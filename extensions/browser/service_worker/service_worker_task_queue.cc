@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
@@ -274,8 +275,8 @@ void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
     return;
   }
 
-  const SequencedContextId context_id = {extension_id, browser_context_,
-                                         activation_token};
+  const SequencedContextId context_id = {
+      extension_id, browser_context_->UniqueId(), activation_token};
 
   const WorkerId worker_id = {extension_id, render_process_id,
                               service_worker_version_id, thread_id};
@@ -316,8 +317,8 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
                               service_worker_version_id, thread_id};
   ProcessManager::Get(browser_context_)
       ->StopTrackingServiceWorkerRunningInstance(worker_id);
-  const SequencedContextId context_id = {extension_id, browser_context_,
-                                         activation_token};
+  const SequencedContextId context_id = {
+      extension_id, browser_context_->UniqueId(), activation_token};
 
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
@@ -374,8 +375,8 @@ bool ServiceWorkerTaskQueue::IsReadyToRunTasks(
     return false;
   }
 
-  const SequencedContextId context_id(extension->id(), browser_context_,
-                                      *activation_token);
+  const SequencedContextId context_id(
+      extension->id(), browser_context_->UniqueId(), *activation_token);
   const WorkerState* worker_state = GetWorkerState(context_id);
 
   if (!worker_state || !worker_state->worker_id()) {
@@ -425,9 +426,9 @@ void ServiceWorkerTaskQueue::AddPendingTask(
   DCHECK(activation_token)
       << "Trying to add pending task to an inactive extension: "
       << lazy_context_id.extension_id();
-  const SequencedContextId context_id = {lazy_context_id.extension_id(),
-                                         lazy_context_id.browser_context(),
-                                         *activation_token};
+  const SequencedContextId context_id = {
+      lazy_context_id.extension_id(),
+      lazy_context_id.browser_context()->UniqueId(), *activation_token};
 
   // `HasPendingTasks(context_id)`  `true` means the worker is starting.
   // `HasPendingTasks(context_id)` `false` means that we don't know if the
@@ -463,8 +464,8 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
   const ExtensionId extension_id = extension->id();
   base::UnguessableToken activation_token = base::UnguessableToken::Create();
   activation_tokens_[extension_id] = activation_token;
-  const SequencedContextId context_id = {extension_id, browser_context_,
-                                         activation_token};
+  const SequencedContextId context_id = {
+      extension_id, browser_context_->UniqueId(), activation_token};
   DCHECK(!base::Contains(worker_state_map_, context_id));
   worker_state_map_.try_emplace(context_id);
   pending_tasks_map_.try_emplace(context_id);
@@ -528,8 +529,8 @@ void ServiceWorkerTaskQueue::UntrackServiceWorkerState(
     // Extension has been deactivated so worker state should already be erased.
     return;
   }
-  const SequencedContextId context_id{extension_id, browser_context_,
-                                      *activation_token};
+  const SequencedContextId context_id{
+      extension_id, browser_context_->UniqueId(), *activation_token};
   WorkerState* worker_state = GetWorkerState(context_id);
   // If the extension is still activated, worker state should still exist.
   CHECK(worker_state);
@@ -584,8 +585,8 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   }
 
   activation_tokens_.erase(extension_id);
-  const SequencedContextId context_id = {extension_id, browser_context_,
-                                         *activation_token};
+  const SequencedContextId context_id = {
+      extension_id, browser_context_->UniqueId(), *activation_token};
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
   // TODO(lazyboy): Run orphaned tasks with nullptr ContextInfo.
@@ -620,7 +621,7 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
 
 void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
     const SequencedContextId& context_id) {
-  if (context_id.browser_context != browser_context_) {
+  if (context_id.browser_context_id != browser_context_->UniqueId()) {
     return;
   }
 
@@ -1061,8 +1062,8 @@ bool ServiceWorkerTaskQueue::IsWorkerRegistered(
     // or a worker unregistration has, at least, been sent.
     return false;
   }
-  const SequencedContextId context_id = {extension_id, browser_context_,
-                                         *activation_token};
+  const SequencedContextId context_id = {
+      extension_id, browser_context_->UniqueId(), *activation_token};
   return base::Contains(worker_registered_, context_id);
 }
 
@@ -1073,9 +1074,9 @@ size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(
   if (!activation_token) {
     return 0;
   }
-  const SequencedContextId context_id = {lazy_context_id.extension_id(),
-                                         lazy_context_id.browser_context(),
-                                         *activation_token};
+  const SequencedContextId context_id = {
+      lazy_context_id.extension_id(),
+      lazy_context_id.browser_context()->UniqueId(), *activation_token};
   std::vector<PendingTask>* tasks = pending_tasks(context_id);
   return tasks ? tasks->size() : 0;
 }
@@ -1147,6 +1148,13 @@ void ServiceWorkerTaskQueue::DidVerifyRegistration(
   const Extension* extension =
       registry->enabled_extensions().GetByID(extension_id);
   if (!extension) {
+    return;
+  }
+
+  // It is possible that the extension got reloaded while we were verifying the
+  // registration. Ignore the request if it is not the current activation.
+  // TODO(crbug.com/391414854): Add a test for this.
+  if (!IsCurrentActivation(extension_id, context_id.token)) {
     return;
   }
 

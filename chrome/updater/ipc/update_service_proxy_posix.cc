@@ -4,6 +4,7 @@
 
 #include "chrome/updater/ipc/update_service_proxy_posix.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -18,7 +19,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,17 +26,18 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/version.h"
-#include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/ipc/ipc_names.h"
 #include "chrome/updater/ipc/update_service_dialer.h"
 #include "chrome/updater/ipc/update_service_proxy.h"
+#include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/posix_util.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
+#include "components/policy/core/common/policy_types.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -260,11 +261,12 @@ void UpdateServiceProxyImpl::GetVersion(
 }
 
 void UpdateServiceProxyImpl::FetchPolicies(
+    policy::PolicyFetchReason reason,
     base::OnceCallback<void(base::expected<int, RpcError>)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
-  remote_->FetchPolicies(ToMojoCallback(std::move(callback)));
+  remote_->FetchPolicies(reason, ToMojoCallback(std::move(callback)));
 }
 
 void UpdateServiceProxyImpl::RegisterApp(
@@ -286,8 +288,8 @@ void UpdateServiceProxyImpl::GetAppStates(
   remote_->GetAppStates(
       base::BindOnce([](std::vector<mojom::AppStatePtr> app_states_mojo) {
         std::vector<updater::UpdateService::AppState> app_states;
-        base::ranges::transform(app_states_mojo, std::back_inserter(app_states),
-                                &MakeAppState);
+        std::ranges::transform(app_states_mojo, std::back_inserter(app_states),
+                               &MakeAppState);
         return app_states;
       }).Then(ToMojoCallback(std::move(callback))));
 }

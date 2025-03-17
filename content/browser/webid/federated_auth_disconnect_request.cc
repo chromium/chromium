@@ -5,6 +5,7 @@
 #include "content/browser/webid/federated_auth_disconnect_request.h"
 
 #include "base/notreached.h"
+#include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
@@ -109,8 +110,13 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
   provider_fetcher_ = std::make_unique<FederatedProviderFetcher>(
       *render_frame_host_, network_manager_.get());
   GURL config_url = options_->config->config_url;
+  // TODO(crbug.com/390626180): It seems ok to ignore the well-known checks in
+  // all cases here. However, keeping this unchanged for now when the IDP
+  // registration API is not enabled since we only really need this for that
+  // case.
   provider_fetcher_->Start(
-      {GURL(config_url)}, blink::mojom::RpMode::kPassive, /*icon_ideal_size=*/0,
+      {{config_url, IsFedCmIdPRegistrationEnabled()}},
+      blink::mojom::RpMode::kPassive, /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindOnce(
           &FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched,
@@ -247,9 +253,10 @@ void FederatedAuthDisconnectRequest::Complete(
           ? std::optional<base::TimeDelta>{base::TimeTicks::Now() - start_time_}
           : std::nullopt;
   metrics_->RecordDisconnectMetrics(
-      disconnect_status_for_metrics, duration, *render_frame_host_, origin_,
-      embedding_origin_, options_->config->config_url,
-      webid::GetNewSessionID());
+      disconnect_status_for_metrics, duration,
+      webid::ComputeRequesterFrameType(*render_frame_host_, origin_,
+                                       embedding_origin_),
+      options_->config->config_url, webid::GetNewSessionID());
 
   std::move(callback_).Run(status);
 }

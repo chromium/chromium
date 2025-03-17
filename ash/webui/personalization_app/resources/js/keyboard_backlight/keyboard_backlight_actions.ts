@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action} from 'chrome://resources/js/store.js';
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {Action} from 'chrome://resources/js/store.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {CurrentBacklightState} from '../../personalization_app.mojom-webui.js';
+import type {CurrentBacklightState} from '../../personalization_app.mojom-webui.js';
 
 /**
  * @fileoverview Defines the actions to update keyboard backlight settings.

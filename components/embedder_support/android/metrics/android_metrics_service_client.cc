@@ -39,14 +39,12 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/drive_metrics_provider.h"
-#include "components/metrics/dwa/dwa_service.h"
 #include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/net/cellular_logic_helper.h"
-#include "components/metrics/net/net_metrics_log_uploader.h"
 #include "components/metrics/net/network_metrics_provider.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/metrics/persistent_synthetic_trial_observer.h"
@@ -56,8 +54,6 @@
 #include "components/metrics/ui/screen_info_metrics_provider.h"
 #include "components/metrics/version_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/ukm/field_trials_provider_helper.h"
-#include "components/ukm/ukm_service.h"
 #include "content/public/browser/histogram_fetcher.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -207,8 +203,6 @@ void AndroidMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
       registry, kCrashpadHistogramAllocatorName);
   metrics::FileMetricsProvider::RegisterPrefs(registry);
   metrics::StabilityMetricsHelper::RegisterPrefs(registry);
-  ukm::UkmService::RegisterPrefs(registry);
-  metrics::dwa::DwaService::RegisterPrefs(registry);
 }
 
 void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
@@ -288,9 +282,6 @@ void AndroidMetricsServiceClient::MaybeStartMetrics() {
       // for a matching Stop() call.
       metrics_service_->Start();
     }
-
-    CreateUkmService();
-    CreateDwaService();
   } else {
     // Even though reporting is not enabled, CreateFileMetricsProvider() is
     // called. This ensures on disk state is removed.
@@ -343,32 +334,6 @@ void AndroidMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
   metrics_service_->InitializeMetricsRecordingState();
 }
 
-void AndroidMetricsServiceClient::CreateUkmService() {
-  ukm_service_ = std::make_unique<ukm::UkmService>(
-      pref_service_, this, /*demographics_provider=*/nullptr);
-
-  ukm_service_->RegisterMetricsProvider(
-      std::make_unique<metrics::NetworkMetricsProvider>(
-          content::CreateNetworkConnectionTrackerAsyncGetter()));
-
-  ukm_service_->RegisterMetricsProvider(
-      std::make_unique<metrics::GPUMetricsProvider>());
-
-  ukm_service_->RegisterMetricsProvider(
-      std::make_unique<metrics::CPUMetricsProvider>());
-
-  ukm_service_->RegisterMetricsProvider(
-      std::make_unique<metrics::ScreenInfoMetricsProvider>());
-
-  ukm_service_->RegisterMetricsProvider(
-      std::make_unique<metrics::FormFactorMetricsProvider>());
-
-  ukm_service_->RegisterMetricsProvider(
-      ukm::CreateFieldTrialsProviderForUkm(synthetic_trial_registry_.get()));
-
-  UpdateUkmService();
-}
-
 void AndroidMetricsServiceClient::SetHaveMetricsConsent(bool user_consent,
                                                         bool app_consent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -388,59 +353,6 @@ void AndroidMetricsServiceClient::SetUploadIntervalForTesting(
     const base::TimeDelta& upload_interval) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   overridden_upload_interval_ = upload_interval;
-}
-
-void AndroidMetricsServiceClient::UpdateUkm(bool must_purge) {
-  if (!ukm_service_)
-    return;
-  if (must_purge) {
-    ukm_service_->Purge();
-    ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
-  }
-
-  UpdateUkmService();
-}
-
-void AndroidMetricsServiceClient::UpdateUkmService() {
-  if (!ukm_service_)
-    return;
-
-  bool consent_or_flag = IsConsentGiven() || IsMetricsReportingForceEnabled();
-  bool allowed = IsUkmAllowedForAllProfiles();
-  bool is_incognito = IsOffTheRecordSessionActive();
-
-  if (consent_or_flag && allowed && !is_incognito) {
-    ukm_service_->EnableRecording();
-    ukm_service_->EnableReporting();
-  } else {
-    ukm_service_->DisableRecording();
-    ukm_service_->DisableReporting();
-  }
-}
-
-void AndroidMetricsServiceClient::UpdateDwaService() {
-  if (!dwa_service_) {
-    return;
-  }
-  // DWA is tied to UKM consent.
-  bool consent_or_flag = IsConsentGiven() || IsMetricsReportingForceEnabled();
-  bool allowed = IsDwaAllowedForAllProfiles();
-  bool is_incognito = IsOffTheRecordSessionActive();
-
-  if (consent_or_flag && allowed && !is_incognito) {
-    metrics::dwa::DwaRecorder::Get()->EnableRecording();
-    dwa_service_->EnableReporting();
-  } else {
-    metrics::dwa::DwaRecorder::Get()->DisableRecording();
-    metrics::dwa::DwaRecorder::Get()->Purge();
-    dwa_service_->DisableReporting();
-  }
-}
-
-void AndroidMetricsServiceClient::CreateDwaService() {
-  dwa_service_ =
-        std::make_unique<metrics::dwa::DwaService>(this, pref_service_);
-  UpdateDwaService();
 }
 
 bool AndroidMetricsServiceClient::IsConsentDetermined() const {
@@ -474,10 +386,6 @@ MetricsService* AndroidMetricsServiceClient::GetMetricsService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This will be null if initialization hasn't finished.
   return metrics_service_.get();
-}
-
-ukm::UkmService* AndroidMetricsServiceClient::GetUkmService() {
-  return ukm_service_.get();
 }
 
 // In Chrome, UMA and Crashpad are enabled/disabled together by the same
@@ -559,15 +467,7 @@ std::unique_ptr<MetricsLogUploader> AndroidMetricsServiceClient::CreateUploader(
     std::string_view mime_type,
     MetricsLogUploader::MetricServiceType service_type,
     const MetricsLogUploader::UploadCallback& on_upload_complete) {
-  if (service_type == metrics::MetricsLogUploader::UKM) {
-    // Clearcut doesn't handle UKMs.
-    auto url_loader_factory = GetURLLoaderFactory();
-    DCHECK(url_loader_factory);
-    return std::make_unique<metrics::NetMetricsLogUploader>(
-        url_loader_factory, server_url, insecure_server_url, mime_type,
-        service_type, on_upload_complete);
-  }
-
+  CHECK_EQ(service_type, metrics::MetricsLogUploader::UMA);
   // |server_url|, |insecure_server_url|, and |mime_type| are unused because
   // AndroidMetricsServiceClients send metrics to the platform logging mechanism
   // rather than to Chrome's metrics server.
@@ -591,15 +491,7 @@ base::TimeDelta AndroidMetricsServiceClient::GetStandardUploadInterval() {
   return metrics::GetUploadInterval(false /* use_cellular_upload_interval */);
 }
 
-bool AndroidMetricsServiceClient::IsUkmAllowedForAllProfiles() {
-  return false;
-}
-
-bool AndroidMetricsServiceClient::IsDwaAllowedForAllProfiles() {
-  return false;
-}
-
-bool AndroidMetricsServiceClient::ShouldStartUpFastForTesting() const {
+bool AndroidMetricsServiceClient::ShouldStartUpFast() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return fast_startup_for_testing_;
 }

@@ -1,6 +1,6 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file
+// found in the LICENSE file.
 
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
@@ -12,11 +12,16 @@
 #include "components/unexportable_keys/features.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"
+#include "net/cookies/canonical_cookie_test_helpers.h"
+#include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/test_support.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
+using net::device_bound_sessions::SessionAccess;
 using net::device_bound_sessions::SessionKey;
 
 namespace {
@@ -25,30 +30,32 @@ class DeviceBoundSessionAccessObserver : public content::WebContentsObserver {
  public:
   DeviceBoundSessionAccessObserver(
       content::WebContents* web_contents,
-      base::RepeatingCallback<void(const SessionKey&)> on_access_callback)
+      base::RepeatingCallback<void(const SessionAccess&)> on_access_callback)
       : WebContentsObserver(web_contents),
         on_access_callback_(std::move(on_access_callback)) {}
 
   void OnDeviceBoundSessionAccessed(content::NavigationHandle* navigation,
-                                    const SessionKey& session) override {
-    on_access_callback_.Run(session);
+                                    const SessionAccess& access) override {
+    on_access_callback_.Run(access);
   }
   void OnDeviceBoundSessionAccessed(content::RenderFrameHost* rfh,
-                                    const SessionKey& session) override {
-    on_access_callback_.Run(session);
+                                    const SessionAccess& access) override {
+    on_access_callback_.Run(access);
   }
 
  private:
-  base::RepeatingCallback<void(const SessionKey&)> on_access_callback_;
+  base::RepeatingCallback<void(const SessionAccess&)> on_access_callback_;
 };
 
 class DeviceBoundSessionBrowserTest : public InProcessBrowserTest {
  public:
   DeviceBoundSessionBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {net::features::kDeviceBoundSessions,
-         unexportable_keys::
-             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{net::features::kDeviceBoundSessions,
+          {{"ForceEnableForTesting", "true"}}},
+         {unexportable_keys::
+              kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,
+          {}}},
         {});
 
     EXPECT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -63,18 +70,79 @@ class DeviceBoundSessionBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
-                       AccessCalledOnRegistration) {
-  base::test::TestFuture<SessionKey> future;
+                       AccessCalledOnRegistrationFromNavigation) {
+  base::test::TestFuture<SessionAccess> future;
   DeviceBoundSessionAccessObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      future.GetRepeatingCallback<const SessionKey&>());
+      future.GetRepeatingCallback<const SessionAccess&>());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/dbsc_required")));
 
-  SessionKey session = future.Take();
-  EXPECT_EQ(session.site,
+  SessionAccess access = future.Take();
+  EXPECT_EQ(access.session_key.site,
             net::SchemefulSite(embedded_test_server()->base_url()));
-  EXPECT_EQ(session.id, SessionKey::Id("session_id"));
+  EXPECT_EQ(access.session_key.id, SessionKey::Id("session_id"));
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
+                       AccessCalledOnRegistrationFromResource) {
+  base::test::TestFuture<SessionAccess> future;
+  DeviceBoundSessionAccessObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      future.GetRepeatingCallback<const SessionAccess&>());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/resource_triggered_dbsc_registration")));
+
+  SessionAccess access = future.Take();
+  EXPECT_EQ(access.session_key.site,
+            net::SchemefulSite(embedded_test_server()->base_url()));
+  EXPECT_EQ(access.session_key.id, SessionKey::Id("session_id"));
+
+  EXPECT_THAT(
+      GetCanonicalCookies(browser()
+                              ->tab_strip_model()
+                              ->GetActiveWebContents()
+                              ->GetBrowserContext(),
+                          embedded_test_server()->GetURL("/dbsc_required")),
+      testing::Contains(net::MatchesCookieWithName("auth_cookie")));
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterOnNavigation) {
+  base::HistogramTester histograms;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/dbsc_required")));
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  histograms.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kDeviceBoundSessionRegistered, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterOnResource) {
+  base::HistogramTester histograms;
+
+  base::test::TestFuture<SessionAccess> future;
+  DeviceBoundSessionAccessObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      future.GetRepeatingCallback<const SessionAccess&>());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/resource_triggered_dbsc_registration")));
+
+  ASSERT_TRUE(future.Wait());
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  histograms.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kDeviceBoundSessionRegistered, 1);
 }
 
 }  // namespace

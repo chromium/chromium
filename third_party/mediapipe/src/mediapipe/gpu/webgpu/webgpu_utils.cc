@@ -23,7 +23,7 @@ namespace {
 
 EM_ASYNC_JS(void, mediapipe_map_buffer_jspi,
             (WGPUBuffer buffer_handle, uint8_t* data), {
-              const buffer = WebGPU.mgrBuffer.get(buffer_handle);
+              const buffer = WebGPU.getJsObject(buffer_handle);
               await buffer.mapAsync(GPUMapMode.READ);
               const mapped = buffer.getMappedRange();
               HEAPU8.set(new Uint8Array(mapped), data);
@@ -122,8 +122,8 @@ absl::Status WebGpuTexture2dUploadData(const wgpu::Device& device,
     buffer = data;
   }
 
-  wgpu::ImageCopyTexture destination = {.texture = texture};
-  wgpu::TextureDataLayout texture_data_layout = {
+  wgpu::TexelCopyTextureInfo destination = {.texture = texture};
+  wgpu::TexelCopyBufferLayout texel_copy_buffer_layout = {
       .bytesPerRow = width * texture_bytes_per_pixel,
       .rowsPerImage = height,
   };
@@ -132,8 +132,8 @@ absl::Status WebGpuTexture2dUploadData(const wgpu::Device& device,
       .height = height,
   };
 
-  queue.WriteTexture(&destination, buffer, buffer_size, &texture_data_layout,
-                     &write_size);
+  queue.WriteTexture(&destination, buffer, buffer_size,
+                     &texel_copy_buffer_layout, &write_size);
   return absl::OkStatus();
 }
 
@@ -168,9 +168,9 @@ absl::Status GetTexture2dData(const wgpu::Device& device,
   wgpu::Buffer webgpu_buffer = device.CreateBuffer(&buffer_descriptor);
 
   auto command_encoder = device.CreateCommandEncoder({});
-  wgpu::ImageCopyTexture copy_src{.texture = texture};
-  wgpu::ImageCopyBuffer copy_dst{.layout = {.bytesPerRow = bytes_per_row},
-                                 .buffer = webgpu_buffer};
+  wgpu::TexelCopyTextureInfo copy_src{.texture = texture};
+  wgpu::TexelCopyBufferInfo copy_dst{.layout = {.bytesPerRow = bytes_per_row},
+                                     .buffer = webgpu_buffer};
   wgpu::Extent3D copy_size = {
       .width = width,
       .height = height,

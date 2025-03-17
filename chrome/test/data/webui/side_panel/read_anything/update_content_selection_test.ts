@@ -8,7 +8,6 @@ import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-c
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {FakeTree} from './fake_tree_builder.js';
 import {FakeTreeBuilder} from './fake_tree_builder.js';
@@ -30,12 +29,14 @@ suite('UpdateContentSelection', () => {
   }
 
   setup(() => {
-    suppressInnocuousErrors();
-    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 
+    // Don't use await createApp() when using a FakeTree, as it seems to cause
+    // flakiness.
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
 
@@ -124,7 +125,7 @@ suite('UpdateContentSelection', () => {
     assertEquals(10, selection.focusOffset);
   });
 
-  test('invalid selection clears selection', async () => {
+  test('invalid selection clears selection', () => {
     chrome.readingMode.startNodeId = -1;
     chrome.readingMode.endNodeId = -1;
 

@@ -34,7 +34,7 @@ class CORE_EXPORT CountersAttachmentContext {
 
   using CounterStack = HeapVector<Member<CounterEntry>>;
   using CounterInheritanceTable =
-      HeapHashMap<AtomicString, Member<CounterStack>>;
+      GCedHeapHashMap<AtomicString, Member<CounterStack>>;
 
  public:
   enum class Type {

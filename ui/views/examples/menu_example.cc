@@ -238,7 +238,7 @@ void MenuExample::CreateExampleView(View* container) {
                                  .Build();
 
   example_menu_button->SetBorder(CreatePaddedBorder(
-      CreateThemedRoundedRectBorder(1, 5, kColorMenuButtonExampleBorder),
+      CreateRoundedRectBorder(1, 5, kColorMenuButtonExampleBorder),
       LayoutProvider::Get()->GetInsetsMetric(
           InsetsMetric::INSETS_LABEL_BUTTON)));
 

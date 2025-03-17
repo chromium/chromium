@@ -30,39 +30,10 @@
 
 #include "third_party/blink/renderer/platform/text/text_run.h"
 
-#include "base/memory/raw_ptr_exclusion.h"
-#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/character.h"
-#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 
 namespace blink {
-
-struct SameSizeAsTextRun {
-  DISALLOW_NEW();
-  union {
-    // RAW_PTR_EXCLUSION: #union
-    RAW_PTR_EXCLUSION const void* pointer;
-  };
-  int integer;
-  uint32_t bitfields : 4;
-};
-
-ASSERT_SIZE(TextRun, SameSizeAsTextRun);
-
-void TextRun::SetText(const String& string) {
-  len_ = string.length();
-  if (!len_) {
-    data_.characters8 = nullptr;
-    is_8bit_ = true;
-    return;
-  }
-  is_8bit_ = string.Is8Bit();
-  if (is_8bit_)
-    data_.characters8 = string.Characters8();
-  else
-    data_.characters16 = string.Characters16();
-}
 
 String TextRun::NormalizedUTF16() const {
   const UChar* source;
@@ -71,17 +42,18 @@ String TextRun::NormalizedUTF16() const {
     string_for8_bit_run = String::Make16BitFrom8BitSource(Span8());
     source = string_for8_bit_run.Characters16();
   } else {
-    source = Characters16();
+    source = Span16().data();
   }
 
-  StringBuffer<UChar> buffer(len_);
+  wtf_size_t len = length();
+  StringBuffer<UChar> buffer(len);
   unsigned result_length = 0;
 
   bool error = false;
   unsigned position = 0;
-  while (position < len_) {
+  while (position < len) {
     UChar32 character;
-    U16_NEXT(source, position, len_, character);
+    U16_NEXT(source, position, len, character);
     // Don't normalize tabs as they are not treated as spaces for word-end.
     if (NormalizeSpace() &&
         Character::IsNormalizedCanvasSpaceCharacter(character)) {
@@ -97,26 +69,22 @@ String TextRun::NormalizedUTF16() const {
       character = kZeroWidthSpaceCharacter;
     }
 
-    U16_APPEND(buffer.Characters(), result_length, len_, character, error);
+    U16_APPEND(buffer.Characters(), result_length, len, character, error);
     DCHECK(!error);
   }
 
-  DCHECK(result_length <= len_);
+  DCHECK(result_length <= len);
   return String::Adopt(buffer);
 }
 
 unsigned TextRun::IndexOfSubRun(const TextRun& sub_run) const {
-  if (Is8Bit() == sub_run.Is8Bit() && sub_run.Bytes() >= Bytes()) {
-    size_t start_index = Is8Bit() ? sub_run.Characters8() - Characters8()
-                                  : sub_run.Characters16() - Characters16();
+  if (Is8Bit() == sub_run.Is8Bit() && sub_run.text_.Bytes() >= text_.Bytes()) {
+    size_t start_index = Is8Bit() ? sub_run.Span8().data() - Span8().data()
+                                  : sub_run.Span16().data() - Span16().data();
     if (start_index + sub_run.length() <= length())
       return static_cast<unsigned>(start_index);
   }
   return std::numeric_limits<unsigned>::max();
-}
-
-void TextRun::SetDirectionFromText() {
-  SetDirection(BidiParagraph::BaseDirectionForStringOrLtr(ToStringView()));
 }
 
 }  // namespace blink

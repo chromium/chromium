@@ -19,7 +19,7 @@
 #import "components/omnibox/browser/suggestion_answer.h"
 #import "components/omnibox/common/omnibox_feature_configs.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_icon_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_swift.h"
@@ -354,7 +354,6 @@ UIColor* DimColorIncognito() {
          _match.type == AutocompleteMatchType::CALCULATOR ||
          _match.type == AutocompleteMatchType::HISTORY_BODY ||
          _match.type == AutocompleteMatchType::HISTORY_CLUSTER ||
-         _match.type == AutocompleteMatchType::HISTORY_KEYWORD ||
          _match.type == AutocompleteMatchType::HISTORY_TITLE ||
          _match.type == AutocompleteMatchType::HISTORY_URL ||
          _match.type == AutocompleteMatchType::NAVSUGGEST ||

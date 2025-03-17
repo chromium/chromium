@@ -127,7 +127,7 @@ bool ChangeThreadStateAndWatchProcFS(
 
   const base::PlatformThreadId thread_id = thread->GetThreadId();
   const std::string thread_id_dir_str =
-      "self/task/" + base::NumberToString(thread_id) + "/";
+      "self/task/" + base::NumberToString(thread_id.raw()) + "/";
 
   if (action == ThreadAction::Stop) {
     // The target thread should exist in /proc.

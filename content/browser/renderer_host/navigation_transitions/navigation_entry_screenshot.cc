@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 
@@ -12,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
-#include "ui/android/resources/ui_resource_provider.h"
+#include "ui/android/resources/etc1_utils.h"
 #endif
 
 namespace content {
@@ -31,16 +32,16 @@ void CompressNavigationScreenshotOnWorkerThread(
     SkBitmap bitmap,
     bool supports_etc_non_power_of_two,
     CompressionDoneCallback done_callback) {
+  SCOPED_UMA_HISTOGRAM_TIMER("Navigation.GestureTransition.CompressionTime");
   TRACE_EVENT0("navigation", "CompressNavigationScreenshotOnWorkerThread");
 
   sk_sp<SkPixelRef> compressed_bitmap = nullptr;
   if (base::FeatureList::IsEnabled(ui::kCompressBitmapAtBackgroundPriority)) {
-    compressed_bitmap =
-        ui::UIResourceProvider::CompressBitmapAtBackgroundPriority(
-            bitmap, supports_etc_non_power_of_two);
-  } else {
-    compressed_bitmap = ui::UIResourceProvider::CompressBitmap(
+    compressed_bitmap = ui::Etc1::CompressBitmapAtBackgroundPriority(
         bitmap, supports_etc_non_power_of_two);
+  } else {
+    compressed_bitmap =
+        ui::Etc1::CompressBitmap(bitmap, supports_etc_non_power_of_two);
   }
 
   if (compressed_bitmap) {

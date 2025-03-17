@@ -45,12 +45,18 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
@@ -139,6 +145,7 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
   ToastController* GetToastController() {
     return browser()->browser_window_features()->toast_controller();
   }
+
 
   auto ShowToast(ToastParams params) {
     return Do(base::BindOnce(
@@ -346,8 +353,22 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
 // Tests that attempting to close the `ToastView` does not succeed while the
 // menu is open. If that happens, the `ToastView` is closed once the menu
 // closes.
+
+// TODO(crbug.com/398296825): Flaky on Windows builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ToastDoesNotCloseWhileMenuIsOpen \
+  DISABLED_ToastDoesNotCloseWhileMenuIsOpen
+#else
+#define MAYBE_ToastDoesNotCloseWhileMenuIsOpen ToastDoesNotCloseWhileMenuIsOpen
+#endif
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
-                       ToastDoesNotCloseWhileMenuIsOpen) {
+                       MAYBE_ToastDoesNotCloseWhileMenuIsOpen) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    GTEST_SKIP() << "Flaky in Wayland due to way events are routed and bounds "
+                    "are reported";
+  }
+#endif
   ToastParams params(ToastId::kPlusAddressOverride);
   params.menu_model = std::make_unique<TestMenuModel>(base::DoNothing());
   RunTestSequence(ShowToast(std::move(params)),
@@ -358,25 +379,33 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                   EnsurePresent(toasts::ToastView::kToastViewId),
                   FireToastCloseTimer(),
                   EnsurePresent(toasts::ToastView::kToastViewId),
-                  PressButton(toasts::ToastView::kToastMenuButton),
-                  WaitForHide(toasts::ToastView::kToastViewId));
+                  MoveMouseTo(toasts::ToastView::kToastMenuButton),
+                  ClickMouse(), WaitForHide(toasts::ToastView::kToastViewId));
 }
 
 // Tests that clicking the menu button twice closes the menu, but not the toast.
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, TwoClicksOnMenuButton) {
-  ToastParams params(ToastId::kPlusAddressOverride);
-  int counter = 0;
-  params.menu_model = std::make_unique<TestMenuModel>(
-      base::BindLambdaForTesting([&counter]() { ++counter; }));
-  RunTestSequence(ShowToast(std::move(params)),
-                  WaitForShow(toasts::ToastView::kToastViewId),
-                  EnsurePresent(toasts::ToastView::kToastMenuButton),
-                  PressButton(toasts::ToastView::kToastMenuButton),
-                  WaitForShow(kSampleMenuItem),
-                  PressButton(toasts::ToastView::kToastMenuButton),
-                  WaitForHide(kSampleMenuItem),
-                  EnsurePresent(toasts::ToastView::kToastMenuButton),
-                  Check([&]() { return counter == 0; }));
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    GTEST_SKIP() << "Flaky in Wayland due to way events are routed and bounds "
+                    "are reported";
+  }
+#endif
+  RunTestSequence(
+      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      EnsurePresent(toasts::ToastView::kToastMenuButton),
+      PressButton(toasts::ToastView::kToastMenuButton),
+      WaitForShow(ToastDismissMenuModel::kToastDontShowAgainMenuItem),
+      CheckViewProperty(toasts::ToastView::kToastMenuButton,
+                        &views::Button::GetState,
+                        views::Button::ButtonState::STATE_PRESSED),
+      MoveMouseTo(toasts::ToastView::kToastMenuButton), ClickMouse(),
+      WaitForHide(ToastDismissMenuModel::kToastDontShowAgainMenuItem),
+      CheckViewProperty(toasts::ToastView::kToastMenuButton,
+                        &views::Button::GetState,
+                        testing::Ne(views::Button::ButtonState::STATE_PRESSED)),
+      EnsurePresent(toasts::ToastView::kToastMenuButton));
 }
 
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
@@ -558,4 +587,28 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
           ->GetContentsWebView()
           ->GetBoundsInScreen();
   EXPECT_TRUE(web_view_bounds.Contains(toast_bounds));
+}
+
+// Regression test for http://crbug.com/383898425
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
+                       HandlesReducedAnimation) {
+  ToastController* const toast_controller = GetToastController();
+  {
+    // Show toast while rich animations are disabled.
+    const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations =
+        gfx::AnimationTestApi::SetRichAnimationRenderMode(
+            gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+    gfx::Animation::SetPrefersReducedMotionForTesting(true);
+    EXPECT_TRUE(gfx::Animation::PrefersReducedMotion());
+    EXPECT_TRUE(
+        toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+  }
+  {
+    // Animate out toast (due to new toast showing) after enabling animations.
+    const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations =
+        gfx::AnimationTestApi::SetRichAnimationRenderMode(
+            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+    EXPECT_TRUE(
+        toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+  }
 }

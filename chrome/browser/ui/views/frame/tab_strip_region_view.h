@@ -19,7 +19,7 @@ namespace views {
 class Button;
 }
 class NewTabButton;
-class TabGlicContainer;
+class TabStripActionContainer;
 class TabSearchButton;
 class TabStrip;
 class TabStripComboButton;
@@ -61,17 +61,15 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   views::Button* GetNewTabButton();
 
-  TabSearchContainer* GetTabSearchContainer();
+  TabSearchButton* GetTabSearchButton();
 
-  TabGlicContainer* GetTabGlicContainer();
+  TabStripActionContainer* GetTabStripActionContainer();
 
   TabStripComboButton* tab_strip_combo_button() {
     return tab_strip_combo_button_;
   }
 
-  ProductSpecificationsButton* product_specifications_button() {
-    return product_specifications_button_;
-  }
+  ProductSpecificationsButton* GetProductSpecificationsButton();
 
   glic::GlicButton* GetGlicButton();
 
@@ -79,8 +77,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // access the new tab button inside the combo button.
   views::Button* new_tab_button_for_testing() { return new_tab_button_; }
 
-  // May be nullptr if combo button is enabled. |Use GetTabSearchContainer()|
-  // to access the tab search container inside the combo button.
+  // May be nullptr if combo button is enabled.
   TabSearchContainer* tab_search_container_for_testing() {
     return tab_search_container_;
   }
@@ -118,12 +115,6 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   gfx::Size GetMinimumSize() const override;
   views::View* GetDefaultFocusableChild() override;
 
-  // Reports to UMA if a HTCAPTION hit test was in the grab handle or other
-  // location. The location of this function is temporary to allow for easy
-  // merging.
-  static void ReportCaptionHitTestInReservedGrabHandleSpace(
-      bool in_reserved_grab_handle_space);
-
   views::View* GetTabStripContainerForTesting() { return tab_strip_container_; }
 
   const Profile* profile() { return profile_; }
@@ -144,13 +135,13 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   void AdjustViewBoundsRect(View* view, int offset);
 
   raw_ptr<const Profile> profile_ = nullptr;
+  raw_ptr<TabStripActionContainer> tab_strip_action_container_ = nullptr;
   raw_ptr<views::View> tab_strip_container_ = nullptr;
   raw_ptr<views::View> reserved_grab_handle_space_ = nullptr;
   raw_ptr<TabStrip> tab_strip_ = nullptr;
   raw_ptr<TabStripScrollContainer> tab_strip_scroll_container_ = nullptr;
   raw_ptr<views::Button> new_tab_button_ = nullptr;
   raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
-  raw_ptr<TabGlicContainer> tab_glic_container_ = nullptr;
   raw_ptr<TabStripComboButton> tab_strip_combo_button_ = nullptr;
   raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
 

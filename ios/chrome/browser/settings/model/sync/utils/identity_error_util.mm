@@ -90,14 +90,6 @@ GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForEverything() {
 AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
   DCHECK(sync_service);
 
-  // TODO(crbug.com/40066949): Remove usage of IsSyncFeatureEnabled() after
-  // kSync users are migrated to kSignin in phase 3. See ConsentLevel::kSync
-  // documentation for details.
-  if (sync_service->IsSyncFeatureEnabled()) {
-    // Don't indicate account errors when Sync is enabled.
-    return nil;
-  }
-
   switch (sync_service->GetUserActionableError()) {
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       return GetUIInfoForPassphraseError();
@@ -121,38 +113,9 @@ AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
   return nil;
 }
 
-// TODO(crbug.com/40066949): Remove this function after kSync users are migrated
-// to kSignin in phase 3. See ConsentLevel::kSync documentation for details.
-SyncState GetSyncFeatureState(syncer::SyncService* sync_service) {
-  syncer::SyncService::UserActionableError error_state =
-      sync_service->GetUserActionableError();
-  if (sync_service->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    // Sync is disabled by administrator policy.
-    return SyncState::kSyncDisabledByAdministrator;
-  } else if (!sync_service->GetUserSettings()
-                  ->IsInitialSyncFeatureSetupComplete()) {
-    // User has not completed Sync setup in sign-in flow.
-    return SyncState::kSyncConsentOff;
-  } else if (!sync_service->CanSyncFeatureStart()) {
-    // Sync engine is off.
-    return SyncState::kSyncOff;
-  } else if (sync_service->GetUserSettings()->GetSelectedTypes().empty()) {
-    // User has deselected all sync data types.
-    // With pre-MICE, the sync status should be SyncState::kSyncEnabled to show
-    // the same value than the sync toggle.
-    return SyncState::kSyncEnabledWithNoSelectedTypes;
-  } else if (error_state != syncer::SyncService::UserActionableError::kNone) {
-    // Sync error.
-    return SyncState::kSyncEnabledWithError;
-  }
-  return SyncState::kSyncEnabled;
-}
-
 bool ShouldIndicateIdentityErrorInOverflowMenu(
     syncer::SyncService* sync_service) {
   DCHECK(sync_service);
 
-  return GetAccountErrorUIInfo(sync_service) != nil ||
-         GetSyncFeatureState(sync_service) == SyncState::kSyncEnabledWithError;
+  return GetAccountErrorUIInfo(sync_service) != nil;
 }

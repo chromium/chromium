@@ -12,12 +12,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/range/range.h"
 
 class Browser;
 class BrowserWindowInterface;
+class ScopedTabStripModalUI;
 class Tab;
 class TabGroup;
 class TabStrip;
@@ -49,10 +51,17 @@ class TabStripController {
   // Returns the number of tabs in the model.
   virtual int GetCount() const = 0;
 
-  // Returns true if |index| is a valid model index.
+  // Features that want to show tabstrip-modal UI are mutually exclusive.
+  // Before showing a modal UI first check `CanShowModalUI`. Then call
+  // ShowModalUI() and keep `ScopedTabStripModal` alive to prevent other
+  // features from showing tabstrip-modal UI.
+  virtual bool CanShowModalUI() const = 0;
+  virtual std::unique_ptr<ScopedTabStripModalUI> ShowModalUI() = 0;
+
+  // Returns true if `index` is a valid model index.
   virtual bool IsValidIndex(int index) const = 0;
 
-  // Returns true if the tab at |index| is the active tab. The active tab is the
+  // Returns true if the tab at `index` is the active tab. The active tab is the
   // one whose content is shown.
   virtual bool IsActiveTab(int index) const = 0;
 
@@ -66,8 +75,13 @@ class TabStripController {
   virtual bool IsTabPinned(int index) const = 0;
 
   // Select the tab at the specified index in the model.
-  // |event| is the input event that triggers the tab selection.
+  // `event` is the input event that triggers the tab selection.
   virtual void SelectTab(int index, const ui::Event& event) = 0;
+
+  // Records metrics related to tab selection changes such as if the active tab
+  // is in a tab group.
+  virtual void RecordMetricsOnTabSelectionChange(
+      std::optional<tab_groups::TabGroupId> group) = 0;
 
   // Extends the selection from the anchor to the specified index in the model.
   virtual void ExtendSelectionTo(int index) = 0;
@@ -75,15 +89,16 @@ class TabStripController {
   // Toggles the selection of the specified index in the model.
   virtual void ToggleSelected(int index) = 0;
 
-  // Adds the selection the anchor to |index|.
+  // Adds the selection the anchor to `index`.
   virtual void AddSelectionFromAnchorTo(int index) = 0;
 
   // Prepares to close a tab. If closing the tab might require (for example) a
   // user prompt, triggers that prompt passing in the callback ownership to it.
   // Otherwise it runs the callback.
-  virtual void OnCloseTab(int index,
-                          CloseTabSource source,
-                          base::OnceCallback<void()> callback) = 0;
+  virtual void OnCloseTab(
+      int index,
+      CloseTabSource source,
+      base::OnceCallback<void(CloseTabSource)> callback) = 0;
 
   // Closes the tab at the specified index in the model.
   virtual void CloseTab(int index) = 0;
@@ -98,11 +113,11 @@ class TabStripController {
   // Removes a tab from its tab group.
   virtual void RemoveTabFromGroup(int model_index) = 0;
 
-  // Moves the tab at |start_index| so that it is now at |final_index|, sliding
+  // Moves the tab at `start_index` so that it is now at `final_index`, sliding
   // any tabs in between left or right as appropriate.
   virtual void MoveTab(int start_index, int final_index) = 0;
 
-  // Moves all the tabs in |group| so that it is now at |final_index|, sliding
+  // Moves all the tabs in `group` so that it is now at `final_index`, sliding
   // any tabs in between left or right as appropriate.
   virtual void MoveGroup(const tab_groups::TabGroupId& group,
                          int final_index) = 0;
@@ -113,9 +128,12 @@ class TabStripController {
   // touch/gesture control, etc). Tests will default to `kMenuAction` unless
   // specified otherwise.
   virtual void ToggleTabGroupCollapsedState(
-      const tab_groups::TabGroupId group,
-      ToggleTabGroupCollapsedStateOrigin origin =
-          ToggleTabGroupCollapsedStateOrigin::kMenuAction) = 0;
+      tab_groups::TabGroupId group,
+      ToggleTabGroupCollapsedStateOrigin origin) = 0;
+  void ToggleTabGroupCollapsedState(tab_groups::TabGroupId group) {
+    ToggleTabGroupCollapsedState(
+        group, ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+  }
 
   // Shows a context menu for the tab at the specified point in screen coords.
   virtual void ShowContextMenuForTab(Tab* tab,
@@ -135,13 +153,13 @@ class TabStripController {
   // Creates the new tab.
   virtual void CreateNewTab() = 0;
 
-  // Creates a new tab, and loads |location| in the tab. If |location| is a
+  // Creates a new tab, and loads `location` in the tab. If `location` is a
   // valid URL, then simply loads the URL, otherwise this can open a
-  // search-result page for |location|.
+  // search-result page for `location`.
   virtual void CreateNewTabWithLocation(const std::u16string& location) = 0;
 
   // Notifies controller that the user started dragging this tabstrip's tabs.
-  // |dragging_window| indicates if the whole window is moving, or if tabs are
+  // `dragging_window` indicates if the whole window is moving, or if tabs are
   // moving within a window.
   virtual void OnStartedDragging(bool dragging_window) = 0;
 
@@ -151,42 +169,42 @@ class TabStripController {
   virtual void OnStoppedDragging() = 0;
 
   // Notifies controller that the index of the tab with keyboard focus changed
-  // to |index|.
+  // to `index`.
   virtual void OnKeyboardFocusedTabChanged(std::optional<int> index) = 0;
 
-  // Returns the title of the given |group|.
+  // Returns the title of the given `group`.
   virtual std::u16string GetGroupTitle(
       const tab_groups::TabGroupId& group) const = 0;
 
-  // Returns the string describing the contents of the given |group|.
+  // Returns the string describing the contents of the given `group`.
   virtual std::u16string GetGroupContentString(
       const tab_groups::TabGroupId& group) const = 0;
 
-  // Returns the color ID of the given |group|.
+  // Returns the color ID of the given `group`.
   virtual tab_groups::TabGroupColorId GetGroupColorId(
       const tab_groups::TabGroupId& group) const = 0;
 
+  // Returns the TabGroup of the given `group`.
   virtual TabGroup* GetTabGroup(const tab_groups::TabGroupId& group) const = 0;
-
-  // Returns the |group| collapsed state. Returns false if the group does not
+  // Returns the `group` collapsed state. Returns false if the group does not
   // exist or is not collapsed.
   virtual bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const = 0;
 
-  // Sets the title and color ID of the given |group|.
+  // Sets the title and color ID of the given `group`.
   virtual void SetVisualDataForGroup(
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) = 0;
 
-  // Gets the first tab index in |group|, or nullopt if the group is
+  // Gets the first tab index in `group`, or nullopt if the group is
   // currently empty. This is always safe to call unlike
   // ListTabsInGroup().
   virtual std::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const = 0;
 
-  // Returns the range of tabs in the given |group|. This must not be
+  // Returns the range of tabs in the given `group`. This must not be
   // called during intermediate states where the group is not
   // contiguous. For example, if tabs elsewhere in the tab strip are
-  // being moved into |group| it may not be contiguous; this method
+  // being moved into `group` it may not be contiguous; this method
   // cannot be called.
   virtual gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group) const = 0;

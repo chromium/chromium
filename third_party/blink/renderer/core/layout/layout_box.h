@@ -253,23 +253,17 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     LocationChanged();
   }
 
-  // The ancestor box that this object's Location and PhysicalLocation are
-  // relative to.
+  // The ancestor box that this object's PhysicalLocation is relative to.
   virtual LayoutBox* LocationContainer() const;
 
   // Note that those functions have their origin at this box's CSS border box.
-  // As such their location doesn't account for 'top'/'left'. About its
-  // coordinate space, it can be treated as in either physical coordinates
-  // or "physical coordinates in flipped block-flow direction", and
-  // FlipForWritingMode() will do nothing on it.
+  // As such their location doesn't account for 'top'/'left'.
   PhysicalRect PhysicalBorderBoxRect() const {
     NOT_DESTROYED();
     return PhysicalRect(PhysicalOffset(), Size());
   }
 
   // Client rect and padding box rect are the same concept.
-  // TODO(crbug.com/877518): Some callers of this method may actually want
-  // "physical coordinates in flipped block-flow direction".
   DISABLE_CFI_PERF PhysicalRect PhysicalPaddingBoxRect() const {
     NOT_DESTROYED();
     return PhysicalRect(ClientLeft(), ClientTop(), ClientWidth(),
@@ -278,15 +272,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // The content area of the box (excludes padding - and intrinsic padding for
   // table cells, etc... - and scrollbars and border).
-  // TODO(crbug.com/877518): Some callers of this method may actually want
-  // "physical coordinates in flipped block-flow direction".
   DISABLE_CFI_PERF PhysicalRect PhysicalContentBoxRect() const {
     NOT_DESTROYED();
     return PhysicalRect(ContentLeft(), ContentTop(), ContentWidth(),
                         ContentHeight());
   }
-  // TODO(crbug.com/877518): Some callers of this method may actually want
-  // "physical coordinates in flipped block-flow direction".
   PhysicalOffset PhysicalContentBoxOffset() const {
     NOT_DESTROYED();
     return PhysicalOffset(ContentLeft(), ContentTop());
@@ -300,8 +290,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   gfx::QuadF AbsoluteContentQuad(MapCoordinatesFlags = 0) const;
 
   // The enclosing rectangle of the background with given opacity requirement.
-  // TODO(crbug.com/877518): Some callers of this method may actually want
-  // "physical coordinates in flipped block-flow direction".
   PhysicalRect PhysicalBackgroundRect(BackgroundRectType) const;
 
   // This returns the content area of the box (excluding padding and border).
@@ -534,6 +522,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return MarginBoxOutsets().right;
   }
+
+  // Get the scroll marker group associated with this box, if any.
+  LayoutBlock* GetScrollMarkerGroup();
+
+  // Get the scroller that owns this scroll marker group.
+  LayoutBlock* ScrollerFromScrollMarkerGroup() const;
 
   void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
                                const LayoutBoxModelObject* ancestor,
@@ -883,6 +877,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return Parent() && Parent()->IsLayoutGrid();
   }
 
+  bool IsMasonryItem() const {
+    NOT_DESTROYED();
+    return Parent() && Parent()->IsLayoutMasonry();
+  }
+
   bool IsMathItem() const {
     NOT_DESTROYED();
     return Parent() && Parent()->IsMathML();
@@ -898,29 +897,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // this container. This ignores TextDirection.
   WritingModeConverter CreateWritingModeConverter() const;
 
-  [[nodiscard]] LayoutUnit FlipForWritingMode(
-      LayoutUnit position,
-      LayoutUnit width = LayoutUnit()) const {
-    NOT_DESTROYED();
-    // The offset is in the block direction (y for horizontal writing modes, x
-    // for vertical writing modes).
-    if (!HasFlippedBlocksWritingMode()) [[likely]] {
-      return position;
-    }
-    DCHECK(!IsHorizontalWritingMode());
-    return Size().width - (position + width);
-  }
-  // Inherit other flipping methods from LayoutObject.
-  using LayoutObject::FlipForWritingMode;
-
-  // Passing |flipped_blocks_container| causes flipped-block flipping w.r.t.
+  // Passing |location_container| causes flipped-block flipping w.r.t.
   // that container, or LocationContainer() otherwise.
   PhysicalOffset PhysicalLocation(
-      const LayoutBox* flipped_blocks_container = nullptr) const {
+      const LayoutBox* location_container = nullptr) const {
     NOT_DESTROYED();
-    return PhysicalLocationInternal(flipped_blocks_container
-                                        ? flipped_blocks_container
-                                        : LocationContainer());
+    return PhysicalLocationInternal(location_container ? location_container
+                                                       : LocationContainer());
   }
 
   bool HasSelfVisualOverflow() const {
@@ -1003,6 +986,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOTREACHED();
   }
 
+  // Get the LayoutBox for the actual content. That's usually `this`, but if the
+  // element creates multiple boxes (e.g. fieldsets and their anonymous content
+  // child box), it may return something else. The box returned will be the one
+  // that's created according to display type, scrollable overflow, and so on.
+  virtual LayoutBox* ContentLayoutBox() {
+    NOT_DESTROYED();
+    return this;
+  }
+
   ShapeOutsideInfo* GetShapeOutsideInfo() const;
 
   // CustomLayoutChild only exists if this LayoutBox is a IsCustomItem (aka. a
@@ -1059,7 +1051,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
         const PhysicalSize& size,
         const PhysicalRect& visual_overflow_rect);
 
-    void UpdateBackgroundPaintLocation();
+    void UpdateBackgroundPaintLocation(bool needs_root_element_group);
 
    protected:
     friend class LayoutBox;
@@ -1228,11 +1220,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   const BoxStrut& OutOfFlowInsetsForGetComputedStyle() const;
 
   Element* AccessibilityAnchor() const;
-  const HeapHashSet<Member<Element>>* DisplayLocksAffectedByAnchors() const;
+  const GCedHeapHashSet<Member<Element>>* DisplayLocksAffectedByAnchors() const;
   void NotifyContainingDisplayLocksForAnchorPositioning(
-      const HeapHashSet<Member<Element>>*
+      const GCedHeapHashSet<Member<Element>>*
           past_display_locks_affected_by_anchors,
-      const HeapHashSet<Member<Element>>* display_locks_affected_by_anchors)
+      const GCedHeapHashSet<Member<Element>>* display_locks_affected_by_anchors)
       const;
   bool NeedsAnchorPositionScrollAdjustmentInX() const;
   bool NeedsAnchorPositionScrollAdjustmentInY() const;
@@ -1284,9 +1276,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   LayoutUnit ContainingBlockLogicalHeightForPositioned(
       const LayoutBoxModelObject* containing_block) const;
-
-  static bool SkipContainingBlockForPercentHeightCalculation(
-      const LayoutBox* containing_block);
 
   virtual LayoutPoint LocationInternal() const {
     NOT_DESTROYED();
@@ -1377,15 +1366,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
       ShouldIncludeScrollbarGutter = kIncludeScrollbarGutter) const;
 
-  LayoutUnit FlipForWritingModeInternal(
-      LayoutUnit position,
-      LayoutUnit width,
-      const LayoutBox* box_for_flipping) const final {
-    NOT_DESTROYED();
-    DCHECK(!box_for_flipping || box_for_flipping == this);
-    return FlipForWritingMode(position, width);
-  }
-
   PhysicalOffset PhysicalLocationInternal(
       const LayoutBox* container_box) const {
     NOT_DESTROYED();
@@ -1402,7 +1382,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   bool BackgroundClipBorderBoxIsEquivalentToPaddingBox() const;
-  BackgroundPaintLocation ComputeBackgroundPaintLocation() const;
+  BackgroundPaintLocation ComputeBackgroundPaintLocation(
+      bool needs_root_element_group) const;
 
   // Compute the border-box size from physical fragments.
   PhysicalSize ComputeSize() const;
@@ -1436,9 +1417,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   Member<MeasureCache> measure_cache_;
   LayoutResultList layout_results_;
 
-  // LayoutBoxUtils is used for the LayoutNG code querying protected methods on
-  // this class, e.g. determining the static-position of OOF elements.
-  friend class LayoutBoxUtils;
   friend class LayoutBoxTest;
 
  private:
@@ -1459,26 +1437,32 @@ struct DowncastTraits<LayoutBox> {
 };
 
 inline LayoutBox* LayoutBox::PreviousSiblingBox() const {
+  NOT_DESTROYED();
   return To<LayoutBox>(PreviousSibling());
 }
 
 inline LayoutBox* LayoutBox::NextSiblingBox() const {
+  NOT_DESTROYED();
   return To<LayoutBox>(NextSibling());
 }
 
 inline LayoutBox* LayoutBox::ParentBox() const {
+  NOT_DESTROYED();
   return To<LayoutBox>(Parent());
 }
 
 inline LayoutBox* LayoutBox::FirstChildBox() const {
+  NOT_DESTROYED();
   return To<LayoutBox>(SlowFirstChild());
 }
 
 inline LayoutBox* LayoutBox::LastChildBox() const {
+  NOT_DESTROYED();
   return To<LayoutBox>(SlowLastChild());
 }
 
 inline LayoutBox* LayoutBox::PreviousSiblingMultiColumnBox() const {
+  NOT_DESTROYED();
   DCHECK(IsLayoutMultiColumnSpannerPlaceholder() || IsLayoutMultiColumnSet());
   LayoutBox* previous_box = PreviousSiblingBox();
   if (previous_box->IsLayoutFlowThread())
@@ -1487,11 +1471,13 @@ inline LayoutBox* LayoutBox::PreviousSiblingMultiColumnBox() const {
 }
 
 inline LayoutBox* LayoutBox::NextSiblingMultiColumnBox() const {
+  NOT_DESTROYED();
   DCHECK(IsLayoutMultiColumnSpannerPlaceholder() || IsLayoutMultiColumnSet());
   return NextSiblingBox();
 }
 
 inline wtf_size_t LayoutBox::FirstInlineFragmentItemIndex() const {
+  NOT_DESTROYED();
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
   return first_fragment_item_index_;

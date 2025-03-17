@@ -4,13 +4,14 @@
 
 package org.chromium.components.embedder_support.contextmenu;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
@@ -21,6 +22,7 @@ import org.chromium.url.GURL;
  * generated from content/public/common/context_menu_params.h.
  */
 @JNINamespace("context_menu")
+@NullMarked
 public class ContextMenuParams {
     private final long mNativePtr;
     private final GURL mPageUrl;
@@ -29,8 +31,9 @@ public class ContextMenuParams {
     private final String mTitleText;
     private final GURL mUnfilteredLinkUrl;
     private final GURL mSrcUrl;
-    private final Referrer mReferrer;
+    private final @Nullable Referrer mReferrer;
 
+    private final boolean mIsPage;
     private final boolean mIsAnchor;
     private final boolean mIsImage;
     private final boolean mIsVideo;
@@ -81,11 +84,20 @@ public class ContextMenuParams {
     }
 
     /** @return the referrer associated with the frame on which the menu is invoked */
-    public Referrer getReferrer() {
+    public @Nullable Referrer getReferrer() {
         return mReferrer;
     }
 
-    /** @return Whether or not the context menu is being shown for an anchor. */
+    /**
+     * @return Whether or not the context menu is being shown for a page.
+     */
+    public boolean isPage() {
+        return mIsPage;
+    }
+
+    /**
+     * @return Whether or not the context menu is being shown for an anchor.
+     */
     public boolean isAnchor() {
         return mIsAnchor;
     }
@@ -151,7 +163,7 @@ public class ContextMenuParams {
     }
 
     /** @return The additional navigation params associated with this Context Menu. */
-    public AdditionalNavigationParams getAdditionalNavigationParams() {
+    public @Nullable AdditionalNavigationParams getAdditionalNavigationParams() {
         return mAdditionalNavigationParams;
     }
 
@@ -165,7 +177,7 @@ public class ContextMenuParams {
             GURL unfilteredLinkUrl,
             GURL srcUrl,
             String titleText,
-            Referrer referrer,
+            @Nullable Referrer referrer,
             boolean canSaveMedia,
             int triggeringTouchXDp,
             int triggeringTouchYDp,
@@ -181,6 +193,13 @@ public class ContextMenuParams {
         mSrcUrl = srcUrl;
         mReferrer = referrer;
 
+        // Note: On desktop it is necessary to also check for the case where the target is an
+        // (editable) text/ password selection. Here that is not necessary because on Clank
+        //  it will open a selection popup instead of a context menu.
+        mIsPage =
+                (mediaType == ContextMenuDataMediaType.NONE
+                        && linkUrl.isEmpty()
+                        && !openedFromHighlight);
         mIsAnchor = !linkUrl.isEmpty();
         mIsImage = mediaType == ContextMenuDataMediaType.IMAGE;
         mIsVideo = mediaType == ContextMenuDataMediaType.VIDEO;

@@ -126,7 +126,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   };
 
   static constexpr char kCreateCustomApnResultHistogram[] =
-      "Network.Ash.Cellular.Apn.CreateCustomApn.Result";
+      "Network.Ash.Cellular.Apn.CreateCustomApn.Result2";
   static constexpr char kCreateCustomApnShillErrorHistogram[] =
       "Network.Ash.Cellular.Apn.CreateCustomApn.ShillError";
   static constexpr char kCreateCustomApnAuthenticationTypeHistogram[] =

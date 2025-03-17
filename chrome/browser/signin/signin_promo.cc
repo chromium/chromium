@@ -6,7 +6,6 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,14 +35,14 @@ const char kSignInPromoQueryKeyAutoClose[] = "auto_close";
 const char kSignInPromoQueryKeyForceKeepData[] = "force_keep_data";
 const char kSignInPromoQueryKeyReason[] = "reason";
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 GURL GetEmbeddedPromoURL(signin_metrics::AccessPoint access_point,
                          signin_metrics::Reason reason,
                          bool auto_close) {
-  CHECK_LT(static_cast<int>(access_point),
-           static_cast<int>(signin_metrics::AccessPoint::ACCESS_POINT_MAX));
+  CHECK_LE(static_cast<int>(access_point),
+           static_cast<int>(signin_metrics::AccessPoint::kMaxValue));
   CHECK_NE(static_cast<int>(access_point),
-           static_cast<int>(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN));
+           static_cast<int>(signin_metrics::AccessPoint::kUnknown));
   CHECK_LE(static_cast<int>(reason),
            static_cast<int>(signin_metrics::Reason::kMaxValue));
   CHECK_NE(static_cast<int>(reason),
@@ -71,7 +70,7 @@ GURL GetEmbeddedReauthURLWithEmail(signin_metrics::AccessPoint access_point,
   url = net::AppendQueryParameter(url, "validateEmail", "1");
   return net::AppendQueryParameter(url, "readOnlyEmail", "1");
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args) {
   GURL url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
@@ -132,17 +131,15 @@ signin_metrics::AccessPoint GetAccessPointForEmbeddedPromoURL(const GURL& url) {
   std::string value;
   if (!net::GetValueForKeyInQuery(url, kSignInPromoQueryKeyAccessPoint,
                                   &value)) {
-    return signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+    return signin_metrics::AccessPoint::kUnknown;
   }
 
   int access_point = -1;
   base::StringToInt(value, &access_point);
   if (access_point <
-          static_cast<int>(
-              signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE) ||
-      access_point >=
-          static_cast<int>(signin_metrics::AccessPoint::ACCESS_POINT_MAX)) {
-    return signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+          static_cast<int>(signin_metrics::AccessPoint::kStartPage) ||
+      access_point > static_cast<int>(signin_metrics::AccessPoint::kMaxValue)) {
+    return signin_metrics::AccessPoint::kUnknown;
   }
 
   return static_cast<signin_metrics::AccessPoint>(access_point);

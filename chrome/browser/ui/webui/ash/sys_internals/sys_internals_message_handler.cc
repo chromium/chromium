@@ -64,7 +64,7 @@ bool ParseProcStatLine(const std::string& line, std::vector<CpuInfo>* infos) {
   uint32_t cpu_index = 0;
   int vals =
       sscanf(line.c_str(),
-             "cpu%" PRIu32 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64,
+             "cpu%" SCNu32 " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64,
              &cpu_index, &user, &nice, &sys, &idle);
   if (vals != 5 || cpu_index >= infos->size()) {
     NOTREACHED();

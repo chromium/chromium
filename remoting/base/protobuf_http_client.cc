@@ -8,10 +8,10 @@
 #include "google_apis/common/api_key_request_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/protobuf_http_request_base.h"
 #include "remoting/base/protobuf_http_request_config.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/url_loader_network_service_observer.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -30,10 +30,12 @@ namespace remoting {
 ProtobufHttpClient::ProtobufHttpClient(
     const std::string& server_endpoint,
     OAuthTokenGetter* token_getter,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store)
     : server_endpoint_(server_endpoint),
       token_getter_(token_getter),
-      url_loader_factory_(url_loader_factory) {}
+      url_loader_factory_(url_loader_factory),
+      client_cert_store_(std::move(client_cert_store)) {}
 
 ProtobufHttpClient::~ProtobufHttpClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -78,20 +80,20 @@ void ProtobufHttpClient::DoExecuteRequest(
     std::string error_message =
         base::StringPrintf("Failed to fetch access token. Status: %d", status);
     LOG(ERROR) << error_message;
-    ProtobufHttpStatus::Code code;
+    HttpStatus::Code code;
     switch (status) {
       case OAuthTokenGetter::Status::AUTH_ERROR:
-        code = ProtobufHttpStatus::Code::UNAUTHENTICATED;
+        code = HttpStatus::Code::UNAUTHENTICATED;
         break;
       // TODO: yuweih - this should be mapped to `NETWORK_ERROR`. Fix this and
       // downstream code that relies on this behavior.
       case OAuthTokenGetter::Status::NETWORK_ERROR:
-        code = ProtobufHttpStatus::Code::UNAVAILABLE;
+        code = HttpStatus::Code::UNAVAILABLE;
         break;
       default:
         NOTREACHED() << "Unknown OAuthTokenGetter Status: " << status;
     }
-    request->OnAuthFailed(ProtobufHttpStatus(code, error_message));
+    request->OnAuthFailed(HttpStatus(code, error_message));
     return;
   }
 
@@ -121,7 +123,10 @@ void ProtobufHttpClient::DoExecuteRequest(
       resource_request->trusted_params.emplace();
     }
 
-    service_observer_.emplace();
+    if (!service_observer_.has_value()) {
+      CHECK(client_cert_store_);
+      service_observer_.emplace(std::move(client_cert_store_));
+    }
     resource_request->trusted_params->url_loader_network_observer =
         service_observer_->Bind();
   }

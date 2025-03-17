@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -17,6 +18,7 @@ import java.util.List;
  * and credit cards and autofilling the chosen data. Data is selected via a bottom sheet that
  * suppresses the keyboard until dismissed.
  */
+@NullMarked
 public interface FastCheckoutComponent {
     /**
      * This delegate is called when the FastCheckout component is interacted with (e.g. dismissed or

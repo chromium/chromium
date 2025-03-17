@@ -81,8 +81,6 @@ DocumentSuggestionsService::DocumentSuggestionsService(
       account_is_subject_to_enterprise_policies_(
           IsAccountSubjectToEnterprisePolicies()),
       token_fetcher_(nullptr) {
-  DCHECK(url_loader_factory);
-
   if (identity_manager_) {
     identity_manager_observation_.Observe(identity_manager_);
   }
@@ -211,6 +209,11 @@ void DocumentSuggestionsService::StartDownloadAndTransferLoader(
     net::NetworkTrafficAnnotationTag traffic_annotation,
     StartCallback start_callback,
     CompletionCallback completion_callback) {
+  // Loader factory may be null in tests.
+  if (!url_loader_factory_) {
+    return;
+  }
+
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   if (!request_body.empty()) {

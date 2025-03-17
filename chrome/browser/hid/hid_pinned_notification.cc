@@ -4,6 +4,7 @@
 
 #include "chrome/browser/hid/hid_pinned_notification.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/device_notifications/device_pinned_notification_renderer.h"
 #include "chrome/grit/generated_resources.h"
 
@@ -11,7 +12,7 @@ HidPinnedNotification::HidPinnedNotification()
     : HidSystemTrayIcon(std::make_unique<DevicePinnedNotificationRenderer>(
           this,
           "chrome://device_indicator/hid/",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
           ash::NotificationCatalogName::kWebHid,
 #endif
           IDS_WEBHID_SYSTEM_TRAY_ICON_EXTENSION_LIST)) {}

@@ -3,14 +3,14 @@
     "isolated_scripts": [
       {
         "args": [
-          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
           "--test-type",
           "testharness",
           "reftest",
           "crashtest",
           "print-reftest",
-          "--exit-after-n-crashes-or-timeouts=10000",
-          "--exit-after-n-failures=10000"
+          "--exit-after-n-crashes-or-timeouts=1000",
+          "--exit-after-n-failures=1000"
         ],
         "experiment_percentage": 100,
         "isolate_profile_data": true,
@@ -20,7 +20,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "headless_shell_wpt_tests_include_all",
+        "name": "headless_shell_wpt_tests_inverted",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -32,7 +32,7 @@
             "os": "Windows-10-19045"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "shards": 5
         },
         "test": "headless_shell_wpt",
         "test_id_prefix": "ninja://:headless_shell_wpt/"

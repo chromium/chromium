@@ -5,54 +5,25 @@
 #ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_SUGGESTIONS_H_
 #define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_SUGGESTIONS_H_
 
-#include <vector>
-
-#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
+#include "base/containers/span.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
-class FormData;
-class FormFieldData;
+class EntityInstance;
+class FormStructure;
 struct Suggestion;
 
 }  // namespace autofill
 
 namespace autofill_ai {
 
-class AutofillAiClient;
-
-// Returns true if the type of `autofill_suggestion` should not be added to
-// prediction improvements or if `autofill_suggestion` likely matches the cached
-// prediction improvements.
-// TODO(crbug.com/376016081): Move to anonymous namespace.
-bool ShouldSkipAutofillSuggestion(
-    AutofillAiClient& client,
-    const AutofillAiModelExecutor::PredictionsByGlobalId& cache,
-    const autofill::FormData& form,
-    const autofill::Suggestion& autofill_suggestion);
-
-// Creates the suggestion that invokes loading predictions when accepted.
-std::vector<autofill::Suggestion> CreateTriggerSuggestions();
-
-// Creates the animated suggestion shown while improved predictions are loaded.
-std::vector<autofill::Suggestion> CreateLoadingSuggestions();
-
-// Creates filling suggestions listing the ones for prediction improvements
-// first and `autofill_suggestions` afterwards.
+// Creates filling suggestions using `autofill::EntityInstance`s.
 std::vector<autofill::Suggestion> CreateFillingSuggestions(
-    AutofillAiClient& client,
-    const AutofillAiModelExecutor::PredictionsByGlobalId& cache,
-    const autofill::FormData& form,
-    const autofill::FormFieldData& field,
-    const std::vector<autofill::Suggestion>& autofill_suggestions);
-
-// Creates a suggestion shown when retrieving prediction improvements wasn't
-// successful.
-std::vector<autofill::Suggestion> CreateErrorSuggestions();
-
-// Creates suggestions shown when there's nothing to fill (not even by Autofill
-// or Autocomplete).
-std::vector<autofill::Suggestion> CreateNoInfoSuggestions();
+    const autofill::FormStructure& form,
+    autofill::FieldGlobalId field_global_id,
+    base::span<const autofill::EntityInstance> entities,
+    const std::string& app_locale);
 
 }  // namespace autofill_ai
 

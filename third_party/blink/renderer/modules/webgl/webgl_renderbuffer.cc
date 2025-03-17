@@ -38,8 +38,10 @@ WebGLRenderbuffer::WebGLRenderbuffer(WebGLRenderingContextBase* ctx)
       is_multisampled_(false),
       has_ever_been_bound_(false) {
   GLuint rbo;
-  ctx->ContextGL()->GenRenderbuffers(1, &rbo);
-  SetObject(rbo);
+  if (!ctx->isContextLost()) {
+    ctx->ContextGL()->GenRenderbuffers(1, &rbo);
+    SetObject(rbo);
+  }
 }
 
 WebGLRenderbuffer::~WebGLRenderbuffer() = default;

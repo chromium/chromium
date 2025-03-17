@@ -4,13 +4,13 @@
 
 #include "content/browser/media/media_internals_audio_focus_helper.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "content/browser/media/media_internals.h"
@@ -294,7 +294,7 @@ std::string MediaInternalsAudioFocusHelper::BuildStateString(
   // Convert the audio_video_states to a string.
   if (state->session_info->audio_video_states) {
     result.append(" {");
-    base::ranges::for_each(
+    std::ranges::for_each(
         *state->session_info->audio_video_states, [&result](const auto& state) {
           result.append(" ");
           switch (state) {

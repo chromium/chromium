@@ -11,7 +11,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 /** A java wrapper for Parsed, GURL's internal parsed URI representation. */
@@ -81,7 +80,7 @@ import org.chromium.build.annotations.Nullable;
         mInnerUrl = innerUrl;
     }
 
-    /* package */ @NullUnmarked
+    /* package */
     void initNative(long nativePtr) {
         Parsed target = this;
         Parsed innerParsed = mInnerUrl;

@@ -30,6 +30,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter disposed
 [Worker]     method Symbol(Symbol.asyncDispose)
 [Worker]     method adopt
+[Worker]     method constructor
 [Worker]     method defer
 [Worker]     method disposeAsync
 [Worker]     method move
@@ -411,6 +412,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter disposed
 [Worker]     method Symbol(Symbol.dispose)
 [Worker]     method adopt
+[Worker]     method constructor
 [Worker]     method defer
 [Worker]     method dispose
 [Worker]     method move
@@ -487,6 +489,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method dispatchEvent
 [Worker]     method removeEventListener
+[Worker]     method when
 [Worker] interface File : Blob
 [Worker]     attribute @@toStringTag
 [Worker]     getter lastModified
@@ -560,6 +563,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method queryPermission
 [Worker]     method remove
 [Worker]     method requestPermission
+[Worker] interface FileSystemObserver
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method disconnect
+[Worker]     method observe
 [Worker] interface FileSystemSyncAccessHandle
 [Worker]     attribute @@toStringTag
 [Worker]     getter mode
@@ -577,6 +585,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method seek
 [Worker]     method truncate
 [Worker]     method write
+[Worker] interface Float16Array : TypedArray
+[Worker]     attribute BYTES_PER_ELEMENT
+[Worker]     method constructor
 [Worker] interface FontFace
 [Worker]     attribute @@toStringTag
 [Worker]     getter ascentOverride
@@ -640,6 +651,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter architecture
 [Worker]     getter description
 [Worker]     getter device
+[Worker]     getter subgroupMaxSize
+[Worker]     getter subgroupMinSize
 [Worker]     getter vendor
 [Worker]     method constructor
 [Worker] interface GPUBindGroup
@@ -894,7 +907,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxComputeWorkgroupsPerDimension
 [Worker]     getter maxDynamicStorageBuffersPerPipelineLayout
 [Worker]     getter maxDynamicUniformBuffersPerPipelineLayout
-[Worker]     getter maxInterStageShaderComponents
 [Worker]     getter maxInterStageShaderVariables
 [Worker]     getter maxSampledTexturesPerShaderStage
 [Worker]     getter maxSamplersPerShaderStage
@@ -1294,6 +1306,29 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onclose
 [Worker]     setter onerror
 [Worker]     setter onshow
+[Worker] interface Observable
+[Worker]     static method from
+[Worker]     attribute @@toStringTag
+[Worker]     method catch
+[Worker]     method constructor
+[Worker]     method drop
+[Worker]     method every
+[Worker]     method filter
+[Worker]     method finally
+[Worker]     method find
+[Worker]     method first
+[Worker]     method flatMap
+[Worker]     method forEach
+[Worker]     method inspect
+[Worker]     method last
+[Worker]     method map
+[Worker]     method reduce
+[Worker]     method some
+[Worker]     method subscribe
+[Worker]     method switchMap
+[Worker]     method take
+[Worker]     method takeUntil
+[Worker]     method toArray
 [Worker] interface OffscreenCanvas : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter height
@@ -1355,6 +1390,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method fill
 [Worker]     method fillRect
 [Worker]     method fillText
+[Worker]     method getContextAttributes
 [Worker]     method getImageData
 [Worker]     method getLineDash
 [Worker]     method getTransform
@@ -1844,6 +1880,15 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method estimate
 [Worker]     method getDirectory
 [Worker]     method persisted
+[Worker] interface Subscriber
+[Worker]     attribute @@toStringTag
+[Worker]     getter active
+[Worker]     getter signal
+[Worker]     method addTeardown
+[Worker]     method complete
+[Worker]     method constructor
+[Worker]     method error
+[Worker]     method next
 [Worker] interface SubtleCrypto
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor

@@ -35,6 +35,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -64,7 +65,7 @@ struct TestParam {
   signin::Tribool is_supervised = signin::Tribool::kUnknown;
 };
 
-AccountInfo CreateAccount(std::string gaia_id,
+AccountInfo CreateAccount(GaiaId gaia_id,
                           std::string given_name,
                           std::string full_name,
                           std::string email,
@@ -79,14 +80,14 @@ AccountInfo CreateAccount(std::string gaia_id,
 }
 
 const AccountInfo primary_account = CreateAccount(
-    /*gaia_id=*/"primary_ID",
+    /*gaia_id=*/GaiaId("primary_ID"),
     /*given_name=*/"Tessa",
     /*full_name=*/"Tessa Tester",
     /*email=*/"tessa.tester@primary.com",
     /*hosted_domain=*/kNoHostedDomainFound);
 
 AccountInfo intercepted_account = CreateAccount(
-    /*gaia_id=*/"intercepted_ID",
+    /*gaia_id=*/GaiaId("intercepted_ID"),
     /*given_name=*/"Sam",
     /*full_name=*/"Sam Sample",
     /*email=*/"sam.sample@intercepted.com",
@@ -102,10 +103,11 @@ const TestParam kTestParams[] = {
           return BubbleStrings{
               .header_text = "",
               .body_title = l10n_util::GetStringUTF8(
-                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE),
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V2),
               .body_text = l10n_util::GetStringFUTF8(
-                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC,
-                  base::UTF8ToUTF16(primary_account.given_name)),
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC,
+                  base::UTF8ToUTF16(primary_account.given_name),
+                  base::UTF8ToUTF16(intercepted_account.email)),
               .confirm_button_label = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL),
               .cancel_button_label = l10n_util::GetStringUTF8(
@@ -122,9 +124,9 @@ const TestParam kTestParams[] = {
           return BubbleStrings{
               .header_text = "",
               .body_title = l10n_util::GetStringUTF8(
-                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE),
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V2),
               .body_text = l10n_util::GetStringFUTF8(
-                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_MANAGED_DEVICE,
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC,
                   base::UTF8ToUTF16(primary_account.given_name),
                   base::UTF8ToUTF16(intercepted_account.email)),
               .confirm_button_label = l10n_util::GetStringUTF8(
@@ -142,10 +144,11 @@ const TestParam kTestParams[] = {
           return BubbleStrings{
               .header_text = "",
               .body_title = l10n_util::GetStringUTF8(
-                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE),
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V2),
               .body_text = l10n_util::GetStringFUTF8(
-                  IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC,
-                  base::UTF8ToUTF16(primary_account.email)),
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC,
+                  base::UTF8ToUTF16(primary_account.given_name),
+                  base::UTF8ToUTF16(intercepted_account.email)),
               .confirm_button_label = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL),
               .cancel_button_label = l10n_util::GetStringUTF8(
@@ -161,9 +164,10 @@ const TestParam kTestParams[] = {
        return BubbleStrings{
            .header_text = "",
            .body_title = l10n_util::GetStringUTF8(
-               IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE),
+               IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V2),
            .body_text = l10n_util::GetStringFUTF8(
-               IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_DEVICE,
+               IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC,
+               base::UTF8ToUTF16(primary_account.given_name),
                base::UTF8ToUTF16(intercepted_account.email)),
            .confirm_button_label = l10n_util::GetStringUTF8(
                IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL),
@@ -181,10 +185,11 @@ const TestParam kTestParams[] = {
               .header_text = intercepted_account.given_name,
               .body_title = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_TITLE),
-              .body_text = l10n_util::GetStringUTF8(
-                  IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC),
+              .body_text = l10n_util::GetStringFUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC_V2,
+                  base::UTF8ToUTF16(intercepted_account.email)),
               .confirm_button_label = l10n_util::GetStringUTF8(
-                  IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CONFIRM_SWITCH_BUTTON_LABEL),
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_CONTINUE_BUTTON_LABEL),
               .cancel_button_label = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_SWITCH_BUTTON_LABEL),
           };
@@ -198,10 +203,11 @@ const TestParam kTestParams[] = {
            .header_text = intercepted_account.given_name,
            .body_title = l10n_util::GetStringUTF8(
                IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_TITLE),
-           .body_text = l10n_util::GetStringUTF8(
-               IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC),
+           .body_text = l10n_util::GetStringFUTF8(
+               IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC_V2_SUPERVISED,
+               base::UTF8ToUTF16(intercepted_account.email)),
            .confirm_button_label = l10n_util::GetStringUTF8(
-               IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CONFIRM_SWITCH_BUTTON_LABEL),
+               IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_CONTINUE_BUTTON_LABEL),
            .cancel_button_label = l10n_util::GetStringUTF8(
                IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_SWITCH_BUTTON_LABEL),
        };
@@ -271,7 +277,7 @@ class DiceWebSigninInterceptHandlerTest
   DiceWebSigninInterceptHandlerTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{supervised_user::kShowKiteForSupervisedUsers},
-        /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop});
+        /*disabled_features=*/{});
 
     AccountCapabilitiesTestMutator mutator(&intercepted_account.capabilities);
     switch (GetParam().is_supervised) {

@@ -67,9 +67,8 @@ class PasswordSaveUpdateViewTest : public PasswordBubbleViewTestBase {
 };
 
 PasswordSaveUpdateViewTest::PasswordSaveUpdateViewTest() {
-  ON_CALL(*feature_manager_mock(), GetDefaultPasswordStore)
-      .WillByDefault(
-          Return(password_manager::PasswordForm::Store::kAccountStore));
+  ON_CALL(*feature_manager_mock(), IsAccountStorageEnabled)
+      .WillByDefault(Return(true));
   ON_CALL(*model_delegate_mock(), GetOrigin)
       .WillByDefault(Return(url::Origin::Create(pending_password_.url)));
   ON_CALL(*model_delegate_mock(), GetState)
@@ -112,18 +111,16 @@ TEST_F(PasswordSaveUpdateViewTest, HasTitleAndTwoButtons) {
 }
 
 TEST_F(PasswordSaveUpdateViewTest, ShouldSelectAccountStoreByDefault) {
-  ON_CALL(*feature_manager_mock(), GetDefaultPasswordStore)
-      .WillByDefault(
-          Return(password_manager::PasswordForm::Store::kAccountStore));
+  ON_CALL(*feature_manager_mock(), IsAccountStorageEnabled)
+      .WillByDefault(Return(true));
 
   SimulateSignIn();
   CreateViewAndShow();
 }
 
 TEST_F(PasswordSaveUpdateViewTest, ShouldSelectProfileStoreByDefault) {
-  ON_CALL(*feature_manager_mock(), GetDefaultPasswordStore)
-      .WillByDefault(
-          Return(password_manager::PasswordForm::Store::kProfileStore));
+  ON_CALL(*feature_manager_mock(), IsAccountStorageEnabled)
+      .WillByDefault(Return(false));
 
   SimulateSignIn();
   CreateViewAndShow();

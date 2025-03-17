@@ -16,7 +16,7 @@ struct StringTraits<std::string> {
   static const std::string& GetUTF8(const std::string& input) { return input; }
 
   static bool Read(StringDataView input, std::string* output) {
-    output->assign(input.storage(), input.size());
+    output->assign(input.value());
     return true;
   }
 };

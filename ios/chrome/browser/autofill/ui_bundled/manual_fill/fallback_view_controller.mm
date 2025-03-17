@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   PlusAddressActionsSectionIdentifier,
   // Must be declared last as it is used as the starting point to dynamically
   // create section identifiers for each data item when the
-  // kIOSKeyboardAccessoryUpgrade feature is enabled.
+  // Keyboard Accessory Upgrade feature is enabled.
   DataItemsSectionIdentifier
 };
 
@@ -336,7 +336,7 @@ bool ShouldResizeViewForPopover(
           ? 1
           : 0;
 
-  // If the kIOSKeyboardAccessoryUpgrade feature is enabled, remove any excess
+  // If the Keyboard Accessory Upgrade feature is enabled, remove any excess
   // data item sections, and present the queued data items.
   if (IsKeyboardAccessoryUpgradeEnabled()) {
     [self removeUnusedDataItemSections];

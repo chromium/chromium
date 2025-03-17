@@ -10,7 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
@@ -503,10 +503,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
+  mojom::UserDisplayMode user_display_mode =
+      (GetExpectedInstallState() ==
+       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION)
+          ? mojom::UserDisplayMode::kStandalone
+          : mojom::UserDisplayMode::kBrowser;
+
   EXPECT_EQ(registrar_unsafe().GetInstallState(app_id),
             GetExpectedInstallState());
-  EXPECT_EQ(registrar_unsafe().GetAppUserDisplayMode(app_id),
-            mojom::UserDisplayMode::kStandalone);
+  EXPECT_EQ(user_display_mode,
+            registrar_unsafe().GetAppUserDisplayMode(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidStartUrl) {
@@ -522,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidStartUrl) {
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Sync.InvalidEntity"),
               base::BucketsAre(
@@ -551,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, NoStartUrl) {
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
 
   std::vector<sync_pb::SyncEntity> server_apps =
       GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);
@@ -585,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidManifestId) {
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
 
   std::vector<sync_pb::SyncEntity> server_apps =
       GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);

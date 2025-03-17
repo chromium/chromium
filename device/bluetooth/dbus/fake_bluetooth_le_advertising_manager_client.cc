@@ -4,9 +4,10 @@
 
 #include "device/bluetooth/dbus/fake_bluetooth_le_advertising_manager_client.h"
 
+#include <algorithm>
+
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -110,7 +111,7 @@ void FakeBluetoothLEAdvertisingManagerClient::UnregisterAdvertisement(
 
   auto service_iter = service_provider_map_.find(advertisement_object_path);
   auto reg_iter =
-      base::ranges::find(currently_registered_, advertisement_object_path);
+      std::ranges::find(currently_registered_, advertisement_object_path);
 
   if (service_iter == service_provider_map_.end()) {
     std::move(error_callback)

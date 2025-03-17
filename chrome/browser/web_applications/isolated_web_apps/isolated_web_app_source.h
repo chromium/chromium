@@ -99,15 +99,6 @@ enum class IwaSourceBundleProdFileOp {
 };
 std::ostream& operator<<(std::ostream& os, IwaSourceBundleProdFileOp file_op);
 
-// TODO(crbug.com/40286084): We currently copy dev bundles into the profile
-// directory to avoid caching issues caused by a bundle changing outside of the
-// normal update flow. This can be caused by the developer rebuilding the
-// bundle for example. In the future we may want to watch referenced bundles
-// and clear cache when the bundle changes to support bundle updates without
-// the developer explicitly having to perform the update step in the dev UI.
-inline constexpr IwaSourceBundleDevFileOp kDefaultBundleDevFileOp =
-    IwaSourceBundleDevFileOp::kCopy;
-
 namespace internal {
 
 class IwaSourceBundleBase {

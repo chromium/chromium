@@ -4,12 +4,13 @@
 
 #include "headless/lib/browser/headless_request_context_manager.h"
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "components/embedder_support/switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "headless/lib/browser/headless_browser_context_options.h"
@@ -233,6 +234,12 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParamsInternal(
   context_params->user_agent = user_agent_;
   context_params->accept_language = accept_language_;
   context_params->enable_zstd = true;
+
+  const base::CommandLine& command_line =
+      CHECK_DEREF(base::CommandLine::ForCurrentProcess());
+  if (command_line.HasSwitch(embedder_support::kShortReportingDelay)) {
+    context_params->reporting_delivery_interval = base::Milliseconds(100);
+  }
 
   // TODO(crbug.com/40405715): Allow
   // context_params->http_auth_static_network_context_params->allow_default_credentials

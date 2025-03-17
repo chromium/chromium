@@ -155,8 +155,9 @@ AccessControlList::~AccessControlList() = default;
 
 bool AccessControlList::SetEntries(
     const std::vector<ExplicitAccessEntry>& entries) {
-  if (entries.empty())
+  if (entries.empty()) {
     return true;
+  }
 
   base::HeapArray<uint8_t> acl = AddACEToAcl(get(), entries);
   if (acl.empty()) {

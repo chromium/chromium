@@ -10,7 +10,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 
@@ -54,14 +53,15 @@ public interface AuxiliarySearchController extends PauseResumeWithNativeObserver
     /**
      * Called after the background task has fetched metadata.
      *
-     * @param tabs The tabs to donate.
-     * @param tabIdToFaviconMap A map of <TabId, Bitmap>.
+     * @param entries The tabs to donate.
+     * @param entryToFaviconMap A map of donation entry and favicon.
      * @param callback The callback to notify whether the donation is succeed.
      * @param startTimeMs The starting time in milliseconds.
+     * @param <T> The type of the entry data for donation.
      */
-    default void onBackgroundTaskStart(
-            @NonNull List<AuxiliarySearchEntry> tabs,
-            @NonNull Map<Integer, Bitmap> tabIdToFaviconMap,
+    default <T> void onBackgroundTaskStart(
+            @NonNull List<T> entries,
+            @NonNull Map<T, Bitmap> entryToFaviconMap,
             @NonNull Callback<Boolean> callback,
             long startTimeMs) {}
 }

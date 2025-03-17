@@ -71,7 +71,6 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   void UpdateContainer();
 
   // Sets the display on which to draw cursor.
-  // Only applicable when cursor compositing is enabled.
   void SetDisplay(const display::Display& display);
 
   // When the mouse starts or stops hovering/resizing the docked magnifier
@@ -160,7 +159,7 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   gfx::Point hot_point_;
 
   int large_cursor_size_in_dip_ = kDefaultLargeCursorSize;
-  SkColor cursor_color_ = kDefaultCursorColor;
+  SkColor cursor_color_ = ui::kDefaultCursorColor;
 
   // The display on which the cursor is drawn.
   // For mirroring mode, the display is always the primary display.

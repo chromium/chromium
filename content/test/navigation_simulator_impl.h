@@ -25,6 +25,7 @@
 #include "net/base/load_flags.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_connection_info.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
@@ -97,7 +98,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void SetIsSignedExchangeInnerResponse(
       bool is_signed_exchange_inner_response) override;
   void SetPermissionsPolicyHeader(
-      blink::ParsedPermissionsPolicy permissions_policy_header) override;
+      network::ParsedPermissionsPolicy permissions_policy_header) override;
   void SetContentsMimeType(const std::string& contents_mime_type) override;
   void SetRedirectHeaders(
       scoped_refptr<net::HttpResponseHeaders> redirect_headers) override;
@@ -383,7 +384,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   std::string contents_mime_type_;
   scoped_refptr<net::HttpResponseHeaders> redirect_headers_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
-  blink::ParsedPermissionsPolicy permissions_policy_header_;
+  network::ParsedPermissionsPolicy permissions_policy_header_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
   network::mojom::CSPDisposition should_check_main_world_csp_ =
       network::mojom::CSPDisposition::CHECK;

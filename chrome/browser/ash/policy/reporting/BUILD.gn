@@ -7,7 +7,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("reporting") {
   sources = [
@@ -53,8 +53,6 @@ static_library("reporting") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//base",
     "//base:i18n",
@@ -76,6 +74,8 @@ static_library("reporting") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/dbus/power",
     "//components/policy:generated",
     "//components/policy/core/common",
@@ -142,8 +142,6 @@ source_set("unit_tests") {
     ":reporting",
     ":test_support",
     ":user_event_reporter_testing_record_proto",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -161,6 +159,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/dbus/power",
     "//components/policy:generated",
     "//components/policy/core/common",

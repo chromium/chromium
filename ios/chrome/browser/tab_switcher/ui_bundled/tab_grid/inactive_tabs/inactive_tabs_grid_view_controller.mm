@@ -30,7 +30,6 @@
 
 - (UICollectionReusableView*)headerForSectionAtIndexPath:
     (NSIndexPath*)indexPath {
-  CHECK(IsInactiveTabsAvailable());
   // The Inactive Tabs grid has a header to inform about the feature and a
   // link to its settings.
   return [self.collectionView
@@ -103,7 +102,8 @@
     [weakSelf didTapInactiveTabsSettingsLink];
   };
   header.daysThreshold = _inactiveTabsDaysThreshold;
-  header.hidden = !IsInactiveTabsEnabled();
+  header.hidden =
+      IsInactiveTabsExplicitlyDisabledByUser(_inactiveTabsDaysThreshold);
 }
 
 // Called when the Inactive Tabs settings link is tapped.

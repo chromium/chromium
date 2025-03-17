@@ -36,7 +36,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
@@ -153,7 +153,7 @@ std::string GetAccountGivenName(Profile& profile) {
 }
 
 void AssertChildStatusOfTheUser(Profile* profile, bool is_child) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (user && is_child != (user->GetType() == user_manager::UserType::kChild)) {
@@ -201,7 +201,7 @@ std::string CreateReauthenticationInterstitialForBlockedSites(
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   bool has_second_custodian =
-      !supervised_user_service->GetSecondCustodianName().empty();
+      supervised_user_service->GetSecondCustodian().has_value();
   GURL request_url = navigation_handle.GetURL();
   bool is_main_frame = navigation_handle.GetNavigatingFrameType() ==
                        content::FrameType::kPrimaryMainFrame;

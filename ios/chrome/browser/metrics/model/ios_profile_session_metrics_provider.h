@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PROFILE_SESSION_METRICS_PROVIDER_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PROFILE_SESSION_METRICS_PROVIDER_H_
 
-#include "components/metrics/metrics_provider.h"
-
 #include <memory>
+
+#include "components/metrics/metrics_provider.h"
 
 std::unique_ptr<metrics::MetricsProvider>
 CreateIOSProfileSessionMetricsProvider();

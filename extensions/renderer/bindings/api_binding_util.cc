@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/api_binding_util.h"
 
+#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"

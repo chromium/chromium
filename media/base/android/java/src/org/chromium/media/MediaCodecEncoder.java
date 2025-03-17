@@ -37,7 +37,7 @@ class MediaCodecEncoder extends MediaCodecBridge {
     }
 
     @Override
-    protected ByteBuffer getOutputBuffer(int index) {
+    protected @Nullable ByteBuffer getOutputBuffer(int index) {
         return mOutputBuffers.get(index);
     }
 

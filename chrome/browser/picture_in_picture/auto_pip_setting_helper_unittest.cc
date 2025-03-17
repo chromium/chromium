@@ -14,6 +14,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -24,18 +25,19 @@ using testing::AtLeast;
 using testing::Return;
 
 using UiResult = AutoPipSettingView::UiResult;
+using AutoPipReason = media::PictureInPictureEventsInfo::AutoPipReason;
 
 namespace {
 
 const char kVideoConferencingHistogram[] =
     "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
-    "VideoConferencing";
+    "VideoConferencing.PromptResultV2";
 const char kMediaPlaybackHistogram[] =
     "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
-    "MediaPlayback";
+    "MediaPlayback.PromptResultV2";
 
 struct TestParams {
-  std::string histogram_name;
+  AutoPipReason auto_pip_reason;
 };
 
 }  // anonymous namespace
@@ -119,11 +121,11 @@ class AutoPipSettingHelperTest
   // Ask the helper for the overlay view, and return whatever it gives us.  This
   // may be null if it decides that one shouldn't be shown.
   AutoPipSettingOverlayView* AttachOverlayView(
-      std::string histogram_name_for_autopip_reason = "") {
+      AutoPipReason auto_pip_reason = AutoPipReason::kUnknown) {
     auto* anchor_view =
         anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
     auto setting_overlay = setting_helper_->CreateOverlayViewIfNeeded(
-        close_cb_.Get(), histogram_name_for_autopip_reason, anchor_view,
+        close_cb_.Get(), auto_pip_reason, std::nullopt, anchor_view,
         views::BubbleBorder::TOP_CENTER);
     if (setting_overlay) {
       setting_overlay_ = static_cast<AutoPipSettingOverlayView*>(
@@ -297,7 +299,7 @@ TEST_F(AutoPipSettingHelperTest, DismissNotifiesEmbargoIfUiIsCreated) {
   EXPECT_CALL(close_cb(), Run()).Times(0);
   AttachOverlayView();
   EXPECT_TRUE(setting_overlay());
-  setting_helper()->OnUserClosedWindow();
+  setting_helper()->OnUserClosedWindow(AutoPipReason::kUnknown, std::nullopt);
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ASK);
 }
 
@@ -314,7 +316,7 @@ TEST_F(AutoPipSettingHelperTest,
   EXPECT_CALL(close_cb(), Run()).Times(0);
   // Do not attach the overlay view, which should prevent a callback since the
   // user wasn't presented with any UI.
-  setting_helper()->OnUserClosedWindow();
+  setting_helper()->OnUserClosedWindow(AutoPipReason::kUnknown, std::nullopt);
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ASK);
 }
 
@@ -339,9 +341,9 @@ TEST_F(AutoPipSettingHelperTest,
 }
 
 const struct TestParams kTestHistogramNameParams[] = {
-    {""},
-    {kVideoConferencingHistogram},
-    {kMediaPlaybackHistogram}};
+    {AutoPipReason::kUnknown},
+    {AutoPipReason::kVideoConferencing},
+    {AutoPipReason::kMediaPlayback}};
 
 INSTANTIATE_TEST_SUITE_P(AllHistogramNames,
                          AutoPipSettingHelperTest,
@@ -350,7 +352,7 @@ INSTANTIATE_TEST_SUITE_P(AllHistogramNames,
 TEST_P(AutoPipSettingHelperTest, HistogramExpectedCounts) {
   set_content_setting(CONTENT_SETTING_DEFAULT);
   SetupNoEmbargo();
-  ASSERT_TRUE(AttachOverlayView(GetParam().histogram_name));
+  ASSERT_TRUE(AttachOverlayView(GetParam().auto_pip_reason));
   setting_overlay()->ShowBubble(widget()->GetNativeView());
 
   // Run result callback with "block" UiResult.  The close cb should be called,
@@ -365,17 +367,18 @@ TEST_P(AutoPipSettingHelperTest, HistogramExpectedCounts) {
   auto media_playback_samples =
       histograms.GetHistogramSamplesSinceCreation(kMediaPlaybackHistogram);
 
-  const auto histogram_name = GetParam().histogram_name;
-  if (histogram_name.empty()) {
+  const auto auto_pip_reason = GetParam().auto_pip_reason;
+  if (auto_pip_reason == AutoPipReason::kUnknown) {
     EXPECT_EQ(0, video_conferencing_samples->TotalCount());
     EXPECT_EQ(0, media_playback_samples->TotalCount());
-  } else if (histogram_name == kVideoConferencingHistogram) {
+  } else if (auto_pip_reason == AutoPipReason::kVideoConferencing) {
     EXPECT_EQ(1, video_conferencing_samples->TotalCount());
     EXPECT_EQ(0, media_playback_samples->TotalCount());
-  } else if (histogram_name == kMediaPlaybackHistogram) {
+  } else if (auto_pip_reason == AutoPipReason::kMediaPlayback) {
     EXPECT_EQ(0, video_conferencing_samples->TotalCount());
     EXPECT_EQ(1, media_playback_samples->TotalCount());
   } else {
-    FAIL() << "Unknown histogram name: " << histogram_name;
+    FAIL() << "Unhandled auto picture in picture reason: "
+           << static_cast<int>(auto_pip_reason);
   }
 }

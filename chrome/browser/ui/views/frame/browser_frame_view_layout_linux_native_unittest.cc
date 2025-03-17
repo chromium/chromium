@@ -168,9 +168,10 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
     frame_provider_ = std::make_unique<::TestFrameProvider>();
     auto layout = std::make_unique<BrowserFrameViewLayoutLinuxNative>(
         nav_button_provider_.get(),
-        base::BindRepeating([](ui::WindowFrameProvider* frame_provider,
-                               bool tiled) { return frame_provider; },
-                            frame_provider_.get()));
+        base::BindRepeating(
+            [](ui::WindowFrameProvider* frame_provider, bool tiled,
+               bool maximized) { return frame_provider; },
+            frame_provider_.get()));
     layout->set_delegate(delegate_.get());
     layout->set_forced_window_caption_spacing_for_test(0);
     widget_ =

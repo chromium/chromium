@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/mojom/input_method_manager.mojom-forward.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 
 namespace arc {

@@ -7,12 +7,14 @@ package org.chromium.components.browsing_data.content;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.Origin;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@NullMarked
 public class BrowsingDataModel {
 
     // A pointer to the C++ object for this model.
@@ -50,7 +52,7 @@ public class BrowsingDataModel {
     }
 
     public void destroy() {
-        BrowsingDataModelJni.get().destroy(mNativeBrowsingDataModel, BrowsingDataModel.this);
+        BrowsingDataModelJni.get().destroy(mNativeBrowsingDataModel);
     }
 
     @CalledByNative
@@ -74,6 +76,6 @@ public class BrowsingDataModel {
         void removeBrowsingData(
                 long nativeBrowsingDataModelAndroid, String host, Runnable completed);
 
-        void destroy(long nativeBrowsingDataModelAndroid, BrowsingDataModel caller);
+        void destroy(long nativeBrowsingDataModelAndroid);
     }
 }

@@ -15,7 +15,7 @@ using alert_overlays::ResponseConverter;
 namespace {
 // The OK button index used for tests.
 size_t kOkButtonIndex = 0;
-}
+}  // namespace
 
 // Test fixture for ConfirmationOverlayResonse util functions.
 using ConfirmationOverlayResponseUtilTest = PlatformTest;

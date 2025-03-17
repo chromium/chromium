@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.notifications.chime;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Delegate Chime notification SDK functionalities. */
+@NullMarked
 public class ChimeDelegate {
     /** Initializes Chime SDK. */
     public void initialize() {}

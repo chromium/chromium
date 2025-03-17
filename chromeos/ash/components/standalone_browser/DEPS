@@ -1,6 +1,0 @@
-specific_include_rules = {
-  "channel_util\.cc": [
-    "+chromeos/ash/components/channel/channel_info.h",
-    "+components/component_updater/component_updater_service.h",
-  ],
-}

@@ -81,7 +81,7 @@ class RTCEncodedVideoStreamTransformerTest
             blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
         webrtc_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner({})),
         webrtc_callback_(
-            new rtc::RefCountedObject<MockWebRtcTransformedFrameCallback>()),
+            new webrtc::RefCountedObject<MockWebRtcTransformedFrameCallback>()),
         metronome_(GetParam() ? new NiceMock<MockMetronome>() : nullptr),
         encoded_video_stream_transformer_(main_task_runner_,
                                           absl::WrapUnique(metronome_.get())) {}
@@ -179,7 +179,7 @@ TEST_P(RTCEncodedVideoStreamTransformerTest,
   encoded_video_stream_transformer_.StartShortCircuiting();
 
   rtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_2(
-      new rtc::RefCountedObject<MockWebRtcTransformedFrameCallback>());
+      new webrtc::RefCountedObject<MockWebRtcTransformedFrameCallback>());
   EXPECT_CALL(*webrtc_callback_2, StartShortCircuiting);
   encoded_video_stream_transformer_.RegisterTransformedFrameSinkCallback(
       webrtc_callback_2, kSSRC + 1);

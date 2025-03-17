@@ -31,6 +31,7 @@ class MODULES_EXPORT MLOperand : public ScriptWrappable {
   // Otherwise return an error message which may be used
   // to throw a TypeError if the inputs are not valid.
   static base::expected<MLOperand*, String> ValidateAndCreateInput(
+      const webnn::ContextProperties& context_properties,
       MLGraphBuilder* builder,
       V8MLOperandDataType::Enum data_type,
       Vector<uint32_t> shape,

@@ -13,6 +13,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -188,7 +189,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
       nullptr, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
   builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
 
-  builder.ComputePolicies(GURL(), false, network::mojom::WebSandboxFlags::kNone,
+  MockNavigationHandle navigation_handle(GURL(), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
+                          network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
   // This must be called on a task runner, hence the need for this test to be
@@ -243,7 +246,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   // is using the history policies.
   builder.AddContentSecurityPolicy(MakeTestCSP());
 
-  builder.ComputePolicies(AboutBlankUrl(), false,
+  MockNavigationHandle navigation_handle(AboutBlankUrl(), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -289,7 +293,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   // is using the history policies.
   builder.AddContentSecurityPolicy(MakeTestCSP());
 
-  builder.ComputePolicies(AboutSrcdocUrl(), false,
+  MockNavigationHandle navigation_handle(AboutSrcdocUrl(), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -335,7 +340,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   PolicyContainerPolicies history_policies = builder.HistoryPolicies()->Clone();
 
-  builder.ComputePolicies(AboutBlankUrl(), false,
+  MockNavigationHandle navigation_handle(AboutBlankUrl(), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
   EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(history_policies))));
@@ -432,7 +438,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   PolicyContainerPolicies history_policies = builder.HistoryPolicies()->Clone();
 
-  builder.ComputePolicies(GURL("http://foo.test"), false,
+  MockNavigationHandle navigation_handle(GURL("http://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -441,7 +448,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   builder.ResetForCrossDocumentRestart();
   EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(history_policies))));
 
-  builder.ComputePolicies(AboutBlankUrl(), false,
+  navigation_handle.set_url(AboutBlankUrl());
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -484,7 +492,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   NavigationPolicyContainerBuilder builder(
       nullptr, &token, initiator->GetProcess()->GetDeprecatedID(),
       root_storage_partition(), nullptr);
-  builder.ComputePolicies(AboutBlankUrl(), false,
+  MockNavigationHandle navigation_handle(AboutBlankUrl(), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -505,10 +514,12 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
       nullptr, &token, initiator->GetProcess()->GetDeprecatedID(),
       root_storage_partition(), nullptr);
 
-  builder.ComputePolicies(
+  MockNavigationHandle navigation_handle(
       GURL("blob:https://example.com/016ece86-b7f9-4b07-88c2-a0e36b7f1dd6"),
-      false, network::mojom::WebSandboxFlags::kNone,
-      /*is_credentialless=*/false);
+      nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
+                          network::mojom::WebSandboxFlags::kNone,
+                          /*is_credentialless=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), initiator_policies);
 }
@@ -531,7 +542,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   // Add some CSP.
   network::mojom::ContentSecurityPolicyPtr test_csp = MakeTestCSP();
   builder.AddContentSecurityPolicy(test_csp.Clone());
-  builder.ComputePolicies(AboutBlankUrl(), false,
+  MockNavigationHandle navigation_handle(AboutBlankUrl(), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -556,7 +568,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   EXPECT_THAT(builder.InitiatorPolicies(),
               Pointee(Eq(ByRef(initiator_policies))));
 
-  builder.ComputePolicies(GURL("https://foo.test"), false,
+  MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
   EXPECT_THAT(builder.InitiatorPolicies(),
@@ -579,7 +592,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
       nullptr, &token, initiator->GetProcess()->GetDeprecatedID(),
       root_storage_partition(), nullptr);
 
-  builder.ComputePolicies(GURL("https://foo.test"), false,
+  MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
   EXPECT_EQ(builder.FinalPolicies(), PolicyContainerPolicies());
@@ -588,7 +602,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   EXPECT_THAT(
       builder.InitiatorPolicies(),
       Pointee(Eq(ByRef(initiator->policy_container_host()->policies()))));
-  builder.ComputePolicies(AboutBlankUrl(), false,
+  navigation_handle.set_url(AboutBlankUrl());
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 

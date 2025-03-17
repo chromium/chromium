@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace {
 
@@ -20,6 +21,7 @@ constexpr std::string_view kAttachedGaiaIdsKey = "attached_gaia_ids";
 constexpr std::string_view kUserNameKey = "user_name";
 constexpr std::string_view kNewProfile = "new_profile";
 constexpr std::string_view kIsFullyInitializedKey = "fully_initialized";
+constexpr std::string_view kIsDeletedProfile = "deleted_profile";
 constexpr std::string_view kDiscardedSessions = "discarded_sessions";
 constexpr std::string_view kNotificationPermissions =
     "notification_permissions";
@@ -74,7 +76,7 @@ StringSet GetStringSet(const Dict& dict, std::string_view key) {
   if (const base::Value::List* list = dict.FindList(key)) {
     for (const base::Value& value : *list) {
       if (const std::string* string = value.GetIfString()) {
-        set.insert(*string);
+        set.emplace(*string);
       }
     }
   }
@@ -82,14 +84,30 @@ StringSet GetStringSet(const Dict& dict, std::string_view key) {
 }
 
 // Stores a string set value in the dictionary.
-template <typename StringSet = std::set<std::string>>
-void SetStringSet(Dict& dict, std::string_view key, const StringSet& set) {
+void SetStringSet(Dict& dict,
+                  std::string_view key,
+                  const std::set<std::string>& set) {
   if (set.empty()) {
     dict.Remove(key);
   } else {
     base::Value::List list;
     for (const std::string& string : set) {
       list.Append(string);
+    }
+    dict.Set(key, std::move(list));
+  }
+}
+
+// Same as above but takes GaiaIdSet as input.
+void SetGaiaIdSet(Dict& dict,
+                  std::string_view key,
+                  const ProfileAttributesIOS::GaiaIdSet& set) {
+  if (set.empty()) {
+    dict.Remove(key);
+  } else {
+    base::Value::List list;
+    for (const GaiaId& gaia_id : set) {
+      list.Append(gaia_id.ToString());
     }
     dict.Set(key, std::move(list));
   }
@@ -126,6 +144,13 @@ ProfileAttributesIOS ProfileAttributesIOS::WithAttrs(
   return ProfileAttributesIOS(profile_name, storage.Clone());
 }
 
+ProfileAttributesIOS ProfileAttributesIOS::DeletedProfile(
+    std::string_view profile_name) {
+  base::Value::Dict dict;
+  SetBool(dict, kIsDeletedProfile, true);
+  return ProfileAttributesIOS(profile_name, std::move(dict));
+}
+
 ProfileAttributesIOS::ProfileAttributesIOS(ProfileAttributesIOS&&) = default;
 
 ProfileAttributesIOS& ProfileAttributesIOS::operator=(ProfileAttributesIOS&&) =
@@ -146,8 +171,12 @@ bool ProfileAttributesIOS::IsFullyInitialized() const {
   return GetBool(storage_, kIsFullyInitializedKey);
 }
 
-const std::string& ProfileAttributesIOS::GetGaiaId() const {
-  return GetString(storage_, kGaiaIdKey);
+bool ProfileAttributesIOS::IsDeletedProfile() const {
+  return GetBool(storage_, kIsDeletedProfile);
+}
+
+GaiaId ProfileAttributesIOS::GetGaiaId() const {
+  return GaiaId(GetString(storage_, kGaiaIdKey));
 }
 
 const std::string& ProfileAttributesIOS::GetUserName() const {
@@ -191,9 +220,9 @@ void ProfileAttributesIOS::SetFullyInitialized() {
   SetBool(storage_, kIsFullyInitializedKey, true);
 }
 
-void ProfileAttributesIOS::SetAuthenticationInfo(std::string_view gaia_id,
+void ProfileAttributesIOS::SetAuthenticationInfo(const GaiaId& gaia_id,
                                                  std::string_view user_name) {
-  SetString(storage_, kGaiaIdKey, gaia_id);
+  SetString(storage_, kGaiaIdKey, gaia_id.ToString());
   SetString(storage_, kUserNameKey, user_name);
 }
 
@@ -202,7 +231,7 @@ void ProfileAttributesIOS::SetHasAuthenticationError(bool value) {
 }
 
 void ProfileAttributesIOS::SetAttachedGaiaIds(const GaiaIdSet& gaia_ids) {
-  SetStringSet(storage_, kAttachedGaiaIdsKey, gaia_ids);
+  SetGaiaIdSet(storage_, kAttachedGaiaIdsKey, gaia_ids);
 }
 
 void ProfileAttributesIOS::SetLastActiveTime(base::Time time) {

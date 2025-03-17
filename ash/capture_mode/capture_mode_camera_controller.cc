@@ -34,7 +34,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
@@ -108,7 +107,7 @@ bool DidDevicesChange(
   for (const auto& incoming_camera : incoming_list) {
     const auto& device_id = incoming_camera.descriptor.device_id;
     const auto iter =
-        base::ranges::find(current_list, device_id, &CameraInfo::device_id);
+        std::ranges::find(current_list, device_id, &CameraInfo::device_id);
     if (iter == current_list.end())
       return true;
 
@@ -171,7 +170,7 @@ bool ShouldCameraActLikeAMirror(const CameraInfo& camera_info) {
 // nullptr if no such item exists.
 const CameraInfo* GetCameraInfoById(const CameraId& id,
                                     const CameraInfoList& list) {
-  const auto iter = base::ranges::find(list, id, &CameraInfo::camera_id);
+  const auto iter = std::ranges::find(list, id, &CameraInfo::camera_id);
   return iter == list.end() ? nullptr : &(*iter);
 }
 

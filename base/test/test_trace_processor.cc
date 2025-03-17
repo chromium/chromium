@@ -16,7 +16,6 @@
 
 namespace base::test {
 
-
 namespace {
 // Emitting the chrome_track_event.descriptor into the trace allows the trace
 // processor to parse the arguments during ingestion of the trace events.
@@ -170,6 +169,5 @@ TestTraceProcessor::RunQuery(const std::string& query) {
   }
   return base::ok(result_or_error.result());
 }
-
 
 }  // namespace base::test

@@ -4,12 +4,13 @@
 
 #include "extensions/shell/test/test_shell_main_delegate.h"
 
+#include <variant>
+
 #include "base/command_line.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/network_service_test_helper.h"
 #include "content/public/utility/content_utility_client.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
 

@@ -19,7 +19,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.ActivityState;
@@ -102,8 +101,11 @@ import java.util.stream.Collectors;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
-@EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+@DisableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH})
+@EnableFeatures({
+    ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    ChromeFeatureList.ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH
+})
 public class TabPersistentStoreTest {
     // Test activity type that does not restore tab on cold restart.
     // Any type other than ActivityType.TABBED works.
@@ -149,7 +151,6 @@ public class TabPersistentStoreTest {
         final MockTabPersistentStoreObserver mTabPersistentStoreObserver;
         private final TabModelOrderController mTabModelOrderController;
         // Required to ensure TabContentManager is not null.
-        @Mock // Annotation required to disable R8 optimization of the class.
         private final TabContentManager mMockTabContentManager;
 
         public TestTabModelSelector(Context context) throws Exception {
@@ -205,7 +206,7 @@ public class TabPersistentStoreTest {
                                     TestTabModelSelector.this,
                                     tabRemover,
                                     /* supportUndo= */ true,
-                                    /* trackInNativeModelList= */ true);
+                                    /* isArchivedTabModel= */ true);
                         }
                     };
             TabModelImpl regularTabModel = ThreadUtils.runOnUiThreadBlocking(callable);
@@ -581,7 +582,7 @@ public class TabPersistentStoreTest {
                             mMockDirectory.getDataDirectory(),
                             /* tabId= */ tab.getId(),
                             /* encrypted= */ false,
-                            /* isFlatBuffer= */ true);
+                            /* isFlatbuffer= */ true);
             Assert.assertTrue(
                     "FlatBuffer file should exist " + flatBufferFile, flatBufferFile.exists());
         }
@@ -599,7 +600,7 @@ public class TabPersistentStoreTest {
                                         mMockDirectory.getDataDirectory(),
                                         /* tabId= */ tab.getId(),
                                         /* encrypted= */ tab.isIncognito(),
-                                        /* isFlatBuffer= */ false);
+                                        /* isFlatbuffer= */ false);
                         Criteria.checkThat(legacyTabStateFile.exists(), Matchers.is(false));
                     });
         }
@@ -835,7 +836,7 @@ public class TabPersistentStoreTest {
                 mMockDirectory.getDataDirectory(),
                 /* tabId= */ tab.getId(),
                 /* encrypted= */ false,
-                /* isFlatBuffer= */ false);
+                /* isFlatbuffer= */ false);
     }
 
     private File getFlatBufferTabStateFile(Tab tab) {
@@ -843,7 +844,7 @@ public class TabPersistentStoreTest {
                 mMockDirectory.getDataDirectory(),
                 /* tabId= */ tab.getId(),
                 /* encrypted= */ false,
-                /* isFlatBuffer= */ true);
+                /* isFlatbuffer= */ true);
     }
 
     /**

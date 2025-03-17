@@ -4,18 +4,16 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_mediator.h"
 
+#import "base/rand_util.h"
 #import "base/run_loop.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/data_type.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/webauthn/core/browser/passkey_sync_bridge.h"
@@ -288,16 +286,13 @@ TEST_F(PasswordSettingsMediatorTest,
           mediator_);
 
   [syncObserver onSyncStateChanged];
-  [[consumer_ verify] setLocalPasswordsCount:0 withUserEligibility:NO];
+  [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:0];
 }
 
 // Tests that update GPM Pin button is shown for a user that has GPM Pin
 // created (has non-degraded recoverability status) and with a bootstrapped
 // device (keys being returned from the passkey trusted vault).
 TEST_F(PasswordSettingsMediatorTest, ShowsUpdateGPMPinButtonForEligibleUser) {
-  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
-    GTEST_SKIP() << "This build configuration does not support passkeys.";
-  }
   EXPECT_CALL(*trusted_vault_backend_, GetDegradedRecoverabilityStatus(
                                            fake_identity_, kPasskeysDomain, _))
       .WillOnce(WithArg<2>(
@@ -309,32 +304,26 @@ TEST_F(PasswordSettingsMediatorTest, ShowsUpdateGPMPinButtonForEligibleUser) {
       }));
 
   CreateMediator();
-  [[consumer_ verify] setupChangeGPMPinButton];
+  [[consumer_ verify] setCanChangeGPMPin:YES];
 }
 
 // Tests that update GPM Pin button is not shown for a user that does not have
 // GPM Pin created (is in degraded recoverability).
 TEST_F(PasswordSettingsMediatorTest,
        DoesNotShowChangeGPMPinButtonWithNoGPMPinCreated) {
-  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
-    GTEST_SKIP() << "This build configuration does not support passkeys.";
-  }
   EXPECT_CALL(*trusted_vault_backend_, GetDegradedRecoverabilityStatus(
                                            fake_identity_, kPasskeysDomain, _))
       .WillOnce(WithArg<2>(
           [](auto callback) { std::move(callback).Run(/*status=*/true); }));
 
   CreateMediator();
-  [[consumer_ reject] setupChangeGPMPinButton];
+  [[consumer_ reject] setCanChangeGPMPin:YES];
 }
 
 // Tests that update GPM Pin button is not shown for a user that has not
 // bootstrapped their device (no keys returned from the passkey trusted vault).
 TEST_F(PasswordSettingsMediatorTest,
        DoesNotShowChangeGPMPinButtonWhenNotBootstrapped) {
-  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
-    GTEST_SKIP() << "This build configuration does not support passkeys.";
-  }
   EXPECT_CALL(*trusted_vault_backend_, GetDegradedRecoverabilityStatus(
                                            fake_identity_, kPasskeysDomain, _))
       .WillOnce(WithArg<2>(
@@ -345,7 +334,7 @@ TEST_F(PasswordSettingsMediatorTest,
           [](auto callback) { std::move(callback).Run(/*shared_keys=*/{}); }));
 
   CreateMediator();
-  [[consumer_ reject] setupChangeGPMPinButton];
+  [[consumer_ verify] setCanChangeGPMPin:NO];
 }
 
 // Tests that passwords already in account store and passkeys are not counted
@@ -355,19 +344,17 @@ TEST_F(PasswordSettingsMediatorTest, CountsProfileStorePasswordsAsLocal) {
 
   AddPassword("https://www.example.com/1", u"password1",
               PasswordForm::Store::kNotSet);
-  [[consumer_ verify] setLocalPasswordsCount:1 withUserEligibility:NO];
+  [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:1];
   AddPassword("https://www.example.com/2", u"password2",
               PasswordForm::Store::kProfileStore);
-  [[consumer_ verify] setLocalPasswordsCount:2 withUserEligibility:NO];
+  [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:2];
 
   // Count should not be increased for an account store password.
   AddPassword("https://www.example.com/3", u"password3",
               PasswordForm::Store::kAccountStore);
-  [[consumer_ verify] setLocalPasswordsCount:2 withUserEligibility:NO];
+  [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:2];
 
-  if (syncer::IsWebauthnCredentialSyncEnabled()) {
-    // Count should not be increased for a passkey.
-    AddPasskey();
-    [[consumer_ verify] setLocalPasswordsCount:2 withUserEligibility:NO];
-  }
+  // Count should not be increased for a passkey.
+  AddPasskey();
+  [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:2];
 }

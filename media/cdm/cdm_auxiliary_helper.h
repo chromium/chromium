@@ -37,6 +37,9 @@ struct MEDIA_EXPORT CdmMetricsData {
   uint64_t number_of_on_message_events = 0;
   std::optional<uint64_t> certificate_serial_number;
   std::optional<uint64_t> decoder_bypass_block_count;
+  uint64_t video_frames_processed = 0;
+
+  url::Origin cdm_origin;
 
   bool IsCdmValueSet() {
     return (license_sdk_version.has_value() ||

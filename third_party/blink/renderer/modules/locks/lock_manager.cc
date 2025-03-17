@@ -236,7 +236,21 @@ class LockManager::LockRequestImpl final
 const char LockManager::kSupplementName[] = "LockManager";
 
 // static
-LockManager* LockManager::locks(NavigatorBase& navigator) {
+LockManager* LockManager::locks(NavigatorBase& navigator,
+                                ExceptionState& exception_state) {
+  ExecutionContext* context = navigator.GetExecutionContext();
+
+  auto* shared_storage_worklet_global_scope =
+      DynamicTo<SharedStorageWorkletGlobalScope>(context);
+
+  if (shared_storage_worklet_global_scope &&
+      !shared_storage_worklet_global_scope->add_module_finished()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "navigator.locks cannot be accessed during addModule().");
+    return nullptr;
+  }
+
   auto* supplement = Supplement<NavigatorBase>::From<LockManager>(navigator);
   if (!supplement) {
     supplement = MakeGarbageCollected<LockManager>(navigator);

@@ -7,9 +7,11 @@ package org.chromium.components.browser_ui.widget.textbubble;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /** Back gesture handler for {@link TextBubble}. */
+@NullMarked
 public class TextBubbleBackPressHandler implements BackPressHandler {
     private final ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();
     private final Callback<Integer> mCallback = (count) -> mSupplier.set(count != 0);

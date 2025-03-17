@@ -1476,9 +1476,11 @@ void CompositeEditCommand::MoveParagraphs(
           ComparePositions(visible_start, start_of_paragraph_to_move) >= 0;
       bool end_in_paragraph =
           ComparePositions(visible_end, end_of_paragraph_to_move) <= 0;
-
       const TextIteratorBehavior behavior =
-          TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
+          RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()
+              ? TextIteratorBehavior::
+                    AllVisiblePositionsIncludingShadowRootRangeLengthBehavior()
+              : TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
 
       start_index = 0;
       if (start_in_paragraph) {
@@ -1555,14 +1557,33 @@ void CompositeEditCommand::MoveParagraphs(
 
   DCHECK(!GetDocument().NeedsLayoutTreeUpdate());
 
-  const VisibleSelection& selection_to_delete = CreateVisibleSelection(
-      SelectionInDOMTree::Builder().Collapse(start).Extend(end).Build());
-  SetEndingSelection(
-      SelectionForUndoStep::From(selection_to_delete.AsSelection()));
+  if (RuntimeEnabledFeatures::
+          RemoveSelectionCanonicalizationInMoveParagraphEnabled()) {
+    SetEndingSelection(SelectionForUndoStep::From(
+        SelectionInDOMTree::Builder().Collapse(start).Extend(end).Build()));
+  } else {
+    const VisibleSelection& selection_to_delete = CreateVisibleSelection(
+        SelectionInDOMTree::Builder().Collapse(start).Extend(end).Build());
+    SetEndingSelection(
+        SelectionForUndoStep::From(selection_to_delete.AsSelection()));
+  }
+
+  if (RuntimeEnabledFeatures::
+          PartialCompletionNotAllowedInMoveParagraphsEnabled()) {
+    const VisibleSelection& destination_selection = CreateVisibleSelection(
+        SelectionInDOMTree::Builder()
+            .Collapse(destination.ToPositionWithAffinity())
+            .Build());
+    if (!destination_selection.RootEditableElement() ||
+        !EndingVisibleSelection().RootEditableElement()) {
+      return;
+    }
+  }
   if (!DeleteSelection(
           editing_state,
-          DeleteSelectionOptions::Builder().SetSanitizeMarkup(true).Build()))
+          DeleteSelectionOptions::Builder().SetSanitizeMarkup(true).Build())) {
     return;
+  }
 
   DCHECK(destination.DeepEquivalent().IsConnected()) << destination;
   CleanupAfterDeletion(editing_state, destination);
@@ -1599,12 +1620,18 @@ void CompositeEditCommand::MoveParagraphs(
 
   // TextIterator::rangeLength requires clean layout.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-
-  destination_index = TextIterator::RangeLength(
-      Position::FirstPositionInNode(*GetDocument().documentElement()),
-      destination.ToParentAnchoredPosition(),
-      TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior());
-
+  if (RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()) {
+    destination_index = TextIterator::RangeLength(
+        Position::FirstPositionInNode(*GetDocument().documentElement()),
+        destination.ToParentAnchoredPosition(),
+        TextIteratorBehavior::
+            AllVisiblePositionsIncludingShadowRootRangeLengthBehavior());
+  } else {
+    destination_index = TextIterator::RangeLength(
+        Position::FirstPositionInNode(*GetDocument().documentElement()),
+        destination.ToParentAnchoredPosition(),
+        TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior());
+  }
   const VisibleSelection& destination_selection =
       CreateVisibleSelection(SelectionInDOMTree::Builder()
                                  .Collapse(destination.ToPositionWithAffinity())

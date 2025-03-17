@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 
 #include "content/public/test/xr_test_utils.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/webxr/android/openxr_device_provider.h"
+#endif
 
 // TODO(crbug.com/41418750): Remove these conversion functions as part of
 // the switch to only mojom types.
@@ -79,15 +78,21 @@ device_test::mojom::ControllerFrameDataPtr DeviceToMojoControllerFrameData(
 
 MockXRDeviceHookBase::MockXRDeviceHookBase()
     : tracked_classes_{
-          device_test::mojom::TrackedDeviceClass::kTrackedDeviceInvalid} {
+          device_test::mojom::TrackedDeviceClass::kTrackedDeviceHmd} {
+  // TODO(https://crbug.com/381913614): Instead of this pattern, consider
+  // spinning up/holding onto and setting the test hook on the XrRuntimeManager,
+  // which could pass on to providers.
+#if BUILDFLAG(IS_WIN)
   content::GetXRDeviceServiceForTesting()->BindTestHook(
       service_test_hook_.BindNewPipeAndPassReceiver());
 
   mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-  // For now, always have the HMD connected.
-  tracked_classes_[0] =
-      device_test::mojom::TrackedDeviceClass::kTrackedDeviceHmd;
   service_test_hook_->SetTestHook(receiver_.BindNewPipeAndPassRemote());
+#elif BUILDFLAG(IS_ANDROID)
+  mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
+  webxr::OpenXrDeviceProvider::SetTestHook(
+      receiver_.BindNewPipeAndPassRemote());
+#endif
 }
 
 MockXRDeviceHookBase::~MockXRDeviceHookBase() {
@@ -227,8 +232,7 @@ device::ControllerFrameData MockXRDeviceHookBase::CreateValidController(
   device::ControllerFrameData ret;
   // Because why shouldn't a 64 button controller exist?
   ret.supported_buttons = UINT64_MAX;
-  memset(ret.axis_data, 0,
-         sizeof(device::ControllerAxisData) * device::kMaxNumAxes);
+  std::ranges::fill(ret.axis_data, device::ControllerAxisData{});
   ret.role = role;
   ret.is_valid = true;
   // Identity matrix.

@@ -1,46 +1,32 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
 
-ArrayBufferContents PinArrayBufferContent(
+ArrayBufferContents PinSharedArrayBufferContent(
     const AllowSharedBufferSource* buffer_union) {
   ArrayBufferContents result;
   switch (buffer_union->GetContentType()) {
     case AllowSharedBufferSource::ContentType::kArrayBufferAllowShared: {
       auto* buffer = buffer_union->GetAsArrayBufferAllowShared();
-      if (buffer && !buffer->IsDetached()) {
-        if (buffer->IsShared()) {
-          buffer->Content()->ShareWith(result);
-        } else {
-          static_cast<blink::DOMArrayBuffer*>(buffer)
-              ->ShareNonSharedForInternalUse(result);
-        }
+      if (buffer && !buffer->IsDetached() && buffer->IsShared()) {
+        buffer->Content()->ShareWith(result);
       }
-      return result;
+      break;
     }
     case AllowSharedBufferSource::ContentType::kArrayBufferViewAllowShared: {
       auto* view = buffer_union->GetAsArrayBufferViewAllowShared().Get();
-      if (view && !view->IsDetached()) {
-        if (view->IsShared()) {
-          view->BufferShared()->Content()->ShareWith(result);
-        } else {
-          view->buffer()->ShareNonSharedForInternalUse(result);
-        }
+      if (view && !view->IsDetached() && view->IsShared()) {
+        view->BufferShared()->Content()->ShareWith(result);
       }
-      return result;
+      break;
     }
   }
+  return result;
 }
 
 ArrayBufferContents TransferArrayBufferForSpan(
@@ -88,10 +74,10 @@ ArrayBufferContents TransferArrayBufferForSpan(
       continue;
     }
 
-    auto* contents_data = static_cast<const uint8_t*>(contents.Data());
-    if (data_range.data() < contents_data ||
-        data_range.data() + data_range.size() >
-            contents_data + contents.DataLength()) {
+    auto contents_data = contents.ByteSpan();
+    if (contents_data.empty() || data_range.empty() ||
+        data_range.data() < contents_data.data() ||
+        &data_range.back() > &contents_data.back()) {
       // This array buffer doesn't contain `data_range`. Let's ignore it.
       continue;
     }

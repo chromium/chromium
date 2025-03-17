@@ -248,6 +248,7 @@ bool Character::CanReceiveTextEmphasis(UChar32 c) {
 
   // Additional word-separator characters listed in CSS Text Level 3 Editor's
   // Draft 3 November 2010.
+  // https://www.w3.org/TR/css-text-3/#word-separator
   if (c == kEthiopicWordspaceCharacter ||
       c == kAegeanWordSeparatorLineCharacter ||
       c == kAegeanWordSeparatorDotCharacter ||
@@ -255,6 +256,19 @@ bool Character::CanReceiveTextEmphasis(UChar32 c) {
       c == kTibetanMarkIntersyllabicTshegCharacter ||
       c == kTibetanMarkDelimiterTshegBstarCharacter)
     return false;
+
+  // Punctuation
+  if (category &
+      (WTF::unicode::kPunctuation_Dash | WTF::unicode::kPunctuation_Open |
+       WTF::unicode::kPunctuation_Close | WTF::unicode::kPunctuation_Connector |
+       WTF::unicode::kPunctuation_Other |
+       WTF::unicode::kPunctuation_InitialQuote |
+       WTF::unicode::kPunctuation_FinalQuote)) {
+    return false;
+  }
+  // TODO(layout-dev): css/css-text-decor/text-emphasis-punctuation-3.html
+  // requires implementation for the following rule in the specification:
+  // > do not NFKD normalize to any of the following symbols:
 
   return true;
 }

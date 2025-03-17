@@ -49,6 +49,8 @@ class AwWebContentsDelegate
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;
+  void SetContentsBounds(content::WebContents* source,
+                         const gfx::Rect& bounds) override;
 
   void NavigationStateChanged(content::WebContents* source,
                               content::InvalidateTypes changed_flags) override;
@@ -83,6 +85,7 @@ class AwWebContentsDelegate
   content::PreloadingEligibility IsPrerender2Supported(
       content::WebContents& web_contents,
       content::PreloadingTriggerType trigger_type) override;
+  int AllowedPrerenderingCount(content::WebContents& web_contents) override;
   content::NavigationController::UserAgentOverrideOption
   ShouldOverrideUserAgentForPrerender2() override;
   bool ShouldAllowPartialParamMismatchOfPrerender2(

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/input/touch_event_manager.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/ranges/algorithm.h"
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -238,8 +234,7 @@ WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
                                                 first_touch_pointer_event);
   WebInputEvent::Type touch_event_type = WebInputEvent::Type::kTouchMove;
   Vector<WebPointerEvent> all_coalesced_events;
-  Vector<int> available_ids;
-  WTF::CopyKeysToVector(touch_attribute_map_, available_ids);
+  Vector<int> available_ids(touch_attribute_map_.Keys());
   std::sort(available_ids.begin(), available_ids.end());
   for (const int& touch_point_id : available_ids) {
     auto* const touch_point_attribute = touch_attribute_map_.at(touch_point_id);
@@ -314,9 +309,9 @@ WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
           return a.id < b.id;
         }
       } id_based_event_comparison;
-      base::ranges::sort(base::span(last_coalesced_touch_event_.touches)
-                             .first(last_coalesced_touch_event_.touches_length),
-                         id_based_event_comparison);
+      std::ranges::sort(base::span(last_coalesced_touch_event_.touches)
+                            .first(last_coalesced_touch_event_.touches_length),
+                        id_based_event_comparison);
       result.AddCoalescedEvent(last_coalesced_touch_event_);
     } else {
       for (unsigned i = 0; i < last_coalesced_touch_event_.touches_length;
@@ -445,10 +440,13 @@ TouchEventManager::DispatchTouchEventFromAccumulatdTouchPoints() {
       size_t event_type_idx =
           static_cast<int>(event_type) -
           static_cast<int>(WebInputEvent::Type::kPointerTypeFirst);
-      if (!changed_touches[event_type_idx].touches_)
-        changed_touches[event_type_idx].touches_ = TouchList::Create();
-      changed_touches[event_type_idx].touches_->Append(touch);
-      changed_touches[event_type_idx].targets_.insert(touch_target);
+      UNSAFE_TODO({
+        if (!changed_touches[event_type_idx].touches_) {
+          changed_touches[event_type_idx].touches_ = TouchList::Create();
+        }
+        changed_touches[event_type_idx].touches_->Append(touch);
+        changed_touches[event_type_idx].targets_.insert(touch_target);
+      });
     }
   }
 
@@ -466,17 +464,19 @@ TouchEventManager::DispatchTouchEventFromAccumulatdTouchPoints() {
        ++action) {
     size_t action_idx =
         action - static_cast<int>(WebInputEvent::Type::kPointerTypeFirst);
-    if (!changed_touches[action_idx].touches_)
+    if (!UNSAFE_TODO(changed_touches[action_idx].touches_)) {
       continue;
+    }
 
     const AtomicString& event_name(TouchEventNameForPointerEventType(
         static_cast<WebInputEvent::Type>(action)));
 
-    for (const auto& event_target : changed_touches[action_idx].targets_) {
+    for (const auto& event_target :
+         UNSAFE_TODO(changed_touches[action_idx].targets_)) {
       EventTarget* touch_event_target = event_target;
       TouchEvent* touch_event = TouchEvent::Create(
           coalesced_event, touches, touches_by_target.at(touch_event_target),
-          changed_touches[action_idx].touches_, event_name,
+          UNSAFE_TODO(changed_touches[action_idx].touches_), event_name,
           touch_event_target->ToNode()->GetDocument().domWindow(),
           current_touch_action_);
 

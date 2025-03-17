@@ -96,6 +96,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                          const AtomicString& initiator_type) override;
   bool AllowImage() const override;
 
+  void ModifyRequestForMixedContentUpgrade(ResourceRequest&) override;
+
   void PopulateResourceRequestBeforeCacheAccess(
       const ResourceLoaderOptions& options,
       ResourceRequest& request) override;
@@ -118,7 +120,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   bool DoesLCPPHaveLcpElementLocatorHintData() override;
 
   // Exposed for testing.
-  void ModifyRequestForCSP(ResourceRequest&);
   void AddClientHintsIfNecessary(const std::optional<float> resource_width,
                                  ResourceRequest&);
 
@@ -199,7 +200,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   Settings* GetSettings() const;
   String GetUserAgent() const;
   std::optional<UserAgentMetadata> GetUserAgentMetadata() const;
-  const PermissionsPolicy* GetPermissionsPolicy() const override;
+  const network::PermissionsPolicy* GetPermissionsPolicy() const override;
+  const FeatureContext* GetFeatureContext() const override;
   HashSet<HashAlgorithm> CSPHashesToReport() const override;
   void AddCSPHashReport(
       const String& url,

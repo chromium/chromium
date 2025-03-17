@@ -32,11 +32,13 @@ export function getHtml(this: DownloadsItemElement) {
             href="${this.data?.url?.url || ''}"
             @click="${this.onFileLinkClick_}" focus-row-control
             focus-type="fileLink"
+            title="${this.data?.fileName || ''}"
             ?hidden="${!this.shouldLinkFilename_}"><!-- No line break
           -->${this.data?.fileName || ''}<!-- No line break
         --></a><!--
         Before #name.
         --><span id="name"
+            title="${this.data?.fileName || ''}"
             ?hidden="${this.shouldLinkFilename_}"><!-- No line break
           -->${this.data?.fileName || ''}</span>
         <span id="tag">${this.computeTag_()}</span>

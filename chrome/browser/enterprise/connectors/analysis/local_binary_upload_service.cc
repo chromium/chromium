@@ -10,7 +10,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/syslog_logging.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -659,7 +658,7 @@ void LocalBinaryUploadService::FinishRequest(Request::Id id,
     DVLOG(1) << __func__ << ": id=" << id << " not active";
   }
 
-  auto it2 = base::ranges::find(
+  auto it2 = std::ranges::find(
       pending_requests_, id,
       [](const RequestInfo& info) { return info.request->id(); });
   if (it2 != pending_requests_.end()) {

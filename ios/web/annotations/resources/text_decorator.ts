@@ -6,11 +6,12 @@
  * @fileoverview Handles multiple decorations on the web page.
  */
 
-import {TextAnnotationList} from '//ios/web/annotations/resources/text_annotation_list.js';
+import type {TextAnnotationList} from '//ios/web/annotations/resources/text_annotation_list.js';
 import {annotationUniqueId, createChromeAnnotation, createSpace, originalNodeDecorationId, replacementNodeDecorationId, TextDecoration} from '//ios/web/annotations/resources/text_decoration.js';
-import {annotationCanBeCrossElement, HTMLElementWithSymbolIndex, NodeWithSymbolIndex, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
-import {TextChunk} from '//ios/web/annotations/resources/text_extractor.js';
-import {TextStyler} from '//ios/web/annotations/resources/text_styler.js';
+import type {HTMLElementWithSymbolIndex, NodeWithSymbolIndex, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
+import {annotationCanBeCrossElement} from '//ios/web/annotations/resources/text_dom_utils.js';
+import type {TextChunk} from '//ios/web/annotations/resources/text_extractor.js';
+import type {TextStyler} from '//ios/web/annotations/resources/text_styler.js';
 
 // `AnnotationsReplacement` represent an interval replacement inside a text
 // Node. `id` is a unique annotation id number. `left` and `right` is the range
@@ -48,7 +49,7 @@ const HIGHLIGHT_BACKGROUND_COLOR = 'rgba(20,111,225,0.25)';
 // 5. An untouched node, deleted and gc collected.
 //    Will be ignored and not decorated.
 
-class TextDecorator {
+export class TextDecorator {
   constructor(private styler: TextStyler) {}
 
   // The key is a unique `number` tagged on the original node and replacememnt
@@ -60,18 +61,17 @@ class TextDecorator {
 
   // A mutation observer callback that observed the original nodes.
   // If an original node is updated, the decoration should be restored.
-  private mutationCallback =
-      (mutationList: MutationRecord[]) => {
-        for (let mutation of mutationList) {
-          let target = mutation.target as TextWithSymbolIndex;
-          if (!target[originalNodeDecorationId]) {
-            continue;
-          }
-          let replacementId = target[originalNodeDecorationId];
-          const liveDecoration = this.decorations.get(replacementId);
-          liveDecoration?.restore();
-        }
+  private mutationCallback = (mutationList: MutationRecord[]) => {
+    for (const mutation of mutationList) {
+      const target = mutation.target as TextWithSymbolIndex;
+      if (!target[originalNodeDecorationId]) {
+        continue;
       }
+      const replacementId = target[originalNodeDecorationId];
+      const liveDecoration = this.decorations.get(replacementId);
+      liveDecoration?.restore();
+    }
+  };
 
   // A mutation observer callback that observed the original nodes.
   // If an original node is updated, the decoration should be restored.
@@ -125,7 +125,7 @@ class TextDecorator {
         }
         // If there is a space before the annotation, and if it is not carried
         // in the annotation text then the space disappears.
-        const needsPrecedingSpace = left > 0 && text[left - 1] == ' ';
+        const needsPrecedingSpace = left > 0 && text[left - 1] === ' ';
         replacements.push(new AnnotationsReplacement(
             run.annotationId, left, right, nodeText, annotation.type,
             annotation.text, annotation.data, needsPrecedingSpace));
@@ -225,7 +225,7 @@ class TextDecorator {
             if (!replacement.textContent) {
               continue;
             }
-            if (replacement.nodeType == Node.TEXT_NODE) {
+            if (replacement.nodeType === Node.TEXT_NODE) {
               this.decorateNode(
                   run, replacement as Text,
                   section.index + innerIndex - offset);
@@ -234,7 +234,7 @@ class TextDecorator {
           }
         }
       } else if (textNode.parentNode && textNode.getRootNode({
-                   composed: true
+                   composed: true,
                  }) !== textNode) {
         // Case 2 and 3.
         this.decorateNode(run, textNode, section.index - offset);
@@ -330,8 +330,4 @@ class TextDecorator {
       }
     });
   }
-}
-
-export {
-  TextDecorator,
 }

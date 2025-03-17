@@ -10,8 +10,9 @@
 #include <set>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
+#include "chrome/browser/supervised_user/classify_url_navigation_throttle.h"
 #include "chrome/common/supervised_user_commands.mojom.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
@@ -35,7 +36,7 @@ class WebContents;
 }  // namespace content
 
 using OnInterstitialResultCallback = base::RepeatingCallback<
-    void(SupervisedUserNavigationThrottle::CallbackActions, bool, bool)>;
+    void(supervised_user::InterstitialResultCallbackActions, bool, bool)>;
 
 class SupervisedUserNavigationObserver
     : public content::WebContentsUserData<SupervisedUserNavigationObserver>,

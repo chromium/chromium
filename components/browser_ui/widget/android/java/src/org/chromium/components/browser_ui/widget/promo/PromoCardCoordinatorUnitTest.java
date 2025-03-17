@@ -130,7 +130,7 @@ public class PromoCardCoordinatorUnitTest {
     @SmallTest
     public void testChangeVisibility() {
         setupCoordinator(LayoutStyle.LARGE);
-        Assert.assertEquals(mView.mSecondaryButton.getVisibility(), View.VISIBLE);
+        Assert.assertEquals(View.VISIBLE, mView.mSecondaryButton.getVisibility());
 
         // Hide the secondary button
         mModel.set(PromoCardProperties.HAS_SECONDARY_BUTTON, false);

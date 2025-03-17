@@ -151,7 +151,7 @@ struct RsaOaepKnownAnswer {
   const char* plaintext;
 };
 
-const auto kRsaOaepKnownAnswers = std::to_array<RsaOaepKnownAnswer>({
+constexpr auto kRsaOaepKnownAnswers = std::to_array<RsaOaepKnownAnswer>({
     // Tests for RSA-OAEP Encrypt/Decrypt without a label (the empty string).
     {"30819f300d06092a864886f70d010101050003818d0030818902818100a56e4a0e7010175"
      "89a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056ffedb162b4c0f283"

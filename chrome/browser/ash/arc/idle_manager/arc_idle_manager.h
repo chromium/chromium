@@ -8,14 +8,14 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/mojom/power.mojom.h"
-#include "ash/components/arc/power/arc_power_bridge.h"
-#include "ash/components/arc/session/connection_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/throttle/throttle_service.h"
+#include "chromeos/ash/experiences/arc/mojom/power.mojom.h"
+#include "chromeos/ash/experiences/arc/power/arc_power_bridge.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/display/manager/display_configurator.h"
 

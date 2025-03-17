@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/notreached.h"
+#import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/identity_button_cell.h"
@@ -17,7 +19,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -25,12 +26,14 @@ namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSaveToPhotos = kSectionIdentifierEnumZero,
+  SectionIdentifierAutoDeletion
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeHeader = kItemTypeEnumZero,
   ItemTypeDefaultIdentity,
   ItemTypeAskEveryTime,
+  ItemTypeAutoDeletion
 };
 
 }  // namespace
@@ -43,9 +46,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong)
     TableViewSwitchItem* saveToPhotosAskEveryTimeSwitch;
 
+// Downloads Auto-deletion items.
+@property(nonatomic, strong) TableViewSwitchItem* autoDeletionSwitch;
+
 @end
 
-@implementation DownloadsSettingsTableViewController
+@implementation DownloadsSettingsTableViewController {
+  // YES if the current profile supports Save To Photos.
+  BOOL _showSaveToPhotosSettings;
+
+  // YES if Download Auto-deletion is enabled.
+  BOOL _isAutoDeletionEnabled;
+}
 
 #pragma mark - Initialization
 
@@ -72,7 +84,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)loadModel {
   [super loadModel];
-  [self loadSaveToPhotosSection];
+
+  if (_showSaveToPhotosSettings) {
+    [self loadSaveToPhotosSection];
+  }
+
+  if (IsDownloadAutoDeletionFeatureEnabled()) {
+    [self loadAutoDeletionSection];
+  }
 }
 
 #pragma mark - SaveToPhotosSettingsAccountConfirmationConsumer
@@ -104,6 +123,37 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
+- (void)displaySaveToPhotosSettingsUI {
+  _showSaveToPhotosSettings = YES;
+
+  if (!self.viewIfLoaded) {
+    return;
+  }
+
+  [self loadModel];
+  [self reloadData];
+}
+
+- (void)hideSaveToPhotosSettingsUI {
+  _showSaveToPhotosSettings = NO;
+
+  if (!self.viewIfLoaded) {
+    return;
+  }
+
+  [self loadModel];
+  [self reloadData];
+}
+
+#pragma mark - AutoDeletionSettingsConsumer
+
+- (void)setAutoDeletionEnabled:(BOOL)status {
+  _isAutoDeletionEnabled = status;
+  TableViewSwitchItem* switchItem = self.autoDeletionSwitch;
+  switchItem.on = status;
+  [self reconfigureCellsForItems:@[ switchItem ]];
+}
+
 #pragma mark - Items
 
 - (IdentityButtonItem*)saveToPhotosDefaultIdentityItem {
@@ -133,25 +183,39 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _saveToPhotosAskEveryTimeSwitch;
 }
 
+- (TableViewSwitchItem*)autoDeletionSwitch {
+  if (!_autoDeletionSwitch) {
+    _autoDeletionSwitch =
+        [[TableViewSwitchItem alloc] initWithType:ItemTypeAutoDeletion];
+    _autoDeletionSwitch.text =
+        l10n_util::GetNSString(IDS_IOS_SETTINGS_DOWNLOADS_SWITCH_ITEM_HEADER);
+    _autoDeletionSwitch.detailText = l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_DOWNLOADS_SWITCH_ITEM_DETAIL_TEXT);
+    _autoDeletionSwitch.on = _isAutoDeletionEnabled;
+  }
+
+  return _autoDeletionSwitch;
+}
+
 #pragma mark - UITableViewDataSource
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  SEL action = [self actionForItemAtIndexPath:indexPath];
   if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
     TableViewSwitchCell* switchCell =
         base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView
-               addTarget:self
-                  action:@selector(saveToPhotosAskEveryTimeSwitchAction:)
-        forControlEvents:UIControlEventValueChanged];
+    [switchCell.switchView addTarget:self
+                              action:action
+                    forControlEvents:UIControlEventValueChanged];
   } else if ([cell isKindOfClass:[IdentityButtonCell class]]) {
     IdentityButtonCell* identityButtonCell =
         base::apple::ObjCCastStrict<IdentityButtonCell>(cell);
     [identityButtonCell.identityButtonControl
                addTarget:self
-                  action:@selector(saveToPhotosIdentityButtonAction:)
+                  action:action
         forControlEvents:UIControlEventTouchUpInside];
   }
   return cell;
@@ -179,6 +243,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
           self];
 }
 
+- (void)autoDeletionSwitchAction:(UISwitch*)sender {
+  [self.autoDeletionSettingsMutator
+      setDownloadAutoDeletionPermissionStatus:sender.isOn];
+}
+
 #pragma mark - Private
 
 // Load Save to Photos section into model.
@@ -198,6 +267,38 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [model addItem:self.saveToPhotosAskEveryTimeSwitch
       toSectionWithIdentifier:SectionIdentifierSaveToPhotos];
+}
+
+// Loads Auto-deletion section into model.
+- (void)loadAutoDeletionSection {
+  TableViewModel* model = self.tableViewModel;
+
+  [model addSectionWithIdentifier:SectionIdentifierAutoDeletion];
+  TableViewTextHeaderFooterItem* headerItem =
+      [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
+
+  headerItem.text =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_DOWNLOADS_SECTION_HEADER);
+  [model setHeader:headerItem
+      forSectionWithIdentifier:SectionIdentifierAutoDeletion];
+
+  [model addItem:self.autoDeletionSwitch
+      toSectionWithIdentifier:SectionIdentifierAutoDeletion];
+}
+
+// Returns the action selector associated with an ItemType located at
+// `indexPath`.
+- (SEL)actionForItemAtIndexPath:(NSIndexPath*)indexPath {
+  switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
+    case ItemTypeDefaultIdentity:
+      return @selector(saveToPhotosIdentityButtonAction:);
+    case ItemTypeAskEveryTime:
+      return @selector(saveToPhotosAskEveryTimeSwitchAction:);
+    case ItemTypeAutoDeletion:
+      return @selector(autoDeletionSwitchAction:);
+  }
+
+  NOTREACHED();
 }
 
 @end

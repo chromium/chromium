@@ -51,6 +51,12 @@ ChromeBrowserCloudManagementController::Delegate::
   return nullptr;
 }
 
+std::unique_ptr<client_certificates::CertificateProvisioningService>
+ChromeBrowserCloudManagementController::Delegate::
+    CreateCertificateProvisioningService() {
+  return nullptr;
+}
+
 void ChromeBrowserCloudManagementController::Delegate::DeferInitialization(
     base::OnceClosure callback) {
   NOTREACHED();
@@ -345,16 +351,6 @@ void ChromeBrowserCloudManagementController::UnenrollCallback(
   NotifyBrowserUnenrolled(success);
 }
 
-void ChromeBrowserCloudManagementController::OnPolicyFetched(
-    CloudPolicyClient* client) {
-  // Ignored.
-}
-
-void ChromeBrowserCloudManagementController::OnRegistrationStateChanged(
-    CloudPolicyClient* client) {
-  // Ignored.
-}
-
 void ChromeBrowserCloudManagementController::OnClientError(
     CloudPolicyClient* client) {
   // DM_STATUS_SERVICE_DEVICE_NOT_FOUND being the last status implies the
@@ -388,6 +384,16 @@ ChromeBrowserCloudManagementController::GetDeviceTrustKeyManager() {
     device_trust_key_manager_ = delegate_->CreateDeviceTrustKeyManager();
   }
   return device_trust_key_manager_.get();
+}
+
+client_certificates::CertificateProvisioningService*
+ChromeBrowserCloudManagementController::GetCertificateProvisioningService() {
+  if (!certificate_provisioning_service_) {
+    certificate_provisioning_service_ =
+        delegate_->CreateCertificateProvisioningService();
+  }
+
+  return certificate_provisioning_service_.get();
 }
 
 void ChromeBrowserCloudManagementController::SetGaiaURLLoaderFactory(

@@ -46,7 +46,7 @@ class MockProcessorHandler final : public AudioBasicProcessorHandler {
 
  private:
   MockProcessorHandler(AudioNode& node, float sample_rate)
-      : AudioBasicProcessorHandler(AudioHandler::kNodeTypeWaveShaper,
+      : AudioBasicProcessorHandler(AudioHandler::NodeType::kNodeTypeWaveShaper,
                                    node,
                                    sample_rate,
                                    std::make_unique<MockAudioProcessor>()) {

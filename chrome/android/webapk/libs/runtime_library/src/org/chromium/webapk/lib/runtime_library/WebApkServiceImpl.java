@@ -18,7 +18,11 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Implements services offered by the WebAPK to Chrome. */
+@NullMarked
 public class WebApkServiceImpl extends IWebApkApi.Stub {
 
     public static final String KEY_SMALL_ICON_ID = "small_icon_id";
@@ -114,7 +118,8 @@ public class WebApkServiceImpl extends IWebApkApi.Stub {
     }
 
     @Override
-    public PendingIntent requestNotificationPermission(String channelName, String channelId) {
+    public @Nullable PendingIntent requestNotificationPermission(
+            String channelName, String channelId) {
         Log.w(
                 TAG,
                 "Should NOT reach WebApkServiceImpl#requestNotificationPermission(String,"
@@ -123,7 +128,7 @@ public class WebApkServiceImpl extends IWebApkApi.Stub {
     }
 
     /** Returns the package name of the task's base activity. */
-    private static String getTaskBaseActivityPackageName(ActivityManager.AppTask task) {
+    private static @Nullable String getTaskBaseActivityPackageName(ActivityManager.AppTask task) {
         try {
             ActivityManager.RecentTaskInfo info = task.getTaskInfo();
             if (info != null && info.baseActivity != null) {

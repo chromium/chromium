@@ -12,7 +12,10 @@ if (is_android) {
 group("unit_tests") {
   testonly = true
 
-  deps = [ "//components/collaboration/internal:unit_tests" ]
+  deps = [
+    "//components/collaboration/internal:unit_tests",
+    "//components/collaboration/public:unit_tests",
+  ]
 
   data_deps = [ ":components_unittests_gtest_filter" ]
 }
@@ -39,6 +42,8 @@ source_set("test_support") {
     "test_support/mock_collaboration_controller_delegate.h",
     "test_support/mock_collaboration_service.cc",
     "test_support/mock_collaboration_service.h",
+    "test_support/mock_messaging_backend_service.cc",
+    "test_support/mock_messaging_backend_service.h",
   ]
 
   public_deps = [

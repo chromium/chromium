@@ -47,8 +47,8 @@ class DisplayStyle {
       case kPseudoIdPickerIcon:
       case kPseudoIdScrollButtonBlockStart:
       case kPseudoIdScrollButtonInlineStart:
-      case kPseudoIdScrollButtonBlockEnd:
       case kPseudoIdScrollButtonInlineEnd:
+      case kPseudoIdScrollButtonBlockEnd:
         return ContentBehavesAsNormal();
       case kPseudoIdMarker:
         return content_data_ && content_data_->IsNone();

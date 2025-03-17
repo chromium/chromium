@@ -278,9 +278,9 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailedDelete) {
       "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", true, 1);
 }
 
-// Test that when connection to Drive isn't available, the upload fails
-// immediately.
-IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, NoConnection) {
+// Test that when connection to Drive isn't available, the upload waits for
+// the connection and continue successfully.
+IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, WaitingWhenNoConnection) {
   SetUpObservers();
   SetUpMyFiles();
   SetDriveConnectionStatusForTesting(ConnectionStatus::kNoNetwork);
@@ -289,7 +289,8 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, NoConnection) {
   const base::FilePath source_file =
       SetUpSourceFile(test_file_name, my_files_dir());
 
-  EXPECT_CALL(fake_drivefs(), ImmediatelyUpload).Times(0);
+  EXPECT_CALL(fake_drivefs(), ImmediatelyUpload)
+      .WillOnce(RunOnceCallback<1>(drive::FileError::FILE_ERROR_OK));
 
   base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
       future;
@@ -298,17 +299,26 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, NoConnection) {
       future.GetCallback());
   drive_upload_handler->Run();
 
-  auto [error, upload_root_path] = future.Get();
-  ASSERT_EQ(MigrationUploadError::kServiceUnavailable, error);
-  EXPECT_EQ(base::FilePath(), upload_root_path);
+  EXPECT_FALSE(future.IsReady());
+  SetDriveConnectionStatusForTesting(ConnectionStatus::kConnected);
+  drive_integration_service()->OnNetworkChanged();
 
-  // Check that the source file has not been moved to Drive.
+  auto [error, upload_root_path] = future.Get();
+  ASSERT_FALSE(error.has_value());
+  EXPECT_EQ(drive_root_dir().Append(kUploadRootPrefix), upload_root_path);
+
+  // Check that the source file has been moved to Drive.
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(base::PathExists(my_files_dir().AppendASCII(test_file_name)));
-    CheckPathNotFoundOnDrive(
+    EXPECT_FALSE(base::PathExists(source_file));
+    CheckPathExistsOnDrive(
         observed_relative_drive_path(source_files_.find(source_file)->second));
   }
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", false, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", true, 0);
 }
 
 // Test that when connection to Drive fails during upload, the file is not
@@ -334,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, ConnectionLostDuringUpload) {
   drive_upload_handler->Run();
 
   auto [error, upload_root_path] = future.Get();
-  ASSERT_EQ(MigrationUploadError::kServiceUnavailable, error);
+  ASSERT_EQ(MigrationUploadError::kNetworkError, error);
   EXPECT_EQ(drive_root_dir().Append(kUploadRootPrefix), upload_root_path);
 
   // Check that the source file has not been moved to Drive.

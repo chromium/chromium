@@ -132,6 +132,10 @@ export class SettingsRow extends ReactiveLitElement {
       <slot name="status"></slot>
     </div>`;
   }
+
+  override click(): void {
+    this.onClick();
+  }
 }
 
 window.customElements.define('settings-row', SettingsRow);

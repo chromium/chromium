@@ -8,13 +8,14 @@
 #include <set>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "components/input/dispatch_to_renderer_callback.h"
 #include "components/input/event_with_latency_info.h"
-#include "base/component_export.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/blink_features.h"
@@ -34,7 +35,8 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueueClient {
   virtual ~PassthroughTouchEventQueueClient() = default;
 
   virtual void SendTouchEventImmediately(
-      const TouchEventWithLatencyInfo& event) = 0;
+      const TouchEventWithLatencyInfo& event,
+      DispatchToRendererCallback& dispatch_callback) = 0;
 
   virtual void OnTouchEventAck(
       const TouchEventWithLatencyInfo& event,
@@ -45,6 +47,8 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueueClient {
       const blink::WebTouchEvent& touch_event) = 0;
 
   virtual void FlushDeferredGestureQueue() = 0;
+
+  virtual DispatchToRendererCallback GetDispatchToRendererCallback() = 0;
 };
 
 // A queue that processes a touch-event and forwards it on to the
@@ -99,7 +103,8 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueue {
 
   ~PassthroughTouchEventQueue();
 
-  void QueueEvent(const TouchEventWithLatencyInfo& event);
+  void QueueEvent(const TouchEventWithLatencyInfo& event,
+                  DispatchToRendererCallback& dispatch_callback);
 
   void PrependTouchScrollNotification();
 
@@ -230,7 +235,8 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueue {
       blink::mojom::InputEventResultState ack_result);
 
   void SendTouchEventImmediately(TouchEventWithLatencyInfo* touch,
-                                 bool wait_for_ack);
+                                 bool wait_for_ack,
+                                 DispatchToRendererCallback& dispatch_callback);
 
   void AckCompletedEvents();
 

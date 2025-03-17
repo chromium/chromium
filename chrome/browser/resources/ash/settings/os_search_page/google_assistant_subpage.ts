@@ -11,7 +11,6 @@ import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
 import '../controls/controlled_button.js';
 import '../controls/settings_toggle_button.js';
-import '/shared/settings/prefs/prefs.js';
 import '/shared/settings/prefs/pref_util.js';
 import '../settings_shared.css.js';
 

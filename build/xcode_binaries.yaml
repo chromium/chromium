@@ -1,18 +1,21 @@
 # This yaml file is used to package binaries from Xcode.app.
 # To use this:
-#   1) Move Xcode.app to the same directory as this file,
+#   1) Make sure Xcode is fully updated (via the app store or otherwise).
+#   2) Move Xcode.app to the same directory as this file,
 #      and rename Xcode.app to xcode_binaries. Or make a symlink:
 #      $ rm -rf build/xcode_binaries && \
 #        ln -s /Applications/Xcode.app build/xcode_binaries
-#   2) Call `cipd create --pkg-def build/xcode_binaries.yaml`
+#   3) Call `cipd create --pkg-def build/xcode_binaries.yaml \
+#            -ref <xcode version num> -ref <xcode build version>`
+#      a.) The version information can be found in "About Xcode",
+#          or by running `xcodebuild -version`
 # To deploy the newly created cipd package across the fleet, modify
 # ./mac_toolchain.py to point to the new cipd hash.
 #
-# Note that runhooks extracts the cipd file to build/mac_files/xcode_binaries
-# -- your build/xcode_binaries you're creating in step 1 above isn't used as
-# part of the Chromium build, build/mac_files/xcode_binaries is. So you need to
-# `runhooks` after updating the hash in mac_toolchain.py like everyone else to
-# get the new bits for your local build.
+# Note that the Chromium build looks for the mac binaries in
+# build/mac_files/xcode_binaries; it won't see the build/xcode_binaries that
+# you just created. In order to use the new toolchain version, you still need to
+# `gclient runhooks` after updating the hash in mac_toolchain.py.
 #
 # The ACLs for this package are determined by the directory structure. The
 # nomenclature mirrors that of the hermetic toolchain to avoid ACL duplication.

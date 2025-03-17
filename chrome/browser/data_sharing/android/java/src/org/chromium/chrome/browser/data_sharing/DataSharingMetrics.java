@@ -11,7 +11,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-class DataSharingMetrics {
+/** Record data sharing flow metrics. */
+public class DataSharingMetrics {
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
     // LINT.IfChange(JoinActionStateAndroid)
@@ -25,6 +26,10 @@ class DataSharingMetrics {
         JoinActionStateAndroid.LOCAL_TAB_GROUP_OPENED,
         JoinActionStateAndroid.ADD_MEMBER_FAILED,
         JoinActionStateAndroid.ADD_MEMBER_SUCCESS,
+        JoinActionStateAndroid.PREVIEW_PERMISSION_DENIED,
+        JoinActionStateAndroid.PREVIEW_FETCHED,
+        JoinActionStateAndroid.PREVIEW_FAVICONS_FETCHED,
+        JoinActionStateAndroid.ALL_FAVICONS_FETCHED,
         JoinActionStateAndroid.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -38,10 +43,14 @@ class DataSharingMetrics {
         int LOCAL_TAB_GROUP_OPENED = 6;
         int ADD_MEMBER_FAILED = 7;
         int ADD_MEMBER_SUCCESS = 8;
+        int PREVIEW_PERMISSION_DENIED = 9;
+        int PREVIEW_FETCHED = 10;
+        int PREVIEW_FAVICONS_FETCHED = 11;
+        int ALL_FAVICONS_FETCHED = 12;
         int COUNT = 9;
     }
 
-    // LINT.ThenChange(//tools/metrics/histograms/data_sharing/enums.xml:JoinActionStateAndroid)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/data_sharing/enums.xml:JoinActionStateAndroid)
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
@@ -70,7 +79,7 @@ class DataSharingMetrics {
         int COUNT = 8;
     }
 
-    // LINT.ThenChange(//tools/metrics/histograms/data_sharing/enums.xml:ShareActionStateAndroid)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/data_sharing/enums.xml:ShareActionStateAndroid)
 
     public static void recordJoinActionFlowState(@JoinActionStateAndroid int state) {
         RecordHistogram.recordEnumeratedHistogram(

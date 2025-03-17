@@ -245,4 +245,22 @@
     -internal-forced-color: CanvasText !important;
   }
 
+  @supports blink-feature(CustomizableSelect) {
+    /*
+     * The default style sheet used to render <select> when the CustomizableSelect
+     * feature is enabled and the forced colors are enabled.
+     */
+
+    /* The duplicated :not(:-internal-list-box):not([multiple]) is to ensure specificity over
+     * another stylesheet. TODO(crbug.com/378869807): Replace this with at-rules to
+     * ensure correct specificity. */
+    select:not(:-internal-list-box):not([multiple]):not(:-internal-list-box):not([multiple]) {
+      background-color: -internal-auto-base(Canvas, color-mix(in lab, currentColor 10%, transparent));
+    }
+
+    /* Undoes opacity: -internal-auto-base(0.7, unset) from html.css */
+    select:not(:-internal-list-box):not([multiple]):not(:-internal-list-box):not([multiple]):disabled {
+      opacity: 1;
+    }
+  }
 }

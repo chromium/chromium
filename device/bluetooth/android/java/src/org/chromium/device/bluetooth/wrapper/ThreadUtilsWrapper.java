@@ -40,6 +40,10 @@ public class ThreadUtilsWrapper {
         ThreadUtils.runOnUiThread(r);
     }
 
+    public void postOnUiThread(Runnable r) {
+        ThreadUtils.postOnUiThread(r);
+    }
+
     public void postOnUiThreadDelayed(Runnable r, long delayMillis) {
         ThreadUtils.postOnUiThreadDelayed(r, delayMillis);
     }

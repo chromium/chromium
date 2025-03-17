@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.printing.Printable;
@@ -81,6 +82,19 @@ public class TabPrinter implements Printable {
     @Override
     public String getErrorMessage() {
         return mErrorMessage;
+    }
+
+    @Override
+    public String getPdfFilePath() {
+        Tab tab = mTab.get();
+        if (tab == null || !tab.isInitialized()) {
+            return null;
+        }
+        if (tab.isNativePage() && tab.getNativePage() instanceof PdfPage) {
+            return tab.getNativePage().getCanonicalFilepath();
+        } else {
+            return null;
+        }
     }
 
     @NativeMethods

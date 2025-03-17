@@ -1,1 +1,0 @@
-This is a suite to run tests exercising layered capture mode for view transitions.

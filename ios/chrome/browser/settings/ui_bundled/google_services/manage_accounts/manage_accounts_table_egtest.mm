@@ -5,14 +5,16 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -43,6 +45,12 @@ using chrome_test_util::SettingsSignInRowMatcher;
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   config.features_enabled.push_back(kIdentityDiscAccountMenu);
+
+  if ([self isRunningTest:@selector
+            (testReloadOnRemoveSecondaryAccountInOtherProfile)]) {
+    config.features_enabled.push_back(kUseAccountListFromIdentityManager);
+    config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
+  }
 
   return config;
 }
@@ -107,6 +115,59 @@ using chrome_test_util::SettingsSignInRowMatcher;
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
                                               fakeIdentity2.userEmail),
                                           grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+
+  // Check fakeIdentity1 is still signed-in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kSettingsAccountsTableViewDoneButtonId)]
+      performAction:grey_tap()];
+}
+
+- (void)testReloadOnRemoveSecondaryAccountInOtherProfile {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeManagedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  [SigninEarlGrey addFakeIdentity:fakeManagedIdentity];
+
+  // Sign In fakeIdentity1, then open the Account Settings.
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
+  [self openAccountsListFromSettings];
+
+  // Ensure both identities show up.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
+                                              fakeIdentity1.userEmail),
+                                          grey_text(fakeIdentity1.userEmail),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(
+                                       fakeManagedIdentity.userEmail),
+                                   grey_text(fakeManagedIdentity.userEmail),
+                                   grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  // Remove the identity that belongs to another profile.
+  [SigninEarlGrey forgetFakeIdentity:fakeManagedIdentity];
+
+  // Check that fakeIdentity1 is still there, but fakeManagedIdentity isn't
+  // available anymore.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
+                                              fakeIdentity1.userEmail),
+                                          grey_text(fakeIdentity1.userEmail),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(
+                                       fakeManagedIdentity.userEmail),
+                                   grey_text(fakeManagedIdentity.userEmail),
+                                   grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
 
   // Check fakeIdentity1 is still signed-in.
@@ -219,6 +280,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
 // Tests add account flow.
 - (void)testAddAccount {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In identity, then open the Sync Settings.

@@ -23,13 +23,13 @@ import '//resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/ash/common/cr_elements/icons.html.js';
 import './common_styles/oobe_common_styles.css.js';
 
-import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeScrollableMixin} from './mixins/oobe_scrollable_mixin.js';
-
 import {getTemplate} from './oobe_carousel.html.js';
 
 const OobeCarouselBase = OobeScrollableMixin(PolymerElement);

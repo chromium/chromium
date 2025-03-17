@@ -32,19 +32,19 @@ suite('SearchboxBackButton', () => {
     // error state hidden.
     assertFalse(isVisible(
         searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
-            '#errorState')!));
+            '#errorState')));
     assertTrue(isVisible(
         searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
-            '#loadingState')!));
+            '#loadingState')));
     testBrowserProxy.page.showErrorState();
     await waitAfterNextRender(searchboxGhostLoaderElement);
     // After autocomplete stop timer has been triggered, the ghost loader
     // should switch to showing the error state.
     assertFalse(isVisible(
         searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
-            '#loadingState')!));
+            '#loadingState')));
     assertTrue(isVisible(
         searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
-            '#errorState')!));
+            '#errorState')));
   });
 });

@@ -17,8 +17,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -36,11 +35,10 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherTabCardFacility;
-import org.chromium.chrome.test.transit.hub.UndoGroupSnackbarFacility;
+import org.chromium.chrome.test.transit.hub.UndoSnackbarFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.TabBinningUtil;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.List;
@@ -49,8 +47,9 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
-@EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
+// TODO(https://crbug.com/392634251): Fix line height when elegant text height is used with Roboto
+// or enable Google Sans (Text) in //chrome/ tests on Android T+.
+@Features.DisableFeatures(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)
 public class TabSwitcherListEditorPTTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -250,7 +249,7 @@ public class TabSwitcherListEditorPTTest {
         TabBinningUtil.assertBinsEqual(tabModel, group(secondTabId, firstTabId, thirdTabId));
 
         // Ungroup and revert to only first and second tabs grouped, and third tab by itself
-        UndoGroupSnackbarFacility undoSnackbar = groupMergedResult.second;
+        UndoSnackbarFacility undoSnackbar = groupMergedResult.second;
         undoSnackbar.pressUndo();
         tabSwitcher.expectGroupCard(
                 List.of(firstTabId, secondTabId),

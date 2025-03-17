@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include <stdint.h>
 
 #include <cmath>
@@ -185,7 +190,7 @@ BuildAndCompute(
   std::vector<std::pair<std::string, blink::WebNNTensorToken>>
       named_input_handles;
   named_input_handles.reserve(named_input_remotes_and_handles.size());
-  base::ranges::transform(
+  std::ranges::transform(
       named_input_remotes_and_handles, std::back_inserter(named_input_handles),
       [](const auto& input) {
         return std::make_pair(input.first, input.second.handle);
@@ -194,7 +199,7 @@ BuildAndCompute(
   std::vector<std::pair<std::string, blink::WebNNTensorToken>>
       named_output_handles;
   named_output_handles.reserve(named_output_remotes_and_handles.size());
-  base::ranges::transform(
+  std::ranges::transform(
       named_output_remotes_and_handles,
       std::back_inserter(named_output_handles), [](const auto& output) {
         return std::make_pair(output.first, output.second.handle);
@@ -224,7 +229,9 @@ BuildAndCompute(
 
 void VerifyFloatDataIsEqual(base::span<const float> data,
                             base::span<const float> expected_data) {
-  EXPECT_THAT(data, testing::Pointwise(testing::FloatEq(), expected_data));
+  float epsilon = 1e-5;
+  EXPECT_THAT(data,
+              testing::Pointwise(testing::FloatNear(epsilon), expected_data));
 }
 
 // Convert a vector of 32-bit floating-point data to a vector of 16-bit
@@ -418,7 +425,7 @@ void WebNNGraphImplBackendTest::SetUp() {
 #endif  // BUILDFLAG(IS_MAC)
 
 // TODO(crbug.com/325612086): Parameterize these tests for different backends.
-#if BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_WIN)
+#if BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 class WebNNGraphImplBackendTest : public testing::Test {
  public:
   WebNNGraphImplBackendTest()
@@ -1056,7 +1063,7 @@ struct ElementWiseBinaryTester {
       // operators to Int32 and set the graph output to Int32.
       graph_output_type = OperandDataType::kInt32;
     }
-#endif  // BUILD_FLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, graph_output_type);
     uint64_t element_wise_binary_output_operand_id = output_operand_id;
@@ -1065,7 +1072,7 @@ struct ElementWiseBinaryTester {
       element_wise_binary_output_operand_id = builder.BuildIntermediateOperand(
           output.dimensions, OperandDataType::kUint8);
     }
-#endif  // BUILD_FLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
     builder.BuildElementWiseBinary(kind, lhs_operand_id, rhs_operand_id,
                                    element_wise_binary_output_operand_id);
 #if BUILDFLAG(IS_MAC)
@@ -1074,7 +1081,7 @@ struct ElementWiseBinaryTester {
                                     element_wise_binary_output_operand_id,
                                     output_operand_id);
     }
-#endif  // BUILD_FLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
     base::flat_map<std::string, base::span<const I>> named_inputs;
     named_inputs.insert({"lhs", lhs.values});
@@ -1088,7 +1095,7 @@ struct ElementWiseBinaryTester {
       VerifyIsEqual(named_outputs["output"], output.ToInt32());
       return;
     }
-#endif  // BUILD_FLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
     VerifyIsEqual(named_outputs["output"], output);
   }

@@ -11,9 +11,11 @@
 # to per-crate options).
 
 [resolve]
-# There is a virtual "sysroot" crate that includes all sysroot libraries as
-# dependencies.
-root = "sysroot"
+# `/build/rust/std/fake_root` is an artificial crate that depends on a
+# `sysroot` crate from `//third_party/rust-src/library/sysroot` while also
+# turning on all the required crate features of `sysroot`.  `sysroot` includes
+# all sysroot libraries as dependencies.
+root = "fake_root"
 
 # Workaround for Cargo issue: hashbrown's Cargo.toml uses an unstable Cargo
 # feature that leads to incorrect `cargo metadata` output.

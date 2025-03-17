@@ -231,7 +231,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     ];
   }
 
-  override async currentRouteChanged(route: Route): Promise<void> {
+  override currentRouteChanged(route: Route) {
     // Avoid override currentMouseChanged when on the customization subpage.
     if (route === routes.CUSTOMIZE_MOUSE_BUTTONS) {
       return;

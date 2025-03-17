@@ -323,7 +323,7 @@ InteractionSequence::StepBuilder::SetElementName(std::string_view name) {
 }
 
 InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetContext(
-    StepContext context) {
+    StepContext context) & {
   DCHECK(context != StepContext(ElementContext()));
   step_->context = context;
   if (const ContextMode* mode = std::get_if<ContextMode>(&context)) {
@@ -334,25 +334,48 @@ InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetContext(
   return *this;
 }
 
+InteractionSequence::StepBuilder&& InteractionSequence::StepBuilder::SetContext(
+    StepContext context) && {
+  return std::move(this->SetContext(context));
+}
+
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetMustBeVisibleAtStart(
-    bool must_be_visible) {
+    bool must_be_visible) & {
   step_->must_be_visible = must_be_visible;
   return *this;
 }
 
+InteractionSequence::StepBuilder&&
+InteractionSequence::StepBuilder::SetMustBeVisibleAtStart(
+    bool must_be_visible) && {
+  return std::move(this->SetMustBeVisibleAtStart(must_be_visible));
+}
+
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetMustRemainVisible(
-    bool must_remain_visible) {
+    bool must_remain_visible) & {
   step_->must_remain_visible = must_remain_visible;
   return *this;
 }
 
+InteractionSequence::StepBuilder&&
+InteractionSequence::StepBuilder::SetMustRemainVisible(
+    bool must_remain_visible) && {
+  return std::move(this->SetMustRemainVisible(must_remain_visible));
+}
+
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetTransitionOnlyOnEvent(
-    bool transition_only_on_event) {
+    bool transition_only_on_event) & {
   step_->transition_only_on_event = transition_only_on_event;
   return *this;
+}
+
+InteractionSequence::StepBuilder&&
+InteractionSequence::StepBuilder::SetTransitionOnlyOnEvent(
+    bool transition_only_on_event) && {
+  return std::move(this->SetTransitionOnlyOnEvent(transition_only_on_event));
 }
 
 InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetType(
@@ -421,9 +444,15 @@ InteractionSequence::StepBuilder::SetStartCallback(
 
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetStepStartMode(
-    StepStartMode step_start_mode) {
+    StepStartMode step_start_mode) & {
   step_->step_start_mode = step_start_mode;
   return *this;
+}
+
+InteractionSequence::StepBuilder&&
+InteractionSequence::StepBuilder::SetStepStartMode(
+    StepStartMode step_start_mode) && {
+  return std::move(this->SetStepStartMode(step_start_mode));
 }
 
 InteractionSequence::StepBuilder&
@@ -440,16 +469,29 @@ InteractionSequence::StepBuilder::SetEndCallback(
 }
 
 InteractionSequence::StepBuilder&
-InteractionSequence::StepBuilder::SetDescription(std::string_view description) {
+InteractionSequence::StepBuilder::SetDescription(
+    std::string_view description) & {
   step_->description = std::string(description);
   return *this;
 }
 
+InteractionSequence::StepBuilder&&
+InteractionSequence::StepBuilder::SetDescription(
+    std::string_view description) && {
+  return std::move(this->SetDescription(description));
+}
+
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::AddDescriptionPrefix(
-    std::string_view prefix) {
+    std::string_view prefix) & {
   step_->description = base::StrCat({prefix, ": ", step_->description});
   return *this;
+}
+
+InteractionSequence::StepBuilder&&
+InteractionSequence::StepBuilder::AddDescriptionPrefix(
+    std::string_view prefix) && {
+  return std::move(this->AddDescriptionPrefix(prefix));
 }
 
 std::unique_ptr<InteractionSequence::Step>

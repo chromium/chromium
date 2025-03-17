@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/query_title_server_util.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -66,7 +65,7 @@ void SelectTab(NSString* title) {
 void ExpectIdleHistogramCount(const char* histogram, int expected_count) {
   NSError* error = [MetricsAppInterface expectTotalCount:expected_count
                                             forHistogram:@(histogram)];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
 }
 
 // Expects that the total number of samples in histogram `histogram` for bucket
@@ -77,7 +76,7 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   NSError* error = [MetricsAppInterface expectCount:expected_count
                                           forBucket:static_cast<int>(bucket)
                                        forHistogram:@(histogram)];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
 }
 
 }  // namespace
@@ -96,8 +95,8 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [super setUp];
 
   // Observe histograms in tests.
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
 // Rotate the device back to portrait if needed, since some tests attempt to run
@@ -106,8 +105,8 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
 
   // Release the histogram tester.
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 
@@ -691,16 +690,16 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [self setUpTestServer];
   [ChromeEarlGrey loadURL:[self makeURLForTitle:title]];
 
-  // Relaunch with inactive tabs enabled.
+  // Relaunch with inactive tabs in test mode  (i.e. considers tabs as inactive
+  // immediately).
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kInactiveTabsIPadFeature);
   config.additional_args.push_back("-InactiveTabsTestMode");
   config.additional_args.push_back("true");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
 

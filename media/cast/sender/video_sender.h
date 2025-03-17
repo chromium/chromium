@@ -17,21 +17,20 @@
 #include "media/cast/cast_config.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/sender/frame_sender.h"
+#include "media/cast/sender/video_bitrate_suggester.h"
 
 namespace openscreen::cast {
 class Sender;
 }
 
 namespace media {
-class VideoEncoderMetricsProvider;
 class VideoFrame;
-}
+}  // namespace media
 
 namespace media::cast {
 
 class VideoEncoder;
 
-using PlayoutDelayChangeCB = base::RepeatingCallback<void(base::TimeDelta)>;
 
 // Not thread safe. Only called from the main cast thread.
 // This class owns all objects related to sending video, objects that create RTP
@@ -41,26 +40,25 @@ using PlayoutDelayChangeCB = base::RepeatingCallback<void(base::TimeDelta)>;
 // timeouts.
 class VideoSender : public FrameSender::Client {
  public:
-  // New way of instantiating using an openscreen::cast::Sender. Since the
-  // |Sender| instance is destroyed when renegotiation is complete, |this|
-  // is also invalid and should be immediately torn down.
-  VideoSender(scoped_refptr<CastEnvironment> cast_environment,
-              const FrameSenderConfig& video_config,
-              StatusChangeCallback status_change_cb,
-              const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-              std::unique_ptr<openscreen::cast::Sender> sender,
-              std::unique_ptr<media::VideoEncoderMetricsProvider>
-                  encoder_metrics_provider,
-              PlayoutDelayChangeCB playout_delay_change_cb,
-              media::VideoCaptureFeedbackCB feedback_cb,
-              FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb);
+  using PlayoutDelayChangeCB = base::RepeatingCallback<void(base::TimeDelta)>;
+
+  // NOTE: Since the `Sender` instance is destroyed when renegotiation is
+  // complete, `this` is also invalid and should be immediately torn down.
+  VideoSender(
+      std::unique_ptr<VideoEncoder> video_encoder,
+      scoped_refptr<CastEnvironment> cast_environment,
+      const FrameSenderConfig& video_config,
+      std::unique_ptr<openscreen::cast::Sender> sender,
+      VideoSender::PlayoutDelayChangeCB playout_delay_change_cb,
+      media::VideoCaptureFeedbackCB feedback_cb,
+      VideoBitrateSuggester::GetVideoNetworkBandwidthCB get_bandwidth_cb);
 
   VideoSender(const VideoSender&) = delete;
   VideoSender& operator=(const VideoSender&) = delete;
 
   ~VideoSender() override;
 
-  // Note: It is not guaranteed that |video_frame| will actually be encoded and
+  // Note: It is not guaranteed that `video_frame` will actually be encoded and
   // sent, if VideoSender detects too many frames in flight.  Therefore, clients
   // should be careful about the rate at which this method is called.
   virtual void InsertRawVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
@@ -80,8 +78,10 @@ class VideoSender : public FrameSender::Client {
   base::TimeDelta GetEncoderBacklogDuration() const final;
 
  private:
-  // Called by the |video_encoder_| with the next EncodedFrame to send.
-  void OnEncodedVideoFrame(std::unique_ptr<SenderEncodedFrame> encoded_frame);
+  // Called by the `video_encoder_` with the next EncodedFrame to send.
+  void OnEncodedVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
+                           const base::TimeTicks reference_time,
+                           std::unique_ptr<SenderEncodedFrame> encoded_frame);
 
   // The backing frame sender implementation.
   std::unique_ptr<FrameSender> frame_sender_;
@@ -99,13 +99,16 @@ class VideoSender : public FrameSender::Client {
   // The duration of video queued for encoding, but not yet sent.
   base::TimeDelta duration_in_encoder_;
 
-  // The timestamp of the frame that was last enqueued in |video_encoder_|.
+  // The timestamp of the frame that was last enqueued in `video_encoder_`.
   RtpTimeTicks last_enqueued_frame_rtp_timestamp_;
   base::TimeTicks last_enqueued_frame_reference_time_;
 
   // Remember what we set the bitrate to before, no need to set it again if
   // we get the same value.
   int last_bitrate_ = 0;
+
+  // Keeps track of frame drops and uses that to drive the video bitrate.
+  std::unique_ptr<VideoBitrateSuggester> bitrate_suggester_;
 
   // The total amount of time between a frame's capture/recording on the sender
   // and its playback on the receiver (i.e., shown to a user).

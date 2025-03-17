@@ -23,6 +23,7 @@ class WhatsNewRegistry;
 namespace glic {
 class GlicBackgroundModeManager;
 class GlicProfileManager;
+class GlicSyntheticTrialManager;
 }  // namespace glic
 #endif
 
@@ -45,6 +46,9 @@ class GlobalFeatures {
   // Called exactly once to initialize features.
   void Init();
 
+  // Called exactly once when the browser starts to shutdown.
+  void Shutdown();
+
   // Public accessors for features, e.g.
   // FooFeature* foo_feature() { return foo_feature_.get(); }
 
@@ -65,6 +69,10 @@ class GlobalFeatures {
 
   glic::GlicBackgroundModeManager* glic_background_mode_manager() {
     return glic_background_mode_manager_.get();
+  }
+
+  glic::GlicSyntheticTrialManager* glic_synthetic_trial_manager() {
+    return synthetic_trial_manager_.get();
   }
 #endif
 
@@ -95,6 +103,7 @@ class GlobalFeatures {
   std::unique_ptr<glic::GlicProfileManager> glic_profile_manager_;
   std::unique_ptr<glic::GlicBackgroundModeManager>
       glic_background_mode_manager_;
+  std::unique_ptr<glic::GlicSyntheticTrialManager> synthetic_trial_manager_;
 #endif
 };
 

@@ -16,18 +16,19 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFac
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.auxiliary_search.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.magic_stack.HomeModulesUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
-import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
 import org.chromium.components.segmentation_platform.InputContext;
+import org.chromium.components.segmentation_platform.ProcessedValue;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Builder to build the auxiliary search opt in module. */
 public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
+    private static final String CARD_AVAILABILITY_INPUT_NAME = "auxiliary_search_available";
+
     private final Context mContext;
     private final Runnable mOpenSettingsRunnable;
     private static boolean sShownInThisSession;
@@ -79,14 +80,21 @@ public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder, Modu
     @Override
     public boolean isEligible() {
         return ChromeFeatureList.sAndroidAppIntegrationModule.isEnabled()
-                && AuxiliarySearchControllerFactory.getInstance().isEnabled();
+                && AuxiliarySearchControllerFactory.getInstance().isEnabledAndDeviceCompatible();
     }
 
     @Override
     public @Nullable InputContext createInputContext() {
-        // TODO(https://crbug.com/382803396: remove this hard coded score.
-        HomeModulesUtils.resetFreshnessCountAsFresh(ModuleType.AUXILIARY_SEARCH);
+        InputContext inputContext = new InputContext();
+        float available = 0;
+        if (isEligible() && AuxiliarySearchUtils.canShowCard(sShownInThisSession)) {
+            available = 1;
+        }
+        inputContext.addEntry(CARD_AVAILABILITY_INPUT_NAME, ProcessedValue.fromFloat(available));
+        return inputContext;
+    }
 
-        return HomeModulesUtils.createInputContext(ModuleType.AUXILIARY_SEARCH);
+    static void resetShownInThisSessionForTesting() {
+        sShownInThisSession = false;
     }
 }

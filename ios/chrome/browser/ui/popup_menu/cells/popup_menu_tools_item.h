@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_item.h"
 
 // Item for a tools menu item.
-@interface PopupMenuToolsItem : TableViewItem<PopupMenuItem>
+@interface PopupMenuToolsItem : TableViewItem <PopupMenuItem>
 
 // The title of the item.
 @property(nonatomic, copy) NSString* title;

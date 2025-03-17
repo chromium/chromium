@@ -19,7 +19,7 @@
 
 namespace blink {
 
-HeapVector<Member<const MLOperator>>* GetOperatorsInTopologicalOrder(
+GCedHeapVector<Member<const MLOperator>>* GetOperatorsInTopologicalOrder(
     const MLNamedOperands& named_outputs) {
   // A WebNN graph is represented by a directed acyclic graph (DAG) that has
   // operators as vertices and operand as edges. The topological sorting is
@@ -87,9 +87,7 @@ DOMArrayBufferView::ViewType GetArrayBufferViewType(
     case webnn::OperandDataType::kFloat32:
       return DOMArrayBufferView::ViewType::kTypeFloat32;
     case webnn::OperandDataType::kFloat16:
-      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
-      // https://github.com/webmachinelearning/webnn/issues/127
-      return DOMArrayBufferView::ViewType::kTypeUint16;
+      return DOMArrayBufferView::ViewType::kTypeFloat16;
     case webnn::OperandDataType::kInt32:
       return DOMArrayBufferView::ViewType::kTypeInt32;
     case webnn::OperandDataType::kUint32:
@@ -271,6 +269,7 @@ bool IsLogicalBinaryOperator(
     case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kNotEqual:
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalAnd:
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalOr:
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalXor:

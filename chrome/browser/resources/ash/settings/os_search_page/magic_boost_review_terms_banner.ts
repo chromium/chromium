@@ -9,19 +9,15 @@
  */
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MagicBoostNoticeBrowserProxy} from '../os_search_page/magic_boost_browser_proxy.js';
 
 import {getTemplate} from './magic_boost_review_terms_banner.html.js';
 
-const MagicBoostReviewTermsBannerBase = I18nMixin(PolymerElement);
-
-export class MagicBoostReviewTermsBanner extends
-    MagicBoostReviewTermsBannerBase {
+export class MagicBoostReviewTermsBanner extends PolymerElement {
   private magicBoostNoticeProxy_: MagicBoostNoticeBrowserProxy;
 
   constructor() {

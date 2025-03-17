@@ -318,7 +318,7 @@ def check_virtual_test_suites(port):
     max_suite_length = 48
 
     wpt_tests = set()
-    for wpt_dir in port.WPT_DIRS:
+    for wpt_dir in port.wpt_dirs():
         wpt_tests.update(
             posixpath.join(wpt_dir, url)
             for url in port.wpt_manifest(wpt_dir).all_urls())
@@ -410,6 +410,8 @@ def check_test_lists(port):
     test_lists_files = host.filesystem.listdir(path)
     failures = []
     for test_lists_file in test_lists_files:
+        if test_lists_file == 'OWNERS':
+            continue
         test_lists = host.filesystem.read_text_file(
             host.filesystem.join(port.web_tests_dir(), 'TestLists',
                                  test_lists_file))

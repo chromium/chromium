@@ -12,17 +12,17 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/enterprise/browser/identifiers/identifiers_prefs.h"
 #include "components/prefs/pref_service.h"
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#else
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/wmi.h"
 #endif  // BUILDFLAG(IS_WIN)
-#else
-#include "components/policy/core/common/cloud/cloud_policy_util.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_ANDROID)
 
 namespace enterprise {
 
@@ -93,8 +93,7 @@ std::string ProfileIdDelegateImpl::GetDeviceId() {
   return ProfileIdDelegateImpl::GetId();
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Gets the device ID from the BrowserDMTokenStorage.
 std::string ProfileIdDelegateImpl::GetId() {
   std::string device_id =
@@ -103,11 +102,11 @@ std::string ProfileIdDelegateImpl::GetId() {
 // On Windows, the combination of the client ID and device serial
 // number are used to form the device ID.
 #if BUILDFLAG(IS_WIN)
-  std::string serial_number =
-      base::WideToUTF8(base::win::WmiComputerSystemInfo::Get().serial_number());
-  if (serial_number.empty())
-    return std::string();
-  device_id += serial_number;
+  // Serial number could be empty for various reasons. However, we should still
+  // generate a profile ID with whatever we have. Devices without serial number
+  // will have higher chance of twin issue but it is still better than no ID at
+  // all.
+  device_id += base::WideToUTF8(base::win::WmiComputerSystemInfo::Get().serial_number());
 #endif  // BUILDFLAG(IS_WIN)
 
   return device_id;
@@ -117,16 +116,8 @@ std::string ProfileIdDelegateImpl::GetId() {
 std::string ProfileIdDelegateImpl::GetId() {
   std::string device_id = policy::GetDeviceName();
 
-// On LACROS, the GetDeviceName method returns the host name when the device
-// serial number could not be found.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (device_id == policy::GetMachineName())
-    return std::string();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   return device_id;
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise

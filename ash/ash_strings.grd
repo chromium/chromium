@@ -14,7 +14,7 @@ Style notes:
 -->
 
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="grit/ash_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -452,8 +452,56 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_BUTTON_LABEL" desc="The shorter label used for the button in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
         Nearby visibility
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_ICON_TOOLTIP" desc="Quick Share tile icon tooltip.">
+        Toggle Quick Share. Quick Share is <ph name="quick_share_state">$1<ex>On</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_TOOLTIP" desc="Quick Share tile tooltip.">
+        Show Quick Share settings
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_TOOLTIP_ENABLED" desc="Quick Share tile tooltip when enabled.">
+        Show Quick Share settings. <ph name="visibility">$1<ex>Your devices</ex></ph> visibility selected
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_TOOLTIP_DISABLED" desc="Quick Share tile tooltip when disabled.">
+        Show Quick Share settings. Quick Share disabled
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_TOOLTIP_HIGH_VISIBILITY" desc="Quick Share tile tooltip when device is in high visibility.">
+        Show Quick Share settings. Visible to everyone for <ph name="time_remaining">$1<ex>10 min</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_SETTINGS_BUTTON_TOOLTIP" desc="Settings button tooltip.">
+        Quick Share settings
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_CONTACTS_SUBLABEL" desc="The sublabel in the Contacts visibility row.">
+        Only your contacts with a Google Account
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_EVERYONE_LABEL" desc="The label in the Everyone visibility toggle row.">
+        Visible to everyone
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_EVERYONE_SUBLABEL" desc="The sublabel in the Everyone visibility toggle row.">
+        For 10 min
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_HIDDEN_SUBLABEL" desc="The sublabel in the Hidden visibility row.">
+        No one can share with you
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_YOUR_DEVICES_SUBLABEL" desc="The sublabel in the Your devices visibility row.">
+        Only devices signed into <ph name="EMAIL">$1<ex>test@gmail.com</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL" desc="The shorter label used for the feature tile in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
-        Nearby Share
+        Quick Share
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_CONTACTS" desc="Quick Share quick settings tile label indicates device is in Contacts visibility.">
+        Contacts
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_HIDDEN" desc="Quick Share quick settings tile label indicates device is in Hidden visibility.">
+        Hidden
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_OFF" desc="Quick Share quick settings tile label indicates Quick Share is disabled.">
+        Off
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_ON" desc="Quick Share quick settings tile label indicates Quick Share is enabled.">
+        On
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_YOUR_DEVICES" desc="Quick Share quick settings tile sublabel indicates device is in Your devices visibility.">
+        Your devices
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_PH" desc="Feature name placeholder: The shorter label used for the feature tile in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
         <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>
@@ -1254,8 +1302,11 @@ Style notes:
     system tray to toggle on/off spoken feedback feature.">
         ChromeVox (spoken feedback)
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS" desc="The label used in the accessibility menu of the system tray to pause/resume the mouse keys feature.">
-        Mouse keys
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_RESUME" desc="The label used in the accessibility menu of the system tray to pause/resume the mouse keys feature.">
+        Resume mouse keys
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE" desc="The label used in the accessibility menu of the system tray to pause/resume the mouse keys feature.">
+        Pause mouse keys
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK" desc="The label used in the accessibility menu of the system tray to toggle on/off the select-to-speak feature.">
         Select-to-speak
@@ -1883,10 +1934,10 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Privacy settings
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_TITLE" desc="The title of the bubble when sidetone is enabled.">
-        Test your mic sound
+        Test your mic
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_BODY" desc="The body of the bubble when sidetone is enabled.">
-        You can test your microphone sound. Close panel to stop.
+        Hear how you’ll sound to others. To stop, click the test icon or close the video call panel.
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_TITLE" desc="The title of the bubble when the active device doesn't support sidetone.">
         Connect wired headphone
@@ -1895,7 +1946,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         To avoid echo, you can listen to your mic only with wired headphone.
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_ANNOUNCEMENT" desc="Accessibility announcement that notifies whether sidetone is supported after user presses the toggle.">
-        <ph name="TITLE">$1<ex>Test your mic sound</ex></ph>. <ph name="DESCRIPTION">$2<ex>You can test your microphone sound. Close panel to stop.</ex></ph>
+        <ph name="TITLE">$1<ex>Test your mic</ex></ph>. <ph name="DESCRIPTION">$2<ex>Hear how you’ll sound to others. To stop, click the test icon or close the video call panel.</ex></ph>
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_DISMISS_BUTTON" desc="The dismiss button of the bubble when sidetone is enabled.">
         Dismiss
@@ -2561,7 +2612,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Key shortcuts, tips for using device, and more
       </message>
       <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_IMAGES_TOOLTIP" desc="The tooltip text of the images menu item in the search category filter menu that shows what search results the category includes.">
-        Search for text within images and see image previews
+        Image search by content and image previews
       </message>
       <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_PLAYSTORE_TOOLTIP" desc="The tooltip text of the playstore menu item in the search category filter menu that shows what search results the category includes.">
         Available apps from the Play Store
@@ -2675,9 +2726,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DESK_DIALOG_TITLE" desc="The text of the title of the saved desk delete dialog, which shows up when trying to delete a saved desk.">
         Delete saved desk?
-      </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LACROS_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
-        Lacros windows aren't currently supported. Other apps will be saved.
       </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
         Linux apps aren’t currently supported. Other apps will be saved.
@@ -2833,6 +2881,15 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
       <message name="IDS_ASH_DESKS_DESK_16_MINI_VIEW_TITLE" desc="The label of the sixteenth virtual desk thumbnail.">
         Desk 16
+      </message>
+      <message name="IDS_ASH_CAMERA_NOW_ALLOWED" desc="The toast message that appears when the shortcut to toggle camera access is invoked, and camera access is now enabled.">
+        Apps can access camera
+      </message>
+      <message name="IDS_ASH_CAMERA_NOW_DISALLOWED" desc="The toast message that appears when the shortcut to toggle camera access is invoked, and camera access is now disabled.">
+        Apps can't access camera
+      </message>
+      <message name="IDS_ASH_CAMERA_ACCESS_DISABLED" desc="The toast message that appears when the shortcut to toggle camera access is invoked, but camera access cannot be enabled because there is currently an admin remote desktop session active.">
+        Can't turn on camera access remotely
       </message>
       <message name="IDS_ASH_DESKS_MAX_NUM_REACHED" desc="Message shown to users when they attempt to add a new virtual desk when the maximum number of desks has been reached.">
         Maximum number of desks reached.
@@ -3617,8 +3674,8 @@ No devices connected.
 
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_AGC_INFO" desc="label used for the information of who is controlling mic input gain. [ICU Syntax]">
         {NUM_APPS, plural,
-         =1 {Mic input controlled by <ph name="app_name">$1<ex>App</ex></ph>}
-         other {Mic input controlled by # apps}}
+         =1 {Mic volume controlled by <ph name="app_name">$1<ex>App</ex></ph>}
+         other {Mic volume controlled by # apps}}
       </message>
 
       <!-- Status tray Live Caption strings. -->
@@ -4106,9 +4163,6 @@ No devices connected.
       <message name="IDS_ASH_IME_MENU_ACCESSIBLE_NAME" desc="The accessible text for opt-in IME menu icon in status tray.">
         IME menu button
       </message>
-      <message name="IDS_ASH_MOUSE_KEYS_TRAY_ACCESSIBLE_NAME" desc="The accessible text for the mouse keys menu icon in the status tray.">
-        Mouse keys button
-      </message>
       <message name="IDS_ASH_SELECT_TO_SPEAK_TRAY_ACCESSIBLE_NAME" desc="The accessible text for the select-to-speak menu icon in the status tray.">
         Select-to-speak button
       </message>
@@ -4250,6 +4304,9 @@ No devices connected.
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_RESIZE_PIP_WINDOW" desc="Label for accelerator action - Resize the picture-in-picture window.">
         Switch between the maximum or current size of the picture-in-picture window
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CAMERA_ENABLED" desc="Label for accelerator action - Toggle whether the camera access setting is enabled.">
+        Turn on/off camera access
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PREVIOUS_PANE" desc="Label for accelerator action - Move focus to previous pane.">
         Move focus to previous pane
@@ -4474,7 +4531,7 @@ No devices connected.
         Mirror monitors
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MOUSE_KEYS" desc="Label for accelerator action - Pause and resume mouse keys.">
-        Pause/resume mouse keys when it's on
+        When turned on, pause and resume mouse keys
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_OVERVIEW" desc="Label for accelerator action - Overview mode.">
         Overview mode
@@ -5560,22 +5617,22 @@ No devices connected.
         A few things to keep in mind
       </message>
       <message name="IDS_ASH_MAGIC_BOOST_DISCLAMIER_PARAGRAPH_ONE" desc="Text shown as the first paragraph of the Magic Boost disclamier view's body.">
-        You must be at least 18 years old to use Help me write and Help me read.
+        You must be at least 18 years old to use Help me read, Help me write, and create images with AI.
       </message>
       <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO" desc="Text shown as the second paragraph of the Magic Boost disclamier view's body.">
-        When you turn on Help me write and Help me read, the input text, document content, and web page URL are sent to Google AI servers to generate writing suggestions, generate summaries, answer questions, and improve the product, subject to <ph name="LINK_TO_SERVICE_TERMS">$1<ex>Google's Terms of Service</ex></ph>. Don't include anything personal, sensitive, or confidential.
+        When you turn on these features, the input text, document content, and web page URL may be sent to Google AI servers. This information is used to generate writing suggestions, generate summaries, answer questions, and improve the product, subject to <ph name="LINK_TO_SERVICE_TERMS">$1<ex>Google's Terms of Service and Privacy Policy</ex></ph>. Don't include anything personal, sensitive, or confidential.
       </message>
       <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE" desc="Text shown as the third paragraph of the Magic Boost disclamier view's body.">
-        Generative AI is experimental, in early development, and currently has limited availability.
+        Generative AI can make mistakes, including about people, so double-check it.
       </message>
       <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_FOUR" desc="Text shown as the forth paragraph of the Magic Boost disclamier view's body.">
-        You can turn off Help me write and Help me read at any time in Settings. <ph name="LINK_TO_LEARN_MORE">$1<ex>Learn more</ex></ph>
+        You can turn off these features at any time in Settings. <ph name="LINK_TO_LEARN_MORE">$1<ex>Learn more</ex></ph>
       </message>
       <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_LEARN_MORE_LINK_TEXT" desc="The linked text Learn More text in the Magic Boost disclaimer view.">
         Learn more
       </message>
       <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_TERMS_LINK_TEXT" desc="The linked Google terms of service text in the Magic Boost disclaimer view.">
-        Google's Terms of Service
+        Google's Terms of Service and Privacy Policy
       </message>
 
       <!-- Multi-profiles intro dialog -->
@@ -6670,6 +6727,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN" desc="Alert spoken by screen readers on entering capture mode.">
         Capture Mode, default is <ph name="SOURCE">$1<ex>partial</ex></ph> <ph name="TYPE">$2<ex>screenshot</ex></ph>. Press tab for keyboard navigation.
       </message>
+      <message name="IDS_ASH_SUNFISH_MODE_ALERT_OPEN" desc="Alert spoken by screen readers on entering a mode where users can select a region on their screen to search.">
+        Select to search my screen. Press tab then space for keyboard navigation.
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_SOURCE_FULLSCREEN" desc="Spoken by screen readers for the open alert with the source as full screen.">
         full screen
       </message>
@@ -6796,23 +6856,92 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_EDUCATION_SETTINGS_NUDGE_LABEL" desc="The label of the Screen Capture Education settings nudge (Arm 3) for using the quick settings menu.">
         Use the screen capture tool in quick settings to take screenshots
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_SEARCH_RESULTS_PANEL_TITLE" desc="The title of the panel that shows Google Search results when the user searches a selected region on their screen.">
+        Google Search
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_DEFAULT_ACTION_BUTTON_WINDOW_TITLE" desc="The title of the window that contains available action buttons for the screen capture tool other than capture image, e.g. copy text or search image.">
+        Other actions
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_SUNFISH_ACTION_BUTTON_WINDOW_TITLE" desc="The title of the window that contains available action buttons after the user has selected a region on their screen of interest. Example actions include copy text or create a Google Doc.">
+        Actions
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_SUNFISH_CLOSE_BUTTON_ACCESSIBLE_NAME" desc="The accessible name of the close button for a screen capture mode, 'search my screen', where users can select a region on their screen to search.">
+        Close search my screen
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_COPY_TEXT_BUTTON_LABEL" desc="The label on a button that can be clicked to copy text from the contents of a screenshot into the user's clipboard.">
+        Copy text
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_TEXT_COPIED_TOAST" desc="The message shown on a toast to indicate text was copied to the user's clipboard from the contents of a screenshot.">
+        Text copied to Clipboard
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_MORE_ACTIONS_UNAVAILABLE_OFFLINE_ERROR" desc="The error message shown to indicate to the user that some actions (e.g. search) are not available while offline.">
+        Connect to internet for more
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_ACTION_ATTEMPTED_OFFLINE_ERROR" desc="The error message shown if the user is offline while attempting an action that requires an internet connection.">
+        Check your internet and try again
+      </message>
 
       <!-- Scanner -->
       <!-- TODO: crbug.com/375967525 - Finalize these strings and mark them as translateable -->
-      <message name="IDS_ASH_SCANNER_ACTION_CREATE_EVENT_LABEL" desc="The label on a button that can be clicked to create a new calendar event from the contents of a screenshot." translateable="false">
+      <message name="IDS_ASH_SCANNER_SMART_ACTIONS_BUTTON_LABEL" desc="The label on a button that can be clicked to show more actions based on the contents of a screenshot. Example actions include creating a new doc or adding a detected event to the user's calendar.">
+        More actions
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_CREATE_EVENT_LABEL" desc="The label on a button that can be clicked to create a new calendar event from the contents of a screenshot. Clicking the button will open a draft new event in Google Calendar with the event details pre-filled.">
         Add to Calendar
       </message>
-      <message name="IDS_ASH_SCANNER_ACTION_CREATE_CONTACT_LABEL" desc="The label on a button that can be clicked to create a new contact from the contents of a screenshot." translateable="false">
+      <message name="IDS_ASH_SCANNER_ACTION_CREATE_CONTACT_LABEL" desc="The label on a button that can be clicked to create a new contact from the contents of a screenshot. Clicking the button will open a draft new contact in Google Contacts with the contact details pre-filled.">
         Create contact
       </message>
-      <message name="IDS_ASH_SCANNER_ACTION_CREATE_SHEET" desc="The label on a button that can be clicked to create a new Google Sheet from the contents of a screenshot." translateable="false">
+      <message name="IDS_ASH_SCANNER_ACTION_CREATE_SHEET" desc="The label on a button that can be clicked to create a new Google Sheet from the contents of a screenshot.">
         Create Google Sheets
       </message>
-      <message name="IDS_ASH_SCANNER_ACTION_CREATE_DOC" desc="The label on a button that can be clicked to create a new Google Doc from the contents of a screenshot." translateable="false">
+      <message name="IDS_ASH_SCANNER_ACTION_CREATE_DOC" desc="The label on a button that can be clicked to create a new Google Doc from the contents of a screenshot.">
         Create Google Docs
       </message>
-      <message name="IDS_ASH_SCANNER_ACTION_COPY_TEXT_AND_FORMAT" desc="The label on a button that can be clicked to copy text with formatting from the contents of a screenshot." translateable="false">
-        Copy text and format
+      <message name="IDS_ASH_SCANNER_ACTION_COPY_TEXT_AND_FORMAT" desc="The label on a button that can be clicked to copy text with formatting from the contents of a screenshot. Formatting includes properties such as text size, font, and color.">
+        Copy with formatting
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_EVENT" desc="The message shown on a toast to indicate that event details were created from the contents of a screenshot." translateable="false">
+        Created event
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_CONTACT" desc="The message shown on a toast to indicate a new contact was created from the contents of a screenshot." translateable="false">
+        Created contact
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_DOC" desc="The message shown on a toast to indicate a new Google Doc was created from the contents of a screenshot." translateable="false">
+        Created Google Doc
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_SHEET" desc="The message shown on a toast to indicate a new Google Sheet was created from the contents of a screenshot." translateable="false">
+        Created Google Sheet
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_COPY_TEXT_AND_FORMAT" desc="The message shown on a toast to indicate text with formatting was copied to the user's clipboard from the contents of a screenshot." translateable="false">
+        Text copied to Clipboard
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_EVENT" desc="The message shown on a toast to indicate an error occurred when trying to add an event to the user's calendar from the contents of a screenshot.">
+        Couldn't add to Calendar
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_CONTACT" desc="The message shown on a toast to indicate an error occurred when trying to create a new contact from the contents of a screenshot.">
+        Couldn’t create contact
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_DOC" desc="The message shown on a toast to indicate an error occurred when trying to create a new Google Doc from the contents of a screenshot.">
+        Couldn’t create Google Doc
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_SHEET" desc="The message shown on a toast to indicate an error occurred when trying to create a new Google Sheet from the contents of a screenshot.">
+        Couldn’t create Google Sheet
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_COPY_TEXT_AND_FORMAT" desc="The message shown on a toast to indicate an error occurred when trying to copy text with formatting from the contents of a screenshot.">
+        Couldn’t copy with formatting
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_TOAST_FEEDBACK_ICON_ACCESSIBLE_NAME" desc="The accessible name of the feedback icon button on a toast shown when an action has been completed. Clicking the feedback icon button opens a dialog for users to report feedback.">
+        Send feedback
+      </message>
+      <message name="IDS_ASH_SCANNER_ERROR_TRY_AGAIN_LINK_TEXT" desc="The text on a try again link shown next to an error message indicating that something went wrong. The link can be pressed to try the action again.">
+        Try again
+      </message>
+      <message name="IDS_ASH_SCANNER_ERROR_GENERIC" desc="Generic message shown when an error occurs while loading actions for a screenshot.">
+        Something went wrong.
+      </message>
+      <message name="IDS_ASH_SCANNER_ERROR_UNSUPPORTED_LANGUAGE" desc="Error message shown when more actions are not available because the language detected in the screenshot area is unsupported.">
+        No more actions for this language
       </message>
 
       <!-- Snap Group -->
@@ -7789,12 +7918,57 @@ New install
         desc="In sentence case: This string appears as a subtitle to a calendar date. The placeholder is the name of a day of the week (e.g. Monday) and is capitalized when appropriate for the locale. This string indicates that the date is in the previous week. For example, suppose today is Tuesday. If the placeholder is Monday, then this string refers to the Monday last week (8 days from ago), as opposed to the Monday that just passed (1 day from now).">
         <ph name="DAY_OF_WEEK">$1<ex>Monday</ex></ph> last week
       </message>
-      <!-- TODO: b/368442959 - Mark this string as translateable once it's finalized -->
-      <message name="IDS_QUICK_INSERT_GIFS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false">
-        Search emojis and GIFs
+      <message name="IDS_QUICK_INSERT_GIFS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type in this search field to search for emojis, GIFs, symbols, and emoticons.">
+        Search emojis, GIFs, and more
       </message>
-      <message name="IDS_QUICK_INSERT_FEATURED_GIFS_CATEGORY_TYPE_SECTION_TITLE" translateable="false">
+      <message name="IDS_QUICK_INSERT_FEATURED_GIFS_CATEGORY_TYPE_SECTION_TITLE"
+        desc="This string appears as the heading text of a section. This section contains a grid of featured GIFs (in the sense of highlighted or promoted). The featured GIFs change throughout the day.">
         Featured GIFs
+      </message>
+
+      <!-- Lobster -->
+      <message name="IDS_LOBSTER_SELECTION_LABEL" desc="The label for the option to open Image Generation.">
+        Create image
+      </message>
+      <message name="IDS_LOBSTER_COPY_IMAGE_TO_CLIPBOARD_TOAST_MESSAGE" desc="The toast message displayed when the image from Image Generation is copied into the clipboard history.">
+        Copied to clipboard.
+      </message>
+      <message name="IDS_LOBSTER_IMAGE_DOWNLOAD_NOTIFICATION_SOURCE" desc="The source label of the successful image download notification of Image Generation.">
+        Download manager
+      </message>
+      <message name="IDS_LOBSTER_IMAGE_INSERTION_ANNOUNCEMENT_SUCCESS" desc="The announcement made when users insert image successfully from Image Generation.">
+        Image inserted
+      </message>
+      <message name="IDS_LOBSTER_IMAGE_INSERTION_ANNOUNCEMENT_FAILURE" desc="The announcement made when users failed to insert image from Image Generation">
+        Image insertion failed
+      </message>
+      <message name="IDS_LOBSTER_SUCCESSFUL_IMAGE_DOWNLOAD_NOTIFICATION_TITLE" desc="The title of the successful image download notification of Image Generation.">
+        Download complete
+      </message>
+      <message name="IDS_LOBSTER_FAILED_IMAGE_DOWNLOAD_NOTIFICATION_TITLE" desc="The title of the unsuccessful image download notification of Image Generation.">
+        <ph name="FILE_NAME">$1<ex>somedocument.pdf</ex></ph> download unsuccessful.
+      </message>
+      <message name="IDS_LOBSTER_FAILED_IMAGE_DOWNLOAD_NOTIFICATION_MESSAGE" desc="The message of the unsuccessful image download notification of Image Generation.">
+        Failed
+      </message>
+      <message name="IDS_LOBSTER_SUCCESSFUL_IMAGE_DOWNLOAD_NOTIFICATION_SHOW_IN_FOLDER_ACTION_LABEL" desc="The label of the button in successful image download notification of Image Generation. Clicking the button will open the Downloads folder.">
+        Show in folder
+      </message>
+      <message name="IDS_LOBSTER_SUCCESSFUL_IMAGE_DOWNLOAD_NOTIFICATION_COPY_IMAGE_TO_CLIPBOARD_ACTION_LABEL" desc="The label of the button in successful image download notification of Image Generation. Clicking the button will copy the image into the clipboard history.">
+        Copy to clipboard
+      </message>
+      <message name="IDS_LOBSTER_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_ONE" desc="Text shown as the first paragraph of the Magic Boost with Image Generation disclaimer view's body.">
+        You must be at least 18 years old to use Help me read, Help me write, and create images with AI.
+      </message>
+      <message name="IDS_LOBSTER_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO" desc="Text shown as the second paragraph of the Magic Boost with Image Generation disclaimer view's body.">
+        When you turn on these features, the input text, document content, and web page URL may be sent to Google servers. This information is used to generate writing suggestions, generate summaries, answer questions, and improve the product, subject to <ph name="LINK_TO_SERVICE_TERMS">$1<ex>Google's Terms of Service and Privacy Policy</ex></ph>. Don't include anything personal, sensitive, or confidential.
+      </message>
+      <message name="IDS_LOBSTER_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE" desc="Text shown as the third paragraph of the Magic Boost with Image Generation disclaimer view's body.">
+        Generative AI can make mistakes, including about people, so double-check it.
+      </message>
+      <message name="IDS_LOBSTER_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_FOUR" desc="Text shown as the forth paragraph of the Magic Boost with Image Generation disclaimer view's body.">
+        You can turn off these features at any time in Settings. <ph name="LINK_TO_LEARN_MORE">$1<ex>Learn more</ex></ph>
       </message>
 
       <!-- WM -->
@@ -8010,6 +8184,29 @@ Otherwise the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS"
         The built-in touchpad is disabled because a mouse is connected. Use the mouse or keyboard to confirm the change.
 
 Otherwise the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS">$1<ex>30 seconds</ex></ph>.
+      </message>
+
+      <!-- Mouse Keys touchpad feature -->
+      <message name="IDS_ASH_MOUSE_KEYS_LEFT_MOUSE_BUTTON" desc="Label to show left mouse button click.">
+        Left mouse button
+      </message>
+      <message name="IDS_ASH_MOUSE_KEYS_RIGHT_MOUSE_BUTTON" desc="Label to show right mouse button click.">
+        Right mouse button
+      </message>
+      <message name="IDS_ASH_MOUSE_KEYS_BOTH_MOUSE_BUTTONS" desc="Label to show both mouse buttons click.">
+        Both mouse buttons
+      </message>
+      <message name="IDS_ASH_MOUSE_KEYS_PERIOD_RELEASE" desc="Label to show how to release mouse button after a drag.">
+        Press "." to release
+      </message>
+      <message name="IDS_ASH_MOUSE_KEYS_C_KEY_RELEASE" desc="Label to show how to release mouse button after a drag.">
+        Press "c" to release
+      </message>
+      <message name="IDS_ASH_MOUSE_KEYS_PAUSED" desc="Label to show the mouse keys paused state.">
+        Mouse keys paused
+      </message>
+      <message name="IDS_ASH_MOUSE_KEYS_RESUMED" desc="Label to show the mouse keys resumed state.">
+        Mouse keys resumed
       </message>
 
       <!-- Guest session confirmation dialog -->
@@ -8848,36 +9045,63 @@ To shut down the device, press and hold the power button on the device again.
         Send feedback
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_USER_FEEDBACK_DESCRIPTION" desc="The description for the user feedback UI">
-        This is experimental AI feature and won't always get it right.
+        Generative AI can make mistakes, including about people, so double-check it.
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_THUMB_UP_ACCESSIBLE_NAME" desc="The accessible name for the thumb up button which is in the user feedback UI">
-        Thumbs up would submit the feedback that you like this suggestion
+        Thumbs up would submit the feedback that you like this suggested group
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_THUMB_DOWN_ACCESSIBLE_NAME" desc="The accessible name for the thumb down button which is in the user feedback UI">
-        Thumbs down would submit the feedback that you dislike this suggestion
+        Thumbs down would submit the feedback that you dislike this suggested group
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_TAB_SUBTITLE" translateable="false" desc="In the birch coral button selector UI, the subtitle for the tab section.">
+      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_TAB_SUBTITLE" desc="In the birch coral button selector UI, the subtitle for the tab section.">
         Tabs
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_APP_SUBTITLE" translateable="false" desc="In the birch coral button selector UI, the subtitle for the app section.">
+      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_APP_SUBTITLE" desc="In the birch coral button selector UI, the subtitle for the app section.">
         Apps
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the birch coral button selector UI.">
-        Coral selector
+      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_ACCESSIBLE_NAME" desc="The accessible name for the birch coral button selector UI.">
+        Items in the suggested group
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_SHOWN" translateable="false" desc="The accessible name for the birch coral button selector UI.">
-        Hide
+      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_ITEM_CLOSE_BUTTON_TOOLTIP" desc="The tooltip of the close button on smart grouping expanded menu item">
+        Remove <ph name="ITEM_LABEL">$1<ex>YouTube</ex></ph> from suggested group
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN" translateable="false" desc="The accessible name for the birch coral button selector UI.">
-        Show
+      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_SHOWN" desc="The accessible name for the birch coral button selector UI.">
+        Hide items in <ph name="GROUP_NAME">$1<ex>Trip To Tokyo</ex></ph>
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_SAVED_GROUPS_MAX_NUM_REACHED" translateable="false" desc="Message shown to users when they attempt to save a new coral group when the maximum number of coral saved groups has been reached.">
+      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN" desc="The accessible name for the birch coral button selector UI.">
+        Show items in <ph name="GROUP_NAME">$1<ex>Trip To Tokyo</ex></ph>
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_ITEM_WITH_REMOVE_BUTTON" desc="The accessibile name of selector menu item with a remove button">
+        <ph name="ITEM_LABEL">$1<ex>YouTube</ex></ph> with remove button
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_SAVED_GROUPS_MAX_NUM_REACHED" desc="Message shown to users when they attempt to save a new coral group when the maximum number of coral saved groups has been reached.">
         Maximum number of saved groups reached.
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_SUGGESTION_NAME" desc="The general name of the suggestions provided by coral service">
+        Suggested group
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_BAR_MENU_ITEM" desc="The name of smart grouping service in Glanceables bar context menu item">
+        App &amp; tab groups
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_RESTORE_CHIP_SUBTITLE" desc="The subtitle of coral restore chip">
+        Resume suggested group
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_IN_SESSION_CHIP_SUBTITLE" desc="The subtitle of coral in-session chip">
+        Organize in a new desk
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_OPEN_GROUP" desc="The chip menu item label of opening a group">
+        Open
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_SAVE_GROUP" desc="The chip menu item label of saving a group as a desk template">
+        Save group for later
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_HIDE_GROUP" desc="The chip menu item label of hiding a group">
+        Hide all group suggestions
       </message>
 
       <!-- Graduation app strings -->
-      <message name="IDS_ASH_GRADUATION_NUDGE_TEXT" desc="Text shown in nudge that is displayed after the Content Transfer app becomes available.">
-        Use the Content Transfer app to move your school account data to your personal account
+      <message name="IDS_ASH_GRADUATION_NUDGE_TEXT" desc="Text shown in nudge that is displayed after the Content transfer app becomes available.">
+        Use the Content transfer app to move your school account data to your personal account
       </message>
 
       <!-- Ash style -->

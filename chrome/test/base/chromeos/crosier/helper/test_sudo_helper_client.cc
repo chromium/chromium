@@ -122,6 +122,11 @@ TestSudoHelperClient::Result TestSudoHelperClient::StartSessionManager(
   base::ScopedFD sock;
   Result result = SendDictAndGetResult(dict, &sock);
 
+  // If session_manager failed to start, we should not start the watcher thread.
+  if (result.return_code != 0) {
+    return result;
+  }
+
   session_manager_watcher_thread_ =
       std::make_unique<base::Thread>("SessionManagerWatcherThread");
   session_manager_watcher_thread_->Start();

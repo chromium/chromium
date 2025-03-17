@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/subresource_filter/content/browser/ad_tagging_utils.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/profile_interaction_manager.h"
@@ -140,8 +141,6 @@ void ContentSubresourceFilterThrottleManager::FrameDeleted(
 // it for later filtering of child frame navigations.
 void ContentSubresourceFilterThrottleManager::ReadyToCommitInFrameNavigation(
     content::NavigationHandle* navigation_handle) {
-  ready_to_commit_navigations_.insert(navigation_handle->GetNavigationId());
-
   content::RenderFrameHost* frame_host =
       navigation_handle->GetRenderFrameHost();
 
@@ -152,11 +151,14 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitInFrameNavigation(
   if (!IsInSubresourceFilterRoot(navigation_handle)) {
     blink::FrameAdEvidence& ad_evidence =
         EnsureFrameAdEvidence(navigation_handle);
-    CHECK_EQ(ad_evidence.parent_is_ad(),
-             base::Contains(
-                 ad_frames_,
-                 frame_host->GetParentOrOuterDocument()->GetFrameTreeNodeId()),
-             base::NotFatalUntil::M134);
+
+    // TODO(crbug.com/367253342): This is rarely hit. After fixing, upgrade to a
+    // CHECK.
+    DCHECK_EQ(
+        ad_evidence.parent_is_ad(),
+        base::Contains(
+            ad_frames_,
+            frame_host->GetParentOrOuterDocument()->GetFrameTreeNodeId()));
     ad_evidence.set_is_complete();
     ad_evidence_for_navigation = ad_evidence;
 
@@ -223,9 +225,6 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
     ongoing_activation_throttles_.erase(throttle_it);
   }
 
-  bool passed_through_ready_to_commit =
-      ready_to_commit_navigations_.erase(navigation_handle->GetNavigationId());
-
   // Do nothing if the navigation finished in the same document.
   if (navigation_handle->IsSameDocument()) {
     return;
@@ -246,9 +245,6 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
                 navigation_handle->GetPreviousRenderFrameHostId());
   if (!frame_host)
     return;
-
-  RecordExperimentalUmaHistogramsForNavigation(navigation_handle,
-                                               passed_through_ready_to_commit);
 
   const content::FrameTreeNodeId frame_tree_node_id =
       navigation_handle->GetFrameTreeNodeId();
@@ -305,13 +301,15 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
     // TODO(crbug.com/40156884): Once these load policies are no longer saved,
     // update the CHECK to verify that the evidence doesn't indicate a subframe
     // (regardless of the URL).
-    CHECK(!(navigation_handle->GetURL().IsAboutBlank() &&
-            EnsureFrameAdEvidence(navigation_handle).IndicatesAdFrame()),
-          base::NotFatalUntil::M134);
+    // TODO(crbug.com/342351452): This is rarely hit. After fixing, upgrade to a
+    // CHECK.
+    DCHECK(!(navigation_handle->GetURL().IsAboutBlank() &&
+             EnsureFrameAdEvidence(navigation_handle).IndicatesAdFrame()));
   } else {
-    CHECK(navigation_handle->IsInMainFrame() ||
-              EnsureFrameAdEvidence(navigation_handle).is_complete(),
-          base::NotFatalUntil::M134);
+    // TODO(crbug.com/373672161): This is rarely hit. After fixing, upgrade to a
+    // CHECK.
+    DCHECK(navigation_handle->IsInMainFrame() ||
+           EnsureFrameAdEvidence(navigation_handle).is_complete());
   }
 
   bool did_inherit_opener_activation;
@@ -341,54 +339,6 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
   }
 
   DestroyRulesetHandleIfNoLongerUsed();
-}
-
-void ContentSubresourceFilterThrottleManager::
-    RecordExperimentalUmaHistogramsForNavigation(
-        content::NavigationHandle* navigation_handle,
-        bool passed_through_ready_to_commit) {
-  // For subframe navigations that pass through ready to commit, we record
-  // whether they eventually committed. We also break this out by whether the
-  // navigation matches the restricted navigation heuristic and by ad status.
-  // The observed frequency will reveal the scope of current mishandling of such
-  // navigations by Ad Tagging. Navigations to URLs that inherit activation
-  // (e.g. about:srcdoc) are excluded as no load policy would be calculated.
-  // Navigations with dead RenderFrames are also excluded as any load policy
-  // sent to the renderer won't be used.
-  // TODO(alexmt): Remove once frequency is determined.
-  // TODO(crbug.com/40202987): Record histograms for fenced frame roots and fix
-  // |is_same_domain_to_main_frame_| below.
-  if (!passed_through_ready_to_commit || navigation_handle->IsInMainFrame() ||
-      ShouldInheritActivation(navigation_handle->GetURL()) ||
-      !navigation_handle->GetRenderFrameHost()->IsRenderFrameLive()) {
-    return;
-  }
-
-  base::UmaHistogramBoolean(
-      "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2",
-      navigation_handle->HasCommitted());
-  blink::mojom::FilterListResult latest_filter_list_result =
-      EnsureFrameAdEvidence(navigation_handle).latest_filter_list_result();
-  bool is_same_domain_to_outermost_main_frame =
-      net::registry_controlled_domains::SameDomainOrHost(
-          navigation_handle->GetURL(),
-          navigation_handle->GetRenderFrameHost()
-              ->GetOutermostMainFrame()
-              ->GetLastCommittedURL(),
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  bool is_restricted_navigation =
-      latest_filter_list_result ==
-          blink::mojom::FilterListResult::kMatchedAllowingRule ||
-      (latest_filter_list_result ==
-           blink::mojom::FilterListResult::kMatchedNoRules &&
-       is_same_domain_to_outermost_main_frame);
-  if (is_restricted_navigation &&
-      base::Contains(ad_frames_, navigation_handle->GetFrameTreeNodeId())) {
-    base::UmaHistogramBoolean(
-        "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2."
-        "RestrictedAdFrameNavigation",
-        navigation_handle->HasCommitted());
-  }
 }
 
 AsyncDocumentSubresourceFilter*
@@ -556,11 +506,13 @@ void ContentSubresourceFilterThrottleManager::OnChildFrameNavigationEvaluated(
 
   blink::FrameAdEvidence& ad_evidence =
       EnsureFrameAdEvidence(navigation_handle);
-  CHECK_EQ(ad_evidence.parent_is_ad(),
-           base::Contains(ad_frames_,
-                          navigation_handle->GetParentFrameOrOuterDocument()
-                              ->GetFrameTreeNodeId()),
-           base::NotFatalUntil::M134);
+
+  // TODO(crbug.com/347625215): This is rarely hit. After fixing, upgrade to a
+  // CHECK.
+  DCHECK_EQ(ad_evidence.parent_is_ad(),
+            base::Contains(ad_frames_,
+                           navigation_handle->GetParentFrameOrOuterDocument()
+                               ->GetFrameTreeNodeId()));
 
   ad_evidence.UpdateFilterListResult(
       InterpretLoadPolicyAsEvidence(load_policy));
@@ -772,8 +724,11 @@ void ContentSubresourceFilterThrottleManager::SetIsAdFrame(
       render_frame_host->GetFrameTreeNodeId();
   CHECK(base::Contains(tracked_ad_evidence_, frame_tree_node_id),
         base::NotFatalUntil::M129);
-  CHECK_EQ(tracked_ad_evidence_.at(frame_tree_node_id).IndicatesAdFrame(),
-           is_ad_frame, base::NotFatalUntil::M134);
+
+  // TODO(crbug.com/373985560): This is rarely hit. After fixing, upgrade to a
+  // CHECK.
+  DCHECK_EQ(tracked_ad_evidence_.at(frame_tree_node_id).IndicatesAdFrame(),
+            is_ad_frame);
   CHECK(render_frame_host->GetParentOrOuterDocument(),
         base::NotFatalUntil::M129);
 

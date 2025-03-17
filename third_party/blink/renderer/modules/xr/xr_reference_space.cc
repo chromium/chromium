@@ -70,32 +70,21 @@ XRPose* XRReferenceSpace::getPose(const XRSpace* other_space) const {
   }
 }
 
-void XRReferenceSpace::SetMojoFromFloor() const {
-  const device::mojom::blink::VRStageParametersPtr& stage_parameters =
-      session()->GetStageParameters();
-
-  if (stage_parameters) {
-    // Use the transform given by stage_parameters if available.
-    mojo_from_floor_ =
-        std::make_unique<gfx::Transform>(stage_parameters->mojo_from_floor);
-  } else {
-    mojo_from_floor_.reset();
-  }
-
-  stage_parameters_id_ = session()->StageParametersId();
-}
-
 std::optional<gfx::Transform> XRReferenceSpace::MojoFromNative() const {
   DVLOG(3) << __func__ << ": type_=" << type_;
 
   switch (type_) {
     case ReferenceSpaceType::kViewer:
     case ReferenceSpaceType::kLocal:
+    case ReferenceSpaceType::kLocalFloor:
     case ReferenceSpaceType::kUnbounded: {
       // The session is the source of truth for latest state of the transform
       // between local & unbounded spaces and mojo space.
       auto mojo_from_native = session()->GetMojoFrom(type_);
       if (!mojo_from_native) {
+        if (type_ == ReferenceSpaceType::kLocalFloor) {
+          return GetMojoFromFloorFallback();
+        }
         // The viewer reference space always has a default pose of identity if
         // it's not tracked; but for any other type if it's not locatable, we
         // return nullopt.
@@ -106,33 +95,35 @@ std::optional<gfx::Transform> XRReferenceSpace::MojoFromNative() const {
 
       return *mojo_from_native;
     }
-    case ReferenceSpaceType::kLocalFloor: {
-      // Check first to see if the stage_parameters has updated since the last
-      // call. If so, update the floor-level transform.
-      if (stage_parameters_id_ != session()->StageParametersId())
-        SetMojoFromFloor();
-
-      if (mojo_from_floor_) {
-        return *mojo_from_floor_;
-      }
-
-      // If the floor-level transform is unavailable, try to use the default
-      // transform based off of local space:
-      auto mojo_from_local = session()->GetMojoFrom(ReferenceSpaceType::kLocal);
-      if (!mojo_from_local) {
-        return std::nullopt;
-      }
-
-      // local_from_floor-local transform corresponding to the default height.
-      auto local_from_floor =
-          gfx::Transform::MakeTranslation(0, kDefaultEmulationHeightMeters);
-
-      return *mojo_from_local * local_from_floor;
-    }
     case ReferenceSpaceType::kBoundedFloor: {
       NOTREACHED() << "kBoundedFloor should be handled by subclass";
     }
   }
+}
+
+std::optional<gfx::Transform> XRReferenceSpace::GetMojoFromFloorFallback()
+    const {
+  // Our first fallback is to see if we have any bounded floor space. If we do
+  // we will use that as the origin for local-floor as well.
+  auto mojo_from_bounded_floor =
+      session()->GetMojoFrom(ReferenceSpaceType::kBoundedFloor);
+
+  if (mojo_from_bounded_floor) {
+    return mojo_from_bounded_floor;
+  }
+
+  // If the bounded floor space is unavailable, fallback to a default height
+  // estimate based on the local space. However, if the local space isn't
+  // available, then we cannot emulate this space.
+  auto mojo_from_local = session()->GetMojoFrom(ReferenceSpaceType::kLocal);
+  if (!mojo_from_local) {
+    return std::nullopt;
+  }
+
+  auto local_from_floor =
+      gfx::Transform::MakeTranslation(0, kDefaultEmulationHeightMeters);
+
+  return *mojo_from_local * local_from_floor;
 }
 
 std::optional<gfx::Transform> XRReferenceSpace::NativeFromViewer(

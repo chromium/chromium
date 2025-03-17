@@ -1,5 +1,4 @@
 adjust_src_dst_region_for_blitframebuffer
-avoid_consecutive_keyframes_for_vp9
 avoid_one_component_egl_images
 avoid_stencil_buffers
 broken_egl_image_ref_counting
@@ -18,7 +17,6 @@ disable_accelerated_vp9_encode
 disable_accelerated_vp9_profile2_decode
 disable_async_readpixels
 disable_blend_equation_advanced
-disable_canvas_oop_rasterization
 disable_chromium_framebuffer_multisample
 disable_d3d11
 disable_d3d11_update_subresource1
@@ -26,7 +24,6 @@ disable_d3d11_video_decoder
 disable_d3d11_vp9_ksvc_decoding
 disable_decode_swap_chain
 disable_depth_texture
-disable_direct_composition
 disable_direct_composition_sw_video_overlays
 disable_direct_composition_video_overlays
 disable_discard_framebuffer
@@ -93,6 +90,7 @@ max_3d_array_texture_size_1024
 max_copy_texture_chromium_size_1048576
 max_msaa_sample_count_2
 max_msaa_sample_count_4
+max_num_hw_video_decoders_10
 msaa_is_slow
 msaa_is_slow_2
 multisample_renderbuffer_resize_emulation

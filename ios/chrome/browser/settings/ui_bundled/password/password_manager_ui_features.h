@@ -11,14 +11,25 @@
 // components.
 namespace password_manager::features {
 
+// Kill switch for the logic that allows the user to open the native Password
+// Settings page. Used when the user wants to access the Password Manager UI
+// without a passcode set.
 BASE_DECLARE_FEATURE(kIOSEnablePasscodeSettings);
 
+// Feature switch for the logic that allows the user to delete all saved
+// credentials in PWM.
 BASE_DECLARE_FEATURE(kIOSEnableDeleteAllSavedCredentials);
 
-BASE_DECLARE_FEATURE(kIOSPasskeysM2);
+// Feature switch for adding or not Suggest Strong Password field in the add
+// password page.
+BASE_DECLARE_FEATURE(kSuggestStrongPasswordInAddPassword);
 
-// Helper function returning the status of `kIOSEnablePasscodeShortcut`.
+// Helper function returning the status of `kIOSEnablePasscodeSettings`.
 bool IsPasscodeSettingsEnabled();
+
+// Helper function returning the status of
+// `kSuggestStrongPasswordInAddPassword`.
+bool IsSuggestStrongPasswordInAddPasswordEnabled();
 
 }  // namespace password_manager::features
 

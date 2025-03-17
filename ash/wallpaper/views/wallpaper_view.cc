@@ -43,7 +43,7 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
   explicit WallpaperWidgetDelegate(views::View* view) {
     SetCanMaximize(true);
     SetCanFullscreen(true);
-    AddChildView(view);
+    AddChildViewRaw(view);
     view->SetPaintToLayer();
   }
 

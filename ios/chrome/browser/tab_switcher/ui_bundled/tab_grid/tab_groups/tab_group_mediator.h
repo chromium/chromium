@@ -18,6 +18,10 @@ class MessagingBackendService;
 }  // namespace messaging
 }  // namespace collaboration
 
+namespace data_sharing {
+class DataSharingService;
+}  // namespace data_sharing
+
 namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
@@ -28,10 +32,31 @@ class TabGroup;
 @class TabGridModeHolder;
 @protocol TabGroupsCommands;
 @protocol TabGroupConsumer;
+@class TabGroupMediator;
 class WebStateList;
+
+// Delegate for the mediator.
+@protocol TabGroupMediatorDelegate
+
+// Called when the:
+// * last tab is closed,
+// * user is the OWNER of the tab group.
+- (void)tabGroupMediatorCloseLastTabAsOwner:(TabGroupMediator*)mediator
+                          lastTabIdentifier:(web::WebStateID)identifier;
+
+// Called when the:
+// * last tab is closed,
+// * user is a MEMBER of the tab group.
+- (void)tabGroupMediatorCloseLastTabAsMember:(TabGroupMediator*)mediator
+                           lastTabIdentifier:(web::WebStateID)identifier;
+
+@end
 
 // Tab group mediator in charge to handle model update for one group.
 @interface TabGroupMediator : BaseGridMediator <TabGroupMutator>
+
+// The delegate for this mediator.
+@property(nonatomic, weak) id<TabGroupMediatorDelegate> tabGroupDelegate;
 
 - (instancetype)
     initWithWebStateList:(WebStateList*)webStateList
@@ -39,6 +64,7 @@ class WebStateList;
          shareKitService:(ShareKitService*)shareKitService
     collaborationService:
         (collaboration::CollaborationService*)collaborationService
+      dataSharingService:(data_sharing::DataSharingService*)dataSharingService
                 tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                 consumer:(id<TabGroupConsumer>)consumer
             gridConsumer:(id<TabCollectionConsumer>)gridConsumer

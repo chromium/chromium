@@ -4,12 +4,14 @@
 
 package org.chromium.content.browser.input;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.DropdownItemBase;
 
 /**
  * Select popup item containing the label, the type and the enabled state
  * of an item belonging to a select popup dialog.
  */
+@NullMarked
 public class SelectPopupItem extends DropdownItemBase {
     private final String mLabel;
     private final int mType;

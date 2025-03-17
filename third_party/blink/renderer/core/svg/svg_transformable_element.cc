@@ -48,7 +48,7 @@ void SVGTransformableElement::Trace(Visitor* visitor) const {
 }
 
 void SVGTransformableElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   AddAnimatedPropertyToPresentationAttributeStyle(*transform_, style);
   SVGElement::CollectExtraStyleForPresentationAttribute(style);
 }

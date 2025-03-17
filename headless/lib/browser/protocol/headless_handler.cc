@@ -5,6 +5,7 @@
 #include "headless/lib/browser/protocol/headless_handler.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/base_switches.h"
 #include "base/check_deref.h"
@@ -63,7 +64,7 @@ std::optional<std::vector<uint8_t>> EncodeBitmapAsWebp(int quality,
   return gfx::WebpCodec::Encode(bitmap, quality);
 }
 
-absl::variant<protocol::Response, BitmapEncoder>
+std::variant<protocol::Response, BitmapEncoder>
 GetEncoder(const std::string& format, int quality, bool optimize_for_speed) {
   if (quality < 0 || quality > 100) {
     return Response::InvalidParams(
@@ -175,11 +176,11 @@ void HeadlessHandler::BeginFrame(std::optional<double> in_frame_time_ticks,
         GetEncoder(params.GetFormat(ScreenshotParams::FormatEnum::Png),
                    params.GetQuality(kDefaultScreenshotQuality),
                    params.GetOptimizeForSpeed(false));
-    if (absl::holds_alternative<protocol::Response>(encoder_or_response)) {
-      callback->sendFailure(absl::get<protocol::Response>(encoder_or_response));
+    if (std::holds_alternative<protocol::Response>(encoder_or_response)) {
+      callback->sendFailure(std::get<protocol::Response>(encoder_or_response));
       return;
     }
-    encoder = absl::get<BitmapEncoder>(std::move(encoder_or_response));
+    encoder = std::get<BitmapEncoder>(std::move(encoder_or_response));
   }
 
   const bool capture_screenshot = !!encoder;

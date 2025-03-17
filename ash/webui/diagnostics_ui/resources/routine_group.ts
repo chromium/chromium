@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RoutineProperties} from './diagnostics_types.js';
-import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
+import type {RoutineProperties} from './diagnostics_types.js';
+import type {ResultStatusItem} from './routine_list_executor.js';
+import {ExecutionProgress} from './routine_list_executor.js';
 import {getSimpleResult} from './routine_result_entry.js';
-import {RoutineResult, RoutineType, StandardRoutineResult} from './system_routine_controller.mojom-webui.js';
+import type {RoutineResult, RoutineType} from './system_routine_controller.mojom-webui.js';
+import {StandardRoutineResult} from './system_routine_controller.mojom-webui.js';
 
 function isBlockingRoutine(routineProp: RoutineProperties): boolean {
   return routineProp.blocking;

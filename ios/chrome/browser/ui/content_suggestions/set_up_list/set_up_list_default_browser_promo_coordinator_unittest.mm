@@ -10,13 +10,20 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/task_environment.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+
+using base::test::ios::kWaitForUIElementTimeout;
+using set_up_list_prefs::SetUpListItemState;
 
 // Tests the SetUpListView and subviews.
 class SetUpListDefaultBrowserPromoCoordinatorTest : public PlatformTest {
@@ -38,6 +45,22 @@ class SetUpListDefaultBrowserPromoCoordinatorTest : public PlatformTest {
     delegate_ = OCMProtocolMock(
         @protocol(SetUpListDefaultBrowserPromoCoordinatorDelegate));
     coordinator_.delegate = delegate_;
+  }
+
+  PrefService* GetLocalState() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
+  void WaitForItemCompletePref() {
+    base::test::ScopedRunLoopTimeout scoped_timeout(FROM_HERE,
+                                                    kWaitForUIElementTimeout);
+    const char* pref_name =
+        set_up_list_prefs::PrefNameForItem(SetUpListItemType::kDefaultBrowser);
+    base::RunLoop wait_for_pref;
+    PrefChangeRegistrar pref_registrar;
+    pref_registrar.Init(GetLocalState());
+    pref_registrar.Add(pref_name, wait_for_pref.QuitClosure());
+    wait_for_pref.Run();
   }
 
  protected:
@@ -69,7 +92,7 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, PrimaryButton) {
   [delegate_ verify];
 
   [coordinator_ stop];
-  task_environment_.RunUntilIdle();
+  WaitForItemCompletePref();
 
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultBrowserPromo.SetUpList.Action",
@@ -91,7 +114,7 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, SecondaryButton) {
   [delegate_ verify];
 
   [coordinator_ stop];
-  task_environment_.RunUntilIdle();
+  WaitForItemCompletePref();
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultBrowserPromo.SetUpList.Action",
       IOSDefaultBrowserPromoAction::kCancel, 1);

@@ -17,7 +17,7 @@ using UkmFeatureList = UseCounterMetricsRecorder::UkmFeatureList;
 using WebFeature = blink::mojom::WebFeature;
 using WebDXFeature = blink::mojom::WebDXFeature;
 using CSSSampleId = blink::mojom::CSSSampleId;
-using PermissionsPolicyFeature = blink::mojom::PermissionsPolicyFeature;
+using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
 
 namespace {
 
@@ -80,14 +80,17 @@ UseCounterMetricsRecorder::UseCounterMetricsRecorder(
       std::make_unique<AtMostOnceEnumUmaDeferrer<blink::mojom::CSSSampleId>>(
           "Blink.UseCounter.AnimatedCSSProperties");
   uma_permissions_policy_violation_enforce_ = std::make_unique<
-      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>(
+      AtMostOnceEnumUmaDeferrer<network::mojom::PermissionsPolicyFeature>>(
       "Blink.UseCounter.PermissionsPolicy.Violation.Enforce");
   uma_permissions_policy_allow2_ = std::make_unique<
-      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>(
+      AtMostOnceEnumUmaDeferrer<network::mojom::PermissionsPolicyFeature>>(
       "Blink.UseCounter.PermissionsPolicy.Allow2");
   uma_permissions_policy_header2_ = std::make_unique<
-      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>(
+      AtMostOnceEnumUmaDeferrer<network::mojom::PermissionsPolicyFeature>>(
       "Blink.UseCounter.PermissionsPolicy.Header2");
+  uma_permissions_policy_enabled_private_ = std::make_unique<
+      AtMostOnceEnumUmaDeferrer<network::mojom::PermissionsPolicyFeature>>(
+      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled");
 }
 
 UseCounterMetricsRecorder::~UseCounterMetricsRecorder() = default;
@@ -117,9 +120,13 @@ void UseCounterMetricsRecorder::AssertNoMetricsRecordedOrDeferred() {
     DCHECK_EQ(uma_permissions_policy_header2_->recorded_or_deferred().count(),
               0ul);
   }
+  if (uma_permissions_policy_enabled_private_) {
+    DCHECK_EQ(
+        uma_permissions_policy_enabled_private_->recorded_or_deferred().count(),
+        0ul);
+  }
 
   DCHECK_EQ(ukm_features_recorded_.count(), 0ul);
-  DCHECK_EQ(webdev_metrics_ukm_features_recorded_.count(), 0ul);
 }
 
 void UseCounterMetricsRecorder::RecordUkmPageVisits(
@@ -152,6 +159,9 @@ void UseCounterMetricsRecorder::DisableDeferAndFlush() {
   }
   if (uma_permissions_policy_header2_) {
     uma_permissions_policy_header2_->DisableDeferAndFlush();
+  }
+  if (uma_permissions_policy_enabled_private_) {
+    uma_permissions_policy_enabled_private_->DisableDeferAndFlush();
   }
 }
 
@@ -242,6 +252,11 @@ void UseCounterMetricsRecorder::RecordOrDeferUseCounterFeature(
             static_cast<PermissionsPolicyFeature>(feature.value()));
       }
       break;
+    case FeatureType::kPermissionsPolicyEnabledPrivacySensitive:
+      if (uma_permissions_policy_enabled_private_) {
+        uma_permissions_policy_enabled_private_->RecordOrDefer(
+            static_cast<PermissionsPolicyFeature>(feature.value()));
+      }
   }
 }
 
@@ -273,21 +288,6 @@ void UseCounterMetricsRecorder::RecordWebFeatures(ukm::SourceId ukm_source_id) {
             uma_main_frame_features_.IsRecordedOrDeferred(web_feature))
         .Record(ukm::UkmRecorder::Get());
   }
-  for (WebFeature web_feature : GetAllowedWebDevMetricsUkmFeatures()) {
-    auto feature_enum_value =
-        static_cast<blink::UseCounterFeature::EnumValue>(web_feature);
-    if (!uma_features_.IsRecordedOrDeferred(web_feature))
-      continue;
-
-    if (TestAndSet(webdev_metrics_ukm_features_recorded_, feature_enum_value))
-      continue;
-
-    ukm::builders::Blink_DeveloperMetricsRare(ukm_source_id)
-        .SetFeature(feature_enum_value)
-        .SetIsMainFrameFeature(
-            uma_main_frame_features_.IsRecordedOrDeferred(web_feature))
-        .Record(ukm::UkmRecorder::Get());
-  }
 }
 
 void UseCounterMetricsRecorder::RecordWebDXFeatures(
@@ -308,6 +308,21 @@ void UseCounterMetricsRecorder::RecordWebDXFeatures(
   ukm::UkmRecorder::Get()->RecordWebDXFeatures(
       ukm_source_id, webdx_features,
       static_cast<size_t>(WebDXFeature::kMaxValue));
+}
+
+void UseCounterMetricsRecorder::RecordPrivacySensitiveFeatures(
+    ukm::SourceId ukm_source_id) {
+  if (!uma_permissions_policy_enabled_private_) {
+    return;
+  }
+  auto used_features =
+      uma_permissions_policy_enabled_private_->GetRecordedValues();
+  for (auto feature : used_features) {
+    ukm::builders::Permissions_PrivacySensitive_UseCounter(ukm_source_id)
+        .SetPrivateFeatureCalledWithAdScriptInStack(
+            static_cast<size_t>(feature))
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 // WebDXFeature use counter mappings have been moved to
@@ -423,6 +438,7 @@ void UseCounterPageLoadMetricsObserver::OnComplete(
   auto source_id = GetDelegate().GetPageUkmSourceId();
   recorder_->RecordWebDXFeatures(source_id);
   recorder_->RecordWebFeatures(source_id);
+  recorder_->RecordPrivacySensitiveFeatures(source_id);
 }
 
 void UseCounterPageLoadMetricsObserver::OnFailedProvisionalLoad(

@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -34,6 +35,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -61,6 +63,10 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.modaldialog.test.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.DualControlLayout;
+import org.chromium.components.browser_ui.widget.ModalDialogViewUtils;
+import org.chromium.components.browser_ui.widget.SpinnerButtonWrapper;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ModalDialogButtonSpec;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -761,6 +767,180 @@ public class ModalDialogViewTest {
         onView(withText(R.string.ok)).perform(click());
         Assert.assertEquals(
                 "Button is clickable after time elapses", 1, callbackHelper.getCallCount());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testModalDialogCustomPositiveSpinnerButtonWidget() {
+        final var callbackHelper = new CallbackHelper();
+        var controller =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onClick(PropertyModel model, int buttonType) {
+                        callbackHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void onDismiss(PropertyModel model, int dismissalCause) {}
+                };
+
+        PropertyModel model =
+                createModel(
+                        mModelBuilder
+                                .with(
+                                        ModalDialogProperties.BUTTON_STYLES,
+                                        ModalDialogProperties.ButtonStyles
+                                                .PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                                .with(
+                                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                        sResources,
+                                        R.string.ok)
+                                .with(
+                                        ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                        sResources,
+                                        R.string.cancel)
+                                .with(ModalDialogProperties.CONTROLLER, controller));
+        onView(withId(R.id.positive_button))
+                .check(matches(allOf(isDisplayed(), isEnabled(), withText(R.string.ok))));
+        onView(withId(R.id.negative_button))
+                .check(matches(allOf(isDisplayed(), isEnabled(), withText(R.string.cancel))));
+
+        Button primaryButton =
+                DualControlLayout.createButtonForLayout(
+                        sActivity,
+                        DualControlLayout.ButtonType.PRIMARY_FILLED,
+                        sResources.getString(R.string.ok),
+                        null);
+        Button secondaryButton =
+                DualControlLayout.createButtonForLayout(
+                        sActivity,
+                        DualControlLayout.ButtonType.SECONDARY_TEXT,
+                        sResources.getString(R.string.cancel),
+                        null);
+        SpinnerButtonWrapper spinnerButtonWrapperPositive =
+                SpinnerButtonWrapper.createSpinnerButtonWrapper(
+                        sActivity,
+                        primaryButton,
+                        R.string.ok,
+                        R.dimen.modal_dialog_spinner_size,
+                        SemanticColorUtils.getDefaultBgColor(sActivity),
+                        () -> {
+                            model.set(ModalDialogProperties.BLOCK_INPUTS, true);
+                        });
+        View customButtonBarView =
+                ModalDialogViewUtils.createCustomButtonBarView(
+                        sActivity, spinnerButtonWrapperPositive, secondaryButton);
+
+        // Set up the custom button bar view with a positive button spinner and click
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    model.set(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, customButtonBarView);
+                });
+        Button positiveButton =
+                (Button) spinnerButtonWrapperPositive.findViewById(R.id.button_primary);
+        ProgressBar progressBar =
+                (ProgressBar) spinnerButtonWrapperPositive.findViewById(R.id.progress_bar);
+        Assert.assertEquals(View.GONE, progressBar.getVisibility());
+        onView(withId(R.id.spinner_button)).perform(click());
+
+        // Assert that the button properties are as expected
+        Assert.assertEquals(View.VISIBLE, progressBar.getVisibility());
+        Assert.assertEquals(0, positiveButton.getTextScaleX(), 0.0);
+        Assert.assertEquals(
+                ColorStateList.valueOf(SemanticColorUtils.getDefaultBgColor(sActivity)),
+                progressBar.getIndeterminateTintList());
+
+        // Assert that clicks on the modal dialog are disabled
+        onView(withId(R.id.button_secondary)).perform(click());
+        Assert.assertEquals(0, callbackHelper.getCallCount());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testModalDialogCustomNegativeSpinnerButtonWidget() {
+        final var callbackHelper = new CallbackHelper();
+        var controller =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onClick(PropertyModel model, int buttonType) {
+                        callbackHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void onDismiss(PropertyModel model, int dismissalCause) {}
+                };
+
+        PropertyModel model =
+                createModel(
+                        mModelBuilder
+                                .with(
+                                        ModalDialogProperties.BUTTON_STYLES,
+                                        ModalDialogProperties.ButtonStyles
+                                                .PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                                .with(
+                                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                        sResources,
+                                        R.string.ok)
+                                .with(
+                                        ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                        sResources,
+                                        R.string.cancel)
+                                .with(ModalDialogProperties.CONTROLLER, controller));
+        onView(withId(R.id.positive_button))
+                .check(matches(allOf(isDisplayed(), isEnabled(), withText(R.string.ok))));
+        onView(withId(R.id.negative_button))
+                .check(matches(allOf(isDisplayed(), isEnabled(), withText(R.string.cancel))));
+
+        Button primaryButton =
+                DualControlLayout.createButtonForLayout(
+                        sActivity,
+                        DualControlLayout.ButtonType.PRIMARY_FILLED,
+                        sResources.getString(R.string.ok),
+                        null);
+        Button secondaryButton =
+                DualControlLayout.createButtonForLayout(
+                        sActivity,
+                        DualControlLayout.ButtonType.SECONDARY_TEXT,
+                        sResources.getString(R.string.cancel),
+                        null);
+        SpinnerButtonWrapper spinnerButtonWrapperNegative =
+                SpinnerButtonWrapper.createSpinnerButtonWrapper(
+                        sActivity,
+                        secondaryButton,
+                        R.string.cancel,
+                        R.dimen.modal_dialog_spinner_size,
+                        SemanticColorUtils.getDefaultIconColorAccent1(sActivity),
+                        () -> {
+                            model.set(ModalDialogProperties.BLOCK_INPUTS, true);
+                        });
+        View customButtonBarView =
+                ModalDialogViewUtils.createCustomButtonBarView(
+                        sActivity, primaryButton, spinnerButtonWrapperNegative);
+
+        // Set up the custom button bar view with a negative button spinner and click
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    model.set(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, customButtonBarView);
+                });
+        Button negativeButton =
+                (Button) spinnerButtonWrapperNegative.findViewById(R.id.button_secondary);
+        ProgressBar progressBar =
+                (ProgressBar) spinnerButtonWrapperNegative.findViewById(R.id.progress_bar);
+        Assert.assertEquals(View.GONE, progressBar.getVisibility());
+        onView(withId(R.id.spinner_button)).perform(click());
+
+        // Assert that the button properties are as expected
+        Assert.assertEquals(View.VISIBLE, progressBar.getVisibility());
+        Assert.assertEquals(0, negativeButton.getTextScaleX(), 0.0);
+        Assert.assertEquals(
+                ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorAccent1(sActivity)),
+                progressBar.getIndeterminateTintList());
+
+        // Assert that clicks on the modal dialog are disabled
+        onView(withId(R.id.button_primary)).perform(click());
+        Assert.assertEquals(0, callbackHelper.getCallCount());
     }
 
     private static Matcher<View> touchFilterEnabled() {

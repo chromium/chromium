@@ -74,16 +74,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Online Signin"/>
 </enum>
 
-<enum name="GaiaPasswordChangedScreenUserAction">
-  <summary>Actions which happen on the screen.</summary>
-  <int value="0" label="Resync user data"/>
-  <int value="1" label="Migrate user data"/>
-  <int value="2" label="Cancel dialog"/>
-  <int value="3" label="Incorrect old password"/>
-  <int value="4" label="Don't setup Recovery"/>
-  <int value="5" label="Setup Recovery"/>
-</enum>
-
 <enum name="HidDetectionBluetoothPairingResult">
   <int value="0" label="Attempted but did not pair via Bluetooth"/>
   <int value="1" label="Paired via Bluetooth"/>

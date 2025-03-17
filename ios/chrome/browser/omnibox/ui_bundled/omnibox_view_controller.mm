@@ -13,12 +13,13 @@
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_container_view.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_keyboard_delegate.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_mutator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_change_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
@@ -66,13 +67,6 @@ using base::UserMetricsAction;
 // omnibox while it was focused. Used to count event "user focuses the omnibox
 // to view the complete URL and immediately defocuses it".
 @property(nonatomic, assign) BOOL omniboxInteractedWhileFocused;
-
-// Tracks editing status, because only the omnibox that is in edit mode can
-// get an edit menu.
-@property(nonatomic, assign) BOOL isTextfieldEditing;
-
-// Is YES while fixing display of edit menu (below omnibox).
-@property(nonatomic, assign) BOOL showingEditMenu;
 
 // Stores whether the clipboard currently stores copied content.
 @property(nonatomic, assign) BOOL hasCopiedContent;
@@ -223,13 +217,6 @@ using base::UserMetricsAction;
   _textChangeDelegate = textChangeDelegate;
 }
 
-- (void)setIsTextfieldEditing:(BOOL)owns {
-  if (_isTextfieldEditing == owns) {
-    return;
-  }
-  _isTextfieldEditing = owns;
-}
-
 - (UIView<TextFieldViewContaining>*)viewContainingTextField {
   return self.view;
 }
@@ -299,6 +286,10 @@ using base::UserMetricsAction;
     // already deconstructed on shutdown.
     return YES;
   }
+  if ([self textFieldIsBlank]) {
+    // Do not proceed when input is blank.
+    return YES;
+  }
   [self.returnKeyDelegate omniboxReturnPressed:self];
   return NO;
 }
@@ -319,7 +310,6 @@ using base::UserMetricsAction;
   }
 
   self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
-  self.isTextfieldEditing = YES;
 
   self.omniboxInteractedWhileFocused = NO;
   if (!_textChangeDelegate) {
@@ -333,8 +323,6 @@ using base::UserMetricsAction;
 // Record the metrics as needed.
 - (void)textFieldDidEndEditing:(UITextField*)textField
                         reason:(UITextFieldDidEndEditingReason)reason {
-  self.isTextfieldEditing = NO;
-
   if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
     self.view.thumbnailButton.selected = NO;
   }
@@ -400,9 +388,7 @@ using base::UserMetricsAction;
 
 - (void)textFieldDidRemoveAdditionalText:(OmniboxTextFieldIOS*)textField {
   base::RecordAction(UserMetricsAction("MobileOmniboxRichInlineRemoved"));
-  if (_textChangeDelegate) {
-    _textChangeDelegate->OnRemoveAdditionalText();
-  }
+  [self.mutator removeAdditionalText];
 }
 
 - (BOOL)canPasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
@@ -514,12 +500,6 @@ using base::UserMetricsAction;
   [self.textField setText:text userTextLength:text.length];
 }
 
-#pragma mark - OmniboxViewConsumer
-
-- (void)updateAdditionalText:(NSString*)additionalText {
-  [self.view updateAdditionalText:additionalText];
-}
-
 - (void)setThumbnailImage:(UIImage*)image {
   [self.view setThumbnailImage:image];
   // Cancel any pending image removal if a new selection is made.
@@ -575,6 +555,13 @@ using base::UserMetricsAction;
     self.copiedContentType = ClipboardContentType::Text;
   }
   self.isUpdatingCachedClipboardState = NO;
+}
+
+- (BOOL)textFieldIsBlank {
+  NSString* trimmedText = [self.textField.text
+      stringByTrimmingCharactersInSet:[NSCharacterSet
+                                          whitespaceAndNewlineCharacterSet]];
+  return [trimmedText length] == 0;
 }
 
 #pragma mark notification callbacks
@@ -726,9 +713,7 @@ using base::UserMetricsAction;
   // Dismiss any inline autocomplete. The user expectation is to not have it.
   [self.textField clearAutocompleteText];
 
-  if (_textChangeDelegate) {
-    _textChangeDelegate->OnRemoveAdditionalText();
-  }
+  [self.mutator removeAdditionalText];
 }
 
 /// Handles interaction with the thumbnail button. (tap or keyboard delete)
@@ -736,13 +721,11 @@ using base::UserMetricsAction;
   if (!self.view.thumbnailButton.selected) {
     self.view.thumbnailButton.selected = YES;
   } else {
-    if (_textChangeDelegate) {
-      _textChangeDelegate->RemoveThumbnail();
-      // Clear the selection once it's no longer needed. This prevents it from
-      // reappearing unexpectedly as the user navigates back through previous
-      // results.
-      self.view.thumbnailButton.selected = NO;
-    }
+    [self.mutator removeThumbnail];
+    // Clear the selection once it's no longer needed. This prevents it from
+    // reappearing unexpectedly as the user navigates back through previous
+    // results.
+    self.view.thumbnailButton.selected = NO;
   }
 }
 

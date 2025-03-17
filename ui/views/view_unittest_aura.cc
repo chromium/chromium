@@ -55,7 +55,7 @@ class ViewAuraTest : public ViewsTestBase {
   ~ViewAuraTest() override = default;
 
   const View::Views& GetViewsWithLayers(Widget* widget) {
-    return widget->GetViewsWithLayers();
+    return widget->GetViewsWithLayersInZOrder();
   }
 };
 

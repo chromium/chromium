@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "url/url_constants.h"
 
@@ -98,7 +99,11 @@ CookieSameSite StringToCookieSameSite(const std::string& same_site,
 }
 
 void RecordCookieSameSiteAttributeValueHistogram(CookieSameSiteString value) {
-  UMA_HISTOGRAM_ENUMERATION("Cookie.SameSiteAttributeValue", value);
+  static base::MetricsSubSampler metrics_subsampler;
+  if (metrics_subsampler.ShouldSample(kHistogramSampleProbability)) {
+    UMA_HISTOGRAM_ENUMERATION("Cookie.SameSiteAttributeValue.Subsampled",
+                              value);
+  }
 }
 
 CookiePort ReducePortRangeForCookieHistogram(const int port) {

@@ -4,9 +4,9 @@
 
 #include "content/browser/compute_pressure/pressure_service_base.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -68,7 +68,7 @@ bool PressureServiceBase::HasImplicitFocus(RenderFrameHost* render_frame_host) {
 
   // 3. If associated document is same origin with initiators of active
   // Picture-in-Picture sessions, return true.
-  if (base::ranges::any_of(
+  if (std::ranges::any_of(
           WebContentsImpl::GetAllWebContents(), [&](WebContentsImpl* wc) {
             if (!wc->HasPictureInPictureVideo()) {
               return false;
@@ -122,54 +122,58 @@ void PressureServiceBase::BindReceiver(
     mojo::ReportBadMessage("PressureService is already connected.");
     return;
   }
+
   manager_receiver_.Bind(std::move(receiver));
   // base::Unretained is safe because Mojo guarantees the callback will not
-  // be called after `manager_receiver_` is deallocated, and `manager_receiver_`
-  // is owned by this class.
+  // be called after `associated_manager_receiver_` is deallocated,
+  //  and `associated_manager_receiver_` is owned by this class.
   manager_receiver_.set_disconnect_handler(
       base::BindRepeating(&PressureServiceBase::OnPressureManagerDisconnected,
                           base::Unretained(this)));
+
+  auto* pressure_manager_proxy =
+      GetWebContentsPressureManagerProxy(/*allow_creation*/true);
+  if (pressure_manager_proxy) {
+    pressure_manager_proxy->AddObserver(this);
+  }
 }
 
-void PressureServiceBase::AddClient(device::mojom::PressureSource source,
-                                    AddClientCallback callback) {
+void PressureServiceBase::AddClient(
+    device::mojom::PressureSource source,
+    mojo::PendingAssociatedRemote<device::mojom::PressureClient> client,
+    AddClientCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!CanCallAddClient()) {
     std::move(callback).Run(
-        device::mojom::PressureManagerAddClientResult::NewError(
-            device::mojom::PressureManagerAddClientError::kNotSupported));
+        device::mojom::PressureManagerAddClientResult::kNotSupported);
     return;
   }
 
   auto& pressure_client = source_to_client_[static_cast<size_t>(source)];
-  if (pressure_client.is_client_remote_bound()) {
+  if (pressure_client.is_client_associated_remote_bound()) {
     manager_receiver_.ReportBadMessage(
         "PressureClientImpl is already connected.");
     return;
   }
 
+  pressure_client.BindPendingAssociatedRemote(std::move(client));
+
   if (!manager_remote_.is_bound()) {
-    auto receiver = manager_remote_.BindNewPipeAndPassReceiver();
-    // base::Unretained is safe because Mojo guarantees the callback will not
-    // be called after `manager_remote_` is deallocated, and `manager_remote_`
-    // is owned by this class.
+    auto manager_receiver = manager_remote_.BindNewPipeAndPassReceiver();
     manager_remote_.set_disconnect_handler(
         base::BindRepeating(&PressureServiceBase::OnPressureManagerDisconnected,
                             base::Unretained(this)));
-    GetDeviceService().BindPressureManager(std::move(receiver));
+
+    GetDeviceService().BindPressureManager(std::move(manager_receiver));
   }
 
   if (pressure_client.is_client_receiver_bound()) {
-    // Calling BindNewPipeAndPassReceiver() is safe because we call
-    // PressureClientImpl::is_client_remote_bound() above.
-    std::move(callback).Run(
-        device::mojom::PressureManagerAddClientResult::NewPressureClient(
-            pressure_client.BindNewPipeAndPassReceiver()));
+    std::move(callback).Run(device::mojom::PressureManagerAddClientResult::kOk);
   } else {
     const std::optional<base::UnguessableToken>& token = GetTokenFor(source);
     manager_remote_->AddClient(
-        source, token,
+        source, token, pressure_client.BindNewEndpointAndPassRemote(),
         base::BindOnce(&PressureServiceBase::DidAddClient,
                        weak_ptr_factory_.GetWeakPtr(), source, token,
                        std::move(callback)));
@@ -200,16 +204,19 @@ void PressureServiceBase::DidRemoveVirtualPressureSource(
 }
 
 WebContentsPressureManagerProxy*
-PressureServiceBase::GetWebContentsPressureManagerProxy() const {
+PressureServiceBase::GetWebContentsPressureManagerProxy(
+    bool allow_creation) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RenderFrameHost* rfh = GetRenderFrameHost();
-  auto* web_content = WebContents::FromRenderFrameHost(rfh);
+  auto* web_contents = WebContents::FromRenderFrameHost(rfh);
   // Checking the validity of RenderFrameHost* because in some cases as
   // explained in ~PressureServiceBase(), the order of destruction might not be
   // as expected.
-  if (rfh && web_content) {
-    return WebContentsPressureManagerProxy::FromWebContents(web_content);
+  if (rfh && web_contents) {
+    return allow_creation
+               ? WebContentsPressureManagerProxy::GetOrCreate(web_contents)
+               : WebContentsPressureManagerProxy::FromWebContents(web_contents);
   } else {
     return nullptr;
   }
@@ -230,14 +237,22 @@ void PressureServiceBase::AddMessageToConsole(
   rfh->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kInfo, message);
 }
 
-// Disconnection handler for |manager_receiver_| and |manager_remote_|. If
-// either of the connections breaks, we should disconnect all connections and
-// let //services know we do not need more updates.
+// Disconnection handler for |associated_manager_receiver_| and
+// |associated_manager_remote_|. If either of the connections breaks, we should
+// disconnect all connections and let //services know we do not need more
+// updates.
 void PressureServiceBase::OnPressureManagerDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   manager_receiver_.reset();
   manager_remote_.reset();
+
+  // In case the client was removed from Blink before service binding
+  // has occurred. Reset is needed.
+  for (auto& client : source_to_client_) {
+    client.Reset();
+  }
+
   auto* pressure_manager_proxy = GetWebContentsPressureManagerProxy();
   if (pressure_manager_proxy) {
     pressure_manager_proxy->RemoveObserver(this);
@@ -248,33 +263,22 @@ void PressureServiceBase::DidAddClient(
     device::mojom::PressureSource source,
     const std::optional<base::UnguessableToken>& token,
     AddClientCallback client_callback,
-    device::mojom::PressureManagerAddClientResultPtr result) {
+    device::mojom::PressureManagerAddClientResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (result->is_error()) {
-    std::move(client_callback).Run(std::move(result));
+  auto& pressure_client = source_to_client_[static_cast<size_t>(source)];
+
+  if (result == device::mojom::PressureManagerAddClientResult::kNotSupported) {
+    std::move(client_callback)
+        .Run(device::mojom::PressureManagerAddClientResult::kNotSupported);
+    pressure_client.Reset();
     return;
   }
 
-  auto& pressure_client = source_to_client_[static_cast<size_t>(source)];
-  pressure_client.BindReceiver(std::move(result->get_pressure_client()),
-                               token.has_value());
+  pressure_client.SetPressureSourceType(token.has_value());
 
   std::move(client_callback)
-      .Run(device::mojom::PressureManagerAddClientResult::NewPressureClient(
-          // This is safe because AddClient() already checked
-          // PressureClientImpl::is_client_remote_bound()'s return value.
-          pressure_client.BindNewPipeAndPassReceiver()));
-
-  RenderFrameHost* rfh = GetRenderFrameHost();
-  auto* web_content = WebContents::FromRenderFrameHost(rfh);
-  if (rfh && web_content) {
-    auto* pressure_manager_proxy =
-        WebContentsPressureManagerProxy::GetOrCreate(web_content);
-    if (pressure_manager_proxy) {
-      pressure_manager_proxy->AddObserver(this);
-    }
-  }
+      .Run(device::mojom::PressureManagerAddClientResult::kOk);
 }
 
 }  // namespace content

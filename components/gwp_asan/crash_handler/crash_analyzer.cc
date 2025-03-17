@@ -267,7 +267,7 @@ bool CrashAnalyzer::AnalyzeLightweightDetectorCrash(
       // https://elixir.bootlin.com/linux/v6.2.2/source/arch/x86/kernel/traps.c#L719
       exception->Exception() == SIGSEGV &&
       exception->ExceptionInfo() == SI_KERNEL
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
       // https://opensource.apple.com/source/xnu/xnu-1699.24.8/osfmk/i386/trap.c
       exception->Exception() == EXC_BAD_ACCESS &&
       exception->ExceptionInfo() == EXC_I386_GPFLT
@@ -433,13 +433,15 @@ bool CrashAnalyzer::AnalyzeCrashedAllocator(
     proto->set_allocation_address(metadata.alloc_ptr);
     proto->set_allocation_size(metadata.alloc_size);
     if (metadata.alloc.tid != base::kInvalidThreadId ||
-        metadata.alloc.trace_len)
+        metadata.alloc.trace_len) {
       ReadAllocationInfo(metadata.stack_trace_pool, 0, metadata.alloc,
                          proto->mutable_allocation());
+    }
     if (metadata.dealloc.tid != base::kInvalidThreadId ||
-        metadata.dealloc.trace_len)
+        metadata.dealloc.trace_len) {
       ReadAllocationInfo(metadata.stack_trace_pool, metadata.alloc.trace_len,
                          metadata.dealloc, proto->mutable_deallocation());
+    }
   }
 
   ReportHistogram(allocator, GwpAsanCrashAnalysisResult::kGwpAsanCrash);
@@ -451,8 +453,15 @@ void CrashAnalyzer::ReadAllocationInfo(
     size_t stack_trace_offset,
     const AllocationInfo& slot_info,
     gwp_asan::Crash_AllocationInfo* proto_info) {
-  if (slot_info.tid != base::kInvalidThreadId)
-    proto_info->set_thread_id(slot_info.tid);
+  if (slot_info.tid != base::kInvalidThreadId) {
+    // The PlatformThreadId will match the Crashpad tid in terms of the bit
+    // values, however it can differ in bitwidth and sign. To make this uniform,
+    // we static cast to uint64_t as a representation conversion, keeping the
+    // value the same. A static_assert on the size makes sure that we never
+    // truncate information with this conversion.
+    static_assert(sizeof(uint64_t) >= sizeof(base::PlatformThreadId));
+    proto_info->set_thread_id(static_cast<uint64_t>(slot_info.tid));
+  }
 
   if (!slot_info.trace_len || !slot_info.trace_collected)
     return;

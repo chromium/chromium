@@ -23,7 +23,7 @@ namespace content_settings {
 namespace {
 
 // clang-format off
-const auto kContentSettingNames = std::to_array<const char *>({
+constexpr auto kContentSettingNames = std::to_array<const char *>({
   "default",
   "allow",
   "block",

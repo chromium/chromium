@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
 
+#include <array>
 #include <iosfwd>
 #include <optional>
 #include <string_view>
@@ -117,16 +118,6 @@ class PLATFORM_EXPORT Color {
     kNone,
   };
 
-  // TODO(crbug.com/383270111): As of 2024-12-12 Skia does not yet support these
-  // color spaces for gradient interpolation.
-  static bool IsUndefinedColorSpaceForGradientInterpolation(
-      ColorSpace color_space) {
-    return color_space == ColorSpace::kDisplayP3 ||
-           color_space == ColorSpace::kA98RGB ||
-           color_space == ColorSpace::kProPhotoRGB ||
-           color_space == ColorSpace::kRec2020;
-  }
-
   // For testing purposes and for serializer.
   static WTF::String ColorSpaceToString(Color::ColorSpace color_space);
 
@@ -199,11 +190,6 @@ class PLATFORM_EXPORT Color {
     return Color(ClampInt255(a) << 24 | ClampInt255(r) << 16 |
                  ClampInt255(g) << 8 | ClampInt255(b));
   }
-
-  static Color FromRGBALegacy(std::optional<int> r,
-                              std::optional<int> g,
-                              std::optional<int> b,
-                              std::optional<int> alpha);
 
   // Create a color using the rgba() syntax, with float arguments. All
   // parameters will be clamped to the [0, 1] interval.
@@ -401,6 +387,8 @@ class PLATFORM_EXPORT Color {
   void ConvertToColorSpace(ColorSpace destination_color_space,
                            bool resolve_missing_components = true);
 
+  void ConvertToColorSpaceForInterpolation(ColorSpace destination_color_space);
+
   // Colors can parse calc(NaN) and calc(Infinity). At computed value time this
   // function is called which resolves all NaNs to zero and +/-infinities to
   // maximum/minimum values, if they exist. It leaves finite values unchanged.
@@ -462,9 +450,19 @@ class PLATFORM_EXPORT Color {
   // According the Spec https://www.w3.org/TR/css-color-4/#interpolation-missing
   // we have to do a special treatment of when to carry forward the 'noneness'
   // of a component, given if it's an 'analog component'.
-  static void CarryForwardAnalogousMissingComponents(
-      Color color,
-      ColorSpace prev_color_space);
+
+  // Get the analogous missing components for this color with respect to the
+  // specified interpolation color space. Returns an array with the 'none'-ness
+  // for each parameter in the interpolation color space, suitable for passing
+  // to CarryForwardAnalogousMissingComponents() after converting the color to
+  // the interpolation color space.
+  std::array<bool, 3> GetAnalogousMissingComponents(
+      ColorSpace interpolation_space) const;
+
+  // Set param[0..2]_is_none_ to true if the corresponding entry in the array
+  // is true.
+  void CarryForwardAnalogousMissingComponents(
+      const std::array<bool, 3>& missing_components);
 
   // https://www.w3.org/TR/css-color-4/#interpolation-missing
   // If a color with a carried forward missing component is interpolated
@@ -494,8 +492,6 @@ class PLATFORM_EXPORT Color {
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream& os, const Color& color);
 
 PLATFORM_EXPORT int DifferenceSquared(const Color&, const Color&);
-PLATFORM_EXPORT Color ColorFromPremultipliedARGB(RGBA32);
-PLATFORM_EXPORT RGBA32 PremultipliedARGBFromColor(const Color&);
 
 }  // namespace blink
 

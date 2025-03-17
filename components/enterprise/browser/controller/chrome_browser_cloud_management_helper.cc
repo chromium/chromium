@@ -115,12 +115,8 @@ MachineLevelUserCloudPolicyFetcher::MachineLevelUserCloudPolicyFetcher(
   InitializeManager(std::move(client));
 }
 
-MachineLevelUserCloudPolicyFetcher::~MachineLevelUserCloudPolicyFetcher() {
-  // The pointers need to be checked since they might be invalidated from a
-  // |Disconnect| call.
-  if (policy_manager_->core() && policy_manager_->core()->service())
-    policy_manager_->core()->service()->RemoveObserver(this);
-}
+MachineLevelUserCloudPolicyFetcher::~MachineLevelUserCloudPolicyFetcher() =
+    default;
 
 void MachineLevelUserCloudPolicyFetcher::SetupRegistrationAndFetchPolicy(
     const DMToken& dm_token,
@@ -148,9 +144,8 @@ void MachineLevelUserCloudPolicyFetcher::RemoveClientObserver(
 }
 
 void MachineLevelUserCloudPolicyFetcher::Disconnect() {
+  cloud_policy_service_observation_.Reset();
   if (policy_manager_) {
-    if (policy_manager_->core() && policy_manager_->core()->service())
-      policy_manager_->core()->service()->RemoveObserver(this);
     policy_manager_->DisconnectAndRemovePolicy();
   }
 }
@@ -175,7 +170,7 @@ void MachineLevelUserCloudPolicyFetcher::
 void MachineLevelUserCloudPolicyFetcher::InitializeManager(
     std::unique_ptr<CloudPolicyClient> client) {
   policy_manager_->Connect(local_state_, std::move(client));
-  policy_manager_->core()->service()->AddObserver(this);
+  cloud_policy_service_observation_.Observe(policy_manager_->core()->service());
 
   // If CloudPolicyStore is already initialized then
   // |OnCloudPolicyServiceInitializationCompleted| has already fired. Fetch
@@ -195,10 +190,6 @@ void MachineLevelUserCloudPolicyFetcher::TryToFetchPolicy() {
   std::string client_id = BrowserDMTokenStorage::Get()->RetrieveClientId();
   if (dm_token.is_valid() && !client_id.empty())
     SetupRegistrationAndFetchPolicy(dm_token, client_id);
-}
-
-std::string_view MachineLevelUserCloudPolicyFetcher::name() const {
-  return "MachineLevelUserCloudPolicyFetcher";
 }
 
 }  // namespace policy

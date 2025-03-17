@@ -12,9 +12,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** Layout that holds an infobar's contents and provides a background color and a top shadow. */
+@NullMarked
 class InfoBarWrapper extends FrameLayout {
     private final InfoBarUiItem mItem;
 

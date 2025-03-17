@@ -36,7 +36,6 @@ export interface SettingsGuestOsSharedPathsElement {
 
 const SettingsGuestOsSharedPathsElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class SettingsGuestOsSharedPathsElement extends
     SettingsGuestOsSharedPathsElementBase {
   static get is() {

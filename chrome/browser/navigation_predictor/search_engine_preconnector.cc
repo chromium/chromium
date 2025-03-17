@@ -156,8 +156,8 @@ bool SearchEnginePreconnector::IsBrowserAppLikelyInForeground() const {
 
 int SearchEnginePreconnector::GetPreconnectIntervalSec() const {
   constexpr int kPreconnectIntervalSec = 60;
-  return preconnect_interval_for_testing_.value_or(kPreconnectIntervalSec);
+  int preconnect_interval = base::GetFieldTrialParamByFeatureAsInt(
+      net::features::kSearchEnginePreconnectInterval, "preconnect_interval",
+      kPreconnectIntervalSec);
+  return preconnect_interval;
 }
-
-std::optional<int> SearchEnginePreconnector::preconnect_interval_for_testing_ =
-    std::nullopt;

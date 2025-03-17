@@ -4,8 +4,9 @@
 
 #include "chrome/browser/policy/chrome_extension_policy_migrator.h"
 
+#include <algorithm>
+
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/common/hashed_extension_id.h"
 
@@ -18,8 +19,8 @@ void ChromeExtensionPolicyMigrator::CopyPoliciesIfUnset(
   // HashedExtensionId gives an all-uppercase output, so make sure the input is
   // all uppercase.
   std::string hashed_extension_id_uppercase = hashed_extension_id;
-  base::ranges::transform(hashed_extension_id_uppercase,
-                          hashed_extension_id_uppercase.begin(), ::toupper);
+  std::ranges::transform(hashed_extension_id_uppercase,
+                         hashed_extension_id_uppercase.begin(), ::toupper);
 
   // Look for an extension with this hash.
   PolicyMap* extension_map = nullptr;

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // Unit test for VideoCaptureBufferPool.
 
 #include "media/capture/video/video_capture_buffer_pool.h"
@@ -33,7 +38,10 @@
 #if BUILDFLAG(IS_WIN)
 #include <dxgi1_2.h>
 #include <mfapi.h>
+
+#include "base/win/scoped_handle.h"
 #include "media/base/win/dxgi_device_manager.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #endif
 
 namespace content {
@@ -358,8 +366,8 @@ gfx::GpuMemoryBufferHandle CreateHandle(ID3D11Device* d3d11_device) {
 
   gfx::GpuMemoryBufferHandle result;
   result.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
-  result.dxgi_handle.Set(texture_handle);
-  result.dxgi_token = gfx::DXGIHandleToken();
+  result.set_dxgi_handle(
+      gfx::DXGIHandle(base::win::ScopedHandle(texture_handle)));
   return result;
 }
 

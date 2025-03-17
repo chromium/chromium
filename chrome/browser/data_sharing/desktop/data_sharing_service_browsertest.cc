@@ -13,6 +13,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/data_sharing/public/features.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class DataSharingServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -50,11 +51,18 @@ IN_PROC_BROWSER_TEST_F(DataSharingServiceBrowserTest, ReadGroup) {
             EXPECT_EQ("GROUP_NAME", result->display_name);
             EXPECT_EQ(1u, result->members.size());
             data_sharing::GroupMember member = result->members[0];
-            EXPECT_EQ("GAIA_ID", member.gaia_id);
+            EXPECT_EQ("GAIA_ID", member.gaia_id.ToString());
             EXPECT_EQ("MEMBER_NAME", member.display_name);
             EXPECT_EQ("test@gmail.com", member.email);
             EXPECT_EQ(data_sharing::MemberRole::kMember, member.role);
             EXPECT_EQ(GURL("http://example.com"), member.avatar_url);
+            data_sharing::GroupMember former_member = result->former_members[0];
+            EXPECT_EQ("GAIA_ID2", former_member.gaia_id.ToString());
+            EXPECT_EQ("MEMBER_NAME2", former_member.display_name);
+            EXPECT_EQ("test2@gmail.com", former_member.email);
+            EXPECT_EQ(data_sharing::MemberRole::kFormerMember,
+                      former_member.role);
+            EXPECT_EQ(GURL("http://example2.com"), former_member.avatar_url);
             run_loop->Quit();
           },
           &run_loop));

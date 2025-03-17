@@ -17,8 +17,9 @@ namespace nsurlprotectionspace_util {
 NSString* MessageForHTTPAuth(NSURLProtectionSpace* protectionSpace) {
   DCHECK(CanShow(protectionSpace));
 
-  if (protectionSpace.receivesCredentialSecurely)
+  if (protectionSpace.receivesCredentialSecurely) {
     return RequesterIdentity(protectionSpace);
+  }
 
   NSString* securityWarning =
       l10n_util::GetNSString(IDS_PAGE_INFO_NOT_SECURE_SUMMARY);
@@ -28,14 +29,18 @@ NSString* MessageForHTTPAuth(NSURLProtectionSpace* protectionSpace) {
 }
 
 BOOL CanShow(NSURLProtectionSpace* protectionSpace) {
-  if (protectionSpace.host.length == 0)
+  if (protectionSpace.host.length == 0) {
     return NO;
+  }
 
-  if (!base::IsValueInRangeForNumericType<uint16_t>(protectionSpace.port))
+  if (!base::IsValueInRangeForNumericType<uint16_t>(protectionSpace.port)) {
     return NO;  // Port is invalid.
+  }
 
-  if (!protectionSpace.isProxy && !RequesterOrigin(protectionSpace).is_valid())
+  if (!protectionSpace.isProxy &&
+      !RequesterOrigin(protectionSpace).is_valid()) {
     return NO;  // Can't construct origin for non-proxy requester.
+  }
 
   return YES;
 }

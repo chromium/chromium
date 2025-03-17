@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import '/strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -82,6 +83,7 @@ export class ProfileCustomizationAppElement extends
   }
 
   protected isManaged_: boolean = false;
+  protected hasEnterpriseLabel: boolean = false;
   protected profileName_: string = '';
   protected pictureUrl_: string = '';
   protected welcomeTitle_: string = '';
@@ -130,6 +132,7 @@ export class ProfileCustomizationAppElement extends
         '--header-background-color', profileInfo.backgroundColor);
     this.pictureUrl_ = profileInfo.pictureUrl;
     this.isManaged_ = profileInfo.isManaged;
+    this.hasEnterpriseLabel = profileInfo.hasEnterpriseLabel;
     this.welcomeTitle_ = this.isLocalProfileCreation_ ?
         this.i18n('localProfileCreationTitle') :
         this.i18n('profileCustomizationTitle');

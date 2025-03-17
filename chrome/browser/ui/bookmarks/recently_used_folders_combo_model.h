@@ -75,9 +75,6 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   // Returns the node at the specified |index|.
   const bookmarks::BookmarkNode* GetNodeAt(size_t index);
 
-  // Removes |node| from |items_|. Does nothing if |node| is not in |items_|.
-  void RemoveNode(const bookmarks::BookmarkNode* node);
-
   struct Item;
   std::vector<Item> items_;
 

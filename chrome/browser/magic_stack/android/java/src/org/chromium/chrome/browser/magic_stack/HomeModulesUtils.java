@@ -5,13 +5,19 @@
 package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
+import android.content.res.Resources;
 import android.os.SystemClock;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
@@ -23,10 +29,14 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.ProcessedValue;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 /** Utility class for the magic stack. */
 public class HomeModulesUtils {
     static final long INVALID_TIMESTAMP = -1;
     static final int INVALID_FRESHNESS_SCORE = -1;
+    static final int INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION = 0;
 
     private static final String SINGLE_TAB_FRESHNESS_INPUT_CONTEXT = "single_tab_freshness";
 
@@ -38,6 +48,23 @@ public class HomeModulesUtils {
 
     private static final String AUXILIARY_SEARCH_FRESHNESS_INPUT_CONTEXT =
             "auxiliary_search_freshness";
+
+    // List of all educational tip modules.
+    private static final HashSet<Integer> sEducationalTipCardList =
+            new HashSet<>(
+                    Arrays.asList(
+                            DEFAULT_BROWSER_PROMO,
+                            TAB_GROUP_PROMO,
+                            TAB_GROUP_SYNC_PROMO,
+                            QUICK_DELETE_PROMO));
+
+    static boolean belongsToEducationalTipModule(@ModuleType int moduleType) {
+        return sEducationalTipCardList.contains(moduleType);
+    }
+
+    static HashSet<Integer> getEducationalTipModuleList() {
+        return sEducationalTipCardList;
+    }
 
     /**
      * Returns the freshness score key used by InputContext for the given module. Remember to update
@@ -56,6 +83,36 @@ public class HomeModulesUtils {
                 return SAFETY_HUB_FRESHNESS_INPUT_CONTEXT;
             case AUXILIARY_SEARCH:
                 return AUXILIARY_SEARCH_FRESHNESS_INPUT_CONTEXT;
+            default:
+                assert false : "Module type not supported!";
+                return null;
+        }
+    }
+
+    /**
+     * @param moduleType Type of the home module
+     * @param resources The {@link Resources} instance to load Android resources from.
+     * @return The string of switch title for the module type.
+     */
+    @NonNull
+    public static String getTitleForModuleType(
+            @ModuleType int moduleType, @NonNull Resources resources) {
+        switch (moduleType) {
+            case SINGLE_TAB:
+            case TAB_RESUMPTION:
+                return resources.getQuantityString(R.plurals.home_modules_tab_resumption_title, 1);
+            case PRICE_CHANGE:
+                return resources.getString(R.string.price_change_module_name);
+            case SAFETY_HUB:
+                return resources.getString(R.string.safety_hub_magic_stack_module_name);
+            case DEFAULT_BROWSER_PROMO:
+            case TAB_GROUP_PROMO:
+            case TAB_GROUP_SYNC_PROMO:
+            case QUICK_DELETE_PROMO:
+                // All tips use the same name.
+                return resources.getString(R.string.educational_tip_module_name);
+            case AUXILIARY_SEARCH:
+                return resources.getString(R.string.auxiliary_search_module_name);
             default:
                 assert false : "Module type not supported!";
                 return null;
@@ -161,6 +218,51 @@ public class HomeModulesUtils {
         }
 
         return getFreshnessCount(moduleType);
+    }
+
+    /** Returns the preference key of the module type for impression count before interaction. */
+    private static String getImpressionCountBeforeInteractionPreferenceKey(
+            @ModuleType int moduleType) {
+        assert HomeModulesUtils.belongsToEducationalTipModule(moduleType);
+
+        return ChromePreferenceKeys.HOME_MODULES_IMPRESSION_COUNT_BEFORE_INTERACTION.createKey(
+                String.valueOf(moduleType));
+    }
+
+    /**
+     * Called to increase the impression count before interaction for the module type provided by 1.
+     * The count is increased from 0.
+     */
+    @VisibleForTesting
+    public static void increaseImpressionCountBeforeInteraction(@ModuleType int moduleType) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        String impressionCountBeforeInteractionKey =
+                getImpressionCountBeforeInteractionPreferenceKey(moduleType);
+        int totalCount =
+                sharedPreferencesManager.readInt(
+                                impressionCountBeforeInteractionKey,
+                                INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION)
+                        + 1;
+        sharedPreferencesManager.writeInt(impressionCountBeforeInteractionKey, totalCount);
+    }
+
+    /** Gets the impression count before interaction of a module. */
+    @VisibleForTesting
+    static int getImpressionCountBeforeInteraction(@ModuleType int moduleType) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        String impressionCountBeforeInteractionKey =
+                getImpressionCountBeforeInteractionPreferenceKey(moduleType);
+        return sharedPreferencesManager.readInt(
+                impressionCountBeforeInteractionKey, INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION);
+    }
+
+    /** Called to remove the impression count before interaction shared preference key. */
+    @VisibleForTesting
+    public static void removeImpressionCountBeforeInteractionKey(@ModuleType int moduleType) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        String impressionCountBeforeInteractionKey =
+                getImpressionCountBeforeInteractionPreferenceKey(moduleType);
+        sharedPreferencesManager.removeKey(impressionCountBeforeInteractionKey);
     }
 
     public static void setFreshnessCountForTesting(

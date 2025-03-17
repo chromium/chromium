@@ -24,7 +24,8 @@ class NET_EXPORT HttpConnection {
  public:
   // IOBuffer for data read.  It's a wrapper around GrowableIOBuffer, with more
   // functions for buffer management.  It moves unconsumed data to the start of
-  // buffer.
+  // buffer. The data() pointer points to the end of the consumed data, where
+  // the next write to the buffer should occur.
   class NET_EXPORT ReadIOBuffer : public IOBuffer {
    public:
     static const int kInitialBufSize = 1024;
@@ -43,13 +44,13 @@ class NET_EXPORT HttpConnection {
     // Increases capacity and returns true if capacity is not beyond the limit.
     bool IncreaseCapacity();
 
-    // Start of read data.
-    char* StartOfBuffer() const;
-    // Returns the bytes of read data.
-    int GetSize() const;
-    // More read data was appended.
+    // Returns a span containing bytes that have been written to, and thus are
+    // available to be read from.
+    base::span<const uint8_t> readable_bytes() const;
+    // More read data was appended. Increases the size of span_before_offset().
     void DidRead(int bytes);
-    // Capacity for which more read data can be appended.
+    // Capacity for which more read data can be appended. Decreases size of
+    // span_before_offset().
     int RemainingCapacity() const;
 
     // Removes consumed data and moves unconsumed data to the start of buffer.
@@ -69,8 +70,8 @@ class NET_EXPORT HttpConnection {
   };
 
   // IOBuffer of pending data to write which has a queue of pending data. Each
-  // pending data is stored in std::string.  data() is the data of first
-  // std::string stored.
+  // pending data is stored in std::string. The IOBuffer's data pointer tracks
+  // the portion of the first write in the queue that has yet to be written.
   class NET_EXPORT QueuedWriteIOBuffer : public IOBuffer {
    public:
     static const int kDefaultMaxBufferSize = 1 * 1024 * 1024;  // 1 Mbytes.

@@ -32,10 +32,6 @@
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#endif
-
 namespace gfx {
 class FontList;
 }  // namespace gfx
@@ -138,7 +134,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   ~MenuItemView() override;
 
   // Overridden from View:
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetRenderedTooltipText(const gfx::Point& p) const override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   FocusBehavior GetFocusBehavior() const override;
 

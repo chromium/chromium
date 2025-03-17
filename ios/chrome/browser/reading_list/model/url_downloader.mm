@@ -434,6 +434,7 @@ void URLDownloader::FetchPDFFile() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = pdf_url;
   resource_request->load_flags = net::LOAD_SKIP_CACHE_VALIDATION;
+  resource_request->site_for_cookies = net::SiteForCookies::FromUrl(pdf_url);
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  NO_TRAFFIC_ANNOTATION_YET);

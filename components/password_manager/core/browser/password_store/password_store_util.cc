@@ -4,7 +4,7 @@
 
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
 
 namespace password_manager {
 
@@ -20,7 +20,7 @@ PasswordChanges JoinPasswordStoreChanges(
     if (!changes.has_value()) {
       return std::nullopt;
     }
-    base::ranges::copy(*changes, std::back_inserter(joined_changes));
+    std::ranges::copy(*changes, std::back_inserter(joined_changes));
   }
   return joined_changes;
 }

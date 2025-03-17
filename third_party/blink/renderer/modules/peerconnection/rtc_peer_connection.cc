@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 
 #include <algorithm>
@@ -41,6 +36,8 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
@@ -320,7 +317,8 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
   }
 
   if (configuration->hasIceServers()) {
-    WebVector<webrtc::PeerConnectionInterface::IceServer> ice_servers;
+    std::vector<webrtc::PeerConnectionInterface::IceServer>& ice_servers =
+        web_configuration.servers;
     for (const RTCIceServer* ice_server : configuration->iceServers()) {
       Vector<String> url_strings;
       std::vector<std::string> converted_urls;
@@ -379,18 +377,12 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
       }
       ice_servers.emplace_back(std::move(converted_ice_server));
     }
-    web_configuration.servers = ice_servers.ReleaseVector();
   }
 
   if (configuration->hasCertificates()) {
-    const HeapVector<Member<RTCCertificate>>& certificates =
-        configuration->certificates();
-    WebVector<rtc::scoped_refptr<rtc::RTCCertificate>> certificates_copy(
-        certificates.size());
-    for (wtf_size_t i = 0; i < certificates.size(); ++i) {
-      certificates_copy[i] = certificates[i]->Certificate();
-    }
-    web_configuration.certificates = certificates_copy.ReleaseVector();
+    web_configuration.certificates = base::ToVector(
+        configuration->certificates(),
+        [](const auto& certificate) { return certificate->Certificate(); });
   }
 
   web_configuration.ice_candidate_pool_size =
@@ -2103,14 +2095,14 @@ RTCRtpSender* RTCPeerConnection::FindSenderForTrackAndStream(
 
 HeapVector<Member<RTCRtpSender>>::iterator RTCPeerConnection::FindSender(
     const RTCRtpSenderPlatform& web_sender) {
-  return base::ranges::find_if(rtp_senders_, [&](const auto& sender) {
+  return std::ranges::find_if(rtp_senders_, [&](const auto& sender) {
     return sender->web_sender()->Id() == web_sender.Id();
   });
 }
 
 HeapVector<Member<RTCRtpReceiver>>::iterator RTCPeerConnection::FindReceiver(
     const RTCRtpReceiverPlatform& platform_receiver) {
-  return base::ranges::find_if(rtp_receivers_, [&](const auto& receiver) {
+  return std::ranges::find_if(rtp_receivers_, [&](const auto& receiver) {
     return receiver->platform_receiver()->Id() == platform_receiver.Id();
   });
 }
@@ -2118,7 +2110,7 @@ HeapVector<Member<RTCRtpReceiver>>::iterator RTCPeerConnection::FindReceiver(
 HeapVector<Member<RTCRtpTransceiver>>::iterator
 RTCPeerConnection::FindTransceiver(
     const RTCRtpTransceiverPlatform& platform_transceiver) {
-  return base::ranges::find_if(transceivers_, [&](const auto& transceiver) {
+  return std::ranges::find_if(transceivers_, [&](const auto& transceiver) {
     return transceiver->platform_transceiver()->Id() ==
            platform_transceiver.Id();
   });
@@ -2435,7 +2427,8 @@ void RTCPeerConnection::DidModifyTransceivers(
   // Remove transceivers and update their states to reflect that they are
   // necessarily stopped.
   for (auto id : removed_transceiver_ids) {
-    for (auto it = transceivers_.begin(); it != transceivers_.end(); ++it) {
+    for (auto it = transceivers_.begin(); it != transceivers_.end();
+         UNSAFE_TODO(++it)) {
       if ((*it)->platform_transceiver()->Id() == id) {
         // All streams are removed on stop, update `remove_list` if necessary.
         auto* track = (*it)->receiver()->track();
@@ -2928,7 +2921,7 @@ void RTCPeerConnection::DispatchScheduledEvents() {
   events.swap(scheduled_events_);
 
   HeapVector<Member<EventWrapper>>::iterator it = events.begin();
-  for (; it != events.end(); ++it) {
+  for (; it != events.end(); UNSAFE_TODO(++it)) {
     if ((*it)->Setup()) {
       DispatchEvent(*(*it)->event_.Release());
     }

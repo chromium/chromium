@@ -4,20 +4,21 @@
 
 #include "components/infobars/core/infobar_container.h"
 
+#include <algorithm>
+
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 
 namespace infobars {
 
-InfoBarContainer::Delegate::~Delegate() {}
+InfoBarContainer::Delegate::~Delegate() = default;
 
 InfoBarContainer::InfoBarContainer(Delegate* delegate)
     : delegate_(delegate),
@@ -82,7 +83,7 @@ void InfoBarContainer::OnInfoBarStateChanged(bool is_animating) {
 
 void InfoBarContainer::RemoveInfoBar(InfoBar* infobar) {
   infobar->set_container(nullptr);
-  auto i = base::ranges::find(infobars_, infobar);
+  auto i = std::ranges::find(infobars_, infobar);
   CHECK(i != infobars_.end());
   PlatformSpecificRemoveInfoBar(infobar);
   infobars_.erase(i);
@@ -110,7 +111,7 @@ void InfoBarContainer::OnInfoBarRemoved(InfoBar* infobar, bool animate) {
 void InfoBarContainer::OnInfoBarReplaced(InfoBar* old_infobar,
                                          InfoBar* new_infobar) {
   PlatformSpecificReplaceInfoBar(old_infobar, new_infobar);
-  InfoBars::const_iterator i = base::ranges::find(infobars_, old_infobar);
+  InfoBars::const_iterator i = std::ranges::find(infobars_, old_infobar);
   CHECK(i != infobars_.end());
   size_t position = i - infobars_.begin();
   old_infobar->Hide(false);

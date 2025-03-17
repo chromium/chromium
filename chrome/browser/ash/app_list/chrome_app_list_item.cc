@@ -9,7 +9,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_item.h"

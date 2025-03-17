@@ -82,7 +82,7 @@ suite('SiteDetailsPermission', function() {
     const header =
         testElement.$.details.querySelector<HTMLElement>('#permissionHeader')!;
     assertEquals(
-        'Camera', header.innerText!.trim(),
+        'Camera', header.innerText.trim(),
         'Widget should be labelled correctly');
 
     // Flip the permission and validate that prefs stay in sync.

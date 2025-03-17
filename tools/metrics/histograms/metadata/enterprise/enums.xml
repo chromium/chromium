@@ -362,16 +362,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Use Another Account button clicked"/>
 </enum>
 
-<enum name="EnrollmentRecoveryOnBootAction">
-  <summary>
-    The action taken on boot when enrollment recovery is marked in the local
-    state.
-  </summary>
-  <int value="0" label="Proceed with recovery"/>
-  <int value="1" label="False flag, the device policy is good"/>
-  <int value="2" label="Device without serial number, skip recovery"/>
-</enum>
-
 <enum name="EnterpriseAccountStatus">
   <summary>Account status fetched before enrollment process starts.</summary>
   <int value="0" label="Unknown account"/>
@@ -417,13 +407,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Timeout cancelled"/>
   <int value="1" label="Timeout encountered during forced re-enrollment"/>
   <int value="2" label="Timeout on a consumer device"/>
-</enum>
-
-<enum name="EnterpriseBrowserSigninPolicy">
-  <summary>Value for BrowserSignin policy</summary>
-  <int value="0" label="Disable browser sign-in"/>
-  <int value="1" label="Enable browser sign-in"/>
-  <int value="2" label="Force users to sign-in to use the browser"/>
 </enum>
 
 <enum name="EnterpriseCloudExtensionRequestListUpdate">
@@ -899,6 +882,15 @@ chromium-metrics-reviews@google.com.
   <int value="5"
       label="DEP Enrollment (automatically grants UAMDM status / full
              management capabilities)"/>
+</enum>
+
+<enum name="EnterpriseObfuscationError">
+  <int value="0" label="Success"/>
+  <int value="1" label="Obfuscation process failed"/>
+  <int value="2" label="Deobfuscation process failed"/>
+  <int value="3" label="Error during file read/write operations"/>
+  <int value="4" label="Obfuscation/deobfuscation is not enabled"/>
+  <int value="5" label="Error with obfuscation scheme"/>
 </enum>
 
 <enum name="EnterprisePolicies">
@@ -2131,7 +2123,7 @@ chromium-metrics-reviews@google.com.
   <int value="1256" label="PdfViewerOutOfProcessIframeEnabled"/>
   <int value="1257" label="LockScreenAutoStartOnlineReauth"/>
   <int value="1258" label="KeyboardFocusableScrollersEnabled"/>
-  <int value="1259" label="ExtensibleEnterpriseSSOEnabled"/>
+  <int value="1259" label="ExtensibleEnterpriseSSOBlocklist"/>
   <int value="1260" label="CSSCustomStateDeprecatedSyntaxEnabled"/>
   <int value="1261" label="MemorySaverModeSavings"/>
   <int value="1262" label="KioskVisionTelemetryEnabled"/>
@@ -2197,6 +2189,24 @@ chromium-metrics-reviews@google.com.
   <int value="1323" label="AllowedInputMethodsForceEnabled"/>
   <int value="1324" label="WebRtcIPHandlingUrl"/>
   <int value="1325" label="GenAIPhotoEditingSettings"/>
+  <int value="1326" label="PartitionedBlobUrlUsage"/>
+  <int value="1328" label="DefaultControlledFrameSetting"/>
+  <int value="1329" label="ControlledFrameAllowedForUrls"/>
+  <int value="1330" label="ControlledFrameBlockedForUrls"/>
+  <int value="1331" label="ExternalStorageAllowlist"/>
+  <int value="1332" label="WebAuthenticationRemoteDesktopAllowedOrigins"/>
+  <int value="1333" label="ServiceWorkerToControlSrcdocIframeEnabled"/>
+  <int value="1334" label="ProvisionManagedClientCertificateForBrowser"/>
+  <int value="1335" label="GeminiSettings"/>
+  <int value="1336" label="GenAISmartGroupingSettings"/>
+  <int value="1337" label="GenAiChromeOsSmartActionsSettings"/>
+  <int value="1338" label="RelaunchSupersededReleaseAge"/>
+  <int value="1339" label="ClassManagementCaptionsEnabled"/>
+  <int value="1340" label="ClassManagementClassroomIntegrationEnabled"/>
+  <int value="1341" label="ClassManagementNetworkRestrictionEnabled"/>
+  <int value="1342" label="ClassManagementSendingContentEnabled"/>
+  <int value="1343" label="ClassManagementViewScreenEnabled"/>
+  <int value="1344" label="KioskChromeAppsForceAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -2391,6 +2401,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="OneDrive authentication required"/>
   <int value="10" label="Generic move failed error"/>
   <int value="11" label="Cancelled"/>
+  <int value="12" label="NetworkError"/>
+  <int value="13" label="ReconnectTimeout"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ash/policy/skyvault/policy_utils.h:MigrationUploadError) -->
@@ -2495,6 +2507,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="OIDC profile registration failure"/>
   <int value="5" label="Can't start enrollment from Guest or OTR profile"/>
   <int value="6" label="OIDC profile registration timeout"/>
+  <int value="7" label="No enrollment due to browser sign in being disabled"/>
 </enum>
 
 <enum name="OidcProfileCreationFunnelStep">
@@ -2528,16 +2541,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="ownership unknown"/>
   <int value="1" label="not yet owned"/>
   <int value="2" label="ownership taken"/>
-</enum>
-
-<enum name="PrintScanningContext">
-  <int value="0" label="System print: Before system dialog"/>
-  <int value="1" label="Normal print: Before preview dialog"/>
-  <int value="2" label="System print: Before print document"/>
-  <int value="3" label="Normal print: Before print document"/>
-  <int value="4" label="System print: Before print job"/>
-  <int value="5" label="Normal print: Before print job"/>
-  <int value="6" label="Normal print: Open PDF in Preview"/>
 </enum>
 
 <enum name="PromotionBannerAction">

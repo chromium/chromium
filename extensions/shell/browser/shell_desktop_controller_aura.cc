@@ -4,19 +4,20 @@
 
 #include "extensions/shell/browser/shell_desktop_controller_aura.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/shell/browser/shell_app_window_client.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window.h"
@@ -112,11 +113,30 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
       SetCursor(delegate->GetCursor(), delegate);
   }
 
+  void SetLargeCursorSizeInDip(
+      int large_cursor_size_in_dip,
+      ::wm::NativeCursorManagerDelegate* delegate) override {
+    cursor_loader_.SetLargeCursorSizeInDip(large_cursor_size_in_dip);
+    delegate->CommitLargeCursorSizeInDip(large_cursor_size_in_dip);
+    if (delegate->IsCursorVisible()) {
+      SetCursor(delegate->GetCursor(), delegate);
+    }
+  }
+
   void SetMouseEventsEnabled(
       bool enabled,
       wm::NativeCursorManagerDelegate* delegate) override {
     delegate->CommitMouseEventsEnabled(enabled);
     SetVisibility(delegate->IsCursorVisible(), delegate);
+  }
+
+  void SetCursorColor(SkColor color,
+                      wm::NativeCursorManagerDelegate* delegate) override {
+    cursor_loader_.SetColor(color);
+    delegate->CommitCursorColor(color);
+    if (delegate->IsCursorVisible()) {
+      SetCursor(delegate->GetCursor(), delegate);
+    }
   }
 
  private:
@@ -210,7 +230,7 @@ void ShellDesktopControllerAura::CloseAppWindows() {
 
 void ShellDesktopControllerAura::CloseRootWindowController(
     RootWindowController* root_window_controller) {
-  const auto it = base::ranges::find(
+  const auto it = std::ranges::find(
       root_window_controllers_, root_window_controller,
       [](const auto& candidate_pair) { return candidate_pair.second.get(); });
   CHECK(it != root_window_controllers_.end(), base::NotFatalUntil::M130);

@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -36,6 +37,7 @@ import java.util.List;
 /** Tests for bookmark bridge */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@DisabledTest(message = "crbug.com/393436289")
 public class BookmarkBridgeTest {
     @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
@@ -105,7 +107,7 @@ public class BookmarkBridgeTest {
         Assert.assertEquals(expectedTitle, item.getTitle());
         Assert.assertEquals(item.isFolder(), isFolder);
         if (!isFolder) Assert.assertEquals(expectedUrl, item.getUrl().getSpec());
-        Assert.assertEquals(item.getParentId(), expectedParent);
+        Assert.assertEquals(expectedParent, item.getParentId());
     }
 
     @Test

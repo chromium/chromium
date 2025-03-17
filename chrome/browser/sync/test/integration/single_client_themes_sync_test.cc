@@ -314,6 +314,12 @@ IN_PROC_BROWSER_TEST_F(
   // Set the flag to not read incoming prefs.
   preferences_helper::GetPrefs(/*index=*/0)
       ->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
+
+  // Wait for data to be committed to disk.
+  base::RunLoop loop;
+  preferences_helper::GetPrefs(/*index=*/0)
+      ->CommitPendingWrite(loop.QuitClosure());
+  loop.Run();
 }
 
 // Verifies that the syncing theme prefs are not read if the migration is set.

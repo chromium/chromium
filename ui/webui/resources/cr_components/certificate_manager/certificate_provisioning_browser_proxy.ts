@@ -16,6 +16,7 @@
  * @see chrome/browser/ui/webui/settings/certificates_handler.cc
  */
 export interface CertificateProvisioningProcess {
+  processId: string;
   certProfileId: string;
   certProfileName: string;
   isDeviceWide: boolean;

@@ -19,8 +19,9 @@ class MockAnchorElementProvider : public AnchorElementProvider {
   // AnchorElementProvider:
   MOCK_METHOD(ui::TrackedElement*,
               GetAnchorElement,
-              (ui::ElementContext),
+              (ui::ElementContext, std::optional<int>),
               (const, override));
+  MOCK_METHOD(int, GetNextValidIndex, (int), (const, override));
 };
 
 }  // namespace user_education::test

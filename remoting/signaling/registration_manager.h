@@ -11,12 +11,12 @@
 
 namespace remoting {
 
-class ProtobufHttpStatus;
+class HttpStatus;
 
 // Interface for registering the user with signaling service.
 class RegistrationManager {
  public:
-  using DoneCallback = base::OnceCallback<void(const ProtobufHttpStatus&)>;
+  using DoneCallback = base::OnceCallback<void(const HttpStatus&)>;
 
   virtual ~RegistrationManager() = default;
 

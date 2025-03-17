@@ -224,7 +224,9 @@ class PasswordFormMetricsRecorder
     // A credential with a different domain was grouped with the current domain
     // by the `AffiliationService`.
     kGroupedMatch = 13,
-    kMaxValue = kGroupedMatch,
+    // A form on a page is a single username form.
+    kSingleUsernameForm = 14,
+    kMaxValue = kSingleUsernameForm,
   };
 
   // Used in UMA histogram, please do NOT reorder.

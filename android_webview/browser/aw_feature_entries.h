@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "components/flags_ui/feature_entry.h"
+#include "components/webui/flags/feature_entry.h"
 
 namespace android_webview {
 namespace aw_feature_entries {

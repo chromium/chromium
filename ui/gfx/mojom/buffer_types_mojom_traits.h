@@ -5,9 +5,9 @@
 #ifndef UI_GFX_MOJOM_BUFFER_TYPES_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_BUFFER_TYPES_MOJOM_TRAITS_H_
 
-
 #include "base/component_export.h"
 #include "base/notreached.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -226,6 +226,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
   }
 };
 
+#if BUILDFLAG(USE_BLINK)
 template <>
 struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
     StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
@@ -239,12 +240,13 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
   static uint32_t stride(const gfx::GpuMemoryBufferHandle& handle) {
     return handle.stride;
   }
-  static mojo::StructPtr<gfx::mojom::GpuMemoryBufferPlatformHandle>
-  platform_handle(gfx::GpuMemoryBufferHandle& handle);
+  static gfx::GpuMemoryBufferHandle& platform_handle(
+      gfx::GpuMemoryBufferHandle& handle);
 
   static bool Read(gfx::mojom::GpuMemoryBufferHandleDataView data,
                    gfx::GpuMemoryBufferHandle* handle);
 };
+#endif  // BUILDFLAG(USE_BLINK)
 
 template <>
 struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)

@@ -18,11 +18,14 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.android.util.concurrent.PausedExecutorService;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
@@ -32,6 +35,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -72,6 +76,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for TabPersistentStore reacting to events from TabModel and Tab. */
@@ -83,6 +88,7 @@ import java.util.concurrent.atomic.AtomicInteger;
     ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY
 })
 public class TabPersistentStoreIntegrationTest {
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     private static final int TAB_ID = 42;
     private static final WebContentsState WEB_CONTENTS_STATE =
@@ -112,7 +118,6 @@ public class TabPersistentStoreIntegrationTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         PostTask.setPrenativeThreadPoolExecutorForTesting(mExecutor);
 
         // Create TabPersistentStore and TabModelSelectorImpl through orchestrator like
@@ -341,6 +346,87 @@ public class TabPersistentStoreIntegrationTest {
 
         // Verify that metadata was saved.
         assertEquals(timesMetadataSavedBefore + 1, timesMetadataSaved.intValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TabPersistentStore"})
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH})
+    public void testSkipSaveTabListDoesNotPersistMetadata() {
+        AtomicInteger timesMetadataSaved = new AtomicInteger();
+        observeOnMetadataSavedAsynchronously(timesMetadataSaved);
+
+        int timesMetadataSavedBefore = timesMetadataSaved.intValue();
+        mTabPersistentStore.pauseSaveTabList();
+
+        // Setup the test: Create a tab and close it.
+        TabModel tabModel = mTabModelSelector.getModel(false);
+        Tab tab = MockTab.createAndInitialize(1, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        // Step to test: Close tab.
+        tabModel.getTabRemover()
+                .closeTabs(TabClosureParams.closeTab(tab).build(), /* allowDialog= */ false);
+        runAllAsyncTasks();
+
+        // Step to test: Commit tab closure.
+        tabModel.commitTabClosure(1);
+        runAllAsyncTasks();
+        mTabPersistentStore.resumeSaveTabList();
+
+        // Verify that metadata was saved.
+        assertEquals(timesMetadataSavedBefore, timesMetadataSaved.intValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TabPersistentStore"})
+    @DisableFeatures({ChromeFeatureList.ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH})
+    public void testSkipSaveTabListDoesNotPersistMetadata_KillswitchDisabled() {
+        AtomicInteger timesMetadataSaved = new AtomicInteger();
+        observeOnMetadataSavedAsynchronously(timesMetadataSaved);
+
+        // Setup the test: Create a tab and close it.
+        TabModel tabModel = mTabModelSelector.getModel(false);
+        Tab tab = MockTab.createAndInitialize(1, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        int timesMetadataSavedBefore = timesMetadataSaved.intValue();
+        // Step to test: Close tab.
+        tabModel.getTabRemover()
+                .closeTabs(TabClosureParams.closeTab(tab).build(), /* allowDialog= */ false);
+        runAllAsyncTasks();
+
+        // Step to test: Commit tab closure.
+        tabModel.commitTabClosure(1);
+        runAllAsyncTasks();
+
+        // Verify that metadata was saved.
+        assertEquals(timesMetadataSavedBefore + 1, timesMetadataSaved.intValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TabPersistentStore"})
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH})
+    public void testSkipSaveTabList_ResumeRunnable() {
+        mTabPersistentStore.pauseSaveTabList();
+
+        // Setup the test: Create a tab and close it.
+        TabModel tabModel = mTabModelSelector.getModel(false);
+        Tab tab = MockTab.createAndInitialize(1, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        tabModel.getTabRemover()
+                .closeTabs(TabClosureParams.closeTab(tab).build(), /* allowDialog= */ false);
+        tabModel.commitTabClosure(1);
+
+        // Step to test: Resume save tab list with runnable.
+        AtomicBoolean runnableCompleted = new AtomicBoolean(false);
+        mTabPersistentStore.resumeSaveTabList(() -> runnableCompleted.set(true));
+        runAllAsyncTasks();
+
+        // Verify the runnable ran.
+        assertTrue(runnableCompleted.get());
     }
 
     private void runAllAsyncTasks() {

@@ -88,7 +88,7 @@ struct TestVector {
   const char* const output;
 };
 
-const auto kEncryptionTestVectorsDraft03 = std::to_array<TestVector>(
+constexpr auto kEncryptionTestVectorsDraft03 = std::to_array<TestVector>(
     {// Simple message.
      {"Hello, world!",
       {0x0B, 0x32, 0xE2, 0xD1, 0x6A, 0xBF, 0x4F, 0x2C, 0x49, 0xEA, 0xF7,
@@ -112,7 +112,7 @@ const auto kEncryptionTestVectorsDraft03 = std::to_array<TestVector>(
       4096,
       "8s-Tzq8Cn_eobL6uEcNDXL7K"}});
 
-const auto kEncryptionTestVectorsDraft08 = std::to_array<TestVector>(
+constexpr auto kEncryptionTestVectorsDraft08 = std::to_array<TestVector>(
     {// Simple message.
      {"Hello, world!",
       {0x0B, 0x32, 0xE2, 0xD1, 0x6A, 0xBF, 0x4F, 0x2C, 0x49, 0xEA, 0xF7,
@@ -136,7 +136,7 @@ const auto kEncryptionTestVectorsDraft08 = std::to_array<TestVector>(
       4096,
       "5OXY345WYPyIvsF7hx4swuA"}});
 
-const auto kDecryptionTestVectorsDraft03 = std::to_array<TestVector>({
+constexpr auto kDecryptionTestVectorsDraft03 = std::to_array<TestVector>({
     // Simple message.
     {"lsemWwzlFoJzoidHCnVuxRiJpotTcYokJHKzmQ2FsA",
      {0x4D, 0x3A, 0x6C, 0xBA, 0xD8, 0x1D, 0x8E, 0x68, 0x8B, 0xE6, 0x76,
@@ -205,7 +205,7 @@ const auto kDecryptionTestVectorsDraft03 = std::to_array<TestVector>({
      nullptr},
 });
 
-const auto kDecryptionTestVectorsDraft08 = std::to_array<TestVector>({
+constexpr auto kDecryptionTestVectorsDraft08 = std::to_array<TestVector>({
     // Simple message.
     {"baIDPDv-Do_x1RVtlFDex2uCvd3Ugrv-gJG3sWeg",
      {0x4D, 0x3A, 0x6C, 0xBA, 0xD8, 0x1D, 0x8E, 0x68, 0x8B, 0xE6, 0x76,
@@ -249,8 +249,8 @@ bool ComputeSharedP256SecretFromPrivateKeyStr(std::string_view private_key,
                                               std::string* out_shared_secret) {
   DCHECK(out_shared_secret);
   std::unique_ptr<crypto::ECPrivateKey> local_key(
-      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(std::vector<uint8_t>(
-          private_key.data(), private_key.data() + private_key.size())));
+      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
+          std::vector<uint8_t>(private_key.begin(), private_key.end())));
   if (!local_key) {
     DLOG(ERROR) << "Unable to create the local key";
     return false;
@@ -281,16 +281,13 @@ void ComputeSharedSecret(std::string_view encoded_sender_private_key,
 class GCMMessageCryptographerTestBase : public ::testing::Test {
  public:
   void SetUp() override {
-    recipient_public_key_.assign(
-        kCommonRecipientPublicKey,
-        kCommonRecipientPublicKey + std::size(kCommonRecipientPublicKey));
-    sender_public_key_.assign(
-        kCommonSenderPublicKey,
-        kCommonSenderPublicKey + std::size(kCommonSenderPublicKey));
+    recipient_public_key_.assign(std::begin(kCommonRecipientPublicKey),
+                                 std::end(kCommonRecipientPublicKey));
+    sender_public_key_.assign(std::begin(kCommonSenderPublicKey),
+                              std::end(kCommonSenderPublicKey));
 
-    std::string recipient_private_key(
-        kCommonRecipientPrivateKey,
-        kCommonRecipientPrivateKey + std::size(kCommonRecipientPrivateKey));
+    std::string recipient_private_key(std::begin(kCommonRecipientPrivateKey),
+                                      std::end(kCommonRecipientPrivateKey));
     std::vector<uint8_t> recipient_private_key_vec(
       recipient_private_key.begin(), recipient_private_key.end());
     std::unique_ptr<crypto::ECPrivateKey> recipient_key =
@@ -299,8 +296,8 @@ class GCMMessageCryptographerTestBase : public ::testing::Test {
     ASSERT_TRUE(ComputeSharedP256Secret(
         *recipient_key, sender_public_key_, &ecdh_shared_secret_));
 
-    auth_secret_.assign(kCommonAuthSecret,
-                        kCommonAuthSecret + std::size(kCommonAuthSecret));
+    auth_secret_.assign(std::begin(kCommonAuthSecret),
+                        std::end(kCommonAuthSecret));
   }
 
  protected:

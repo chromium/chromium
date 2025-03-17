@@ -7,7 +7,8 @@ import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 
 import {traceFirstScreenShown} from '../../oobe_trace.js';
 
-import {OobeBaseMixin, OobeBaseMixinInterface} from './oobe_base_mixin.js';
+import type {OobeBaseMixinInterface} from './oobe_base_mixin.js';
+import {OobeBaseMixin} from './oobe_base_mixin.js';
 
 /**
  * @fileoverview

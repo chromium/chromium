@@ -5,5 +5,5 @@
 file_suggestion_v2_test_files = [
   "modules/v2/file_suggestion/drive_module_test.ts",
   "modules/v2/file_suggestion/file_suggestion_test.ts",
-  "modules/v2/file_suggestion/sharepoint_module_test.ts",
+  "modules/v2/file_suggestion/microsoft_files_module_test.ts",
 ]

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("metrics_reporting") {
   sources = [
@@ -76,11 +76,15 @@ static_library("test_support") {
   sources = [
     "cros_healthd_info_metric_sampler_test_utils.cc",
     "cros_healthd_info_metric_sampler_test_utils.h",
+    "metric_reporting_manager_for_test.cc",
+    "metric_reporting_manager_for_test.h",
   ]
 
   deps = [
     ":metrics_reporting",
     "//base",
+    "//components/reporting/metrics/fakes:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

@@ -4,10 +4,17 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.collect.ImmutableList;
+
+import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
@@ -15,10 +22,14 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -111,7 +122,11 @@ public class TabModelImpl extends TabModelJniBridge {
             //   is selected before this it may not exist for those observers.
             // * UndoRefocusHelper may update the index out-of-band.
             for (TabModelObserver obs : mObservers) {
-                obs.tabClosureUndone(tab);
+                if (ChromeFeatureList.sTabClosureMethodRefactor.isEnabled()) {
+                    obs.onTabCloseUndone(ImmutableList.of(tab), /* isAllTabs= */ false);
+                } else {
+                    obs.tabClosureUndone(tab);
+                }
             }
 
             // If the mIndex we set earlier is still in use then trigger a proper index update and
@@ -120,7 +135,7 @@ public class TabModelImpl extends TabModelJniBridge {
                 // Reset the index first so the event is raised properly as a index change and not
                 // re-using the current index.
                 mIndex = INVALID_TAB_INDEX;
-                TabModelUtils.setIndex(TabModelImpl.this, insertIndex, TabSelectionType.FROM_UNDO);
+                setIndex(insertIndex, TabSelectionType.FROM_UNDO);
             } else if (wasInvalidIndex && !isActiveModel()) {
                 mCurrentTabSupplier.set(TabModelUtils.getCurrentTab(TabModelImpl.this));
             }
@@ -129,13 +144,6 @@ public class TabModelImpl extends TabModelJniBridge {
         @Override
         public void finalizeClosure(Tab tab) {
             finalizeTabClosure(tab, true);
-        }
-
-        @Override
-        public void notifyAllTabsClosureUndone() {
-            for (TabModelObserver obs : mObservers) {
-                obs.allTabsClosureUndone();
-            }
         }
 
         @Override
@@ -491,13 +499,6 @@ public class TabModelImpl extends TabModelJniBridge {
         mPendingTabClosureManager.commitAllTabClosures();
 
         for (TabModelObserver obs : mObservers) obs.allTabsClosureCommitted(isIncognito());
-    }
-
-    @Override
-    public void notifyAllTabsClosureUndone() {
-        if (!supportsPendingClosures()) return;
-
-        mPendingTabClosureManager.notifyAllTabsClosureUndone();
     }
 
     /**
@@ -969,6 +970,40 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     @Override
+    public Tab createNewTabForDevTools(GURL url, boolean newWindow) {
+        LoadUrlParams loadParams = new LoadUrlParams(url);
+        @TabLaunchType int launchType = TabLaunchType.FROM_CHROME_UI;
+        if (!newWindow
+                || MultiWindowUtils.getInstanceCount() >= MultiWindowUtils.getMaxInstances()) {
+            return getTabCreator(/* incognito= */ false).createNewTab(loadParams, launchType, null);
+        }
+
+        // Creating a new window is asynchronous on Android, so create a background tab that we can
+        // return immediately and reparent it into a new window.
+        WarmupManager warmupManager = WarmupManager.getInstance();
+        Tab parentTab = TabModelUtils.getCurrentTab(this);
+        Profile profile = parentTab.getProfile();
+        warmupManager.createRegularSpareTab(profile);
+        Tab tab = warmupManager.takeSpareTab(profile, /* initiallyHidden= */ false, launchType);
+        tab.loadUrl(loadParams);
+
+        MultiInstanceManager.onMultiInstanceModeStarted();
+        Intent intent =
+                MultiWindowUtils.createNewWindowIntent(
+                        parentTab.getContext(),
+                        MultiWindowUtils.INVALID_INSTANCE_ID,
+                        /* preferNew= */ true,
+                        /* openAdjacently= */ true,
+                        /* addTrustedIntentExtras= */ true);
+
+        Activity activity = ContextUtils.activityFromContext(parentTab.getContext());
+        Bundle options = MultiWindowUtils.getOpenInOtherWindowActivityOptions(activity);
+
+        ReparentingTask.from(tab).begin(activity, intent, options, null);
+        return tab;
+    }
+
+    @Override
     public int getCount() {
         return mTabs.size();
     }
@@ -1020,15 +1055,13 @@ public class TabModelImpl extends TabModelJniBridge {
 
         getTabRemover().closeTabs(params, /* allowDialog= */ false);
 
-        // Open a new tab if all tabs are closed and the respective experiment is eanbled.
-        if (QuickDeleteController.isQuickDeleteFollowupEnabled()) {
-            for (Tab tab : mTabs) {
-                if (!tab.isCustomTab()) {
-                    return;
-                }
+        // Open a new tab if all tabs are closed.
+        for (Tab tab : mTabs) {
+            if (!tab.isCustomTab()) {
+                return;
             }
-            getTabCreator(false).launchNtp();
         }
+        getTabCreator(false).launchNtp();
     }
 
     @VisibleForTesting

@@ -40,7 +40,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -59,8 +58,6 @@
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_rendering_context_2d_settings.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_will_read_frequently.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -76,7 +73,6 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
-#include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -92,27 +88,27 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
+#include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_helpers.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/graphics/platform_focus_ring.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
 #include "third_party/blink/renderer/platform/wtf/key_value_pair.h"
@@ -154,24 +150,6 @@ static mojom::blink::ColorScheme GetColorSchemeFromCanvas(
 }
 
 namespace {
-
-// Serves as killswitch for changing CanCreateCanvasResourceProvider() to
-// create resource provider internally rather than Canvas2DLayerBridge.
-// TODO(crbug.com/40280152): Eliminate post safe-rollout.
-BASE_FEATURE(kAdjustCanCreateCanvas2dResourceProvider,
-             "AdjustCanCreateCanvas2dResourceProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Convert from a PredefinedColorSpace to a V8PredefinedColorSpace.
-V8CanvasPixelFormat CanvasPixelFormatToV8(CanvasPixelFormat pixel_format) {
-  switch (pixel_format) {
-    case CanvasPixelFormat::kF16:
-      return V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kFloat16);
-    case CanvasPixelFormat::kUint8:
-      return V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kUint8);
-  }
-  NOTREACHED();
-}
 
 }  // namespace
 
@@ -298,9 +276,19 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
     }
   }
 
-  // If RealLostContext, it means the context was not lost due to surface
-  // failure but rather due to a an eviction, which means image buffer exists.
-  if (context_lost_mode_ == kRealLostContext && IsPaintable() && Restore()) {
+  // This code historically checked whether the bridge existed because it called
+  // into the bridge to restore the resource provider. However, it no longer
+  // does so, and there is no logical reason to guard restoring the resource
+  // provider by whether the bridge is present or not. Note that it doesn't make
+  // sense to call IsPaintable() here when IsPaintable() is returning whether
+  // the resource provider is present, since we are trying to restore the
+  // resource provider here :). Instead, just ensure that the canvas is present,
+  // since this method is called on a timer.
+  bool can_restore = CheckProviderInCanvas2DRenderingContextIsPaintable()
+                         ? canvas() != nullptr
+                         : IsPaintable();
+  if (context_lost_mode_ == kRealLostContext && can_restore && Restore()) {
+    Host()->set_context_lost(false);
     try_restore_context_event_timer_.Stop();
     DispatchContextRestoredEvent(nullptr);
     return;
@@ -345,8 +333,6 @@ bool CanvasRenderingContext2D::Restore() {
     if (resource_provider && host->GetRasterMode() == RasterMode::kCPU) {
       host->ReplaceResourceProvider(nullptr);
       // FIXME: draw sad canvas picture into new buffer crbug.com/243842
-    } else {
-      host->set_context_lost(false);
     }
   }
 
@@ -585,7 +571,7 @@ bool CanvasRenderingContext2D::CurrentFontResolvedAndUpToDate() const {
   // which would require that the font be re-resolved. This check has to
   // come after the layout tree update in WillSetFont() to flush pending
   // style changes.
-  return GetState().HasRealizedFont() &&
+  return BaseRenderingContext2D::CurrentFontResolvedAndUpToDate() &&
          fonts_resolved_using_current_style_.size() > 0;
 }
 
@@ -599,6 +585,8 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
   HTMLCanvasElement* const element = canvas();
   Document& document = element->GetDocument();
   CanvasFontCache* canvas_font_cache = document.GetCanvasFontCache();
+  bool use_locale = RuntimeEnabledFeatures::CanvasTextLangEnabled();
+  const LayoutLocale* locale = use_locale ? LocaleFromLang() : nullptr;
 
   // Map the <canvas> font into the text style. If the font uses keywords like
   // larger/smaller, these will work relative to the canvas.
@@ -608,6 +596,9 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
     if (i != fonts_resolved_using_current_style_.end()) {
       auto add_result = font_lru_list_.PrependOrMoveToFirst(new_font);
       DCHECK(!add_result.is_new_entry);
+      if (use_locale && i->value.Locale() != locale) {
+        i->value.SetLocale(locale);
+      }
       GetState().SetFont(i->value, Host()->GetFontSelector());
     } else {
       MutableCSSPropertyValueSet* parsed_style =
@@ -618,6 +609,9 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
           document.GetStyleResolver().CreateComputedStyleBuilder();
       FontDescription element_font_description(
           computed_style->GetFontDescription());
+      if (use_locale) {
+        element_font_description.SetLocale(locale);
+      }
       // Reset the computed size to avoid inheriting the zoom factor from the
       // <canvas> element.
       element_font_description.SetComputedSize(
@@ -627,12 +621,12 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
 
       font_style_builder.SetFontDescription(element_font_description);
       const ComputedStyle* font_style = font_style_builder.TakeStyle();
-      Font font = document.GetStyleEngine().ComputeFont(*element, *font_style,
-                                                        *parsed_style);
+      const Font* font = document.GetStyleEngine().ComputeFont(
+          *element, *font_style, *parsed_style);
 
       // We need to reset Computed and Adjusted size so we skip zoom and
       // minimum font size.
-      FontDescription final_description(font.GetFontDescription());
+      FontDescription final_description(font->GetFontDescription());
       final_description.SetComputedSize(final_description.SpecifiedSize());
       final_description.SetAdjustedSize(final_description.SpecifiedSize());
 
@@ -644,15 +638,18 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
       GetState().SetFont(final_description, Host()->GetFontSelector());
     }
   } else {
-    Font resolved_font;
-    if (!canvas_font_cache->GetFontUsingDefaultStyle(*element, new_font,
-                                                     resolved_font)) {
+    const Font* resolved_font =
+        canvas_font_cache->GetFontUsingDefaultStyle(*element, new_font);
+    if (!resolved_font) {
       return false;
     }
 
     // We need to reset Computed and Adjusted size so we skip zoom and
     // minimum font size for detached canvas.
-    FontDescription final_description(resolved_font.GetFontDescription());
+    FontDescription final_description(resolved_font->GetFontDescription());
+    if (use_locale) {
+      final_description.SetLocale(locale);
+    }
     final_description.SetComputedSize(final_description.SpecifiedSize());
     final_description.SetAdjustedSize(final_description.SpecifiedSize());
     GetState().SetFont(final_description, Host()->GetFontSelector());
@@ -695,9 +692,20 @@ void CanvasRenderingContext2D::PruneLocalFontCache(size_t target_size) {
 
 void CanvasRenderingContext2D::StyleDidChange(const ComputedStyle* old_style,
                                               const ComputedStyle& new_style) {
-  if (old_style && old_style->GetFont() == new_style.GetFont())
+  if (old_style && old_style->GetFont() == new_style.GetFont()) {
     return;
+  }
   PruneLocalFontCache(0);
+}
+
+void CanvasRenderingContext2D::LangAttributeChanged() {
+  CanvasRenderingContext2DState& state = GetState();
+  if (state.GetLang() == kInheritString) {
+    PruneLocalFontCache(0);
+    if (state.HasRealizedFont()) {
+      setFont(font());
+    }
+  }
 }
 
 void CanvasRenderingContext2D::ClearFilterReferences() {
@@ -734,7 +742,7 @@ int CanvasRenderingContext2D::Height() const {
 }
 
 bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() const {
-  if (base::FeatureList::IsEnabled(kAdjustCanCreateCanvas2dResourceProvider)) {
+  if (CheckProviderInCanCreateCanvas2dResourceProvider()) {
     return canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint();
   } else {
     return canvas()->GetOrCreateCanvas2DLayerBridge();
@@ -743,15 +751,23 @@ bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() const {
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
     FlushReason reason) {
-  CanvasHibernationHandler* hibernation_handler =
-      canvas()->GetHibernationHandler();
-  if (!hibernation_handler) {
-    return nullptr;
+  if (CheckProviderInCanvas2DRenderingContextIsPaintable()) {
+    // We can get an image if either (a) there is a ResourceProvider or (b) the
+    // canvas is hibernating (in which case there will be no resource provider
+    // but we can get a snapshot from the hibernation handler).
+    bool is_hibernating = canvas() && canvas()->IsHibernating();
+    if (!IsPaintable() && !is_hibernating) {
+      return nullptr;
+    }
+  } else {
+    if (!IsPaintable()) {
+      return nullptr;
+    }
   }
 
-  if (hibernation_handler->IsHibernating()) {
+  if (canvas()->IsHibernating()) {
     return UnacceleratedStaticBitmapImage::Create(
-        hibernation_handler->GetImage());
+        canvas()->GetHibernationHandler()->GetImage());
   }
 
   if (!Host()->IsResourceValid()) {
@@ -856,10 +872,15 @@ void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
     return;
   }
 
-  // Make sure surface is ready for painting: fix the rendering mode now
-  // because it will be too late during the paint invalidation phase.
-  if (!canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
-    return;
+  // NOTE: Historically IsPaintable() checked for the existence of the canvas'
+  // bridge rather than its ResourceProvider. When IsPaintable() checks for the
+  // existence of the ResourceProvider, the below code is unnecessary.
+  if (!CheckProviderInCanvas2DRenderingContextIsPaintable()) {
+    // Make sure surface is ready for painting: fix the rendering mode now
+    // because it will be too late during the paint invalidation phase.
+    if (!canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
+      return;
+    }
   }
 
   CanvasRenderingContextHost* host = Host();
@@ -893,6 +914,14 @@ ExecutionContext* CanvasRenderingContext2D::GetTopExecutionContext() const {
   return Host()->GetTopExecutionContext();
 }
 
+bool CanvasRenderingContext2D::IsPaintable() const {
+  if (CheckProviderInCanvas2DRenderingContextIsPaintable()) {
+    return canvas() && canvas()->ResourceProvider();
+  } else {
+    return canvas() && canvas()->GetCanvas2DLayerBridge();
+  }
+}
+
 Color CanvasRenderingContext2D::GetCurrentColor() const {
   const HTMLCanvasElement* const element = canvas();
   if (!element || !element->isConnected() || !element->InlineStyle()) {
@@ -906,7 +935,18 @@ Color CanvasRenderingContext2D::GetCurrentColor() const {
 
 void CanvasRenderingContext2D::PageVisibilityChanged() {
   HTMLCanvasElement* const element = canvas();
-  if (IsPaintable()) {
+
+  // NOTE: Historically this method executed the code in
+  // OnPageVisibilityChangeWhenPaintable() only when the bridge existed because
+  // that method used to be on the bridge itself.  It is not correct to guard
+  // the execution of this call on the presence of the resource provider since
+  // OnPageVisibilityChangeWhenPaintable() internally has logic to handle the
+  // case where the resource provider isn't present. Code inspection shows that
+  // there is no indication that the execution of this code needs to have any
+  // restriction.
+  // TODO(crbug.com/40280152): Merge OnPageVisibilityChangeWhenPaintable() into
+  // this method post-safe rollout.
+  if (IsPaintable() || CheckProviderInCanvas2DRenderingContextIsPaintable()) {
     OnPageVisibilityChangeWhenPaintable();
   }
   if (!element->IsPageVisible()) {
@@ -915,7 +955,10 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
 }
 
 void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
-  CHECK(IsPaintable());
+  // NOTE: See the comment at the callsite of this method.
+  if (!CheckProviderInCanvas2DRenderingContextIsPaintable()) {
+    CHECK(IsPaintable());
+  }
   HTMLCanvasElement* const element = canvas();
 
   bool page_is_visible = element->IsPageVisible();
@@ -965,35 +1008,24 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
 }
 
 cc::Layer* CanvasRenderingContext2D::CcLayer() const {
-  if (!IsPaintable()) {
+  // This check of IsPaintable() originated when the CC layer was held and
+  // obtained by the bridge. It is now held and obtained by the canvas, so it
+  // makes sense to simply check whether the canvas is present before asking it
+  // to get/create the CC layer.
+  bool can_get_cc_layer = CheckProviderInCanvas2DRenderingContextIsPaintable()
+                              ? canvas() != nullptr
+                              : IsPaintable();
+
+  if (!can_get_cc_layer) {
     return nullptr;
   }
+
   return canvas()->GetOrCreateCcLayerIfNeeded();
 }
 
 CanvasRenderingContext2DSettings*
 CanvasRenderingContext2D::getContextAttributes() const {
-  CanvasRenderingContext2DSettings* settings =
-      CanvasRenderingContext2DSettings::Create();
-  settings->setAlpha(CreationAttributes().alpha);
-  settings->setColorSpace(PredefinedColorSpaceToV8(color_params_.ColorSpace()));
-  if (RuntimeEnabledFeatures::CanvasFloatingPointEnabled()) {
-    settings->setPixelFormat(
-        CanvasPixelFormatToV8(color_params_.PixelFormat()));
-  }
-  settings->setDesynchronized(Host()->LowLatencyEnabled());
-  switch (CreationAttributes().will_read_frequently) {
-    case CanvasContextCreationAttributesCore::WillReadFrequently::kTrue:
-      settings->setWillReadFrequently(V8CanvasWillReadFrequently::Enum::kTrue);
-      break;
-    case CanvasContextCreationAttributesCore::WillReadFrequently::kFalse:
-      settings->setWillReadFrequently(V8CanvasWillReadFrequently::Enum::kFalse);
-      break;
-    case CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined:
-      settings->setWillReadFrequently(
-          V8CanvasWillReadFrequently::Enum::kUndefined);
-  }
-  return settings;
+  return ToCanvasRenderingContext2DSettings(CreationAttributes());
 }
 
 void CanvasRenderingContext2D::drawFocusIfNeeded(Element* element) {
@@ -1102,8 +1134,6 @@ void CanvasRenderingContext2D::UpdateElementAccessibility(const Path& path,
   ax_object_cache->SetCanvasObjectBounds(canvas_element, element, element_rect);
 }
 
-// TODO(aaronhk) This is only used for the size heuristic. Delete this function
-// once always accelerate fully lands.
 void CanvasRenderingContext2D::DisableAcceleration() {
   canvas()->DisableAcceleration();
 }
@@ -1136,7 +1166,7 @@ HTMLCanvasElement* CanvasRenderingContext2D::HostAsHTMLCanvasElement() const {
   return canvas();
 }
 
-FontSelector* CanvasRenderingContext2D::GetFontSelector() const {
+UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
   return canvas()->GetFontSelector();
 }
 

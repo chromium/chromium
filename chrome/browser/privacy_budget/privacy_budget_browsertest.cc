@@ -678,7 +678,7 @@ class PrivacyBudgetAssignedBlockSamplingConfigTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kIdentifiabilityStudy,
           {{features::kIdentifiabilityStudyBlockedMetrics.name, "44033,44289"},
-           {features::kIdentifiabilityStudyBlockedTypes.name, "13,25,28"},
+           {features::kIdentifiabilityStudyBlockedTypes.name, "11,25,28"},
            {features::kIdentifiabilityStudyBlockWeights.name,
             "5202,37515,34582"},
            {features::kIdentifiabilityStudyBlocks.name,
@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetAssignedBlockSamplingConfigTest,
 
   // Blocked types
   EXPECT_FALSE(settings->ShouldSampleType(
-      blink::IdentifiableSurface::Type::kLocalFontLookupByFallbackCharacter));
+      blink::IdentifiableSurface::Type::kHTMLMediaElement_CanPlayType));
   EXPECT_FALSE(settings->ShouldSampleType(
       blink::IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo));
 }

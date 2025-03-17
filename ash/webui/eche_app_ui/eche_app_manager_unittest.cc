@@ -95,7 +95,7 @@ class FakeAccessibilityProviderProxy : public AccessibilityProviderProxy {
 
 const char kFakeDeviceName[] = "Someone's Chromebook";
 const char kFakeBoardName[] = "atlas";
-const char kFakeGaiaId[] = "123";
+const GaiaId::Literal kFakeGaiaId("123");
 const size_t kNumTestDevices = 3;
 const char kFakeDeviceType[] = "Chromebook";
 
@@ -147,7 +147,7 @@ class EcheAppManagerTest : public AshTestBase {
         SystemInfo::Builder()
             .SetDeviceName(kFakeDeviceName)
             .SetBoardName(kFakeBoardName)
-            .SetGaiaId(GaiaId(kFakeGaiaId))
+            .SetGaiaId(kFakeGaiaId)
             .SetDeviceType(kFakeDeviceType)
             .Build(),
         fake_phone_hub_manager_.get(), fake_device_sync_client_.get(),

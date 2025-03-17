@@ -131,6 +131,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
     animator_factory_ = std::move(factory);
   }
 
+  SkBitmap GetBackForwardTransitionFallbackUXInternalPageIcon();
+
  private:
   // The browser test needs to access the test-only `animator_`.
   friend class BackForwardTransitionAnimationManagerBrowserTest;

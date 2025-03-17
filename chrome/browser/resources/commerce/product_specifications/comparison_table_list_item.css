@@ -11,8 +11,30 @@
   --cr-url-list-item-padding: 12px;
 }
 
+/* Visually hide the label but allow the screen reader to pick it up. */
+cr-checkbox::part(label-container) {
+  clip: rect(0,0,0,0);
+  display: block;
+  position: fixed;
+}
+
+cr-input {
+  --cr-input-background-color: transparent;
+  --cr-input-error-display: none;
+  width: 100%;
+}
+
+cr-input.stroked:hover {
+  --cr-input-hover-background-color: transparent;
+}
+
 cr-url-list-item {
   padding: 4px 0;
+}
+
+hr {
+  border: none;
+  border-top: var(--cr-hairline);
 }
 
 #itemContainer {

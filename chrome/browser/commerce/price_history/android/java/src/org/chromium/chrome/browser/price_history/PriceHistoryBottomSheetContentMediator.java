@@ -1,0 +1,112 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.price_history;
+
+import static org.chromium.chrome.browser.price_history.PriceHistoryBottomSheetContentProperties.OPEN_URL_BUTTON_ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.price_history.PriceHistoryBottomSheetContentProperties.OPEN_URL_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.price_history.PriceHistoryBottomSheetContentProperties.PRICE_HISTORY_CHART;
+import static org.chromium.chrome.browser.price_history.PriceHistoryBottomSheetContentProperties.PRICE_HISTORY_CHART_CONTENT_DESCRIPTION;
+import static org.chromium.chrome.browser.price_history.PriceHistoryBottomSheetContentProperties.PRICE_HISTORY_DESCRIPTION;
+import static org.chromium.chrome.browser.price_history.PriceHistoryBottomSheetContentProperties.PRICE_HISTORY_DESCRIPTION_VISIBLE;
+import static org.chromium.chrome.browser.price_history.PriceHistoryBottomSheetContentProperties.PRICE_HISTORY_TITLE;
+
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+
+import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.commerce.core.PriceBucket;
+import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
+
+/** Mediator for price history bottom sheet responsible for property model update. */
+public class PriceHistoryBottomSheetContentMediator {
+    private final Context mContext;
+    private final Tab mTab;
+    private final TabModelSelector mTabModelSelector;
+    private final PropertyModel mPropertyModel;
+    private final PriceInsightsDelegate mPriceInsightsDelegate;
+
+    private @PriceBucket int mPriceBucket;
+
+    public PriceHistoryBottomSheetContentMediator(
+            @NonNull Context context,
+            @NonNull Tab tab,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull PropertyModel propertyModel,
+            @NonNull PriceInsightsDelegate priceInsightsDelegate) {
+        mContext = context;
+        mTab = tab;
+        mTabModelSelector = tabModelSelector;
+        mPropertyModel = propertyModel;
+        mPriceInsightsDelegate = priceInsightsDelegate;
+    }
+
+    public void requestShowContent(Callback<Boolean> contentReadyCallback) {
+        ShoppingServiceFactory.getForProfile(mTab.getProfile())
+                .getPriceInsightsInfoForUrl(
+                        mTab.getUrl(),
+                        (url, info) -> {
+                            boolean hasPriceInsightInfo = isValidPriceInsightsInfo(info);
+                            if (hasPriceInsightInfo) {
+                                updatePriceInsightsInfo(info);
+                            }
+                            contentReadyCallback.onResult(hasPriceInsightInfo);
+                        });
+    }
+
+    private boolean isValidPriceInsightsInfo(PriceInsightsInfo info) {
+        return info != null
+                && !info.currencyCode.isEmpty()
+                && info.catalogHistoryPrices != null
+                && !info.catalogHistoryPrices.isEmpty();
+    }
+
+    private void updatePriceInsightsInfo(PriceInsightsInfo info) {
+        mPropertyModel.set(PRICE_HISTORY_CHART_CONTENT_DESCRIPTION, mTab.getTitle());
+        mPriceBucket = info.priceBucket;
+        @StringRes int priceHistoryTitleResId = R.string.price_history_title;
+        boolean hasMultipleCatalogs =
+                info.hasMultipleCatalogs
+                        && info.catalogAttributes != null
+                        && !info.catalogAttributes.isEmpty();
+        mPropertyModel.set(PRICE_HISTORY_DESCRIPTION_VISIBLE, hasMultipleCatalogs);
+        if (hasMultipleCatalogs) {
+            priceHistoryTitleResId = R.string.price_history_multiple_catalogs_title;
+            mPropertyModel.set(PRICE_HISTORY_DESCRIPTION, info.catalogAttributes.get());
+        }
+        mPropertyModel.set(PRICE_HISTORY_TITLE, mContext.getString(priceHistoryTitleResId));
+        mPropertyModel.set(
+                PRICE_HISTORY_CHART,
+                mPriceInsightsDelegate.getPriceHistoryChartForPriceInsightsInfo(info));
+
+        boolean hasJackpotUrl = info.jackpotUrl != null && !info.jackpotUrl.isEmpty();
+        mPropertyModel.set(OPEN_URL_BUTTON_VISIBLE, hasJackpotUrl);
+        if (hasJackpotUrl) {
+            mPropertyModel.set(
+                    OPEN_URL_BUTTON_ON_CLICK_LISTENER,
+                    view -> openJackpotUrl(info.jackpotUrl.get()));
+        }
+    }
+
+    private void openJackpotUrl(GURL url) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Commerce.PriceInsights.BuyingOptionsClicked",
+                mPriceBucket,
+                PriceBucket.MAX_VALUE + 1);
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+        mTabModelSelector.openNewTab(
+                loadUrlParams, TabLaunchType.FROM_LINK, mTab, /* incognito= */ false);
+    }
+}

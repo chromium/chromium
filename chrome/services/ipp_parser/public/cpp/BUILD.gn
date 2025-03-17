@@ -26,7 +26,7 @@ if (use_cups) {
 
   # Fuzzer target only available on fuzzing builds.
   # TODO(crbug.com/831914): Enable this fuzzer once its running on CrOS only.
-  if (false) {  # use_fuzzing_engine && is_chromeos_ash
+  if (false) {  # use_fuzzing_engine && is_chromeos
     fuzzer_test("ipp_message_parser_fuzzer") {
       sources = [ "ipp_message_parser_fuzzer.cc" ]
       deps = [ ":cpp" ]

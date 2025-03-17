@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -93,11 +94,12 @@ void OffscreenCanvasPlaceholderTest::TearDown() {
 void OffscreenCanvasPlaceholderTest::CreateDispatcher() {
   dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>(placeholder_id_);
   dispatcher_->SetPlaceholderCanvasDispatcher(placeholder_id_);
-  resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
-      gfx::Size(kWidth, kHeight), kN32_SkColorType, kPremul_SkAlphaType,
-      SkColorSpace::MakeSRGB(),
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
-      test_web_shared_image_interface_provider_.get());
+  resource_provider_ =
+      CanvasResourceProvider::CreateSoftwareSharedImageProvider(
+          gfx::Size(kWidth, kHeight), GetN32FormatForCanvas(),
+          kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
+          CanvasResourceProvider::ShouldInitialize::kCallClear,
+          test_web_shared_image_interface_provider_.get());
 }
 
 void OffscreenCanvasPlaceholderTest::DrawSomething() {

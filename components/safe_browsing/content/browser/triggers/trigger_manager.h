@@ -53,9 +53,8 @@ struct DataCollectorsContainer {
 
 // Stores the data collectors that are active on each WebContents (ie: browser
 // tab). Keys are derived from WebContents* but should not be dereferenced.
-using DataCollectorsMap = std::unordered_map<WebContentsKey,
-                                             DataCollectorsContainer,
-                                             typename WebContentsKey::Hasher>;
+using DataCollectorsMap =
+    std::unordered_map<WebContentsKey, DataCollectorsContainer>;
 
 using SBErrorOptions =
     security_interstitials::BaseSafeBrowsingErrorUI::SBErrorDisplayOptions;

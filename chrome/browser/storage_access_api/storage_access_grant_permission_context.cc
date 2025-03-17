@@ -4,6 +4,8 @@
 
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -11,11 +13,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,9 +35,11 @@
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/btm_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -45,11 +47,11 @@
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace {
 
@@ -228,7 +230,7 @@ FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
   CHECK(base::FeatureList::IsEnabled(
       blink::features::kFedCmWithStorageAccessAPI));
   if (!rfh->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
+          network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     RecordAutograntViaFedCmOutcomeSample(
         AutograntViaFedCmOutcome::kDeniedByPermissionsPolicy);
     return nullptr;
@@ -276,7 +278,7 @@ StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::STORAGE_ACCESS,
-          blink::mojom::PermissionsPolicyFeature::kStorageAccessAPI) {}
+          network::mojom::PermissionsPolicyFeature::kStorageAccessAPI) {}
 
 StorageAccessGrantPermissionContext::~StorageAccessGrantPermissionContext() =
     default;
@@ -459,7 +461,7 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
             ContentSettingsType::STORAGE_ACCESS,
             content_settings::mojom::SessionModel::USER_SESSION);
 
-    const int existing_implicit_grants = base::ranges::count_if(
+    const int existing_implicit_grants = std::ranges::count_if(
         implicit_grants, [&request_data](const auto& entry) {
           return entry.primary_pattern.Matches(request_data.requesting_origin);
         });
@@ -479,7 +481,8 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
   // We haven't found a reason to auto-grant permission, but before we prompt
   // there's one more hurdle: the user must have interacted with the requesting
   // site in a top-level context recently.
-  DIPSService* dips_service = DIPSService::Get(browser_context());
+  content::BtmService* dips_service =
+      content::BtmService::Get(browser_context());
   if (!dips_service ||
       kStorageAccessAPITopLevelUserInteractionBound == base::TimeDelta()) {
     // If we don't have access to this kind of historical info or the time bound
@@ -490,7 +493,7 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
   }
 
   GURL site(request_data.requesting_origin);
-  dips_service->DidSiteHaveInteractionSince(
+  dips_service->DidSiteHaveUserActivationSince(
       site, base::Time::Now() - kStorageAccessAPITopLevelUserInteractionBound,
       base::BindOnce(&StorageAccessGrantPermissionContext::
                          OnCheckedUserInteractionHeuristic,
@@ -538,8 +541,12 @@ ContentSetting StorageAccessGrantPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  // Permission query from top-level frame should be "granted" by default.
-  if (render_frame_host && render_frame_host->IsInPrimaryMainFrame()) {
+  // Permission query from top-level frame should be "granted" by default unless
+  // We are in a partitioned popin. Partitioned popins can be partitioned even
+  // as a top-frame, so need to continue. See
+  // https://explainers-by-googlers.github.io/partitioned-popins/
+  if (render_frame_host && render_frame_host->IsInPrimaryMainFrame() &&
+      !render_frame_host->ShouldPartitionAsPopin()) {
     return CONTENT_SETTING_ALLOW;
   }
 
@@ -579,7 +586,6 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
       outcome = RequestOutcome::kReusedImplicitGrant;
     } else {
       switch (info.metadata.session_model()) {
-        case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
         case content_settings::mojom::SessionModel::USER_SESSION:
           outcome = RequestOutcome::kReusedImplicitGrant;
           break;
@@ -678,4 +684,14 @@ void StorageAccessGrantPermissionContext::UpdateContentSetting(
   // run our callback. As a result we do our updates when we're notified of a
   // permission being set and should not be called here.
   NOTREACHED();
+}
+
+GURL StorageAccessGrantPermissionContext::GetEffectiveEmbedderOrigin(
+    content::RenderFrameHost* rfh) const {
+  if (!rfh->ShouldPartitionAsPopin()) {
+    return PermissionContextBase::GetEffectiveEmbedderOrigin(rfh);
+  }
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  return web_contents->GetPartitionedPopinEmbedderOrigin(PassKey());
 }

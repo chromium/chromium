@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <functional>
 #include <memory>
 #include <numbers>
 #include <numeric>
@@ -22,8 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -38,8 +38,6 @@
 #include "chrome/browser/icon_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
@@ -105,6 +103,11 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
+
 namespace {
 
 // TODO(pkasting): Replace bespoke constants in file with standard metrics from
@@ -165,7 +168,13 @@ class TransparentButton : public views::Button {
                       views::style::STYLE_PRIMARY)));
         },
         this));
+    tooltip_text_changed_subscription_ =
+        parent->AddTooltipTextChangedCallback(base::BindRepeating(
+            &TransparentButton::OnTooltipTextUpdated, base::Unretained(this)));
+
+    SetTooltipText(parent->GetTooltipText());
   }
+
   ~TransparentButton() override = default;
 
   // Forward dragging and capture loss events, since this class doesn't have
@@ -181,9 +190,10 @@ class TransparentButton : public views::Button {
     Button::OnMouseCaptureLost();
   }
 
-  std::u16string GetTooltipText(const gfx::Point& point) const override {
-    return parent()->GetTooltipText(point);
-  }
+  void OnTooltipTextUpdated() { parent()->GetTooltipText(); }
+
+ private:
+  base::CallbackListSubscription tooltip_text_changed_subscription_;
 };
 
 BEGIN_METADATA(TransparentButton)
@@ -348,10 +358,12 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
       base::BindRepeating(&DownloadItemView::ExecuteCommand,
                           base::Unretained(this), DownloadCommands::DEEP_SCAN),
       l10n_util::GetStringUTF16(IDS_SCAN_DOWNLOAD)));
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   review_button_ = AddChildView(std::make_unique<views::MdTextButton>(
       base::BindRepeating(&DownloadItemView::ReviewButtonPressed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_REVIEW_DOWNLOAD)));
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
   dropdown_button_ = AddChildView(std::make_unique<ContextMenuButton>(this));
 
@@ -422,9 +434,7 @@ void DownloadItemView::Layout(PassKey) {
     gfx::Rect button_bounds(gfx::Point(label->bounds().right() + kLabelPadding,
                                        CenterY(button_size.height())),
                             button_size);
-    for (const raw_ptr<views::MdTextButton>& button :
-         {save_button_, discard_button_, scan_button_, open_now_button_,
-          review_button_}) {
+    for (const raw_ptr<views::MdTextButton>& button : buttons()) {
       button->SetBoundsRect(button_bounds);
       if (button->GetVisible()) {
         button_bounds.set_x(button_bounds.right() + kSaveDiscardButtonPadding);
@@ -475,12 +485,12 @@ void DownloadItemView::OnMouseCaptureLost() {
 
 void DownloadItemView::UpdateTooltipText() {
   if (has_warning_label(mode_)) {
-    SetCachedTooltipText(std::u16string());
+    SetTooltipText(std::u16string());
     return;
   }
 
   const std::u16string new_tooltip_text = model_->GetTooltipText();
-  SetCachedTooltipText(new_tooltip_text);
+  SetTooltipText(new_tooltip_text);
 }
 
 void DownloadItemView::ShowContextMenuForViewImpl(
@@ -582,11 +592,8 @@ gfx::Size DownloadItemView::CalculatePreferredSize(
     width +=
         kStartPadding * 2 + icon_size.width() + label->width() + kEndPadding;
     height = std::max(height, icon_size.height());
-    const int visible_buttons = base::ranges::count(
-        std::array<const views::View*, 5>{save_button_, discard_button_,
-                                          scan_button_, open_now_button_,
-                                          review_button_},
-        true, &views::View::GetVisible);
+    const int visible_buttons =
+        std::ranges::count(buttons(), true, &views::View::GetVisible);
     if (visible_buttons > 0) {
       const gfx::Size button_size = GetButtonSize();
       width += kLabelPadding + button_size.width() * visible_buttons +
@@ -697,11 +704,9 @@ void DownloadItemView::OnThemeChanged() {
       GetColorProvider()->GetColor(kColorDownloadShelfBackground);
   SetBackground(views::CreateSolidBackground(background_color));
 
-  shelf_->ConfigureButtonForTheme(open_now_button_);
-  shelf_->ConfigureButtonForTheme(save_button_);
-  shelf_->ConfigureButtonForTheme(discard_button_);
-  shelf_->ConfigureButtonForTheme(scan_button_);
-  shelf_->ConfigureButtonForTheme(review_button_);
+  for (const raw_ptr<views::MdTextButton>& button : buttons()) {
+    shelf_->ConfigureButtonForTheme(button);
+  }
 
   UpdateDropdownButtonImage();
 }
@@ -827,11 +832,12 @@ void DownloadItemView::UpdateLabels() {
     warning_label_->SizeToFit(GetLabelWidth(*warning_label_));
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   deep_scanning_label_->SetVisible(mode_ ==
                                    download::DownloadItemMode::kDeepScanning);
   if (deep_scanning_label_->GetVisible()) {
     const int id = (model_->GetDownloadItem() &&
-                    safe_browsing::DeepScanningRequest::ShouldUploadBinary(
+                    safe_browsing::ShouldUploadBinaryForDeepScanning(
                         model_->GetDownloadItem()))
                        ? IDS_PROMPT_DEEP_SCANNING_DOWNLOAD
                        : IDS_PROMPT_DEEP_SCANNING_APP_DOWNLOAD;
@@ -842,12 +848,17 @@ void DownloadItemView::UpdateLabels() {
     StyleFilename(*deep_scanning_label_, filename_offset, filename.length());
     deep_scanning_label_->SizeToFit(GetLabelWidth(*deep_scanning_label_));
   }
+#endif
 }
 
 void DownloadItemView::UpdateButtons() {
   bool prompt_to_scan = false, prompt_to_discard = false;
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   bool prompt_to_review = enterprise_connectors::ShouldPromptReviewForDownload(
       model_->profile(), model_->GetDownloadItem());
+#else
+  bool prompt_to_review = false;
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   if (is_download_warning(mode_)) {
     const auto danger_type = model_->GetDangerType();
     prompt_to_scan =
@@ -857,12 +868,16 @@ void DownloadItemView::UpdateButtons() {
         !ChromeDownloadManagerDelegate::IsDangerTypeBlocked(danger_type);
   }
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   const bool allow_open_during_deep_scan =
       (mode_ == download::DownloadItemMode::kDeepScanning) &&
       !enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
            model_->profile())
            ->DelayUntilVerdict(
                enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
+#else
+  const bool allow_open_during_deep_scan = false;
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   open_button_->SetEnabled((mode_ == download::DownloadItemMode::kNormal) ||
                            prompt_to_scan || allow_open_during_deep_scan);
 
@@ -877,7 +892,9 @@ void DownloadItemView::UpdateButtons() {
       (mode_ == download::DownloadItemMode::kInsecureDownloadBlock) ||
       prompt_to_discard);
   scan_button_->SetVisible(prompt_to_scan);
-  review_button_->SetVisible(prompt_to_review);
+  if (review_button_) {
+    review_button_->SetVisible(prompt_to_review);
+  }
 
   dropdown_button_->SetVisible(model_->ShouldShowDropdown());
   if (dropdown_button_->GetVisible() && !dropdown_button_shown_recorded_) {
@@ -970,7 +987,8 @@ std::u16string DownloadItemView::GetInProgressAccessibleAlertText() const {
 }
 
 void DownloadItemView::AnnounceAccessibleAlert() {
-  accessible_alert_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  accessible_alert_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kAlert, true);
   announce_accessible_alert_soon_ = false;
 }
 
@@ -1123,7 +1141,7 @@ gfx::Size DownloadItemView::GetButtonSize() const {
   if (scan_button_->GetVisible()) {
     size.SetToMax(scan_button_->GetPreferredSize());
   }
-  if (review_button_->GetVisible()) {
+  if (review_button_ && review_button_->GetVisible()) {
     size.SetToMax(review_button_->GetPreferredSize());
   }
   return size;
@@ -1170,8 +1188,8 @@ int DownloadItemView::GetLabelWidth(const views::StyledLabel& label) const {
   // TODO(pkasting): Can use std::iota_view() when C++20 is available.
   std::vector<int> widths(max_width + 1 - min_width);
   std::iota(widths.begin(), widths.end(), min_width);
-  return *base::ranges::lower_bound(widths, 2, base::ranges::greater{},
-                                    std::move(lines_for_width));
+  return *std::ranges::lower_bound(widths, 2, std::ranges::greater{},
+                                   std::move(lines_for_width));
 }
 
 void DownloadItemView::SetDropdownPressed(bool pressed) {
@@ -1229,6 +1247,7 @@ void DownloadItemView::DropdownButtonPressed(const ui::Event& event) {
 }
 
 void DownloadItemView::ReviewButtonPressed() {
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // Disable every button on the download so the user has to use the review
   // dialog to review their sensitive data/malware violation.
   review_button_->SetEnabled(false);
@@ -1242,6 +1261,7 @@ void DownloadItemView::ReviewButtonPressed() {
                      DownloadCommands::KEEP),
       base::BindOnce(&DownloadItemView::ExecuteCommand, base::Unretained(this),
                      DownloadCommands::DISCARD));
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 }
 
 void DownloadItemView::ShowOpenDialog(content::WebContents* web_contents) {
@@ -1299,7 +1319,9 @@ void DownloadItemView::ShowContextMenuImpl(
 }
 
 void DownloadItemView::OpenDownloadDuringAsyncScanning() {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   model_->CompleteSafeBrowsingScan();
+#endif
   model_->SetOpenWhenComplete(true);
 }
 
@@ -1330,8 +1352,19 @@ void DownloadItemView::UpdateAccessibleName() {
 std::u16string DownloadItemView::CalculateAccessibleName() const {
   return has_warning_label(mode_)
              ? warning_label_->GetText()
-             : (status_label_->GetText() + u' ' +
-                model_->GetFileNameToReportUser().LossyDisplayName());
+             : base::StrCat(
+                   {status_label_->GetText(), u" ",
+                    model_->GetFileNameToReportUser().LossyDisplayName()});
+}
+
+std::array<raw_ptr<views::MdTextButton>, DownloadItemView::kButtonsCount>
+DownloadItemView::buttons() const {
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  return {open_now_button_, save_button_, discard_button_, scan_button_,
+          review_button_};
+#else
+  return {open_now_button_, save_button_, discard_button_, scan_button_};
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 }
 
 DEFINE_ENUM_CONVERTERS(download::DownloadItemMode,

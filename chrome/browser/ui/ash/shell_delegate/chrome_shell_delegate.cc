@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/ash/shell_delegate/chrome_shell_delegate.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "ash/accelerators/accelerator_prefs_delegate.h"
@@ -31,7 +33,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/desk_profiles_ash.h"
@@ -42,6 +43,8 @@
 #include "chrome/browser/ash/scanner/chrome_scanner_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/feedback/feedback_uploader_chrome.h"
+#include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/nearby_sharing/nearby_share_delegate_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -58,6 +61,7 @@
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui.h"
 #include "chrome/browser/ui/ash/session/session_util.h"
+#include "chrome/browser/ui/ash/shell_delegate/tab_scrubber.h"
 #include "chrome/browser/ui/ash/user_education/chrome_user_education_delegate.h"
 #include "chrome/browser/ui/ash/wm/coral_delegate_impl.h"
 #include "chrome/browser/ui/browser.h"
@@ -70,7 +74,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -78,12 +81,12 @@
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/audio/system_sounds_delegate_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/specialized_features/feedback.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/chromeos/multi_capture_service.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/media_session_service.h"
@@ -253,8 +256,8 @@ bool ChromeShellDelegate::CanGoBack(gfx::NativeWindow window) const {
   return contents ? contents->GetController().CanGoBack() : false;
 }
 
-void ChromeShellDelegate::SetTabScrubberChromeOSEnabled(bool enabled) {
-  TabScrubberChromeOS::GetInstance()->SetEnabled(enabled);
+void ChromeShellDelegate::SetTabScrubberEnabled(bool enabled) {
+  ash::TabScrubber::GetInstance()->SetEnabled(enabled);
 }
 
 bool ChromeShellDelegate::AllowDefaultTouchActions(gfx::NativeWindow window) {
@@ -316,12 +319,6 @@ void ChromeShellDelegate::BindMultiDeviceSetup(
   if (service) {
     service->BindMultiDeviceSetup(std::move(receiver));
   }
-}
-
-void ChromeShellDelegate::BindMultiCaptureService(
-    mojo::PendingReceiver<video_capture::mojom::MultiCaptureService> receiver) {
-  content::GetMultiCaptureService().BindMultiCaptureService(
-      std::move(receiver));
 }
 
 media_session::MediaSessionService*
@@ -437,6 +434,36 @@ void ChromeShellDelegate::OpenFeedbackDialog(
   chrome::OpenFeedbackDialog(/*browser=*/nullptr,
                              ToChromeFeedbackSource(source),
                              description_template, category_tag);
+}
+
+bool ChromeShellDelegate::SendSpecializedFeatureFeedback(
+    const AccountId& account_id,
+    int product_id,
+    std::string description,
+    std::optional<std::string> image,
+    std::optional<std::string> image_mime_type) {
+  // NOTE: `FeedbackUploaderFactoryChrome` (in //chrome/browser/feedback/)
+  // returns different instances to `FeedbackUploaderFactory` (in
+  // //components/feedback/content). The correct instance should be obtained
+  // from `FeedbackUploaderFactoryChrome`.
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  if (!browser_context) {
+    return false;
+  }
+
+  feedback::FeedbackUploaderChrome* uploader =
+      feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(
+          browser_context);
+  if (!uploader) {
+    return false;
+  }
+
+  specialized_features::SendFeedback(*uploader, product_id,
+                                     std::move(description), std::move(image),
+                                     std::move(image_mime_type));
+  return true;
 }
 
 void ChromeShellDelegate::OpenProfileManager() {

@@ -136,10 +136,9 @@ LayoutPoint ComputeLocation(const PhysicalBoxFragment& column_box,
   // engine LayoutPoint, which will also take care of converting it into the
   // flow thread coordinate space, if we happen to be nested inside another
   // fragmentation context.
-  return LayoutBoxUtils::ComputeLocation(
-      column_box, physical_offset,
-      *container.GetPhysicalFragment(fragment_index),
-      previous_container_break_token);
+  return ComputeBoxLocation(column_box, physical_offset,
+                            *container.GetPhysicalFragment(fragment_index),
+                            previous_container_break_token);
 }
 
 }  // namespace

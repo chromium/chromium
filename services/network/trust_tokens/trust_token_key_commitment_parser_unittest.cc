@@ -6,15 +6,18 @@
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/fuzztest_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 using ::testing::ElementsAre;
 using ::testing::Truly;
@@ -825,5 +828,20 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers,
         "protocol_version": "PrivateStateTokenV1PMB",
         "id": 1, "batchsize": 5}})")));
 }
+
+void ParsesOneIssuerCorrectly(base::Value value) {
+  std::string output;
+  base::JSONWriter::Write(std::move(value), &output);
+  TrustTokenKeyCommitmentParser().Parse(output);
+}
+
+void ParsesMultipleIssuersCorrectly(base::Value value) {
+  std::string output;
+  base::JSONWriter::Write(std::move(value), &output);
+  TrustTokenKeyCommitmentParser().ParseMultipleIssuers(output);
+}
+
+FUZZ_TEST(TrustTokenKeyCommitmentFuzzer, ParsesOneIssuerCorrectly);
+FUZZ_TEST(TrustTokenKeyCommitmentFuzzer, ParsesMultipleIssuersCorrectly);
 
 }  // namespace network

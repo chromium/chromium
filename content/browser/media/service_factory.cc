@@ -287,12 +287,12 @@ media::mojom::CdmService& GetCdmService(BrowserContext* browser_context,
 
 #if BUILDFLAG(IS_WIN)
 media::mojom::MediaFoundationService& GetMediaFoundationService(
+    const media::CdmType& cdm_type,
     BrowserContext* browser_context,
     const GURL& site,
     const base::FilePath& cdm_path) {
   return GetService<media::mojom::MediaFoundationService>(
-      media::CdmType(), browser_context, site, "Media Foundation Service",
-      cdm_path);
+      cdm_type, browser_context, site, "Media Foundation Service", cdm_path);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

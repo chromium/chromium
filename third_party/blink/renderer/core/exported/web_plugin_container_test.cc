@@ -1588,9 +1588,11 @@ TEST_F(WebPluginContainerTest, CompositedPlugin) {
 
   const auto& display_items = paint_artifact.GetDisplayItemList();
   ASSERT_EQ(1u, display_items.size());
-  ASSERT_EQ(DisplayItem::kForeignLayerPlugin, display_items[0].GetType());
+  // SAFETY: ASSERT_EQ() that size is 1u on line above.
+  ASSERT_EQ(DisplayItem::kForeignLayerPlugin,
+            UNSAFE_BUFFERS(display_items[0]).GetType());
   const auto& foreign_layer_display_item =
-      To<ForeignLayerDisplayItem>(display_items[0]);
+      To<ForeignLayerDisplayItem>(UNSAFE_BUFFERS(display_items[0]));
   EXPECT_EQ(plugin->GetCcLayer(), foreign_layer_display_item.GetLayer());
 }
 

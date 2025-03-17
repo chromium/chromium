@@ -3126,6 +3126,8 @@
         "args": [
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet_landscape.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet_landscape.chrome_public_test_apk.filter",
+          "--emulator-debug-tags=all",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3281,6 +3283,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--gtest_filter=-InstallableManagerBrowserTest.CheckManifestWithIconThatIsTooSmall",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3461,6 +3464,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3929,6 +3933,8 @@
         "args": [
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet.chrome_public_test_apk.filter",
+          "--emulator-debug-tags=all",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3982,6 +3988,7 @@
         "args": [
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet.chrome_public_unit_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -4127,10 +4134,12 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "description": "Run with android_35_google_apis_x64_tablet",
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -4221,6 +4230,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.content_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -4730,6 +4740,7 @@
         "args": [
           "--use-cmd-decoder=validating",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -4914,6 +4925,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -5422,6 +5434,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -5974,6 +5987,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.unit_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

@@ -213,7 +213,7 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = 29, message = "https://crbug.com/1036556")
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.P, message = "https://crbug.com/1036556")
     public void testMediaSuspension() throws TimeoutException {
         mActivityTestRule.loadUrl(
                 mTestServer.getURLWithHostName(STARTING_FQDN, MEDIA_FILE_TEST_PATH));

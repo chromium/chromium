@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @class FormSuggestion;
 

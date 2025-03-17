@@ -232,6 +232,12 @@ bool CertProvisioningWorkerStatic::IsWorkerMarkedForReset() const {
   return is_schedueled_for_reset_;
 }
 
+const std::string& CertProvisioningWorkerStatic::GetProcessId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return process_id_;
+}
+
 const CertProfile& CertProvisioningWorkerStatic::GetCertProfile() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -266,7 +272,7 @@ CertProvisioningWorkerStatic::GetLastBackendServerError() const {
   return last_backend_server_error_;
 }
 
-std::string CertProvisioningWorkerStatic::GetFailureMessage() const {
+std::string CertProvisioningWorkerStatic::GetFailureMessageWithPii() const {
   return failure_message_ui_.value_or(failure_message_);
 }
 

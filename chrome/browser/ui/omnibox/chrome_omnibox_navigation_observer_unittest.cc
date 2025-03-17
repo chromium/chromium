@@ -272,7 +272,7 @@ TEST_F(ChromeOmniboxNavigationObserverTest, AlternateNavInfoBar) {
       redir_info.status_code = net::HTTP_MOVED_PERMANENTLY;
       auto redir_head =
           network::CreateURLResponseHead(net::HTTP_MOVED_PERMANENTLY);
-      redirects.push_back({redir_info, std::move(redir_head)});
+      redirects.emplace_back(redir_info, std::move(redir_head));
     }
 
     // Fill in final response.

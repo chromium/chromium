@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/subscriber.h"
 
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_callback.h"
@@ -14,28 +15,39 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/dom/observable.h"
 #include "third_party/blink/renderer/core/dom/observable_internal_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-class Subscriber::CloseSubscriptionAlgorithm final
+using PassKey = base::PassKey<Subscriber>;
+
+class Subscriber::ConsumerAbortSubscriptionAlgorithm final
     : public AbortSignal::Algorithm {
  public:
-  explicit CloseSubscriptionAlgorithm(Subscriber* subscriber,
-                                      AbortSignal* signal,
-                                      ScriptState* script_state)
-      : subscriber_(subscriber), signal_(signal), script_state_(script_state) {}
-  ~CloseSubscriptionAlgorithm() override = default;
+  explicit ConsumerAbortSubscriptionAlgorithm(
+      Subscriber& subscriber,
+      ObservableInternalObserver& associated_observer,
+      AbortSignal& signal,
+      ScriptState& script_state)
+      : subscriber_(subscriber),
+        associated_observer_(associated_observer),
+        signal_(signal),
+        script_state_(script_state) {
+    CHECK(script_state_->ContextIsValid());
+  }
+  ~ConsumerAbortSubscriptionAlgorithm() override = default;
 
   void Run() override {
-    subscriber_->CloseSubscription(script_state_,
-                                   signal_->reason(script_state_));
+    subscriber_->ConsumerUnsubscribe(script_state_, associated_observer_,
+                                     signal_->reason(script_state_));
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(subscriber_);
+    visitor->Trace(associated_observer_);
     visitor->Trace(signal_);
     visitor->Trace(script_state_);
     Algorithm::Trace(visitor);
@@ -43,6 +55,12 @@ class Subscriber::CloseSubscriptionAlgorithm final
 
  private:
   Member<Subscriber> subscriber_;
+  // This is the observer associated with the `signal_` that it subscribed to
+  // `subscriber_` with. `this` keeps both around so when the `signal_` gets
+  // aborted (i.e., `Run()` is called above) we can alert `subscriber_` as to
+  // which observer needs to be unregistered so that it doesn't receive values
+  // from the producer.
+  Member<ObservableInternalObserver> associated_observer_;
   Member<AbortSignal> signal_;
   Member<ScriptState> script_state_;
 };
@@ -52,23 +70,30 @@ Subscriber::Subscriber(base::PassKey<Observable>,
                        ObservableInternalObserver* internal_observer,
                        SubscribeOptions* options)
     : ExecutionContextClient(ExecutionContext::From(script_state)),
-      internal_observer_(internal_observer),
       subscription_controller_(AbortController::Create(script_state)) {
+  internal_observers_.push_back(internal_observer);
+
   // If a downstream `AbortSignal` is provided, setup an instance of
-  // `CloseSubscriptionAlgorithm` as one of its internal abort algorithms. it
-  // enables `this` to close the subscription that `this` represents in response
-  // to downstream aborts.
+  // `ConsumerAbortSubscriptionAlgorithm` as one of its internal abort
+  // algorithms. It enables `this` to close the subscription that `this`
+  // represents in response to downstream aborts.
   if (options->hasSignal()) {
     AbortSignal* downstream_signal = options->signal();
 
     if (downstream_signal->aborted()) {
+      internal_observers_.pop_back();
       CloseSubscription(
           script_state,
           /*abort_reason=*/downstream_signal->reason(script_state));
     } else {
-      close_subscription_algorithm_handle_ = downstream_signal->AddAlgorithm(
-          MakeGarbageCollected<CloseSubscriptionAlgorithm>(
-              this, downstream_signal, script_state));
+      // Add an abort algorithm to the consumer's signal. Keep the algorithm
+      // alive by associating it with the `internal_observer`.
+      consumer_abort_algorithms_.insert(
+          internal_observer,
+          downstream_signal->AddAlgorithm(
+              MakeGarbageCollected<ConsumerAbortSubscriptionAlgorithm>(
+                  *this, *internal_observer, *downstream_signal,
+                  *script_state)));
     }
   }
 }
@@ -78,10 +103,17 @@ void Subscriber::next(ScriptValue value) {
     return;
   }
 
-  // This is a DCHECK because dispatching every single value to a subscriber is
-  // performance-criticial.
-  DCHECK(internal_observer_);
-  internal_observer_->Next(value);
+  // Call `Next()` on all observers. Do this by iterating over a *copy* of the
+  // list of observers, because `Next()` can actually complete one of the
+  // observers' subscriptions, thus removing `observer` from
+  // `internal_observers_`. That means `internal_observers_` can be mutated
+  // throughout this process, and we cannot iterate over it while it is
+  // mutating.
+  HeapVector<Member<ObservableInternalObserver>> internal_observers =
+      internal_observers_;
+  for (auto& observer : internal_observers) {
+    observer->Next(value);
+  }
 }
 
 void Subscriber::complete(ScriptState* script_state) {
@@ -90,12 +122,16 @@ void Subscriber::complete(ScriptState* script_state) {
   }
 
   // `CloseSubscription()` makes it impossible to invoke user-provided callbacks
-  // via `internal_observer_` anymore/re-entrantly, which is why we pull the
+  // via `internal_observers_` anymore/re-entrantly, which is why we pull the
   // `internal_observer` out before calling this.
   CloseSubscription(script_state, /*abort_reason=*/std::nullopt);
 
-  CHECK(internal_observer_);
-  internal_observer_->Complete();
+  // See the documentation in `Subscriber::next()`.
+  HeapVector<Member<ObservableInternalObserver>> internal_observers =
+      internal_observers_;
+  for (auto& observer : internal_observers) {
+    observer->Complete();
+  }
 }
 
 void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
@@ -119,12 +155,16 @@ void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
   }
 
   // `CloseSubscription()` makes it impossible to invoke user-provided callbacks
-  // via `internal_observer_` anymore/re-entrantly, which is why we pull the
+  // via `internal_observers_` anymore/re-entrantly, which is why we pull the
   // `internal_observer` out before calling this.
   CloseSubscription(script_state, error_value);
 
-  CHECK(internal_observer_);
-  internal_observer_->Error(script_state, error_value);
+  // See the documentation in `Subscriber::next()`.
+  HeapVector<Member<ObservableInternalObserver>> internal_observers =
+      internal_observers_;
+  for (auto& observer : internal_observers) {
+    observer->Error(script_state, error_value);
+  }
 }
 
 void Subscriber::addTeardown(V8VoidFunction* teardown) {
@@ -141,6 +181,34 @@ AbortSignal* Subscriber::signal() const {
   return subscription_controller_->signal();
 }
 
+void Subscriber::ConsumerUnsubscribe(
+    ScriptState* script_state,
+    ObservableInternalObserver* associated_observer,
+    std::optional<ScriptValue> abort_reason) {
+  // If the producer closes the subscription before any consumer abort signal
+  // algorithms attempt, the consumer abort signal algorithms can still fire,
+  // attempting to close the subscription. Do nothing if it's already closed.
+  if (!active_) {
+    return;
+  }
+
+  // Now that the abort algorithm has run, clear the
+  // `AbortSignal::AlgorithmHandle` associated with `associated_observer` that's
+  // keeping it alive.
+  DCHECK(base::Contains(consumer_abort_algorithms_, associated_observer));
+  consumer_abort_algorithms_.erase(associated_observer);
+
+  // Also remove `associated_observer` from `internal_observers_`, since it no
+  // longer cares about values `this` produces.
+  DCHECK(base::Contains(internal_observers_, associated_observer));
+  internal_observers_.erase(
+      std::ranges::find(internal_observers_, associated_observer));
+
+  if (internal_observers_.empty()) {
+    CloseSubscription(script_state, abort_reason);
+  }
+}
+
 void Subscriber::CloseSubscription(ScriptState* script_state,
                                    std::optional<ScriptValue> abort_reason) {
   // Guard against re-entrant invocation, which can happen during
@@ -149,12 +217,14 @@ void Subscriber::CloseSubscription(ScriptState* script_state,
   // running a teardown) -> Script aborts the downstream `AbortSignal` (the one
   // passed in via `SubscribeOptions` in the constructor) -> the downstream
   // signal's internal abort algorithm runs ->
-  // `Subscriber::CloseSubscriptionAlgorithm::Run()` -> `CloseSubscription()`.
+  // `Subscriber::ConsumerAbortSubscriptionAlgorithm::Run()` ->
+  // `CloseSubscription()`.
   if (!active_) {
     return;
   }
 
-  close_subscription_algorithm_handle_.Clear();
+  // We no longer need to hold onto the consumer abort algorithms.
+  consumer_abort_algorithms_.clear();
 
   // There are three things to do when the signal associated with a subscription
   // gets aborted.
@@ -188,11 +258,36 @@ void Subscriber::CloseSubscription(ScriptState* script_state,
   teardown_callbacks_.clear();
 }
 
+void Subscriber::RegisterNewObserver(ScriptState* script_state,
+                                     ObservableInternalObserver* observer,
+                                     SubscribeOptions* options) {
+  // We can only hit this path if there is already at least one subscriber that
+  // forced the creation of `this` and subscribed via `this`'s constructor.
+  CHECK_GE(internal_observers_.size(), 1u);
+  internal_observers_.push_back(observer);
+
+  if (options->hasSignal()) {
+    AbortSignal* downstream_signal = options->signal();
+
+    if (downstream_signal->aborted()) {
+      internal_observers_.pop_back();
+      return;
+    }
+
+    ConsumerAbortSubscriptionAlgorithm* abort_algorithm =
+        MakeGarbageCollected<ConsumerAbortSubscriptionAlgorithm>(
+            *this, *observer, *downstream_signal, *script_state);
+    AbortSignal::AlgorithmHandle* maybe_close_algorithm_handle =
+        downstream_signal->AddAlgorithm(abort_algorithm);
+    consumer_abort_algorithms_.insert(observer, maybe_close_algorithm_handle);
+  }
+}
+
 void Subscriber::Trace(Visitor* visitor) const {
   visitor->Trace(subscription_controller_);
-  visitor->Trace(close_subscription_algorithm_handle_);
+  visitor->Trace(consumer_abort_algorithms_);
   visitor->Trace(teardown_callbacks_);
-  visitor->Trace(internal_observer_);
+  visitor->Trace(internal_observers_);
 
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);

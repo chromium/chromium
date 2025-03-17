@@ -22,14 +22,8 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/font.h"
 
-#include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -50,7 +44,6 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
-#include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -99,77 +92,16 @@ bool Font::operator==(const Font& other) const {
          font_description_ == other.font_description_;
 }
 
-namespace {
-
-void DrawBlobs(cc::PaintCanvas* canvas,
-               const cc::PaintFlags& flags,
-               const ShapeResultBloberizer::BlobBuffer& blobs,
-               const gfx::PointF& point,
-               cc::NodeId node_id = cc::kInvalidNodeId) {
-  for (const auto& blob_info : blobs) {
-    DCHECK(blob_info.blob);
-    cc::PaintCanvasAutoRestore auto_restore(canvas, false);
-    switch (blob_info.rotation) {
-      case CanvasRotationInVertical::kRegular:
-        break;
-      case CanvasRotationInVertical::kRotateCanvasUpright: {
-        canvas->save();
-
-        SkMatrix m;
-        m.setSinCos(-1, 0, point.x(), point.y());
-        canvas->concat(SkM44(m));
-        break;
-      }
-      case CanvasRotationInVertical::kRotateCanvasUprightOblique: {
-        canvas->save();
-
-        SkMatrix m;
-        m.setSinCos(-1, 0, point.x(), point.y());
-        // TODO(yosin): We should use angle specified in CSS instead of
-        // constant value -15deg.
-        // Note: We draw glyph in right-top corner upper.
-        // See CSS "transform: skew(0, -15deg)"
-        SkMatrix skewY;
-        constexpr SkScalar kSkewY = -0.2679491924311227;  // tan(-15deg)
-        skewY.setSkew(0, kSkewY, point.x(), point.y());
-        m.preConcat(skewY);
-        canvas->concat(SkM44(m));
-        break;
-      }
-      case CanvasRotationInVertical::kOblique: {
-        // TODO(yosin): We should use angle specified in CSS instead of
-        // constant value 15deg.
-        // Note: We draw glyph in right-top corner upper.
-        // See CSS "transform: skew(0, -15deg)"
-        canvas->save();
-        SkMatrix skewX;
-        constexpr SkScalar kSkewX = 0.2679491924311227;  // tan(15deg)
-        skewX.setSkew(kSkewX, 0, point.x(), point.y());
-        canvas->concat(SkM44(skewX));
-        break;
-      }
-    }
-    if (node_id != cc::kInvalidNodeId) {
-      canvas->drawTextBlob(blob_info.blob, point.x(), point.y(), node_id,
-                           flags);
-    } else {
-      canvas->drawTextBlob(blob_info.blob, point.x(), point.y(), flags);
-    }
-  }
-}
-
-}  // anonymous ns
-
 void Font::DrawText(cc::PaintCanvas* canvas,
-                    const TextRunPaintInfo& run_info,
+                    const TextRun& run,
                     const gfx::PointF& point,
                     const cc::PaintFlags& flags,
                     DrawType draw_type) const {
-  DrawText(canvas, run_info, point, cc::kInvalidNodeId, flags, draw_type);
+  DrawText(canvas, run, point, cc::kInvalidNodeId, flags, draw_type);
 }
 
 void Font::DrawText(cc::PaintCanvas* canvas,
-                    const TextRunPaintInfo& run_info,
+                    const TextRun& run,
                     const gfx::PointF& point,
                     cc::NodeId node_id,
                     const cc::PaintFlags& flags,
@@ -181,13 +113,14 @@ void Font::DrawText(cc::PaintCanvas* canvas,
 
   CachingWordShaper word_shaper(*this);
   ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
+  word_shaper.FillResultBuffer(run, &buffer);
+  TextRunPaintInfo run_info(run);
   ShapeResultBloberizer::FillGlyphs bloberizer(
       GetFontDescription(), run_info, buffer,
       draw_type == Font::DrawType::kGlyphsOnly
           ? ShapeResultBloberizer::Type::kNormal
           : ShapeResultBloberizer::Type::kEmitText);
-  DrawBlobs(canvas, flags, bloberizer.Blobs(), point, node_id);
+  DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags, node_id);
 }
 
 void Font::DrawText(cc::PaintCanvas* canvas,
@@ -207,7 +140,7 @@ void Font::DrawText(cc::PaintCanvas* canvas,
       draw_type == Font::DrawType::kGlyphsOnly
           ? ShapeResultBloberizer::Type::kNormal
           : ShapeResultBloberizer::Type::kEmitText);
-  DrawBlobs(canvas, flags, bloberizer.Blobs(), point, node_id);
+  DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags, node_id);
 }
 
 bool Font::DrawBidiText(cc::PaintCanvas* canvas,
@@ -235,9 +168,9 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     const String text_with_override =
         BidiParagraph::StringWithDirectionalOverride(run.ToStringView(),
                                                      run.Direction());
-    TextRun run_with_override = run_info.run;
-    run_with_override.SetText(text_with_override);
-    run_with_override.SetDirectionalOverride(false);
+    TextRun run_with_override(text_with_override, run.Direction(),
+                              /* directional_override */ false,
+                              run.NormalizeSpace());
     return DrawBidiText(canvas, TextRunPaintInfo(run_with_override), point,
                         custom_font_not_ready_action, flags, draw_type);
   }
@@ -260,9 +193,8 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
       continue;
     }
 
-    TextRun subrun = run.SubRun(bidi_run.start, bidi_run.Length());
-    subrun.SetDirection(bidi_run.Direction());
-
+    TextRun subrun =
+        run.SubRun(bidi_run.start, bidi_run.Length(), bidi_run.Direction());
     TextRunPaintInfo subrun_info(subrun);
     CharacterRange range(0, 0, 0, 0);
     if (is_sub_run) [[unlikely]] {
@@ -278,7 +210,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     }
 
     ShapeResultBuffer buffer;
-    word_shaper.FillResultBuffer(subrun_info, &buffer);
+    word_shaper.FillResultBuffer(subrun, &buffer);
 
     // Fix regression with -ftrivial-auto-var-init=pattern. See
     // crbug.com/1055652.
@@ -291,7 +223,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
       // Align the subrun with the point given.
       curr_point.Offset(-range.start, 0);
     }
-    DrawBlobs(canvas, flags, bloberizer.Blobs(), curr_point);
+    DrawTextBlobs(bloberizer.Blobs(), *canvas, curr_point, flags);
 
     if (is_sub_run) [[unlikely]] {
       curr_point.Offset(range.Width(), 0);
@@ -302,8 +234,9 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
   return true;
 }
 
+// This function is not used if TextCombineEmphasisNG flag is enabled.
 void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
-                             const TextRunPaintInfo& run_info,
+                             const TextRun& run,
                              const AtomicString& mark,
                              const gfx::PointF& point,
                              const cc::PaintFlags& flags) const {
@@ -318,10 +251,11 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
 
   CachingWordShaper word_shaper(*this);
   ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
+  word_shaper.FillResultBuffer(run, &buffer);
+  TextRunPaintInfo run_info(run);
   ShapeResultBloberizer::FillTextEmphasisGlyphs bloberizer(
       GetFontDescription(), run_info, buffer, emphasis_glyph_data);
-  DrawBlobs(canvas, flags, bloberizer.Blobs(), point);
+  DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags);
 }
 
 void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
@@ -340,7 +274,7 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
   ShapeResultBloberizer::FillTextEmphasisGlyphsNG bloberizer(
       GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result, emphasis_glyph_data);
-  DrawBlobs(canvas, flags, bloberizer.Blobs(), point);
+  DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags);
 }
 
 gfx::RectF Font::TextInkBounds(const TextFragmentPaintInfo& text_info) const {
@@ -397,8 +331,8 @@ float Font::SubRunWidth(const TextRun& run,
     // Measure the subrun.
     TextRun text_run(
         StringView(run.ToStringView(), visual_run.start, visual_run.Length()),
-        visual_run.Direction(), /* directional_override */ false);
-    text_run.SetNormalizeSpace(true);
+        visual_run.Direction(), /* directional_override */ false,
+        /* normalize_space */ true);
     CharacterRange character_range =
         shaper.GetCharacterRange(text_run, run_from, run_to);
 
@@ -441,7 +375,7 @@ unsigned InterceptsFromBlobs(const ShapeResultBloberizer::BlobBuffer& blobs,
 
     SkScalar* offset_intercepts_buffer = nullptr;
     if (intercepts_buffer)
-      offset_intercepts_buffer = &intercepts_buffer[num_intervals];
+      offset_intercepts_buffer = UNSAFE_TODO(&intercepts_buffer[num_intervals]);
     num_intervals += blob_info.blob->getIntercepts(
         bounds_array, offset_intercepts_buffer, &paint);
   }
@@ -467,23 +401,6 @@ void GetTextInterceptsInternal(const ShapeResultBloberizer::BlobBuffer& blobs,
 }
 
 }  // anonymous namespace
-
-void Font::GetTextIntercepts(const TextRunPaintInfo& run_info,
-                             const cc::PaintFlags& flags,
-                             const std::tuple<float, float>& bounds,
-                             Vector<TextIntercept>& intercepts) const {
-  if (ShouldSkipDrawing())
-    return;
-
-  CachingWordShaper word_shaper(*this);
-  ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
-  ShapeResultBloberizer::FillGlyphs bloberizer(
-      GetFontDescription(), run_info, buffer,
-      ShapeResultBloberizer::Type::kTextIntercepts);
-
-  GetTextInterceptsInternal(bloberizer.Blobs(), flags, bounds, intercepts);
-}
 
 void Font::GetTextIntercepts(const TextFragmentPaintInfo& text_info,
                              const cc::PaintFlags& flags,
@@ -532,8 +449,12 @@ int Font::OffsetForPosition(const TextRun& run,
   return shaper.OffsetForPosition(run, x_float, partial_glyphs, break_glyphs);
 }
 
-NGShapeCache& Font::GetNGShapeCache() const {
-  return EnsureFontFallbackList()->GetNGShapeCache(font_description_);
+base::span<const FontFeatureRange> Font::GetFontFeatures() const {
+  return EnsureFontFallbackList()->GetFontFeatures(font_description_);
+}
+
+bool Font::HasNonInitialFontFeatures() const {
+  return EnsureFontFallbackList()->HasNonInitialFontFeatures(font_description_);
 }
 
 ShapeCache* Font::GetShapeCache() const {

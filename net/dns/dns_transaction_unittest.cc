@@ -27,7 +27,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -540,7 +539,8 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
       pending_buf_size_ = buf_size;
       return ERR_IO_PENDING;
     }
-    return DoBufferCopy(read.data, read.data_len, buf, buf_size);
+    return DoBufferCopy(read.data.data(), static_cast<int>(read.data.length()),
+                        buf, buf_size);
   }
 
   void GetResponseInfo(HttpResponseInfo* info) override {
@@ -564,8 +564,9 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
     EXPECT_NE(data.result, ERR_IO_PENDING);
     if (data.result < 0)
       return ReadRawDataComplete(data.result);
-    ReadRawDataComplete(DoBufferCopy(data.data, data.data_len, pending_buf_,
-                                     pending_buf_size_));
+    ReadRawDataComplete(DoBufferCopy(data.data.data(),
+                                     static_cast<int>(data.data.length()),
+                                     pending_buf_, pending_buf_size_));
   }
   void OnWriteComplete(int rv) override {}
   void OnConnectComplete(const MockConnect& data) override {}
@@ -833,8 +834,8 @@ class DnsTransactionTestBase : public testing::Test {
         }
       } else if (!server.use_post() && request->method() == "GET") {
         std::string prefix = url_base + "?dns=";
-        auto mispair = base::ranges::mismatch(prefix, request->url().spec());
-        if (mispair.first == prefix.end()) {
+        auto mispair = std::ranges::mismatch(prefix, request->url().spec());
+        if (mispair.in1 == prefix.end()) {
           server_found = true;
           socket_factory_->remote_endpoints_.emplace_back(server);
         }
@@ -1019,11 +1020,11 @@ TEST_F(DnsTransactionTest, LookupWithLog) {
 
 TEST_F(DnsTransactionTest, LookupWithEDNSOption) {
   OptRecordRdata expected_opt_rdata;
-
+  const auto data = std::to_array<uint8_t>({0xbe, 0xef});
   transaction_factory_->AddEDNSOption(
-      OptRecordRdata::UnknownOpt::CreateForTesting(123, "\xbe\xef"));
+      OptRecordRdata::UnknownOpt::CreateForTesting(123, data));
   expected_opt_rdata.AddOpt(
-      OptRecordRdata::UnknownOpt::CreateForTesting(123, "\xbe\xef"));
+      OptRecordRdata::UnknownOpt::CreateForTesting(123, data));
 
   AddAsyncQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype,
                            kT0ResponseDatagram, &expected_opt_rdata);
@@ -1036,13 +1037,15 @@ TEST_F(DnsTransactionTest, LookupWithEDNSOption) {
 
 TEST_F(DnsTransactionTest, LookupWithMultipleEDNSOptions) {
   OptRecordRdata expected_opt_rdata;
-
-  std::vector<std::pair<uint16_t, std::string>> params = {
+  const auto data0 = std::to_array<uint8_t>({0xde, 0xad});
+  const auto data1 = std::to_array<uint8_t>({0xbe, 0xef});
+  const auto data2 = std::to_array<uint8_t>({0xff});
+  std::vector<std::pair<uint16_t, base::span<const uint8_t>>> params = {
       // Two options with the same code, to check that both are included.
-      std::pair<uint16_t, std::string>(1, "\xde\xad"),
-      std::pair<uint16_t, std::string>(1, "\xbe\xef"),
+      std::pair<uint16_t, base::span<const uint8_t>>(1, data0),
+      std::pair<uint16_t, base::span<const uint8_t>>(1, data1),
       // Try a different code and different length of data.
-      std::pair<uint16_t, std::string>(2, "\xff")};
+      std::pair<uint16_t, base::span<const uint8_t>>(2, data2)};
 
   for (auto& param : params) {
     transaction_factory_->AddEDNSOption(

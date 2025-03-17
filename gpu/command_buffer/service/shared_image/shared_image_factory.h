@@ -10,6 +10,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -18,10 +19,12 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_pool_service.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "gpu/ipc/common/shared_image_pool_client_interface.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_extra_info.h"
@@ -141,6 +144,11 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                                     gfx::Size& size,
                                     gfx::BufferUsage& buffer_usage);
 
+  bool CreateSharedImagePool(
+      const SharedImagePoolId& pool_id,
+      mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote);
+  bool DestroySharedImagePool(const SharedImagePoolId& pool_id);
+
   void RegisterSharedImageBackingFactoryForTesting(
       SharedImageBackingFactory* factory);
 
@@ -163,6 +171,9 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                            const std::string& debug_label);
   bool IsNativeBufferSupported(gfx::BufferFormat format,
                                gfx::BufferUsage usage);
+#if BUILDFLAG(IS_WIN)
+  bool IsD3DSharedImageSupported() const;
+#endif
 
   raw_ptr<SharedImageManager> shared_image_manager_;
   const scoped_refptr<SharedContextState> context_state_;
@@ -202,6 +213,11 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                      SharedImageRepresentationFactoryRefHash,
                      SharedImageRepresentationFactoryRefKeyEqual>
       shared_images_;
+
+  // Map of all the SharedImagePoolService objects corresponding to its unique
+  // pool id.
+  base::flat_map<SharedImagePoolId, std::unique_ptr<SharedImagePoolService>>
+      shared_image_pool_map_;
 
   // Array of all the backing factories to choose from for creating shared
   // images.

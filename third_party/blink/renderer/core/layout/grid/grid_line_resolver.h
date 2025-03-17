@@ -24,26 +24,27 @@ class GridPosition;
 
 // This is a utility class with all the code related to grid items positions
 // resolution.
-class GridLineResolver {
+class CORE_EXPORT GridLineResolver {
   DISALLOW_NEW();
 
  public:
-  GridLineResolver() = default;
-
-  explicit GridLineResolver(const ComputedStyle& grid_style,
-                            wtf_size_t column_auto_repetitions,
-                            wtf_size_t row_auto_repetitions)
+  GridLineResolver(const ComputedStyle& grid_style,
+                   wtf_size_t column_auto_repetitions,
+                   wtf_size_t row_auto_repetitions)
       : style_(&grid_style),
         column_auto_repetitions_(column_auto_repetitions),
         row_auto_repetitions_(row_auto_repetitions) {}
 
+  GridLineResolver(const ComputedStyle& parent_style,
+                   wtf_size_t auto_repetitions);
+
   // Subgrids need to map named lines from every parent grid. This constructor
   // should be used exclusively by subgrids to differentiate such scenario.
-  explicit GridLineResolver(const ComputedStyle& grid_style,
-                            const GridLineResolver& parent_line_resolver,
-                            GridArea subgrid_area,
-                            wtf_size_t column_auto_repetitions,
-                            wtf_size_t row_auto_repetitions);
+  GridLineResolver(const ComputedStyle& grid_style,
+                   const GridLineResolver& parent_line_resolver,
+                   GridArea subgrid_area,
+                   wtf_size_t column_auto_repetitions,
+                   wtf_size_t row_auto_repetitions);
 
   bool operator==(const GridLineResolver& other) const;
 
@@ -63,12 +64,8 @@ class GridLineResolver {
 
   bool HasStandaloneAxis(GridTrackSizingDirection track_direction) const;
 
-  wtf_size_t SpanSizeForAutoPlacedItem(
-      const ComputedStyle& grid_item_style,
-      GridTrackSizingDirection track_direction) const;
-
   GridSpan ResolveGridPositionsFromStyle(
-      const ComputedStyle& grid_item_style,
+      const ComputedStyle& item_style,
       GridTrackSizingDirection track_direction) const;
 
   const NamedGridLinesMap& ImplicitNamedLinesMap(

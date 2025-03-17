@@ -58,7 +58,7 @@ FocusModeUntrustedUIConfig::FocusModeUntrustedUIConfig()
 
 bool FocusModeUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return ash::features::IsFocusModeEnabled();
+  return true;
 }
 
 }  // namespace ash

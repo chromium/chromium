@@ -35,9 +35,7 @@ network::ResourceRequest RemoveQuery(
 IsolatedWebAppResponseReaderImpl::IsolatedWebAppResponseReaderImpl(
     std::unique_ptr<SignedWebBundleReader> reader,
     TrustChecker trust_checker)
-    : reader_(std::move(reader)), trust_checker_(std::move(trust_checker)) {
-  CHECK_EQ(reader_->GetState(), SignedWebBundleReader::State::kInitialized);
-}
+    : reader_(std::move(reader)), trust_checker_(std::move(trust_checker)) {}
 
 IsolatedWebAppResponseReaderImpl::~IsolatedWebAppResponseReaderImpl() = default;
 
@@ -115,8 +113,7 @@ IsolatedWebAppResponseReader::Response::~Response() = default;
 void IsolatedWebAppResponseReader::Response::ReadBody(
     mojo::ScopedDataPipeProducerHandle producer_handle,
     base::OnceCallback<void(net::Error net_error)> callback) {
-  if (!reader_ ||
-      reader_->GetState() != SignedWebBundleReader::State::kInitialized) {
+  if (!reader_ || reader_->IsClosed()) {
     // The weak pointer to `reader_` might no longer be valid when this is
     // called. Also the reader might be closed.
     std::move(callback).Run(net::ERR_FAILED);

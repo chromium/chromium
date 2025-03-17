@@ -18,14 +18,13 @@ D3D12VideoEncoderWrapper::D3D12VideoEncoderWrapper(
     Microsoft::WRL::ComPtr<ID3D12VideoEncoder> video_encoder,
     Microsoft::WRL::ComPtr<ID3D12VideoEncoderHeap> video_encoder_heap)
     : video_encoder_(std::move(video_encoder)),
-      video_encoder_heap_(std::move(video_encoder_heap)) {
-  CHECK(video_encoder_);
-  CHECK(video_encoder_heap_);
-}
+      video_encoder_heap_(std::move(video_encoder_heap)) {}
 
 D3D12VideoEncoderWrapper::~D3D12VideoEncoderWrapper() = default;
 
 bool D3D12VideoEncoderWrapper::Initialize() {
+  CHECK(video_encoder_);
+  CHECK(video_encoder_heap_);
   Microsoft::WRL::ComPtr<ID3D12Device> device;
   CHECK_EQ(video_encoder_->GetDevice(IID_PPV_ARGS(&device)), S_OK);
   Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device3;
@@ -33,8 +32,29 @@ bool D3D12VideoEncoderWrapper::Initialize() {
 
   // Get the profile, resolution and MaxEncoderOutputMetadataBufferSize
   D3D12_VIDEO_ENCODER_CODEC codec = video_encoder_->GetCodec();
-  D3D12_VIDEO_ENCODER_PROFILE_DESC profile_desc;
-  // TODO(crbug.com/40275246): support no codec for now due to CL split.
+  D3D12_VIDEO_ENCODER_PROFILE_DESC profile_desc{};
+  switch (codec) {
+    case D3D12_VIDEO_ENCODER_CODEC_H264:
+      profile_desc = {
+          .DataSize = sizeof(profile_data_.h264_profile_),
+          .pH264Profile = &profile_data_.h264_profile_,
+      };
+      break;
+    case D3D12_VIDEO_ENCODER_CODEC_HEVC:
+      profile_desc = {
+          .DataSize = sizeof(profile_data_.hevc_profile_),
+          .pHEVCProfile = &profile_data_.hevc_profile_,
+      };
+      break;
+    case D3D12_VIDEO_ENCODER_CODEC_AV1:
+      profile_desc = {
+          .DataSize = sizeof(profile_data_.av1_profile_),
+          .pAV1Profile = &profile_data_.av1_profile_,
+      };
+      break;
+    default:
+      NOTREACHED();
+  }
   HRESULT hr = video_encoder_->GetCodecProfile(profile_desc);
   RETURN_ON_HR_FAILURE(hr, "GetCodecProfile failed", false);
   CHECK_EQ(video_encoder_heap_->GetResolutionListCount(), 1u);

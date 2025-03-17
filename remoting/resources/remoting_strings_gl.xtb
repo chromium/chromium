@@ -28,6 +28,7 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="2329392777730037872">Non se puido abrir <ph name="URL" /> no cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">Non se pode conectar co host. A causa é probablemente á configuración da rede que estás usando.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Reservados todos os dereitos.</translation>
 <translation id="2504109125669302160">Concede o permiso Accesibilidade a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Conectado a <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Queres compartir este ordenador para que outro usuario poida acceder a el e controlalo?</translation>
@@ -133,6 +134,7 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="7067321367069083429">A pantalla actúa como unha pantalla táctil</translation>
 <translation id="7116737094673640201">Dámosche a benvida ao Escritorio remoto de Chrome</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
+<translation id="7298392173540380852">Copyright 2021, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="7312846573060934304">O host non ten conexión.</translation>
 <translation id="7319983568955948908">Deixar de compartir</translation>
 <translation id="7359298090707901886">Non se pode usar o navegador escollido para abrir URL no equipo local.</translation>
@@ -149,7 +151,6 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="7693372326588366043">Actualizar a lista de host</translation>
 <translation id="7714222945760997814">Informar deste fallo</translation>
 <translation id="7868137160098754906">Introduce o teu PIN para o ordenador remoto.</translation>
-<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. Reservados todos os dereitos.</translation>
 <translation id="7895403300744144251">As políticas de seguranza do ordenador remoto non permiten conexións desde a túa conta.</translation>
 <translation id="7936528439960309876">Ancorar á dereita</translation>
 <translation id="7970576581263377361">Non se puido efectuar a autenticación. Volve iniciar sesión en Chromium.</translation>
@@ -181,7 +182,6 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="8747048596626351634">A sesión fallou ou non puido comezar. Se hai unha secuencia de comandos ~/.chrome-remote-desktop-session no ordenador remoto, asegúrate de que inicie un proceso de longa duración en primeiro plano, como un administrador de ventás ou un contorno de escritorio.</translation>
 <translation id="8804164990146287819">Política de privacidade</translation>
 <translation id="8906511416443321782">É necesario acceder ao micrófono para capturar audio e transmitirllo en tempo real ao cliente do Escritorio remoto de Chrome.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Reservados todos os dereitos.</translation>
 <translation id="9111855907838866522">Tes conexión co dispositivo remoto. Para abrir o menú, toca a pantalla cos dedos.</translation>
 <translation id="9126115402994542723">Non volver solicitar un PIN cando te conectes a este host desde este dispositivo.</translation>
 <translation id="916856682307586697">Inicia a XSession predeterminada</translation>

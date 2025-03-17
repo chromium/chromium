@@ -21,10 +21,16 @@ namespace segmentation_platform::home_modules {
 // Immpression counter for each card.
 extern const char kDefaultBrowserPromoImpressionCounterPref[];
 extern const char kTabGroupPromoImpressionCounterPref[];
+extern const char kTabGroupSyncPromoImpressionCounterPref[];
+extern const char kQuickDeletePromoImpressionCounterPref[];
+extern const char kAuxiliarySearchPromoImpressionCounterPref[];
 
 // Interaction flag for each card.
 extern const char kDefaultBrowserPromoInteractedPref[];
 extern const char kTabGroupPromoInteractedPref[];
+extern const char kTabGroupSyncPromoInteractedPref[];
+extern const char kQuickDeletePromoInteractedPref[];
+extern const char kAuxiliarySearchPromoInteractedPref[];
 #endif
 
 // Registry that manages all ephemeral cards in mobile home modules.

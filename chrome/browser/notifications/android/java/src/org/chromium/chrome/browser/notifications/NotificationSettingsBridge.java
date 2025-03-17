@@ -11,12 +11,14 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 
 /** Interface for native code to interact with Android notification channels. */
+@NullMarked
 public class NotificationSettingsBridge {
     /**
      * Creates a notification channel for the given origin, unless a channel for this origin already

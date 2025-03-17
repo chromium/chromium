@@ -46,6 +46,20 @@ std::string ToString(Uri::ParserStatus status) {
 }
 }  // namespace
 
+IppPrinterInfo::IppPrinterInfo() = default;
+
+IppPrinterInfo::IppPrinterInfo(const IppPrinterInfo& other) = default;
+
+IppPrinterInfo::IppPrinterInfo(const std::vector<std::string>& document_formats,
+                               const std::string& document_format_default,
+                               const std::string& document_format_preferred) {
+  this->document_formats = document_formats;
+  this->document_format_default = document_format_default;
+  this->document_format_preferred = document_format_preferred;
+}
+
+IppPrinterInfo::~IppPrinterInfo() = default;
+
 std::string ToString(PrinterClass pclass) {
   switch (pclass) {
     case PrinterClass::kEnterprise:
@@ -167,10 +181,16 @@ bool Printer::RequiresDriverlessUsb() const {
   // IPP-USB evaluation is complete.
   static constexpr auto kDriverlessUsbMakeModels =
       base::MakeFixedFlatSet<std::string_view>({
-          "epson et-5180 series",    // b/319373509
-          "epson et-8550 series",    // b/301387697
-          "epson wf-110 series",     // b/287159028
-          "hp deskjet 4100 series",  // b/279387801
+          "epson et-5180 series",          // b/319373509
+          "epson et-8550 series",          // b/301387697
+          "epson wf-110 series",           // b/287159028
+          "hp deskjet 2600 series",        // b/399480007
+          "hp deskjet 4100 series",        // b/279387801
+          "hp officejet 8010 series",      // b/401543989
+          "hp officejet 8020 series",      // b/401543989
+          "hp officejet 8700",             // b/401543989
+          "hp officejet pro 9010 series",  // b/401543989
+          "hp officejet pro 9020 series",  // b/401543989
       });
   return kDriverlessUsbMakeModels.contains(base::ToLowerASCII(make_and_model_));
 }

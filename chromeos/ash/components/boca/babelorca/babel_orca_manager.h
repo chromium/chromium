@@ -25,8 +25,6 @@ class GaiaId;
 
 namespace ash::babelorca {
 class BabelOrcaController;
-class CaptionController;
-class LiveCaptionControllerWrapper;
 }  // namespace ash::babelorca
 
 namespace boca {
@@ -35,7 +33,6 @@ class UserIdentity;
 
 namespace captions {
 class CaptionBubbleContext;
-class LiveCaptionController;
 }  // namespace captions
 
 namespace network {
@@ -45,6 +42,10 @@ class SharedURLLoaderFactory;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
+
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 namespace ash::boca {
 
@@ -58,22 +59,28 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
           babelorca::TokenManager*,
           babelorca::TachyonRequestDataProvider*)>;
 
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
   static std::unique_ptr<BabelOrcaManager> CreateAsProducer(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      ::captions::LiveCaptionController* live_caption_controller,
       std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
       std::unique_ptr<babelorca::BabelOrcaSpeechRecognizer> speech_recognizer,
       std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
-      PrefService* pref_service);
+      base::RepeatingClosure on_local_caption_closed_cb,
+      PrefService* pref_service,
+      const std::string& application_locale);
 
   static std::unique_ptr<BabelOrcaManager> CreateAsConsumer(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<babelorca::CaptionController> caption_controller,
+      std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
       const GaiaId& gaia_id,
+      std::string school_tools_url_base,
       std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
-      PrefService* pref_service);
+      base::RepeatingClosure on_local_caption_closed_cb,
+      PrefService* pref_service,
+      const std::string& application_locale);
 
   BabelOrcaManager(
       signin::IdentityManager* identity_manager,
@@ -95,6 +102,7 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
       const std::string& tachyon_group_id) override;
   void OnLocalCaptionConfigUpdated(
       const ::boca::CaptionsConfig& config) override;
+  void OnLocalCaptionClosed() override;
 
   bool IsCaptioningAvailable();
 
@@ -111,8 +119,6 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
   babelorca::TokenManagerImpl token_manager_;
   babelorca::TachyonAuthedClientImpl authed_client_;
   babelorca::TachyonRegistrar registrar_;
-  std::unique_ptr<babelorca::LiveCaptionControllerWrapper>
-      caption_controller_wrapper_;
 
   std::optional<std::string> session_id_;
   std::optional<std::string> group_id_;

@@ -64,26 +64,28 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   // The maximum size for Blink if auto-resize is enabled.
   gfx::Size max_size_for_auto_resize;
 
-  // The size for the widget in DIPs.
-  gfx::Size new_size;
+  // The size for the widget, in device pixels.
+  gfx::Size new_size_device_px;
 
-  // The size of the area of the widget that is visible to the user, in DIPs.
-  // The visible area may be empty if the visible area does not intersect with
-  // the widget, for example in the case of a child frame that is entirely
-  // scrolled out of the main frame's viewport. It may also be smaller than the
-  // widget's size in |new_size| due to the UI hiding part of the widget, such
-  // as with an on-screen keyboard.
-  gfx::Size visible_viewport_size;
+  // The size of the area of the widget that is visible to the user, in device
+  // pixels. The visible area may be empty if the visible area does not
+  // intersect with the widget, for example in the case of a child frame that
+  // is entirely scrolled out of the main frame's viewport. It may also be
+  // smaller than the widget's size in |new_size| due to the UI hiding part of
+  // the widget, such as with an on-screen keyboard.
+  gfx::Size visible_viewport_size_device_px;
 
-  // The rect of compositor's viewport in pixels. Note that for top level
-  // widgets this is roughly the DSF scaled new_size put into a rect. For child
-  // frame widgets it is a pixel-perfect bounds of the visible region of the
-  // widget. The size would be similar to visible_viewport_size, but in physical
-  // pixels and computed via very different means.
-  // TODO(danakj): It would be super nice to remove one of |new_size|,
-  // |visible_viewport_size| and |compositor_viewport_pixel_rect|. Their values
-  // overlap in purpose, creating a very confusing situation about which to use
-  // for what, and how they should relate or not.
+  // The rect of compositor's viewport in device pixels. Note that for top level
+  // widgets this is the same as |new_size| (when UseDevicePixelsForWidgetSizing
+  // is on; otherwise different by device pixel ratio) except that on Android
+  // it includes the size of the browser controls. For child frame widgets it
+  // is a pixel-perfect bounds of the visible region of the widget. The size
+  // would be similar to visible_viewport_size, but in device pixels and
+  // computed via very different means. TODO(danakj): It would be super nice to
+  // remove one of |new_size|, |visible_viewport_size| and
+  // |compositor_viewport_pixel_rect|. Their values overlap in purpose,
+  // creating a very confusing situation about which to use for what, and how
+  // they should relate or not.
   gfx::Rect compositor_viewport_pixel_rect;
 
   // Browser controls params such as top and bottom controls heights, whether
@@ -91,9 +93,9 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   cc::BrowserControlsParams browser_controls_params;
 
   // If shown and resizing the renderer, returns the height of the virtual
-  // keyboard in physical pixels. Otherwise, returns 0. Always 0 in a
+  // keyboard in device pixels. Otherwise, returns 0. Always 0 in a
   // non-outermost main frame.
-  int virtual_keyboard_resize_height_physical_px = 0;
+  int virtual_keyboard_resize_height_device_px = 0;
 
   // Whether or not the focused node should be scrolled into view after the
   // resize.

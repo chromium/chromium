@@ -9,6 +9,8 @@
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"

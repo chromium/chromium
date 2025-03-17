@@ -86,7 +86,7 @@ suite('Main', function() {
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
-  test('ChromeRootStorePage', async function() {
+  test('ChromeRootStorePage', function() {
     // Chrome Root Store Help link should not be present since
     // kEnableCertManagementUIV2 feature flag is enabled by
     // SettingsSecurityPageTest constructor.
@@ -158,7 +158,7 @@ suite('Main', function() {
         '#httpsFirstModeEnabledStrict');
     assertTrue(!!radioButton);
     radioButton.click();
-    await eventToPromise('selected-changed', radioGroup);
+    await eventToPromise('change', radioGroup);
     assertEquals(
         HttpsFirstModeSetting.ENABLED_FULL,
         page.getPref('generated.https_first_mode_enabled').value);
@@ -168,7 +168,7 @@ suite('Main', function() {
         '#httpsFirstModeEnabledBalanced');
     assertTrue(!!radioButton);
     radioButton.click();
-    await eventToPromise('selected-changed', radioGroup);
+    await eventToPromise('change', radioGroup);
     assertEquals(
         HttpsFirstModeSetting.ENABLED_BALANCED,
         page.getPref('generated.https_first_mode_enabled').value);
@@ -290,7 +290,7 @@ suite('SecurityPageHappinessTrackingSurveys', function() {
   test('SecurityPageBeforeUnloadCallsHatsProxy', async function() {
     // Interact with the security page.
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
 
     const t1 = 10000;
     testHatsBrowserProxy.setNow(t1);
@@ -562,7 +562,7 @@ suite('FlagsDisabled', function() {
     page.$.safeBrowsingStandard.click();
     assertFalse(safeBrowsingReportingToggle.disabled);
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
 
     assertTrue(safeBrowsingReportingToggle.disabled);
   });
@@ -613,7 +613,7 @@ suite('FlagsDisabled', function() {
     assertEquals(epSubLabel, enhancedProtection.subLabel);
 
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
   });
 
   // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove is
@@ -871,7 +871,7 @@ suite('SafeBrowsing', function() {
     const previous = page.prefs.safebrowsing.scout_reporting_enabled.value;
 
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
 
     assertTrue(
         page.prefs.safebrowsing.scout_reporting_enabled.value === previous);
@@ -882,7 +882,7 @@ suite('SafeBrowsing', function() {
     const previous = page.prefs.safebrowsing.scout_reporting_enabled.value;
 
     page.$.safeBrowsingDisabled.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
 
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
@@ -899,7 +899,7 @@ suite('SafeBrowsing', function() {
     const previous = page.prefs.profile.password_manager_leak_detection.value;
 
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
 
     assertTrue(
         page.prefs.profile.password_manager_leak_detection.value === previous);
@@ -941,7 +941,7 @@ suite('SafeBrowsing', function() {
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
     const [enhancedClickedResult, enhancedClickedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
@@ -994,7 +994,7 @@ suite('SafeBrowsing', function() {
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
     page.$.safeBrowsingDisabled.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
     const [disableClickedResult, disableClickedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
@@ -1029,7 +1029,7 @@ suite('SafeBrowsing', function() {
     await flushTasks();
 
     page.$.safeBrowsingDisabled.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
@@ -1102,7 +1102,7 @@ suite('SafeBrowsing', function() {
     assertEquals(epSubLabel, enhancedProtection.subLabel);
 
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
     // Learn more label should be visible.
     assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
   });
@@ -1121,7 +1121,7 @@ suite('SafeBrowsing', function() {
     assertFalse(isChildVisible(page, '#whenOnBulFive'));
   });
 
-  test('NoProtectionText', async () => {
+  test('NoProtectionText', () => {
     const noProtection = page.$.safeBrowsingDisabled;
     const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
     assertEquals(npSubLabel, noProtection.subLabel);
@@ -1146,7 +1146,7 @@ suite('SafeBrowsing', function() {
     // enforced.
     assertEquals(
         'auto',
-        (learnMoreLink!.computedStyleMap()!.get('pointer-events') as
+        (learnMoreLink!.computedStyleMap().get('pointer-events') as
          CSSKeywordValue)
             .value);
 

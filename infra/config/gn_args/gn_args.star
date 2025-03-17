@@ -564,6 +564,13 @@ gn_args.config(
     ],
 )
 
+gn_args.config(
+    name = "enable_android_secondary_abi",
+    args = {
+        "enable_android_secondary_abi": True,
+    },
+)
+
 # Enables backup ref ptr by changing the default value of the feature flag.
 # This sets the default value of PartitionAllocBackupRefPtr to enabled, with
 # enabled-processes = non-renderer:
@@ -572,6 +579,16 @@ gn_args.config(
     name = "enable_backup_ref_ptr_feature_flag",
     args = {
         "enable_backup_ref_ptr_feature_flag": True,
+    },
+)
+
+# Enables the instance tracer for BackupRefPtr. This provides more useful stack
+# traces when triggering the dangling pointer detector, but at the cost of some
+# runtime performance (last measured at ~10% in release builds).
+gn_args.config(
+    name = "enable_backup_ref_ptr_instance_tracer",
+    args = {
+        "enable_backup_ref_ptr_instance_tracer": True,
     },
 )
 
@@ -765,13 +782,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "ios_chromium_cert",
-    args = {
-        "ios_code_signing_identity_description": "iPhone Developer",
-    },
-)
-
-gn_args.config(
     name = "ios_developer",
     configs = ["ios_simulator", "debug"],
 )
@@ -826,9 +836,6 @@ gn_args.config(
 gn_args.config(
     name = "libcxx_modules",
     args = {
-        # TODO: crbug.com/351909443 - remove once performance of plugins is
-        # improved.
-        "clang_use_chrome_plugins": False,
         "use_libcxx_modules": True,
     },
 )
@@ -857,6 +864,7 @@ gn_args.config(
         "ozone_platform_wayland": True,
         "ozone_platform": "wayland",
         "use_bundled_weston": True,
+        "use_bundled_mutter": True,
     },
 )
 
@@ -992,18 +1000,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "no_secondary_abi",
-    args = {
-        "skip_secondary_abi_for_cq": True,
-        # A chromium build with "skip_secondary_abi_for_cq" enabled in a
-        # checkout that has src-internal fails if enable_chrome_android_internal
-        # is not set to false.
-        # TODO(crbug.com/361540497): Can remove this when the build is fixed.
-        "enable_chrome_android_internal": False,
-    },
-)
-
-gn_args.config(
     name = "no_siso",
     args = {
         "use_siso": False,
@@ -1095,13 +1091,6 @@ gn_args.config(
     name = "perfetto_zlib",
     args = {
         "enable_perfetto_zlib": True,
-    },
-)
-
-gn_args.config(
-    name = "pgo_phase_0",
-    args = {
-        "chrome_pgo_phase": 0,
     },
 )
 
@@ -1372,6 +1361,20 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "v8_backtrace",
+    args = {
+        "v8_enable_backtrace": True,
+    },
+)
+
+gn_args.config(
+    name = "v8_debug",
+    args = {
+        "v8_enable_debug_code": True,
+    },
+)
+
+gn_args.config(
     name = "v8_heap",
     args = {
         "v8_enable_verify_heap": True,
@@ -1397,6 +1400,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "v8_sandbox_testing",
+    args = {
+        "v8_enable_memory_corruption_api": True,
+    },
+)
+
+gn_args.config(
     name = "v8_simulate_arm",
     args = {
         "v8_target_cpu": "arm",
@@ -1417,9 +1427,9 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "v8_sandbox_testing",
+    name = "v8_static",
     args = {
-        "v8_enable_memory_corruption_api": True,
+        "v8_static_library": True,
     },
 )
 

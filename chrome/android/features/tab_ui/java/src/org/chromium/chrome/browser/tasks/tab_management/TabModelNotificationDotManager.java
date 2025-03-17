@@ -15,7 +15,12 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.collaboration.CollaborationService;
@@ -57,11 +62,56 @@ public class TabModelNotificationDotManager implements Destroyable {
                 }
             };
 
+    // Any operation aside from grouping a tab for restoring from TabGroupSyncService should "just
+    // work" via the MessagingBackendService so no need to observe anything else.
+    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
+            new TabGroupModelFilterObserver() {
+                @Override
+                public void didMergeTabToGroup(Tab movedTab) {
+                    maybeUpdateForTab(movedTab, /* mayAddDot= */ true);
+                }
+            };
+
+    // MessagingBackendService and TabGroupSyncService see tabs moving between the hidden and open
+    // states as essentially no-ops. This observer is necessary to ensure dots are updated
+    // correctly.
+    private final TabModelObserver mTabModelObserver =
+            new TabModelObserver() {
+                @Override
+                public void willCloseTab(Tab tab, boolean didCloseAlone) {
+                    maybeUpdateForTab(tab, /* mayAddDot= */ false);
+                }
+
+                @Override
+                public void onFinishingTabClosure(Tab tab) {
+                    maybeUpdateForTab(tab, /* mayAddDot= */ false);
+                }
+
+                @Override
+                public void tabRemoved(Tab tab) {
+                    maybeUpdateForTab(tab, /* mayAddDot= */ false);
+                }
+
+                @Override
+                public void tabClosureUndone(Tab tab) {
+                    maybeUpdateForTab(tab, /* mayAddDot= */ true);
+                }
+
+                @Override
+                public void didAddTab(
+                        Tab tab,
+                        @TabLaunchType int type,
+                        @TabCreationState int creationState,
+                        boolean markedForSelection) {
+                    maybeUpdateForTab(tab, /* mayAddDot= */ true);
+                }
+            };
+
     private final ObservableSupplierImpl<Boolean> mNotificationDotObservableSupplier =
             new ObservableSupplierImpl<>(false);
     private final CallbackController mCallbackController = new CallbackController();
     private @Nullable MessagingBackendService mMessagingBackendService;
-    private @Nullable TabModel mTabModel;
+    private @Nullable TabGroupModelFilter mTabGroupModelFilter;
     private boolean mTabModelSelectorInitialized;
     private boolean mMessagingBackendServiceInitialized;
 
@@ -72,10 +122,13 @@ public class TabModelNotificationDotManager implements Destroyable {
      *     observed. However, the selector is needed to know when the tab model is initialized.
      */
     public void initWithNative(TabModelSelector tabModelSelector) {
-        mTabModel = tabModelSelector.getModel(/* incognito= */ false);
-        assert mTabModel != null : "TabModel & native should be initialized.";
+        mTabGroupModelFilter =
+                tabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(/* isIncognito= */ false);
+        assert mTabGroupModelFilter != null : "TabModel & native should be initialized.";
 
-        Profile profile = mTabModel.getProfile();
+        Profile profile = mTabGroupModelFilter.getTabModel().getProfile();
         CollaborationService collaborationService =
                 CollaborationServiceFactory.getForProfile(profile);
         if (!collaborationService.getServiceStatus().isAllowedToJoin()) return;
@@ -87,6 +140,9 @@ public class TabModelNotificationDotManager implements Destroyable {
                 mCallbackController.makeCancelable(
                         unused -> {
                             mTabModelSelectorInitialized = true;
+                            mTabGroupModelFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
+                            mTabGroupModelFilter.getTabModel().addObserver(mTabModelObserver);
+
                             computeUpdate();
                         }));
     }
@@ -105,6 +161,19 @@ public class TabModelNotificationDotManager implements Destroyable {
         if (mMessagingBackendService != null) {
             mMessagingBackendService.removePersistentMessageObserver(mPersistentMessageObserver);
         }
+        if (mTabGroupModelFilter != null) {
+            mTabGroupModelFilter.removeTabGroupObserver(mTabGroupModelFilterObserver);
+            mTabGroupModelFilter.getTabModel().removeObserver(mTabModelObserver);
+        }
+    }
+
+    private void maybeUpdateForTab(Tab tab, boolean mayAddDot) {
+        @Nullable Boolean showingDot = mNotificationDotObservableSupplier.get();
+        boolean stateWillBeUnchanged = showingDot != null && showingDot == mayAddDot;
+        if (tab.getTabGroupId() == null || stateWillBeUnchanged) {
+            return;
+        }
+        computeUpdate();
     }
 
     private void computeUpdate() {
@@ -115,7 +184,9 @@ public class TabModelNotificationDotManager implements Destroyable {
     }
 
     private boolean anyTabsInModelHaveDirtyBit() {
-        assert mTabModel != null && mMessagingBackendService != null;
+        assert mTabGroupModelFilter != null && mMessagingBackendService != null;
+
+        TabModel tabModel = mTabGroupModelFilter.getTabModel();
 
         List<PersistentMessage> messages =
                 mMessagingBackendService.getMessages(
@@ -124,7 +195,8 @@ public class TabModelNotificationDotManager implements Destroyable {
             int tabId = MessageUtils.extractTabId(message);
             if (tabId == Tab.INVALID_TAB_ID) continue;
 
-            if (mTabModel.getTabById(tabId) != null) return true;
+            @Nullable Tab tab = tabModel.getTabById(tabId);
+            if (tab != null && !tab.isClosing()) return true;
         }
         return false;
     }

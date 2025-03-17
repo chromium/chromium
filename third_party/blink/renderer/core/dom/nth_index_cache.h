@@ -45,10 +45,18 @@ class Document;
 // we receive them to do the actual query, but do not store them.
 class CORE_EXPORT NthIndexData final : public GarbageCollected<NthIndexData> {
  public:
+  enum SiblingOrder {
+    kLightTree,
+    // sibling-index() and sibling-count() are based on non-flattened
+    // assignedNodes order for slotted elements.
+    kFlatTree,
+  };
+
   NthIndexData(ContainerNode&,
                const CSSSelectorList* filter,
                const SelectorChecker* selector_checker,
-               const SelectorChecker::SelectorCheckingContext* context);
+               const SelectorChecker::SelectorCheckingContext* context,
+               SiblingOrder sibling_order);
   NthIndexData(ContainerNode&, const QualifiedName& type);
   NthIndexData(const NthIndexData&) = delete;
   NthIndexData& operator=(const NthIndexData&) = delete;
@@ -57,16 +65,16 @@ class CORE_EXPORT NthIndexData final : public GarbageCollected<NthIndexData> {
   // re-checking the selector (if any), since we only store every third
   // matching element. We're not allowed to store them easily in the
   // constructor, since they are marked as STACK_ALLOCATED.
-  unsigned NthIndex(
-      Element&,
-      const CSSSelectorList* filter,
-      const SelectorChecker* selector_checker,
-      const SelectorChecker::SelectorCheckingContext* context) const;
-  unsigned NthLastIndex(
-      Element&,
-      const CSSSelectorList* filter,
-      const SelectorChecker* selector_checker,
-      const SelectorChecker::SelectorCheckingContext* context) const;
+  unsigned NthIndex(Element&,
+                    const CSSSelectorList* filter,
+                    const SelectorChecker* selector_checker,
+                    const SelectorChecker::SelectorCheckingContext* context,
+                    SiblingOrder sibling_order) const;
+  unsigned NthLastIndex(Element&,
+                        const CSSSelectorList* filter,
+                        const SelectorChecker* selector_checker,
+                        const SelectorChecker::SelectorCheckingContext* context,
+                        SiblingOrder sibling_order) const;
   unsigned NthOfTypeIndex(Element&) const;
   unsigned NthLastOfTypeIndex(Element&) const;
 
@@ -102,20 +110,24 @@ class CORE_EXPORT NthIndexCache final {
       Element& element,
       const CSSSelectorList* filter,
       const SelectorChecker* selector_checker,
-      const SelectorChecker::SelectorCheckingContext* context);
+      const SelectorChecker::SelectorCheckingContext* context,
+      NthIndexData::SiblingOrder sibling_order);
   static unsigned NthLastChildIndex(
       Element& element,
       const CSSSelectorList* filter,
       const SelectorChecker* selector_checker,
-      const SelectorChecker::SelectorCheckingContext* context);
+      const SelectorChecker::SelectorCheckingContext* context,
+      NthIndexData::SiblingOrder sibling_order);
   static unsigned NthOfTypeIndex(Element&);
   static unsigned NthLastOfTypeIndex(Element&);
 
  private:
   // Key in the top-level cache; identifies the parent and the type of query.
   struct Key : public GarbageCollected<Key> {
-    Key(Node* parent_arg, const CSSSelectorList* filter_arg)
-        : parent(parent_arg), filter(filter_arg) {}
+    Key(Node* parent_arg,
+        const CSSSelectorList* filter_arg,
+        NthIndexData::SiblingOrder order)
+        : parent(parent_arg), filter(filter_arg), sibling_order(order) {}
     Key(Node* parent_arg, String child_tag_name_arg)
         : parent(parent_arg), child_tag_name(child_tag_name_arg) {}
 
@@ -124,6 +136,10 @@ class CORE_EXPORT NthIndexCache final {
     // Can be nullptr. Always nullptr if :nth-of-type, which filters on
     // child_tag_name instead.
     Member<const CSSSelectorList> filter;
+    // kFlatTree if the index is for a slotted element in the flat tree order.
+    // Used for sibling-index() and sibling-count().
+    // Indices for :nth-*() selectors are always cached for kLightTree.
+    NthIndexData::SiblingOrder sibling_order = NthIndexData::kLightTree;
 
     void Trace(Visitor* visitor) const;
     unsigned GetHash() const;
@@ -132,7 +148,8 @@ class CORE_EXPORT NthIndexCache final {
       // (theoretically) less effective caching between different selectors, but
       // is simpler.
       return parent == other.parent && filter == other.filter &&
-             child_tag_name == other.child_tag_name;
+             child_tag_name == other.child_tag_name &&
+             sibling_order == other.sibling_order;
     }
   };
 
@@ -167,18 +184,21 @@ class CORE_EXPORT NthIndexCache final {
       const CSSSelectorList* filter,
       const SelectorChecker* selector_checker,
       const SelectorChecker::SelectorCheckingContext* context,
+      NthIndexData::SiblingOrder,
       unsigned& sibling_count);
   static unsigned UncachedNthLastChildIndex(
       Element& element,
       const CSSSelectorList* filter,
       const SelectorChecker* selector_checker,
       const SelectorChecker::SelectorCheckingContext* context,
+      NthIndexData::SiblingOrder,
       unsigned& sibling_count);
   void CacheNthIndexDataForParent(
       Element& element,
       const CSSSelectorList* filter,
       const SelectorChecker* selector_checker,
-      const SelectorChecker::SelectorCheckingContext* context);
+      const SelectorChecker::SelectorCheckingContext* context,
+      NthIndexData::SiblingOrder sibling_order);
   void CacheNthOfTypeIndexDataForParent(Element&);
   void EnsureCache();
 
@@ -186,7 +206,7 @@ class CORE_EXPORT NthIndexCache final {
 
   // Effectively maps (parent, optional tag name, child) → index.
   // (The child part of the key is in NthIndexData.)
-  HeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>* cache_ =
+  GCedHeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>* cache_ =
       nullptr;
 
 #if DCHECK_IS_ON()

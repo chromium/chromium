@@ -17,6 +17,8 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -24,6 +26,8 @@
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/heavy_ad_intervention/heavy_ad_helper.h"
 #include "components/heavy_ad_intervention/heavy_ad_service.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -58,24 +62,6 @@
 #include "url/gurl.h"
 
 namespace page_load_metrics {
-
-namespace features {
-
-// Enables or disables the restricted navigation ad tagging feature. When
-// enabled, the AdTagging heuristic is modified to additional information to
-// determine if a frame is an ad. If the frame's navigation url matches an allow
-// list rule, it is not an ad.
-//
-// If a frame's navigation url does not match a blocked rule, but was created by
-// ad script and is same domain to the top-level frame, it is not an ad.
-//
-// Currently this feature only changes AdTagging behavior for metrics recorded
-// in AdsPageLoadMetricsObserver, and for triggering the Heavy Ad Intervention.
-BASE_FEATURE(kRestrictedNavigationAdTagging,
-             "RestrictedNavigationAdTagging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace features
 
 namespace {
 
@@ -182,6 +168,22 @@ void RecordPageLoadInitiatorForAdTaggingUkm(
   builder.Record(ukm_recorder->Get());
 }
 
+std::string GetEtldPlusOne(const GURL& url) {
+  return net::registry_controlled_domains::GetDomainAndRegistry(
+      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+size_t GetTotalVisitCountsInHistoryQueryResults(
+    const history::QueryResults& results) {
+  // QueryResults is a vector of URLResult. The total number of visits is
+  // the summation of all visit_count in each URLResult.
+  size_t visit_counts = 0;
+  for (auto& result : results) {
+    visit_counts += result.visit_count();
+  }
+  return visit_counts;
+}
+
 }  // namespace
 
 // static
@@ -189,7 +191,9 @@ std::unique_ptr<AdsPageLoadMetricsObserver>
 AdsPageLoadMetricsObserver::CreateIfNeeded(
     content::WebContents* web_contents,
     heavy_ad_intervention::HeavyAdService* heavy_ad_service,
-    const ApplicationLocaleGetter& application_locale_getter) {
+    history::HistoryService* history_service,
+    const ApplicationLocaleGetter& application_locale_getter,
+    bool is_incognito) {
   // TODO(bokan): ContentSubresourceFilterThrottleManager is now associated
   // with a FrameTree. When AdsPageLoadMetricsObserver becomes aware of MPArch
   // this should use the associated page rather than the primary page.
@@ -197,8 +201,10 @@ AdsPageLoadMetricsObserver::CreateIfNeeded(
       !subresource_filter::ContentSubresourceFilterWebContentsHelper::
           FromWebContents(web_contents))
     return nullptr;
+
   return std::make_unique<AdsPageLoadMetricsObserver>(
-      heavy_ad_service, application_locale_getter);
+      heavy_ad_service, history_service, application_locale_getter,
+      is_incognito);
 }
 
 // static
@@ -257,13 +263,14 @@ int AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
 
 AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
     heavy_ad_intervention::HeavyAdService* heavy_ad_service,
+    history::HistoryService* history_service,
     const ApplicationLocaleGetter& application_locale_getter,
+    bool is_incognito,
     base::TickClock* clock,
     heavy_ad_intervention::HeavyAdBlocklist* blocklist)
     : clock_(clock ? clock : base::DefaultTickClock::GetInstance()),
-      restricted_navigation_ad_tagging_enabled_(base::FeatureList::IsEnabled(
-          features::kRestrictedNavigationAdTagging)),
       heavy_ad_service_(heavy_ad_service),
+      history_service_(history_service),
       application_locale_getter_(application_locale_getter),
       heavy_ad_blocklist_(blocklist),
       heavy_ad_privacy_mitigations_enabled_(base::FeatureList::IsEnabled(
@@ -271,7 +278,8 @@ AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
       heavy_ad_threshold_noise_provider_(
           std::make_unique<HeavyAdThresholdNoiseProvider>(
               heavy_ad_privacy_mitigations_enabled_ /* use_noise */)),
-      page_ad_density_tracker_(clock) {
+      page_ad_density_tracker_(clock),
+      is_incognito_(is_incognito) {
   // Manual setting of the heavy ad blocklist should be used only as a
   // convenience for tests that don't create HeavyAdService.
   DCHECK(!heavy_ad_service_ || !heavy_ad_blocklist_);
@@ -324,6 +332,20 @@ PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnCommit(
   DCHECK(ad_frames_data_.empty());
 
   RecordPageLoadInitiatorForAdTaggingUkm(navigation_handle);
+
+  // When NavigationInitiatorActivationAndAdStatus is
+  // kStartedWithTransientActivationFromAd, the navigation activated from a user
+  // ad click gesture.
+  if (history_service_ &&
+      navigation_handle->GetNavigationInitiatorActivationAndAdStatus() ==
+          blink::mojom::NavigationInitiatorActivationAndAdStatus::
+              kStartedWithTransientActivationFromAd) {
+    // Check the frequency of the navigation URL in history.
+    QueryAdUrlFrequencyInHistory(
+        history_service_.get(), navigation_handle->GetURL(),
+        &query_ad_url_history_task_tracker_,
+        &query_ad_url_etld_plus_one_history_task_tracker_);
+  }
 
   page_load_is_reload_ =
       navigation_handle->GetReloadType() != content::ReloadType::NONE;
@@ -557,8 +579,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   // Only un-tag frames as ads if the navigation has committed. This prevents
   // frames from being untagged that have an aborted navigation to allowlist
   // urls.
-  if (restricted_navigation_ad_tagging_enabled_ && load_policy &&
-      navigation_handle->GetNetErrorCode() == net::OK &&
+  if (load_policy && navigation_handle->GetNetErrorCode() == net::OK &&
       navigation_handle->HasCommitted()) {
     // If a filter list explicitly allows the rule, we should ignore a detected
     // ad.
@@ -1258,6 +1279,15 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
                     earliest_fcp_since_top_nav_start.value());
     }
   }
+
+  if (is_incognito_) {
+    if (auto first_contentful_paint =
+            ad_frame_data.earliest_first_contentful_paint()) {
+      ADS_HISTOGRAM("AdPaintTiming.NavigationToFirstContentfulPaint3.Incognito",
+                    PAGE_LOAD_LONG_HISTOGRAM, FrameVisibility::kAnyVisibility,
+                    first_contentful_paint.value());
+    }
+  }
 }
 
 void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForHeavyAds(
@@ -1533,6 +1563,35 @@ void AdsPageLoadMetricsObserver::CleanupDeletedFrame(
     page_ad_density_tracker_.RemoveRect(RectId(RectType::kIFrame, id.value()),
                                         /*recalculate_viewport_density=*/true);
   }
+}
+
+void AdsPageLoadMetricsObserver::QueryAdUrlFrequencyInHistory(
+    history::HistoryService* history_service,
+    const GURL& ad_url,
+    base::CancelableTaskTracker* query_ad_url_cancelable_task_tracker,
+    base::CancelableTaskTracker*
+        query_ad_url_etld_plus_one_cancelable_task_tracker) {
+  history::QueryOptions query_options;
+
+  // Query ad url in history.
+  history_service->QueryHistory(
+      base::ASCIIToUTF16(ad_url.GetWithoutFilename().spec()), query_options,
+      base::BindOnce([](history::QueryResults result) {
+        base::UmaHistogramCounts1000(
+            "PageLoad.Clients.Ads.AdClick.HistoryQueryCount",
+            GetTotalVisitCountsInHistoryQueryResults(result));
+      }),
+      query_ad_url_cancelable_task_tracker);
+
+  // Query eTLD+1 of ad url in history.
+  history_service->QueryHistory(
+      base::ASCIIToUTF16(GetEtldPlusOne(ad_url)), query_options,
+      base::BindOnce([](history::QueryResults result) {
+        base::UmaHistogramCounts1000(
+            "PageLoad.Clients.Ads.AdClick.EtldPlusOneHistoryQueryCount",
+            GetTotalVisitCountsInHistoryQueryResults(result));
+      }),
+      query_ad_url_etld_plus_one_cancelable_task_tracker);
 }
 
 }  // namespace page_load_metrics

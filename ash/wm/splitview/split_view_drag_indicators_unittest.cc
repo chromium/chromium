@@ -102,8 +102,6 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::features::kOverviewSessionInitOptimizations};
   raw_ptr<OverviewSession, DanglingUntriaged> overview_session_ = nullptr;
 };
 

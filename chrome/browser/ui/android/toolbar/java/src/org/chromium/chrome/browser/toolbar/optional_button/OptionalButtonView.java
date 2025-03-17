@@ -19,7 +19,6 @@ import android.transition.Transition.TransitionListener;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -226,21 +226,26 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
             mActionChipLabelString = getContext().getString(buttonSpec.getActionChipLabelResId());
         }
 
+        // The button's height precisely matches the avatar and its padding. When an error badge is
+        // added in the avatar's bottom-right corner, the avatar height increases. To maintain the
+        // original position of the avatar, the button's bottom padding is then reduced.
+        int paddingBottom =
+                getDimensionPixelSize(
+                        buttonSpec.hasErrorBadge()
+                                ? R.dimen
+                                        .optional_toolbar_phone_button_with_error_badge_padding_bottom
+                                : R.dimen
+                                        .toolbar_phone_optional_button_foreground_vertical_padding);
+
+        mButton.setPaddingRelative(
+                mButton.getPaddingStart(),
+                mButton.getPaddingTop(),
+                mButton.getPaddingEnd(),
+                paddingBottom);
+
         mClickListener = buttonSpec.getOnClickListener();
         mLongClickListener = buttonSpec.getOnLongClickListener();
         mButton.setEnabled(buttonData.isEnabled());
-
-        // Set circular hover highlight for optional button when button variant is profile, share,
-        // voice search and new tab. Set box hover highlight for the rest of button variants.
-        if (buttonData.getButtonSpec().getShouldShowHoverHighlight()) {
-            mButton.setBackgroundResource(R.drawable.toolbar_button_ripple);
-        } else {
-            TypedValue themeRes = new TypedValue();
-            getContext()
-                    .getTheme()
-                    .resolveAttribute(R.attr.selectableItemBackground, themeRes, true);
-            mButton.setBackgroundResource(themeRes.resourceId);
-        }
 
         // Set hover state tooltip text for optional toolbar buttons(e.g. share, voice search, new
         // tab and profile).
@@ -339,13 +344,10 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mState = State.HIDDEN;
 
         mCollapsedStateWidthPx =
-                getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.toolbar_phone_optional_button_collapsed_state_width);
+                getDimensionPixelSize(R.dimen.toolbar_phone_optional_button_collapsed_state_width);
         mExpandedStatePaddingPx =
-                getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.toolbar_phone_optional_button_expanded_state_extra_width);
+                getDimensionPixelSize(
+                        R.dimen.toolbar_phone_optional_button_expanded_state_extra_width);
     }
 
     /**
@@ -660,6 +662,12 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mActionChipLabel.setText(mActionChipLabelString);
 
         mAnimationImage.setImageDrawable(mButton.getDrawable());
+        // Update mAnimationImage's padding to match mButton's.
+        mAnimationImage.setPaddingRelative(
+                mButton.getPaddingStart(),
+                mButton.getPaddingTop(),
+                mButton.getPaddingEnd(),
+                mButton.getPaddingBottom());
         ImageViewCompat.setImageTintList(
                 mAnimationImage, ImageViewCompat.getImageTintList(mButton));
 
@@ -690,9 +698,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
                 mActionChipLabel.getPaint().measureText(mActionChipLabelString);
 
         int maxExpandedStateWidthPx =
-                getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.toolbar_phone_optional_button_action_chip_max_width);
+                getDimensionPixelSize(R.dimen.toolbar_phone_optional_button_action_chip_max_width);
 
         int expandedStateWidthPx =
                 Math.min(
@@ -799,5 +805,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         }
 
         TransitionManager.beginDelayedTransition(mTransitionRoot, transition);
+    }
+
+    private int getDimensionPixelSize(@DimenRes int dimenId) {
+        return getResources().getDimensionPixelSize(dimenId);
     }
 }

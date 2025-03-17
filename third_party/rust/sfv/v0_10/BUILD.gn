@@ -1,0 +1,50 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "sfv"
+  epoch = "0.10"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/ref_serializer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/serializer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/test_parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/test_serializer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/utils.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_version = "0.10.4"
+  cargo_pkg_authors = "Tania Batieva <yalyna.ts@gmail.com>"
+  cargo_pkg_name = "sfv"
+  cargo_pkg_description =
+      "Structured Field Values for HTTP parser. Implementation of RFC 8941."
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [
+    "//third_party/rust/base64/v0_22:lib",
+    "//third_party/rust/indexmap/v2:lib",
+    "//third_party/rust/rust_decimal/v1:lib",
+  ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
+}

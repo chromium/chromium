@@ -31,7 +31,7 @@ source_set("model") {
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:metrics_browser_agent",
-    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/model/omnibox_position",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:browser_agent",
     "//ios/chrome/browser/reading_list/model",

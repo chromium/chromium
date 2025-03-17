@@ -16,6 +16,9 @@
 - (void)registerForApplicationWillResignActiveNotification;
 // Logs the number of Chrome Siri Shortcuts to UMA.
 - (void)logSiriShortcuts;
+// Removes the files that were scheduled for automatic deletion and were
+// downloaded more than 30 days ago.
+- (void)removeFilesScheduledForAutoDeletion;
 
 @end
 

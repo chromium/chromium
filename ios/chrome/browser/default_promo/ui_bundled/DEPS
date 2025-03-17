@@ -1,8 +1,7 @@
 include_rules = [
-  "+ios/chrome/browser/default_browser/model/promo_statistics.h",
-  "+ios/chrome/browser/default_browser/model/utils.h",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/promos_manager/model",
   "+ios/chrome/browser/infobars/ui_bundled",
   "+ios/chrome/browser/promos_manager/ui_bundled",
+  "+ios/chrome/browser/default_browser/model",
 ]

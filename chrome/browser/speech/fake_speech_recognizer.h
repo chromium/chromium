@@ -41,6 +41,9 @@ class FakeSpeechRecognizer : public media::mojom::AudioSourceFetcher,
   void OnLanguageChanged(const std::string& language) override {}
   void OnMaskOffensiveWordsChanged(bool mask_offensive_words) override {}
   void MarkDone() override;
+  void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override {}
 
   // media::mojom::AudioSourceFetcher:
   void Start(

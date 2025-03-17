@@ -4,13 +4,13 @@
 
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -340,7 +340,7 @@ void AutomationEventRouter::TreeRemoved(ui::AXTreeID ax_tree_id) {
 AutomationEventRouter::AutomationListener*
 AutomationEventRouter::GetListenerByRenderProcessID(
     const RenderProcessHostId& listener_rph_id) const {
-  const auto iter = base::ranges::find(
+  const auto iter = std::ranges::find(
       listeners_, listener_rph_id, &AutomationListener::render_process_host_id);
 
   if (iter != listeners_.end()) {

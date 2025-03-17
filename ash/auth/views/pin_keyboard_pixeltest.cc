@@ -76,14 +76,14 @@ TEST_F(PinKeyboardPixelTest, DayMode) {
   DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   //  Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "DayMode", /*revision_number=*/3, view_));
+      "DayMode", /*revision_number=*/4, view_));
 }
 
 // Verify the pin keyboard component look like in DayMode
 TEST_F(PinKeyboardPixelTest, NightMode) {
   //  Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "NightMode", /*revision_number=*/3, view_));
+      "NightMode", /*revision_number=*/4, view_));
 }
 
 }  // namespace

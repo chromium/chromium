@@ -195,6 +195,16 @@ void XDGToplevelWrapperImpl::SetAppId(const std::string& app_id) {
   xdg_toplevel_set_app_id(xdg_toplevel_.get(), app_id.c_str());
 }
 
+void XDGToplevelWrapperImpl::ShowWindowMenu(WaylandConnection* connection,
+                                            const gfx::Point& point) {
+  DCHECK(xdg_toplevel_);
+  if (auto serial = GetSerialForMoveResize(connection)) {
+    xdg_toplevel_show_window_menu(xdg_toplevel_.get(),
+                                  connection_->seat()->wl_object(),
+                                  serial->value, point.x(), point.y());
+  }
+}
+
 void XDGToplevelWrapperImpl::SetDecoration(DecorationMode decoration) {
   SetTopLevelDecorationMode(decoration);
 }

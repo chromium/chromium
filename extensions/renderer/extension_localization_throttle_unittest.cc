@@ -23,12 +23,6 @@ namespace {
 
 class FakeURLLoader final : public network::mojom::URLLoader {
  public:
-  enum class Status {
-    kInitial,
-    kPauseReading,
-    kResumeReading,
-  };
-
   explicit FakeURLLoader(
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver)
       : receiver_(this, std::move(url_loader_receiver)) {}
@@ -49,17 +43,11 @@ class FakeURLLoader final : public network::mojom::URLLoader {
                    int32_t intra_priority_value) override {
     set_priority_called_ = true;
   }
-  void PauseReadingBodyFromNet() override { status_ = Status::kPauseReading; }
-  void ResumeReadingBodyFromNet() override { status_ = Status::kResumeReading; }
 
   bool set_priority_called() const { return set_priority_called_; }
 
-  Status status() const { return status_; }
-
  private:
   bool set_priority_called_ = false;
-
-  Status status_ = Status::kInitial;
 
   mojo::Receiver<network::mojom::URLLoader> receiver_;
 };
@@ -447,19 +435,10 @@ TEST_F(ExtensionLocalizationThrottleTest, URLLoaderChain) {
 
   ASSERT_TRUE(source_url_loader);
   EXPECT_FALSE(source_url_loader->set_priority_called());
-  EXPECT_EQ(FakeURLLoader::Status::kInitial, source_url_loader->status());
 
   destination_loader_remote->SetPriority(net::LOW, 1);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(source_url_loader->set_priority_called());
-
-  destination_loader_remote->PauseReadingBodyFromNet();
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(FakeURLLoader::Status::kPauseReading, source_url_loader->status());
-
-  destination_loader_remote->ResumeReadingBodyFromNet();
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(FakeURLLoader::Status::kResumeReading, source_url_loader->status());
 
   delegate->LoadResponseBody("__MSG_hello__!");
   delegate->CompleteResponse();

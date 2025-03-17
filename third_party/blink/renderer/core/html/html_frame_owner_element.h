@@ -21,6 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_FRAME_OWNER_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_FRAME_OWNER_ELEMENT_H_
 
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink-forward.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
@@ -116,7 +117,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr) final;
   void DispatchLoad() final;
   const FramePolicy& GetFramePolicy() const final { return frame_policy_; }
-  void IntrinsicSizingInfoChanged() override {}
+  void NaturalSizingInfoChanged() override {}
   void SetNeedsOcclusionTracking(bool) override {}
   AtomicString BrowsingContextContainerName() const override {
     return FastGetAttribute(html_names::kNameAttr);
@@ -140,11 +141,15 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   // Updates the deferred fetch policy and notify the frame loader client of any
   // changes after `LoadOrRedirectSubframe()` is called and navigating to
-  // a target URL.
-  // Must be called after navigation such that "inherited policy" is available.
-  // To be precise, after `ApplyPermissionsPolicy()` is called by
-  // `DocumentLoader::CommitNavigation()`.
-  void UpdateDeferredFetchPolicy();
+  // a target URL `to_url`.
+  // Must be called during the "Beginning navigation" algorithm as described in
+  // https://whatpr.org/html/10903/d1c086a...0e0afb3/browsing-the-web.html#beginning-navigation
+  void UpdateDeferredFetchPolicy(const KURL& to_url);
+
+  // Potentially clear its deferred-fetch policy.
+  // Must be called during "document creation" flow as described in
+  // https://whatpr.org/html/10903/d1c086a...0e0afb3/document-lifecycle.html
+  void MaybeClearDeferredFetchPolicy();
 
   void CancelPendingLazyLoad();
 
@@ -186,7 +191,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // Return a permissions policy container policy for this frame, based on the
   // frame attributes and the effective origin specified in the frame
   // attributes.
-  virtual ParsedPermissionsPolicy ConstructContainerPolicy() const = 0;
+  virtual network::ParsedPermissionsPolicy ConstructContainerPolicy() const = 0;
 
   // Update the container policy and notify the frame loader client of any
   // changes.
@@ -212,6 +217,10 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
       const;
   void ReportFallbackResourceTimingIfNeeded();
 
+  // Check for potential Permissions Policy violation based on the combination
+  // of Permissions Policy and an allow attribute.
+  virtual void CheckPotentialPermissionsPolicyViolation() {}
+
  protected:
   bool is_swapping_frames() const { return is_swapping_frames_; }
 
@@ -219,7 +228,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   bool IsCurrentlyWithinFrameLimit() const;
 
   // Pre-iframe frame-owning elements have certain policies by default.
-  static ParsedPermissionsPolicy GetLegacyFramePolicies();
+  static network::ParsedPermissionsPolicy GetLegacyFramePolicies();
 
  private:
   // Intentionally private to prevent redundant checks when the type is

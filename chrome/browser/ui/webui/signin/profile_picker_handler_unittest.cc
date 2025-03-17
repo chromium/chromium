@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -69,18 +68,15 @@ void VerifyProfileEntry(const base::Value::Dict& dict,
 
 class ProfilePickerHandlerTest : public testing::Test {
  public:
-  ProfilePickerHandlerTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    scoped_feature_list_.InitAndEnableFeature(
-        supervised_user::kHideGuestModeForSupervisedUsers);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  explicit ProfilePickerHandlerTest(bool is_glic_version = false)
+      : is_glic_version_(is_glic_version),
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {
   }
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
 
-    handler_ = std::make_unique<ProfilePickerHandler>();
+    handler_ = std::make_unique<ProfilePickerHandler>(is_glic_version_);
     web_ui_profile_ = GetWebUIProfile();
     web_ui_.set_web_contents(
         web_contents_factory_.CreateWebContents(web_ui_profile_));
@@ -108,16 +104,7 @@ class ProfilePickerHandlerTest : public testing::Test {
   }
 
   void VerifyIfGuestModeUpdateWasCalled(bool expected_guest_mode) {
-    std::optional<bool> expected_guest_mode_update_value;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    // Feature needs to be enabled in order to invoke update guest mode.
-    if (base::FeatureList::IsEnabled(
-            supervised_user::kHideGuestModeForSupervisedUsers)) {
-      expected_guest_mode_update_value = expected_guest_mode;
-    }
-#endif  //  BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
-    auto it = base::ranges::find_if(web_ui()->call_data(), [](auto& data_ptr) {
+    auto it = std::ranges::find_if(web_ui()->call_data(), [](auto& data_ptr) {
       return data_ptr->function_name() == "cr.webUIListenerCallback" &&
              data_ptr->arg1()->GetString() == "guest-mode-availability-updated";
     });
@@ -128,7 +115,7 @@ class ProfilePickerHandlerTest : public testing::Test {
       guest_mode_update_value = it->get()->arg2()->GetBool();
     }
 
-    EXPECT_EQ(guest_mode_update_value, expected_guest_mode_update_value);
+    EXPECT_EQ(guest_mode_update_value, expected_guest_mode);
   }
 
   void VerifyProfileWasRemoved(const base::FilePath& profile_path) {
@@ -169,13 +156,14 @@ class ProfilePickerHandlerTest : public testing::Test {
   ProfilePickerHandler* handler() { return handler_.get(); }
 
  private:
+  const bool is_glic_version_;
+
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<Profile> web_ui_profile_ = nullptr;
   content::TestWebUI web_ui_;
   std::unique_ptr<ProfilePickerHandler> handler_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ProfilePickerHandlerTest, OrderedAlphabeticallyOnInit) {
@@ -315,34 +303,18 @@ TEST_F(ProfilePickerHandlerTest, OmittedProfileOnInit) {
 
 // Tests the behavior of the profile picker handler in presence of supervised
 // profiles.
-class SupervisedProfilePickerHandlerTest
-    : public ProfilePickerHandlerTest,
-      public testing::WithParamInterface<
-          /*HideGuestModeForSupervisedUsers=*/bool> {
+class SupervisedProfilePickerHandlerTest : public ProfilePickerHandlerTest {
  public:
   SupervisedProfilePickerHandlerTest() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.push_back(supervised_user::kShowKiteForSupervisedUsers);
-    if (HideGuestModeForSupervisedUsersEnabled()) {
-      enabled_features.push_back(
-          supervised_user::kHideGuestModeForSupervisedUsers);
-    } else {
-      disabled_features.push_back(
-          supervised_user::kHideGuestModeForSupervisedUsers);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    scoped_feature_list_.InitAndEnableFeature(
+        supervised_user::kShowKiteForSupervisedUsers);
   }
-
-  bool HideGuestModeForSupervisedUsersEnabled() { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(SupervisedProfilePickerHandlerTest,
+TEST_F(SupervisedProfilePickerHandlerTest,
        AddSupervisedProfileDisablesGuestMode) {
   ProfileAttributesEntry* profile_a = CreateTestingProfile("A");
   InitializeMainViewAndVerifyProfileList({profile_a});
@@ -354,7 +326,7 @@ TEST_P(SupervisedProfilePickerHandlerTest,
   web_ui()->ClearTrackedCalls();
 }
 
-TEST_P(SupervisedProfilePickerHandlerTest,
+TEST_F(SupervisedProfilePickerHandlerTest,
        RemoveLastSupervisedProfileEnablesGuestMode) {
   ProfileAttributesEntry* profile_a = CreateTestingProfile("A");
   ProfileAttributesEntry* profile_b =
@@ -380,7 +352,7 @@ TEST_P(SupervisedProfilePickerHandlerTest,
   web_ui()->ClearTrackedCalls();
 }
 
-TEST_P(SupervisedProfilePickerHandlerTest,
+TEST_F(SupervisedProfilePickerHandlerTest,
        SettingSupervisedProfileRemovesGuestMode) {
   ProfileAttributesEntry* profile_a = CreateTestingProfile("A");
   ProfileAttributesEntry* profile_b = CreateTestingProfile("B");
@@ -403,7 +375,7 @@ TEST_P(SupervisedProfilePickerHandlerTest,
 }
 
 // Regression test for crbug.com/378067760.
-TEST_P(SupervisedProfilePickerHandlerTest,
+TEST_F(SupervisedProfilePickerHandlerTest,
        RemovingSupervisionFromProfileTriggersProfileUpdate) {
   ProfileAttributesEntry* profile =
       CreateTestingProfile("A", /*is_supervised=*/true);
@@ -423,18 +395,6 @@ TEST_P(SupervisedProfilePickerHandlerTest,
   VerifyProfileListWasPushed({profile});
   web_ui()->ClearTrackedCalls();
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SupervisedProfilePickerHandlerTest,
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-                         testing::Bool(),
-#else
-      testing::Values(false),
-#endif
-                         [](const auto& info) {
-                           return info.param ? "WithHideGuestModeEnabled"
-                                             : "WithHideGuestModeDisabled";
-                         });
 
 TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
   auto entries_to_names =
@@ -482,4 +442,22 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
         entries_to_names(storage->GetAllProfilesAttributesSortedForDisplay()),
         expected_profile_order_names);
   }
+}
+
+class ProfilePickerHandlerGlicVersionTest : public ProfilePickerHandlerTest {
+ public:
+  ProfilePickerHandlerGlicVersionTest()
+      : ProfilePickerHandlerTest(/*is_glic_version=*/true) {}
+};
+
+TEST_F(ProfilePickerHandlerGlicVersionTest, FilteringProfileEntries) {
+  ProfileAttributesEntry* eligible_1 = CreateTestingProfile("E1");
+  eligible_1->SetIsGlicEligible(true);
+  ProfileAttributesEntry* eligible_2 = CreateTestingProfile("E2");
+  eligible_2->SetIsGlicEligible(true);
+
+  ProfileAttributesEntry* ineligible_1 = CreateTestingProfile("I1");
+  ineligible_1->SetIsGlicEligible(false);
+
+  InitializeMainViewAndVerifyProfileList({eligible_1, eligible_2});
 }

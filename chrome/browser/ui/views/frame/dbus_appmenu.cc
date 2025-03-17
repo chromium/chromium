@@ -159,7 +159,7 @@ void FindMenuItemsForCommandAux(
     std::vector<std::pair<ui::MenuModel*, size_t>>* menu_items) {
   for (size_t i = 0; i < menu->GetItemCount(); ++i) {
     if (menu->GetCommandIdAt(i) == command) {
-      menu_items->push_back({menu, i});
+      menu_items->emplace_back(menu, i);
     }
     if (menu->GetTypeAt(i) == ui::SimpleMenuModel::ItemType::TYPE_SUBMENU) {
       FindMenuItemsForCommandAux(menu->GetSubmenuModelAt(i), command,
@@ -548,7 +548,7 @@ void DbusAppmenu::TabRestoreServiceChanged(
         title = l10n_util::GetPluralStringFUTF16(IDS_RECENTLY_CLOSED_GROUP,
                                                  tabs.size());
         title = base::ReplaceStringPlaceholders(
-            title, {group->visual_data.title()}, nullptr);
+            title, group->visual_data.title(), nullptr);
       }
 
       AddEntryToHistoryMenu(group->id, title, index++, tabs);

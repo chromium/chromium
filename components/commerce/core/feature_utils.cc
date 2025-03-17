@@ -58,6 +58,18 @@ bool IsShoppingListEligible(AccountChecker* account_checker) {
   return true;
 }
 
+bool IsPriceInsightsApiEnabled(AccountChecker* account_checker) {
+  return account_checker &&
+         commerce::IsRegionLockedFeatureEnabled(
+             kPriceInsights, kPriceInsightsRegionLaunched,
+             account_checker->GetCountry(), account_checker->GetLocale());
+}
+
+bool IsPriceInsightsEligible(AccountChecker* account_checker) {
+  return IsPriceInsightsApiEnabled(account_checker) &&
+         account_checker->IsAnonymizedUrlDataCollectionEnabled();
+}
+
 bool IsSubscriptionsApiEnabled(AccountChecker* account_checker) {
   return IsRegionLockedFeatureEnabled(
       kSubscriptionsApi, kSubscriptionsApiRegionLaunched,
@@ -94,8 +106,10 @@ bool IsProductSpecificationsQualityLoggingAllowed(PrefService* prefs) {
 }
 
 bool IsSyncingProductSpecifications(AccountChecker* account_checker) {
-  return account_checker && account_checker->IsSyncTypeEnabled(
-                                syncer::UserSelectableType::kProductComparison);
+  return account_checker &&
+         account_checker->IsSyncTypeEnabled(
+             syncer::UserSelectableType::kProductComparison) &&
+         account_checker->IsSyncAvailable();
 }
 
 bool CanLoadProductSpecificationsFullPageUi(AccountChecker* account_checker) {
@@ -149,6 +163,33 @@ bool IsProductSpecificationsSettingVisible(AccountChecker* account_checker) {
       optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi));
   return CanFetchProductSpecificationsData(account_checker,
                                            /*skip_enterprise_check=*/true);
+}
+
+bool IsDiscountInfoApiEnabled(AccountChecker* account_checker) {
+  return account_checker &&
+         commerce::IsRegionLockedFeatureEnabled(
+             kEnableDiscountInfoApi, kEnableDiscountInfoApiRegionLaunched,
+             account_checker->GetCountry(), account_checker->GetLocale());
+}
+
+bool IsDiscountEligibleToShowOnNavigation(AccountChecker* account_checker) {
+  return IsDiscountInfoApiEnabled(account_checker) &&
+         account_checker->IsSignedIn() &&
+         account_checker->IsAnonymizedUrlDataCollectionEnabled();
+}
+
+bool IsMerchantViewerEnabled(AccountChecker* account_checker) {
+  return account_checker &&
+         commerce::IsRegionLockedFeatureEnabled(
+             kCommerceMerchantViewer, kCommerceMerchantViewerRegionLaunched,
+             account_checker->GetCountry(), account_checker->GetLocale());
+}
+
+bool IsShoppingPageTypesApiEnabled(AccountChecker* account_checker) {
+  return account_checker &&
+         commerce::IsRegionLockedFeatureEnabled(
+             kShoppingPageTypes, kShoppingPageTypesRegionLaunched,
+             account_checker->GetCountry(), account_checker->GetLocale());
 }
 
 }  // namespace commerce

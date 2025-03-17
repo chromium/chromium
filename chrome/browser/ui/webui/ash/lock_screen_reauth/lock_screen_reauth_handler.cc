@@ -284,9 +284,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   // TODO(crbug.com/377862442) Add autoreload url param.
 
   CallJavascript("loadAuthenticator", params);
-  if (features::IsNewLockScreenReauthLayoutEnabled()) {
-    UpdateOrientationAndWidth();
-  }
+  UpdateOrientationAndWidth();
 }
 
 void LockScreenReauthHandler::UpdateOrientationAndWidth() {
@@ -504,10 +502,6 @@ void LockScreenReauthHandler::HandleWebviewLoadAborted(int error_code) {
 
 void LockScreenReauthHandler::HandleGetDeviceId(
     const std::string& callback_id) {
-  if (!IsJavascriptAllowed()) {
-    return;
-  }
-
   user_manager::KnownUser known_user{g_browser_process->local_state()};
   ResolveJavascriptCallback(callback_id, GetDeviceId(known_user));
 }
@@ -520,33 +514,37 @@ void LockScreenReauthHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "startOnlineAuth",
       base::BindRepeating(&LockScreenReauthHandler::HandleStartOnlineAuth,
-                          weak_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
       "authenticatorLoaded",
       base::BindRepeating(&LockScreenReauthHandler::HandleAuthenticatorLoaded,
-                          weak_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "completeAuthentication",
       base::BindRepeating(
           &LockScreenReauthHandler::HandleCompleteAuthentication,
-          weak_factory_.GetWeakPtr()));
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "updateUserPassword",
       base::BindRepeating(&LockScreenReauthHandler::HandleUpdateUserPassword,
-                          weak_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "onPasswordTyped",
       base::BindRepeating(&LockScreenReauthHandler::HandleOnPasswordTyped,
-                          weak_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
   web_ui()->RegisterHandlerCallback(
       "webviewLoadAborted",
       base::BindRepeating(&LockScreenReauthHandler::HandleWebviewLoadAborted,
-                          weak_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
   web_ui()->RegisterHandlerCallback(
       "getDeviceId",
       base::BindRepeating(&LockScreenReauthHandler::HandleGetDeviceId,
-                          weak_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
+}
+
+void LockScreenReauthHandler::OnJavascriptDisallowed() {
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 bool LockScreenReauthHandler::IsAuthenticatorLoaded(

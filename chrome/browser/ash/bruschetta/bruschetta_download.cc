@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_network_context.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
@@ -99,7 +100,8 @@ std::string Sha256FileForTesting(const base::FilePath& path) {
   return Sha256File(path);
 }
 
-SimpleURLLoaderDownload::SimpleURLLoaderDownload() = default;
+SimpleURLLoaderDownload::SimpleURLLoaderDownload(PrefService& local_state)
+    : local_state_(local_state) {}
 
 SimpleURLLoaderDownload::~SimpleURLLoaderDownload() {
   auto seq = base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
@@ -133,9 +135,11 @@ void SimpleURLLoaderDownload::Download(
   auto path = scoped_temp_dir_->GetPath().Append("download");
   auto req = std::make_unique<network::ResourceRequest>();
   req->url = url_;
+  req->site_for_cookies = net::SiteForCookies::FromUrl(url_);
   loader_ = network::SimpleURLLoader::Create(std::move(req),
                                              kBruschettaTrafficAnnotation);
-  network_context_ = std::make_unique<BruschettaNetworkContext>(profile);
+  network_context_ =
+      std::make_unique<BruschettaNetworkContext>(profile, local_state_.get());
   loader_->DownloadToFile(network_context_->GetURLLoaderFactory(),
                           base::BindOnce(&SimpleURLLoaderDownload::Finished,
                                          weak_ptr_factory_.GetWeakPtr()),

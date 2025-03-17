@@ -10,16 +10,14 @@
 #import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
+#import "ios/chrome/browser/download/coordinator/download_manager_coordinator.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
-#import "ios/chrome/browser/download/ui_bundled/download_manager_coordinator.h"
 #import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
-#import "ios/chrome/browser/parcel_tracking/features.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/print/coordinator/print_coordinator.h"
@@ -32,7 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
-#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
+#import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
@@ -40,6 +38,7 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_tab_helper.h"
 #import "ios/chrome/browser/web/model/print/print_tab_helper.h"
@@ -103,6 +102,13 @@
       passwordTabHelper->GetPasswordGenerationProvider();
   bottomSheetTabHelper->SetPasswordGenerationProvider(generationProvider);
 
+  SupervisedUserErrorContainer* supervisedUserErrorContainer =
+      SupervisedUserErrorContainer::FromWebState(webState);
+  if (supervisedUserErrorContainer) {
+    supervisedUserErrorContainer->SetParentAccessBottomSheetHandler(
+        HandlerForProtocol(_commandDispatcher, ParentAccessCommands));
+  }
+
   if (ios::provider::IsLensSupported()) {
     LensTabHelper* lensTabHelper = LensTabHelper::FromWebState(webState);
     lensTabHelper->SetLensCommandsHandler(
@@ -117,6 +123,8 @@
   DCHECK(_downloadManagerTabHelperDelegate);
   DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(
       _downloadManagerTabHelperDelegate);
+  DownloadManagerTabHelper::FromWebState(webState)->SetSnackbarHandler(
+      static_cast<id<SnackbarCommands>>(_commandDispatcher));
 
   DCHECK(_tabHelperDelegate);
   NetExportTabHelper::GetOrCreateForWebState(webState)->SetDelegate(
@@ -168,17 +176,6 @@
         HandlerForProtocol(_commandDispatcher, MiniMapCommands));
     annotationsTabHelper->SetUnitConversionCommands(
         HandlerForProtocol(_commandDispatcher, UnitConversionCommands));
-
-    PrefService* prefs =
-        IsHomeCustomizationEnabled()
-            ? ProfileIOS::FromBrowserState(webState->GetBrowserState())
-                  ->GetPrefs()
-            : GetApplicationContext()->GetLocalState();
-
-    if (IsIOSParcelTrackingEnabled() && !IsParcelTrackingDisabled(prefs)) {
-      annotationsTabHelper->SetParcelTrackingOptInCommands(
-          HandlerForProtocol(_commandDispatcher, ParcelTrackingOptInCommands));
-    }
   }
 
   PriceNotificationsTabHelper* priceNotificationsTabHelper =
@@ -222,6 +219,12 @@
       AutofillBottomSheetTabHelper::FromWebState(webState);
   bottomSheetTabHelper->SetAutofillBottomSheetHandler(nil);
 
+  SupervisedUserErrorContainer* supervisedUserErrorContainer =
+      SupervisedUserErrorContainer::FromWebState(webState);
+  if (supervisedUserErrorContainer) {
+    supervisedUserErrorContainer->SetParentAccessBottomSheetHandler(nil);
+  }
+
   LensTabHelper* lensTabHelper = LensTabHelper::FromWebState(webState);
   if (lensTabHelper) {
     lensTabHelper->SetLensCommandsHandler(nil);
@@ -230,6 +233,7 @@
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
 
   DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(nil);
+  DownloadManagerTabHelper::FromWebState(webState)->SetSnackbarHandler(nil);
 
   NetExportTabHelper::GetOrCreateForWebState(webState)->SetDelegate(nil);
 

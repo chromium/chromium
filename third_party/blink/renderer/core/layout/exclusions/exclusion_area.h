@@ -100,7 +100,7 @@ struct CORE_EXPORT ExclusionArea final
   }
 };
 
-using ExclusionAreaPtrArray = HeapVector<Member<const ExclusionArea>>;
+using ExclusionAreaPtrArray = GCedHeapVector<Member<const ExclusionArea>>;
 
 std::ostream& operator<<(std::ostream& os, const ExclusionArea& exclusion);
 std::ostream& operator<<(std::ostream& os, const ExclusionArea* exclusion);

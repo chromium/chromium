@@ -113,7 +113,7 @@ export class ProductSpecificationsListsElement extends PolymerElement {
     this.callbackRouter_ = this.productSpecificationsProxy_.getCallbackRouter();
   }
 
-  override async connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.focusGrid_ = new FocusGrid();
 
@@ -153,7 +153,7 @@ export class ProductSpecificationsListsElement extends PolymerElement {
     super.disconnectedCallback();
     this.listenerIds_.forEach(id => this.callbackRouter_.removeListener(id));
     if (this.focusGrid_) {
-      this.focusGrid_!.destroy();
+      this.focusGrid_.destroy();
     }
     if (this.boundFocusCallback_) {
       window.removeEventListener('focus', this.boundFocusCallback_);
@@ -189,9 +189,9 @@ export class ProductSpecificationsListsElement extends PolymerElement {
         this.shadowRoot!.querySelectorAll('product-specifications-item');
     for (const el of items) {
       const row = el.createFocusRow();
-      this.focusGrid_!.addRow(row);
+      this.focusGrid_.addRow(row);
     }
-    this.focusGrid_!.ensureRowActive(0);
+    this.focusGrid_.ensureRowActive(0);
   }
 
   private hasResults_(): boolean {

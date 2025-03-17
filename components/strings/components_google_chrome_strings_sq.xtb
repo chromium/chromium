@@ -9,8 +9,12 @@
 <translation id="2447485272386224171">Chrome është bërë i mundur nga projekti me burim të hapur <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> dhe <ph name="BEGIN_LINK_OSS" />softuerë të tjerë me burim të hapur<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logoja e Chrome</translation>
 <translation id="3444832043240812445">Kjo faqe shfaq vetëm informacione mbi ndërprerjet e tua të fundit aksidentale, nëse  <ph name="BEGIN_LINK" />aktivizon raportimin e ndërprerjeve aksidentale<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Këto faqe synohen të përdoren nga zhvilluesit e Chrome dhe mund të mos mirëmbahen apo testohen në mënyrë aktive. Për t'i aktivizuar ato, navigo te <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliko butonin për të aktivizuar faqet e korrigjimit dhe më pas navigo përsëri te kjo faqe.</translation>
 <translation id="3875312571075912821">Lejo Chrome të qaset në rrjet, në cilësimet e murit mbrojtës ose
       të antivirusit.</translation>
+<translation id="4949828774841497663">Shko te Aplikacionet &gt; Cilësimet e sistemit &gt; Rrjeti, zgjidh
+          rrjetin aktiv, kliko te butoni "Detajet..." , dhe hiq përzgjedhjen e çdo proxy
+          që mund të jetë zgjedhur.</translation>
 <translation id="5005121315113832363">Kjo faqe është bllokuar nga Chrome</translation>
 <translation id="6011049234605203654">Shko në
           menynë e Chrome &gt;
@@ -38,7 +42,6 @@
           Cilësimet e rrjetit LAN
           dhe anulo zgjedhjen për "Përdor një server përfaqësues për rrjetin LAN".</translation>
 <translation id="7230956101631259640">Po shikon një faqe të sigurt të Chrome</translation>
-<translation id="8187289872471304532">Shko te Aplikacionet &gt; Preferencat e sistemit &gt; Rrjeti &gt; Të përparuara &gt; Përfaqësuesit dhe anulo zgjedhjen për çdo përfaqësues që është zgjedhur.</translation>
 <translation id="8232971017369963250">Chrome është mundësuar nga projekti me burim të hapur <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome është mundësuar po ashtu nga <ph name="BEGIN_LINK_OSS" />softuerë të tjerë me burim të hapur<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome po përpiqet të modifikojë cilësimet për plotësimin e mënyrave të pagesës.</translation>

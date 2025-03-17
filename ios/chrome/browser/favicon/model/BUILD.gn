@@ -9,7 +9,8 @@ source_set("model") {
     "favicon_client_impl.h",
     "favicon_client_impl.mm",
     "favicon_loader.h",
-    "favicon_loader.mm",
+    "favicon_loader_impl.h",
+    "favicon_loader_impl.mm",
     "favicon_service_factory.cc",
     "favicon_service_factory.h",
     "ios_chrome_favicon_loader_factory.h",
@@ -51,10 +52,28 @@ source_set("model") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_favicon_loader.h",
+    "mock_favicon_loader.mm",
+    "test_favicon_loader.h",
+    "test_favicon_loader.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/resources",
+    "//testing/gmock",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "favicon_loader_unittest.mm",
+    "favicon_loader_impl_unittest.mm",
     "large_icon_cache_unittest.cc",
   ]
   deps = [

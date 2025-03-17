@@ -23,8 +23,10 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -81,6 +83,8 @@ public class TabModalLifetimeHandler
     private final Supplier<FullscreenManager> mFullscreenManagerSupplier;
     private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplier<ScrimManager> mScrimManagerSupplier;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final BackPressManager mBackPressManager;
     private ChromeTabModalPresenter mPresenter;
     private TabModelSelectorTabModelObserver mTabModelObserver;
@@ -103,6 +107,10 @@ public class TabModalLifetimeHandler
      * @param fullscreenManagerSupplier Supplies the {@link FullscreenManager} object.
      * @param backPressManager The {@link BackPressManager} which can register {@link
      *     BackPressHandler}.
+     * @param scrimManagerSupplier The supplier for {@link ScrimManager}. Used to darken the screen
+     *     behind the dialog.
+     * @param edgeToEdgeControllerSupplier The supplier for {@link EdgeToEdgeController}. Used to
+     *     decide how to position the scrim.
      */
     public TabModalLifetimeHandler(
             Activity activity,
@@ -115,7 +123,9 @@ public class TabModalLifetimeHandler
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<BrowserControlsVisibilityManager> browserControlsVisibilityManagerSupplier,
             Supplier<FullscreenManager> fullscreenManagerSupplier,
-            BackPressManager backPressManager) {
+            BackPressManager backPressManager,
+            ObservableSupplier<ScrimManager> scrimManagerSupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -131,6 +141,8 @@ public class TabModalLifetimeHandler
         mBackPressManager = backPressManager;
         mManager.addObserver(this);
         backPressManager.addHandler(this, Type.TAB_MODAL_HANDLER);
+        mScrimManagerSupplier = scrimManagerSupplier;
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
     }
 
     /**
@@ -182,7 +194,9 @@ public class TabModalLifetimeHandler
                         mHideContextualSearch,
                         mFullscreenManagerSupplier.get(),
                         mBrowserControlsVisibilityManagerSupplier.get(),
-                        tabModelSelector);
+                        tabModelSelector,
+                        mScrimManagerSupplier,
+                        mEdgeToEdgeControllerSupplier);
         assert mAppVisibilityDelegateSupplier.hasValue();
         mAppVisibilityDelegateSupplier
                 .get()

@@ -12,8 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -21,17 +23,22 @@
 #include "content/browser/service_worker/fake_service_worker.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/test/fake_network_url_loader_factory.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -49,6 +56,9 @@
 
 namespace content {
 namespace service_worker_main_resource_loader_unittest {
+
+constexpr char kTestCacheName[] = "test cache name";
+constexpr char16_t kTestCacheNameU16[] = u"test cache name";
 
 class ScopedOverrideToDisableHighPriorityFetchResponseCallback {
  public:
@@ -431,6 +441,34 @@ network::mojom::URLResponseHeadPtr CreateResponseInfoFromServiceWorker() {
   return head;
 }
 
+// Returns router info when request does not match the test routing rules.
+network::mojom::ServiceWorkerRouterInfoPtr
+CreateExpectedNonMatchingServiceWorkerRouterInfo() {
+  auto router_info = network::mojom::ServiceWorkerRouterInfo::New();
+  router_info->route_rule_num = 2;
+  router_info->evaluation_worker_status =
+      network::mojom::ServiceWorkerStatus::kRunning;
+  router_info->router_evaluation_time =
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime;
+  return router_info;
+}
+
+// Returns typical router info when request matches a registered routing rule.
+network::mojom::ServiceWorkerRouterInfoPtr
+CreateExpectedMatchingServiceWorkerRouterInfo(
+    network::mojom::ServiceWorkerRouterSourceType matched_type) {
+  auto router_info = network::mojom::ServiceWorkerRouterInfo::New();
+  router_info->route_rule_num = 1;
+  router_info->evaluation_worker_status =
+      network::mojom::ServiceWorkerStatus::kRunning;
+  router_info->router_evaluation_time =
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime;
+  router_info->rule_id_matched = 1;
+  router_info->matched_source_type = matched_type;
+  router_info->actual_source_type = matched_type;
+  return router_info;
+}
+
 const char kHistogramMainResourceFetchEvent[] =
     "ServiceWorker.FetchEvent.MainResource.Status";
 
@@ -527,6 +565,10 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
       service_worker_client()->AddMatchingRegistration(registration_.get());
       service_worker_client()->SetControllerRegistration(
           registration_, /*notify_controllerchange=*/false);
+      if (network_loader_factory_) {
+        service_worker_client()->SetNetworkURLLoaderFactoryForTesting(
+            network_loader_factory_);
+      }
     }
 
     // Create a ServiceWorkerMainResourceLoader.
@@ -534,20 +576,130 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
         base::BindOnce(&ServiceWorkerMainResourceLoaderTest::Fallback,
                        base::Unretained(this)),
         /*fetch_event_client_id=*/"", service_worker_client()->AsWeakPtr(),
-        FrameTreeNodeId(),
         /*find_registration_start_time=*/base::TimeTicks::Now());
 
     // Load |request.url|.
-    loader_->StartRequest(*request, loader_remote_.BindNewPipeAndPassReceiver(),
-                          client_.CreateRemote());
+    loader_->StartRequest(loader_remote_.BindNewPipeAndPassReceiver(),
+                          /*request_id=*/0, /*options=*/0, *request,
+                          client_.CreateRemote(),
+                          net::MutableNetworkTrafficAnnotationTag());
   }
 
   // The |fallback_callback| passed to the ServiceWorkerMainResourceLoader in
   // StartRequest().
-  void Fallback(ResponseHeadUpdateParams) {
+  network::mojom::URLLoaderFactory* Fallback(ResponseHeadUpdateParams params) {
     did_call_fallback_callback_ = true;
+    response_head_update_params_ = std::move(params);
     if (quit_closure_for_fallback_callback_)
       std::move(quit_closure_for_fallback_callback_).Run();
+    return fake_url_loader_factory_.get();
+  }
+
+  void DidCacheBatchOperation(base::OnceClosure quit_closure,
+                              blink::mojom::CacheStorageVerboseErrorPtr error) {
+    DCHECK_EQ(error->value, blink::mojom::CacheStorageError::kSuccess);
+    std::move(quit_closure).Run();
+  }
+
+  void SetupStaticRoutingRules(
+      network::mojom::ServiceWorkerRouterSourceType source_type) {
+    blink::ServiceWorkerRouterRules rules;
+    blink::ServiceWorkerRouterRule rule;
+    rule.condition = blink::ServiceWorkerRouterCondition::WithRunningStatus(
+        {blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
+             kRunning});
+    blink::ServiceWorkerRouterSource source;
+    source.type = source_type;
+    switch (source_type) {
+      case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
+        source.fetch_event_source.emplace();
+        break;
+      case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
+        source.network_source.emplace();
+        break;
+      case network::mojom::ServiceWorkerRouterSourceType::kRace:
+        source.race_source.emplace();
+        break;
+      case network::mojom::ServiceWorkerRouterSourceType::kCache:
+        blink::ServiceWorkerRouterCacheSource cache_source;
+        cache_source.cache_name = kTestCacheName;
+        source.cache_source = cache_source;
+        break;
+    }
+    rule.sources.emplace_back(source);
+    rules.rules.emplace_back(rule);
+    EXPECT_EQ(version_->SetupRouterEvaluator(rules),
+              ServiceWorkerRouterEvaluatorErrorEnums::kNoError);
+    EXPECT_TRUE(version_->router_evaluator());
+  }
+
+  void SetupNetworkResponse() {
+    fake_url_loader_factory_ = std::make_unique<FakeNetworkURLLoaderFactory>();
+    network_loader_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            fake_url_loader_factory_.get());
+  }
+
+  void SetupErrorNetworkResponse() {
+    fake_url_loader_factory_ = std::make_unique<FakeNetworkURLLoaderFactory>(
+        /* headers=*/std::string(), /* body=*/std::string(),
+        /* network_accessed=*/true, net::ERR_CONNECTION_TIMED_OUT);
+    network_loader_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            fake_url_loader_factory_.get());
+  }
+
+  void SetupStoragePartition() {
+    helper_->context_wrapper()->set_storage_partition(
+        static_cast<StoragePartitionImpl*>(
+            helper_->browser_context()->GetDefaultStoragePartition()));
+  }
+
+  std::unique_ptr<network::ResourceRequest> CreateRequestAndSetupCache(
+      const base::Time& cache_response_time) {
+    auto request = CreateRequest();
+
+    SetupStoragePartition();
+
+    const network::CrossOriginEmbedderPolicy* coep =
+        version_->cross_origin_embedder_policy();
+    const network::DocumentIsolationPolicy* dip =
+        version_->document_isolation_policy();
+    mojo::Remote<blink::mojom::CacheStorage> cache_storage;
+    auto* storage_partition =
+        version_->context()->wrapper()->storage_partition();
+    auto* control = storage_partition->GetCacheStorageControl();
+    control->AddReceiver(
+        *coep, version_->embedded_worker()->GetCoepReporter(), *dip,
+        version_->embedded_worker()->GetDipReporter(),
+        storage::BucketLocator::ForDefaultBucket(version_->key()),
+        storage::mojom::CacheStorageOwner::kCacheAPI,
+        cache_storage.BindNewPipeAndPassReceiver());
+    mojo::AssociatedRemote<blink::mojom::CacheStorageCache> cache;
+    base::RunLoop run_loop;
+    cache_storage->Open(
+        kTestCacheNameU16, /* trace_id= */ 0,
+        base::BindLambdaForTesting([&](blink::mojom::OpenResultPtr result) {
+          EXPECT_TRUE(result->is_cache());
+
+          std::vector<blink::mojom::BatchOperationPtr> operation_ptr_vec;
+          operation_ptr_vec.push_back(blink::mojom::BatchOperation::New());
+          operation_ptr_vec[0]->operation_type =
+              blink::mojom::OperationType::kPut;
+          operation_ptr_vec[0]->request = CreateFetchAPIRequest(request.get());
+          operation_ptr_vec[0]->response =
+              OkResponse(nullptr /* blob_body */,
+                         network::mojom::FetchResponseSource::kUnspecified,
+                         cache_response_time, kTestCacheName);
+          cache.Bind(std::move(result->get_cache()));
+          cache->Batch(
+              std::move(operation_ptr_vec), /* trace_id= */ 0,
+              base::BindOnce(
+                  &ServiceWorkerMainResourceLoaderTest::DidCacheBatchOperation,
+                  base::Unretained(this), run_loop.QuitClosure()));
+        }));
+    run_loop.Run();
+    return request;
   }
 
   // Runs until the ServiceWorkerMainResourceLoader created in StartRequest()
@@ -561,20 +713,49 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     run_loop.Run();
   }
 
+  void ExpectRouterInfo(
+      const network::mojom::ServiceWorkerRouterInfo& info,
+      const network::mojom::ServiceWorkerRouterInfo& expected_info) {
+    EXPECT_EQ(expected_info.rule_id_matched, info.rule_id_matched);
+    EXPECT_EQ(expected_info.matched_source_type, info.matched_source_type);
+    EXPECT_EQ(expected_info.actual_source_type, info.actual_source_type);
+    EXPECT_EQ(expected_info.route_rule_num, info.route_rule_num);
+    EXPECT_EQ(expected_info.router_evaluation_time,
+              info.router_evaluation_time);
+    EXPECT_EQ(expected_info.evaluation_worker_status,
+              info.evaluation_worker_status);
+  }
+
   void ExpectResponseInfo(
       const network::mojom::URLResponseHead& info,
       const network::mojom::URLResponseHead& expected_info) {
+    bool expect_service_worker_timing =
+        expected_info.was_fetched_via_service_worker;
+    if (expected_info.service_worker_router_info &&
+        (expected_info.service_worker_router_info->actual_source_type ==
+         network::mojom::ServiceWorkerRouterSourceType::kCache)) {
+      expect_service_worker_timing = false;
+    }
     EXPECT_EQ(expected_info.was_fetched_via_service_worker,
               info.was_fetched_via_service_worker);
     EXPECT_EQ(expected_info.url_list_via_service_worker,
               info.url_list_via_service_worker);
     EXPECT_EQ(expected_info.response_type, info.response_type);
     EXPECT_EQ(expected_info.response_time, info.response_time);
-    EXPECT_FALSE(info.load_timing.service_worker_start_time.is_null());
-    EXPECT_FALSE(info.load_timing.service_worker_ready_time.is_null());
-    EXPECT_FALSE(info.load_timing.service_worker_fetch_start.is_null());
-    EXPECT_FALSE(
-        info.load_timing.service_worker_respond_with_settled.is_null());
+    EXPECT_EQ(info.client_address_space,
+              expected_info.was_fetched_via_service_worker
+                  ? network::mojom::IPAddressSpace::kPrivate
+                  : network::mojom::IPAddressSpace::kUnknown);
+    EXPECT_EQ(!info.load_timing.service_worker_start_time.is_null(),
+              expect_service_worker_timing);
+    EXPECT_EQ(!info.load_timing.service_worker_ready_time.is_null(),
+              expect_service_worker_timing);
+    EXPECT_EQ(!info.load_timing.service_worker_fetch_start.is_null(),
+              expect_service_worker_timing);
+    EXPECT_EQ(!info.load_timing.service_worker_respond_with_settled.is_null(),
+              expect_service_worker_timing);
+    EXPECT_LE(info.load_timing.receive_headers_start,
+              info.load_timing.receive_headers_end);
     EXPECT_LE(info.load_timing.service_worker_start_time,
               info.load_timing.service_worker_ready_time);
     EXPECT_LE(info.load_timing.service_worker_ready_time,
@@ -589,8 +770,13 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
               info.did_service_worker_navigation_preload);
     EXPECT_EQ(expected_info.initial_service_worker_status,
               info.initial_service_worker_status);
-    // TODO(crbug.com/40944544): Write tests about Static Routing API, in
-    // particular, checking the correctness of `service_worker_router_info`.
+    if (expected_info.service_worker_router_info) {
+      EXPECT_TRUE(info.service_worker_router_info);
+      ExpectRouterInfo(*info.service_worker_router_info,
+                       *expected_info.service_worker_router_info);
+    } else {
+      EXPECT_FALSE(info.service_worker_router_info);
+    }
   }
 
   std::unique_ptr<network::ResourceRequest> CreateRequest() {
@@ -605,6 +791,24 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     return request;
   }
 
+  // Create FetchAPIRequest for the same request returned from CreateRequest.
+  // This is a simplified version of blink::mojom::FetchAPIRequest::From.
+  // We use a simplified copy of the code instead of calling
+  // FetchAPIRequest::From here because content_test has difficulty linking code
+  // from fetch_request_type_converters.cc.
+  blink::mojom::FetchAPIRequestPtr CreateFetchAPIRequest(
+      const network::ResourceRequest* request) {
+    auto fetch_request = blink::mojom::FetchAPIRequest::New();
+    fetch_request->is_main_resource_load = true;
+    fetch_request->url = request->url;
+    fetch_request->method = request->method;
+    fetch_request->mode = request->mode;
+    fetch_request->credentials_mode = request->credentials_mode;
+    fetch_request->redirect_mode = request->redirect_mode;
+    fetch_request->destination = request->destination;
+    return fetch_request;
+  }
+
   bool HasWorkInBrowser(ServiceWorkerVersion* version) const {
     return version->HasWorkInBrowser();
   }
@@ -613,6 +817,15 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
   ServiceWorkerClient* service_worker_client() const {
     return service_worker_client_->get();
   }
+
+  // Declare test_elapsed_timer_ earlier so that it is created before other
+  // objects and stays alive after other objects are released.
+  base::ScopedMockElapsedTimersForTest test_elapsed_timer_;
+
+  // Declare these first so that they are released last to avoid DanglingPtr
+  // issue if service_worker_client_ is released after them.
+  std::unique_ptr<FakeNetworkURLLoaderFactory> fake_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;
 
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
@@ -627,6 +840,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
 
   bool did_call_fallback_callback_ = false;
   base::OnceClosure quit_closure_for_fallback_callback_;
+  ResponseHeadUpdateParams response_head_update_params_;
 };
 
 TEST_F(ServiceWorkerMainResourceLoaderTest, Basic) {
@@ -641,11 +855,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, Basic) {
   EXPECT_EQ(200, info->headers->response_code());
   EXPECT_FALSE(info->load_timing.receive_headers_start.is_null());
   EXPECT_FALSE(info->load_timing.receive_headers_end.is_null());
-  EXPECT_LE(info->load_timing.receive_headers_start,
-            info->load_timing.receive_headers_end);
   EXPECT_TRUE(info->was_fetched_via_service_worker);
-  EXPECT_EQ(info->client_address_space,
-            network::mojom::IPAddressSpace::kPrivate);
   ExpectResponseInfo(*info, *CreateResponseInfoFromServiceWorker());
 
   histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
@@ -1191,11 +1401,385 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, FencedFrameNavigationPreload) {
   EXPECT_EQ(200, info->headers->response_code());
   EXPECT_FALSE(info->load_timing.receive_headers_start.is_null());
   EXPECT_FALSE(info->load_timing.receive_headers_end.is_null());
-  EXPECT_LE(info->load_timing.receive_headers_start,
-            info->load_timing.receive_headers_end);
   auto expected_info = CreateResponseInfoFromServiceWorker();
   expected_info->did_service_worker_navigation_preload = true;
   ExpectResponseInfo(*info, *expected_info);
+}
+
+// Similar to Basic test setup, but with non matching static routing rules.
+TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingNoMatch) {
+  base::HistogramTester histogram_tester;
+
+  // Setup 2 non matching static routing rules.
+  {
+    blink::ServiceWorkerRouterRules rules;
+    blink::ServiceWorkerRouterRule rule;
+    rule.condition = blink::ServiceWorkerRouterCondition::WithRunningStatus(
+        {blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
+             kNotRunning});
+    blink::ServiceWorkerRouterSource source;
+    source.type = network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+    source.network_source.emplace();
+    rule.sources.emplace_back(source);
+    rules.rules.emplace_back(rule);
+    blink::ServiceWorkerRouterRule rule2;
+    blink::ServiceWorkerRouterRequestCondition request_condition;
+    request_condition.mode = network::mojom::RequestMode::kCors;
+    rule2.sources.emplace_back(source);
+    rules.rules.emplace_back(rule);
+    EXPECT_EQ(version_->SetupRouterEvaluator(rules),
+              ServiceWorkerRouterEvaluatorErrorEnums::kNoError);
+    EXPECT_TRUE(version_->router_evaluator());
+  }
+
+  StartRequest(CreateRequest());
+  client_.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  auto& info = client_.response_head();
+  EXPECT_EQ(200, info->headers->response_code());
+  EXPECT_FALSE(info->load_timing.receive_headers_start.is_null());
+  EXPECT_FALSE(info->load_timing.receive_headers_end.is_null());
+  auto expected_info = CreateResponseInfoFromServiceWorker();
+  expected_info->service_worker_router_info =
+      CreateExpectedNonMatchingServiceWorkerRouterInfo();
+  ExpectResponseInfo(*info, *expected_info);
+
+  histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
+                                      blink::ServiceWorkerStatusCode::kOk, 1);
+
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        1);
+  }
+}
+
+// Similar to Basic test setup, but with matching static fetch routing rule.
+TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingFetch) {
+  base::HistogramTester histogram_tester;
+
+  SetupStaticRoutingRules(
+      network::mojom::ServiceWorkerRouterSourceType::kFetchEvent);
+
+  StartRequest(CreateRequest());
+  client_.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  auto& info = client_.response_head();
+  EXPECT_EQ(200, info->headers->response_code());
+  EXPECT_FALSE(info->load_timing.receive_headers_start.is_null());
+  EXPECT_FALSE(info->load_timing.receive_headers_end.is_null());
+  auto expected_info = CreateResponseInfoFromServiceWorker();
+  expected_info->service_worker_router_info =
+      CreateExpectedMatchingServiceWorkerRouterInfo(
+          network::mojom::ServiceWorkerRouterSourceType::kFetchEvent);
+  ExpectResponseInfo(*info, *expected_info);
+
+  histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
+                                      blink::ServiceWorkerStatusCode::kOk, 1);
+
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        1);
+  }
+}
+
+// Similar to Basic test setup, but with matching network static routing rule.
+TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingNetwork) {
+  base::HistogramTester histogram_tester;
+
+  SetupStaticRoutingRules(
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork);
+
+  SetupNetworkResponse();
+
+  StartRequest(CreateRequest());
+  client_.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  auto& info = client_.response_head();
+  EXPECT_EQ(200, info->headers->response_code());
+  // FakeNetworkURLLoaderFactory doesn't set any of the following.
+  EXPECT_TRUE(info->load_timing.receive_headers_start.is_null());
+  EXPECT_TRUE(info->load_timing.receive_headers_end.is_null());
+  EXPECT_EQ(info->client_address_space,
+            network::mojom::IPAddressSpace::kUnknown);
+  EXPECT_FALSE(info->was_fetched_via_service_worker);
+
+  // The test FakeNetworkURLLoaderFactory doesn't copy head updates over to
+  // final response as NavigationURLLoaderImpl::OnReceiveResponse does.
+  // Therefore, verify router info by checking router info seen in fallback
+  // call.
+  auto expected_router_info = CreateExpectedMatchingServiceWorkerRouterInfo(
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork);
+  ExpectRouterInfo(*response_head_update_params_.router_info,
+                   *expected_router_info);
+
+  // As the request goes to network directly, there should be no fetch event
+  // dispatched and it is not reported as fallback to network.
+  histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
+                                      blink::ServiceWorkerStatusCode::kOk, 0);
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "FetchHandlerEndToFallbackNetwork",
+        0);
+  }
+}
+
+// Similar to Basic test setup, but with matching race static routing rule and
+// network wins.
+TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingRaceNetworkWin) {
+  base::HistogramTester histogram_tester;
+
+  SetupStaticRoutingRules(network::mojom::ServiceWorkerRouterSourceType::kRace);
+
+  service_worker_->DeferResponse();
+  SetupNetworkResponse();
+
+  StartRequest(CreateRequest());
+  client_.RunUntilComplete();
+
+  // The loader is still alive. Finish the fetch event. It shouldn't crash or
+  // call any callbacks on |client_|, which would throw an error.
+  service_worker_->FinishRespondWith();
+  // There's no event to wait for, just pump the message loop and the test
+  // passes if there is no error or crash.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  auto& info = client_.response_head();
+  EXPECT_EQ(200, info->headers->response_code());
+  EXPECT_FALSE(info->load_timing.receive_headers_start.is_null());
+  EXPECT_FALSE(info->load_timing.receive_headers_end.is_null());
+  auto expected_info = CreateResponseInfoFromServiceWorker();
+  expected_info->was_fetched_via_service_worker = false;
+  auto expected_router_info = CreateExpectedMatchingServiceWorkerRouterInfo(
+      network::mojom::ServiceWorkerRouterSourceType::kRace);
+  expected_router_info->actual_source_type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+  expected_info->service_worker_router_info = std::move(expected_router_info);
+  ExpectResponseInfo(*info, *expected_info);
+
+  // As the fetch event has not completed before request completes, there should
+  // be no fetch event related histograms logged.
+  histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
+                                      blink::ServiceWorkerStatusCode::kOk, 0);
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "FetchHandlerEndToFallbackNetwork",
+        0);
+    // Logged as part of RecordTimingMetricsForRaceNetworkRequestCase().
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        1);
+  }
+}
+
+// Similar to Basic test setup, but with matching race static routing rule and
+// fetch event wins.
+TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingRaceFetchWin) {
+  base::HistogramTester histogram_tester;
+
+  SetupStaticRoutingRules(network::mojom::ServiceWorkerRouterSourceType::kRace);
+
+  SetupErrorNetworkResponse();
+
+  StartRequest(CreateRequest());
+  client_.RunUntilComplete();
+
+  // There's no event to wait for, just pump the message loop and the test
+  // passes if there is no error or crash.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  auto& info = client_.response_head();
+  EXPECT_EQ(200, info->headers->response_code());
+  auto expected_info = CreateResponseInfoFromServiceWorker();
+  auto expected_router_info = CreateExpectedMatchingServiceWorkerRouterInfo(
+      network::mojom::ServiceWorkerRouterSourceType::kRace);
+  expected_router_info->actual_source_type =
+      network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
+  expected_info->service_worker_router_info = std::move(expected_router_info);
+  ExpectResponseInfo(*info, *expected_info);
+
+  histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
+                                      blink::ServiceWorkerStatusCode::kOk, 1);
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "FetchHandlerEndToFallbackNetwork",
+        0);
+  }
+}
+
+// Similar to Basic test setup, but with matching cache static routing rule and
+// a matching entry in cache.
+TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingCache) {
+  base::HistogramTester histogram_tester;
+
+  SetupStaticRoutingRules(
+      network::mojom::ServiceWorkerRouterSourceType::kCache);
+
+  base::Time response_time = base::Time::Now();
+  auto request = CreateRequestAndSetupCache(response_time);
+
+  StartRequest(std::move(request));
+  client_.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  auto& info = client_.response_head();
+  EXPECT_EQ(200, info->headers->response_code());
+  EXPECT_FALSE(info->load_timing.receive_headers_start.is_null());
+  EXPECT_FALSE(info->load_timing.receive_headers_end.is_null());
+  EXPECT_FALSE(info->load_timing.service_worker_cache_lookup_start.is_null());
+  EXPECT_EQ(info->client_address_space,
+            network::mojom::IPAddressSpace::kPrivate);
+  EXPECT_TRUE(info->was_fetched_via_service_worker);
+  auto expected_info = CreateResponseInfoFromServiceWorker();
+  expected_info->service_worker_response_source =
+      network::mojom::FetchResponseSource::kCacheStorage;
+  expected_info->response_time = response_time;
+  expected_info->cache_storage_cache_name = kTestCacheName;
+  auto expected_router_info = CreateExpectedMatchingServiceWorkerRouterInfo(
+      network::mojom::ServiceWorkerRouterSourceType::kCache);
+  expected_router_info->actual_source_type =
+      network::mojom::ServiceWorkerRouterSourceType::kCache;
+  expected_info->service_worker_router_info = std::move(expected_router_info);
+  ExpectResponseInfo(*info, *expected_info);
+
+  histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
+                                      blink::ServiceWorkerStatusCode::kOk, 1);
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "FetchHandlerEndToFallbackNetwork",
+        0);
+  }
+}
+
+// Similar to Basic test setup, but with matching cache static routing rule and
+// no entry in cache.
+TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingCacheMiss) {
+  base::HistogramTester histogram_tester;
+
+  SetupStaticRoutingRules(
+      network::mojom::ServiceWorkerRouterSourceType::kCache);
+
+  // setup storage partition so that we don't error out unexpectedly in
+  // ServiceWorkerCacheStorageMatcher::Run.
+  SetupStoragePartition();
+
+  // With no entry in cache, it will fallback to network, so setup network
+  // response.
+  SetupNetworkResponse();
+
+  StartRequest(CreateRequest());
+  client_.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  auto& info = client_.response_head();
+  EXPECT_EQ(200, info->headers->response_code());
+  // The fallback FakeNetworkURLLoaderFactory doesn't set any of the following.
+  EXPECT_TRUE(info->load_timing.receive_headers_start.is_null());
+  EXPECT_TRUE(info->load_timing.receive_headers_end.is_null());
+  EXPECT_EQ(info->client_address_space,
+            network::mojom::IPAddressSpace::kUnknown);
+  EXPECT_FALSE(info->was_fetched_via_service_worker);
+
+  // The test FakeNetworkURLLoaderFactory doesn't copy head updates over to
+  // final response as NavigationURLLoaderImpl::OnReceiveResponse does.
+  // Therefore, verify router info by checking router info seen in fallback
+  // call.
+  auto expected_router_info = CreateExpectedMatchingServiceWorkerRouterInfo(
+      network::mojom::ServiceWorkerRouterSourceType::kCache);
+  expected_router_info->actual_source_type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+  ExpectRouterInfo(*response_head_update_params_.router_info,
+                   *expected_router_info);
+
+  // Cache matching miss is treated as normal fallback and not as kErrorFailed.
+  // And as response is not completed by service worker fetch or fallback from
+  // fetch, no related histograms are logged.
+  histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
+                                      blink::ServiceWorkerStatusCode::kOk, 1);
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "FetchHandlerEndToFallbackNetwork",
+        0);
+  }
+}
+
+// Similar to Basic test setup, but with matching cache static routing rule and
+// had unexpected failure during cache match.
+TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingCacheFailure) {
+  base::HistogramTester histogram_tester;
+
+  SetupStaticRoutingRules(
+      network::mojom::ServiceWorkerRouterSourceType::kCache);
+
+  // Not setting up storage partition, which is unexpected and cache matching
+  // will finish with kErrorFailed.
+
+  // With no entry in cache, it will fallback to network, so setup network
+  // response.
+  SetupNetworkResponse();
+
+  StartRequest(CreateRequest());
+  client_.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  auto& info = client_.response_head();
+  EXPECT_EQ(200, info->headers->response_code());
+  // The fallback FakeNetworkURLLoaderFactory doesn't set any of the following.
+  EXPECT_TRUE(info->load_timing.receive_headers_start.is_null());
+  EXPECT_TRUE(info->load_timing.receive_headers_end.is_null());
+  EXPECT_EQ(info->client_address_space,
+            network::mojom::IPAddressSpace::kUnknown);
+  EXPECT_FALSE(info->was_fetched_via_service_worker);
+
+  // NotifyControllerLost should be called and the Fallback callback should be
+  // called with ResponseHeadUpdateParams().
+  EXPECT_FALSE(service_worker_client()->controller());
+  EXPECT_TRUE(did_call_fallback_callback_);
+  EXPECT_FALSE(response_head_update_params_.router_info);
+  EXPECT_FALSE(response_head_update_params_.initial_service_worker_status);
+
+  // Cache matching failed and logged as kErrorFailed.
+  // And as response is not completed by service worker fetch or fallback from
+  // fetch, no related histograms are logged.
+  histogram_tester.ExpectUniqueSample(
+      kHistogramMainResourceFetchEvent,
+      blink::ServiceWorkerStatusCode::kErrorFailed, 1);
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "FetchHandlerEndToFallbackNetwork",
+        0);
+  }
 }
 
 }  // namespace service_worker_main_resource_loader_unittest

@@ -14,13 +14,15 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.browser.customtabs.CustomTabsIntent;
+
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Container for all parameters related to creating a customizable button. */
+@NullMarked
 public interface CustomButtonParams {
 
     /** Enum used to describe different types of buttons. */
@@ -45,7 +47,7 @@ public interface CustomButtonParams {
     }
 
     /** Replaces the current icon and description with new ones. */
-    void update(@NonNull Bitmap icon, @NonNull String description);
+    void update(Bitmap icon, String description);
 
     /**
      * @return Whether this button should be shown on the toolbar.

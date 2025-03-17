@@ -7,6 +7,8 @@ package org.chromium.components.paintpreview.player;
 import android.graphics.Rect;
 
 import org.chromium.base.UnguessableToken;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Arrays;
 
@@ -16,15 +18,19 @@ import java.util.Arrays;
  * Each frame has a GUID, content width and height.
  * Optionally, a frame can have other frames (iframes) as its children. or sub-frames.
  */
+@NullMarked
 class PaintPreviewFrame {
     private UnguessableToken mGuid;
     // The content size of this frame. In native, this is represented as 'scroll extent'.
     private int mContentWidth;
     private int mContentHeight;
+
     // Other frames that this frame embeds, its sub-frames.
     private PaintPreviewFrame[] mSubFrames;
+
     // The coordinates of the sub-frames relative to this frame.
     private Rect[] mSubFrameClips;
+
     // The initial scroll position of this frame.
     private int mInitialScrollX;
     private int mInitialScrollY;
@@ -59,10 +65,12 @@ class PaintPreviewFrame {
         mSubFrameClips = subFrameClips;
     }
 
+    @Initializer
     void setSubFrames(PaintPreviewFrame[] subFrames) {
         mSubFrames = subFrames;
     }
 
+    @Initializer
     void setSubFrameClips(Rect[] subFrameClips) {
         mSubFrameClips = subFrameClips;
     }

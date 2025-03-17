@@ -4,6 +4,7 @@
 
 #include "services/webnn/tflite/op_resolver.h"
 
+#include "services/webnn/buildflags.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "third_party/tflite/buildflags.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"
@@ -17,9 +18,15 @@
 #include "third_party/tflite/src/tensorflow/lite/tflite_with_xnnpack_optional.h"
 #endif
 
+#if BUILDFLAG(WEBNN_USE_CHROME_ML_API)
+#include "services/on_device_model/ml/chrome_ml.h"  // nogncheck
+#include "services/on_device_model/ml/chrome_ml_api.h"  // nogncheck
+#endif
+
 namespace webnn::tflite {
 
-OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
+OpResolver::OpResolver(const mojom::CreateContextOptions& options,
+                       bool graph_requires_fp32_precision) {
   AddBuiltin(::tflite::BuiltinOperator_ABS,
              ::tflite::ops::builtin::Register_ABS());
   AddBuiltin(::tflite::BuiltinOperator_AVERAGE_POOL_2D,
@@ -235,6 +242,8 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
              ::tflite::ops::builtin::Register_SPLIT_V(),
              /* min_version = */ 1,
              /* max_version = */ 2);
+  AddBuiltin(::tflite::BuiltinOperator_SQUARE,
+             ::tflite::ops::builtin::Register_SQUARE());
   AddBuiltin(::tflite::BuiltinOperator_SQUEEZE,
              ::tflite::ops::builtin::Register_SQUEEZE(),
              /* min_version = */ 1,
@@ -279,6 +288,30 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
             delete static_cast<::tflite::StatefulNnApiDelegate*>(delegate);
           });
     });
+  }
+#endif
+
+#if BUILDFLAG(WEBNN_USE_CHROME_ML_API)
+  if (options.device == mojom::CreateContextOptions::Device::kGpu) {
+    // TODO(crbug.com/394119734): Simplify this check once these functions are
+    // always available.
+    auto* chrome_ml = ml::ChromeML::Get();
+    if (chrome_ml && chrome_ml->api().CreateGpuDelegate &&
+        chrome_ml->api().DestroyGpuDelegate) {
+      delegate_creators_.push_back(
+          [graph_requires_fp32_precision](TfLiteContext* context) {
+            GpuDelegatePrecision precision = GpuDelegatePrecision::kFp16;
+            if (graph_requires_fp32_precision) {
+              precision = GpuDelegatePrecision::kFp32;
+            }
+            return std::unique_ptr<TfLiteDelegate, void (*)(TfLiteDelegate*)>(
+                ml::ChromeML::Get()->api().CreateGpuDelegateWithPrecision(
+                    precision),
+                [](TfLiteDelegate* delegate) {
+                  ml::ChromeML::Get()->api().DestroyGpuDelegate(delegate);
+                });
+          });
+    }
   }
 #endif
 

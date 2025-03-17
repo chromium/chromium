@@ -4,13 +4,13 @@
 
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
@@ -48,8 +48,9 @@ AppActivity::AppActivity(const MediaRoute& route,
 AppActivity::~AppActivity() = default;
 
 void AppActivity::OnSessionSet(const CastSession& session) {
-  if (media_controller_)
+  if (media_controller_) {
     media_controller_->SetSession(session);
+  }
 }
 
 void AppActivity::OnSessionUpdated(const CastSession& session,
@@ -58,8 +59,9 @@ void AppActivity::OnSessionUpdated(const CastSession& session,
     client.second->SendMessageToClient(
         CreateUpdateSessionMessage(session, client.first, sink_, hash_token));
   }
-  if (media_controller_)
+  if (media_controller_) {
     media_controller_->SetSession(session);
+  }
 }
 
 cast_channel::Result AppActivity::SendAppMessageToReceiver(
@@ -97,8 +99,9 @@ cast_channel::Result AppActivity::SendAppMessageToReceiver(
 std::optional<int> AppActivity::SendMediaRequestToReceiver(
     const CastInternalMessage& cast_message) {
   CastSession* session = GetSession();
-  if (!session)
+  if (!session) {
     return std::nullopt;
+  }
   return message_handler_->SendMediaRequest(
       cast_channel_id(), cast_message.v2_message_body(),
       cast_message.client_id(), session->destination_id());
@@ -116,8 +119,9 @@ void AppActivity::SendMediaStatusToClients(
     const base::Value::Dict& media_status,
     std::optional<int> request_id) {
   CastActivity::SendMediaStatusToClients(media_status, request_id);
-  if (media_controller_)
+  if (media_controller_) {
     media_controller_->SetMediaStatus(media_status);
+  }
 }
 
 void AppActivity::BindMediaController(
@@ -181,11 +185,13 @@ void AppActivity::OnInternalMessage(
 }
 
 bool AppActivity::CanJoinSession(const CastMediaSource& cast_source) const {
-  if (!cast_source.ContainsApp(app_id()))
+  if (!cast_source.ContainsApp(app_id())) {
     return false;
+  }
 
-  if (base::Contains(connected_clients_, cast_source.client_id()))
+  if (base::Contains(connected_clients_, cast_source.client_id())) {
     return false;
+  }
 
   return true;
 }
@@ -194,7 +200,7 @@ bool AppActivity::HasJoinableClient(
     AutoJoinPolicy policy,
     const url::Origin& origin,
     content::FrameTreeNodeId frame_tree_node_id) const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       connected_clients_,
       [policy, &origin, frame_tree_node_id](const auto& client) {
         return IsAutoJoinAllowed(policy, origin, frame_tree_node_id.value(),

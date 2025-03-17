@@ -17,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -67,7 +66,7 @@
 #include "pdf/pdf_features.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -1468,87 +1467,6 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   EXPECT_EQ(first_web_contents, tab_strip_model->GetActiveWebContents());
 }
 
-class ChromeSitePerProcessTestWithVerifiedUserActivation
-    : public ChromeSitePerProcessTest {
- public:
-  ChromeSitePerProcessTestWithVerifiedUserActivation() {
-    feature_list()->Reset();
-    feature_list()->InitWithFeatures(
-        /*enabled_features=*/{features::kBrowserVerifiedUserActivationMouse},
-        // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
-        // disable this feature.
-        /*disabled_features=*/{features::kHttpsUpgrades});
-  }
-};
-
-// Test mouse down activation notification with browser verification.
-// TODO(crbug.com/40826005): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_UserActivationBrowserVerificationSameOriginSite \
-  DISABLED_UserActivationBrowserVerificationSameOriginSite
-#else
-#define MAYBE_UserActivationBrowserVerificationSameOriginSite \
-  UserActivationBrowserVerificationSameOriginSite
-#endif
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTestWithVerifiedUserActivation,
-                       MAYBE_UserActivationBrowserVerificationSameOriginSite) {
-  // Start on a page a.com with same-origin iframe on a.com and cross-origin
-  // iframe b.com.
-  GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(a(b))"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* frame_a =
-      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
-  content::RenderFrameHost* frame_b = ChildFrameAt(frame_a, 0);
-
-  // The test becomes flaky if we don't wait for frame_a's hit-test data before
-  // sending the mouse-event below (crbug.com/1119342).
-  content::WaitForHitTestData(frame_a);
-
-  // Activate frame_a by clicking at the midpoints of top-left corners of
-  // frame_a and frame_b.
-  gfx::Rect bounds_a = frame_a->GetView()->GetViewBounds();
-  gfx::Rect bounds_b = frame_b->GetView()->GetViewBounds();
-  content::SimulateMouseClickAt(web_contents, 0 /* modifiers */,
-                                blink::WebMouseEvent::Button::kLeft,
-                                gfx::Point((bounds_a.x() + bounds_b.x()) / 2,
-                                           (bounds_a.y() + bounds_b.y()) / 2));
-
-  // Add a popup observer.
-  content::TestNavigationObserver popup_observer(nullptr);
-  popup_observer.StartWatchingNewWebContents();
-
-  // Try opening popups from frame_b and root frame.
-  GURL popup_url(embedded_test_server()->GetURL("popup.com", "/"));
-  EXPECT_TRUE(
-      ExecJs(frame_b,
-             content::JsReplace("window.w = window.open($1 + 'title1.html');",
-                                popup_url),
-             content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  EXPECT_TRUE(
-      ExecJs(web_contents,
-             content::JsReplace("window.w = window.open($1 + 'title2.html');",
-                                popup_url),
-             content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  // Wait and check that only one popup has opened.
-  popup_observer.Wait();
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-
-  content::WebContents* popup =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(embedded_test_server()->GetURL("popup.com", "/title2.html"),
-            popup->GetLastCommittedURL());
-  EXPECT_NE(popup, web_contents);
-
-  // Confirm that only the root_frame opened the popup.
-  EXPECT_EQ(true, content::EvalJs(web_contents, "!!window.w"));
-
-  EXPECT_EQ(false, content::EvalJs(frame_b, "!!window.w"));
-}
-
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest, JSPrintDuringSwap) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1568,7 +1486,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest, JSPrintDuringSwap) {
   EXPECT_TRUE(watcher.did_exit_normally());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // This test verifies that an OOPIF created in a tab on a secondary display
 // doesn't initialize its device scale factor based on the primary display.
 // Note: This test could probably be expanded to run on all ASH platforms.

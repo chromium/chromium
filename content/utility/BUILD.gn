@@ -105,7 +105,7 @@ source_set("utility") {
       "//chromeos/services/tts:sandbox_hook",
     ]
     if (use_vaapi || use_v4l2_codec) {
-      deps += [ "//ash/components/arc/video_accelerator" ]
+      deps += [ "//chromeos/ash/experiences/arc/video_accelerator" ]
     }
   }
 

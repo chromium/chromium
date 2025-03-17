@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -88,7 +89,7 @@ class ShippingAddressEditorViewController : public EditorViewController {
 
     // ValidationDelegate:
     bool ShouldFormat() override;
-    std::u16string Format(const std::u16string& text) override;
+    std::u16string Format(std::u16string_view text) override;
     bool IsValidTextfield(views::Textfield* textfield,
                           std::u16string* error_message) override;
     bool IsValidCombobox(ValidatingCombobox* combobox,
@@ -99,7 +100,7 @@ class ShippingAddressEditorViewController : public EditorViewController {
     void ComboboxModelChanged(ValidatingCombobox* combobox) override;
 
    private:
-    bool ValidateValue(const std::u16string& value,
+    bool ValidateValue(std::u16string_view value,
                        std::u16string* error_message);
 
     EditorField field_;

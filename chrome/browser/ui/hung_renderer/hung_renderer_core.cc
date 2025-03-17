@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/hung_renderer/hung_renderer_core.h"
 
+#include <algorithm>
+
 #include "base/i18n/rtl.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
@@ -80,13 +81,12 @@ std::vector<content::WebContents*> GetHungWebContentsList(
     return IsWebContentsHung(web_contents, hung_process) &&
            !web_contents->IsCrashed();
   };
-  base::ranges::copy_if(AllTabContentses(), std::back_inserter(result),
-                        is_hung);
+  std::ranges::copy_if(AllTabContentses(), std::back_inserter(result), is_hung);
 
   // Move |hung_web_contents| to the front.  It might be missing from the
   // initial |results| when it hasn't yet committed a navigation into the hung
   // process.
-  auto first = base::ranges::find(result, hung_web_contents);
+  auto first = std::ranges::find(result, hung_web_contents);
   if (first != result.end()) {
     std::rotate(result.begin(), first, std::next(first));
   } else {

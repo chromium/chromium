@@ -1,109 +1,11 @@
-<style include="cr-icons md-select read-anything-toolbar">
-  #play-pause {
-    --cr-icon-button-icon-size: 20px;
-    --cr-icon-button-fill-color: var(--color-sys-primary);
-    --cr-icon-button-size: 28px;
-    color: var(--color-side-panel-entry-icon);
-  }
-
-  .audio-background-when-active-false {
-    --audio-controls-background: transparent;
-    --audio-controls-right-margin: 2px;
-    --audio-controls-right-padding: 0px;
-  }
-
-  .audio-background-when-active-true {
-    --audio-controls-background: var(--color-sys-tonal-container);
-    --audio-controls-right-margin: 6px;
-    --audio-controls-right-padding: 4px;
-  }
-
-  #audio-controls {
-    background: var(--audio-controls-background);
-    border-radius: 18px;
-    display: inline-block;
-    height: fit-content;
-    margin-right: var(--audio-controls-right-margin);
-    padding: 4px var(--audio-controls-right-padding) 4px 2px;
-  }
-
-  .audio-controls {
-    margin: 0px 2px;
-  }
-
-  #font-size-decrease {
-    margin-left: 12px;
-  }
-
-  #font-size-reset {
-    margin-right: 4px;
-  }
-
-  .text-button {
-    border: none;
-    font-size: 13px;
-  }
-
-  .check-mark-hidden-true {
-    visibility: hidden;
-  }
-
-  .check-mark-hidden-false {
-    visibility: visible;
-  }
-
-  .toolbar-container {
-    display: inline-block;
-    overflow: visible;
-    padding: 6px 8px;
-    white-space: var(--toolbar-white-space);
-  }
-
-  #more {
-    display: none;
-  }
-
-  .separator {
-    background: var(--color-side-panel-divider);
-    display: inline;
-    height: 0px;
-    margin: 10px 4px;
-    transform: rotate(-90deg);
-    width: 20px;
-  }
-
-  .spinner {
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-  }
-
-  .md-select {
-    --md-select-text-color: var(--cr-primary-text-color);
-    --md-select-width: fit-content;
-    margin: 4px 8px 4px 0px;
-  }
-
-  .md-select option {
-    --md-select-option-bg-color: var(--color-sys-base-container-elevated);
-  }
-
-  .more-options-icon {
-    margin: 8px 6px;
-  }
-
-  #more-options-menu-dialog::part(dialog) {
-    min-width: 92px;
-  }
-</style>
 <div id="toolbarContainer" class="toolbar-container" role="toolbar"
-    aria-label$="[[getToolbarAriaLabel_()]]"
-    on-keydown="onToolbarKeyDown_"
-    on-reset-toolbar="onResetToolbar_"
-    on-toolbar-overflow="onToolbarOverflow_">
-  <template id="read-aloud-container" is="dom-if" if="[[isReadAloudEnabled_]]">
-    <span id="audio-controls" class$="audio-background-when-active-[[isSpeechActive]]">
-      <span hidden="[[hideSpinner]]">
+    aria-label="${this.getToolbarAriaLabel_()}"
+    @keydown="${this.onToolbarKeyDown_}"
+    @reset-toolbar="${this.onResetToolbar_}"
+    @toolbar-overflow="${this.onToolbarOverflow_}">
+  ${this.isReadAloudEnabled_ ? html`
+    <span id="audio-controls" class="audio-background-when-active-${this.isSpeechActive}">
+      <span ?hidden="${this.hideSpinner_}">
         <picture class="spinner toolbar-button audio-controls">
           <source media="(prefers-color-scheme: dark)"
               srcset="//resources/images/throbber_small_dark.svg">
@@ -112,77 +14,75 @@
       </span>
 
       <cr-icon-button class="toolbar-button audio-controls" id="play-pause"
-          disabled="[[!isReadAloudPlayable]]"
-          title$="[[playPauseButtonTitle_(isSpeechActive)]]"
-          aria-label$="[[playPauseButtonAriaLabel_(isSpeechActive)]]"
+          ?disabled="${!this.isReadAloudPlayable}"
+          title="${this.playPauseButtonTitle_()}"
+          aria-label="${this.playPauseButtonAriaLabel_()}"
           aria-keyshortcuts="k"
           aria-description="$i18n{playDescription}"
-          iron-icon$="[[playPauseButtonIronIcon_(isSpeechActive)]]"
+          iron-icon="${this.playPauseButtonIronIcon_()}"
           tabindex="0"
-          on-click="onPlayPauseClick_">
+          @click="${this.onPlayPauseClick_}">
       </cr-icon-button>
-      <span id="granularity-container" hidden="[[!isSpeechActive]]">
+      <span id="granularity-container" ?hidden="${!this.isSpeechActive}">
         <cr-icon-button id="previousGranularity"
             class="toolbar-button audio-controls"
-            disabled="[[!isReadAloudPlayable]]"
+            ?disabled="${!this.isReadAloudPlayable}"
             aria-label="$i18n{previousSentenceLabel}"
             title="$i18n{previousSentenceLabel}"
             iron-icon="cr:chevron-left"
             tabindex="-1"
-            on-click="onPreviousGranularityClick_">
+            @click="${this.onPreviousGranularityClick_}">
         </cr-icon-button>
-        <cr-icon-button id="nextGranularity" class="toolbar-button audio-controls"
+        <cr-icon-button id="nextGranularity"
+            class="toolbar-button audio-controls"
             aria-label="$i18n{nextSentenceLabel}"
-            disabled="[[!isReadAloudPlayable]]"
+            ?disabled="${!this.isReadAloudPlayable}"
             title="$i18n{nextSentenceLabel}"
             iron-icon="cr:chevron-right"
             tabindex="-1"
-            on-click="onNextGranularityClick_">
+            @click="${this.onNextGranularityClick_}">
         </cr-icon-button>
       </span>
     </span>
     <cr-icon-button class="toolbar-button" id="rate"
-        tabindex$="[[getRateTabIndex_(isReadAloudPlayable)]]"
-        aria-label$="[[getVoiceSpeedLabel_()]]"
+        tabindex="${this.getRateTabIndex_()}"
+        aria-label="${this.getVoiceSpeedLabel_()}"
         title="$i18n{voiceSpeedLabel}"
         aria-haspopup="menu"
-        iron-icon="voice-rate:1"
-        on-click="onShowRateMenuClick_">
+        iron-icon="voice-rate:${this.speechRate_}"
+        @click="${this.onShowRateMenuClick_}">
     </cr-icon-button>
     <cr-icon-button class="toolbar-button" id="voice-selection" tabindex="-1"
         aria-label="$i18n{voiceSelectionLabel}"
         title="$i18n{voiceSelectionLabel}"
         aria-haspopup="menu"
         iron-icon="read-anything:voice-selection"
-        on-click="onVoiceSelectionMenuClick_">
+        @click="${this.onVoiceSelectionMenuClick_}">
     </cr-icon-button>
     <voice-selection-menu id="voiceSelectionMenu"
-        selected-voice="[[selectedVoice]]"
-        available-voices="[[availableVoices]]"
-        enabled-langs="[[enabledLangs]]"
-        locale-to-display-name="[[localeToDisplayName]]"
-        is-speech-active="[[isSpeechActive]]"
-        preview-voice-playing="[[previewVoicePlaying]]">
+        .selectedVoice="${this.selectedVoice}"
+        .availableVoices="${this.availableVoices}"
+        .enabledLangs="${this.enabledLangs}"
+        .localeToDisplayName="${this.localeToDisplayName}"
+        .isSpeechActive="${this.isSpeechActive}"
+        .previewVoicePlaying="${this.previewVoicePlaying}">
     </voice-selection-menu>
     <cr-icon-button class="toolbar-button" id="highlight" tabindex="-1"
         iron-icon="read-anything:highlight-on"
-        title="[[getHighlightButtonLabel_()]]"
-        aria-label="[[getHighlightButtonLabel_()]]"
-        on-click="onHighlightClick_">
+        title="${this.getHighlightButtonLabel_()}"
+        aria-label="${this.getHighlightButtonLabel_()}"
+        @click="${this.onHighlightClick_}">
     </cr-icon-button>
-  </template>
-
-  <template is="dom-if" if="[[!isReadAloudEnabled_]]">
+  `: html`
+    <!-- isReadAloudEnabled_ === false -->
     <select id="font-select" class="md-select" tabindex="0"
-        on-change="onFontSelectValueChange_"
-        on-keydown="onFontSelectKeyDown_"
+        @change="${this.onFontSelectValueChange_}"
+        @keydown="${this.onFontSelectKeyDown_}"
         aria-label="$i18n{fontNameTitle}"
         title="$i18n{fontNameTitle}">
-      <template is="dom-repeat" items="[[fontOptions_]]" initial-count="9">
-        <option value="[[item]]">
-          [[getFontItemLabel_(item, areFontsLoaded_)]]
-        </option>
-      </template>
+      ${this.fontOptions_.map((item) => html`
+        <option value="${item}">${this.getFontItemLabel_(item)}</option>
+      `)}
     </select>
     <hr class="separator" aria-hidden="true">
     <cr-icon-button id="font-size-decrease-old" tabindex="-1"
@@ -190,140 +90,140 @@
         aria-label="$i18n{decreaseFontSizeLabel}"
         title="$i18n{decreaseFontSizeLabel}"
         iron-icon="read-anything:font-size-decrease-old"
-        on-click="onFontSizeDecreaseClick_">
+        @click="${this.onFontSizeDecreaseClick_}">
     </cr-icon-button>
     <cr-icon-button id="font-size-increase-old" tabindex="-1"
         class="toolbar-button"
         aria-label="$i18n{increaseFontSizeLabel}"
         title="$i18n{increaseFontSizeLabel}"
         iron-icon="read-anything:font-size-increase-old"
-        on-click="onFontSizeIncreaseClick_">
+        @click="${this.onFontSizeIncreaseClick_}">
     </cr-icon-button>
-  </template>
+  `}
 
   <hr class="separator" aria-hidden="true">
 
-  <template is="dom-repeat" items="[[textStyleToggles_]]" initial-count="1">
+  ${this.textStyleToggles_.map((item) => html`
     <cr-icon-button tabindex="-1" class="toolbar-button"
-        disabled="[[isSpeechActive]]"
-        id="[[item.id]]"
-        aria-label="[[item.title]]"
-        title="[[item.title]]"
-        iron-icon="[[item.icon]]"
-        on-click="onToggleButtonClick_">
+        ?disabled="${this.isSpeechActive}"
+        id="${item.id}"
+        aria-label="${item.title}"
+        title="${item.title}"
+        iron-icon="${item.icon}"
+        @click="${this.onToggleButtonClick_}">
     </cr-icon-button>
-  </template>
+  `)}
 
-  <template is="dom-repeat" items="[[textStyleOptions_]]" initial-count="5">
-    <cr-icon-button class="toolbar-button text-style-button" id="[[item.id]]"
+  ${this.textStyleOptions_.map((item, index) => html`
+    <cr-icon-button class="toolbar-button text-style-button" id="${item.id}"
         tabindex="-1"
-        aria-label="[[item.ariaLabel]]"
-        title="[[item.ariaLabel]]"
+        data-index="${index}"
+        aria-label="${item.ariaLabel}"
+        title="${item.ariaLabel}"
         aria-haspopup="menu"
-        iron-icon="[[item.icon]]"
-        on-click="onTextStyleMenuButtonClick_">
+        iron-icon="${item.icon}"
+        @click="${this.onTextStyleMenuButtonClick_}">
     </cr-icon-button>
-  </template>
+  `)}
   <cr-icon-button id="more" tabindex="-1" aria-label="$i18n{moreOptionsLabel}"
       title="$i18n{moreOptionsLabel}"
       aria-haspopup="menu"
       iron-icon="cr:more-vert"
       hidden
-      on-click="onMoreOptionsClick_">
+      @click="${this.onMoreOptionsClick_}">
   </cr-icon-button>
 
-  <cr-lazy-render id="moreOptionsMenu">
-    <template>
-      <cr-action-menu id="more-options-menu-dialog"
-          on-keydown="onToolbarKeyDown_"
-          role-description="$i18n{menu}">
-        <template is="dom-repeat" items="[[moreOptionsButtons_]]"
-            inital-count="0">
-          <cr-icon-button id="[[item.id]]" class="more-options-icon"
-              aria-label="[[item.ariaLabel]]"
-              title="[[item.ariaLabel]]"
-              aria-haspopup="menu"
-              iron-icon="[[item.icon]]"
-              on-click="onTextStyleMenuButtonClick_">
-          </cr-icon-button>
-        </template>
-      </cr-action-menu>
-    </template>
-  </cr-lazy-render>
-  <cr-lazy-render id="rateMenu">
-    <template>
-      <cr-action-menu accessibility-label="$i18n{voiceSpeedLabel}"
-          role-description="$i18n{menu}">
-        <template is="dom-repeat" items="[[rateOptions]]" index-as="index"
-            initial-count="8">
-          <button class="dropdown-item" on-click="onRateClick_">
-            <cr-icon class$="button-image check-mark
-                check-mark-hidden-[[isRateItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"
-                aria-label="$i18n{selected}">
-            </cr-icon>
-            [[item]]x
-          </button>
-        </template>
-      </cr-action-menu>
-    </template>
-  </cr-lazy-render>
+  <cr-lazy-render-lit id="moreOptionsMenu" .template='${() => html`
+    <cr-action-menu id="more-options-menu-dialog"
+        @keydown="${this.onToolbarKeyDown_}"
+        role-description="$i18n{menu}">
+      ${this.moreOptionsButtons_.map((item, index) => html`
+        <cr-icon-button id="${item.id}" class="more-options-icon"
+            aria-label="${item.ariaLabel}"
+            data-index="${index}"
+            title="${item.ariaLabel}"
+            aria-haspopup="menu"
+            iron-icon="${item.icon}"
+            @click="${this.onTextStyleMenuButtonClickFromOverflow_}">
+        </cr-icon-button>
+      `)}
+    </cr-action-menu>
+  `}'>
+  </cr-lazy-render-lit>
+  <cr-lazy-render-lit id="rateMenu" .template='${() => html`
+    <cr-action-menu accessibility-label="$i18n{voiceSpeedLabel}"
+        role-description="$i18n{menu}">
+      ${this.rateOptions.map((item, index) => html`
+        <button class="dropdown-item"
+            data-index="${index}"
+            @click="${this.onRateClick_}">
+          <cr-icon class="button-image check-mark
+              check-mark-hidden-${!this.isRateItemSelected_(index)}"
+              icon="read-anything-20:check-mark"
+              aria-label="$i18n{selected}">
+          </cr-icon>
+          ${item}x
+        </button>
+      `)}
+    </cr-action-menu>
+  `}'>
+  </cr-lazy-render-lit>
   <highlight-menu
-    id="highlightMenu" settings-prefs="[[settingsPrefs]]"
-    on-highlight-change="onHighlightChange_">
+      id="highlightMenu"
+      .settingsPrefs="${this.settingsPrefs}"
+      @highlight-change="${this.onHighlightChange_}">
   </highlight-menu>
-  <cr-lazy-render id="fontSizeMenu">
-    <template>
-      <cr-action-menu on-keydown="onFontSizeMenuKeyDown_"
-          accessibility-label="$i18n{fontSizeTitle}"
-          role-description="$i18n{menu}">
-        <cr-icon-button class="font-size" role="menuitem"
-            id="font-size-decrease"
-            aria-label="$i18n{decreaseFontSizeLabel}"
-            title="$i18n{decreaseFontSizeLabel}"
-            iron-icon="read-anything:font-size-decrease"
-            on-click="onFontSizeDecreaseClick_">
-        </cr-icon-button>
-        <cr-icon-button class="font-size" role="menuitem"
-            id="font-size-increase"
-            aria-label="$i18n{increaseFontSizeLabel}"
-            title="$i18n{increaseFontSizeLabel}"
-            iron-icon="cr:add"
-            on-click="onFontSizeIncreaseClick_">
-        </cr-icon-button>
-        <cr-button class="text-button" role="menuitem" id="font-size-reset"
-            on-click="onFontResetClick_">
-          $i18n{fontResetTitle}
-        </cr-button>
-      </cr-action-menu>
-    </template>
-  </cr-lazy-render>
-  <color-menu
-      id="colorMenu" settings-prefs="[[settingsPrefs]]">
+  <cr-lazy-render-lit id="fontSizeMenu" .template='${() => html`
+    <cr-action-menu @keydown="${this.onFontSizeMenuKeyDown_}"
+        accessibility-label="$i18n{fontSizeTitle}"
+        role-description="$i18n{menu}">
+      <cr-icon-button class="font-size" role="menuitem"
+          id="font-size-decrease"
+          aria-label="$i18n{decreaseFontSizeLabel}"
+          title="$i18n{decreaseFontSizeLabel}"
+          iron-icon="read-anything:font-size-decrease"
+          @click="${this.onFontSizeDecreaseClick_}">
+      </cr-icon-button>
+      <cr-icon-button class="font-size" role="menuitem"
+          id="font-size-increase"
+          aria-label="$i18n{increaseFontSizeLabel}"
+          title="$i18n{increaseFontSizeLabel}"
+          iron-icon="cr:add"
+          @click="${this.onFontSizeIncreaseClick_}">
+      </cr-icon-button>
+      <cr-button class="text-button" role="menuitem" id="font-size-reset"
+          @click="${this.onFontResetClick_}">
+        $i18n{fontResetTitle}
+      </cr-button>
+    </cr-action-menu>
+  `}'>
+  </cr-lazy-render-lit>
+  <color-menu id="colorMenu" .settingsPrefs="${this.settingsPrefs}">
   </color-menu>
   <line-spacing-menu
-      id="lineSpacingMenu" settings-prefs="[[settingsPrefs]]">
+      id="lineSpacingMenu"
+      .settingsPrefs="${this.settingsPrefs}">
   </line-spacing-menu>
   <letter-spacing-menu
-      id="letterSpacingMenu" settings-prefs="[[settingsPrefs]]">
+      id="letterSpacingMenu"
+      .settingsPrefs="${this.settingsPrefs}">
   </letter-spacing-menu>
-  <cr-lazy-render id="fontMenu">
-    <template>
-      <cr-action-menu accessibility-label="$i18n{fontNameTitle}"
-          role-description="$i18n{menu}">
-        <template is="dom-repeat" items="[[fontOptions_]]" index-as="index"
-            initial-count="8">
-          <button class="dropdown-item" on-click="onFontClick_"
-              style$="font-family:[[item]]">
-            <cr-icon class$="button-image check-mark
-                check-mark-hidden-[[isFontItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"
-                aria-label="$i18n{selected}">
-            </cr-icon>
-            [[getFontItemLabel_(item, areFontsLoaded_)]]
-          </button>
-        </template>
-      </cr-action-menu>
-    </template>
-  </cr-lazy-render>
+  <cr-lazy-render-lit id="fontMenu" .template='${() => html`
+    <cr-action-menu accessibility-label="$i18n{fontNameTitle}"
+        role-description="$i18n{menu}">
+      ${this.fontOptions_.map((item, index) => html`
+        <button class="dropdown-item" @click="${this.onFontClick_}"
+            data-index="${index}"
+            style="font-family:${item}">
+          <cr-icon
+              class="button-image check-mark check-mark-hidden-${!this.isFontItemSelected_(index)}"
+              icon="read-anything-20:check-mark"
+              aria-label="$i18n{selected}">
+          </cr-icon>
+          ${this.getFontItemLabel_(item)}
+        </button>
+      `)}
+    </cr-action-menu>
+  `}'>
+  </cr-lazy-render-lit>
 </div>

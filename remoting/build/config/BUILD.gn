@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//chrome/version.gni")
+import("//remoting/build/config/remoting_build.gni")
 import("//remoting/remoting_options.gni")
 
 if (is_win) {
@@ -40,7 +41,10 @@ config("host_implementation") {
     defines += [ "HOST_IMPLEMENTATION" ]
 
     if (is_chrome_branded && is_official_build) {
-      defines += [ "REMOTING_ENABLE_BREAKPAD" ]
+      defines += [ "REMOTING_ENABLE_CRASH_REPORTING" ]
+    }
+    if (is_linux && enable_chromoting_crashpad) {
+      defines += [ "REMOTING_ENABLE_CRASHPAD" ]
     }
   }
   if (is_win) {

@@ -116,7 +116,7 @@ void AppControlsNotifier::ShowNotification() {
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&AppControlsNotifier::HandleClick,
                               weak_ptr_factory_.GetWeakPtr())),
-      /*small_image=*/gfx::VectorIcon(),
+      /*small_image=*/gfx::VectorIcon::EmptyIcon(),
       message_center::SystemNotificationWarningLevel::NORMAL);
 
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(

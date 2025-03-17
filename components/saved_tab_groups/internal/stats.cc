@@ -191,14 +191,6 @@ void RecordEmptyGroupsMetricsOnGroupAddedLocally(const SavedTabGroup& group,
 
   base::UmaHistogramBoolean("TabGroups.Sync.AddedGroupIsEmptyLocally",
                             group.saved_tabs().empty());
-  if (group.saved_tabs().empty()) {
-    // This seems like it may be happening in production, unexpectedly; it
-    // should still be rare, so add a diagnostic dump to find out if anyone is
-    // adding empty groups, so we can see if we need to support it properly or
-    // if this should become a CHECK. In the latter case we'll need to update
-    // the many tests which do add empty groups.
-    base::debug::DumpWithoutCrashing();
-  }
 }
 
 void RecordEmptyGroupsMetricsOnGroupAddedFromSync(const SavedTabGroup& group,

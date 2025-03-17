@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GuestOsBrowserProxy, GuestOsSharedUsbDevice} from 'chrome://os-settings/lazy_load.js';
+import type {GuestOsBrowserProxy, GuestOsSharedUsbDevice} from 'chrome://os-settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 

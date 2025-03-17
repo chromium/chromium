@@ -292,19 +292,17 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   auto scenarios = BackgroundTracingManager::GetInstance().AddPresetScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::NO_DATA_FILTERING);
-  EXPECT_EQ(std::vector<std::string>({"e345f523fcd98b60063256afa89905ca"}),
-            scenarios);
+  EXPECT_EQ(std::vector<std::string>({"test_scenario"}), scenarios);
   {
     auto all_scenarios =
         BackgroundTracingManagerImpl::GetInstance().GetAllPresetScenarios();
     std::vector<trace_report::mojom::ScenarioPtr> expected;
-    expected.push_back(trace_report::mojom::Scenario::New(
-        "e345f523fcd98b60063256afa89905ca", "test_scenario"));
+    expected.push_back(trace_report::mojom::Scenario::New("test_scenario"));
     EXPECT_EQ(expected, all_scenarios);
   }
 
   BackgroundTracingManager::GetInstance().SetEnabledScenarios(scenarios);
-  EXPECT_EQ(std::vector<std::string>({"e345f523fcd98b60063256afa89905ca"}),
+  EXPECT_EQ(std::vector<std::string>({"test_scenario"}),
             BackgroundTracingManagerImpl::GetInstance().GetEnabledScenarios());
 
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
@@ -338,10 +336,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::NO_DATA_FILTERING);
 
-  EXPECT_EQ(std::vector<std::string>({"5875325968aa9b724ccf25e4018a2907"}),
-            scenarios);
+  EXPECT_EQ(std::vector<std::string>({"test_scenario"}), scenarios);
   BackgroundTracingManager::GetInstance().SetEnabledScenarios(scenarios);
-  EXPECT_EQ(std::vector<std::string>({"5875325968aa9b724ccf25e4018a2907"}),
+  EXPECT_EQ(std::vector<std::string>({"test_scenario"}),
             BackgroundTracingManagerImpl::GetInstance().GetEnabledScenarios());
 
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
@@ -1004,13 +1001,14 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ProtoTraceReceived) {
   std::string compressed_trace;
   base::RunLoop run_loop;
   BackgroundTracingManager::GetInstance().GetTraceToUpload(
-      base::BindLambdaForTesting(
-          [&](std::optional<std::string> trace_content,
-              std::optional<std::string> system_profile) {
-            ASSERT_TRUE(trace_content);
-            compressed_trace = std::move(*trace_content);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](std::optional<std::string> trace_content,
+                                     std::optional<std::string> system_profile,
+                                     base::OnceClosure upload_complete) {
+        ASSERT_TRUE(trace_content);
+        compressed_trace = std::move(*trace_content);
+        std::move(upload_complete).Run();
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
   std::string serialized_trace;

@@ -651,8 +651,13 @@ public class TabWindowManagerTest {
 
         String umaPreExistingActivityDestroyed =
                 "Android.MultiWindowMode.AssertIndicesMatch.PreExistingActivityDestroyed";
+        String umaTimeToPreExistingActivityDestruction =
+                "Android.MultiWindowMode.MismatchedIndices.TimeToPreExistingActivityDestruction";
         try (var ignored =
-                HistogramWatcher.newSingleRecordWatcher(umaPreExistingActivityDestroyed)) {
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(umaPreExistingActivityDestroyed)
+                        .expectAnyRecord(umaTimeToPreExistingActivityDestruction)
+                        .build()) {
             destroyActivity(activityController0);
         }
     }

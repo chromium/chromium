@@ -95,8 +95,8 @@ export const FocusRowMixinLit = <T extends Constructor<CrLitElement>>(
       this.boundOnFirstControlKeydown_ = this.onFirstControlKeydown_.bind(this);
 
       this.updateComplete.then(() => {
-        const rowContainer = this.shadowRoot!.querySelector<HTMLElement>(
-            '[focus-row-container]');
+        const rowContainer =
+            this.shadowRoot.querySelector<HTMLElement>('[focus-row-container]');
         assert(rowContainer);
         this.row_ =
             new VirtualFocusRow(rowContainer, new FocusRowMixinDelegate(this));
@@ -107,7 +107,7 @@ export const FocusRowMixinLit = <T extends Constructor<CrLitElement>>(
         this.addEventListener('focus', this.onFocus_);
         this.subtreeObserver_ = new MutationObserver(() => this.addItems_());
         this.subtreeObserver_.observe(
-            this.shadowRoot!, {childList: true, subtree: true});
+            this.shadowRoot, {childList: true, subtree: true});
         this.addEventListener('mousedown', this.onMouseDown_);
         this.addEventListener('blur', this.onBlur_);
       });
@@ -203,7 +203,7 @@ export const FocusRowMixinLit = <T extends Constructor<CrLitElement>>(
         this.removeObservers_();
         this.row_.destroy();
 
-        const controls = this.shadowRoot!.querySelectorAll<HTMLElement>(
+        const controls = this.shadowRoot.querySelectorAll<HTMLElement>(
             '[focus-row-control]');
 
         controls.forEach(control => {

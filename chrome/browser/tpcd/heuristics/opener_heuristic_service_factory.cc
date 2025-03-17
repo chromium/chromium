@@ -6,9 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/dips/chrome_dips_delegate.h"
-#include "chrome/browser/dips/dips_service_factory.h"
-#include "chrome/browser/dips/dips_utils.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_service.h"
 #include "components/content_settings/core/common/features.h"
@@ -30,7 +28,6 @@ OpenerHeuristicServiceFactory::OpenerHeuristicServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "OpenerHeuristicService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(DIPSServiceFactory::GetInstance());
   DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 
@@ -45,7 +42,7 @@ content::BrowserContext* OpenerHeuristicServiceFactory::GetBrowserContextToUse(
 
   // Enable the heuristic for the same profiles as DIPS -- profiles associated
   // with a human user.
-  if (!ChromeDipsDelegate::Create()->ShouldEnableDips(context)) {
+  if (!ShouldBrowserContextEnableDips(context)) {
     return nullptr;
   }
 

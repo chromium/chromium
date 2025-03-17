@@ -21,7 +21,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/print_preview/local_printer_handler_chromeos.h"
@@ -41,12 +43,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "printing/mojom/print.mojom.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/local_printer_ash.h"
-#endif
 
 namespace printing {
 
@@ -80,11 +76,9 @@ base::Value::List ConvertPrintersToValues(
 }  // namespace
 
 PrintPreviewHandlerChromeOS::PrintPreviewHandlerChromeOS() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(crosapi::CrosapiManager::IsInitialized());
   local_printer_ =
       crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
-#endif
 }
 
 PrintPreviewHandlerChromeOS::~PrintPreviewHandlerChromeOS() = default;

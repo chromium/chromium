@@ -1,0 +1,25 @@
+This is a wdspec test.
+[FAIL] test_device_pixel_ratio_only[0.5]
+  assert 0.5000000149011612 == 0.5
+[FAIL] test_device_pixel_ratio_only[2]
+  assert 2.0000000596046448 == 2
+[FAIL] test_device_pixel_ratio_with_viewport[0.5]
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 250, 'height': 300}
+[FAIL] test_device_pixel_ratio_with_viewport[2]
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 250, 'height': 300}
+[FAIL] test_reset_device_pixel_ratio
+  assert 4.0000001192092896 == 4
+[FAIL] test_device_pixel_ratio_with_scrollbar[horizontal-0.5]
+  assert 0.5000000149011612 == 0.5
+[FAIL] test_device_pixel_ratio_with_scrollbar[horizontal-2]
+  assert 2.0000000596046448 == 2
+[FAIL] test_device_pixel_ratio_with_scrollbar[vertical-0.5]
+  assert 0.5000000149011612 == 0.5
+[FAIL] test_device_pixel_ratio_with_scrollbar[vertical-2]
+  assert 2.0000000596046448 == 2
+[FAIL] test_device_pixel_ratio_with_scrollbar[both-0.5]
+  assert 0.5000000149011612 == 0.5
+[FAIL] test_device_pixel_ratio_with_scrollbar[both-2]
+  assert 2.0000000596046448 == 2
+Harness: the test ran to completion.
+

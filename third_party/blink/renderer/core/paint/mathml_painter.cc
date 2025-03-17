@@ -43,7 +43,7 @@ void MathMLPainter::PaintStretchyOrLargeOperator(const PaintInfo& info,
   info.context.SetFillColor(style.VisitedDependentColor(GetCSSPropertyColor()));
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
-  info.context.DrawText(style.GetFont(), text_fragment_paint_info,
+  info.context.DrawText(*style.GetFont(), text_fragment_paint_info,
                         gfx::PointF(paint_offset), kInvalidDOMNodeId,
                         auto_dark_mode);
 }

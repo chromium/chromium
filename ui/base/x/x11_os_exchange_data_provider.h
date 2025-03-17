@@ -6,7 +6,9 @@
 #define UI_BASE_X_X11_OS_EXCHANGE_DATA_PROVIDER_H_
 
 #include <stdint.h>
+
 #include <map>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
@@ -71,8 +73,8 @@ class COMPONENT_EXPORT(UI_BASE_X) XOSExchangeDataProvider
   std::optional<url::Origin> GetRendererTaintedOrigin() const override;
   void MarkAsFromPrivileged() override;
   bool IsFromPrivileged() const override;
-  void SetString(const std::u16string& data) override;
-  void SetURL(const GURL& url, const std::u16string& title) override;
+  void SetString(std::u16string_view data) override;
+  void SetURL(const GURL& url, std::u16string_view title) override;
   void SetFilename(const base::FilePath& path) override;
   void SetFilenames(const std::vector<FileInfo>& filenames) override;
   void SetPickledData(const ClipboardFormatType& format,

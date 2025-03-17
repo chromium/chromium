@@ -55,6 +55,44 @@ OfflineEnabledChromeAppV2RequiresVersion1234();
 // reads from it.
 [[nodiscard]] KioskMixin::CwsChromeAppOption LocalFsChromeAppV2();
 
+// Corresponds to the Chrome app under:
+// //chrome/test/data/chromeos/app_mode/apps_and_extensions/
+//   minimum_chrome_version/v1
+//
+// Version 1 of this app has no `minimum_chrome_version` requirements.
+[[nodiscard]] KioskMixin::CwsChromeAppOption MinimumChromeVersionAppV1();
+
+// Corresponds to the Chrome app under:
+// //chrome/test/data/chromeos/app_mode/apps_and_extensions/
+//   minimum_chrome_version/v2
+//
+// Version 2 of this app sets `minimum_chrome_version` to M100.
+[[nodiscard]] KioskMixin::CwsChromeAppOption
+MinimumChromeVersionAppV2WithMinimumVersion100();
+
+// Corresponds to the Chrome app under:
+// //chrome/test/data/chromeos/app_mode/apps_and_extensions/
+//   minimum_chrome_version/v3
+//
+// Version 3 of this app sets `minimum_chrome_version` to M999.
+[[nodiscard]] KioskMixin::CwsChromeAppOption
+MinimumChromeVersionAppV3WithMinimumVersion999();
+
+// Corresponds to the Chrome app under:
+// //chrome/test/data/chromeos/app_mode/apps_and_extensions/
+//   app_with_secondary_app/v1
+//
+// This app sets the "minimum_chrome_version" app as a secondary app in the
+// manifest. See `MinimumChromeVersionAppV1`.
+[[nodiscard]] KioskMixin::CwsChromeAppOption AppWithSecondaryAppV1();
+
+// Corresponds to the Chrome app under:
+// //chrome/test/data/chromeos/app_mode/apps_and_extensions/
+//   enterprise_kiosk_test_app/src
+//
+// This app declares the "identity" permission in the manifest.
+[[nodiscard]] KioskMixin::CwsChromeAppOption EnterpriseKioskAppV1();
+
 }  // namespace ash::kiosk::test
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_TEST_FAKE_CWS_CHROME_APPS_H_

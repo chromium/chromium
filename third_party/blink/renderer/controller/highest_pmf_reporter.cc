@@ -124,7 +124,7 @@ void HighestPmfReporter::OnReportMetrics() {
 
 void HighestPmfReporter::ReportMetrics() {
   base::UmaHistogramMemoryMB(kHighestPmfMetricNames[report_count_],
-                             base::saturated_cast<base::Histogram::Sample>(
+                             base::saturated_cast<base::Histogram::Sample32>(
                                  current_highest_pmf_ / 1024 / 1024));
 }
 

@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
@@ -21,6 +22,8 @@
 #include "url/third_party/mozilla/url_parse.h"
 
 class AutocompleteSchemeClassifier;
+class TemplateURL;
+class TemplateURLService;
 
 // The user input for an autocomplete query.  Allows copying.
 class AutocompleteInput {
@@ -135,6 +138,76 @@ class AutocompleteInput {
 
   // Returns whether |text| begins with "https:" or "view-source:https:".
   static bool HasHTTPSScheme(const std::u16string& text);
+
+  // Whether the text might be matching featured keyword suggestions.
+  enum class FeaturedKeywordMode {
+    kFalse,   // `text_` doesn't start with '@'.
+    kPrefix,  // `text_` starts with '@'.
+    kExact,   // `text_` is exactly '@'.
+  };
+  static FeaturedKeywordMode GetFeaturedKeywordMode(std::u16string_view text);
+
+  // If the input is in the keyword mode for a starter pack engine, returns the
+  // starter pack's `TemplateURL` or nullptr. E.g. for "@Gemini text", Gemini
+  // `TemplateURL` is returned. If the matching keyword was found, updates
+  // `input` with the keyword stripped.
+  // `model` must be non-null.
+  static const TemplateURL* AdjustInputForStarterPackEngines(
+      TemplateURLService* model,
+      AutocompleteInput* input);
+
+  // Returns the matching substituting keyword for `input`, or NULL if there
+  // is no keyword for the specified input.  If the matching keyword was found,
+  // updates `input`'s text and cursor position.
+  // `model` must be non-null.
+  static const TemplateURL* GetSubstitutingTemplateURLForInput(
+      const TemplateURLService* model,
+      AutocompleteInput* input);
+
+  // Extracts the keyword from |input| into |keyword|. Any remaining characters
+  // after the keyword are placed in |remaining_input|. Returns true if |input|
+  // is valid and has a keyword. This makes use of SplitKeywordFromInput() to
+  // extract the keyword and remaining string, and uses |template_url_service|
+  // to validate and clean up the extracted keyword (e.g., to remove unnecessary
+  // characters).
+  // In general use this instead of SplitKeywordFromInput().
+  // Leading whitespace in |*remaining_input| will be trimmed.
+  // |template_url_service| must be non-null.
+  static bool ExtractKeywordFromInput(
+      const AutocompleteInput& input,
+      const TemplateURLService* template_url_service,
+      std::u16string* keyword,
+      std::u16string* remaining_input);
+
+  // Returns the replacement string from the user input. The replacement
+  // string is the portion of the input that does not contain the keyword.
+  // For example, the replacement string for "b blah" is blah.
+  // If |trim_leading_whitespace| is true then leading whitespace in
+  // replacement string will be trimmed.
+  static std::u16string SplitReplacementStringFromInput(
+      const std::u16string& input,
+      bool trim_leading_whitespace);
+
+  // Removes any unnecessary characters from a user input keyword, returning
+  // the resulting keyword.  Usually this means it does transformations such as
+  // removing any leading scheme, "www." and trailing slash and returning the
+  // resulting string regardless of whether it's a registered keyword.
+  // However, if a |template_url_service| is provided and the function finds a
+  // registered keyword at any point before finishing those transformations,
+  // it'll return that keyword.
+  // |template_url_service| must be non-null.
+  static std::u16string CleanUserInputKeyword(
+      const TemplateURLService* template_url_service,
+      const std::u16string& keyword);
+
+  // Extracts the next whitespace-delimited token from input and returns it.
+  // Sets |remaining_input| to everything after the first token (skipping over
+  // the first intervening whitespace).
+  // If |trim_leading_whitespace| is true then leading whitespace in
+  // |*remaining_input| will be trimmed.
+  static std::u16string SplitKeywordFromInput(const std::u16string& input,
+                                              bool trim_leading_whitespace,
+                                              std::u16string* remaining_input);
 
   // User-provided text to be completed.
   const std::u16string& text() const { return text_; }
@@ -323,6 +396,9 @@ class AutocompleteInput {
   // Uses the keyword entry mode to decide if the user is currently in keyword
   // mode.
   bool InKeywordMode() const;
+
+  // Whether the input might be matching featured keyword suggestions.
+  FeaturedKeywordMode GetFeaturedKeywordMode() const;
 
  private:
   friend class AutocompleteProviderTest;

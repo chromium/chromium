@@ -159,7 +159,7 @@ message AXRelativeBounds {
   repeated float transform = 6;
 }
 
-// Next ID: 10
+// Next ID: 11
 message PageContext {
   // The URL of the page that the form is on.
   string url = 1;
@@ -196,11 +196,21 @@ message PageContext {
 
 // The page content represented as a tree of semantic chunks and (in the
 // future) annotated with additional information about the page.
-// Next ID: 3
+// Next ID: 5
 message AnnotatedPageContent {
   AnnotatedPageContentVersion version = 1;
 
   ContentNode root_node = 2;
+
+  // The data for the main frame of the page.
+  FrameData main_frame_data = 3;
+
+  // The interaction information for the page--the subtree represented by the
+  // AnnotatedPageContent. This is for top-level interactions, such as the mouse
+  // position and focused element, for which there can only be one unique value
+  // for the entire page. Includes interaction information for the main frame
+  // and embedded iframes.
+  PageInteractionInfo page_interaction_info = 4;
 }
 
 // The ContentNode tree is a sparse representation of the DOM tree for a web
@@ -229,7 +239,7 @@ message ContentNode {
   ContentAttributes content_attributes = 2;
 }
 
-// Next ID: 16
+// Next ID: 23
 message ContentAttributes {
   oneof content_data {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
@@ -242,7 +252,10 @@ message ContentAttributes {
     AnchorData anchor_data = 14;
 
     // Only set if attribute_type is CONTENT_ATTRIBUTE_FORM.
-    FormData form_data = 7;
+    FormInfo form_data = 19;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_FORM_CONTROL.
+    FormControlData form_control_data = 20;
 
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TABLE.
     TableData table_data = 8;
@@ -253,6 +266,12 @@ message ContentAttributes {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TABLE_ROW.
     TableRowData table_row_data = 13;
   }
+
+  // The ID for this ContentNode. This is unique to the AnnotatedPageContent,
+  // including the embedded iframes. The value may change across different
+  // AnnotatedPageContent extractions for the same page; it is not guaranteed to
+  // be stable in the same page across different time.
+  int32 content_node_id = 22;
 
   // The IDs of the DOM nodes whose content is represented by this ContentNode.
   // This is used to map the results of the receiver's action back to the
@@ -268,17 +287,29 @@ message ContentAttributes {
   // This is the geometry of the common_ancestor_dom_node_id.
   Geometry geometry = 4;
 
-  repeated TextInfo text_info = 5; // deprecated
-
-  repeated ImageInfo image_info = 6; // deprecated
+  // The interaction information for the content node.
+  InteractionInfo interaction_info = 21;
 
   // These can come from the aria role, the html tag, or are assumed from some
   // properties of the page.
   repeated AnnotatedRole annotated_roles = 15;
+
+  // A text "label" for the content node, e.g. for a "Submit" button this would
+  // be "Submit".
+  string label = 16;
+
+  string tag_name = 17; // HTML tag name.
+
+  string type = 18; // HTML type attribute.
+
+  reserved 5, 6, 7;
 }
 
 // The geometry of the content, in the page coordinate system.
 // Next ID: 6
+// NOTE: If `visual_bounding_box` is empty, i.e., the content is offscreen and
+// it's in an iframe, the `outer_bounding_box` may be incorrect. See crbug.com/384996050
+// for details.
 message Geometry {
   // The bounding box of the content node, in the page coordinate system. This
   // roughly corresponds to the element's local box used for hit testing.
@@ -292,10 +323,10 @@ message Geometry {
   // that the node is a header, footer, or sidebar.
   bool is_fixed_or_sticky_position = 3;
 
-  // Whether the content node can scroll in the x direction.
+  // [DEPRECATED] Whether the content node can scroll in the x direction.
   bool scrolls_overflow_x = 4;
 
-  // Whether the content node can scroll in the y direction.
+  // [DEPRECATED] Whether the content node can scroll in the y direction.
   bool scrolls_overflow_y = 5;
 }
 
@@ -309,15 +340,53 @@ message BoundingRect {
   int32 height = 4;
 }
 
+// The interaction information for the content node. This indicates whether the
+// node is interactive and what type of interaction it supports.
+// Next ID: 11
+message InteractionInfo {
+  // Whether the content node can scroll in the x direction.
+  bool scrolls_overflow_x = 1;
+
+  // Whether the content node can scroll in the y direction.
+  bool scrolls_overflow_y = 2;
+
+  // Whether the content node is selectable.
+  bool is_selectable = 3;
+
+  // Whether the content node is editable; i.e. whether the user can type into
+  // it. This refers to the text actually being editable, not whether the
+  // content node is a text field.
+  bool is_editable = 4;
+
+  // Whether the content node can be resized. This is relevant for scroll
+  // containers and iframes which have the CSS resize behavior.
+  bool can_resize_horizontal = 5;
+
+  bool can_resize_vertical = 6;
+
+  // Whether the content node is focusable.
+  bool is_focusable = 7;
+
+  // [DEPRECATED - Moved to page-level interaction info]
+  // [Whether the content node is focused.
+  bool is_focused = 8;
+
+  // Whether the content node is draggable.
+  bool is_draggable = 9;
+
+  // Whether the content node is clickable. This checks for whether the node is
+  // a clickable control (e.g. form control elements) or has activation
+  // behavior. It also checks for whether the node has a click handler.
+  bool is_clickable = 10;
+}
+
 // Next ID: 5
 message TextInfo {
   string text_content = 1;
 
   TextStyle text_style = 3;
 
-  BoundingRect text_bounding_box = 2; // deprecated
-
-  reserved 4;
+  reserved 2, 4;
 }
 
 // Next ID: 5
@@ -332,18 +401,41 @@ message TextStyle {
   // to know which specific semantic was used; only that the website author
   // chose to emphasize the text in some way. The default is false.
   bool has_emphasis = 2;
+
+  // The color of the text in RGBA format.
+  uint32 color = 3;
 }
 
 // Information about the image. In the future, this may include a pixmap.
-// Next ID: 4
+// Next ID: 5
 message ImageInfo {
   string image_caption = 2;
 
-  // Provides the URL for this image if available. For example, data: URLs for
-  // inline images will be skipped.
+  // DEPRECATED: Provides the URL for this image if available. For example,
+  // data: URLs for inline images will be skipped.
   string source_url = 3;
 
-  BoundingRect image_bounding_box = 1; // deprecated
+  // Provides the source origin for the image.
+  SecurityOrigin security_origin = 4;
+
+  reserved 1;
+}
+
+// The source origin for the web content in AnnotatedPageContent. This maps to
+// the origin concept in the spec: https://url.spec.whatwg.org/#origin.
+//
+// This is distinct from URLs. There are cases where the URL for a Document,
+// example about:blank, is different from the origin that the Document's data
+// should be attributed to.
+//
+// Next ID: 3
+message SecurityOrigin {
+  // Whether the origin is opaque.
+  bool opaque = 1;
+
+  // The raw value of the origin. It is set to the nonce for opaque origins and
+  // scheme-host-port string for non-opaque origins.
+  string value = 2;
 }
 
 message AnchorData {
@@ -351,6 +443,152 @@ message AnchorData {
 
   // The relationship between the linked URL and the current document.
   repeated AnchorRel rel = 2;
+}
+
+message FormInfo {
+  // The of the form.
+  string form_name = 1;
+}
+
+// Next ID: 8
+message FormControlData {
+  // The name for the field.
+  string field_name = 1;
+
+  // The value of the field.
+  string field_value = 2;
+
+  // The type of control for this form field.
+  FormControlType form_control_type = 3;
+
+  // The options for a select field, if applicable.
+  repeated SelectOption select_options = 4;
+
+  // The placeholder text for the field. This is only applicable to text fields.
+  string placeholder = 5;
+
+  // Whether the field is checked. This is only applicable to checkbox and radio
+  // button fields.
+  bool is_checked = 6;
+
+  // Whether the field is required.
+  bool is_required = 7;
+}
+
+// Represents an option in a select field. See below for example.
+//
+// HTML                                      | value  | text
+// ------------------------------------------+--------+------
+// <option value=Foo label=Bar>Baz</option>  | "Foo"  | "Bar"
+// <option value=Foo>Bar</option>            | "Foo"  | "Bar"
+// <option label=Bar>Foo</option>            | "Foo"  | "Bar"
+// <option>Foo</option>                      | "Foo"  | "Foo"
+// <option value=Foo></option>               | "Foo"  | ""
+// <option label=Bar></option>               | ""     | "Bar"
+message SelectOption {
+  string value = 1;
+
+  string text = 2;
+
+  // Whether the option is selected.
+  bool is_selected = 3;
+}
+
+message TableData {
+  // The name of the table, coming from the caption.
+  string table_name = 1;
+
+  reserved 2, 3, 4;
+}
+
+message IframeData {
+  // DEPRECATED in favor of Security Origin in FrameData.
+  // The URL of the iframe.
+  string url = 1;
+
+  FrameData frame_data = 3;
+
+  // Indicates whether the iframe is likely to be an ad frame. This is set for
+  // both the root ad frame and its descendants.
+  bool likely_ad_frame = 2;
+}
+
+// The data for a frame in the web page. This is the common data structure for
+// both the root frame and embedded iframes.
+// Next ID: 4
+message FrameData {
+  // The security origin of the frame.
+  SecurityOrigin security_origin = 1;
+
+  // Interaction information for the frame.
+  FrameInteractionInfo frame_interaction_info = 2;
+
+  // Identifies the frame.
+  FrameIdentifier frame_identifier = 3;
+}
+
+// The interaction information for the frame. This is for interactions that
+// are specific to the frame, such as the current selection.
+// Next ID: 2
+message FrameInteractionInfo {
+  // The current selection.
+  Selection selection = 1;
+}
+
+// Represents a selection in the page. This is a frame-level concept.
+message Selection {
+  // The content node ID of the start node. Note that this could be the same as
+  // the end node ID. This node is always before or equal to the end node.
+  int32 start_node_id = 1;
+
+  // The character offset of the start of the selection from the start of the
+  // text contained in start node.
+  int32 start_offset = 2;
+
+  // The content node ID of the end node. Note that this could be the same as
+  // the start node ID. This node is always after or equal to the start node.
+  int32 end_node_id = 3;
+
+  // The character offset of the end of the selection from the start of the
+  // text contained in end node.
+  int32 end_offset = 4;
+
+  // The selected text.
+  string selected_text = 5;
+}
+
+// Directs the action to a specific Frame in Chrome.
+message FrameIdentifier {
+  // TODO: crbug.com/402086380 - Add frame information. We need to decide the right
+  // format for this.
+
+}
+
+message TableRowData {
+  TableRowType type = 1;
+}
+
+// Represents the interaction information for the page. This is for top-level
+// interactions, such as the mouse position and focused element, for which
+// there can only be one unique value. Includes interaction information for
+// the main frame and embedded iframes.
+// Next ID: 4
+message PageInteractionInfo {
+  // The content node ID of the content node that is currently focused.
+  int32 focused_node_id = 1;
+
+  // The content node ID of the content node that is currently focused by a
+  // screen reader. If this is set, it means that a screen reader is being used.
+  int32 accessibility_focused_node_id = 2;
+
+  // The last known mouse position, in the page coordinate system.
+  Point mouse_position = 3;
+}
+
+message Point {
+  int32 x = 1;
+
+  int32 y = 2;
 }
 
 message FormData {
@@ -400,48 +638,8 @@ message FormFieldData {
   string global_id = 11;
 }
 
-// Represents an option in a select field. See below for example.
-//
-// HTML                                      | value  | text
-// ------------------------------------------+--------+------
-// <option value=Foo label=Bar>Baz</option>  | "Foo"  | "Bar"
-// <option value=Foo>Bar</option>            | "Foo"  | "Bar"
-// <option label=Bar>Foo</option>            | "Foo"  | "Bar"
-// <option>Foo</option>                      | "Foo"  | "Foo"
-// <option value=Foo></option>               | "Foo"  | ""
-// <option label=Bar></option>               | ""     | "Bar"
-message SelectOption {
-  string value = 1;
-
-  string text = 2;
-}
-
-message TableData {
-  // The name of the table, coming from the caption.
-  string table_name = 1;
-
-  repeated TableRow header_rows = 2; // deprecated
-
-  repeated TableRow body_rows = 3; // deprecated
-
-  repeated TableRow footer_rows = 4; // deprecated
-}
-
 message TableRow {
   repeated ContentNode cells = 1;
-}
-
-message IframeData {
-  // The URL of the iframe.
-  string url = 1;
-
-  // Indicates whether the iframe is likely to be an ad frame. This is set for
-  // both the root ad frame and its descendants.
-  bool likely_ad_frame = 2;
-}
-
-message TableRowData {
-  TableRowType type = 1;
 }
 
 message UserAnnotationsEntry {
@@ -494,6 +692,14 @@ message SiteEngagementEntry {
 message SiteEngagement {
   // The site engagement information for the user.
   repeated SiteEngagementEntry entries = 1;
+}
+
+// The coordinates of a point.
+// Next ID: 3
+message Coordinate {
+  int32 x = 1;
+
+  int32 y = 2;
 }
 
 // Selection text affinity, part of the a11y snapshot.
@@ -1315,11 +1521,13 @@ enum AXStringListAttribute {
 }
 
 // This will be updated when there is a significant change in the parsing logic.
-// Next ID: 2
+// Next ID: 3
 enum AnnotatedPageContentVersion {
   ANNOTATED_PAGE_CONTENT_VERSION_UNKNOWN = 0;
 
   ANNOTATED_PAGE_CONTENT_VERSION_1_0 = 1;
+
+  ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0 = 2;
 }
 
 // Indicates the structure of the ContentNode. Suggests which type of
@@ -1327,7 +1535,7 @@ enum AnnotatedPageContentVersion {
 // When adding new types, please also update AIPageContentAttributeType in
 // third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
 // See crrev.com/c/6072788 for an example.
-// Next ID: 23;
+// Next ID: 25;
 enum ContentAttributeType {
   CONTENT_ATTRIBUTE_UNKNOWN = 0;
 
@@ -1338,9 +1546,9 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_IFRAME = 3;
 
   // Text chunks.
-  CONTENT_ATTRIBUTE_PARAGRAPH = 4; // deprecated, use ANNOTATED_ROLE_PARAGRAPH.
+  CONTENT_ATTRIBUTE_PARAGRAPH = 4;
 
-  CONTENT_ATTRIBUTE_HEADING = 5; // deprecated, use ANNOTATED_ROLE_HEADING.
+  CONTENT_ATTRIBUTE_HEADING = 5;
 
   CONTENT_ATTRIBUTE_TEXT = 20;
 
@@ -1350,11 +1558,15 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_IMAGE = 9;
 
   // Structured chunks.
-  CONTENT_ATTRIBUTE_ORDERED_LIST = 6; // deprecated, use ANNOTATED_ROLE_ORDERED_LIST.
+  CONTENT_ATTRIBUTE_ORDERED_LIST = 6;
 
-  CONTENT_ATTRIBUTE_UNORDERED_LIST = 7; // deprecated, use ANNOTATED_ROLE_UNORDERED_LIST.
+  CONTENT_ATTRIBUTE_UNORDERED_LIST = 7;
+
+  CONTENT_ATTRIBUTE_LIST_ITEM = 23;
 
   CONTENT_ATTRIBUTE_FORM = 8;
+
+  CONTENT_ATTRIBUTE_FORM_CONTROL = 24;
 
   CONTENT_ATTRIBUTE_TABLE = 10;
 
@@ -1362,22 +1574,7 @@ enum ContentAttributeType {
 
   CONTENT_ATTRIBUTE_TABLE_CELL = 11;
 
-  // Landmark/section chunks.
-  CONTENT_ATTRIBUTE_HEADER = 12; // deprecated, use ANNOTATED_ROLE_HEADER.
-
-  CONTENT_ATTRIBUTE_NAV = 13; // deprecated, use ANNOTATED_ROLE_NAV.
-
-  CONTENT_ATTRIBUTE_SEARCH = 14; // deprecated, use ANNOTATED_ROLE_SEARCH.
-
-  CONTENT_ATTRIBUTE_MAIN = 15; // deprecated, use ANNOTATED_ROLE_MAIN.
-
-  CONTENT_ATTRIBUTE_ARTICLE = 16; // deprecated, use ANNOTATED_ROLE_ARTICLE.
-
-  CONTENT_ATTRIBUTE_SECTION = 17; // deprecated, use ANNOTATED_ROLE_SECTION.
-
-  CONTENT_ATTRIBUTE_ASIDE = 18; // deprecated, use ANNOTATED_ROLE_ASIDE.
-
-  CONTENT_ATTRIBUTE_FOOTER = 19; // deprecated, use ANNOTATED_ROLE_FOOTER.
+  reserved 12, 13, 14, 15, 16, 17, 18, 19;
 }
 
 // Next ID: 5
@@ -1412,6 +1609,7 @@ enum AnchorRel {
 // Matches FormControlType in mojo, but off by one, because this list contains
 // an "UNSPECIFIED" value at 0.
 // https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/common/mojom/autofill_types.mojom;l=17;drc=105770df485ace262780d95126bb60b1a16ec340;bpv=1;bpt=1
+// Next ID: 34
 enum FormControlType {
   FORM_CONTROL_TYPE_UNSPECIFIED = 0;
 
@@ -1442,6 +1640,42 @@ enum FormControlType {
   FORM_CONTROL_TYPE_SELECT_MULTIPLE = 13;
 
   FORM_CONTROL_TYPE_TEXT_AREA = 15;
+
+  FORM_CONTROL_TYPE_BUTTON_BUTTON = 16;
+
+  FORM_CONTROL_TYPE_BUTTON_SUBMIT = 17;
+
+  FORM_CONTROL_TYPE_BUTTON_RESET = 18;
+
+  FORM_CONTROL_TYPE_BUTTON_POPOVER = 19;
+
+  FORM_CONTROL_TYPE_FIELDSET = 20;
+
+  FORM_CONTROL_TYPE_INPUT_BUTTON = 21;
+
+  FORM_CONTROL_TYPE_INPUT_COLOR = 22;
+
+  FORM_CONTROL_TYPE_INPUT_DATE = 23;
+
+  FORM_CONTROL_TYPE_INPUT_DATETIME_LOCAL = 24;
+
+  FORM_CONTROL_TYPE_INPUT_FILE = 25;
+
+  FORM_CONTROL_TYPE_INPUT_HIDDEN = 26;
+
+  FORM_CONTROL_TYPE_INPUT_IMAGE = 27;
+
+  FORM_CONTROL_TYPE_INPUT_RANGE = 28;
+
+  FORM_CONTROL_TYPE_INPUT_RESET = 29;
+
+  FORM_CONTROL_TYPE_INPUT_SUBMIT = 30;
+
+  FORM_CONTROL_TYPE_INPUT_TIME = 31;
+
+  FORM_CONTROL_TYPE_INPUT_WEEK = 32;
+
+  FORM_CONTROL_TYPE_OUTPUT = 33;
 }
 
 enum TableRowType {
@@ -1458,18 +1692,9 @@ enum TableRowType {
 // role, the html tag, or are assumed from some properties of the page.
 // When adding new roles, please also update AIPageContentAnnotatedRole in
 // third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
-// Next ID: 13
+// Next ID: 14
 enum AnnotatedRole {
   ANNOTATED_ROLE_UNKNOWN = 0;
-
-  // Text chunks.
-  ANNOTATED_ROLE_PARAGRAPH = 1;
-
-  ANNOTATED_ROLE_HEADING = 2;
-
-  ANNOTATED_ROLE_ORDERED_LIST = 3;
-
-  ANNOTATED_ROLE_UNORDERED_LIST = 4;
 
   // Landmark/section chunks.
   ANNOTATED_ROLE_HEADER = 5;
@@ -1487,6 +1712,19 @@ enum AnnotatedRole {
   ANNOTATED_ROLE_ASIDE = 11;
 
   ANNOTATED_ROLE_FOOTER = 12;
+
+  // Indicates that the subtree for this ContentNode is hidden from the user but
+  // accessible via features like find-in-page. See `hidden=until-found` in
+  // https://developer.mozilla.org/en-US/docs/Wecrbug.com/HTML/Global_attributes/hidden
+  // for details.
+  //
+  // Note: This is different from Geometry.visible_bounding_box being empty
+  // which indicates whether the content is offscreen. The visible_bounding_box
+  // for nodes in a hidden subtree may be non-empty, depending on whether the
+  // content would be in the viewport if the user searched for it.
+  ANNOTATED_ROLE_CONTENT_HIDDEN = 13;
+
+  reserved 1 to 4;
 }
 
 // Whether or not status of the model's output is a success (i.e "is good") or

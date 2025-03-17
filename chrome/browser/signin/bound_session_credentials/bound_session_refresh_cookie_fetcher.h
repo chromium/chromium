@@ -8,6 +8,7 @@
 #include <optional>
 #include <ostream>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -64,6 +65,8 @@ class BoundSessionRefreshCookieFetcher {
   // Returns whether the fetcher had received a challenge.
   virtual bool IsChallengeReceived() const = 0;
   virtual std::optional<std::string> TakeSecSessionChallengeResponseIfAny() = 0;
+  // Returns names of the cookies that haven't been refreshed by this fetcher.
+  virtual base::flat_set<std::string> GetNonRefreshedCookieNames() = 0;
 };
 
 std::ostream& operator<<(

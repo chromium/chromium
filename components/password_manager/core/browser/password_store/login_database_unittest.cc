@@ -46,6 +46,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -121,8 +122,10 @@ PasswordForm GenerateExamplePasswordForm() {
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.skip_zero_click = true;
   form.in_store = PasswordForm::Store::kProfileStore;
-  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user1"));
-  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user2"));
+  form.moving_blocked_for_list.push_back(
+      GaiaIdHash::FromGaiaId(GaiaId("user1")));
+  form.moving_blocked_for_list.push_back(
+      GaiaIdHash::FromGaiaId(GaiaId("user2")));
   form.sender_email = u"sender@gmail.com";
   form.sender_name = u"Cool Sender";
   form.sender_profile_image_url = GURL("http://www.sender.com/profile_image");
@@ -1210,9 +1213,9 @@ TEST_P(LoginDatabaseTest, GaiaIdHashVectorSerialization) {
   EXPECT_THAT(output, Eq(vec));
 
   // Normal data.
-  vec.push_back(GaiaIdHash::FromGaiaId("first"));
-  vec.push_back(GaiaIdHash::FromGaiaId("second"));
-  vec.push_back(GaiaIdHash::FromGaiaId("third"));
+  vec.push_back(GaiaIdHash::FromGaiaId(GaiaId("first")));
+  vec.push_back(GaiaIdHash::FromGaiaId(GaiaId("second")));
+  vec.push_back(GaiaIdHash::FromGaiaId(GaiaId("third")));
 
   temp = SerializeGaiaIdHashVector(vec);
   output = DeserializeGaiaIdHashVector(temp);
@@ -1484,7 +1487,8 @@ TEST_P(LoginDatabaseTest, UpdateLogin) {
   form.federation_origin =
       url::SchemeHostPort(GURL("https://accounts.google.com/"));
   form.skip_zero_click = true;
-  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("gaia_id"));
+  form.moving_blocked_for_list.push_back(
+      GaiaIdHash::FromGaiaId(GaiaId("gaia_id")));
 
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/true), changes);
@@ -1522,7 +1526,8 @@ TEST_P(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.skip_zero_click = true;
-  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("gaia_id"));
+  form.moving_blocked_for_list.push_back(
+      GaiaIdHash::FromGaiaId(GaiaId("gaia_id")));
 
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false), changes);
@@ -2354,7 +2359,8 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSkipUndecryptablePasswords);
+  feature_list.InitWithFeatures({}, {features::kSkipUndecryptablePasswords,
+                                     features::kClearUndecryptablePasswords});
   auto form1 =
       AddDummyLogin("foo1", GURL("https://foo1.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
@@ -2629,7 +2635,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
        PasswordRecoveryDisabledGetLogins) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSkipUndecryptablePasswords);
+  feature_list.InitWithFeatures({}, {features::kSkipUndecryptablePasswords,
+                                     features::kClearUndecryptablePasswords});
   AddDummyLogin("foo1", GURL("https://foo1.com/"), false,
                 /*blocklisted=*/false);
   AddDummyLogin("foo2", GURL("https://foo2.com/"), true, /*blocklisted=*/false);
@@ -3078,6 +3085,75 @@ TEST_P(LoginDatabaseTest, RemoveLoginRemovesNoteAttachedToTheLogin) {
   EXPECT_TRUE(db().RemoveLogin(form, &list));
   EXPECT_TRUE(
       db().password_notes_table().GetPasswordNotes(FormPrimaryKey(1)).empty());
+}
+
+TEST_P(LoginDatabaseTest, ChangesOnlyWithNotes) {
+  PasswordForm form = GenerateExamplePasswordForm();
+  PasswordStoreChangeList change_list = db().AddLogin(form);
+  FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
+  PasswordNote note(u"example note", base::Time::Now());
+  form.notes = {note};
+
+  EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
+                                /*insecure_changed=*/true),
+            db().UpdateLogin(form, nullptr));
+
+  EXPECT_EQ(db().password_notes_table().GetPasswordNotes(
+                FormPrimaryKey(primary_key))[0],
+            note);
+}
+
+TEST_P(LoginDatabaseTest, UpdateLoginNoteRemoved) {
+  PasswordForm form = GenerateExamplePasswordForm();
+  PasswordNote note(u"example note", base::Time::Now());
+  form.notes = {note};
+  PasswordStoreChangeList change_list = db().AddLogin(form);
+  FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
+  form.notes = {};
+  EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
+                                /*insecure_changed=*/true),
+            db().UpdateLogin(form, nullptr));
+
+  EXPECT_TRUE(db().password_notes_table()
+                  .GetPasswordNotes(FormPrimaryKey(primary_key))
+                  .empty());
+}
+
+TEST_P(LoginDatabaseTest, UpdateLoginInsecureCredentialsChanged) {
+  PasswordForm form = GenerateExamplePasswordForm();
+  PasswordStoreChangeList change_list = db().AddLogin(form);
+  FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
+  InsecureCredential credential1{
+      form.signon_realm, form.username_value,
+      base::Time(),      InsecureType::kLeaked,
+      IsMuted(false),    TriggerBackendNotification(false)};
+
+  form.password_issues.insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(credential1.create_time, credential1.is_muted,
+                         credential1.trigger_notification_from_backend));
+  EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
+                                /*insecure_changed=*/true),
+            db().UpdateLogin(form, nullptr));
+  ASSERT_THAT(
+      db().insecure_credentials_table().GetRows(FormPrimaryKey(primary_key)),
+      ElementsAre(credential1));
+}
+
+TEST_P(LoginDatabaseTest, UpdateLoginNoChanges) {
+  PasswordForm form = GenerateExamplePasswordForm();
+  PasswordStoreChangeList change_list = db().AddLogin(form);
+  FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
+
+  EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
+                                /*insecure_changed=*/true),
+            db().UpdateLogin(form, nullptr));
+  EXPECT_TRUE(db().password_notes_table()
+                  .GetPasswordNotes(FormPrimaryKey(primary_key))
+                  .empty());
+  EXPECT_TRUE(db().password_notes_table()
+                  .GetPasswordNotes(FormPrimaryKey(primary_key))
+                  .empty());
 }
 
 TEST_P(LoginDatabaseTest, RemovingLoginRemovesInsecureCredentials) {

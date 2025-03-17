@@ -94,7 +94,6 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/inspector_web_audio_agent.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_client.h"
-#include "third_party/blink/renderer/modules/webdatabase/inspector_database_agent.h"
 #include "third_party/blink/renderer/modules/webdatabase/web_database_host.h"
 #include "third_party/blink/renderer/modules/webdatabase/web_database_impl.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
@@ -298,7 +297,6 @@ ModulesInitializer::CreatePictureInPictureController(Document& document) const {
 
 void ModulesInitializer::InitInspectorAgentSession(
     DevToolsSession* session,
-    bool allow_view_agents,
     InspectorDOMAgent* dom_agent,
     InspectedFrames* inspected_frames,
     Page* page) const {
@@ -311,9 +309,6 @@ void ModulesInitializer::InitInspectorAgentSession(
   session->CreateAndAppend<InspectorWebAudioAgent>(page);
   session->CreateAndAppend<InspectorCacheStorageAgent>(inspected_frames);
   session->CreateAndAppend<BucketFileSystemAgent>(inspected_frames);
-  if (allow_view_agents) {
-    session->CreateAndAppend<InspectorDatabaseAgent>(page);
-  }
 }
 
 void ModulesInitializer::OnClearWindowObjectInMainWorld(

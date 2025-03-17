@@ -17,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread.h"
+#include "base/win/scoped_gdi_object.h"
 #include "chrome/browser/win/icon_reader_service.h"
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -169,14 +170,14 @@ gfx::Image GetIconForFileExtension(const std::wstring& group,
   if (SHGetFileInfo(group.c_str(), FILE_ATTRIBUTE_NORMAL, &file_info,
                     sizeof(file_info),
                     SHGFI_ICON | size | SHGFI_USEFILEATTRIBUTES)) {
-    const SkBitmap bitmap = IconUtil::CreateSkBitmapFromHICON(file_info.hIcon);
+    base::win::ScopedGDIObject<HICON> file_icon(file_info.hIcon);
+    const SkBitmap bitmap = IconUtil::CreateSkBitmapFromHICON(file_icon.get());
     if (!bitmap.isNull()) {
       gfx::ImageSkia image_skia(
           gfx::ImageSkiaRep(bitmap, display::win::GetDPIScale()));
       image_skia.MakeThreadSafe();
       image = gfx::Image(image_skia);
     }
-    DestroyIcon(file_info.hIcon);
   }
   return image;
 }

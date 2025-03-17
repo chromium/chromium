@@ -62,15 +62,12 @@ struct ResponseSummary {
   // Optional safety information computed against the full response.
   SafetyInfo? safety_info;
 
-  // The total number of input tokens from the call to Execute().
-  uint32 input_token_count;
-
   // The total number of output tokens for this response.
   uint32 output_token_count;
 };
 
 // Streams a response from a call to execute a model. Close this pipe to cancel
-// the call to |Execute()|.
+// the call to |Generate()|.
 [Stable]
 interface StreamingResponder {
   // This is called each time a new chunk of text is available.
@@ -97,15 +94,38 @@ struct LoadAdaptationParams {
   // Assets for an adaptation.
   AdaptationAssets assets;
 
-  // The maximum number of input+output tokens the adaptation model can handle.
-  // This is needed when initializing the model. Currently this is only
-  // supported by the APU backend.
-  // When set to 0, the original `max_tokens` set by the base model will be
-  // used.
+  // Deprecated: use SessionParams.max_tokens instead.
   uint32 max_tokens = 0;
 
+  // Deprecated: use SessionParams.capabilities.image_input instead.
+  [MinVersion=1]
+  bool enable_image_input = false;
+  // Deprecated: use SessionParams.capabilities.audio_input instead.
+  [MinVersion=2]
+  bool enable_audio_input = false;
+};
+
+// A set of capabilities that a model can have.
+[Stable]
+struct Capabilities {
   // Whether this model will handle InputPieces containing images.
-  [MinVersion=1] bool enable_image_input = false;
+  bool image_input = false;
+
+  // Whether this model will handle InputPieces containing audio.
+  bool audio_input = false;
+};
+
+// Params to describe a new session.
+[Stable]
+struct SessionParams {
+  // The maximum number of input+output tokens the session can handle. This is
+  // needed when initializing the session. Currently this is only supported by
+  // the APU backend. When set to 0, the original `max_tokens` set by the base
+  // model will be used.
+  uint32 max_tokens = 0;
+
+  // The capabilities to enable for this session.
+  Capabilities capabilities;
 };
 
 // The set of tokens that can be added as part of an input.
@@ -137,7 +157,12 @@ union InputPiece {
   skia.mojom.BitmapMappedFromTrustedProcess bitmap;
 
   // Used to handle version skew.
-  [Default] bool unknown_type;
+  [Default]
+  bool unknown_type;
+
+  // Audio provided as input.
+  [MinVersion=1]
+  AudioData audio;
 };
 
 [Stable]
@@ -147,9 +172,8 @@ struct Input {
   array<InputPiece> pieces;
 };
 
-// Options to control how the model handles input.
 [Stable]
-struct InputOptions {
+struct AppendOptions {
   // The input for the model.
   Input input;
 
@@ -160,14 +184,12 @@ struct InputOptions {
   // After text is tokenized, the offset into that vector to start processing.
   // If zero, will start at the first token.
   uint32 token_offset = 0;
+};
 
-  // If this is true, indicates this is a one-off call that wants to ignore the
-  // context for this input. Note that this is less efficient than running on
-  // top of the current context, so only use when necessary.
-  bool ignore_context;
-
+[Stable]
+struct GenerateOptions {
   // The maximum number of tokens that should be output from a call to
-  // Execute(). If zero, will output tokens until an end token or the maximum
+  // Generate(). If zero, will output tokens until an end token or the maximum
   // sequence length.
   uint32 max_output_tokens = 0;
 
@@ -186,14 +208,17 @@ struct InputOptions {
 // with that context.
 [Stable]
 interface Session {
-  // Adds context to this session. Any context added here will build off of
-  // previous calls to |AddContext()|.
-  AddContext@0(InputOptions input, pending_remote<ContextClient>? client);
+  // Appends input to this session. Any input added here will build off of
+  // previous calls to |Append()|. To cancel, close the |client| pipe.
+  [MinVersion=1]
+  Append@6(AppendOptions options, pending_remote<ContextClient>? client);
 
-  // Executes model on the given input. The input will be added on top of the
-  // context provided by |AddContext()|. The response will be streamed to
-  // |response|. To cancel the request, close the |response| pipe.
-  Execute@1(InputOptions input, pending_remote<StreamingResponder> response);
+  // Generates output from the model on top of any input added from Append().
+  // The response will be streamed to |response|. To cancel the request, close
+  // the |response| pipe.
+  [MinVersion=1]
+  Generate@7(
+      GenerateOptions options, pending_remote<StreamingResponder> response);
 
   // Gets the size of the given text in tokens. Will return 0 if the text is
   // empty or error occurred.
@@ -219,7 +244,8 @@ interface OnDeviceModel {
   // of StreamingResponder & ContextClient will also be closed.
   // When the multiple sessions support is enabled, nothing will be
   // disconnected, and the further requests will be queued.
-  StartSession@0(pending_receiver<Session> session);
+  StartSession@0(pending_receiver<Session> session,
+      [MinVersion=1] SessionParams? params);
 
   // Infers multiclass safety scores for the given `text` using this model's
   // underlying safety classifier, if any. Returns null if classification fails
@@ -273,4 +299,19 @@ enum LoadModelResult {
   kSuccess,
   kGpuBlocked,
   [Default] kFailedToLoadLibrary,
+};
+
+[Stable]
+struct AudioData {
+  // Number of channels.
+  int32 channel_count;
+
+  // Sample rate of the buffer.
+  int32 sample_rate;
+
+  // Number of frames in the buffer.
+  int32 frame_count;
+
+  // Channel data.
+  array<float> data;
 };

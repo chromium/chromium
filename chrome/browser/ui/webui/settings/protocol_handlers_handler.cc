@@ -184,9 +184,8 @@ void ProtocolHandlersHandler::UpdateHandlerList() {
   registry->GetRegisteredProtocols(&protocols);
 
   base::Value::List handlers;
-  for (auto protocol = protocols.begin(); protocol != protocols.end();
-       protocol++) {
-    handlers.Append(GetHandlersForProtocol(*protocol));
+  for (auto& protocol : protocols) {
+    handlers.Append(GetHandlersForProtocol(protocol));
   }
 
   FireWebUIListener("setProtocolHandlers", handlers);

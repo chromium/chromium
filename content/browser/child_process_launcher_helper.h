@@ -133,8 +133,12 @@ class ChildProcessLauncherHelper
       mojo::OutgoingInvitation mojo_invitation,
       const mojo::ProcessErrorCallback& process_error_callback,
       std::unique_ptr<ChildProcessLauncherFileData> file_data,
-      base::UnsafeSharedMemoryRegion histogram_memory_region,
-      base::ReadOnlySharedMemoryRegion tracing_config_memory_region);
+      scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+          histogram_memory_region,
+      scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
+          tracing_config_memory_region,
+      scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+          tracing_output_memory_region);
 
   // The methods below are defined in the order they are called.
 
@@ -330,7 +334,7 @@ class ChildProcessLauncherHelper
 
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<sandbox::SeatbeltExecClient> seatbelt_exec_client_;
-  sandbox::mac::SandboxPolicy policy_;
+  std::string serialized_policy_;
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_IOS)
@@ -354,11 +358,22 @@ class ChildProcessLauncherHelper
   base::win::ScopedHandle log_handle_;
 #endif
 
-  // Histogram shared memory region metadata.
-  base::UnsafeSharedMemoryRegion histogram_memory_region_;
+  // Histogram shared memory region. Ownership of the memory region object is
+  // shared with the process host which runs, and is destroyed, asynchronously.
+  scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+      histogram_memory_region_;
 
-  // Startup tracing config shared memory region.
-  base::ReadOnlySharedMemoryRegion tracing_config_memory_region_;
+  // Startup tracing config shared memory region. Ownership of the memory region
+  // object is shared with the process host which runs, and is destroyed,
+  // asynchronously.
+  scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
+      tracing_config_memory_region_;
+
+  // Startup tracing output shared memory region. Ownership of the memory region
+  // object is shared with the process host which runs, and is destroyed,
+  // asynchronously.
+  scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+      tracing_output_memory_region_;
 
   // Creation time of the helper, used for metrics.
   // TODO(crbug.com/40287847): Remove when parallel launching is finished.

@@ -25,6 +25,7 @@
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_options.h"
 #include "components/services/storage/shared_storage/shared_storage_test_utils.h"
+#include "services/network/public/cpp/features.h"
 #include "sql/database.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -48,6 +49,7 @@ using OperationResult = SharedStorageDatabase::OperationResult;
 using GetResult = SharedStorageDatabase::GetResult;
 using TimeResult = SharedStorageDatabase::TimeResult;
 using EntriesResult = SharedStorageDatabase::EntriesResult;
+using DataClearSource = SharedStorageDatabase::DataClearSource;
 
 const int kBudgetIntervalHours = 24;
 const int kStalenessThresholdDays = 1;
@@ -88,7 +90,8 @@ constexpr char kBytesUsedTotalHistogram[] =
     "Storage.SharedStorage.Database.FileBacked.BytesUsed.Total.KB";
 constexpr char kTimingOpenImplHistogram[] =
     "Storage.SharedStorage.Database.Timing.OpenImpl";
-
+constexpr char kDataDurationHistogram[] =
+    "Storage.SharedStorage.OnDataClearedForOrigin.DataDurationInDays";
 }  // namespace
 
 class SharedStorageDatabaseTest : public testing::Test {
@@ -152,7 +155,7 @@ TEST_F(SharedStorageDatabaseTest, OptionsCreatedFromFeatures) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      {blink::features::kSharedStorageAPI},
+      {network::features::kSharedStorageAPI},
       {{"MaxSharedStoragePageSize", "2048"},
        {"MaxSharedStorageCacheSize", "1024"},
        {"MaxSharedStorageInitTries", "5"},
@@ -2769,6 +2772,156 @@ TEST_F(SharedStorageDatabaseTest, EightOrigins) {
                                        (10000 + 100100) / 2, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 1599000, 1);
   histogram_tester_.ExpectTotalCount(kTimingOpenImplHistogram, 1);
+}
+
+class SharedStorageDatabaseDataDurationHistogramTest
+    : public SharedStorageDatabaseTest {
+ public:
+  std::unique_ptr<SharedStorageDatabaseOptions> GetDatabaseOptions() override {
+    return std::make_unique<SharedStorageDatabaseOptions>(
+        /*max_page_size=*/4096,
+        /*max_cache_size=*/1024,
+        /*max_bytes_per_origin=*/kMaxBytesPerOrigin,
+        /*max_init_tries=*/1,
+        /*max_iterator_batch_size=*/100,
+        /*bit_budget=*/kBitBudget,
+        /*budget_interval=*/base::Hours(kBudgetIntervalHours),
+        /*staleness_threshold=*/base::Days(30));
+  }
+
+  void SetUp() override {
+    SharedStorageDatabaseTest::SetUp();
+
+    db_ = std::make_unique<SharedStorageDatabase>(
+        base::FilePath(), special_storage_policy_, GetDatabaseOptions());
+    db_->OverrideClockForTesting(&clock_);
+    clock_.SetNow(base::Time::Now());
+
+    ASSERT_TRUE(db_);
+  }
+};
+
+TEST_F(SharedStorageDatabaseDataDurationHistogramTest, ClearFromUI) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  ASSERT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"k1", u"v1"));
+
+  clock_.Advance(base::Days(2));
+
+  ASSERT_EQ(OperationResult::kSuccess,
+            db_->Clear(kOrigin1, DataClearSource::kUI));
+
+  histogram_tester_.ExpectUniqueSample(kDataDurationHistogram, /*sample=*/2,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(SharedStorageDatabaseDataDurationHistogramTest, ClearFromSite) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  ASSERT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"k1", u"v1"));
+
+  clock_.Advance(base::Days(2));
+
+  ASSERT_EQ(OperationResult::kSuccess,
+            db_->Clear(kOrigin1, DataClearSource::kSite));
+
+  // No histogram recorded for site-initiated clears.
+  histogram_tester_.ExpectTotalCount(kDataDurationHistogram,
+                                     /*expected_count=*/0);
+}
+
+TEST_F(SharedStorageDatabaseDataDurationHistogramTest, PurgeStale) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  const url::Origin kOrigin2 =
+      url::Origin::Create(GURL("http://www.example2.test"));
+  const url::Origin kOrigin3 =
+      url::Origin::Create(GURL("http://www.example3.test"));
+
+  ASSERT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"k1", u"v1"));
+  clock_.Advance(base::Days(10));
+  ASSERT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"k1", u"v1"));
+  clock_.Advance(base::Days(10));
+  ASSERT_EQ(OperationResult::kSet, db_->Set(kOrigin3, u"k1", u"v1"));
+  clock_.Advance(base::Days(25));
+
+  ASSERT_EQ(OperationResult::kSuccess, db_->PurgeStale());
+
+  histogram_tester_.ExpectTotalCount(kDataDurationHistogram,
+                                     /*expected_count=*/2);
+  histogram_tester_.ExpectBucketCount(kDataDurationHistogram, /*sample=*/45,
+                                      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(kDataDurationHistogram, /*sample=*/35,
+                                      /*expected_count=*/1);
+}
+
+TEST_F(SharedStorageDatabaseDataDurationHistogramTest, PurgeMatchingOrigins) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  const url::Origin kOrigin2 =
+      url::Origin::Create(GURL("http://www.example2.test"));
+
+  ASSERT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"k1", u"v1"));
+  clock_.Advance(base::Days(1));
+  ASSERT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"k1", u"v1"));
+  clock_.Advance(base::Days(1));
+
+  ASSERT_EQ(
+      OperationResult::kSuccess,
+      db_->PurgeMatchingOrigins(
+          StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
+              {kOrigin1}),
+          base::Time(), base::Time::Max(), /*perform_storage_cleanup=*/false));
+
+  histogram_tester_.ExpectUniqueSample(kDataDurationHistogram, /*sample=*/2,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(SharedStorageDatabaseDataDurationHistogramTest,
+       ManualPurgeExpiredValuesOnSet) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  const url::Origin kOrigin2 =
+      url::Origin::Create(GURL("http://www.example2.test"));
+  const url::Origin kOrigin3 =
+      url::Origin::Create(GURL("http://www.example3.test"));
+
+  ASSERT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"k1", u"v1"));
+  clock_.Advance(base::Days(10));
+  ASSERT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"k1", u"v1"));
+  clock_.Advance(base::Days(10));
+  ASSERT_EQ(OperationResult::kSet, db_->Set(kOrigin3, u"k1", u"v1"));
+  clock_.Advance(base::Days(25));
+
+  std::pair<std::u16string, std::u16string> key_value_pair_max_bytes(
+      std::u16string(25, u'a'), std::u16string(25, u'b'));
+
+  // Trigger manual purge for kOrigin2 by attempting to set a value that would
+  // exceed its storage limit. This forces the database to evaluate and remove
+  // expired entries for kOrigin2 before the new value is stored.
+  ASSERT_EQ(OperationResult::kSet,
+            db_->Set(kOrigin2, key_value_pair_max_bytes.first,
+                     key_value_pair_max_bytes.second));
+
+  histogram_tester_.ExpectUniqueSample(kDataDurationHistogram, /*sample=*/35,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(SharedStorageDatabaseDataDurationHistogramTest,
+       RecordsDurationCappedAtMaximumValue) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  ASSERT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"k1", u"v1"));
+
+  clock_.Advance(base::Days(100));
+
+  ASSERT_EQ(OperationResult::kSuccess,
+            db_->Clear(kOrigin1, DataClearSource::kUI));
+
+  // Data duration exceeding the maximum histogram value (60 days) is capped and
+  // recorded in the overflow bucket (61).
+  histogram_tester_.ExpectUniqueSample(kDataDurationHistogram, /*sample=*/61,
+                                       /*expected_bucket_count=*/1);
 }
 
 }  // namespace storage

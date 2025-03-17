@@ -97,7 +97,8 @@ class ModelLoaderDev<T> extends ModelLoader<T> {
 
   override async load(): Promise<Model<T>> {
     console.log('model installation requested');
-    if (this.state.value.kind === 'notInstalled') {
+    if (this.state.value.kind !== 'installed' &&
+        this.state.value.kind !== 'installing') {
       this.state.value = {kind: 'installing', progress: 0};
       // Simulate the loading of model.
       let progress = 0;
@@ -106,7 +107,11 @@ class ModelLoaderDev<T> extends ModelLoader<T> {
         // 4% per 200 ms -> simulate 5 seconds for the whole installation.
         progress += 4;
         if (progress >= 100) {
-          this.state.value = {kind: 'installed'};
+          if (this.platformHandler.forceGenAiModelDownloadError.value) {
+            this.state.value = {kind: 'error'};
+          } else {
+            this.state.value = {kind: 'installed'};
+          }
           break;
         }
         this.state.value = {kind: 'installing', progress};
@@ -124,6 +129,9 @@ class ModelLoaderDev<T> extends ModelLoader<T> {
       return {kind: 'error', error: ModelResponseError.GENERAL};
     }
     const model = await this.load();
+    if (this.state.value.kind !== 'installed') {
+      return {kind: 'error', error: ModelResponseError.GENERAL};
+    }
     try {
       return await model.execute(content, language);
     } finally {
@@ -289,8 +297,9 @@ class SodaSessionDev implements SodaSession {
     }
   }
 
-  async start(): Promise<void> {
+  start(): Promise<void> {
     console.info('Soda session started');
+    return Promise.resolve();
   }
 
   addAudio(samples: Float32Array): void {
@@ -304,9 +313,10 @@ class SodaSessionDev implements SodaSession {
     }
   }
 
-  async stop(): Promise<void> {
+  stop(): Promise<void> {
     console.info('Soda session stopped');
     this.emitSodaNextWord(true);
+    return Promise.resolve();
   }
 
   subscribeEvent(observer: Observer<SodaEvent>): Unsubscribe {
@@ -371,7 +381,15 @@ export class PlatformHandler extends PlatformHandlerBase {
     () => devSettings.value.canCaptureSystemAudioWithLoopback,
   );
 
-  override async init(): Promise<void> {
+  private readonly forceLanguageSelection = computed(
+    () => devSettings.value.forceLanguageSelection,
+  );
+
+  readonly forceGenAiModelDownloadError = computed(
+    () => devSettings.value.forceGenAiModelDownloadError,
+  );
+
+  override init(): Promise<void> {
     document.body.appendChild(this.errorView);
     settingsInit();
     const sodaState = signal<ModelState>({kind: 'notInstalled'});
@@ -388,6 +406,11 @@ export class PlatformHandler extends PlatformHandlerBase {
     });
 
     this.initPerfEventWatchers();
+    return Promise.resolve();
+  }
+
+  override getDefaultLanguage(): LanguageCode {
+    return LanguageCode.EN_US;
   }
 
   override getLangPackList(): readonly LangPackInfo[] {
@@ -399,6 +422,10 @@ export class PlatformHandler extends PlatformHandlerBase {
   }
 
   override isMultipleLanguageAvailable(): boolean {
+    if (this.forceLanguageSelection.value) {
+      return true;
+    }
+
     let count = 0;
     for (const state of this.sodaStates.values()) {
       if (state.value.kind !== 'unavailable') {
@@ -419,7 +446,7 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   override perfLogger = new PerfLogger(this.eventsSender);
 
-  override async installSoda(language: LanguageCode): Promise<void> {
+  override installSoda(language: LanguageCode): Promise<void> {
     console.log(`SODA lang pack ${language} installation requested`);
     const sodaState = this.getSodaState(language);
     if (sodaState.value.kind === 'notInstalled') {
@@ -444,6 +471,7 @@ export class PlatformHandler extends PlatformHandlerBase {
         }
       })();
     }
+    return Promise.resolve();
   }
 
   override isSodaAvailable(): boolean {
@@ -454,14 +482,14 @@ export class PlatformHandler extends PlatformHandlerBase {
     return assertExists(this.sodaStates.get(language));
   }
 
-  override async newSodaSession(_language: LanguageCode): Promise<SodaSession> {
-    return new SodaSessionDev();
+  override newSodaSession(_language: LanguageCode): Promise<SodaSession> {
+    return Promise.resolve(new SodaSessionDev());
   }
 
-  override async getMicrophoneInfo(
+  override getMicrophoneInfo(
     _deviceId: string,
   ): Promise<InternalMicInfo> {
-    return {isDefault: false, isInternal: false};
+    return Promise.resolve({isDefault: false, isInternal: false});
   }
 
   override renderDevUi(): RenderResult {
@@ -483,6 +511,18 @@ export class PlatformHandler extends PlatformHandlerBase {
       const target = assertInstanceof(ev.target, CrosSwitch);
       devSettings.mutate((s) => {
         s.canCaptureSystemAudioWithLoopback = target.selected;
+      });
+    }
+    function handleForceLanguageSelectionChange(ev: Event) {
+      const target = assertInstanceof(ev.target, CrosSwitch);
+      devSettings.mutate((s) => {
+        s.forceLanguageSelection = target.selected;
+      });
+    }
+    function handleForceGenAiModelDownloadErrorChange(ev: Event) {
+      const target = assertInstanceof(ev.target, CrosSwitch);
+      devSettings.mutate((s) => {
+        s.forceGenAiModelDownloadError = target.selected;
       });
     }
     // TODO(pihsun): Move the dev toggle to a separate component, so we don't
@@ -538,6 +578,33 @@ export class PlatformHandler extends PlatformHandlerBase {
           >
           </cros-switch>
           Toggle can capture system audio via getDisplayMedia
+        </label>
+      </div>
+      <div class="section">
+        <label style=${styleMap(labelStyle)}>
+          <!--
+            TODO(hsuanling): cros-switch doesn't automatically makes clicking
+            the surrounding label toggles the switch, unlike md-switch.
+          -->
+          <cros-switch
+            @change=${handleForceLanguageSelectionChange}
+            .selected=${this.forceLanguageSelection.value}
+          >
+          </cros-switch>
+          Toggle can force language selection display
+        </label>
+      </div>
+      <div class="section">
+        <label style=${styleMap(labelStyle)}>
+          <!--
+            TODO(hsuanling): Use select for model error enum.
+          -->
+          <cros-switch
+            @change=${handleForceGenAiModelDownloadErrorChange}
+            .selected=${this.forceGenAiModelDownloadError.value}
+          >
+          </cros-switch>
+          Toggle to force GenAI model fail to install
         </label>
       </div>
     `;

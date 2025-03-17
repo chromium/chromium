@@ -64,50 +64,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Timeout error"/>
 </enum>
 
-<enum name="IDBLevelDBBackingStoreInternalErrorType">
-  <int value="0" label="IDBLevelDBBackingStoreReadError">
-    IndexedDB encountered an error attempting to read or decode a value from the
-    leveldb backing store, indicative of corruption or I/O error. Unused as of
-    M26.
-  </int>
-  <int value="1" label="IDBLevelDBBackingStoreWriteError">
-    IndexeDB encountered an error attempting to write or commit a value to the
-    leveldb backing store, indicative of I/O error. Unused as of M26.
-  </int>
-  <int value="2" label="IDBLevelDBBackingStoreConsistencyError">
-    IndexedDB encountered a consistency error in the leveldb backing store,
-    indicative of corruption or an coding error. Unused as of M26.
-  </int>
-  <int value="3" label="FindKeyInIndex"/>
-  <int value="4" label="GetIDBDatabaseMetaData"/>
-  <int value="5" label="GetIndexes"/>
-  <int value="6" label="GetKeyGeneratorCurrentNumber"/>
-  <int value="7" label="GetObjectStores"/>
-  <int value="8" label="GetRecord"/>
-  <int value="9" label="KeyExistsInObjectStore"/>
-  <int value="10" label="LoadCurrentRow"/>
-  <int value="11" label="SetupMetadata"/>
-  <int value="12" label="GetPrimaryKeyViaIndex"/>
-  <int value="13" label="KeyExistsInIndex"/>
-  <int value="14" label="VersionExists"/>
-  <int value="15" label="DeleteObjectStore"/>
-  <int value="16" label="SetMaxObjectStoreId"/>
-  <int value="17" label="SetMaxIndexId"/>
-  <int value="18" label="GetNewDatabaseId"/>
-  <int value="19" label="GetNewVersionNumber"/>
-  <int value="20" label="CreateIDBDatabaseMetaData"/>
-  <int value="21" label="DeleteDatabase"/>
-  <int value="22" label="TransactionCommit"/>
-  <int value="23" label="GetDatabaseNames"/>
-  <int value="24" label="DeleteIndex"/>
-  <int value="25" label="ClearObjectStore"/>
-  <int value="26" label="ReadBlobJournal"/>
-  <int value="27" label="DecodeBlobJournal"/>
-  <int value="28" label="GetBlobKeyGeneratorCurrentNumber"/>
-  <int value="29" label="GetBlobInfoForRecord"/>
-  <int value="30" label="UpgradingSchemaWithCorruptedBlobs"/>
-</enum>
-
 <enum name="IDBLevelDBBackingStoreOpenResult">
   <int value="0" label="OpenMemorySuccess (Deprecated)">
     An in-memory backing store was opened successfully.

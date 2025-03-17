@@ -5,6 +5,12 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_
 
+#include "components/collaboration/public/collaboration_flow_type.h"
+
+namespace data_sharing {
+class Logger;
+}  // namespace data_sharing
+
 namespace collaboration::metrics {
 
 // Types of join events that occur in the collaboration service.
@@ -14,11 +20,85 @@ namespace collaboration::metrics {
 enum class CollaborationServiceJoinEvent {
   kUnknown = 0,
   kStarted = 1,
-  kMaxValue = kStarted
+  kCanceled = 2,
+  kCanceledNotSignedIn = 3,
+  kNotSignedIn = 4,
+  kAccepted = 5,
+  kOpenedNewGroup = 6,
+  kOpenedExistingGroup = 7,
+  kFlowRequirementsMet = 8,
+  kParsingFailure = 9,
+  kSigninVerificationFailed = 10,
+  kSigninVerified = 11,
+  kSigninVerifiedInObserver = 12,
+  kFoundCollaborationWithoutTabGroup = 13,
+  kReadNewGroupFailed = 14,
+  kReadNewGroupSuccess = 15,
+  kAddedUserToGroup = 16,
+  kPreviewGroupFullError = 17,
+  kPreviewFailure = 18,
+  kPreviewSuccess = 19,
+  kGroupExistsWhenJoined = 20,
+  kTabGroupFetched = 21,
+  kPeopleGroupFetched = 22,
+  kPromoteTabGroup = 23,
+  kDataSharingReadyWhenStarted = 24,
+  kDataSharingServiceReadyObserved = 25,
+  kTabGroupServiceReady = 26,
+  kAllServicesReadyForFlow = 27,
+  kTimeoutWaitingForServicesReady = 28,
+  kTimeoutWaitingForSyncAndDataSharingGroup = 29,
+  kDevicePolicyDisableSignin = 30,
+  kManagedAccountSignin = 31,
+  kAccountInfoNotReadyOnSignin = 32,
+  kMaxValue = kAccountInfoNotReadyOnSignin,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceJoinEvent)
 
-void RecordJoinEvent(CollaborationServiceJoinEvent event);
+// Types of share or manage events that occur in the collaboration service.
+// These values are persisted to logs. Entries should not be renumbered and
+// number values should never be reused.
+// LINT.IfChange(CollaborationServiceShareOrManageEvent)
+enum class CollaborationServiceShareOrManageEvent {
+  kUnknown = 0,
+  kStarted = 1,
+  kNotSignedIn = 2,
+  kCanceledNotSignedIn = 3,
+  kShareDialogShown = 4,
+  kManageDialogShown = 5,
+  kTabGroupShared = 6,
+  kUrlReadyToShare = 7,
+  kFlowRequirementsMet = 8,
+  kSigninVerificationFailed = 9,
+  kSigninVerified = 10,
+  kSigninVerifiedInObserver = 11,
+  kSyncedTabGroupNotFound = 12,
+  kCollaborationIdMissing = 13,
+  kCollaborationIdInvalid = 14,
+  kTabGroupMissingBeforeMigration = 15,
+  kMigrationFailure = 16,
+  kReadGroupFailed = 17,
+  kUrlCreationFailed = 18,
+  kDataSharingReadyWhenStarted = 19,
+  kDataSharingServiceReadyObserved = 20,
+  kTabGroupServiceReady = 21,
+  kAllServicesReadyForFlow = 22,
+  kDevicePolicyDisableSignin = 23,
+  kManagedAccountSignin = 24,
+  kAccountInfoNotReadyOnSignin = 25,
+  kMaxValue = kAccountInfoNotReadyOnSignin,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEvent)
+
+void RecordJoinEvent(data_sharing::Logger* logger,
+                     CollaborationServiceJoinEvent event);
+void RecordShareOrManageEvent(data_sharing::Logger* logger,
+                              CollaborationServiceShareOrManageEvent event);
+void RecordJoinOrShareOrManageEvent(
+    data_sharing::Logger* logger,
+    FlowType type,
+    CollaborationServiceJoinEvent join_event,
+    CollaborationServiceShareOrManageEvent share_or_manage_event);
 }  // namespace collaboration::metrics
 
 #endif  // COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_

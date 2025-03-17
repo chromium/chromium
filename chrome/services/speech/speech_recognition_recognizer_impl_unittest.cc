@@ -96,7 +96,7 @@ TEST_F(SpeechRecognitionRecognizerImplTest, OnLanguagePackInstalledTest) {
 TEST_F(SpeechRecognitionRecognizerImplTest,
        SpeechRecognitionRecognitionContextTest) {
   std::vector<media::SpeechRecognitionPhrase> phrases;
-  phrases.push_back(media::SpeechRecognitionPhrase("test phrase", 2.0));
+  phrases.emplace_back("test phrase", 2.0);
 
   auto recognizer = CreateRecognizer(
       CreateOptions(media::SpeechRecognitionRecognitionContext(phrases)));
@@ -113,6 +113,18 @@ TEST_F(SpeechRecognitionRecognizerImplTest,
   auto phrase = context_input.phrases().phrase().Get(0);
   EXPECT_EQ("test phrase", phrase.phrase());
   EXPECT_EQ(2.0, phrase.boost());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest, UpdateRecognitionContextTest) {
+  auto recognizer = CreateRecognizer(CreateOptions());
+  auto soda_client = std::make_unique<NiceMock<::soda::MockSodaClient>>();
+  auto* soda_client_ptr = soda_client.get();
+  recognizer->SetSodaClientForTesting(std::move(soda_client));
+
+  media::SpeechRecognitionRecognitionContext context;
+  context.phrases.emplace_back("test phrase", 2.0);
+  EXPECT_CALL(*soda_client_ptr, UpdateRecognitionContext(_));
+  recognizer->UpdateRecognitionContext(context);
 }
 
 }  // namespace speech

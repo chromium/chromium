@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shortcut_input.js';
+import 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -43,6 +43,16 @@ export class ExtensionsKeyboardShortcutsElement extends
     this.addEventListener('view-enter-start', this.onViewEnter_);
   }
 
+  protected onInputCaptureChange_(event: CustomEvent<boolean>) {
+    this.delegate.setShortcutHandlingSuspended(event.detail);
+  }
+
+  protected onShortcutUpdated_(
+      itemId: string, commandName: string, event: CustomEvent<string>) {
+    this.delegate.updateExtensionCommandKeybinding(
+        itemId, commandName, event.detail);
+  }
+
   private onViewEnter_() {
     chrome.metricsPrivate.recordUserAction('Options_ExtensionCommands');
   }
@@ -74,6 +84,21 @@ export class ExtensionsKeyboardShortcutsElement extends
     this.delegate.updateExtensionCommandScope(
         extensionId, commandName,
         (target.value as chrome.developerPrivate.CommandScope));
+  }
+
+  protected isChromeScopeSelected_(command: chrome.developerPrivate.Command) {
+    return command.scope === chrome.developerPrivate.CommandScope.CHROME;
+  }
+
+  protected isGlobalScopeSelected_(command: chrome.developerPrivate.Command) {
+    return command.scope === chrome.developerPrivate.CommandScope.GLOBAL;
+  }
+
+  protected computeInputDisabled_(
+      item: chrome.developerPrivate.ExtensionInfo,
+      command: chrome.developerPrivate.Command): boolean {
+    return item.isCommandRegistrationHandledExternally &&
+        command.scope === chrome.developerPrivate.CommandScope.GLOBAL;
   }
 }
 

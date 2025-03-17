@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Instantiable version of {@link PasswordSettingsAccessorFactory}, don't add anything to this
  * class. Downstream provides an actual implementation via ServiceLoader/@ServiceImpl.
  */
+@NullMarked
 class PasswordSettingsAccessorFactoryUpstreamImpl extends PasswordSettingsAccessorFactory {}

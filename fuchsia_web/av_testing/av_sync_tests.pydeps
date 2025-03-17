@@ -8,6 +8,8 @@
 ../../build/fuchsia/test/isolate_daemon.py
 ../../build/fuchsia/test/modification_waiter.py
 ../../build/fuchsia/test/monitors.py
+../../build/fuchsia/test/perf_trace.py
+../../build/fuchsia/test/repeating_log.py
 ../../build/fuchsia/test/run_webpage_test.py
 ../../build/fuchsia/test/test_runner.py
 ../../build/fuchsia/test/version.py

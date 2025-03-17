@@ -107,6 +107,11 @@ class BaseSiteIsolationTest : public testing::Test {
       return GetBrowserSpecificBuiltInIsolatedOrigins();
     }
 
+    bool ShouldDisableOriginIsolation() override {
+      return site_isolation::SiteIsolationPolicy::
+          ShouldDisableOriginIsolationDueToMemoryThreshold();
+    }
+
     bool strict_isolation_enabled_ = false;
   };
 
@@ -483,6 +488,132 @@ TEST_F(NoPasswordSiteIsolationPolicyTest,
                                           GURL("http://foo.com/"));
   EXPECT_FALSE(foo_instance->RequiresDedicatedProcess());
 }
+
+enum class OriginIsolationProcessMemoryThreshold {
+  kNone,
+  k128MB,
+  k768MB,
+};
+
+struct OriginIsolationMemoryThresholdBrowserTestParams {
+  OriginIsolationProcessMemoryThreshold threshold;
+  bool enabled;
+};
+
+class OriginIsolationMemoryThresholdBrowserTest
+    : public BaseSiteIsolationTest,
+      public ::testing::WithParamInterface<
+          OriginIsolationMemoryThresholdBrowserTestParams> {
+ public:
+  OriginIsolationMemoryThresholdBrowserTest() {
+    switch (GetParam().threshold) {
+      case OriginIsolationProcessMemoryThreshold::kNone:
+        break;
+      case OriginIsolationProcessMemoryThreshold::k128MB:
+        threshold_feature_.InitAndEnableFeatureWithParameters(
+            features::kOriginIsolationMemoryThreshold,
+            {{features::kOriginIsolationMemoryThresholdParamName, "128"}});
+        break;
+      case OriginIsolationProcessMemoryThreshold::k768MB:
+        threshold_feature_.InitAndEnableFeatureWithParameters(
+            features::kOriginIsolationMemoryThreshold,
+            {{features::kOriginIsolationMemoryThresholdParamName, "768"}});
+        break;
+    }
+
+    if (GetParam().enabled) {
+      mode_feature_.InitAndEnableFeature(
+          ::features::kOriginKeyedProcessesByDefault);
+    } else {
+      mode_feature_.InitAndDisableFeature(
+          ::features::kOriginKeyedProcessesByDefault);
+    }
+  }
+
+  OriginIsolationMemoryThresholdBrowserTest(
+      const OriginIsolationMemoryThresholdBrowserTest&) = delete;
+  OriginIsolationMemoryThresholdBrowserTest& operator=(
+      const OriginIsolationMemoryThresholdBrowserTest&) = delete;
+
+  void SetUp() override {
+    // This way the test always sees the same amount of physical memory
+    // (kLowMemoryDeviceThresholdMB = 512MB), regardless of how much memory is
+    // available in the testing environment.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnableLowEndDeviceMode);
+    // Without strict site isolation, AreOriginKeyedProcessesByDefaultEnabled()
+    // will always be false. This is needed to run the test on Android.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSitePerProcess);
+    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    BaseSiteIsolationTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList threshold_feature_;
+  base::test::ScopedFeatureList mode_feature_;
+};  // class OriginIsolationMemoryThresholdBrowserTest
+
+TEST_P(OriginIsolationMemoryThresholdBrowserTest, IsolationThresholds) {
+  // OAC opt-in is enabled by default, and since the test forces strict site
+  // isolation on, we expect OAC opt-in process isolation to always work.
+  bool expected_oac_optin_process = true;
+#if BUILDFLAG(IS_ANDROID)
+  // Android doesn't enable kOriginKeyedProcessesByDefault, so if it's on it's
+  // because it was explicitly enable, in which case we don't do memory checks.
+  bool expected_process_origin_isolation = GetParam().enabled;
+#else
+  // If enabled, two of the three threshold settings are compatible with the
+  // kLowEndDeviceMode switch, which simulated 512MB or RAM.
+  OriginIsolationProcessMemoryThreshold threshold = GetParam().threshold;
+  bool expected_process_origin_isolation =
+      GetParam().enabled &&
+      (threshold == OriginIsolationProcessMemoryThreshold::kNone ||
+       threshold == OriginIsolationProcessMemoryThreshold::k128MB);
+#endif
+  EXPECT_EQ(expected_oac_optin_process,
+            content::SiteIsolationPolicy::
+                IsProcessIsolationForOriginAgentClusterEnabled());
+  EXPECT_EQ(
+      expected_process_origin_isolation,
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OriginIsolationMemoryThresholdBrowserTest,
+    testing::Values(
+        OriginIsolationMemoryThresholdBrowserTestParams{
+            OriginIsolationProcessMemoryThreshold::kNone, true},
+        OriginIsolationMemoryThresholdBrowserTestParams{
+            OriginIsolationProcessMemoryThreshold::k128MB, true},
+        OriginIsolationMemoryThresholdBrowserTestParams{
+            OriginIsolationProcessMemoryThreshold::k768MB, true},
+        OriginIsolationMemoryThresholdBrowserTestParams{
+            OriginIsolationProcessMemoryThreshold::kNone, false},
+        OriginIsolationMemoryThresholdBrowserTestParams{
+            OriginIsolationProcessMemoryThreshold::k128MB, false},
+        OriginIsolationMemoryThresholdBrowserTestParams{
+            OriginIsolationProcessMemoryThreshold::k768MB, false}),
+    [](const testing::TestParamInfo<
+        OriginIsolationMemoryThresholdBrowserTestParams>& info) {
+      std::string threshold_str;
+      switch (info.param.threshold) {
+        case OriginIsolationProcessMemoryThreshold::kNone:
+          threshold_str = "none";
+          break;
+        case OriginIsolationProcessMemoryThreshold::k128MB:
+          threshold_str = "128MB";
+          break;
+        case OriginIsolationProcessMemoryThreshold::k768MB:
+          threshold_str = "768MB";
+          break;
+      }
+      std::string label = base::StringPrintf(
+          "OriginIsolationThresholdTest_%s_Threshold_%s",
+          (info.param.enabled ? "Enabled" : "Disabled"), threshold_str.c_str());
+      return label;
+    });
 
 enum class SitePerProcessMemoryThreshold {
   kNone,

@@ -20,43 +20,50 @@
 #include "base/time/clock.h"
 #include "base/values.h"
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
-#include "content/public/browser/web_ui_message_handler.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "ui/webui/resources/cr_components/history/history.mojom.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 // The handler for Javascript messages related to the "history" view.
-class BrowsingHistoryHandler : public content::WebUIMessageHandler,
+class BrowsingHistoryHandler : public history::mojom::PageHandler,
                                public ProfileBasedBrowsingHistoryDriver {
  public:
-  BrowsingHistoryHandler();
+  BrowsingHistoryHandler(
+      mojo::PendingReceiver<history::mojom::PageHandler> pending_page_handler,
+      Profile* profile,
+      content::WebContents* web_contents);
 
   BrowsingHistoryHandler(const BrowsingHistoryHandler&) = delete;
   BrowsingHistoryHandler& operator=(const BrowsingHistoryHandler&) = delete;
 
   ~BrowsingHistoryHandler() override;
 
-  // WebUIMessageHandler implementation.
-  void OnJavascriptAllowed() override;
-  void OnJavascriptDisallowed() override;
-  void RegisterMessages() override;
-
   void StartQueryHistory();
 
-  // Handler for the "queryHistory" message.
-  void HandleQueryHistory(const base::Value::List& args);
+  void SetPage(mojo::PendingRemote<history::mojom::Page> pending_page) override;
 
-  // Handler for the "queryHistoryContinuation" message.
-  void HandleQueryHistoryContinuation(const base::Value::List& args);
+  void QueryHistory(const std::string& query,
+                    int max_count,
+                    std::optional<double> begin_timestamp,
+                    QueryHistoryCallback callback) override;
 
-  // Handler for the "removeVisits" message.
-  void HandleRemoveVisits(const base::Value::List& args);
+  void QueryHistoryContinuation(
+      QueryHistoryContinuationCallback callback) override;
 
-  // Handler for "clearBrowsingData" message.
-  void HandleClearBrowsingData(const base::Value::List& args);
+  void RemoveVisits(const std::vector<history::mojom::RemovalItemPtr> items,
+                    RemoveVisitsCallback callback) override;
 
-  // Handler for "removeBookmark" message.
-  void HandleRemoveBookmark(const base::Value::List& args);
+  void OpenClearBrowsingDataDialog() override;
 
-  // Handler for "setLastSelectedTab" message.
-  void HandleSetLastSelectedTab(const base::Value::List& args);
+  void RemoveBookmark(const std::string& url) override;
+
+  void SetLastSelectedTab(const int last_tab) override;
 
   // BrowsingHistoryDriver implementation.
   void OnQueryComplete(
@@ -82,15 +89,25 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
     browsing_history_service_ = std::move(service);
   }
 
+  history::BrowsingHistoryService* get_browsing_history_service_for_testing() {
+    return browsing_history_service_.get();
+  }
+
  protected:
   virtual void SendHistoryQuery(int count,
-                                const std::u16string& query,
+                                const std::string& query,
                                 std::optional<double> begin_timestamp);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowsingHistoryHandlerTest,
                            ObservingWebHistoryDeletions);
   FRIEND_TEST_ALL_PREFIXES(BrowsingHistoryHandlerTest, MdTruncatesTitles);
+
+  raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> web_contents_;
+
+  mojo::Remote<history::mojom::Page> page_;
+  mojo::Receiver<history::mojom::PageHandler> page_handler_;
 
   // The clock used to vend times.
   raw_ptr<base::Clock> clock_;
@@ -99,13 +116,11 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
 
   std::vector<base::OnceClosure> deferred_callbacks_;
 
-  std::optional<base::Value::Dict> initial_results_;
-
-  std::string query_history_callback_id_;
+  QueryHistoryCallback query_history_callback_;
 
   base::OnceClosure query_history_continuation_;
 
-  std::queue<std::string> remove_visits_callbacks_;
+  std::queue<RemoveVisitsCallback> remove_visits_callbacks_;
 
   base::WeakPtrFactory<BrowsingHistoryHandler> weak_factory_{this};
 };

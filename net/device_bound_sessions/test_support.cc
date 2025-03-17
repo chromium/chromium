@@ -13,6 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "crypto/signature_verifier.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -40,6 +41,7 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
         "Sec-Session-Registration",
         "(RS256 "
         "ES256);challenge=\"challenge_value\";path=\"dbsc_register_session\"");
+    response->set_content_type("text/html");
     return response;
   } else if (request.relative_url == "/dbsc_register_session") {
     response->AddCustomHeader("Set-Cookie", "auth_cookie=abcdef0123;");
@@ -58,6 +60,12 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
     std::optional<std::string> json = base::WriteJson(registration_response);
     EXPECT_TRUE(json.has_value());
     response->set_content(*json);
+    return response;
+  } else if (request.relative_url == "/resource_triggered_dbsc_registration") {
+    response->set_content_type("text/html");
+    response->set_content(base::StringPrintf(
+        R"*(<html><body onload="fetch('%s')"></body></html>)*",
+        base_url.Resolve("/dbsc_required").spec()));
     return response;
   }
   return nullptr;
@@ -257,5 +265,67 @@ bool VerifyEs256Jwt(std::string_view jwt) {
       base::as_byte_span(base::StrCat({header64, ".", payload64})));
   return verifier.VerifyFinal();
 }
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+// static
+ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithSuccess(
+    std::string_view session_id,
+    std::string_view refresh_url_string,
+    std::string_view origin_string) {
+  return ScopedTestRegistrationFetcher(base::BindRepeating(
+      [](const std::string& session_id, const std::string& refresh_url_string,
+         const std::string& origin_string) {
+        std::vector<SessionParams::Credential> cookie_credentials;
+        cookie_credentials.push_back(
+            SessionParams::Credential{"test_cookie", "secure"});
+        SessionParams::Scope scope;
+        scope.include_site = true;
+        scope.origin = origin_string;
+        return base::expected<SessionParams, SessionError>(SessionParams(
+            session_id, GURL(refresh_url_string), refresh_url_string,
+            std::move(scope), std::move(cookie_credentials),
+            unexportable_keys::UnexportableKeyId()));
+      },
+      std::string(session_id), std::string(refresh_url_string),
+      std::string(origin_string)));
+}
+
+// static
+ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithFailure(
+    SessionError::ErrorType error_type,
+    std::string_view refresh_url_string) {
+  return ScopedTestRegistrationFetcher(base::BindRepeating(
+      [](SessionError::ErrorType error_type, const GURL& refresh_url) {
+        return base::expected<SessionParams, SessionError>(base::unexpected(
+            SessionError{error_type, net::SchemefulSite(refresh_url),
+                         /*session_id=*/std::nullopt}));
+      },
+      error_type, GURL(refresh_url_string)));
+}
+
+// static
+ScopedTestRegistrationFetcher
+ScopedTestRegistrationFetcher::CreateWithTermination(
+    std::string_view session_id,
+    std::string_view refresh_url_string) {
+  return ScopedTestRegistrationFetcher(base::BindRepeating(
+      [](const std::string& session_id, const std::string& refresh_url_string) {
+        return base::expected<SessionParams, SessionError>(
+            base::unexpected(SessionError{
+                SessionError::ErrorType::kServerRequestedTermination,
+                net::SchemefulSite(GURL(refresh_url_string)), session_id}));
+      },
+      std::string(session_id), std::string(refresh_url_string)));
+}
+
+ScopedTestRegistrationFetcher::ScopedTestRegistrationFetcher(
+    RegistrationFetcher::FetcherType fetcher)
+    : fetcher_(fetcher) {
+  RegistrationFetcher::SetFetcherForTesting(&fetcher_);
+}
+ScopedTestRegistrationFetcher::~ScopedTestRegistrationFetcher() {
+  RegistrationFetcher::SetFetcherForTesting(nullptr);
+}
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 }  // namespace net::device_bound_sessions

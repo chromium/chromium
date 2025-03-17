@@ -4,12 +4,12 @@
 
 package org.chromium.components.crash;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  *
  * The crash keys will only be included in browser process crash reports.
  */
+@NullMarked
 public class CrashKeys {
     private static final String[] KEYS =
             new String[] {
@@ -105,6 +106,6 @@ public class CrashKeys {
 
     @NativeMethods
     interface Natives {
-        void set(CrashKeys caller, int key, String value);
+        void set(CrashKeys caller, int key, @Nullable String value);
     }
 }

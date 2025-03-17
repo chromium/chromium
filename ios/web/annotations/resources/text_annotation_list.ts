@@ -8,7 +8,7 @@
  */
 
 // Matches an annotation returned by the browser side.
-interface TextViewportAnnotation {
+export interface TextViewportAnnotation {
   //  Character index to start of annotation.
   start: number;
   // Character index to end of annotation (first character after text).
@@ -23,7 +23,7 @@ interface TextViewportAnnotation {
 
 // Holds data needed to move through an array of `TextViewportAnnotation`. The
 // array is sorted and overlaps are removed.
-class TextAnnotationList {
+export class TextAnnotationList {
   // Unique id  number for current annotation, updated on `next`. Must be
   // different for each annotation in the page, not just a single instance of
   // `TextAnnotationList`.
@@ -133,9 +133,4 @@ class TextAnnotationList {
       return true;
     });
   }
-}
-
-export {
-  TextViewportAnnotation,
-  TextAnnotationList,
 }

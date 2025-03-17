@@ -17,6 +17,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_publisher.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/test/fidl_matchers.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

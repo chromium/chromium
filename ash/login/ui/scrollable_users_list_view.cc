@@ -195,7 +195,7 @@ ScrollableUsersListView::ScrollableUsersListView(
                                    base::RepeatingClosure());
     user_views_.push_back(view);
     view->UpdateForUser(users[i], false /*animate*/);
-    user_view_host_->AddChildView(view);
+    user_view_host_->AddChildViewRaw(view);
   }
 
   // |user_view_host_| is the same size as the user views, which may be shorter
@@ -216,7 +216,7 @@ ScrollableUsersListView::ScrollableUsersListView(
       views::BoxLayout::MainAxisAlignment::kCenter);
   ensure_min_height_layout->set_cross_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kStart);
-  ensure_min_height->AddChildView(user_view_host_.get());
+  ensure_min_height->AddChildViewRaw(user_view_host_.get());
   SetContents(std::move(ensure_min_height));
   SetBackgroundColor(std::nullopt);
   SetDrawOverflowIndicator(false);

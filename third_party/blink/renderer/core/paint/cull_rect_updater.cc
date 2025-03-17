@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 
-#include "base/auto_reset.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -198,13 +197,6 @@ void CullRectUpdater::Update() {
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Blink.CullRect.UpdateTime");
 
   UpdateInternal(CullRect::Infinite());
-
-#if DCHECK_IS_ON()
-  if (VLOG_IS_ON(2)) {
-    VLOG(2) << "PaintLayer tree after cull rect update:";
-    ShowLayerTree(&starting_layer_);
-  }
-#endif
 }
 
 void CullRectUpdater::UpdateForTesting(const CullRect& input_cull_rect) {
@@ -257,6 +249,13 @@ void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
 
   if (!g_original_cull_rects)
     starting_layer_.ClearNeedsCullRectUpdate();
+
+#if DCHECK_IS_ON()
+  if (VLOG_IS_ON(2)) {
+    VLOG(2) << "PaintLayer tree after cull rect update:";
+    ShowLayerTree(&starting_layer_);
+  }
+#endif
 }
 
 // See UpdateForDescendants for how |force_update_self| is propagated.
@@ -361,21 +360,19 @@ void CullRectUpdater::UpdateForDescendants(const Context& context,
 
 bool CullRectUpdater::UpdateForSelf(Context& context, PaintLayer& layer) {
   const auto& parent_object = context.current.container->GetLayoutObject();
-  // If the containing layer is fragmented, try to match fragments from the
-  // container to |layer|, so that any fragment clip for
-  // |context.current.container|'s fragment matches |layer|'s.
-  //
-  // TODO(paint-dev): If nested fragmentation is involved, we're not matching
-  // correctly here. In order to fix that, we most likely need to move over to
-  // some sort of fragment tree traversal (rather than pure PaintLayer tree
-  // traversal).
-  bool should_match_fragments = parent_object.IsFragmented();
   bool force_update_children = false;
   bool should_use_infinite_cull_rect =
       !context.current.subtree_is_out_of_cull_rect &&
       ShouldUseInfiniteCullRect(
           layer, view_transition_supplement_,
           context.current.subtree_should_use_infinite_cull_rect);
+
+  const FragmentData* parent_fragment = nullptr;
+  // If the parent has multiple fragments, don't set `parent_fragment`, and
+  // instead let ComputeFragmentCullRect() figure it out (map from root state).
+  if (!parent_object.IsFragmented()) {
+    parent_fragment = &parent_object.FirstFragment();
+  }
 
   for (FragmentData& fragment :
        MutableFragmentDataIterator(layer.GetLayoutObject())) {
@@ -386,27 +383,12 @@ bool CullRectUpdater::UpdateForSelf(Context& context, PaintLayer& layer) {
       // need to SetPreviousPaintResult() here.
       layer.SetPreviousPaintResult(kMayBeClippedByCullRect);
     } else {
-      const FragmentData* parent_fragment = nullptr;
-      if (!should_use_infinite_cull_rect) {
-        if (should_match_fragments) {
-          for (const FragmentData& walker :
-               FragmentDataIterator(parent_object)) {
-            parent_fragment = &walker;
-            if (parent_fragment->FragmentID() == fragment.FragmentID()) {
-              break;
-            }
-          }
-        } else {
-          parent_fragment = &parent_object.FirstFragment();
-        }
-      }
-
-      if (should_use_infinite_cull_rect || !parent_fragment) {
+      if (should_use_infinite_cull_rect) {
         cull_rect = CullRect::Infinite();
         contents_cull_rect = CullRect::Infinite();
       } else {
         cull_rect =
-            ComputeFragmentCullRect(context, layer, fragment, *parent_fragment);
+            ComputeFragmentCullRect(context, layer, fragment, parent_fragment);
         contents_cull_rect = ComputeFragmentContentsCullRect(
             context, layer, fragment, cull_rect);
       }
@@ -424,10 +406,10 @@ CullRect CullRectUpdater::ComputeFragmentCullRect(
     Context& context,
     PaintLayer& layer,
     const FragmentData& fragment,
-    const FragmentData& parent_fragment) {
-  auto local_state = fragment.LocalBorderBoxProperties().Unalias();
-  CullRect cull_rect = parent_fragment.GetContentsCullRect();
-  auto parent_state = parent_fragment.ContentsProperties().Unalias();
+    const FragmentData* parent_fragment) {
+  PropertyTreeState local_state = fragment.LocalBorderBoxProperties().Unalias();
+  std::optional<CullRect> cull_rect;
+  std::optional<PropertyTreeState> parent_state;
   const LayoutObject& object = layer.GetLayoutObject();
   const auto& parent_object = context.current.container->GetLayoutObject();
   const LocalFrameView* frame_view = object.GetFrameView();
@@ -470,19 +452,38 @@ CullRect CullRectUpdater::ComputeFragmentCullRect(
     }
   }
 
-  if (parent_state != local_state) {
+  // The parent state, and possibly also the cull rect, may have been set above.
+  // Otherwise, fill out the blanks now, based on the parent fragment, if the
+  // parent fragment is known. Otherwise, use the root state.
+  if (!parent_state) {
+    if (parent_fragment) {
+      parent_state = parent_fragment->ContentsProperties().Unalias();
+    } else {
+      parent_state = root_state_;
+    }
+  }
+  if (!cull_rect) {
+    if (parent_fragment) {
+      cull_rect = parent_fragment->GetContentsCullRect();
+    } else {
+      cull_rect = CullRect::Infinite();
+    }
+  }
+
+  if (*parent_state != local_state) {
     std::optional<CullRect> old_cull_rect;
     // Not using |old_cull_rect| will force the cull rect to be updated
     // (skipping |ChangedEnough|) in |ApplyPaintProperties|.
     if (!ShouldProactivelyUpdate(context, layer))
       old_cull_rect = fragment.GetCullRect();
     bool expanded =
-        cull_rect.ApplyPaintProperties(root_state_, parent_state, local_state,
-                                       old_cull_rect, expansion_ratio_);
-    if (expanded && fragment.GetCullRect() != cull_rect)
+        cull_rect->ApplyPaintProperties(root_state_, *parent_state, local_state,
+                                        old_cull_rect, expansion_ratio_);
+    if (expanded && fragment.GetCullRect() != *cull_rect) {
       context.current.force_proactive_update = true;
+    }
   }
-  return cull_rect;
+  return *cull_rect;
 }
 
 CullRect CullRectUpdater::ComputeFragmentContentsCullRect(
@@ -574,7 +575,20 @@ void CullRectUpdater::PaintPropertiesChanged(
   }
 
   if (object.HasLayer()) {
-    To<LayoutBoxModelObject>(object).Layer()->SetNeedsCullRectUpdate();
+    PaintLayer* layer = To<LayoutBoxModelObject>(object).Layer();
+    layer->SetNeedsCullRectUpdate();
+
+    // For change of scroll properties (e.g. contents rect), SetNeedsRepaint to
+    // force proactive update of cull rect because the ChangedEnough logic
+    // doesn't apply. In most cases, other code paths also SetNeedsRepaint
+    // on such changes, but not for the case where a containing-block-order
+    // descendant causing the change is not a paint-order descendant of the
+    // scroller.
+    if (properties_changed.scroll_changed >=
+        PaintPropertyChangeType::kChangedOnlySimpleValues) {
+      layer->SetNeedsRepaint();
+    }
+
     // Fixed-position cull rects depend on view clip. See
     // ComputeFragmentCullRect().
     if (const auto* layout_view = DynamicTo<LayoutView>(object)) {

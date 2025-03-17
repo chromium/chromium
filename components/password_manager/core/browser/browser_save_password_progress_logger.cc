@@ -33,6 +33,7 @@ using autofill::AutofillType;
 using autofill::AutofillUploadContents;
 using autofill::FieldGlobalId;
 using autofill::FieldPropertiesFlags;
+using autofill::FieldRendererId;
 using autofill::FieldType;
 using autofill::FieldTypeToStringView;
 using autofill::FormData;
@@ -189,8 +190,8 @@ std::string GetFormFieldsDataAndServerPredictionsLogString(
 // Returns a log string with `FieldType` for a field identified by `field_id`,
 // or an empty string if `predictions` do not contain data for the field.
 std::string GetModelPredictionLogString(
-    FieldGlobalId field_id,
-    const base::flat_map<FieldGlobalId, FieldType>& predictions) {
+    FieldRendererId field_id,
+    const base::flat_map<FieldRendererId, FieldType>& predictions) {
   return predictions.contains(field_id)
              ? base::StrCat({", Model Type= ",
                              FieldTypeToStringView(predictions.at(field_id))})
@@ -201,12 +202,12 @@ std::string GetModelPredictionLogString(
 // `FieldType`s contained in `form`.
 std::string GetFormDataFieldsAndModelPredictionsLogString(
     const FormData& form,
-    const base::flat_map<FieldGlobalId, FieldType>& predictions) {
+    const base::flat_map<FieldRendererId, FieldType>& predictions) {
   std::string result;
   for (const FormFieldData& field : form.fields()) {
     std::string field_info = GetFormFieldDataWithPropertiesMaskLogString(field);
     result += field_info +
-              GetModelPredictionLogString(field.global_id(), predictions) +
+              GetModelPredictionLogString(field.renderer_id(), predictions) +
               "\n";
   }
   return result;
@@ -236,7 +237,7 @@ void BrowserSavePasswordProgressLogger::LogFormDataWithServerPredictions(
 
 void BrowserSavePasswordProgressLogger::LogFormDataWithModelPredictions(
     const autofill::FormData& form,
-    const base::flat_map<FieldGlobalId, FieldType>& predictions) {
+    const base::flat_map<FieldRendererId, FieldType>& predictions) {
   std::string message = "Model predictions: {\n";
   message += GetFormDataLog(form);
   message += GetFormDataFieldsAndModelPredictionsLogString(form, predictions);

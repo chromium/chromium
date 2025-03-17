@@ -15,7 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -223,19 +223,21 @@ TEST_F(OAuth2AccessTokenFetcherImplTest, CancelOngoingRequest) {
   base::RunLoop().RunUntilIdle();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(OAuth2AccessTokenFetcherImplTest, GetAccessTokenRaptRequiredFailure) {
   SetupGetAccessToken(net::OK, net::HTTP_BAD_REQUEST,
                       kRaptRequiredErrorResponse);
-  EXPECT_CALL(consumer_,
-              OnGetTokenFailure(
-                  GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
-                      "reauth related error")))
+  EXPECT_CALL(
+      consumer_,
+      OnGetTokenFailure(
+          GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+              GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+                  kInvalidGrantRaptError)))
       .Times(1);
   fetcher_->Start("client_id", "client_secret", ScopeList());
   base::RunLoop().RunUntilIdle();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(OAuth2AccessTokenFetcherImplTest, MakeGetAccessTokenBodyNoScope) {
   std::string body =
@@ -374,8 +376,8 @@ class OAuth2ErrorCodesTest
       case GoogleServiceAuthError::SERVICE_ERROR:
         return GoogleServiceAuthError::FromServiceError(error_message);
       case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
-        return GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
-            error_message);
+        return GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+            GetScopeLimitedUnrecoverableErrorReason(GetParam().error_code));
 
       case GoogleServiceAuthError::NONE:
       case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
@@ -386,6 +388,24 @@ class OAuth2ErrorCodesTest
       case GoogleServiceAuthError::NUM_STATES:
         NOTREACHED();
     }
+  }
+
+ private:
+  GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason
+  GetScopeLimitedUnrecoverableErrorReason(const std::string error_code) {
+    if (error_code == "invalid_scope") {
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kInvalidScope;
+    }
+    if (error_code == "restricted_client") {
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kRestrictedClient;
+    }
+    if (error_code == "admin_policy_enforced") {
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kAdminPolicyEnforced;
+    }
+    NOTREACHED();
   }
 };
 
@@ -416,6 +436,12 @@ const OAuth2ErrorCodesTestParam kOAuth2ErrorCodesTable[] = {
      GoogleServiceAuthError::SERVICE_UNAVAILABLE},
     {"internal_failure", net::HTTP_INTERNAL_SERVER_ERROR,
      OAuth2AccessTokenFetcherImpl::kInternalFailure,
+     GoogleServiceAuthError::SERVICE_UNAVAILABLE},
+    {"admin_policy_enforced", net::HTTP_BAD_REQUEST,
+     OAuth2AccessTokenFetcherImpl::kAdminPolicyEnforced,
+     GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR},
+    {"access_denied", net::HTTP_FORBIDDEN,
+     OAuth2AccessTokenFetcherImpl::kAccessDenied,
      GoogleServiceAuthError::SERVICE_UNAVAILABLE},
     {"", net::HTTP_BAD_REQUEST,
      OAuth2AccessTokenFetcherImpl::kErrorUnexpectedFormat,

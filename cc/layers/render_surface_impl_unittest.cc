@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/test/fake_mask_layer_impl.h"
 #include "cc/test/fake_raster_source.h"
@@ -105,8 +106,8 @@ static std::unique_ptr<viz::CompositorRenderPass> DoAppendQuadsWithScaledMask(
   RenderSurfaceImpl* render_surface_impl = GetRenderSurface(surface);
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData append_quads_data;
-  render_surface_impl->AppendQuads(draw_mode, render_pass.get(),
-                                   &append_quads_data);
+  render_surface_impl->AppendQuads(AppendQuadsContext{draw_mode, {}, false},
+                                   render_pass.get(), &append_quads_data);
   return render_pass;
 }
 

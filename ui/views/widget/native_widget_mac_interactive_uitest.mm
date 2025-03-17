@@ -175,6 +175,8 @@ NSData* ViewAsTIFF(NSView* view) {
   return [bitmap TIFFRepresentation];
 }
 
+}  // namespace
+
 class TestBubbleView : public BubbleDialogDelegateView {
  public:
   explicit TestBubbleView(Widget* parent) {
@@ -184,8 +186,6 @@ class TestBubbleView : public BubbleDialogDelegateView {
   TestBubbleView(const TestBubbleView&) = delete;
   TestBubbleView& operator=(const TestBubbleView&) = delete;
 };
-
-}  // namespace
 
 // Test that parent windows keep their traffic lights enabled when showing
 // dialogs.
@@ -366,7 +366,7 @@ TEST_F(NativeWidgetMacInteractiveUITest, GlobalNSTextInputContextUpdates) {
   Widget* widget = CreateTopLevelNativeWidget();
   Textfield* textfield = new Textfield;
   textfield->SetBounds(0, 0, 100, 100);
-  widget->GetContentsView()->AddChildView(textfield);
+  widget->GetContentsView()->AddChildViewRaw(textfield);
   textfield->RequestFocus();
   {
     widget->Show();

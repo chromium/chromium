@@ -5,13 +5,16 @@
 #ifndef CC_TREES_DRAW_PROPERTY_UTILS_H_
 #define CC_TREES_DRAW_PROPERTY_UTILS_H_
 
+#include <optional>
 #include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_collections.h"
 
 namespace gfx {
 class Transform;
+class Vector2dF;
 }  // namespace gfx
 
 namespace cc {
@@ -79,6 +82,30 @@ bool CC_EXPORT LayerShouldBeSkippedForDrawPropertiesComputation(
 bool CC_EXPORT
 IsLayerBackFaceVisibleForTesting(const LayerImpl* layer,
                                  const PropertyTrees* property_trees);
+
+// Returns true if the scales are interchangeable when rasterizing the same
+// drawings without visual misalignment.
+bool CC_EXPORT RasterScalesApproximatelyEqual(gfx::Vector2dF scale1,
+                                              gfx::Vector2dF scale2);
+
+// The result will be used to avoid blurriness of rasterized rendering under
+// transforms with subpixel translations. If applicable, the offset will be in
+// the range of [0, 1) for each component. After this function returns
+// - for a RenderSurfaceImpl, the offset should be subtracted from the the draw
+//   transform, and be added to the draw transforms of contributing layers and
+//   render surfaces.
+// - for a PictureLayerImpl, the offset should be converted to a raster
+//   translation which will translate rasterization and offset tex_coord_rect
+//   of draw quads.
+//
+// With this offset applied, the drawings will still be rendered at the same
+// screen locations, but the rasterized texels will be aligned to the screen
+// pixels, to avoid the additional bluriness during compositing.
+//
+// Returns nullopt if pixel alignment can't be achieved.
+std::optional<gfx::Vector2dF> CC_EXPORT
+PixelAlignmentOffset(const gfx::Transform& screen_space_transform,
+                     const gfx::Transform& original_draw_transform);
 
 #if DCHECK_IS_ON()
 // Checks and logs if double background blur exists in any layers. Returns

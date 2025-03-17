@@ -5,15 +5,14 @@
 package org.chromium.chrome.browser.compositor.layouts.components;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.RectF;
 import android.util.FloatProperty;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
+import org.chromium.chrome.browser.compositor.overlays.strip.TooltipManager;
 import org.chromium.ui.MotionEventUtils;
 
 import java.lang.annotation.Retention;
@@ -60,9 +59,13 @@ public class CompositorButton extends StripLayoutView {
     private boolean mIsPressedFromMouse;
     private boolean mIsHovered;
     private String mAccessibilityDescriptionIncognito = "";
+
+    @Nullable private TooltipManager mTooltipManager;
+
     // @StripLayoutView the button was embedded in. Null if it's not a child view.
     @Nullable private final StripLayoutView mParentView;
     private final @ButtonType int mType;
+    private final float mClickSlop;
 
     /**
      * Default constructor for {@link CompositorButton}
@@ -71,6 +74,7 @@ public class CompositorButton extends StripLayoutView {
      * @param width The button width.
      * @param height The button height.
      * @param clickHandler The action to be performed on click.
+     * @param clickSlopDp The click slop for the button, in dp.
      */
     public CompositorButton(
             Context context,
@@ -78,8 +82,9 @@ public class CompositorButton extends StripLayoutView {
             StripLayoutView parentView,
             float width,
             float height,
-            StripLayoutViewOnClickHandler clickHandler) {
-        super(false, clickHandler);
+            StripLayoutViewOnClickHandler clickHandler,
+            float clickSlopDp) {
+        super(false, clickHandler, context);
         mDrawBounds.set(0, 0, width, height);
 
         mType = type;
@@ -88,10 +93,9 @@ public class CompositorButton extends StripLayoutView {
         mParentView = parentView;
         setVisible(true);
 
-        Resources res = context.getResources();
-        float sPxToDp = 1.0f / res.getDisplayMetrics().density;
-        float clickSlop = res.getDimension(R.dimen.compositor_button_slop) * sPxToDp;
-        setTouchTargetInsets(-clickSlop, -clickSlop, -clickSlop, -clickSlop);
+        mClickSlop = clickSlopDp;
+        // Apply the click slop to the button's touch target.
+        setTouchTargetInsets(null, null, null, null);
     }
 
     /**
@@ -198,11 +202,16 @@ public class CompositorButton extends StripLayoutView {
     }
 
     /**
-     * @param slop The additional area outside of the button to be considered when checking click
-     *     target bounds.
+     * Do not account for the button's click slop in the method inputs when invoking this method as
+     * this is accounted for in this method.
      */
-    public void setClickSlop(float slop) {
-        setTouchTargetInsets(-slop, -slop, -slop, -slop);
+    @Override
+    public void setTouchTargetInsets(Float left, Float top, Float right, Float bottom) {
+        float leftInset = -mClickSlop + (left != null ? left : 0);
+        float topInset = -mClickSlop + (top != null ? top : 0);
+        float rightInset = -mClickSlop + (right != null ? right : 0);
+        float bottomInset = -mClickSlop + (bottom != null ? bottom : 0);
+        super.setTouchTargetInsets(leftInset, topInset, rightInset, bottomInset);
     }
 
     /**
@@ -274,12 +283,23 @@ public class CompositorButton extends StripLayoutView {
     }
 
     /**
-     * Set whether button is hovered on.
+     * Set whether button is hovered on and notify the tooltip manager if the hover state changed.
      *
      * @param isHovered Whether the button is hovered on.
      */
     public void setHovered(boolean isHovered) {
+        if (mTooltipManager != null && mIsHovered != isHovered) {
+            mTooltipManager.setHovered(this, isHovered);
+        }
         mIsHovered = isHovered;
+    }
+
+    @Override
+    public void setVisible(boolean isVisible) {
+        if (!isVisible) {
+            setHovered(false);
+        }
+        super.setVisible(isVisible);
     }
 
     /**
@@ -310,5 +330,14 @@ public class CompositorButton extends StripLayoutView {
      */
     public boolean getShouldApplyHoverBackground() {
         return isHovered() || isPressedFromMouse();
+    }
+
+    /**
+     * @param tooltipManager The {@link
+     *     org.chromium.chrome.browser.compositor.overlays.strip.TooltipManager} responsible for the
+     *     tooltip associated with this button.
+     */
+    public void setTooltipManager(TooltipManager tooltipManager) {
+        mTooltipManager = tooltipManager;
     }
 }

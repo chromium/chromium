@@ -7,11 +7,11 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -84,8 +84,7 @@ std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
 }
 
 std::string GetManagedDeviceTitle() {
-  std::optional<std::string> device_manager =
-      chrome::GetDeviceManagerIdentity();
+  std::optional<std::string> device_manager = GetDeviceManagerIdentity();
   if (!device_manager) {
     return std::string();
   }
@@ -138,7 +137,8 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
            signin::SigninChoiceOperationRetryCallback) {
           std::move(callback).Run(choice);
           std::move(done).Run(
-              signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS);
+              signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS,
+              signin::SigninChoiceErrorType::kNoError);
         },
         std::move(std::get<signin::SigninChoiceCallback>(
             create_param->process_user_choice_callback)));
@@ -362,9 +362,8 @@ std::string ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
 
 #if !BUILDFLAG(IS_CHROMEOS)
   std::optional<std::string> account_manager =
-      chrome::GetAccountManagerIdentity(profile);
-  std::optional<std::string> device_manager =
-      chrome::GetDeviceManagerIdentity();
+      GetAccountManagerIdentity(profile);
+  std::optional<std::string> device_manager = GetDeviceManagerIdentity();
 
   if (!signin_util::IsProfileSeparationEnforcedByProfile(
           profile, base::UTF16ToUTF8(email))) {
@@ -568,7 +567,8 @@ void ManagedUserProfileNoticeHandler::CallProceedCallbackForTesting(
 }
 
 void ManagedUserProfileNoticeHandler::OnUserChoiceHandled(
-    signin::SigninChoiceOperationResult result) {
+    signin::SigninChoiceOperationResult result,
+    signin::SigninChoiceErrorType error_type) {
   if (!UseMultiscreen() && done_callback_) {
     DisallowJavascript();
     std::move(done_callback_).Run();
@@ -593,8 +593,7 @@ void ManagedUserProfileNoticeHandler::OnUserChoiceHandled(
       break;
 
     case signin::SigninChoiceOperationResult::SIGNIN_ERROR:
-      FireWebUIListener("on-state-changed",
-                        ManagedUserProfileNoticeHandler::State::kError);
+      FireErrorEvent(error_type);
       break;
 
     case signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS:
@@ -602,4 +601,28 @@ void ManagedUserProfileNoticeHandler::OnUserChoiceHandled(
                         ManagedUserProfileNoticeHandler::State::kSuccess);
       break;
   }
+}
+
+void ManagedUserProfileNoticeHandler::FireErrorEvent(
+    signin::SigninChoiceErrorType error) {
+  std::string dialog_title, dialog_subtitle;
+  std::optional<std::string> device_manager = GetDeviceManagerIdentity();
+
+  switch (error) {
+    case signin::SigninChoiceErrorType::kSigninDisabled:
+      dialog_title = l10n_util::GetStringUTF8(
+          IDS_ENTERPRISE_OIDC_WELCOME_ERROR_NO_SIGNIN_TITLE);
+      dialog_subtitle = l10n_util::GetStringUTF8(
+          IDS_ENTERPRISE_OIDC_WELCOME_ERROR_NO_SIGNIN_SUBTITLE);
+      break;
+    case signin::SigninChoiceErrorType::kNoError:
+    case signin::SigninChoiceErrorType::kUnknown:
+      dialog_title =
+          l10n_util::GetStringUTF8(IDS_ENTERPRISE_OIDC_WELCOME_ERROR_TITLE);
+      dialog_subtitle =
+          l10n_util::GetStringUTF8(IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE);
+      break;
+  }
+
+  FireWebUIListener("on-state-changed-to-error", dialog_title, dialog_subtitle);
 }

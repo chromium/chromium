@@ -23,6 +23,9 @@ class BrowserAccessibilityStateImplAndroid
   void OnContrastLevelChanged(bool highContrastEnabled) override;
   void RecordAccessibilityServiceInfoHistograms() override;
 
+  // BrowserAccessibilityState implementation.
+  void SetKnownScreenReaderAppActive(bool is_active) override;
+
  protected:
   void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
@@ -31,6 +34,10 @@ class BrowserAccessibilityStateImplAndroid
                                                 int flags_mask,
                                                 int capabilities_mask,
                                                 std::string histogram);
+  AssistiveTech ActiveKnownAssistiveTech() override;
+
+ private:
+  bool is_talkback_active_ = false;
 };
 
 }  // namespace content

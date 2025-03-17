@@ -24,8 +24,8 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "components/flags_ui/feature_entry_macros.h"
 #include "components/user_manager/user_manager.h"
+#include "components/webui/flags/feature_entry_macros.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 

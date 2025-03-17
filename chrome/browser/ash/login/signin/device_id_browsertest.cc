@@ -48,7 +48,7 @@ const base::FilePath::CharType kRefreshTokenToDeviceIdMapFile[] =
 
 char kSecondUserEmail[] = "second_user@gmail.com";
 char kSecondUserPassword[] = "password";
-char kSecondUserGaiaId[] = "4321";
+constexpr GaiaId::Literal kSecondUserGaiaId("4321");
 char kSecondUserRefreshToken1[] = "refresh_token_second_user_1";
 char kSecondUserRefreshToken2[] = "refresh_token_second_user_2";
 
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_PRE_PRE_PRE_PRE_NewUsers) {
       ->GetWizardController()
       ->SkipToLoginForTesting();
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
-               kRefreshToken1, GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
+               kRefreshToken1, FakeGaiaMixin::kFakeUserGaiaId);
   CheckDeviceIDIsConsistent(
       AccountId::FromUserEmail(FakeGaiaMixin::kFakeUserEmail), kRefreshToken1);
 }
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_PRE_PRE_PRE_NewUsers) {
   test::TapForPersonalUseCrRadioButton();
   test::TapUserCreationNext();
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
-               kRefreshToken2, GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
+               kRefreshToken2, FakeGaiaMixin::kFakeUserGaiaId);
   CheckDeviceIDIsConsistent(
       AccountId::FromUserEmail(FakeGaiaMixin::kFakeUserEmail), kRefreshToken2);
 
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_PRE_NewUsers) {
   test::TapForPersonalUseCrRadioButton();
   test::TapUserCreationNext();
   SignInOnline(kSecondUserEmail, kSecondUserPassword, kSecondUserRefreshToken1,
-               GaiaId(kSecondUserGaiaId));
+               kSecondUserGaiaId);
   CheckDeviceIDIsConsistent(AccountId::FromUserEmail(kSecondUserEmail),
                             kSecondUserRefreshToken1);
 }
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, NewUsers) {
   test::TapForPersonalUseCrRadioButton();
   test::TapUserCreationNext();
   SignInOnline(kSecondUserEmail, kSecondUserPassword, kSecondUserRefreshToken2,
-               GaiaId(kSecondUserGaiaId));
+               kSecondUserGaiaId);
   CheckDeviceIDIsConsistent(AccountId::FromUserEmail(kSecondUserEmail),
                             kSecondUserRefreshToken2);
   EXPECT_NE(GetDeviceIdFromGAIA(kSecondUserRefreshToken1),
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_Migration) {
       ->GetWizardController()
       ->SkipToLoginForTesting();
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
-               kRefreshToken1, GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
+               kRefreshToken1, FakeGaiaMixin::kFakeUserGaiaId);
 
   // Simulate user that has device ID saved only in preferences (pre-M44).
   PrefService* prefs =
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_LegacyUsers) {
       ->GetWizardController()
       ->SkipToLoginForTesting();
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
-               kRefreshToken1, GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
+               kRefreshToken1, FakeGaiaMixin::kFakeUserGaiaId);
 
   PrefService* prefs =
       ProfileHelper::Get()

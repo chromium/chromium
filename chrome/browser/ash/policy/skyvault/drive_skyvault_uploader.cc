@@ -12,8 +12,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/delete_io_task.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/chrome_features.h"
@@ -103,18 +106,35 @@ void DriveSkyvaultUploader::Run() {
     return;
   }
 
-  if (drive::util::GetDriveConnectionStatus(profile_) !=
-      drive::util::ConnectionStatus::kConnected) {
-    LOG(ERROR) << "No connection to Drive";
+  // Observe Drive updates.
+  drive::DriveIntegrationService::Observer::Observe(drive_integration_service_);
+
+  auto drive_status = drive::util::GetDriveConnectionStatus(profile_);
+  if (drive_status == drive::util::ConnectionStatus::kNoService) {
+    // Drive is completely disabled for this profile.
+    LOG(ERROR) << "Drive integration service isn't available";
     OnEndCopy(MigrationUploadError::kServiceUnavailable);
+    return;
+  }
+
+  waiting_for_connection_ =
+      drive_status != drive::util::ConnectionStatus::kConnected;
+  SkyVaultMigrationWaitForConnectionHistogram(
+      MigrationDestination::kGoogleDrive, waiting_for_connection_);
+  if (waiting_for_connection_) {
+    LOG(ERROR) << "Waiting for connection to Drive";
+    connection_wait_start_time_ = base::Time::Now();
+
+    reconnection_timer_.Start(
+        FROM_HERE, kReconnectionTimeout,
+        base::BindOnce(&DriveSkyvaultUploader::OnReconnectionTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
   // Observe IO tasks updates.
   io_task_controller_observer_.Observe(io_task_controller_);
 
-  // Observe Drive updates.
-  drive::DriveIntegrationService::Observer::Observe(drive_integration_service_);
   drivefs::DriveFsHost::Observer::Observe(
       drive_integration_service_->GetDriveFsHost());
 
@@ -247,7 +267,7 @@ void DriveSkyvaultUploader::OnEndCopy(
 void DriveSkyvaultUploader::OnEndUpload() {
   observed_relative_drive_path_.clear();
   SkyVaultDeleteErrorHistogram(UploadTrigger::kMigration,
-                               CloudProvider::kGoogleDrive,
+                               MigrationDestination::kGoogleDrive,
                                error_ == MigrationUploadError::kDeleteFailed);
   std::move(callback_).Run(error_, upload_root_path_);
 }
@@ -415,10 +435,41 @@ void DriveSkyvaultUploader::OnError(const drivefs::mojom::DriveError& error) {
 
 void DriveSkyvaultUploader::OnDriveConnectionStatusChanged(
     drive::util::ConnectionStatus status) {
+  if (waiting_for_connection_) {
+    if (status == drive::util::ConnectionStatus::kConnected) {
+      LOG(ERROR) << "Reconnected to Drive";
+      waiting_for_connection_ = false;
+      CHECK(connection_wait_start_time_.has_value());
+      SkyVaultMigrationReconnectionDurationHistogram(
+          MigrationDestination::kGoogleDrive,
+          base::Time::Now() - connection_wait_start_time_.value());
+      connection_wait_start_time_.reset();
+      reconnection_timer_.Stop();
+      drive::DriveIntegrationService::Observer::Reset();
+      Run();
+    }
+    return;
+  }
+  if (status == drive::util::ConnectionStatus::kNoService) {
+    LOG(ERROR) << "Drive service became unavailable during upload";
+    OnEndCopy(MigrationUploadError::kServiceUnavailable);
+    return;
+  }
   if (status != drive::util::ConnectionStatus::kConnected) {
     LOG(ERROR) << "Lost connection to Drive during upload";
-    OnEndCopy(MigrationUploadError::kServiceUnavailable);
+    OnEndCopy(MigrationUploadError::kNetworkError);
   }
+}
+
+void DriveSkyvaultUploader::OnReconnectionTimeout() {
+  if (!waiting_for_connection_) {
+    LOG(ERROR) << "Reconnection timer fired, but currently not waiting for "
+                  "connection; ignoring";
+    return;
+  }
+  LOG(ERROR)
+      << "Reconnection not established within the timeout, failing the upload";
+  OnEndCopy(MigrationUploadError::kReconnectTimeout);
 }
 
 }  // namespace policy::local_user_files

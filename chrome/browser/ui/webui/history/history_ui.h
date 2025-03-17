@@ -18,12 +18,15 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
+#include "ui/webui/resources/cr_components/history/history.mojom-forward.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-forward.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 
 namespace base {
 class RefCountedMemory;
 }
+
+class BrowsingHistoryHandler;
 
 namespace history_clusters {
 class HistoryClustersHandler;
@@ -69,6 +72,8 @@ class HistoryUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
           pending_page_handler);
+  void BindInterface(
+      mojo::PendingReceiver<history::mojom::PageHandler> pending_page_handler);
   void BindInterface(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
                          pending_page_handler);
   void BindInterface(
@@ -90,6 +95,10 @@ class HistoryUI : public ui::MojoWebUIController,
     return history_clusters_handler_.get();
   }
 
+  BrowsingHistoryHandler* GetBrowsingHistoryHandlerForTesting() {
+    return browsing_history_handler_.get();
+  }
+
  private:
   void CreateShoppingServiceHandler(
       mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
@@ -107,6 +116,7 @@ class HistoryUI : public ui::MojoWebUIController,
   std::unique_ptr<HistoryEmbeddingsHandler> history_embeddings_handler_;
   std::unique_ptr<history_clusters::HistoryClustersHandler>
       history_clusters_handler_;
+  std::unique_ptr<BrowsingHistoryHandler> browsing_history_handler_;
   std::unique_ptr<page_image_service::ImageServiceHandler>
       image_service_handler_;
   PrefChangeRegistrar pref_change_registrar_;

@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -75,8 +76,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kSyncPassphraseOkButtonFieldId);
 
 void ShowSyncPassphraseDialog(
     Browser& browser,
-    base::RepeatingCallback<bool(const std::u16string&)>
-        decrypt_data_callback) {
+    base::RepeatingCallback<bool(std::u16string_view)> decrypt_data_callback) {
   ui::DialogModel::Builder dialog_builder;
 
   // Link for the footnote.
@@ -84,13 +84,16 @@ void ShowSyncPassphraseDialog(
       base::BindRepeating(&OpenSyncDashboardAndCloseDialog, std::ref(browser),
                           dialog_builder.model());
   ui::DialogModelLabel::TextReplacement link_replacement =
-      ui::DialogModelLabel::CreateLink(IDS_SYNC_PASSPHRASE_DIALOG_FOOTER_LINK,
-                                       std::move(link_closure));
+      ui::DialogModelLabel::CreateLink(
+          IDS_SYNC_PASSPHRASE_DIALOG_FOOTER_LINK, std::move(link_closure),
+          l10n_util::GetStringUTF16(
+              IDS_SYNC_PASSPHRASE_DIALOG_FOOTER_LINK_ACC));
 
   // The OK button is initially disabled, as the passphrase must be non-empty.
   ui::DialogModel::Button::Params ok_button_params;
-  ok_button_params.SetEnabled(false);
-  ok_button_params.SetId(kSyncPassphraseOkButtonFieldId);
+  ok_button_params.SetEnabled(false)
+      .SetLabel(l10n_util::GetStringUTF16(IDS_SYNC_PASSPHRASE_DIALOG_OK_BUTTON))
+      .SetId(kSyncPassphraseOkButtonFieldId);
 
   // Callback for the OK button.
   // If the passphrase is correct, the dialog is closed. If it's incorrect, the
@@ -132,7 +135,7 @@ void ShowSyncPassphraseDialog(
 }
 
 bool SyncPassphraseDialogDecryptData(syncer::SyncService* sync_service,
-                                     const std::u16string& passphrase) {
+                                     std::u16string_view passphrase) {
   if (!sync_service || !sync_service->IsEngineInitialized()) {
     // Even though this is a failure, return true so that the dialog closes and
     // the user does not need to try again.

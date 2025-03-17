@@ -10,8 +10,10 @@ import type {App} from 'chrome://resources/cr_components/app_management/app_mana
 import {AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -76,7 +78,7 @@ suite('SupportedLinksItemElement', function() {
 
     await setUpSupportedLinksComponent('app1', appOptions);
     const radioGroup =
-        supportedLinksItem.shadowRoot!.querySelector<CrRadioGroupElement>(
+        supportedLinksItem.shadowRoot.querySelector<CrRadioGroupElement>(
             '#radioGroup');
     assertTrue(!!radioGroup);
     assertFalse(!!radioGroup.disabled);
@@ -92,28 +94,29 @@ suite('SupportedLinksItemElement', function() {
 
     await setUpSupportedLinksComponent('app1', appOptions);
     let supportedLinksDialog =
-        supportedLinksItem.shadowRoot!.querySelector<HTMLElement>('#dialog');
+        supportedLinksItem.shadowRoot.querySelector<CrLitElement>('#dialog');
     assertNull(supportedLinksDialog);
 
     // Open dialog.
-    const heading = supportedLinksItem.shadowRoot!.querySelector('#heading');
+    const heading =
+        supportedLinksItem.shadowRoot.querySelector<CrLitElement>('#heading');
     assertTrue(!!heading);
-    const link = heading.shadowRoot!.querySelector('a');
+    const link = heading.shadowRoot.querySelector('a');
     assertTrue(!!link);
     link.click();
     await microtasksFinished();
 
     supportedLinksDialog =
-        supportedLinksItem.shadowRoot!.querySelector<HTMLElement>('#dialog');
+        supportedLinksItem.shadowRoot.querySelector<CrLitElement>('#dialog');
     assertTrue(!!supportedLinksDialog);
     const innerDialog =
-        supportedLinksDialog.shadowRoot!.querySelector<HTMLDialogElement>(
+        supportedLinksDialog.shadowRoot.querySelector<CrDialogElement>(
             '#dialog');
     assertTrue(!!innerDialog);
     assertTrue(innerDialog.open);
 
     // Confirm google.com shows up.
-    const list = supportedLinksDialog.shadowRoot!.querySelector('#list');
+    const list = supportedLinksDialog.shadowRoot.querySelector('#list');
     assertTrue(!!list);
     const item = list.getElementsByClassName('list-item')[0] as HTMLElement;
     assertTrue(!!item);
@@ -121,14 +124,14 @@ suite('SupportedLinksItemElement', function() {
 
     // Close dialog.
     const closeButton =
-        innerDialog.shadowRoot!.querySelector<HTMLButtonElement>('#close');
+        innerDialog.shadowRoot.querySelector<HTMLButtonElement>('#close');
     assertTrue(!!closeButton);
     closeButton.click();
     await microtasksFinished();
 
     // Wait for the stamped dialog to be destroyed.
     supportedLinksDialog =
-        supportedLinksItem.shadowRoot!.querySelector('#dialog');
+        supportedLinksItem.shadowRoot.querySelector<CrLitElement>('#dialog');
     assertNull(supportedLinksDialog);
   });
 });

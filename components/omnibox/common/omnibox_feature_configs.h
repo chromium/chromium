@@ -6,9 +6,14 @@
 #define COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURE_CONFIGS_H_
 
 #include "base/feature_list.h"
+#include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "base/values.h"
 
+class EnterpriseSearchManager;
 class EnterpriseSearchManagerProviderInjectionTest;
+class EnterpriseSearchManagerRequireShortcutTest;
+FORWARD_DECLARE_TEST(EnterpriseSearchManagerProviderInjectionTest, Verify);
 
 namespace omnibox_feature_configs {
 
@@ -76,8 +81,10 @@ template <class T>
 class Config {
  public:
   static const T& Get() {
-    static T config;
-    return config;
+    static T* config;
+    if (config == nullptr)
+      config = new T();
+    return *config;
   }
 };
 
@@ -86,8 +93,6 @@ template <class T>
 class ScopedConfigForTesting : Config<T> {
  public:
   ScopedConfigForTesting() : original_config_(Get()) { Reset(); }
-  ScopedConfigForTesting(const ScopedConfigForTesting&) = delete;
-  ScopedConfigForTesting& operator=(const ScopedConfigForTesting&) = delete;
   ~ScopedConfigForTesting() { Get() = original_config_; }
 
   T& Get() { return const_cast<T&>(T::Get()); }
@@ -123,6 +128,18 @@ struct DocumentProvider : Config<DocumentProvider> {
   // Whether to ignore the state of the document provider when deciding to
   // finish debouncing.
   bool ignore_when_debouncing;
+  // Whether to scope backoff state to the profile instead of the current
+  // window.
+  bool scope_backoff_to_profile;
+  // How long to continue backing off from making new document suggestion
+  // requests after receiving a backoff signal, when the backoff state is scoped
+  // to the profile. If this is set to 0 (the default value) or a negative
+  // value, the backoff state never resets. If this is set to a positive value,
+  // the backoff state is reset after the specified amount of time. The value
+  // can be supplied using --enable-features or in an experiment config using
+  // the string representation expected by `base::TimeDeltaFromString()` (e.g.
+  // "10m" or "12h"). Has no effect when `scope_backoff_to_profile` is false.
+  base::TimeDelta backoff_duration;
 };
 
 // If enabled, pretends all matches are allowed to be default. This is very
@@ -156,55 +173,69 @@ struct RealboxContextualAndTrendingSuggestions
 // If enabled, injects a mock search engine using the same format as policy
 // `EnterpriseSearchAggregatorSettings` to be applied. Ignored if feature
 // policy is set.
-class SearchAggregatorProvider : public Config<SearchAggregatorProvider> {
+struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   DECLARE_FEATURE(kSearchAggregatorProvider);
-
- public:
   SearchAggregatorProvider();
   SearchAggregatorProvider(const SearchAggregatorProvider&);
   SearchAggregatorProvider& operator=(const SearchAggregatorProvider&);
   ~SearchAggregatorProvider();
 
-  bool enabled() const { return enabled_; }
-  bool valid_search_engine() const { return valid_search_engine_; }
-  std::vector<base::Value> GetSearchEngines() const;
-  bool trigger_omnibox_blending() const { return trigger_omnibox_blending_; }
+  bool enabled;
+  // Minimum length input must be to run the
+  // `EnterpriseSearchAggregatorProvider`.
+  int min_query_length;
+  // If true, the response will be parsed in a utility process.
+  bool parse_response_in_utility_process;
+  // If true, the newer Discovery Engine OAuth scope will be used in suggestions
+  // requests.
+  bool use_discovery_engine_oauth_scope;
+  // If true, doc provider won't run outside the drive scope. If false, doc
+  // provider will run unscoped. Either way, doc provider won't run when in the
+  // enterprise scope.
+  bool disable_drive;
+
+  // See comments in enterprise_search_aggregator_provider.cc
+  size_t scoring_max_matches_created_per_type;
+  size_t scoring_max_scoped_matches_shown_per_type;
+  size_t scoring_max_unscoped_matches_shown_per_type;
+  size_t scoring_min_char_for_strong_text_match;
+  size_t scoring_min_words_for_full_text_match_boost;
+  int scoring_full_text_match_score;
+  int scoring_score_per_strong_text_match;
+  int scoring_score_per_weak_text_match;
+  int scoring_max_text_score;
+  int scoring_people_score_boost;
+  bool scoring_prefer_contents_over_queries;
+  size_t scoring_scoped_max_low_quality_matches;
+  size_t scoring_unscoped_max_low_quality_matches;
+  int scoring_low_quality_threshold;
 
  private:
-  friend ::EnterpriseSearchManagerProviderInjectionTest;
+  // Utility methods and members for setting up a mock search engine via Finch.
+  // Restricted to `EnterpriseSearchManager` and its tests.
+  friend class ::EnterpriseSearchManager;
+  friend class ::EnterpriseSearchManagerProviderInjectionTest;
+  friend class ::EnterpriseSearchManagerRequireShortcutTest;
+  FRIEND_TEST_ALL_PREFIXES(::EnterpriseSearchManagerProviderInjectionTest,
+                           Verify);
 
-  // Makes it easier for tests to set a config.
-  void Init(bool enabled,
-            const std::string& name,
-            const std::string& shortcut,
-            const std::string& search_url,
-            const std::string& suggest_url,
-            const std::string& icon_url,
-            bool trigger_omnibox_blending);
-  // Same as `Init(,,,,,,)` setting all string arguments as empty.
-  void Init(bool enabled, bool trigger_omnibox_blending);
-
-  // Returns a dictionary corresponding to the search engine
+  bool AreMockEnginesValid() const;
+  std::vector<base::Value> CreateMockSearchEngines() const;
   base::Value::Dict CreateMockSearchAggregator(bool featured_by_policy) const;
 
-  // If true, injects mock search aggregator in the Omnibox.
-  bool enabled_ = false;
-  // If true, the data passes soft validation that prevents crashes downstream.
-  // Only set as true is `enabled_` is true.
-  bool valid_search_engine_ = false;
   // The search engine name, shown in the Omnibox.
-  std::string name_;
+  std::string name;
   // The shortcut the user enters to trigger the search.
-  std::string shortcut_;
+  std::string shortcut;
   // The URL on which to perform a search.
-  std::string search_url_;
+  std::string search_url;
   // The URL that provides search suggestions.
-  std::string suggest_url_;
+  std::string suggest_url;
   // The URL to an imanage that will be used on search suggestions.
-  std::string icon_url_;
+  std::string icon_url;
   // If enabled, Chrome will blend search suggestions with other Omnibox
   // suggestions without requiring keyword mode.
-  bool trigger_omnibox_blending_ = false;
+  bool require_shortcut;
 };
 
 // If enabled, uses RichAnswerTemplate instead of SuggestionAnswer to display
@@ -215,21 +246,17 @@ struct SuggestionAnswerMigration : Config<SuggestionAnswerMigration> {
   bool enabled;
 };
 
-// If enabled, affects autocompleted keywords (e.g. input 'youtu Ispiryan' ->
-// match 'Ispiryan - Search YouTube').
-// 1) These autocompleted keywords will be scored `score` instead of the default
-//    450.
-// 2) Autocompletes keyword even when the full keyword is typed ('youtube.com').
-//    Otherwise, only incomplete keywords ('youtube.co') are autocompleted.
-struct VitalizeAutocompletedKeywords : Config<VitalizeAutocompletedKeywords> {
-  DECLARE_FEATURE(kVitalizeAutocompletedKeywords);
-  VitalizeAutocompletedKeywords();
+// Enables url suggestions when omnibox is focused on Web/SRP.
+struct OmniboxUrlSuggestionsOnFocus : Config<OmniboxUrlSuggestionsOnFocus> {
+  DECLARE_FEATURE(kOmniboxUrlSuggestionsOnFocus);
+  OmniboxUrlSuggestionsOnFocus();
   bool enabled;
-  // Should probably be less than 1100; i.e. the score for complete keywords
-  // in `SearchProvider::CalculateRelevanceForKeywordVerbatim()`. Otherwise, it
-  // would be weird if the input 'youtube.co Ispiryan' produces a higher scored
-  // keyword match than 'youtube.com Ispiryan'.
-  int score;
+  // Max number of zps suggestions to show.
+  size_t max_suggestions;
+  // Max number of search zps suggestions to show.
+  size_t max_search_suggestions;
+  // Max number of url zps suggestions to show.
+  size_t max_url_suggestions;
 };
 
 // Do not add new configs here at the bottom by default. They should be ordered

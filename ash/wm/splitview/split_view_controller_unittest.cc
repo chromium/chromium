@@ -126,19 +126,6 @@ class OverviewStatesObserver : public OverviewObserver {
   raw_ptr<aura::Window> root_window_;
 };
 
-// The test BubbleDialogDelegateView for bubbles.
-class TestBubbleDialogDelegateView : public views::BubbleDialogDelegateView {
- public:
-  explicit TestBubbleDialogDelegateView(views::View* anchor_view)
-      : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE) {}
-
-  TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;
-  TestBubbleDialogDelegateView& operator=(const TestBubbleDialogDelegateView&) =
-      delete;
-
-  ~TestBubbleDialogDelegateView() override = default;
-};
-
 // Helper class to simulate the text input field in a window. When the text
 // input field is focused, the attached window will also be focused and show the
 // virtual keyboard. If the text input field is unfocused, it will hide the
@@ -192,6 +179,19 @@ class TestTextInputClient : public ui::DummyTextInputClient {
 };
 
 }  // namespace
+
+// The test BubbleDialogDelegateView for bubbles.
+class TestBubbleDialogDelegateView : public views::BubbleDialogDelegateView {
+ public:
+  explicit TestBubbleDialogDelegateView(views::View* anchor_view)
+      : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE) {}
+
+  TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;
+  TestBubbleDialogDelegateView& operator=(const TestBubbleDialogDelegateView&) =
+      delete;
+
+  ~TestBubbleDialogDelegateView() override = default;
+};
 
 class SplitViewControllerTest : public AshTestBase {
  public:

@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("settings") {
   sources = [
@@ -56,7 +55,6 @@ static_library("settings") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/common:trusted_types_util",
@@ -93,6 +91,7 @@ static_library("settings") {
     "//chrome/browser/ui/webui/ash/settings/services/metrics",
     "//chrome/browser/ui/webui/ash/settings/services/settings_manager",
     "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/services/auth_factor_config",
     "//chromeos/ash/services/cellular_setup",
     "//chromeos/components/in_session_auth",

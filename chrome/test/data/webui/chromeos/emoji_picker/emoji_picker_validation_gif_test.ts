@@ -1,7 +1,8 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {EmojiGroupElement, EmojiPickerApiProxy, EmojiPickerApp, GIF_VALIDATION_DATE, TRENDING} from 'chrome://emoji-picker/emoji_picker.js';
+import type {EmojiGroupElement, EmojiPickerApp} from 'chrome://emoji-picker/emoji_picker.js';
+import {EmojiPickerApiProxy, GIF_VALIDATION_DATE, TRENDING} from 'chrome://emoji-picker/emoji_picker.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -193,8 +194,8 @@ suite(`emoji-picker-validation-gif`, () => {
         flush();
 
         const recentlyUsedEmoji =
-            (await waitUntilFindInEmojiPicker(historyGroupSelector(
-                'gif')))!.shadowRoot!.querySelectorAll('emoji-image');
+            (await waitUntilFindInEmojiPicker(historyGroupSelector('gif')))
+                .shadowRoot!.querySelectorAll('emoji-image');
 
         assertEquals(3, recentlyUsedEmoji.length);
 
@@ -217,12 +218,12 @@ suite(`emoji-picker-validation-gif`, () => {
             emojiPicker.activeInfiniteGroupId!,
             ));
 
-        const gifResults1 = group!.shadowRoot!.querySelectorAll('emoji-image');
+        const gifResults1 = group.shadowRoot!.querySelectorAll('emoji-image');
         assertEquals(gifResults1.length, 6);
 
         // Check display is correct.
         const leftColResults1 =
-            group!.shadowRoot!.querySelectorAll<HTMLImageElement>(
+            group.shadowRoot!.querySelectorAll<HTMLImageElement>(
                 'div.left-column > emoji-image');
         assertEquals(leftColResults1.length, 3);
         assertEmojiImageAlt(leftColResults1[0], 'Trending Left 1');
@@ -230,7 +231,7 @@ suite(`emoji-picker-validation-gif`, () => {
         assertEmojiImageAlt(leftColResults1[2], 'Trending Left 3');
 
         const rightColResults1 =
-            group!.shadowRoot!.querySelectorAll<HTMLImageElement>(
+            group.shadowRoot!.querySelectorAll<HTMLImageElement>(
                 'div.right-column > emoji-image');
         assertEquals(rightColResults1.length, 3);
         assertEmojiImageAlt(rightColResults1[0], 'Trending Right 1');
@@ -244,12 +245,12 @@ suite(`emoji-picker-validation-gif`, () => {
                 12,
             'wait for emoji picker to scroll and render new Gifs');
 
-        const gifResults2 = group!.shadowRoot!.querySelectorAll('emoji-image');
+        const gifResults2 = group.shadowRoot!.querySelectorAll('emoji-image');
         assertEquals(gifResults2.length, 12);
 
         // Check display is correct.
         const leftColResults2 =
-            group!.shadowRoot!.querySelectorAll<HTMLImageElement>(
+            group.shadowRoot!.querySelectorAll<HTMLImageElement>(
                 'div.left-column > emoji-image');
         assertEquals(leftColResults2.length, 6);
         assertEmojiImageAlt(leftColResults2[0], 'Trending Left 1');
@@ -260,7 +261,7 @@ suite(`emoji-picker-validation-gif`, () => {
         assertEmojiImageAlt(leftColResults2[5], 'Trending Left 6');
 
         const rightColResults2 =
-            group!.shadowRoot!.querySelectorAll<HTMLImageElement>(
+            group.shadowRoot!.querySelectorAll<HTMLImageElement>(
                 'div.right-column > emoji-image');
         assertEquals(rightColResults2.length, 6);
         assertEmojiImageAlt(rightColResults2[0], 'Trending Right 1');
@@ -286,8 +287,8 @@ suite(`emoji-picker-validation-gif`, () => {
         flush();
 
         const recentlyUsedEmoji =
-            (await waitUntilFindInEmojiPicker(historyGroupSelector(
-                'gif')))!.shadowRoot!.querySelectorAll('emoji-image');
+            (await waitUntilFindInEmojiPicker(historyGroupSelector('gif')))
+                .shadowRoot!.querySelectorAll('emoji-image');
 
         assertEquals(3, recentlyUsedEmoji.length);
 
@@ -296,9 +297,10 @@ suite(`emoji-picker-validation-gif`, () => {
                 .find((group: EmojiGroupElement) => group.name === TRENDING)
                 ?.groupId;
 
-        const trendingSubcategoryButton = (await waitUntilFindInEmojiPicker(
-            `#tabs text-group-button[data-group="${
-                trendingId}"]`))!.shadowRoot!.querySelector('cr-button');
+        const trendingSubcategoryButton =
+            (await waitUntilFindInEmojiPicker(
+                 `#tabs text-group-button[data-group="${trendingId}"]`))
+                .shadowRoot!.querySelector('cr-button');
 
         trendingSubcategoryButton!.click();
         await flush();
@@ -314,15 +316,15 @@ suite(`emoji-picker-validation-gif`, () => {
 
         await waitForCondition(
             () =>
-                group!.shadowRoot!.querySelectorAll('emoji-image').length === 6,
+                group.shadowRoot!.querySelectorAll('emoji-image').length === 6,
             'wait for trending GIFs');
 
-        const gifResults1 = group!.shadowRoot!.querySelectorAll('emoji-image');
+        const gifResults1 = group.shadowRoot!.querySelectorAll('emoji-image');
         assertEquals(gifResults1.length, 6);
 
         // Check display is correct.
         const leftColResults1 =
-            group!.shadowRoot!.querySelectorAll<HTMLImageElement>(
+            group.shadowRoot!.querySelectorAll<HTMLImageElement>(
                 'div.left-column > emoji-image');
         assertEquals(leftColResults1.length, 3);
         assertEmojiImageAlt(leftColResults1[0], 'Trending Left 1');
@@ -330,7 +332,7 @@ suite(`emoji-picker-validation-gif`, () => {
         assertEmojiImageAlt(leftColResults1[2], 'Trending Left 3');
 
         const rightColResults1 =
-            group!.shadowRoot!.querySelectorAll<HTMLImageElement>(
+            group.shadowRoot!.querySelectorAll<HTMLImageElement>(
                 'div.right-column > emoji-image');
         assertEquals(rightColResults1.length, 3);
         assertEmojiImageAlt(rightColResults1[0], 'Trending Right 1');
@@ -343,16 +345,16 @@ suite(`emoji-picker-validation-gif`, () => {
 
         // Wait for Emoji Picker to scroll and render new GIFs.
         await waitForCondition(
-            () => group!.shadowRoot!.querySelectorAll('emoji-image').length ===
-                12,
+            () =>
+                group.shadowRoot!.querySelectorAll('emoji-image').length === 12,
             'failed to wait for new GIFs to render');
 
-        const gifResults2 = group!.shadowRoot!.querySelectorAll('emoji-image');
+        const gifResults2 = group.shadowRoot!.querySelectorAll('emoji-image');
         assertEquals(gifResults2.length, 12);
 
         // Check display is correct.
         const leftColResults2 =
-            group!.shadowRoot!.querySelectorAll<HTMLImageElement>(
+            group.shadowRoot!.querySelectorAll<HTMLImageElement>(
                 'div.left-column > emoji-image');
         assertEquals(leftColResults2.length, 6);
         assertEmojiImageAlt(leftColResults2[0], 'Trending Left 1');
@@ -363,7 +365,7 @@ suite(`emoji-picker-validation-gif`, () => {
         assertEmojiImageAlt(leftColResults2[5], 'Trending Left 6');
 
         const rightColResults2 =
-            group!.shadowRoot!.querySelectorAll<HTMLImageElement>(
+            group.shadowRoot!.querySelectorAll<HTMLImageElement>(
                 'div.right-column > emoji-image');
         assertEquals(rightColResults2.length, 6);
         assertEmojiImageAlt(rightColResults2[0], 'Trending Right 1');

@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("boca") {
   sources = [
@@ -32,6 +30,7 @@ static_library("boca") {
     "//base",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/network",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/strings:strings_grit",
@@ -67,19 +66,41 @@ static_library("invalidations") {
   ]
 }
 
+static_library("spotlight_notification_constants") {
+  sources = [ "spotlight/spotlight_notification_constants.h" ]
+  deps = [ "//base" ]
+}
+
 static_library("spotlight") {
   sources = [
     "spotlight/register_screen_request.cc",
     "spotlight/register_screen_request.h",
+    "spotlight/spotlight_crd_manager.h",
+    "spotlight/spotlight_notification_handler.cc",
+    "spotlight/spotlight_notification_handler.h",
+    "spotlight/spotlight_service.cc",
+    "spotlight/spotlight_service.h",
+    "spotlight/spotlight_session_manager.cc",
+    "spotlight/spotlight_session_manager.h",
+    "spotlight/update_view_screen_state_request.cc",
+    "spotlight/update_view_screen_state_request.h",
     "spotlight/view_screen_request.cc",
     "spotlight/view_screen_request.h",
   ]
   deps = [
     ":boca",
+    ":spotlight_notification_constants",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/resources/vector_icons",
     "//base",
+    "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
+    "//chromeos/strings:strings_grit",
+    "//components/signin/public/identity_manager",
     "//google_apis/common:common",
     "//net",
+    "//ui/message_center",
   ]
 }
 
@@ -95,6 +116,10 @@ source_set("unit_tests") {
     "invalidations/invalidation_service_impl_unittest.cc",
     "notifications/boca_notification_handler_unittest.cc",
     "spotlight/register_screen_request_unittest.cc",
+    "spotlight/spotlight_notification_handler_unittest.cc",
+    "spotlight/spotlight_service_unittest.cc",
+    "spotlight/spotlight_session_manager_unittest.cc",
+    "spotlight/update_view_screen_state_request_unittest.cc",
     "spotlight/view_screen_request_unittest.cc",
   ]
 
@@ -102,12 +127,16 @@ source_set("unit_tests") {
     ":boca",
     ":invalidations",
     ":spotlight",
+    ":spotlight_notification_constants",
     "//ash:test_support",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/settings:test_support",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/strings:strings_grit",

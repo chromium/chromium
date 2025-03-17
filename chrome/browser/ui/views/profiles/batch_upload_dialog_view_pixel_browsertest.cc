@@ -32,7 +32,8 @@ const gfx::Image kSignedInImage = gfx::test::CreateImage(20, 20, SK_ColorBLUE);
 const char kSignedInImageUrl[] = "SIGNED_IN_IMAGE_URL";
 
 syncer::LocalDataDescription GetFakeLocalData(syncer::DataType type,
-                                              int item_count) {
+                                              int item_count,
+                                              bool long_title) {
   syncer::LocalDataDescription data_descriptions;
   data_descriptions.type = type;
 
@@ -52,16 +53,25 @@ syncer::LocalDataDescription GetFakeLocalData(syncer::DataType type,
         item.icon = syncer::LocalDataItemModel::FolderIcon();
         break;
       case syncer::DataType::CONTACT_INFO:
+      case syncer::DataType::THEMES:
         item.icon = syncer::LocalDataItemModel::NoIcon();
         break;
       default:
         NOTREACHED();
     }
 
-    item.title =
-        data_name + "_title_" + base::UTF16ToUTF8(base::FormatNumber(i));
-    item.subtitle =
-        data_name + "_subtitle_" + base::UTF16ToUTF8(base::FormatNumber(i));
+    // Theme item has a different title as it is shown in the section title.
+    if (type == syncer::DataType::THEMES) {
+      item.title = long_title ? "Custom theme name that is very very long long "
+                                "long long long long"
+                              : "Custom theme name";
+    } else {
+      item.title =
+          data_name + "_title_" + base::UTF16ToUTF8(base::FormatNumber(i));
+      item.subtitle =
+          data_name + "_subtitle_" + base::UTF16ToUTF8(base::FormatNumber(i));
+    }
+
     data_descriptions.local_data_models.push_back(std::move(item));
   }
   return data_descriptions;
@@ -74,6 +84,9 @@ struct TestParam {
       {2, syncer::DataType::PASSWORDS},
       {1, syncer::DataType::CONTACT_INFO},
   };
+  // Currently only relevant for Themes section as the item title is shown in
+  // the section title.
+  bool long_title = false;
 };
 
 // Allows the test to be named like
@@ -137,6 +150,22 @@ const TestParam kTestParams[] = {
     {.test_suffix = "MultipleSectionsWithNonHeroTypeAsPrimarySection",
      .section_item_count_type = {{5, syncer::DataType::CONTACT_INFO},
                                  {5, syncer::DataType::PASSWORDS}}},
+
+    // Themes data type section has a specific UI.
+    {.test_suffix = "ThemesSectionOnly",
+     .section_item_count_type = {{1, syncer::DataType::THEMES}}},
+    {.test_suffix = "ThemesSectionOnlyWithLongName",
+     .section_item_count_type = {{1, syncer::DataType::THEMES}},
+     .long_title = true},
+    {.test_suffix = "MultipleSectionsWithThemes",
+     .section_item_count_type = {{5, syncer::DataType::CONTACT_INFO},
+                                 {5, syncer::DataType::PASSWORDS},
+                                 {1, syncer::DataType::THEMES}}},
+    {.test_suffix = "MultipleSectionsWithThemesLongName",
+     .section_item_count_type = {{5, syncer::DataType::CONTACT_INFO},
+                                 {5, syncer::DataType::PASSWORDS},
+                                 {1, syncer::DataType::THEMES}},
+     .long_title = true},
 };
 
 }  // namespace
@@ -147,7 +176,8 @@ class BatchUploadDialogViewPixelTest
  public:
   BatchUploadDialogViewPixelTest() {
     for (const auto& [count, type] : GetParam().section_item_count_type) {
-      fake_descriptions_.emplace_back(GetFakeLocalData(type, count));
+      fake_descriptions_.emplace_back(
+          GetFakeLocalData(type, count, GetParam().long_title));
     }
 
     // The Batch Upload view seems not to be resized properly on changes which

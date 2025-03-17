@@ -10,8 +10,6 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/Contents.json",
     "Assets.xcassets/arrow_clockwise.symbolset/Contents.json",
     "Assets.xcassets/arrow_clockwise.symbolset/arrow.clockwise.cr.svg",
-    "Assets.xcassets/arrow_triangle_slash_circlepath.symbolset/Contents.json",
-    "Assets.xcassets/arrow_triangle_slash_circlepath.symbolset/arrow.triangle.slash.circlepath.cr.svg",
     "Assets.xcassets/bottom_omnibox_option.symbolset/Contents.json",
     "Assets.xcassets/bottom_omnibox_option.symbolset/bottom.omnibox.cr.svg",
     "Assets.xcassets/camera_lens.symbolset/Contents.json",

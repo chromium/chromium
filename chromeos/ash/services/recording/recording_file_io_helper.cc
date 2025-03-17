@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/recording/recording_file_io_helper.h"
 
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 
 namespace recording {

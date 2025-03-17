@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/public/provider/chrome/browser/lens/lens_image_source.h"
+
 class GURL;
 
 @protocol ChromeLensOverlayResult;
@@ -30,7 +32,7 @@ class GURL;
 
 // The lens overlay has suggest signals available for the given result.
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
-    suggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result;
+    hasSuggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result;
 
 // The lens overlay requested to open a URL (e.g. after a selection in the
 // flyout menu).
@@ -47,6 +49,15 @@ class GURL;
 
 // Defines the interface for interacting with a Chrome Lens Overlay.
 @protocol ChromeLensOverlay
+
+// Whether the current mode is translate.
+@property(nonatomic, readonly) BOOL translateFilterActive;
+
+// The layout guide that demarcates the start of the unobstructed area.
+@property(nonatomic, strong) UILayoutGuide* visibleAreaLayoutGuide;
+
+// The selection rect in the coordinate system of the query image.
+@property(nonatomic, readonly) CGRect selectionRect;
 
 // Sets the delegate for `ChromeLensOverlay`.
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate;
@@ -83,6 +94,11 @@ class GURL;
 // Disables flyout menus from displaying.
 - (void)disableFlyoutMenu:(BOOL)disable;
 
+// Optional until fully integrated.
+@optional
+// Shows the overflow menu tooltip.
+- (void)requestShowOverflowMenuTooltip;
+
 @end
 
 namespace ios {
@@ -91,7 +107,13 @@ namespace provider {
 // Creates a controller for the given snapshot that can facilitate
 // communication with the downstream Lens controller.
 UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
-    UIImage* snapshot,
+    LensImageSource* imageSource,
+    LensConfiguration* config,
+    NSArray<UIAction*>* precedingMenuItems,
+    NSArray<UIAction*>* additionalMenuItems);
+
+UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
+    LensImageSource* imageSource,
     LensConfiguration* config,
     NSArray<UIAction*>* additionalMenuItems);
 

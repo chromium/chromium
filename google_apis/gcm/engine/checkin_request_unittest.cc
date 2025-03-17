@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "google_apis/gcm/engine/checkin_request.h"
+
 #include <stdint.h>
 
 #include <memory>
@@ -9,8 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/chromeos_buildflags.h"
-#include "google_apis/gcm/engine/checkin_request.h"
+#include "build/build_config.h"
 #include "google_apis/gcm/engine/gcm_request_test_base.h"
 #include "google_apis/gcm/monitoring/fake_gcm_stats_recorder.h"
 #include "google_apis/gcm/protocol/checkin.pb.h"
@@ -25,8 +26,6 @@ const char kCheckinURL[] = "http://foo.bar/checkin";
 const char kChromeVersion[] = "Version String";
 const uint64_t kSecurityToken = 77;
 const char kSettingsDigest[] = "settings_digest";
-const char kEmailAddress[] = "test_user@gmail.com";
-const char kTokenValue[] = "token_value";
 
 class CheckinRequestTest : public GCMRequestTestBase {
  public:
@@ -89,12 +88,8 @@ void CheckinRequestTest::CreateRequest(uint64_t android_id,
       checkin_proto::ChromeBuildProto::CHANNEL_CANARY);
   chrome_build_proto_.set_chrome_version(kChromeVersion);
 
-  std::map<std::string, std::string> account_tokens;
-  account_tokens[kEmailAddress] = kTokenValue;
-
   CheckinRequest::RequestInfo request_info(android_id,
                                            security_token,
-                                           account_tokens,
                                            kSettingsDigest,
                                            chrome_build_proto_);
   // Then create a request with that protobuf and specified android_id,
@@ -152,11 +147,8 @@ TEST_F(CheckinRequestTest, FetcherDataAndURL) {
             request_proto.checkin().chrome_build().chrome_version());
   EXPECT_EQ(chrome_build_proto_.channel(),
             request_proto.checkin().chrome_build().channel());
-  EXPECT_EQ(2, request_proto.account_cookie_size());
-  EXPECT_EQ(kEmailAddress, request_proto.account_cookie(0));
-  EXPECT_EQ(kTokenValue, request_proto.account_cookie(1));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(checkin_proto::DEVICE_CHROME_OS, request_proto.checkin().type());
 #else
   EXPECT_EQ(checkin_proto::DEVICE_CHROME_BROWSER,

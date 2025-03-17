@@ -52,6 +52,7 @@ class PinnedToolbarActionsContainer
   // Updates whether the button is shown ephemerally in the toolbar (in the
   // popped out region unless also pinned) regardless of whether it is active.
   void ShowActionEphemerallyInToolbar(actions::ActionId id, bool show);
+  void UpdatePinnedStateAndAnnounce(actions::ActionId id, bool pin);
 
   void MovePinnedActionBy(actions::ActionId action_id, int delta);
 
@@ -60,6 +61,7 @@ class PinnedToolbarActionsContainer
 
   // views::View:
   void OnThemeChanged() override;
+  void AddedToWidget() override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool AreDropTypesRequired() override;
@@ -73,9 +75,6 @@ class PinnedToolbarActionsContainer
   // PinnedToolbarActionsModel::Observer:
   void OnActionAddedLocally(const actions::ActionId& id) override;
   void OnActionRemovedLocally(const actions::ActionId& id) override;
-  void OnActionMovedLocally(const actions::ActionId& id,
-                            int from_index,
-                            int to_index) override {}
   void OnActionsChanged() override;
 
   // views::DragController:

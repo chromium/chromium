@@ -280,8 +280,8 @@ TEST_F(CallerValidationTest, DISABLED_PathValidationNetwork) {
 
 TEST_F(CallerValidationTest, TrimProcessPath) {
   struct TestData {
-    base::FilePath::StringPieceType input;
-    base::FilePath::StringPieceType expected;
+    base::FilePath::StringViewType input;
+    base::FilePath::StringViewType expected;
   } cases[] = {
       {L"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
        L"C:\\Program Files\\Google\\Chrome"},

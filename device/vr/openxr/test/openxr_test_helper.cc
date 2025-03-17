@@ -102,13 +102,15 @@ void OpenXrTestHelper::Reset() {
 
   system_id_ = 0;
   frame_begin_ = false;
+#if BUILDFLAG(IS_WIN)
   d3d_device_ = nullptr;
+  textures_arr_.clear();
+#endif
   acquired_swapchain_texture_ = 0;
   next_handle_ = 0;
   next_predicted_display_time_ = 0;
 
   // vectors
-  textures_arr_.clear();
   paths_.clear();
 
   // unordered_maps
@@ -139,7 +141,9 @@ void OpenXrTestHelper::SetTestHook(device::VRTestHook* hook) {
 }
 
 void OpenXrTestHelper::OnPresentedFrame() {
+#if BUILDFLAG(IS_WIN)
   DCHECK_NE(textures_arr_.size(), 0ull);
+#endif
 
   std::vector<device::ViewData> submitted_views;
   uint32_t current_x = 0;
@@ -172,6 +176,7 @@ void OpenXrTestHelper::OnPresentedFrame() {
 
 void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
                                                     device::ViewData& data) {
+#if BUILDFLAG(IS_WIN)
   DCHECK(d3d_device_);
   DCHECK_NE(textures_arr_.size(), 0ull);
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
@@ -215,6 +220,7 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
   memcpy(&data.raw_buffer, map_data.pData, buffer_size);
 
   context->Unmap(texture_destination.Get(), 0);
+#endif
 }
 
 XrSystemId OpenXrTestHelper::GetSystemId() {
@@ -635,7 +641,9 @@ void OpenXrTestHelper::AddDimensions(
 }
 
 void OpenXrTestHelper::ReinitializeTextures() {
+#if BUILDFLAG(IS_WIN)
   DCHECK(d3d_device_);
+#endif
 
   uint32_t total_width = 0;
   uint32_t total_height = 0;
@@ -664,6 +672,7 @@ void OpenXrTestHelper::ReinitializeTextures() {
 }
 
 void OpenXrTestHelper::CreateTextures(uint32_t width, uint32_t height) {
+#if BUILDFLAG(IS_WIN)
   DCHECK(d3d_device_);
   textures_arr_.clear();
 
@@ -684,8 +693,10 @@ void OpenXrTestHelper::CreateTextures(uint32_t width, uint32_t height) {
 
     textures_arr_.push_back(texture);
   }
+#endif
 }
 
+#if BUILDFLAG(IS_WIN)
 void OpenXrTestHelper::SetD3DDevice(ID3D11Device* d3d_device) {
   DCHECK_EQ(d3d_device_, nullptr);
   DCHECK_NE(d3d_device, nullptr);
@@ -697,6 +708,7 @@ void OpenXrTestHelper::SetD3DDevice(ID3D11Device* d3d_device) {
   // is multiplied by 2 because WebXR uses a single double wide texture.
   CreateTextures(kPrimaryViewDimension * 2, kPrimaryViewDimension);
 }
+#endif
 
 XrResult OpenXrTestHelper::AttachActionSets(
     const XrSessionActionSetsAttachInfo& attach_info) {
@@ -892,15 +904,21 @@ XrResult OpenXrTestHelper::PollEvent(XrEventDataBuffer* event_data) {
   return XR_EVENT_UNAVAILABLE;
 }
 
+#if BUILDFLAG(IS_WIN)
 const std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>>&
 OpenXrTestHelper::GetSwapchainTextures() const {
   return textures_arr_;
 }
+#endif
 
 uint32_t OpenXrTestHelper::NextSwapchainImageIndex() {
+#if BUILDFLAG(IS_WIN)
   acquired_swapchain_texture_ =
       (acquired_swapchain_texture_ + 1) % textures_arr_.size();
   return acquired_swapchain_texture_;
+#else
+  return 0;
+#endif
 }
 
 XrTime OpenXrTestHelper::NextPredictedDisplayTime() {

@@ -64,6 +64,10 @@ power_manager::BacklightBrightnessChange_Cause RequestCauseToChangeCause(
         SetBacklightBrightnessRequest_Cause_RESTORED_FROM_USER_PREFERENCE:
       return power_manager::
           BacklightBrightnessChange_Cause_RESTORED_FROM_USER_PREFERENCE;
+    case power_manager::
+        SetBacklightBrightnessRequest_Cause_BATTERY_SAVER_STATE_CHANGED:
+      return power_manager::
+          BacklightBrightnessChange_Cause_BATTERY_SAVER_STATE_CHANGED;
   }
   NOTREACHED() << "Unhandled brightness request cause " << cause;
 }

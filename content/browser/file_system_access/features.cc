@@ -11,15 +11,6 @@
 
 namespace content::features {
 
-// TODO(crbug.com/40061211): Remove this flag eventually.
-//
-// When enabled, drag-and-dropped directories will be checked against the File
-// System Access blocklist. This feature was disabled since it broke some
-// applications.
-BASE_FEATURE(kFileSystemAccessDragAndDropCheckBlocklist,
-             "FileSystemAccessDragAndDropCheckBlocklist",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // TODO(crbug.com/40896420): Remove this flag eventually.
 // TODO(b/354661640): Temporarily disable this flag while investigating CrOS
 // file saving issue.

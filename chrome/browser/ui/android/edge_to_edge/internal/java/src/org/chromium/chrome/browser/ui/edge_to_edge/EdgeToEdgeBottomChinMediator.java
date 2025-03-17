@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.CAN_SHOW;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.DIVIDER_COLOR;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HAS_CONSTRAINT;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.OFFSET_TAG;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
@@ -13,12 +14,13 @@ import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isBott
 
 import androidx.annotation.NonNull;
 
-import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -32,7 +34,6 @@ class EdgeToEdgeBottomChinMediator
         implements LayoutStateProvider.LayoutStateObserver,
                 KeyboardVisibilityDelegate.KeyboardVisibilityListener,
                 EdgeToEdgeSupplier.ChangeObserver,
-                NavigationBarColorProvider.Observer,
                 FullscreenManager.Observer,
                 BottomControlsLayer {
     private static final String TAG = "E2EBottomChin";
@@ -45,10 +46,10 @@ class EdgeToEdgeBottomChinMediator
     private boolean mIsDrawingToEdge;
     private boolean mIsPagedOptedIntoEdgeToEdge;
 
-    // The offset of the composited view in the renderer. When BCIV is enabled, this will usually
-    // not be equal to the property model's Y_OFFSET value, since the composited view will be moved
-    // by viz instead of the browser.
-    private int mRendererOffset;
+    // The offset of the composited view in the browser. When BCIV is enabled, this will usually
+    // not be equal to the offset in the renderer, since the composited view will be moved by viz
+    // instead of the browser.
+    private int mYOffset;
 
     private int mNavigationBarColor;
     private int mDividerColor;
@@ -60,13 +61,14 @@ class EdgeToEdgeBottomChinMediator
     private @LayerVisibility int mLatestLayerVisibility;
 
     private boolean mIsKeyboardVisible;
+    private boolean mHasSafeAreaConstraint;
 
     private final @NonNull KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final @NonNull LayoutManager mLayoutManager;
     private final @NonNull EdgeToEdgeController mEdgeToEdgeController;
-    private final @NonNull NavigationBarColorProvider mNavigationBarColorProvider;
     private final @NonNull BottomControlsStacker mBottomControlsStacker;
     private final @NonNull FullscreenManager mFullscreenManager;
+    private final boolean mIsConstraintChinScrollableWhenStacking;
 
     /**
      * Build a new mediator for the bottom chin component.
@@ -78,8 +80,6 @@ class EdgeToEdgeBottomChinMediator
      * @param layoutManager The {@link LayoutManager} for observing active layout type.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
      *     status and window bottom insets.
-     * @param navigationBarColorProvider The {@link NavigationBarColorProvider} for observing the
-     *     color for the navigation bar.
      * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
      *     browser controls heights.
      * @param fullscreenManager The {@link FullscreenManager} for provide the fullscreen state.
@@ -89,22 +89,21 @@ class EdgeToEdgeBottomChinMediator
             @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             @NonNull LayoutManager layoutManager,
             @NonNull EdgeToEdgeController edgeToEdgeController,
-            @NonNull NavigationBarColorProvider navigationBarColorProvider,
             @NonNull BottomControlsStacker bottomControlsStacker,
             @NonNull FullscreenManager fullscreenManager) {
         mModel = model;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mLayoutManager = layoutManager;
         mEdgeToEdgeController = edgeToEdgeController;
-        mNavigationBarColorProvider = navigationBarColorProvider;
         mBottomControlsStacker = bottomControlsStacker;
         mFullscreenManager = fullscreenManager;
+        mIsConstraintChinScrollableWhenStacking =
+                EdgeToEdgeUtils.isConstraintBottomChinScrollableWhenStacking();
 
         // Add observers.
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(this);
         mLayoutManager.addObserver(this);
         mEdgeToEdgeController.registerObserver(this);
-        mNavigationBarColorProvider.addObserver(this);
         mBottomControlsStacker.addLayer(this);
         mFullscreenManager.addObserver(this);
 
@@ -121,20 +120,42 @@ class EdgeToEdgeBottomChinMediator
         assert mKeyboardVisibilityDelegate != null;
         assert mLayoutManager != null;
         assert mEdgeToEdgeController != null;
-        assert mNavigationBarColorProvider != null;
         assert mBottomControlsStacker != null;
         assert mFullscreenManager != null;
 
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(this);
         mLayoutManager.removeObserver(this);
         mEdgeToEdgeController.unregisterObserver(this);
-        mNavigationBarColorProvider.removeObserver(this);
         mBottomControlsStacker.removeLayer(this);
         mFullscreenManager.removeObserver(this);
     }
 
     private boolean isVisible() {
-        return mRendererOffset < mModel.get(HEIGHT);
+        // This assumes the chin is at the very bottom, or all layers below the chin are scrollable.
+        if (ChromeFeatureList.sBcivBottomControls.isEnabled() && mModel.get(OFFSET_TAG) != null) {
+            return mBottomControlsStacker.getBrowserControls().getBottomControlOffset()
+                    < mModel.get(HEIGHT);
+        } else {
+            return mYOffset < mModel.get(HEIGHT);
+        }
+    }
+
+    /** Change the color of the bottom chin. */
+    void changeBottomChinColor(int color) {
+        mNavigationBarColor = color;
+        if (!isVisible()) {
+            return;
+        }
+        mModel.set(COLOR, color);
+    }
+
+    /** Change the color of the bottom chin. */
+    void changeBottomChinDividerColor(int dividerColor) {
+        mDividerColor = dividerColor;
+        if (!isVisible()) {
+            return;
+        }
+        mModel.set(DIVIDER_COLOR, dividerColor);
     }
 
     /**
@@ -192,24 +213,13 @@ class EdgeToEdgeBottomChinMediator
     }
 
     @Override
-    public void onNavigationBarColorChanged(int color) {
-        if (!isVisible()) {
-            mNavigationBarColor = color;
-            return;
-        }
-
-        // TODO(): Animate the color change.
-        mModel.set(COLOR, color);
-    }
-
-    @Override
-    public void onNavigationBarDividerChanged(int dividerColor) {
-        if (!isVisible()) {
-            mDividerColor = dividerColor;
-            return;
-        }
-
-        mModel.set(DIVIDER_COLOR, dividerColor);
+    public void onSafeAreaConstraintChanged(boolean hasConstraint) {
+        if (mHasSafeAreaConstraint == hasConstraint) return;
+        // mHasSafeAreaConstraint impacts scroll behavior which changes the min height of browser
+        // controls layers. Request an update to refresh the calculated height in the stacker.
+        mHasSafeAreaConstraint = hasConstraint;
+        mModel.set(HAS_CONSTRAINT, mHasSafeAreaConstraint);
+        mBottomControlsStacker.requestLayerUpdate(false);
     }
 
     // KeyboardVisibilityDelegate.KeyboardVisibilityListener
@@ -241,7 +251,11 @@ class EdgeToEdgeBottomChinMediator
 
     @Override
     public int getScrollBehavior() {
-        return LayerScrollBehavior.DEFAULT_SCROLL_OFF;
+        if (!mHasSafeAreaConstraint
+                || (mIsPagedOptedIntoEdgeToEdge && mIsConstraintChinScrollableWhenStacking)) {
+            return LayerScrollBehavior.DEFAULT_SCROLL_OFF;
+        }
+        return LayerScrollBehavior.NEVER_SCROLL_OFF;
     }
 
     @Override
@@ -257,23 +271,21 @@ class EdgeToEdgeBottomChinMediator
     }
 
     @Override
-    public void onBrowserControlsOffsetUpdate(int layerYOffset, boolean didMinHeightChange) {
+    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
         assert BottomControlsStacker.isDispatchingYOffset();
 
-        mRendererOffset = layerYOffset;
+        mYOffset = layerYOffset;
 
         if (isVisible()) {
             // If the chin isn't visible, cache the color and update it when the chin is visible.
             // This is done to reduce the number of compositor frames submitted while scrolling.
             // The color is unnecessarily set to null when the chin gets scrolled off screen, and
             // gets set back to what it was before it was scrolled off.
-            onNavigationBarColorChanged(mNavigationBarColor);
-            onNavigationBarDividerChanged(mDividerColor);
+            changeBottomChinColor(mNavigationBarColor);
+            changeBottomChinDividerColor(mDividerColor);
         }
 
-        if (!mBottomControlsStacker.isMoveableByViz()) {
-            mModel.set(Y_OFFSET, layerYOffset);
-        }
+        mModel.set(Y_OFFSET, layerYOffset);
     }
 
     @Override
@@ -285,5 +297,13 @@ class EdgeToEdgeBottomChinMediator
     @Override
     public void clearOffsetTag() {
         mModel.set(OFFSET_TAG, null);
+    }
+
+    public int getDividerColorForTesting() {
+        return mDividerColor;
+    }
+
+    public int getNavigationBarColorForTesting() {
+        return mNavigationBarColor;
     }
 }

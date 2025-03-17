@@ -231,6 +231,8 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="AI Prototyping"/>
   <int value="64" label="Manage shared tab group"/>
   <int value="65" label="Share local tab group"/>
+  <int value="66" label="Leave shared tab group"/>
+  <int value="67" label="Delete shared tab group"/>
 </enum>
 
 <enum name="IOSMenuScenario">
@@ -330,6 +332,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninMediator.java:LoadPoint) -->
 
+<!-- LINT.IfChange(MobileDefaultBrowserState) -->
+
 <enum name="MobileDefaultBrowserState">
   <int value="0" label="No default"/>
   <int value="1"
@@ -341,19 +345,24 @@ chromium-metrics-reviews@google.com.
   <int value="4"
       label="Other app currently default; that app not in original system
              image"/>
+  <int value="5" label="Other Chrome channel default"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/DefaultBrowserInfoUmaRecorder.java:MobileDefaultBrowserState) -->
+
+<!-- LINT.IfChange(MobileFreProgress) -->
 
 <enum name="MobileFreProgress">
   <int value="0" label="FRE started"/>
   <int value="1" label="Welcome shown"/>
   <int value="2" label="Data saver shown (Deprecated 01/2022)"/>
-  <int value="3" label="Sync consent shown"/>
+  <int value="3" label="Sync consent shown (Deprecated 02/2025)"/>
   <int value="4"
       label="The user clicked on the continue button to continue with sync
-             consent"/>
+             consent (Deprecated 02/2025)"/>
   <int value="5"
       label="The user clicked on the |No thanks| button to continue without
-             sync consent"/>
+             sync consent (Deprecated 02/2025)"/>
   <int value="6" label="Search engine choice dialog shown"/>
   <int value="7" label="The user started adding account from welcome screen"/>
   <int value="8"
@@ -372,6 +381,8 @@ chromium-metrics-reviews@google.com.
       label="The user clicked on the |No thanks| button to decline history
              sync"/>
 </enum>
+
+<!-- LINT.ThenChange(/chrome/browser/first_run/android/java/src/org/chromium/chrome/browser/firstrun/MobileFreProgress.java:MobileFreProgress) -->
 
 <enum name="MobileFreSignInChoice">
   <summary>
@@ -545,6 +556,8 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="Undo provisional unsubscribe button."/>
   <int value="32" label="Commit provisional unsubscribe explicitly."/>
   <int value="33" label="Commit provisional unsubscribe implicitly."/>
+  <int value="34" label="Show original notification button."/>
+  <int value="35" label="Always allow notification button."/>
 </enum>
 
 <enum name="SystemNotificationType">
@@ -588,6 +601,7 @@ chromium-metrics-reviews@google.com.
   <int value="38" label="Webapk Install Failed"/>
   <int value="39" label="Data Sharing"/>
   <int value="40" label="Unified password manager access loss warning"/>
+  <int value="41" label="Tracing"/>
 </enum>
 
 </enums>

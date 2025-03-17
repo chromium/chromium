@@ -24,21 +24,21 @@ class Origin;
 namespace network {
 
 // The "Sec-CH-Prefers-Color-Scheme" header values.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 extern const char kPrefersColorSchemeDark[];
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 extern const char kPrefersColorSchemeLight[];
 
 // The "Sec-CH-Prefers-Reduced-Motion" header values.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 extern const char kPrefersReducedMotionNoPreference[];
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 extern const char kPrefersReducedMotionReduce[];
 
 // The "Sec-CH-Prefers-Reduced-Transparency" header values.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 extern const char kPrefersReducedTransparencyNoPreference[];
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 extern const char kPrefersReducedTransparencyReduce[];
 
 // Mapping from WebEffectiveConnectionType to the header value. This value is
@@ -69,16 +69,17 @@ using ClientHintToNameMap =
 // Mapping from WebClientHintsType to the hint's name in Accept-CH header.
 // The ordering matches the ordering of enums in
 // services/network/public/mojom/web_client_hints_types.mojom
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 const ClientHintToNameMap& GetClientHintToNameMap();
 
 // Tries to parse an Accept-CH header. Returns std::nullopt if parsing
 // failed and the header should be ignored; otherwise returns a (possibly
 // empty) list of hints to accept.
 std::optional<std::vector<network::mojom::WebClientHintsType>> COMPONENT_EXPORT(
-    NETWORK_CPP) ParseClientHintsHeader(const std::string& header);
+    NETWORK_CPP_WEB_PLATFORM) ParseClientHintsHeader(const std::string& header);
 
-struct COMPONENT_EXPORT(NETWORK_CPP) ClientHintToDelegatedThirdPartiesHeader {
+struct COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
+    ClientHintToDelegatedThirdPartiesHeader {
   ClientHintToDelegatedThirdPartiesHeader();
   ~ClientHintToDelegatedThirdPartiesHeader();
   ClientHintToDelegatedThirdPartiesHeader(
@@ -104,13 +105,14 @@ enum class MetaCHType {
 // named meta tag). Returns std::nullopt if parsing failed and the header
 // should be ignored; otherwise returns a (possibly empty) map of hints to
 // delegated third-parties.
-const ClientHintToDelegatedThirdPartiesHeader COMPONENT_EXPORT(NETWORK_CPP)
+const ClientHintToDelegatedThirdPartiesHeader COMPONENT_EXPORT(
+    NETWORK_CPP_WEB_PLATFORM)
     ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header,
                                                  MetaCHType type);
 
 // This is used by subclassed of ClientHintsControllerDelegate to track the
 // amount of time that persisting client hints takes.
-void COMPONENT_EXPORT(NETWORK_CPP)
+void COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
     LogClientHintsPersistenceMetrics(const base::TimeTicks& persistence_started,
                                      std::size_t hints_stored);
 

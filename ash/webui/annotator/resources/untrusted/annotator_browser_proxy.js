@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {UntrustedAnnotatorPageCallbackRouter, UntrustedAnnotatorPageHandlerFactory, UntrustedAnnotatorPageHandlerRemote, UntrustedAnnotatorPageRemote} from './ash/webui/annotator/mojom/untrusted_annotator.mojom-webui.js';
+import {UntrustedAnnotatorPageCallbackRouter, UntrustedAnnotatorPageHandlerFactory, UntrustedAnnotatorPageHandlerRemote} from './untrusted_annotator.mojom-webui.js';
 
 /**
  * To use the annotator proxy, please import this module and call

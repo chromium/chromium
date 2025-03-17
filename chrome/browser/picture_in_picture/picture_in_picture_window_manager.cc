@@ -134,6 +134,8 @@ void PictureInPictureWindowManager::EnterPictureInPictureWithController(
     RecordPictureInPictureDisallowed(
         PictureInPictureDisallowedType::kNewWindowClosed);
   }
+
+  MaybeRecordPictureInPictureChanged(true);
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
@@ -181,6 +183,10 @@ PictureInPictureWindowManager::EnterVideoPictureInPicture(
     CreateWindowInternal(web_contents);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  MaybeRecordPictureInPictureChanged(true);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   return content::PictureInPictureResult::kSuccess;
 }
 
@@ -211,6 +217,10 @@ bool PictureInPictureWindowManager::ExitPictureInPictureViaWindowUi(
       break;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  MaybeRecordPictureInPictureChanged(false);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   return true;
 }
 
@@ -219,6 +229,11 @@ bool PictureInPictureWindowManager::ExitPictureInPicture() {
     CloseWindowInternal();
     return true;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  MaybeRecordPictureInPictureChanged(false);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   return false;
 }
 
@@ -446,6 +461,10 @@ void PictureInPictureWindowManager::CloseWindowInternal() {
   video_web_contents_observer_.reset();
   pip_window_controller_->Close(false /* should_pause_video */);
   pip_window_controller_ = nullptr;
+
+#if !BUILDFLAG(IS_ANDROID)
+  MaybeRecordPictureInPictureChanged(false);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -613,6 +632,15 @@ void PictureInPictureWindowManager::
 void PictureInPictureWindowManager::RecordPictureInPictureDisallowed(
     PictureInPictureDisallowedType type) {
   base::UmaHistogramEnumeration("Media.PictureInPicture.Disallowed", type);
+}
+
+void PictureInPictureWindowManager::MaybeRecordPictureInPictureChanged(
+    bool is_picture_in_picture) {
+  if (!uma_helper_) {
+    uma_helper_ = std::make_unique<PictureInPictureWindowManagerUmaHelper>();
+  }
+
+  uma_helper_->MaybeRecordPictureInPictureChanged(is_picture_in_picture);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

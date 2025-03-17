@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -86,7 +87,9 @@ public class CustomTabMinimizationManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final String TITLE = "Google";
-    private static final String HOST = JUnitTestGURLs.SEARCH_URL.getHost();
+    private static final String HOST =
+            UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                    JUnitTestGURLs.SEARCH_URL);
 
     @Spy private AppCompatActivity mActivity;
     @Mock private ActivityTabProvider mTabProvider;
@@ -229,6 +232,21 @@ public class CustomTabMinimizationManagerUnitTest {
     public void testAboutBlank() {
         // Simulate having about:blank URL in the tab.
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.ABOUT_BLANK);
+        when(mTab.getTitle()).thenReturn("google.com");
+
+        mManager.minimize();
+        mManager.accept(new PictureInPictureModeChangedInfo(true));
+
+        assertEquals(View.GONE, mActivity.findViewById(R.id.title).getVisibility());
+        assertEquals(
+                JUnitTestGURLs.ABOUT_BLANK.getSpec(),
+                ((TextView) mActivity.findViewById(R.id.url)).getText());
+    }
+
+    @Test
+    public void testAboutBlank_fragment() {
+        // Simulate having about:blank#google.com URL in the tab.
+        when(mTab.getUrl()).thenReturn(new GURL("about:blank#google.com"));
         when(mTab.getTitle()).thenReturn("google.com");
 
         mManager.minimize();

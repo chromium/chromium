@@ -23,10 +23,11 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
  public:
   ProfilePickerFlowController(ProfilePickerWebContentsHost* host,
                               ClearHostClosure clear_host_callback,
-                              ProfilePicker::EntryPoint entry_point);
+                              ProfilePicker::EntryPoint entry_point,
+                              const GURL& selected_profile_target_url);
   ~ProfilePickerFlowController() override;
 
-  void Init(StepSwitchFinishedCallback step_switch_finished_callback) override;
+  void Init() override;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void SwitchToDiceSignIn(ProfilePicker::ProfileInfo profile_info,
@@ -47,8 +48,11 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   // without signing in.
   void SwitchToSignedOutPostIdentityFlow(
       Profile* profile,
-      PostHostClearedCallback post_host_cleared_callback,
       StepSwitchFinishedCallback step_switch_finished_callback);
+
+  // ProfileManagementFlowControllerImpl:
+  void PickProfile(const base::FilePath& profile_path,
+                   ProfilePicker::ProfilePickingArgs args) override;
 
  protected:
   // ProfileManagementFlowControllerImpl
@@ -75,7 +79,11 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents) override;
 
+  // Callback after loading a profile and opening a browser.
+  void OnSwitchToProfileComplete(bool open_settings, Browser* browser);
+
   const ProfilePicker::EntryPoint entry_point_;
+  const GURL selected_profile_target_url_;
 
   // Color provided when a profile creation is initiated, that may be used to
   // tint screens of the profile creation flow (currently this only affects the
@@ -92,6 +100,12 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       weak_signed_in_flow_controller_;
 
   base::WeakPtr<Profile> created_profile_;
+
+  // Time when the user picked a profile to open, to measure browser startup
+  // performance. Only set when the picker is shown on startup.
+  base::TimeTicks profile_picked_time_on_startup_;
+
+  base::WeakPtrFactory<ProfilePickerFlowController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FLOW_CONTROLLER_H_

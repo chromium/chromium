@@ -132,6 +132,20 @@ message ChromeUserPopulation {
   reserved 19;
 }
 
+// Identifies a web app (e.g. a WebAPK) on the basis of its origin and id, as
+// defined in https://www.w3.org/TR/appmanifest/#id-member.
+message SafeBrowsingWebAppKey {
+  // Serialized origin without the scheme portion. In most cases, this is just
+  // the host part. May include a colon character followed by a port number, if
+  // the port number is non-default.
+  optional string start_url_origin = 1;
+  // Manifest id or (if there is no id) the path and query portions of
+  // start_url, without leading slash character, e.g. will be empty string if
+  // the path is "/". This should not include URL fragments, but should include
+  // query params.
+  optional string id_or_start_path = 2;
+}
+
 message ImageFeatureEmbedding {
   // Tracking embedding-model's version from iteration to iteration
   optional int32 embedding_model_version = 1;
@@ -158,6 +172,15 @@ message LlamaForcedTriggerInfo {
 message IntelligentScanInfo {
   optional string brand = 1;
   optional string intent = 2;
+
+  // Reason why the brand and intent are empty.
+  enum NoInfoReason {
+    NO_INFO_REASON_UNSPECIFIED = 0;
+    // Client cannot infer the brand and intent because there is no text on the
+    // page.
+    EMPTY_TEXT = 1;
+  }
+  optional NoInfoReason no_info_reason = 3;
 }
 
 message ClientPhishingRequest {
@@ -344,7 +367,8 @@ enum PreClassificationCheckResult {
   NO_CLASSIFY_CHROME_UI_PAGE = 16;
   OBSOLETE_NO_CLASSIFY_NOT_ALLOWED_BY_POLICY = 17;
   NO_CLASSIFY_MATCH_HC_ALLOWLIST = 18;
-  NO_CLASSIFY_MAX = 19;  // Always add before this, and update this value.
+  NO_CLASSIFY_ALLOWLIST_METRIC = 19;
+  NO_CLASSIFY_MAX = 20;  // Always add before this, and update this value.
 }
 
 // This value must be kept in sync with those in
@@ -392,6 +416,13 @@ message ReferringAppInfo {
   optional ReferringAppSource referring_app_source = 1;
 
   optional string referring_app_name = 2;
+
+  // If Chrome was launched by a WebAPK, this field identifies that WebAPK.
+  // Note: This is not mutually exclusive with referring_app_{source,name}. If
+  // an external app launches a WebAPK which then launches Chrome,
+  // referring_app_{source,name} will refer to the original referring app while
+  // this referring_webapk field will refer to the WebAPK.
+  optional SafeBrowsingWebAppKey referring_webapk = 3;
 }
 
 // The message is used for client request to determine whether the provided URL
@@ -454,7 +485,7 @@ message LoginReputationClientRequest {
   repeated Frame frames = 3;
 
   // The message contains fields needed for a password reuse event.
-  // Next tag: 4
+  // Next tag: 7
   message PasswordReuseEvent {
     // Domains from the Chrome password manager DB that are associated with
     // the same password as the one triggering this event. The field is filled
@@ -465,22 +496,8 @@ message LoginReputationClientRequest {
     // The frame that the password reuse is detected.
     optional int32 frame_id = 2;
 
-    // Deprecated field.
-    reserved 3;
-
-    // TODO(crbug.com/41431428): Remove once ReusedPasswordAccountType is
-    // implemented. Sync account type.
-    enum SyncAccountType {
-      // Not a sign-in user.
-      NOT_SIGNED_IN = 0;
-
-      // User signed in with @gmail.com, or @googlemail.com account.
-      GMAIL = 1;
-
-      // User signed in with a G Suite account.
-      GSUITE = 2;
-    }
-    optional SyncAccountType sync_account_type = 4;
+    // Deprecated fields.
+    reserved 3, 4;
 
     // TODO(crbug.com/41431428): Remove once ReusedPasswordAccountType is
     // implemented. Type of password being reused.
@@ -586,8 +603,9 @@ message LoginReputationClientRequest {
     optional bool hide_on_interaction = 4;
     // True if OmniboxUIExperimentElideToRegistrableDomain is enabled.
     optional bool elide_to_registrable_domain = 5;
-    // True if this is the control group. This sent by the finch config.
-    optional bool simplified_url_display_enabled = 6;
+
+    // Deprecated: simplified_url_display_enabled.
+    reserved 6;
   };
   optional UrlDisplayExperiment url_display_experiment = 14;
 
@@ -1058,6 +1076,10 @@ message ClientDownloadRequest {
 
   // The token from previous requests related to this download, if any exists.
   optional bytes previous_token = 91;
+
+  // Fields 92-94 are reserved for server-side use and are never sent by the
+  // client.
+  reserved 92 to 94;
 }
 
 message ReferrerChainOptions {
@@ -1208,6 +1230,8 @@ enum ClientSideDetectionType {
   POINTER_LOCK_REQUESTED = 5;
   // Vibration API request triggered.
   VIBRATION_API = 6;
+  // Fullscreen API request triggered.
+  FULLSCREEN_API = 7;
 }
 
 message ClientDownloadResponse {
@@ -2227,6 +2251,9 @@ message ExtensionTelemetryReportRequest {
     // Bitmask of reason(s) the Chrome extension is disabled.
     // Bit positions are defined in extensions::disable_reason::DisableReason
     // (located in //extensions/browser/disable_reason.h)
+    //
+    // TODO(crbug.com/372186532): This field will be deprecated in favor of
+    // disable_reasons_list field below.
     optional uint32 disable_reasons = 13;
 
     // Manifest.json file associated with the extension. Only populated for
@@ -2250,7 +2277,12 @@ message ExtensionTelemetryReportRequest {
     // Installation policy for the extension determined by enterprise policy.
     optional InstallationPolicy installation_policy = 17;
 
-    // Next available tag number: 18.
+    // List of reasons for which the Chrome extension is disabled. The reason
+    // values are defined in extensions::disable_reason::DisableReason (located
+    // in //extensions/browser/disable_reason.h).
+    repeated uint32 disable_reasons_list = 18;
+
+    // Next available tag number: 19.
   }
 
   // Information about the various telemetry signals.

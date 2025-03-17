@@ -19,12 +19,12 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_utils.h"
-#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -95,13 +95,13 @@ void AshSignalsDecorator::Decorate(base::Value::Dict& signals,
   // On ChromeOS the disk is always encrypted. See (b/249756773) for more
   // information.
   signals.Set(device_signals::names::kDiskEncrypted,
-              static_cast<int32_t>(enterprise_signals::SettingValue::ENABLED));
+              static_cast<int32_t>(device_signals::SettingValue::ENABLED));
 
   // Also, there is no way to remove the need for a password when logging into a
   // device, including when the screen is locked. A password or pin is always
   // required.
   signals.Set(device_signals::names::kScreenLockSecured,
-              static_cast<int32_t>(enterprise_signals::SettingValue::ENABLED));
+              static_cast<int32_t>(device_signals::SettingValue::ENABLED));
 
   base::Value::List imei_list;
   base::Value::List meid_list;

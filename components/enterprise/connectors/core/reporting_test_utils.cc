@@ -9,6 +9,7 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/policy_types.h"
@@ -46,6 +47,14 @@ constexpr char kKeyTriggeredRuleId[] = "ruleId";
 constexpr char kKeyUrlCategory[] = "urlCategory";
 constexpr char kKeyAction[] = "action";
 constexpr char kKeyHasWatermarking[] = "hasWatermarking";
+constexpr char kKeyIsFederated[] = "isFederated";
+constexpr char kKeyFederatedOrigin[] = "federatedOrigin";
+constexpr char kKeyProfileUserName[] = "profileUserName";
+constexpr char kKeyLoginUserName[] = "loginUserName";
+constexpr char kKeyTrigger[] = "trigger";
+constexpr char kKeyPasswordBreachIdentities[] = "identities";
+constexpr char kKeyPasswordBreachIdentitiesUsername[] = "username";
+constexpr char kKeyPasswordBreachIdentitiesUrl[] = "url";
 
 }  // namespace
 
@@ -93,6 +102,10 @@ EventReportValidatorBase::~EventReportValidatorBase() {
   testing::Mock::VerifyAndClearExpectations(client_);
 }
 
+void EventReportValidatorBase::ExpectNoReport() {
+  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(0);
+}
+
 void EventReportValidatorBase::ExpectURLFilteringInterstitialEvent(
     chrome::cros::reporting::proto::UrlFilteringInterstitialEvent
         expected_urlf_event) {
@@ -131,6 +144,85 @@ void EventReportValidatorBase::ExpectURLFilteringInterstitialEvent(
           const base::Value::Dict& rule = (*triggered_rules)[i].GetDict();
           ValidateThreatInfo(&rule, expected_urlf_event.triggered_rule_info(i));
         }
+        if (!done_closure_.is_null()) {
+          done_closure_.Run();
+        }
+      });
+}
+
+void EventReportValidatorBase::ExpectLoginEvent(
+    const std::string& expected_url,
+    const bool expected_is_federated,
+    const std::string& expected_federated_origin,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
+    const std::u16string& expected_login_username) {
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce([this, expected_url, expected_is_federated,
+                 expected_federated_origin, expected_profile_username,
+                 expected_profile_identifier, expected_login_username](
+                    bool include_device_info, base::Value::Dict report,
+                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                        callback) {
+        // Extract the event list.
+        const base::Value::List* event_list = report.FindList(
+            policy::RealtimeReportingJobConfiguration::kEventListKey);
+        ASSERT_TRUE(event_list);
+
+        // There should only be 1 event per test.
+        ASSERT_EQ(1u, event_list->size());
+        const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+        const base::Value::Dict* event =
+            wrapper.FindDict(enterprise_connectors::kKeyLoginEvent);
+        ASSERT_TRUE(event);
+
+        ValidateField(event, kKeyURL, expected_url);
+        ValidateField(event, kKeyIsFederated, expected_is_federated);
+        ValidateFederatedOrigin(event, expected_federated_origin);
+        ValidateField(event, kKeyProfileUserName, expected_profile_username);
+        ValidateField(event,
+                      enterprise_connectors::RealtimeReportingClientBase::
+                          kKeyProfileIdentifier,
+                      expected_profile_identifier);
+        ValidateField(event, kKeyLoginUserName, expected_login_username);
+
+        if (!done_closure_.is_null()) {
+          done_closure_.Run();
+        }
+      });
+}
+
+void EventReportValidatorBase::ExpectPasswordBreachEvent(
+    const std::string& expected_trigger,
+    const std::vector<std::pair<std::string, std::u16string>>&
+        expected_identities,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier) {
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce([this, expected_trigger, expected_identities,
+                 expected_profile_username, expected_profile_identifier](
+                    bool include_device_info, base::Value::Dict report,
+                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                        callback) {
+        // Extract the event list.
+        const base::Value::List* event_list = report.FindList(
+            policy::RealtimeReportingJobConfiguration::kEventListKey);
+        ASSERT_TRUE(event_list);
+
+        // There should only be 1 event per test.
+        ASSERT_EQ(1u, event_list->size());
+        const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+        const base::Value::Dict* event =
+            wrapper.FindDict(enterprise_connectors::kKeyPasswordBreachEvent);
+        ASSERT_TRUE(event);
+
+        ValidateField(event, kKeyTrigger, expected_trigger);
+        ValidateIdentities(event, std::move(expected_identities));
+        ValidateField(event, kKeyProfileUserName, expected_profile_username);
+        ValidateField(event,
+                      enterprise_connectors::RealtimeReportingClientBase::
+                          kKeyProfileIdentifier,
+                      expected_profile_identifier);
         if (!done_closure_.is_null()) {
           done_closure_.Run();
         }
@@ -181,14 +273,13 @@ void EventReportValidatorBase::ValidateField(
       << "\nExpected value: " << expected_value.value();
 }
 
-void EventReportValidatorBase::ValidateField(
-    const base::Value::Dict* value,
-    const std::string& field_key,
-    const std::optional<bool>& expected_value) {
+void EventReportValidatorBase::ValidateField(const base::Value::Dict* value,
+                                             const std::string& field_key,
+                                             bool expected_value) {
   ASSERT_EQ(value->FindBool(field_key), expected_value)
       << "Mismatch in field " << field_key
       << "\nActual value: " << value->FindBool(field_key).value()
-      << "\nExpected value: " << expected_value.value();
+      << "\nExpected value: " << expected_value;
 }
 
 void EventReportValidatorBase::ValidateThreatInfo(
@@ -203,7 +294,49 @@ void EventReportValidatorBase::ValidateThreatInfo(
                 chrome::cros::reporting::proto::TriggeredRuleInfo::Action_Name(
                     expected_rule_info.action()));
   if (expected_rule_info.has_watermarking()) {
-    ValidateField(value, kKeyHasWatermarking, std::optional<bool>(true));
+    ValidateField(value, kKeyHasWatermarking, true);
+  }
+}
+
+void EventReportValidatorBase::ValidateFederatedOrigin(
+    const base::Value::Dict* value,
+    const std::string& expected_federated_origin) {
+  std::optional<bool> is_federated = value->FindBool(kKeyIsFederated);
+  const std::string* federated_origin = value->FindString(kKeyFederatedOrigin);
+  if (is_federated.has_value() && is_federated.value()) {
+    EXPECT_NE(nullptr, federated_origin);
+    EXPECT_EQ(expected_federated_origin, *federated_origin);
+  } else {
+    EXPECT_EQ(nullptr, federated_origin);
+  }
+}
+
+void EventReportValidatorBase::ValidateIdentities(
+    const base::Value::Dict* value,
+    const std::vector<std::pair<std::string, std::u16string>>&
+        expected_identities) {
+  const base::Value::List* identities =
+      value->FindList(kKeyPasswordBreachIdentities);
+  EXPECT_NE(nullptr, identities);
+  EXPECT_EQ(expected_identities.size(), identities->size());
+  for (const auto& expected_identity : expected_identities) {
+    bool matched = false;
+    for (const auto& actual_identity : *identities) {
+      const base::Value::Dict& actual_identity_dict = actual_identity.GetDict();
+      const std::string* url =
+          actual_identity_dict.FindString(kKeyPasswordBreachIdentitiesUrl);
+      const std::string* actual_username =
+          actual_identity_dict.FindString(kKeyPasswordBreachIdentitiesUsername);
+      EXPECT_NE(nullptr, actual_username);
+      const std::u16string username = base::UTF8ToUTF16(*actual_username);
+      EXPECT_NE(nullptr, url);
+      if (expected_identity.first == *url &&
+          expected_identity.second == username) {
+        matched = true;
+        break;
+      }
+    }
+    EXPECT_TRUE(matched);
   }
 }
 

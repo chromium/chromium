@@ -14,25 +14,25 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace controlled_frame {
 
 namespace {
 
-blink::mojom::PermissionsPolicyFeature
+network::mojom::PermissionsPolicyFeature
 GetPermissionPolicyFeatureForMediaStreamType(
     blink::mojom::MediaStreamType type) {
   switch (type) {
     case blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE:
-      return blink::mojom::PermissionsPolicyFeature::kMicrophone;
+      return network::mojom::PermissionsPolicyFeature::kMicrophone;
     case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
-      return blink::mojom::PermissionsPolicyFeature::kCamera;
+      return network::mojom::PermissionsPolicyFeature::kCamera;
     default:
-      return blink::mojom::PermissionsPolicyFeature::kNotFound;
+      return network::mojom::PermissionsPolicyFeature::kNotFound;
   }
 }
 
@@ -54,18 +54,14 @@ ControlledFrameMediaAccessHandler::~ControlledFrameMediaAccessHandler() =
     default;
 
 bool ControlledFrameMediaAccessHandler::SupportsStreamType(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
-  if (!web_contents || extension) {
+  if (!render_frame_host || extension) {
     return false;
   }
-
-  // TODO(b/40238394): |GuestView| should be looked up from |RenderFrameHost|
-  // instead of |WebContents|. To fix this, |SupportsStreamType| could pass
-  // |RenderFrameHost| instead of |WebContents|.
   extensions::WebViewGuest* web_view =
-      extensions::WebViewGuest::FromWebContents(web_contents);
+      extensions::WebViewGuest::FromRenderFrameHost(render_frame_host);
 
   bool is_controlled_frame = web_view && web_view->attached() &&
                              web_view->IsOwnedByControlledFrameEmbedder();
@@ -211,7 +207,7 @@ bool ControlledFrameMediaAccessHandler::IsAllowedByPermissionsPolicy(
   content::RenderFrameHost* embedder_rfh = web_view->embedder_rfh();
   CHECK(embedder_rfh);
 
-  const blink::PermissionsPolicy* permissions_policy =
+  const network::PermissionsPolicy* permissions_policy =
       embedder_rfh->GetPermissionsPolicy();
   CHECK(permissions_policy);
   if (!permissions_policy->IsFeatureEnabledForOrigin(

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 LSPosed
+ * Copyright (C) 2021-2025 LSPosed
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,31 @@
 
 package org.lsposed.hiddenapibypass;
 
-import java.lang.invoke.MethodHandleInfo;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.Member;
+import java.util.HashSet;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 public class Helper {
+    static final Set<String> signaturePrefixes = new HashSet<>();
+
+    static boolean checkArgsForInvokeMethod(java.lang.Class<?>[] params, Object[] args) {
+        if (params.length != args.length) return false;
+        for (int i = 0; i < params.length; ++i) {
+            if (params[i].isPrimitive()) {
+                if (params[i] == int.class && !(args[i] instanceof Integer)) return false;
+                else if (params[i] == byte.class && !(args[i] instanceof Byte)) return false;
+                else if (params[i] == char.class && !(args[i] instanceof Character)) return false;
+                else if (params[i] == boolean.class && !(args[i] instanceof Boolean)) return false;
+                else if (params[i] == double.class && !(args[i] instanceof Double)) return false;
+                else if (params[i] == float.class && !(args[i] instanceof Float)) return false;
+                else if (params[i] == long.class && !(args[i] instanceof Long)) return false;
+                else if (params[i] == short.class && !(args[i] instanceof Short)) return false;
+            } else if (args[i] != null && !params[i].isInstance(args[i])) return false;
+        }
+        return true;
+    }
+
     static public class MethodHandle {
         private final MethodType type = null;
         private MethodType nominalType;
@@ -30,15 +49,6 @@ public class Helper {
 
         // The ArtMethod* or ArtField* associated with this method handle (used by the runtime).
         protected final long artFieldOrMethod = 0;
-    }
-
-    static final public class MethodHandleImpl extends MethodHandle {
-        private final MethodHandleInfo info = null;
-    }
-
-    static final public class HandleInfo {
-        private final Member member = null;
-        private final MethodHandle handle = null;
     }
 
     static final public class Class {

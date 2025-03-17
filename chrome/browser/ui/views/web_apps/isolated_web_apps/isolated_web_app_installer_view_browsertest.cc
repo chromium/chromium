@@ -191,7 +191,7 @@ class NamedWidgetUiPixelTest : public MixinBasedUiBrowserTest {
     widgets_.clear();
 #if BUILDFLAG(IS_CHROMEOS)
     for (aura::Window* root_window : ash::Shell::GetAllRootWindows()) {
-      views::Widget::GetAllChildWidgets(root_window, &widgets_);
+      widgets_.merge(views::Widget::GetAllChildWidgets(root_window));
     }
 #else
     widgets_ = views::test::WidgetTest::GetAllWidgets();

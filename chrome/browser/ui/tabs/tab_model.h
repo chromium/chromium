@@ -60,6 +60,7 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   void SetGroup(std::optional<tab_groups::TabGroupId> group);
 
   void set_blocked(bool blocked) { blocked_ = blocked; }
+  void set_split(bool split) { split_ = split; }
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
@@ -113,11 +114,17 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   content::WebContents* GetContents() const override;
   base::CallbackListSubscription RegisterWillDiscardContents(
       TabInterface::WillDiscardContentsCallback callback) override;
-  bool IsInForeground() const override;
-  base::CallbackListSubscription RegisterDidEnterForeground(
-      TabInterface::DidEnterForegroundCallback callback) override;
-  base::CallbackListSubscription RegisterWillEnterBackground(
-      TabInterface::WillEnterBackgroundCallback callback) override;
+  bool IsActivated() const override;
+  base::CallbackListSubscription RegisterDidActivate(
+      TabInterface::DidActivateCallback callback) override;
+  base::CallbackListSubscription RegisterWillDeactivate(
+      TabInterface::WillDeactivateCallback callback) override;
+  bool IsVisible() const override;
+  base::CallbackListSubscription RegisterDidBecomeVisible(
+      DidBecomeVisibleCallback callback) override;
+  base::CallbackListSubscription RegisterWillBecomeHidden(
+      WillBecomeHiddenCallback callback) override;
+
   base::CallbackListSubscription RegisterWillDetach(
       TabInterface::WillDetach callback) override;
   base::CallbackListSubscription RegisterDidInsert(
@@ -136,7 +143,11 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   tabs::TabFeatures* GetTabFeatures() override;
   bool IsPinned() const override;
+  bool IsSplit() const override;
   std::optional<tab_groups::TabGroupId> GetGroup() const override;
+  bool ShouldAcceptMouseEventsWhileWindowInactive() const override;
+  std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>
+  AcceptMouseEventsWhileWindowInactive() override;
   void Close() override;
 
  private:
@@ -159,8 +170,19 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
 
    private:
     // Owns this. Some consumers may hold this beyond the lifetime of the tab.
-    // This is because legacy code often clears state in WebContentsDestroyed(),
-    // which occurs during or after TabModel destruction.
+    base::WeakPtr<TabModel> tab_;
+  };
+
+  // Whether the tab should accept mouse events while in the foreground, but the
+  // window is inactive.
+  class ScopedAcceptMouseEventsWhileWindowInactiveImpl
+      : public ScopedAcceptMouseEventsWhileWindowInactive {
+   public:
+    explicit ScopedAcceptMouseEventsWhileWindowInactiveImpl(TabModel* tab);
+    ~ScopedAcceptMouseEventsWhileWindowInactiveImpl() override;
+
+   private:
+    // Owns this. Some consumers may hold this beyond the lifetime of the tab.
     base::WeakPtr<TabModel> tab_;
   };
 
@@ -181,6 +203,9 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   bool reset_opener_on_active_tab_change_ = false;
   bool pinned_ = false;
   bool blocked_ = false;
+  // TODO(crbug.com/392951786): Remove this property, and instead determine a
+  // tab's split status based on whether it is part of a split tab collection.
+  bool split_ = false;
   std::optional<tab_groups::TabGroupId> group_ = std::nullopt;
   raw_ptr<TabCollection> parent_collection_ = nullptr;
 
@@ -188,13 +213,21 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
       void(TabInterface*, content::WebContents*, content::WebContents*)>;
   WillDiscardContentsCallbackList will_discard_contents_callback_list_;
 
-  using DidEnterForegroundCallbackList =
+  using DidActivateCallbackList =
       base::RepeatingCallbackList<void(TabInterface*)>;
-  DidEnterForegroundCallbackList did_enter_foreground_callback_list_;
+  DidActivateCallbackList did_enter_foreground_callback_list_;
 
-  using WillEnterBackgroundCallbackList =
+  using WillDeactivateCallbackList =
       base::RepeatingCallbackList<void(TabInterface*)>;
-  WillEnterBackgroundCallbackList will_enter_background_callback_list_;
+  WillDeactivateCallbackList will_enter_background_callback_list_;
+
+  using DidBecomeVisibleCallback =
+      base::RepeatingCallbackList<void(TabInterface*)>;
+  DidActivateCallbackList did_become_visible_callback_list_;
+
+  using WillBecomeHiddenCallback =
+      base::RepeatingCallbackList<void(TabInterface*)>;
+  WillBecomeHiddenCallback will_become_hidden_callback_list_;
 
   using WillDetachCallbackList =
       base::RepeatingCallbackList<void(TabInterface*,
@@ -219,6 +252,11 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
 
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;
+
+  // Whether to accept input events when the tab is in the foreground and the
+  // window is inactive. This is a reference count for
+  // number of instances of ScopedAcceptMouseEventsWhileWindowInactiveImpl.
+  int accept_input_when_window_inactive_ = 0;
 
   // Features that are per-tab will be owned by this class.
   std::unique_ptr<TabFeatures> tab_features_;

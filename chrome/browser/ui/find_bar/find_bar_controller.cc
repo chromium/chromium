@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
@@ -46,8 +47,8 @@ void FindBarController::Show(bool find_next, bool forward_direction) {
   find_bar_->SetFocusAndSelection();
 
   if (find_next) {
-    find_tab_helper->StartFinding(find_bar_->GetFindText(), forward_direction,
-                                  false /* case_sensitive */,
+    find_tab_helper->StartFinding(std::u16string(find_bar_->GetFindText()),
+                                  forward_direction, false /* case_sensitive */,
                                   true /* find_match */);
     return;
   }
@@ -69,7 +70,7 @@ void FindBarController::Show(bool find_next, bool forward_direction) {
   // So we set |find_match| to false, which will set up match counts and
   // highlighting, but not jump to any matches.
   find_tab_helper->StartFinding(
-      find_bar_->GetFindText(), true /* forward_direction */,
+      std::u16string(find_bar_->GetFindText()), true /* forward_direction */,
       false /* case_sensitive */, false /* find_match */);
 }
 
@@ -147,9 +148,10 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
     // update the results in the findbar. If condition is true due to the find
     // text being empty, the call to StartFinding will be a harmless no-op.
     if (find_tab_helper->find_result().number_of_matches() == -1) {
-      find_tab_helper->StartFinding(
-          find_bar_->GetFindText(), true /* forward_direction */,
-          false /* case_sensitive */, false /* find_match */);
+      find_tab_helper->StartFinding(std::u16string(find_bar_->GetFindText()),
+                                    true /* forward_direction */,
+                                    false /* case_sensitive */,
+                                    false /* find_match */);
     }
   }
 
@@ -173,7 +175,7 @@ void FindBarController::SetText(std::u16string text) {
                                 false /* find_match */);
 }
 
-void FindBarController::OnUserChangedFindText(std::u16string text) {
+void FindBarController::OnUserChangedFindText(std::u16string_view text) {
   has_user_modified_text_ = !text.empty();
 
   if (find_bar_platform_helper_) {

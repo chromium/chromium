@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
 #include "media/media_buildflags.h"
 
@@ -70,7 +69,7 @@ int LCM(int a, int b) {
 
 // static
 bool AudioLatency::IsResamplingPassthroughSupported(Type type) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #elif BUILDFLAG(IS_FUCHSIA)
   return true;

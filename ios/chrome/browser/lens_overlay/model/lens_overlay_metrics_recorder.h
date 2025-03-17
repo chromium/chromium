@@ -56,6 +56,9 @@ class WebState;
             (lens::LensOverlayDismissalSource)dismissalSource
                        generatedTabCount:(NSInteger)generatedTabCount;
 
+/// Records "Search with Camera" overflow menu entry tapped.
+- (void)recordSearchWithCameraTapped;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_METRICS_RECORDER_H_

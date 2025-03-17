@@ -138,8 +138,9 @@ void PrintUsage() {
 }
 
 bool GetSwitchValueAsInt(const std::string& switch_name, int* result) {
-  if (!CommandLine::ForCurrentProcess()->HasSwitch(switch_name))
+  if (!CommandLine::ForCurrentProcess()->HasSwitch(switch_name)) {
     return true;
+  }
 
   std::string switch_value =
       CommandLine::ForCurrentProcess()->GetSwitchValueASCII(switch_name);
@@ -201,8 +202,9 @@ int RunTestSuite(RunTestSuiteCallback run_test_suite,
   TestTimeouts::Initialize();
 
   int batch_limit = default_batch_limit;
-  if (!GetSwitchValueAsInt(switches::kTestLauncherBatchLimit, &batch_limit))
+  if (!GetSwitchValueAsInt(switches::kTestLauncherBatchLimit, &batch_limit)) {
     return 1;
+  }
 
   fprintf(stdout,
           "IMPORTANT DEBUGGING NOTE: batches of tests are run inside their\n"
@@ -250,11 +252,13 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
 #else
   ScopedBlockTestsWritingToSpecialDirs scoped_blocker(
       {
-        // Please keep these in alphabetic order within each platform type.
-        base::DIR_SRC_TEST_DATA_ROOT, base::DIR_USER_DESKTOP,
+          // Please keep these in alphabetic order within each platform type.
+          base::DIR_SRC_TEST_DATA_ROOT,
+          base::DIR_USER_DESKTOP,
 #if BUILDFLAG(IS_WIN)
-            base::DIR_COMMON_DESKTOP, base::DIR_START_MENU,
-            base::DIR_USER_STARTUP,
+          base::DIR_COMMON_DESKTOP,
+          base::DIR_START_MENU,
+          base::DIR_USER_STARTUP,
 
 #endif  // BUILDFLAG(IS_WIN)
       },
@@ -387,8 +391,9 @@ bool DefaultUnitTestPlatformDelegate::GetTests(
 bool DefaultUnitTestPlatformDelegate::CreateResultsFile(
     const base::FilePath& temp_dir,
     base::FilePath* path) {
-  if (!CreateTemporaryDirInDir(temp_dir, FilePath::StringType(), path))
+  if (!CreateTemporaryDirInDir(temp_dir, FilePath::StringType(), path)) {
     return false;
+  }
   *path = path->AppendASCII("test_results.xml");
   return true;
 }
@@ -396,8 +401,9 @@ bool DefaultUnitTestPlatformDelegate::CreateResultsFile(
 bool DefaultUnitTestPlatformDelegate::CreateTemporaryFile(
     const base::FilePath& temp_dir,
     base::FilePath* path) {
-  if (temp_dir.empty())
+  if (temp_dir.empty()) {
     return false;
+  }
   return CreateTemporaryFileInDir(temp_dir, path);
 }
 

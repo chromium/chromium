@@ -1,18 +1,16 @@
 specific_include_rules = {
   "it2me_confirmation_dialog_chromeos.cc": [
     "+chromeos/ui/vector_icons",
+    "+components/session_manager",
     "+ui/message_center/message_center.h",
     "+ui/message_center/public/cpp",
   ],
   "it2me_confirmation_dialog_chromeos_unittest.cc": [
+    "+components/user_manager/user_type.h",
     "+ui/message_center/lock_screen/fake_lock_screen_controller.h",
     "+ui/message_center/message_center.h",
     "+ui/message_center/public/cpp/notification.h",
     "+ui/message_center/public/cpp/notification_types.h",
     "+ui/message_center/notification_list.h",
-  ],
-  "it2me_native_messaging_host_lacros.cc": [
-    "+chromeos/crosapi/mojom/remoting.mojom.h",
-    "+chromeos/lacros/lacros_service.h",
   ],
 }

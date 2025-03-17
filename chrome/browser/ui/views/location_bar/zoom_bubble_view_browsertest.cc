@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest,
   ASSERT_TRUE(bubble);
 
   const double old_zoom_level = zoom_controller->GetZoomLevel();
-  const std::u16string old_label = bubble->label_->GetText();
+  const std::u16string old_label(bubble->label_->GetText());
 
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("Test").Build();
@@ -331,9 +331,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest,
   zoom_controller->SetZoomLevelByClient(new_zoom_level, client);
 
   ASSERT_EQ(ZoomBubbleView::GetZoomBubble(), bubble);
-  const std::u16string new_label = bubble->label_->GetText();
-
-  EXPECT_NE(new_label, old_label);
+  EXPECT_NE(bubble->label_->GetText(), old_label);
 }
 
 class ZoomBubbleReuseTest : public ZoomBubbleBrowserTest {

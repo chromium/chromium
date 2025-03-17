@@ -1,8 +1,11 @@
 include_rules = [
+  "+components/collaboration/public",
+  "+components/collaboration/test_support",
   "+components/data_sharing/public",
   "+components/saved_tab_groups/delegate",
   "+components/saved_tab_groups/public",
   "+components/saved_tab_groups/test_support",
+  "+ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/signin/model/identity_manager_factory.h",
   "+ios/chrome/browser/sync/model/data_type_store_service_factory.h",

@@ -4,7 +4,8 @@
 
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {PinSettingsApiInterface, PinSettingsApiReceiver, PinSettingsApiRemote} from '../pin_settings_api.test-mojom-webui.js';
+import type {PinSettingsApiInterface, PinSettingsApiRemote} from '../pin_settings_api.test-mojom-webui.js';
+import {PinSettingsApiReceiver} from '../pin_settings_api.test-mojom-webui.js';
 import {assertAsync, assertForDuration, hasBooleanProperty, retry, retryUntilSome} from '../utils.js';
 
 import {PinDialogApi} from './pin_dialog_api.js';

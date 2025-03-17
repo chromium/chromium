@@ -138,8 +138,6 @@ class GPU_EXPORT SyncPointOrderData
 
   const SequenceId sequence_id_;
 
-  uint64_t current_callback_id_ GUARDED_BY(lock_) = 0;
-
   // Non thread-safe functions need to be called from a single thread.
   base::ThreadChecker processing_thread_checker_;
 

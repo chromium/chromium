@@ -70,11 +70,11 @@ export class ThemeHueSliderDialogElement extends
     };
   }
 
-  protected hueGradient_: string = computeHueGradient();
-  protected maxHue_: number = maxHue;
-  protected minHue_: number = minHue;
-  selectedHue: number = minHue;
-  protected knobHue_: number = minHue;
+  protected accessor hueGradient_: string = computeHueGradient();
+  protected accessor maxHue_: number = maxHue;
+  protected accessor minHue_: number = minHue;
+  accessor selectedHue: number = minHue;
+  protected accessor knobHue_: number = minHue;
   private boundPointerdown_: (e: PointerEvent) => void;
 
   constructor() {
@@ -129,8 +129,7 @@ export class ThemeHueSliderDialogElement extends
 
   protected updateSelectedHueValue_() {
     this.selectedHue = this.$.slider.value;
-    this.dispatchEvent(new CustomEvent(
-        'selected-hue-changed', {detail: {selectedHue: this.selectedHue}}));
+    this.fire('selected-hue-changed', {selectedHue: this.selectedHue});
   }
 }
 

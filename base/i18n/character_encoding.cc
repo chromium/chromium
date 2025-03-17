@@ -25,16 +25,18 @@ const char* const kCanonicalEncodingNames[] = {
 
 std::string GetCanonicalEncodingNameByAliasName(const std::string& alias_name) {
   for (auto* encoding_name : kCanonicalEncodingNames) {
-    if (alias_name == encoding_name)
+    if (alias_name == encoding_name) {
       return alias_name;
+    }
   }
   static const char* kStandards[3] = {"HTML", "MIME", "IANA"};
   for (auto* standard : kStandards) {
     UErrorCode error_code = U_ZERO_ERROR;
     const char* canonical_name =
         ucnv_getStandardName(alias_name.c_str(), standard, &error_code);
-    if (U_SUCCESS(error_code) && canonical_name)
+    if (U_SUCCESS(error_code) && canonical_name) {
       return canonical_name;
+    }
   }
   return std::string();
 }

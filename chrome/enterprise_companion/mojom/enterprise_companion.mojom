@@ -4,6 +4,10 @@
 
 module enterprise_companion.mojom;
 
+import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
+
+// Next MinVersion: 2
+
 [Stable] struct Status {
     // The numeric identifier of the status space corresponding to the variant
     // indices defined in enterprise_companion_status.h. Zero corresponds to
@@ -27,5 +31,5 @@ module enterprise_companion.mojom;
     // Instruct the app to perform a policy fetch, registering the device if
     // needed. Fetched policies are persisted to the on-disk cached which may be
     // read from by dependent applications.
-    FetchPolicies@1() => (Status result);
+    FetchPolicies@1([MinVersion=1]PolicyFetchReason reason) => (Status result);
 };

@@ -98,8 +98,10 @@ std::optional<syncer::ModelError> FloatingSsoSyncBridge::MergeFullSyncData(
   }
 
   // Add remote entities to local data.
-  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
-                                     std::move(remote_entities));
+  std::optional<syncer::ModelError> result = ApplyIncrementalSyncChanges(
+      std::move(metadata_change_list), std::move(remote_entities));
+  OnMergeFullSyncDataFinished();
+  return result;
 }
 
 std::optional<syncer::ModelError>
@@ -329,6 +331,22 @@ void FloatingSsoSyncBridge::RemoveObserver(Observer* observer) {
 void FloatingSsoSyncBridge::AddToLocallyPreferredCookies(
     const std::string& storage_key) {
   keep_local_cookie_keys_.insert(storage_key);
+}
+
+void FloatingSsoSyncBridge::SetOnMergeFullSyncDataCallback(
+    base::OnceClosure callback) {
+  if (merge_full_sync_data_finished_) {
+    std::move(callback).Run();
+    return;
+  }
+  on_merge_full_sync_data_callback_ = std::move(callback);
+}
+
+void FloatingSsoSyncBridge::OnMergeFullSyncDataFinished() {
+  if (on_merge_full_sync_data_callback_) {
+    std::move(on_merge_full_sync_data_callback_).Run();
+  }
+  merge_full_sync_data_finished_ = true;
 }
 
 }  // namespace ash::floating_sso

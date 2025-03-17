@@ -14,7 +14,7 @@
 
 namespace local_discovery {
 class ServiceDiscoveryClient;
-}  // local_discovery
+}  // namespace local_discovery
 
 namespace media_router {
 

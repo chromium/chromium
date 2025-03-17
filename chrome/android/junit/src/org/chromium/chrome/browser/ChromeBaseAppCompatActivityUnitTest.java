@@ -27,6 +27,8 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
+import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.util.XrUtils;
 
 /** Unit tests for {@link ChromeBaseAppCompatActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -122,6 +124,77 @@ public class ChromeBaseAppCompatActivityUnitTest {
         assertEquals(
                 "Screen height in density pixels should not be scaled down from the "
                         + "real display metric on non-automotive devices.",
+                MOCK_REAL_DISPLAY_HEIGHT_PIXELS,
+                config.screenHeightDp);
+        assertEquals(
+                "Smallest screen width should not have changed.", 0, config.smallestScreenWidthDp);
+    }
+
+    @Test
+    @MediumTest
+    public void testApplyOverridesForXr_onXrDevice_uiScalesUp() {
+        Configuration config = new Configuration();
+        config.densityDpi = MOCK_REAL_DISPLAY_DENSITY_DPI;
+        config.screenWidthDp = MOCK_REAL_DISPLAY_WIDTH_PIXELS;
+        config.screenHeightDp = MOCK_REAL_DISPLAY_HEIGHT_PIXELS;
+        config.smallestScreenWidthDp = 0;
+
+        // Set XR environment.
+        XrUtils.setXrDeviceForTesting(true);
+        ChromeBaseAppCompatActivity.applyOverridesForXr(mContext, config);
+        XrUtils.resetXrDeviceForTesting();
+
+        float xrScaleUpFactor =
+                (float) DisplayUtil.getUiDensityForXr(mContext, MOCK_REAL_DISPLAY_DENSITY_DPI)
+                        / (float) MOCK_REAL_DISPLAY_DENSITY_DPI;
+        assertEquals(
+                "Screen width in density pixels should be scaled down from the real display metric"
+                        + " on XR.",
+                Math.round((float) MOCK_REAL_DISPLAY_WIDTH_PIXELS / xrScaleUpFactor),
+                config.screenWidthDp);
+        assertEquals(
+                "Screen height in density pixels should be scaled down from the real display metric"
+                        + " on XR.",
+                Math.round((float) MOCK_REAL_DISPLAY_HEIGHT_PIXELS / xrScaleUpFactor),
+                config.screenHeightDp);
+        assertEquals(
+                "Smallest screen width should be overridden to match the screen height, as it is"
+                        + " smaller than the screen width.",
+                config.screenHeightDp,
+                config.smallestScreenWidthDp);
+        assertEquals(
+                "Density dpi should be scaled up from the real display metric on XR device.",
+                DisplayUtil.getUiDensityForXr(mContext, MOCK_REAL_DISPLAY_DENSITY_DPI),
+                config.densityDpi);
+    }
+
+    @Test
+    @MediumTest
+    public void testApplyOverridesForXr_onNonXrDevice_noUiScaleUp() {
+        Configuration config = new Configuration();
+        config.densityDpi = MOCK_REAL_DISPLAY_DENSITY_DPI;
+        config.screenWidthDp = MOCK_REAL_DISPLAY_WIDTH_PIXELS;
+        config.screenHeightDp = MOCK_REAL_DISPLAY_HEIGHT_PIXELS;
+        config.smallestScreenWidthDp = 0;
+
+        // Set XR environment.
+        XrUtils.setXrDeviceForTesting(false);
+        ChromeBaseAppCompatActivity.applyOverridesForXr(mContext, config);
+        XrUtils.resetXrDeviceForTesting();
+
+        assertEquals(
+                "Density dpi should not be scaled up from the real display metric "
+                        + "on non-Xr devices.",
+                MOCK_REAL_DISPLAY_DENSITY_DPI,
+                config.densityDpi);
+        assertEquals(
+                "Screen width in density pixels should not be scaled down from the "
+                        + "real display metric on non-Xr devices.",
+                MOCK_REAL_DISPLAY_WIDTH_PIXELS,
+                config.screenWidthDp);
+        assertEquals(
+                "Screen height in density pixels should not be scaled down from the "
+                        + "real display metric on non-Xr devices.",
                 MOCK_REAL_DISPLAY_HEIGHT_PIXELS,
                 config.screenHeightDp);
         assertEquals(

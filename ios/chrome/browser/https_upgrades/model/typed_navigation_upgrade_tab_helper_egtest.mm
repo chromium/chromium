@@ -89,23 +89,22 @@ std::string GetURLWithoutScheme(const GURL& url) {
              @"Omnibox upgrade timer is unexpectedly running");
 
   // HTTPS-Only mode shouldn't handle this navigation.
-  GREYAssertNil([MetricsAppInterface
-                    expectTotalCount:0
-                        forHistogram:@(security_interstitials::https_only_mode::
-                                           kEventHistogram)],
-                @"HTTPS-Only mode unexpectedly recorded a histogram event");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:
+                  @(security_interstitials::https_only_mode::kEventHistogram)],
+      @"HTTPS-Only mode unexpectedly recorded a histogram event");
 }
 
 // Asserts that the metrics are properly recorded for a successful upgrade.
 - (void)assertSuccessfulUpgrade:(int)repeatCount {
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:2 * repeatCount
-              forHistogram:@(security_interstitials::omnibox_https_upgrades::
-                                 kEventHistogram)],
-      @"Failed to record event histogram");
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+      expectTotalCount:2 * repeatCount
+          forHistogram:@(security_interstitials::omnibox_https_upgrades::
+                             kEventHistogram)]);
 
-  GREYAssertNil(
+  chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface
            expectCount:1 * repeatCount
              forBucket:static_cast<int>(
@@ -114,7 +113,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
           forHistogram:@(security_interstitials::omnibox_https_upgrades::
                              kEventHistogram)],
       @"Failed to record upgrade attempt");
-  GREYAssertNil(
+  chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface
            expectCount:1 * repeatCount
              forBucket:static_cast<int>(
@@ -129,24 +128,23 @@ std::string GetURLWithoutScheme(const GURL& url) {
              @"Omnibox upgrade timer is still running");
 
   // HTTPS-Only mode shouldn't handle this navigation.
-  GREYAssertNil([MetricsAppInterface
-                    expectTotalCount:0
-                        forHistogram:@(security_interstitials::https_only_mode::
-                                           kEventHistogram)],
-                @"HTTPS-Only mode unexpectedly recorded a histogram event");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:
+                  @(security_interstitials::https_only_mode::kEventHistogram)],
+      @"HTTPS-Only mode unexpectedly recorded a histogram event");
 }
 
 // Asserts that the metrics are properly recorded for a failed upgrade.
 // repeatCount is the expected number of times the upgrade failed.
 - (void)assertFailedUpgrade:(int)repeatCount {
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:(repeatCount * 2)
-              forHistogram:@(security_interstitials::omnibox_https_upgrades::
-                                 kEventHistogram)],
-      @"Failed to record event histogram");
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+      expectTotalCount:(repeatCount * 2)
+          forHistogram:@(security_interstitials::omnibox_https_upgrades::
+                             kEventHistogram)]);
 
-  GREYAssertNil(
+  chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface
            expectCount:repeatCount
              forBucket:static_cast<int>(
@@ -155,7 +153,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
           forHistogram:@(security_interstitials::omnibox_https_upgrades::
                              kEventHistogram)],
       @"Failed to record upgrade attempt");
-  GREYAssertNil(
+  chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface
            expectCount:repeatCount
              forBucket:static_cast<int>(
@@ -170,11 +168,12 @@ std::string GetURLWithoutScheme(const GURL& url) {
              @"Omnibox upgrade timer is still running");
 
   // HTTPS-Only mode shouldn't handle this navigation.
-  GREYAssertNil([MetricsAppInterface
-                    expectTotalCount:0
-                        forHistogram:@(security_interstitials::https_only_mode::
-                                           kEventHistogram)],
-                @"HTTPS-Only mode unexpectedly recorded a histogram event");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:
+                  @(security_interstitials::https_only_mode::kEventHistogram)],
+      @"HTTPS-Only mode unexpectedly recorded a histogram event");
 }
 
 // Asserts that the metrics are properly recorded for a timed-out upgrade.
@@ -187,7 +186,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
                                  kEventHistogram)],
       @"Incorrect numbber of records in event histogram");
 
-  GREYAssertNil(
+  chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface
            expectCount:repeatCount
              forBucket:static_cast<int>(
@@ -196,7 +195,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
           forHistogram:@(security_interstitials::omnibox_https_upgrades::
                              kEventHistogram)],
       @"Failed to record upgrade attempt");
-  GREYAssertNil(
+  chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface
            expectCount:repeatCount
              forBucket:static_cast<int>(
@@ -211,11 +210,12 @@ std::string GetURLWithoutScheme(const GURL& url) {
              @"Omnibox upgrade timer is still running");
 
   // HTTPS-Only mode shouldn't handle this navigation.
-  GREYAssertNil([MetricsAppInterface
-                    expectTotalCount:0
-                        forHistogram:@(security_interstitials::https_only_mode::
-                                           kEventHistogram)],
-                @"HTTPS-Only mode unexpectedly recorded a histogram event");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:
+                  @(security_interstitials::https_only_mode::kEventHistogram)],
+      @"HTTPS-Only mode unexpectedly recorded a histogram event");
 }
 
 #pragma mark - Tests
@@ -325,11 +325,12 @@ std::string GetURLWithoutScheme(const GURL& url) {
   [self assertSuccessfulUpgrade:2];
 
   // HTTPS-Only mode shouldn't handle this navigation.
-  GREYAssertNil([MetricsAppInterface
-                    expectTotalCount:0
-                        forHistogram:@(security_interstitials::https_only_mode::
-                                           kEventHistogram)],
-                @"HTTPS-Only mode unexpectedly recorded a histogram event");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:
+                  @(security_interstitials::https_only_mode::kEventHistogram)],
+      @"HTTPS-Only mode unexpectedly recorded a histogram event");
 }
 
 // Type an HTTP URL without scheme. The navigation should be upgraded to HTTPS,

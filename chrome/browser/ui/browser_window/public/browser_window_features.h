@@ -10,10 +10,18 @@
 #include "base/functional/callback.h"
 #include "chrome/common/buildflags.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+namespace glic {
+class GlicButtonController;
+class GlicIphController;
+}  // namespace glic
+#endif
+
 class Browser;
 class BrowserView;
 class BrowserWindowInterface;
 class ChromeLabsCoordinator;
+class HistorySidePanelCoordinator;
 class MemorySaverOptInIPHController;
 class SidePanelCoordinator;
 class SidePanelUI;
@@ -21,6 +29,7 @@ class TabStripModel;
 class ToastController;
 class ToastService;
 class DataSharingOpenGroupHelper;
+class DownloadToolbarUIController;
 
 namespace extensions {
 class ExtensionSidePanelManager;
@@ -35,22 +44,27 @@ namespace commerce {
 class ProductSpecificationsEntryPointController;
 }  // namespace commerce
 
-#if BUILDFLAG(ENABLE_GLIC)
-namespace glic {
-class GlicTabIndicatorHelper;
+namespace tabs {
+class GlicNudgeController;
 }
-#endif
 
 namespace lens {
 class LensOverlayEntryPointController;
+class LensRegionSearchController;
 }  // namespace lens
 
 namespace media_router {
 class CastBrowserController;
 }  // namespace media_router
 
+namespace memory_saver {
+class MemorySaverBubbleController;
+}  // namespace memory_saver
+
 namespace tab_groups {
 class SessionServiceTabGroupSyncObserver;
+class SharedTabGroupFeedbackController;
+class MostRecentSharedTabUpdateStore;
 }  // namespace tab_groups
 
 namespace send_tab_to_self {
@@ -108,6 +122,10 @@ class BrowserWindowFeatures {
     return cast_browser_controller_.get();
   }
 
+  HistorySidePanelCoordinator* history_side_panel_coordinator() {
+    return history_side_panel_coordinator_.get();
+  }
+
   // TODO(crbug.com/346158959): For historical reasons, side_panel_ui is an
   // abstract base class that contains some, but not all of the public interface
   // of SidePanelCoordinator. One of the accessors side_panel_ui() or
@@ -124,10 +142,17 @@ class BrowserWindowFeatures {
     return lens_overlay_entry_point_controller_.get();
   }
 
+  lens::LensRegionSearchController* lens_region_search_controller() {
+    return lens_region_search_controller_.get();
+  }
+
   tabs::TabDeclutterController* tab_declutter_controller() {
     return tab_declutter_controller_.get();
   }
 
+  tabs::GlicNudgeController* glic_nudge_controller() {
+    return glic_nudge_controller_.get();
+  }
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
   // Returns a pointer to the ToastController for the browser window. This can
@@ -153,6 +178,24 @@ class BrowserWindowFeatures {
     return data_sharing_open_group_helper_.get();
   }
 
+  DownloadToolbarUIController* download_toolbar_ui_controller() {
+    return download_toolbar_ui_controller_.get();
+  }
+
+  tab_groups::MostRecentSharedTabUpdateStore*
+  most_recent_shared_tab_update_store() {
+    return most_recent_shared_tab_update_store_.get();
+  }
+
+  memory_saver::MemorySaverBubbleController* memory_saver_bubble_controller() {
+    return memory_saver_bubble_controller_.get();
+  }
+
+  tab_groups::SharedTabGroupFeedbackController*
+  shared_tab_group_feedback_controller() {
+    return shared_tab_group_feedback_controller_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -175,6 +218,9 @@ class BrowserWindowFeatures {
   std::unique_ptr<lens::LensOverlayEntryPointController>
       lens_overlay_entry_point_controller_;
 
+  std::unique_ptr<lens::LensRegionSearchController>
+      lens_region_search_controller_;
+
   std::unique_ptr<extensions::Mv2DisabledDialogController>
       mv2_disabled_dialog_controller_;
 
@@ -182,6 +228,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<MemorySaverOptInIPHController>
       memory_saver_opt_in_iph_controller_;
+
+  std::unique_ptr<HistorySidePanelCoordinator> history_side_panel_coordinator_;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 
@@ -200,9 +248,23 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<media_router::CastBrowserController> cast_browser_controller_;
 
+  std::unique_ptr<DownloadToolbarUIController> download_toolbar_ui_controller_;
+
+  std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
+
 #if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
+  std::unique_ptr<glic::GlicButtonController> glic_button_controller_;
+  std::unique_ptr<glic::GlicIphController> glic_iph_controller_;
 #endif
+
+  std::unique_ptr<tab_groups::MostRecentSharedTabUpdateStore>
+      most_recent_shared_tab_update_store_;
+
+  std::unique_ptr<memory_saver::MemorySaverBubbleController>
+      memory_saver_bubble_controller_;
+
+  std::unique_ptr<tab_groups::SharedTabGroupFeedbackController>
+      shared_tab_group_feedback_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

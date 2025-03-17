@@ -12,18 +12,23 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_request_manager.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -59,18 +64,10 @@ webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
   webapps::AppId app_id = InstallWebApp(profile, start_url);
   content::TestNavigationObserver navigation_observer(start_url);
   navigation_observer.StartWatchingNewWebContents();
-  app_browser_ = web_app::LaunchWebAppBrowser(profile, app_id);
+  Browser* app_browser = web_app::LaunchWebAppBrowser(profile, app_id);
   navigation_observer.WaitForNavigationFinished();
 
-  browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
-  views::NonClientFrameView* frame_view =
-      browser_view_->GetWidget()->non_client_view()->frame_view();
-  frame_view_ = static_cast<BrowserNonClientFrameView*>(frame_view);
-  root_view_ = browser_view_->GetWidget()->GetRootView();
-
-  web_app_frame_toolbar_ = browser_view_->web_app_frame_toolbar_for_testing();
-  DCHECK(web_app_frame_toolbar_);
-  DCHECK(web_app_frame_toolbar_->GetVisible());
+  SetViews(app_browser);
   return app_id;
 }
 
@@ -88,19 +85,26 @@ webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchCustomWebApp(
       web_app::test::InstallWebApp(browser->profile(), std::move(web_app_info));
   content::TestNavigationObserver navigation_observer(start_url);
   navigation_observer.StartWatchingNewWebContents();
-  app_browser_ = web_app::LaunchWebAppBrowser(browser->profile(), app_id);
+  Browser* app_browser =
+      web_app::LaunchWebAppBrowser(browser->profile(), app_id);
   navigation_observer.WaitForNavigationFinished();
 
-  browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
-  views::NonClientFrameView* frame_view =
-      browser_view_->GetWidget()->non_client_view()->frame_view();
-  frame_view_ = static_cast<BrowserNonClientFrameView*>(frame_view);
-  root_view_ = browser_view_->GetWidget()->GetRootView();
-
-  web_app_frame_toolbar_ = browser_view_->web_app_frame_toolbar_for_testing();
-  DCHECK(web_app_frame_toolbar_);
-  DCHECK(web_app_frame_toolbar_->GetVisible());
+  SetViews(app_browser);
   return app_id;
+}
+
+web_app::IsolatedWebAppUrlInfo
+WebAppFrameToolbarTestHelper::InstallAndLaunchIsolatedWebApp(
+    Profile* profile,
+    web_app::BundledIsolatedWebApp* iwa) {
+  web_app::IsolatedWebAppUrlInfo url_info = iwa->InstallChecked(profile);
+  content::RenderFrameHost* app_frame =
+      web_app::OpenIsolatedWebApp(profile, url_info.app_id());
+  Browser* app_browser = chrome::FindBrowserWithTab(
+      content::WebContents::FromRenderFrameHost(app_frame));
+
+  SetViews(app_browser);
+  return url_info;
 }
 
 GURL WebAppFrameToolbarTestHelper::
@@ -323,4 +327,17 @@ WebAppOriginText* WebAppFrameToolbarTestHelper::origin_text_view() {
 void WebAppFrameToolbarTestHelper::SetOriginTextLabelForTesting(
     const std::u16string& label_text) {
   origin_text_view()->label_->SetText(label_text);
+}
+
+void WebAppFrameToolbarTestHelper::SetViews(Browser* app_browser) {
+  app_browser_ = app_browser;
+  browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
+  views::NonClientFrameView* frame_view =
+      browser_view_->GetWidget()->non_client_view()->frame_view();
+  frame_view_ = static_cast<BrowserNonClientFrameView*>(frame_view);
+  root_view_ = browser_view_->GetWidget()->GetRootView();
+
+  web_app_frame_toolbar_ = browser_view_->web_app_frame_toolbar_for_testing();
+  DCHECK(web_app_frame_toolbar_);
+  DCHECK(web_app_frame_toolbar_->GetVisible());
 }

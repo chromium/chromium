@@ -194,7 +194,8 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     cls._os_name = cls.browser.platform.GetOSName()
     # Set up the slow tests expectations' tags to match the test runner
     # expectations' tags
-    cls._GetSlowTests().set_tags(cls.child.expectations.tags)
+    if cls.child:
+      cls._GetSlowTests().set_tags(cls.child.expectations.tags)
 
   @classmethod
   def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
@@ -213,10 +214,6 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       else:
         enable_dawn_features.append('use_dxc')
       # TODO(crbug.com/377296327): Remove once Tint IR is launched on Windows.
-      enable_dawn_features.append('use_tint_ir')
-
-    # TODO(crbug.com/364675466): Remove this when Tint IR is launched on macOS.
-    if host_information.IsMac():
       enable_dawn_features.append('use_tint_ir')
 
     if enable_dawn_features:

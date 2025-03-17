@@ -8,11 +8,12 @@
  *  action settings.
  */
 
+import 'chrome://resources/cros_components/chip/chip.js';
 import '../controls/settings_dropdown_menu.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
-import 'chrome://resources/cros_components/chip/chip.js';
+import './facegaze_actions_add_dialog.js';
 import './facegaze_icons.html.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -42,8 +43,7 @@ export interface FaceGazeActionsCardElement {
 }
 
 export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
-  static readonly FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME =
-      'commandPairs_' as const;
+  static readonly FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME = 'commandPairs_';
   disabled: boolean;
 
   private showAddActionDialog_: boolean;
@@ -242,7 +242,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
              assignedGestures)) {
       if (assignedMacro === removedCommandPair.action &&
           currentGesture === removedCommandPair.gesture) {
-        delete assignedGestures[currentGesture as FacialGesture];
+        delete assignedGestures[currentGesture];
         break;
       }
     }
@@ -394,7 +394,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
              assignedKeyCombos)) {
       if (currentGesture === gesture &&
           keyCombo === removedKeyCombo.prefString) {
-        delete assignedKeyCombos[currentGesture as FacialGesture];
+        delete assignedKeyCombos[currentGesture];
         break;
       }
     }

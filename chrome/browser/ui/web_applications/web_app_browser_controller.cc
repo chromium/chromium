@@ -53,14 +53,15 @@
 #include "ui/gfx/image/image.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/system_web_apps/color_helpers.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -105,24 +106,6 @@ base::OnceClosure& ManifestUpdateAppliedCallbackForTesting() {
   return *callback;
 }
 
-// Returns the list of patterns to match URLs against for tabbed mode home
-// tab navigations.
-std::vector<TabbedModeScopeMatcher> CreateTabbedHomeTabScope(
-    const WebApp* web_app) {
-  std::vector<TabbedModeScopeMatcher> matchers;
-  if (!web_app) {
-    return matchers;
-  }
-  TabStrip tab_strip = web_app->tab_strip().value();
-  if (const auto* params =
-          absl::get_if<blink::Manifest::HomeTabParams>(&tab_strip.home_tab)) {
-    for (auto& pattern : params->scope_patterns) {
-      matchers.emplace_back(pattern);
-    }
-  }
-  return matchers;
-}
-
 }  // namespace
 
 WebAppBrowserController::WebAppBrowserController(
@@ -140,8 +123,6 @@ WebAppBrowserController::WebAppBrowserController(
       system_app_(system_app)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 {
-  manifest_display_mode_ =
-      registrar().GetEffectiveDisplayModeFromManifest(this->app_id());
   effective_display_mode_ =
       registrar().GetAppEffectiveDisplayMode(this->app_id());
   install_manager_observation_.Observe(&provider.install_manager());
@@ -154,8 +135,7 @@ bool WebAppBrowserController::HasMinimalUiButtons() const {
   if (has_tab_strip()) {
     return false;
   }
-  return manifest_display_mode_ == DisplayMode::kBrowser ||
-         manifest_display_mode_ == DisplayMode::kMinimalUi;
+  return effective_display_mode_ == DisplayMode::kMinimalUi;
 }
 
 bool WebAppBrowserController::IsHostedApp() const {
@@ -490,42 +470,7 @@ bool WebAppBrowserController::ShouldHideNewTabButton() const {
 }
 
 bool WebAppBrowserController::IsUrlInHomeTabScope(const GURL& url) const {
-  if (!registrar().IsTabbedWindowModeEnabled(app_id())) {
-    return false;
-  }
-
-  if (!IsUrlInAppScope(url)) {
-    return false;
-  }
-
-  // Retrieve the start URL for the app. Start URL is always in home tab scope.
-  // TODO(b/330640982): rename GetAppPinnedHomeTabUrl() to something more
-  // sensible.
-  std::optional<GURL> pinned_home_url =
-      registrar().GetAppPinnedHomeTabUrl(app_id());
-  if (!pinned_home_url) {
-    return false;
-  }
-
-  // We ignore hash ref when deciding what should be opened as the home tab.
-  GURL::Replacements replacements;
-  replacements.ClearRef();
-  if (url.ReplaceComponents(replacements) ==
-      pinned_home_url.value().ReplaceComponents(replacements)) {
-    return true;
-  }
-
-  if (!home_tab_scope_) {
-    home_tab_scope_ = std::make_unique<std::vector<TabbedModeScopeMatcher>>(
-        CreateTabbedHomeTabScope(registrar().GetAppById(app_id())));
-  }
-
-  for (auto& matcher : *home_tab_scope_) {
-    if (matcher.Match(url)) {
-      return true;
-    }
-  }
-  return false;
+  return registrar().IsUrlInHomeTabScope(url, app_id());
 }
 
 bool WebAppBrowserController::ShouldShowAppIconOnTab(int index) const {
@@ -566,7 +511,7 @@ bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
   // https://w3c.github.io/manifest/#navigation-scope
   // If url is same origin as scope and url path starts with scope path, return
   // true. Otherwise, return false.
-  if (app_scope.DeprecatedGetOriginAsURL() != url.DeprecatedGetOriginAsURL()) {
+  if (!url::IsSameOriginWith(app_scope, url)) {
     // We allow an upgrade from http |app_scope| to https |url|.
     if (app_scope.scheme() != url::kHttpScheme) {
       return false;
@@ -575,12 +520,22 @@ bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
     GURL::Replacements rep;
     rep.SetSchemeStr(url::kHttpsScheme);
     GURL secure_app_scope = app_scope.ReplaceComponents(rep);
-    if (secure_app_scope.DeprecatedGetOriginAsURL() !=
-        url.DeprecatedGetOriginAsURL()) {
+    if (!url::IsSameOriginWith(secure_app_scope, url)) {
       return false;
     }
   }
+  // Past here, the url and scope must be same-origin.
 
+  // For scopes without paths, return 'true' early (allowing blobs to be in
+  // scope).
+  if (!app_scope.has_path() || app_scope.path() == "/") {
+    return true;
+  }
+  if (url.scheme() == url::kBlobScheme) {
+    // Blobs can only be in-scope in the above case where the app scope doesn't
+    // have a path.
+    return false;
+  }
   std::string scope_path = app_scope.path();
   std::string url_path = url.path();
   return base::StartsWith(url_path, scope_path, base::CompareCase::SENSITIVE);
@@ -604,19 +559,20 @@ std::u16string WebAppBrowserController::GetTitle() const {
       provider_->registrar_unsafe().GetAppShortName(app_id()));
 
   // If app title is set, then use that with the app name as the title.
-  std::optional<std::u16string> app_title;
+  std::optional<std::u16string> application_title;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   if (web_contents) {
-    app_title = web_contents->GetAppTitle();
+    application_title = web_contents->GetApplicationTitle();
   }
 
   // If the app title is empty, then use the app name.
-  if (app_title.has_value()) {
-    return app_title.value().empty()
+  if (application_title.has_value()) {
+    return application_title.value().empty()
                ? app_name
                : l10n_util::GetStringFUTF16(IDS_WEB_APP_WITH_APP_TITLE,
-                                            app_name, app_title.value());
+                                            app_name,
+                                            application_title.value());
   }
   if (base::StartsWith(raw_title, app_name)) {
     return raw_title;

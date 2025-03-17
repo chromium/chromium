@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
+#include "third_party/blink/renderer/core/dom/interest_invoker_data.h"
+#include "third_party/blink/renderer/core/dom/interest_invoker_target_data.h"
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
@@ -95,6 +97,12 @@ PseudoElement* ElementRareDataVector::GetPseudoElement(
     return nullptr;
   return data->GetPseudoElement(pseudo_id, document_transition_tag);
 }
+bool ElementRareDataVector::HasViewTransitionGroupPseudoElement() const {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  return data && data->HasViewTransitionGroupPseudoElement();
+}
+
 PseudoElementData::PseudoElementVector
 ElementRareDataVector::GetPseudoElements() const {
   PseudoElementData* data =
@@ -269,10 +277,10 @@ DOMTokenList* ElementRareDataVector::GetPart() const {
 }
 
 void ElementRareDataVector::SetPartNamesMap(const AtomicString part_names) {
-  EnsureWrappedField<NamesMap>(FieldId::kPartNamesMap).Set(part_names);
+  EnsureField<NamesMap>(FieldId::kPartNamesMap).Set(part_names);
 }
 const NamesMap* ElementRareDataVector::PartNamesMap() const {
-  return GetWrappedField<NamesMap>(FieldId::kPartNamesMap);
+  return static_cast<NamesMap*>(GetField(FieldId::kPartNamesMap));
 }
 
 InlineStylePropertyMap& ElementRareDataVector::EnsureInlineStylePropertyMap(
@@ -412,6 +420,31 @@ void ElementRareDataVector::RemovePopoverData() {
   SetField(FieldId::kPopoverData, nullptr);
 }
 
+InterestInvokerData* ElementRareDataVector::GetInterestInvokerData() const {
+  return static_cast<InterestInvokerData*>(
+      GetField(FieldId::kInterestInvokerData));
+}
+InterestInvokerData& ElementRareDataVector::EnsureInterestInvokerData() {
+  return EnsureField<InterestInvokerData>(FieldId::kInterestInvokerData);
+}
+void ElementRareDataVector::RemoveInterestInvokerData() {
+  SetField(FieldId::kInterestInvokerData, nullptr);
+}
+
+InterestInvokerTargetData* ElementRareDataVector::GetInterestInvokerTargetData()
+    const {
+  return static_cast<InterestInvokerTargetData*>(
+      GetField(FieldId::kInterestInvokerTargetData));
+}
+InterestInvokerTargetData&
+ElementRareDataVector::EnsureInterestInvokerTargetData() {
+  return EnsureField<InterestInvokerTargetData>(
+      FieldId::kInterestInvokerTargetData);
+}
+void ElementRareDataVector::RemoveInterestInvokerTargetData() {
+  SetField(FieldId::kInterestInvokerTargetData, nullptr);
+}
+
 AnchorPositionScrollData* ElementRareDataVector::GetAnchorPositionScrollData()
     const {
   return static_cast<AnchorPositionScrollData*>(
@@ -454,7 +487,7 @@ void ElementRareDataVector::DecrementImplicitlyAnchoredElementCount() {
 bool ElementRareDataVector::HasImplicitlyAnchoredElement() const {
   wtf_size_t* anchored_element_count =
       GetWrappedField<wtf_size_t>(FieldId::kImplicitlyAnchoredElementCount);
-  return anchored_element_count ? *anchored_element_count : false;
+  return anchored_element_count && *anchored_element_count;
 }
 
 void ElementRareDataVector::Trace(blink::Visitor* visitor) const {

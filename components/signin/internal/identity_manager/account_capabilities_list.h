@@ -91,3 +91,11 @@ ACCOUNT_CAPABILITY(kCanUseSpeakerLabelInRecorderApp,
 ACCOUNT_CAPABILITY(kCanUseGenerativeAiInRecorderApp,
                    CAN_USE_GENERATIVE_AI_IN_RECORDER_APP,
                    "accountcapabilities/ge2tkobnmnqxa")
+
+ACCOUNT_CAPABILITY(kCanUseGenerativeAiPhotoEditing,
+                   CAN_USE_GENERATIVE_AI_PHOTO_EDITING,
+                   "accountcapabilities/ge3dgobnmnqxa")
+
+ACCOUNT_CAPABILITY(kCanUseChromeOSGenerativeAi,
+                   CAN_USE_CHROMEOS_GENERATIVE_AI,
+                   "accountcapabilities/ge3dgmjnmnqxa")

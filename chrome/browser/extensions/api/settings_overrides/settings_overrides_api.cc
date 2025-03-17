@@ -9,11 +9,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/pref_names.h"
@@ -22,6 +24,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_prefs_helper.h"
@@ -54,14 +57,13 @@ std::string SubstituteInstallParam(std::string str,
 }
 
 std::unique_ptr<TemplateURLData> ConvertSearchProvider(
-    PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    const TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
     const ChromeSettingsOverrides::SearchProvider& search_provider,
     const std::string& install_parameter) {
   std::unique_ptr<TemplateURLData> data;
   if (search_provider.prepopulated_id) {
-    data = TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
-        prefs, search_engine_choice_service, *search_provider.prepopulated_id);
+    data = prepopulate_data_resolver.GetEngineFromFullList(
+        *search_provider.prepopulated_id);
 
     if (data) {
       // We need to override the prepopulate_id and Sync GUID of the generated
@@ -250,8 +252,8 @@ void SettingsOverridesAPI::RegisterSearchProvider(
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
   std::string install_parameter = GetInstallParam(prefs, extension->id());
   std::unique_ptr<TemplateURLData> data = ConvertSearchProvider(
-      profile_->GetPrefs(),
-      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile_),
+      CHECK_DEREF(
+          TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_)),
       *settings->search_engine, install_parameter);
   auto turl = std::make_unique<TemplateURL>(
       *data, TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, extension->id(),

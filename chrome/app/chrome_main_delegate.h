@@ -11,7 +11,6 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/startup_timestamps.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/common/chrome_content_client.h"
@@ -20,10 +19,6 @@
 
 namespace base {
 class CommandLine;
-}
-
-namespace chromeos {
-class LacrosService;
 }
 
 namespace tracing {
@@ -106,10 +101,6 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   ChromeContentClient chrome_content_client_;
 
   memory_system::MemorySystem memory_system_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::LacrosService> lacros_service_;
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   // The sampling profiler exists until the `ChromeContentBrowserClient` is

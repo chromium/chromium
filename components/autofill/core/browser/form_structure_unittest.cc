@@ -636,54 +636,124 @@ TEST_F(FormStructureTestImpl, StripCommonNamePrefix_SmallPrefix) {
 TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_Minimal) {
   CheckFormStructureTestData(
       {{{.description_for_logging = "IsCompleteCreditCardForm_Minimal",
-         .fields = {{.role = FieldType::CREDIT_CARD_NUMBER},
-                    {.label = u"Expiration", .name = u"cc_exp"},
-                    {.role = FieldType::ADDRESS_HOME_ZIP}}},
+         .fields = {{.role = CREDIT_CARD_NUMBER},
+                    {.label = u"Expiration"},
+                    {.role = ADDRESS_HOME_ZIP}}},
         {.determine_heuristic_type = true,
-         .is_complete_credit_card_form = true},
+         .is_complete_credit_card_form = std::make_pair(
+             FormStructure::CreditCardFormCompleteness::kCompleteCreditCardForm,
+             true)},
         {}}});
 }
 
 TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_Full) {
   CheckFormStructureTestData(
       {{{.description_for_logging = "IsCompleteCreditCardForm_Full",
-         .fields = {{.label = u"Name on Card", .name = u"name_on_card"},
-                    {.role = FieldType::CREDIT_CARD_NUMBER},
-                    {.label = u"Exp Month", .name = u"ccmonth"},
-                    {.label = u"Exp Year", .name = u"ccyear"},
-                    {.label = u"Verification", .name = u"verification"},
-                    {.label = u"Submit",
-                     .name = u"submit",
-                     .form_control_type = FormControlType::kInputText}}},
+         .fields = {{.label = u"Name on Card"},
+                    {.role = CREDIT_CARD_NUMBER},
+                    {.label = u"Exp Month"},
+                    {.label = u"Exp Year"},
+                    {.label = u"Verification"}}},
         {.determine_heuristic_type = true,
-         .is_complete_credit_card_form = true},
-        {}}});
+         .is_complete_credit_card_form = std::make_pair(
+             FormStructure::CreditCardFormCompleteness::kCompleteCreditCardForm,
+             true)}}});
 }
 
 // A form with only the credit card number is not considered sufficient.
 TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_OnlyCCNumber) {
   CheckFormStructureTestData(
       {{{.description_for_logging = "IsCompleteCreditCardForm_OnlyCCNumber",
-         .fields = {{.role = FieldType::CREDIT_CARD_NUMBER}}},
+         .fields = {{.role = CREDIT_CARD_NUMBER}}},
         {.determine_heuristic_type = true,
-         .is_complete_credit_card_form = false},
+         .is_complete_credit_card_form = std::make_pair(
+             FormStructure::CreditCardFormCompleteness::kCompleteCreditCardForm,
+             false)},
         {}}});
 }
 
-// A form with only the credit card number is not considered sufficient.
 TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_AddressForm) {
   CheckFormStructureTestData(
       {{{.description_for_logging = "IsCompleteCreditCardForm_AddressForm",
-         .fields = {{.role = FieldType::NAME_FIRST, .name = u""},
-                    {.role = FieldType::NAME_LAST, .name = u""},
-                    {.role = FieldType::EMAIL_ADDRESS, .name = u""},
-                    {.role = FieldType::PHONE_HOME_NUMBER, .name = u""},
-                    {.label = u"Address", .name = u""},
-                    {.label = u"Address", .name = u""},
-                    {.role = FieldType::ADDRESS_HOME_ZIP, .name = u""}}},
+         .fields = {{.role = FieldType::NAME_FIRST},
+                    {.role = FieldType::NAME_LAST},
+                    {.role = FieldType::EMAIL_ADDRESS},
+                    {.role = FieldType::PHONE_HOME_NUMBER},
+                    {.label = u"Address"},
+                    {.label = u"Address"},
+                    {.role = FieldType::ADDRESS_HOME_ZIP}}},
         {.determine_heuristic_type = true,
-         .is_complete_credit_card_form = false},
+         .is_complete_credit_card_form = std::make_pair(
+             FormStructure::CreditCardFormCompleteness::kCompleteCreditCardForm,
+             false)},
         {}}});
+}
+
+TEST_F(FormStructureTestImpl,
+       IsCompleteCreditCardFormIncludingCvcAndName_CvcAndNameExist) {
+  CheckFormStructureTestData({{
+      {.description_for_logging =
+           "IsCompleteCreditCardFormIncludingCvcAndName_CvcAndNameExist",
+       .fields = {{.role = CREDIT_CARD_NUMBER},
+                  {.label = u"Expiration"},
+                  {.label = u"Verification"},
+                  {.label = u"Name on Card"}}},
+      {.determine_heuristic_type = true,
+       .is_complete_credit_card_form =
+           std::make_pair(FormStructure::CreditCardFormCompleteness::
+                              kCompleteCreditCardFormIncludingCvcAndName,
+                          true)},
+  }});
+}
+
+TEST_F(FormStructureTestImpl,
+       IsCompleteCreditCardFormIncludingCvcAndName_MissingCvc) {
+  CheckFormStructureTestData({{
+      {.description_for_logging =
+           "IsCompleteCreditCardFormIncludingCvcAndName_MissingCvc",
+       .fields = {{.role = CREDIT_CARD_NUMBER},
+                  {.label = u"Expiration"},
+                  {.label = u"Name on Card"}}},
+      {.determine_heuristic_type = true,
+       .is_complete_credit_card_form =
+           std::make_pair(FormStructure::CreditCardFormCompleteness::
+                              kCompleteCreditCardFormIncludingCvcAndName,
+                          false)},
+  }});
+}
+
+TEST_F(FormStructureTestImpl,
+       IsCompleteCreditCardFormIncludingCvcAndName_MissingName) {
+  CheckFormStructureTestData({{
+      {.description_for_logging =
+           "IsCompleteCreditCardFormIncludingCvcAndName_MissingName",
+       .fields = {{.role = CREDIT_CARD_NUMBER},
+                  {.label = u"Expiration"},
+                  {.label = u"Verification"}}},
+      {.determine_heuristic_type = true,
+       .is_complete_credit_card_form =
+           std::make_pair(FormStructure::CreditCardFormCompleteness::
+                              kCompleteCreditCardFormIncludingCvcAndName,
+                          false)},
+  }});
+}
+
+TEST_F(FormStructureTestImpl,
+       IsCompleteCreditCardFormIncludingCvcAndName_FirstAndLastNames) {
+  CheckFormStructureTestData({{
+      {.description_for_logging =
+           "IsCompleteCreditCardFormIncludingCvcAndName_FirstAndLastNames",
+       .fields = {{.role = CREDIT_CARD_NUMBER},
+                  {.label = u"Expiration"},
+                  {.label = u"Verification"},
+                  {.label = u"first name"},
+                  {.label = u"last name"}}},
+      {.determine_heuristic_type = true,
+       .is_complete_credit_card_form =
+           std::make_pair(FormStructure::CreditCardFormCompleteness::
+                              kCompleteCreditCardFormIncludingCvcAndName,
+                          true)},
+  }});
 }
 
 // Verify that we can correctly process the 'autocomplete' attribute for phone
@@ -2352,17 +2422,9 @@ TEST_F(FormStructureTestImpl, TwoFieldFormEmailHeuristicsBehavior) {
   }
 }
 
-// Verifies that with kAutofillEnableEmailHeuristicAutocompleteEmail enabled,
-// only fields with autocomplete=email are parsed as email fields.
+// Verifies that fields with autocomplete=off are not parsed as email fields.
 TEST_F(FormStructureTestImpl,
        SingleFieldEmailHeuristicsEnabledAutocompleteEmail) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillEnableEmailHeuristicOnlyAddressForms,
-      base::FieldTrialParams{
-          {features::kAutofillEnableEmailHeuristicAutocompleteEmail.name,
-           "true"}});
-
   FormData form = test::GetFormData(
       {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "off"},
                   {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
@@ -2388,10 +2450,8 @@ TEST_F(FormStructureTestImpl,
 TEST_F(FormStructureTestImpl,
        SingleFieldEmailHeuristicsNotSupportedOutsideFormTag) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillEnableEmailHeuristicOnlyAddressForms},
-      {features::kAutofillEnableEmailHeuristicOutsideForms});
-
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableEmailHeuristicOutsideForms);
   FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
   // Set the form to simulate a field outside a <form> tag.
   form.set_renderer_id(FormRendererId());
@@ -2416,11 +2476,8 @@ TEST_F(FormStructureTestImpl,
 // is enabled.
 TEST_F(FormStructureTestImpl,
        SingleFieldEmailHeuristicsSupportedOutsideFormTag) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures(
-      {features::kAutofillEnableEmailHeuristicOnlyAddressForms,
-       features::kAutofillEnableEmailHeuristicOutsideForms},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableEmailHeuristicOutsideForms};
 
   FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
   // Set the form to simulate a field outside a <form> tag.
@@ -2464,6 +2521,45 @@ TEST_F(FormStructureTestImpl, GetHeuristicPredictions) {
               UnorderedElementsAre(
                   testing::Pair(form.fields()[1].global_id(), PASSWORD),
                   testing::Pair(mystery_field.global_id(), NO_SERVER_DATA)));
+}
+
+// Tests that loyalty card fields are classified on big forms.
+TEST_F(FormStructureTestImpl, LoyaltyCardsHeuristics_BigForms) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableLoyaltyCardsFilling};
+  std::unique_ptr<FormStructure> form_structure;
+  FormData form;
+  form.set_url(GURL("http://www.foo.com/"));
+  form.set_renderer_id(test::MakeFormRendererId());
+  form.set_fields(
+      {CreateTestFormField("First Name", "firstname", "",
+                           FormControlType::kInputText, "given-name"),
+       CreateTestFormField("Last Name", "lastname", "",
+                           FormControlType::kInputText, "family-name"),
+       CreateTestFormField("Email", "email", "", FormControlType::kInputEmail,
+                           "email"),
+       CreateTestFormField("Frequent Flyer Number", "frequent-flyer-number", "",
+                           FormControlType::kInputText, "flyer-number"),
+       CreateTestFormField("Phone Number", "BillTo.Phone", "",
+                           FormControlType::kInputText, "phone")});
+
+  form_structure = std::make_unique<FormStructure>(form);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  EXPECT_TRUE(form_structure->IsAutofillable());
+  ASSERT_EQ(5U, form_structure->field_count());
+  ASSERT_EQ(5U, form_structure->autofill_count());
+
+  // First name.
+  EXPECT_EQ(NAME_FIRST, form_structure->field(0)->heuristic_type());
+  // Last name.
+  EXPECT_EQ(NAME_LAST, form_structure->field(1)->heuristic_type());
+  // Email.
+  EXPECT_EQ(EMAIL_ADDRESS, form_structure->field(2)->heuristic_type());
+  // Loyalty Card.
+  EXPECT_EQ(LOYALTY_MEMBERSHIP_ID, form_structure->field(3)->heuristic_type());
+  // Phone number.
+  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER,
+            form_structure->field(4)->heuristic_type());
 }
 
 }  // namespace

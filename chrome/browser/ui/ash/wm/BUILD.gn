@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("wm") {
   sources = [
@@ -20,16 +18,21 @@ static_library("wm") {
   ]
 
   deps = [
+    "//ash/constants",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_restore:app_restore",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/ash/desks",
+    "//chrome/browser/ui/webui/ash/scanner_feedback_dialog",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/services/coral/public/mojom",
     "//chromeos/ui/wm",
     "//components/app_constants",
+    "//components/signin/public/identity_manager",
+    "//components/variations/service",
     "//content/public/browser",
   ]
 }

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/sync/cwv_sync_controller_internal.h"
-
 #import <memory>
 #import <set>
 
@@ -13,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/task_environment.h"
+#import "components/autofill/core/browser/studies/autofill_experiments.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
@@ -30,6 +29,7 @@
 #import "components/sync/test/test_sync_service.h"
 #import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
+#import "ios/web_view/internal/sync/cwv_sync_controller_internal.h"
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller_data_source.h"
 #import "ios/web_view/public/cwv_sync_controller_delegate.h"
@@ -65,10 +65,10 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
   CoreAccountInfo account_info =
       identity_test_environment_.MakeAccountAvailable(kTestEmail);
 
-  CWVIdentity* identity = [[CWVIdentity alloc]
-      initWithEmail:@(kTestEmail)
-           fullName:nil
-             gaiaID:base::SysUTF8ToNSString(account_info.gaia)];
+  CWVIdentity* identity =
+      [[CWVIdentity alloc] initWithEmail:@(kTestEmail)
+                                fullName:nil
+                                  gaiaID:account_info.gaia.ToNSString()];
 
   // Preconfigure TestSyncService as if it was enabled in transport mode.
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
@@ -86,12 +86,9 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
   EXPECT_EQ(primary_account_info, account_info);
 
   // Ensure opt-ins for transport only sync data is flipped to true.
-  EXPECT_TRUE(autofill::prefs::IsUserOptedInWalletSyncTransport(
+  EXPECT_TRUE(autofill::IsUserOptedInWalletSyncTransport(
       &pref_service_, primary_account_info.account_id));
-  EXPECT_EQ(password_manager::features_util::GetDefaultPasswordStore(
-                &pref_service_, &sync_service_),
-            password_manager::PasswordForm::Store::kAccountStore);
-  EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
       &pref_service_, &sync_service_));
 }
 
@@ -101,7 +98,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentityInAuthError) {
       identity_test_environment_.MakeAccountAvailable(kTestEmail);
   sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
   sync_service_.SetPersistentAuthError();
-  ASSERT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+  ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
       &pref_service_, &sync_service_));
 
   // Should not crash.
@@ -114,8 +111,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentityInAuthError) {
                                 initWithEmail:@(kTestEmail)
                                      fullName:base::SysUTF8ToNSString(
                                                   account_info.full_name)
-                                       gaiaID:base::SysUTF8ToNSString(
-                                                  account_info.gaia)]];
+                                       gaiaID:account_info.gaia.ToNSString()]];
 
   CWVWebView.skipAccountStorageCheckEnabled = false;
 }
@@ -131,8 +127,7 @@ TEST_F(CWVSyncControllerTest, StopSyncAndClearIdentity) {
               prefService:&pref_service_];
   CWVIdentity* current_identity = sync_controller.currentIdentity;
   ASSERT_TRUE(current_identity);
-  EXPECT_NSEQ(current_identity.gaiaID,
-              base::SysUTF8ToNSString(account_info.gaia));
+  EXPECT_NSEQ(current_identity.gaiaID, account_info.gaia.ToNSString());
   EXPECT_NSEQ(current_identity.email, base::SysUTF8ToNSString(kTestEmail));
 
   [sync_controller stopSyncAndClearIdentity];

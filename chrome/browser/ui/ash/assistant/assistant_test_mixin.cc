@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/auto_reset.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -31,6 +31,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/events/test/event_generator.h"
@@ -41,7 +42,7 @@ namespace ash::assistant {
 namespace {
 
 constexpr const char kTestUser[] = "test_user@gmail.com";
-constexpr const char kTestUserGaiaId[] = "test_user_gaia_id";
+constexpr const GaiaId::Literal kTestUserGaiaId("test_user_gaia_id");
 
 LoginManagerMixin::TestUserInfo GetTestUserInfo() {
   return LoginManagerMixin::TestUserInfo(

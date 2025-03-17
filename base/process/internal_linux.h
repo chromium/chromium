@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // This file contains internal routines that are called by other files in
 // base/process/.
 
@@ -123,8 +128,7 @@ int64_t ReadProcStatsAndGetFieldAsInt64(pid_t pid, ProcStatsFields field_num);
 int64_t ReadProcSelfStatsAndGetFieldAsInt64(ProcStatsFields field_num);
 
 // Same as ReadProcStatsAndGetFieldAsInt64() but for size_t values.
-size_t ReadProcStatsAndGetFieldAsSizeT(pid_t pid,
-                                       ProcStatsFields field_num);
+size_t ReadProcStatsAndGetFieldAsSizeT(pid_t pid, ProcStatsFields field_num);
 
 // Returns the time that the OS started. Clock ticks are relative to this.
 Time GetBootTime();
@@ -144,17 +148,21 @@ void ForEachProcessTask(base::ProcessHandle process, Lambda&& lambda) {
   FilePath fd_path = GetProcPidDir(process).Append("task");
 
   DirReaderPosix dir_reader(fd_path.value().c_str());
-  if (!dir_reader.IsValid())
+  if (!dir_reader.IsValid()) {
     return;
+  }
 
   for (; dir_reader.Next();) {
     const char* tid_str = dir_reader.name();
-    if (strcmp(tid_str, ".") == 0 || strcmp(tid_str, "..") == 0)
+    if (strcmp(tid_str, ".") == 0 || strcmp(tid_str, "..") == 0) {
       continue;
+    }
 
-    PlatformThreadId tid;
-    if (!StringToInt(tid_str, &tid))
+    PlatformThreadId::UnderlyingType tid_value;
+    if (!StringToInt(tid_str, &tid_value)) {
       continue;
+    }
+    PlatformThreadId tid(tid_value);
 
     FilePath task_path = fd_path.Append(tid_str);
     lambda(tid, task_path);

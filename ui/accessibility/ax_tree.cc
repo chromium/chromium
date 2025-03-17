@@ -25,6 +25,7 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/crash/core/common/crash_key.h"
@@ -40,6 +41,10 @@
 #include "ui/accessibility/ax_table_info.h"
 #include "ui/accessibility/ax_tree_observer.h"
 #include "ui/gfx/geometry/transform.h"
+
+#define ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(enum_value) \
+  base::UmaHistogramEnumeration(                                   \
+      "Accessibility.Reliability.Tree.UnserializeError", enum_value)
 
 namespace ui {
 
@@ -58,16 +63,42 @@ constexpr ax::mojom::IntListAttribute kReverseRelationIntListAttributes[] = {
 constexpr ax::mojom::IntAttribute kReverseRelationIntAttributes[] = {
     ax::mojom::IntAttribute::kActivedescendantId};
 
-std::string TreeToStringHelper(const AXNode* node, int indent, bool verbose) {
-  if (!node)
+std::string TreeToStringHelper(const AXNode* node,
+                               int indent,
+                               bool verbose,
+                               int& max_items) {
+  if (!node || max_items == 0) {
     return "";
+  }
+
+  std::string str = base::StrCat(
+      {std::string(2 * indent, ' '), node->data().ToString(verbose), "\n"});
+
+  if (max_items > 0 && --max_items == 0) {
+    return str;
+  }
 
   return std::accumulate(
-      node->children().cbegin(), node->children().cend(),
-      std::string(2 * indent, ' ') + node->data().ToString(verbose) + "\n",
-      [indent, verbose](const std::string& str, const AXNode* child) {
-        return str + TreeToStringHelper(child, indent + 1, verbose);
+      node->children().cbegin(), node->children().cend(), std::move(str),
+      [indent, verbose, &max_items](std::string str,
+                                   const AXNode* child) mutable {
+        str.append(TreeToStringHelper(child, indent + 1, verbose, max_items));
+        return str;
       });
+}
+
+// Return a formatted, indented, string representation of the tree, with each
+// node on its own line.
+// To stringify the entire tree, pass in max_items = -1.
+// This method is used to help diagnose inconsistent tree states. Limiting the
+// max number of items avoids out of memory errors and excessive logging.
+constexpr int kMaxItemsToStringify = 200;
+
+std::string TreeToString(const AXNode* node,
+                         int indent,
+                         bool verbose,
+                         int max_items = kMaxItemsToStringify) {
+  return TreeToStringHelper(node, indent, verbose, max_items);
 }
 
 template <typename K, typename V>
@@ -1289,8 +1320,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     if (!root_) {
       ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
           AXTreeUnserializeError::kNoRoot);
-      // TODO(b/368660753): make this fatal once root cause resolved.
-      RecordError(update_state, "Tree has no root.", /*is_fatal=*/false);
+      RecordError(update_state, "Tree has no root.", true);
       return false;
     }
 
@@ -1494,8 +1524,7 @@ void AXTree::CheckTreeConsistency(const AXTreeUpdate& update) {
       << "\n* Number of ids mapped: " << id_map_.size()
       << "\n* Serializer's node count: " << update.tree_checks->node_count
       << "\n* Slow nodes count: " << root_->GetSubtreeCount()
-      << "\n* AXTreeUpdate: "
-      << TreeToStringHelper(root_, 0, /*verbose*/ false);
+      << "\n* AXTreeUpdate: " << TreeToString(root_, 0, /*verbose*/ false);
 
   NOTREACHED() << msg.str();
 }
@@ -1536,8 +1565,7 @@ AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
 }
 
 std::string AXTree::ToString(bool verbose) const {
-  return "AXTree" + data_.ToString() + "\n" +
-         TreeToStringHelper(root_, 0, verbose);
+  return "AXTree" + data_.ToString() + "\n" + TreeToString(root_, 0, verbose);
 }
 
 AXNode* AXTree::CreateNode(AXNode* parent,
@@ -2852,8 +2880,8 @@ AXSelection AXTree::GetSelection() const {
   return AXSelection(*this);
 }
 
-AXSelection AXTree::GetUnignoredSelection() const {
-  return GetSelection().ToUnignoredSelection();
+AXSelection AXTree::GetUnignoredSelection(bool non_text_endpoints) const {
+  return GetSelection().ToUnignoredSelection(non_text_endpoints);
 }
 
 bool AXTree::GetTreeUpdateInProgressState() const {
@@ -2898,16 +2926,18 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
   is_fatal = true;
 #endif
 
+  std::string tree_str = TreeToString(root_, 0, false);
+  std::string tree_update_str = update_state.pending_tree_update
+                                    ->ToString(
+                                        /*verbose=*/false)
+                                    .substr(0, 1000);
+
   std::ostringstream verbose_error;
   verbose_error << new_error << "\n** Pending tree update **\n"
-                << update_state.pending_tree_update
-                       ->ToString(
-                           /*verbose*/ false)
-                       .substr(0, 1000)
-                << "** Root **\n"
+                << tree_update_str << "** Root **\n"
                 << root() << "\n** AXTreeData **\n"
                 << data_.ToString() + "\n** AXTree **\n"
-                << TreeToStringHelper(root_, 0, false).substr(0, 1000);
+                << tree_str.substr(0, 2000);
 
   LOG_IF(FATAL, is_fatal) << verbose_error.str();
 
@@ -2924,10 +2954,8 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
 
   // Log additional crash keys so we can debug bad tree updates.
   base::debug::SetCrashKeyString(ax_tree_error_key, new_error);
-  base::debug::SetCrashKeyString(ax_tree_update_key,
-                                 update_state.pending_tree_update->ToString());
-  base::debug::SetCrashKeyString(ax_tree_key,
-                                 TreeToStringHelper(root_, 0, false));
+  base::debug::SetCrashKeyString(ax_tree_update_key, tree_update_str);
+  base::debug::SetCrashKeyString(ax_tree_key, tree_str);
   base::debug::SetCrashKeyString(ax_tree_data_key, data_.ToString());
   LOG(ERROR) << verbose_error.str();
 }

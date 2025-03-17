@@ -4,9 +4,10 @@
 
 #include "services/device/hid/hid_connection.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/ranges/algorithm.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/public/cpp/hid/hid_report_type.h"
 #include "services/device/public/cpp/hid/hid_report_utils.h"
@@ -18,7 +19,7 @@ namespace {
 
 bool HasAlwaysProtectedCollection(
     const std::vector<mojom::HidCollectionInfoPtr>& collections) {
-  return base::ranges::any_of(collections, [](const auto& collection) {
+  return std::ranges::any_of(collections, [](const auto& collection) {
     return IsAlwaysProtected(*collection->usage, HidReportType::kInput) ||
            IsAlwaysProtected(*collection->usage, HidReportType::kOutput) ||
            IsAlwaysProtected(*collection->usage, HidReportType::kFeature);

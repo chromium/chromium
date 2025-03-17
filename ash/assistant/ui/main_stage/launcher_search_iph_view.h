@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "base/memory/raw_ptr.h"
@@ -35,7 +36,7 @@ class LauncherSearchIphView : public views::View {
    public:
     virtual ~Delegate() = default;
     // Run `query` as a launcher search. `query` is localized.
-    virtual void RunLauncherSearchQuery(const std::u16string& query) = 0;
+    virtual void RunLauncherSearchQuery(std::u16string_view query) = 0;
     // Opens Assistant page in the launcher.
     virtual void OpenAssistantPage() = 0;
   };
@@ -76,7 +77,7 @@ class LauncherSearchIphView : public views::View {
 
   void NotifyAssistantButtonPressedEvent();
 
-  std::u16string GetTitleText() const;
+  std::u16string_view GetTitleText() const;
 
   std::vector<raw_ptr<ChipView>> GetChipsForTesting();
   views::View* GetAssistantButtonForTesting();

@@ -5,11 +5,12 @@
 #include "device/bluetooth/bluetooth_remote_gatt_service_mac.h"
 
 #import <CoreBluetooth/CoreBluetooth.h>
+
+#include <algorithm>
 #include <vector>
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
 #include "device/bluetooth/bluetooth_low_energy_device_mac.h"
@@ -138,7 +139,7 @@ void BluetoothRemoteGattServiceMac::SendNotificationIfComplete() {
   // Notify when all characteristics have been fully discovered.
   SetDiscoveryComplete(
       discovery_pending_count_ == 0 &&
-      base::ranges::all_of(characteristics_, [](const auto& pair) {
+      std::ranges::all_of(characteristics_, [](const auto& pair) {
         return static_cast<BluetoothRemoteGattCharacteristicMac*>(
                    pair.second.get())
             ->IsDiscoveryComplete();

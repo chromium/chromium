@@ -9,7 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
-#include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/public/browser/speculation_host_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/test_browser_context.h"
@@ -44,25 +44,6 @@ class MockSpeculationHostDelegate : public SpeculationHostDelegate {
  private:
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates_;
   base::WeakPtrFactory<MockSpeculationHostDelegate> weak_ptr_factory_{this};
-};
-
-class TestPrefetchService : public PrefetchService {
- public:
-  explicit TestPrefetchService(BrowserContext* browser_context)
-      : PrefetchService(browser_context) {}
-
-  void PrefetchUrl(
-      base::WeakPtr<PrefetchContainer> prefetch_container) override {
-    prefetch_container->DisablePrecogLoggingForTest();
-    prefetches_.push_back(prefetch_container);
-
-    std::unique_ptr<network::ResourceRequest> request =
-        std::make_unique<network::ResourceRequest>();
-    network::ResourceRequest::TrustedParams trusted_params;
-    request->trusted_params = trusted_params;
-  }
-
-  std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
 };
 
 class MockContentBrowserClient : public TestContentBrowserClient {

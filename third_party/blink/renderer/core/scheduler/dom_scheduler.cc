@@ -14,13 +14,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_task_priority.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/scheduler/dom_task.h"
 #include "third_party/blink/renderer/core/scheduler/dom_task_continuation.h"
 #include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
+#include "third_party/blink/renderer/core/scheduler/scheduler_task_context.h"
 #include "third_party/blink/renderer/core/scheduler/script_wrappable_task_state.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_info_impl.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
@@ -115,6 +118,8 @@ ScriptPromise<IDLAny> DOMScheduler::postTask(
 
   AbortSignal* signal_option = options->getSignalOr(nullptr);
   if (signal_option && signal_option->aborted()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kSchedulerPostTaskAbortBeforeRunning);
     return ScriptPromise<IDLAny>::Reject(script_state,
                                          signal_option->reason(script_state));
   }
@@ -139,8 +144,10 @@ ScriptPromise<IDLAny> DOMScheduler::postTask(
       GetTaskQueue(priority_source, WebSchedulingQueueType::kTaskQueue);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
       script_state, exception_state.GetContext());
+  auto* task_context = MakeGarbageCollected<SchedulerTaskContext>(
+      GetExecutionContext(), signal_option, priority_source);
   MakeGarbageCollected<DOMTask>(
-      resolver, callback_function, signal_option, priority_source, task_queue,
+      resolver, callback_function, task_context, task_queue,
       base::Milliseconds(options->delay()), NextIdForTracing());
   return resolver->Promise();
 }
@@ -164,8 +171,12 @@ ScriptPromise<IDLUndefined> DOMScheduler::yield(
   DOMTaskSignal* priority_source = nullptr;
   if (auto* inherited_state =
           ScriptWrappableTaskState::GetCurrent(script_state->GetIsolate())) {
-    abort_source = inherited_state->WrappedState()->AbortSource();
-    priority_source = inherited_state->WrappedState()->PrioritySource();
+    if (SchedulerTaskContext* task_context =
+            inherited_state->WrappedState()->GetSchedulerTaskContextFor(
+                *GetExecutionContext())) {
+      abort_source = task_context->AbortSource();
+      priority_source = task_context->PrioritySource();
+    }
   }
 
   if (abort_source && abort_source->aborted()) {

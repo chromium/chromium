@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/supervised_user_extensions_manager.h"
 
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -158,11 +159,14 @@ bool SupervisedUserExtensionsManager::IsExtensionAllowed(
 bool SupervisedUserExtensionsManager::CanInstallExtensions() const {
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForBrowserContext(context_);
+  bool has_custodian = supervised_user_service->GetCustodian() ||
+                       supervised_user_service->GetSecondCustodian();
+
   if (supervised_user::
           IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
-    return supervised_user_service->HasACustodian();
+    return has_custodian;
   }
-  return supervised_user_service->HasACustodian() &&
+  return has_custodian &&
          user_prefs_->GetBoolean(
              prefs::kSupervisedUserExtensionsMayRequestPermissions);
 }
@@ -272,7 +276,7 @@ SupervisedUserExtensionsManager::ExtensionState
 SupervisedUserExtensionsManager::GetExtensionState(
     const extensions::Extension& extension) const {
   bool was_installed_by_default = extension.was_installed_by_default();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS all external sources are controlled by us so it means that
   // they are "default". Method was_installed_by_default returns false because
   // extensions creation flags are ignored in case of default extensions with
@@ -398,9 +402,11 @@ std::u16string SupervisedUserExtensionsManager::GetExtensionsLockedMessage()
     const {
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForBrowserContext(context_);
+  std::optional<supervised_user::Custodian> custodian =
+      supervised_user_service->GetCustodian();
   return l10n_util::GetStringFUTF16(
       IDS_EXTENSIONS_LOCKED_SUPERVISED_USER,
-      base::UTF8ToUTF16(supervised_user_service->GetCustodianName()));
+      base::UTF8ToUTF16(custodian ? custodian->GetName() : ""));
 }
 
 void SupervisedUserExtensionsManager::ChangeExtensionStateIfNecessary(
@@ -438,8 +444,7 @@ void SupervisedUserExtensionsManager::ChangeExtensionStateIfNecessary(
           extension_id,
           extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
       // If not disabled for other reasons, enable it.
-      if (extension_prefs_->GetDisableReasons(extension_id) ==
-          extensions::disable_reason::DISABLE_NONE) {
+      if (extension_prefs_->GetDisableReasons(extension_id).empty()) {
         service->EnableExtension(extension_id);
       }
       break;

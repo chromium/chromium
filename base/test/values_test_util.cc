@@ -168,9 +168,9 @@ class DictionaryHasValuesMatcher
 // provided, treats `json` parsing as a Value of a different type as a failure.
 //
 std::optional<Value> ParseJsonHelper(std::string_view json,
-                                     std::optional<Value::Type> expected_type) {
-  auto result = JSONReader::ReadAndReturnValueWithError(
-      json, JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS);
+                                     std::optional<Value::Type> expected_type,
+                                     int options) {
+  auto result = JSONReader::ReadAndReturnValueWithError(json, options);
   if (!result.has_value()) {
     ADD_FAILURE() << "Failed to parse \"" << json
                   << "\": " << result.error().message;
@@ -259,21 +259,21 @@ void IsJsonMatcher::DescribeNegationTo(std::ostream* os) const {
   *os << "is not the JSON value " << expected_value_;
 }
 
-Value ParseJson(std::string_view json) {
+Value ParseJson(std::string_view json, int options) {
   std::optional<Value> result =
-      ParseJsonHelper(json, /*expected_type=*/std::nullopt);
+      ParseJsonHelper(json, /*expected_type=*/std::nullopt, options);
   return result.has_value() ? std::move(*result) : Value();
 }
 
-Value::Dict ParseJsonDict(std::string_view json) {
+Value::Dict ParseJsonDict(std::string_view json, int options) {
   std::optional<Value> result =
-      ParseJsonHelper(json, /*expected_type=*/Value::Type::DICT);
+      ParseJsonHelper(json, /*expected_type=*/Value::Type::DICT, options);
   return result.has_value() ? std::move(*result).TakeDict() : Value::Dict();
 }
 
-Value::List ParseJsonList(std::string_view json) {
+Value::List ParseJsonList(std::string_view json, int options) {
   std::optional<Value> result =
-      ParseJsonHelper(json, /*expected_type=*/Value::Type::LIST);
+      ParseJsonHelper(json, /*expected_type=*/Value::Type::LIST, options);
   return result.has_value() ? std::move(*result).TakeList() : Value::List();
 }
 

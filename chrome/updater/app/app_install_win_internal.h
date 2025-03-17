@@ -5,13 +5,16 @@
 #ifndef CHROME_UPDATER_APP_APP_INSTALL_WIN_INTERNAL_H_
 #define CHROME_UPDATER_APP_APP_INSTALL_WIN_INTERNAL_H_
 
+#include <string>
+
 #include "chrome/updater/app/app_install_progress.h"
 #include "chrome/updater/update_service.h"
 
 namespace updater {
 
 [[nodiscard]] ObserverCompletionInfo HandleInstallResult(
-    const UpdateService::UpdateState& update_state);
+    const UpdateService::UpdateState& update_state,
+    const std::wstring& lang);
 
 }  // namespace updater
 

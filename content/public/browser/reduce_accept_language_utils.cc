@@ -30,6 +30,15 @@ std::string GetFirstUserAcceptLanguage(
   return user_accept_language[0];
 }
 
+bool ReduceAcceptLanguageFeatureEnabled() {
+  // Return true if either the general feature enabled or the HTTP only feature
+  // enabled.
+  return base::FeatureList::IsEnabled(
+             network::features::kReduceAcceptLanguage) ||
+         base::FeatureList::IsEnabled(
+             network::features::kReduceAcceptLanguageHTTP);
+}
+
 }  // namespace
 
 ReduceAcceptLanguageUtils::PersistLanguageResult::PersistLanguageResult() =
@@ -49,7 +58,7 @@ ReduceAcceptLanguageUtils::~ReduceAcceptLanguageUtils() = default;
 std::optional<ReduceAcceptLanguageUtils> ReduceAcceptLanguageUtils::Create(
     BrowserContext* browser_context) {
   DCHECK(browser_context);
-  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
+  if (!ReduceAcceptLanguageFeatureEnabled()) {
     return std::nullopt;
   }
   ReduceAcceptLanguageControllerDelegate* reduce_accept_lang_delegate =
@@ -192,7 +201,7 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
     FrameTreeNode* frame_tree_node) {
   DCHECK(frame_tree_node);
 
-  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
+  if (!ReduceAcceptLanguageFeatureEnabled() ||
       !OriginCanReduceAcceptLanguage(request_origin)) {
     return std::nullopt;
   }
@@ -211,7 +220,7 @@ std::optional<std::string>
 ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
     const url::Origin& request_origin,
     const url::Origin& top_frame_origin) {
-  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
+  if (!ReduceAcceptLanguageFeatureEnabled() ||
       !OriginCanReduceAcceptLanguage(request_origin)) {
     return std::nullopt;
   }
@@ -268,9 +277,9 @@ ReduceAcceptLanguageUtils::GetOriginForLanguageLookup(
 void ReduceAcceptLanguageUtils::RemoveReducedAcceptLanguage(
     const url::Origin& origin,
     FrameTreeNode* frame_tree_node) {
-  // Skip if kReduceAcceptLanguage feature isn't enabled because deprecation
-  // origin trial is used to disable reduce accept-language.
-  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
+  // Skip if ReduceAcceptLanguage feature for HTTP header isn't enabled because
+  // deprecation origin trial is used to disable reduce accept-language.
+  if (!ReduceAcceptLanguageFeatureEnabled()) {
     return;
   }
 
@@ -296,7 +305,7 @@ ReduceAcceptLanguageUtils::GetLanguageToPersist(
   // If the response content-language matches the initial accept language
   // values, no need to resend the request.
   std::string selected_language;
-  if (base::ranges::any_of(content_languages, [&](const std::string& language) {
+  if (std::ranges::any_of(content_languages, [&](const std::string& language) {
         return ReduceAcceptLanguageUtils::
             DoesAcceptLanguageMatchContentLanguage(initial_accept_language,
                                                    language);
@@ -315,7 +324,7 @@ ReduceAcceptLanguageUtils::GetLanguageToPersist(
       // Only resend request if the `matched_language` doesn't match any
       // content languages in current response header because otherwise
       // resending the request won't get a better result.
-      result.should_resend_request = base::ranges::none_of(
+      result.should_resend_request = std::ranges::none_of(
           content_languages, [&](const std::string& language) {
             return base::EqualsCaseInsensitiveASCII(language,
                                                     matched_language.value());

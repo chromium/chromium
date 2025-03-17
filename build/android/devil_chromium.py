@@ -26,91 +26,81 @@ _DEVIL_CONFIG = os.path.abspath(
     os.path.join(os.path.dirname(__file__), 'devil_chromium.json'))
 
 _DEVIL_BUILD_PRODUCT_DEPS = {
-  'chromium_commands': [
-    {
-      'platform': 'linux2',
-      'arch': 'x86_64',
-      'path_components': ['lib.java', 'chromium_commands.dex.jar'],
-    }
-  ],
-  'forwarder_device': [
-    {
-      'platform': 'android',
-      'arch': abis.ARM,
-      'path_components': ['forwarder_dist'],
-    },
-    {
-      'platform': 'android',
-      'arch': abis.ARM_64,
-      'path_components': ['forwarder_dist'],
-    },
-    {
-      'platform': 'android',
-      'arch': 'mips',
-      'path_components': ['forwarder_dist'],
-    },
-    {
-      'platform': 'android',
-      'arch': 'mips64',
-      'path_components': ['forwarder_dist'],
-    },
-    {
-      'platform': 'android',
-      'arch': abis.X86,
-      'path_components': ['forwarder_dist'],
-    },
-    {
-      'platform': 'android',
-      'arch': abis.X86_64,
-      'path_components': ['forwarder_dist'],
-    },
-  ],
-  'forwarder_host': [
-    {
-      'platform': 'linux2',
-      'arch': 'x86_64',
-      'path_components': ['host_forwarder'],
-    },
-  ],
-  'md5sum_device': [
-    {
-      'platform': 'android',
-      'arch': abis.ARM,
-      'path_components': ['md5sum_dist'],
-    },
-    {
-      'platform': 'android',
-      'arch': abis.ARM_64,
-      'path_components': ['md5sum_dist'],
-    },
-    {
-      'platform': 'android',
-      'arch': 'mips',
-      'path_components': ['md5sum_dist'],
-    },
-    {
-      'platform': 'android',
-      'arch': 'mips64',
-      'path_components': ['md5sum_dist'],
-    },
-    {
-      'platform': 'android',
-      'arch': abis.X86,
-      'path_components': ['md5sum_dist'],
-    },
-    {
-      'platform': 'android',
-      'arch': abis.X86_64,
-      'path_components': ['md5sum_dist'],
-    },
-  ],
-  'md5sum_host': [
-    {
-      'platform': 'linux2',
-      'arch': 'x86_64',
-      'path_components': ['md5sum_bin_host'],
-    },
-  ],
+    'devil_util_device': [
+        {
+            'platform': 'android',
+            'arch': abis.ARM,
+            'path_components': ['devil_util_dist'],
+        },
+        {
+            'platform': 'android',
+            'arch': abis.ARM_64,
+            'path_components': ['devil_util_dist'],
+        },
+        {
+            'platform': 'android',
+            'arch': abis.X86,
+            'path_components': ['devil_util_dist'],
+        },
+        {
+            'platform': 'android',
+            'arch': abis.X86_64,
+            'path_components': ['devil_util_dist'],
+        },
+    ],
+    'devil_util_host': [
+        {
+            'platform': 'linux2',
+            'arch': 'x86_64',
+            'path_components': ['devil_util_host'],
+        },
+    ],
+    'chromium_commands': [{
+        'platform':
+        'linux2',
+        'arch':
+        'x86_64',
+        'path_components': ['lib.java', 'chromium_commands.dex.jar'],
+    }],
+    'forwarder_device': [
+        {
+            'platform': 'android',
+            'arch': abis.ARM,
+            'path_components': ['forwarder_dist'],
+        },
+        {
+            'platform': 'android',
+            'arch': abis.ARM_64,
+            'path_components': ['forwarder_dist'],
+        },
+        {
+            'platform': 'android',
+            'arch': 'mips',
+            'path_components': ['forwarder_dist'],
+        },
+        {
+            'platform': 'android',
+            'arch': 'mips64',
+            'path_components': ['forwarder_dist'],
+        },
+        {
+            'platform': 'android',
+            'arch': abis.X86,
+            'path_components': ['forwarder_dist'],
+        },
+        {
+            'platform': 'android',
+            'arch': abis.X86_64,
+            'path_components': ['forwarder_dist'],
+        },
+    ],
+    'forwarder_host': [
+        {
+            'platform': 'linux2',
+            'arch': 'x86_64',
+            'path_components': ['host_forwarder'],
+        },
+    ],
 }
 
 
@@ -155,7 +145,8 @@ def Initialize(output_directory=None,
     - Build products:
       - host & device forwarder binaries
           ("forwarder_device" and "forwarder_host")
-      - host & device md5sum binaries ("md5sum_device" and "md5sum_host")
+      - host & device devil_util binaries
+          ("devil_util_device" and "devil_util_host")
 
   Args:
     output_directory: An optional path to the output directory. If not set,
@@ -172,7 +163,7 @@ def Initialize(output_directory=None,
         }
     adb_path: An optional path to use for the adb binary. If not set, this uses
       the adb binary provided by the Android SDK.
-    use_local_devil_tools: Use locally built versions of md5sum,
+    use_local_devil_tools: Use locally built versions of devil_util,
       forwarder_dist, etc.
   """
   build_with_chromium = _BuildWithChromium()

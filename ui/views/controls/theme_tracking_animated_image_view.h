@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_variant.h"
 #include "ui/views/controls/animated_image_view.h"
 
 namespace views {
@@ -20,15 +21,16 @@ class VIEWS_EXPORT ThemeTrackingAnimatedImageView : public AnimatedImageView {
   METADATA_HEADER(ThemeTrackingAnimatedImageView, AnimatedImageView)
 
  public:
-  ThemeTrackingAnimatedImageView(
-      int light_animation_lottie_id,
-      int dark_animation_lottie_id,
-      base::RepeatingCallback<SkColor()> get_background_color_callback);
+  ThemeTrackingAnimatedImageView(int light_animation_lottie_id,
+                                 int dark_animation_lottie_id,
+                                 base::RepeatingCallback<ui::ColorVariant()>
+                                     get_background_color_callback);
 
   ThemeTrackingAnimatedImageView(const ThemeTrackingAnimatedImageView&) =
       delete;
   ThemeTrackingAnimatedImageView& operator=(
       const ThemeTrackingAnimatedImageView&) = delete;
+
   ~ThemeTrackingAnimatedImageView() override;
 
   // AnimatedImageView:
@@ -41,7 +43,7 @@ class VIEWS_EXPORT ThemeTrackingAnimatedImageView : public AnimatedImageView {
   int light_animation_lottie_id_;
   int dark_animation_lottie_id_;
 
-  base::RepeatingCallback<SkColor()> get_background_color_callback_;
+  base::RepeatingCallback<ui::ColorVariant()> get_background_color_callback_;
 };
 
 }  // namespace views

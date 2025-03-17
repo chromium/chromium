@@ -9,7 +9,7 @@ import {toSandboxedURL} from '../../common/js/url_constants.js';
 import {getTemplate} from './files_safe_media.html.js';
 
 export interface FilesSafeMedia {
-  $: {content: HTMLDivElement};
+  $: {content: HTMLElement};
   type: string;
   src: FilePreviewContent;
   fire: (eventName: string) => void;

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("auth") {
   sources = [
@@ -24,7 +24,6 @@ static_library("auth") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/webui/settings/public/constants",
     "//base",
@@ -35,6 +34,7 @@ static_library("auth") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chromeos/ash/experiences/arc",
     "//components/account_manager_core",
     "//components/prefs",
     "//components/user_manager",
@@ -56,8 +56,6 @@ source_set("browser_tests") {
 
   deps = [
     ":auth",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
@@ -71,11 +69,15 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/demo_mode:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/account_id",
     "//components/policy/core/common",
     "//components/prefs",

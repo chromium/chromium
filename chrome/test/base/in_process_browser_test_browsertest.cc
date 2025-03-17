@@ -42,19 +42,6 @@
 
 namespace {
 
-class InProcessBrowserTestP
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<const char*> {
-};
-
-IN_PROC_BROWSER_TEST_P(InProcessBrowserTestP, TestP) {
-  EXPECT_EQ(0, strcmp("foo", GetParam()));
-}
-
-INSTANTIATE_TEST_SUITE_P(IPBTP,
-                         InProcessBrowserTestP,
-                         ::testing::Values("foo"));
-
 // WebContents observer that can detect provisional load failures.
 class LoadFailObserver : public content::WebContentsObserver {
  public:
@@ -87,6 +74,20 @@ class LoadFailObserver : public content::WebContentsObserver {
   net::ResolveErrorInfo resolve_error_info_ = net::ResolveErrorInfo(net::OK);
   GURL validated_url_;
 };
+
+}  // namespace
+
+class InProcessBrowserTestP
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<const char*> {};
+
+IN_PROC_BROWSER_TEST_P(InProcessBrowserTestP, TestP) {
+  EXPECT_EQ(0, strcmp("foo", GetParam()));
+}
+
+INSTANTIATE_TEST_SUITE_P(IPBTP,
+                         InProcessBrowserTestP,
+                         ::testing::Values("foo"));
 
 // Tests that InProcessBrowserTest cannot resolve external host, in this case
 // "google.com" and "cnn.com". Using external resources is disabled by default
@@ -174,8 +175,9 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest,
 
   // Temporarily owned.
   views::BubbleDialogDelegateView* const bubble =
-      new views::BubbleDialogDelegateView(anchor_view,
-                                          views::BubbleBorder::TOP_RIGHT);
+      new views::BubbleDialogDelegateView(
+          views::BubbleDialogDelegateView::CreatePassKey(), anchor_view,
+          views::BubbleBorder::TOP_RIGHT);
   LayoutTrackingView* layout_tracker =
       bubble->AddChildView(std::make_unique<LayoutTrackingView>());
 
@@ -193,5 +195,3 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest,
 }
 
 #endif  // defined(TOOLKIT_VIEWS)
-
-}  // namespace

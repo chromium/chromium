@@ -1,0 +1,34 @@
+caption: Settings for Gemini integration
+desc: |-
+  Enables Gemini app integration
+
+  0/unset = Gemini integration will be available for users
+
+  1 = Gemini integration will not be available for users
+owners:
+- salg@google.com
+- ssid@chromium.org
+- file://components/policy/OWNERS
+example_value: 1
+future_on:
+- android
+- chrome.*
+- chrome_os
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: int-enum
+schema:
+  type: integer
+  enum:
+  - 0
+  - 1
+items:
+- caption: Enable Gemini integration.
+  name: Enabled
+  value: 0
+- caption: Do not enable Gemini integration.
+  name: Disabled
+  value: 1
+default: 0
+tags: []

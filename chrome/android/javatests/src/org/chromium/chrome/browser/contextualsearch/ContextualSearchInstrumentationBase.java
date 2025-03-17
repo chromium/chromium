@@ -105,7 +105,8 @@ public class ContextualSearchInstrumentationBase {
                     true,
                     null,
                     sActivityTestRule.getActivity().getEdgeToEdgeControllerSupplierForTesting(),
-                    /* desktopWindowStateManager= */ null);
+                    /* desktopWindowStateManager= */ null,
+                    /* bottomControlsStacker= */ null);
         }
 
         @Override
@@ -127,7 +128,7 @@ public class ContextualSearchInstrumentationBase {
                     activity,
                     ProfileManager.getLastUsedRegularProfile(),
                     null,
-                    activity.getRootUiCoordinatorForTesting().getScrimCoordinator(),
+                    activity.getRootUiCoordinatorForTesting().getScrimManager(),
                     activity.getActivityTabProvider(),
                     activity.getFullscreenManager(),
                     activity.getBrowserControlsManager(),

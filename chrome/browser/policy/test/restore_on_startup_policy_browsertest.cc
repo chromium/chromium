@@ -7,13 +7,13 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <algorithm>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/url_blocking_policy_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker_test_support.h"
@@ -75,7 +75,7 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
     base::CommandLine::StringVector argv = command_line->argv();
     std::erase_if(argv, IsNonSwitchArgument);
     command_line->InitFromArgv(argv);
-    ASSERT_TRUE(base::ranges::equal(argv, command_line->argv()));
+    ASSERT_TRUE(std::ranges::equal(argv, command_line->argv()));
   }
 
   void ListOfURLs() {

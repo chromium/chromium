@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NAVIGATION_CONTROL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -61,7 +61,8 @@ class WebNavigationControl : public WebLocalFrame {
       bool is_browser_initiated,
       bool has_ua_visual_transition,
       std::optional<scheduler::TaskAttributionId>
-          soft_navigation_heuristics_task_id) = 0;
+          soft_navigation_heuristics_task_id,
+      bool should_skip_screenshot) = 0;
 
   // Override the normal rules that determine whether the frame is on the
   // initial empty document or not. Used to propagate state when this frame has
@@ -80,7 +81,7 @@ class WebNavigationControl : public WebLocalFrame {
   // - The beforeunload event gets dispatched.
   // Note that the navigation might not actually start.
   virtual void MaybeStartOutermostMainFrameNavigation(
-      const WebVector<WebURL>& urls) const = 0;
+      const std::vector<WebURL>& urls) const = 0;
 
   // Marks the frame as loading, before WebLocalFrameClient issues a navigation
   // request through the browser process on behalf of the frame.

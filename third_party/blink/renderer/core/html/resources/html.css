@@ -328,8 +328,10 @@ ul, menu, dir {
     list-style-type: disc;
     margin-block-start: 1__qem;
     margin-block-end: 1em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
+    @supports not blink-feature(CorrectStylesForLists) {
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
     padding-inline-start: 40px
 }
 
@@ -338,22 +340,60 @@ ol {
     list-style-type: decimal;
     margin-block-start: 1__qem;
     margin-block-end: 1em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
+    @supports not blink-feature(CorrectStylesForLists) {
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
     padding-inline-start: 40px
 }
 
 li {
     display: list-item;
+    /* TODO(crbug.com/40774317, crbug.com/40787216): We should use
+       text-align: match-parent once it is supported. */
     text-align: -webkit-match-parent;
 }
 
-ul ul, ol ul {
-    list-style-type: circle
+@supports not blink-feature(CorrectStylesForLists) {
+    ul ul, ol ul {
+        list-style-type: circle
+    }
+
+    ol ol ul, ol ul ul, ul ol ul, ul ul ul {
+        list-style-type: square
+    }
+
+    ol ul, ul ol, ul ul, ol ol {
+        margin-block-start: 0;
+        margin-block-end: 0
+    }
 }
 
-ol ol ul, ol ul ul, ul ol ul, ul ul ul {
-    list-style-type: square
+@supports blink-feature(CorrectStylesForLists) {
+    :is(dir, dl, menu, ol, ul) dir,
+    :is(dir, dl, menu, ol, ul) dl,
+    :is(dir, dl, menu, ol, ul) menu,
+    :is(dir, dl, menu, ol, ul) ol,
+    :is(dir, dl, menu, ol, ul) ul {
+        margin-block-start: 0;
+        margin-block-end: 0;
+    }
+
+    :is(dir, menu, ol, ul) dir,
+    :is(dir, menu, ol, ul) menu,
+    :is(dir, menu, ol, ul) ul {
+        list-style-type: circle
+    }
+
+    :is(dir, menu, ol, ul) :is(dir, menu, ol, ul) dir,
+    :is(dir, menu, ol, ul) :is(dir, menu, ol, ul) menu,
+    :is(dir, menu, ol, ul) :is(dir, menu, ol, ul) ul {
+        list-style-type: square
+    }
+
+    /* TODO(crbug.com/40774317, crbug.com/354025385): We should add rule
+       ol, ul, menu { counter-reset: list-item; }
+       once it is supported. */
 }
 
 dd {
@@ -365,17 +405,14 @@ dl {
     display: block;
     margin-block-start: 1__qem;
     margin-block-end: 1em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
+    @supports not blink-feature(CorrectStylesForLists) {
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
 }
 
 dt {
     display: block
-}
-
-ol ul, ul ol, ul ul, ol ol {
-    margin-block-start: 0;
-    margin-block-end: 0
 }
 
 /* form elements */
@@ -502,7 +539,7 @@ input[type="search" i]::-webkit-search-cancel-button {
     flex: none;
     -webkit-user-modify: read-only !important;
     margin-inline-start: 1px;
-    margin-right: 3px;
+    margin-inline-end: 3px;
     opacity: 0;
     pointer-events: none;
     user-select: none !important;
@@ -939,8 +976,12 @@ select:disabled {
 select:-internal-list-box {
     appearance: auto;
     align-items: flex-start;
-    -internal-overflow-inline: hidden;
-    -internal-overflow-block: scroll;
+    @supports not blink-feature(CSSLogicalOverflow) {
+      -internal-overflow-inline: hidden;
+      -internal-overflow-block: scroll;
+    }
+    overflow-inline: hidden;
+    overflow-block: scroll;
     vertical-align: text-bottom;
     white-space: nowrap;
     border-radius: 2px;
@@ -962,19 +1003,27 @@ select:-internal-list-box optgroup {
     line-height: initial !important;
 }
 
-/* option selected, list-box focused */
-/* TODO(crbug.com/1244986): We should be able to remove !important here, but
-   it breaks some WebUI menus. */
 select:-internal-list-box:focus option:checked,
+select:-internal-list-box:focus option:checked:disabled,
 select:-internal-list-box:focus option:checked:hover {
-    background-color: SelectedItem !important;
-    color: SelectedItemText !important;
+    background-color: SelectedItem;
+    color: SelectedItemText;
 }
 
-/* TODO(crbug.com/1244986): We should be able to remove !important here, but
-   it breaks some WebUI menus. */
 select:-internal-list-box:focus option:checked:disabled {
-    background-color: -internal-inactive-list-box-selection !important;
+    background-color: -internal-inactive-list-box-selection;
+}
+
+@supports not blink-feature(SelectColorsRemoveImportant) {
+    select:-internal-list-box:focus option:checked,
+    select:-internal-list-box:focus option:checked:hover {
+        background-color: SelectedItem !important;
+        color: SelectedItemText !important;
+    }
+
+    select:-internal-list-box:focus option:checked:disabled {
+        background-color: -internal-inactive-list-box-selection !important;
+    }
 }
 
 /* option selected, list-box not focused */
@@ -1008,6 +1057,11 @@ select:-internal-list-box option:hover {
 optgroup {
     font-weight: bolder;
     display: block;
+}
+
+optgroup::-internal-optgroup-label {
+    padding: 0 2px 1px 2px;
+    min-height: 1.2em;
 }
 
 option {
@@ -1056,146 +1110,77 @@ output {
 
 /* meter */
 
-@supports not blink-feature(MeterAppearanceNoneFallbackStyle) {
-  meter {
-    appearance: auto;
-    box-sizing: border-box;
-    display: inline-block;
-    block-size: 1em;
-    inline-size: 5em;
-    vertical-align: -0.2em;
-    -webkit-user-modify: read-only !important;
-  }
-
-  meter::-webkit-meter-inner-element {
-    appearance: inherit;
-    box-sizing: inherit;
-    display: none;
-    -webkit-user-modify: read-only !important;
-    block-size: 100%;
-    inline-size: 100%;
-  }
-
-  meter::-webkit-meter-inner-element:-internal-shadow-host-has-non-auto-appearance {
-    display: grid;
-    grid-template-rows: 1fr [line1] 2fr [line2] 1fr;
-    position: relative;
-  }
-
-  meter::-internal-fallback:-internal-shadow-host-has-non-auto-appearance {
-    display: none;
-  }
-
-  meter::-webkit-meter-bar {
-    block-size: 100%;
-    inline-size: 100%;
-    -webkit-user-modify: read-only !important;
-    background: light-dark(#efefef, #3B3B3B);
-    border: thin solid light-dark(rgba(118, 118, 118, 0.3), #858585);
-    grid-row-start: line1;
-    grid-row-end: line2;
-    border-radius: 20px;
-    box-sizing: border-box;
-    align-self: unsafe center;
-    position: absolute;
-    overflow: hidden;
-  }
-
-  meter::-webkit-meter-optimum-value {
-    block-size: 100%;
-    -webkit-user-modify: read-only !important;
-    box-sizing: border-box;
-    background: light-dark(#107c10, #74b374);
-  }
-
-  meter::-webkit-meter-suboptimum-value {
-    block-size: 100%;
-    -webkit-user-modify: read-only !important;
-    box-sizing: border-box;
-    background: light-dark(#ffb900, #f2c812);
-  }
-
-  meter::-webkit-meter-even-less-good-value {
-    block-size: 100%;
-    -webkit-user-modify: read-only !important;
-    box-sizing: border-box;
-    background: light-dark(#d83b01, #e98f6d);
-  }
+meter {
+-webkit-user-modify: read-only !important;
+appearance: auto;
+block-size: 1em;
+box-sizing: border-box;
+display: inline-block;
+inline-size: 5em;
+vertical-align: -0.2em;
 }
 
-@supports blink-feature(MeterAppearanceNoneFallbackStyle) {
-  meter {
-    -webkit-user-modify: read-only !important;
-    appearance: auto;
-    block-size: 1em;
-    box-sizing: border-box;
-    display: inline-block;
-    inline-size: 5em;
-    vertical-align: -0.2em;
-  }
+meter::-webkit-meter-inner-element {
+-webkit-user-modify: read-only !important;
+appearance: inherit;
+block-size: 100%;
+box-sizing: inherit;
+display: grid;
+grid-template-rows: 1fr [line1] 2fr [line2] 1fr;
+inline-size: 100%;
+position: relative;
+}
 
-  meter::-webkit-meter-inner-element {
-    -webkit-user-modify: read-only !important;
-    appearance: inherit;
-    block-size: 100%;
-    box-sizing: inherit;
-    display: grid;
-    grid-template-rows: 1fr [line1] 2fr [line2] 1fr;
-    inline-size: 100%;
-    position: relative;
-  }
+meter::-webkit-meter-bar {
+-webkit-user-modify: read-only !important;
+align-self: unsafe center;
+background: linear-gradient(to bottom, #ddd, #eee 20%, #ccc 45%, #ccc 55%, #ddd);
+block-size: 100%;
+box-sizing: border-box;
+grid-row-end: line2;
+grid-row-start: line1;
+inline-size: 100%;
+overflow: hidden;
+position: absolute;
+}
 
-  meter::-webkit-meter-bar {
-    -webkit-user-modify: read-only !important;
-    align-self: unsafe center;
-    background: linear-gradient(to bottom, #ddd, #eee 20%, #ccc 45%, #ccc 55%, #ddd);
-    block-size: 100%;
-    box-sizing: border-box;
-    grid-row-end: line2;
-    grid-row-start: line1;
-    inline-size: 100%;
-    overflow: hidden;
-    position: absolute;
-  }
+meter::-webkit-meter-bar:-internal-shadow-host-has-non-auto-appearance {
+background: light-dark(#efefef, #3B3B3B);
+border-radius: 20px;
+border: thin solid light-dark(rgba(118, 118, 118, 0.3), #858585);
+}
 
-  meter::-webkit-meter-bar:-internal-shadow-host-has-non-auto-appearance {
-    background: light-dark(#efefef, #3B3B3B);
-    border-radius: 20px;
-    border: thin solid light-dark(rgba(118, 118, 118, 0.3), #858585);
-  }
+meter::-webkit-meter-optimum-value {
+-webkit-user-modify: read-only !important;
+background: linear-gradient(to bottom, #ad7, #cea 20%, #7a3 45%, #7a3 55%, #ad7);
+block-size: 100%;
+box-sizing: border-box;
+}
 
-  meter::-webkit-meter-optimum-value {
-    -webkit-user-modify: read-only !important;
-    background: linear-gradient(to bottom, #ad7, #cea 20%, #7a3 45%, #7a3 55%, #ad7);
-    block-size: 100%;
-    box-sizing: border-box;
-  }
+meter::-webkit-meter-optimum-value:-internal-shadow-host-has-non-auto-appearance {
+background: light-dark(#107c10, #74b374);
+}
 
-  meter::-webkit-meter-optimum-value:-internal-shadow-host-has-non-auto-appearance {
-    background: light-dark(#107c10, #74b374);
-  }
+meter::-webkit-meter-suboptimum-value {
+-webkit-user-modify: read-only !important;
+background: linear-gradient(to bottom, #fe7, #ffc 20%, #db3 45%, #db3 55%, #fe7);
+block-size: 100%;
+box-sizing: border-box;
+}
 
-  meter::-webkit-meter-suboptimum-value {
-    -webkit-user-modify: read-only !important;
-    background: linear-gradient(to bottom, #fe7, #ffc 20%, #db3 45%, #db3 55%, #fe7);
-    block-size: 100%;
-    box-sizing: border-box;
-  }
+meter::-webkit-meter-suboptimum-value:-internal-shadow-host-has-non-auto-appearance {
+background: light-dark(#ffb900, #f2c812);
+}
 
-  meter::-webkit-meter-suboptimum-value:-internal-shadow-host-has-non-auto-appearance {
-    background: light-dark(#ffb900, #f2c812);
-  }
+meter::-webkit-meter-even-less-good-value {
+-webkit-user-modify: read-only !important;
+background: linear-gradient(to bottom, #f77, #fcc 20%, #d44 45%, #d44 55%, #f77);
+block-size: 100%;
+box-sizing: border-box;
+}
 
-  meter::-webkit-meter-even-less-good-value {
-    -webkit-user-modify: read-only !important;
-    background: linear-gradient(to bottom, #f77, #fcc 20%, #d44 45%, #d44 55%, #f77);
-    block-size: 100%;
-    box-sizing: border-box;
-  }
-
-  meter::-webkit-meter-even-less-good-value:-internal-shadow-host-has-non-auto-appearance {
-    background: light-dark(#d83b01, #e98f6d);
-  }
+meter::-webkit-meter-even-less-good-value:-internal-shadow-host-has-non-auto-appearance {
+background: light-dark(#d83b01, #e98f6d);
 }
 
 /* progress */
@@ -1243,7 +1228,12 @@ abbr[title], acronym[title] {
 }
 
 strong, b {
-    font-weight: bold
+    @supports blink-feature(StrongBolder) {
+      font-weight: bolder;
+    }
+    @supports not blink-feature(StrongBolder) {
+     font-weight: bold;
+    }
 }
 
 i, cite, em, var, address, dfn {
@@ -1300,6 +1290,14 @@ nobr {
 
 :focus-visible {
     outline: auto 1px -webkit-focus-ring-color
+}
+
+[interesttarget]:focus-visible {
+  outline: solid 3px -webkit-focus-ring-color;
+}
+
+button[interesttarget] {
+  user-select: none;
 }
 
 html:focus-visible, body:focus-visible {
@@ -1696,4 +1694,228 @@ img:is([sizes="auto" i], [sizes^="auto," i]) {
   contain-intrinsic-size: 300px 150px;
 }
 
+/* https://drafts.csswg.org/css-ui-4/#inertness */
+/* Reducing specificity with :where since [inert] needs to override. Also
+   explicitly use 'dialog' to avoid adding universal bucket rule. Separate rule
+   added for :fullscreen in fullscreen.css. */
+dialog:where(:modal) {
+  interactivity: auto;
+}
+[inert] {
+  interactivity: inert;
+}
+
 /* noscript is handled internally, as it depends on settings. */
+
+/*
+ * The default style sheet used to render <select> when the CustomizableSelect
+ * feature is enabled.
+ */
+
+@supports blink-feature(CustomizableSelect) {
+  select:not(:-internal-list-box):not([multiple]) {
+    font: -internal-auto-base(-webkit-small-control, inherit);
+    text-shadow: -internal-auto-base(none, inherit);
+    text-transform: -internal-auto-base(none, initial);
+    text-rendering: -internal-auto-base(auto, inherit);
+    letter-spacing: -internal-auto-base(normal, inherit);
+    word-spacing: -internal-auto-base(normal, inherit);
+    text-align: -internal-auto-base(start, initial);
+    text-indent: -internal-auto-base(0px, initial);
+    -webkit-rtl-ordering: -internal-auto-base(logical, inherit);
+    cursor: -internal-auto-base(default, inherit);
+    white-space: -internal-auto-base(pre, inherit);
+    /* This text-autospace rule won't work because it is set with !important
+     * earlier in the UA stylesheet. After merging with the rest of the UA
+     * style rules when removing the CustomizableSelect flag, it should start
+     * to work. */
+    text-autospace: -internal-auto-base(no-autospace !important, inherit);
+    color: -internal-auto-base(FieldText, inherit);
+    background-color: -internal-auto-base(Field, transparent);
+    border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
+    padding-block: -internal-auto-base(0, 0.25em);
+    padding-inline: -internal-auto-base(0, 0.5em);
+
+    /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
+     * https://github.com/openui/open-ui/issues/1026
+     * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
+    /* TODO(crbug.com/1511354): This might be able to be combined with the
+     * default select option rules at some point. This should be re-evaluated
+     * before StylableSelect is shipped. */
+    min-inline-size: -internal-auto-base(auto, 24px);
+    /* The 1lh here makes sure that options with no text still make the button
+     * have the same height as options with text. */
+    min-block-size: -internal-auto-base(auto, max(24px, 1lh));
+
+    display: -internal-auto-base(inline-block, inline-flex);
+    gap: -internal-auto-base(initial, 0.5em);
+    border-radius: -internal-auto-base(0, 0.5em);
+    align-items: -internal-auto-base(center, unset);
+    /* https://github.com/whatwg/html/issues/10876 */
+    user-select: -internal-auto-base(auto, none);
+  }
+
+  select:not(:-internal-list-box):not([multiple]) > button:first-child {
+    all: unset;
+    display: contents;
+    interactivity: inert;
+  }
+
+  select:not(:-internal-list-box):not([multiple]):enabled:hover {
+    background-color: -internal-auto-base(Field, color-mix(in lab, currentColor 10%, transparent));
+  }
+  select:not(:-internal-list-box):not([multiple]):enabled:active {
+    background-color: -internal-auto-base(Field, color-mix(in lab, currentColor 20%, transparent));
+  }
+  select:not(:-internal-list-box):not([multiple]):disabled {
+    opacity: -internal-auto-base(0.7, unset);
+    color: -internal-auto-base(light-dark(GrayText, #aaa), color-mix(in srgb, currentColor 50%, transparent));
+    border-color: -internal-auto-base(rgba(118, 118, 118, 0.3), inherit);
+  }
+
+  /* Undo unwanted styles from select rules */
+  select:not(:-internal-list-box):not([multiple]) > button:first-child,
+  select::picker(select) {
+    white-space: normal;
+  }
+
+  select:not(:-internal-list-box):not([multiple])::picker(select) {
+    box-sizing: border-box;
+    border: 1px solid;
+    padding: 0;
+    color: CanvasText;
+    background-color: Canvas;
+    margin: 0;
+    inset: auto;
+    min-inline-size: anchor-size(self-inline);
+    min-block-size: 1lh;
+    /* Go to the edge of the viewport, and add scrollbars if needed. */
+    max-block-size: -webkit-fill-available; /* Can be removed when stretch ships */
+    max-block-size: stretch;
+    overflow: auto;
+    /* Below and span-right, by default. */
+    position-area: block-end span-inline-end;
+    position-try-order: most-block-size;
+    position-try-fallbacks:
+      /* First try above and span-right. */
+      block-start span-inline-end,
+      /* Then below but span-left. */
+      block-end span-inline-start,
+      /* Then above and span-left. */
+      block-start span-inline-start;
+  }
+
+  select:not(:-internal-list-box):not([multiple]) option {
+    /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
+     * https://github.com/openui/open-ui/issues/1026
+     * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
+    /* TODO(crbug.com/1511354): This might be able to be combined with the
+     * default select option rules at some point. This should be re-evaluted
+     * before CustomizableSelect is shipped. */
+    min-inline-size: 24px;
+    min-block-size: max(24px, 1lh);
+    font-weight: -internal-auto-base(normal, inherit);
+    padding-inline: -internal-auto-base(2px, 0.5em);
+    padding-block-end: -internal-auto-base(1px, 0);
+    display: -internal-auto-base(block, flex);
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  select:not(:-internal-list-box):not([multiple]) option:enabled:hover {
+    background-color: color-mix(in lab, currentColor 10%, transparent);
+  }
+  select:not(:-internal-list-box):not([multiple]) option:enabled:active {
+    background-color: color-mix(in lab, currentColor 20%, transparent);
+  }
+  select:not(:-internal-list-box):not([multiple]) option:disabled {
+    color: -internal-auto-base(inherit, color-mix(in lab, currentColor 50%, transparent));
+  }
+
+
+  select:not(:-internal-list-box):not([multiple]) option::checkmark {
+    content: '\2713' / '';
+  }
+  select option:not(:checked)::checkmark {
+    visibility: hidden;
+  }
+
+  select:-internal-autofill-selected,
+  select::-internal-select-autofill-preview[popover] {
+    background-image: none;
+    background-color: light-dark(#E8F0FE, rgba(70, 90, 126, 0.4));
+    color: FieldText;
+  }
+  select::-internal-select-autofill-preview[popover]:popover-open {
+    display: grid;
+    align-items: center;
+    position-area: center;
+    height: calc(anchor-size(height) - 2px);
+    width: calc(anchor-size(width) - 2px);
+    margin: 0;
+    padding: 0;
+    border: 1px solid black;
+  }
+  select::-internal-select-autofill-preview-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  select:not(:-internal-list-box):not([multiple])::picker-icon {
+    content: -internal-auto-base(none, counter(fake-counter-name, disclosure-open));
+    /* We don't have to use -internal-auto-base() here because
+     * the pseudo-element won't get generated unless the content property is set. */
+    display: block;
+    margin-inline-start: auto;
+  }
+
+  /* This can be merged with the :-internal-list-box rule in html.css */
+  select:not(:-internal-list-box):not([multiple]) optgroup option {
+    padding-inline-start: -internal-auto-base(20px, 0.5em);
+    font-weight: normal;
+  }
+
+  select:not(:-internal-list-box):not([multiple]) optgroup::-internal-optgroup-label {
+    padding-inline: -internal-auto-base(2px, 0.5em);
+    padding-block: -internal-auto-base(0 1px, 0);
+    min-height: -internal-auto-base(1.2em, 0);
+  }
+
+  select:not(:-internal-list-box):not([multiple]) optgroup legend {
+    padding-inline: -internal-auto-base(2px, 0.5em);
+    min-block-size: -internal-auto-base(initial, 1lh);
+  }
+
+  /* These style rules switch whether <option> elements render their label text
+   * via ::-internal-option-label-container or all of their children via a
+   * <slot> called ::-internal-option-slot. Using the <slot> for rendering is
+   * only supported for customizable select when the option does not have a
+   * label attribute. In all other cases, just the label text is rendered via
+   * ::-internal-option-label-container. */
+  /* TODO(crbug.com/393500003): Some :-internal-list-box and multiple checks
+   * here could be removed if we make -internal-auto-base() work better. */
+  option::-internal-option-label-container {
+    display: contents;
+  }
+  option::-internal-option-slot {
+    display: none;
+  }
+  select:not(:-internal-list-box):not([multiple]) option::-internal-option-label-container {
+    display: none;
+  }
+  select:not(:-internal-list-box):not([multiple]) option::-internal-option-slot {
+    display: contents;
+  }
+  /* Render the label attribute when it is set. This should be kept in sync
+   * with the logic in HTMLOptionElement::DisplayLabel. */
+  select:not(:-internal-list-box):not([multiple])
+  option[label]:not([label=""])::-internal-option-label-container {
+    display: contents;
+  }
+  select:not(:-internal-list-box):not([multiple])
+  option[label]:not([label=""])::-internal-option-slot {
+    display: none;
+  }
+}

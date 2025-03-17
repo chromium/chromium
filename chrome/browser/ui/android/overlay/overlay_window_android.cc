@@ -170,12 +170,22 @@ void OverlayWindowAndroid::OnDetachCompositor() {
 }
 
 void OverlayWindowAndroid::OnActivityStopped() {
-  Destroy(nullptr);
+  if (java_ref_.is_uninitialized()) {
+    return;
+  }
+
+  // If the activity stops, pretend that somebody pressed the close button.
+  // This will notify the java side to forget about us, and clean up.
+  Close();
+  // `this` may be destroyed.
 }
 
-void OverlayWindowAndroid::Destroy(JNIEnv* env) {
+void OverlayWindowAndroid::DestroyStartedByJava(JNIEnv* env) {
   // Note that the java side also clears its native ptr when calling us, so it's
   // okay that we don't notify it in the dtor.
+  // ** IMPORTANT ** Do not add calls here unless the above statement continues
+  // to be true.  It's unlikely that anything on the native side should call
+  // this method directly.
   java_ref_.reset();
 
   // Stop the timer for completeness, though resetting `java_ref_` will make it
@@ -264,6 +274,7 @@ void OverlayWindowAndroid::OnBackToTab(JNIEnv* env) {
 void OverlayWindowAndroid::Close() {
   CloseInternal();
   controller_->OnWindowDestroyed(/*should_pause_video=*/true);
+  // `this` may be destroyed.
 }
 
 void OverlayWindowAndroid::Hide() {
@@ -282,6 +293,8 @@ void OverlayWindowAndroid::CloseInternal() {
   window_android_ = nullptr;
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_close(env, java_ref_.get(env));
+  // The java side forgets about us on close, so don't call back.
+  java_ref_.reset();
 
   // Stop any in-flight action button updates.  We won't find out if the Android
   // window is destroyed since that comes from `WindowAndroidObserver` but we

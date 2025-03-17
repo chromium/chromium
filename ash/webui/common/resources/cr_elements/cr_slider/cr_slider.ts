@@ -41,7 +41,7 @@ function getAriaValue(tick: SliderTick|number): number {
   }
 
   const sliderTick = tick as SliderTick;
-  return sliderTick.ariaValue !== undefined ? sliderTick.ariaValue! :
+  return sliderTick.ariaValue !== undefined ? sliderTick.ariaValue :
                                               sliderTick.value;
 }
 
@@ -424,14 +424,14 @@ export class CrSliderElement extends CrSliderElementBase {
     const value = this.value;
     if (ticks && ticks.length > 0 && Number.isInteger(value) && value >= 0 &&
         value < ticks.length) {
-      const tick = ticks[this.value]!;
+      const tick = ticks[this.value];
       this.label_ = Number.isFinite(tick) ? '' : (tick as SliderTick).label;
       const ariaValueNow = getAriaValue(tick);
       this.setAttribute('aria-valuetext', String(this.label_ || ariaValueNow));
       this.setAttribute('aria-valuenow', ariaValueNow.toString());
-      this.setAttribute('aria-valuemin', getAriaValue(ticks[0]!).toString());
+      this.setAttribute('aria-valuemin', getAriaValue(ticks[0]).toString());
       this.setAttribute(
-          'aria-valuemax', getAriaValue(ticks.slice(-1)[0]!).toString());
+          'aria-valuemax', getAriaValue(ticks.slice(-1)[0]).toString());
     } else {
       this.setAttribute(
           'aria-valuetext', value !== undefined ? value.toString() : '');

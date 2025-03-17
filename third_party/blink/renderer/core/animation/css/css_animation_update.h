@@ -304,6 +304,12 @@ class CORE_EXPORT CSSAnimationUpdate final {
     return active_interpolations_for_transitions_;
   }
 
+  bool HasActiveInterpolationsForProperty(
+      const PropertyHandle& property) const {
+    return active_interpolations_for_animations_.Contains(property) ||
+           active_interpolations_for_transitions_.Contains(property);
+  }
+
   bool IsEmpty() const { return !HasUpdates() && !HasActiveInterpolations(); }
 
   bool HasUpdates() const {

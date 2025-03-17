@@ -4,10 +4,12 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/policy_constants.h"
-#import "components/search_engines/prepopulated_engines.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_test_case_base.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -17,8 +19,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -26,6 +26,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 // Tests first run stages with search engine choice
@@ -44,6 +45,10 @@
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
   config.additional_args.push_back("true");
+  config.additional_args.push_back(
+      "--disable-features=UpdatedFirstRunSequence");
+  config.additional_args.push_back(
+      "--disable-features=AnimatedDefaultBrowserPromoInFRE");
   return config;
 }
 
@@ -68,7 +73,7 @@
 - (void)testSearchEngineChoiceScreenSelectThenScroll {
   // Skip sign-in.
   [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+             chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -110,7 +115,7 @@
 - (void)testSearchEngineChoiceScreenScrollThenSelect {
   // Skip sign-in.
   [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+             chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -166,7 +171,7 @@
                                  policy::key::kDefaultSearchProviderEnabled);
   // Skip sign-in.
   [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+             chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -199,27 +204,23 @@
   NSString* const eventHistogram =
       @(search_engines::kSearchEngineChoiceScreenEventsHistogram);
   // Skip sign-in.
-  GREYAssertNil([MetricsAppInterface expectTotalCount:0
-                                         forHistogram:eventHistogram],
-                @"Failed to record event histogram");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectTotalCount:0 forHistogram:eventHistogram]);
   [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+             chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Check that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
-  GREYAssertNil([MetricsAppInterface expectTotalCount:1
-                                         forHistogram:eventHistogram],
-                @"Failed to record event histogram");
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:static_cast<int>(
-                           search_engines::SearchEngineChoiceScreenEvents::
-                               kFreChoiceScreenWasDisplayed)
-          forHistogram:eventHistogram],
-      @"Failed to record event histogram");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectTotalCount:1 forHistogram:eventHistogram]);
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       search_engines::SearchEngineChoiceScreenEvents::
+                           kFreChoiceScreenWasDisplayed)
+      forHistogram:eventHistogram]);
   // Scroll down and open the Learn More dialog.
   id<GREYMatcher> learnMoreLinkMatcher = grey_allOf(
       grey_accessibilityLabel(@"Learn more"), grey_sufficientlyVisible(), nil);
@@ -231,17 +232,14 @@
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       grey_accessibilityID(
                           kSearchEngineChoiceLearnMoreAccessibilityIdentifier)];
-  GREYAssertNil([MetricsAppInterface expectTotalCount:2
-                                         forHistogram:eventHistogram],
-                @"Failed to record event histogram");
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:static_cast<int>(
-                           search_engines::SearchEngineChoiceScreenEvents::
-                               kFreLearnMoreWasDisplayed)
-          forHistogram:eventHistogram],
-      @"Failed to record event histogram");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectTotalCount:2 forHistogram:eventHistogram]);
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       search_engines::SearchEngineChoiceScreenEvents::
+                           kFreLearnMoreWasDisplayed)
+      forHistogram:eventHistogram]);
   // Close the Learn More dialog.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
@@ -259,17 +257,14 @@
   [[[EarlGrey selectElementWithMatcher:continueButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
-  GREYAssertNil([MetricsAppInterface expectTotalCount:3
-                                         forHistogram:eventHistogram],
-                @"Failed to record event histogram");
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:static_cast<int>(
-                           search_engines::SearchEngineChoiceScreenEvents::
-                               kFreDefaultWasSet)
-          forHistogram:eventHistogram],
-      @"Failed to record event histogram");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectTotalCount:3 forHistogram:eventHistogram]);
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       search_engines::SearchEngineChoiceScreenEvents::
+                           kFreDefaultWasSet)
+      forHistogram:eventHistogram]);
   [[self class] dismissDefaultBrowser];
 }
 
@@ -289,8 +284,8 @@
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninWithPolicy];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];

@@ -28,6 +28,12 @@ class MockPaymentManifestWebDataService : public PaymentManifestWebDataService {
                std::vector<uint8_t> browser_bound_key_id,
                WebDataServiceConsumer* consumer),
               (override));
+  MOCK_METHOD(WebDataServiceBase::Handle,
+              GetBrowserBoundKey,
+              (std::vector<uint8_t> credential_id,
+               std::string relying_party_id,
+               WebDataServiceConsumer* consumer),
+              (override));
 
  protected:
   ~MockPaymentManifestWebDataService() override;

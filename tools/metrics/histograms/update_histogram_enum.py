@@ -7,17 +7,17 @@
 If the file was pretty-printed, the updated version is pretty-printed too.
 """
 
+import enum
 import io
 import logging
 import os
 import re
 import sys
-
 from xml.dom import minidom
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import path_util
 import histogram_configuration_model
+import path_util
 
 
 class UserError(Exception):
@@ -137,80 +137,109 @@ def _CreateEnumItemNode(document, value, label):
   return item_node
 
 
-def _UpdateHistogramDefinitions(histogram_enum_name, source_enum_values,
-                                source_enum_path, caller_script_name, document):
-  """Updates the enum node named |histogram_enum_name| based on the definition
-  stored in |source_enum_values|. Existing items for which |source_enum_values|
-  doesn't contain any corresponding data will be preserved. |source_enum_path|
-  and |caller_script_name| will be used to insert a comment.
+def _CreateVariantItemNode(document, label):
+  """Creates an int element to append to an enum."""
+  item_node = document.createElement('variant')
+  item_node.attributes['name'] = label
+  return item_node
+
+
+def _UpdateHistogramDefinitions(node_name, input_list_values, input_list_path,
+                                caller_script_name, document, update_comment):
+  """Updates the node named |node_name| based on the definition.
+
+  Definition should be stored in |input_list_values|. Existing items for which
+  |input_list_values| doesn't contain any corresponding data will be preserved.
+  |input_list_path| and |caller_script_name| will be used to insert a comment
+  unless |update_comment| is set to False (comment is not inserted where
+  expected for variants).
   """
-  # Get a dom of <enum name=|histogram_enum_name| ...> node in |document|.
+
+  class _XmlType(enum.Enum):
+    NONE = 0
+    ENUM = 1
+    VARIANT = 2
+
+  found = _XmlType.NONE
+  # Get a dom of <enum name=|node_name| ...> node in |document|.
   for enum_node in document.getElementsByTagName('enum'):
-    if enum_node.attributes['name'].value == histogram_enum_name:
+    if enum_node.attributes['name'].value == node_name:
+      found = _XmlType.ENUM
+      updated_node = enum_node
       break
-  else:
-    raise UserError('No {0} enum node found'.format(histogram_enum_name))
+  # Otherwise, get a dom of <variants name=|node_name|> node.
+  if found == _XmlType.NONE:
+    for variants_node in document.getElementsByTagName('variants'):
+      if variants_node.attributes['name'].value == node_name:
+        found = _XmlType.VARIANT
+        updated_node = variants_node
+        break
+  if found == _XmlType.NONE:
+    raise UserError('No {0} enum node found'.format(node_name))
 
   new_item_nodes = {}
   new_comments = []
 
   # Add a "Generated from (...)" comment.
-  new_comments.append(
-      document.createComment(
-          ' Generated from {0}.'.format(source_enum_path).replace('\\', '/') +
-          ('\nCalled by {0}.'.format(caller_script_name
-                                     ) if caller_script_name else '')))
+  if update_comment:
+    new_comments.append(
+        document.createComment(
+            ' Generated from {0}.'.format(input_list_path).replace('\\', '/') +
+            ('\nCalled by {0}.'.format(caller_script_name
+                                       ) if caller_script_name else '')))
 
   # Create item nodes for each of the enum values.
-  for value, label in source_enum_values.items():
-    new_item_nodes[value] = _CreateEnumItemNode(document, value, label)
+  for value, label in input_list_values.items():
+    if found == _XmlType.ENUM:
+      new_item_nodes[value] = _CreateEnumItemNode(document, value, label)
+    elif found == _XmlType.VARIANT:
+      new_item_nodes[value] = _CreateVariantItemNode(document, label)
 
-  # Scan existing nodes in |enum_node| for old values and preserve them.
+  # Scan existing nodes in |updated_node| for old values and preserve them.
   # - Preserve comments other than the 'Generated from' comment. NOTE:
   #   this does not preserve the order of the comments in relation to the
   #   old values.
   # - Drop anything else.
   SOURCE_COMMENT_REGEX = re.compile('^ Generated from ')
-  for child in enum_node.childNodes:
+  for child in updated_node.childNodes:
     if child.nodeName == 'int':
       value = int(child.attributes['value'].value)
-      if value not in source_enum_values:
+      if value not in input_list_values:
         new_item_nodes[value] = child
     # Preserve existing non-generated comments.
     elif (child.nodeType == minidom.Node.COMMENT_NODE and
           SOURCE_COMMENT_REGEX.match(child.data) is None):
       new_comments.append(child)
 
-  # Update |enum_node|. First, remove everything existing.
-  while enum_node.hasChildNodes():
-    enum_node.removeChild(enum_node.lastChild)
+  # Update |updated_node|. First, remove everything existing.
+  while updated_node.hasChildNodes():
+    updated_node.removeChild(updated_node.lastChild)
 
   # Add comments at the top.
   for comment in new_comments:
-    enum_node.appendChild(comment)
+    updated_node.appendChild(comment)
 
   # Add in the new enums.
   for value in sorted(new_item_nodes.keys()):
-    enum_node.appendChild(new_item_nodes[value])
+    updated_node.appendChild(new_item_nodes[value])
 
 
-def _GetOldAndUpdatedXml(enums_xml_path, histogram_enum_name,
-                         source_enum_values, source_enum_path,
-                         caller_script_name):
-  """Reads old histogram from |histogram_enum_name| from |enums_xml_path|, and
-  calculates new histogram from |source_enum_values| from |source_enum_path|,
+def _GetOldAndUpdatedXml(xml_path, node_name, input_list_values,
+                         input_list_path, caller_script_name, update_comment):
+  """Reads old histogram from |node_name| from |xml_path|, and
+  calculates new histogram from |input_list_values| from |input_list_path|,
   and returns both in XML format.
   """
-  Log('Reading existing histograms from "{0}".'.format(enums_xml_path))
-  with io.open(enums_xml_path, 'r', encoding='utf-8') as f:
+  Log('Reading existing histograms from "{0}".'.format(xml_path))
+  with io.open(xml_path, 'r', encoding='utf-8') as f:
     histograms_doc = minidom.parse(f)
     f.seek(0)
     xml = f.read()
 
   Log('Comparing histograms enum with new enum definition.')
-  _UpdateHistogramDefinitions(histogram_enum_name, source_enum_values,
-                              source_enum_path, caller_script_name,
-                              histograms_doc)
+  _UpdateHistogramDefinitions(node_name, input_list_values, input_list_path,
+                              caller_script_name, histograms_doc,
+                              update_comment)
 
   new_xml = histogram_configuration_model.PrettifyTree(histograms_doc)
   return (xml, new_xml)
@@ -270,8 +299,11 @@ def CheckPresubmitErrors(enums_xml_path,
              duplicated_labels.second_value))
 
   (xml, new_xml) = _GetOldAndUpdatedXml(path_util.GetInputFile(enums_xml_path),
-                                        histogram_enum_name, source_enum_values,
-                                        source_enum_path, update_script_name)
+                                        histogram_enum_name,
+                                        source_enum_values,
+                                        source_enum_path,
+                                        update_script_name,
+                                        update_comment=True)
   if xml != new_xml:
     return ('%s enum has been updated and the UMA mapping needs to be '
             'regenerated. Please run %s in src/tools/metrics/histograms/ to '
@@ -280,28 +312,38 @@ def CheckPresubmitErrors(enums_xml_path,
   return None
 
 
-def UpdateHistogramFromDict(enums_xml_path, histogram_enum_name,
-                            source_enum_values, source_enum_path,
-                            caller_script_name):
-  """Updates an enums.xml file with values from a {value: 'key'} dictionary.
+def UpdateHistogramFromDict(xml_path,
+                            node_name,
+                            input_list_values,
+                            input_list_path,
+                            caller_script_name,
+                            update_comment=True):
+  """Updates an xml file with values from a {value: 'key'} dictionary.
 
-  A comment is added to enums.xml citing that the values in
-  |histogram_enum_name| were sourced from |source_enum_path|, requested by
-  |caller_script_name|.
+  A comment is added to the enums.xml or histograms.xml file citing that the
+  values in the <enum> or <variants> node with name=|node_name| were sourced
+  from |input_list_path|, requested by |caller_script_name| (if update_comment
+  was set to True).
 
   Args:
-      enums_xml_path: Src-relative path to the enums.xml file to update.
-      histogram_enum_name: The name of the XML <enum> attribute to update.
-      source_enum_values: The {value: 'key'} dictionary containing enum values.
-      source_enum_path: A unix-style path, relative to src/, giving
-          the C++ header file from which to read the enum.
+      xml_path: Src-relative path to the enums.xml / histograms.xml file to
+          update.
+      node_name: The name of the XML <enum> or <variants> node to update.
+      input_list_values: The {value: 'key'} dictionary containing the input
+          list.
+      input_list_path: A unix-style path, relative to src/, giving
+          the C++ header file from which to read the input list.
       caller_script_name: Name of the calling script.
+      update_comment: Should the "Generated from" comment be added / updated. If
+          false, the user is responsible for making sure it's documented.
+          Necessary as the comment is not updated as expected for
+          histograms.xml.
   """
-  enums_xml_path = path_util.GetInputFile(enums_xml_path)
-  (xml, new_xml) = _GetOldAndUpdatedXml(enums_xml_path, histogram_enum_name,
-                                        source_enum_values, source_enum_path,
-                                        caller_script_name)
-  with io.open(enums_xml_path, 'w', encoding='utf-8', newline='') as f:
+  xml_path = path_util.GetInputFile(xml_path)
+  (xml, new_xml) = _GetOldAndUpdatedXml(xml_path, node_name, input_list_values,
+                                        input_list_path, caller_script_name,
+                                        update_comment)
+  with io.open(xml_path, 'w', encoding='utf-8', newline='') as f:
     f.write(new_xml)
 
   Log('Done.')

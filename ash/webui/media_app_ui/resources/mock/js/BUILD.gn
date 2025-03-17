@@ -6,7 +6,7 @@ import("//ash/webui/media_app_ui/media_app_files.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 
-assert(is_chromeos_ash, "Media App is ash-chrome only")
+assert(is_chromeos, "Media App is ChromeOS only")
 
 # Copy all the required files for TSC to this directory.
 mock_ts_root_dir = "$target_gen_dir/stage_ts"

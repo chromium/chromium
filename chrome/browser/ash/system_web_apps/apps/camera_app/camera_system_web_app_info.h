@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
@@ -29,12 +29,5 @@ class CameraSystemAppDelegate : public ash::SystemWebAppDelegate {
   base::FilePath GetLaunchDirectory(
       const apps::AppLaunchParams& params) const override;
 };
-
-// Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForCameraSystemWebApp();
-
-// Returns the default bounds.
-gfx::Rect GetDefaultBoundsForCameraApp(Browser*);
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_CAMERA_APP_CAMERA_SYSTEM_WEB_APP_INFO_H_

@@ -16,32 +16,33 @@ import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.
 import 'chrome://resources/ash/common/cr_elements/cr_icons.css.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {CrIconButtonElement} from '//resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrIconButtonElement} from '//resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import * as constants from './constants.js';
-import {EmojiGroupComponent} from './emoji_group.js';
+import type {EmojiGroupComponent} from './emoji_group.js';
 import {Category, Feature} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
-import {EmojiSearch} from './emoji_search.js';
+import type {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
 import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX, TABS_CATEGORY_START_INDEX_GIF_SUPPORT} from './metadata_extension.js';
 import {EmojiPreferencesStore, GifNudgeHistoryStore, RecentlyUsedStore} from './store.js';
 import {Status} from './tenor_types.mojom-webui.js';
-import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, Gender, GifSubcategoryData, PreferenceMapping, SubcategoryData, Tone} from './types.js';
+import type {Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, GifSubcategoryData, PreferenceMapping, SubcategoryData} from './types.js';
+import {CategoryEnum, Gender, Tone} from './types.js';
 
 export interface EmojiPickerApp {
   $: {
     'left-chevron': CrIconButtonElement,
-    'list-container': HTMLDivElement,
+    'list-container': HTMLElement,
     'right-chevron': CrIconButtonElement,
     'search-container': EmojiSearch,
-    bar: HTMLDivElement,
-    dummyTab: HTMLDivElement,
-    groups: HTMLDivElement,
-    message: HTMLDivElement,
-    tabs: HTMLDivElement,
+    bar: HTMLElement,
+    dummyTab: HTMLElement,
+    groups: HTMLElement,
+    message: HTMLElement,
+    tabs: HTMLElement,
   };
 }
 
@@ -318,7 +319,7 @@ export class EmojiPickerApp extends PolymerElement {
     // Update UI and relevant features based on the initial data.
     this.updateCategoryData(
         // If we don't have 1 data URL, a crash probably isn't a bad idea
-        initialData, dataUrls[0]!.category, dataUrls[0]!.categoryLastPartition,
+        initialData, dataUrls[0].category, dataUrls[0].categoryLastPartition,
         false);
 
     // Show the UI after the initial data is rendered.
@@ -662,7 +663,7 @@ export class EmojiPickerApp extends PolymerElement {
     this.insertVisualContent(category, ev.detail);
   }
 
-  private async insertText(category: CategoryEnum, item: events.TextItem) {
+  private insertText(category: CategoryEnum, item: events.TextItem) {
     const {text, isVariant} = item;
     this.$.message.textContent = text + ' inserted.';
 

@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -65,7 +64,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteMediator.EditSessionState;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFactoryImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxAnswerAction;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
@@ -303,8 +301,8 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(null, null), /* isFinal= */ true);
 
-        Assert.assertEquals(0, mSuggestionModels.size());
-        Assert.assertFalse(mListModel.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE));
+        assertEquals(0, mSuggestionModels.size());
+        assertFalse(mListModel.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE));
     }
 
     @Test
@@ -318,8 +316,8 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(null, null), /* isFinal= */ true);
 
-        Assert.assertEquals(0, mSuggestionModels.size());
-        Assert.assertFalse(mListModel.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE));
+        assertEquals(0, mSuggestionModels.size());
+        assertFalse(mListModel.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE));
     }
 
     @Test
@@ -417,9 +415,8 @@ public class AutocompleteMediatorUnitTest {
     @Config(sdk = VERSION_CODES.R)
     public void onOmniboxSessionStateChange_startsAnimationDriver() {
         mListModel.set(SuggestionListProperties.ALPHA, 1.0f);
-        ImeSyncedSuggestionsListAnimationDriver animationDriver =
-                (ImeSyncedSuggestionsListAnimationDriver)
-                        mMediator.initializeAnimationDriver(mWindow);
+        var animationDriver =
+                (ImeSyncedSuggestionsListAnimationDriver) mMediator.getAnimationDriverForTesting();
         mMediator.onNativeInitialized();
 
         // Animation shouldn't run if IME insets are not yet controllable.
@@ -819,9 +816,9 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), /* isFinal= */ true);
-        Assert.assertEquals(mSuggestionsList.size(), mSuggestionModels.size());
+        assertEquals(mSuggestionsList.size(), mSuggestionModels.size());
         for (int i = 0; i < mSuggestionModels.size(); i++) {
-            Assert.assertEquals(
+            assertEquals(
                     i + "th model does not have the expected layout direction.",
                     View.LAYOUT_DIRECTION_RTL,
                     mSuggestionModels
@@ -839,11 +836,11 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), /* isFinal= */ true);
-        Assert.assertEquals(mSuggestionsList.size(), mSuggestionModels.size());
+        assertEquals(mSuggestionsList.size(), mSuggestionModels.size());
 
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         for (int i = 0; i < mSuggestionModels.size(); i++) {
-            Assert.assertEquals(
+            assertEquals(
                     i + "th model does not have the expected layout direction.",
                     View.LAYOUT_DIRECTION_RTL,
                     mSuggestionModels
@@ -854,7 +851,7 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         for (int i = 0; i < mSuggestionModels.size(); i++) {
-            Assert.assertEquals(
+            assertEquals(
                     i + "th model does not have the expected layout direction.",
                     View.LAYOUT_DIRECTION_LTR,
                     mSuggestionModels
@@ -942,18 +939,17 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void onTextChanged_editSessionActivatedByUserInput() {
+    public void onOmniboxSessionStateChange_trackSessionState() {
         mMediator.setAutocompleteProfile(mProfile);
-
         mMediator.onNativeInitialized();
+
+        assertFalse(mMediator.isOmniboxSessionActiveForTesting());
+
         mMediator.onOmniboxSessionStateChange(true);
-        Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
-        mMediator.onTextChanged("n", /* isOnFocusContext= */ false);
-        Assert.assertEquals(
-                mMediator.getEditSessionStateForTest(), EditSessionState.ACTIVATED_BY_USER_INPUT);
+        assertTrue(mMediator.isOmniboxSessionActiveForTesting());
 
         mMediator.onOmniboxSessionStateChange(false);
-        Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
+        assertFalse(mMediator.isOmniboxSessionActiveForTesting());
     }
 
     @Test
@@ -963,7 +959,7 @@ public class AutocompleteMediatorUnitTest {
 
         // There is no Tab to switch to.
         doReturn(null).when(mAutocompleteController).getMatchingTabForSuggestion(any());
-        Assert.assertFalse(mMediator.maybeSwitchToTab(null));
+        assertFalse(mMediator.maybeSwitchToTab(null));
     }
 
     @Test
@@ -973,7 +969,7 @@ public class AutocompleteMediatorUnitTest {
 
         // We have a tab, but no tab manager.
         doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(any());
-        Assert.assertFalse(mMediator.maybeSwitchToTab(null));
+        assertFalse(mMediator.maybeSwitchToTab(null));
     }
 
     @Test
@@ -986,7 +982,7 @@ public class AutocompleteMediatorUnitTest {
         mTabWindowManagerSupplier.set(mTabManager);
         doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
         doReturn(ActivityState.STOPPED).when(mMockWindowAndroid).getActivityState();
-        Assert.assertTrue(mMediator.maybeSwitchToTab(null));
+        assertTrue(mMediator.maybeSwitchToTab(null));
     }
 
     @Test
@@ -1002,7 +998,7 @@ public class AutocompleteMediatorUnitTest {
         doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
         doReturn(ActivityState.RESUMED).when(mMockWindowAndroid).getActivityState();
         doReturn(null).when(mTabManager).getTabModelForTab(any());
-        Assert.assertFalse(mMediator.maybeSwitchToTab(null));
+        assertFalse(mMediator.maybeSwitchToTab(null));
     }
 
     @Test
@@ -1020,9 +1016,9 @@ public class AutocompleteMediatorUnitTest {
         doReturn(mTabModel).when(mTabManager).getTabModelForTab(any());
 
         // Make sure that this indeed returns no association.
-        Assert.assertEquals(
+        assertEquals(
                 TabModel.INVALID_TAB_INDEX, TabModelUtils.getTabIndexById(mTabModel, mTab.getId()));
-        Assert.assertFalse(mMediator.maybeSwitchToTab(null));
+        assertFalse(mMediator.maybeSwitchToTab(null));
     }
 
     @Test
@@ -1039,7 +1035,7 @@ public class AutocompleteMediatorUnitTest {
         doReturn(mTabModel).when(mTabManager).getTabModelForTab(any());
         doReturn(1).when(mTabModel).getCount();
         doReturn(mTab).when(mTabModel).getTabAt(anyInt());
-        Assert.assertTrue(mMediator.maybeSwitchToTab(null));
+        assertTrue(mMediator.maybeSwitchToTab(null));
     }
 
     /**
@@ -1059,17 +1055,17 @@ public class AutocompleteMediatorUnitTest {
             @Nullable Integer firstHistogramTime,
             int lastHistogramTotalCount,
             @Nullable Integer lastHistogramTime) {
-        Assert.assertEquals(
+        assertEquals(
                 firstHistogramTotalCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST));
-        Assert.assertEquals(
+        assertEquals(
                 lastHistogramTotalCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST));
 
         if (firstHistogramTime != null) {
-            Assert.assertEquals(
+            assertEquals(
                     1,
                     RecordHistogram.getHistogramValueCountForTesting(
                             OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST,
@@ -1077,7 +1073,7 @@ public class AutocompleteMediatorUnitTest {
         }
 
         if (lastHistogramTime != null) {
-            Assert.assertEquals(
+            assertEquals(
                     1,
                     RecordHistogram.getHistogramValueCountForTesting(
                             OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST,
@@ -1394,7 +1390,7 @@ public class AutocompleteMediatorUnitTest {
         // Triggeer one touch down event the maximum allowed. The extra event should not be sent to
         // native.
         int numTouchDownEvents = OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION + 1;
-        Assert.assertTrue(numTouchDownEvents < mSuggestionsList.size());
+        assertTrue(numTouchDownEvents < mSuggestionsList.size());
         for (int i = 0; i < numTouchDownEvents; i++) {
             mMediator.onSuggestionTouchDown(mSuggestionsList.get(i), i);
         }
@@ -1429,8 +1425,10 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onTopResumedActivityChanged_toNonActive() {
+        mMediator.setAutocompleteProfile(mProfile);
+        mMediator.onNativeInitialized();
+
         mMediator.onTopResumedActivityChanged(false);
-        Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
         verify(mAutocompleteDelegate, times(1)).clearOmniboxFocus();
     }
 
@@ -1561,16 +1559,15 @@ public class AutocompleteMediatorUnitTest {
         verify(mVisualStateObserver)
                 .onOmniboxSuggestionsBackgroundColorChanged(
                         eq(
-                                OmniboxResourceProvider
-                                        .getSuggestionsDropdownStandardBackgroundColor(mActivity)));
+                                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
+                                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME)));
 
         mMediator.updateVisualsForState(BrandedColorScheme.INCOGNITO);
         verify(mVisualStateObserver)
                 .onOmniboxSuggestionsBackgroundColorChanged(
                         eq(
-                                OmniboxResourceProvider
-                                        .getSuggestionsDropdownIncognitoBackgroundColor(
-                                                mActivity)));
+                                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
+                                        mActivity, BrandedColorScheme.INCOGNITO)));
     }
 
     @Test

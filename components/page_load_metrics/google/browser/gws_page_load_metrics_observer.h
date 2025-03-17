@@ -139,6 +139,7 @@ class GWSPageLoadMetricsObserver
   virtual bool IsFromNewTabPage(
       content::NavigationHandle* navigation_handle) = 0;
   virtual bool IsBrowserStartupComplete() = 0;
+  virtual bool IsIncognitoProfile() const = 0;
   std::string AddHistogramSuffix(const std::string& histogram_name);
 
   void MaybeRecordUnexpectedHeaders(
@@ -148,7 +149,6 @@ class GWSPageLoadMetricsObserver
 
   bool is_first_navigation_ = false;
   bool was_cached_ = false;
-  bool is_safesites_filter_enabled_ = false;
 
   NavigationSourceType source_type_ = kUnknown;
 

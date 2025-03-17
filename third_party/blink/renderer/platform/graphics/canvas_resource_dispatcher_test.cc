@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_embedded_frame_sink_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
@@ -55,12 +56,13 @@ class MockCanvasResourceDispatcherClient
 
 class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
  public:
-  MockCanvasResourceDispatcher()
+  explicit MockCanvasResourceDispatcher(
+      scoped_refptr<base::SingleThreadTaskRunner>
+          agent_group_scheduler_compositor_task_runner)
       : CanvasResourceDispatcher(
             &client_,
             /*task_runner=*/scheduler::GetSingleThreadTaskRunnerForTesting(),
-            /*agent_group_scheduler_compositor_task_runner=*/
-            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            agent_group_scheduler_compositor_task_runner,
             kClientId,
             kSinkId,
             /*placeholder_canvas_id=*/0,
@@ -117,16 +119,21 @@ class CanvasResourceDispatcherTest
  protected:
   CanvasResourceDispatcherTest() = default;
 
-  void CreateCanvasResourceDispatcher() {
+  void CreateCanvasResourceDispatcher(
+      scoped_refptr<base::SingleThreadTaskRunner>
+          agent_group_scheduler_compositor_task_runner =
+              scheduler::GetSingleThreadTaskRunnerForTesting()) {
     test_web_shared_image_interface_provider_ =
         TestWebGraphicsSharedImageInterfaceProvider::Create();
 
-    dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>();
-    resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
-        gfx::Size(kWidth, kHeight), kN32_SkColorType, kPremul_SkAlphaType,
-        SkColorSpace::MakeSRGB(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear,
-        test_web_shared_image_interface_provider_.get());
+    dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>(
+        agent_group_scheduler_compositor_task_runner);
+    resource_provider_ =
+        CanvasResourceProvider::CreateSoftwareSharedImageProvider(
+            gfx::Size(kWidth, kHeight), GetN32FormatForCanvas(),
+            kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
+            CanvasResourceProvider::ShouldInitialize::kCallClear,
+            test_web_shared_image_interface_provider_.get());
   }
 
   MockCanvasResourceDispatcher* Dispatcher() { return dispatcher_.get(); }
@@ -187,6 +194,17 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderRunsNormally) {
   // Reclaim third frame
   reclaim_resource_id = NextId(reclaim_resource_id);
   Dispatcher()->ReclaimResource(reclaim_resource_id, std::move(frame3));
+  EXPECT_EQ(0u, GetNumUnreclaimedFramesPosted());
+}
+
+TEST_F(CanvasResourceDispatcherTest,
+       AgentGroupSchedulerCompositorTaskRunnerIsNull) {
+  CreateCanvasResourceDispatcher(nullptr);
+
+  // When agent_group_scheduler_compositor_task_runner is null,
+  // PostImageToPlaceholder should not be called.
+  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, _)).Times(0);
+  auto frame1 = DispatchOneFrame();
   EXPECT_EQ(0u, GetNumUnreclaimedFramesPosted());
 }
 
@@ -366,7 +384,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
               CreateCompositorFrameSink_(viz::FrameSinkId(kClientId, kSinkId)));
   platform->RunUntilIdle();
 
-  auto canvas_resource = CanvasResourceSharedBitmap::Create(
+  auto canvas_resource = CanvasResourceSharedImage::CreateSoftware(
       GetSize(), viz::SinglePlaneFormat::kRGBA_8888, kPremul_SkAlphaType,
       gfx::ColorSpace::CreateSRGB(),
       /*provider=*/nullptr, shared_image_interface_provider());
@@ -410,7 +428,8 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
             EXPECT_EQ(texture_quad->uv_top_left, gfx::PointF(0.0f, 0.0f));
             EXPECT_EQ(texture_quad->uv_bottom_right, gfx::PointF(1.0f, 1.0f));
 
-            // CanvasResourceSharedBitmap origin is top-left.
+            // CanvasResourceSharedImage::CreateSoftware() creates a resource
+            // whose origin is top-left.
             EXPECT_EQ(frame->resource_list.front().origin,
                       kTopLeft_GrSurfaceOrigin);
           })));

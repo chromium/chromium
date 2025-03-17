@@ -940,15 +940,15 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     // we use the peak, because it exists for variable bitrates.
     bitrate_bps = bitrate.peak_bps();
     DCHECK_NE(bitrate.peak_bps(), 0u);
-    base::CheckedNumeric<uint32_t> checked_percentage =
-        base::CheckDiv(base::CheckMul<uint32_t>(bitrate.target_bps(), 100u),
+    base::CheckedNumeric<uint64_t> checked_percentage =
+        base::CheckDiv(base::CheckMul<uint64_t>(bitrate.target_bps(), 100u),
                        bitrate.peak_bps());
     if (!checked_percentage.AssignIfValid(&target_percentage)) {
       DVLOGF(1)
           << "Integer overflow while computing target percentage for bitrate.";
       return false;
     }
-    target_percentage = checked_percentage.ValueOrDefault(100u);
+    DVLOGF(3) << "Target percentage: " << target_percentage;
   }
   VAEncSequenceParameterBufferH264 seq_param = {};
 
@@ -1106,7 +1106,7 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
                           &packed_slice_param_buffer});
     va_buffers.push_back({VAEncPackedHeaderDataBufferType,
                           packed_slice_header.BytesInBuffer(),
-                          packed_slice_header.data()});
+                          packed_slice_header.data().data()});
   }
 
   return vaapi_wrapper_->SubmitBuffers(va_buffers);
@@ -1130,11 +1130,11 @@ bool H264VaapiVideoEncoderDelegate::SubmitPackedHeaders(
       {{VAEncPackedHeaderParameterBufferType, sizeof(packed_sps_param),
         &packed_sps_param},
        {VAEncPackedHeaderDataBufferType, packed_sps.BytesInBuffer(),
-        packed_sps.data()},
+        packed_sps.data().data()},
        {VAEncPackedHeaderParameterBufferType, sizeof(packed_pps_param),
         &packed_pps_param},
        {VAEncPackedHeaderDataBufferType, packed_pps.BytesInBuffer(),
-        packed_pps.data()}});
+        packed_pps.data().data()}});
 }
 
 void H264VaapiVideoEncoderDelegate::BitrateControlUpdate(

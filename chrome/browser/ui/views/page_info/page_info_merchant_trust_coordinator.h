@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "components/page_info/core/page_info_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/view_observer.h"
 
@@ -21,6 +22,8 @@ class PageInfoMerchantTrustCoordinator : public views::ViewObserver,
   ~PageInfoMerchantTrustCoordinator() override;
 
   std::unique_ptr<PageInfoMerchantTrustContentView> CreatePageContent();
+
+  void OnBubbleOpened(page_info::MerchantBubbleOpenReferrer referrer);
 
  private:
   // views::ViewObserver

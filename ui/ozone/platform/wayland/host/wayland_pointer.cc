@@ -6,6 +6,8 @@
 
 #include <linux/input.h>
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/version.h"
 #include "ui/events/base_event_utils.h"
@@ -162,31 +164,11 @@ void WaylandPointer::OnAxis(void* data,
                             uint32_t time,
                             uint32_t axis,
                             wl_fixed_t value) {
-  static const double kAxisValueScale = 10.0;
+  const double delta =
+      -wl_fixed_to_double(value) * MouseWheelEvent::kWheelDelta;
+  const auto timestamp = wl::EventMillisecondsToTimeTicks(time);
   auto* self = static_cast<WaylandPointer*>(data);
-  gfx::Vector2dF offset;
-  // Wayland compositors send axis events with values in the surface coordinate
-  // space. They send a value of 10 per mouse wheel click by convention, so
-  // clients (e.g. GTK+) typically scale down by this amount to convert to
-  // discrete step coordinates. wl_pointer version 5 improves the situation by
-  // adding axis sources and discrete axis events.
-  if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL) {
-    offset.set_y(-wl_fixed_to_double(value) / kAxisValueScale *
-                 MouseWheelEvent::kWheelDelta);
-  } else if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL) {
-    offset.set_x(-wl_fixed_to_double(value) / kAxisValueScale *
-                 MouseWheelEvent::kWheelDelta);
-  } else {
-    return;
-  }
-  // If we did not receive the axis event source explicitly, set it to the mouse
-  // wheel so far.  Should this be a part of some complex event coming from the
-  // different source, the compositor will let us know sooner or later.
-  auto timestamp = wl::EventMillisecondsToTimeTicks(time);
-  if (!self->axis_source_received_) {
-    self->delegate_->OnPointerAxisSourceEvent(WL_POINTER_AXIS_SOURCE_WHEEL);
-  }
-  self->delegate_->OnPointerAxisEvent(offset, timestamp);
+  self->OnAxisImpl(delta, axis, timestamp, /*is_high_resolution=*/false);
 }
 
 // ---- Version 5 ----
@@ -236,9 +218,33 @@ void WaylandPointer::OnAxisValue120(void* data,
                                     wl_pointer* pointer,
                                     uint32_t axis,
                                     int32_t value120) {
-  // TODO(crbug.com/40720099): Use this event for better handling of mouse wheel
-  // events.
-  NOTIMPLEMENTED_LOG_ONCE();
+  static const double kDetentAngleDegrees = 15.0;
+  const double delta = -value120 * kDetentAngleDegrees;
+  auto* self = static_cast<WaylandPointer*>(data);
+  self->OnAxisImpl(delta, axis, /*timestamp=*/std::nullopt,
+                   /*is_high_resolution=*/true);
+}
+
+void WaylandPointer::OnAxisImpl(double delta,
+                                uint32_t axis,
+                                std::optional<base::TimeTicks> timestamp,
+                                bool is_high_resolution) {
+  gfx::Vector2dF offset;
+  if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL) {
+    offset.set_y(delta);
+  } else if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL) {
+    offset.set_x(delta);
+  } else {
+    return;
+  }
+  delegate_->OnPointerAxisEvent(offset, timestamp, is_high_resolution);
+
+  // If we did not receive the axis event source explicitly, set it to the mouse
+  // wheel so far.  Should this be a part of some complex event coming from the
+  // different source, the compositor will let us know sooner or later.
+  if (!axis_source_received_) {
+    delegate_->OnPointerAxisSourceEvent(WL_POINTER_AXIS_SOURCE_WHEEL);
+  }
 }
 
 }  // namespace ui

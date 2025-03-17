@@ -35,6 +35,7 @@
   "disable-bruschetta-install-checks",
   "disable-buffer-bw-compression",
   "disable-explicit-dma-fences",
+  "disable-facilitated-payments-merchant-allowlist",
   "disable-javascript-harmony-shipping",
   "disallow-doc-written-script-loads",
   "enable-autofill-credit-card-upload",
@@ -47,6 +48,7 @@
   "enable-experimental-webassembly-features",
   "enable-fake-keyboard-heuristic",
   "enable-fake-mouse-heuristic",
+  "enable-force-dark",
   "enable-future-v8-vm-features",
   "enable-gpu-rasterization",
   "enable-gpu-service-logging",
@@ -159,5 +161,6 @@
   "webrtc-hw-encoding",
   "webtransport-developer-mode",
   "webxr-runtime",
-  "webxr-shared-buffers"
+  "webxr-shared-buffers",
+  "windows-system-tracing"
 ]

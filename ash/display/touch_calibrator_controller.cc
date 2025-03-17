@@ -4,6 +4,7 @@
 
 #include "ash/display/touch_calibrator_controller.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/display/touch_calibrator_view.h"
@@ -13,7 +14,6 @@
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/aura/window_tree_host.h"
@@ -50,8 +50,8 @@ gfx::Transform CalculateEventTransformer(int touch_device_id) {
   const std::vector<ui::TouchscreenDevice>& device_list =
       ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices();
 
-  auto device_it = base::ranges::find(device_list, touch_device_id,
-                                      &ui::TouchscreenDevice::id);
+  auto device_it = std::ranges::find(device_list, touch_device_id,
+                                     &ui::TouchscreenDevice::id);
   DCHECK(device_it != device_list.end())
       << "Device id " << touch_device_id
       << " is invalid. No such device connected to system";

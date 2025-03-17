@@ -22,7 +22,7 @@ MockMigrationNotificationManager::~MockMigrationNotificationManager() = default;
 MockMigrationCoordinator::MockMigrationCoordinator(Profile* profile)
     : MigrationCoordinator(profile) {
   ON_CALL(*this, Run)
-      .WillByDefault([this](CloudProvider cloud_provider,
+      .WillByDefault([this](MigrationDestination destination,
                             std::vector<base::FilePath> file_paths,
                             const std::string& upload_root,
                             MigrationDoneCallback callback) {

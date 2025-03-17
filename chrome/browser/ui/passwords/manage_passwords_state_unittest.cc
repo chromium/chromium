@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
@@ -195,7 +195,7 @@ void ManagePasswordsStateTest::TestAllUpdates() {
   // Remove and Add form.
   list[0] = PasswordStoreChange(PasswordStoreChange::REMOVE, form);
   form.username_value = u"user15";
-  list.push_back(PasswordStoreChange(PasswordStoreChange::ADD, form));
+  list.emplace_back(PasswordStoreChange::ADD, form);
   EXPECT_CALL(mock_client_, UpdateFormManagers()).Times(0);
   passwords_data().ProcessLoginsChanged(list);
   EXPECT_EQ(state, passwords_data().state());
@@ -237,7 +237,7 @@ void ManagePasswordsStateTest::TestBlocklistedUpdates() {
   blocked_form.blocked_by_user = true;
   blocked_form.url = origin.GetURL();
   PasswordStoreChangeList list;
-  list.push_back(PasswordStoreChange(PasswordStoreChange::ADD, blocked_form));
+  list.emplace_back(PasswordStoreChange::ADD, blocked_form);
   passwords_data().ProcessLoginsChanged(list);
   EXPECT_EQ(forms, GetRawPointers(passwords_data().GetCurrentForms()));
   EXPECT_EQ(state, passwords_data().state());
@@ -463,21 +463,6 @@ TEST_F(ManagePasswordsStateTest, PendingPasswordAddBlocklisted) {
             passwords_data().state());
 
   TestBlocklistedUpdates();
-}
-
-TEST_F(ManagePasswordsStateTest, DefaultStoreChanged) {
-  std::vector<PasswordForm> best_matches = {saved_match(), psl_match()};
-  std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
-      CreateFormManager(best_matches, {}));
-  passwords_data().OnDefaultStoreChanged(std::move(test_form_manager));
-
-  EXPECT_THAT(passwords_data().GetCurrentForms(),
-              ElementsAre(Pointee(saved_match()), Pointee(psl_match())));
-  EXPECT_EQ(password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE,
-            passwords_data().state());
-  EXPECT_EQ(url::Origin::Create(GURL(kTestOrigin)), passwords_data().origin());
-  ASSERT_TRUE(passwords_data().form_manager());
-  TestAllUpdates();
 }
 
 TEST_F(ManagePasswordsStateTest, RequestCredentialsAddBlocklisted) {

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <memory>
@@ -17,7 +18,6 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/angle_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -34,6 +34,7 @@
 #include "cc/input/page_scale_animation.h"
 #include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar_controller.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
@@ -67,6 +68,7 @@
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/latency_info_swap_promise.h"
+#include "cc/trees/layer_tree_host_impl_client.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/render_frame_metadata.h"
@@ -74,6 +76,7 @@
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
 #include "cc/view_transition/view_transition_request.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -90,6 +93,7 @@
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/fake_skia_output_surface.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "media/base/media.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -237,11 +241,12 @@ class LayerTreeHostImplTestBase : public testing::Test,
   void SetNeedsOneBeginImplFrameOnImplThread() override {
     did_request_next_frame_ = true;
   }
-  void SetNeedsUpdateDisplayTreeOnImplThread() override {}
   void SetNeedsPrepareTilesOnImplThread() override {
     did_request_prepare_tiles_ = true;
   }
-  void SetNeedsCommitOnImplThread() override { did_request_commit_ = true; }
+  void SetNeedsCommitOnImplThread(bool urgent) override {
+    did_request_commit_ = true;
+  }
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override {}
   void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override {}
   bool IsInsideDraw() override { return false; }
@@ -854,15 +859,6 @@ class LayerTreeHostImplTestBase : public testing::Test,
 
   InputHandler& GetInputHandler() { return host_impl_->GetInputHandler(); }
 
-  class StubGpuBacking : public ResourcePool::GpuBacking {
-   public:
-    void OnMemoryDump(
-        base::trace_event::ProcessMemoryDump* pmd,
-        const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-        uint64_t tracing_process_id,
-        int importance) const override {}
-  };
-
   FakeImplTaskRunnerProvider task_runner_provider_;
   DebugScopedSetMainThreadBlocked always_main_thread_blocked_;
 
@@ -1014,7 +1010,8 @@ class FluentOverlayScrollbarOpacityLayerTreeHostImplTest
     scrollbar->SetThumbThicknessScaleFactor(thickness);
     auto render_pass = viz::CompositorRenderPass::Create();
     AppendQuadsData append_quads_data;
-    scrollbar->AppendQuads(render_pass.get(), &append_quads_data);
+    scrollbar->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                           render_pass.get(), &append_quads_data);
     if (expected_opacity == 0.f) {
       // If the opacity of the track is expected to be zero, the layer code
       // makes an early return and doesn't append the track's quads.
@@ -3731,7 +3728,8 @@ class IncompleteRecordingLayer : public LayerImpl {
   IncompleteRecordingLayer(LayerTreeImpl* layer_tree_impl, int id)
       : LayerImpl(layer_tree_impl, id) {}
 
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
     append_quads_data->checkerboarded_needs_record = true;
     append_quads_data->visible_layer_area += 200;
@@ -6513,10 +6511,11 @@ class DidDrawCheckLayer : public LayerImpl {
     return true;
   }
 
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
     append_quads_called_ = true;
-    LayerImpl::AppendQuads(render_pass, append_quads_data);
+    LayerImpl::AppendQuads(context, render_pass, append_quads_data);
   }
 
   void DidDraw(viz::ClientResourceProvider* provider) override {
@@ -6770,9 +6769,10 @@ class MissingTextureAnimatingLayer : public DidDrawCheckLayer {
         tree_impl, id, tile_missing, had_incomplete_tile, animating, timeline));
   }
 
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
-    LayerImpl::AppendQuads(render_pass, append_quads_data);
+    LayerImpl::AppendQuads(context, render_pass, append_quads_data);
     if (had_incomplete_tile_) {
       append_quads_data->checkerboarded_needs_raster = true;
     }
@@ -10670,12 +10670,23 @@ class BlendStateCheckLayer : public LayerImpl {
         comparison_layer_(nullptr),
         quads_appended_(false),
         quad_rect_(5, 5, 5, 5),
-        quad_visible_rect_(5, 5, 5, 5) {
-    resource_id_ = resource_provider_->ImportResource(
-        viz::TransferableResource::MakeSoftwareSharedBitmap(
-            viz::SharedBitmap::GenerateId(), gpu::SyncToken(), gfx::Size(1, 1),
-            viz::SinglePlaneFormat::kRGBA_8888),
-        base::DoNothing());
+        quad_visible_rect_(5, 5, 5, 5),
+        shared_image_interface_(
+            base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
+    auto shared_image =
+        shared_image_interface_->CreateSharedImageForSoftwareCompositor(
+            {viz::SinglePlaneFormat::kBGRA_8888, gfx::Size(1, 1),
+             gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+             "BlendStateCheckLayerTest"});
+    auto sync_token = shared_image_interface_->GenVerifiedSyncToken();
+    viz::TransferableResource resource =
+        viz::TransferableResource::MakeSoftwareSharedImage(
+            shared_image, sync_token, gfx::Size(1, 1),
+            viz::SinglePlaneFormat::kBGRA_8888,
+            viz::TransferableResource::ResourceSource::kTileRasterTask);
+
+    resource_id_ = resource_provider_->ImportResource(std::move(resource),
+                                                      base::DoNothing());
     SetBounds(gfx::Size(10, 10));
     SetDrawsContent(true);
   }
@@ -10684,7 +10695,8 @@ class BlendStateCheckLayer : public LayerImpl {
     resource_provider_->RemoveImportedResource(resource_id_);
   }
 
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
     quads_appended_ = true;
 
@@ -10739,6 +10751,7 @@ class BlendStateCheckLayer : public LayerImpl {
   gfx::Rect opaque_content_rect_;
   gfx::Rect quad_visible_rect_;
   viz::ResourceId resource_id_;
+  scoped_refptr<gpu::TestSharedImageInterface> shared_image_interface_;
 };
 
 TEST_P(LayerTreeHostImplTest, BlendingOffWhenDrawingOpaqueLayers) {
@@ -10942,7 +10955,7 @@ TEST_P(LayerTreeHostImplTest, MayContainVideo) {
   auto* root =
       SetupRootLayer<DidDrawCheckLayer>(host_impl_->active_tree(), big_size);
   auto* video_layer = AddLayer<DidDrawCheckLayer>(host_impl_->active_tree());
-  video_layer->set_may_contain_video(true);
+  video_layer->SetMayContainVideo(true);
   CopyProperties(root, video_layer);
   UpdateDrawProperties(host_impl_->active_tree());
   EXPECT_TRUE(MayContainVideoBitSetOnFrameData(host_impl_.get()));
@@ -11371,7 +11384,8 @@ class FakeLayerWithQuads : public LayerImpl {
     return base::WrapUnique(new FakeLayerWithQuads(tree_impl, id));
   }
 
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
     viz::SharedQuadState* shared_quad_state =
         render_pass->CreateAndAppendSharedQuadState();
@@ -13087,7 +13101,8 @@ TEST_P(LayerTreeHostImplTest, OnMemoryPressure) {
       host_impl_->resource_pool()->GetTotalMemoryUsageForTesting();
   EXPECT_EQ(current_memory_usage, 0u);
 
-  resource.set_gpu_backing(std::make_unique<StubGpuBacking>());
+  resource.set_backing(std::make_unique<ResourcePool::Backing>(
+      resource.size(), resource.format(), resource.color_space()));
 
   host_impl_->resource_pool()->ReleaseResource(std::move(resource));
 
@@ -15721,7 +15736,6 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
        InvalidLayerNotAddedToRasterQueue) {
   CreatePendingTree();
 
-  Region empty_invalidation;
   scoped_refptr<RasterSource> raster_source_with_tiles(
       FakeRasterSource::CreateFilled(gfx::Size(10, 10)));
 
@@ -15731,7 +15745,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
       host_impl_->active_tree()->GetDeviceViewport().size());
   layer->SetDrawsContent(true);
   layer->tilings()->AddTiling(gfx::AxisTransform2d(), raster_source_with_tiles);
-  layer->UpdateRasterSource(raster_source_with_tiles, &empty_invalidation);
+  layer->SetRasterSourceForTesting(raster_source_with_tiles);
   layer->tilings()->tiling_at(0)->set_resolution(
       TileResolution::HIGH_RESOLUTION);
   layer->tilings()->tiling_at(0)->CreateAllTilesForTesting();
@@ -15854,7 +15868,7 @@ TEST_P(LayerTreeHostImplCountingLostSurfaces, TwiceLostSurface) {
 
 size_t CountRenderPassesWithId(const viz::CompositorRenderPassList& list,
                                viz::CompositorRenderPassId id) {
-  return base::ranges::count(list, id, &viz::CompositorRenderPass::id);
+  return std::ranges::count(list, id, &viz::CompositorRenderPass::id);
 }
 
 TEST_P(LayerTreeHostImplTest, RemoveUnreferencedRenderPass) {
@@ -17574,11 +17588,9 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest, CommitWithDirtyPaintWorklets) {
   root->SetNeedsPushProperties();
 
   // Add a PaintWorkletInput to the PictureLayerImpl.
-  scoped_refptr<RasterSource> raster_source_with_pws(
-      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds()));
-  Region empty_invalidation;
-  root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation);
-
+  scoped_refptr<RasterSource> raster_source_with_pws =
+      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds());
+  root->SetRasterSourceForTesting(raster_source_with_pws);
   UpdateDrawProperties(host_impl_->pending_tree());
 
   // Since we have dirty PaintWorklets, committing will not cause tile
@@ -17623,10 +17635,9 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   root->SetNeedsPushProperties();
 
   // Add some PaintWorklets.
-  scoped_refptr<RasterSource> raster_source_with_pws(
-      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds()));
-  Region empty_invalidation;
-  root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation);
+  scoped_refptr<RasterSource> raster_source_with_pws =
+      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds());
+  root->SetRasterSourceForTesting(raster_source_with_pws);
 
   UpdateDrawProperties(host_impl_->pending_tree());
 
@@ -17669,10 +17680,9 @@ TEST_F(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
   root->SetNeedsPushProperties();
 
   // Add a PaintWorkletInput to the PictureLayerImpl.
-  scoped_refptr<RasterSource> raster_source_with_pws(
-      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds()));
-  Region empty_invalidation;
-  root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation);
+  scoped_refptr<RasterSource> raster_source_with_pws =
+      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds());
+  root->SetRasterSourceForTesting(raster_source_with_pws);
 
   UpdateDrawProperties(host_impl_->pending_tree());
 

@@ -11,12 +11,9 @@ large binary ever checked in.
 
 ## Solution
 
-Hash the large files, check in the large files into Google Storage, check the
-hashes into the repository.  When we need to fetch the files, just run a script.
-
-We now have two tools to help with this process in depot_tools:
-`depot_tools/download_from_google_storage`, and
-`depot_tools/upload_to_google_storage.py`.
+Hash the large files, check in the large files into Google Storage, add the GCS
+object as a dependency in the DEPS file. Files will be fetched from Google
+Storage during `gclient sync`.
 
 ## Steps
 
@@ -26,10 +23,10 @@ For Android-related files, it might be appropriate to use the shared
 chromium-android-tools bucket. Create a new folder in the bucket, and use
 chromium-android-tools/[new folder name] as the bucket name.
 
-Otherwise, go to [go/chromeinfraticket](http://go/chromeinfraticket) to request
-a bucket.  We ask that you do this so we can ensure the ACLs will work on our
-buildbots, and storage costs will be centralize to Chrome Infrastructure.
-You'll need to specify:
+Otherwise, to create a new bucket you can add an entry into
+[bucket.json](http://shortn/_wkOtCQm10E). Entries within `bucket.json` should
+aim to answer the below questions. Afterwards, send the CL to a coworker for review.
+After that is approved, someone from chops security will do a final review.
 
 * Who can have read access to this bucket? Certain groups at Google? All of
   Google? All of Chrome-Team? Everyone? Consider adding googlers@chromium.org to
@@ -68,69 +65,10 @@ typical.
 
 ### Step 3. Check your files into the bucket
 
-Once you have your shiny new bucket, run:
+Once you have your shiny new bucket, follow the
+[instructions](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/gcs_dependencies.md#upload-a-new-object-to-gcs)
+for adding GCS objects as a dependency in the DEPS file.
 
-```
-$ upload_to_google_storage.py --bucket chromium-my-bucket-name ./file-I-want-to-upload
-Main> Calculating hash for ./file-I-want-to-upload...
-Main> Done calculating hash for ./file-I-want-to-upload.
-0> Uploading ./file-I-want-to-upload...
-Hashing 1 files took 0.285466 seconds
-Uploading took 256.985357 seconds
-Success!
-```
-
-If you have more than 1 file, you can pipe it into upload_to_google_storage.py,
-and set the target to "-" (without the quotes)
-
-```bash
-$ find . -name *exe | upload_to_google_storage.py --bucket chromium-my-bucket-name -
-```
-
-If there are spaces in the name, use a null terminator and pass in
---null_terminator into the script
-
-```bash
-$ find . -name *exe -print0 | upload_to_google_storage.py --bucket chromium-my-bucket-name --null_terminator -
-$ find . -name *exe -print0 | upload_to_google_storage.py -b chromium-my-bucket-name -0 - # Shorthand
-```
-
-### Step 4. Check the .sha1 files into repository
-
-Step 3 creates a .sha1 file for each uploaded file, with just the sha1 sum of
-the file.  We'll want to check this into the repository.
-
-If the files are already check into the repository, we can remove them now.
-
-```bash
-$ git add ./file-I-want-to-upload.sha1
-$ git rm ./file-I-want-to-upload  # If the file was previously in the repo.
-```
-
-### Step 5. Add a hook in your DEPS file to fetch the files:
-
-Add this to the top level .DEPS file.  This can also go in the .gclient file if
-you want people to only fetch the files if the specifically add it.
-
-See download_from_google_storage --help for all available flags.  The following
-is to scan a folder for all .sha1 files. Other configs can be found
-[here][1]
-
-```python
-hooks = [
-  {
-    "pattern": "\\.sha1",                    # Only update when a .sha1 file has been modified.
-    "action": [ "download_from_google_storage",
-    "--directory",
-    "--recursive",
-    "--bucket", "chromium-my-bucket-name",  # Replace with your bucket name.
-    "./chrome/path/to/directory"]           # Replace with the root folder to scan from.  Relative path from .gclient file.
-  }
-]
-```
-
-[1]: https://code.google.com/p/chromium/codesearch#chromium/src/DEPS&sq=package:chromium&q=DEPS&l=723
-
-### Step 6. Add the file names to .gitignore.
+### Step 4. Add the file names to .gitignore.
 
 This is so that the files do not show up in a git status.

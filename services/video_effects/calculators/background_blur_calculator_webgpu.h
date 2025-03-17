@@ -18,6 +18,13 @@ namespace video_effects {
 
 class BackgroundBlurCalculatorWebGpu : public mediapipe::CalculatorBase {
  public:
+  static constexpr char kCalculatorName[] = "BackgroundBlurCalculatorWebGpu";
+
+  static constexpr char kRuntimeConfigInputStreamTag[] = "RUNTIME_CONFIG";
+  static constexpr char kInputTextureStreamTag[] = "TEXTURE_IN";
+  static constexpr char kMaskTextureStreamTag[] = "MASK_IN";
+  static constexpr char kOutputTextureStreamTag[] = "TEXTURE_OUT";
+
   BackgroundBlurCalculatorWebGpu();
   ~BackgroundBlurCalculatorWebGpu() override;
 

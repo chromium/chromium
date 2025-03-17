@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.impl.CronetLibraryLoader;
 
 /** Unit tests for {@code MockCertVerifier}. */
 @RunWith(AndroidJUnit4.class)
@@ -36,8 +37,8 @@ public class MockCertVerifierTest {
     @Before
     public void setUp() throws Exception {
         // Load library first to create MockCertVerifier.
-        System.loadLibrary("cronet_tests");
-
+        CronetLibraryLoader.switchToTestLibrary();
+        CronetLibraryLoader.loadLibrary();
         assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
                 .isTrue();
     }

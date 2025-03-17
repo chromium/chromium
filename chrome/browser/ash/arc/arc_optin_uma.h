@@ -7,8 +7,8 @@
 
 #include <ostream>
 
-#include "ash/components/arc/mojom/app.mojom-forward.h"
-#include "ash/components/arc/mojom/auth.mojom-forward.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
+#include "chromeos/ash/experiences/arc/mojom/auth.mojom-forward.h"
 
 class Profile;
 

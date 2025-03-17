@@ -8,18 +8,17 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace gfx {
 class ImageSkia;
@@ -41,7 +40,7 @@ void VerifyCompressedIcon(const std::vector<uint8_t>& src_data,
 
 gfx::ImageSkia CreateSquareIconImageSkia(int size_dp, SkColor solid_color);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 struct AppLaunchParams;
 
 class FakeIconLoader : public apps::IconLoader {
@@ -87,7 +86,7 @@ class FakePublisherForIconTest : public apps::AppPublisher {
                              ui::ResourceScaleFactor scale_factor,
                              apps::LoadIconCallback callback) override;
 };
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps
 

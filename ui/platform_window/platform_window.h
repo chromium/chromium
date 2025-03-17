@@ -86,6 +86,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   virtual void Maximize() = 0;
   virtual void Minimize() = 0;
   virtual void Restore() = 0;
+  virtual void ShowWindowControlsMenu(const gfx::Point& point);
   virtual PlatformWindowState GetPlatformWindowState() const = 0;
 
   virtual void Activate() = 0;

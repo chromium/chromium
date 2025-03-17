@@ -49,10 +49,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-using base::UmaHistogramEnumeration;
 using password_manager::GetWarningTypeForDetailsContext;
 using password_manager::constants::kMaxPasswordNoteLength;
-using password_manager::constants::kPasswordManagerAuthValidity;
 using password_manager::metrics_util::LogPasswordNoteActionInSettings;
 using password_manager::metrics_util::PasswordNoteAction;
 
@@ -194,10 +192,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 // Used to create and show the actions users can execute when they tap on a row
 // in the tableView. These actions are displayed a pop-up.
-// TODO(crbug.com/40284033): Remove available guard when min deployment target
-// is bumped to iOS 16.0.
-@property(nonatomic, strong)
-    UIEditMenuInteraction* interactionMenu API_AVAILABLE(ios(16));
+@property(nonatomic, strong) UIEditMenuInteraction* interactionMenu;
 
 @end
 
@@ -932,6 +927,10 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       @[ self.navigationItem.rightBarButtonItem, shareButton ];
 }
 
+- (void)hideShareButton {
+  _shareButton.hidden = YES;
+}
+
 #pragma mark - TableViewTextEditItemDelegate
 
 - (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {
@@ -1161,18 +1160,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     }
   }
   return YES;
-}
-
-// Removes the given section if it exists.
-- (void)removeSectionWithIdentifier:(NSInteger)sectionIdentifier
-                   withRowAnimation:(UITableViewRowAnimation)animation {
-  TableViewModel* model = self.tableViewModel;
-  if ([model hasSectionForSectionIdentifier:sectionIdentifier]) {
-    NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
-    [model removeSectionWithIdentifier:sectionIdentifier];
-    [[self tableView] deleteSections:[NSIndexSet indexSetWithIndex:section]
-                    withRowAnimation:animation];
-  }
 }
 
 // Enables/Disables the right bar button item in the navigation bar.
@@ -1441,12 +1428,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 #pragma mark - UIEditMenuInteractionDelegate
 
-// TODO(crbug.com/40284033): Remove available guard when min deployment target
-// is bumped to iOS 16.0.
 - (UIMenu*)editMenuInteraction:(UIEditMenuInteraction*)interaction
           menuForConfiguration:(UIEditMenuConfiguration*)configuration
-              suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions
-    API_AVAILABLE(ios(16)) {
+              suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions {
   NSUInteger itemType =
       [base::apple::ObjCCast<NSNumber>(configuration.identifier) intValue];
 
@@ -1698,7 +1682,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       }
     }
   }
-  [self.delegate didFinishEditingPasswordDetails];
+  [self.delegate didFinishEditingCredentialDetails];
   [super editButtonPressed];
   [self reloadData];
 }

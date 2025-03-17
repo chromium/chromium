@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.page_info;
 
-import static org.chromium.components.browser_ui.site_settings.AllSiteSettings.EXTRA_SEARCH;
+import static org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings.EXTRA_SITE;
 
 import android.app.Activity;
 import android.content.Context;
@@ -47,9 +47,10 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
+import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
+import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
@@ -252,13 +253,13 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
 
     /** {@inheritDoc} */
     @Override
-    public void showAllSettingsForRws(String rwsOwner) {
+    public void showSiteSettings(Website currentSite) {
         Bundle extras = new Bundle();
-        extras.putString(EXTRA_SEARCH, rwsOwner);
+        extras.putSerializable(EXTRA_SITE, currentSite);
 
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
-        settingsNavigation.startSettings(mContext, AllSiteSettings.class, extras);
+        settingsNavigation.startSettings(mContext, SingleWebsiteSettings.class, extras);
     }
 
     @Override
@@ -339,7 +340,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         return new CookieControlsBridge(
                 observer,
                 mWebContents,
-                mProfile.isOffTheRecord() ? mProfile.getOriginalProfile() : null);
+                mProfile.isOffTheRecord() ? mProfile.getOriginalProfile() : null,
+                mProfile.isIncognitoBranded());
     }
 
     /** {@inheritDoc} */
@@ -358,22 +360,23 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public void getFavicon(GURL url, Callback<Drawable> callback) {
         Resources resources = mContext.getResources();
         int size = resources.getDimensionPixelSize(R.dimen.page_info_favicon_size);
-        new FaviconHelper()
-                .getLocalFaviconImageForURL(
-                        mProfile,
-                        url,
-                        size,
-                        (image, iconUrl) -> {
-                            if (image != null) {
-                                callback.onResult(new BitmapDrawable(resources, image));
-                            } else if (UrlUtilities.isInternalScheme(url)) {
-                                callback.onResult(
-                                        TintedDrawable.constructTintedDrawable(
-                                                mContext, R.drawable.chromelogo16));
-                            } else {
-                                callback.onResult(null);
-                            }
-                        });
+        FaviconHelper faviconHelper = new FaviconHelper();
+        faviconHelper.getLocalFaviconImageForURL(
+                mProfile,
+                url,
+                size,
+                (image, iconUrl) -> {
+                    if (image != null) {
+                        callback.onResult(new BitmapDrawable(resources, image));
+                    } else if (UrlUtilities.isInternalScheme(url)) {
+                        callback.onResult(
+                                TintedDrawable.constructTintedDrawable(
+                                        mContext, R.drawable.chromelogo16));
+                    } else {
+                        callback.onResult(null);
+                    }
+                    faviconHelper.destroy();
+                });
     }
 
     @Override

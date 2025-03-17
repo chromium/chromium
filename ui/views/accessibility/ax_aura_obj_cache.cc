@@ -199,7 +199,7 @@ AXAuraObjWrapper* AXAuraObjCache::GetFocus() {
 void AXAuraObjCache::OnFocusedViewChanged() {
   View* view = GetFocusedView();
   if (view) {
-    view->NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+    view->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
   }
 }
 

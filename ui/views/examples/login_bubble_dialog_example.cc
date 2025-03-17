@@ -157,8 +157,8 @@ void LoginBubbleDialogExample::CreateExampleView(View* container) {
   password_input_ = container->AddChildView(std::make_unique<Label>());
 }
 
-void LoginBubbleDialogExample::OnSubmit(std::u16string username,
-                                        std::u16string password) {
+void LoginBubbleDialogExample::OnSubmit(std::u16string_view username,
+                                        std::u16string_view password) {
   username_label_->SetVisible(true);
   username_input_->SetText(username);
   password_label_->SetVisible(true);

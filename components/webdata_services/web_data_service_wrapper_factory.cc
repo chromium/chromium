@@ -43,6 +43,9 @@ scoped_refptr<payments::PaymentManifestWebDataService>
 WebDataServiceWrapperFactory::GetPaymentManifestWebDataServiceForBrowserContext(
     content::BrowserContext* context,
     ServiceAccessType access_type) {
+  if (!g_instance) {
+    return nullptr;
+  }
   WebDataServiceWrapper* wrapper = GetForBrowserContext(context, access_type);
   return wrapper ? wrapper->GetPaymentManifestWebData() : nullptr;
 }

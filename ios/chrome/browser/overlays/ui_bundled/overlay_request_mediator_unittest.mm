@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator.h"
-#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 
 #import "base/functional/bind.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
@@ -12,6 +11,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_response_support.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
+#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -21,7 +21,7 @@ namespace {
 // ConfigType and InfoType used in tests.
 DEFINE_TEST_OVERLAY_REQUEST_CONFIG(FakeConfig);
 DEFINE_TEST_OVERLAY_RESPONSE_INFO(DispatchInfo);
-}
+}  // namespace
 
 // OverlayRequestMediator subclass used in tests.
 @interface FakeOverlayRequestMediator : OverlayRequestMediator
@@ -54,8 +54,9 @@ class OverlayRequestMediatorTest : public PlatformTest {
 
   // Destroys `request_`, expecting that the completion callback is executed.
   void ResetRequest() {
-    if (!request_)
+    if (!request_) {
       return;
+    }
     EXPECT_CALL(callback_receiver_, CompletionCallback(request_.get()));
     request_ = nullptr;
   }

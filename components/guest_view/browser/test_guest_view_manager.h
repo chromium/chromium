@@ -50,6 +50,7 @@ class TestGuestViewManager : public GuestViewManager {
   content::RenderFrameHost* GetLastGuestRenderFrameHostCreated();
 
   void WaitUntilAttached(GuestViewBase* guest_view);
+  [[nodiscard]] bool WaitUntilAttachedAndLoaded(GuestViewBase* guest_view);
 
   // Returns the number of guests currently still alive at the time of calling
   // this method.

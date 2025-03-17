@@ -4,13 +4,14 @@
 
 #include "components/performance_manager/scenarios/performance_scenario_data.h"
 
+#include <memory>
 #include <utility>
 
-#include "base/memory/scoped_refptr.h"
+#include "base/memory/shared_memory_mapper.h"
 #include "base/memory/structured_shared_memory.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/tracing_support.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
@@ -31,55 +32,43 @@ perfetto::NamedTrack CreateTracingTrack(const ProcessNode* process_node,
 }  // namespace
 
 // static
-scoped_refptr<RefCountedScenarioState> RefCountedScenarioState::Create() {
-  auto shared_state = base::StructuredSharedMemory<ScenarioState>::Create();
-  if (shared_state.has_value()) {
-    return base::WrapRefCounted(
-        new RefCountedScenarioState(std::move(shared_state.value())));
-  }
-  return nullptr;
-}
-
-RefCountedScenarioState::RefCountedScenarioState(
-    base::StructuredSharedMemory<ScenarioState> shared_state)
-    : shared_state_(std::move(shared_state)) {}
-
-RefCountedScenarioState::~RefCountedScenarioState() = default;
-
-void RefCountedScenarioState::EnsureTracingTracks(
-    const ProcessNode* process_node) {
-  uint64_t track_id = reinterpret_cast<uint64_t>(this);
-  if (process_node && !HasProcessTracingTrack(process_node)) {
-    return;
-  }
-  if (!loading_tracing_track_.has_value()) {
-    loading_tracing_track_.emplace(CreateTracingTrack(
-        process_node, "LoadingPerformanceScenario", track_id));
-  }
-  if (!input_tracing_track_.has_value()) {
-    input_tracing_track_.emplace(
-        CreateTracingTrack(process_node, "InputPerformanceScenario", track_id));
-  }
-}
-
-// static
-PerformanceScenarioMemoryData& PerformanceScenarioMemoryData::GetOrCreate(
-    const ProcessNode* process_node) {
+PerformanceScenarioData& PerformanceScenarioData::GetOrCreate(
+    const ProcessNode* process_node,
+    base::SharedMemoryMapper* mapper) {
   auto* process_node_impl = ProcessNodeImpl::FromNode(process_node);
   if (Exists(process_node_impl)) {
     return Get(process_node_impl);
   }
-  return Create(process_node_impl);
+  return Create(process_node_impl, mapper);
 }
 
-PerformanceScenarioMemoryData::PerformanceScenarioMemoryData() = default;
+PerformanceScenarioData::PerformanceScenarioData(
+    base::SharedMemoryMapper* mapper)
+    : shared_state_(mapper ? SharedScenarioState::CreateWithCustomMapper(mapper)
+                           : SharedScenarioState::Create()) {}
 
-PerformanceScenarioMemoryData::~PerformanceScenarioMemoryData() = default;
+PerformanceScenarioData::~PerformanceScenarioData() = default;
 
-PerformanceScenarioMemoryData::PerformanceScenarioMemoryData(
-    PerformanceScenarioMemoryData&&) = default;
+PerformanceScenarioData::PerformanceScenarioData(PerformanceScenarioData&&) =
+    default;
 
-PerformanceScenarioMemoryData& PerformanceScenarioMemoryData::operator=(
-    PerformanceScenarioMemoryData&&) = default;
+PerformanceScenarioData& PerformanceScenarioData::operator=(
+    PerformanceScenarioData&&) = default;
+
+void PerformanceScenarioData::EnsureTracingTracks(
+    const ProcessNode* process_node) {
+  if (process_node && !HasProcessTracingTrack(process_node)) {
+    return;
+  }
+  uint64_t track_id = reinterpret_cast<uint64_t>(tracing_tracks_.get());
+  if (!tracing_tracks_->loading_track.has_value()) {
+    tracing_tracks_->loading_track.emplace(CreateTracingTrack(
+        process_node, "LoadingPerformanceScenario", track_id));
+  }
+  if (!tracing_tracks_->input_track.has_value()) {
+    tracing_tracks_->input_track.emplace(
+        CreateTracingTrack(process_node, "InputPerformanceScenario", track_id));
+  }
+}
 
 }  // namespace performance_manager

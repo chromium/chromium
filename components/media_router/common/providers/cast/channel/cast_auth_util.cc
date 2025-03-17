@@ -56,7 +56,7 @@ BASE_FEATURE(kEnforceFallbackCRLRevocationChecking,
 // This flag tracks the changes necessary to fully enforce revocation.
 BASE_FEATURE(kEnforceRevocationChecking,
              "CastCertificateRevocation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -453,8 +453,9 @@ AuthResult VerifyCredentialsImpl(const AuthResponse& response,
   // Handle and report errors.
   AuthResult result = MapToAuthResult(verify_result, crl_policy);
   result.CopyFlagsFrom(parse_result);
-  if (!result.success())
+  if (!result.success()) {
     return result;
+  }
 
   // The certificate is verified at this point.
   RecordCertificateStatus(CastCertificateStatus::kOk);
@@ -470,8 +471,9 @@ AuthResult VerifyCredentialsImpl(const AuthResponse& response,
   AuthResult digest_result =
       VerifyAndMapDigestAlgorithm(response.hash_algorithm(), &digest_algorithm);
   digest_result.CopyFlagsFrom(result);
-  if (!digest_result.success())
+  if (!digest_result.success()) {
     return digest_result;
+  }
 
   if (!verification_context->VerifySignatureOverData(
           response.signature(), signature_input, digest_algorithm)) {

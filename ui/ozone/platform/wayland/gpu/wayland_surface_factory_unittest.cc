@@ -20,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/linux/gbm_device.h"
 #include "ui/gfx/linux/test/mock_gbm_device.h"
@@ -1346,7 +1347,7 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
   });
 
   gfx::Size test_buffer_size = {300, 100};
-  gfx::RectF crop_uv = {0.1f, 0.2f, 0.5, 0.5f};
+  gfx::RectF crop_uv = {0.1f, 0.2f, 0.5f, 0.5f};
   gfx::Rect expected_src = gfx::ToEnclosingRect(
       gfx::ScaleRect({0.2f, 0.4f, 0.5f, 0.5f}, test_buffer_size.height(),
                      test_buffer_size.width()));
@@ -1408,34 +1409,9 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
         ASSERT_TRUE(test_viewport);
 
         EXPECT_CALL(*test_viewport,
-                    // TODO(crbug.com/359904707) Use this instead of below
-                    // workaround for rounding errors.
-
-                    // SetSource(expected_src.x(), expected_src.y(),
-                    //           expected_src.width(), expected_src.height()))
-
-                    SetSource(_, _, _, _))
-            .Times(1)
-            .WillOnce(
-                [expected_src](float x, float y, float width, float height) {
-                  auto matches_with_precision_loss = [](float expected,
-                                                        float actual) {
-                    // Allows for a precision loss of 1/256
-                    bool match = std::abs(wl_fixed_from_double(expected) -
-                                          wl_fixed_from_double(actual)) <= 1;
-                    if (!match) {
-                      LOG(ERROR)
-                          << "Expected: " << expected << " Actual: " << actual;
-                    }
-                    return match;
-                  };
-                  EXPECT_TRUE(matches_with_precision_loss(expected_src.x(), x));
-                  EXPECT_TRUE(matches_with_precision_loss(expected_src.y(), y));
-                  EXPECT_TRUE(
-                      matches_with_precision_loss(expected_src.width(), width));
-                  EXPECT_TRUE(matches_with_precision_loss(expected_src.height(),
-                                                          height));
-                });
+                    SetSource(expected_src.x(), expected_src.y(),
+                              expected_src.width(), expected_src.height()))
+            .Times(1);
         EXPECT_CALL(*test_viewport,
                     SetDestination(bounds_dip.width(), bounds_dip.height()))
             .Times(1);

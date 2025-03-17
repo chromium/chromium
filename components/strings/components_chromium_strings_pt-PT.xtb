@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">Esta página foi bloqueada pelo Chromium</translation>
 <translation id="48558539577516920">Permita que o Chromium aceda à rede nas definições da sua firewall ou
           do antivírus.</translation>
+<translation id="4949828774841497663">Aceda a Aplicações &gt; Definições do sistema &gt; Rede, selecione a
+          rede ativa, clique no botão Detalhes… e desmarque todos os proxies
+          que possam ter sido selecionados.</translation>
 <translation id="580822234363523061">Aceda ao
           menu Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +32,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           e certifique-se de que a sua configuração está definida como "sem proxy" ou "direta".</translation>
+<translation id="648062525172759633">Estas páginas destinam-se a ser usadas por programadores do Chromium e podem não ser testadas nem mantidas ativamente. Para as ativar, navegue para <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, clique no botão para ativar as páginas de depuração e, em seguida, navegue para esta página novamente.</translation>
 <translation id="6549378540556750549">A criação do Chromium também foi possível devido a outro <ph name="BEGIN_LINK_OSS" />software de código aberto<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">As alterações serão aplicadas da próxima vez que reiniciar o Chromium.</translation>
 <translation id="691026815377248078">O Chromium necessita do acesso ao Bluetooth para continuar 
@@ -42,7 +46,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
         e desmarque "<ph name="NO_PREFETCH_DESCRIPTION" />".
         Se isso não resolver o problema, recomendamos que selecione esta opção
         novamente para um desempenho melhorado.</translation>
-<translation id="8187289872471304532">Aceda a Apps &gt; Preferências do Sistema &gt; Rede &gt; Avançadas &gt; Proxies e desmarque todos os proxies selecionados.</translation>
 <translation id="8597726643333341451">Está a ver uma página segura do Chrome for Testing</translation>
 <translation id="8684913864886094367">O Chromium não foi corretamente encerrado.</translation>
 </translationbundle>

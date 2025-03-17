@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -64,6 +65,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -72,6 +74,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.I
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -222,12 +225,15 @@ public class SearchActivity extends AsyncInitializationActivity
     // Incoming intent search type. See {@link SearchActivityUtils#SearchType}.
     @SearchType Integer mSearchType;
 
+    private final StartupMetricsTracker mStartupMetricsTracker;
     private LocationBarCoordinator mLocationBarCoordinator;
     private SearchActivityLocationBarLayout mSearchBox;
     private View mAnchorView;
 
     private SnackbarManager mSnackbarManager;
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
+            new ObservableSupplierImpl<>();
 
     // SearchBoxDataProvider and LocationBarEmbedderUiOverrides are passed to several child
     // components upon construction. Ensure we don't accidentally introduce disconnection by
@@ -239,6 +245,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     public SearchActivity() {
         mUmaActivityObserver = new UmaActivityObserver(this);
+        mStartupMetricsTracker = new StartupMetricsTracker(mTabModelSelectorSupplier);
         mLocationBarUiOverrides.setForcedPhoneStyleOmnibox();
     }
 
@@ -253,6 +260,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 this,
                 /* listenToActivityState= */ true,
                 new ActivityKeyboardVisibilityDelegate(new WeakReference(this)),
+                /* activityTopResumedSupported= */ false,
                 getIntentRequestTracker(),
                 getInsetObserver(),
                 /* trackOcclusion= */ true) {
@@ -272,7 +280,6 @@ public class SearchActivity extends AsyncInitializationActivity
     @Override
     protected void triggerLayoutInflation() {
         enableHardwareAcceleration();
-        mSnackbarManager = new SnackbarManager(this, findViewById(android.R.id.content), null);
         boolean isIncognito = SearchActivityUtils.getIntentIncognitoStatus(getIntent());
         mSearchBoxDataProvider.initialize(this, isIncognito);
 
@@ -283,20 +290,15 @@ public class SearchActivity extends AsyncInitializationActivity
 
         var contentView = createContentView();
         setContentView(contentView);
+        mStartupMetricsTracker.registerSearchActivityViewObserver(contentView);
+        mSnackbarManager = new SnackbarManager(this, contentView, null);
 
         // Build the search box.
         mSearchBox = contentView.findViewById(R.id.search_location_bar);
         mAnchorView = contentView.findViewById(R.id.toolbar);
 
         // Update the status bar's color based on the toolbar color.
-        Drawable anchorViewBackground = mAnchorView.getBackground();
-        assert anchorViewBackground instanceof GradientDrawable
-                : "Unsupported background drawable.";
-        if (anchorViewBackground instanceof GradientDrawable) {
-            int anchorViewColor =
-                    ((GradientDrawable) anchorViewBackground).getColor().getDefaultColor();
-            StatusBarColorController.setStatusBarColor(this.getWindow(), anchorViewColor);
-        }
+        setStatusAndNavBarColors();
 
         BackPressManager backPressManager = new BackPressManager();
         getOnBackPressedDispatcher().addCallback(this, backPressManager.getCallback());
@@ -360,10 +362,10 @@ public class SearchActivity extends AsyncInitializationActivity
                                 null),
                         null,
                         backPressManager,
-                        /* OmniboxSuggestionsDropdownScrollListener= */ null,
+                        /* omniboxSuggestionsDropdownScrollListener= */ null,
                         /* tabModelSelectorSupplier= */ null,
                         mLocationBarUiOverrides,
-                        null,
+                        findViewById(R.id.control_container),
                         /* bottomWindowPaddingSupplier */ () -> 0,
                         /* onLongClickListener= */ null,
                         /* browserControlsStateProvider= */ null,
@@ -655,7 +657,7 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private void openChromeBrowser(@Nullable OmniboxLoadUrlParams params) {
-        Intent intent = SearchActivityUtils.createIntentForStartActivity(this, params);
+        Intent intent = SearchActivityUtils.createIntentForStartActivity(params);
         if (intent == null) return;
 
         if (mIntentOrigin == IntentOrigin.SEARCH_WIDGET) {
@@ -697,14 +699,29 @@ public class SearchActivity extends AsyncInitializationActivity
         int anchorViewBackgroundColor = getColor(R.color.default_bg_color_dark_elev_3_baseline);
         GradientDrawable anchorViewBackground = (GradientDrawable) mAnchorView.getBackground();
         anchorViewBackground.setColor(anchorViewBackgroundColor);
-        // Update the status bar's color based on the toolbar color.
-        StatusBarColorController.setStatusBarColor(getWindow(), anchorViewBackgroundColor);
-
         GradientDrawable searchBoxBackground =
                 (GradientDrawable) ((LayerDrawable) mSearchBox.getBackground()).getDrawable(0);
         searchBoxBackground.setTintList(
                 AppCompatResources.getColorStateList(
                         this, R.color.toolbar_text_box_background_incognito));
+        setStatusAndNavBarColors();
+    }
+
+    /**
+     * Sets the status and nav bar colors to match the background color of mAnchorView.
+     *
+     * <p>Make sure that mAnchorView has the desired background color before you call this method.
+     */
+    private void setStatusAndNavBarColors() {
+        Drawable anchorViewBackground = mAnchorView.getBackground();
+        assert anchorViewBackground instanceof GradientDrawable
+                : "Unsupported background drawable.";
+        int anchorViewColor =
+                ((GradientDrawable) anchorViewBackground).getColor().getDefaultColor();
+        EdgeToEdgeSystemBarColorHelper helper =
+                getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper();
+        StatusBarColorController.setStatusBarColor(helper, getWindow(), anchorViewColor);
+        helper.setNavigationBarColor(anchorViewColor);
     }
 
     @VisibleForTesting
@@ -811,7 +828,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         && templateSvc.isSearchResultsPageFromDefaultSearchProvider(url);
         boolean isNative =
                 NativePage.isNativePageUrl(
-                        url, /* incognito= */ false, /* hasPdfDownload= */ false);
+                        url, /* isIncognito= */ false, /* hasPdfDownload= */ false);
 
         int targetType =
                 isNative
@@ -888,6 +905,14 @@ public class SearchActivity extends AsyncInitializationActivity
     @SuppressWarnings("MissingSuperCall")
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         super_onTopResumedActivityChanged(isTopResumedActivity);
+
+        // For hub search use in split screen and multi window mode, search activity should be
+        // dismissed when focus is lost to prevent focus from causing the suggestion list to flicker
+        // on window toggling.
+        if (!isTopResumedActivity && mIntentOrigin == IntentOrigin.HUB) {
+            finish(TerminationReason.ACTIVITY_FOCUS_LOST, null);
+            return;
+        }
 
         // TODO(crbug.com/329702834): Ensure showing Suggestions when activity resumes.
         // This may only happen when user enters tab switcher, and immediately returns to the

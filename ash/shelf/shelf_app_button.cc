@@ -192,10 +192,13 @@ class PromiseIconBackground : public views::Background {
   PromiseIconBackground(ui::ColorId color_id,
                         const gfx::Rect& icon_bounds,
                         const gfx::Insets& insets)
-      : color_id_(color_id), icon_bounds_(icon_bounds), insets_(insets) {}
+      : icon_bounds_(icon_bounds), insets_(insets) {
+    SetColor(color_id);
+  }
 
   PromiseIconBackground(const PromiseIconBackground&) = delete;
   PromiseIconBackground& operator=(const PromiseIconBackground&) = delete;
+
   ~PromiseIconBackground() override = default;
 
   // views::Background:
@@ -208,18 +211,16 @@ class PromiseIconBackground : public views::Background {
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(get_color());
+    flags.setColor(color().ConvertToSkColor(view->GetColorProvider()));
 
     canvas->DrawCircle(bounds.CenterPoint(), radius, flags);
   }
 
   void OnViewThemeChanged(views::View* view) override {
-    SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
     view->SchedulePaint();
   }
 
  private:
-  const ui::ColorId color_id_;
   const gfx::Rect icon_bounds_;
   const gfx::Insets insets_;
 };
@@ -473,7 +474,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   indicator_->SetPaintToLayer();
   indicator_->layer()->SetFillsBoundsOpaquely(false);
 
-  AddChildView(indicator_.get());
+  AddChildViewRaw(indicator_.get());
 
   notification_indicator_ =
       AddChildView(std::make_unique<DotIndicator>(kDefaultIndicatorColor));
@@ -501,13 +502,15 @@ ShelfAppButton::~ShelfAppButton() {
 }
 
 void ShelfAppButton::SetShadowedImage(const gfx::ImageSkia& image) {
-  icon_view_->SetImage(gfx::ImageSkiaOperations::CreateImageWithDropShadow(
-      image, icon_shadows_));
+  icon_view_->SetImage(ui::ImageModel::FromImageSkia(
+      gfx::ImageSkiaOperations::CreateImageWithDropShadow(image,
+                                                          icon_shadows_)));
 }
 
 void ShelfAppButton::UpdateMainAndMaybeHostBadgeIconImage() {
   if (is_promise_app_ || progress_indicator_ || has_host_badge_) {
-    icon_view_->SetImage(GetIconImage(icon_scale_));
+    icon_view_->SetImage(
+        ui::ImageModel::FromImageSkia(GetIconImage(icon_scale_)));
     return;
   }
 
@@ -900,9 +903,13 @@ void ShelfAppButton::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void ShelfAppButton::OnMouseCaptureLost() {
+  drag_timer_.Stop();
+
+  ClearState(STATE_DRAGGING);
   ClearState(STATE_HOVERED);
-  shelf_view_->PointerReleasedOnButton(this, ShelfView::MOUSE, true);
   ShelfButton::OnMouseCaptureLost();
+
+  shelf_view_->PointerReleasedOnButton(this, ShelfView::MOUSE, true);
 }
 
 bool ShelfAppButton::OnMouseDragged(const ui::MouseEvent& event) {

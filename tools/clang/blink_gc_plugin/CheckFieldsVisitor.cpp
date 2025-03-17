@@ -130,10 +130,9 @@ void CheckFieldsVisitor::AtValue(Value* edge) {
   }
 
   if (!Parent() || (!edge->value()->IsGCAllocated() &&
-                    (!options_.enable_ptrs_to_traceable_check ||
-                     !edge->value()
-                          ->NeedsTracing(Edge::NeedsTracingOption::kRecursive)
-                          .IsNeeded()))) {
+                    !edge->value()
+                         ->NeedsTracing(Edge::NeedsTracingOption::kRecursive)
+                         .IsNeeded())) {
     return;
   }
 

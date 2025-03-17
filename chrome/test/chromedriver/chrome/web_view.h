@@ -78,14 +78,15 @@ class WebView {
   // Resume the current page.
   virtual Status Resume(const Timeout* timeout) = 0;
 
-  virtual Status StartBidiServer(std::string bidi_mapper_string) = 0;
+  virtual Status StartBidiServer(std::string bidi_mapper_string,
+                                 bool enable_unsafe_extension_debugging) = 0;
 
   // Send the BiDi command to the BiDiMapper
   virtual Status PostBidiCommand(base::Value::Dict command) = 0;
 
   // Send the BiDi command to the BiDiMapper and receive the response
   // Precondition: commdand.Find("id") != nullptr
-  // Precondition: commdand.FindString("channel") != nullptr
+  // Precondition: commdand.FindString("goog:channel") != nullptr
   virtual Status SendBidiCommand(base::Value::Dict command,
                                  const Timeout& timeout,
                                  base::Value::Dict& response) = 0;

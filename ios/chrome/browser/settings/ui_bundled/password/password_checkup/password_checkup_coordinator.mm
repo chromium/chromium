@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -315,7 +316,7 @@ using password_manager::PasswordCheckReferrer;
   // `GetMobileNotificationPermissionStatusForClient()`.
   return push_notification_settings::
       GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kSafetyCheck, "");
+          PushNotificationClientId::kSafetyCheck, GaiaId());
 }
 
 // Prompts the user to opt-in to Safety Check push notifications.
@@ -329,7 +330,8 @@ using password_manager::PasswordCheckReferrer;
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser];
-
+  _optInAlertCoordinator.accessPoint =
+      NotificationOptInAccessPoint::kSafetyCheck;
   _optInAlertCoordinator.delegate = self;
 
   _optInAlertCoordinator.clientIds =

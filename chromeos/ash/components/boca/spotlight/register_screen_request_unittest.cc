@@ -114,7 +114,8 @@ TEST_F(RegisterScreenRequestTest, InitRegisterScreenRequestSucceed) {
   std::unique_ptr<RegisterScreenRequest> request =
       std::make_unique<RegisterScreenRequest>(
           request_sender(), std::move(session_id),
-          RegisterScreenParam("123456", "1", "d1"), future.GetCallback());
+          RegisterScreenParam("123456", "1", "d1"), "https://test",
+          future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -127,9 +128,8 @@ TEST_F(RegisterScreenRequestTest, InitRegisterScreenRequestSucceed) {
             http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   const char* contentData =
-      "{\"hostDevice\":{\"deviceInfo\":{\"deviceId\":\"d1\"},\"user\":{"
-      "\"gaiaId\":\"1\"}},\"spotlightConnectionParam\":{"
-      "\"spotlightConnectionCode\":\"123456\"}}";
+      "{\"connectionParam\":{\"connectionCode\":\"123456\"},\"hostDevice\":{"
+      "\"deviceInfo\":{\"deviceId\":\"d1\"},\"user\":{\"gaiaId\":\"1\"}}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_EQ(true, result.value());
@@ -147,7 +147,8 @@ TEST_F(RegisterScreenRequestTest, InitRegisterScreenAndFail) {
   std::unique_ptr<RegisterScreenRequest> request =
       std::make_unique<RegisterScreenRequest>(
           request_sender(), std::move(session_id),
-          RegisterScreenParam("123456", "1", "d1"), future.GetCallback());
+          RegisterScreenParam("123456", "1", "d1"), "https://test",
+          future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
 
@@ -161,9 +162,8 @@ TEST_F(RegisterScreenRequestTest, InitRegisterScreenAndFail) {
             http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   const char* contentData =
-      "{\"hostDevice\":{\"deviceInfo\":{\"deviceId\":\"d1\"},\"user\":{"
-      "\"gaiaId\":\"1\"}},\"spotlightConnectionParam\":{"
-      "\"spotlightConnectionCode\":\"123456\"}}";
+      "{\"connectionParam\":{\"connectionCode\":\"123456\"},\"hostDevice\":{"
+      "\"deviceInfo\":{\"deviceId\":\"d1\"},\"user\":{\"gaiaId\":\"1\"}}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_EQ(google_apis::HTTP_INTERNAL_SERVER_ERROR, result.error());

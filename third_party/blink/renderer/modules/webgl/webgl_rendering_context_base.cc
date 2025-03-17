@@ -23,6 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 #include <memory>
@@ -38,6 +43,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
@@ -126,11 +132,14 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/sk_image_info_hash.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -224,33 +233,36 @@ base::Lock& WebGLContextLimitLock() {
 using WebGLRenderingContextBaseSet =
     HeapHashSet<WeakMember<WebGLRenderingContextBase>>;
 WebGLRenderingContextBaseSet& ActiveContexts() {
+  using WebGLRenderingContextBaseSetHolder =
+      DisallowNewWrapper<WebGLRenderingContextBaseSet>;
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<Persistent<WebGLRenderingContextBaseSet>>, active_contexts,
-      ());
-  Persistent<WebGLRenderingContextBaseSet>& active_contexts_persistent =
+      ThreadSpecific<Persistent<WebGLRenderingContextBaseSetHolder>>,
+      active_contexts, ());
+  Persistent<WebGLRenderingContextBaseSetHolder>& active_contexts_persistent =
       *active_contexts;
   if (!active_contexts_persistent) {
     active_contexts_persistent =
-        MakeGarbageCollected<WebGLRenderingContextBaseSet>();
+        MakeGarbageCollected<WebGLRenderingContextBaseSetHolder>();
     LEAK_SANITIZER_IGNORE_OBJECT(&active_contexts_persistent);
   }
-  return *active_contexts_persistent;
+  return active_contexts_persistent->Value();
 }
 
 using WebGLRenderingContextBaseMap =
     HeapHashMap<WeakMember<WebGLRenderingContextBase>, int>;
 WebGLRenderingContextBaseMap& ForciblyEvictedContexts() {
+  using WebGLRenderingContextBaseMapHolder =
+      DisallowNewWrapper<WebGLRenderingContextBaseMap>;
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<Persistent<WebGLRenderingContextBaseMap>>,
-      forcibly_evicted_contexts, ());
-  Persistent<WebGLRenderingContextBaseMap>&
-      forcibly_evicted_contexts_persistent = *forcibly_evicted_contexts;
-  if (!forcibly_evicted_contexts_persistent) {
-    forcibly_evicted_contexts_persistent =
-        MakeGarbageCollected<WebGLRenderingContextBaseMap>();
-    LEAK_SANITIZER_IGNORE_OBJECT(&forcibly_evicted_contexts_persistent);
+      ThreadSpecific<Persistent<WebGLRenderingContextBaseMapHolder>>, holder,
+      ());
+  Persistent<WebGLRenderingContextBaseMapHolder>& holder_persistent = *holder;
+  if (!holder_persistent) {
+    holder_persistent =
+        MakeGarbageCollected<WebGLRenderingContextBaseMapHolder>();
+    LEAK_SANITIZER_IGNORE_OBJECT(&holder_persistent);
   }
-  return *forcibly_evicted_contexts_persistent;
+  return holder_persistent->Value();
 }
 
 }  // namespace
@@ -674,11 +686,14 @@ void WebGLRenderingContextBase::ForceNextWebGLContextCreationToFail() {
 }
 
 ImageBitmap* WebGLRenderingContextBase::TransferToImageBitmapBase(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   WebFeature feature = WebFeature::kOffscreenCanvasTransferToImageBitmapWebGL;
   UseCounter::Count(ExecutionContext::From(script_state), feature);
   if (!GetDrawingBuffer()) {
-    // Context is lost.
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot transfer to ImageBitmap because WebGL context is lost.");
     return nullptr;
   }
 
@@ -826,12 +841,12 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
       CanvasResourceProvider::ShouldInitialize::kNo;
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          size, GetSkColorType(), GetAlphaType(), GetSkColorSpace(),
+          size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
           kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
           RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-        size, GetSkColorType(), GetAlphaType(), GetSkColorSpace(),
+        size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         CanvasResourceProvider::ShouldInitialize::kNo);
   }
 
@@ -1423,12 +1438,6 @@ void WebGLRenderingContextBase::InitializeNewContext() {
       WTF::BindRepeating(&WebGLRenderingContextBase::OnErrorMessage,
                          WrapWeakPersistent(this)));
 
-  // If WebGL 2, the PRIMITIVE_RESTART_FIXED_INDEX should be always enabled.
-  // See the section <Primitive Restart is Always Enabled> in WebGL 2 spec:
-  // https://www.khronos.org/registry/webgl/specs/latest/2.0/#4.1.4
-  if (IsWebGL2())
-    ContextGL()->Enable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
-
   // This ensures that the context has a valid "lastFlushID" and won't be
   // mistakenly identified as the "least recently used" context.
   ContextGL()->Flush();
@@ -1532,6 +1541,13 @@ WebGLRenderingContextBase::~WebGLRenderingContextBase() {
   // Now that this context is destroyed, see if there's a
   // previously-evicted one that should be restored.
   RestoreEvictedContext(this);
+}
+
+HTMLCanvasElement* WebGLRenderingContextBase::canvas() const {
+  if (Host()->IsOffscreenCanvas()) {
+    return nullptr;
+  }
+  return static_cast<HTMLCanvasElement*>(Host());
 }
 
 void WebGLRenderingContextBase::DestroyContext() {
@@ -1786,6 +1802,31 @@ void WebGLRenderingContextBase::RestoreColorMask() {
                          color_mask_[3]);
 }
 
+void WebGLRenderingContextBase::RestoreVertexArrayObjectBinding() {
+  if (isContextLost()) {
+    return;
+  }
+
+  ContextGL()->BindVertexArrayOES(
+      ObjectOrZero(bound_vertex_array_object_.Get()));
+}
+
+void WebGLRenderingContextBase::RestoreProgram() {
+  if (isContextLost()) {
+    return;
+  }
+
+  ContextGL()->UseProgram(ObjectOrZero(current_program_.Get()));
+}
+
+void WebGLRenderingContextBase::RestoreActiveTexture() {
+  if (isContextLost()) {
+    return;
+  }
+
+  ContextGL()->ActiveTexture(active_texture_unit_ + GL_TEXTURE0);
+}
+
 void WebGLRenderingContextBase::MarkLayerComposited() {
   if (!isContextLost())
     GetDrawingBuffer()->SetBufferClearNeeded(true);
@@ -1827,12 +1868,7 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   if (!resource_provider)
     return false;
 
-  if (Host()->LowLatencyEnabled() &&
-      resource_provider->SupportsSingleBuffering()) {
-    // It's possible single buffering isn't enabled yet because we haven't
-    // finished the first frame e.g. this gets called first due to drawImage.
-    resource_provider->TryEnableSingleBuffering();
-    DCHECK(resource_provider->IsSingleBuffered());
+  if (Host()->LowLatencyEnabled() && resource_provider->IsSingleBuffered()) {
     // Single buffered passthrough resource provider doesn't have backing
     // texture. We need to export the backbuffer mailbox directly without
     // copying.
@@ -2673,32 +2709,22 @@ void WebGLRenderingContextBase::copyTexSubImage2D(GLenum target,
 }
 
 WebGLBuffer* WebGLRenderingContextBase::createBuffer() {
-  if (isContextLost())
-    return nullptr;
   return MakeGarbageCollected<WebGLBuffer>(this);
 }
 
 WebGLFramebuffer* WebGLRenderingContextBase::createFramebuffer() {
-  if (isContextLost())
-    return nullptr;
   return MakeGarbageCollected<WebGLFramebuffer>(this);
 }
 
 WebGLTexture* WebGLRenderingContextBase::createTexture() {
-  if (isContextLost())
-    return nullptr;
   return MakeGarbageCollected<WebGLTexture>(this);
 }
 
 WebGLProgram* WebGLRenderingContextBase::createProgram() {
-  if (isContextLost())
-    return nullptr;
   return MakeGarbageCollected<WebGLProgram>(this);
 }
 
 WebGLRenderbuffer* WebGLRenderingContextBase::createRenderbuffer() {
-  if (isContextLost())
-    return nullptr;
   return MakeGarbageCollected<WebGLRenderbuffer>(this);
 }
 
@@ -2711,8 +2737,6 @@ void WebGLRenderingContextBase::SetBoundVertexArrayObject(
 }
 
 WebGLShader* WebGLRenderingContextBase::createShader(GLenum type) {
-  if (isContextLost())
-    return nullptr;
   if (!ValidateShaderType("createShader", type)) {
     return nullptr;
   }
@@ -3704,9 +3728,6 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
       return GetIntParameter(script_state, pname);
     case GL_MAX_VIEWPORT_DIMS:
       return GetWebGLIntArrayParameter(script_state, pname);
-    case GL_NUM_SHADER_BINARY_FORMATS:
-      // FIXME: should we always return 0 for this?
-      return GetIntParameter(script_state, pname);
     case GL_PACK_ALIGNMENT:
       return GetIntParameter(script_state, pname);
     case GL_POLYGON_OFFSET_FACTOR:
@@ -5548,10 +5569,10 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
   // TODO(https://crbug.com/1341235): The choice of color type should match the
   // format of the TexImage function. The choice of alpha type should opaque for
   // opaque images. The color space should match the unpack color space.
-  const auto resource_provider_info = SkImageInfo::Make(
-      width, height, kN32_SkColorType, kPremul_SkAlphaType, nullptr);
   CanvasResourceProvider* resource_provider =
-      generated_image_cache_.GetCanvasResourceProvider(resource_provider_info);
+      generated_image_cache_.GetCanvasResourceProvider(
+          {width, height}, GetN32FormatForCanvas(), kPremul_SkAlphaType,
+          gfx::ColorSpace::CreateSRGB());
   if (!resource_provider) {
     SynthesizeGLError(GL_OUT_OF_MEMORY, function_name, "out of memory");
     return nullptr;
@@ -5623,15 +5644,15 @@ SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
   return CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
 }
 
-SkColorType WebGLRenderingContextBase::GetSkColorType() const {
+viz::SharedImageFormat WebGLRenderingContextBase::GetSharedImageFormat() const {
   if (drawing_buffer_ && drawing_buffer_->StorageFormat() == GL_RGBA16F) {
-    return kRGBA_F16_SkColorType;
+    return viz::SinglePlaneFormat::kRGBA_F16;
   }
-  return kN32_SkColorType;
+  return GetN32FormatForCanvas();
 }
 
-sk_sp<SkColorSpace> WebGLRenderingContextBase::GetSkColorSpace() const {
-  return PredefinedColorSpaceToSkColorSpace(drawing_buffer_color_space_);
+gfx::ColorSpace WebGLRenderingContextBase::GetColorSpace() const {
+  return PredefinedColorSpaceToGfxColorSpace(drawing_buffer_color_space_);
 }
 
 gfx::Rect WebGLRenderingContextBase::GetImageDataSize(ImageData* pixels) {
@@ -6053,7 +6074,7 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image = context_host->GetSourceImageForCanvas(
       FlushReason::kWebGLTexImage, &source_image_status,
-      gfx::SizeF(*params.width, *params.height), kPremultiplyAlpha);
+      gfx::SizeF(*params.width, *params.height));
   if (source_image_status != kNormalSourceImageStatus)
     return;
 
@@ -6339,21 +6360,22 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     dest_rect.Transpose();
   }
 
-  // TODO(https://crbug.com/1341235): The choice of color type will clamp
+  // TODO(https://crbug.com/1341235): The choice of format will clamp
   // higher precision sources to 8 bit per color.
-  const auto resource_provider_info = SkImageInfo::Make(
-      gfx::SizeToSkISize(dest_rect.size()), kN32_SkColorType,
-      media::IsOpaque(media_video_frame->format()) ? kOpaque_SkAlphaType
-                                                   : kPremul_SkAlphaType,
-      params.unpack_colorspace_conversion
-          ? media_video_frame->CompatRGBColorSpace().ToSkColorSpace()
-          : SkColorSpace::MakeSRGB());
+  viz::SharedImageFormat format = GetN32FormatForCanvas();
+  SkAlphaType alpha_type = media::IsOpaque(media_video_frame->format())
+                               ? kOpaque_SkAlphaType
+                               : kPremul_SkAlphaType;
+  gfx::ColorSpace color_space = params.unpack_colorspace_conversion
+                                    ? media_video_frame->CompatRGBColorSpace()
+                                    : gfx::ColorSpace::CreateSRGB();
 
   // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
   // handle tagged orientation, we set |prefer_tagged_orientation| to false.
   scoped_refptr<StaticBitmapImage> image = CreateImageFromVideoFrame(
       std::move(media_video_frame), kAllowZeroCopyImages,
-      image_cache.GetCanvasResourceProvider(resource_provider_info),
+      image_cache.GetCanvasResourceProvider(dest_rect.size(), format,
+                                            alpha_type, color_space),
       video_renderer, dest_rect, /*prefer_tagged_orientation=*/false,
       /*reinterpret_video_as_srgb=*/!params.unpack_colorspace_conversion);
   if (!image)
@@ -6432,7 +6454,7 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
   // ignored. Set `adjusted_params` such that no conversions will be made using
   // that state.
   params.unpack_premultiply_alpha =
-      static_bitmap_image->GetSkColorInfo().alphaType() == kPremul_SkAlphaType;
+      static_bitmap_image->GetAlphaType() == kPremul_SkAlphaType;
   params.unpack_flip_y = false;
   const bool image_has_flip_y = false;
   // TODO(kbr): make this work for sub-rectangles of ImageBitmaps.
@@ -7301,6 +7323,17 @@ void WebGLRenderingContextBase::DrawingBufferClientRestoreTexture2DBinding() {
   if (!ContextGL())
     return;
   RestoreCurrentTexture2D();
+}
+
+void WebGLRenderingContextBase::
+    DrawingBufferClientRestoreTexture2DArrayBinding() {
+  if (destruction_in_progress_) {
+    return;
+  }
+  if (!ContextGL()) {
+    return;
+  }
+  RestoreCurrentTexture2DArray();
 }
 
 void WebGLRenderingContextBase::
@@ -8589,14 +8622,22 @@ WebGLRenderingContextBase::LRUCanvasResourceProviderCache::
 
 CanvasResourceProvider* WebGLRenderingContextBase::
     LRUCanvasResourceProviderCache::GetCanvasResourceProvider(
-        const SkImageInfo& info) {
+        gfx::Size size,
+        viz::SharedImageFormat format,
+        SkAlphaType alpha_type,
+        const gfx::ColorSpace& color_space) {
   wtf_size_t i;
   for (i = 0; i < resource_providers_.size(); ++i) {
     CanvasResourceProvider* resource_provider = resource_providers_[i].get();
     if (!resource_provider)
       break;
-    if (resource_provider->GetSkImageInfo() != info)
+
+    if (resource_provider->Size() != size ||
+        resource_provider->GetSharedImageFormat() != format ||
+        resource_provider->GetAlphaType() != alpha_type ||
+        resource_provider->GetColorSpace() != color_space) {
       continue;
+    }
     BubbleToFront(i);
     return resource_provider;
   }
@@ -8608,12 +8649,12 @@ CanvasResourceProvider* WebGLRenderingContextBase::
       raster_context_provider =
           wrapper->ContextProvider().RasterContextProvider();
     }
-    temp = CreateResourceProviderForVideoFrame(info, raster_context_provider);
+    temp = CreateResourceProviderForVideoFrame(
+        size, format, alpha_type, color_space, raster_context_provider);
   } else {
     // TODO(fserb): why is this a BITMAP?
     temp = CanvasResourceProvider::CreateBitmapProvider(
-        gfx::Size(info.width(), info.height()), info.colorType(),
-        info.alphaType(), info.refColorSpace(),
+        size, format, alpha_type, color_space,
         CanvasResourceProvider::ShouldInitialize::kNo);  // TODO: should this
                                                          // use the canvas's
   }
@@ -8776,6 +8817,13 @@ void WebGLRenderingContextBase::RestoreCurrentFramebuffer() {
 void WebGLRenderingContextBase::RestoreCurrentTexture2D() {
   bindTexture(GL_TEXTURE_2D,
               texture_units_[active_texture_unit_].texture2d_binding_.Get());
+}
+
+void WebGLRenderingContextBase::RestoreCurrentTexture2DArray() {
+  CHECK(IsWebGL2());
+  bindTexture(
+      GL_TEXTURE_2D_ARRAY,
+      texture_units_[active_texture_unit_].texture2d_array_binding_.Get());
 }
 
 void WebGLRenderingContextBase::RestoreCurrentTextureCubeMap() {

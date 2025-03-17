@@ -153,6 +153,18 @@ void TabModelObserverJniBridge::TabClosureUndone(
   }
 }
 
+void TabModelObserverJniBridge::OnTabCloseUndone(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jobj,
+    const JavaParamRef<jobjectArray>& jtabs) {
+  std::vector<raw_ptr<TabAndroid, VectorExperimental>> tabs =
+      TabAndroid::GetAllNativeTabs(env,
+                                   ScopedJavaLocalRef<jobjectArray>(jtabs));
+  for (auto& observer : observers_) {
+    observer.OnTabCloseUndone(tabs);
+  }
+}
+
 void TabModelObserverJniBridge::TabClosureCommitted(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj,

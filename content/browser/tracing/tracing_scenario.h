@@ -138,6 +138,8 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
     kEnabled,
     // The tracing session was setup and the scenario is ready to start.
     kSetup,
+    // The tracing session is starting.
+    kStarting,
     // The tracing session is recording.
     kRecording,
     // A stop rule was triggered and the tracing session is stopping.
@@ -163,6 +165,9 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
     virtual bool OnScenarioCloned(TracingScenario* scenario) = 0;
     // Called when |scenario| starts recording a trace.
     virtual void OnScenarioRecording(TracingScenario* scenario) = 0;
+    // Called when |scenario| has an error.
+    virtual void OnScenarioError(TracingScenario* scenario,
+                                 perfetto::TracingError error) = 0;
     // Called when a trace was collected.
     virtual void SaveTrace(TracingScenario* scenario,
                            base::Token trace_uuid,
@@ -198,7 +203,6 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   State current_state() const { return current_state_; }
   bool privacy_filter_enabled() const { return privacy_filtering_enabled_; }
   bool is_local_scenario() const { return is_local_scenario_; }
-  std::string config_hash() const { return config_hash_; }
 
   base::Token GetSessionID() const { return session_id_; }
 
@@ -260,10 +264,10 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   base::WeakPtr<TracingScenario> GetWeakPtr();
   void SetState(State new_state);
 
-  const std::string config_hash_;
   const bool privacy_filtering_enabled_;
   const bool is_local_scenario_;
   const bool request_startup_tracing_;
+  const bool use_system_backend_ = false;
   State current_state_ = State::kDisabled;
   std::vector<std::unique_ptr<BackgroundTracingRule>> setup_rules_;
 

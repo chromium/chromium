@@ -16,7 +16,7 @@ namespace blink {
 
 class OpenTypeMathSupportTest : public FontTestBase {
  protected:
-  Font CreateMathFont(const String& name, float size = 1000) {
+  Font* CreateMathFont(const String& name, float size = 1000) {
     FontDescription::VariantLigatures ligatures;
     return blink::test::CreateTestFont(
         AtomicString("MathTestFont"),
@@ -26,15 +26,15 @@ class OpenTypeMathSupportTest : public FontTestBase {
 
   bool HasMathData(const String& name) {
     return OpenTypeMathSupport::HasMathData(
-        CreateMathFont(name).PrimaryFont()->PlatformData().GetHarfBuzzFace());
+        CreateMathFont(name)->PrimaryFont()->PlatformData().GetHarfBuzzFace());
   }
 
   std::optional<float> MathConstant(
       const String& name,
       OpenTypeMathSupport::MathConstants constant) {
-    Font math = CreateMathFont(name);
+    Font* math = CreateMathFont(name);
     return OpenTypeMathSupport::MathConstant(
-        math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), constant);
+        math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), constant);
   }
 };
 
@@ -50,7 +50,7 @@ TEST_F(OpenTypeMathSupportTest, HasMathData) {
 }
 
 TEST_F(OpenTypeMathSupportTest, MathConstantNullOpt) {
-  Font math_text = CreateMathFont("math-text.woff");
+  Font* math_text = CreateMathFont("math-text.woff");
 
   for (int i = OpenTypeMathSupport::MathConstants::kScriptPercentScaleDown;
        i <=
@@ -63,7 +63,7 @@ TEST_F(OpenTypeMathSupportTest, MathConstantNullOpt) {
 
     // Font without a MATH table.
     EXPECT_FALSE(OpenTypeMathSupport::MathConstant(
-        math_text.PrimaryFont()->PlatformData().GetHarfBuzzFace(),
+        math_text->PrimaryFont()->PlatformData().GetHarfBuzzFace(),
         math_constant));
   }
 }
@@ -227,13 +227,13 @@ TEST_F(OpenTypeMathSupportTest, MathConstantRadicals) {
 }
 
 TEST_F(OpenTypeMathSupportTest, MathVariantsWithoutTable) {
-  Font math = CreateMathFont("math-text.woff");
-  auto glyph = math.PrimaryFont()->GlyphForCharacter('A');
+  Font* math = CreateMathFont("math-text.woff");
+  auto glyph = math->PrimaryFont()->GlyphForCharacter('A');
 
   // Horizontal variants.
   {
     auto variants = OpenTypeMathSupport::GetGlyphVariantRecords(
-        math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), glyph,
+        math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), glyph,
         OpenTypeMathStretchData::StretchAxis::Horizontal);
     EXPECT_EQ(variants.size(), 1u);
     EXPECT_EQ(variants[0], glyph);
@@ -242,7 +242,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithoutTable) {
   // Vertical variants.
   {
     auto variants = OpenTypeMathSupport::GetGlyphVariantRecords(
-        math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), glyph,
+        math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), glyph,
         OpenTypeMathStretchData::StretchAxis::Vertical);
     EXPECT_EQ(variants.size(), 1u);
     EXPECT_EQ(variants[0], glyph);
@@ -251,7 +251,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithoutTable) {
   // Horizontal parts.
   {
     auto parts = OpenTypeMathSupport::GetGlyphPartRecords(
-        math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), glyph,
+        math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), glyph,
         OpenTypeMathStretchData::StretchAxis::Horizontal);
     EXPECT_TRUE(parts.empty());
   }
@@ -259,7 +259,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithoutTable) {
   // // Vertical parts.
   {
     auto parts = OpenTypeMathSupport::GetGlyphPartRecords(
-        math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), glyph,
+        math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), glyph,
         OpenTypeMathStretchData::StretchAxis::Vertical);
     EXPECT_TRUE(parts.empty());
   }
@@ -268,9 +268,9 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithoutTable) {
 // See blink/web_tests/external/wpt/mathml/tools/operator-dictionary.py and
 // blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h.
 TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
-  Font math = CreateMathFont("operators.woff");
-  auto left_brace = math.PrimaryFont()->GlyphForCharacter(kLeftBraceCodePoint);
-  auto over_brace = math.PrimaryFont()->GlyphForCharacter(kOverBraceCodePoint);
+  Font* math = CreateMathFont("operators.woff");
+  auto left_brace = math->PrimaryFont()->GlyphForCharacter(kLeftBraceCodePoint);
+  auto over_brace = math->PrimaryFont()->GlyphForCharacter(kOverBraceCodePoint);
 
   // Retrieve glyph indices of stretchy operator's parts.
   Vector<UChar32> v, h;
@@ -279,7 +279,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
   // Vertical variants for vertical operator.
   {
     auto variants = OpenTypeMathSupport::GetGlyphVariantRecords(
-        math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), left_brace,
+        math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), left_brace,
         OpenTypeMathStretchData::StretchAxis::Vertical);
     EXPECT_EQ(variants.size(), 5u);
     EXPECT_EQ(variants[0], left_brace);
@@ -292,7 +292,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
   // Horizontal variants for vertical operator.
   {
     auto variants = OpenTypeMathSupport::GetGlyphVariantRecords(
-        math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), left_brace,
+        math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), left_brace,
         OpenTypeMathStretchData::StretchAxis::Horizontal);
     EXPECT_EQ(variants.size(), 1u);
     EXPECT_EQ(variants[0], left_brace);
@@ -301,7 +301,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
   // Horizontal variants for horizontal operator.
   {
     auto variants = OpenTypeMathSupport::GetGlyphVariantRecords(
-        math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), over_brace,
+        math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), over_brace,
         OpenTypeMathStretchData::StretchAxis::Horizontal);
     EXPECT_EQ(variants.size(), 5u);
     EXPECT_EQ(variants[0], over_brace);
@@ -314,7 +314,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
   // Vertical variants for horizontal operator.
   {
     auto variants = OpenTypeMathSupport::GetGlyphVariantRecords(
-        math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), over_brace,
+        math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), over_brace,
         OpenTypeMathStretchData::StretchAxis::Vertical);
     EXPECT_EQ(variants.size(), 1u);
     EXPECT_EQ(variants[0], over_brace);
@@ -323,7 +323,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
   // Vertical parts for vertical operator.
   {
     auto parts = OpenTypeMathSupport::GetGlyphPartRecords(
-        math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), left_brace,
+        math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), left_brace,
         OpenTypeMathStretchData::StretchAxis::Vertical);
     EXPECT_EQ(parts.size(), 2u);
     EXPECT_EQ(parts[0].glyph, v[2]);
@@ -341,7 +341,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
   // Horizontal parts for vertical operator.
   {
     auto parts = OpenTypeMathSupport::GetGlyphPartRecords(
-        math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), left_brace,
+        math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), left_brace,
         OpenTypeMathStretchData::StretchAxis::Horizontal);
     EXPECT_TRUE(parts.empty());
   }
@@ -349,7 +349,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
   // Horizontal parts for horizontal operator.
   {
     auto parts = OpenTypeMathSupport::GetGlyphPartRecords(
-        math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), over_brace,
+        math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), over_brace,
         OpenTypeMathStretchData::StretchAxis::Horizontal);
 
     EXPECT_EQ(parts.size(), 2u);
@@ -369,7 +369,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
   // Vertical parts for horizontal operator.
   {
     auto parts = OpenTypeMathSupport::GetGlyphPartRecords(
-        math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), over_brace,
+        math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), over_brace,
         OpenTypeMathStretchData::StretchAxis::Vertical);
     EXPECT_TRUE(parts.empty());
   }
@@ -379,15 +379,15 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
 // blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h
 TEST_F(OpenTypeMathSupportTest, MathItalicCorrection) {
   {
-    Font math = CreateMathFont(
+    Font* math = CreateMathFont(
         "largeop-displayoperatorminheight2000-2AFF-italiccorrection3000.woff");
     Glyph base_glyph =
-        math.PrimaryFont()->GlyphForCharacter(kNAryWhiteVerticalBarCodePoint);
+        math->PrimaryFont()->GlyphForCharacter(kNAryWhiteVerticalBarCodePoint);
 
     // Retrieve the glyph with italic correction.
     Vector<OpenTypeMathStretchData::GlyphVariantRecord> variants =
         OpenTypeMathSupport::GetGlyphVariantRecords(
-            math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), base_glyph,
+            math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), base_glyph,
             OpenTypeMathStretchData::StretchAxis::Vertical);
     EXPECT_EQ(variants.size(), 3u);
     EXPECT_EQ(variants[0], base_glyph);
@@ -397,7 +397,7 @@ TEST_F(OpenTypeMathSupportTest, MathItalicCorrection) {
     // MathItalicCorrection with a value.
     std::optional<float> glyph_with_italic_correction_value =
         OpenTypeMathSupport::MathItalicCorrection(
-            math.PrimaryFont()->PlatformData().GetHarfBuzzFace(),
+            math->PrimaryFont()->PlatformData().GetHarfBuzzFace(),
             glyph_with_italic_correction);
     EXPECT_TRUE(glyph_with_italic_correction_value);
     EXPECT_FLOAT_EQ(*glyph_with_italic_correction_value, 3000);
@@ -407,23 +407,23 @@ TEST_F(OpenTypeMathSupportTest, MathItalicCorrection) {
     float italic_correction = -1000;
     Vector<OpenTypeMathStretchData::GlyphPartRecord> parts =
         OpenTypeMathSupport::GetGlyphPartRecords(
-            math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), base_glyph,
+            math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), base_glyph,
             OpenTypeMathStretchData::StretchAxis::Vertical, &italic_correction);
     EXPECT_TRUE(parts.empty());
     EXPECT_FLOAT_EQ(italic_correction, -1000);
   }
 
   {
-    Font math = CreateMathFont(
+    Font* math = CreateMathFont(
         "largeop-displayoperatorminheight7000-2AFF-italiccorrection5000.woff");
     Glyph base_glyph =
-        math.PrimaryFont()->GlyphForCharacter(kNAryWhiteVerticalBarCodePoint);
+        math->PrimaryFont()->GlyphForCharacter(kNAryWhiteVerticalBarCodePoint);
 
     // OpenTypeMathSupport::GetGlyphPartRecords sets italic correction.
     float italic_correction = -1000;
     Vector<OpenTypeMathStretchData::GlyphPartRecord> parts =
         OpenTypeMathSupport::GetGlyphPartRecords(
-            math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), base_glyph,
+            math->PrimaryFont()->PlatformData().GetHarfBuzzFace(), base_glyph,
             OpenTypeMathStretchData::StretchAxis::Vertical, &italic_correction);
     EXPECT_EQ(parts.size(), 3u);
     EXPECT_FLOAT_EQ(italic_correction, 5000);
@@ -432,11 +432,11 @@ TEST_F(OpenTypeMathSupportTest, MathItalicCorrection) {
 
 TEST_F(OpenTypeMathSupportTest, MathItalicCorrectionNullOpt) {
   // Font without a MATH table.
-  Font math_text = CreateMathFont("math-text.woff");
-  Glyph glyph = math_text.PrimaryFont()->GlyphForCharacter('A');
+  Font* math_text = CreateMathFont("math-text.woff");
+  Glyph glyph = math_text->PrimaryFont()->GlyphForCharacter('A');
   EXPECT_TRUE(glyph);
   EXPECT_FALSE(OpenTypeMathSupport::MathItalicCorrection(
-      math_text.PrimaryFont()->PlatformData().GetHarfBuzzFace(), glyph));
+      math_text->PrimaryFont()->PlatformData().GetHarfBuzzFace(), glyph));
 }
 
 }  // namespace blink

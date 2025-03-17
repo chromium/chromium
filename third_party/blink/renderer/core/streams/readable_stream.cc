@@ -1323,6 +1323,9 @@ ReadableStream::IterationSourceBase* ReadableStream::CreateIterationSource(
     ReadableStream::IterationSourceBase::Kind kind,
     ReadableStreamIteratorOptions* options,
     ExceptionState& exception_state) {
+  UseCounter::CountWebDXFeature(ExecutionContext::From(script_state),
+                                WebDXFeature::kAsyncIterableStreams);
+
   // 1. Let reader be ? AcquireReadableStreamDefaultReader(stream).
   ReadableStreamDefaultReader* reader =
       AcquireDefaultReader(script_state, this, exception_state);

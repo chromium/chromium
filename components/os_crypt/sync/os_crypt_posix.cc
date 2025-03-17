@@ -7,56 +7,47 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/os_crypt/sync/os_crypt_metrics.h"
-#include "crypto/encryptor.h"
-#include "crypto/symmetric_key.h"
+#include "crypto/aes_cbc.h"
 
 namespace {
 
-// Salt for Symmetric key derivation.
-constexpr char kSalt[] = "saltysalt";
+// clang-format off
+// PBKDF2-HMAC-SHA1(1 iteration, key = "peanuts", salt = "saltysalt")
+constexpr auto kV10Key = std::to_array<uint8_t>({
+    0xfd, 0x62, 0x1f, 0xe5, 0xa2, 0xb4, 0x02, 0x53,
+    0x9d, 0xfa, 0x14, 0x7c, 0xa9, 0x27, 0x27, 0x78,
+});
 
-// Key size required for 128 bit AES.
-constexpr size_t kDerivedKeySizeInBits = 128;
+constexpr std::array<uint8_t, crypto::aes_cbc::kBlockSize> kIv{
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+};
 
-// Constant for Symmetric key derivation.
-constexpr size_t kEncryptionIterations = 1;
+std::optional<bool> g_encryption_available_for_testing;
 
-// Size of initialization vector for AES 128-bit.
-constexpr size_t kIVBlockSizeAES128 = 16;
+// clang-format on
 
 // Prefix for cypher text returned by obfuscation version.  We prefix the
 // cyphertext with this string so that future data migration can detect
 // this and migrate to full encryption without data loss.
 constexpr char kObfuscationPrefix[] = "v10";
 
-// Generates a newly allocated SymmetricKey object based a hard-coded password.
-// Ownership of the key is passed to the caller.  Returns NULL key if a key
-// generation error occurs.
-crypto::SymmetricKey* GetEncryptionKey() {
-  // We currently "obfuscate" by encrypting and decrypting with hard-coded
-  // password.  We need to improve this password situation by moving a secure
-  // password into a system-level key store.
-  // http://crbug.com/25404 and http://crbug.com/49115
-  const std::string password = "peanuts";
-  const std::string salt(kSalt);
+}  // namespace
 
-  // Create an encryption key from our password and salt.
-  std::unique_ptr<crypto::SymmetricKey> encryption_key(
-      crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-          crypto::SymmetricKey::AES, password, salt, kEncryptionIterations,
-          kDerivedKeySizeInBits));
-  DCHECK(encryption_key.get());
+namespace OSCrypt {
 
-  return encryption_key.release();
+void SetEncryptionAvailableForTesting(std::optional<bool> available) {
+  g_encryption_available_for_testing = available;
 }
 
-}  // namespace
+}  // namespace OSCrypt
 
 bool OSCrypt::EncryptString16(const std::u16string& plaintext,
                               std::string* ciphertext) {
@@ -73,52 +64,43 @@ bool OSCrypt::DecryptString16(const std::string& ciphertext,
   return true;
 }
 
+// This is an obfuscation layer that does not provide any genuine
+// confidentiality. It is used on OSes that already provide protection for data
+// at rest some other way (Android, CrOS, and Fuchsia) or where there's no
+// implementation available of platform secret store integration in Chromium
+// (FreeBSD, others).
 bool OSCrypt::EncryptString(const std::string& plaintext,
                             std::string* ciphertext) {
-  // This currently "obfuscates" by encrypting with hard-coded password.
-  // We need to improve this password situation by moving a secure password
-  // into a system-level key store.
-  // http://crbug.com/25404 and http://crbug.com/49115
+  if (!IsEncryptionAvailable()) {
+    return false;
+  }
 
   if (plaintext.empty()) {
     *ciphertext = std::string();
     return true;
   }
 
-  std::unique_ptr<crypto::SymmetricKey> encryption_key(GetEncryptionKey());
-  if (!encryption_key.get())
-    return false;
+  *ciphertext = kObfuscationPrefix;
+  ciphertext->append(base::as_string_view(
+      crypto::aes_cbc::Encrypt(kV10Key, kIv, base::as_byte_span(plaintext))));
 
-  const std::string iv(kIVBlockSizeAES128, ' ');
-  crypto::Encryptor encryptor;
-  if (!encryptor.Init(encryption_key.get(), crypto::Encryptor::CBC, iv))
-    return false;
-
-  if (!encryptor.Encrypt(plaintext, ciphertext))
-    return false;
-
-  // Prefix the cypher text with version information.
-  ciphertext->insert(0, kObfuscationPrefix);
   return true;
 }
 
 bool OSCrypt::DecryptString(const std::string& ciphertext,
                             std::string* plaintext) {
-  // This currently "obfuscates" by encrypting with hard-coded password.
-  // We need to improve this password situation by moving a secure password
-  // into a system-level key store.
-  // http://crbug.com/25404 and http://crbug.com/49115
+  if (!IsEncryptionAvailable()) {
+    return false;
+  }
 
   if (ciphertext.empty()) {
     *plaintext = std::string();
     return true;
   }
 
-  // Check that the incoming cyphertext was indeed encrypted with the expected
-  // version.  If the prefix is not found then we'll assume we're dealing with
-  // old data saved as clear text and we'll return it directly.
-  // Credit card numbers are current legacy data, so false match with prefix
-  // won't happen.
+  // The incoming ciphertext was either obfuscated by OSCrypt::EncryptString()
+  // as above, or is regular unobfuscated plaintext if it was imported from an
+  // old version. Check for the obfuscation prefix to detect obfuscated text.
   const bool no_prefix_found = !base::StartsWith(ciphertext, kObfuscationPrefix,
                                                  base::CompareCase::SENSITIVE);
 
@@ -127,32 +109,26 @@ bool OSCrypt::DecryptString(const std::string& ciphertext,
                       : os_crypt::EncryptionPrefixVersion::kVersion10);
 
   if (no_prefix_found) {
-    *plaintext = ciphertext;
-    return true;
+    return false;
   }
 
   // Strip off the versioning prefix before decrypting.
   const std::string raw_ciphertext =
       ciphertext.substr(strlen(kObfuscationPrefix));
 
-  std::unique_ptr<crypto::SymmetricKey> encryption_key(GetEncryptionKey());
-  if (!encryption_key.get())
-    return false;
+  std::optional<std::vector<uint8_t>> maybe_plain = crypto::aes_cbc::Decrypt(
+      kV10Key, kIv, base::as_byte_span(raw_ciphertext));
 
-  const std::string iv(kIVBlockSizeAES128, ' ');
-  crypto::Encryptor encryptor;
-  if (!encryptor.Init(encryption_key.get(), crypto::Encryptor::CBC, iv))
-    return false;
+  if (maybe_plain) {
+    plaintext->assign(base::as_string_view(*maybe_plain));
+  }
 
-  if (!encryptor.Decrypt(raw_ciphertext, plaintext))
-    return false;
-
-  return true;
+  return maybe_plain.has_value();
 }
 
 // static
 bool OSCrypt::IsEncryptionAvailable() {
-  return false;
+  return g_encryption_available_for_testing.value_or(true);
 }
 
 // static

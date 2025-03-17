@@ -21,10 +21,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/color_plane_layout.h"
@@ -109,10 +111,7 @@ bool VideoFrame::IsStorageTypeMappable(VideoFrame::StorageType storage_type) {
       // level, DmaBufs are not mappable from userspace.
       storage_type != VideoFrame::STORAGE_DMABUFS &&
 #endif
-      // GpuMemoryBuffer is not mappable at VideoFrame level. In most places
-      // GpuMemoryBuffer is opaque to the CPU, and for places that really need
-      // to access the data on CPU they can get the buffer with
-      // GetGpuMemoryBuffer() and call gfx::GpuMemoryBuffer::Map().
+      // GpuMemoryBuffer is not mappable at VideoFrame level.
       (storage_type == VideoFrame::STORAGE_UNOWNED_MEMORY ||
        storage_type == VideoFrame::STORAGE_OWNED_MEMORY ||
        storage_type == VideoFrame::STORAGE_SHMEM);
@@ -314,9 +313,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapTrackingToken(
     DLOG(ERROR) << "Invalid layout.";
     return nullptr;
   }
-  scoped_refptr<VideoFrame> frame =
-      new VideoFrame(*layout, StorageType::STORAGE_OPAQUE, visible_rect,
-                     natural_size, timestamp);
+  auto frame = base::MakeRefCounted<VideoFrame>(
+      base::PassKey<VideoFrame>(), *layout, StorageType::STORAGE_OPAQUE,
+      visible_rect, natural_size, timestamp);
   frame->metadata().tracking_token = tracking_token;
   return frame;
 }
@@ -366,8 +365,9 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForNativeTexturesInternal(
     return nullptr;
   }
 
-  scoped_refptr<VideoFrame> frame =
-      new VideoFrame(*layout, storage, visible_rect, natural_size, timestamp);
+  auto frame = base::MakeRefCounted<VideoFrame>(base::PassKey<VideoFrame>(),
+                                                *layout, storage, visible_rect,
+                                                natural_size, timestamp);
 
   return frame;
 }
@@ -458,8 +458,9 @@ VideoFrame::CreateFrameForGpuMemoryBufferOrMappableSIInternal(
     return nullptr;
   }
 
-  scoped_refptr<VideoFrame> frame =
-      new VideoFrame(*layout, storage, visible_rect, natural_size, timestamp);
+  auto frame = base::MakeRefCounted<VideoFrame>(base::PassKey<VideoFrame>(),
+                                                *layout, storage, visible_rect,
+                                                natural_size, timestamp);
   if (!frame) {
     DLOG(ERROR) << __func__ << " Couldn't create VideoFrame instance";
     return nullptr;
@@ -603,8 +604,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDataWithLayout(
     return nullptr;
   }
 
-  scoped_refptr<VideoFrame> frame = new VideoFrame(
-      layout, storage_type, visible_rect, natural_size, timestamp);
+  auto frame = base::MakeRefCounted<VideoFrame>(
+      base::PassKey<VideoFrame>(), layout, storage_type, visible_rect,
+      natural_size, timestamp);
 
   for (size_t i = 0; i < layout.planes().size(); ++i) {
     auto& plane = layout.planes()[i];
@@ -683,8 +685,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvDataWithLayout(
     return nullptr;
   }
 
-  scoped_refptr<VideoFrame> frame(
-      new VideoFrame(layout, storage, visible_rect, natural_size, timestamp));
+  auto frame = base::MakeRefCounted<VideoFrame>(base::PassKey<VideoFrame>(),
+                                                layout, storage, visible_rect,
+                                                natural_size, timestamp);
   std::array<base::span<const uint8_t>, 3> data = {y_data, u_data, v_data};
   for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
     frame->data_[plane] = data[plane];
@@ -728,8 +731,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvaData(
     return nullptr;
   }
 
-  scoped_refptr<VideoFrame> frame(
-      new VideoFrame(*layout, storage, visible_rect, natural_size, timestamp));
+  auto frame = base::MakeRefCounted<VideoFrame>(base::PassKey<VideoFrame>(),
+                                                *layout, storage, visible_rect,
+                                                natural_size, timestamp);
   std::array<const uint8_t*, 4> data = {y_data, u_data, v_data, a_data};
   for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
     // TODO(crbug.com/338570700): y_data, u_data, v_data should be spans
@@ -771,8 +775,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
     return nullptr;
   }
 
-  scoped_refptr<VideoFrame> frame(
-      new VideoFrame(*layout, storage, visible_rect, natural_size, timestamp));
+  auto frame = base::MakeRefCounted<VideoFrame>(base::PassKey<VideoFrame>(),
+                                                *layout, storage, visible_rect,
+                                                natural_size, timestamp);
   std::array<base::span<const uint8_t>, 3> data = {y_data, u_data, v_data};
   for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
     frame->data_[plane] = data[plane];
@@ -811,8 +816,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
     return nullptr;
   }
 
-  scoped_refptr<VideoFrame> frame(
-      new VideoFrame(*layout, storage, visible_rect, natural_size, timestamp));
+  auto frame = base::MakeRefCounted<VideoFrame>(base::PassKey<VideoFrame>(),
+                                                *layout, storage, visible_rect,
+                                                natural_size, timestamp);
   std::array<const uint8_t*, 2> data = {y_data, uv_data};
   for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
     // TODO(crbug.com/338570700): y_data, uv_data should be spans
@@ -858,8 +864,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvaData(
     return nullptr;
   }
 
-  scoped_refptr<VideoFrame> frame(
-      new VideoFrame(*layout, storage, visible_rect, natural_size, timestamp));
+  auto frame = base::MakeRefCounted<VideoFrame>(base::PassKey<VideoFrame>(),
+                                                *layout, storage, visible_rect,
+                                                natural_size, timestamp);
   std::array<base::span<const uint8_t>, 4> data = {y_data, u_data, v_data,
                                                    a_data};
   for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
@@ -930,8 +937,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
     return nullptr;
   }
 
-  scoped_refptr<VideoFrame> frame =
-      new VideoFrame(layout, storage, visible_rect, natural_size, timestamp);
+  auto frame = base::MakeRefCounted<VideoFrame>(base::PassKey<VideoFrame>(),
+                                                layout, storage, visible_rect,
+                                                natural_size, timestamp);
   if (!frame) {
     DLOG(ERROR) << __func__ << " Couldn't create VideoFrame instance.";
     return nullptr;
@@ -951,6 +959,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
 scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
     base::TimeDelta timestamp) {
   if (handle.type != gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER) {
     DLOG(ERROR) << "Non-IOSurface handle.";
@@ -984,7 +993,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
   }
 
   const StorageType storage_type = STORAGE_UNOWNED_MEMORY;
-  if (!IsValidConfig(pixel_format, storage_type, size, visible_rect, size)) {
+  if (!IsValidConfig(pixel_format, storage_type, size, visible_rect,
+                     natural_size)) {
     DLOG(ERROR) << "Invalid config.";
     return nullptr;
   }
@@ -1002,8 +1012,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
         IOSurfaceUnlock(io_surface.get(), kIOSurfaceLockReadOnly, nullptr);
       };
 
-  scoped_refptr<VideoFrame> frame =
-      new VideoFrame(*layout, storage_type, visible_rect, size, timestamp);
+  auto frame = base::MakeRefCounted<VideoFrame>(
+      base::PassKey<VideoFrame>(), *layout, storage_type, visible_rect,
+      natural_size, timestamp);
   for (size_t i = 0; i < num_planes; ++i) {
     uint8_t* plane_data = reinterpret_cast<uint8_t*>(
         IOSurfaceGetBaseAddressOfPlane(io_surface.get(), i));
@@ -1018,7 +1029,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
       base::BindOnce(unlock_lambda, std::move(io_surface)));
   return frame;
 }
-
 #endif
 
 // static
@@ -1065,9 +1075,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapVideoFrame(
     return nullptr;
   }
 
-  scoped_refptr<VideoFrame> wrapping_frame(
-      new VideoFrame(new_layout.value(), frame->storage_type(), visible_rect,
-                     natural_size, frame->timestamp()));
+  auto wrapping_frame = base::MakeRefCounted<VideoFrame>(
+      base::PassKey<VideoFrame>(), new_layout.value(), frame->storage_type(),
+      visible_rect, natural_size, frame->timestamp());
 
   // Copy all metadata to the wrapped frame->
   wrapping_frame->metadata().MergeMetadataFrom(frame->metadata());
@@ -1107,9 +1117,9 @@ scoped_refptr<VideoFrame> VideoFrame::CreateEOSFrame() {
     DLOG(ERROR) << "Invalid layout.";
     return nullptr;
   }
-  scoped_refptr<VideoFrame> frame =
-      new VideoFrame(*layout, STORAGE_UNKNOWN, gfx::Rect(), gfx::Size(),
-                     kNoTimestamp, FrameControlType::kEos);
+  auto frame = base::MakeRefCounted<VideoFrame>(
+      base::PassKey<VideoFrame>(), *layout, STORAGE_UNKNOWN, gfx::Rect(),
+      gfx::Size(), kNoTimestamp, FrameControlType::kEos);
   frame->metadata().end_of_stream = true;
   return frame;
 }
@@ -1382,12 +1392,10 @@ bool VideoFrame::HasNativeGpuMemoryBuffer() const {
 }
 
 gfx::GpuMemoryBuffer* VideoFrame::GetGpuMemoryBufferForTesting() const {
-  return GetGpuMemoryBuffer();
-}
-
-gfx::GpuMemoryBuffer* VideoFrame::GetGpuMemoryBuffer() const {
-  return wrapped_frame_ ? wrapped_frame_->GetGpuMemoryBuffer()
-                        : gpu_memory_buffer_.get();
+  if (wrapped_frame_) {
+    return wrapped_frame_->GetGpuMemoryBufferForTesting();  // IN-TEST
+  }
+  return gpu_memory_buffer_.get();
 }
 
 std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
@@ -1660,17 +1668,13 @@ gpu::SyncToken VideoFrame::UpdateReleaseSyncToken(SyncTokenClient* client) {
   return release_sync_token_;
 }
 
-gpu::SyncToken VideoFrame::UpdateAcquireSyncToken(SyncTokenClient* client) {
-  DCHECK(HasOneRef());
+void VideoFrame::UpdateAcquireSyncToken(gpu::SyncToken token) {
   DCHECK(HasSharedImage());
-  DCHECK(!wrapped_frame_);
-
-  // No lock is required due to the HasOneRef() check.
-  auto& token = acquire_sync_token_;
-  if (token.HasData())
-    client->WaitSyncToken(token);
-  client->GenerateSyncToken(&token);
-  return token;
+  if (wrapped_frame_) {
+    return wrapped_frame_->UpdateAcquireSyncToken(token);
+  }
+  base::AutoLock locker(release_sync_token_lock_);
+  acquire_sync_token_ = token;
 }
 
 std::string VideoFrame::AsHumanReadableString() const {
@@ -1691,7 +1695,8 @@ size_t VideoFrame::BitDepth() const {
   return media::BitDepth(format());
 }
 
-VideoFrame::VideoFrame(const VideoFrameLayout& layout,
+VideoFrame::VideoFrame(base::PassKey<VideoFrame>,
+                       const VideoFrameLayout& layout,
                        StorageType storage_type,
                        const gfx::Rect& visible_rect,
                        const gfx::Size& natural_size,
@@ -1884,8 +1889,9 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameWithLayout(
     return nullptr;
   }
 
-  scoped_refptr<VideoFrame> frame(new VideoFrame(
-      std::move(layout), storage, visible_rect, natural_size, timestamp));
+  auto frame = base::MakeRefCounted<VideoFrame>(
+      base::PassKey<VideoFrame>(), std::move(layout), storage, visible_rect,
+      natural_size, timestamp);
   return frame->AllocateMemory(zero_initialize_memory) ? frame : nullptr;
 }
 

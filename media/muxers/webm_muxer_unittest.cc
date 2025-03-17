@@ -4,6 +4,7 @@
 
 #include "media/muxers/webm_muxer.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -14,7 +15,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -298,7 +298,8 @@ TEST_P(WebmMuxerTest, ColorSpaceREC709IsPropagatedToTrack) {
       media::DecoderBuffer::CopyFrom(base::as_byte_span("abab"));
   encoded_data->set_is_key_frame(true);
   Muxer::VideoParameters params(gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
-                                gfx::ColorSpace::CreateREC709());
+                                gfx::ColorSpace::CreateREC709(),
+                                media::kNoTransformation);
   PutVideo(params, std::move(encoded_data), std::nullopt);
   mkvmuxer::Colour* colour = GetVideoTrackColor();
   EXPECT_EQ(colour->primaries(), mkvmuxer::Colour::kIturBt709P);
@@ -315,7 +316,8 @@ TEST_P(WebmMuxerTest, ColorSpaceExtendedSRGBIsPropagatedToTrack) {
       gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
       gfx::ColorSpace(
           gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
-          gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED));
+          gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED),
+      kNoTransformation);
   PutVideo(params, std::move(encoded_data), std::nullopt);
   mkvmuxer::Colour* colour = GetVideoTrackColor();
   EXPECT_EQ(colour->primaries(), mkvmuxer::Colour::kIturBt709P);
@@ -333,7 +335,8 @@ TEST_P(WebmMuxerTest, ColorSpaceHDR10IsPropagatedToTrack) {
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                       gfx::ColorSpace::TransferID::PQ,
                       gfx::ColorSpace::MatrixID::BT2020_NCL,
-                      gfx::ColorSpace::RangeID::LIMITED));
+                      gfx::ColorSpace::RangeID::LIMITED),
+      media::kNoTransformation);
   PutVideo(params, std::move(encoded_data), std::nullopt);
   mkvmuxer::Colour* colour = GetVideoTrackColor();
   EXPECT_EQ(colour->primaries(), mkvmuxer::Colour::kIturBt2020);
@@ -352,7 +355,8 @@ TEST_P(WebmMuxerTest, ColorSpaceFullRangeHDR10IsPropagatedToTrack) {
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                       gfx::ColorSpace::TransferID::PQ,
                       gfx::ColorSpace::MatrixID::BT2020_NCL,
-                      gfx::ColorSpace::RangeID::FULL));
+                      gfx::ColorSpace::RangeID::FULL),
+      media::kNoTransformation);
   PutVideo(params, std::move(encoded_data), std::nullopt);
   mkvmuxer::Colour* colour = GetVideoTrackColor();
   EXPECT_EQ(colour->range(), mkvmuxer::Colour::kFullRange);
@@ -438,13 +442,26 @@ class WebmMuxerTestUnparametrized : public testing::Test {
 
   bool AddVideoAtOffset(int system_timestamp_offset_ms, bool is_key_frame) {
     Muxer::VideoParameters params(gfx::Size(1, 1), 0, media::VideoCodec::kVP8,
-                                  gfx::ColorSpace());
+                                  gfx::ColorSpace(), media::kNoTransformation);
     auto buffer =
         media::DecoderBuffer::CopyFrom(base::as_byte_span("video_at_offset"));
     buffer->set_is_key_frame(is_key_frame);
     bool result = webm_muxer_->PutFrame(
         Muxer::EncodedFrame{std::move(params), std::nullopt, buffer},
         base::Milliseconds(system_timestamp_offset_ms));
+    got_video_ = true;
+    return result;
+  }
+
+  bool AddVideoWithTransformation(VideoTransformation transformation) {
+    Muxer::VideoParameters params(gfx::Size(1, 1), 0, media::VideoCodec::kVP8,
+                                  gfx::ColorSpace(), transformation);
+    auto buffer =
+        media::DecoderBuffer::CopyFrom(base::as_byte_span("video_at_offset"));
+    buffer->set_is_key_frame(true);
+    bool result = webm_muxer_->PutFrame(
+        Muxer::EncodedFrame{std::move(params), std::nullopt, buffer},
+        base::TimeDelta());
     got_video_ = true;
     return result;
   }
@@ -462,6 +479,27 @@ class WebmMuxerTestUnparametrized : public testing::Test {
     return webm_muxer_->PutFrame(
         Muxer::EncodedFrame{std::move(audio_params), std::nullopt, buffer},
         base::Milliseconds(system_timestamp_offset_ms));
+  }
+
+  mkvmuxer::Projection* GetVideoTrackTransformation() const {
+    mkvmuxer::VideoTrack* const video_track =
+        reinterpret_cast<mkvmuxer::VideoTrack*>(
+            webm_muxer_->segment_.GetTrackByNumber(
+                webm_muxer_->video_track_index_));
+    return video_track->projection();
+  }
+
+  void RunTransformationTest(VideoTransformation transformation,
+                             double pitch,
+                             double yaw,
+                             double roll) {
+    SCOPED_TRACE(transformation.ToString());
+    CreateMuxer(true, true);
+    AddVideoWithTransformation(transformation);
+    mkvmuxer::Projection* projection = GetVideoTrackTransformation();
+    EXPECT_EQ(projection->pose_pitch(), pitch);
+    EXPECT_EQ(projection->pose_yaw(), yaw);
+    EXPECT_EQ(projection->pose_roll(), roll);
   }
 
   MOCK_METHOD(void, OnWrite, ());
@@ -492,7 +530,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
 
   void SaveChunkAndInvokeWriteCallback(base::span<const uint8_t> chunk) {
     OnWrite();
-    base::ranges::copy(chunk, std::back_inserter(muxed_data_));
+    std::ranges::copy(chunk, std::back_inserter(muxed_data_));
   }
 
   // Muxed data gets saved here. The content is guaranteed to be finalized first
@@ -613,6 +651,32 @@ TEST_F(WebmMuxerTestUnparametrized, ForwardsAudioVideoMuxingError) {
   // sample.
   ASSERT_TRUE(AddVideoAtOffset(0, /*is_key_frame=*/true));
   ASSERT_FALSE(AddAudioAtOffsetWithDuration(0, 10));
+}
+
+TEST_F(WebmMuxerTestUnparametrized, Transformations) {
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_0, false), 0.0, 0.0,
+                        0.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_0, true), 0.0, 180.0,
+                        0.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_90, false), 0.0, 0.0,
+                        -90.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_90, true), 0.0,
+                        180.0, 90.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_180, false), 0.0,
+                        0.0, 180.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_180, true), 0.0,
+                        180.0, 180.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_270, false), 0.0,
+                        0.0, 90.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_270, true), 0.0,
+                        180.0, -90.0);
 }
 
 }  // namespace media

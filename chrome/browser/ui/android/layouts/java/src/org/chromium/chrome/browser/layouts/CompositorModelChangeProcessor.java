@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.layouts;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -24,15 +24,16 @@ import java.util.Set;
  *
  * @param <V> A view type that extends {@link SceneLayer}.
  */
+@NullMarked
 public class CompositorModelChangeProcessor<V extends SceneLayer> {
     /**
      * A {@link ObservableSupplier} for the newly generated frame. In addition, this has ability to
      * request another frame.
      */
     public static class FrameRequestSupplier extends ObservableSupplierImpl<Long> {
-        @NonNull private final Runnable mRenderRequestRunnable;
+        private final Runnable mRenderRequestRunnable;
 
-        public FrameRequestSupplier(@NonNull Runnable renderRequestRunnable) {
+        public FrameRequestSupplier(Runnable renderRequestRunnable) {
             mRenderRequestRunnable = renderRequestRunnable;
         }
 
@@ -44,11 +45,11 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
 
     private final V mView;
     private final PropertyModel mModel;
-    private final ViewBinder<PropertyModel, V, PropertyKey> mViewBinder;
+    private final ViewBinder<PropertyModel, V, @Nullable PropertyKey> mViewBinder;
     private final FrameRequestSupplier mFrameSupplier;
     private final PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver;
     private final Callback<Long> mNewFrameCallback;
-    private final Set<PropertyKey> mExclusions;
+    private final @Nullable Set<PropertyKey> mExclusions;
 
     /**
      * Construct a new CompositorModelChangeProcessor.
@@ -63,10 +64,10 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
     private CompositorModelChangeProcessor(
             PropertyModel model,
             V view,
-            ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
+            ViewBinder<PropertyModel, V, @Nullable PropertyKey> viewBinder,
             FrameRequestSupplier frameSupplier,
             boolean performInitialBind,
-            Set<PropertyKey> exclusions) {
+            @Nullable Set<PropertyKey> exclusions) {
         mModel = model;
         mView = view;
         mViewBinder = viewBinder;
@@ -98,10 +99,10 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
     public static <V extends SceneLayer> CompositorModelChangeProcessor<V> create(
             PropertyModel model,
             V view,
-            ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
+            ViewBinder<PropertyModel, V, @Nullable PropertyKey> viewBinder,
             FrameRequestSupplier frameSupplier,
             boolean performInitialBind,
-            Set<PropertyKey> exclusions) {
+            @Nullable Set<PropertyKey> exclusions) {
         return new CompositorModelChangeProcessor(
                 model, view, viewBinder, frameSupplier, performInitialBind, exclusions);
     }
@@ -119,7 +120,7 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
     public static <V extends SceneLayer> CompositorModelChangeProcessor<V> create(
             PropertyModel model,
             V view,
-            ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
+            ViewBinder<PropertyModel, V, @Nullable PropertyKey> viewBinder,
             FrameRequestSupplier frameSupplier,
             boolean performInitialBind) {
         return create(model, view, viewBinder, frameSupplier, performInitialBind, null);
@@ -137,7 +138,7 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
     public static <V extends SceneLayer> CompositorModelChangeProcessor<V> create(
             PropertyModel model,
             V view,
-            ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
+            ViewBinder<PropertyModel, V, @Nullable PropertyKey> viewBinder,
             FrameRequestSupplier frameSupplier) {
         return create(model, view, viewBinder, frameSupplier, true);
     }
@@ -156,7 +157,8 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
         mViewBinder.bind(mModel, mView, null);
     }
 
-    private void onPropertyChanged(PropertyObservable<PropertyKey> model, PropertyKey propertyKey) {
+    private void onPropertyChanged(
+            PropertyObservable<PropertyKey> model, @Nullable PropertyKey propertyKey) {
         assert model == mModel;
         if (mExclusions != null && mExclusions.contains(propertyKey)) {
             return;

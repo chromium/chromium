@@ -19,8 +19,13 @@ class AnchorElementProvider {
   virtual ~AnchorElementProvider() = default;
 
   // Returns the target element, using `default_context`.
+  // For rotating promos, specify `index`.
   virtual ui::TrackedElement* GetAnchorElement(
-      ui::ElementContext default_context) const = 0;
+      ui::ElementContext default_context,
+      std::optional<int> index) const = 0;
+
+  // Gets the next valid index for a rotating promo.
+  virtual int GetNextValidIndex(int starting_index) const = 0;
 };
 
 // Common implementation of AnchorElementProvider.
@@ -46,10 +51,10 @@ class AnchorElementProviderCommon : public AnchorElementProvider {
     return anchor_element_filter_;
   }
 
-  // Get the anchor element based on `anchor_element_id`,
-  // `anchor_element_filter`, and `context`.
-  ui::TrackedElement* GetAnchorElement(
-      ui::ElementContext context) const override;
+  // AnchorElementProvider:
+  ui::TrackedElement* GetAnchorElement(ui::ElementContext context,
+                                       std::optional<int> index) const override;
+  int GetNextValidIndex(int starting_index) const override;
 
  protected:
   void set_in_any_context(bool in_any_context) {

@@ -126,8 +126,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         kSettingsTrackingPriceMobileNotificationsCellId;
     _mobileNotificationItem.on = push_notification_settings::
         GetMobileNotificationPermissionStatusForClient(
-            PushNotificationClientId::kCommerce,
-            base::SysNSStringToUTF8(_identity.gaiaID));
+            PushNotificationClientId::kCommerce, GaiaId(_identity.gaiaID));
   }
 
   return _mobileNotificationItem;
@@ -181,8 +180,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self setPreferenceFor:PushNotificationClientId::kCommerce to:value];
       self.mobileNotificationItem.on = push_notification_settings::
           GetMobileNotificationPermissionStatusForClient(
-              PushNotificationClientId::kCommerce,
-              base::SysNSStringToUTF8(_identity.gaiaID));
+              PushNotificationClientId::kCommerce, GaiaId(_identity.gaiaID));
       if (!value) {
         break;
       }
@@ -227,8 +225,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   self.mobileNotificationItem.on = push_notification_settings::
       GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kCommerce,
-          base::SysNSStringToUTF8(_identity.gaiaID));
+          PushNotificationClientId::kCommerce, GaiaId(_identity.gaiaID));
   [self.consumer setMobileNotificationItem:self.mobileNotificationItem];
 }
 

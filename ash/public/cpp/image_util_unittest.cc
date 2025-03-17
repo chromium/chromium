@@ -90,7 +90,7 @@ class ImageUtilTest : public ::testing::Test {
  protected:
   void SetUp() override { ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir()); }
 
-  base::FilePath CreateFilePath(base::FilePath::StringPieceType file_name) {
+  base::FilePath CreateFilePath(base::FilePath::StringViewType file_name) {
     return scoped_temp_dir_.GetPath().Append(file_name);
   }
 
@@ -105,7 +105,7 @@ class ImageUtilTest : public ::testing::Test {
   }
 
   gfx::ImageSkia DecodeImageFile(
-      base::FilePath::StringPieceType file_name,
+      base::FilePath::StringViewType file_name,
       data_decoder::mojom::ImageCodec codec,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner = nullptr) {
     base::test::ScopedRunLoopTimeout timeout(FROM_HERE, kDecodeImageTimeout);

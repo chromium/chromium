@@ -16,8 +16,6 @@
 #include "components/sync_bookmarks/bookmark_data_type_processor.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 
-class BookmarkUndoService;
-
 namespace syncer {
 class DataTypeControllerDelegate;
 }
@@ -36,10 +34,8 @@ class BookmarkDataTypeProcessor;
 // This service owns the BookmarkDataTypeProcessor.
 class BookmarkSyncService : public KeyedService {
  public:
-  // `bookmark_undo_service` must not be null and must outlive this object.
-  BookmarkSyncService(BookmarkUndoService* bookmark_undo_service,
-                      syncer::WipeModelUponSyncDisabledBehavior
-                          wipe_model_upon_sync_disabled_behavior);
+  explicit BookmarkSyncService(syncer::WipeModelUponSyncDisabledBehavior
+                                   wipe_model_upon_sync_disabled_behavior);
 
   BookmarkSyncService(const BookmarkSyncService&) = delete;
   BookmarkSyncService& operator=(const BookmarkSyncService&) = delete;

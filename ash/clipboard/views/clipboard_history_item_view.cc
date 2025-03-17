@@ -53,7 +53,7 @@ const ClipboardHistoryItem* GetClipboardHistoryItemImpl(
     const ClipboardHistory* clipboard_history) {
   const auto& items = clipboard_history->GetItems();
   const auto& item_iter =
-      base::ranges::find(items, item_id, &ClipboardHistoryItem::id);
+      std::ranges::find(items, item_id, &ClipboardHistoryItem::id);
   return item_iter == items.cend() ? nullptr : &(*item_iter);
 }
 
@@ -478,8 +478,9 @@ void ClipboardHistoryItemView::SetPseudoFocus(PseudoFocus new_pseudo_focus) {
       ->GetInkDrop()
       ->SetFocused(IsDeleteButtonPseudoFocused());
   if (IsDeleteButtonPseudoFocused()) {
-    delete_button_->NotifyAccessibilityEvent(ax::mojom::Event::kHover,
-                                             /*send_native_event*/ true);
+    delete_button_->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kHover,
+        /*send_native_event*/ true);
   }
 
   if (repaint_main_button) {

@@ -18,8 +18,8 @@ public class MenuBuilderHelper {
         int toolbarHeight = anchorView.getHeight();
         int iconHeight =
                 anchorView.getResources().getDimensionPixelSize(R.dimen.toolbar_icon_height);
-        int paddingBottom = (toolbarHeight - iconHeight) / 2;
-        rectProvider.setInsetPx(0, 0, 0, paddingBottom);
+        int paddingVertical = (toolbarHeight - iconHeight) / 2;
+        rectProvider.setInsetPx(0, paddingVertical, 0, paddingVertical);
         return rectProvider;
     }
 }

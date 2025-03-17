@@ -9,7 +9,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -52,6 +51,7 @@ class AppManagementPageHandlerBase : public app_management::mojom::PageHandler,
                      apps::PermissionPtr permission) override;
   void OpenNativeSettings(const std::string& app_id) override;
   void SetFileHandlingEnabled(const std::string& app_id, bool enabled) override;
+  void UpdateAppSize(const std::string& app_id) override;
 
  protected:
   AppManagementPageHandlerBase(

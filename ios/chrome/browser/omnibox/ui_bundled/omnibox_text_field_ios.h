@@ -27,8 +27,6 @@
 
 /// Text displayed when in pre-edit state.
 @property(nonatomic) BOOL clearingPreEditText;
-/// Optional text displayed after user and autocomplete text.
-@property(nonatomic, strong) NSAttributedString* additionalText;
 
 /// Whether the return key is enabled with an empty textfield.
 @property(nonatomic, assign) BOOL allowsReturnKeyWithEmptyText;
@@ -47,6 +45,9 @@
 /// the field is not in editing mode, it will respect the text attributes set on
 /// `text`.
 - (void)setText:(NSAttributedString*)text userTextLength:(size_t)userTextLength;
+
+/// Optional text displayed after user and autocomplete text.
+- (void)setAdditionalText:(NSString*)additionalText;
 
 /// Inserts the given `text` into the text field. The text replaces the current
 /// selection, if there is one; otherwise the text is inserted at the current

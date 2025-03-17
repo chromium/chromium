@@ -6,29 +6,26 @@ package org.chromium.chrome.browser.thumbnail.generator;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Provides thumbnails that represent different files. */
+@NullMarked
 public interface ThumbnailProvider {
     /** Used to request the retrieval of a thumbnail. */
     public static interface ThumbnailRequest {
         /** Local storage path to the file. */
-        @Nullable
-        String getFilePath();
+        @Nullable String getFilePath();
 
         /** The mime type of the file. */
-        @Nullable
-        String getMimeType();
+        @Nullable String getMimeType();
 
         /** Content ID that uniquely identifies the file. */
-        @Nullable
-        String getContentId();
+        @Nullable String getContentId();
 
         /** Called when a requested thumbnail is ready. */
-        void onThumbnailRetrieved(@NonNull String contentId, @Nullable Bitmap thumbnail);
+        void onThumbnailRetrieved(String contentId, @Nullable Bitmap thumbnail);
 
         /**
          * The requested size (maximum dimension (pixel) of the smaller side) of the thumbnail to

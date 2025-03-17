@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -116,7 +116,7 @@ void TabStripLayoutHelper::MarkTabAsClosing(int model_index, Tab* tab) {
 }
 
 void TabStripLayoutHelper::RemoveTab(Tab* tab) {
-  auto it = base::ranges::find_if(slots_, [tab](const TabSlot& slot) {
+  auto it = std::ranges::find_if(slots_, [tab](const TabSlot& slot) {
     return slot.type == ViewType::kTab && slot.view == tab;
   });
   if (it != slots_.end()) {
@@ -168,12 +168,19 @@ void TabStripLayoutHelper::RemoveGroupHeader(tab_groups::TabGroupId group) {
 
 void TabStripLayoutHelper::UpdateGroupHeaderIndex(
     tab_groups::TabGroupId group) {
+  if (!GetFirstTabSlotForGroup(group).has_value()) {
+    return;
+  }
+
   const int slot_index = GetSlotIndexForGroupHeader(group);
   TabSlot header_slot = slots_[slot_index];
 
   slots_.erase(slots_.begin() + slot_index);
+
+  // Recalculate the first tab index after removing the header as it
+  // helps with the header insertion index calculation.
   std::optional<int> first_tab = GetFirstTabSlotForGroup(group);
-  CHECK(first_tab);
+
   slots_.insert(slots_.begin() + first_tab.value(), header_slot);
 }
 
@@ -295,7 +302,7 @@ int TabStripLayoutHelper::GetSlotIndexForExistingTab(int model_index) const {
     return slot_index;
   }
 
-  // If |slot_index| is a group header we must return the next slot that
+  // If `slot_index` is a group header we must return the next slot that
   // is not animating closed.
   if (slots_[slot_index].type == ViewType::kGroupHeader) {
     // Skip all slots animating closed.
@@ -323,7 +330,7 @@ int TabStripLayoutHelper::GetSlotInsertionIndexForNewTab(
     return slot_index;
   }
 
-  // If |slot_index| points to a group header and the new tab's |group|
+  // If `slot_index` points to a group header and the new tab's `group`
   // matches, the tab goes to the right of the header to keep it
   // contiguous.
   if (slots_[slot_index].type == ViewType::kGroupHeader &&
@@ -379,17 +386,17 @@ int TabStripLayoutHelper::GetFirstSlotIndexForTabModelIndex(
     }
   }
 
-  // If there's no slot in |slots_| corresponding to |model_index|, then
-  // |model_index| may represent the first tab past the end of the
+  // If there's no slot in `slots_` corresponding to `model_index`, then
+  // `model_index` may represent the first tab past the end of the
   // tabstrip. In this case we should return the first-past-the-end
-  // index in |slots_|.
+  // index in `slots_`.
   CHECK_EQ(current_model_index, model_index) << "model_index is too large";
   return slots_.size();
 }
 
 int TabStripLayoutHelper::GetSlotIndexForGroupHeader(
     tab_groups::TabGroupId group) const {
-  const auto it = base::ranges::find_if(slots_, [group](const auto& slot) {
+  const auto it = std::ranges::find_if(slots_, [group](const auto& slot) {
     return slot.type == ViewType::kGroupHeader &&
            static_cast<TabGroupHeader*>(slot.view)->group() == group;
   });

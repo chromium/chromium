@@ -21,10 +21,10 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.components.input.InputUtils;
 import org.chromium.content_public.browser.InputTransferHandler;
 import org.chromium.content_public.browser.SurfaceInputTransferHandlerMap;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.InputUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 /***
@@ -103,8 +103,11 @@ public class ContentViewRenderView extends FrameLayout {
                                                 holder.getSurface(),
                                                 browserInputToken);
                         if (surfaceId != null && browserInputToken != null) {
+                            InputTransferHandler.Delegate delegate =
+                                    new InputTransferHandler.Delegate() {};
                             InputTransferHandler handler =
-                                    new InputTransferHandler(browserInputToken);
+                                    new InputTransferHandler(
+                                            browserInputToken, delegate, mWindowAndroid);
                             assert mSurfaceId == null;
                             mSurfaceId = surfaceId;
                             SurfaceInputTransferHandlerMap.getMap().put(mSurfaceId, handler);
@@ -146,7 +149,7 @@ public class ContentViewRenderView extends FrameLayout {
                                 .surfaceDestroyed(
                                         mNativeContentViewRenderView, ContentViewRenderView.this);
                         if (mSurfaceId != null) {
-                            SurfaceInputTransferHandlerMap.getMap().remove(mSurfaceId);
+                            SurfaceInputTransferHandlerMap.remove(mSurfaceId);
                             mSurfaceId = null;
                         }
                     }

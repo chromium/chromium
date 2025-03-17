@@ -53,6 +53,7 @@ bool IsValueOutOfRangeForProperty(CSSPropertyID property_id,
   // For non-length properties and special cases.
   switch (property_id) {
     case CSSPropertyID::kOrder:
+    case CSSPropertyID::kReadingOrder:
     case CSSPropertyID::kZIndex:
     case CSSPropertyID::kMathDepth:
       return round(value) != value;

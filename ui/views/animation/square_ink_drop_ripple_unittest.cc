@@ -230,9 +230,9 @@ TEST_F(SquareInkDropRippleCalculateTransformsTest, RippleIsPixelAligned) {
   // Add to a widget so we can control the DSF.
   auto* widget = CreateTopLevelPlatformWidget();
   widget->SetBounds(gfx::Rect(0, 0, 100, 100));
-  auto* host_view = new View();
+  auto* host_view =
+      widget->GetContentsView()->AddChildView(std::make_unique<View>());
   host_view->SetPaintToLayer();
-  widget->GetContentsView()->AddChildView(host_view);
   host_view->layer()->Add(ink_drop_ripple.GetRootLayer());
 
   // Test a variety of scale factors and target transform sizes.

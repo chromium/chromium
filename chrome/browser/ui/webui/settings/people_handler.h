@@ -14,7 +14,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -203,7 +202,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   void HandleSetChromeSigninUserChoice(const base::Value::List& args);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void HandleAttemptUserExit(const base::Value::List& args);
   void HandleTurnOnSync(const base::Value::List& args);
   void HandleTurnOffSync(const base::Value::List& args);
@@ -219,19 +218,22 @@ class PeopleHandler : public SettingsPageUIHandler,
   void HandleStartKeyRetrieval(const base::Value::List& args);
   void HandleGetSyncStatus(const base::Value::List& args);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
+  void HandleShowSyncPassphraseDialog(const base::Value::List& args);
+
   // Displays the GAIA login form.
   void DisplayGaiaLogin(signin_metrics::AccessPoint access_point);
 
   // When web-flow is enabled, displays the Gaia login form in a new tab.
-  // This function is virtual so that tests can override.
-  virtual void DisplayGaiaLoginInNewTabOrWindow(
+  void DisplayGaiaLoginInNewTabOrWindow(
       signin_metrics::AccessPoint access_point);
 #endif
 
   void HandleGetStoredAccounts(const base::Value::List& args);
   void HandleStartSyncingWithEmail(const base::Value::List& args);
+  void HandleGetProfileAvatar(const base::Value::List& args);
   base::Value::List GetStoredAccountsList();
+  base::Value GetProfileAvatar();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Sends the updated chrome signin user choice info to UI.
@@ -252,7 +254,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   void UpdateStoredAccounts();
 
   // Sends the computed profile avatar to the JavaScript WebUI code.
-  void UpdateProfileAvatar(const base::FilePath& profile_path);
+  void UpdateProfileAvatar();
 
   // Suppresses any further signin promos, since the user has signed in once.
   void MarkFirstSetupComplete();

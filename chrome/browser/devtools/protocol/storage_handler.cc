@@ -3,13 +3,20 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/devtools/protocol/storage_handler.h"
-#include <memory>
 
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "base/check.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/devtools/protocol/protocol.h"
 #include "chrome/browser/devtools/protocol/storage.h"
-#include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
-#include "content/public/browser/browser_thread.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/tpcd/metadata/manager_factory.h"
+#include "content/public/browser/btm_service.h"
 #include "content/public/browser/web_contents.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 
@@ -21,14 +28,16 @@ StorageHandler::StorageHandler(content::WebContents* web_contents,
 
 StorageHandler::~StorageHandler() = default;
 
+// TODO: crbug.com/380896828 - move CDP support for DIPS to //content.
 void StorageHandler::RunBounceTrackingMitigations(
     std::unique_ptr<RunBounceTrackingMitigationsCallback> callback) {
-  DIPSService* dips_service =
-      web_contents_ ? DIPSService::Get(web_contents_->GetBrowserContext())
-                    : nullptr;
+  content::BtmService* dips_service =
+      web_contents_
+          ? content::BtmService::Get(web_contents_->GetBrowserContext())
+          : nullptr;
 
   if (!dips_service) {
-    callback->sendFailure(protocol::Response::ServerError("No DIPSService"));
+    callback->sendFailure(protocol::Response::ServerError("No BtmService"));
     return;
   }
 
@@ -100,6 +109,51 @@ void StorageHandler::GetRelatedWebsiteSets(
             .Build());
   }
   callback->sendSuccess(std::move(protocol_list));
+}
+
+protocol::Response StorageHandler::GetAffectedUrlsForThirdPartyCookieMetadata(
+    const protocol::String& first_party_url,
+    std::unique_ptr<protocol::Array<protocol::String>> third_party_urls,
+    std::unique_ptr<protocol::Array<protocol::String>>* matched_urls) {
+  // The frontend should ensure that each call at least passes the current page
+  // URL.
+  const GURL first_party_gurl(first_party_url);
+  if (!first_party_gurl.is_valid()) {
+    return protocol::Response::InvalidParams(
+        "Invalid first-party URL provided.");
+  }
+
+  tpcd::metadata::Manager* tpcd_metadata_manager =
+      tpcd::metadata::ManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  if (!tpcd_metadata_manager) {
+    return protocol::Response::InternalError();
+  }
+
+  *matched_urls = std::make_unique<protocol::Array<protocol::String>>();
+
+  // If the first-party URL has a first-party pattern without a third-party
+  // pattern defined, all URLs will be matched. Instead just return the first-
+  // party URL.
+  if (tpcd_metadata_manager->IsAllowed(GURL(), first_party_gurl, nullptr)) {
+    (*matched_urls)->push_back(std::move(first_party_url));
+    return protocol::Response::Success();
+  }
+
+  CHECK(third_party_urls);
+  for (const auto& url : *third_party_urls) {
+    const GURL gurl(url);
+    if (!gurl.is_valid()) {
+      return protocol::Response::InvalidParams(
+          "Invalid third-party URL provided.");
+    }
+
+    if (tpcd_metadata_manager->IsAllowed(gurl, first_party_gurl, nullptr)) {
+      (*matched_urls)->push_back(std::move(url));
+    }
+  }
+
+  return protocol::Response::Success();
 }
 
 /* static */

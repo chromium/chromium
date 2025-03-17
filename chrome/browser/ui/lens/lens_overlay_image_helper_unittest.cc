@@ -320,12 +320,17 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapRegionMaxSize) {
   ASSERT_EQ(kImageMaxWidth, image_crop->zoomed_crop().parent_width());
   ASSERT_EQ(kImageMaxHeight, image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(1, image_crop->zoomed_crop().zoom());
-  ASSERT_EQ(kImageMaxWidth * .5, image_crop->zoomed_crop().crop().center_x());
-  ASSERT_EQ(kImageMaxHeight * .5, image_crop->zoomed_crop().crop().center_y());
-  ASSERT_EQ(kImageMaxWidth, image_crop->zoomed_crop().crop().width());
-  ASSERT_EQ(kImageMaxHeight, image_crop->zoomed_crop().crop().height());
+  ASSERT_EQ(kImageMaxWidth * .5, image_crop->zoomed_crop().crop().center_x() *
+                                     image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(kImageMaxHeight * .5,
+            image_crop->zoomed_crop().crop().center_y() *
+                image_crop->zoomed_crop().parent_height());
+  ASSERT_EQ(kImageMaxWidth, image_crop->zoomed_crop().crop().width() *
+                                image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(kImageMaxHeight, image_crop->zoomed_crop().crop().height() *
+                                 image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(0, image_crop->zoomed_crop().crop().rotation_z());
-  ASSERT_EQ(lens::CoordinateType::IMAGE,
+  ASSERT_EQ(lens::CoordinateType::NORMALIZED,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
   ASSERT_EQ(
@@ -364,12 +369,16 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapRegionSmallSize) {
   ASSERT_EQ(100, image_crop->zoomed_crop().parent_width());
   ASSERT_EQ(100, image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(1, image_crop->zoomed_crop().zoom());
-  ASSERT_EQ(35, image_crop->zoomed_crop().crop().center_x());
-  ASSERT_EQ(35, image_crop->zoomed_crop().crop().center_y());
-  ASSERT_EQ(50, image_crop->zoomed_crop().crop().width());
-  ASSERT_EQ(50, image_crop->zoomed_crop().crop().height());
+  ASSERT_EQ(35, image_crop->zoomed_crop().crop().center_x() *
+                    image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(35, image_crop->zoomed_crop().crop().center_y() *
+                    image_crop->zoomed_crop().parent_height());
+  ASSERT_EQ(50, image_crop->zoomed_crop().crop().width() *
+                    image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(50, image_crop->zoomed_crop().crop().height() *
+                    image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(0, image_crop->zoomed_crop().crop().rotation_z());
-  ASSERT_EQ(lens::CoordinateType::IMAGE,
+  ASSERT_EQ(lens::CoordinateType::NORMALIZED,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
   ASSERT_EQ(
@@ -412,12 +421,16 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(kImageMaxWidth * scale, image_crop->zoomed_crop().parent_width());
   ASSERT_EQ(kImageMaxHeight * scale, image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(1, image_crop->zoomed_crop().zoom());
-  ASSERT_EQ(35, image_crop->zoomed_crop().crop().center_x());
-  ASSERT_EQ(35, image_crop->zoomed_crop().crop().center_y());
-  ASSERT_EQ(50, image_crop->zoomed_crop().crop().width());
-  ASSERT_EQ(50, image_crop->zoomed_crop().crop().height());
+  ASSERT_EQ(35, image_crop->zoomed_crop().crop().center_x() *
+                    image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(35, image_crop->zoomed_crop().crop().center_y() *
+                    image_crop->zoomed_crop().parent_height());
+  ASSERT_EQ(50, image_crop->zoomed_crop().crop().width() *
+                    image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(50, image_crop->zoomed_crop().crop().height() *
+                    image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(0, image_crop->zoomed_crop().crop().rotation_z());
-  ASSERT_EQ(lens::CoordinateType::IMAGE,
+  ASSERT_EQ(lens::CoordinateType::NORMALIZED,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
   ASSERT_EQ(
@@ -465,14 +478,19 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(kImageMaxHeight * full_image_scale,
             image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(.5, image_crop->zoomed_crop().zoom());
-  ASSERT_EQ(10 + kImageMaxWidth, image_crop->zoomed_crop().crop().center_x());
-  ASSERT_EQ(10 + kImageMaxHeight, image_crop->zoomed_crop().crop().center_y());
+  ASSERT_EQ(10 + kImageMaxWidth, image_crop->zoomed_crop().crop().center_x() *
+                                     image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(10 + kImageMaxHeight,
+            image_crop->zoomed_crop().crop().center_y() *
+                image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(kImageMaxWidth * region_scale,
-            image_crop->zoomed_crop().crop().width());
+            image_crop->zoomed_crop().crop().width() *
+                image_crop->zoomed_crop().parent_width());
   ASSERT_EQ(kImageMaxHeight * region_scale,
-            image_crop->zoomed_crop().crop().height());
+            image_crop->zoomed_crop().crop().height() *
+                image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(0, image_crop->zoomed_crop().crop().rotation_z());
-  ASSERT_EQ(lens::CoordinateType::IMAGE,
+  ASSERT_EQ(lens::CoordinateType::NORMALIZED,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
   ASSERT_EQ(
@@ -520,14 +538,18 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(kImageMaxHeight * full_image_scale,
             image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(.5, image_crop->zoomed_crop().zoom());
-  ASSERT_EQ(10 + kImageMaxWidth, image_crop->zoomed_crop().crop().center_x());
+  ASSERT_EQ(10 + kImageMaxWidth, image_crop->zoomed_crop().crop().center_x() *
+                                     image_crop->zoomed_crop().parent_width());
   ASSERT_EQ(10 + kImageMaxHeight / 2,
-            image_crop->zoomed_crop().crop().center_y());
+            image_crop->zoomed_crop().crop().center_y() *
+                image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(kImageMaxWidth * region_scale,
-            image_crop->zoomed_crop().crop().width());
-  ASSERT_EQ(kImageMaxHeight, image_crop->zoomed_crop().crop().height());
+            image_crop->zoomed_crop().crop().width() *
+                image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(kImageMaxHeight, image_crop->zoomed_crop().crop().height() *
+                                 image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(0, image_crop->zoomed_crop().crop().rotation_z());
-  ASSERT_EQ(lens::CoordinateType::IMAGE,
+  ASSERT_EQ(lens::CoordinateType::NORMALIZED,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
   ASSERT_EQ(
@@ -577,13 +599,18 @@ TEST_F(LensOverlayImageHelperTest,
             image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(.5, image_crop->zoomed_crop().zoom());
   ASSERT_EQ(10 + kImageMaxWidth / 2,
-            image_crop->zoomed_crop().crop().center_x());
-  ASSERT_EQ(10 + kImageMaxHeight, image_crop->zoomed_crop().crop().center_y());
-  ASSERT_EQ(kImageMaxWidth, image_crop->zoomed_crop().crop().width());
+            image_crop->zoomed_crop().crop().center_x() *
+                image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(10 + kImageMaxHeight,
+            image_crop->zoomed_crop().crop().center_y() *
+                image_crop->zoomed_crop().parent_height());
+  ASSERT_EQ(kImageMaxWidth, image_crop->zoomed_crop().crop().width() *
+                                image_crop->zoomed_crop().parent_width());
   ASSERT_EQ(kImageMaxHeight * region_scale,
-            image_crop->zoomed_crop().crop().height());
+            image_crop->zoomed_crop().crop().height() *
+                image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(0, image_crop->zoomed_crop().crop().rotation_z());
-  ASSERT_EQ(lens::CoordinateType::IMAGE,
+  ASSERT_EQ(lens::CoordinateType::NORMALIZED,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
   ASSERT_EQ(
@@ -626,12 +653,16 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(1000, image_crop->zoomed_crop().parent_width());
   ASSERT_EQ(1000, image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(3, image_crop->zoomed_crop().zoom());
-  ASSERT_EQ(50, image_crop->zoomed_crop().crop().center_x());
-  ASSERT_EQ(50, image_crop->zoomed_crop().crop().center_y());
-  ASSERT_EQ(100, image_crop->zoomed_crop().crop().width());
-  ASSERT_EQ(100, image_crop->zoomed_crop().crop().height());
+  ASSERT_EQ(50, image_crop->zoomed_crop().crop().center_x() *
+                    image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(50, image_crop->zoomed_crop().crop().center_y() *
+                    image_crop->zoomed_crop().parent_height());
+  ASSERT_EQ(100, image_crop->zoomed_crop().crop().width() *
+                     image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(100, image_crop->zoomed_crop().crop().height() *
+                     image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(0, image_crop->zoomed_crop().crop().rotation_z());
-  ASSERT_EQ(lens::CoordinateType::IMAGE,
+  ASSERT_EQ(lens::CoordinateType::NORMALIZED,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
   ASSERT_EQ(
@@ -660,12 +691,16 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(1000, image_crop->zoomed_crop().parent_width());
   ASSERT_EQ(1000, image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(3, image_crop->zoomed_crop().zoom());
-  ASSERT_EQ(50, image_crop->zoomed_crop().crop().center_x());
-  ASSERT_EQ(50, image_crop->zoomed_crop().crop().center_y());
-  ASSERT_EQ(100, image_crop->zoomed_crop().crop().width());
-  ASSERT_EQ(100, image_crop->zoomed_crop().crop().height());
+  ASSERT_EQ(50, image_crop->zoomed_crop().crop().center_x() *
+                    image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(50, image_crop->zoomed_crop().crop().center_y() *
+                    image_crop->zoomed_crop().parent_height());
+  ASSERT_EQ(100, image_crop->zoomed_crop().crop().width() *
+                     image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(100, image_crop->zoomed_crop().crop().height() *
+                     image_crop->zoomed_crop().parent_height());
   ASSERT_EQ(0, image_crop->zoomed_crop().crop().rotation_z());
-  ASSERT_EQ(lens::CoordinateType::IMAGE,
+  ASSERT_EQ(lens::CoordinateType::NORMALIZED,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
   ASSERT_EQ(

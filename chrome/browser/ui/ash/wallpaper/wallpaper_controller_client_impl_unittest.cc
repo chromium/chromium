@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -20,6 +21,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/value_store/testing_value_store.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -28,9 +30,8 @@ class WallpaperControllerClientImplTest : public testing::Test {
  public:
   WallpaperControllerClientImplTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
     user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+        std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
   }
 
   void SetUp() override {
@@ -68,6 +69,7 @@ class WallpaperControllerClientImplTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
   TestWallpaperController controller_;
   WallpaperControllerClientImpl client_{
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
       std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>()};
 };
 
@@ -81,14 +83,15 @@ TEST_F(WallpaperControllerClientImplTest, Construction) {
 
 TEST_F(WallpaperControllerClientImplTest, IsWallpaperSyncEnabledNoProfile) {
   AccountId account_id =
-      AccountId::FromUserEmailGaiaId("idontexist@test.com", "444444");
+      AccountId::FromUserEmailGaiaId("idontexist@test.com", GaiaId("444444"));
   EXPECT_FALSE(client()->WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
       account_id));
 }
 
 TEST_F(WallpaperControllerClientImplTest, GetFilesId) {
   const AccountId account_id = AccountId::FromUserEmail("test@test.com");
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(
+      TestingBrowserProcess::GetGlobal()->local_state());
   // Make a fake entry to register `account_id` as existing user.
   known_user.SetPath(account_id, "test", base::Value(""));
   EXPECT_TRUE(known_user.UserExists(account_id));
@@ -109,14 +112,15 @@ TEST_F(WallpaperControllerClientImplTest, GetFilesIdForRemovedUser) {
   base::test::TestFuture<const std::string&> future;
   client()->GetFilesId(account_id, future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(
+      TestingBrowserProcess::GetGlobal()->local_state());
   EXPECT_FALSE(known_user.UserExists(account_id));
 }
 
 TEST_F(WallpaperControllerClientImplTest, DailyGooglePhotosDoNotRepeat) {
   using ash::personalization_app::mojom::GooglePhotosPhotoPtr;
   AccountId account_id =
-      AccountId::FromUserEmailGaiaId("idontexist@test.com", "444444");
+      AccountId::FromUserEmailGaiaId("idontexist@test.com", GaiaId("444444"));
 
   // Size big enough to have not hit the minimum cache size logic, but small
   // enough to make sure we're very unlikely to pass if the logic is broken,

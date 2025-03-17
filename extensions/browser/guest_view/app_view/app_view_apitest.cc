@@ -4,7 +4,11 @@
 
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "components/guest_view/browser/guest_view_manager_delegate.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -86,9 +90,32 @@ class MockExtensionsAPIClient : public extensions::ShellExtensionsAPIClient {
 
 namespace extensions {
 
-class AppViewTest : public AppShellTest {
+class AppViewTest : public AppShellTest,
+                    public testing::WithParamInterface<bool> {
+ public:
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "MPArch" : "InnerWebContents";
+  }
+
+  AppViewTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kGuestViewMPArch,
+                                              GetParam());
+  }
+
  protected:
-  AppViewTest() = default;
+  void SetUpOnMainThread() override {
+    AppShellTest::SetUpOnMainThread();
+    content::BrowserContext* context =
+        ShellContentBrowserClient::Get()->GetBrowserContext();
+    test_guest_view_manager_ = factory_.GetOrCreateTestGuestViewManager(
+        context, ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
+  }
+
+  void TearDownOnMainThread() override {
+    test_guest_view_manager_ = nullptr;
+    AppShellTest::TearDownOnMainThread();
+  }
 
   content::WebContents* GetFirstAppWindowWebContents() {
     const AppWindowRegistry::AppWindowList& app_window_list =
@@ -127,17 +154,41 @@ class AppViewTest : public AppShellTest {
         << "Unable to start test.";
     ASSERT_TRUE(done_listener.WaitUntilSatisfied());
   }
+
+  guest_view::TestGuestViewManager* test_guest_view_manager() const {
+    return test_guest_view_manager_;
+  }
+
+ private:
+  guest_view::TestGuestViewManagerFactory factory_;
+  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         AppViewTest,
+                         testing::Bool(),
+                         AppViewTest::DescribeParams);
+
 // Tests that <appview> correctly processes parameters passed on connect.
-IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewGoodDataShouldSucceed) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewGoodDataShouldSucceed) {
   RunTest("testAppViewGoodDataShouldSucceed",
           "app_view/apitest",
           "app_view/apitest/skeleton");
+  // Note that the callback of the appview connect method runs after guest
+  // creation, but not necessarily after attachment. So we now ensure that the
+  // guest successfully attaches and loads.
+  EXPECT_TRUE(test_guest_view_manager()->WaitUntilAttachedAndLoaded(
+      test_guest_view_manager()->WaitForSingleGuestViewCreated()));
 }
 
 // Tests that <appview> can handle media permission requests.
-IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewMediaRequest) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewMediaRequest) {
+  // TODO(crbug.com/40202416): Implement for MPArch.
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    GTEST_SKIP() << "MPArch implementation skipped. https://crbug.com/40202416";
+  }
+
   static_cast<ShellExtensionsBrowserClient*>(ExtensionsBrowserClient::Get())
       ->SetAPIClientForTest(nullptr);
   static_cast<ShellExtensionsBrowserClient*>(ExtensionsBrowserClient::Get())
@@ -152,20 +203,22 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewMediaRequest) {
 // Tests that <appview> correctly processes parameters passed on connect.
 // This test should fail to connect because the embedded app (skeleton) will
 // refuse the data passed by the embedder app and deny the request.
-IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewRefusedDataShouldFail) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewRefusedDataShouldFail) {
   RunTest("testAppViewRefusedDataShouldFail",
           "app_view/apitest",
           "app_view/apitest/skeleton");
 }
 
 // Tests that <appview> is able to navigate to another installed app.
-IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewWithUndefinedDataShouldSucceed) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewWithUndefinedDataShouldSucceed) {
   RunTest("testAppViewWithUndefinedDataShouldSucceed",
           "app_view/apitest",
           "app_view/apitest/skeleton");
+  EXPECT_TRUE(test_guest_view_manager()->WaitUntilAttachedAndLoaded(
+      test_guest_view_manager()->WaitForSingleGuestViewCreated()));
 }
 
-IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewNoEmbedRequestListener) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewNoEmbedRequestListener) {
   RunTest("testAppViewNoEmbedRequestListener", "app_view/apitest",
           "app_view/apitest/no_embed_request_listener");
 }

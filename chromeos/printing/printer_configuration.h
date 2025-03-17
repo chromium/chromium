@@ -5,7 +5,10 @@
 #ifndef CHROMEOS_PRINTING_PRINTER_CONFIGURATION_H_
 #define CHROMEOS_PRINTING_PRINTER_CONFIGURATION_H_
 
+#include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/component_export.h"
 #include "chromeos/printing/cups_printer_status.h"
@@ -25,6 +28,27 @@ enum class COMPONENT_EXPORT(CHROMEOS_PRINTING) PrinterClass {
   kAutomatic,
   kDiscovered,
   kSaved
+};
+
+struct COMPONENT_EXPORT(CHROMEOS_PRINTING) IppPrinterInfo {
+  IppPrinterInfo();
+  IppPrinterInfo(const std::vector<std::string>& document_formats,
+                 const std::string& document_format_default,
+                 const std::string& document_format_preferred);
+  IppPrinterInfo(const IppPrinterInfo& other);
+  ~IppPrinterInfo();
+
+  // document-format-supported
+  // MIME types for supported formats.
+  std::vector<std::string> document_formats;
+
+  // document-format-default
+  // MIME type for default format.
+  std::string document_format_default;
+
+  // document-format-preferred
+  // MIME type for preferred format.
+  std::string document_format_preferred;
 };
 
 COMPONENT_EXPORT(CHROMEOS_PRINTING) std::string ToString(PrinterClass pclass);
@@ -224,6 +248,13 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
   const std::string& uuid() const { return uuid_; }
   void set_uuid(const std::string& uuid) { uuid_ = uuid; }
 
+  const std::optional<IppPrinterInfo>& ipp_printer_info() const {
+    return ipp_printer_info_;
+  }
+  void set_ipp_printer_info(std::optional<IppPrinterInfo> ipp_printer_info) {
+    ipp_printer_info_ = std::move(ipp_printer_info);
+  }
+
   // Returns true if the printer should be automatically configured using IPP
   // Everywhere.  Computed using information from |ppd_reference_| and |uri_|.
   bool IsIppEverywhere() const;
@@ -328,6 +359,9 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
   // This flag is set for printers that take part in the finch experiment
   // created for b/184293121.
   bool experimental_setup_of_usb_printer_with_ipp_and_ppd_ = false;
+
+  // IPP attributes, if available.
+  std::optional<IppPrinterInfo> ipp_printer_info_;
 };
 
 }  // namespace chromeos

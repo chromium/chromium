@@ -323,9 +323,10 @@ ScriptPromise<IDLUndefined> HIDDevice::forget(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise<IDLUndefined> HIDDevice::sendReport(ScriptState* script_state,
-                                                  uint8_t report_id,
-                                                  const DOMArrayPiece& data) {
+ScriptPromise<IDLUndefined> HIDDevice::sendReport(
+    ScriptState* script_state,
+    uint8_t report_id,
+    base::span<const uint8_t> data) {
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
@@ -340,14 +341,14 @@ ScriptPromise<IDLUndefined> HIDDevice::sendReport(ScriptState* script_state,
     return promise;
   }
 
-  if (!base::CheckedNumeric<wtf_size_t>(data.ByteLength()).IsValid()) {
+  if (!base::CheckedNumeric<wtf_size_t>(data.size()).IsValid()) {
     resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
                                      kArrayBufferTooBig);
     return promise;
   }
 
   Vector<uint8_t> vector;
-  vector.AppendSpan(data.ByteSpan());
+  vector.AppendSpan(data);
 
   device_requests_.insert(resolver);
   connection_->Write(
@@ -360,7 +361,7 @@ ScriptPromise<IDLUndefined> HIDDevice::sendReport(ScriptState* script_state,
 ScriptPromise<IDLUndefined> HIDDevice::sendFeatureReport(
     ScriptState* script_state,
     uint8_t report_id,
-    const DOMArrayPiece& data) {
+    base::span<const uint8_t> data) {
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
@@ -375,14 +376,14 @@ ScriptPromise<IDLUndefined> HIDDevice::sendFeatureReport(
     return promise;
   }
 
-  if (!base::CheckedNumeric<wtf_size_t>(data.ByteLength()).IsValid()) {
+  if (!base::CheckedNumeric<wtf_size_t>(data.size()).IsValid()) {
     resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
                                      kArrayBufferTooBig);
     return promise;
   }
 
   Vector<uint8_t> vector;
-  vector.AppendSpan(data.ByteSpan());
+  vector.AppendSpan(data);
 
   device_requests_.insert(resolver);
   connection_->SendFeatureReport(

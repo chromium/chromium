@@ -19,35 +19,35 @@ namespace downgrade {
 
 namespace {
 
-constexpr base::FilePath::StringPieceType kSomeFolder =
+constexpr base::FilePath::StringViewType kSomeFolder =
     FILE_PATH_LITERAL("Some Folder");
-constexpr base::FilePath::StringPieceType kSomeFile =
+constexpr base::FilePath::StringViewType kSomeFile =
     FILE_PATH_LITERAL("Some File");
-constexpr base::FilePath::StringPieceType kSomeFolderFile =
+constexpr base::FilePath::StringViewType kSomeFolderFile =
     FILE_PATH_LITERAL("A File");
-constexpr base::FilePath::StringPieceType kSomeSubFolder =
+constexpr base::FilePath::StringViewType kSomeSubFolder =
     FILE_PATH_LITERAL("Some Sub Folder");
-constexpr base::FilePath::StringPieceType kSomeSubFile =
+constexpr base::FilePath::StringViewType kSomeSubFile =
     FILE_PATH_LITERAL("Some Sub File");
 
-constexpr base::FilePath::StringPieceType kUserDataFolder =
+constexpr base::FilePath::StringViewType kUserDataFolder =
     FILE_PATH_LITERAL("User Data Folder");
-constexpr base::FilePath::StringPieceType kProfileDataFolder =
+constexpr base::FilePath::StringViewType kProfileDataFolder =
     FILE_PATH_LITERAL("Profile Data Folder");
-constexpr base::FilePath::StringPieceType kUserDataFile =
+constexpr base::FilePath::StringViewType kUserDataFile =
     FILE_PATH_LITERAL("User Data File");
-constexpr base::FilePath::StringPieceType kProfileDataFile =
+constexpr base::FilePath::StringViewType kProfileDataFile =
     FILE_PATH_LITERAL("Profile Data File");
-constexpr base::FilePath::StringPieceType kProfileDataJournalFile =
+constexpr base::FilePath::StringViewType kProfileDataJournalFile =
     FILE_PATH_LITERAL("Profile Data File-journal");
-constexpr base::FilePath::StringPieceType kProfileDataExtFile =
+constexpr base::FilePath::StringViewType kProfileDataExtFile =
     FILE_PATH_LITERAL("Profile Data File.ext");
-constexpr base::FilePath::StringPieceType kProfileDataExtWalFile =
+constexpr base::FilePath::StringViewType kProfileDataExtWalFile =
     FILE_PATH_LITERAL("Profile Data File.ext-wal");
-constexpr base::FilePath::StringPieceType kProfileDataExtShmFile =
+constexpr base::FilePath::StringViewType kProfileDataExtShmFile =
     FILE_PATH_LITERAL("Profile Data File.ext-shm");
 
-constexpr std::array<base::FilePath::StringPieceType, 3>
+constexpr std::array<base::FilePath::StringViewType, 3>
     kProfileDirectoryBaseNames = {FILE_PATH_LITERAL("Default"),
                                   FILE_PATH_LITERAL("Profile 1"),
                                   FILE_PATH_LITERAL("Profile 2")};

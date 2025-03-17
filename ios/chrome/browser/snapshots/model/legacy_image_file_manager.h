@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_IMAGE_FILE_MANAGER_H_
 #define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_IMAGE_FILE_MANAGER_H_
 
-#include <vector>
-
 #import <UIKit/UIKit.h>
+
+#include <vector>
 
 #import "base/functional/callback_forward.h"
 

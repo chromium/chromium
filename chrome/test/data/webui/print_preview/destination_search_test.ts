@@ -30,8 +30,7 @@ suite('DestinationSearchTest', function() {
     nativeLayer.setLocalDestinationCapabilities(
         getCddTemplate('FooDevice', 'FooName'));
     destinationStore.init(
-        false /* pdfPrinterDisabled */, true /* saveToDriveDisabled */,
-        'FooDevice' /* printerName */,
+        false /* pdfPrinterDisabled */, 'FooDevice' /* printerName */,
         '' /* serializedDefaultDestinationSelectionRulesStr */,
         [] /* recentDestinations */);
 

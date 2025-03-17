@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_DIALOGS_SETTINGS_OVERRIDDEN_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_DIALOGS_SETTINGS_OVERRIDDEN_DIALOG_H_
 
-static constexpr char kExtensionSettingsOverriddenDialogName[] =
+inline constexpr char kExtensionSettingsOverriddenDialogName[] =
     "ExtensionSettingsOverriddenDialog";
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_DIALOGS_SETTINGS_OVERRIDDEN_DIALOG_H_

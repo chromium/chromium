@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {beginLoadRecentSeaPenImagesAction, beginLoadSelectedImageAction, beginLoadSelectedRecentSeaPenImageAction, beginSearchSeaPenThumbnailsAction, beginSelectRecentSeaPenImageAction, beginSelectSeaPenThumbnailAction, endSelectRecentSeaPenImageAction, endSelectSeaPenThumbnailAction, FullscreenPreviewState, getRecentSeaPenImageIds, getSeaPenStore, getSeaPenThumbnails, SeaPenState, SeaPenStoreAdapter, SeaPenStoreInterface, selectRecentSeaPenImage, selectSeaPenThumbnail, setCurrentSeaPenQueryAction, setFullscreenStateAction, setRecentSeaPenImagesAction, setSeaPenFullscreenStateAction, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setThumbnailResponseStatusCodeAction, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import type {SeaPenState, SeaPenStoreInterface} from 'chrome://personalization/js/personalization_app.js';
+import {beginLoadRecentSeaPenImagesAction, beginLoadSelectedImageAction, beginLoadSelectedRecentSeaPenImageAction, beginSearchSeaPenThumbnailsAction, beginSelectRecentSeaPenImageAction, beginSelectSeaPenThumbnailAction, endSelectRecentSeaPenImageAction, endSelectSeaPenThumbnailAction, FullscreenPreviewState, getRecentSeaPenImageIds, getSeaPenStore, getSeaPenThumbnails, SeaPenStoreAdapter, selectRecentSeaPenImage, selectSeaPenThumbnail, setCurrentSeaPenQueryAction, setFullscreenStateAction, setRecentSeaPenImagesAction, setSeaPenFullscreenStateAction, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setThumbnailResponseStatusCodeAction, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -97,6 +98,7 @@ suite('SeaPen reducers', () => {
               pendingSelected: null,
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,
+              shouldShowSeaPenFreeformIntroductionDialog: false,
               error: null,
               textQueryHistory: null,
             }),
@@ -118,6 +120,7 @@ suite('SeaPen reducers', () => {
               pendingSelected: null,
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,
+              shouldShowSeaPenFreeformIntroductionDialog: false,
               error: null,
               textQueryHistory: null,
             }),
@@ -139,6 +142,7 @@ suite('SeaPen reducers', () => {
               pendingSelected: null,
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,
+              shouldShowSeaPenFreeformIntroductionDialog: false,
               error: null,
               textQueryHistory: null,
             }),
@@ -160,6 +164,7 @@ suite('SeaPen reducers', () => {
               pendingSelected: null,
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,
+              shouldShowSeaPenFreeformIntroductionDialog: false,
               error: null,
               textQueryHistory: null,
             }),
@@ -179,6 +184,7 @@ suite('SeaPen reducers', () => {
       layout: WallpaperLayout.kCenterCropped,
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
     };
     personalizationStore.data.wallpaper.seaPen.currentSelected = 123;
 
@@ -225,6 +231,7 @@ suite('SeaPen reducers', () => {
       layout: WallpaperLayout.kCenterCropped,
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
     };
     personalizationStore.data.wallpaper.seaPen.currentSelected = 123;
 

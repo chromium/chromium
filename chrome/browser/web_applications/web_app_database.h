@@ -30,7 +30,9 @@ namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
 class WebApp;
-class WebAppProto;
+namespace proto {
+class WebApp;
+}  // namespace proto
 struct RegistryUpdateData;
 
 // Exclusively used from the UI thread.
@@ -59,12 +61,13 @@ class WebAppDatabase {
              CompletionCallback callback);
 
   // Exposed for testing.
-  static std::unique_ptr<WebAppProto> CreateWebAppProto(const WebApp& web_app);
+  static std::unique_ptr<proto::WebApp> CreateWebAppProto(
+      const WebApp& web_app);
   // Exposed for testing.
   static std::unique_ptr<WebApp> ParseWebApp(const webapps::AppId& app_id,
                                              const std::string& value);
   // Exposed for testing.
-  static std::unique_ptr<WebApp> CreateWebApp(const WebAppProto& local_data);
+  static std::unique_ptr<WebApp> CreateWebApp(const proto::WebApp& local_data);
 
   bool is_opened() const { return opened_; }
 
@@ -82,7 +85,7 @@ class WebAppDatabase {
     ProtobufState& operator=(ProtobufState&&);
 
     proto::DatabaseMetadata metadata;
-    base::flat_map<webapps::AppId, WebAppProto> apps;
+    base::flat_map<webapps::AppId, proto::WebApp> apps;
   };
 
   ProtobufState ParseProtobufs(
@@ -122,9 +125,9 @@ class WebAppDatabase {
   base::WeakPtrFactory<WebAppDatabase> weak_ptr_factory_{this};
 };
 
-DisplayMode ToMojomDisplayMode(WebAppProto::DisplayMode display_mode);
+DisplayMode ToMojomDisplayMode(proto::WebApp::DisplayMode display_mode);
 
-WebAppProto::DisplayMode ToWebAppProtoDisplayMode(DisplayMode display_mode);
+proto::WebApp::DisplayMode ToWebAppProtoDisplayMode(DisplayMode display_mode);
 
 }  // namespace web_app
 

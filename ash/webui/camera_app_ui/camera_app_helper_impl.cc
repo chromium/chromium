@@ -626,7 +626,7 @@ void CameraAppHelperImpl::GetAspectRatioOrder(
       [](GetAspectRatioOrderCallback callback,
          base::SysInfo::HardwareInfo hardware_info) {
         std::string board = base::SysInfo::HardwareModelName();
-        std::string model = hardware_info.model;
+        const std::string& model = hardware_info.model;
         // This customization is added to use the device's maximum resolution by
         // default. It's not intended for general use and should not be
         // replicated. Refer to crbug.com/316111545 for more details.

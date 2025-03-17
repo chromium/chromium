@@ -77,7 +77,7 @@ static std::string JNI_AndroidProtocolHandler_GetAndroidResourcePath(
   return android_webview::kAndroidResourcePath;
 }
 
-// returns the mime type, or returns null if a mime type was not found.
+// Returns the mime type, or returns empty string if a mime type was not found.
 static std::string JNI_AndroidProtocolHandler_GetWellKnownMimeType(
     JNIEnv* env,
     std::string& path) {
@@ -90,7 +90,7 @@ static std::string JNI_AndroidProtocolHandler_GetWellKnownMimeType(
     return mime_type;
   }
 
-  return nullptr;
+  return "";
 }
 
 }  // namespace android_webview

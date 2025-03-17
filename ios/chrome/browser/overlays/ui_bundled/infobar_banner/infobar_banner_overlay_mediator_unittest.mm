@@ -23,7 +23,7 @@
 namespace {
 // Request ConfigType used in tests.
 DEFINE_TEST_OVERLAY_REQUEST_CONFIG(FakeConfig);
-}
+}  // namespace
 
 // InfobarBannerOverlayMediator subclass used for testing.
 @interface FakeInfobarBannerOverlayMediator : InfobarBannerOverlayMediator

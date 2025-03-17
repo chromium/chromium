@@ -65,10 +65,15 @@ from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
                          GetRustClangRevision)
 
 EXCLUDED_TESTS = [
+    # Temporarily disabled due to https://crbug.com/396424971
+    os.path.join('tests', 'codegen', 'common_prim_int_ptr.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # Temporarily disabled due to https://crbug.com/379308086
-    os.path.join('tests', 'ui', 'asan-odr-win', 'asan_odr_windows.rs'),
+    os.path.join('tests', 'ui', 'sanitizer', 'asan_odr_windows.rs'),
+
+    # Temporarily disabled due to https://crbug.com/400524229
+    os.path.join('tests', 'ui', 'process', 'win-command-child-path.rs'),
 ]
 EXCLUDED_TESTS_MAC = [
 ]
@@ -348,6 +353,12 @@ class XPy:
             self._env['CFLAGS'] += f' {sysroot_cflag}'
             self._env['CXXFLAGS'] += f' {sysroot_cflag}'
             self._env['LDFLAGS'] += f' {sysroot_cflag}'
+            # TODO(https://crbug.com/395891130): remove
+            # C/CXXFLAGS_x86_64_unknown_linux_gnu workaround after upstream
+            # issue is properly fixed.
+            self._env['CFLAGS_x86_64_unknown_linux_gnu'] += f' {sysroot_cflag}'
+            self._env[
+                'CXXFLAGS_x86_64_unknown_linux_gnu'] += f' {sysroot_cflag}'
 
             self._env['RUSTFLAGS_BOOTSTRAP'] += f' -Clink-arg={sysroot_cflag}'
             self._env[

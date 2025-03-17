@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
@@ -36,11 +34,14 @@
 #include "chromeos/ash/components/local_search_service/search_metrics_reporter.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 
@@ -70,8 +71,8 @@ class OsSettingsManagerTest : public testing::Test {
     Profile* profile = profile_manager_.CreateTestingProfile(
         TestingProfile::kDefaultProfileUserName);
     // Log in user to ensure ARC PlayStore can be enabled.
-    const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(profile->GetProfileUserName(), "1234"));
+    const AccountId account_id(AccountId::FromUserEmailGaiaId(
+        profile->GetProfileUserName(), GaiaId("1234")));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 

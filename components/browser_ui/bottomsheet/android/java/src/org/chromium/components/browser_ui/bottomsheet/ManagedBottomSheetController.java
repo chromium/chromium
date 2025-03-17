@@ -4,12 +4,14 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 
 /**
  * An interface for the owning object to manage interaction between the bottom sheet and the rest of
  * the system.
  */
+@NullMarked
 public interface ManagedBottomSheetController
         extends BottomSheetController, BottomSheetControllerProvider.Unowned, AppHeaderObserver {
     /**

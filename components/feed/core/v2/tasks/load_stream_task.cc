@@ -73,7 +73,8 @@ Result& Result::operator=(Result&&) = default;
 LaunchResult LoadStreamTask::LaunchResultFromNetworkInfo(
     const NetworkResponseInfo& response_info,
     bool has_parsed_body) {
-  if (response_info.status_code == 200) {
+  int status_code = response_info.status_code;
+  if (status_code == 200) {
     if (has_parsed_body) {
       // Success.
       return {LoadStreamStatus::kNoStatus,
@@ -105,6 +106,13 @@ LaunchResult LoadStreamTask::LaunchResultFromNetworkInfo(
       return {
           LoadStreamStatus::kAccountTokenFetchTimedOut,
           feedwire::DiscoverLaunchResult::NO_CARDS_FAILED_TO_GET_AUTH_TOKEN};
+  }
+  if (status_code == net::ERR_INTERNET_DISCONNECTED ||
+      status_code == net::ERR_NAME_NOT_RESOLVED ||
+      status_code == net::ERR_ADDRESS_UNREACHABLE ||
+      status_code == net::ERR_PROXY_CONNECTION_FAILED) {
+    return {LoadStreamStatus::kCannotLoadFromNetworkOffline,
+            feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_NO_INTERNET};
   }
   return {LoadStreamStatus::kNetworkFetchFailed,
           feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_NON_200};
@@ -364,12 +372,8 @@ void LoadStreamTask::SendFeedQueryRequest() {
     }
   } else {
     // Other requests use GWS.
-    NetworkRequestType network_request_type =
-        options_.stream_type.IsForSupervisedUser()
-            ? NetworkRequestType::kSupervisedFeed
-            : NetworkRequestType::kFeedQuery;
     network.SendQueryRequest(
-        network_request_type, request, account_info,
+        NetworkRequestType::kFeedQuery, request, account_info,
         base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
   }
 }
@@ -449,6 +453,10 @@ void LoadStreamTask::ProcessNetworkResponse(
   if (response_data.content_lifetime) {
     feedstore::SetContentLifetime(updated_metadata, options_.stream_type,
                                   *response_data.content_lifetime);
+  }
+  if (response_data.feed_launch_cui_metadata) {
+    updated_metadata.set_feed_launch_cui_metadata(
+        *response_data.feed_launch_cui_metadata);
   }
   stream_->SetMetadata(std::move(updated_metadata));
   if (response_data.experiments)

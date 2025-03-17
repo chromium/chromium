@@ -10,6 +10,8 @@ source_set("model") {
     "off_the_record_profile_ios_impl.mm",
     "off_the_record_profile_ios_io_data.h",
     "off_the_record_profile_ios_io_data.mm",
+    "profile_deleter_ios.h",
+    "profile_deleter_ios.mm",
     "profile_ios_impl.h",
     "profile_ios_impl.mm",
     "profile_ios_impl_io_data.h",
@@ -160,6 +162,8 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/download/model/background_service",
     "//ios/chrome/browser/drive/model:drive_service_factory",
     "//ios/chrome/browser/enterprise/connectors",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
+    "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
     "//ios/chrome/browser/enterprise/model/idle",
     "//ios/chrome/browser/external_files/model",
     "//ios/chrome/browser/favicon/model",
@@ -175,6 +179,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/language_detection/model",
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
     "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/metrics/model:bookmark_model_metrics",
     "//ios/chrome/browser/metrics/model:google_groups_updater",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/page_content_annotations/model",
@@ -217,6 +222,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/sync/model:sync_invalidations_service_factory",
+    "//ios/chrome/browser/tab_switcher/model/inactive_tabs:model",
     "//ios/chrome/browser/tabs_search/model:model_factory",
     "//ios/chrome/browser/text_selection/model",
     "//ios/chrome/browser/tips_manager/model:factory",
@@ -265,6 +271,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "profile_deleter_ios_unittest.mm",
     "profile_ios_impl_unittest.mm",
     "profile_manager_ios_impl_unittest.mm",
   ]
@@ -272,9 +279,12 @@ source_set("unit_tests") {
     ":model",
     ":test_support",
     "//base",
+    "//base/test:test_support",
     "//components/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public",
     "//testing/gtest",
   ]
 }

@@ -27,6 +27,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
 CGFloat const kCaptionTextViewOffset = 16;
 CGFloat const kDefaultMargin = 16;
 CGFloat const kTitleTopMinimumMargin = 48;
@@ -36,6 +37,61 @@ CGFloat const kContentWidthMultiplier = 0.65;
 CGFloat const kBottomMargin = 10;
 CGFloat const kButtonHorizontalMargin = 4;
 CGFloat const kContentOptimalWidth = 327;
+CGFloat const kCheckmarkIconSize = 18;
+CGFloat const kSubtitleMarginLayoutGuideHeight = 24;
+
+// Helper method that returns the green checkmark image.
+UIImage* GetCheckmarkImage(bool passkeys_m2_enabled) {
+  if (passkeys_m2_enabled) {
+    return DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
+                                      kCheckmarkIconSize);
+  } else {
+    return [[UIImage imageNamed:@"settings_safe_state"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
+}
+
+// Helper method that returns the height of the `subtitleMarginLayoutGuide`.
+CGFloat GetSubtitleMarginLayoutGuideHeight(bool passkeys_m2_enabled) {
+  if (passkeys_m2_enabled) {
+    return kSubtitleMarginLayoutGuideHeight;
+  } else {
+    return kDefaultMargin;
+  }
+}
+
+// Helper method that returns the string to use as title.
+NSString* GetTitleString(bool passkeys_m2_enabled) {
+  if (!passkeys_m2_enabled) {
+    return l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
+  }
+
+  if (@available(iOS 18.0, *)) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER_IOS18);
+  } else {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER);
+  }
+}
+
+// Helper method that returns the string to use in the caption view that
+// provides instructions on how to turn off autofill in other apps.
+NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
+  if (!passkeys_m2_enabled) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS16);
+  }
+
+  if (@available(iOS 18.0, *)) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS18);
+  } else {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS17);
+  }
+}
+
 }  // namespace
 
 @interface PasswordsInOtherAppsViewController ()
@@ -83,17 +139,23 @@ CGFloat const kContentOptimalWidth = 327;
 
 @end
 
-@implementation PasswordsInOtherAppsViewController
+@implementation PasswordsInOtherAppsViewController {
+  // Whether the Passkeys M2 feature is enabled.
+  BOOL _passkeysM2Enabled;
+}
 
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _titleText =
-        l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
+    _passkeysM2Enabled = IOSPasskeysM2Enabled();
+    _titleText = GetTitleString(_passkeysM2Enabled);
     _actionString = l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS);
 
     UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-    if (idiom == UIUserInterfaceIdiomPad) {
+    if (_passkeysM2Enabled) {
+      _subtitleText = l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SUBTITLE);
+    } else if (idiom == UIUserInterfaceIdiomPad) {
       _subtitleText = l10n_util::GetNSString(
           IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPAD);
     } else {
@@ -133,8 +195,13 @@ CGFloat const kContentOptimalWidth = 327;
   [self.scrollContentView addSubview:self.imageView];
 
   // Add the labels.
-  [self.scrollContentView addSubview:self.titleLabel];
-  [self.scrollContentView addSubview:self.subtitleLabel];
+  UIStackView* titleStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ self.titleLabel, self.subtitleLabel ]];
+  titleStackView.axis = UILayoutConstraintAxisVertical;
+  titleStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  titleStackView.spacing = kDefaultMargin;
+  titleStackView.alignment = UIStackViewAlignmentCenter;
+  [self.scrollContentView addSubview:titleStackView];
   [self.view addLayoutGuide:subtitleMarginLayoutGuide];
   [self.scrollContentView addSubview:self.specificContentView];
 
@@ -204,27 +271,23 @@ CGFloat const kContentOptimalWidth = 327;
 
     // Labels contraints. Attach them to the top of the scroll content view, and
     // center them horizontally.
-    [self.titleLabel.topAnchor
+    [titleStackView.topAnchor
         constraintEqualToAnchor:self.imageView.bottomAnchor],
-    [self.titleLabel.centerXAnchor
+    [titleStackView.centerXAnchor
         constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
-    [self.titleLabel.widthAnchor
-        constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor
-                                 constant:-2 * kTitleHorizontalMargin],
-    [self.subtitleLabel.topAnchor
-        constraintEqualToAnchor:self.titleLabel.bottomAnchor
-                       constant:kDefaultMargin],
-    [self.subtitleLabel.centerXAnchor
-        constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
-    [self.subtitleLabel.widthAnchor
+    [titleStackView.widthAnchor
         constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor],
+    [self.titleLabel.widthAnchor
+        constraintLessThanOrEqualToAnchor:titleStackView.widthAnchor
+                                 constant:-2 * kTitleHorizontalMargin],
 
     // Constraints for the screen-specific content view. It should take the
     // remaining scroll view area, with some margins on the top and sides.
     [subtitleMarginLayoutGuide.topAnchor
-        constraintEqualToAnchor:self.subtitleLabel.bottomAnchor],
+        constraintEqualToAnchor:titleStackView.bottomAnchor],
     [subtitleMarginLayoutGuide.heightAnchor
-        constraintEqualToConstant:kDefaultMargin],
+        constraintEqualToConstant:GetSubtitleMarginLayoutGuideHeight(
+                                      _passkeysM2Enabled)],
     [self.specificContentView.topAnchor
         constraintEqualToAnchor:subtitleMarginLayoutGuide.bottomAnchor],
     [self.specificContentView.leadingAnchor
@@ -257,6 +320,13 @@ CGFloat const kContentOptimalWidth = 327;
       constraintEqualToConstant:kTitleTopMinimumMargin];
   imageHeightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
   imageHeightConstraint.active = YES;
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateImageOnTraitChange)];
+  }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -314,13 +384,19 @@ CGFloat const kContentOptimalWidth = 327;
   [self.navigationController setToolbarHidden:YES animated:YES];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (self.traitCollection.verticalSizeClass !=
       previousTraitCollection.verticalSizeClass) {
-    self.imageView.image = [self createOrUpdateImage:self.imageView.image];
+    [self updateImageOnTraitChange];
   }
 }
+#endif
 
 #pragma mark - Accessors
 
@@ -532,11 +608,10 @@ CGFloat const kContentOptimalWidth = 327;
 - (UIView*)turnOffInstructionView {
   if (!_turnOffInstructionView) {
     UITextView* captionTextView = [self drawCaptionTextView];
-    NSLog(@"%@", captionTextView.text);
-    UIImage* checkmark = [[UIImage imageNamed:@"settings_safe_state"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* checkmark = GetCheckmarkImage(_passkeysM2Enabled);
     UIImageView* checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
-    checkmarkView.tintColor = [UIColor colorNamed:kGreenColor];
+    checkmarkView.tintColor =
+        [UIColor colorNamed:_passkeysM2Enabled ? kGreen500Color : kGreenColor];
     checkmarkView.translatesAutoresizingMaskIntoConstraints = NO;
 
     _turnOffInstructionView = [[UIView alloc] init];
@@ -590,6 +665,10 @@ CGFloat const kContentOptimalWidth = 327;
   BOOL shouldShowTurnOffInstructions =
       sharedManager.ready && sharedManager.autoFillEnabled;
 
+  if (_passkeysM2Enabled) {
+    self.subtitleLabel.hidden = shouldShowTurnOffInstructions;
+  }
+
   UIView* viewToRemove = shouldShowTurnOffInstructions
                              ? _turnOnInstructionView
                              : _turnOffInstructionView;
@@ -611,9 +690,7 @@ CGFloat const kContentOptimalWidth = 327;
 }
 
 - (BOOL)useShortInstruction {
-  return ios::provider::SupportShortenedInstructionForPasswordAutoFill() &&
-         base::FeatureList::IsEnabled(
-             kEnableShortenedPasswordAutoFillInstruction);
+  return ios::provider::SupportShortenedInstructionForPasswordAutoFill();
 }
 
 - (NSArray<NSString*>*)steps {
@@ -622,7 +699,9 @@ CGFloat const kContentOptimalWidth = 327;
       l10n_util::GetNSString(
           IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16),
       l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
+          _passkeysM2Enabled
+              ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_2
+              : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
     ];
   }
   return @[
@@ -647,6 +726,7 @@ CGFloat const kContentOptimalWidth = 327;
 
 #pragma mark - UITextViewDelegate
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
@@ -655,14 +735,23 @@ CGFloat const kContentOptimalWidth = 327;
   // Return NO as the app is handling the opening of the settings page.
   return NO;
 }
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf didTapActionButton];
+  }];
+}
 
 #pragma mark - Private
 
-// Returns caption text that shows below the subtitle in turnOffInstructions.
+// Returns caption text that shows below the subtitle in `turnOffInstructions`.
 - (UITextView*)drawCaptionTextView {
   NSString* text;
-  text = l10n_util::GetNSString(
-      IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS16);
+  text = GetTurnOffCaptionTitleString(_passkeysM2Enabled);
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kGrey600Color],
     NSFontAttributeName :
@@ -687,6 +776,8 @@ CGFloat const kContentOptimalWidth = 327;
   captionTextView.textAlignment = NSTextAlignmentCenter;
   captionTextView.translatesAutoresizingMaskIntoConstraints = NO;
   captionTextView.adjustsFontForContentSizeCategory = YES;
+  captionTextView.accessibilityIdentifier =
+      kPasswordsInOtherAppsTurnOffCaptionAccessibilityIdentifier;
 
   captionTextView.delegate = self;
 
@@ -727,9 +818,14 @@ CGFloat const kContentOptimalWidth = 327;
   return newSize;
 }
 
-// Selector of self.actionButton and link in caption text view.
+// Selector of `self.actionButton` and link in caption text view.
 - (void)didTapActionButton {
   [self.delegate openApplicationSettings];
+}
+
+// A helper function invoked when the device's UITrait have been changed.
+- (void)updateImageOnTraitChange {
+  self.imageView.image = [self createOrUpdateImage:self.imageView.image];
 }
 
 @end

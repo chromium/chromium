@@ -34,6 +34,7 @@ const char kAppUrlHost[] = "apps.apple.com";
 
 const char kITunesProductIdPrefix[] = "id";
 const char kITunesAppPathIdentifier[] = "app";
+const char kITunesAppBundlePathIdentifier[] = "app-bundle";
 const size_t kITunesUrlPathMinComponentsCount = 2;
 const size_t kITunesUrlRegionComponentDefaultIndex = 0;
 const size_t kITunesUrlMediaTypeComponentDefaultIndex = 1;
@@ -44,8 +45,9 @@ bool IsITunesProductUrl(const GURL& url) {
   if (!url.SchemeIsHTTPOrHTTPS() ||
       !(strcmp(url.host().c_str(), kLegacyITunesUrlHost) == 0 ||
         strcmp(url.host().c_str(), kLegacyITunesGlobalUrlHost) == 0 ||
-        strcmp(url.host().c_str(), kAppUrlHost) == 0))
+        strcmp(url.host().c_str(), kAppUrlHost) == 0)) {
     return false;
+  }
 
   std::string file_name = url.ExtractFileName();
   // The first `kITunesProductIdLength` characters must be
@@ -78,23 +80,27 @@ ITunesUrlsHandlerTabHelper::ITunesUrlsHandlerTabHelper(web::WebState* web_state)
 
 // static
 bool ITunesUrlsHandlerTabHelper::CanHandleUrl(const GURL& url) {
-  if (!IsITunesProductUrl(url))
+  if (!IsITunesProductUrl(url)) {
     return false;
+  }
   // Valid iTunes URL structure:
   // HOST/OPTIONAL_REGION_CODE/MEDIA_TYPE/OPTIONAL_MEDIA_NAME/ID?PARAMETERS
   // Check the URL media type, to determine if it is supported.
   std::vector<std::string> path_components = base::SplitString(
       url.path(), "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  if (path_components.size() < kITunesUrlPathMinComponentsCount)
+  if (path_components.size() < kITunesUrlPathMinComponentsCount) {
     return false;
+  }
   size_t media_type_index = kITunesUrlMediaTypeComponentDefaultIndex;
   DCHECK(media_type_index > 0);
   // If there is no region code in the URL then media type has to appear
   // earlier in the URL.
-  if (path_components[kITunesUrlRegionComponentDefaultIndex].size() != 2)
+  if (path_components[kITunesUrlRegionComponentDefaultIndex].size() != 2) {
     media_type_index--;
-  return path_components[media_type_index] == kITunesAppPathIdentifier;
+  }
+  return path_components[media_type_index] == kITunesAppPathIdentifier ||
+      path_components[media_type_index] == kITunesAppBundlePathIdentifier;
 }
 
 void ITunesUrlsHandlerTabHelper::ShouldAllowRequest(

@@ -4,8 +4,9 @@
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 
-import {HelpContentList} from './feedback_types.js';
-import {FeedbackContext, HelpContentType, SearchRequest, SearchResponse} from './os_feedback_ui.mojom-webui.js';
+import type {HelpContentList} from './feedback_types.js';
+import type {FeedbackContext, SearchRequest, SearchResponse} from './os_feedback_ui.mojom-webui.js';
+import {HelpContentType} from './os_feedback_ui.mojom-webui.js';
 
 /**
  * @fileoverview

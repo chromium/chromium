@@ -4,12 +4,13 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_mediator.h"
 
+#import <algorithm>
+
 #import "base/check.h"
 #import "base/containers/contains.h"
 #import "base/containers/flat_set.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/cancelable_task_tracker.h"
 #import "base/task/sequenced_task_runner.h"
@@ -46,7 +47,7 @@ bool CheckForDuplicates(
         return signon_realm == credential.GetFirstSignonRealm() &&
                username_value == credential.username;
       };
-  if (base::ranges::any_of(credentials, have_equal_username_and_realm)) {
+  if (std::ranges::any_of(credentials, have_equal_username_and_realm)) {
     return true;
   }
   return false;
@@ -109,7 +110,7 @@ bool CheckForDuplicates(
                                                        _syncService);
   if (account) {
     CHECK(!account->empty());
-    [_consumer setAccountSavingPasswords:base::SysUTF8ToNSString(*account)];
+    [_consumer setAccountSavingPasswords:SysUTF8ToNSString(*account)];
   } else {
     [_consumer setAccountSavingPasswords:nil];
   }
@@ -140,8 +141,10 @@ bool CheckForDuplicates(
   credential.password = SysNSStringToUTF16(password);
   credential.note = SysNSStringToUTF16(note);
   credential.stored_in = {
-      password_manager::features_util::GetDefaultPasswordStore(_prefService,
-                                                               _syncService)};
+      password_manager::features_util::IsAccountStorageEnabled(_prefService,
+                                                               _syncService)
+          ? password_manager::PasswordForm::Store::kAccountStore
+          : password_manager::PasswordForm::Store::kProfileStore};
 
   password_manager::CredentialFacet facet;
   facet.url = self.URL;

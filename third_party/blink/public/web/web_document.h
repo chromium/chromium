@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOCUMENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOCUMENT_H_
 
+#include <vector>
+
 #include "net/cookies/site_for_cookies.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
@@ -41,7 +43,6 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_css_origin.h"
 #include "third_party/blink/public/web/web_draggable_region.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -121,11 +122,11 @@ class BLINK_EXPORT WebDocument : public WebNode {
   WebString Title() const;
   WebString ContentAsTextForTesting() const;
   WebElementCollection All() const;
-  WebVector<WebFormElement> Forms() const;
+  std::vector<WebFormElement> Forms() const;
 
   // Returns all form elements that have no shadow-tree including ancestor that
   // is also a form element. This includes form elements inside shadow trees.
-  WebVector<WebFormElement> GetTopLevelForms() const;
+  std::vector<WebFormElement> GetTopLevelForms() const;
 
   WebURL CompleteURL(const WebString&) const;
   WebElement GetElementById(const WebString&) const;
@@ -133,7 +134,7 @@ class BLINK_EXPORT WebDocument : public WebNode {
 
   // The unassociated form controls are form control elements that are not
   // associated to a <form> element.
-  WebVector<WebFormControlElement> UnassociatedFormControls() const;
+  std::vector<WebFormControlElement> UnassociatedFormControls() const;
 
   // Inserts the given CSS source code as a style sheet in the document.
   WebStyleSheetKey InsertStyleSheet(
@@ -150,9 +151,9 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // Arranges to call WebLocalFrameClient::didMatchCSS(frame(), ...) when one of
   // the selectors matches or stops matching an element in this document.
   // Each call to this method overrides any previous calls.
-  void WatchCSSSelectors(const WebVector<WebString>& selectors);
+  void WatchCSSSelectors(const std::vector<WebString>& selectors);
 
-  WebVector<WebDraggableRegion> DraggableRegions() const;
+  std::vector<WebDraggableRegion> DraggableRegions() const;
 
   WebDistillabilityFeatures DistillabilityFeatures();
 

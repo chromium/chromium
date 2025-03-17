@@ -66,7 +66,6 @@
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-shared.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/indexed_db/file_path_util.h"
-#include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
@@ -225,71 +224,6 @@ std::
 }
 
 }  // namespace
-
-// BlobDataItemReader implementation providing a BlobDataItem -> file adapter.
-class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
- public:
-  IndexedDBDataItemReader(const base::FilePath& file_path,
-                          base::OnceCallback<void(const base::FilePath&)>
-                              on_last_receiver_disconnected)
-      : file_path_(file_path),
-        on_last_receiver_disconnected_(
-            std::move(on_last_receiver_disconnected)) {
-    // The `BlobStorageContext` will disconnect when the blob is no longer
-    // referenced.
-    receivers_.set_disconnect_handler(
-        base::BindRepeating(&IndexedDBDataItemReader::OnClientDisconnected,
-                            base::Unretained(this)));
-  }
-
-  IndexedDBDataItemReader(const IndexedDBDataItemReader&) = delete;
-  IndexedDBDataItemReader& operator=(const IndexedDBDataItemReader&) = delete;
-
-  ~IndexedDBDataItemReader() override = default;
-
-  void AddReader(mojo::PendingReceiver<BlobDataItemReader> receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(receiver.is_valid());
-
-    receivers_.Add(this, std::move(receiver));
-  }
-
-  void Read(uint64_t offset,
-            uint64_t length,
-            mojo::ScopedDataPipeProducerHandle pipe,
-            ReadCallback callback) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    OpenFileAndReadIntoPipe(file_path_, offset, length, std::move(pipe),
-                            std::move(callback));
-  }
-
-  void ReadSideData(ReadSideDataCallback callback) override {
-    // This type should never have side data.
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    std::move(callback).Run(net::ERR_NOT_IMPLEMENTED, mojo_base::BigBuffer());
-  }
-
- private:
-  void OnClientDisconnected() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!receivers_.empty()) {
-      return;
-    }
-
-    std::move(on_last_receiver_disconnected_).Run(file_path_);
-    // `this` is deleted.
-  }
-
-  mojo::ReceiverSet<storage::mojom::BlobDataItemReader> receivers_;
-
-  base::FilePath file_path_;
-
-  // Called when the last receiver is disconnected. Will destroy `this`.
-  base::OnceCallback<void(const base::FilePath&)>
-      on_last_receiver_disconnected_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-};
 
 BucketContext::Delegate::Delegate()
     : on_ready_for_destruction(base::DoNothing()),
@@ -555,23 +489,7 @@ void BucketContext::CreateAllExternalObjects(
           continue;
         }
 
-        auto element = storage::mojom::BlobDataItem::New();
-        // TODO(enne): do we have to handle unknown size here??
-        element->size = blob_info.size();
-        element->side_data_size = 0;
-        element->content_type = base::UTF16ToUTF8(blob_info.type());
-        element->type = storage::mojom::BlobDataItemType::kIndexedDB;
-
-        BindFileReader(blob_info.indexed_db_file_path(),
-                       blob_info.release_callback(),
-                       element->reader.InitWithNewPipeAndPassReceiver());
-
-        // Write results to output_info.
-        blob_storage_context_->RegisterFromDataItem(
-            std::move(receiver),
-            base::Uuid::GenerateRandomV4().AsLowercaseString(),
-            std::move(element));
-
+        BindBlobReader(blob_info, std::move(receiver));
         break;
       }
       case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle: {
@@ -996,27 +914,29 @@ void BucketContext::CloseNow() {
   QueueRunTasks();
 }
 
-void BucketContext::BindFileReader(
-    const base::FilePath& path,
-    base::OnceClosure release_callback,
-    mojo::PendingReceiver<storage::mojom::BlobDataItemReader> receiver) {
+void BucketContext::BindBlobReader(
+    const IndexedDBExternalObject& blob_info,
+    mojo::PendingReceiver<blink::mojom::Blob> blob_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(receiver.is_valid());
+
+  const base::FilePath& path = blob_info.indexed_db_file_path();
 
   auto itr = file_reader_map_.find(path);
   if (itr == file_reader_map_.end()) {
     // Unretained is safe because `this` owns the reader.
-    auto reader = std::make_unique<IndexedDBDataItemReader>(
-        path, base::BindOnce(&BucketContext::RemoveBoundReaders,
-                             base::Unretained(this)));
-    itr = file_reader_map_
-              .insert({path, std::make_tuple(std::move(reader),
-                                             base::ScopedClosureRunner(
-                                                 std::move(release_callback)))})
-              .first;
+    auto reader = std::make_unique<BlobReader>(
+        blob_info, base::BindOnce(&BucketContext::RemoveBoundReaders,
+                                  base::Unretained(this), path));
+    itr =
+        file_reader_map_
+            .insert({path, std::make_tuple(std::move(reader),
+                                           base::ScopedClosureRunner(
+                                               blob_info.release_callback()))})
+            .first;
   }
 
-  std::get<0>(itr->second)->AddReader(std::move(receiver));
+  std::get<0>(itr->second)
+      ->AddReceiver(std::move(blob_receiver), *blob_storage_context_);
 }
 
 void BucketContext::RemoveBoundReaders(const base::FilePath& path) {

@@ -14,6 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
+#include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 
 namespace device {
@@ -51,6 +52,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
 
   // BluetoothDevice:
   uint32_t GetBluetoothClass() const override;
+  BluetoothTransport GetType() const override;
   std::string GetAddress() const override;
   AddressType GetAddressType() const override;
   VendorIDSource GetVendorIDSource() const override;
@@ -64,6 +66,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
   bool IsGattConnected() const override;
   bool IsConnectable() const override;
   bool IsConnecting() const override;
+  UUIDSet GetUUIDs() const override;
   bool ExpectingPinCode() const override;
   bool ExpectingPasskey() const override;
   bool ExpectingConfirmation() const override;
@@ -113,8 +116,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
       const base::android::JavaParamRef<jobject>&
           bluetooth_gatt_service_wrapper);  // BluetoothGattServiceWrapper
 
- protected:
-  BluetoothDeviceAndroid(BluetoothAdapterAndroid* adapter);
+ private:
+  explicit BluetoothDeviceAndroid(BluetoothAdapterAndroid* adapter);
 
   // BluetoothDevice:
   void CreateGattConnectionImpl(

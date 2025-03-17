@@ -14,9 +14,11 @@
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
@@ -80,6 +82,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -102,6 +105,7 @@
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
 #include "third_party/blink/public/common/loader/record_load_histograms.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
@@ -242,15 +246,13 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
         device_bound_session_observer,
     mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>
         accept_ch_frame_observer) {
-  auto new_request = std::make_unique<network::ResourceRequest>();
+  auto new_request = CreateResourceRequestForNavigation(
+      request_info.common_params->method, request_info.common_params->url,
+      request_info.common_params->request_destination,
+      *request_info.common_params->referrer, request_info.isolation_info,
+      std::move(devtools_observer), /*priority=*/net::HIGHEST,
+      request_info.is_main_frame);
 
-  new_request->method = request_info.common_params->method;
-  new_request->url = request_info.common_params->url;
-  new_request->navigation_redirect_chain.push_back(new_request->url);
-  new_request->site_for_cookies =
-      request_info.isolation_info.site_for_cookies();
-  new_request->trusted_params = network::ResourceRequest::TrustedParams();
-  new_request->trusted_params->isolation_info = request_info.isolation_info;
   new_request->trusted_params->cookie_observer = std::move(cookie_observer);
   new_request->trusted_params->trust_token_observer =
       std::move(trust_token_observer);
@@ -258,7 +260,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
       std::move(shared_dictionary_observer);
   new_request->trusted_params->url_loader_network_observer =
       std::move(url_loader_network_observer);
-  new_request->trusted_params->devtools_observer = std::move(devtools_observer);
   new_request->trusted_params->device_bound_session_observer =
       std::move(device_bound_session_observer);
   new_request->trusted_params->client_security_state =
@@ -268,11 +269,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->trusted_params->allow_cookies_from_browser =
       request_info.allow_cookies_from_browser;
   new_request->is_outermost_main_frame = request_info.is_outermost_main_frame;
-  new_request->priority = net::HIGHEST;
   new_request->request_initiator = request_info.common_params->initiator_origin;
-  new_request->referrer = request_info.common_params->referrer->url;
-  new_request->referrer_policy = Referrer::ReferrerPolicyForUrlRequest(
-      request_info.common_params->referrer->policy);
   new_request->headers.AddHeadersFromString(request_info.begin_params->headers);
   new_request->cors_exempt_headers = request_info.cors_exempt_headers;
   new_request->devtools_accepted_stream_types =
@@ -282,14 +279,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
       static_cast<int>(request_info.is_outermost_main_frame
                            ? blink::mojom::ResourceType::kMainFrame
                            : blink::mojom::ResourceType::kSubFrame);
-  // When set, `update_first_party_url_on_redirect` will cause a
-  // server-redirect to update the URL used to determine if cookies are
-  // first-party. Since fenced frames are main frames in terms of cookie
-  // partitioning, this needs to be `is_main_frame` rather than
-  // `is_outermost_main_frame`.
-  if (request_info.is_main_frame) {
-    new_request->update_first_party_url_on_redirect = true;
-  }
 
   int load_flags = request_info.begin_params->load_flags;
   if (request_info.is_outermost_main_frame) {
@@ -305,9 +294,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
 
   new_request->request_body = request_info.common_params->post_data.get();
   new_request->has_user_gesture = request_info.common_params->has_user_gesture;
-  new_request->enable_load_timing = true;
-  new_request->mode = network::mojom::RequestMode::kNavigate;
-  new_request->destination = request_info.common_params->request_destination;
 
   if (ui::PageTransitionIsWebTriggerable(
           ui::PageTransitionFromInt(request_info.common_params->transition))) {
@@ -317,8 +303,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
     new_request->trusted_params->has_user_activation = true;
   }
 
-  new_request->credentials_mode = network::mojom::CredentialsMode::kInclude;
-  new_request->redirect_mode = network::mojom::RedirectMode::kManual;
   new_request->upgrade_if_insecure = request_info.upgrade_if_insecure;
   new_request->throttling_profile_id = request_info.devtools_frame_token;
   new_request->transition_type = request_info.common_params->transition;
@@ -389,6 +373,26 @@ bool IsSameOriginRedirect(const std::vector<GURL>& url_chain) {
 
   auto previous_origin = url::Origin::Create(url_chain[url_chain.size() - 2]);
   return previous_origin.IsSameOriginWith(url_chain[url_chain.size() - 1]);
+}
+
+// Return whether the inherited frame policy or iframe sandbox attribute
+// contains the 'allow-same-site-none-cookies' value and the override should be
+// applied as the frame's ancestors are all same-site.
+bool ShouldAllowSameSiteNoneCookiesInSandbox(FrameTreeNode& frame_tree_node) {
+  if (frame_tree_node.IsInFencedFrameTree()) {
+    return false;
+  }
+
+  RenderFrameHostImpl* frame = frame_tree_node.current_frame_host();
+  return frame &&
+         frame->active_sandbox_flags() !=
+             network::mojom::WebSandboxFlags::kNone &&
+         !frame->IsSandboxed(
+             network::mojom::WebSandboxFlags::kAllowSameSiteNoneCookies) &&
+         frame->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin) &&
+         frame->AncestorsAllowSameSiteNoneCookiesOverride(
+             frame_tree_node.navigation_request()
+                 ->GetTentativeOriginAtRequestTime());
 }
 
 // TODO(https://crbug.com/346000235) there is a known failure with extensions
@@ -471,6 +475,87 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
 #endif  // NDEBUG
 
 }  // namespace
+
+std::unique_ptr<network::ResourceRequest> CreateResourceRequestForNavigation(
+    const std::string& method,
+    const GURL& url,
+    network::mojom::RequestDestination destination,
+    const blink::mojom::Referrer& referrer,
+    const net::IsolationInfo& isolation_info,
+    mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
+    net::RequestPriority priority,
+    bool is_main_frame) {
+  auto new_request = std::make_unique<network::ResourceRequest>();
+
+  // - Step 3 of
+  // https://html.spec.whatwg.org/multipage/browsing-the-web.html#create-navigation-params-by-fetching
+  // - Step 2 of
+  // https://wicg.github.io/nav-speculation/prefetch.html#create-a-navigation-request
+
+  // url: entry's URL [spec text]
+  new_request->url = url;
+  new_request->navigation_redirect_chain.push_back(new_request->url);
+
+  // client: sourceSnapshotParams's fetch client [spec text]
+
+  // destination: "document" [spec text]
+  new_request->destination = destination;
+
+  // credentials mode: "include" [spec text]
+  new_request->credentials_mode = network::mojom::CredentialsMode::kInclude;
+
+  // use-URL-credentials flag: set [spec text]
+
+  // redirect mode: "manual" [spec text]
+  new_request->redirect_mode = network::mojom::RedirectMode::kManual;
+
+  // replaces client id: navigable's active document's relevant settings
+  // object's id [spec text]
+  // Not implemented (https://crbug.com/40287592).
+
+  // mode: "navigate"  [spec text]
+  new_request->mode = network::mojom::RequestMode::kNavigate;
+
+  // referrer: entry's document state's request referrer [spec text]
+  new_request->referrer = referrer.url;
+
+  // referrer policy: entry's document state's request referrer policy [spec
+  // text]
+  new_request->referrer_policy =
+      Referrer::ReferrerPolicyForUrlRequest(referrer.policy);
+
+  new_request->method = method;
+
+  new_request->site_for_cookies = isolation_info.site_for_cookies();
+
+  new_request->trusted_params = network::ResourceRequest::TrustedParams();
+  new_request->trusted_params->isolation_info = isolation_info;
+  new_request->trusted_params->devtools_observer = std::move(devtools_observer);
+
+  new_request->priority = priority;
+
+  if (is_main_frame) {
+    // When set, `update_first_party_url_on_redirect` will cause a
+    // server-redirect to update the URL used to determine if cookies are
+    // first-party. Since fenced frames are main frames in terms of cookie
+    // partitioning, this needs to be `is_main_frame` rather than
+    // `is_outermost_main_frame`.
+    new_request->update_first_party_url_on_redirect = true;
+
+    // Navigation responses for the top-level document are able to be used as
+    // compression dictionaries.
+    new_request->shared_dictionary_writer_enabled = true;
+  }
+
+  new_request->enable_load_timing = true;
+
+  if (base::FeatureList::IsEnabled(
+          network::features::kRendererSideContentDecoding)) {
+    new_request->client_side_content_decoding_enabled = true;
+  }
+
+  return new_request;
+}
 
 // TODO(kinuko): Fix the method ordering and move these methods after the ctor.
 NavigationURLLoaderImpl::~NavigationURLLoaderImpl() {
@@ -757,26 +842,26 @@ void NavigationURLLoaderImpl::StartNonInterceptedRequest(
   CreateThrottlingLoaderAndStart(std::move(factory),
                                  /*additional_throttles=*/{});
 }
-void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
-    ResponseHeadUpdateParams head_update_params) {
-  head_update_params_ = std::move(head_update_params);
-  scoped_refptr<network::SharedURLLoaderFactory> factory;
-  if (network::IsURLHandledByNetworkService(resource_request_->url)) {
-    factory = network_loader_factory_;
-    default_loader_used_ = true;
-  } else {
-    factory = GetOrCreateNonNetworkLoaderFactory();
-  }
-  uint32_t options =
-      GetURLLoaderOptions(resource_request_->is_outermost_main_frame);
 
-  // As `FallbackToNonInterceptedRequest()` is called only from ServiceWorker
-  // after initially setting `interceptor_result->single_request_factory`,
-  // `url_loader_` should be non-null and pointing to the
-  // service-worker-intercepting loader. Restart it with the non-interceptor
-  // factory.
-  CHECK(url_loader_);
-  url_loader_->RestartWithFactory(std::move(factory), options);
+network::mojom::URLLoaderFactory*
+NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
+    base::WeakPtr<NavigationURLLoaderImpl> self,
+    ResponseHeadUpdateParams head_update_params) {
+  if (!self) {
+    return nullptr;
+  }
+
+  self->head_update_params_ = std::move(head_update_params);
+  if (network::IsURLHandledByNetworkService(self->resource_request_->url)) {
+    // `NavigationURLLoaderImpl::default_loader_used_` is NOT set to true here,
+    // because the underlying URLLoaderFactory of
+    // `NavigationURLLoaderImpl::url_loader_` is still ServiceWorker-provided
+    // one (that finally delegates to `network_loader_factory_` though) and thus
+    // isn't e.g. unsafe to reuse after redirects.
+    return self->network_loader_factory_.get();
+  } else {
+    return self->GetOrCreateNonNetworkLoaderFactory().get();
+  }
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -1424,6 +1509,10 @@ void NavigationURLLoaderImpl::ParseHeaders(
 
   // If the network service is running in process, skip unnecessary thread hops.
   if (IsInProcessNetworkService() && !head->parsed_headers) {
+    base::ScopedUmaHistogramTimer in_process(
+        "Navigation.URLLoader.ParseHeaders.InProcessTime",
+        base::ScopedUmaHistogramTimer::ScopedHistogramTiming::
+            kMicrosecondTimes);
     head->parsed_headers =
         network::PopulateParsedHeaders(head->headers.get(), url);
   }
@@ -1436,18 +1525,25 @@ void NavigationURLLoaderImpl::ParseHeaders(
   // - Network
   // - ServiceWorker
   // - WebUI
+  base::UmaHistogramBoolean("Navigation.URLLoader.InMainPath",
+                            static_cast<bool>(head->parsed_headers));
   if (head->parsed_headers) {
 #ifndef NDEBUG
     // In debug mode, force reparsing the headers and check that they match.
     auto check = [](base::OnceClosure continuation,
                     network::mojom::URLResponseHead* head, GURL url,
+                    base::TimeTicks call_time,
                     network::mojom::ParsedHeadersPtr parsed_headers) {
+      base::UmaHistogramMicrosecondsTimes(
+          "Navigation.URLLoader.ParseHeaders.RoundTripTimeForVerify",
+          base::TimeTicks::Now() - call_time);
       CheckParsedHeadersEquals(parsed_headers, head->parsed_headers, url);
       std::move(continuation).Run();
     };
     GetNetworkService()->ParseHeaders(
         url, head->headers,
-        base::BindOnce(check, std::move(continuation), head, url));
+        base::BindOnce(check, std::move(continuation), head, url,
+                       base::TimeTicks::Now()));
 #else   // NDEBUG
     std::move(continuation).Run();
 #endif  // NDEBUG
@@ -1456,14 +1552,19 @@ void NavigationURLLoaderImpl::ParseHeaders(
 
   auto assign = [](base::OnceClosure continuation,
                    network::mojom::URLResponseHead* head,
+                   base::TimeTicks call_time,
                    network::mojom::ParsedHeadersPtr parsed_headers) {
+    base::UmaHistogramMicrosecondsTimes(
+        "Navigation.URLLoader.ParseHeaders.RoundTripTimeForNonNetworkResponse",
+        base::TimeTicks::Now() - call_time);
     head->parsed_headers = std::move(parsed_headers);
     std::move(continuation).Run();
   };
 
   GetNetworkService()->ParseHeaders(
       url, head->headers,
-      base::BindOnce(assign, std::move(continuation), head));
+      base::BindOnce(assign, std::move(continuation), head,
+                     base::TimeTicks::Now()));
 }
 
 // TODO(crbug.com/40552600): pass `navigation_ui_data` along with the
@@ -1646,18 +1747,42 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
       factory_builder, &header_client, bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
       GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
-  devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
-      frame_tree_node->current_frame_host())
-      .Run(/*is_navigation=*/true,
-           /*is_download=*/false, factory_builder,
-           /*factory_override=*/nullptr);
+
+  auto devtools_params =
+      devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
+          frame_tree_node->current_frame_host());
+  devtools_params.Run(/*is_navigation=*/true,
+                      /*is_download=*/false, factory_builder,
+                      /*factory_override=*/nullptr);
+  net::CookieSettingOverrides devtools_cookie_overrides;
+  devtools_instrumentation::ApplyNetworkCookieControlsOverrides(
+      devtools_params.agent_host(), devtools_cookie_overrides);
+
+  net::CookieSettingOverrides cookie_overrides;
+  if (ShouldAllowSameSiteNoneCookiesInSandbox(*frame_tree_node)) {
+    // Include a CookieSettingOverride in the UrlLoaderFactoryParams for the
+    // frame's SharedURLLoaderFactory if the frame contains the
+    // `allow-same-site-none-cookies` value in its sandbox policy.
+    cookie_overrides.Put(
+        net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
+  }
 
   if (header_client) {
     return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-        CreateURLLoaderFactoryWithHeaderClient(std::move(header_client),
-                                               std::move(factory_builder),
-                                               storage_partition));
+        CreateURLLoaderFactoryWithHeaderClient(
+            std::move(header_client), std::move(factory_builder),
+            storage_partition, std::move(devtools_cookie_overrides),
+            std::move(cookie_overrides)));
   } else {
+    if (!devtools_cookie_overrides.empty() || !cookie_overrides.empty()) {
+      network::mojom::URLLoaderFactoryParamsPtr params =
+          storage_partition->CreateURLLoaderFactoryParams();
+      params->devtools_cookie_setting_overrides =
+          std::move(devtools_cookie_overrides);
+      params->cookie_setting_overrides = std::move(cookie_overrides);
+      return std::move(factory_builder)
+          .Finish(storage_partition->GetNetworkContext(), std::move(params));
+    }
     return std::move(factory_builder)
         .Finish(storage_partition->GetURLLoaderFactoryForBrowserProcess());
   }
@@ -1801,7 +1926,9 @@ NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
         header_client,
     network::URLLoaderFactoryBuilder factory_builder,
-    StoragePartitionImpl* partition) {
+    StoragePartitionImpl* partition,
+    std::optional<net::CookieSettingOverrides> devtools_cookie_overrides,
+    std::optional<net::CookieSettingOverrides> cookie_overrides) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (url_loader_factory::GetTestingInterceptor()) {
@@ -1818,7 +1945,13 @@ NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
   params->disable_web_security =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity);
-
+  if (devtools_cookie_overrides.has_value()) {
+    params->devtools_cookie_setting_overrides =
+        std::move(devtools_cookie_overrides.value());
+  }
+  if (cookie_overrides.has_value()) {
+    params->cookie_setting_overrides = std::move(cookie_overrides.value());
+  }
   return std::move(factory_builder)
       .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
           partition->GetNetworkContext(), std::move(params));

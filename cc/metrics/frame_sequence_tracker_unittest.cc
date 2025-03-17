@@ -42,13 +42,23 @@ const char* ParseNumber(const char* str, uint64_t* retvalue) {
 
 }  // namespace
 
+// Mock DroppedFrameCounter class in order to test the number of times that
+// frames get backfilled. This is necessary since `WillBeginImplFrame` creates
+// `CompositorFrameReporter`s for backfilled frames which submit to the DFC
+// without a good interim spot to analyze the frame info contents.
+class DroppedFrameCounterMock : public DroppedFrameCounter {
+ public:
+  MOCK_METHOD2(OnEndFrame, void(const viz::BeginFrameArgs&, const FrameInfo&));
+};
+
 class FrameSequenceTrackerTest : public testing::Test {
  public:
   const uint32_t kImplDamage = 0x1;
   const uint32_t kMainDamage = 0x2;
 
   FrameSequenceTrackerTest()
-      : compositor_frame_reporting_controller_(
+      : dfc_mock_(DroppedFrameCounterMock()),
+        compositor_frame_reporting_controller_(
             std::make_unique<CompositorFrameReportingController>(
                 /*should_report_histograms=*/true,
                 /*should_report_ukm=*/false,
@@ -332,6 +342,7 @@ class FrameSequenceTrackerTest : public testing::Test {
   }
 
  protected:
+  DroppedFrameCounterMock dfc_mock_;
   std::unique_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
   FrameSequenceTrackerCollection collection_;
@@ -878,26 +889,15 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackerOutOfOrderFramesMissingV3Data) {
   EXPECT_EQ(2u, results[1].frames_expected_v3);
 }
 
-// Mock DroppedFrameCounter class in order to test the number of times that
-// frames get backfilled. This is necessary since `WillBeginImplFrame` creates
-// `CompositorFrameReporter`s for backfilled frames which submit to the DFC
-// without a good interim spot to analyze the frame info contents.
-class DroppedFrameCounterMock : public DroppedFrameCounter {
- public:
-  MOCK_METHOD2(OnEndFrame, void(const viz::BeginFrameArgs&, const FrameInfo&));
-};
-
 TEST_F(FrameSequenceTrackerTest,
        FrameTrackerSkippedFramesPreservesSmoothThread) {
   const uint64_t source = 1;
   uint64_t sequence = 0;
   const uint64_t kNumFramesSkipped = 5;
 
-  DroppedFrameCounterMock dfc = DroppedFrameCounterMock();
-
   // Expect that kNumFramesSkipped are backfilled with the appropriate smooth
   // thread set.
-  EXPECT_CALL(dfc, OnEndFrame(testing::_, testing::_))
+  EXPECT_CALL(dfc_mock_, OnEndFrame(testing::_, testing::_))
       .Times(kNumFramesSkipped)
       .WillRepeatedly([=](const viz::BeginFrameArgs& args,
                           const FrameInfo& frame_info) {
@@ -906,7 +906,7 @@ TEST_F(FrameSequenceTrackerTest,
                   FrameInfo::SmoothEffectDrivingThread::kCompositor);
       });
 
-  compositor_frame_reporting_controller_->SetDroppedFrameCounter(&dfc);
+  compositor_frame_reporting_controller_->SetDroppedFrameCounter(&dfc_mock_);
   compositor_frame_reporting_controller_->SetFrameSequenceTrackerCollection(
       &collection_);
   auto frame0_args = CreateBeginFrameArgs(source, ++sequence);
@@ -920,7 +920,7 @@ TEST_F(FrameSequenceTrackerTest,
                            base::TimeTicks::Now() /*+ base::Seconds(5)*/);
   compositor_frame_reporting_controller_->WillBeginImplFrame(frame5_args);
   // Clear the expectation before simulating finishing the frame.
-  testing::Mock::VerifyAndClearExpectations(&dfc);
+  testing::Mock::VerifyAndClearExpectations(&dfc_mock_);
   compositor_frame_reporting_controller_->WillBeginMainFrame(frame5_args);
   compositor_frame_reporting_controller_->NotifyReadyToCommit(nullptr);
   compositor_frame_reporting_controller_->WillCommit();

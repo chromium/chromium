@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 
+#include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"

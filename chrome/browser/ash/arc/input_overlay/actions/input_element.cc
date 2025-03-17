@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -59,7 +59,7 @@ std::unique_ptr<InputElement> InputElement::CreateActionMoveKeyElement(
     const std::vector<ui::DomCode>& keys) {
   auto element = std::make_unique<InputElement>();
   element->input_sources_ = InputSource::IS_KEYBOARD;
-  base::ranges::copy(keys, std::back_inserter(element->keys_));
+  std::ranges::copy(keys, std::back_inserter(element->keys_));
   // There are four and only four keys representing move up, left, down and
   // right.
   DCHECK(element->keys_.size() == kActionMoveKeysSize);
@@ -163,11 +163,11 @@ void InputElement::SetKey(size_t index, ui::DomCode code) {
 
 void InputElement::SetKeys(std::vector<ui::DomCode>& keys) {
   keys_.clear();
-  base::ranges::copy(keys, std::back_inserter(keys_));
+  std::ranges::copy(keys, std::back_inserter(keys_));
 }
 
 int InputElement::GetIndexOfKey(ui::DomCode key) const {
-  auto it = base::ranges::find(keys_, key);
+  auto it = std::ranges::find(keys_, key);
   return it == keys_.end() ? -1 : it - keys_.begin();
 }
 

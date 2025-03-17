@@ -70,19 +70,22 @@ void ValidateShortcut(const FilePath& shortcut_path,
   EXPECT_TRUE(SUCCEEDED(hr = ::CoCreateInstance(CLSID_ShellLink, NULL,
                                                 CLSCTX_INPROC_SERVER,
                                                 IID_PPV_ARGS(&i_shell_link))));
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return;
+  }
 
   EXPECT_TRUE(SUCCEEDED(hr = i_shell_link.As(&i_persist_file)));
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return;
+  }
 
   // Load the shortcut.
   EXPECT_TRUE(
       SUCCEEDED(hr = i_persist_file->Load(shortcut_path.value().c_str(), 0)))
       << "Failed to load shortcut at " << shortcut_path.value();
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return;
+  }
 
   if (properties.options & ShortcutProperties::PROPERTIES_TARGET) {
     EXPECT_TRUE(SUCCEEDED(
@@ -117,8 +120,9 @@ void ValidateShortcut(const FilePath& shortcut_path,
 
   Microsoft::WRL::ComPtr<IPropertyStore> property_store;
   EXPECT_TRUE(SUCCEEDED(hr = i_shell_link.As(&property_store)));
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return;
+  }
 
   if (properties.options & ShortcutProperties::PROPERTIES_APP_ID) {
     ScopedPropVariant pv_app_id;

@@ -35,16 +35,21 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.internal.SyncPrefNames;
 import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.components.sync.protocol.WalletMaskedCreditCard;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.Collections;
 import java.util.List;
@@ -179,6 +184,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     private FakeServerHelper mFakeServerHelper;
     private SyncService mSyncService;
     private final SigninTestRule mSigninTestRule = new SigninTestRule();
+    private final BlankCTATabInitialStateRule mBlankCTATabRule =
+            new BlankCTATabInitialStateRule(this, false);
 
     public SigninTestRule getSigninTestRule() {
         return mSigninTestRule;
@@ -197,12 +204,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     public SyncService getSyncService() {
         return mSyncService;
-    }
-
-    public void startMainActivityForSyncTest() {
-        // Start the activity by opening about:blank. This URL is ideal because it is not synced as
-        // a typed URL. If another URL is used, it could interfere with test data.
-        startMainActivityOnBlankPage();
     }
 
     /**
@@ -248,24 +249,23 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
-     * Set up a test account and sign in. Does not setup sync.
+     * Sets up an account and signs in and enables history sync.
      *
-     * @return the test accountInfo that is signed in.
+     * @return the test {@link CoreAccountInfo} that is signed in.
      */
-    public CoreAccountInfo setUpAccountAndSignInForTesting() {
-        return mSigninTestRule.addTestAccountThenSignin();
+    public CoreAccountInfo setUpAccountAndEnableHistorySync() {
+        mSigninTestRule.addAccountThenSigninAndEnableHistorySync(TestAccounts.ACCOUNT1);
+        return TestAccounts.ACCOUNT1;
     }
 
     /**
-     * Set up a test account, sign in but don't mark sync setup complete.
+     * Set up a test account and sign in. Does not setup sync.
      *
-     * @return the test account that is signed in.
+     * @return the test {@link CoreAccountInfo} that is signed in.
      */
-    public CoreAccountInfo setUpTestAccountAndSignInWithSyncSetupAsIncomplete() {
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addTestAccountThenSigninAndEnableSync(/* syncService= */ null);
-        SyncTestUtil.waitForSyncTransportActive();
-        return accountInfo;
+    public CoreAccountInfo setUpAccountAndSignInForTesting() {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        return TestAccounts.ACCOUNT1;
     }
 
     public void signOut() {
@@ -337,16 +337,17 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     @Override
     public Statement apply(final Statement base, final Description desc) {
         final Statement superStatement = super.apply(base, desc);
-        return mSigninTestRule.apply(superStatement, desc);
+
+        // Start the activity by opening about:blank. This URL is ideal because it is not synced as
+        // a typed URL. If another URL is used, it could interfere with test data.
+        final Statement blankCTATabStatement = mBlankCTATabRule.apply(superStatement, desc);
+        return mSigninTestRule.apply(blankCTATabStatement, desc);
     }
 
     @Override
     protected void before() throws Throwable {
         super.before();
-        TrustedVaultClient.setInstanceForTesting(
-                new TrustedVaultClient(FakeTrustedVaultClientBackend.get()));
-
-        startMainActivityForSyncTest();
+        TrustedVaultClient.get().setBackendForTesting(FakeTrustedVaultClientBackend.get());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -367,6 +368,11 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                     mSyncService = null;
                     mFakeServerHelper = null;
                     FakeServerHelper.destroyInstance();
+
+                    // Reset the state of sync-related prefs to allow test batching.
+                    getPrefService().clearPref(SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT);
+                    getPrefService().clearPref(SyncPrefNames.SYNC_KEEP_EVERYTHING_SYNCED);
+                    getPrefService().clearPref(SyncPrefNames.SYNC_TRANSPORT_DATA_PER_ACCOUNT);
                 });
     }
 
@@ -450,5 +456,9 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         SyncTestUtil.waitForSyncFeatureActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();
         return accountInfo;
+    }
+
+    private static PrefService getPrefService() {
+        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
     }
 }

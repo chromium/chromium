@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
@@ -198,7 +199,15 @@ public class DownloadActivityV2Test {
         mModalDialogManager =
                 new ModalDialogManager(mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
 
-        FaviconProvider faviconProvider = (url, faviconSizePx, callback) -> {};
+        FaviconProvider faviconProvider =
+                new FaviconProvider() {
+                    @Override
+                    public void destroy() {}
+
+                    @Override
+                    public void getFavicon(
+                            final String url, int faviconSizePx, Callback<Bitmap> callback) {}
+                };
         Callback<Context> settingsNavigation = context -> {};
         ObservableSupplierImpl<Boolean> isPrefetchEnabledSupplier = new ObservableSupplierImpl<>();
         isPrefetchEnabledSupplier.set(true);

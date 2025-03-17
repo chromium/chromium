@@ -12,12 +12,14 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/unique_cookie_key.h"
 
 namespace ash::floating_sso {
 
@@ -185,12 +187,20 @@ std::optional<std::string> SerializedKey(const net::CanonicalCookie& cookie) {
     return std::nullopt;
   }
 
-  const auto& [partition_key, name, domain, path, source_scheme, source_port] =
-      cookie.StrictlyUniqueKey();
+  const net::UniqueCookieKey strict_unique_key = cookie.StrictlyUniqueKey();
+  const std::string& name = strict_unique_key.name();
+  const std::string& domain = strict_unique_key.domain();
+  const std::string& path = strict_unique_key.path();
+  // `source_scheme()` and `port()` are guaranteed to return non-nullopt values,
+  // since we created the key via StrictlyUniqueKey.
+  const net::CookieSourceScheme source_scheme =
+      strict_unique_key.source_scheme().value();
+  const int source_port = strict_unique_key.port().value();
+
   // We just concatenate all involved strings.
   std::string serialized_key = base::StrCat(
       {serialized_partition_key->TopLevelSite(),
-       (serialized_partition_key->has_cross_site_ancestor() ? "true" : "false"),
+       base::ToString(serialized_partition_key->has_cross_site_ancestor()),
        name, domain, path,
        base::NumberToString(static_cast<int>(source_scheme)),
        base::NumberToString(source_port)});

@@ -162,37 +162,6 @@ class FFmpegVideoDecoderTest : public testing::Test {
     return DecodeMultipleFrames(input_buffers);
   }
 
-  // Decodes |i_frame_buffer_| and then decodes the data contained in
-  // the file named |test_file_name|. This function expects both buffers
-  // to decode to frames that are the same size.
-  void DecodeIFrameThenTestFile(const std::string& test_file_name,
-                                int expected_width,
-                                int expected_height,
-                                size_t expected_frames = 2u) {
-    Initialize();
-    scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile(test_file_name);
-
-    InputBuffers input_buffers;
-    input_buffers.push_back(i_frame_buffer_);
-    input_buffers.push_back(buffer);
-    input_buffers.push_back(end_of_stream_buffer_);
-
-    DecoderStatus status = DecodeMultipleFrames(input_buffers);
-
-    EXPECT_TRUE(status.is_ok());
-    ASSERT_EQ(expected_frames, output_frames_.size());
-
-    gfx::Size original_size = kVisibleRect.size();
-    EXPECT_EQ(original_size.width(),
-              output_frames_[0]->visible_rect().size().width());
-    EXPECT_EQ(original_size.height(),
-              output_frames_[0]->visible_rect().size().height());
-    EXPECT_EQ(expected_width,
-              output_frames_[1]->visible_rect().size().width());
-    EXPECT_EQ(expected_height,
-              output_frames_[1]->visible_rect().size().height());
-  }
-
   DecoderStatus Decode(scoped_refptr<DecoderBuffer> buffer) {
     DecoderStatus status;
     EXPECT_CALL(*this, DecodeDone(_)).WillOnce(SaveArg<0>(&status));
@@ -305,13 +274,44 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_DecodeErrorAtEndOfStream) {
 // Decode |i_frame_buffer_| and then a smaller frame and verify the output size
 // was adjusted.
 TEST_F(FFmpegVideoDecoderTest, DecodeFrame_Smaller) {
-  DecodeIFrameThenTestFile("red-green.h264", 80, 128, /*expected_frames=*/4);
+  Initialize();
+
+  InputBuffers input_buffers;
+  input_buffers.push_back(
+      ReadTestDataFile("bear-320x192-baseline-frame-0.h264"));
+  input_buffers.push_back(i_frame_buffer_);
+  input_buffers.push_back(end_of_stream_buffer_);
+
+  DecoderStatus status = DecodeMultipleFrames(input_buffers);
+
+  EXPECT_TRUE(status.is_ok());
+  ASSERT_EQ(2u, output_frames_.size());
+
+  constexpr gfx::Size kExpectedSize(320, 192);
+  EXPECT_EQ(kExpectedSize, output_frames_[0]->visible_rect().size());
+  EXPECT_EQ(kVisibleRect.size(), output_frames_[1]->visible_rect().size());
 }
 
 // Decode |i_frame_buffer_| and then a larger frame and verify the output size
 // was adjusted.
 TEST_F(FFmpegVideoDecoderTest, DecodeFrame_Larger) {
-  DecodeIFrameThenTestFile("bear-320x192-baseline-frame-0.h264", 320, 192);
+  Initialize();
+
+  InputBuffers input_buffers;
+  input_buffers.push_back(i_frame_buffer_);
+  input_buffers.push_back(
+      ReadTestDataFile("bear-320x192-baseline-frame-0.h264"));
+  input_buffers.push_back(end_of_stream_buffer_);
+
+  DecoderStatus status = DecodeMultipleFrames(input_buffers);
+
+  EXPECT_TRUE(status.is_ok());
+  ASSERT_EQ(2u, output_frames_.size());
+
+  EXPECT_EQ(kVisibleRect.size(), output_frames_[0]->visible_rect().size());
+
+  constexpr gfx::Size kExpectedSize(320, 192);
+  EXPECT_EQ(kExpectedSize, output_frames_[1]->visible_rect().size());
 }
 
 // Test resetting when decoder has initialized but not decoded.

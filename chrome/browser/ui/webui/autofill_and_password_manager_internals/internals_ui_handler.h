@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -63,6 +64,7 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
       base::RepeatingCallback<autofill::LogRouter*(content::BrowserContext*)>;
 
   InternalsUIHandler(std::string call_on_load,
+                     base::Value call_on_load_argument,
                      GetLogRouterFunction get_log_router_function);
 
   InternalsUIHandler(const InternalsUIHandler&) = delete;
@@ -85,15 +87,18 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
   void EndSubscription();
 
   // JavaScript call handler.
+  void OnDeleteAutofillAiCacheEntry(const base::Value::List& args);
+  void OnGetAutofillAiCache(const base::Value::List& args);
   void OnLoaded(const base::Value::List& args);
   void OnResetCache(const base::Value::List& args);
   void OnResetUpmEviction(const base::Value::List& args);
-  void OnResetAccountStorageNotice(const base::Value::List& args);
 
   void OnResetCacheDone(const std::string& message);
 
   // JavaScript function to be called on load.
   std::string call_on_load_;
+  // The argument to be passed to the on load function.
+  base::Value call_on_load_argument_;
   GetLogRouterFunction get_log_router_function_;
 
   // Whether |this| is registered as a log receiver with the LogRouter.

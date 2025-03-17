@@ -12,8 +12,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 
-namespace password_manager {
-namespace bad_message {
+namespace password_manager::bad_message {
 namespace {
 
 // Called when the browser receives a bad IPC message from a renderer process on
@@ -76,5 +75,15 @@ bool CheckFrameNotPrerendering(content::RenderFrameHost* frame) {
   return true;
 }
 
-}  // namespace bad_message
-}  // namespace password_manager
+bool CheckGeneratedPassword(content::RenderFrameHost* frame,
+                            const std::u16string& generated_password) {
+  if (generated_password.empty()) {
+    ReceivedBadMessage(
+        frame->GetProcess(),
+        BadMessageReason::CPMD_BAD_ORIGIN_NO_GENERATED_PASSWORD_TO_EDIT);
+    return false;
+  }
+  return true;
+}
+
+}  // namespace password_manager::bad_message

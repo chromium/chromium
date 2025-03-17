@@ -20,6 +20,7 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -123,7 +124,7 @@ int SineWaveAudioSource::OnMoreData(base::TimeDelta /* delay */,
                                     base::TimeTicks /* delay_timestamp */,
                                     const AudioGlitchInfo& /* glitch_info */,
                                     AudioBus* dest) {
-  int max_frames;
+  size_t max_frames;
 
   {
     base::AutoLock auto_lock(lock_);
@@ -133,13 +134,25 @@ int SineWaveAudioSource::OnMoreData(base::TimeDelta /* delay */,
     // where Theta = 2*PI*fs.
     // We store the discrete time value |t| in a member to ensure that the
     // next pass starts at a correct state.
-    max_frames = cap_ > 0 ? std::min(dest->frames(), cap_ - pos_samples_)
-                          : dest->frames();
-    for (int i = 0; i < max_frames; ++i)
-      dest->channel(0)[i] = sin(2.0 * std::numbers::pi * f_ * pos_samples_++);
-    for (int i = 1; i < dest->channels(); ++i) {
-      memcpy(dest->channel(i), dest->channel(0),
-             max_frames * sizeof(*dest->channel(i)));
+    max_frames = static_cast<size_t>(dest->frames());
+    if (cap_ > 0) {
+      max_frames =
+          base::CheckMin(max_frames, base::CheckSub(cap_, pos_samples_))
+              .ValueOrDie();
+    }
+
+    if (max_frames > 0) {
+      auto first_channel_frames = dest->channel_span(0).first(max_frames);
+
+      for (float& sample : first_channel_frames) {
+        sample = sin(2.0 * std::numbers::pi * f_ * pos_samples_++);
+      }
+
+      for (int ch = 1; ch < dest->channels(); ++ch) {
+        dest->channel_span(ch)
+            .first(max_frames)
+            .copy_from_nonoverlapping(first_channel_frames);
+      }
     }
   }
 

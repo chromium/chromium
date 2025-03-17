@@ -89,8 +89,14 @@ void TabModel::OnAddedToModel(TabStripModel* owning_model) {
 
   // Being detached is equivalent to being in the background. So after
   // detachment, if the tab is in the foreground, we must send a notification.
-  if (IsInForeground()) {
+  if (IsActivated()) {
     did_enter_foreground_callback_list_.Notify(this);
+  }
+
+  // Being detached is equivalent to being in the background. So after
+  // detachment, if the tab is in the foreground, we must send a notification.
+  if (IsVisible()) {
+    did_become_visible_callback_list_.Notify(this);
   }
 }
 
@@ -116,13 +122,11 @@ void TabModel::OnRemovedFromModel() {
 
 TabCollection* TabModel::GetParentCollection(
     base::PassKey<TabCollection>) const {
-  CHECK(base::FeatureList::IsEnabled(tabs::kTabStripCollectionStorage));
   return parent_collection_;
 }
 
 void TabModel::OnReparented(TabCollection* parent,
                             base::PassKey<TabCollection>) {
-  CHECK(base::FeatureList::IsEnabled(tabs::kTabStripCollectionStorage));
   parent_collection_ = parent;
 }
 
@@ -146,6 +150,7 @@ void TabModel::SetGroup(std::optional<tab_groups::TabGroupId> group) {
 
 void TabModel::WillEnterBackground(base::PassKey<TabStripModel>) {
   will_enter_background_callback_list_.Notify(this);
+  will_become_hidden_callback_list_.Notify(this);
 }
 
 void TabModel::WillDetach(base::PassKey<TabStripModel>,
@@ -166,18 +171,32 @@ base::CallbackListSubscription TabModel::RegisterWillDiscardContents(
   return will_discard_contents_callback_list_.Add(std::move(callback));
 }
 
-bool TabModel::IsInForeground() const {
+bool TabModel::IsActivated() const {
   return GetModelForTabInterface()->GetActiveTab() == this;
 }
 
-base::CallbackListSubscription TabModel::RegisterDidEnterForeground(
-    TabInterface::DidEnterForegroundCallback callback) {
+base::CallbackListSubscription TabModel::RegisterDidActivate(
+    TabInterface::DidActivateCallback callback) {
   return did_enter_foreground_callback_list_.Add(std::move(callback));
 }
 
-base::CallbackListSubscription TabModel::RegisterWillEnterBackground(
-    TabInterface::WillEnterBackgroundCallback callback) {
+base::CallbackListSubscription TabModel::RegisterWillDeactivate(
+    TabInterface::WillDeactivateCallback callback) {
   return will_enter_background_callback_list_.Add(std::move(callback));
+}
+
+bool TabModel::IsVisible() const {
+  return GetModelForTabInterface()->GetActiveTab() == this;
+}
+
+base::CallbackListSubscription TabModel::RegisterDidBecomeVisible(
+    TabInterface::DidBecomeVisibleCallback callback) {
+  return did_become_visible_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterWillBecomeHidden(
+    TabInterface::WillBecomeHiddenCallback callback) {
+  return will_become_hidden_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription TabModel::RegisterWillDetach(
@@ -229,8 +248,21 @@ bool TabModel::IsPinned() const {
   return pinned_;
 }
 
+bool TabModel::IsSplit() const {
+  return split_;
+}
+
 std::optional<tab_groups::TabGroupId> TabModel::GetGroup() const {
   return group_;
+}
+
+bool TabModel::ShouldAcceptMouseEventsWhileWindowInactive() const {
+  return accept_input_when_window_inactive_ > 0;
+}
+
+std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>
+TabModel::AcceptMouseEventsWhileWindowInactive() {
+  return std::make_unique<ScopedAcceptMouseEventsWhileWindowInactiveImpl>(this);
 }
 
 void TabModel::Close() {
@@ -252,6 +284,7 @@ void TabModel::OnTabStripModelChanged(
 
   if (selection.new_contents == GetContents()) {
     did_enter_foreground_callback_list_.Notify(this);
+    did_become_visible_callback_list_.Notify(this);
     return;
   }
 }
@@ -263,7 +296,6 @@ TabStripModel* TabModel::GetModelForTabInterface() const {
 
 TabModel::ScopedTabModalUIImpl::ScopedTabModalUIImpl(TabModel* tab)
     : tab_(tab->weak_factory_.GetWeakPtr()) {
-  CHECK(!tab_->showing_modal_ui_);
   tab_->showing_modal_ui_ = true;
   tab_->modal_ui_changed_callback_list_.Notify(tab_.get());
 }
@@ -275,10 +307,24 @@ TabModel::ScopedTabModalUIImpl::~ScopedTabModalUIImpl() {
   }
 }
 
+TabModel::ScopedAcceptMouseEventsWhileWindowInactiveImpl::
+    ScopedAcceptMouseEventsWhileWindowInactiveImpl(TabModel* tab)
+    : tab_(tab->weak_factory_.GetWeakPtr()) {
+  ++tab_->accept_input_when_window_inactive_;
+}
+
+TabModel::ScopedAcceptMouseEventsWhileWindowInactiveImpl::
+    ~ScopedAcceptMouseEventsWhileWindowInactiveImpl() {
+  if (tab_) {
+    --tab_->accept_input_when_window_inactive_;
+  }
+}
+
 void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("web_contents", GetContents());
   dict.Add("pinned", IsPinned());
+  dict.Add("split", IsSplit());
   dict.Add("blocked", blocked());
 }
 

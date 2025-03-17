@@ -881,7 +881,8 @@ TEST(CSSPropertyParserTest, ImageSetNegativeResolution) {
 }
 
 TEST(CSSPropertyParserTest, ImageSetOnlyOneGradientColor) {
-  TestImageSetParsingFailure("image-set(linear-gradient(red) 1x)");
+  TestImageSetParsing("image-set(linear-gradient(red) 1x)",
+                      "image-set(linear-gradient(red) 1x)");
 }
 
 TEST(CSSPropertyParserTest, ImageSetAddCalcMissingUnit1) {
@@ -949,14 +950,14 @@ TEST(CSSPropertyParserTest, UALightDarkBackgroundImage) {
   }
 }
 
-TEST(CSSPropertyParserTest, UAAppearanceAutoBaseSelectSerialization) {
+TEST(CSSPropertyParserTest, UAAutoBaseSerialization) {
   // Note: we're not using CSSParser::ParseSingleValue, because it expects
   // arbitrary function substitution to already have happened.
   const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
-      "color:-internal-appearance-auto-base-select(red, blue)", kUASheetMode);
+      "color:-internal-auto-base(red, blue)", kUASheetMode);
   const CSSValue* value = set->GetPropertyCSSValue(CSSPropertyID::kColor);
   ASSERT_TRUE(value);
-  EXPECT_EQ("-internal-appearance-auto-base-select(red, blue)",
+  EXPECT_EQ("-internal-auto-base(red, blue)",
             value->CssText());
 }
 

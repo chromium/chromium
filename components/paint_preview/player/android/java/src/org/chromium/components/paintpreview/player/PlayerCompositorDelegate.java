@@ -8,10 +8,10 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.UnguessableToken;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.url.GURL;
 
@@ -19,6 +19,7 @@ import org.chromium.url.GURL;
  * Used for communicating with the Paint Preview delegate for requesting new bitmaps and forwarding
  * click events.
  */
+@NullMarked
 public interface PlayerCompositorDelegate {
     /** An interface that creates an instance of {@link PlayerCompositorDelegate}. */
     interface Factory {
@@ -27,7 +28,7 @@ public interface PlayerCompositorDelegate {
                 GURL url,
                 String directoryKey,
                 boolean mainFrameMode,
-                @NonNull CompositorListener compositorListener,
+                CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback);
 
         PlayerCompositorDelegate createForCaptureResult(
@@ -36,7 +37,7 @@ public interface PlayerCompositorDelegate {
                 GURL url,
                 String directoryKey,
                 boolean mainFrameMode,
-                @NonNull CompositorListener compositorListener,
+                CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback);
     }
 
@@ -145,7 +146,7 @@ public interface PlayerCompositorDelegate {
      * @param y The y coordinate of the click event, relative to the frame.
      * @return The URL that was clicked on. Null if there are no URLs.
      */
-    GURL onClick(UnguessableToken frameGuid, int x, int y);
+    @Nullable GURL onClick(UnguessableToken frameGuid, int x, int y);
 
     /**
      * Gets the Root Frame Offsets for scroll matching.

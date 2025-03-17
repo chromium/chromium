@@ -185,7 +185,7 @@ TEST_F(WaylandOutputTest, WaylandOutputIsReady) {
   ASSERT_EQ(2u, all_outputs.size());
 
   // Get the newly created WaylandOutput.
-  auto pair_it = base::ranges::find_if_not(all_outputs, [&](auto& pair) {
+  auto pair_it = std::ranges::find_if_not(all_outputs, [&](auto& pair) {
     return pair.first == primary_output->output_id();
   });
   ASSERT_NE(all_outputs.end(), pair_it);

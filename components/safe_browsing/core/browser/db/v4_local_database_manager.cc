@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/db/v4_local_database_manager.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/task/sequenced_task_runner.h"
@@ -365,14 +365,14 @@ void V4LocalDatabaseManager::CancelCheck(Client* client) {
   // being closed).
   DCHECK(enabled_ || is_shutdown_);
   auto pending_it =
-      base::ranges::find(pending_checks_, client, &PendingCheck::client);
+      std::ranges::find(pending_checks_, client, &PendingCheck::client);
   if (pending_it != pending_checks_.end()) {
     (*pending_it)->Abandon();
     RemovePendingCheck(pending_it);
   }
 
   auto queued_it =
-      base::ranges::find(queued_checks_, client, &PendingCheck::client);
+      std::ranges::find(queued_checks_, client, &PendingCheck::client);
   if (queued_it != queued_checks_.end()) {
     queued_checks_.erase(queued_it);
   }
@@ -737,7 +737,7 @@ void V4LocalDatabaseManager::GetSeverestThreatTypeAndMetadata(
     ThreatSeverity severity = GetThreatSeverity(fhi.list_id);
     SBThreatType threat_type = GetSBThreatTypeForList(fhi.list_id);
 
-    const auto& it = base::ranges::find(full_hashes, fhi.full_hash);
+    const auto& it = std::ranges::find(full_hashes, fhi.full_hash);
     CHECK(it != full_hashes.end(), base::NotFatalUntil::M130);
     (*full_hash_threat_types)[it - full_hashes.begin()] = threat_type;
 
@@ -764,7 +764,7 @@ std::unique_ptr<StoreStateMap> V4LocalDatabaseManager::GetStoreStateMap() {
 // Returns the SBThreatType corresponding to a given SafeBrowsing list.
 SBThreatType V4LocalDatabaseManager::GetSBThreatTypeForList(
     const ListIdentifier& list_id) {
-  auto it = base::ranges::find(list_infos_, list_id, &ListInfo::list_id);
+  auto it = std::ranges::find(list_infos_, list_id, &ListInfo::list_id);
   CHECK(list_infos_.end() != it, base::NotFatalUntil::M130);
   DCHECK_NE(SBThreatType::SB_THREAT_TYPE_SAFE, it->sb_threat_type());
   DCHECK_NE(SBThreatType::SB_THREAT_TYPE_UNUSED, it->sb_threat_type());

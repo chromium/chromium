@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper_base.h"
 
@@ -32,6 +33,11 @@ class StarboardApiWrapper14 : public StarboardApiWrapperBase {
 
   void GetPlayerInfo(void* player, StarboardPlayerInfo* player_info) override {
     SbPlayerInfo2 sb_player_info = {};
+    if (!player) {
+      LOG(ERROR) << "player is nullptr";
+      return;
+    }
+    CHECK(player_info);
     SbPlayerGetInfo2(static_cast<SbPlayer>(player), &sb_player_info);
 
     player_info->current_media_timestamp_micros =
@@ -146,12 +152,12 @@ class StarboardApiWrapper14 : public StarboardApiWrapperBase {
     return out_audio_info;
   }
 
-  void CallWriteSamples(SbPlayer player,
-                        SbMediaType sample_type,
-                        const SbPlayerSampleInfo* sample_infos,
-                        int number_of_sample_infos) override {
-    SbPlayerWriteSample2(player, sample_type, sample_infos,
-                         number_of_sample_infos);
+  void CallWriteSamples(
+      SbPlayer player,
+      SbMediaType sample_type,
+      base::span<const SbPlayerSampleInfo> sample_infos) override {
+    SbPlayerWriteSample2(player, sample_type, sample_infos.data(),
+                         sample_infos.size());
   }
 };
 

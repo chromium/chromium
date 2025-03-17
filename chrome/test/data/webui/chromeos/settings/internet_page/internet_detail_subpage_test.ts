@@ -4,21 +4,23 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CellularRoamingToggleButtonElement, NetworkProxySectionElement, PasspointRemoveDialogElement, SettingsInternetDetailPageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrDialogElement, CrLinkRowElement, InternetPageBrowserProxyImpl, LocalizedLinkElement, Router, routes, settingMojom, SettingsToggleButtonElement, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+import type {CellularRoamingToggleButtonElement, NetworkProxySectionElement, PasspointRemoveDialogElement, SettingsInternetDetailPageElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrDialogElement, CrLinkRowElement, LocalizedLinkElement, SettingsToggleButtonElement, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+import {InternetPageBrowserProxyImpl, Router, routes, settingMojom, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
-import {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
+import type {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkApnListElement} from 'chrome://resources/ash/common/network/network_apnlist.js';
-import {NetworkChooseMobileElement} from 'chrome://resources/ash/common/network/network_choose_mobile.js';
-import {NetworkConfigToggleElement} from 'chrome://resources/ash/common/network/network_config_toggle.js';
-import {NetworkIpConfigElement} from 'chrome://resources/ash/common/network/network_ip_config.js';
-import {NetworkNameserversElement} from 'chrome://resources/ash/common/network/network_nameservers.js';
-import {NetworkPropertyListMojoElement} from 'chrome://resources/ash/common/network/network_property_list_mojo.js';
+import type {NetworkApnListElement} from 'chrome://resources/ash/common/network/network_apnlist.js';
+import type {NetworkChooseMobileElement} from 'chrome://resources/ash/common/network/network_choose_mobile.js';
+import type {NetworkConfigToggleElement} from 'chrome://resources/ash/common/network/network_config_toggle.js';
+import type {NetworkIpConfigElement} from 'chrome://resources/ash/common/network/network_ip_config.js';
+import type {NetworkNameserversElement} from 'chrome://resources/ash/common/network/network_nameservers.js';
+import type {NetworkPropertyListMojoElement} from 'chrome://resources/ash/common/network/network_property_list_mojo.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {ActivationStateType, ApnAuthenticationType, ApnIpType, ApnSource, ApnState, DeviceStateProperties, GlobalPolicy, InhibitReason, ManagedOpenVPNProperties, ManagedProperties, MatchType, NetworkStateProperties, ProxyMode, SuppressionType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {DeviceStateProperties, GlobalPolicy, ManagedOpenVPNProperties, ManagedProperties, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ActivationStateType, ApnAuthenticationType, ApnIpType, ApnSource, ApnState, InhibitReason, MatchType, ProxyMode, SuppressionType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
@@ -140,19 +142,19 @@ suite('<settings-internet-detail-subpage>', () => {
 
   function getDefaultDeviceStateProps(): DeviceStateProperties {
     return {
-      ipv4Address: undefined,
-      ipv6Address: undefined,
-      imei: undefined,
-      macAddress: undefined,
+      ipv4Address: null,
+      ipv6Address: null,
+      imei: null,
+      macAddress: null,
       scanning: false,
-      simLockStatus: undefined,
-      simInfos: undefined,
+      simLockStatus: null,
+      simInfos: null,
       inhibitReason: InhibitReason.kNotInhibited,
       simAbsent: false,
       deviceState: DeviceStateType.kUninitialized,
       type: NetworkType.kCellular,
       managedNetworkAvailable: false,
-      serial: undefined,
+      serial: null,
       isCarrierLocked: false,
       isFlashing: false,
     };
@@ -519,9 +521,9 @@ suite('<settings-internet-detail-subpage>', () => {
           policySource: PolicySource.kUserPolicyEnforced,
           policyValue: '',
         },
-        manual: undefined,
-        excludeDomains: undefined,
-        pac: undefined,
+        manual: null,
+        excludeDomains: null,
+        pac: null,
       };
       mojoApi.setManagedPropertiesForTest(wifiNetwork);
 
@@ -545,9 +547,9 @@ suite('<settings-internet-detail-subpage>', () => {
           policySource: PolicySource.kDevicePolicyEnforced,
           policyValue: '',
         },
-        manual: undefined,
-        excludeDomains: undefined,
-        pac: undefined,
+        manual: null,
+        excludeDomains: null,
+        pac: null,
       };
       mojoApi.setManagedPropertiesForTest(wifiNetwork);
 
@@ -832,43 +834,43 @@ suite('<settings-internet-detail-subpage>', () => {
 
     function getDefaultManagedOpenVpnProps(): ManagedOpenVPNProperties {
       return {
-        auth: undefined,
-        authRetry: undefined,
-        authNoCache: undefined,
-        cipher: undefined,
-        clientCertPkcs11Id: undefined,
-        clientCertPattern: undefined,
-        clientCertProvisioningProfileId: undefined,
-        clientCertRef: undefined,
-        clientCertType: undefined,
-        compressionAlgorithm: undefined,
-        extraHosts: undefined,
-        ignoreDefaultRoute: undefined,
-        keyDirection: undefined,
-        nsCertType: undefined,
-        password: undefined,
-        port: undefined,
-        proto: undefined,
-        pushPeerInfo: undefined,
-        remoteCertEku: undefined,
-        remoteCertKu: undefined,
-        remoteCertTls: undefined,
-        renegSec: undefined,
-        saveCredentials: undefined,
-        serverCaPems: undefined,
-        serverCaRefs: undefined,
-        serverCertRef: undefined,
-        serverPollTimeout: undefined,
-        shaper: undefined,
-        staticChallenge: undefined,
-        tlsAuthContents: undefined,
-        tlsRemote: undefined,
-        tlsVersionMin: undefined,
-        userAuthenticationType: undefined,
-        username: undefined,
-        verb: undefined,
-        verifyHash: undefined,
-        verifyX509: undefined,
+        auth: null,
+        authRetry: null,
+        authNoCache: null,
+        cipher: null,
+        clientCertPkcs11Id: null,
+        clientCertPattern: null,
+        clientCertProvisioningProfileId: null,
+        clientCertRef: null,
+        clientCertType: null,
+        compressionAlgorithm: null,
+        extraHosts: null,
+        ignoreDefaultRoute: null,
+        keyDirection: null,
+        nsCertType: null,
+        password: null,
+        port: null,
+        proto: null,
+        pushPeerInfo: null,
+        remoteCertEku: null,
+        remoteCertKu: null,
+        remoteCertTls: null,
+        renegSec: null,
+        saveCredentials: null,
+        serverCaPems: null,
+        serverCaRefs: null,
+        serverCertRef: null,
+        serverPollTimeout: null,
+        shaper: null,
+        staticChallenge: null,
+        tlsAuthContents: null,
+        tlsRemote: null,
+        tlsVersionMin: null,
+        userAuthenticationType: null,
+        username: null,
+        verb: null,
+        verifyHash: null,
+        verifyX509: null,
       };
     }
 
@@ -880,7 +882,7 @@ suite('<settings-internet-detail-subpage>', () => {
       const defaultManagedStringProps = {
         activeValue: '',
         policySource: PolicySource.kNone,
-        policyValue: undefined,
+        policyValue: null,
       };
       const vpn1 = OncMojo.getDefaultManagedProperties(
           NetworkType.kVPN, 'vpn1_guid', 'vpn1');
@@ -941,9 +943,9 @@ suite('<settings-internet-detail-subpage>', () => {
           policySource: PolicySource.kNone,
           policyValue: [],
         },
-        ipAddresses: undefined,
-        privateKey: undefined,
-        publicKey: undefined,
+        ipAddresses: null,
+        privateKey: null,
+        publicKey: null,
       };
       wg1.staticIpConfig = {
         ipAddress: {
@@ -951,11 +953,11 @@ suite('<settings-internet-detail-subpage>', () => {
           policySource: PolicySource.kNone,
           policyValue: '',
         },
-        gateway: undefined,
-        nameServers: undefined,
-        routingPrefix: undefined,
+        gateway: null,
+        nameServers: null,
+        routingPrefix: null,
         type: IPConfigType.kIPv4,
-        webProxyAutoDiscoveryUrl: undefined,
+        webProxyAutoDiscoveryUrl: null,
       };
       initManagedVpn(wg1);
     }
@@ -1156,7 +1158,7 @@ suite('<settings-internet-detail-subpage>', () => {
           cellularNetwork.typeProperties.cellular!.paymentPortal = {
             url: 'url',
             method: '',
-            postData: undefined,
+            postData: null,
           };
           mojoApi.setManagedPropertiesForTest(cellularNetwork);
 
@@ -1814,18 +1816,18 @@ suite('<settings-internet-detail-subpage>', () => {
           accessPointName: '',
           id: '',
           authentication: ApnAuthenticationType.kAutomatic,
-          language: undefined,
-          localizedName: undefined,
-          name: undefined,
-          password: undefined,
-          username: undefined,
-          attach: undefined,
+          language: null,
+          localizedName: null,
+          name: null,
+          password: null,
+          username: null,
+          attach: null,
           state: ApnState.kEnabled,
           ipType: ApnIpType.kAutomatic,
           apnTypes: [],
           source: ApnSource.kModb,
         };
-        cellularNetwork.typeProperties.cellular!.connectedApn!.accessPointName =
+        cellularNetwork.typeProperties.cellular!.connectedApn.accessPointName =
             apnName;
         cellularNetwork.typeProperties.cellular!.iccid = testIccid;
         mojoApi.setManagedPropertiesForTest(cellularNetwork);
@@ -1897,18 +1899,18 @@ suite('<settings-internet-detail-subpage>', () => {
               accessPointName: '',
               id: '',
               authentication: ApnAuthenticationType.kAutomatic,
-              language: undefined,
-              localizedName: undefined,
-              name: undefined,
-              password: undefined,
-              username: undefined,
-              attach: undefined,
+              language: null,
+              localizedName: null,
+              name: null,
+              password: null,
+              username: null,
+              attach: null,
               state: ApnState.kEnabled,
               ipType: ApnIpType.kAutomatic,
               apnTypes: [],
               source: ApnSource.kModb,
             };
-            cellularNetwork.typeProperties.cellular!.connectedApn!
+            cellularNetwork.typeProperties.cellular!.connectedApn
                 .accessPointName = apnName;
             cellularNetwork.typeProperties.cellular!.iccid = testIccid;
             mojoApi.setManagedPropertiesForTest(cellularNetwork);
@@ -2313,10 +2315,10 @@ suite('<settings-internet-detail-subpage>', () => {
         connectable: false,
         connectRequested: false,
         connectionState: ConnectionStateType.kOnline,
-        errorState: undefined,
+        errorState: null,
         name: '',
         portalState: PortalState.kUnknown,
-        portalProbeUrl: undefined,
+        portalProbeUrl: null,
         priority: 0,
         proxyMode: ProxyMode.kDirect,
         prohibitedByPolicy: false,

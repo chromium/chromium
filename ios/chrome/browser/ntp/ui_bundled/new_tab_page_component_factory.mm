@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/pref_service.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -21,8 +22,10 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
+#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -71,12 +74,12 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 
 - (NewTabPageHeaderViewController*)headerViewControllerForBrowser:
     (Browser*)browser {
-  PrefService* prefService = browser->GetProfile()->GetPrefs();
+  PrefService* localState = GetApplicationContext()->GetLocalState();
   NSInteger lensNewBadgeShowCount =
-      prefService->GetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount);
+      localState->GetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount);
 
   BOOL useNewBadgeForCustomizationMenu = NO;
-  NSInteger customizationNewBadgeImpressionCount = prefService->GetInteger(
+  NSInteger customizationNewBadgeImpressionCount = localState->GetInteger(
       prefs::kNTPHomeCustomizationNewBadgeImpressionCount);
 
   if (customizationNewBadgeImpressionCount <
@@ -84,15 +87,15 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
     useNewBadgeForCustomizationMenu = YES;
     base::RecordAction(
         base::UserMetricsAction(kNTPCustomizationNewBadgeShownAction));
-    prefService->SetInteger(prefs::kNTPHomeCustomizationNewBadgeImpressionCount,
-                            customizationNewBadgeImpressionCount + 1);
+    localState->SetInteger(prefs::kNTPHomeCustomizationNewBadgeImpressionCount,
+                           customizationNewBadgeImpressionCount + 1);
   }
 
   if (lensNewBadgeShowCount < kMaxShowCountNTPLensButtonNewBadge) {
     // Show the "New" badge and colored symbol.
     LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult::kShown);
-    prefService->SetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount,
-                            lensNewBadgeShowCount + 1);
+    localState->SetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount,
+                           lensNewBadgeShowCount + 1);
     return [[NewTabPageHeaderViewController alloc]
         initWithUseNewBadgeForLensButton:YES
          useNewBadgeForCustomizationMenu:useNewBadgeForCustomizationMenu];
@@ -119,21 +122,25 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
       DiscoverFeedServiceFactory::GetForProfile(profile);
   PrefService* prefService = profile->GetPrefs();
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
+  regional_capabilities::RegionalCapabilitiesService*
+      regionalCapabilitiesService =
+          ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile);
   BOOL isSafeMode =
       [browser->GetSceneState().profileState.appState resumingFromSafeMode];
   return [[NewTabPageMediator alloc]
-      initWithTemplateURLService:templateURLService
-                       URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)
-                     authService:authService
-                 identityManager:IdentityManagerFactory::GetForProfile(profile)
-           accountManagerService:ChromeAccountManagerServiceFactory::
-                                     GetForProfile(profile)
-        identityDiscImageUpdater:imageUpdater
-                     isIncognito:profile->IsOffTheRecord()
-             discoverFeedService:discoverFeedService
-                     prefService:prefService
-                     syncService:syncService
-                      isSafeMode:isSafeMode];
+       initWithTemplateURLService:templateURLService
+                        URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)
+                      authService:authService
+                  identityManager:IdentityManagerFactory::GetForProfile(profile)
+            accountManagerService:ChromeAccountManagerServiceFactory::
+                                      GetForProfile(profile)
+         identityDiscImageUpdater:imageUpdater
+                      isIncognito:profile->IsOffTheRecord()
+              discoverFeedService:discoverFeedService
+                      prefService:prefService
+                      syncService:syncService
+      regionalCapabilitiesService:regionalCapabilitiesService
+                       isSafeMode:isSafeMode];
 }
 
 - (NewTabPageViewController*)NTPViewController {

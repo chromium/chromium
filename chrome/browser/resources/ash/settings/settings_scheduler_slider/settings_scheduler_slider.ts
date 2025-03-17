@@ -26,16 +26,16 @@ import {getTemplate} from './settings_scheduler_slider.html.js';
 
 export interface SettingsSchedulerSliderElement {
   $: {
-    dummyRippleContainer: HTMLDivElement,
-    endKnob: HTMLDivElement,
-    endLabel: HTMLDivElement,
-    endProgress: HTMLDivElement,
-    markersContainer: HTMLDivElement,
-    sliderBar: HTMLDivElement,
-    sliderContainer: HTMLDivElement,
-    startKnob: HTMLDivElement,
-    startLabel: HTMLDivElement,
-    startProgress: HTMLDivElement,
+    dummyRippleContainer: HTMLElement,
+    endKnob: HTMLElement,
+    endLabel: HTMLElement,
+    endProgress: HTMLElement,
+    markersContainer: HTMLElement,
+    sliderBar: HTMLElement,
+    sliderContainer: HTMLElement,
+    startKnob: HTMLElement,
+    startLabel: HTMLElement,
+    startProgress: HTMLElement,
   };
 }
 

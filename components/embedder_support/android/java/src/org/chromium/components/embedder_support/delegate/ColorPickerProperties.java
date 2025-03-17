@@ -5,6 +5,8 @@
 package org.chromium.components.embedder_support.delegate;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -13,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * This class is to store the current color choices and all the information needed to paint the
  * view.
  */
+@NullMarked
 public class ColorPickerProperties {
     public static final PropertyModel.WritableIntPropertyKey CHOSEN_COLOR =
             new PropertyModel.WritableIntPropertyKey();
@@ -32,7 +35,7 @@ public class ColorPickerProperties {
     public static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>>
             CUSTOM_COLOR_PICKED_CALLBACK = new PropertyModel.ReadableObjectPropertyKey<>();
 
-    public static final PropertyModel.ReadableObjectPropertyKey<Callback<Void>>
+    public static final PropertyModel.ReadableObjectPropertyKey<Callback<@Nullable Void>>
             VIEW_SWITCHED_CALLBACK = new PropertyModel.ReadableObjectPropertyKey<>();
 
     public static final PropertyModel.ReadableObjectPropertyKey<Callback<Boolean>>

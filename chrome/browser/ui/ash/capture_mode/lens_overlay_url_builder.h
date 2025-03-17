@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_CAPTURE_MODE_LENS_OVERLAY_URL_BUILDER_H_
 #define CHROME_BROWSER_UI_ASH_CAPTURE_MODE_LENS_OVERLAY_URL_BUILDER_H_
 
+#include <map>
 #include <optional>
 #include <string>
 

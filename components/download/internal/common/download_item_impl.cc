@@ -38,6 +38,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -238,7 +239,7 @@ class DownloadItemActivatedData
     out->append(
         base::StringPrintf("\"start_offset\":\"%" PRId64 "\",", start_offset_));
     out->append(base::StringPrintf("\"has_user_gesture\":\"%s\"",
-                                   has_user_gesture_ ? "true" : "false"));
+                                   base::ToString(has_user_gesture_).c_str()));
     out->append("}");
   }
 
@@ -1308,7 +1309,7 @@ std::string DownloadItemImpl::DebugString(bool verbose) const {
         IsPaused() ? 'T' : 'F', DebugResumeModeString(GetResumeMode()),
         auto_resume_count_, GetDangerType(), AllDataSaved() ? 'T' : 'F',
         GetLastModifiedTime().c_str(), GetETag().c_str(),
-        download_file_ ? "true" : "false", url_list.c_str(),
+        base::ToString(download_file_).c_str(), url_list.c_str(),
         GetFullPath().value().c_str(), GetTargetFilePath().value().c_str(),
         GetReferrerUrl().spec().c_str(),
         GetSerializedEmbedderDownloadData().c_str());

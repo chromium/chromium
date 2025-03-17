@@ -520,8 +520,8 @@ void OverviewGroupItem::OnOverviewItemWindowDestroying(
   // We use 2-step removal to ensure that the `overview_item` gets removed from
   // the vector before been destroyed so that all the overview items in
   // `overview_items_` are valid.
-  auto iter = base::ranges::find_if(overview_items_,
-                                    base::MatchesUniquePtr(overview_item));
+  auto iter = std::ranges::find_if(overview_items_,
+                                   base::MatchesUniquePtr(overview_item));
   auto to_be_removed = std::move(*iter);
   overview_items_.erase(iter);
   to_be_removed.reset();

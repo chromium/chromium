@@ -29,6 +29,7 @@
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
@@ -46,6 +47,13 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/test_extension_dir.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include <wrl/client.h>
+
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "third_party/iaccessible2/ia2_api_all.h"
 #endif
 
 namespace {
@@ -878,3 +886,49 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest, MAYBE_RendererBuildId) {
     EXPECT_TRUE(found);
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+// Tests the reporting of dormant, ghost, and live node counts.
+// Disabled due to flakes; see https://crbug.com/41324945.
+IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
+                       DISABLED_AXPlatformNodeWinTest) {
+  // A lambda to collect and check a memory metric.
+  auto check_metric = [this](const std::string& metric_name) {
+    base::HistogramTester histogram_tester;
+    base::RunLoop run_loop;
+    {
+      scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
+          new ProcessMemoryMetricsEmitterFake(&run_loop,
+                                              test_ukm_recorder_.get()));
+      emitter->FetchAndEmitProcessMemoryMetrics();
+    }
+
+    run_loop.Run();
+
+    CheckMemoryMetric(metric_name, histogram_tester, 1,
+                      ValueRestriction::ABOVE_ZERO);
+  };
+
+  // Enable basic accessibility to ensure that nodes are created.
+  content::ScopedAccessibilityModeOverride basic_ax(ui::kAXModeBasic);
+
+  // Check that there are a number of dormant nodes for the browser's UX.
+  check_metric(
+      "Memory.Experimental.Browser2.Custom.AXPlatformWinDormantNodeCount");
+
+  // Hold a reference to an accessibility node so that there's one live node.
+  Microsoft::WRL::ComPtr<IAccessible> root(
+      browser()->GetBrowserView().GetNativeViewAccessible());
+  ASSERT_TRUE(root);
+
+  // Check for a live node.
+  check_metric(
+      "Memory.Experimental.Browser2.Custom.AXPlatformWinLiveNodeCount");
+
+  // Close the browser so that the live node becomes a ghost.
+  CloseBrowserSynchronously(browser());
+
+  check_metric(
+      "Memory.Experimental.Browser2.Custom.AXPlatformWinGhostNodeCount");
+}
+#endif  // BUILDFLAG(IS_WIN)

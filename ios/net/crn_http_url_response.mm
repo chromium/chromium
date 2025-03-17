@@ -4,7 +4,6 @@
 
 #import "ios/net/crn_http_url_response.h"
 
-
 @interface CRNHTTPURLResponse () {
   NSString* _cr_HTTPVersion;
 }

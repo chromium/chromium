@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <variant>
@@ -13,7 +14,6 @@
 #include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
@@ -76,7 +76,8 @@ struct TimeoutOccured {};
 
 void UpdateDebugInfo(bound_session_credentials::RotationDebugInfo& info,
                      std::variant<Result, TimeoutOccured> last_result,
-                     bool last_challenge_received) {
+                     bool last_challenge_received,
+                     const base::flat_set<std::string>& last_missing_cookies) {
   using bound_session_credentials::RotationDebugInfo;
   // Null value means no error.
   std::optional<RotationDebugInfo::FailureType> failure_type = std::visit(
@@ -87,6 +88,8 @@ void UpdateDebugInfo(bound_session_credentials::RotationDebugInfo& info,
                 return RotationDebugInfo::CONNECTION_ERROR;
               case Result::kServerTransientError:
                 return RotationDebugInfo::SERVER_ERROR;
+              case Result::kServerUnexepectedResponse:
+                return RotationDebugInfo::SUCCESS_WITH_MISSING_COOKIES;
               case Result::kSuccess:
                 return std::nullopt;
               default:
@@ -104,7 +107,7 @@ void UpdateDebugInfo(bound_session_credentials::RotationDebugInfo& info,
     return;
   }
 
-  auto counter_it = base::ranges::find_if(
+  auto counter_it = std::ranges::find_if(
       *info.mutable_errors_since_last_rotation(),
       [&failure_type](const RotationDebugInfo::FailureCounter& counter) {
         return counter.type() == failure_type.value();
@@ -125,6 +128,12 @@ void UpdateDebugInfo(bound_session_credentials::RotationDebugInfo& info,
         bound_session_credentials::TimeToTimestamp(base::Time::Now());
     failure_info->set_type(failure_type.value());
     failure_info->set_received_challenge(last_challenge_received);
+    if (failure_type.value() ==
+        RotationDebugInfo::SUCCESS_WITH_MISSING_COOKIES) {
+      for (const std::string& cookie_name : last_missing_cookies) {
+        failure_info->add_missing_cookies(cookie_name);
+      }
+    }
   }
 }
 
@@ -322,7 +331,11 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(Result result) {
   }
 
   UpdateDebugInfo(debug_info_, result,
-                  refresh_cookie_fetcher_->IsChallengeReceived());
+                  refresh_cookie_fetcher_->IsChallengeReceived(),
+                  result == BoundSessionRefreshCookieFetcher::Result::
+                                kServerUnexepectedResponse
+                      ? refresh_cookie_fetcher_->GetNonRefreshedCookieNames()
+                      : base::flat_set<std::string>());
   refresh_cookie_fetcher_.reset();
 
   UpdateCookieFetcherBackoff(result);
@@ -482,7 +495,7 @@ void BoundSessionCookieControllerImpl::ResumeBlockedRequests(
 
 void BoundSessionCookieControllerImpl::OnResumeBlockedRequestsTimeout() {
   UpdateDebugInfo(debug_info_, TimeoutOccured{},
-                  refresh_cookie_fetcher_->IsChallengeReceived());
+                  refresh_cookie_fetcher_->IsChallengeReceived(), {});
   // Reset the fetcher, it has been taking at least
   // kResumeBlockedRequestTimeout. New requests will trigger a new fetch.
   refresh_cookie_fetcher_.reset();

@@ -11,7 +11,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -26,12 +25,8 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "google_apis/google_api_keys.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_MIRROR)
@@ -171,7 +166,7 @@ bool AccountConsistencyModeManager::ShouldBuildServiceForProfile(
 
 AccountConsistencyMethod
 AccountConsistencyModeManager::GetAccountConsistencyMethod() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40583837): ChromeOS should use the cached value.
   // Changing the value dynamically is not supported.
   return ComputeAccountConsistencyMethod(profile_);
@@ -191,23 +186,14 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
     Profile* profile) {
   DCHECK(ShouldBuildServiceForProfile(profile));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!ash::IsAccountManagerAvailable(profile))
     return AccountConsistencyMethod::kDisabled;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Account consistency is unavailable on Guest and Managed Guest Sessions.
-  if (chromeos::IsManagedGuestSession() || profile->IsGuestSession()) {
-    return AccountConsistencyMethod::kDisabled;
-  }
-#endif
-
 #if BUILDFLAG(ENABLE_MIRROR)
   return AccountConsistencyMethod::kMirror;
-#endif
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
     VLOG(1) << "Desktop Identity Consistency disabled as sign-in to Chrome "
                "is not allowed";
@@ -215,7 +201,7 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
   }
 
   return AccountConsistencyMethod::kDice;
-#endif
-
+#else
   NOTREACHED();
+#endif
 }

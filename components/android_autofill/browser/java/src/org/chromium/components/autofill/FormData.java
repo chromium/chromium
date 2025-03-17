@@ -4,6 +4,8 @@
 
 package org.chromium.components.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.RectF;
 import android.view.View;
 import android.view.ViewStructure;
@@ -15,6 +17,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /**
@@ -24,6 +28,7 @@ import java.util.List;
  * AutofillRequest} to translate the FormData object into a ViewStructure.
  */
 @JNINamespace("autofill")
+@NullMarked
 public class FormData {
     public final int mSessionId;
     public final String mName;
@@ -65,8 +70,8 @@ public class FormData {
                 child.setFocused(true);
             }
             int virtualId = toFieldVirtualId(mSessionId, fieldIndex++);
-            child.setAutofillId(structure.getAutofillId(), virtualId);
-            field.setAutofillId(child.getAutofillId());
+            child.setAutofillId(assumeNonNull(structure.getAutofillId()), virtualId);
+            field.setAutofillId(assumeNonNull(child.getAutofillId()));
             if (field.mAutocompleteAttr != null && !field.mAutocompleteAttr.isEmpty()) {
                 child.setAutofillHints(field.mAutocompleteAttr.split(" +"));
             }

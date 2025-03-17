@@ -12,4 +12,10 @@ found in the LICENSE file.
     <dimen name="badge_position_y">20dp</dimen>
     <dimen name="badge_border_size">1.3dp</dimen>
     <dimen name="badge_size">20dp</dimen>
+
+    <!-- Toolbar Identity Disc Badge Dimensions -->
+    <dimen name="toolbar_identity_disc_badge_size">16dp</dimen>
+    <dimen name="toolbar_identity_disc_badge_border_size">0dp</dimen>
+    <dimen name="toolbar_identity_disc_badge_position_x">12dp</dimen>
+    <dimen name="toolbar_identity_disc_badge_position_y">12dp</dimen>
 </resources>

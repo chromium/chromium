@@ -471,11 +471,11 @@ void PreloadHelper::PreloadIfNeeded(
       resource_type == ResourceType::kFont) {
     if (!integrity_attr.empty()) {
       IntegrityMetadataSet metadata_set;
-      SubresourceIntegrity::ParseIntegrityAttribute(integrity_attr,
-                                                    metadata_set);
+      SubresourceIntegrity::ParseIntegrityAttribute(
+          integrity_attr, metadata_set, document.GetExecutionContext());
       link_fetch_params.SetIntegrityMetadata(metadata_set);
       link_fetch_params.MutableResourceRequest().SetFetchIntegrity(
-          integrity_attr);
+          integrity_attr, document.GetExecutionContext());
     }
   } else {
     if (!integrity_attr.empty()) {
@@ -631,7 +631,8 @@ void PreloadHelper::ModulePreloadIfNeeded(
   if (!integrity_value.empty()) {
     IntegrityReport integrity_report;
     SubresourceIntegrity::ParseIntegrityAttribute(
-        params.integrity, integrity_metadata, &integrity_report);
+        params.integrity, integrity_metadata, document.GetExecutionContext(),
+        &integrity_report);
     integrity_report.SendReports(document.GetExecutionContext());
   } else if (integrity_value.IsNull()) {
     // Step 10. "If el does not have an integrity attribute, then set integrity

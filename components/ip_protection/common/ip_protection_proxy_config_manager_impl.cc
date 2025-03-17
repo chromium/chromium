@@ -4,9 +4,15 @@
 
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core.h"
@@ -19,9 +25,6 @@
 namespace ip_protection {
 
 namespace {
-
-// Default Geo used until caching by geo is enabled.
-constexpr char kDefaultGeo[] = "EARTH";
 
 // Based on the logic in the `IpProtectionProxyConfigDirectFetcher`, if there is
 // a non-empty proxy list with an empty `GeoHint`, it would be considered a
@@ -58,15 +61,8 @@ IpProtectionProxyConfigManagerImpl::IpProtectionProxyConfigManagerImpl(
           net::features::kIpPrivacyProxyListMinFetchInterval.Get()),
       proxy_list_refresh_interval_(
           net::features::kIpPrivacyProxyListFetchInterval.Get()),
-      enable_token_caching_by_geo_(
-          net::features::kIpPrivacyCacheTokensByGeo.Get()),
       disable_proxy_refreshing_for_testing_(
           disable_proxy_refreshing_for_testing) {
-  // If caching by geo is disabled, the current geo will be resolved to
-  // `kDefaultGeo` and should not be modified.
-  if (!enable_token_caching_by_geo_) {
-    current_geo_id_ = kDefaultGeo;
-  }
   if (!disable_proxy_refreshing_for_testing_) {
     // Refresh the proxy list immediately.
     RefreshProxyList();
@@ -135,11 +131,10 @@ void IpProtectionProxyConfigManagerImpl::OnGotProxyList(
 
     // Only trigger a callback to the config cache if the following requirements
     // are met:
-    // 1. Token caching by geo is enabled.
-    // 2. The proxy_list is non-empty. An empty list implies there is no
+    // 1. The proxy_list is non-empty. An empty list implies there is no
     //    geo_hint present.
-    // 3. The new geo is different than the existing geo.
-    if (enable_token_caching_by_geo_ && !proxy_list_.empty()) {
+    // 2. The new geo is different than the existing geo.
+    if (!proxy_list_.empty()) {
       CHECK(geo_hint.has_value());
       current_geo_id_ = GetGeoIdFromGeoHint(std::move(geo_hint));
       ip_protection_core_->GeoObserved(current_geo_id_);

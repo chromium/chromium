@@ -8,11 +8,13 @@
 #import "ios/chrome/browser/contextual_panel/model/active_contextual_panel_tab_helper_observation_forwarder.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer_bridge.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_consumer.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/tab_group_indicator_features_utils.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 
@@ -93,16 +95,10 @@
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
-  if (IsTabGroupIndicatorEnabled()) {
-    // Update the Tab Grid button style, based on whether the active tab is
-    // grouped or not.
-    const int active_index = webStateList->active_index();
-    if (active_index != WebStateList::kInvalidIndex &&
-        webStateList->GetGroupOfWebStateAt(active_index) != nullptr) {
-      [self.consumer updateTabGroupState:ToolbarTabGroupState::kTabGroup];
-    } else {
-      [self.consumer updateTabGroupState:ToolbarTabGroupState::kNormal];
-    }
+  // Update the Tab Grid button style, based on whether the active tab is
+  // grouped or not.
+  if (IsTabGroupInGridEnabled()) {
+    [self.consumer updateTabGroupState:[self tabGroupStateToDisplay]];
   }
 
   // Return early if the active web state is the same as before the change.
@@ -135,6 +131,27 @@
 
 - (void)contextualPanelClosed:(ContextualPanelTabHelper*)tabHelper {
   [self.consumer makeOpaque];
+}
+
+#pragma mark - Private
+
+// Returns the tab group of the active web state, if any.
+- (const TabGroup*)activeWebStateTabGroup {
+  const int active_index = _webStateList->active_index();
+  if (active_index != WebStateList::kInvalidIndex) {
+    return _webStateList->GetGroupOfWebStateAt(active_index);
+  }
+  return nullptr;
+}
+
+// Returns the tab group state to display in the Tab Grid button.
+- (ToolbarTabGroupState)tabGroupStateToDisplay {
+  if ([self activeWebStateTabGroup] == nullptr) {
+    return ToolbarTabGroupState::kNormal;
+  }
+  return IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()
+             ? ToolbarTabGroupState::kTabGroup
+             : ToolbarTabGroupState::kNormal;
 }
 
 @end

@@ -153,7 +153,6 @@ bool MojoVideoEncodeAccelerator::Initialize(
   base::ScopedAllowBaseSyncPrimitives allow;
   vea_->Initialize(config, std::move(vea_client_remote),
                    std::move(media_log_pending_remote), &result);
-  init_format_ = config.input_format;
   return result;
 }
 
@@ -178,17 +177,6 @@ void MojoVideoEncodeAccelerator::Encode(
   UMA_HISTOGRAM_ENUMERATION("Media.MojoVideoEncodeAccelerator.InputStorageType",
                             frame->storage_type(),
                             static_cast<int>(VideoFrame::STORAGE_MAX) + 1);
-  if (frame->format() != PIXEL_FORMAT_I420 &&
-      frame->format() != PIXEL_FORMAT_NV12 && frame->format() != init_format_) {
-    if (vea_client_) {
-      vea_client_->NotifyErrorStatus(
-          {EncoderStatus::Codes::kUnsupportedFrameFormat,
-           "Unexpected pixel format: " +
-               VideoPixelFormatToString(frame->format())});
-    }
-    return;
-  }
-
   vea_->Encode(frame, options, base::DoNothingWithBoundArgs(frame));
 }
 

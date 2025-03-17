@@ -70,18 +70,22 @@ std::optional<Vote> GetVote(const FrameNode* frame_node,
 const char InheritParentPriorityVoter::kPriorityInheritedReason[] =
     "Priority inherited from parent.";
 
-InheritParentPriorityVoter::InheritParentPriorityVoter(
-    VotingChannel voting_channel)
-    : voting_channel_(std::move(voting_channel)) {}
+InheritParentPriorityVoter::InheritParentPriorityVoter() = default;
 
 InheritParentPriorityVoter::~InheritParentPriorityVoter() = default;
 
-void InheritParentPriorityVoter::InitializeOnGraph(Graph* graph) {
+void InheritParentPriorityVoter::InitializeOnGraph(
+    Graph* graph,
+    VotingChannel voting_channel) {
+  voting_channel_ = OptionalVotingChannel(std::move(voting_channel));
+
   graph->AddFrameNodeObserver(this);
 }
 
 void InheritParentPriorityVoter::TearDownOnGraph(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
+
+  voting_channel_.Reset();
 }
 
 void InheritParentPriorityVoter::OnBeforeFrameNodeAdded(

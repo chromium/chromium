@@ -97,8 +97,6 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
       const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override {}
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
   // Returns a RequestHandler callback that can be passed to the underlying
   // LoaderCallback to serve an artificial redirect to `new_url`.

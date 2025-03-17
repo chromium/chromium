@@ -4,15 +4,19 @@
 
 #include "content/browser/interest_group/trusted_signals_cache_impl.h"
 
+#include <stdint.h>
+
 #include <list>
+#include <memory>
 #include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/memory/scoped_refptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -21,21 +25,30 @@
 #include "base/values.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/trusted_signals_fetcher.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 namespace {
+
+// Some tests need a small, non-zero time, so tests can simulate time passing
+// until just before something should happen, and then skip forward to exactly
+// when it should happen, to make sure the passage of time is handled correctly.
+// Time is mocked out in these tests, so a small value will never cause flake.
+const base::TimeDelta kTinyTime = base::Milliseconds(1);
 
 // Generic success/error strings used in most tests.
 const char kSuccessBody[] = "Successful result";
@@ -47,12 +60,37 @@ const char kErrorMessage[] = "Error message";
 // Mojo interface, but no matching CompressionGroupData is found.
 const char kRequestCancelledError[] = "Request cancelled";
 
+// Creates a consistent fixed-size URL from a given integer from 0 to 999,
+// inclusive.
+GURL CreateUrl(std::uint32_t i) {
+  CHECK_LE(i, 999u);
+  // Always return a fixed size string. While the size doesn't currently matter,
+  // the URL length may be included in size computations in the future, at which
+  // point a constant size string may be useful in making the computed size
+  // consistent.
+  return GURL(base::StringPrintf("https://%03u.test", i));
+}
+
+// Creates a string of size `length`. Each value of `i` creates a distinct but
+// consistent string. `i` may be in the range 0 to 999.
+std::string CreateString(std::uint32_t i, size_t length = 3) {
+  CHECK_LE(i, 999u);
+  std::string out = base::StringPrintf("%03u", i);
+  out.append(length - 3, 'a');
+  CHECK_EQ(out.size(), length);
+  return out;
+}
+
 // Struct with input parameters for RequestTrustedBiddingSignals(). Having a
 // struct allows for more easily checking changing a single parameter, and
 // validating all parameters passed to the TrustedSignalsFetcher, without
 // duplicating a lot of code.
 struct BiddingParams {
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+  FrameTreeNodeId frame_tree_node_id;
   url::Origin main_frame_origin;
+  network::mojom::IPAddressSpace ip_address_space =
+      network::mojom::IPAddressSpace::kPublic;
   // The bidder / interest group owner.
   url::Origin script_origin;
 
@@ -73,7 +111,11 @@ struct BiddingParams {
 
 // Struct with input parameters for RequestTrustedScoringSignals().
 struct ScoringParams {
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+  FrameTreeNodeId frame_tree_node_id;
   url::Origin main_frame_origin;
+  network::mojom::IPAddressSpace ip_address_space =
+      network::mojom::IPAddressSpace::kPublic;
   // The seller.
   url::Origin script_origin;
   GURL trusted_signals_url;
@@ -124,7 +166,10 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     struct PendingBiddingSignalsFetch {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+      FrameTreeNodeId frame_tree_node_id;
       url::Origin main_frame_origin;
+      network::mojom::IPAddressSpace ip_address_space;
       base::UnguessableToken network_partition_nonce;
       url::Origin script_origin;
       std::map<int, std::vector<FetcherBiddingPartitionArgs>>
@@ -139,7 +184,10 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     struct PendingScoringSignalsFetch {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+      FrameTreeNodeId frame_tree_node_id;
       url::Origin main_frame_origin;
+      network::mojom::IPAddressSpace ip_address_space;
       base::UnguessableToken network_partition_nonce;
       url::Origin script_origin;
       std::map<int, std::vector<FetcherScoringPartitionArgs>>
@@ -158,8 +206,10 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
    private:
     void FetchBiddingSignals(
-        network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
+        network::mojom::URLLoaderFactory* url_loader_factory,
+        FrameTreeNodeId frame_tree_node_id,
         const url::Origin& main_frame_origin,
+        network::mojom::IPAddressSpace ip_address_space,
         base::UnguessableToken network_partition_nonce,
         const url::Origin& script_origin,
         const GURL& trusted_signals_url,
@@ -186,15 +236,19 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       }
 
       cache_->OnPendingBiddingSignalsFetch(PendingBiddingSignalsFetch(
-          trusted_signals_url, bidding_and_auction_key, main_frame_origin,
+          trusted_signals_url, bidding_and_auction_key,
+          static_cast<network::SharedURLLoaderFactory*>(url_loader_factory),
+          frame_tree_node_id, main_frame_origin, ip_address_space,
           network_partition_nonce, script_origin,
           std::move(compression_groups_copy), std::move(callback),
           weak_ptr_factory_.GetWeakPtr()));
     }
 
     void FetchScoringSignals(
-        network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
+        network::mojom::URLLoaderFactory* url_loader_factory,
+        FrameTreeNodeId frame_tree_node_id,
         const url::Origin& main_frame_origin,
+        network::mojom::IPAddressSpace ip_address_space,
         base::UnguessableToken network_partition_nonce,
         const url::Origin& script_origin,
         const GURL& trusted_signals_url,
@@ -221,7 +275,10 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       }
 
       cache_->OnPendingScoringSignalsFetch(PendingScoringSignalsFetch(
-          trusted_signals_url, bidding_and_auction_key, main_frame_origin,
+          trusted_signals_url, bidding_and_auction_key,
+          reinterpret_cast<network::SharedURLLoaderFactory*>(
+              url_loader_factory),
+          frame_tree_node_id, main_frame_origin, ip_address_space,
           network_partition_nonce, script_origin,
           std::move(compression_groups_copy), std::move(callback),
           weak_ptr_factory_.GetWeakPtr()));
@@ -234,7 +291,6 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
   TestTrustedSignalsCache()
       : TrustedSignalsCacheImpl(
-            /*url_loader_factory=*/nullptr,
             // The use of base::Unretained here means that all async calls must
             // be accounted for before a test completes. The base class always
             // invokes this
@@ -257,13 +313,14 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
   // Callback to handle coordinator key requests by the base
   // TrustedSignalsCacheImpl class.
   void GetCoordinatorKey(
+      const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
     switch (get_coordinator_key_mode_) {
       case GetCoordinatorKeyMode::kSync:
         std::move(callback).Run(BiddingAndAuctionServerKey{
-            /*key=*/coordinator->Serialize(), /*id=*/1});
+            /*key=*/coordinator->Serialize(), /*id=*/"01"});
         break;
       case GetCoordinatorKeyMode::kAsync:
         // This should be safe, as the base class guards this callback with a
@@ -272,7 +329,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
             FROM_HERE,
             base::BindOnce(std::move(callback),
                            BiddingAndAuctionServerKey{
-                               /*key=*/coordinator->Serialize(), /*id=*/1}));
+                               /*key=*/coordinator->Serialize(), /*id=*/"01"}));
         break;
       case GetCoordinatorKeyMode::kSyncFail:
         std::move(callback).Run(base::unexpected(std::string(kKeyFetchFailed)));
@@ -467,7 +524,10 @@ void ValidateFetchParams(const FetcherFetchType& fetch,
                          const ParamType& params,
                          int expected_compression_group_id,
                          int expected_partition_id) {
+  EXPECT_EQ(fetch.url_loader_factory, params.url_loader_factory);
+  EXPECT_EQ(fetch.frame_tree_node_id, params.frame_tree_node_id);
   EXPECT_EQ(fetch.main_frame_origin, params.main_frame_origin);
+  EXPECT_EQ(fetch.ip_address_space, params.ip_address_space);
   EXPECT_EQ(fetch.trusted_signals_url, params.trusted_signals_url);
   EXPECT_EQ(fetch.script_origin, params.script_origin);
   EXPECT_EQ(fetch.bidding_and_auction_key.key, params.coordinator.Serialize());
@@ -483,7 +543,7 @@ TrustedSignalsFetcher::CompressionGroupResult CreateCompressionGroupResult(
     auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme =
         auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
     std::string_view body = kSuccessBody,
-    base::TimeDelta ttl = base::Hours(1)) {
+    base::TimeDelta ttl = base::Days(1)) {
   TrustedSignalsFetcher::CompressionGroupResult result;
   result.compression_group_data =
       base::Value::BlobStorage(body.begin(), body.end());
@@ -498,7 +558,7 @@ CreateCompressionGroupResultMap(
     auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme =
         auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
     std::string_view body = kSuccessBody,
-    base::TimeDelta ttl = base::Hours(1)) {
+    base::TimeDelta ttl = base::Days(1)) {
   TrustedSignalsFetcher::CompressionGroupResultMap map;
   map[compression_group_id] =
       CreateCompressionGroupResult(compression_scheme, body, ttl);
@@ -514,7 +574,7 @@ void RespondToFetchWithSuccess(
     auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme =
         auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
     std::string_view body = kSuccessBody,
-    base::TimeDelta ttl = base::Hours(1)) {
+    base::TimeDelta ttl = base::Days(1)) {
   // Shouldn't be calling this after the fetcher was destroyed.
   ASSERT_TRUE(trusted_signals_fetch.fetcher_alive);
 
@@ -580,7 +640,7 @@ class TestTrustedSignalsCacheClient
 
   // Overload used by almost all callers, to simplify the call a bit.
   TestTrustedSignalsCacheClient(
-      scoped_refptr<TestTrustedSignalsCache::Handle> handle,
+      TestTrustedSignalsCache::Handle* handle,
       mojo::Remote<auction_worklet::mojom::TrustedSignalsCache>&
           cache_mojo_pipe)
       : TestTrustedSignalsCacheClient(handle->compression_group_token(),
@@ -778,7 +838,10 @@ class TrustedSignalsCacheTest : public testing::Test {
 
   BiddingParams CreateDefaultBiddingParams() const {
     BiddingParams out;
+    out.url_loader_factory = url_loader_factory_;
+    out.frame_tree_node_id = kFrameTreeNodeId;
     out.main_frame_origin = kMainFrameOrigin;
+    out.ip_address_space = network::mojom::IPAddressSpace::kPublic;
     out.script_origin = kBidder;
     out.interest_group_names = {kInterestGroupName};
     out.execution_mode =
@@ -792,7 +855,10 @@ class TrustedSignalsCacheTest : public testing::Test {
 
   ScoringParams CreateDefaultScoringParams() const {
     ScoringParams out;
+    out.url_loader_factory = url_loader_factory_;
+    out.frame_tree_node_id = kFrameTreeNodeId;
     out.main_frame_origin = kMainFrameOrigin;
+    out.ip_address_space = network::mojom::IPAddressSpace::kPublic;
     out.script_origin = kSeller;
     out.trusted_signals_url = kTrustedScoringSignalsUrl;
     out.coordinator = kCoordinator;
@@ -985,6 +1051,17 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.back().request_relation = RequestRelation::kDifferentFetches;
       out.back().params2.coordinator =
           url::Origin::Create(GURL("https://other.coordinator.test"));
+
+      // Different IP address spaces. Nonce is shared, because merging nonces in
+      // the case that a more local and less local frame are running auctions at
+      // the same time would only leak data to hosts on the more-local network,
+      // the leak doesn't include much data, and the situation is very unlikely
+      // to occur in practice.
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different IP address spaces";
+      out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().params2.ip_address_space =
+          network::mojom::IPAddressSpace::kLocal;
     }
 
     if constexpr (std::is_same<ParamsType, ScoringParams>::value) {
@@ -1069,7 +1146,32 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.back().request_relation = RequestRelation::kDifferentFetches;
       out.back().params2.coordinator =
           url::Origin::Create(GURL("https://other.coordinator.test"));
+
+      // Different IP address spaces. Nonce is shared, because merging nonces in
+      // the case that a more local and less local frame are running auctions at
+      // the same time would only leak data to hosts on the more-local network,
+      // the leak doesn't include much data, and the situation is very unlikely
+      // to occur in practice.
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different IP address spaces";
+      out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().params2.ip_address_space =
+          network::mojom::IPAddressSpace::kLocal;
     }
+
+    // Cases shared by bidder and seller tests.
+
+    out.emplace_back(CreateDefaultTestCase());
+    out.back().description = "Different SharedURLLoaderFactories";
+    out.back().request_relation = RequestRelation::kDifferentFetches;
+    out.back().params2.url_loader_factory =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            /*factory_ptr=*/nullptr);
+
+    out.emplace_back(CreateDefaultTestCase());
+    out.back().description = "Different FrameTreeNodeIds";
+    out.back().request_relation = RequestRelation::kDifferentFetches;
+    out.back().params2.frame_tree_node_id = FrameTreeNodeId(2);
 
     return out;
   }
@@ -1081,8 +1183,14 @@ class TrustedSignalsCacheTest : public testing::Test {
                                    const BiddingParams& bidding_params2) {
     // In order to merge two sets of params, only `interest_group_names` and
     // `trusted_bidding_signals_keys` may be different.
+    EXPECT_EQ(bidding_params1.url_loader_factory,
+              bidding_params2.url_loader_factory);
+    EXPECT_EQ(bidding_params1.frame_tree_node_id,
+              bidding_params2.frame_tree_node_id);
     EXPECT_EQ(bidding_params1.main_frame_origin,
               bidding_params2.main_frame_origin);
+    EXPECT_EQ(bidding_params1.ip_address_space,
+              bidding_params2.ip_address_space);
     EXPECT_EQ(bidding_params1.script_origin, bidding_params2.script_origin);
     EXPECT_EQ(bidding_params1.execution_mode, bidding_params2.execution_mode);
     EXPECT_EQ(bidding_params1.joining_origin, bidding_params2.joining_origin);
@@ -1093,7 +1201,10 @@ class TrustedSignalsCacheTest : public testing::Test {
               bidding_params2.additional_params);
 
     BiddingParams merged_bidding_params{
+        bidding_params1.url_loader_factory,
+        bidding_params1.frame_tree_node_id,
         bidding_params1.main_frame_origin,
+        bidding_params1.ip_address_space,
         bidding_params1.script_origin,
         bidding_params1.interest_group_names,
         bidding_params1.execution_mode,
@@ -1134,7 +1245,7 @@ class TrustedSignalsCacheTest : public testing::Test {
   // clear.
   //
   // If `start_fetch` is true, calls StartFetch() on the handle.
-  std::pair<scoped_refptr<TestTrustedSignalsCache::Handle>, int>
+  std::pair<std::unique_ptr<TestTrustedSignalsCache::Handle>, int>
   RequestTrustedSignals(const BiddingParams& bidding_params,
                         bool start_fetch = true) {
     int partition_id = -1;
@@ -1142,7 +1253,9 @@ class TrustedSignalsCacheTest : public testing::Test {
     // solely for the ValidateFetchParams family of methods.
     CHECK_EQ(1u, bidding_params.interest_group_names.size());
     auto handle = trusted_signals_cache_->RequestTrustedBiddingSignals(
-        bidding_params.main_frame_origin, bidding_params.script_origin,
+        bidding_params.url_loader_factory, bidding_params.frame_tree_node_id,
+        bidding_params.main_frame_origin, bidding_params.ip_address_space,
+        bidding_params.script_origin,
         *bidding_params.interest_group_names.begin(),
         bidding_params.execution_mode, bidding_params.joining_origin,
         bidding_params.trusted_signals_url, bidding_params.coordinator,
@@ -1161,15 +1274,17 @@ class TrustedSignalsCacheTest : public testing::Test {
   }
 
   // Same as above, but for scoring signals.
-  std::pair<scoped_refptr<TestTrustedSignalsCache::Handle>, int>
+  std::pair<std::unique_ptr<TestTrustedSignalsCache::Handle>, int>
   RequestTrustedSignals(const ScoringParams& scoring_params,
                         bool start_fetch = true) {
     int partition_id = -1;
     auto handle = trusted_signals_cache_->RequestTrustedScoringSignals(
-        scoring_params.main_frame_origin, scoring_params.script_origin,
-        scoring_params.trusted_signals_url, scoring_params.coordinator,
-        scoring_params.interest_group_owner, scoring_params.joining_origin,
-        scoring_params.render_url, scoring_params.component_render_urls,
+        scoring_params.url_loader_factory, scoring_params.frame_tree_node_id,
+        scoring_params.main_frame_origin, scoring_params.ip_address_space,
+        scoring_params.script_origin, scoring_params.trusted_signals_url,
+        scoring_params.coordinator, scoring_params.interest_group_owner,
+        scoring_params.joining_origin, scoring_params.render_url,
+        scoring_params.component_render_urls,
         scoring_params.additional_params.Clone(), partition_id);
 
     // The call should never fail.
@@ -1189,6 +1304,7 @@ class TrustedSignalsCacheTest : public testing::Test {
 
   // Defaults used by most tests.
 
+  static constexpr FrameTreeNodeId kFrameTreeNodeId{1};
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main.frame.test"));
   const url::Origin kBidder = url::Origin::Create(GURL("https://bidder.test"));
@@ -1205,6 +1321,12 @@ class TrustedSignalsCacheTest : public testing::Test {
 
   const url::Origin kCoordinator =
       url::Origin::Create(GURL("https://coordinator.test"));
+
+  // Use a SharedURLLoaderFactory that can't be used to make requests. This is
+  // only used in pointer equality tests.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_ =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          /*factory_ptr=*/nullptr);
 
   std::unique_ptr<TestTrustedSignalsCache> trusted_signals_cache_;
   mojo::Remote<auction_worklet::mojom::TrustedSignalsCache> cache_mojo_pipe_;
@@ -1245,7 +1367,7 @@ TYPED_TEST(TrustedSignalsCacheTest, GetBeforeFetchCompletes) {
   ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
                       partition_id);
 
-  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle.get(), this->cache_mojo_pipe_);
 
   // Wait for the GetTrustedSignals call to make it to the cache.
   this->task_environment_.RunUntilIdle();
@@ -1269,7 +1391,7 @@ TYPED_TEST(TrustedSignalsCacheTest, GetBeforeFetchFails) {
   ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
                       partition_id);
 
-  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle.get(), this->cache_mojo_pipe_);
 
   // Wait for the GetTrustedSignals call to make it to the cache.
   this->task_environment_.RunUntilIdle();
@@ -1295,7 +1417,7 @@ TYPED_TEST(TrustedSignalsCacheTest, GetAfterFetchCompletes) {
                       partition_id);
   RespondToFetchWithSuccess(fetch);
 
-  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle.get(), this->cache_mojo_pipe_);
   client.WaitForSuccess();
 }
 
@@ -1315,15 +1437,13 @@ TYPED_TEST(TrustedSignalsCacheTest, GetAfterFetchFails) {
                       partition_id);
   RespondToFetchWithError(fetch);
 
-  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle.get(), this->cache_mojo_pipe_);
   client.WaitForError();
 }
 
 // Check that fetches are automatically started after kAutoStartDelay has
 // elapsed.
 TYPED_TEST(TrustedSignalsCacheTest, AutoStart) {
-  base::TimeDelta kTinyTime = base::Milliseconds(1);
-
   auto params = this->CreateDefaultParams();
   auto [handle, partition_id] =
       this->RequestTrustedSignals(params, /*start_fetch=*/false);
@@ -1340,15 +1460,13 @@ TYPED_TEST(TrustedSignalsCacheTest, AutoStart) {
                       partition_id);
   RespondToFetchWithSuccess(fetch);
 
-  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle.get(), this->cache_mojo_pipe_);
   client.WaitForSuccess();
 }
 
 // Check that fetches are automatically started after kAutoStartDelay, even if a
 // second request is merged into it.
 TYPED_TEST(TrustedSignalsCacheTest, AutoStartTwoRequests) {
-  base::TimeDelta kTinyTime = base::Milliseconds(1);
-
   auto params = this->CreateDefaultParams();
   auto [handle1, partition_id1] =
       this->RequestTrustedSignals(params, /*start_fetch=*/false);
@@ -1359,7 +1477,8 @@ TYPED_TEST(TrustedSignalsCacheTest, AutoStartTwoRequests) {
       TrustedSignalsCacheImpl::kAutoStartDelay - kTinyTime);
   auto [handle2, partition_id2] =
       this->RequestTrustedSignals(params, /*start_fetch=*/false);
-  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle2->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id2);
 
   // No fetches should have been started.
@@ -1374,7 +1493,7 @@ TYPED_TEST(TrustedSignalsCacheTest, AutoStartTwoRequests) {
                       partition_id1);
   RespondToFetchWithSuccess(fetch);
 
-  TestTrustedSignalsCacheClient client(handle1, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle1.get(), this->cache_mojo_pipe_);
   client.WaitForSuccess();
 }
 
@@ -1406,7 +1525,7 @@ TYPED_TEST(TrustedSignalsCacheTest, AutoStartThenManuallyStart) {
                       partition_id);
   RespondToFetchWithSuccess(fetch);
 
-  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle.get(), this->cache_mojo_pipe_);
   client.WaitForSuccess();
 }
 
@@ -1451,7 +1570,7 @@ TYPED_TEST(TrustedSignalsCacheTest, ManuallyStartThenAutoStart) {
     }
     EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
 
-    TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+    TestTrustedSignalsCacheClient client(handle.get(), this->cache_mojo_pipe_);
     client.WaitForSuccess();
 
     handle.reset();
@@ -1500,7 +1619,7 @@ TYPED_TEST(TrustedSignalsCacheTest, HandleDestroyedWithoutStartingFetch) {
     if (test_case != TestCase::kCancelBeforeCoordinatorKeyCallback) {
       callback = this->trusted_signals_cache_->WaitForCoordinatorKeyCallback();
       if (test_case == TestCase::kCancelAfterCoordinatorKeyCallback) {
-        std::move(callback).Run(BiddingAndAuctionServerKey{"key", /*id=*/1});
+        std::move(callback).Run(BiddingAndAuctionServerKey{"key", /*id=*/"01"});
       }
     }
 
@@ -1522,7 +1641,7 @@ TYPED_TEST(TrustedSignalsCacheTest, HandleDestroyedWithoutStartingFetch) {
     if (test_case ==
         TestCase::kCancelDuringCoordinatorKeyCallbackAndInvokeCallback) {
       // Invoking the GetCoordinatorKeyCallback late should not crash.
-      std::move(callback).Run(BiddingAndAuctionServerKey{"key", /*id=*/1});
+      std::move(callback).Run(BiddingAndAuctionServerKey{"key", /*id=*/"01"});
     }
   }
 }
@@ -1536,7 +1655,7 @@ TYPED_TEST(TrustedSignalsCacheTest, HandleDestroyedAfterGet) {
   // Wait for the fetch.
   auto fetch = this->WaitForSignalsFetch();
 
-  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle.get(), this->cache_mojo_pipe_);
   // Wait fo the request to hit the cache.
   this->task_environment_.RunUntilIdle();
 
@@ -1544,7 +1663,7 @@ TYPED_TEST(TrustedSignalsCacheTest, HandleDestroyedAfterGet) {
   client.WaitForError(kRequestCancelledError);
 }
 
-// Test the case where a GetTrustedSignals() request is made after the handle
+// Test the case where a GetTrustedSignals() request is made after the Handle
 // has been destroyed.
 //
 // This test covers three cases:
@@ -1552,8 +1671,9 @@ TYPED_TEST(TrustedSignalsCacheTest, HandleDestroyedAfterGet) {
 // 2) The fetch was started but didn't complete before the handle was destroyed.
 // 3) The fetch completed before the handle was destroyed.
 //
-// Since in all cases the handle was destroyed before the read attempt, all
-// cases should return errors.
+// In the first two cases, since the fetch never completed, the entry is not
+// cached, and the request should fail. In the third case, the entry is still
+// cached, and should succeed.
 TYPED_TEST(TrustedSignalsCacheTest, GetAfterHandleDestroyed) {
   enum class TestCase { kFetchNotStarted, kFetchNotCompleted, kFetchSucceeded };
 
@@ -1586,7 +1706,11 @@ TYPED_TEST(TrustedSignalsCacheTest, GetAfterHandleDestroyed) {
 
     TestTrustedSignalsCacheClient client(compression_group_token,
                                          this->cache_mojo_pipe_);
-    client.WaitForError(kRequestCancelledError);
+    if (test_case == TestCase::kFetchSucceeded) {
+      client.WaitForSuccess();
+    } else {
+      client.WaitForError(kRequestCancelledError);
+    }
   }
 }
 
@@ -1632,9 +1756,9 @@ TYPED_TEST(TrustedSignalsCacheTest, GetMultipleTimes) {
   ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
                       partition_id);
 
-  TestTrustedSignalsCacheClient client1(handle, this->cache_mojo_pipe_);
-  TestTrustedSignalsCacheClient client2(handle, this->cache_mojo_pipe_);
-  TestTrustedSignalsCacheClient client3(handle, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client1(handle.get(), this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client2(handle.get(), this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client3(handle.get(), this->cache_mojo_pipe_);
 
   // Wait for the GetTrustedSignals call to make it to the cache.
   this->task_environment_.RunUntilIdle();
@@ -1643,9 +1767,9 @@ TYPED_TEST(TrustedSignalsCacheTest, GetMultipleTimes) {
   EXPECT_FALSE(client3.has_result());
 
   RespondToFetchWithSuccess(fetch);
-  TestTrustedSignalsCacheClient client4(handle, this->cache_mojo_pipe_);
-  TestTrustedSignalsCacheClient client5(handle, this->cache_mojo_pipe_);
-  TestTrustedSignalsCacheClient client6(handle, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client4(handle.get(), this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client5(handle.get(), this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client6(handle.get(), this->cache_mojo_pipe_);
   client1.WaitForSuccess();
   client2.WaitForSuccess();
   client3.WaitForSuccess();
@@ -1656,12 +1780,13 @@ TYPED_TEST(TrustedSignalsCacheTest, GetMultipleTimes) {
 
 // Check that re-requesting trusted bidding with the same arguments returns the
 // same handle and IDs, when any Handle is still alive.
-TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsReused) {
+TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsReusedHandleAlive) {
   auto params = this->CreateDefaultParams();
   auto [handle1, partition_id1] = this->RequestTrustedSignals(params);
 
   auto [handle2, partition_id2] = this->RequestTrustedSignals(params);
-  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle2->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id2);
 
   // Destroying the first handle should not cancel the request. This should be
@@ -1677,7 +1802,8 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsReused) {
   // Create yet another handle, which should again be merged, and destroy the
   // second handle.
   auto [handle3, partition_id3] = this->RequestTrustedSignals(params);
-  EXPECT_EQ(handle2, handle3);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle3->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id3);
   handle2.reset();
 
@@ -1687,16 +1813,56 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsReused) {
   // Create yet another handle, which should again be merged, and destroy the
   // third handle.
   auto [handle4, partition_id4] = this->RequestTrustedSignals(params);
-  EXPECT_EQ(handle3, handle4);
+  EXPECT_EQ(handle3->compression_group_token(),
+            handle4->compression_group_token());
   EXPECT_EQ(partition_id3, partition_id4);
   handle3.reset();
 
   // Finally request the response body, which should succeed.
-  TestTrustedSignalsCacheClient client(handle4, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle4.get(), this->cache_mojo_pipe_);
   client.WaitForSuccess();
 
   // No pending fetches should have been created after the first.
   EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
+}
+
+// Check that re-requesting trusted bidding with the same arguments returns the
+// same handle and IDs, when there's no live Handle.
+TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsReusedHandleNotAlive) {
+  auto params = this->CreateDefaultParams();
+  auto [handle1, partition_id1] = this->RequestTrustedSignals(params);
+  base::UnguessableToken token = handle1->compression_group_token();
+
+  // Wait for Fetcher and complete the request, so the result will be kept alive
+  // when the Handle is destroyed.
+  auto fetch = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id1);
+  RespondToFetchWithSuccess(fetch);
+  TestTrustedSignalsCacheClient(handle1.get(), this->cache_mojo_pipe_)
+      .WaitForSuccess();
+
+  // Destroying the only Handle should not destroy the underlying data.
+  handle1.reset();
+
+  // Re-requesting the data should return the same entry.
+  auto [handle2, partition_id2] = this->RequestTrustedSignals(params);
+  EXPECT_EQ(token, handle2->compression_group_token());
+  EXPECT_EQ(partition_id1, partition_id2);
+  TestTrustedSignalsCacheClient(handle2.get(), this->cache_mojo_pipe_)
+      .WaitForSuccess();
+
+  // Destroying the only Handle should not destroy the underlying data, even if
+  // some time passes, if the time is less than the TTL.
+  handle2.reset();
+  this->task_environment_.FastForwardBy(base::Minutes(1));
+
+  // Re-requesting the data yet again should return the same entry.
+  auto [handle3, partition_id3] = this->RequestTrustedSignals(params);
+  EXPECT_EQ(token, handle3->compression_group_token());
+  EXPECT_EQ(partition_id1, partition_id3);
+  TestTrustedSignalsCacheClient(handle3.get(), this->cache_mojo_pipe_)
+      .WaitForSuccess();
 }
 
 // Check that re-requesting trusted bidding with the same arguments returns the
@@ -1707,7 +1873,8 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsReusedLateStartFetch) {
       this->RequestTrustedSignals(params, /*start_fetch=*/false);
   auto [handle2, partition_id2] =
       this->RequestTrustedSignals(params, /*start_fetch=*/true);
-  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle2->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id2);
 
   // Wait for Fetcher.
@@ -1718,7 +1885,7 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsReusedLateStartFetch) {
   // Complete the request.
   RespondToFetchWithSuccess(fetch);
 
-  TestTrustedSignalsCacheClient client(handle1, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle1.get(), this->cache_mojo_pipe_);
   client.WaitForSuccess();
 
   // No pending fetches should have been created after the first.
@@ -1726,8 +1893,8 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsReusedLateStartFetch) {
 }
 
 // Check that re-requesting trusted bidding with the same arguments returns a
-// different ID, when all Handles have been destroyed. Tests all points at which
-// a Handle may be deleted.
+// different ID, when all Handles have been destroyed and the original fetch did
+// not complete.
 TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsNotReused) {
   auto params = this->CreateDefaultParams();
 
@@ -1735,7 +1902,7 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsNotReused) {
   auto [handle1, partition_id1] = this->RequestTrustedSignals(params);
   base::UnguessableToken compression_group_token1 =
       handle1->compression_group_token();
-  TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client1(handle1.get(), this->cache_mojo_pipe_);
   handle1.reset();
   EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
 
@@ -1745,7 +1912,7 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsNotReused) {
   base::UnguessableToken compression_group_token2 =
       handle2->compression_group_token();
   EXPECT_NE(compression_group_token1, compression_group_token2);
-  TestTrustedSignalsCacheClient client2(handle2, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client2(handle2.get(), this->cache_mojo_pipe_);
 
   // Wait for fetch request, then destroy the second handle.
   auto fetch2 = this->WaitForSignalsFetch();
@@ -1760,10 +1927,7 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsNotReused) {
       handle3->compression_group_token();
   EXPECT_NE(compression_group_token1, compression_group_token3);
   EXPECT_NE(compression_group_token2, compression_group_token3);
-  TestTrustedSignalsCacheClient client3(handle3, this->cache_mojo_pipe_);
-  // Wait for the request from `client3` to make it to the cache.
-  this->task_environment_.RunUntilIdle();
-
+  TestTrustedSignalsCacheClient client3(handle3.get(), this->cache_mojo_pipe_);
   // Wait for another fetch request, send a response, and retrieve it over the
   // Mojo pipe.
   auto fetch3 = this->WaitForSignalsFetch();
@@ -1771,40 +1935,16 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsNotReused) {
                       partition_id3);
   RespondToFetchWithSuccess(fetch3);
 
-  // Destroy the third handle.
-  handle3.reset();
-
-  // Create a new request with the same parameters should get a new
-  // `compression_group_id`.
-  auto [handle4, partition_id4] = this->RequestTrustedSignals(params);
-  base::UnguessableToken compression_group_token4 =
-      handle4->compression_group_token();
-  EXPECT_NE(compression_group_token1, compression_group_token4);
-  EXPECT_NE(compression_group_token2, compression_group_token4);
-  EXPECT_NE(compression_group_token3, compression_group_token4);
-  TestTrustedSignalsCacheClient client4(handle4, this->cache_mojo_pipe_);
-  // Wait for the request from `client4` to make it to the cache.
-  this->task_environment_.RunUntilIdle();
-  // Wait for the fetch.
-  auto fetch4 = this->WaitForSignalsFetch();
-  // Destroy the handle, which should fail the request.
-  handle4.reset();
-
-  // All cache clients but the third should receive errorse
+  // All cache clients but the last should receive errors.
   client1.WaitForError(kRequestCancelledError);
   client2.WaitForError(kRequestCancelledError);
   client3.WaitForSuccess();
-  client4.WaitForError(kRequestCancelledError);
 }
 
 // Test the case where a bidding signals request is made while there's still an
 // outstanding Handle, but the response has expired.
 TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleResponseExpired) {
   const base::TimeDelta kTtl = base::Minutes(10);
-  // A small amount of time. Test will wait until this much time before
-  // expiration, and then wait for this much time to pass, to check before/after
-  // expiration behavior.
-  const base::TimeDelta kTinyTime = base::Milliseconds(1);
 
   auto params = this->CreateDefaultParams();
   auto [handle1, partition_id1] = this->RequestTrustedSignals(params);
@@ -1820,13 +1960,14 @@ TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleResponseExpired) {
   this->task_environment_.FastForwardBy(kTtl - kTinyTime);
 
   // A request for `handle1`'s data should succeed.
-  TestTrustedSignalsCacheClient(handle1, this->cache_mojo_pipe_)
+  TestTrustedSignalsCacheClient(handle1.get(), this->cache_mojo_pipe_)
       .WaitForSuccess();
 
   // Re-requesting the data before expiration time should return the same Handle
   // and partition.
   auto [handle2, partition_id2] = this->RequestTrustedSignals(params);
-  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle2->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id2);
 
   // Run until the expiration time. When the time exactly equals the expiration
@@ -1834,7 +1975,7 @@ TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleResponseExpired) {
   this->task_environment_.FastForwardBy(kTinyTime);
 
   // A request for `handle1`'s data should return the same value as before.
-  TestTrustedSignalsCacheClient(handle1, this->cache_mojo_pipe_)
+  TestTrustedSignalsCacheClient(handle1.get(), this->cache_mojo_pipe_)
       .WaitForSuccess();
 
   // Re-request the data. A different handle should be returned, since the old
@@ -1852,14 +1993,14 @@ TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleResponseExpired) {
       kOtherSuccessBody, kTtl);
 
   // A request for `handle3`'s data should return the different data.
-  TestTrustedSignalsCacheClient(handle3, this->cache_mojo_pipe_)
+  TestTrustedSignalsCacheClient(handle3.get(), this->cache_mojo_pipe_)
       .WaitForSuccess(
           auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
           kOtherSuccessBody);
 
   // A request for `handle1`'s data should return the same value as before, even
   // though it has expired.
-  TestTrustedSignalsCacheClient(handle1, this->cache_mojo_pipe_)
+  TestTrustedSignalsCacheClient(handle1.get(), this->cache_mojo_pipe_)
       .WaitForSuccess();
 }
 
@@ -1876,13 +2017,15 @@ TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleError) {
   // Re-requesting the data before the response is received should return the
   // same Handle and partition.
   auto [handle2, partition_id2] = this->RequestTrustedSignals(params);
-  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle2->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id2);
 
   RespondToFetchWithError(fetch);
 
   // A request for `handle1`'s data should return the error.
-  TestTrustedSignalsCacheClient(handle1, this->cache_mojo_pipe_).WaitForError();
+  TestTrustedSignalsCacheClient(handle1.get(), this->cache_mojo_pipe_)
+      .WaitForError();
 
   // Re-request the data. A different handle should be returned, since the error
   // should not be cached.
@@ -1897,66 +2040,160 @@ TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleError) {
   RespondToFetchWithSuccess(fetch);
 
   // A request for `handle3`'s data should return a success.
-  TestTrustedSignalsCacheClient(handle3, this->cache_mojo_pipe_)
+  TestTrustedSignalsCacheClient(handle3.get(), this->cache_mojo_pipe_)
       .WaitForSuccess();
 
   // A request for `handle1`'s data should still return the error.
-  TestTrustedSignalsCacheClient(handle1, this->cache_mojo_pipe_).WaitForError();
+  TestTrustedSignalsCacheClient(handle1.get(), this->cache_mojo_pipe_)
+      .WaitForError();
 }
 
 // Check that zero (and negative) TTL bidding signals responses are handled
-// appropriately.
+// appropriately. Test both the case the original Handles are kept alive and the
+// case they're not.
 TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleSuccessZeroTTL) {
-  for (base::TimeDelta ttl : {base::Seconds(-1), base::Seconds(0)}) {
+  for (bool keep_handles_alive : {false, true}) {
+    for (base::TimeDelta ttl : {base::Seconds(-1), base::Seconds(0)}) {
+      // Start with a clean slate for each test. Not strictly necessary, but
+      // limits what's under test a bit.
+      this->CreateCache();
+
+      auto params = this->CreateDefaultParams();
+      auto [handle1, partition_id1] = this->RequestTrustedSignals(params);
+
+      auto fetch = this->WaitForSignalsFetch();
+      ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                          partition_id1);
+
+      // Re-requesting the data before a response is received should return the
+      // same compression group and partition.
+      auto [handle2, partition_id2] = this->RequestTrustedSignals(params);
+      EXPECT_EQ(handle1->compression_group_token(),
+                handle2->compression_group_token());
+      EXPECT_EQ(partition_id1, partition_id2);
+
+      RespondToFetchWithSuccess(
+          fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+          kSuccessBody, ttl);
+
+      // A request for `handle1's` data should succeed.
+      TestTrustedSignalsCacheClient(handle1.get(), this->cache_mojo_pipe_)
+          .WaitForSuccess();
+
+      base::UnguessableToken handle1_token = handle1->compression_group_token();
+      if (!keep_handles_alive) {
+        handle1.reset();
+        handle2.reset();
+        // If not keeping the Handles alive, the underlying data should be
+        // destroyed, since it's not reusable.
+        EXPECT_EQ(this->trusted_signals_cache_->size_for_testing(), 0u);
+        EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 0u);
+      } else {
+        // Otherwise, the data should still be available in the cache.
+        EXPECT_GT(this->trusted_signals_cache_->size_for_testing(), 0u);
+        EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+      }
+
+      // Re-request the data. A different Handle should be returned, since the
+      // data should not be cached.
+      auto [handle3, partition_id3] = this->RequestTrustedSignals(params);
+      EXPECT_NE(handle1_token, handle3->compression_group_token());
+
+      // Give a different response for the second fetch.
+      fetch = this->WaitForSignalsFetch();
+      ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                          partition_id3);
+      RespondToFetchWithSuccess(
+          fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+          kOtherSuccessBody, ttl);
+
+      // A request for `handle3`'s data should return the different data.
+      TestTrustedSignalsCacheClient(handle3.get(), this->cache_mojo_pipe_)
+          .WaitForSuccess(
+              auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+              kOtherSuccessBody);
+
+      TestTrustedSignalsCacheClient client(handle1_token,
+                                           this->cache_mojo_pipe_);
+      if (keep_handles_alive) {
+        // If `handle1` is still alive, a request for `handle1`'s data should
+        // return the same value as before, even though it has expired.
+        client.WaitForSuccess();
+      } else {
+        // Otherwise, the data should have been destroyed to free up memory, so
+        // requesting it should fail.
+        client.WaitForError(kRequestCancelledError);
+      }
+    }
+  }
+}
+
+// Test that a cache entry is reusable until it expires. Tests both the case
+// that handles are kept alive and the case that they're not.
+TYPED_TEST(TrustedSignalsCacheTest, ReusableUntilExpires) {
+  const base::TimeDelta kTtl = base::Seconds(10);
+  // Time to wait before checking if entry is still accessible.
+  const base::TimeDelta kWaitTime = kTtl / 10;
+
+  for (bool keep_handles_alive : {false, true}) {
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
     this->CreateCache();
 
     auto params = this->CreateDefaultParams();
-    auto [handle1, partition_id1] = this->RequestTrustedSignals(params);
 
+    base::UnguessableToken token;
+    std::vector<std::unique_ptr<TestTrustedSignalsCache::Handle>> handles;
+    for (int i = 0; i < 10; ++i) {
+      this->task_environment_.FastForwardBy(kWaitTime);
+
+      // For all loop iterations but the first, there should be a single
+      // compression group in the cache.
+      EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(),
+                i == 0 ? 0u : 1u);
+
+      auto [handle, partition_id] = this->RequestTrustedSignals(params);
+      if (i == 0) {
+        // Only the first request should trigger a fetch.
+        token = handle->compression_group_token();
+        auto fetch = this->WaitForSignalsFetch();
+        ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                            partition_id);
+        RespondToFetchWithSuccess(
+            fetch,
+            auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+            kSuccessBody, kTtl);
+      } else {
+        // Others should reuse the compression group from the first request.
+        EXPECT_EQ(token, handle->compression_group_token());
+      }
+
+      // A request for the data should succeed.
+      TestTrustedSignalsCacheClient(handle.get(), this->cache_mojo_pipe_)
+          .WaitForSuccess();
+
+      if (keep_handles_alive) {
+        handles.emplace_back(std::move(handle));
+      }
+    }
+
+    // This should result in the data finally expiring.
+    this->task_environment_.FastForwardBy(kWaitTime);
+
+    // A new request for the same data should start a new fetch.
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    EXPECT_NE(handle->compression_group_token(), token);
     auto fetch = this->WaitForSignalsFetch();
     ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
-                        partition_id1);
-
-    // Re-requesting the data before a response is received should return the
-    // same Handle and partition.
-    auto [handle2, partition_id2] = this->RequestTrustedSignals(params);
-    EXPECT_EQ(handle1, handle2);
-    EXPECT_EQ(partition_id1, partition_id2);
-
-    RespondToFetchWithSuccess(
-        fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
-        kSuccessBody, ttl);
-
-    // A request for `handle1`'s data should succeed.
-    TestTrustedSignalsCacheClient(handle1, this->cache_mojo_pipe_)
-        .WaitForSuccess();
-
-    // Re-request the data. A different handle should be returned, since the
-    // data should not be cached.
-    auto [handle3, partition_id3] = this->RequestTrustedSignals(params);
-    EXPECT_NE(handle1->compression_group_token(),
-              handle3->compression_group_token());
-
-    // Give a different response for the second fetch.
-    fetch = this->WaitForSignalsFetch();
-    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
-                        partition_id3);
+                        partition_id);
+    // Respond with different data, and make sure it can be retrieved.
     RespondToFetchWithSuccess(
         fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
-        kOtherSuccessBody, ttl);
-
-    // A request for `handle3`'s data should return the different data.
-    TestTrustedSignalsCacheClient(handle3, this->cache_mojo_pipe_)
+        kOtherSuccessBody);
+    TestTrustedSignalsCacheClient(handle.get(), this->cache_mojo_pipe_)
         .WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
             kOtherSuccessBody);
-
-    // A request for `handle1`'s data should return the same value as before,
-    // even though it has expired.
-    TestTrustedSignalsCacheClient(handle1, this->cache_mojo_pipe_)
-        .WaitForSuccess();
   }
 }
 
@@ -1965,10 +2202,6 @@ TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleSuccessZeroTTL) {
 TYPED_TEST(TrustedSignalsCacheTest,
            OutstandingHandleResponseExpiredSharedCompressionGroup) {
   const base::TimeDelta kTtl = base::Minutes(10);
-  // A small amount of time. Test will wait until this much time before
-  // expiration, and then wait for this much time to pass, to check before/after
-  // expiration behavior.
-  const base::TimeDelta kTinyTime = base::Milliseconds(1);
 
   auto params1 = this->CreateDefaultParams();
   auto params2 = this->CreateDefaultParams();
@@ -1984,7 +2217,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
   auto [handle1, partition_id1] = this->RequestTrustedSignals(params1);
   auto [handle2, partition_id2] = this->RequestTrustedSignals(params2);
-  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle2->compression_group_token());
   EXPECT_NE(partition_id1, partition_id2);
   auto fetch = this->WaitForSignalsFetch();
 
@@ -2006,10 +2240,12 @@ TYPED_TEST(TrustedSignalsCacheTest,
   // Re-requesting either set of parameters should return the same Handle and
   // partition as the first requests.
   auto [handle3, partition_id3] = this->RequestTrustedSignals(params1);
-  EXPECT_EQ(handle1, handle3);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle3->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id3);
   auto [handle4, partition_id4] = this->RequestTrustedSignals(params2);
-  EXPECT_EQ(handle2, handle4);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle4->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id4);
 
   // Run until the expiration time. When the time exactly equals the expiration
@@ -2025,7 +2261,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
   auto [handle6, partition_id6] = this->RequestTrustedSignals(params2);
   EXPECT_NE(handle2->compression_group_token(),
             handle6->compression_group_token());
-  EXPECT_EQ(handle5, handle6);
+  EXPECT_EQ(handle5->compression_group_token(),
+            handle6->compression_group_token());
   EXPECT_NE(partition_id5, partition_id6);
 
   // Give a different response for the second fetch.
@@ -2036,14 +2273,14 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
   // A request for `handle5`'s data should return the second fetch's data. No
   // need to request the data for `handle6`, since it's the same Handle.
-  TestTrustedSignalsCacheClient(handle5, this->cache_mojo_pipe_)
+  TestTrustedSignalsCacheClient(handle5.get(), this->cache_mojo_pipe_)
       .WaitForSuccess(
           auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
           kOtherSuccessBody);
 
   // A request for `handle1`'s data should return the first fetch's data. No
   // need to request the data for `handle2`, since it's the same Handle.
-  TestTrustedSignalsCacheClient(handle1, this->cache_mojo_pipe_)
+  TestTrustedSignalsCacheClient(handle1.get(), this->cache_mojo_pipe_)
       .WaitForSuccess();
 }
 
@@ -2054,10 +2291,6 @@ TYPED_TEST(TrustedSignalsCacheTest,
            OutstandingHandleResponseExpiredDifferentCompressionGroup) {
   const base::TimeDelta kTtl1 = base::Minutes(5);
   const base::TimeDelta kTtl2 = base::Minutes(10);
-  // A small amount of time. Test will wait until this much time before
-  // expiration, and then wait for this much time to pass, to check before/after
-  // expiration behavior.
-  const base::TimeDelta kTinyTime = base::Milliseconds(1);
 
   auto params1 = this->CreateDefaultParams();
   auto params2 = this->CreateDefaultParams();
@@ -2066,7 +2299,6 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
   auto [handle1, partition_id1] = this->RequestTrustedSignals(params1);
   auto [handle2, partition_id2] = this->RequestTrustedSignals(params2);
-  EXPECT_NE(handle1, handle2);
   EXPECT_NE(handle1->compression_group_token(),
             handle2->compression_group_token());
   auto fetch = this->WaitForSignalsFetch();
@@ -2090,10 +2322,12 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
   // Re-request both sets of parameters. The same Handles should be returned.
   auto [handle3, partition_id3] = this->RequestTrustedSignals(params1);
-  EXPECT_EQ(handle1, handle3);
+  EXPECT_EQ(handle1->compression_group_token(),
+            handle3->compression_group_token());
   EXPECT_EQ(partition_id1, partition_id3);
   auto [handle4, partition_id4] = this->RequestTrustedSignals(params2);
-  EXPECT_EQ(handle2, handle4);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle4->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id4);
 
   // Wait until the first compression group's data has expired.
@@ -2103,9 +2337,11 @@ TYPED_TEST(TrustedSignalsCacheTest,
   // a new handle, and trigger a new fetch. The second set of parameters should
   // get the same Handle, since it has yet to expire.
   auto [handle5, partition_id5] = this->RequestTrustedSignals(params1);
-  EXPECT_NE(handle1, handle5);
+  EXPECT_NE(handle1->compression_group_token(),
+            handle5->compression_group_token());
   auto [handle6, partition_id6] = this->RequestTrustedSignals(params2);
-  EXPECT_EQ(handle2, handle6);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle6->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id6);
 
   // Validate there is indeed a new fetch for the first set of parameters, and
@@ -2123,10 +2359,12 @@ TYPED_TEST(TrustedSignalsCacheTest,
   // Re-request both sets of parameters. The same Handles should be returned as
   // the last time.
   auto [handle7, partition_id7] = this->RequestTrustedSignals(params1);
-  EXPECT_EQ(handle5, handle7);
+  EXPECT_EQ(handle5->compression_group_token(),
+            handle7->compression_group_token());
   EXPECT_EQ(partition_id5, partition_id7);
   auto [handle8, partition_id8] = this->RequestTrustedSignals(params2);
-  EXPECT_EQ(handle2, handle8);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle8->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id8);
 
   // Wait until the second compression group's data has expired.
@@ -2135,10 +2373,12 @@ TYPED_TEST(TrustedSignalsCacheTest,
   // Re-request both sets of parameters. This time, only the second set of
   // parameters should get a new Handle.
   auto [handle9, partition_id9] = this->RequestTrustedSignals(params1);
-  EXPECT_EQ(handle5, handle9);
+  EXPECT_EQ(handle5->compression_group_token(),
+            handle9->compression_group_token());
   EXPECT_EQ(partition_id5, partition_id9);
   auto [handle10, partition_id10] = this->RequestTrustedSignals(params2);
-  EXPECT_NE(handle2, handle10);
+  EXPECT_NE(handle2->compression_group_token(),
+            handle10->compression_group_token());
 
   // Validate there is indeed a new fetch for the second set of parameters, and
   // provide a response.
@@ -2152,17 +2392,17 @@ TYPED_TEST(TrustedSignalsCacheTest,
   // Validate the responses for each of the distinct Handles. Even the ones
   // associated with expired data should still receive success responses, since
   // data lifetime is scoped to that of the associated Handle.
-  TestTrustedSignalsCacheClient(handle1, this->cache_mojo_pipe_)
+  TestTrustedSignalsCacheClient(handle1.get(), this->cache_mojo_pipe_)
       .WaitForSuccess();
-  TestTrustedSignalsCacheClient(handle2, this->cache_mojo_pipe_)
+  TestTrustedSignalsCacheClient(handle2.get(), this->cache_mojo_pipe_)
       .WaitForSuccess(
           auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
           kOtherSuccessBody);
-  TestTrustedSignalsCacheClient(handle5, this->cache_mojo_pipe_)
+  TestTrustedSignalsCacheClient(handle5.get(), this->cache_mojo_pipe_)
       .WaitForSuccess(
           auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
           kSomeOtherSuccessBody);
-  TestTrustedSignalsCacheClient(handle10, this->cache_mojo_pipe_)
+  TestTrustedSignalsCacheClient(handle10.get(), this->cache_mojo_pipe_)
       .WaitForSuccess(
           auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
           kSomeOtherSuccessBody);
@@ -2180,7 +2420,7 @@ TYPED_TEST(TrustedSignalsCacheTest, NoCompressionGroup) {
   // Respond with an empty map with no compression groups.
   std::move(fetch.callback).Run({});
 
-  TestTrustedSignalsCacheClient(handle, this->cache_mojo_pipe_)
+  TestTrustedSignalsCacheClient(handle.get(), this->cache_mojo_pipe_)
       .WaitForError("Fetched signals missing compression group 0.");
 }
 
@@ -2202,7 +2442,7 @@ TYPED_TEST(TrustedSignalsCacheTest, WrongCompressionGroup) {
   RespondToFetchWithSuccess(fetch);
 
   // A request for `handle3`'s data should return the different data.
-  TestTrustedSignalsCacheClient(handle, this->cache_mojo_pipe_)
+  TestTrustedSignalsCacheClient(handle.get(), this->cache_mojo_pipe_)
       .WaitForError("Fetched signals missing compression group 0.");
 }
 
@@ -2234,9 +2474,9 @@ TYPED_TEST(TrustedSignalsCacheTest, OneCompressionGroupMissing) {
 
     // Even though the data for only one Handle was missing, both should have
     // the same error.
-    TestTrustedSignalsCacheClient(handle1, this->cache_mojo_pipe_)
+    TestTrustedSignalsCacheClient(handle1.get(), this->cache_mojo_pipe_)
         .WaitForError(expected_error);
-    TestTrustedSignalsCacheClient(handle2, this->cache_mojo_pipe_)
+    TestTrustedSignalsCacheClient(handle2.get(), this->cache_mojo_pipe_)
         .WaitForError(expected_error);
   }
 }
@@ -2290,9 +2530,10 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
             fetches[1],
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
-        TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client1(handle1.get(),
+                                              this->cache_mojo_pipe_);
         TestTrustedSignalsCacheClient client2(
-            handle2, this->CreateOrGetMojoPipeGivenParams(params2));
+            handle2.get(), this->CreateOrGetMojoPipeGivenParams(params2));
         client1.WaitForSuccess();
         client2.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
@@ -2301,7 +2542,6 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
       }
 
       case RequestRelation::kDifferentCompressionGroups: {
-        EXPECT_NE(handle1, handle2);
         EXPECT_NE(handle1->compression_group_token(),
                   handle2->compression_group_token());
         auto fetch = this->WaitForSignalsFetch();
@@ -2319,8 +2559,10 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
 
         // Respond with different results for each compression group.
         RespondToTwoCompressionGroupFetchWithSuccess(fetch);
-        TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
-        TestTrustedSignalsCacheClient client2(handle2, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client1(handle1.get(),
+                                              this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client2(handle2.get(),
+                                              this->cache_mojo_pipe_);
         client1.WaitForSuccess();
         client2.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
@@ -2329,7 +2571,8 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
       }
 
       case RequestRelation::kDifferentPartitions: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_NE(partition_id1, partition_id2);
         auto fetch = this->WaitForSignalsFetch();
 
@@ -2345,14 +2588,16 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
         // Respond with a single response for the partition, and read it - no
         // need for multiple clients, since the handles are the same.
         RespondToFetchWithSuccess(fetch);
-        TestTrustedSignalsCacheClient client(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client(handle1.get(),
+                                             this->cache_mojo_pipe_);
         client.WaitForSuccess();
         break;
       }
 
       case RequestRelation::kSamePartitionModified:
       case RequestRelation::kSamePartitionUnmodified: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id2);
         auto fetch = this->WaitForSignalsFetch();
 
@@ -2364,7 +2609,8 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
         // Respond with a single response for the partition, and read it - no
         // need for multiple clients, since the handles are the same.
         RespondToFetchWithSuccess(fetch);
-        TestTrustedSignalsCacheClient client(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client(handle1.get(),
+                                             this->cache_mojo_pipe_);
         client.WaitForSuccess();
         break;
       }
@@ -2418,9 +2664,10 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchStart) {
             fetch2,
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
-        TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client1(handle1.get(),
+                                              this->cache_mojo_pipe_);
         TestTrustedSignalsCacheClient client2(
-            handle2, this->CreateOrGetMojoPipeGivenParams(params2));
+            handle2.get(), this->CreateOrGetMojoPipeGivenParams(params2));
         client1.WaitForSuccess();
         client2.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
@@ -2429,13 +2676,15 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchStart) {
       }
 
       case RequestRelation::kSamePartitionUnmodified: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id2);
 
         // Respond with a single response for the partition, and read it - no
         // need for multiple clients, since the handles are the same.
         RespondToFetchWithSuccess(fetch1);
-        TestTrustedSignalsCacheClient client(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client(handle1.get(),
+                                             this->cache_mojo_pipe_);
         client.WaitForSuccess();
         break;
       }
@@ -2466,7 +2715,8 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchComplete) {
     ValidateFetchParams(fetch1, params1, /*expected_compression_group_id=*/0,
                         partition_id1);
     RespondToFetchWithSuccess(fetch1);
-    TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
+    TestTrustedSignalsCacheClient client1(handle1.get(),
+                                          this->cache_mojo_pipe_);
     client1.WaitForSuccess();
 
     auto [handle2, partition_id2] = this->RequestTrustedSignals(params2);
@@ -2492,7 +2742,7 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchComplete) {
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
         TestTrustedSignalsCacheClient client2(
-            handle2, this->CreateOrGetMojoPipeGivenParams(params2));
+            handle2.get(), this->CreateOrGetMojoPipeGivenParams(params2));
         client2.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
@@ -2500,9 +2750,11 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchComplete) {
       }
 
       case RequestRelation::kSamePartitionUnmodified: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id2);
-        TestTrustedSignalsCacheClient client2(handle2, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client2(handle2.get(),
+                                              this->cache_mojo_pipe_);
         client2.WaitForSuccess();
         break;
       }
@@ -2560,13 +2812,15 @@ TYPED_TEST(TrustedSignalsCacheTest,
         ValidateFetchParams(fetch1, params1,
                             /*expected_compression_group_id=*/0, partition_id1);
         RespondToFetchWithSuccess(fetch1);
-        TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client1(handle1.get(),
+                                              this->cache_mojo_pipe_);
         client1.WaitForSuccess();
 
         // Make a second request using `params2`. It should result in a new
         // request.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params2);
-        EXPECT_NE(handle1, handle3);
+        EXPECT_NE(handle1->compression_group_token(),
+                  handle3->compression_group_token());
         auto fetch3 = this->WaitForSignalsFetch();
         ValidateFetchParams(fetch3, params2,
                             /*expected_compression_group_id=*/0, partition_id3);
@@ -2578,7 +2832,7 @@ TYPED_TEST(TrustedSignalsCacheTest,
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
         TestTrustedSignalsCacheClient client3(
-            handle3, this->CreateOrGetMojoPipeGivenParams(params2));
+            handle3.get(), this->CreateOrGetMojoPipeGivenParams(params2));
         client3.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
@@ -2597,16 +2851,19 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
         // Respond with a single response for the partition, and read it.
         RespondToFetchWithSuccess(fetch1);
-        TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client1(handle1.get(),
+                                              this->cache_mojo_pipe_);
         client1.WaitForSuccess();
 
         // Make a second request using `params2`. It should reuse the response
         // to the initial request.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params2);
-        EXPECT_EQ(handle1, handle3);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle3->compression_group_token());
         EXPECT_NE(partition_id1, partition_id3);
         EXPECT_EQ(partition_id2, partition_id3);
-        TestTrustedSignalsCacheClient client3(handle3, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client3(handle3.get(),
+                                              this->cache_mojo_pipe_);
         client3.WaitForSuccess();
         break;
       }
@@ -2619,17 +2876,20 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
         // Respond with a single response for the partition, and read it.
         RespondToFetchWithSuccess(fetch1);
-        TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client1(handle1.get(),
+                                              this->cache_mojo_pipe_);
         client1.WaitForSuccess();
 
         // Make a second request using `params2`. It should reuse the response
         // to the initial request, including the same partition ID.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params2);
-        EXPECT_EQ(handle1, handle3);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle3->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id3);
 
         // For the sake of completeness, read the response again.
-        TestTrustedSignalsCacheClient client3(handle3, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client3(handle3.get(),
+                                              this->cache_mojo_pipe_);
         client3.WaitForSuccess();
         break;
       }
@@ -2672,13 +2932,12 @@ TYPED_TEST(TrustedSignalsCacheTest,
                             /*expected_compression_group_id=*/0, partition_id2);
         RespondToFetchWithSuccess(fetch1);
         TestTrustedSignalsCacheClient client1(
-            handle2, this->CreateOrGetMojoPipeGivenParams(params2));
+            handle2.get(), this->CreateOrGetMojoPipeGivenParams(params2));
         client1.WaitForSuccess();
 
         // Make a second request using `params1`. It should result in a new
         // request.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params1);
-        EXPECT_NE(handle1, handle3);
         auto fetch3 = this->WaitForSignalsFetch();
         ValidateFetchParams(fetch3, params1,
                             /*expected_compression_group_id=*/0, partition_id3);
@@ -2689,7 +2948,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
             fetch3,
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
-        TestTrustedSignalsCacheClient client3(handle3, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client3(handle3.get(),
+                                              this->cache_mojo_pipe_);
         client3.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
@@ -2708,16 +2968,19 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
         // Respond with a single response for the partition, and read it.
         RespondToFetchWithSuccess(fetch1);
-        TestTrustedSignalsCacheClient client1(handle2, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client1(handle2.get(),
+                                              this->cache_mojo_pipe_);
         client1.WaitForSuccess();
 
         // Make a second request using `params1`. It should reuse the response
         // to the initial request.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params1);
-        EXPECT_EQ(handle2, handle3);
+        EXPECT_EQ(handle2->compression_group_token(),
+                  handle3->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id3);
         EXPECT_NE(partition_id2, partition_id3);
-        TestTrustedSignalsCacheClient client3(handle3, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client3(handle3.get(),
+                                              this->cache_mojo_pipe_);
         client3.WaitForSuccess();
         break;
       }
@@ -2730,17 +2993,20 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
         // Respond with a single response for the partition, and read it.
         RespondToFetchWithSuccess(fetch1);
-        TestTrustedSignalsCacheClient client1(handle2, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client1(handle2.get(),
+                                              this->cache_mojo_pipe_);
         client1.WaitForSuccess();
 
         // Make a second request using `params1`. It should reuse the response
         // to the initial request, including the same partition ID.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params1);
-        EXPECT_EQ(handle2, handle3);
+        EXPECT_EQ(handle2->compression_group_token(),
+                  handle3->compression_group_token());
         EXPECT_EQ(partition_id2, partition_id3);
 
         // For the sake of completeness, read the response again.
-        TestTrustedSignalsCacheClient client3(handle3, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client3(handle3.get(),
+                                              this->cache_mojo_pipe_);
         client3.WaitForSuccess();
         break;
       }
@@ -2815,9 +3081,10 @@ TYPED_TEST(TrustedSignalsCacheTest,
             fetch3,
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
-        TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client1(handle1.get(),
+                                              this->cache_mojo_pipe_);
         TestTrustedSignalsCacheClient client3(
-            handle3, this->CreateOrGetMojoPipeGivenParams(params2));
+            handle3.get(), this->CreateOrGetMojoPipeGivenParams(params2));
         client1.WaitForSuccess();
         client3.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
@@ -2826,7 +3093,6 @@ TYPED_TEST(TrustedSignalsCacheTest,
       }
 
       case RequestRelation::kDifferentCompressionGroups: {
-        EXPECT_NE(handle1, handle2);
         EXPECT_NE(handle1->compression_group_token(),
                   handle2->compression_group_token());
         auto fetch1 = this->WaitForSignalsFetch();
@@ -2872,10 +3138,12 @@ TYPED_TEST(TrustedSignalsCacheTest,
             fetch3,
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
             kSomeOtherSuccessBody);
-        TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client1(handle1.get(),
+                                              this->cache_mojo_pipe_);
         TestTrustedSignalsCacheClient client2(compression_group_token2,
                                               this->cache_mojo_pipe_);
-        TestTrustedSignalsCacheClient client3(handle3, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client3(handle3.get(),
+                                              this->cache_mojo_pipe_);
         client1.WaitForSuccess();
         client2.WaitForError(kRequestCancelledError);
         client3.WaitForSuccess(
@@ -2885,7 +3153,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
       }
 
       case RequestRelation::kDifferentPartitions: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_NE(partition_id1, partition_id2);
         auto fetch1 = this->WaitForSignalsFetch();
 
@@ -2907,20 +3176,23 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // request ID as the other requests, and the same partition ID as the
         // second request.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params2);
-        EXPECT_EQ(handle1, handle3);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle3->compression_group_token());
         EXPECT_EQ(partition_id2, partition_id3);
 
         // Respond with a single response for the partition, and read it - no
         // need for multiple clients, since the handles are the same.
         RespondToFetchWithSuccess(fetch1);
-        TestTrustedSignalsCacheClient client(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client(handle1.get(),
+                                             this->cache_mojo_pipe_);
         client.WaitForSuccess();
         break;
       }
 
       case RequestRelation::kSamePartitionModified:
       case RequestRelation::kSamePartitionUnmodified: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id2);
         auto fetch1 = this->WaitForSignalsFetch();
 
@@ -2936,13 +3208,15 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // Reissue second request, which should result in the same signals
         // request ID and partition ID as the other requests.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params2);
-        EXPECT_EQ(handle1, handle3);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle3->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id3);
 
         // Respond with a single request for the partition, and read it - no
         // need for multiple clients, since the handles are the same.
         RespondToFetchWithSuccess(fetch1);
-        TestTrustedSignalsCacheClient client(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client(handle1.get(),
+                                             this->cache_mojo_pipe_);
         client.WaitForSuccess();
         break;
       }
@@ -2971,6 +3245,7 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsCancelBothBeforeFetchStart) {
 
     this->task_environment_.RunUntilIdle();
     EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 0u);
   }
 }
 
@@ -3032,7 +3307,7 @@ TYPED_TEST(TrustedSignalsCacheTest, CoordinatorKeyReceivedAsync) {
                       partition_id);
   RespondToFetchWithSuccess(fetch);
 
-  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle.get(), this->cache_mojo_pipe_);
   client.WaitForSuccess();
 }
 
@@ -3044,7 +3319,7 @@ TYPED_TEST(TrustedSignalsCacheTest, CoordinatorKeyFailsSync) {
 
   auto params = this->CreateDefaultParams();
   auto [handle, partition_id] = this->RequestTrustedSignals(params);
-  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle.get(), this->cache_mojo_pipe_);
   client.WaitForError(TestTrustedSignalsCache::kKeyFetchFailed);
   // Teardown will check that the fetcher saw no unaccounted for requests.
 }
@@ -3057,7 +3332,7 @@ TYPED_TEST(TrustedSignalsCacheTest, CoordinatorKeyFailsAsync) {
 
   auto params = this->CreateDefaultParams();
   auto [handle, partition_id] = this->RequestTrustedSignals(params);
-  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle.get(), this->cache_mojo_pipe_);
   client.WaitForError(TestTrustedSignalsCache::kKeyFetchFailed);
   // Teardown will check that the fetcher saw no unaccounted for requests.
 }
@@ -3079,7 +3354,7 @@ TYPED_TEST(TrustedSignalsCacheTest, CancelledDuringGetCoordinatorKey) {
         this->trusted_signals_cache_->WaitForCoordinatorKeyCallback();
     handle.reset();
     if (invoke_callback) {
-      std::move(callback).Run(BiddingAndAuctionServerKey{"key", /*id=*/1});
+      std::move(callback).Run(BiddingAndAuctionServerKey{"key", /*id=*/"01"});
     }
 
     // Let any pending async callbacks complete.
@@ -3128,9 +3403,9 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // Invoke both callbacks, with the usual key (the serialized
         // coordinator).
         std::move(callback1).Run(BiddingAndAuctionServerKey{
-            /*key=*/params1.coordinator.Serialize(), /*id=*/1});
+            /*key=*/params1.coordinator.Serialize(), /*id=*/"01"});
         std::move(callback2).Run(BiddingAndAuctionServerKey{
-            /*key=*/params2.coordinator.Serialize(), /*id=*/1});
+            /*key=*/params2.coordinator.Serialize(), /*id=*/"01"});
 
         auto fetches = this->WaitForSignalsFetches(2);
 
@@ -3150,9 +3425,10 @@ TYPED_TEST(TrustedSignalsCacheTest,
             fetches[1],
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
-        TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client1(handle1.get(),
+                                              this->cache_mojo_pipe_);
         TestTrustedSignalsCacheClient client2(
-            handle2, this->CreateOrGetMojoPipeGivenParams(params2));
+            handle2.get(), this->CreateOrGetMojoPipeGivenParams(params2));
         client1.WaitForSuccess();
         client2.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
@@ -3161,11 +3437,10 @@ TYPED_TEST(TrustedSignalsCacheTest,
       }
 
       case RequestRelation::kDifferentCompressionGroups: {
-        EXPECT_NE(handle1, handle2);
         EXPECT_NE(handle1->compression_group_token(),
                   handle2->compression_group_token());
         std::move(callback1).Run(BiddingAndAuctionServerKey{
-            /*key=*/params1.coordinator.Serialize(), /*id=*/1});
+            /*key=*/params1.coordinator.Serialize(), /*id=*/"01"});
 
         auto fetch = this->WaitForSignalsFetch();
 
@@ -3182,8 +3457,10 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
         // Respond with different results for each compression group.
         RespondToTwoCompressionGroupFetchWithSuccess(fetch);
-        TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
-        TestTrustedSignalsCacheClient client2(handle2, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client1(handle1.get(),
+                                              this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client2(handle2.get(),
+                                              this->cache_mojo_pipe_);
         client1.WaitForSuccess();
         client2.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
@@ -3192,10 +3469,11 @@ TYPED_TEST(TrustedSignalsCacheTest,
       }
 
       case RequestRelation::kDifferentPartitions: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_NE(partition_id1, partition_id2);
         std::move(callback1).Run(BiddingAndAuctionServerKey{
-            /*key=*/params1.coordinator.Serialize(), /*id=*/1});
+            /*key=*/params1.coordinator.Serialize(), /*id=*/"01"});
 
         auto fetch = this->WaitForSignalsFetch();
 
@@ -3211,17 +3489,19 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // Respond with a single response for the partition, and read it - no
         // need for multiple clients, since the handles are the same.
         RespondToFetchWithSuccess(fetch);
-        TestTrustedSignalsCacheClient client(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client(handle1.get(),
+                                             this->cache_mojo_pipe_);
         client.WaitForSuccess();
         break;
       }
 
       case RequestRelation::kSamePartitionModified:
       case RequestRelation::kSamePartitionUnmodified: {
-        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(handle1->compression_group_token(),
+                  handle2->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id2);
         std::move(callback1).Run(BiddingAndAuctionServerKey{
-            /*key=*/params1.coordinator.Serialize(), /*id=*/1});
+            /*key=*/params1.coordinator.Serialize(), /*id=*/"01"});
 
         auto fetch = this->WaitForSignalsFetch();
 
@@ -3233,7 +3513,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // Respond with a single response for the partition, and read it - no
         // need for multiple clients, since the handles are the same.
         RespondToFetchWithSuccess(fetch);
-        TestTrustedSignalsCacheClient client(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client(handle1.get(),
+                                             this->cache_mojo_pipe_);
         client.WaitForSuccess();
         break;
       }
@@ -3254,7 +3535,7 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
   auto callback = this->trusted_signals_cache_->WaitForCoordinatorKeyCallback();
   std::move(callback).Run(BiddingAndAuctionServerKey{
-      /*key=*/this->kCoordinator.Serialize(), /*id=*/1});
+      /*key=*/this->kCoordinator.Serialize(), /*id=*/"01"});
 
   // No fetch should have been started yet.
   EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
@@ -3268,7 +3549,7 @@ TYPED_TEST(TrustedSignalsCacheTest,
                       partition_id);
   RespondToFetchWithSuccess(fetch);
 
-  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client(handle.get(), this->cache_mojo_pipe_);
   client.WaitForSuccess();
 }
 
@@ -3287,7 +3568,7 @@ TYPED_TEST(TrustedSignalsCacheTest, RequestWithWrongScriptOrigin) {
 
   // Trying to use the remote to get data from another origin's request should
   // result in a bad message and the TrustedSignalsCache pipe being closed.
-  TestTrustedSignalsCacheClient client(handle, remote);
+  TestTrustedSignalsCacheClient client(handle.get(), remote);
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "Data from wrong compression group requested.");
   remote.FlushForTesting();
@@ -3320,7 +3601,7 @@ TYPED_TEST(TrustedSignalsCacheTest, RequestWithWrongSignalsType) {
 
   // Trying to use the remote to get data using the wrong type should result in
   // a bad message and the TrustedSignalsCache pipe being closed.
-  TestTrustedSignalsCacheClient client(handle, remote);
+  TestTrustedSignalsCacheClient client(handle.get(), remote);
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "Data from wrong compression group requested.");
   remote.FlushForTesting();
@@ -3348,14 +3629,16 @@ TEST_F(TrustedBiddingSignalsCacheTest, MultipleRequestsSameCacheKey) {
   auto params2 = this->CreateDefaultParams();
   params2.trusted_bidding_signals_keys = {{"othey_key2"}};
   auto [handle2, partition_id2] = this->RequestTrustedSignals(params2);
-  EXPECT_NE(handle1, handle2);
+  EXPECT_NE(handle1->compression_group_token(),
+            handle2->compression_group_token());
 
   // Create another fetch with the default set of parameters. It's merged into
   // the second request, not the first. This is because the first and second
   // request have the same cache key, so the second request overwrite the cache
   // key of the first, though its compression group ID should still be valid.
   auto [handle3, partition_id3] = this->RequestTrustedSignals(params1);
-  EXPECT_EQ(handle2, handle3);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle3->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id3);
 
   // Wait for the combined fetch.
@@ -3366,22 +3649,24 @@ TEST_F(TrustedBiddingSignalsCacheTest, MultipleRequestsSameCacheKey) {
   // Reissuing a request with either previous set of params should reuse the
   // partition shared by the second and third fetches.
   auto [handle4, partition_id4] = this->RequestTrustedSignals(params1);
-  EXPECT_EQ(handle2, handle4);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle4->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id4);
   auto [handle5, partition_id5] = this->RequestTrustedSignals(params2);
-  EXPECT_EQ(handle2, handle5);
+  EXPECT_EQ(handle2->compression_group_token(),
+            handle5->compression_group_token());
   EXPECT_EQ(partition_id2, partition_id5);
 
   // Complete second fetch before first, just to make sure there's no
   // expectation about completion order here.
   RespondToFetchWithSuccess(fetch2);
-  TestTrustedSignalsCacheClient client2(handle2, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client2(handle2.get(), this->cache_mojo_pipe_);
   client2.WaitForSuccess();
 
   RespondToFetchWithSuccess(
       fetch1, auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
       kSomeOtherSuccessBody);
-  TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
+  TestTrustedSignalsCacheClient client1(handle1.get(), this->cache_mojo_pipe_);
   client1.WaitForSuccess(
       auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
       kSomeOtherSuccessBody);
@@ -3467,9 +3752,9 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentTypes) {
   // use the same ones for this test.
   scoring_params.trusted_signals_url = bidding_params.trusted_signals_url;
 
-  scoped_refptr<TestTrustedSignalsCache::Handle> bidding_handle;
+  std::unique_ptr<TestTrustedSignalsCache::Handle> bidding_handle;
   int bidding_partition_id;
-  scoped_refptr<TestTrustedSignalsCache::Handle> scoring_handle;
+  std::unique_ptr<TestTrustedSignalsCache::Handle> scoring_handle;
   int scoring_partition_id;
   // Vary which request is made first depending on the templatization of the
   // test.
@@ -3501,6 +3786,532 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentTypes) {
   // And the fetches should not share nonces.
   EXPECT_NE(bidding_fetch.network_partition_nonce,
             scoring_fetch.network_partition_nonce);
+}
+
+// Test the cache size limit in the case Handles are not kept alive.
+TYPED_TEST(TrustedSignalsCacheTest, SizeLimitReachedNoLiveHandles) {
+  // A body size large enough so that only 10 entries may be in the cache. This
+  // doesn't take into account overhead due to fields other than the body
+  // contributing to the total size - that's assumed to be less than
+  // TrustedSignalsCacheImpl::kMaxCacheSizeBytes / 11 for each entry.
+  const size_t kEntrySize =
+      TrustedSignalsCacheImpl::kMaxCacheSizeBytes / 11 + 1;
+  auto params = this->CreateDefaultParams();
+  for (size_t i = 0; i < 10u; ++i) {
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+    RespondToFetchWithSuccess(
+        fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+        CreateString(i, kEntrySize));
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1 + i);
+    // The cache size limit should never be exceeded.
+    EXPECT_LT(this->trusted_signals_cache_->size_for_testing(),
+              TrustedSignalsCacheImpl::kMaxCacheSizeBytes);
+  }
+
+  // Start an 11th request, which corresponds to `i = 10`, since numbering
+  // starts at 0. Nothing should be evicted yet.
+  params.trusted_signals_url = CreateUrl(10);
+  auto [handle10, partition_id10] = this->RequestTrustedSignals(params);
+  auto fetch10 = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch10, params, /*expected_compression_group_id=*/0,
+                      partition_id10);
+  // 11 entries are in the cache, but only 10 have bodies.
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 11u);
+  EXPECT_LT(this->trusted_signals_cache_->size_for_testing(),
+            TrustedSignalsCacheImpl::kMaxCacheSizeBytes);
+
+  // Check that all previous entries are still in the cache.
+  for (size_t i = 0; i < 10u; ++i) {
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    TestTrustedSignalsCacheClient(handle.get(), this->cache_mojo_pipe_)
+        .WaitForSuccess(
+            auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+            CreateString(i, kEntrySize));
+  }
+
+  // Respond to fetch 10. This should evict the entry least recently closed
+  // entry, which is entry 0.
+  RespondToFetchWithSuccess(
+      fetch10, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+      CreateString(10, kEntrySize));
+  // Close handle, to avoid impacting eviction logic.
+  handle10.reset();
+  // Entry 0 should have been evicted.
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 10u);
+  EXPECT_LT(this->trusted_signals_cache_->size_for_testing(),
+            TrustedSignalsCacheImpl::kMaxCacheSizeBytes);
+
+  // Trying to request entry 0 should trigger a new fetch, without evicting
+  // anything.
+  params.trusted_signals_url = CreateUrl(0);
+  auto [handle0, partition_id0] = this->RequestTrustedSignals(params);
+  auto fetch0 = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch0, params, /*expected_compression_group_id=*/0,
+                      partition_id0);
+  // 11 entries should be in the cache again, but entry 0 should have no body
+  // yet.
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 11u);
+  EXPECT_LT(this->trusted_signals_cache_->size_for_testing(),
+            TrustedSignalsCacheImpl::kMaxCacheSizeBytes);
+
+  // Check that all other entries are still in the cache. Check in reverse
+  // order, so that entry 10 is the least recently accessed, and thus will
+  // be the one that's evicted when a new entry is added. This serves to
+  // double-check that eviction order is based on time last used, rather than on
+  // creation time.
+  for (size_t i = 10u; i >= 1u; --i) {
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    TestTrustedSignalsCacheClient(handle.get(), this->cache_mojo_pipe_)
+        .WaitForSuccess(
+            auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+            CreateString(i, kEntrySize));
+  }
+
+  // Respond to the second fetch for entry 0. This should evict the entry least
+  // recently closed entry, which is entry 10.
+  RespondToFetchWithSuccess(
+      fetch0, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+      CreateString(0, kEntrySize));
+  // Close handle for entry 0.
+  handle0.reset();
+
+  // Entry 10 should have been evicted.
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 10u);
+  EXPECT_LT(this->trusted_signals_cache_->size_for_testing(),
+            TrustedSignalsCacheImpl::kMaxCacheSizeBytes);
+
+  // Trying to request entry 10 again should trigger a new fetch, without
+  // evicting anything.
+  params.trusted_signals_url = CreateUrl(10);
+  auto [handle10_2, partition_id10_2] = this->RequestTrustedSignals(params);
+  auto fetch10_2 = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch10_2, params, /*expected_compression_group_id=*/0,
+                      partition_id10_2);
+  // 11 entries should be in the cache again.
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 11u);
+
+  // Check that entries 0 through 9 are all in the cache.
+  for (size_t i = 0; i < 10u; ++i) {
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    TestTrustedSignalsCacheClient(handle.get(), this->cache_mojo_pipe_)
+        .WaitForSuccess(
+            auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+            CreateString(i, kEntrySize));
+  }
+}
+
+// Test the cache size limit in the case Handles are kept alive. The size limit
+// may be exceeded as long as there are live Handles.
+TYPED_TEST(TrustedSignalsCacheTest, SizeLimitReachedLiveHandles) {
+  // A body size large enough so that only 10 entries may be in the cache. This
+  // doesn't take into account overhead due to fields other than the body
+  // contributing to the total size - that's assumed to be less than
+  // TrustedSignalsCacheImpl::kMaxCacheSizeBytes / 11 for each entry.
+  const size_t kEntrySize =
+      TrustedSignalsCacheImpl::kMaxCacheSizeBytes / 11 + 1;
+  auto params = this->CreateDefaultParams();
+  std::vector<std::unique_ptr<TestTrustedSignalsCache::Handle>> handles;
+  // Make 15 entries.  All should remain in the cache as long as they're live,
+  // though the cache limit will be exceeded.
+  for (size_t i = 0; i < 15u; ++i) {
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+    RespondToFetchWithSuccess(
+        fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+        CreateString(i, kEntrySize));
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1 + i);
+    handles.emplace_back(std::move(handle));
+  }
+
+  // Delete all the Handles that exceeded the limit. The underlying cache data
+  // should be destroyed as soon as they're released.
+  for (size_t i = 14u; i >= 10; --i) {
+    // There should be `i` entries in the cache, and the size limit should be
+    // exceeded.
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), i + 1);
+    EXPECT_GT(this->trusted_signals_cache_->size_for_testing(),
+              TrustedSignalsCacheImpl::kMaxCacheSizeBytes);
+
+    // Destroying a Handle should immediately destroy the entry, as long as the
+    // max size is exceeded.
+    handles.pop_back();
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), i);
+  }
+
+  // Deleting the other Handles shouldn't result in removing anything.
+  while (!handles.empty()) {
+    handles.pop_back();
+    EXPECT_LT(this->trusted_signals_cache_->size_for_testing(),
+              TrustedSignalsCacheImpl::kMaxCacheSizeBytes);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 10u);
+  }
+
+  // Check that entries 0 through 9 are all in the cache.
+  for (size_t i = 0; i < 10u; ++i) {
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    TestTrustedSignalsCacheClient(handle.get(), this->cache_mojo_pipe_)
+        .WaitForSuccess(
+            auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+            CreateString(i, kEntrySize));
+  }
+
+  // Check that entries 10 through 14 are not in the cache, by checking that
+  // requesting them triggers network requests.
+  for (size_t i = 10; i < 15u; ++i) {
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+  }
+}
+
+TYPED_TEST(TrustedSignalsCacheTest, SingleEntryExceedsSizeLimit) {
+  // Value above the maximum allowed size.
+  const size_t kLargeEntrySize =
+      TrustedSignalsCacheImpl::kMaxCacheSizeBytes + 1;
+
+  // Add a single entry exceeding the maximum size, and mmake sure it can be
+  // retrieved.
+  auto params = this->CreateDefaultParams();
+  auto [handle, partition_id] = this->RequestTrustedSignals(params);
+  auto fetch = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id);
+  RespondToFetchWithSuccess(
+      fetch, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+      CreateString(0, kLargeEntrySize));
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+  EXPECT_GT(this->trusted_signals_cache_->size_for_testing(),
+            TrustedSignalsCacheImpl::kMaxCacheSizeBytes);
+  TestTrustedSignalsCacheClient(handle.get(), this->cache_mojo_pipe_)
+      .WaitForSuccess(
+          auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+          CreateString(0, kLargeEntrySize));
+
+  // Destroying the Handle should result in the entry being immediately evicted,
+  // even though nothing else is in the cache.
+  handle.reset();
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 0u);
+  EXPECT_EQ(this->trusted_signals_cache_->size_for_testing(), 0u);
+
+  // Re-requesting the data should result in a new fetch, since it was evicted.
+  auto [handle2, partition_id2] = this->RequestTrustedSignals(params);
+  auto fetch2 = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch2, params, /*expected_compression_group_id=*/0,
+                      partition_id2);
+}
+
+// Test that when there are multiple Handles, entries are kept around until all
+// of them are destroyed.
+TYPED_TEST(TrustedSignalsCacheTest, MultipleLiveHandles) {
+  // Size large enough that two entries will exceed the limit.
+  const size_t kEntrySize = TrustedSignalsCacheImpl::kMaxCacheSizeBytes / 2 + 1;
+
+  auto params1 = this->CreateDefaultParams();
+  auto params2 = this->CreateDefaultParams();
+  params2.trusted_signals_url = CreateUrl(2);
+
+  // Make a request using the first set of parameters, and provide a response.
+  auto [handle1_1, partition_id1_1] = this->RequestTrustedSignals(params1);
+  auto fetch1_1 = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch1_1, params1, /*expected_compression_group_id=*/0,
+                      partition_id1_1);
+  RespondToFetchWithSuccess(
+      fetch1_1, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+      CreateString(0, kEntrySize));
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+
+  // Make a request using the second set of parameters, and provide a response.
+  auto [handle2_1, partition_id2_1] = this->RequestTrustedSignals(params2);
+  auto fetch2_1 = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch2_1, params2, /*expected_compression_group_id=*/0,
+                      partition_id2_1);
+  RespondToFetchWithSuccess(
+      fetch2_1, auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+      CreateString(1, kEntrySize));
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 2u);
+
+  // Send a second request using each set of parameters. The responses should be
+  // reused.
+  auto [handle1_2, partition_id1_2] = this->RequestTrustedSignals(params1);
+  EXPECT_EQ(handle1_1->compression_group_token(),
+            handle1_2->compression_group_token());
+  EXPECT_EQ(partition_id1_1, partition_id1_2);
+  auto [handle2_2, partition_id2_2] = this->RequestTrustedSignals(params2);
+  EXPECT_EQ(handle2_1->compression_group_token(),
+            handle2_2->compression_group_token());
+  EXPECT_EQ(partition_id2_1, partition_id2_2);
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 2u);
+  EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
+
+  // Destroy the original two Handles. The data should be retained.
+  handle1_1.reset();
+  handle2_1.reset();
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 2u);
+
+  // Verify the responses are still cached.
+  TestTrustedSignalsCacheClient(handle1_2.get(), this->cache_mojo_pipe_)
+      .WaitForSuccess(
+          auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+          CreateString(0, kEntrySize));
+  TestTrustedSignalsCacheClient(handle2_2.get(), this->cache_mojo_pipe_)
+      .WaitForSuccess(
+          auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+          CreateString(1, kEntrySize));
+
+  // Destroy the second Handle for request 2. This should result in it being
+  // removed from the cache, since the size of the two entries combined exceeds
+  // the maximum size.
+  handle2_2.reset();
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+  // Verify the first response is still in the cache.
+  TestTrustedSignalsCacheClient(handle1_2.get(), this->cache_mojo_pipe_)
+      .WaitForSuccess(
+          auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+          CreateString(0, kEntrySize));
+
+  // Making another request with `params2` should result in a new fetch.
+  auto [handle2_3, partition_id2_3] = this->RequestTrustedSignals(params2);
+  auto fetch2_3 = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch2_3, params2, /*expected_compression_group_id=*/0,
+                      partition_id2_3);
+
+  // Destroy the second Handle for request 1. The data should not be evicted
+  // from the cache, since it's the only thing in the cache, and does not exceed
+  // the maximum size.
+  handle1_2.reset();
+  // Note that this includes the pending fetch for the second group.
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 2u);
+
+  // Verify the first response is still in the cache by re-requesting it, and
+  // retrieving it.
+  auto [handle1_3, partition_id1_3] = this->RequestTrustedSignals(params1);
+  TestTrustedSignalsCacheClient(handle1_3.get(), this->cache_mojo_pipe_)
+      .WaitForSuccess(
+          auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+          CreateString(0, kEntrySize));
+}
+
+// Test that a single entry is still usable after the Handle has been destroyed
+// for less than `kMinUnusedCleanupTime` or `kMaxUnusedCleanupTime`. The latter
+// won't always be the case - the guarantee is just that unused entries will be
+// cleaned sometime between `kMinUnusedCleanupTime` and `kMaxUnusedCleanupTime`,
+// but when there's a single entry, it will be expired at exactly
+// `kMaxUnusedCleanupTime`.
+//
+// Also, wait a variable amount of time before destroying the Handle, to make
+// sure that the timer doesn't start until the Handle is released
+TYPED_TEST(TrustedSignalsCacheTest, CleanupTimerBeforeTimerTriggers) {
+  auto params = this->CreateDefaultParams();
+
+  for (base::TimeDelta time_to_wait_before_destroying_handle :
+       {base::TimeDelta(), TrustedSignalsCacheImpl::kMinUnusedCleanupTime,
+        TrustedSignalsCacheImpl::kMaxUnusedCleanupTime,
+        20 * TrustedSignalsCacheImpl::kMaxUnusedCleanupTime}) {
+    for (base::TimeDelta time_to_wait_after_destroying_handle :
+         {TrustedSignalsCacheImpl::kMinUnusedCleanupTime - kTinyTime,
+          TrustedSignalsCacheImpl::kMaxUnusedCleanupTime - kTinyTime}) {
+      // Start with a clean slate for each test.
+      this->CreateCache();
+
+      auto [handle, partition_id] = this->RequestTrustedSignals(params);
+      auto fetch = this->WaitForSignalsFetch();
+      ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                          partition_id);
+      RespondToFetchWithSuccess(fetch);
+      EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+
+      // Destroy the Handle and wait for `time_to_wait`, get a new Handle, and
+      // verify the data is accessible. Do this several times, to check that
+      // accessing the entry resets the timer.
+      for (int i = 0; i < 5; ++i) {
+        this->task_environment_.FastForwardBy(
+            time_to_wait_before_destroying_handle);
+        handle.reset();
+        this->task_environment_.FastForwardBy(
+            time_to_wait_after_destroying_handle);
+        EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+
+        // Check the result is still usable.
+        handle = std::move(this->RequestTrustedSignals(params).first);
+        TestTrustedSignalsCacheClient(handle.get(), this->cache_mojo_pipe_)
+            .WaitForSuccess();
+      }
+    }
+  }
+}
+
+// Test that the cleanup timer triggers at exactly `kMaxUnusedCleanupTime` after
+// a lone entry has been destroyed. Adding multiple entries would potentially
+// affect when the timeout timer triggers.
+TYPED_TEST(TrustedSignalsCacheTest, CleanupTimerTriggers) {
+  auto params = this->CreateDefaultParams();
+
+  for (base::TimeDelta time_to_wait_before_destroying_handle :
+       {base::TimeDelta(), TrustedSignalsCacheImpl::kMinUnusedCleanupTime,
+        TrustedSignalsCacheImpl::kMaxUnusedCleanupTime,
+        20 * TrustedSignalsCacheImpl::kMaxUnusedCleanupTime}) {
+    // Start with a clean slate for each test.
+    this->CreateCache();
+
+    auto [handle1, partition_id1] = this->RequestTrustedSignals(params);
+    auto fetch1 = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch1, params, /*expected_compression_group_id=*/0,
+                        partition_id1);
+    RespondToFetchWithSuccess(fetch1);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+
+    // Destroy the Handle and wait for `time_to_wait_before_destroying_handle`.
+    // The timer should only start after the Handle has been destroyed.
+    this->task_environment_.FastForwardBy(
+        time_to_wait_before_destroying_handle);
+    handle1.reset();
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+
+    // Wait until just before the timer triggers. The compression group should
+    // still exist. Can't request it through a new Handle, since that would
+    // extend the lifetime. Could access it through a cached compression group
+    // token with no live Handle, but that's not a guaranteed part of the API.
+    this->task_environment_.FastForwardBy(
+        TrustedSignalsCacheImpl::kMaxUnusedCleanupTime - kTinyTime);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+
+    // Check that the data is destroyed on schedule, and that trying to access
+    // it results in a new fetch.
+    this->task_environment_.FastForwardBy(kTinyTime);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 0u);
+    auto [handle2, partition_id2] = this->RequestTrustedSignals(params);
+    auto fetch2 = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch2, params, /*expected_compression_group_id=*/0,
+                        partition_id2);
+  }
+}
+
+// Add several entries within `kCleanupInterval` of each other, and test that
+// the cleanup timer clears them all at once.
+TYPED_TEST(TrustedSignalsCacheTest, CleanupTimerCleansMultipleEntries) {
+  auto params = this->CreateDefaultParams();
+
+  // Create 3 requests within `kCleanupInterval` of each other. Destroy each
+  // Handle immediately after providing the response.
+  for (size_t i = 0u; i < 3u; ++i) {
+    SCOPED_TRACE(i);
+
+    // It doesn't matter if time is fast forwarded or not before the first entry
+    // is added.
+    if (i > 0u) {
+      this->task_environment_.FastForwardBy(
+          TrustedSignalsCacheImpl::kCleanupInterval / 2);
+    }
+
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+    RespondToFetchWithSuccess(fetch);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), i + 1);
+  }
+
+  // Wait until just before `kMaxUnusedCleanupTime` (which is `kCleanupInterval`
+  // + `kMinUnusedCleanupTime`)  has passed since the first request's Handle was
+  // destroyed. The cleanup timer should not have triggered yet.
+  this->task_environment_.FastForwardBy(
+      TrustedSignalsCacheImpl::kMinUnusedCleanupTime - kTinyTime);
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 3u);
+
+  // Wait just long enough for the cleanup timer to trigger, which should delete
+  // all entries.
+  this->task_environment_.FastForwardBy(kTinyTime);
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 0u);
+
+  // Verify no entries were in the cache by making sure re-requesting them
+  // triggers a signals fetch.
+  for (size_t i = 0u; i < 3u; ++i) {
+    SCOPED_TRACE(i);
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+  }
+}
+
+// Add several entries that each expire just after `kMaxUnusedCleanupTime` has
+// passed since the previous entry has expired, so when the cleanup timer
+// triggers, only a single entry will be destroyed.
+TYPED_TEST(TrustedSignalsCacheTest,
+           CleanupTimerCleansSingleEntriesSuccessively) {
+  // Near the smallest time between Handle destruction of different entries
+  // where the cleanup timer for the previous entry won't destroy the next one
+  // as well.
+  const base::TimeDelta kTimeDelta =
+      TrustedSignalsCacheImpl::kCleanupInterval + kTinyTime;
+  auto params = this->CreateDefaultParams();
+
+  // Create 3 requests `kTimeDelta` apart. Destroy each Handle immediately after
+  // providing the response.
+  for (size_t i = 0u; i < 3u; ++i) {
+    SCOPED_TRACE(i);
+
+    // It doesn't matter if time is fast forwarded or not before the first entry
+    // is added.
+    if (i > 0u) {
+      this->task_environment_.FastForwardBy(kTimeDelta);
+    }
+
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+    RespondToFetchWithSuccess(fetch);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), i + 1);
+  }
+
+  // Wait until just before `kMinUnusedCleanupTime - kTinyTime`  has passed
+  // since the first request's Handle was destroyed. At this point, the first
+  // entry should be removed at `kTimeDelta`, and each of the other two should
+  // be removed `kTimeDelta` after the previous entry.
+  this->task_environment_.FastForwardBy(
+      TrustedSignalsCacheImpl::kMinUnusedCleanupTime - 2 * kTimeDelta -
+      kTinyTime);
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 3u);
+
+  // Wait for each entry to be destroyed, one-by-one, and check that a new
+  // request for it will indeed trigger a fetch. Can't check that other entries
+  // are still in the cache, other than probing `num_groups_for_testing()`,
+  // since actually creating a new Handle and fetching the response will extend
+  // the life of the response in the cache. Could cache the compression group
+  // tokens and partition IDs the Handle before destroying it the first time,
+  // but prefer not to relying on IDs persisting and being fetchable when there
+  // are no matching Handles.
+  for (size_t i = 0; i < 3u; ++i) {
+    SCOPED_TRACE(i);
+    this->task_environment_.FastForwardBy(
+        TrustedSignalsCacheImpl::kCleanupInterval);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 3u - i);
+    this->task_environment_.FastForwardBy(kTinyTime);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 2u - i);
+
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+  }
 }
 
 }  // namespace

@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/cdm_factory_daemon.mojom.h"
@@ -76,7 +75,6 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
       const std::vector<uint8_t>& stream_data,
       ChromeOsCdmContext::ParseEncryptedSliceHeaderCB callback);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Invoked in the OOP Video Decoder utility process to set the Mojo connection
   // back to the browser process. Normally the GPU process has a Mojo connection
   // to the browser process for this purpose. When we launch an OOP Video
@@ -90,7 +88,6 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
   // Returns a singleton pointer that can be used as the media::CdmContext for
   // ARC video decode operations.
   static media::CdmContext* GetArcCdmContext();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   void OnVerifiedAccessEnabled(

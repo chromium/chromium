@@ -176,7 +176,13 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   EXPECT_EQ(description.Get().item_count, 1u);
   EXPECT_EQ(description.Get().domain_count, 1u);
   EXPECT_EQ(description.Get().domains, std::vector<std::string>{"local.com"});
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  ASSERT_EQ(description.Get().local_data_models.size(), 1u);
+  EXPECT_EQ(description.Get().local_data_models[0].title, "local.com");
+  EXPECT_EQ(description.Get().local_data_models[0].subtitle, "username");
+#else
   EXPECT_EQ(description.Get().local_data_models.size(), 0u);
+#endif
 }
 
 TEST_F(PasswordLocalDataBatchUploaderTest,
@@ -200,7 +206,13 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   EXPECT_EQ(first_description.Get().domain_count, 1u);
   EXPECT_EQ(first_description.Get().domains,
             std::vector<std::string>{"local.com"});
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  ASSERT_EQ(first_description.Get().local_data_models.size(), 1u);
+  EXPECT_EQ(first_description.Get().local_data_models[0].title, "local.com");
+  EXPECT_EQ(first_description.Get().local_data_models[0].subtitle, "username");
+#else
   EXPECT_EQ(first_description.Get().local_data_models.size(), 0u);
+#endif
   EXPECT_EQ(second_description.Get(), first_description.Get());
 }
 
@@ -514,55 +526,6 @@ class PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest
 };
 
 TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
-       DescriptionContainsOnlyLocalPasswords) {
-  base::test::TestFuture<void> wait_add;
-  profile_store()->AddLogin(CreatePasswordForm("http://local.com"),
-                            wait_add.GetCallback());
-  ASSERT_TRUE(wait_add.WaitAndClear());
-  account_store()->AddLogin(CreatePasswordForm("http://account.com"),
-                            wait_add.GetCallback());
-  ASSERT_TRUE(wait_add.WaitAndClear());
-  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
-  base::test::TestFuture<syncer::LocalDataDescription> description;
-
-  uploader.GetLocalDataDescription(description.GetCallback());
-
-  EXPECT_EQ(description.Get().item_count, 1u);
-  EXPECT_EQ(description.Get().domain_count, 1u);
-  EXPECT_EQ(description.Get().domains, std::vector<std::string>{"local.com"});
-  ASSERT_EQ(description.Get().local_data_models.size(), 1u);
-  EXPECT_EQ(description.Get().local_data_models[0].title, "local.com");
-  EXPECT_EQ(description.Get().local_data_models[0].subtitle, "username");
-}
-
-TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
-       DescriptionCanBeQueriedBySimultaneousRequests) {
-  // Add one local password and one account password.
-  base::test::TestFuture<void> wait_add;
-  PasswordForm local_password = CreatePasswordForm("http://local.com");
-  profile_store()->AddLogin(local_password, wait_add.GetCallback());
-  ASSERT_TRUE(wait_add.WaitAndClear());
-  PasswordForm account_password = CreatePasswordForm("http://account.com");
-  account_store()->AddLogin(account_password, wait_add.GetCallback());
-  ASSERT_TRUE(wait_add.WaitAndClear());
-  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
-  base::test::TestFuture<syncer::LocalDataDescription> first_description;
-  base::test::TestFuture<syncer::LocalDataDescription> second_description;
-
-  uploader.GetLocalDataDescription(first_description.GetCallback());
-  uploader.GetLocalDataDescription(second_description.GetCallback());
-
-  EXPECT_EQ(first_description.Get().item_count, 1u);
-  EXPECT_EQ(first_description.Get().domain_count, 1u);
-  EXPECT_EQ(first_description.Get().domains,
-            std::vector<std::string>{"local.com"});
-  ASSERT_EQ(first_description.Get().local_data_models.size(), 1u);
-  EXPECT_EQ(first_description.Get().local_data_models[0].title, "local.com");
-  EXPECT_EQ(first_description.Get().local_data_models[0].subtitle, "username");
-  EXPECT_EQ(second_description.Get(), first_description.Get());
-}
-
-TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
        MigrationUploadsEmptyKeys) {
   base::HistogramTester histogram_tester;
   std::vector<PasswordForm> passwords =
@@ -570,7 +533,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
 
   // Trigger upload with an empty list.
-  uploader.TriggerLocalDataMigration({});
+  uploader.TriggerLocalDataMigrationForItems({});
   RunUntilIdle();
 
   // All passwords still in profile store.
@@ -588,7 +551,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
 
   // Trigger upload for password 0 and 2.
-  uploader.TriggerLocalDataMigration({
+  uploader.TriggerLocalDataMigrationForItems({
       PasswordFormUniqueKey(passwords[0]),
       PasswordFormUniqueKey(passwords[2]),
   });
@@ -618,9 +581,9 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
 
   // Trigger upload for all passwords with their keys.
-  uploader.TriggerLocalDataMigration({PasswordFormUniqueKey(passwords[0]),
-                                      PasswordFormUniqueKey(passwords[1]),
-                                      PasswordFormUniqueKey(passwords[2])});
+  uploader.TriggerLocalDataMigrationForItems(
+      {PasswordFormUniqueKey(passwords[0]), PasswordFormUniqueKey(passwords[1]),
+       PasswordFormUniqueKey(passwords[2])});
   RunUntilIdle();
 
   EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
@@ -644,9 +607,9 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
 
   // Trigger upload for the same key multiple times. Only password 0.
-  uploader.TriggerLocalDataMigration({PasswordFormUniqueKey(passwords[0]),
-                                      PasswordFormUniqueKey(passwords[0]),
-                                      PasswordFormUniqueKey(passwords[0])});
+  uploader.TriggerLocalDataMigrationForItems(
+      {PasswordFormUniqueKey(passwords[0]), PasswordFormUniqueKey(passwords[0]),
+       PasswordFormUniqueKey(passwords[0])});
   RunUntilIdle();
 
   // Only password 0 should be uploaded.
@@ -674,7 +637,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   PasswordForm password_not_in_local_store =
       CreatePasswordForm("http://password_not_local.com");
   // Trigger upload for password 0 and a password not in profile store.
-  uploader.TriggerLocalDataMigration(
+  uploader.TriggerLocalDataMigrationForItems(
       {PasswordFormUniqueKey(passwords[0]),
        PasswordFormUniqueKey(password_not_in_local_store)});
   RunUntilIdle();
@@ -705,7 +668,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
 
   // Trigger upload for local password 0 and a account password 0 already in
   // account store.
-  uploader.TriggerLocalDataMigration(
+  uploader.TriggerLocalDataMigrationForItems(
       {PasswordFormUniqueKey(local_passwords[0]),
        PasswordFormUniqueKey(account_passwords[0])});
   RunUntilIdle();
@@ -749,7 +712,8 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
                   Pair(common_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(common_password)))));
 
-  uploader.TriggerLocalDataMigration({PasswordFormUniqueKey(common_password)});
+  uploader.TriggerLocalDataMigrationForItems(
+      {PasswordFormUniqueKey(common_password)});
   RunUntilIdle();
 
   // Common password should be removed from the profile store and not duplicated

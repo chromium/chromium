@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("input_method_manager") {
   sources = [
@@ -25,7 +25,6 @@ static_library("input_method_manager") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/public/cpp",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/arc:arc_util",
@@ -33,6 +32,7 @@ static_library("input_method_manager") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/common:constants",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/services/ime/public/mojom",
     "//components/crx_file",
     "//components/keyed_service/content",
@@ -59,7 +59,6 @@ source_set("unit_tests") {
   deps = [
     ":input_method_manager",
     "//ash",
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -69,6 +68,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/keyboard:ash_test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/services/ime/public/cpp:structs",
     "//chromeos/ui/base",
     "//components/crx_file",

@@ -5,12 +5,9 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_MESSAGE_DISPATCHER_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_MESSAGE_DISPATCHER_H_
 
-#include <utility>
-#include <vector>
+#include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/message.h"

@@ -24,8 +24,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
-#include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
+#include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -35,6 +35,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/metrics/daily_event.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -44,10 +46,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-#include "chrome/browser/background/background_mode_manager.h"
-#endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
 namespace metrics {
 
@@ -198,14 +196,15 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
                          base::BindRepeating(&TabStatsTracker::OnHeartbeatEvent,
                                              base::Unretained(this)));
 
-  g_browser_process->GetTabManager()->AddObserver(this);
+  resource_coordinator::GetTabLifecycleUnitSource()->AddLifecycleObserver(this);
 }
 
 TabStatsTracker::~TabStatsTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BrowserList::GetInstance()->RemoveObserver(this);
   base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
-  g_browser_process->GetTabManager()->RemoveObserver(this);
+  resource_coordinator::GetTabLifecycleUnitSource()->RemoveLifecycleObserver(
+      this);
 }
 
 // static
@@ -472,16 +471,16 @@ void TabStatsTracker::OnResume() {
       tab_stats_data_store_->tab_stats().total_tab_count);
 }
 
-// resource_coordinator::TabLifecycleObserver:
-void TabStatsTracker::OnTabLifecycleStateChange(
-    content::WebContents* contents,
-    mojom::LifecycleUnitState previous_state,
-    mojom::LifecycleUnitState new_state,
-    std::optional<LifecycleUnitDiscardReason> discard_reason) {
+// resource_coordinator::LifecycleUnitObserver:
+void TabStatsTracker::OnLifecycleUnitStateChanged(
+    resource_coordinator::LifecycleUnit* lifecycle_unit,
+    ::mojom::LifecycleUnitState previous_state,
+    ::mojom::LifecycleUnitStateChangeReason reason) {
+  const ::mojom::LifecycleUnitState new_state = lifecycle_unit->GetState();
   if (previous_state == ::mojom::LifecycleUnitState::DISCARDED ||
       new_state == ::mojom::LifecycleUnitState::DISCARDED) {
     tab_stats_data_store_->OnTabDiscardStateChange(
-        discard_reason.value(),
+        lifecycle_unit->GetDiscardReason(),
         new_state == ::mojom::LifecycleUnitState::DISCARDED);
   }
 }
@@ -699,12 +698,25 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportTabDuplicateMetrics(
 bool TabStatsTracker::UmaStatsReportingDelegate::
     IsChromeBackgroundedWithoutWindows() {
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-  if (g_browser_process && g_browser_process->background_mode_manager()
-                               ->IsBackgroundWithoutWindows()) {
-    return true;
-  }
-#endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
+  return KeepAliveRegistry::GetInstance()->WouldRestartWithout({
+      // Transient startup related KeepAlives, not related to any UI.
+      KeepAliveOrigin::SESSION_RESTORE,
+      KeepAliveOrigin::BACKGROUND_MODE_MANAGER_STARTUP,
+
+      KeepAliveOrigin::BACKGROUND_SYNC,
+
+      // Notification KeepAlives are not dependent on the Chrome UI being
+      // loaded, and can be registered when we were in pure background mode.
+      // They just block it to avoid issues. Ignore them when determining if we
+      // are in that mode.
+      KeepAliveOrigin::NOTIFICATION,
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT,
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT,
+      KeepAliveOrigin::IN_FLIGHT_PUSH_MESSAGE,
+  });
+#else
   return false;
+#endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 }
 
 TabStatsTracker::UmaStatsReportingDelegate::DuplicateData::DuplicateData() {

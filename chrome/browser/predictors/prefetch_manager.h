@@ -41,7 +41,7 @@ struct PrefetchRequest;
 struct PrefetchInfo;
 struct PrefetchJob;
 
-static constexpr size_t kMaxInflightPrefetches = 3;
+inline constexpr size_t kMaxInflightPrefetches = 3;
 
 struct PrefetchStats {
   explicit PrefetchStats(const GURL& url);

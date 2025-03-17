@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "ui/events/ozone/device/udev/device_manager_udev.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -28,10 +29,10 @@ namespace ui {
 
 namespace {
 
-const char* const kSubsystems[] = {
-  "input",
-  "drm",
-};
+constexpr auto kSubsystems = std::to_array<const char*>({
+    "input",
+    "drm",
+});
 
 // Start monitoring input device changes.
 device::ScopedUdevMonitorPtr UdevCreateMonitor(struct udev* udev) {

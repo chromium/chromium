@@ -184,7 +184,8 @@ void ReadingListBrowserAgent::AddURLToReadingListwithTitle(const GURL& url,
     }
   }
 
-  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
+  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts,
+                              browser_->GetProfile()->GetPrefs());
   base::RecordAction(base::UserMetricsAction("MobileReadingListAdd"));
   ReadingListModel* reading_model =
       ReadingListModelFactory::GetForProfile(browser_->GetProfile());

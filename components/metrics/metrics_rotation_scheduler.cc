@@ -13,8 +13,8 @@ MetricsRotationScheduler::MetricsRotationScheduler(
     const base::RepeatingClosure& upload_callback,
     const base::RepeatingCallback<base::TimeDelta(void)>&
         upload_interval_callback,
-    bool fast_startup_for_testing)
-    : MetricsScheduler(upload_callback, fast_startup_for_testing),
+    bool fast_startup)
+    : MetricsScheduler(upload_callback, fast_startup),
       init_task_complete_(false),
       waiting_for_init_task_complete_(false),
       upload_interval_callback_(upload_interval_callback) {}

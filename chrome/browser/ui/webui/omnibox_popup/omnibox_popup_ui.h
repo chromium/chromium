@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/webui_config.h"
@@ -17,7 +16,6 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom-forward.h"
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
-#include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom-forward.h"
 
 class Profile;
 class RealboxHandler;
@@ -52,10 +50,6 @@ class OmniboxPopupUI : public ui::MojoWebUIController {
   void BindInterface(content::RenderFrameHost* host,
                      mojo::PendingReceiver<searchbox::mojom::PageHandler>
                          pending_page_handler);
-  // Instantiates the implementor of metrics_reporter::mojom::PageMetricsHost
-  // mojo interface passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver);
   // Instantiates the implementor of color_change_listener::mojom::PageHandler
   // mojo interface passing the pending receiver that will be internally bound.
   void BindInterface(
@@ -68,7 +62,6 @@ class OmniboxPopupUI : public ui::MojoWebUIController {
   std::unique_ptr<RealboxHandler> handler_;
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   raw_ptr<Profile> profile_;
-  MetricsReporter metrics_reporter_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

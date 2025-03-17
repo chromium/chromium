@@ -95,6 +95,10 @@ size_t SettingsStorageQuotaEnforcer::GetBytesInUse() {
   return used_total_;
 }
 
+ValueStore::ReadResult SettingsStorageQuotaEnforcer::GetKeys() {
+  return HandleResult(delegate_->GetKeys());
+}
+
 ValueStore::ReadResult SettingsStorageQuotaEnforcer::Get(
     const std::string& key) {
   return HandleResult(delegate_->Get(key));

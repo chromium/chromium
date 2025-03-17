@@ -1,8 +1,5 @@
 {
   "description": "Test that sources with a smaller attribution scope limit are deleted.",
-  "api_config": {
-    "needs_attribution_scopes": true
-  },
   "input": {
     "registrations": [
       // S1: attribution scope limit -> 3 destinations -> [D1].

@@ -51,7 +51,7 @@ found in the LICENSE file.
                 android:text="@string/missing_device_lock_title"
                 android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
-            <TextView
+            <org.chromium.ui.widget.TextViewWithLeading
                 android:id="@+id/missing_device_lock_description"
                 android:layout_below="@id/missing_device_lock_title"
                 android:layout_width="match_parent"
@@ -61,20 +61,18 @@ found in the LICENSE file.
                 android:layout_marginEnd="16dp"
                 android:gravity="center"
                 android:text="@string/missing_device_lock_description"
-                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                app:leading="@dimen/text_size_medium_leading" />
 
             <CheckBox
                 android:id="@+id/missing_device_lock_remove_local_data"
                 android:layout_below="@id/missing_device_lock_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="40dp"
+                android:layout_margin="16dp"
                 android:paddingStart="4dp"
                 android:text="@string/missing_device_lock_remove_local_data"
-                android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
         </RelativeLayout>
 
     </ScrollView>

@@ -19,7 +19,8 @@ repack_locales("packed_resources") {
   input_locales = platform_pak_locales
   output_locales = locales_as_apple_outputs
 
-  source_patterns = [ "$root_gen_dir/ios/open_extension/ios_open_extension_${branding_path_product}_strings_" ]
+  source_patterns =
+      [ "$root_gen_dir/ios/open_extension/ios_open_extension_branded_strings_" ]
 
   deps = [ "//ios/chrome/open_extension/strings" ]
 }

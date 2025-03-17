@@ -23,7 +23,7 @@ class GetDetailsForCreateBnplPaymentInstrumentRequestTestApi {
       const GetDetailsForCreateBnplPaymentInstrumentRequestTestApi&) = delete;
   ~GetDetailsForCreateBnplPaymentInstrumentRequestTestApi() = default;
 
-  std::u16string get_context_token() const {
+  std::string get_context_token() const {
     return get_details_for_create_bnpl_payment_instrument_request_
         ->context_token_;
   }

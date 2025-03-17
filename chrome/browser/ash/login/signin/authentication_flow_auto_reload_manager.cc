@@ -6,6 +6,7 @@
 
 #include <functional>
 
+#include "base/time/clock.h"
 #include "chrome/browser/ash/login/login_constants.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/browser_process.h"
@@ -151,13 +152,12 @@ void AuthenticationFlowAutoReloadManager::SetClockForTesting(
   tick_clock_for_testing = tick_clock;
 }
 
-void AuthenticationFlowAutoReloadManager::ResumeTimerForTesting() {
-  if (auto_reload_timer_ && auto_reload_timer_->IsRunning()) {
-    auto_reload_timer_->OnResume();
-  }
+base::WallClockTimer*
+AuthenticationFlowAutoReloadManager::GetTimerForTesting() {
+  return auto_reload_timer_.get();
 }
 
-bool AuthenticationFlowAutoReloadManager::IsActiveForTesting() {
+bool AuthenticationFlowAutoReloadManager::IsAutoReloadActive() {
   return auto_reload_timer_->IsRunning() && idle_state_observer_.IsObserving();
 }
 

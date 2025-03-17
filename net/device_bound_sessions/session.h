@@ -11,8 +11,10 @@
 
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
+#include "net/base/backoff_entry.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/cookie_craving.h"
+#include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_inclusion_rules.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_params.h"
@@ -20,6 +22,7 @@
 
 namespace net {
 class URLRequest;
+class FirstPartySetMetadata;
 }
 
 namespace net::device_bound_sessions {
@@ -42,8 +45,9 @@ class NET_EXPORT Session {
 
   ~Session();
 
-  static std::unique_ptr<Session> CreateIfValid(const SessionParams& params,
-                                                GURL url);
+  // Creates an instance of `Session` based on the `params`.
+  static base::expected<std::unique_ptr<Session>, SessionError> CreateIfValid(
+      const SessionParams& params);
   static std::unique_ptr<Session> CreateFromProto(const proto::Session& proto);
   proto::Session ToProto() const;
 
@@ -57,8 +61,9 @@ class NET_EXPORT Session {
 
   const KeyIdOrError& unexportable_key_id() const { return key_id_or_error_; }
 
-  // this bool could also be an enum for UMA, eventually devtools, etc.
-  bool ShouldDeferRequest(URLRequest* request) const;
+  bool ShouldDeferRequest(
+      URLRequest* request,
+      const FirstPartySetMetadata& first_party_set_metadata) const;
 
   const Id& id() const { return id_; }
 
@@ -88,6 +93,15 @@ class NET_EXPORT Session {
 
   // On use of a session, extend the TTL.
   void RecordAccess();
+
+  // Whether the URL is in-scope for the session.
+  bool IncludesUrl(const GURL& url) const;
+
+  // Inform the session about a refresh so it can decide whether to
+  // enter backoff mode.
+  void InformOfRefreshResult(SessionError::ErrorType error_type);
+
+  const url::Origin& origin() const { return inclusion_rules_.origin(); }
 
  private:
   Session(Id id, url::Origin origin, GURL refresh);
@@ -134,6 +148,10 @@ class NET_EXPORT Session {
       base::unexpected(unexportable_keys::ServiceError::kKeyNotReady);
   // Precached challenge, if any. Should not be persisted.
   std::optional<std::string> cached_challenge_;
+  // Backoff for unreachable refresh endpoints. This is essential for
+  // preventing Chrome from causing a DoS due to expiring session
+  // cookies.
+  net::BackoffEntry backoff_;
 };
 
 }  // namespace net::device_bound_sessions

@@ -1,7 +1,6 @@
 <style include="cr-icons searchbox-shared-style">
   :host {
     --cr-searchbox-height: 52px;
-    --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
     --cr-searchbox-min-width: min(calc(100%), 1100px);
   }
 
@@ -26,7 +25,7 @@
   }
 
   :host([dark-mode]) .results-pane {
-    background-color: #1F1F1F;
+    background-color: #101218;
   }
 
   /* Set z-index to hide results to prevent ghost frames when reshowing. */
@@ -40,7 +39,7 @@
   }
 
   :host([dark-mode]) #ghostLoader {
-    background-color: #1F1F1F;
+    background-color: #101218;
   }
 
   :host(:not([is-loading-results])) #ghostLoader,
@@ -91,7 +90,7 @@
 
   :host([is-error-page-visible]) #networkErrorPage {
     display: block;
-    z-index: 2;
+    z-index: 3;
   }
 
   :host([dark-mode]) #networkErrorBottomLine {
@@ -124,23 +123,23 @@
   }
 
   :host([dark-mode]) #searchboxContainer {
-    background-color: #1F1F1F;
-      /* Colors used in the cr-searchbox results dropdown */
+    background-color: #101218;
+    /* Colors used in the cr-searchbox results dropdown */
     --color-searchbox-answer-icon-background: #004a77ff;
     --color-searchbox-answer-icon-foreground: #c2e7ffff;
-    --color-searchbox-dropdown-divider: #444746;
+    --color-searchbox-dropdown-divider: #60626C;
     --color-searchbox-results-action-chip: #047db7ff;
     --color-searchbox-results-action-chip-icon: #a8c7faff;
     --color-searchbox-results-action-chip-focus-outline: #669df6ff;
-    --color-searchbox-results-background: #28292A;
-    --color-searchbox-results-background-hovered: #3C4043;
+    --color-searchbox-results-background: #2E313B;
+    --color-searchbox-results-background-hovered: #3D4049;
     --color-searchbox-results-button-hover: #fdfcfb1a;
     --color-searchbox-results-dim-selected: #c7c7c7ff;
     --color-searchbox-results-focus-indicator: #3C4043;
     --color-searchbox-results-foreground: #E8EAED;
     --color-searchbox-results-foreground-dimmed: #c7c7c7ff;
-    --color-searchbox-results-icon: #9DA3A9;
-    --color-searchbox-results-icon-container-background: #3C4043;
+    --color-searchbox-results-icon: #9aa0a6;
+    --color-searchbox-results-icon-container-background: #3D4049;
     --color-searchbox-results-icon-focused-outline: #a8c7faff;
     --color-searchbox-results-icon-selected: #9DA3A9;
     --color-searchbox-results-typed-prefix: #9DA3A9;
@@ -150,11 +149,11 @@
     --color-searchbox-thumbnail-overlay: #8CB7FA66;
     --color-searchbox-thumbnail-outline: #8CB7FA;
     /* Colors specific to the cr-searchbox input */
-    --color-searchbox-background-hovered: #303134;
-    --color-searchbox-background: #303134;
+    --color-searchbox-background-hovered: #4D5160;
+    --color-searchbox-background: #3F4454;
     --color-searchbox-border: #dadce0ff;
-    --color-searchbox-foreground: #BDC1C6;
-    --color-searchbox-placeholder: #9E9E9E;
+    --color-searchbox-foreground: #e8eaed;
+    --color-searchbox-placeholder: #999da9;
     --color-searchbox-shadow: #20212451;
     /* Colors for searchbox ghost loader */
     --color-searchbox-ghost-loader-spinner: #70757A;
@@ -162,6 +161,10 @@
 
   :host([show-ghost-loader]) #searchboxContainer {
     --color-searchbox-background: var(--color-searchbox-results-background);
+  }
+
+  #toast {
+    justify-content: space-between;
   }
 
   cr-icon-button.icon-arrow-back {
@@ -182,6 +185,28 @@
     top: 16px;
   }
 
+  #uploadProgressBar {
+    background-color: #4E8FF8;
+    height: 100%;
+    width: 0; /* Starts at 0% width and animates to 100% width via JS. */
+  }
+
+  #uploadProgressBarContainer {
+    background-color: #D0E4FF;
+    height: 3px;
+    inset-block-start: 76px;
+    inset-inline-start: 0;
+    position: fixed;
+    transform-origin: 50% 50%; /*  Sets the transform origin to the center */
+    width: 100%;
+    z-index: 2; /* Ensure that the progress bar is above the ghost loader. */
+  }
+
+  :host(:not([show-upload-progress])) #uploadProgressBarContainer,
+  :host([is-error-page-visible]) #uploadProgressBarContainer {
+    visibility: hidden;
+  }
+
   /**
    * Show the ghost loader when the searchbox is focused and the searchbox
    * dropdown isn't showing (no results available). Only show for contextual
@@ -191,14 +216,27 @@
     display: block;
   }
 </style>
-<div id="searchboxContainer" on-escape-searchbox="handleEscapeSearchbox">
+<div id="searchboxContainer"
+     on-escape-searchbox="handleEscapeSearchbox"
+     on-focusout="onSearchboxFocusOut_">
   <template is="dom-if" if="[[isBackArrowVisible]]">
     <cr-icon-button id="backButton" class="action-icon icon-arrow-back"
         on-click="onBackArrowClick" aria-label="$i18n{backButton}">
     </cr-icon-button>
   </template>
-  <cr-searchbox id="searchbox" placeholder-text="{{placeholderText}}"></cr-searchbox>
-  <cr-searchbox-ghost-loader show-error-state="{{showErrorState}}"></cr-searchbox-ghost-loader>
+    <cr-searchbox
+    id="searchbox"
+    placeholder-text="{{placeholderText}}"
+    searchbox-aria-description="[[getSearchboxAriaDescription(showErrorState, showGhostLoader)]]"
+    on-focusin="onSearchboxFocusIn_"
+    >
+  </cr-searchbox>
+  <cr-searchbox-ghost-loader
+      id="searchboxGhostLoader"
+      show-error-state="{{showErrorState}}"
+      page-content-type="[[pageContentType]]"
+      tabindex="-1">
+  </cr-searchbox-ghost-loader>
 </div>
 
 <!-- Network error UI that is initially hidden -->
@@ -218,6 +256,16 @@
   </div>
 </div>
 
+<div id="uploadProgressBarContainer">
+  <div
+    id="uploadProgressBar"
+    role="progressbar"
+    aria-valuenow="[[uploadProgress]]"
+    aria-valuemin="0"
+    aria-valuemax="100"
+  ></div>
+</div>
+
 <side-panel-ghost-loader id="ghostLoader"
     class="results-pane"></side-panel-ghost-loader>
 
@@ -225,3 +273,9 @@
     allow="cross-origin-isolated; display-capture; geolocation; microphone;"
     frameBorder="0">
 </iframe>
+<cr-toast id="toast" duration="4000">
+  <div>[[toastMessage]]</div>
+  <cr-button on-click="onHideToastClick">
+    $i18n{dismiss}
+  </cr-button>
+</cr-toast>

@@ -31,10 +31,6 @@ class PasswordAffiliationSourceAdapter
   // Registers the store to be observed for login changes.
   void RegisterPasswordStore(PasswordStoreInterface* store);
 
-  // Disables fetching facets that require affiliations and stops observing
-  // password changes.
-  void DisableSource();
-
  private:
   // PasswordStoreInterface::Observer:
   void OnLoginsChanged(PasswordStoreInterface* store,
@@ -46,9 +42,6 @@ class PasswordAffiliationSourceAdapter
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
-
-  // Whether this class should continue fetching passwords.
-  bool is_fetching_canceled_ = false;
 
   AffiliationSource::ResultCallback on_password_forms_received_callback_;
 

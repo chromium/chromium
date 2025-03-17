@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <limits>
 #include <utility>
@@ -25,7 +26,6 @@
 #include "base/numerics/safe_math.h"
 #include "base/process/current_process.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
@@ -302,7 +302,7 @@ Channel::MessagePtr Channel::Message::CreateRawForFuzzing(
   message->size_ = data.size();
   if (data.size()) {
     message->data_ = MakeAlignedBuffer(data.size());
-    base::ranges::copy(data, message->data_.get());
+    std::ranges::copy(data, message->data_.get());
   }
   return base::WrapUnique<Channel::Message>(message.release());
 }

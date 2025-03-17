@@ -843,6 +843,9 @@ message FatalCrashTelemetry {
 
     // When presenting to the admin, the following will be ACTIVE_DIRECTORY
     SESSION_TYPE_ACTIVE_DIRECTORY = 8;
+
+    // When presenting to the admin, the following will be KIOSK
+    SESSION_TYPE_KIOSK_IWA = 9;
   }
   // required
   optional CrashType type = 1;

@@ -19,7 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -74,7 +74,7 @@ TEST_F(CacheUtilTest, MoveCache) {
   EXPECT_TRUE(base::PathExists(dest_file1_));
   EXPECT_TRUE(base::PathExists(dest_file2_));
   EXPECT_TRUE(base::PathExists(dest_dir1_));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(base::PathExists(cache_dir_)); // old cache dir stays
 #else
   EXPECT_FALSE(base::PathExists(cache_dir_)); // old cache is gone
@@ -130,7 +130,7 @@ TEST_F(CacheUtilTest, CleanupDirectory) {
           base::SafeBaseName::Create(path);
       ASSERT_EQ(dirname, tmp_dir_.GetPath());
       ASSERT_TRUE(basename.has_value());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       if (basename->path().value() == FILE_PATH_LITERAL("Cache")) {
         // See the comment above.
         ASSERT_TRUE(base::IsDirectoryEmpty(dirname.Append(*basename)));

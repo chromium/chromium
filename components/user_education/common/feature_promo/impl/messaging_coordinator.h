@@ -58,6 +58,9 @@ class MessagingCoordinator {
   base::CallbackListSubscription AddPromoReadyCallback(
       base::RepeatingClosure callback);
 
+  // Determines whether there is another promo in line ahead of us.
+  bool IsBlockedByExternalPromo() const;
+
   // Retrieve the current promo state. Probably only useful for testing.
   PromoState promo_state_for_testing() const { return promo_state_; }
 

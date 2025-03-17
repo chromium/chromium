@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/user_education/user_education_configuration_provider.h"
 
 #include <algorithm>
@@ -41,15 +46,13 @@ bool IsAdditionalConfigBounded(const feature_engagement::EventConfig& config) {
 extern void MaybeRegisterChromeFeaturePromos(
     user_education::FeaturePromoRegistry& registry);
 
-UserEducationConfigurationProvider::UserEducationConfigurationProvider()
-    : use_v2_behavior_(user_education::features::IsUserEducationV2()) {
+UserEducationConfigurationProvider::UserEducationConfigurationProvider() {
   MaybeRegisterChromeFeaturePromos(registry_);
 }
 
 UserEducationConfigurationProvider::UserEducationConfigurationProvider(
     user_education::FeaturePromoRegistry registry_for_testing)
-    : registry_(std::move(registry_for_testing)),
-      use_v2_behavior_(user_education::features::IsUserEducationV2()) {}
+    : registry_(std::move(registry_for_testing)) {}
 
 UserEducationConfigurationProvider::~UserEducationConfigurationProvider() =
     default;
@@ -59,17 +62,6 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
     feature_engagement::FeatureConfig& config,
     const feature_engagement::FeatureVector& known_features,
     const feature_engagement::GroupVector& known_groups) const {
-  // Determine if a configuration needs to be provided or modified.
-  //
-  // Provide a configuration in v1 if there is no existing config, so that IPH
-  // added after the v2 transition without explicit configuration still work on
-  // browsers without the v2 flag enabled.
-  //
-  // In v2, a configuration is always provided; if one already exists, any
-  // values that mandatory in v2 are overwritten.
-  if (config.valid && !use_v2_behavior_) {
-    return false;
-  }
 
   // Features not controlled by FeaturePromoController are ignored.
   if (!registry_.IsFeatureRegistered(feature)) {
@@ -77,13 +69,6 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
   }
 
   const auto* const promo_spec = registry_.GetParamsForFeature(feature);
-  const bool is_unlimited =
-      promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
-                                         PromoSubtype::kKeyedNotice ||
-      promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
-                                         PromoSubtype::kLegalNotice ||
-      promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
-                                         PromoSubtype::kActionableAlert;
 
   // These are baseline session rate values.
   config.session_rate.type = feature_engagement::ANY;
@@ -96,14 +81,10 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
     case user_education::FeaturePromoSpecification::PromoType::kSnooze:
     case user_education::FeaturePromoSpecification::PromoType::kCustomAction:
     case user_education::FeaturePromoSpecification::PromoType::kTutorial:
+    case user_education::FeaturePromoSpecification::PromoType::kCustomUi:
       // Heavyweight promos prevent future low-priority heavyweight promos.
       config.session_rate_impact.type =
           feature_engagement::SessionRateImpact::Type::ALL;
-      // Heavyweight IPH can only show once per session. However, in V2,
-      // sessions are controlled by the session policy.
-      if (!is_unlimited && !use_v2_behavior_) {
-        config.session_rate.type = feature_engagement::EQUAL;
-      }
       break;
 
     case user_education::FeaturePromoSpecification::PromoType::kToast:
@@ -126,13 +107,8 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
   if (config.trigger.name.empty()) {
     config.trigger.name = GetDefaultTriggerName(feature);
   }
-  if (is_unlimited || use_v2_behavior_) {
-    config.trigger.comparator.type = feature_engagement::ANY;
-    config.trigger.comparator.value = 0;
-  } else {
-    config.trigger.comparator.type = feature_engagement::LESS_THAN;
-    config.trigger.comparator.value = 5;
-  }
+  config.trigger.comparator.type = feature_engagement::ANY;
+  config.trigger.comparator.value = 0;
   config.trigger.storage = feature_engagement::kMaxStoragePeriod;
   config.trigger.window = feature_engagement::kMaxStoragePeriod;
 
@@ -166,12 +142,10 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
 
   // In V2, since trigger config is overwritten, also remove additional
   // references in the existing event configs.
-  if (use_v2_behavior_) {
-    std::erase_if(config.event_configs, [&trigger_name = config.trigger.name](
-                                            const auto& event_config) {
-      return event_config.name == trigger_name;
-    });
-  }
+  std::erase_if(config.event_configs, [&trigger_name = config.trigger.name](
+                                          const auto& event_config) {
+    return event_config.name == trigger_name;
+  });
 
   // Set up additional constraints, if specified and not overridden in the
   // existing config.

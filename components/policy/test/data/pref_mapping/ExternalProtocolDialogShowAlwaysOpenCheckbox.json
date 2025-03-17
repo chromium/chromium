@@ -6,17 +6,13 @@
       "mac",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ExternalProtocolDialogShowAlwaysOpenCheckbox": true
-        },
-        "prefs": {
-          "external_protocol_dialog.show_always_open_checkbox": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "external_protocol_dialog.show_always_open_checkbox",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

@@ -11,6 +11,7 @@
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/supervised_user/model/ios_web_content_handler_impl.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
@@ -29,9 +30,9 @@ const char* BoolToString(bool value) {
 // a permission request.
 // The method is invoked as a callback, so it is recommended to
 // bind a weak pointer to the webstate, in case it has been invalidated.
-void OnRequestUrlAccessRemote(base::WeakPtr<web::WebState> weak_web_state,
-                              bool is_main_frame,
-                              bool is_request_successful) {
+void OnRequestUrlAccess(base::WeakPtr<web::WebState> weak_web_state,
+                        bool is_main_frame,
+                        bool is_request_successful) {
   web::WebState* web_state = weak_web_state.get();
   if (!web_state) {
     return;
@@ -79,7 +80,7 @@ std::unique_ptr<supervised_user::SupervisedUserInterstitial>
 SupervisedUserErrorContainer::CreateSupervisedUserInterstitial(
     SupervisedUserErrorInfo& error_info) {
   std::unique_ptr<IOSWebContentHandlerImpl> web_content_handler =
-      std::make_unique<IOSWebContentHandlerImpl>(web_state_,
+      std::make_unique<IOSWebContentHandlerImpl>(web_state_, commands_handler_,
                                                  error_info.is_main_frame());
 
   std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial =
@@ -99,12 +100,15 @@ void SupervisedUserErrorContainer::HandleCommand(
   if (command == security_interstitials::SecurityInterstitialCommand::
                      CMD_REQUEST_SITE_ACCESS_PERMISSION) {
     RequestUrlAccessRemoteCallback callback =
-        base::BindOnce(&OnRequestUrlAccessRemote, web_state_->GetWeakPtr(),
+        base::BindOnce(&OnRequestUrlAccess, web_state_->GetWeakPtr(),
                        interstitial.web_content_handler()->IsMainFrame());
     interstitial.RequestUrlAccessRemote(
         base::BindOnce(&SupervisedUserErrorContainer::OnRequestCreated,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        interstitial.url()));
+  } else if (command ==
+             security_interstitials::SecurityInterstitialCommand::CMD_PROCEED) {
+    interstitial.RequestUrlAccessLocal(base::DoNothing());
   } else if (command == security_interstitials::SecurityInterstitialCommand::
                             CMD_DONT_PROCEED) {
     interstitial.GoBack();
@@ -192,6 +196,16 @@ void SupervisedUserErrorContainer::MaybeUpdatePendingApprovals() {
       iter++;
     }
   }
+}
+
+void SupervisedUserErrorContainer::SetParentAccessBottomSheetHandler(
+    id<ParentAccessCommands> commands_handler) {
+  if (!commands_handler) {
+    // Means that the web state has been destroyed therefore dismiss the
+    // bottom sheet if it's shown.
+    [commands_handler_ hideParentAccessBottomSheet];
+  }
+  commands_handler_ = commands_handler;
 }
 
 SupervisedUserInterstitialBlockingPage::SupervisedUserInterstitialBlockingPage(

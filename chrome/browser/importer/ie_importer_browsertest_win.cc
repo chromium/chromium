@@ -445,10 +445,9 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporter) {
       L"SubFolder",     L"WithPortAndQuery.url", L"a",
       L"SubFolder.url",
   };
-  ASSERT_TRUE(
-      CreateOrderBlob(base::FilePath(path), L"",
-                      std::vector<std::wstring>(
-                          root_links, root_links + std::size(root_links))));
+  ASSERT_TRUE(CreateOrderBlob(
+      base::FilePath(path), L"",
+      std::vector<std::wstring>(std::begin(root_links), std::end(root_links))));
 
   // Sets up a special history link.
   Microsoft::WRL::ComPtr<IUrlHistoryStg2> url_history_stg2;

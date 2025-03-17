@@ -124,6 +124,9 @@ enum {
   kLastPlusAddressFillingTime = 78,
   kSafeBrowsingEnhanced = 79,
   kFacilitatedPaymentsEwallet = 80,
+  kAutofillBnplEnabled = 81,
+  kAutofillHasSeenBnpl = 82,
+  kAutomaticPasskeyUpgrades = 83,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -206,6 +209,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
          {syncable_prefs_ids::kCredentialsEnableService,
           syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
           MergeBehavior::kNone}},
+        {password_manager::prefs::kAutomaticPasskeyUpgrades,
+         {syncable_prefs_ids::kAutomaticPasskeyUpgrades, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
         {password_manager::prefs::kPasswordDismissCompromisedAlertEnabled,
          {syncable_prefs_ids::kPasswordDismissCompromisedAlertEnabled,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
@@ -325,6 +331,16 @@ constexpr auto kCommonSyncablePrefsAllowlist =
          {syncable_prefs_ids::kFacilitatedPaymentsEwallet, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+        {autofill::prefs::kAutofillBnplEnabled,
+         {syncable_prefs_ids::kAutofillBnplEnabled, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {autofill::prefs::kAutofillHasSeenBnpl,
+         {syncable_prefs_ids::kAutofillHasSeenBnpl, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
     });
 
 }  // namespace

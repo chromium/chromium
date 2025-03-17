@@ -103,6 +103,11 @@ def CheckNoDisallowedJS(input_api, output_api):
                                               lambda f: not allow_js(f))
 
 
+def CheckNoNewPolymer(input_api, output_api):
+  from web_dev_style import presubmit_support
+  return presubmit_support.DisallowNewPolymerElements(input_api, output_api)
+
+
 def CheckPatchFormatted(input_api, output_api):
   return input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
                                                      check_js=True)

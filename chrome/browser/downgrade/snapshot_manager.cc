@@ -24,11 +24,11 @@ namespace downgrade {
 
 namespace {
 
-constexpr base::FilePath::StringPieceType kSQLiteJournalSuffix(
+constexpr base::FilePath::StringViewType kSQLiteJournalSuffix(
     FILE_PATH_LITERAL("-journal"));
-constexpr base::FilePath::StringPieceType kSQLiteWalSuffix(
+constexpr base::FilePath::StringViewType kSQLiteWalSuffix(
     FILE_PATH_LITERAL("-wal"));
-constexpr base::FilePath::StringPieceType kSQLiteShmSuffix(
+constexpr base::FilePath::StringViewType kSQLiteShmSuffix(
     FILE_PATH_LITERAL("-shm"));
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -95,7 +95,7 @@ bool IsProfileDir(const base::FilePath& base_name) {
   int number;
   return base::StartsWith(base_name.value(), prefix.value(),
                           base::CompareCase::SENSITIVE) &&
-         base::StringToInt(base::FilePath::StringPieceType(base_name.value())
+         base::StringToInt(base::FilePath::StringViewType(base_name.value())
                                .substr(prefix.value().length()),
                            &number);
 }

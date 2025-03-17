@@ -6,6 +6,7 @@
 
 #import "base/files/file_path.h"
 #import "base/strings/sys_string_conversions.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager+testing.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
@@ -31,11 +32,10 @@ void UpdateProfileAuthInfo(ProfileAttributesStorageIOS* storage,
                            const std::string& gaia) {
   storage->UpdateAttributesForProfileWithName(
       profile_name, base::BindOnce(
-                        [](const std::string& gaia, ProfileAttributesIOS attr) {
+                        [](const GaiaId& gaia, ProfileAttributesIOS& attr) {
                           attr.SetAuthenticationInfo(gaia, std::string());
-                          return attr;
                         },
-                        gaia));
+                        GaiaId(gaia)));
 }
 
 // Iterates through the testcases and creates a new Profile for each
@@ -52,7 +52,7 @@ void AddTestCasesToManagerAndValidate(
   // the AccountContextManager.
   for (const TestCase& test_case : test_cases) {
     UpdateProfileAuthInfo(storage, profile_name, test_case.gaia);
-    [manager addAccount:test_case.gaia];
+    [manager addAccount:GaiaId(test_case.gaia)];
   }
 
   ASSERT_EQ([manager accountIDs].count, N);
@@ -60,7 +60,7 @@ void AddTestCasesToManagerAndValidate(
   // Validate that the given testcases exist inside the AccountContextManager.
   bool entries_are_valid = true;
   for (const TestCase& test_case : test_cases) {
-    if (![manager preferenceMapForAccount:test_case.gaia]) {
+    if (![manager preferenceMapForAccount:GaiaId(test_case.gaia)]) {
       entries_are_valid = false;
     }
   }
@@ -131,14 +131,14 @@ TEST_F(PushNotificationAccountContextManagerTest, AddDuplicates) {
   for (const TestCase& test_case : kNoDuplicatesTestCase) {
     UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                           test_case.gaia);
-    [manager_ addAccount:test_case.gaia];
+    [manager_ addAccount:GaiaId(test_case.gaia)];
   }
 
   // Validate again that the original testcases are inside the
   // AccountContextManager.
   bool entries_are_valid = true;
   for (const TestCase& test_case : kTestCase) {
-    if (![manager_ preferenceMapForAccount:test_case.gaia]) {
+    if (![manager_ preferenceMapForAccount:GaiaId(test_case.gaia)]) {
       entries_are_valid = false;
       break;
     }
@@ -147,9 +147,13 @@ TEST_F(PushNotificationAccountContextManagerTest, AddDuplicates) {
 
   // Validate the occurence counter has increased.
   ASSERT_EQ(
-      [manager_ registrationCountForAccount:kNoDuplicatesTestCase[0].gaia], 2u);
+      [manager_
+          registrationCountForAccount:GaiaId(kNoDuplicatesTestCase[0].gaia)],
+      2u);
   ASSERT_EQ(
-      [manager_ registrationCountForAccount:kNoDuplicatesTestCase[1].gaia], 3u);
+      [manager_
+          registrationCountForAccount:GaiaId(kNoDuplicatesTestCase[1].gaia)],
+      3u);
 }
 
 // This test ensures that the AccountContextManager can remove an account ID.
@@ -164,16 +168,16 @@ TEST_F(PushNotificationAccountContextManagerTest, RemoveAccount) {
   // Add the testcase we would like to check for its removal into the manager.
   UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                         kRemovalTestCase.gaia);
-  [manager_ addAccount:kRemovalTestCase.gaia];
+  [manager_ addAccount:GaiaId(kRemovalTestCase.gaia)];
 
   // Remove the testcase
-  ASSERT_EQ([manager_ removeAccount:kRemovalTestCase.gaia], true);
+  ASSERT_EQ([manager_ removeAccount:GaiaId(kRemovalTestCase.gaia)], true);
 
   // Validate again that the original testcases are inside the
   // AccountContextManager.
   bool entries_are_valid = true;
   for (const TestCase& test_case : kTestCase) {
-    if (![manager_ preferenceMapForAccount:test_case.gaia]) {
+    if (![manager_ preferenceMapForAccount:GaiaId(test_case.gaia)]) {
       entries_are_valid = false;
     }
   }
@@ -194,18 +198,18 @@ TEST_F(PushNotificationAccountContextManagerTest, RemoveMultipleAccounts) {
   for (const TestCase& test_case : kRemovalTestCase) {
     UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                           test_case.gaia);
-    [manager_ addAccount:test_case.gaia];
+    [manager_ addAccount:GaiaId(test_case.gaia)];
   }
   for (const TestCase& test_case : kRemovalTestCase) {
     // Remove the testcase
-    ASSERT_EQ([manager_ removeAccount:test_case.gaia], true);
+    ASSERT_EQ([manager_ removeAccount:GaiaId(test_case.gaia)], true);
   }
 
   // Validate again that the original testcases are inside the
   // AccountContextManager.
   bool entries_are_valid = true;
   for (const TestCase& test_case : kTestCase) {
-    if (![manager_ preferenceMapForAccount:test_case.gaia]) {
+    if (![manager_ preferenceMapForAccount:GaiaId(test_case.gaia)]) {
       entries_are_valid = false;
     }
   }
@@ -224,26 +228,28 @@ TEST_F(PushNotificationAccountContextManagerTest, AddDuplicateThenRemove) {
 
   UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                         kRemovalTestCase.gaia);
-  [manager_ addAccount:kRemovalTestCase.gaia];
+  [manager_ addAccount:GaiaId(kRemovalTestCase.gaia)];
 
   for (const TestCase& test_case : kNoDuplicatesTestCase) {
     UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                           test_case.gaia);
-    [manager_ addAccount:test_case.gaia];
+    [manager_ addAccount:GaiaId(test_case.gaia)];
   }
 
   // Validate the occurence counter has increased.
   ASSERT_EQ(
-      [manager_ registrationCountForAccount:kNoDuplicatesTestCase[0].gaia], 2u);
+      [manager_
+          registrationCountForAccount:GaiaId(kNoDuplicatesTestCase[0].gaia)],
+      2u);
   // Remove the duplicate testcase twice.
-  [manager_ removeAccount:kRemovalTestCase.gaia];
-  ASSERT_EQ([manager_ removeAccount:kRemovalTestCase.gaia], true);
+  [manager_ removeAccount:GaiaId(kRemovalTestCase.gaia)];
+  ASSERT_EQ([manager_ removeAccount:GaiaId(kRemovalTestCase.gaia)], true);
 
   // Validate again that the original testcases are inside the
   // AccountContextManager.
   bool entries_are_valid = true;
   for (const TestCase& test_case : kTestCase) {
-    if (![manager_ preferenceMapForAccount:test_case.gaia]) {
+    if (![manager_ preferenceMapForAccount:GaiaId(test_case.gaia)]) {
       entries_are_valid = false;
       break;
     }
@@ -269,10 +275,12 @@ TEST_F(PushNotificationAccountContextManagerTest, UpdatePreferences) {
   for (const TestCase& test_case : kTestCase) {
     UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                           test_case.gaia);
-    [manager_ enablePushNotification:clientID forAccount:test_case.gaia];
-    ASSERT_EQ([manager_ isPushNotificationEnabledForClient:clientID
-                                                forAccount:test_case.gaia],
-              YES);
+    [manager_ enablePushNotification:clientID
+                          forAccount:GaiaId(test_case.gaia)];
+    ASSERT_EQ(
+        [manager_ isPushNotificationEnabledForClient:clientID
+                                          forAccount:GaiaId(test_case.gaia)],
+        YES);
     EXPECT_EQ(
         profile_attributes().GetNotificationPermissions()->FindBool(client_key),
         YES);
@@ -281,10 +289,12 @@ TEST_F(PushNotificationAccountContextManagerTest, UpdatePreferences) {
   for (const TestCase& test_case : kUpdateTestCase) {
     UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                           test_case.gaia);
-    [manager_ disablePushNotification:clientID forAccount:test_case.gaia];
-    ASSERT_EQ([manager_ isPushNotificationEnabledForClient:clientID
-                                                forAccount:test_case.gaia],
-              NO);
+    [manager_ disablePushNotification:clientID
+                           forAccount:GaiaId(test_case.gaia)];
+    ASSERT_EQ(
+        [manager_ isPushNotificationEnabledForClient:clientID
+                                          forAccount:GaiaId(test_case.gaia)],
+        NO);
     EXPECT_EQ(
         profile_attributes().GetNotificationPermissions()->FindBool(client_key),
         NO);

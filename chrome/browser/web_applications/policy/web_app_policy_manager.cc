@@ -4,13 +4,13 @@
 
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "ash/constants/web_app_id_constants.h"
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -21,7 +21,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/values.h"
@@ -39,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -56,18 +56,17 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
-#include "components/policy/core/common/policy_pref_names.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/edusumer/graduation_utils.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -88,7 +87,7 @@ bool IconInfosContainIconURL(const std::vector<apps::IconInfo>& icon_infos,
 // 2. All Chrome profiles apart from incognito/guest profiles.
 bool AreForceInstalledAppsAllowed(Profile* profile) {
   bool allowed = web_app::AreWebAppsUserInstallable(profile);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   allowed = allowed || user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
             user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
 #endif
@@ -120,7 +119,7 @@ WebAppPolicyManager::WebAppPolicyManager(Profile* profile)
 
 WebAppPolicyManager::~WebAppPolicyManager() = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void WebAppPolicyManager::SetSystemWebAppDelegateMap(
     const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map) {
   system_web_apps_delegate_map_ = system_web_apps_delegate_map;
@@ -156,7 +155,7 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(
       pref_service_->GetList(prefs::kWebAppInstallForceList);
   const auto& web_apps_list = web_apps;
 
-  const auto it = base::ranges::find(
+  const auto it = std::ranges::find(
       web_apps_list, url.spec(), [](const base::Value& entry) {
         return CHECK_DEREF(entry.GetDict().FindString(kUrlKey));
       });
@@ -245,12 +244,12 @@ void WebAppPolicyManager::OnSyncPolicySettingsCommandsComplete() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const std::set<ash::SystemWebAppType>&
 WebAppPolicyManager::GetDisabledSystemWebApps() const {
   return disabled_system_apps_;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const std::set<webapps::AppId>& WebAppPolicyManager::GetDisabledWebAppsIds()
     const {
@@ -371,8 +370,8 @@ void WebAppPolicyManager::ParsePolicySettings() {
   default_settings_ = WebAppPolicyManager::WebAppSetting();
 
   // Read default policy, if provided.
-  const auto it = base::ranges::find(
-      web_apps_list, kWildcard, [](const base::Value& entry) {
+  const auto it =
+      std::ranges::find(web_apps_list, kWildcard, [](const base::Value& entry) {
         return CHECK_DEREF(entry.GetDict().FindString(kManifestId));
       });
 
@@ -486,8 +485,7 @@ WebAppPolicyManager::ParseInstallPolicyEntry(const base::Value::Dict& entry) {
   const std::string* fallback_app_name = entry.FindString(kFallbackAppNameKey);
   const base::Value::List* uninstall_and_replace =
       entry.FindList(kUninstallAndReplaceKey);
-  const std::optional<bool> install_as_shortcut =
-      entry.FindBool(kInstallAsShortcut);
+  const std::optional<bool> install_as_diy = entry.FindBool(kInstallAsShortcut);
 
   DCHECK(!default_launch_container ||
          (*default_launch_container == kDefaultLaunchContainerWindowValue) ||
@@ -535,7 +533,9 @@ WebAppPolicyManager::ParseInstallPolicyEntry(const base::Value::Dict& entry) {
     }
   }
 
-  install_options.install_as_shortcut = install_as_shortcut.value_or(false);
+  // Shortcut apps no longer exist in the web applications system and are
+  // treated as DIY apps now.
+  install_options.install_as_diy = install_as_diy.value_or(false);
 
   const std::string* custom_name = entry.FindString(kCustomNameKey);
   if (custom_name) {
@@ -773,14 +773,16 @@ void WebAppPolicyManager::ObserveDisabledSystemFeaturesPolicy() {
       policy::policy_prefs::kSystemFeaturesDisableMode,
       base::BindRepeating(&WebAppPolicyManager::OnDisableModePolicyChanged,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::features::IsGraduationEnabled()) {
     pref_change_registrar_.Add(
         ash::prefs::kGraduationEnablementStatus,
         base::BindRepeating(&WebAppPolicyManager::OnDisableListPolicyChanged,
                             weak_ptr_factory_.GetWeakPtr()));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  pref_change_registrar_.Add(
+      ash::prefs::kClassManagementToolsAvailabilitySetting,
+      base::BindRepeating(&WebAppPolicyManager::OnDisableModePolicyChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
   // Make sure we get the right disabled mode in case it was changed before
   // policy registration.
   OnDisableModePolicyChanged();
@@ -796,16 +798,14 @@ void WebAppPolicyManager::OnDisableModePolicyChanged() {
 void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   disabled_web_apps_.clear();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   disabled_system_apps_.clear();
 
   if (ash::features::IsGraduationEnabled() &&
       !ash::graduation::IsEligibleForGraduation(pref_service_)) {
     disabled_system_apps_.insert(ash::SystemWebAppType::GRADUATION);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
   PrefService* const local_state = g_browser_process->local_state();
   if (!local_state)  // Sometimes it's not available in tests.
     return;
@@ -818,7 +818,6 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kCanvas:
         disabled_web_apps_.insert(ash::kCanvasAppId);
         break;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       case policy::SystemFeature::kCamera:
         disabled_system_apps_.insert(ash::SystemWebAppType::CAMERA);
         break;
@@ -850,28 +849,48 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kRecorder:
         disabled_system_apps_.insert(ash::SystemWebAppType::RECORDER);
         break;
-#else
-      case policy::SystemFeature::kCamera:
-      case policy::SystemFeature::kOsSettings:
-      case policy::SystemFeature::kScanning:
-      case policy::SystemFeature::kExplore:
-      case policy::SystemFeature::kCrosh:
-      case policy::SystemFeature::kTerminal:
-      case policy::SystemFeature::kGallery:
-      case policy::SystemFeature::kPrintJobs:
-      case policy::SystemFeature::kKeyShortcuts:
-      case policy::SystemFeature::kRecorder:
+      case policy::SystemFeature::kGmail:
+        disabled_web_apps_.insert(ash::kGmailAppId);
         break;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      case policy::SystemFeature::kGoogleDocs:
+        disabled_web_apps_.insert(ash::kGoogleDocsAppId);
+        break;
+      case policy::SystemFeature::kGoogleSlides:
+        disabled_web_apps_.insert(ash::kGoogleSlidesAppId);
+        break;
+      case policy::SystemFeature::kGoogleSheets:
+        disabled_web_apps_.insert(ash::kGoogleSheetsAppId);
+        break;
+      case policy::SystemFeature::kGoogleDrive:
+        disabled_web_apps_.insert(ash::kGoogleDriveAppId);
+        break;
+      case policy::SystemFeature::kGoogleKeep:
+        disabled_web_apps_.insert(ash::kGoogleKeepAppId);
+        break;
+      case policy::SystemFeature::kGoogleCalendar:
+        disabled_web_apps_.insert(ash::kGoogleCalendarAppId);
+        break;
+      case policy::SystemFeature::kGoogleChat:
+        disabled_web_apps_.insert(ash::kGoogleChatAppId);
+        break;
+      case policy::SystemFeature::kYoutube:
+        disabled_web_apps_.insert(ash::kYoutubeAppId);
+        break;
+      case policy::SystemFeature::kGoogleMaps:
+        disabled_web_apps_.insert(ash::kGoogleMapsAppId);
+        break;
+      case policy::SystemFeature::kCalculator:
+        disabled_web_apps_.insert(ash::kCalculatorAppId);
+        break;
       case policy::SystemFeature::kUnknownSystemFeature:
       case policy::SystemFeature::kBrowserSettings:
       case policy::SystemFeature::kWebStore:
+      case policy::SystemFeature::kTextEditor:
       case policy::SystemFeature::kGoogleNewsDeprecated:
         break;
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(system_web_apps_delegate_map_);
   for (const ash::SystemWebAppType& app_type : disabled_system_apps_) {
     std::optional<webapps::AppId> app_id =
@@ -881,7 +900,6 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       disabled_web_apps_.insert(app_id.value());
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

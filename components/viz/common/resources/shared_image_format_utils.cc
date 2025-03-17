@@ -15,18 +15,8 @@
 
 namespace viz {
 
-SkColorType ToClosestSkColorType(bool gpu_compositing,
-                                 SharedImageFormat format) {
+SkColorType ToClosestSkColorType(SharedImageFormat format) {
   CHECK(format.is_single_plane());
-
-  if (!gpu_compositing) {
-    // TODO(crbug.com/41472025): Remove this assumption and have clients tag
-    // resources with the correct format.
-    // In software compositing we lazily use RGBA_8888 throughout the system,
-    // but actual pixel encodings are the native skia bit ordering, which can be
-    // RGBA or BGRA.
-    return kN32_SkColorType;
-  }
 
   if (format == SinglePlaneFormat::kRGBA_4444) {
     return kARGB_4444_SkColorType;
@@ -72,7 +62,7 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
 SkColorType ToClosestSkColorType(SharedImageFormat format, int plane_index) {
   CHECK(format.IsValidPlaneIndex(plane_index));
   if (format.is_single_plane()) {
-    return ToClosestSkColorType(/*gpu_compositing=*/true, format);
+    return ToClosestSkColorType(format);
   }
 
   // No external sampling, format is per plane.
@@ -116,12 +106,16 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
       return SinglePlaneFormat::kRGBA_1010102;
     case kBGRA_1010102_SkColorType:
       return SinglePlaneFormat::kBGRA_1010102;
-    // These colortypes are just for reading from - not to render to.
     case kR8G8_unorm_SkColorType:
+      return SinglePlaneFormat::kRG_88;
     case kA16_float_SkColorType:
-    case kR16G16_float_SkColorType:
+      return SinglePlaneFormat::kR_F16;
     case kA16_unorm_SkColorType:
+      return SinglePlaneFormat::kR_16;
     case kR16G16_unorm_SkColorType:
+      return SinglePlaneFormat::kRG_1616;
+    // These colortypes are just for reading from - not to render to.
+    case kR16G16_float_SkColorType:
     case kR16G16B16A16_unorm_SkColorType:
     case kUnknown_SkColorType:
     // These colortypes are don't have an equivalent in SharedImageFormat.

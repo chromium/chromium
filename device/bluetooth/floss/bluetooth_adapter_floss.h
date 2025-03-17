@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
@@ -185,16 +185,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       override;
 
   std::vector<BluetoothRole> GetSupportedRoles() override;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Set the adapter name to one chosen from the system information. Only Ash
-  // needs to do this.
+  // Set the adapter name to one chosen from the system information.
   void SetStandardChromeOSAdapterName() override;
-  // Enable telephony feature for floss. Only Ash needs to do this.
+  // Enable telephony feature for floss.
   void ConfigureBluetoothTelephony(bool enabled);
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // ScannerClientObserver overrides
   void ScannerRegistered(device::BluetoothUUID uuid,
@@ -273,7 +269,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // Complete adapter present/enabled changes after adapter clients are ready.
   // Invoke PresentChanged to the observers only when |is_newly_present| is
   // true.
-  void OnAdapterClientsReady(bool enabled, bool is_newly_present);
+  void OnAdapterClientsReady(bool is_newly_present);
 
   // Initialize observers for adapter dependent clients. We need to add + remove
   // these observers whenever we get a powered notification.
@@ -290,6 +286,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void AdapterDiscoveringChanged(bool state) override;
   void AdapterFoundDevice(const FlossDeviceId& device_found) override;
   void AdapterClearedDevice(const FlossDeviceId& device_found) override;
+  void AdapterKeyMissingDevice(const FlossDeviceId& device) override;
   void AdapterDevicePropertyChanged(
       FlossAdapterClient::BtPropertyType prop_type,
       const FlossDeviceId& device) override;

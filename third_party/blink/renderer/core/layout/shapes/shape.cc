@@ -33,6 +33,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
@@ -43,15 +44,10 @@
 #include "third_party/blink/renderer/core/layout/shapes/raster_shape.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -66,7 +62,7 @@ class LogicalPixelScanner {
 
  public:
   // Initialize the instance, and move to the logical origin.
-  LogicalPixelScanner(const DOMUint8ClampedArray& pixel_array,
+  LogicalPixelScanner(base::span<const uint8_t> pixel_array,
                       const gfx::Size& size,
                       WritingMode writing_mode)
       : pixel_array_(pixel_array), size_(size), writing_mode_(writing_mode) {}
@@ -83,7 +79,7 @@ class LogicalPixelScanner {
 
   // Get the alpha channel value of the current pixel.
   uint8_t GetAlpha() const {
-    return pixel_array_.Item(PixelOffset() + kAlphaOffsetInPixel);
+    return pixel_array_[PixelOffset() + kAlphaOffsetInPixel];
   }
 
  private:
@@ -115,7 +111,7 @@ class LogicalPixelScanner {
     return (y * size_.width() + x) * kBytesPerPixel;
   }
 
-  const DOMUint8ClampedArray& pixel_array_;
+  const base::span<const uint8_t> pixel_array_;
   const gfx::Size size_;
   const WritingMode writing_mode_;
   uint32_t inline_offset_ = 0;
@@ -289,20 +285,16 @@ static bool ExtractImageData(Image* image,
 }
 
 static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
-    ArrayBufferContents& contents,
+    base::span<const uint8_t> pixel_data,
     float threshold,
     int content_block_size,
     const gfx::Size& image_physical_size,
     const gfx::Rect& image_logical_rect,
     const gfx::Rect& margin_logical_rect,
     WritingMode writing_mode) {
-  DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(contents);
-  DOMUint8ClampedArray* pixel_array =
-      DOMUint8ClampedArray::Create(array_buffer, 0, array_buffer->ByteLength());
-
   uint8_t alpha_pixel_threshold = threshold * 255;
 
-  DCHECK_EQ(image_logical_rect.size().Area64() * 4, pixel_array->length());
+  CHECK_EQ(image_logical_rect.size().Area64() * 4, pixel_data.size());
 
   const int image_inline_size = image_logical_rect.width();
   const int image_inline_start = image_logical_rect.x();
@@ -320,7 +312,7 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
       std::make_unique<RasterShapeIntervals>(margin_box_block_size,
                                              -margin_block_start);
 
-  LogicalPixelScanner scanner(*pixel_array, image_physical_size, writing_mode);
+  LogicalPixelScanner scanner(pixel_data, image_physical_size, writing_mode);
   for (int y = image_block_start; y < min_buffer_y; ++y) {
     scanner.NextLine();
   }
@@ -366,20 +358,21 @@ std::unique_ptr<Shape> Shape::CreateRasterShape(
     return CreateEmptyRasterShape(writing_mode, margin);
   }
 
-  ArrayBufferContents contents;
   gfx::Size image_physical_size = image_logical_rect.size();
   if (!IsHorizontalWritingMode(writing_mode)) {
     image_physical_size.Transpose();
   }
+  ArrayBufferContents contents;
   if (!ExtractImageData(image, image_physical_size, contents,
                         respect_orientation)) {
     return CreateEmptyRasterShape(writing_mode, margin);
   }
 
   std::unique_ptr<RasterShapeIntervals> intervals =
-      ExtractIntervalsFromImageData(contents, threshold, content_block_size,
-                                    image_physical_size, image_logical_rect,
-                                    margin_logical_rect, writing_mode);
+      ExtractIntervalsFromImageData(contents.ByteSpan(), threshold,
+                                    content_block_size, image_physical_size,
+                                    image_logical_rect, margin_logical_rect,
+                                    writing_mode);
   std::unique_ptr<RasterShape> raster_shape =
       std::make_unique<RasterShape>(std::move(intervals), margin_box_size);
   raster_shape->writing_mode_ = writing_mode;

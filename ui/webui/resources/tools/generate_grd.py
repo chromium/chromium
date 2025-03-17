@@ -46,8 +46,7 @@ import sys
 _CWD = os.getcwd()
 
 GRD_BEGIN_TEMPLATE = '<?xml version="1.0" encoding="UTF-8"?>\n'\
-                     '<grit latest_public_release="0" current_release="1" '\
-                     'output_all_resource_defines="false">\n'\
+                     '<grit latest_public_release="0" current_release="1">\n'\
                      '  <outputs>\n'\
                      '    <output filename="{out_dir}/{prefix}_resources.h" '\
                      'type="rc_header">\n'\

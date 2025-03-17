@@ -89,11 +89,11 @@ class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
   // |should_succeed| is true.
   virtual content::WebContents* StartSessionWithTestPageAndChooseSink();
 
-  void OpenTestPage(base::FilePath::StringPieceType file);
-  void OpenTestPageInNewTab(base::FilePath::StringPieceType file);
+  void OpenTestPage(base::FilePath::StringViewType file);
+  void OpenTestPageInNewTab(base::FilePath::StringViewType file);
   virtual GURL GetTestPageUrl(const base::FilePath& full_path);
 
-  void SetTestData(base::FilePath::StringPieceType test_data_file);
+  void SetTestData(base::FilePath::StringViewType test_data_file);
 
   bool IsRouteCreatedOnUI();
 
@@ -150,7 +150,7 @@ class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
   //                  <chromium src>/out/<build config>/media_router/
   //                  browser_test_resources/
   base::FilePath GetResourceFile(
-      base::FilePath::StringPieceType relative_path) const;
+      base::FilePath::StringViewType relative_path) const;
 
   // Returns whether actual media route providers (as opposed to
   // TestMediaRouteProvider) should be loaded.

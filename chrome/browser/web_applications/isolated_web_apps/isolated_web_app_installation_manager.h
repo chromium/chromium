@@ -15,8 +15,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 
 namespace base {
 class CommandLine;
@@ -41,11 +42,7 @@ class WebAppProvider;
 // On ChromeOS only, the command line will be parsed whenever a new manager is
 // started, which occurs on `Profile` initialization. This is done this way
 // because the browser does not go through the "normal" startup flow on
-// ChromeOS, and has different startup behaviors depending on whether or not Ash
-// or Lacros is used.
-//
-// TODO(cmfcmf): Revisit this behavior once using Ash instead of Lacros is no
-// longer possible.
+// ChromeOS.
 class IsolatedWebAppInstallationManager {
  public:
   using MaybeInstallIsolatedWebAppCommandSuccess =

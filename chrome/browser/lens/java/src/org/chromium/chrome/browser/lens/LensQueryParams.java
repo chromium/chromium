@@ -6,21 +6,22 @@ package org.chromium.chrome.browser.lens;
 
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /**
  * A wrapper class for the Lens image query params (e.g. used in LensController.queryImage)
  * to provide a more consistent and extensible API.
  */
+@NullMarked
 public class LensQueryParams {
-    private Uri mImageUri;
-    private String mPageUrl;
-    private String mImageTitleOrAltText;
-    private String mPageTitle;
-    private WebContents mWebContents;
-    private String mSrcUrl;
+    private @Nullable Uri mImageUri;
+    private @Nullable String mPageUrl;
+    private @Nullable String mImageTitleOrAltText;
+    private @Nullable String mPageTitle;
+    private @Nullable WebContents mWebContents;
+    private @Nullable String mSrcUrl;
     private boolean mIsIncognito;
     private @LensEntryPoint int mLensEntryPoint;
     private boolean mIsTablet;
@@ -28,11 +29,11 @@ public class LensQueryParams {
     /** Builder class for LensQueryParams. */
     public static class Builder {
         private Uri mImageUri = Uri.EMPTY;
-        private String mPageUrl;
-        private String mImageTitleOrAltText;
-        private String mPageTitle;
-        private WebContents mWebContents;
-        private String mSrcUrl;
+        private @Nullable String mPageUrl;
+        private @Nullable String mImageTitleOrAltText;
+        private @Nullable String mPageTitle;
+        private @Nullable WebContents mWebContents;
+        private @Nullable String mSrcUrl;
         private boolean mIsIncognito;
         private @LensEntryPoint int mLensEntryPoint;
         private boolean mIsTablet;
@@ -48,7 +49,7 @@ public class LensQueryParams {
          *
          * @param imageUri The image URI to set as a parameter
          */
-        public Builder withImageUri(@NonNull Uri imageUri) {
+        public Builder withImageUri(Uri imageUri) {
             this.mImageUri = imageUri;
             return this;
         }
@@ -125,37 +126,37 @@ public class LensQueryParams {
      * e.g., LensChipDelegate#getChipRenderParams.
      * @param imageUri The image URI to set as a parameter
      */
-    public void setImageUri(@NonNull Uri imageUri) {
+    public void setImageUri(Uri imageUri) {
         mImageUri = imageUri;
     }
 
     /** Returns the image URI for this set of params. */
-    public Uri getImageUri() {
+    public @Nullable Uri getImageUri() {
         return mImageUri;
     }
 
     /** Returns the page url for this set of params. */
-    public String getPageUrl() {
+    public @Nullable String getPageUrl() {
         return mPageUrl;
     }
 
     /** Returns the image title or alt text for this set of params. */
-    public String getImageTitleOrAltText() {
+    public @Nullable String getImageTitleOrAltText() {
         return mImageTitleOrAltText;
     }
 
     /** Returns the page title for this set of params. */
-    public String getPageTitle() {
+    public @Nullable String getPageTitle() {
         return mPageTitle;
     }
 
     /** Returns the web contents for this set of params. */
-    public WebContents getWebContents() {
+    public @Nullable WebContents getWebContents() {
         return mWebContents;
     }
 
     /** Returns the src url for this set of params. */
-    public String getSrcUrl() {
+    public @Nullable String getSrcUrl() {
         return mSrcUrl;
     }
 

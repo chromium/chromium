@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_compare.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -38,6 +38,8 @@ namespace {
 class OrderByManagedAndAlphabetically {
  public:
   OrderByManagedAndAlphabetically();
+  OrderByManagedAndAlphabetically(const OrderByManagedAndAlphabetically& other)
+      : collator_(other.collator_->clone()) {}
 
   bool operator()(const TemplateURL* lhs, const TemplateURL* rhs) const;
 
@@ -114,8 +116,11 @@ void TemplateURLTableModel::Reload() {
   for (TemplateURL* template_url : urls) {
     // Don't include the expanded set of starter pack keywords if the expansion
     // feature flag is not enabled.
-    if (!OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
-        template_url->starter_pack_id() > TemplateURLStarterPackData::kTabs) {
+    if ((template_url->starter_pack_id() ==
+             TemplateURLStarterPackData::kGemini &&
+         !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
+        (template_url->starter_pack_id() == TemplateURLStarterPackData::kPage &&
+         !OmniboxFieldTrial::IsStarterPackPageEnabled())) {
       continue;
     }
 
@@ -132,8 +137,8 @@ void TemplateURLTableModel::Reload() {
     }
   }
 
-  base::ranges::sort(active_entries, OrderByManagedAndAlphabetically());
-  base::ranges::sort(other_entries, OrderByManagedAndAlphabetically());
+  std::ranges::sort(active_entries, OrderByManagedAndAlphabetically());
+  std::ranges::sort(other_entries, OrderByManagedAndAlphabetically());
 
   last_search_engine_index_ = default_entries.size();
   last_active_engine_index_ = last_search_engine_index_ + active_entries.size();

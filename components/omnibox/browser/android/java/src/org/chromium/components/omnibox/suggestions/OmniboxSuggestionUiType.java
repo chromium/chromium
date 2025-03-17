@@ -6,6 +6,8 @@ package org.chromium.components.omnibox.suggestions;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -34,6 +36,7 @@ import java.lang.annotation.RetentionPolicy;
     OmniboxSuggestionUiType.COUNT
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface OmniboxSuggestionUiType {
     int DEFAULT = 0;
     int EDIT_URL_SUGGESTION = 1;

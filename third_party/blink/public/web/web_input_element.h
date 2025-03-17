@@ -70,7 +70,7 @@ class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
   bool IsMultiple() const;
 
   // Associated <datalist> options which match to the current INPUT value.
-  WebVector<WebOptionElement> FilteredDataListOptions() const;
+  std::vector<WebOptionElement> FilteredDataListOptions() const;
 
   // Return the localized value for this input type.
   WebString LocalizeValue(const WebString&) const;

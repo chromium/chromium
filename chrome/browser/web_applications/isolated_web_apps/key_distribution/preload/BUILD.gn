@@ -13,7 +13,7 @@ protoc_convert("key_distribution_binary") {
   args = [
     "--encode=web_app.IwaKeyDistribution",
     "-I",
-    rebase_path("//"),
+    rebase_path("//", root_build_dir),
     "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.proto",
   ]
 }

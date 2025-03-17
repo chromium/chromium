@@ -80,6 +80,40 @@ export function getWordCount(s: string, locale: Intl.LocalesArgument): number {
 }
 
 /**
+ * Chunks content string by size, respecting word boundaries defined by the
+ * given locale. See getWordCount comments for more implementation details.
+ *
+ * Returns array of strings chunked by word.
+ */
+export function chunkContentByWord(
+  content: string,
+  chunkSize: number,
+  locale: Intl.LocalesArgument,
+): string[] {
+  const segmenter = new Intl.Segmenter(locale, {granularity: 'word'});
+  const segments = segmenter.segment(content);
+  const chunks = [];
+  let chunk: string[] = [];
+  let wordCount = 0;
+  for (const {segment, isWordLike} of segments) {
+    if (wordCount < chunkSize) {
+      chunk.push(segment);
+    } else {
+      wordCount = 0;
+      chunks.push(chunk.join(''));
+      chunk = [segment];
+    }
+
+    wordCount += isWordLike === true ? 1 : 0;
+  }
+
+  if (chunk.length > 0) {
+    chunks.push(chunk.join(''));
+  }
+  return chunks;
+}
+
+/**
  * Shorten the given string to at most `maxWords` space-delimited words by
  * snipping the middle of string as "(...)".
  */

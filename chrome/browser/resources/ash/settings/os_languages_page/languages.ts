@@ -13,8 +13,6 @@
 // TODO(b/263828712): Upstream and downstream changes from browser settings, and
 // consider merging the two.
 
-import '/shared/settings/prefs/prefs.js';
-
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -1119,7 +1117,7 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
     const result = languageCode.match(/^([^-]+)-?/)!;
     // Safety: The regex above has one non-optional capturing group.
     assert(result.length === 2);
-    return result[1]!;
+    return result[1];
   }
 
   getLanguage(languageCode: string): chrome.languageSettingsPrivate.Language

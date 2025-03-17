@@ -13,12 +13,15 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Provide the enterprise information for the current device and profile. */
+@NullMarked
 public abstract class EnterpriseInfo {
     private static final String TAG = "EnterpriseInfo";
 
-    private static EnterpriseInfo sInstance;
+    private static @Nullable EnterpriseInfo sInstance;
 
     /** A simple tuple to hold onto named fields about the state of ownership. */
     public static class OwnedState {
@@ -58,13 +61,13 @@ public abstract class EnterpriseInfo {
      *
      * @param callback to invoke with results.
      */
-    public abstract void getDeviceEnterpriseInfo(Callback<OwnedState> callback);
+    public abstract void getDeviceEnterpriseInfo(Callback<@Nullable OwnedState> callback);
 
     /**
      * Returns whether the device has a device owner or a profile owner synchronously. Returns null
      * if the OwnedState isn't yet available and kicks off a background request to fetch the state.
      */
-    public abstract OwnedState getDeviceEnterpriseInfoSync();
+    public abstract @Nullable OwnedState getDeviceEnterpriseInfoSync();
 
     /** Records metrics regarding whether the device has a device owner or a profile owner. */
     public abstract void logDeviceEnterpriseInfo();
@@ -93,19 +96,19 @@ public abstract class EnterpriseInfo {
      */
     @CalledByNative
     public static void getManagedStateForNative() {
-        Callback<OwnedState> callback =
-                (result) -> {
-                    Log.i(TAG, "#getManagedStateForNative() " + result);
-                    if (result == null) {
-                        // Unable to determine the owned state, assume it's not owned.
-                        EnterpriseInfoJni.get().updateNativeOwnedState(false, false);
-                    } else {
-                        EnterpriseInfoJni.get()
-                                .updateNativeOwnedState(result.mDeviceOwned, result.mProfileOwned);
-                    }
-                };
+        EnterpriseInfo.getInstance()
+                .getDeviceEnterpriseInfo(EnterpriseInfo::getManagedStateForNativeCallback);
+    }
 
-        EnterpriseInfo.getInstance().getDeviceEnterpriseInfo(callback);
+    private static void getManagedStateForNativeCallback(@Nullable OwnedState result) {
+        Log.i(TAG, "#getManagedStateForNative() " + result);
+        if (result == null) {
+            // Unable to determine the owned state, assume it's not owned.
+            EnterpriseInfoJni.get().updateNativeOwnedState(false, false);
+        } else {
+            EnterpriseInfoJni.get()
+                    .updateNativeOwnedState(result.mDeviceOwned, result.mProfileOwned);
+        }
     }
 
     @NativeMethods

@@ -7,8 +7,7 @@
 #include "base/task/task_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 TEST(ScopedSetTaskPriorityForCurrentThreadTest,
      ScopedSetTaskPriorityForCurrentThread) {
@@ -21,5 +20,4 @@ TEST(ScopedSetTaskPriorityForCurrentThreadTest,
   EXPECT_EQ(TaskPriority::USER_BLOCKING, GetTaskPriorityForCurrentThread());
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/metrics/histogram_functions.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_writable_stream_wrapper.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/system/handle_signals_state.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -217,7 +212,8 @@ void TCPWritableStreamWrapper::CloseStream() {
   }
 
   ResetPipe();
-  std::move(on_close_).Run(/*exception=*/ScriptValue());
+  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>(),
+                           /*net_error=*/net::OK);
 }
 
 void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
@@ -239,10 +235,8 @@ void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
   // ScriptValue.
   ScriptState::Scope scope{script_state};
 
-  auto exception = ScriptValue(script_state->GetIsolate(),
-                               V8ThrowDOMException::CreateOrDie(
-                                   script_state->GetIsolate(),
-                                   DOMExceptionCode::kNetworkError, message));
+  auto exception = V8ThrowDOMException::CreateOrDie(
+      script_state->GetIsolate(), DOMExceptionCode::kNetworkError, message);
 
   // Can be already reset due to HandlePipeClosed() called previously.
   if (data_pipe_) {
@@ -253,10 +247,11 @@ void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
     write_promise_resolver_->Reject(exception);
     write_promise_resolver_ = nullptr;
   } else {
-    Controller()->error(script_state, exception);
+    Controller()->error(script_state,
+                        ScriptValue(script_state->GetIsolate(), exception));
   }
 
-  std::move(on_close_).Run(exception);
+  std::move(on_close_).Run(exception, error_code);
 }
 
 void TCPWritableStreamWrapper::ResetPipe() {

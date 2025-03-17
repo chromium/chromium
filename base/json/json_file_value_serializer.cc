@@ -19,8 +19,7 @@ const char JSONFileValueDeserializer::kNoSuchFile[] = "File doesn't exist.";
 
 JSONFileValueSerializer::JSONFileValueSerializer(
     const base::FilePath& json_file_path)
-    : json_file_path_(json_file_path) {
-}
+    : json_file_path_(json_file_path) {}
 
 JSONFileValueSerializer::~JSONFileValueSerializer() = default;
 
@@ -41,8 +40,9 @@ bool JSONFileValueSerializer::SerializeInternal(base::ValueView root,
   bool result = omit_binary_values
                     ? serializer.SerializeAndOmitBinaryValues(root)
                     : serializer.Serialize(root);
-  if (!result)
+  if (!result) {
     return false;
+  }
 
   return base::WriteFile(json_file_path_, json_string);
 }
@@ -97,10 +97,12 @@ std::unique_ptr<base::Value> JSONFileValueDeserializer::Deserialize(
   std::string json_string;
   int error = ReadFileToString(&json_string);
   if (error != JSON_NO_ERROR) {
-    if (error_code)
+    if (error_code) {
       *error_code = error;
-    if (error_str)
+    }
+    if (error_str) {
       *error_str = GetErrorMessageForCode(error);
+    }
     return nullptr;
   }
 

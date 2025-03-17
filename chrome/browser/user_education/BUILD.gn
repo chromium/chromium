@@ -48,10 +48,14 @@ robolectric_library("junit") {
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/profiles/android:java",
     "//components/browser_ui/theme/android:java_resources",
+    "//components/browser_ui/widget/android:java",
     "//components/feature_engagement/public:public_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
   ]
   resources_package = "org.chromium.chrome.browser.user_education.test"
 }

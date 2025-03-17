@@ -230,9 +230,26 @@ class BrowserChildProcessHostImpl
   // The memory allocator, if any, in which the process will write its metrics.
   std::unique_ptr<base::PersistentMemoryAllocator> metrics_allocator_;
 
-  // The shared memory region used by |metrics_allocator_| that should be
-  // transferred to the child process.
-  base::UnsafeSharedMemoryRegion metrics_shared_region_;
+  // The histogram shared memory region used to transmit metrics. The memory
+  // region is allocated by the process host (this object) but ownership is
+  // shared with the child process launcher/helper which runs, and is destroyed,
+  // asynchronously. Depending on the feature configuration, either the host or
+  // the launcher is responsible for passing the memory region to the child.
+  // The destruction order of the host, launcher and child are indeterminate.
+  scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+      metrics_shared_region_;
+
+  // The tracing config memory region. Ownership of the memory region object is
+  // shared with the child process launcher/helper which runs, and is destroyed,
+  // asynchronously.
+  scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
+      tracing_config_memory_region_;
+
+  // The tracing output memory region to transmit traces. Ownership of the
+  // memory region object is shared with the child process launcher/helper which
+  // runs, and is destroyed, asynchronously.
+  scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+      tracing_output_memory_region_;
 
   // Indicates if the main browser process is used instead of a dedicated child
   // process.

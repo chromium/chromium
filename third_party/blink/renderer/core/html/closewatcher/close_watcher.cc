@@ -204,13 +204,7 @@ CloseWatcher::CloseWatcher(LocalDOMWindow& window)
     : ExecutionContextClient(&window) {}
 
 void CloseWatcher::requestCloseForBinding() {
-  // This behavior is being changes as part of the shipment of the dialog light
-  // dismiss feature, simply because it maintains the parallelism between
-  // dialog.requestClose() and closeWatcher.requestClose(). If there are compat
-  // problems, the flag will be disabled and this part can be rolled back.
-  RequestClose(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()
-                   ? AllowCancel::kAlways
-                   : AllowCancel::kWithUserActivation);
+  RequestClose(AllowCancel::kAlways);
 }
 
 bool CloseWatcher::RequestClose(AllowCancel allow_cancel) {
@@ -218,11 +212,8 @@ bool CloseWatcher::RequestClose(AllowCancel allow_cancel) {
     return true;
   }
   if (!enabled_) {
-    CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
     return true;
   }
-  CHECK(allow_cancel == AllowCancel::kWithUserActivation ||
-        RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
 
   WatcherStack& stack = *DomWindow()->closewatcher_stack();
   Event& cancel_event =
@@ -252,7 +243,6 @@ void CloseWatcher::close() {
     return;
   }
   if (!enabled_) {
-    CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
     return;
   }
 

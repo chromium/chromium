@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular/regular_grid_view_controller.h"
@@ -25,7 +26,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_user_education_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu/tab_context_menu_helper.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/tabs_closer.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -160,7 +160,6 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
                                    browser:(Browser*)browser
                                   delegate:(id<InactiveTabsCoordinatorDelegate>)
                                                delegate {
-  CHECK(IsInactiveTabsAvailable());
   CHECK(delegate);
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
@@ -191,7 +190,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
       SnapshotBrowserAgent::FromBrowser(browser)->snapshot_storage();
   self.mediator = [[InactiveTabsMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
-               prefService:GetApplicationContext()->GetLocalState()
+        profilePrefService:browser->GetProfile()->GetPrefs()
            snapshotStorage:snapshotStorage
                 tabsCloser:std::make_unique<TabsCloser>(
                                browser, TabsCloser::ClosePolicy::kAllTabs)];
@@ -392,6 +391,11 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 - (void)gridViewControllerDropSessionDidExit:
     (BaseGridViewController*)gridViewController {
   // No-op.
+}
+
+- (void)didTapButtonInActivitySummary:
+    (BaseGridViewController*)gridViewController {
+  NOTREACHED();
 }
 
 #pragma mark - InactiveTabsUserEducationCoordinatorDelegate
@@ -643,7 +647,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   // Start the user education coordinator.
   self.userEducationCoordinator = [[InactiveTabsUserEducationCoordinator alloc]
       initWithBaseViewController:self.viewController
-                         browser:nullptr];
+                         browser:self.browser];
   self.userEducationCoordinator.delegate = self;
   [self.userEducationCoordinator start];
 

@@ -14,6 +14,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.annotation.Retention;
@@ -30,16 +32,17 @@ import java.util.Map;
  * notification, it should inform this class about the corresponding job ID. The timeout will then
  * be set to the latest remaining job that is expected to finish.
  */
+@NullMarked
 public class TrampolineActivityTracker {
 
     @SuppressLint("StaticFieldLeak")
-    private static TrampolineActivityTracker sInstance;
+    private static @Nullable TrampolineActivityTracker sInstance;
 
     private final Runnable mRunnable;
     private final Map<String, Long> mEstimatedJobCompletionTimeMap = new HashMap<>();
 
     private boolean mNativeInitialized;
-    private Activity mTrackedActivity;
+    private @Nullable Activity mTrackedActivity;
 
     // Number of activities waiting for notification intent handling.
     private Handler mHandler;

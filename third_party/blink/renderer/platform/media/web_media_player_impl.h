@@ -45,7 +45,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/media_position.h"
-#include "third_party/blink/public/platform/media/video_frame_compositor.h"
 #include "third_party/blink/public/platform/media/web_media_player_builder.h"
 #include "third_party/blink/public/platform/media/web_media_player_delegate.h"
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
@@ -213,7 +212,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   bool HasAudio() const override;
 
   void EnabledAudioTracksChanged(
-      const WebVector<WebMediaPlayer::TrackId>& enabled_track_ids) override;
+      const std::vector<WebMediaPlayer::TrackId>& enabled_track_ids) override;
   void SelectedVideoTrackChanged(
       std::optional<WebMediaPlayer::TrackId> selected_track_id) override;
 
@@ -271,6 +270,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void SetContentDecryptionModule(
       WebContentDecryptionModule* cdm,
       WebContentDecryptionModuleResult result) override;
+  void SetRenderMutedAudio(bool render_muted_audio) override;
 
   void EnteredFullscreen() override;
   void ExitedFullscreen() override;
@@ -697,10 +697,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void RecordEncryptionScheme(const std::string& stream_name,
                               media::EncryptionScheme encryption_scheme);
 
-  // Returns whether the player is currently displayed in Picture-in-Picture.
-  // It will return true even if the player is in AutoPIP mode.
-  // The player MUST have a `client_` when this call happen.
-  bool IsInPictureInPicture() const;
+  // Returns whether the player is currently displayed in video
+  // Picture-in-Picture. It will return true even if the player is in AutoPIP
+  // (Android) mode. The player MUST have a `client_` when this call happen.
+  bool IsInVideoPictureInPicture() const;
 
   // Sets the UKM container name if needed.
   void MaybeSetContainerNameForMetrics();

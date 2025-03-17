@@ -22,7 +22,9 @@ namespace proto {
 class DatabaseMetadata;
 }  // namespace proto
 
-class WebAppProto;
+namespace proto {
+class WebApp;
+}  // namespace proto
 
 class FakeWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
  public:
@@ -43,7 +45,7 @@ class FakeWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
 
   std::set<webapps::AppId> ReadAllAppIds();
 
-  void WriteProtos(const std::vector<std::unique_ptr<WebAppProto>>& protos);
+  void WriteProtos(const std::vector<std::unique_ptr<proto::WebApp>>& protos);
   void WriteRegistry(const Registry& registry);
 
   void set_is_syncing_apps(bool is_syncing_apps) {

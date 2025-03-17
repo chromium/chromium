@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view_delegate.h"
 #include "components/vector_icons/vector_icons.h"
@@ -37,6 +38,10 @@ constexpr gfx::Size kArrowButtonSize(20, 20);
 constexpr gfx::Insets kArrowButtonInsets(4);
 constexpr int kPaddingBetweenArrowButtonAndTextfield = 10;
 
+bool IsValidContents(const std::u16string& contents) {
+  return !base::TrimWhitespace(contents, base::TRIM_ALL).empty();
+}
+
 }  // namespace
 
 EditorMenuTextfieldView::EditorMenuTextfieldView(
@@ -50,6 +55,11 @@ EditorMenuTextfieldView::~EditorMenuTextfieldView() = default;
 void EditorMenuTextfieldView::AddedToWidget() {
   // Only initialize the view after it is added to a widget.
   InitLayout();
+}
+
+void EditorMenuTextfieldView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  SetColors();
 }
 
 void EditorMenuTextfieldView::Layout(PassKey) {
@@ -67,7 +77,7 @@ void EditorMenuTextfieldView::Layout(PassKey) {
 void EditorMenuTextfieldView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  arrow_button_->SetVisible(!new_contents.empty());
+  arrow_button_->SetVisible(IsValidContents(new_contents));
 }
 
 bool EditorMenuTextfieldView::HandleKeyEvent(views::Textfield* sender,
@@ -92,7 +102,6 @@ void EditorMenuTextfieldView::InitLayout() {
   textfield_->SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
   textfield_->SetPlaceholderText(
       GetEditorMenuFreeformPromptInputFieldPlaceholderForHelpMeWrite());
-  textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
   textfield_->RemoveHoverEffect();
   textfield_->SetExtraInsets(gfx::Insets::TLBR(
       0, 0, 0, kArrowButtonSize.width() + kArrowButtonInsets.width()));
@@ -108,11 +117,20 @@ void EditorMenuTextfieldView::InitLayout() {
   arrow_button_->SetImageVerticalAlignment(
       views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
   arrow_button_->SetVisible(false);
+
+  SetColors();
 }
 
 void EditorMenuTextfieldView::OnTextfieldArrowButtonPressed() {
   CHECK(delegate_);
   delegate_->OnTextfieldArrowButtonPressed(textfield_->GetText());
+}
+
+void EditorMenuTextfieldView::SetColors() {
+  if (textfield_) {
+    textfield_->SetBackgroundColor(
+        GetColorProvider()->GetColor(ui::kColorCrosSysInputFieldOnBase));
+  }
 }
 
 BEGIN_METADATA(EditorMenuTextfieldView)

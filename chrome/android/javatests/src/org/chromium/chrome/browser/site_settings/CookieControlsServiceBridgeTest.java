@@ -37,6 +37,8 @@ import org.chromium.net.test.EmbeddedTestServer;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(CookieControlsBridgeTest.COOKIE_CONTROLS_BATCH_NAME)
+// TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
+@DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
 public class CookieControlsServiceBridgeTest {
     private class TestCallbackHandler
             implements CookieControlsServiceBridge.CookieControlsServiceObserver {
@@ -167,9 +169,9 @@ public class CookieControlsServiceBridgeTest {
 
                     Assert.assertEquals(
                             "CookieControlsMode should be incognito_only",
+                            CookieControlsMode.INCOGNITO_ONLY,
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                    .getInteger(PrefNames.COOKIE_CONTROLS_MODE),
-                            CookieControlsMode.INCOGNITO_ONLY);
+                                    .getInteger(PrefNames.COOKIE_CONTROLS_MODE));
                 });
         // One initial callback after creation, then another after the toggle change.
         mCallbackHelper.waitForCallback(currentCallCount, 2);

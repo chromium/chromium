@@ -40,7 +40,7 @@ class UnexpectedChild(Parsing):
 
 
 class UnexpectedAttribute(Parsing):
-  '''The attribute was not expected'''
+  '''An unexpected attribute was encountered'''
   pass
 
 

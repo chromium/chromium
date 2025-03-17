@@ -80,7 +80,7 @@ public class HistorySyncCoordinator {
 
         setView(view, mUseLandscapeLayout);
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.Started", accessPoint, SigninAccessPoint.MAX);
+                "Signin.HistorySyncOptIn.Started", accessPoint, SigninAccessPoint.MAX_VALUE);
         MinorModeHelper.resolveMinorMode(
                 IdentityServicesProvider.get().getSigninManager(mProfile).getIdentityManager(),
                 IdentityServicesProvider.get()

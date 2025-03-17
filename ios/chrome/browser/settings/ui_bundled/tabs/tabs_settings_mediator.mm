@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_mediator.h"
 
+#import <memory>
+
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -19,7 +21,7 @@
 @end
 
 @implementation TabsSettingsMediator {
-  // Preference service from the application context.
+  // Preference service from the profile.
   raw_ptr<PrefService> _prefs;
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
@@ -29,28 +31,25 @@
   __weak id<TabsSettingsConsumer> _consumer;
 }
 
-- (instancetype)initWithUserLocalPrefService:(PrefService*)localPrefService
-                                    consumer:
-                                        (id<TabsSettingsConsumer>)consumer {
+- (instancetype)initWithProfilePrefService:(PrefService*)profilePrefService
+                                  consumer:(id<TabsSettingsConsumer>)consumer {
   self = [super init];
   if (self) {
-    CHECK(localPrefService);
+    CHECK(profilePrefService);
     CHECK(consumer);
-    _prefs = localPrefService;
+    _prefs = profilePrefService;
     _consumer = consumer;
     _prefChangeRegistrar.Init(_prefs);
-    _prefObserverBridge.reset(new PrefObserverBridge(self));
-    if (IsInactiveTabsAvailable()) {
-      _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kInactiveTabsTimeThreshold, &_prefChangeRegistrar);
+    _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kInactiveTabsTimeThreshold, &_prefChangeRegistrar);
 
-      // Use InactiveTabsTimeThreshold() instead of reading the pref value
-      // directly as this function also manage flag and default value.
-      int currentThreshold = IsInactiveTabsExplicitlyDisabledByUser()
-                                 ? kInactiveTabsDisabledByUser
-                                 : InactiveTabsTimeThreshold().InDays();
-      [_consumer setInactiveTabsTimeThreshold:currentThreshold];
-    }
+    // Use InactiveTabsTimeThreshold() instead of reading the pref value
+    // directly as this function also manage flag and default value.
+    int currentThreshold = IsInactiveTabsExplicitlyDisabledByUser(_prefs)
+                               ? kInactiveTabsDisabledByUser
+                               : InactiveTabsTimeThreshold(_prefs).InDays();
+    [_consumer setInactiveTabsTimeThreshold:currentThreshold];
   }
   return self;
 }
@@ -66,7 +65,6 @@
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == prefs::kInactiveTabsTimeThreshold) {
-    CHECK(IsInactiveTabsAvailable());
     [_consumer
         setInactiveTabsTimeThreshold:_prefs->GetInteger(
                                          prefs::kInactiveTabsTimeThreshold)];

@@ -49,18 +49,21 @@ void TaskQueue::TaskTiming::RecordTaskStart(LazyNow* now) {
   DCHECK_EQ(State::NotStarted, state_);
   state_ = State::Running;
 
-  if (has_wall_time())
+  if (has_wall_time()) {
     start_time_ = now->Now();
+  }
 }
 
 void TaskQueue::TaskTiming::RecordTaskEnd(LazyNow* now) {
   DCHECK(state_ == State::Running || state_ == State::Finished);
-  if (state_ == State::Finished)
+  if (state_ == State::Finished) {
     return;
+  }
   state_ = State::Finished;
 
-  if (has_wall_time())
+  if (has_wall_time()) {
     end_time_ = now->Now();
+  }
 }
 
 TaskQueue::Handle::Handle(std::unique_ptr<internal::TaskQueueImpl> task_queue)

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
+<translation id="1149198577555059081">Іздеңіз не URL теріңіз</translation>
 <translation id="1324575488877808473">Ең көп кірген сайттарыңызды осы жерден көру үшін Chrome-ды ашыңыз.</translation>
 <translation id="2513892053093488070">Дауыспен іздеу</translation>
 <translation id="2535710892645968259">Құлыптаулы экраннан бірден Chrome Dino ойынына өту.</translation>
@@ -15,7 +16,6 @@
 <translation id="405442954313519726">Жаңа қойындыдан іздеңіз, инкогнито режимінде дауыспен іздеуді не QR кодын пайдаланыңыз.</translation>
 <translation id="4557098988773644458">Chrome Dino ойынына өту</translation>
 <translation id="4678859075583681103">Жаңа іздеуді бастаңыз немесе iPhone негізгі бетінен ең көп қаралатын сайттарды ашыңыз.</translation>
-<translation id="4954445889641385956">Іздеңіз не URL теріңіз</translation>
 <translation id="4962772945748414465">WEBSITE_PLACEHOLDER веб-сайтын ашу</translation>
 <translation id="5234725349196694896">Chrome-да ұнататын іздеу жүйесін пайдалану.</translation>
 <translation id="5277852985315196237">Іздеңіз не URL теріңіз</translation>

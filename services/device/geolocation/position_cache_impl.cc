@@ -4,7 +4,8 @@
 
 #include "services/device/geolocation/position_cache_impl.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/utf_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/geolocation/wifi_data.h"
@@ -78,7 +79,8 @@ void PositionCacheImpl::CachePosition(const WifiData& wifi_data,
 const mojom::Geoposition* PositionCacheImpl::FindPosition(
     const WifiData& wifi_data) {
   const Hash key = MakeKey(wifi_data);
-  auto it = base::ranges::find(data_, key);
+  auto it = std::ranges::find_if(
+      data_, [key](const CacheEntry& entry) { return entry == key; });
   if (it == data_.end()) {
     ++miss_count_;
     last_miss_ = base::Time::Now();

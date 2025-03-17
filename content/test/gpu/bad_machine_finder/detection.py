@@ -322,10 +322,17 @@ def _ChanceOfExactlyNIndependentEvents(event_probability: decimal.Decimal,
     A decimal.Decimal object containing the chance that the event happened
     exactly |n| times.
   """
-  # Special case this to avoid 0**0, which results in an error when using
+  # Special case these to avoid 0**0, which results in an error when using
   # decimal.Decimal.
+  # Probability of 0 occurs in practice when a configuration was 100% stable
   if event_probability == 0:
     if n == 0:
+      return decimal.Decimal(1)
+    return decimal.Decimal(0)
+  # Event probability of 1 occurs in practice when a configuration was 0%
+  # stable.
+  if event_probability == 1:
+    if n == total_events:
       return decimal.Decimal(1)
     return decimal.Decimal(0)
 

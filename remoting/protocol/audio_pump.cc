@@ -184,7 +184,7 @@ void AudioPump::Core::EncodeAudioPacket(std::unique_ptr<AudioPacket> packet) {
     return;
   }
 
-  int packet_size = encoded_packet->ByteSize();
+  int packet_size = encoded_packet->ByteSizeLong();
   bytes_pending_ += packet_size;
 
   pump_task_runner_->PostTask(

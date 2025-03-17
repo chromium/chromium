@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] This tests for the remove order of discard elements.
+  assert_array_equals: removed nodes lengths differ, expected array ["animate", "discard", "rect", "discard"] length 4, got [] length 0
+Harness: the test ran to completion.
+

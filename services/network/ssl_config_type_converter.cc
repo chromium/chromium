@@ -60,8 +60,6 @@ net::CertVerifier::Config MojoSSLConfigToCertVerifierConfig(
       mojo_config->rev_checking_required_local_anchors;
   net_config.enable_sha1_local_anchors =
       mojo_config->sha1_local_anchors_enabled;
-  net_config.disable_symantec_enforcement =
-      mojo_config->symantec_enforcement_disabled;
 
   return net_config;
 }

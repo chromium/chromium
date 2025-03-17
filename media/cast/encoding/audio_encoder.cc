@@ -21,6 +21,7 @@
 #include "base/memory/raw_span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -150,8 +151,9 @@ class AudioEncoder::ImplBase
       src_pos += num_samples_to_xfer;
       buffer_fill_end_ += num_samples_to_xfer;
 
-      if (buffer_fill_end_ < samples_per_frame_)
+      if (buffer_fill_end_ < samples_per_frame_) {
         break;
+      }
 
       auto audio_frame = std::make_unique<SenderEncodedFrame>();
       audio_frame->is_key_frame = true;
@@ -180,10 +182,9 @@ class AudioEncoder::ImplBase
             "cast.stream", "Audio Encode", TRACE_ID_LOCAL(audio_frame.get()),
             "encoder_utilization", audio_frame->encoder_utilization);
 
-        audio_frame->encode_completion_time =
-            cast_environment_->Clock()->NowTicks();
+        audio_frame->encode_completion_time = cast_environment_->NowTicks();
         cast_environment_->PostTask(
-            CastEnvironment::MAIN, FROM_HERE,
+            CastEnvironment::ThreadId::kMain, FROM_HERE,
             base::BindOnce(callback_, std::move(audio_frame),
                            samples_dropped_from_buffer_));
         samples_dropped_from_buffer_ = 0;
@@ -786,7 +787,7 @@ void AudioEncoder::InsertAudio(std::unique_ptr<AudioBus> audio_bus,
   DCHECK(audio_bus.get());
   CHECK_EQ(InitializationResult(), STATUS_INITIALIZED);
   cast_environment_->PostTask(
-      CastEnvironment::AUDIO, FROM_HERE,
+      CastEnvironment::ThreadId::kAudio, FROM_HERE,
       base::BindOnce(&AudioEncoder::ImplBase::EncodeAudio, impl_,
                      std::move(audio_bus), recorded_time));
 }

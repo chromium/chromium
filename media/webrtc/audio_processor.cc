@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/to_string.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -27,7 +29,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/audio_fifo.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -178,7 +179,8 @@ class AudioProcessorCaptureFifo {
     }
 
     if (fifo_) {
-      CHECK_LT(fifo_->frames(), destination_->bus()->frames());
+      CHECK_LT(fifo_->frames(),
+               static_cast<size_t>(destination_->bus()->frames()));
       next_audio_delay_ =
           audio_delay + fifo_->frames() * base::Seconds(1) / sample_rate_;
       fifo_->Push(source_to_push);
@@ -195,8 +197,10 @@ class AudioProcessorCaptureFifo {
   bool Consume(AudioProcessorCaptureBus** destination,
                base::TimeDelta* audio_delay) {
     if (fifo_) {
-      if (fifo_->frames() < destination_->bus()->frames())
+      if (fifo_->frames() <
+          static_cast<size_t>(destination_->bus()->frames())) {
         return false;
+      }
 
       fifo_->Consume(destination_->bus(), 0, destination_->bus()->frames());
       *audio_delay = next_audio_delay_;
@@ -243,7 +247,7 @@ std::unique_ptr<AudioProcessor> AudioProcessor::Create(
     const media::AudioParameters& output_format) {
   log_callback.Run(base::StringPrintf(
       "AudioProcessor::Create({multi_channel_capture_processing=%s})",
-      settings.multi_channel_capture_processing ? "true" : "false"));
+      base::ToString(settings.multi_channel_capture_processing)));
 
   rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing =
       media::CreateWebRtcAudioProcessingModule(settings);
@@ -364,7 +368,7 @@ void AudioProcessor::ProcessCapturedAudio(const media::AudioBus& audio_source,
 void AudioProcessor::SetOutputWillBeMuted(bool muted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   SendLogMessage(
-      base::StringPrintf("%s({muted=%s})", __func__, muted ? "true" : "false"));
+      base::StringPrintf("%s({muted=%s})", __func__, base::ToString(muted)));
   if (webrtc_audio_processing_) {
     webrtc_audio_processing_->set_output_will_be_muted(muted);
   }
@@ -505,8 +509,7 @@ std::optional<double> AudioProcessor::ProcessData(
   // controller.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   DCHECK_LE(volume, 1.0);
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    BUILDFLAG(IS_OPENBSD)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_OPENBSD)
   // We have a special situation on Linux where the microphone volume can be
   // "higher than maximum". The input volume slider in the sound preference
   // allows the user to set a scaling that is higher than 100%. It means that

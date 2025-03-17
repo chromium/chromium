@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] checkbox
+  assert_equals: border-width expected "5px" but got "0px"
+[FAIL] radio
+  assert_equals: border-width expected "5px" but got "0px"
+Harness: the test ran to completion.
+

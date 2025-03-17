@@ -25,7 +25,6 @@
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/util/fps_meter.h"
 #include "device/vr/util/sliding_average.h"
-#include "device/vr/vr_device.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -267,6 +266,11 @@ class OpenXrRenderLoop : public XRThread,
                             std::unique_ptr<gfx::GpuFence> gpu_fence);
 
   void MaybeRejectSessionCallback();
+
+  gfx::Transform mojo_from_local() {
+    // mojo_from_local is currently identity.
+    return gfx::Transform();
+  }
 
   bool IsFeatureEnabled(device::mojom::XRSessionFeature feature) const;
   int16_t next_frame_id_ = 0;

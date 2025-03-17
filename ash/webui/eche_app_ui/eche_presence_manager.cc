@@ -72,16 +72,12 @@ void EchePresenceManager::UpdateMonitoringStatus() {
       eche_feature_status_provider_->GetStatus();
   switch (feature_status) {
     case FeatureStatus::kIneligible:
-      ABSL_FALLTHROUGH_INTENDED;
     case FeatureStatus::kDisabled:
-      ABSL_FALLTHROUGH_INTENDED;
     case FeatureStatus::kDependentFeature:
-      ABSL_FALLTHROUGH_INTENDED;
     case FeatureStatus::kDependentFeaturePending:
-      ABSL_FALLTHROUGH_INTENDED;
     case FeatureStatus::kDisconnected:
       stream_running_ = false;
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case FeatureStatus::kConnecting:
       StopMonitoring();
       break;

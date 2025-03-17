@@ -87,7 +87,10 @@ std::optional<std::string> ParseWithLockParam(
     }
 
     if (param_type.value() == SharedStorageHeaderParamType::kWithLock) {
-      return param_item.GetString();
+      // Skip on reserved lock name.
+      if (!IsReservedLockName(param_item.GetString())) {
+        return param_item.GetString();
+      }
     }
   }
 
@@ -134,7 +137,10 @@ MakeSharedStorageModifierMethodWithOptions(
     }
 
     if (param_type.value() == SharedStorageHeaderParamType::kWithLock) {
-      with_lock = param_item.GetString();
+      // Skip on reserved lock name.
+      if (!IsReservedLockName(param_item.GetString())) {
+        with_lock = param_item.GetString();
+      }
       continue;
     }
 

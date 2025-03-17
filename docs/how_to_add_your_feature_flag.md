@@ -48,6 +48,28 @@ feature needs to be runtime-enabled, read also Blink's
 
 [blink-rte]: ../third_party/blink/renderer/platform/RuntimeEnabledFeatures.md
 
+### To Use the Flag in `third_party/devtools-frontend/`
+
+Add a `base::Feature` to the following files
+
+* [chrome/browser/devtools/features.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/devtools/features.cc)
+* [chrome/browser/devtools/features.h](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/devtools/features.h)
+
+and add appropriate logic to `DevToolsUIBindings::GetHostConfig()` in
+
+* [chrome/browser/devtools/devtools_ui_bindings.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/devtools/devtools_ui_bindings.cc)
+
+to expose the feature to DevTools' front-end ([example CL](https://crrev.com/c/6084996)).
+Afterwards hook up the feature in `devtools-frontend` by following the steps outlined
+in the [documentation][devtools-cli-docs].
+
+Historically, DevTools front-end used [Experiments][devtools-experiments] to gate
+new (experimental) features, but going forward the `base::Feature` mechanism should
+be used.
+
+[devtools-experiments]: https://developer.chrome.com/docs/devtools/settings/experiments
+[devtools-cli-docs]: https://chromium.googlesource.com/devtools/devtools-frontend/+/HEAD/docs/contributing/settings-experiments-features.md#how-to-add-command-line-flags
+
 ### Examples
 
 You can refer to [this CL](https://chromium-review.googlesource.com/c/554510/)

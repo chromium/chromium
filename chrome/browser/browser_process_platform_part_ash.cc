@@ -15,7 +15,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/scheduler_config/scheduler_configuration_manager.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
@@ -47,6 +46,7 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller_delegate_impl.h"
+#include "chromeos/ash/components/scheduler_config/scheduler_configuration_manager.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -200,11 +200,14 @@ void BrowserProcessPlatformPart::ShutdownDeviceDisablingManager() {
 }
 
 void BrowserProcessPlatformPart::InitializeSessionManager() {
+  CHECK(ash::BootTimesRecorder::GetIfCreated());
   CHECK(!session_manager_);
   session_manager_ = std::make_unique<ash::ChromeSessionManager>();
+  session_manager_->AddObserver(ash::BootTimesRecorder::Get());
 }
 
 void BrowserProcessPlatformPart::ShutdownSessionManager() {
+  session_manager_->RemoveObserver(ash::BootTimesRecorder::Get());
   session_manager_.reset();
 }
 

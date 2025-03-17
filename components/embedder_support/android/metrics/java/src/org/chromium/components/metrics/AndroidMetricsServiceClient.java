@@ -13,13 +13,16 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Helps the native AndroidMetricsServiceClient call Android Java APIs over JNI. */
 @JNINamespace("metrics")
+@NullMarked
 public class AndroidMetricsServiceClient {
     private static final String PLAY_STORE_PACKAGE_NAME = "com.android.vending";
 
-    private static @InstallerPackageType Integer sInstallerPackageTypeForTesting;
+    private static @InstallerPackageType @Nullable Integer sInstallerPackageTypeForTesting;
 
     @CalledByNative
     private static @InstallerPackageType int getInstallerPackageType() {

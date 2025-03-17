@@ -63,7 +63,7 @@ TEST_F(ReplaceSelectionCommandTest, pasteSpanInText) {
   GetDocument().setDesignMode("on");
   SetBodyContent("<b>text</b>");
 
-  Element* b_element = GetDocument().QuerySelector(AtomicString("b"));
+  Element* b_element = QuerySelector("b");
   LocalFrame* frame = GetDocument().GetFrame();
   frame->Selection().SetSelection(
       SelectionInDOMTree::Builder()
@@ -81,6 +81,81 @@ TEST_F(ReplaceSelectionCommandTest, pasteSpanInText) {
   EXPECT_TRUE(command->Apply()) << "the replace command should have succeeded";
   EXPECT_EQ("<b>t</b>bar<b>ext</b>", GetDocument().body()->innerHTML())
       << "'bar' should have been inserted";
+}
+
+TEST_F(ReplaceSelectionCommandTest,
+       PasteNonEditableSpanInBetweenEditableAndNonEditable) {
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<div contenteditable=\"true\">Editable<span "
+          "contenteditable=\"false\">Non-Editable</span>|Editable</div>"),
+      SetSelectionOptions());
+
+  Element* span_element = QuerySelector("span");
+  DocumentFragment* fragment = GetDocument().createDocumentFragment();
+  fragment->ParseHTML("<span contenteditable=\"false\">ToPaste</span>",
+                      span_element);
+
+  ReplaceSelectionCommand::CommandOptions options = 0;
+  auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), fragment, options);
+
+  EXPECT_TRUE(command->Apply()) << "the replace command should have succeeded";
+  String expected_string;
+  String assert_comment;
+  if (RuntimeEnabledFeatures::
+          PartialCompletionNotAllowedInMoveParagraphsEnabled()) {
+    expected_string =
+        "<div contenteditable=\"true\">Editable<span "
+        "contenteditable=\"false\">Non-Editable</span><span "
+        "contenteditable=\"false\">ToPaste</span>Editable</div>";
+    assert_comment = "span should have been inserted without losing any data";
+  } else {
+    expected_string =
+        "<div contenteditable=\"true\">Editable<span "
+        "contenteditable=\"false\">Non-Editable</span><span "
+        "contenteditable=\"false\">ToPaste</span></div>";
+    assert_comment = "span would be incorrectly inserted with data loss";
+  }
+  EXPECT_EQ(expected_string, GetDocument().body()->innerHTML())
+      << assert_comment;
+}
+
+TEST_F(ReplaceSelectionCommandTest, PasteNonEditableSpanInEditableArea) {
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<div contenteditable=\"true\">Editable<span "
+          "contenteditable=\"false\">Non-Editable</span>Edit|able</div>"),
+      SetSelectionOptions());
+
+  Element* span_element = QuerySelector("span");
+  DocumentFragment* fragment = GetDocument().createDocumentFragment();
+  fragment->ParseHTML("<span contenteditable=\"false\">ToPaste</span>",
+                      span_element);
+
+  ReplaceSelectionCommand::CommandOptions options = 0;
+  auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), fragment, options);
+
+  EXPECT_TRUE(command->Apply()) << "the replace command should have succeeded";
+  String expected_string;
+  String assert_comment;
+  if (RuntimeEnabledFeatures::
+          PartialCompletionNotAllowedInMoveParagraphsEnabled()) {
+    expected_string =
+        "<div contenteditable=\"true\">Editable<span "
+        "contenteditable=\"false\">Non-Editable</span>Edit<span "
+        "contenteditable=\"false\">ToPaste</span>able</div>";
+    assert_comment = "span should have been inserted without duplication";
+  } else {
+    expected_string =
+        "<div contenteditable=\"true\">Editable<span "
+        "contenteditable=\"false\">Non-Editable</span>Edit<span "
+        "contenteditable=\"false\">ToPaste</span>ToPasteable</div>";
+    assert_comment = "span would be incorrectly inserted with duplication";
+  }
+  EXPECT_EQ(expected_string, GetDocument().body()->innerHTML())
+      << assert_comment;
 }
 
 // Helper function to set autosizing multipliers on a document.
@@ -106,8 +181,8 @@ TEST_F(ReplaceSelectionCommandTest, TextAutosizingDoesntInflateText) {
   SetBodyContent("<div><span style='font-size: 12px;'>foo bar</span></div>");
   SetTextAutosizingMultiplier(&GetDocument(), 2.0);
 
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
-  Element* span = GetDocument().QuerySelector(AtomicString("span"));
+  Element* div = QuerySelector("div");
+  Element* span = QuerySelector("span");
 
   // Select "bar".
   GetDocument().GetFrame()->Selection().SetSelection(
@@ -138,8 +213,7 @@ TEST_F(ReplaceSelectionCommandTest, TrailingNonVisibleTextCrash) {
                            SetSelectionOptions());
 
   DocumentFragment* fragment = GetDocument().createDocumentFragment();
-  fragment->ParseHTML("<div>bar</div> ",
-                      GetDocument().QuerySelector(AtomicString("div")));
+  fragment->ParseHTML("<div>bar</div> ", QuerySelector("div"));
   ReplaceSelectionCommand::CommandOptions options = 0;
   auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
       GetDocument(), fragment, options);
@@ -189,7 +263,7 @@ TEST_F(ReplaceSelectionCommandTest, SmartPlainTextPaste) {
 TEST_F(ReplaceSelectionCommandTest, TableAndImages) {
   GetDocument().setDesignMode("on");
   SetBodyContent("<table>&#x20;<tbody></tbody>&#x20;</table>");
-  Element* tbody = GetDocument().QuerySelector(AtomicString("tbody"));
+  Element* tbody = QuerySelector("tbody");
   tbody->AppendChild(GetDocument().CreateRawElement(html_names::kImgTag));
   Selection().SetSelection(
       SelectionInDOMTree::Builder().Collapse(Position(tbody, 1)).Build(),
@@ -264,7 +338,7 @@ TEST_F(ReplaceSelectionCommandTest, InsertImageInNonEditableBlock1) {
   EXPECT_TRUE(command.Apply());
   EXPECT_EQ(
       "<div contenteditable=\"false\"><span contenteditable>"
-      "a<img>|<br>b</span></div>",
+      "a<img>|b</span></div>",
       GetSelectionTextFromBody());
 }
 

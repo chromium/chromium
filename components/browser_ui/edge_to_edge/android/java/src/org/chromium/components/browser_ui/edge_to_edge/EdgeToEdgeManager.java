@@ -4,17 +4,24 @@
 
 package org.chromium.components.browser_ui.edge_to_edge;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.util.TokenHolder;
 
+@NullMarked
 public class EdgeToEdgeManager {
-    private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    private final ObservableSupplierImpl<Boolean> mContentFitsWindowInsetsSupplier =
+            new ObservableSupplierImpl<>();
+    private @Nullable EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private int mEdgeToEdgeToken = TokenHolder.INVALID_TOKEN;
-    private final @NonNull EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
+    private final EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
 
     /**
      * Creates an EdgeToEdgeManager for managing central edge-to-edge functionality.
@@ -25,18 +32,23 @@ public class EdgeToEdgeManager {
      *     used to color the system bars when edge to edge is enabled.
      * @param shouldDrawEdgeToEdge Whether the host activity intends to draw edge-to-edge by
      *     default.
+     * @param canColorStatusBarColor Whether the status bar color is able to be changed.
      */
     public EdgeToEdgeManager(
-            @NonNull Activity activity,
-            @NonNull EdgeToEdgeStateProvider edgeToEdgeStateProvider,
-            @NonNull OneshotSupplier<SystemBarColorHelper> systemBarColorHelperSupplier,
-            boolean shouldDrawEdgeToEdge) {
+            Activity activity,
+            EdgeToEdgeStateProvider edgeToEdgeStateProvider,
+            OneshotSupplier<SystemBarColorHelper> systemBarColorHelperSupplier,
+            boolean shouldDrawEdgeToEdge,
+            boolean canColorStatusBarColor) {
+        mContentFitsWindowInsetsSupplier.set(!shouldDrawEdgeToEdge);
+
         mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
         mEdgeToEdgeSystemBarColorHelper =
                 new EdgeToEdgeSystemBarColorHelper(
                         activity.getWindow(),
-                        mEdgeToEdgeStateProvider,
-                        systemBarColorHelperSupplier);
+                        getContentFitsWindowInsetsSupplier(),
+                        systemBarColorHelperSupplier,
+                        canColorStatusBarColor);
 
         if (shouldDrawEdgeToEdge) {
             mEdgeToEdgeToken = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
@@ -58,6 +70,7 @@ public class EdgeToEdgeManager {
      * edge-to-edge state.
      */
     public EdgeToEdgeStateProvider getEdgeToEdgeStateProvider() {
+        assert mEdgeToEdgeStateProvider != null; // Ensure not destroyed.
         return mEdgeToEdgeStateProvider;
     }
 
@@ -66,5 +79,28 @@ public class EdgeToEdgeManager {
      */
     public EdgeToEdgeSystemBarColorHelper getEdgeToEdgeSystemBarColorHelper() {
         return mEdgeToEdgeSystemBarColorHelper;
+    }
+
+    /**
+     * Sets whether the content should fit within the system's window insets, or if the content
+     * should be drawn edge-to-edge (into the window insets).
+     */
+    public void setContentFitsWindowInsets(boolean contentFitsWindow) {
+        mContentFitsWindowInsetsSupplier.set(contentFitsWindow);
+    }
+
+    /**
+     * Returns true if the content should fit within the system's window insets, false if the
+     * content should be drawn edge-to-edge (into the window insets).
+     */
+    public boolean shouldContentFitsWindowInsets() {
+        return assumeNonNull(mContentFitsWindowInsetsSupplier.get());
+    }
+
+    /**
+     * Returns the supplier informing whether the contents fit within the system's window insets.
+     */
+    public ObservableSupplier<Boolean> getContentFitsWindowInsetsSupplier() {
+        return mContentFitsWindowInsetsSupplier;
     }
 }

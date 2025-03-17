@@ -86,21 +86,24 @@ void LocalInputMonitorImpl::StartMonitoringForClientSession(
   hotkey_input_monitor_ = LocalHotkeyInputMonitor::Create(
       caller_task_runner_, input_task_runner_, ui_task_runner_,
       base::BindOnce(&ClientSessionControl::DisconnectSession,
-                     client_session_control, ErrorCode::OK));
+                     client_session_control, ErrorCode::OK,
+                     "Disconnection keyboard shortcut pressed", FROM_HERE));
 
   pointer_input_monitor_ = LocalPointerInputMonitor::Create(
       caller_task_runner_, input_task_runner_, ui_task_runner_,
       base::BindRepeating(&ClientSessionControl::OnLocalPointerMoved,
                           client_session_control),
       base::BindOnce(&ClientSessionControl::DisconnectSession,
-                     client_session_control, ErrorCode::OK));
+                     client_session_control, ErrorCode::OK,
+                     "Local pointer input detected", FROM_HERE));
 
   keyboard_input_monitor_ = LocalKeyboardInputMonitor::Create(
       caller_task_runner_, input_task_runner_, ui_task_runner_,
       base::BindRepeating(&ClientSessionControl::OnLocalKeyPressed,
                           client_session_control),
       base::BindOnce(&ClientSessionControl::DisconnectSession,
-                     client_session_control, ErrorCode::OK));
+                     client_session_control, ErrorCode::OK,
+                     "Local keyboard input detected.", FROM_HERE));
 
   OnMonitoringStarted();
 }

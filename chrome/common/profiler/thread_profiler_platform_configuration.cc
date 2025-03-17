@@ -170,6 +170,9 @@ class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
       sampling_profiler::ProfilerThreadType thread,
       std::optional<version_info::Channel> release_channel) const override;
 
+  bool IsSupportedForChannel(
+      std::optional<version_info::Channel> release_channel) const override;
+
  private:
   // Whether profiling is enabled on a thread type for Android DEV channel.
   const base::flat_map<sampling_profiler::ProfilerThreadType, bool>
@@ -210,9 +213,23 @@ AndroidPlatformConfiguration::GetEnableRates(
     return RelativePopulations{0.0, 100.0, 0.0};
   }
 
-  CHECK(*release_channel == version_info::Channel::CANARY ||
-        *release_channel == version_info::Channel::DEV ||
-        *release_channel == version_info::Channel::BETA);
+  CHECK(*release_channel != version_info::Channel::UNKNOWN);
+
+  if (*release_channel == version_info::Channel::STABLE) {
+// Only enable for arm64, as this does not require DFM installation.
+#if defined(ARCH_CPU_ARM64)
+    // For 100% of population
+    // - 1/2 within the subgroup, i.e. 50.0% of total population, enable
+    // profiling.
+    // - 1/2 within the subgroup, disable profiling.
+    // This results a total of 0.00005% enable rate.
+    static constexpr double experiment_rate = 0.0001;
+    return RelativePopulations{100.0 - experiment_rate, 0.0, experiment_rate};
+#else
+    // Don't enable for arm32.
+    return RelativePopulations{100.0, 0.0, 0.0};
+#endif
+  }
 
   if (*release_channel == version_info::Channel::BETA) {
     // For 100% of population
@@ -273,14 +290,6 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
     sampling_profiler::ProfilerProcessType process,
     sampling_profiler::ProfilerThreadType thread,
     std::optional<version_info::Channel> release_channel) const {
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-  // For now, we only enable SSM in the Browser process and Main thread on
-  // Android 64, since Libunwindstack doesn't support JavaScript.
-  if (!(process == sampling_profiler::ProfilerProcessType::kBrowser &&
-        thread == sampling_profiler::ProfilerThreadType::kMain)) {
-    return false;
-  }
-#endif
   if (!release_channel.has_value() || browser_test_mode_enabled()) {
     return true;
   }
@@ -303,6 +312,29 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
     }
     case version_info::Channel::CANARY:
       return true;
+    default:
+      return false;
+  }
+}
+
+bool AndroidPlatformConfiguration::IsSupportedForChannel(
+    std::optional<version_info::Channel> release_channel) const {
+  // The profiler is always supported for local builds and the CQ.
+  if (!release_channel) {
+    return true;
+  }
+
+  // Canary, dev, beta, stable channels are supported in release builds, with
+  // stable only support on arm64.
+  switch (*release_channel) {
+    case version_info::Channel::CANARY:
+    case version_info::Channel::DEV:
+    case version_info::Channel::BETA:
+#if defined(ARCH_CPU_ARM64)
+    case version_info::Channel::STABLE:
+#endif
+      return true;
+
     default:
       return false;
   }

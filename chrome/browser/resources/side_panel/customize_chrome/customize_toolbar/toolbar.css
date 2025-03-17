@@ -30,7 +30,7 @@
   padding: 0;
 }
 
-.toggle-container {
+.choose-icons-row-container {
   align-items: center;
   display: flex;
   gap: 12px;
@@ -60,6 +60,11 @@
   padding: 0px 16px;
   font-size: 12px;
   font-weight: 500;
+}
+
+.enterprise-enabled-text {
+  color: var(--cr-secondary-text-color);
+  font-weight: 400;
 }
 
 .sp-card > :first-child {

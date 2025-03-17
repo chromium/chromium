@@ -113,15 +113,6 @@ bool DownloadUtils::IsOmaDownloadDescription(const std::string& mime_type) {
   return Java_MimeUtils_isOMADownloadDescription(env, mime_type);
 }
 
-// static
-void DownloadUtils::ShowDownloadManager(bool show_prefetched_content,
-                                        DownloadOpenSource open_source) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_DownloadUtils_showDownloadManager(
-      env, nullptr, nullptr, nullptr, static_cast<jint>(open_source),
-      static_cast<jboolean>(show_prefetched_content));
-}
-
 bool DownloadUtils::IsDownloadUserInitiated(download::DownloadItem* download) {
   ui::PageTransition page_transition = download->GetTransitionType();
   return download->HasUserGesture() ||

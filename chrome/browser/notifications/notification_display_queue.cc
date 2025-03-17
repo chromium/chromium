@@ -4,9 +4,9 @@
 
 #include "chrome/browser/notifications/notification_display_queue.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "url/origin.h"
 
@@ -104,10 +104,10 @@ void NotificationDisplayQueue::AddNotificationBlocker(
 bool NotificationDisplayQueue::DoRemoveQueuedNotification(
     const std::string& notification_id,
     bool notify) {
-  auto it = base::ranges::find(queued_notifications_, notification_id,
-                               [](const QueuedNotification& queued) {
-                                 return queued.notification.id();
-                               });
+  auto it = std::ranges::find(queued_notifications_, notification_id,
+                              [](const QueuedNotification& queued) {
+                                return queued.notification.id();
+                              });
 
   if (it == queued_notifications_.end())
     return false;
@@ -145,7 +145,7 @@ void NotificationDisplayQueue::MaybeDisplayQueuedNotifications() {
 
 bool NotificationDisplayQueue::IsAnyNotificationBlockerActive(
     const message_center::Notification& notification) const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       blockers_,
       [&notification](const std::unique_ptr<NotificationBlocker>& blocker) {
         return blocker->ShouldBlockNotification(notification);

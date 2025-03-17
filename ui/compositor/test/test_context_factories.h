@@ -15,7 +15,6 @@ class DisableNullDrawGLBindings;
 
 namespace viz {
 class HostFrameSinkManager;
-class ServerSharedBitmapManager;
 class FrameSinkManagerImpl;
 }  // namespace viz
 
@@ -40,7 +39,6 @@ class TestContextFactories {
 
  private:
   std::unique_ptr<gl::DisableNullDrawGLBindings> disable_null_draw_;
-  std::unique_ptr<viz::ServerSharedBitmapManager> shared_bitmap_manager_;
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
   std::unique_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
   std::unique_ptr<ui::InProcessContextFactory> implicit_factory_;

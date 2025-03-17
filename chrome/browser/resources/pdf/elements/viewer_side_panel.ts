@@ -45,7 +45,7 @@ export class ViewerSidePanelElement extends CrLitElement {
     record(UserAction.OPEN_INK2_SIDE_PANEL);
   }
 
-  protected shouldShowColorOptions_(): boolean {
+  protected shouldShowBrushOptions_(): boolean {
     return this.currentType !== AnnotationBrushType.ERASER;
   }
 }

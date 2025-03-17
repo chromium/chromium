@@ -8,7 +8,6 @@
 #include "base/metrics/single_sample_metrics.h"
 #include "base/values.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
-#include "chrome/common/read_anything/read_anything_constants.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "ui/accessibility/ax_node_position.h"
@@ -261,7 +260,7 @@ class ReadAloudAppModel {
   bool speech_playing_ = false;
 
   // The current speech rate for reading aloud.
-  double speech_rate_ = kReadAnythingDefaultSpeechRate;
+  double speech_rate_ = 1.0;
 
   // The languages that the user has enabled for reading aloud.
   base::Value::List languages_enabled_in_pref_;

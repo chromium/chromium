@@ -21,17 +21,20 @@ FakePressureService::~FakePressureService() = default;
 void FakePressureService::BindRequest(mojo::ScopedMessagePipeHandle handle) {
   mojo::PendingReceiver<mojom::blink::WebPressureManager> receiver(
       std::move(handle));
-  DCHECK(!receiver_.is_bound());
-  receiver_.Bind(std::move(receiver));
-  receiver_.set_disconnect_handler(WTF::BindOnce(
+  DCHECK(!manager_receiver_.is_bound());
+  manager_receiver_.Bind(std::move(receiver));
+  manager_receiver_.set_disconnect_handler(WTF::BindOnce(
       &FakePressureService::OnConnectionError, WTF::Unretained(this)));
 }
 
-void FakePressureService::AddClient(device::mojom::blink::PressureSource source,
-                                    AddClientCallback callback) {
+void FakePressureService::AddClient(
+    device::mojom::blink::PressureSource source,
+    mojo::PendingAssociatedRemote<device::mojom::blink::PressureClient> client,
+    AddClientCallback callback) {
+  client_remote_.Bind(std::move(client));
+
   std::move(callback).Run(
-      device::mojom::blink::PressureManagerAddClientResult::NewPressureClient(
-          client_remote_.BindNewPipeAndPassReceiver()));
+      device::mojom::blink::PressureManagerAddClientResult::kOk);
 }
 
 void FakePressureService::SendUpdate(
@@ -40,7 +43,7 @@ void FakePressureService::SendUpdate(
 }
 
 void FakePressureService::OnConnectionError() {
-  receiver_.reset();
+  manager_receiver_.reset();
   client_remote_.reset();
 }
 

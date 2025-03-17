@@ -14,7 +14,7 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  * is experimential, so it is not included in the CSSStyleDeclaration
  * object.
  */
-declare interface CSSTextSizeAdjust extends CSSStyleDeclaration {
+interface CssTextSizeAdjust extends CSSStyleDeclaration {
   webkitTextSizeAdjust: string;
 }
 
@@ -29,9 +29,9 @@ declare interface CSSTextSizeAdjust extends CSSStyleDeclaration {
  */
 function adjustFontSize(size: number): void {
   try {
-    (document.body.style as CSSTextSizeAdjust).webkitTextSizeAdjust
-        = `${size}%`;
+    (document.body.style as CssTextSizeAdjust).webkitTextSizeAdjust =
+        `${size}%`;
   } catch (error) {}
 }
 
-gCrWeb.font_size = { adjustFontSize };
+gCrWeb.font_size = {adjustFontSize};

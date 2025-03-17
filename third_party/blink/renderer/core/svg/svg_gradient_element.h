@@ -77,7 +77,7 @@ class SVGGradientElement : public SVGElement, public SVGURIReference {
       const QualifiedName& attribute_name) const override;
   void SynchronizeAllSVGAttributes() const override;
   void CollectExtraStyleForPresentationAttribute(
-      MutableCSSPropertyValueSet* style) override;
+      HeapVector<CSSPropertyValue, 8>& style) override;
 
  private:
   InsertionNotificationRequest InsertedInto(ContainerNode&) final;

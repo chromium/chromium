@@ -1,10 +1,10 @@
 Name: PFFFT: a pretty fast FFT.
 Short Name: PFFFT
 URL: https://bitbucket.org/jpommier/pffft/
-Version: 0
+Version: N/A
 Date: 2014-08-09
 Revision: 483453d8f766
-License: BSD-like
+License: pffft
 License File: LICENSE
 Security Critical: Yes
 Shipped: yes

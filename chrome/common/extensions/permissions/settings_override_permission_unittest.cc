@@ -87,8 +87,8 @@ TEST_F(SettingsOverridePermissionTest, HomePage) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   EXPECT_TRUE(permission_set.HasAPIPermission(APIPermissionID::kHomepage));
-  VerifyOnePermissionMessage(extension->permissions_data(),
-                             "Change your home page to: google.com");
+  EXPECT_TRUE(VerifyOnePermissionMessage(
+      extension->permissions_data(), "Change your home page to: google.com"));
 #else
   EXPECT_FALSE(permission_set.HasAPIPermission(APIPermissionID::kHomepage));
 #endif
@@ -105,8 +105,8 @@ TEST_F(SettingsOverridePermissionTest, StartupPages) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   EXPECT_TRUE(permission_set.HasAPIPermission(APIPermissionID::kStartupPages));
-  VerifyOnePermissionMessage(extension->permissions_data(),
-                             "Change your start page to: startup.com");
+  EXPECT_TRUE(VerifyOnePermissionMessage(
+      extension->permissions_data(), "Change your start page to: startup.com"));
 #else
   EXPECT_FALSE(permission_set.HasAPIPermission(APIPermissionID::kStartupPages));
 #endif
@@ -124,8 +124,9 @@ TEST_F(SettingsOverridePermissionTest, SearchSettings) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   EXPECT_TRUE(
       permission_set.HasAPIPermission(APIPermissionID::kSearchProvider));
-  VerifyOnePermissionMessage(extension->permissions_data(),
-                             "Change your search settings to: google.com");
+  EXPECT_TRUE(
+      VerifyOnePermissionMessage(extension->permissions_data(),
+                                 "Change your search settings to: google.com"));
 #else
   EXPECT_FALSE(
       permission_set.HasAPIPermission(APIPermissionID::kSearchProvider));

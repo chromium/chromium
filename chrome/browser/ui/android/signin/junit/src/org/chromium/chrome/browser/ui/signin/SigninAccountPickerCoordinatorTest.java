@@ -31,9 +31,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
@@ -52,7 +50,6 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link SigninAccountPickerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
-@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class SigninAccountPickerCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -104,7 +101,7 @@ public class SigninAccountPickerCoordinatorTest {
                         bottomSheetStrings,
                         AccountPickerLaunchMode.DEFAULT,
                         mAccessPoint,
-                        /* selectedCoreAccountId= */ null);
+                        /* selectedAccountId= */ null);
     }
 
     @Test

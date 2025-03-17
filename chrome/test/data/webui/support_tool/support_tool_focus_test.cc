@@ -13,7 +13,6 @@ class SupportToolTest : public WebUIMochaFocusTest {
   SupportToolTest() {
     scoped_feature_list_.InitWithFeatures(
         {
-            features::kSupportTool,
             features::kSupportToolScreenshot,
         },
         {});

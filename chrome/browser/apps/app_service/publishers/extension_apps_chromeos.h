@@ -74,7 +74,6 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   // ExtensionAppsBase overrides.
   void Initialize() override;
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Requests a compressed icon data for an app identified by `app_id`. The icon
   // is identified by `size_in_dip` and `scale_factor`. Calls `callback` with
   // the result.
@@ -82,7 +81,6 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                              int32_t size_in_dip,
                              ui::ResourceScaleFactor scale_factor,
                              LoadIconCallback callback) override;
-#endif
 
   void LaunchAppWithParamsImpl(AppLaunchParams&& params,
                                LaunchCallback callback) override;

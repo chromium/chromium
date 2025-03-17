@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("assistant") {
   sources = [
@@ -27,9 +26,6 @@ static_library("assistant") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -39,7 +35,6 @@ static_library("assistant") {
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/assistant",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
@@ -49,12 +44,16 @@ static_library("assistant") {
     "//chrome/common",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/services/assistant:lib",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/assistant/public/proto",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/services/assistant/public/shared:new_entry_point_constants",
     "//components/language/core/browser",
     "//components/session_manager/core",
     "//content/public/browser",
@@ -77,8 +76,6 @@ source_set("unit_tests") {
 
   deps = [
     ":assistant",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:arc_test_support",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/app_list/arc",
@@ -89,6 +86,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/services/assistant:lib",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/shared",

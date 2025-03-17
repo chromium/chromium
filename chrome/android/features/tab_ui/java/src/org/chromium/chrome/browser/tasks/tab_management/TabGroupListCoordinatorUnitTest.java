@@ -16,8 +16,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +30,9 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
@@ -49,25 +51,43 @@ public class TabGroupListCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
-    @Mock Activity mActivity;
     @Mock Profile mProfile;
     @Mock Callback<Drawable> mCallback;
     @Mock Bitmap mBitmap;
 
     @Captor private ArgumentCaptor<FaviconImageCallback> mFaviconImageCallbackCaptor;
 
+    private Activity mActivity;
+    private TabListFaviconProvider mTabListFaviconProvider;
+
     @Before
     public void setUp() {
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
         when(mFaviconHelperJniMock.init()).thenReturn(FAKE_NATIVE_PTR);
-        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
+
+        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+    }
+
+    private void onActivity(Activity activity) {
+        mActivity = activity;
+        mTabListFaviconProvider =
+                new TabListFaviconProvider(
+                        activity,
+                        /* isTabStrip= */ false,
+                        R.dimen.default_favicon_corner_radius,
+                        /* tabWebContentsFaviconDelegate= */ null);
+    }
+
+    @After
+    public void tearDown() {
+        mTabListFaviconProvider.destroy();
     }
 
     @Test
-    @SmallTest
     public void testForeignFavicon() {
         FaviconResolver resolver =
-                TabGroupListCoordinator.buildFaviconResolver(mActivity, mProfile);
+                TabGroupListFaviconResolverFactory.build(
+                        mActivity, mProfile, mTabListFaviconProvider);
         resolver.resolve(JUnitTestGURLs.URL_1, mCallback);
         verify(mFaviconHelperJniMock)
                 .getForeignFaviconImageForURL(
@@ -78,10 +98,10 @@ public class TabGroupListCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFallbackFavicon() {
         FaviconResolver resolver =
-                TabGroupListCoordinator.buildFaviconResolver(mActivity, mProfile);
+                TabGroupListFaviconResolverFactory.build(
+                        mActivity, mProfile, mTabListFaviconProvider);
         resolver.resolve(JUnitTestGURLs.URL_1, mCallback);
         verify(mFaviconHelperJniMock)
                 .getForeignFaviconImageForURL(
@@ -92,10 +112,10 @@ public class TabGroupListCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInternalFavicon() {
         FaviconResolver resolver =
-                TabGroupListCoordinator.buildFaviconResolver(mActivity, mProfile);
+                TabGroupListFaviconResolverFactory.build(
+                        mActivity, mProfile, mTabListFaviconProvider);
         resolver.resolve(JUnitTestGURLs.NTP_NATIVE_URL, mCallback);
         verify(mCallback).onResult(notNull());
     }

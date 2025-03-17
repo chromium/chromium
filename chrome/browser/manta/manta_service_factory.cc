@@ -9,7 +9,7 @@
 #include "base/version.h"
 #include "base/version_info/channel.h"
 #include "base/version_info/version_info.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -23,10 +23,10 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chromeos/ash/components/channel/channel_info.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace manta {
 
@@ -59,13 +59,13 @@ MantaServiceFactory::~MantaServiceFactory() = default;
 std::unique_ptr<KeyedService>
 MantaServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* const context) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool is_demo_mode = ash::DemoSession::IsDeviceInDemoMode();
   version_info::Channel chrome_channel = ash::GetChannel();
 #else
   bool is_demo_mode = false;
   version_info::Channel chrome_channel = version_info::Channel::UNKNOWN;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   Profile* const profile = Profile::FromBrowserContext(context);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -76,7 +76,7 @@ MantaServiceFactory::BuildServiceInstanceForBrowserContext(
 
   std::string chrome_version = version_info::GetVersion().GetString();
   std::string locale;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (PrefService* pref_service = profile->GetPrefs()) {
     // Check to make sure that the locale pref is set before accessing.
     locale = pref_service->GetString(language::prefs::kApplicationLocale);

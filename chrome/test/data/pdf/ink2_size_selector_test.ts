@@ -44,7 +44,7 @@ async function testSizeKeyboardEvent(
 function assertTabIndices(
     sizeButtons: NodeListOf<HTMLElement>, buttonIndex: number) {
   for (let i = 0; i < sizeButtons.length; ++i) {
-    const actualTabIndex = sizeButtons[i].getAttribute('tabindex');
+    const actualTabIndex = sizeButtons[i]!.getAttribute('tabindex');
     chrome.test.assertTrue(actualTabIndex !== null);
     chrome.test.assertEq(i === buttonIndex ? '0' : '-1', actualTabIndex);
   }
@@ -56,13 +56,17 @@ chrome.test.runTests([
     const selector = createSelector();
     const sizeButtons = getSizeButtons(selector);
 
-    sizeButtons[0].click();
+    let button = sizeButtons[0];
+    chrome.test.assertTrue(!!button);
+    button.click();
     await microtasksFinished();
 
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 0);
     assertTabIndices(sizeButtons, /*buttonIndex=*/ 0);
 
-    sizeButtons[1].click();
+    button = sizeButtons[1];
+    chrome.test.assertTrue(!!button);
+    button.click();
     await microtasksFinished();
 
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 1);
@@ -76,7 +80,9 @@ chrome.test.runTests([
     const selector = createSelector();
     const sizeButtons = getSizeButtons(selector);
 
-    sizeButtons[4].click();
+    const button = sizeButtons[4];
+    chrome.test.assertTrue(!!button);
+    button.click();
     await microtasksFinished();
 
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 4);
@@ -108,7 +114,9 @@ chrome.test.runTests([
     const selector = createSelector();
     const sizeButtons = getSizeButtons(selector);
 
-    sizeButtons[4].click();
+    const button = sizeButtons[4];
+    chrome.test.assertTrue(!!button);
+    button.click();
     await microtasksFinished();
 
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 4);
@@ -116,17 +124,17 @@ chrome.test.runTests([
 
     // Pressing 'ArrowLeft' or 'ArrowUp' should select the previous size button.
     await testSizeKeyboardEvent(
-        sizeButtons, sizeButtons[4], 'ArrowLeft', /*expectedButtonIndex=*/ 3);
+        sizeButtons, sizeButtons[4]!, 'ArrowLeft', /*expectedButtonIndex=*/ 3);
 
     await testSizeKeyboardEvent(
-        sizeButtons, sizeButtons[3], 'ArrowUp', /*expectedButtonIndex=*/ 2);
+        sizeButtons, sizeButtons[3]!, 'ArrowUp', /*expectedButtonIndex=*/ 2);
 
     // Pressing 'ArrowRight' or 'ArrowDown' should select the next size button.
     await testSizeKeyboardEvent(
-        sizeButtons, sizeButtons[2], 'ArrowRight', /*expectedButtonIndex=*/ 3);
+        sizeButtons, sizeButtons[2]!, 'ArrowRight', /*expectedButtonIndex=*/ 3);
 
     await testSizeKeyboardEvent(
-        sizeButtons, sizeButtons[3], 'ArrowDown', /*expectedButtonIndex=*/ 4);
+        sizeButtons, sizeButtons[3]!, 'ArrowDown', /*expectedButtonIndex=*/ 4);
 
     chrome.test.succeed();
   },
@@ -139,23 +147,25 @@ chrome.test.runTests([
     const selector = createSelector();
     const sizeButtons = getSizeButtons(selector);
 
-    sizeButtons[4].click();
+    const button = sizeButtons[4];
+    chrome.test.assertTrue(!!button);
+    button.click();
     await microtasksFinished();
 
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 4);
     assertTabIndices(sizeButtons, /*buttonIndex=*/ 4);
 
     await testSizeKeyboardEvent(
-        sizeButtons, sizeButtons[4], 'ArrowRight', /*expectedButtonIndex=*/ 0);
+        sizeButtons, sizeButtons[4]!, 'ArrowRight', /*expectedButtonIndex=*/ 0);
 
     await testSizeKeyboardEvent(
-        sizeButtons, sizeButtons[0], 'ArrowLeft', /*expectedButtonIndex=*/ 4);
+        sizeButtons, sizeButtons[0]!, 'ArrowLeft', /*expectedButtonIndex=*/ 4);
 
     await testSizeKeyboardEvent(
-        sizeButtons, sizeButtons[4], 'ArrowDown', /*expectedButtonIndex=*/ 0);
+        sizeButtons, sizeButtons[4]!, 'ArrowDown', /*expectedButtonIndex=*/ 0);
 
     await testSizeKeyboardEvent(
-        sizeButtons, sizeButtons[0], 'ArrowUp', /*expectedButtonIndex=*/ 4);
+        sizeButtons, sizeButtons[0]!, 'ArrowUp', /*expectedButtonIndex=*/ 4);
 
     chrome.test.succeed();
   },
@@ -165,11 +175,11 @@ chrome.test.runTests([
     const selector = createSelector();
     const sizeButtons = getSizeButtons(selector);
 
-    assertLabels(sizeButtons[0], 'Extra thin');
-    assertLabels(sizeButtons[1], 'Thin');
-    assertLabels(sizeButtons[2], 'Medium');
-    assertLabels(sizeButtons[3], 'Thick');
-    assertLabels(sizeButtons[4], 'Extra thick');
+    assertLabels(sizeButtons[0]!, 'Extra thin');
+    assertLabels(sizeButtons[1]!, 'Thin');
+    assertLabels(sizeButtons[2]!, 'Medium');
+    assertLabels(sizeButtons[3]!, 'Thick');
+    assertLabels(sizeButtons[4]!, 'Extra thick');
 
     chrome.test.succeed();
   },

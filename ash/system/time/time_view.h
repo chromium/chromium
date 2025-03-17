@@ -128,6 +128,7 @@ class ASH_EXPORT TimeView : public views::View, public ClockObserver {
   friend class TimeViewTest;
   friend class TimeTrayItemViewTest;
   friend class DateTrayTest;
+  friend class UnifiedSystemTrayAccessibilityTest;
 
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;

@@ -12,9 +12,11 @@ import android.content.Intent;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.build.annotations.IdentifierNameString;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.base.SplitCompatIntentService;
 
 /** See {@link NotificationServiceImpl}. */
+@NullMarked
 public class NotificationService extends SplitCompatIntentService {
     private static final String TAG = NotificationService.class.getSimpleName();
 

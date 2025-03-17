@@ -79,17 +79,9 @@ std::optional<base::FilePath> GetVersionedInstallDirectory(UpdaterScope scope);
 // Does not create the directory if it does not exist.
 std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope);
 
-// Returns the base path for discardable caches. Deleting a discardable cache
-// between runs of the updater may impair performance, cause a redownload, etc.,
-// but otherwise not interfere with overall updater function. Cache contents
-// should only be stored in subpaths under this path. Does not create the
-// directory if it does not exist.
-std::optional<base::FilePath> GetCacheBaseDirectory(UpdaterScope scope);
-
-// Returns the path where CRXes cached for delta updates should be stored,
-// common to all versions of the updater. Does not create the directory if it
-// does not exist.
-std::optional<base::FilePath> GetCrxDiffCacheDirectory(UpdaterScope scope);
+// Returns the path where cached CRX files should be stored, common to all
+// versions of the updater. Does not create the directory if it does not exist.
+std::optional<base::FilePath> GetCrxCacheDirectory(UpdaterScope scope);
 
 #if BUILDFLAG(IS_MAC)
 // For example: ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app
@@ -143,6 +135,8 @@ TagParsingResult GetTagArgs();
 
 std::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id);
 
+std::string GetTagLanguage();
+
 std::string GetDecodedInstallDataFromAppArgs(const std::string& app_id);
 
 std::string GetInstallDataIndexFromAppArgs(const std::string& app_id);
@@ -190,12 +184,16 @@ bool ConfirmFilePermissions(const base::FilePath& root_path,
 // Returns the versioned task name prefix in the following format:
 // "{ProductName}Task{System/User}{UpdaterVersion}".
 // For instance: "ChromiumUpdaterTaskSystem92.0.0.1".
-std::wstring GetTaskNamePrefix(UpdaterScope scope);
+std::wstring GetTaskNamePrefix(
+    UpdaterScope scope,
+    const base::Version& version = base::Version(kUpdaterVersion));
 
 // Returns the versioned task display name in the following format:
 // "{ProductName} Task {System/User} {UpdaterVersion}".
 // For instance: "ChromiumUpdater Task System 92.0.0.1".
-std::wstring GetTaskDisplayName(UpdaterScope scope);
+std::wstring GetTaskDisplayName(
+    UpdaterScope scope,
+    const base::Version& version = base::Version(kUpdaterVersion));
 
 // Parses the command line string in legacy format into `base::CommandLine`.
 // The string must be in format like:

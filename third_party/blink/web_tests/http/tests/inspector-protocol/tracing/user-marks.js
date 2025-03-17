@@ -31,6 +31,7 @@
 
   const performanceMark = tracingHelper.findEvent('startMark', Phase.INSTANT);
   const userTimings = allEvents.filter(event => event.name === 'user timing');
+  const performanceMeasureTraces = allEvents.filter(event => event.name === 'UserTiming::Measure');
 
   const timerRemove = tracingHelper.findEvent('TimerRemove', Phase.INSTANT);
   const timerId = timerRemove.args.data.timerId;
@@ -82,6 +83,11 @@
   testRunner.log(`Phase of end event: ${userTimings[1].ph}`);
   if (userTimings[0].id2.local === userTimings[1].id2.local) {
     testRunner.log('user timing event ids are equal.');
+  }
+  testRunner.log('Got trace for performance measure call:');
+  tracingHelper.logEventShape(performanceMeasureTraces[0]);
+  if (performanceMeasureTraces[0].args.traceId === userTimings[0].args.traceId) {
+      testRunner.log('Performance measure trace matches user timing event by trace id.');
   }
 
   testRunner.log('Got a TimerInstall event:');

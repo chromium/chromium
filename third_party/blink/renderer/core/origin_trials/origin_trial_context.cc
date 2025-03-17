@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -426,7 +427,7 @@ bool OriginTrialContext::InstallFeatures(
     installed_features_.insert(enabled_feature);
 
     if (enabled_feature ==
-        mojom::blink::OriginTrialFeature::kPageFreezeOptOut) {
+        mojom::blink::OriginTrialFeature::kBackgroundPageFreezeOptOut) {
       if (auto* rc = document.GetResourceCoordinator()) {
         UseCounter::Count(document.GetExecutionContext(),
                           WebFeature::kPageFreezeOptOut);
@@ -513,7 +514,8 @@ void OriginTrialContext::AddForceEnabledTrials(
 
 bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "FledgeBiddingAndAuctionServer") {
-    return base::FeatureList::IsEnabled(features::kInterestGroupStorage) &&
+    return base::FeatureList::IsEnabled(
+               network::features::kInterestGroupStorage) &&
            base::FeatureList::IsEnabled(
                features::kFledgeBiddingAndAuctionServer);
   }
@@ -521,8 +523,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "FencedFrames")
     return base::FeatureList::IsEnabled(features::kFencedFrames);
 
-  if (trial_name == "AdInterestGroupAPI")
-    return base::FeatureList::IsEnabled(features::kInterestGroupStorage);
+  if (trial_name == "AdInterestGroupAPI") {
+    return base::FeatureList::IsEnabled(
+        network::features::kInterestGroupStorage);
+  }
 
   if (trial_name == "SpeculationRulesPrefetchFuture") {
     return base::FeatureList::IsEnabled(
@@ -562,6 +566,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
 
   if (trial_name == "AIPromptAPIForExtension") {
     return base::FeatureList::IsEnabled(features::kAIPromptAPIForExtension);
+  }
+
+  if (trial_name == "SpeculationRulesTargetHint") {
+    return base::FeatureList::IsEnabled(features::kPrerender2InNewTab);
   }
 
   if (trial_name == "TranslationAPI") {

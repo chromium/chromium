@@ -11,6 +11,8 @@
 #import "components/browsing_data/core/counters/history_counter.h"
 #import "components/browsing_data/core/counters/passwords_counter.h"
 #import "components/browsing_data/core/pref_names.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -25,6 +27,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_presentation_commands.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -156,6 +159,9 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 
   // Used to check whether this scene is blocked before blocking other scenes.
   id<UIBlockerTarget> _uiBlockerTarget;
+
+  // Feature engagement tracker pointer.
+  raw_ptr<feature_engagement::Tracker> _tracker;
 }
 
 - (instancetype)initWithPrefs:(PrefService*)prefs
@@ -165,7 +171,8 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
                    browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
                    discoverFeedService:(DiscoverFeedService*)discoverFeedService
         canPerformTabsClosureAnimation:(BOOL)canPerformTabsClosureAnimation
-                       uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget {
+                       uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget
+              featureEngagementTracker:(feature_engagement::Tracker*)tracker {
   if ((self = [super init])) {
     CHECK(uiBlockerTarget);
     _uiBlockerTarget = uiBlockerTarget;
@@ -177,6 +184,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
             _identityManager, self);
     _browsingDataRemover = browsingDataRemover;
     _discoverFeedService = discoverFeedService;
+    _tracker = tracker;
 
     _prefChangeRegistrar.Init(_prefs);
     _prefObserverBridge.reset(new PrefObserverBridge(self));
@@ -199,7 +207,8 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
                    browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
                    discoverFeedService:(DiscoverFeedService*)discoverFeedService
                              timeRange:(browsing_data::TimePeriod)timeRange
-                       uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget {
+                       uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget
+              featureEngagementTracker:(feature_engagement::Tracker*)tracker {
   if ((self = [super init])) {
     CHECK(uiBlockerTarget);
     _uiBlockerTarget = uiBlockerTarget;
@@ -211,6 +220,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
             _identityManager, self);
     _browsingDataRemover = browsingDataRemover;
     _discoverFeedService = discoverFeedService;
+    _tracker = tracker;
 
     _prefChangeRegistrar.Init(_prefs);
     _prefObserverBridge.reset(new PrefObserverBridge(self));
@@ -409,6 +419,10 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   }
 
   RecordCookieOrCacheDeletedFromDialogHistogram(removeMask);
+  if (IsDownloadAutoDeletionFeatureEnabled()) {
+    _tracker->NotifyEvent(
+        feature_engagement::events::kIOSDownloadAutoDeletionIPHCriterionMet);
+  }
 }
 
 - (void)updateHistorySelection:(BOOL)selected {

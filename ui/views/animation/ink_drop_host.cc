@@ -21,6 +21,7 @@
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/animation/ink_drop_stub.h"
 #include "ui/views/animation/pulsing_ink_drop_mask.h"
+#include "ui/views/animation/pulsing_path_ink_drop_mask.h"
 #include "ui/views/animation/square_ink_drop_ripple.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -143,7 +144,8 @@ void InkDropHost::SetCreateHighlightCallback(
 std::unique_ptr<views::InkDropMask> InkDropHost::CreateInkDropMask() const {
   // Attention mask takes precedence.
   if (in_attention_state_) {
-    return std::make_unique<views::PulsingInkDropMask>(host_view_);
+    return std::make_unique<views::PulsingPathInkDropMask>(
+        host_view_, GetHighlightPath(host_view_));
   }
 
   if (create_ink_drop_mask_callback_) {

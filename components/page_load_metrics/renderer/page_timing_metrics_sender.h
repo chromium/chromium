@@ -107,7 +107,11 @@ class PageTimingMetricsSender {
   void UpdateCpuTiming(base::TimeDelta task_time);
 
   void UpdateResourceMetadata(int resource_id, bool is_main_frame_resource);
-  void SetUpSmoothnessReporting(base::ReadOnlySharedMemoryRegion shared_memory);
+
+  void SetUpUkmReporting(
+      base::ReadOnlySharedMemoryRegion shared_memory_smoothness,
+      base::ReadOnlySharedMemoryRegion shared_memory_dropped_frames);
+
   void InitiateUserInteractionTiming();
   mojom::SoftNavigationMetricsPtr GetSoftNavigationMetrics() {
     return soft_navigation_metrics_->Clone();

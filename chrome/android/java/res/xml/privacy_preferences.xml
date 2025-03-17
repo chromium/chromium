@@ -14,13 +14,7 @@ found in the LICENSE file.
         android:key="clear_browsing_data"
         android:title="@string/clear_browsing_data_title"
         android:summary="@string/clear_browsing_data_summary"
-        android:fragment="org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment" />
-    <Preference
-        android:key="clear_browsing_data_advanced"
-        android:title="@string/clear_browsing_data_title"
-        android:summary="@string/clear_browsing_data_summary"
-        android:fragment="org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentAdvanced"
-        app:isPreferenceVisible="false" />
+        android:fragment="org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment" />
     <Preference
         android:key="privacy_guide"
         android:title="@string/privacy_guide_pref_title"
@@ -73,6 +67,11 @@ found in the LICENSE file.
         android:title="@string/prefs_safe_browsing_title"
         android:summary="@string/prefs_safe_browsing_summary"
         android:fragment="org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment" />
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="password_leak_detection"
+        android:title="@string/passwords_leak_detection_switch_title"
+        android:summary="@string/passwords_leak_detection_switch_summary"
+        android:persistent="false" />
     <!-- Old HTTPS-First Mode toggle. Hidden if HttpsFirstBalancedMode flag is enabled.
          TODO(crbug.com/349860796): Remove once new settings are fully rolled out. -->
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
@@ -93,11 +92,6 @@ found in the LICENSE file.
         android:title="@string/website_settings_privacy_and_security_javascript_optimizer_row_label"
         android:summary="@string/website_settings_privacy_and_security_javascript_optimizer_summary"
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
-    <Preference
-        android:key="phone_as_a_security_key"
-        android:title="@string/cablev2_paask_title"
-        android:summary="@string/cablev2_paask_body"
-        android:fragment="org.chromium.chrome.browser.webauthn.PrivacySettingsFragment" />
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="can_make_payment"
         android:title="@string/can_make_payment_title"

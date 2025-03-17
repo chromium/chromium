@@ -279,6 +279,10 @@ void MediaProgressView::OnBlur() {
   SchedulePaint();
 }
 
+ui::Cursor MediaProgressView::GetCursor(const ui::MouseEvent& event) {
+  return ui::mojom::CursorType::kHand;
+}
+
 bool MediaProgressView::OnMousePressed(const ui::MouseEvent& event) {
   if (is_live_ || !event.IsOnlyLeftMouseButton() ||
       !IsValidSeekPosition(event.x(), event.y())) {

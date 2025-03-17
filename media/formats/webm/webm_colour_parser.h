@@ -30,6 +30,7 @@ struct MEDIA_EXPORT WebMColorMetadata {
 
   WebMColorMetadata();
   WebMColorMetadata(const WebMColorMetadata& rhs);
+  ~WebMColorMetadata();
 };
 
 // Parser for WebM MasteringMetadata within Colour element:

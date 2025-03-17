@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/prefs/pref_service.h"
 
 #include <algorithm>
@@ -22,12 +27,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/default_pref_store.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -36,34 +39,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/prefs/android/pref_service_android.h"
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace pref_service_util {
-void GetAllDottedPaths(std::string_view prefix,
-                       const base::Value::Dict& dict,
-                       std::vector<std::string>& paths) {
-  for (const auto pair : dict) {
-    std::string path;
-    if (prefix.empty()) {
-      path = pair.first;
-    } else {
-      path = base::StrCat({prefix, ".", pair.first});
-    }
-
-    if (pair.second.is_dict()) {
-      GetAllDottedPaths(path, pair.second.GetDict(), paths);
-    } else {
-      paths.push_back(path);
-    }
-  }
-}
-
-void GetAllDottedPaths(const base::Value::Dict& dict,
-                       std::vector<std::string>& paths) {
-  GetAllDottedPaths("", dict, paths);
-}
-}  // namespace pref_service_util
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 PrefService::PersistentPrefStoreLoadingObserver::
     PersistentPrefStoreLoadingObserver(PrefService* pref_service)

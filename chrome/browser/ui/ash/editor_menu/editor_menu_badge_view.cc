@@ -47,7 +47,7 @@ EditorMenuBadgeView::EditorMenuBadgeView() {
   auto* label = AddChildView(
       std::make_unique<views::Label>(GetEditorMenuExperimentBadgeLabel(),
                                      views::Label::CustomFont({kBadgeFont})));
-  label->SetEnabledColorId(ui::kColorSysOnSurface);
+  label->SetEnabledColor(ui::kColorSysOnSurface);
   label->SetLineHeight(kBadgeLineHeight);
   label->SetBorder(views::CreateEmptyBorder(kBadgeInsets));
 }

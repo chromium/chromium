@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_FAKE_REMOTE_FRAME_H_
 
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -76,7 +77,7 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
       blink::mojom::IntrinsicSizingInfoPtr sizing_info) override;
   void DidSetFramePolicyHeaders(
       network::mojom::WebSandboxFlags sandbox_flags,
-      const std::vector<blink::ParsedPermissionsPolicyDeclaration>&
+      const std::vector<network::ParsedPermissionsPolicyDeclaration>&
           parsed_permissions_policy) override {}
   void DidUpdateFramePolicy(const blink::FramePolicy& frame_policy) override {}
   void UpdateOpener(

@@ -33,6 +33,11 @@ inline constexpr int kEventUpdate = 3;
 inline constexpr int kEventUninstall = 4;
 inline constexpr int kEventDownload = 14;
 
+// Event result codes as described in //docs/updater/protocol_3_1.md.
+inline constexpr int kEventResultError = 0;
+inline constexpr int kEventResultSuccess = 1;
+inline constexpr int kEventResultCancelled = 4;
+
 // App Command Events.
 inline constexpr int kEventAppCommandComplete = 41;
 
@@ -139,7 +144,6 @@ struct App {
   std::string install_id;
   std::string install_source;
   std::string install_location;
-  std::string fingerprint;
 
   std::string cohort;       // Opaque string.
   std::string cohort_hint;  // Server may use to move the app to a new cohort.
@@ -161,6 +165,8 @@ struct App {
 
   // Progress/result pings.
   std::optional<std::vector<base::Value::Dict>> events;
+
+  std::vector<std::string> cached_hashes;
 };
 
 struct Request {

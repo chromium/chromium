@@ -57,7 +57,7 @@ bool SharedMemoryRegionWrapper::Initialize(
     gfx::BufferFormat format) {
   DCHECK(!mapping_.IsValid());
 
-  if (!handle.region.IsValid()) {
+  if (!handle.region().IsValid()) {
     DLOG(ERROR) << "Invalid GMB shared memory region.";
     return false;
   }
@@ -90,7 +90,7 @@ bool SharedMemoryRegionWrapper::Initialize(
   }
 
   const size_t map_size = checked_size.ValueOrDie();
-  mapping_ = handle.region.MapAt(static_cast<off_t>(map_offset), map_size);
+  mapping_ = handle.region().MapAt(static_cast<off_t>(map_offset), map_size);
   if (!mapping_.IsValid()) {
     DLOG(ERROR) << "Failed to map shared memory.";
     return false;
@@ -130,6 +130,15 @@ const uint8_t* SharedMemoryRegionWrapper::GetMemory(int plane_index) const {
 size_t SharedMemoryRegionWrapper::GetStride(int plane_index) const {
   DCHECK(IsValid());
   return planes_[plane_index].stride;
+}
+
+base::span<const uint8_t> SharedMemoryRegionWrapper::GetMemoryPlanes() const {
+  DCHECK(IsValid());
+  auto full_mapped_span =
+      base::span(mapping_.GetMemoryAs<const uint8_t>(), mapping_.mapped_size());
+  // It is possible that the first plane starts at a non-zero offset. So we
+  // subspan at this offset.
+  return full_mapped_span.subspan(planes_[0].offset);
 }
 
 SkPixmap SharedMemoryRegionWrapper::MakePixmapForPlane(const SkImageInfo& info,

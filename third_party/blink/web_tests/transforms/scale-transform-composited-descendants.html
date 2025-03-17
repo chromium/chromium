@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<style>
+  .black-layer {
+    width: 100px;
+    height: 100px;
+    background: black;
+    will-change: opacity;
+  }
+  #parentEl {
+    transform-origin:0 0;
+    transform: scale(0.995);
+  }
+</style>
+<!-- Tests that there is no 1px seam between the two .black-layer composited
+layers. -->
+<div id=parentEl>
+  <div class="black-layer"></div>
+  <div class="black-layer"></div>
+</div>
+<script>
+  setTimeout(() => {
+    parentEl.style.transform = "scale(0.5)";
+  }, 1000);
+</script>

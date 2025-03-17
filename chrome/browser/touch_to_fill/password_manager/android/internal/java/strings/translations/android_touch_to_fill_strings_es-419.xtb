@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">La lista de credenciales que se debe tocar para completar está totalmente abierta.</translation>
 <translation id="5591247451101092906">¿Quieres usar una contraseña o llave de acceso guardada?</translation>
 <translation id="5624120631404540903">Administrar contraseñas</translation>
+<translation id="592182999816790476">Se guardó la contraseña de <ph name="USERNAME" /> para <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Llave de acceso de <ph name="USERNAME" />, usa el bloqueo de pantalla</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Contraseña nueva para este sitio}other{Contraseñas nuevas para este sitio}}</translation>
 <translation id="7286867818472074330">Seleccionar llave de acceso</translation>

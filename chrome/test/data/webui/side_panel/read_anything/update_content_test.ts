@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, SpeechBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './common.js';
+import {setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeTreeBuilder} from './fake_tree_builder.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('UpdateContent', () => {
   let app: AppElement;
@@ -26,18 +27,22 @@ suite('UpdateContent', () => {
   ];
 
   setup(() => {
-    suppressInnocuousErrors();
-    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    const speech = new TestSpeechBrowserProxy();
+    SpeechBrowserProxyImpl.setInstance(speech);
 
+    // Don't use await createApp() when using a FakeTree, as it seems to cause
+    // flakiness.
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
     new FakeTreeBuilder()
         .root(1)
         .addTag(2, /* parentId= */ 1, 'p')
-        .addText(textNodeIds[0]!!, /* parentId= */ 2, texts[0]!)
+        .addText(textNodeIds[0]!, /* parentId= */ 2, texts[0]!)
         .addTag(4, /* parentId= */ 1, 'p')
         .addText(textNodeIds[1]!, /* parentId= */ 4, texts[1]!)
         .addTag(6, /* parentId= */ 1, 'p')
@@ -46,12 +51,7 @@ suite('UpdateContent', () => {
         .addText(textNodeIds[3]!, /* parentId= */ 8, texts[3]!)
         .build(readingMode);
 
-    app.enabledLangs = ['en-US'];
-
-    const selectedVoice =
-        createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
-    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
-    return microtasksFinished();
+    setupBasicSpeech(app, speech);
   });
 
   test('playable if done with distillation', async () => {

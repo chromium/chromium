@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/task/thread_pool.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/content_decoding_interceptor.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -49,6 +51,18 @@ void NavigationPreloadRequest::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(!response_);
+
+  if (!response_head->client_side_content_decoding_types.empty()) {
+    auto endpoints = network::mojom::URLLoaderClientEndpoints::New(
+        mojo::PendingRemote<network::mojom::URLLoader>(), receiver_.Unbind());
+    network::ContentDecodingInterceptor::Intercept(
+        response_head->client_side_content_decoding_types, endpoints, body,
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::TaskPriority::USER_BLOCKING}));
+    decoder_loader_ = std::move(endpoints->url_loader);
+    receiver_.Bind(std::move(endpoints->url_loader_client));
+  }
+
   response_ = std::make_unique<WebURLResponse>();
   // TODO(horo): Set report_security_info to true when DevTools is attached.
   const bool report_security_info = false;
@@ -93,6 +107,7 @@ void NavigationPreloadRequest::OnTransferSizeUpdated(
 
 void NavigationPreloadRequest::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
+  decoder_loader_.reset();
   if (status.error_code != net::OK) {
     WebString message;
     WebServiceWorkerError::Mode error_mode = WebServiceWorkerError::Mode::kNone;

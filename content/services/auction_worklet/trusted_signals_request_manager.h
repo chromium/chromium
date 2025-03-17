@@ -97,6 +97,12 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   // non-null, it will trigger the KVv2 call flow and be used during the message
   // encryption and decryption process.
   //
+  // For sellers using KVv1 protocol, `send_creative_scanning_metadata` controls
+  // whether additional fields like creative_scanning_metadata, size and owner
+  // info are sent with trusted scoring requests. If this is off, this
+  // information should not be included in the passed in
+  // TrustedSignals::CreativeInfo.
+  //
   // TODO(crbug.com/40810962): Investigate improving the
   // `automatically_send_requests` logic.
   TrustedSignalsRequestManager(
@@ -110,6 +116,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
       std::optional<uint16_t> experiment_group_id,
       const std::string& trusted_bidding_signals_slot_size_param,
       mojom::TrustedSignalsPublicKeyPtr public_key,
+      bool send_creative_scanning_metadata,
       AuctionV8Helper* v8_helper);
 
   explicit TrustedSignalsRequestManager(const TrustedSignalsRequestManager&) =
@@ -136,8 +143,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   // the format matches the one accepted by ScoringSignals::Result, which
   // minimizes conversions.
   std::unique_ptr<Request> RequestScoringSignals(
-      const GURL& render_url,
-      const std::vector<std::string>& ad_component_render_urls,
+      TrustedSignals::CreativeInfo ad,
+      std::set<TrustedSignals::CreativeInfo> ad_components,
       int32_t max_trusted_scoring_signals_url_length,
       LoadSignalsCallback load_signals_callback);
 
@@ -155,8 +162,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   // support. Requires `bidder_owner_origin` and `bidder_joining_origin` instead
   // of `max_trusted_scoring_signals_url_length`.
   std::unique_ptr<Request> RequestKVv2ScoringSignals(
-      const GURL& render_url,
-      const std::vector<std::string>& ad_component_render_urls,
+      TrustedSignals::CreativeInfo ad,
+      std::set<TrustedSignals::CreativeInfo> ad_components,
       const url::Origin& bidder_owner_origin,
       const url::Origin& bidder_joining_origin,
       LoadSignalsCallback load_signals_callback);
@@ -185,8 +192,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     // Constructor for the BYOS version of trusted scoring signals, which builds
     // a GET request with a limit set by max_trusted_scoring_signals_url_length.
     RequestImpl(TrustedSignalsRequestManager* trusted_signals_request_manager,
-                const GURL& render_url,
-                std::set<std::string> ad_component_render_urls,
+                TrustedSignals::CreativeInfo ad,
+                std::set<TrustedSignals::CreativeInfo> ad_components,
                 int32_t max_trusted_scoring_signals_url_length,
                 LoadSignalsCallback load_signals_callback);
 
@@ -202,8 +209,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     // Constructor for trusted scoring signals with KVv2 support, which builds a
     // POST request.
     RequestImpl(TrustedSignalsRequestManager* trusted_signals_request_manager,
-                const GURL& render_url,
-                std::set<std::string> ad_component_render_urls,
+                TrustedSignals::CreativeInfo ad,
+                std::set<TrustedSignals::CreativeInfo> ad_components,
                 const url::Origin& bidder_owner_origin,
                 const url::Origin& bidder_joining_origin,
                 LoadSignalsCallback load_signals_callback);
@@ -225,13 +232,11 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     std::optional<url::Origin> joining_origin_;
     std::optional<blink::mojom::InterestGroup::ExecutionMode> execution_mode_;
 
-    // Used for requests for scoring signals. `render_url_` must be non-null
-    // and non-empty for scoring signals requests, and
-    // `ad_component_render_urls_` non-null. Both must be null for bidding
-    // signals requests.
-    std::optional<GURL> render_url_;
-    // Stored as a std::set for simpler
-    std::optional<std::set<std::string>> ad_component_render_urls_;
+    // Used for requests for scoring signals. `ad_` must be non-null for
+    // scoring signals requests. `ad_` and `ad_components_` must be nullopt and
+    // empty respectively for bidding signals requests.
+    std::optional<TrustedSignals::CreativeInfo> ad_;
+    std::set<TrustedSignals::CreativeInfo> ad_components_;
     std::optional<url::Origin> bidder_owner_origin_;
     std::optional<url::Origin> bidder_joining_origin_;
 
@@ -315,6 +320,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   const Type type_;
   const raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
   const bool automatically_send_requests_;
+  const bool send_creative_scanning_metadata_;
   const url::Origin top_level_origin_;
   const GURL trusted_signals_url_;
   const std::optional<uint16_t> experiment_group_id_;

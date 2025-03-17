@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/auto_reset.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ui_base_types.h"
@@ -31,7 +30,6 @@ WaylandPopup::WaylandPopup(PlatformWindowDelegate* delegate,
                            WaylandWindow* parent)
     : WaylandWindow(delegate, connection) {
   set_parent_window(parent);
-#if BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/330384470): Whether the popup appear depends on whether
   // anchor point is outside of the parent xdg_surface. On Mutter the popup will
   // not show when outside.
@@ -39,7 +37,6 @@ WaylandPopup::WaylandPopup(PlatformWindowDelegate* delegate,
          !parent->AsWaylandToplevelWindow() && !parent->AsWaylandPopup())
       << "Popup's parent is a bubble. Wayland shell popup is not guaranteed to "
          "show up.";
-#endif
 }
 
 WaylandPopup::~WaylandPopup() = default;
@@ -146,6 +143,7 @@ void WaylandPopup::Hide() {
   if (shell_popup_) {
     parent_window()->set_child_popup(nullptr);
     shell_popup_.reset();
+    ClearInFlightRequestsSerial();
   }
 
   connection()->Flush();

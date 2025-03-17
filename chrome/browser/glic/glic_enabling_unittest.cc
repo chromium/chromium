@@ -5,8 +5,14 @@
 #include "chrome/browser/glic/glic_enabling.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/glic_test_util.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::FeatureRef;
@@ -17,6 +23,8 @@ namespace {
 class GlicEnablingTest : public testing::Test {
  public:
   void SetUp() override {
+    testing::Test::SetUp();
+
     // Enable kGlic and kTabstripComboButton by default for testing.
     scoped_feature_list_.InitWithFeatures(
         {features::kGlic, features::kTabstripComboButton}, {});
@@ -24,9 +32,11 @@ class GlicEnablingTest : public testing::Test {
 
   void TearDown() override {
     scoped_feature_list_.Reset();
+    testing::Test::TearDown();
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

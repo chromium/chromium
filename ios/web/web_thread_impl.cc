@@ -33,8 +33,7 @@ enum WebThreadState {
 };
 
 struct WebThreadGlobals {
-  WebThreadGlobals() {
-  }
+  WebThreadGlobals() {}
 
   // This lock protects `threads` and `states`. Do not read or modify those
   // arrays without holding this lock. Do not block while holding this lock.
@@ -71,8 +70,9 @@ bool PostTaskHelper(WebThread::ID identifier,
       current_thread >= identifier;
 
   WebThreadGlobals& globals = g_globals.Get();
-  if (!target_thread_outlives_current)
+  if (!target_thread_outlives_current) {
     globals.lock.Acquire();
+  }
 
   const bool accepting_tasks =
       globals.states[identifier] == WebThreadState::RUNNING;
@@ -88,8 +88,9 @@ bool PostTaskHelper(WebThread::ID identifier,
     }
   }
 
-  if (!target_thread_outlives_current)
+  if (!target_thread_outlives_current) {
     globals.lock.Release();
+  }
 
   return accepting_tasks;
 }
@@ -245,15 +246,17 @@ const char* WebThreadImpl::GetThreadName(WebThread::ID thread) {
       "Web_IOThread",  // IO
   };
 
-  if (WebThread::UI <= thread && thread < WebThread::ID_COUNT)
+  if (WebThread::UI <= thread && thread < WebThread::ID_COUNT) {
     return kWebThreadNames[thread];
+  }
   return "Unknown Thread";
 }
 
 // static
 bool WebThreadImpl::IsThreadInitialized(ID identifier) {
-  if (!g_globals.IsCreated())
+  if (!g_globals.IsCreated()) {
     return false;
+  }
 
   WebThreadGlobals& globals = g_globals.Get();
   base::AutoLock lock(globals.lock);
@@ -275,8 +278,9 @@ bool WebThreadImpl::CurrentlyOn(ID identifier) {
 // static
 std::string WebThreadImpl::GetCurrentlyOnErrorMessage(ID expected) {
   std::string actual_name = base::PlatformThread::GetName();
-  if (actual_name.empty())
+  if (actual_name.empty()) {
     actual_name = "Unknown Thread";
+  }
 
   std::string result = "Must be called on ";
   result += WebThreadImpl::GetThreadName(expected);
@@ -288,8 +292,9 @@ std::string WebThreadImpl::GetCurrentlyOnErrorMessage(ID expected) {
 
 // static
 bool WebThreadImpl::GetCurrentThreadIdentifier(ID* identifier) {
-  if (!g_globals.IsCreated())
+  if (!g_globals.IsCreated()) {
     return false;
+  }
 
   WebThreadGlobals& globals = g_globals.Get();
   base::AutoLock lock(globals.lock);

@@ -28,6 +28,7 @@
 <translation id="2329392777730037872">無法在用戶端上開啟 <ph name="URL" />。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2366718077645204424">無法連線到主機，原因可能與你使用的網路設定有關。</translation>
+<translation id="242591256144136845">著作權所有 2025 Google LLC。保留所有權利。</translation>
 <translation id="2504109125669302160">將「無障礙功能」權限授予 <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">已連線至「<ph name="HOSTNAME" />」</translation>
 <translation id="2540992418118313681">您要與其他使用者分享這台電腦的瀏覽及控制權限嗎？</translation>
@@ -133,6 +134,7 @@
 <translation id="7067321367069083429">把螢幕當作觸控螢幕使用</translation>
 <translation id="7116737094673640201">歡迎使用 Chrome 遠端桌面</translation>
 <translation id="7144878232160441200">重試</translation>
+<translation id="7298392173540380852">著作權所有 2025 The Chromium Authors。保留所有權利。</translation>
 <translation id="7312846573060934304">主機已離線。</translation>
 <translation id="7319983568955948908">停止共用</translation>
 <translation id="7359298090707901886">所選瀏覽器無法在本機電腦上開啟網址。</translation>
@@ -149,7 +151,6 @@
 <translation id="7693372326588366043">重新整理主機清單</translation>
 <translation id="7714222945760997814">回報這個問題</translation>
 <translation id="7868137160098754906">請為遠端電腦輸入你的 PIN。</translation>
-<translation id="7881455334687220899">著作權所有 2024 The Chromium Authors。保留所有權利。</translation>
 <translation id="7895403300744144251">遠端電腦的安全性政策禁止從您的帳戶連線。</translation>
 <translation id="7936528439960309876">靠右固定</translation>
 <translation id="7970576581263377361">驗證失敗，請重新登入 Chromium。</translation>
@@ -181,7 +182,6 @@
 <translation id="8747048596626351634">工作階段當機或無法啟動。如果遠端電腦有 ~/.chrome-remote-desktop-session，請確認該檔案開始執行長期運作的前景程序，例如桌面環境或視窗管理員。</translation>
 <translation id="8804164990146287819">隱私權政策</translation>
 <translation id="8906511416443321782">該主機需要麥克風存取權才能擷取音訊，並將音訊投放到 Chrome 遠端桌面用戶端。</translation>
-<translation id="9042277333359847053">著作權所有 2024 Google LLC。保留所有權利。</translation>
 <translation id="9111855907838866522">你已連上遠端裝置，使用四指輕觸螢幕即可開啟選單。</translation>
 <translation id="9126115402994542723">此裝置連線至這個主機時，不必再次詢問 PIN。</translation>
 <translation id="916856682307586697">啟動預設的 XSession</translation>

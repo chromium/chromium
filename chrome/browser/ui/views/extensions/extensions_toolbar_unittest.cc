@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -20,6 +21,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "ui/events/base_event_utils.h"
@@ -29,11 +31,19 @@
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
-ExtensionsToolbarUnitTest::ExtensionsToolbarUnitTest() = default;
+ExtensionsToolbarUnitTest::ExtensionsToolbarUnitTest() {
+  // Allow unpacked extensions without developer mode for testing.
+  scoped_feature_list_.InitAndDisableFeature(
+      extensions_features::kExtensionDisableUnsupportedDeveloper);
+}
 
 ExtensionsToolbarUnitTest::ExtensionsToolbarUnitTest(
     base::test::TaskEnvironment::TimeSource time_source)
-    : TestWithBrowserView(time_source) {}
+    : TestWithBrowserView(time_source) {
+  // Allow unpacked extensions without developer mode for testing.
+  scoped_feature_list_.InitAndDisableFeature(
+      extensions_features::kExtensionDisableUnsupportedDeveloper);
+}
 
 ExtensionsToolbarUnitTest::~ExtensionsToolbarUnitTest() = default;
 

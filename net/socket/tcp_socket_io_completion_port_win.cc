@@ -72,7 +72,7 @@ bool SkipCompletionPortOnSuccessIsSupported() {
     }
 
     // Return true iff all protocols return IFS handles.
-    return base::ranges::all_of(
+    return std::ranges::all_of(
         buffer.subspan(0, result), [](const WSAPROTOCOL_INFOW& protocol_info) {
           return protocol_info.dwServiceFlags1 & XP1_IFS_HANDLES;
         });
@@ -298,7 +298,7 @@ int TcpSocketIoCompletionPortWin::Write(
 
   const int rv =
       ::WSASend(socket_, &write_buffer, /*dwBufferCount=*/1, &bytes_sent,
-                /*dwFlags=*/0, &context->overlapped,
+                /*dwFlags=*/0, context->GetOverlapped(),
                 /*lpCompletionRoutine=*/nullptr);
 
   // "Citations" below are from
@@ -508,7 +508,7 @@ int TcpSocketIoCompletionPortWin::HandleReadRequest(
   // whether zero-byte overlapped reads are allowed (for ReadIfReady).
   auto rv = ::WSARecv(
       socket_, &read_buffer, /*dwBufferCount=*/1, &bytes_read, &flags,
-      allow_zero_byte_overlapped_read ? nullptr : &context->overlapped,
+      allow_zero_byte_overlapped_read ? nullptr : context->GetOverlapped(),
       nullptr);
 
   // "Citations" below are from
@@ -532,7 +532,7 @@ int TcpSocketIoCompletionPortWin::HandleReadRequest(
     // value from WSARecv here in that case will be WSA_IO_PENDING.
     read_buffer = {};
     rv = ::WSARecv(socket_, &read_buffer, /*dwBufferCount=*/1, &bytes_read,
-                   &flags, &context->overlapped, nullptr);
+                   &flags, context->GetOverlapped(), nullptr);
     if (rv == 0) {
       // Immediate completion for zero-byte read. The contract for ReadIfReady
       // explicitly states that on synchronous completion we need to return

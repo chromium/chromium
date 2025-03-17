@@ -88,7 +88,7 @@
     <div slot="button-container"
         hidden$="[[!isUpdateDone(installationProgress.state)]]">
       <template is="dom-if"
-          if="[[!updateRequiresRestart()]]" restamp>
+          if="[[!isUpdateSuccessfulAndRequiresReboot(updateIsDone)]]" restamp>
         <cr-button class="action-button"
             on-click="closeDialog"
             id="updateDoneButton">
@@ -96,7 +96,7 @@
         </cr-button>
       </template>
       <template is="dom-if"
-          if="[[updateRequiresRestart()]]" restamp>
+          if="[[isUpdateSuccessfulAndRequiresReboot(updateIsDone)]]" restamp>
         <cr-button class="cancel-button"
             on-click="closeDialog"
             id="restartLaterButton">

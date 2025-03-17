@@ -14,31 +14,38 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/features/native_theme_features.h"
 
 namespace blink {
 
+class CullRectTestConfig {
+ public:
+  CullRectTestConfig() {
+    feature_.InitAndEnableFeatureWithParameters(
+        features::kExpandCompositedCullRect,
+        {{"pixels", "4000"}, {"changed_enough", "512"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_;
+};
+
 inline constexpr unsigned kUnderInvalidationChecking = 1 << 0;
 inline constexpr unsigned kFluentScrollbar = 1 << 1;
-inline constexpr unsigned kHitTestOpaqueness = 1 << 2;
-inline constexpr unsigned kElementCapture = 1 << 3;
-inline constexpr unsigned kRasterInducingScroll = 1 << 4;
-inline constexpr unsigned kSpeculativeImageDecodes = 1 << 5;
+inline constexpr unsigned kElementCapture = 1 << 2;
+inline constexpr unsigned kRasterInducingScroll = 1 << 3;
+inline constexpr unsigned kSpeculativeImageDecodes = 1 << 4;
 
 class PaintTestConfigurations
     : public testing::WithParamInterface<unsigned>,
       private ScopedPaintUnderInvalidationCheckingForTest,
-      private ScopedHitTestOpaquenessForTest,
-      private ScopedFastNonCompositedScrollHitTestForTest,
       private ScopedElementCaptureForTest,
-      private ScopedRasterInducingScrollForTest {
+      private ScopedRasterInducingScrollForTest,
+      private CullRectTestConfig {
  public:
   PaintTestConfigurations()
       : ScopedPaintUnderInvalidationCheckingForTest(GetParam() &
                                                     kUnderInvalidationChecking),
-        ScopedHitTestOpaquenessForTest(GetParam() & kHitTestOpaqueness),
-        ScopedFastNonCompositedScrollHitTestForTest(GetParam() &
-                                                    kHitTestOpaqueness),
         ScopedElementCaptureForTest(GetParam() & kElementCapture),
         ScopedRasterInducingScrollForTest(GetParam() & kRasterInducingScroll) {
     std::vector<base::test::FeatureRef> enabled_features = {};
@@ -71,9 +78,8 @@ class PaintTestConfigurations
   base::test::ScopedFeatureList feature_list_;
 };
 
-#define PAINT_TEST_SUITE_P_VALUES          \
-  0, kFluentScrollbar, kHitTestOpaqueness, \
-      kRasterInducingScroll | kHitTestOpaqueness, kSpeculativeImageDecodes
+#define PAINT_TEST_SUITE_P_VALUES \
+  0, kFluentScrollbar, kRasterInducingScroll, kSpeculativeImageDecodes
 
 #define INSTANTIATE_PAINT_TEST_SUITE_P(test_class) \
   INSTANTIATE_TEST_SUITE_P(All, test_class,        \

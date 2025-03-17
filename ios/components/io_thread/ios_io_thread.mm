@@ -121,8 +121,9 @@ SystemURLRequestContextGetter::~SystemURLRequestContextGetter() {}
 
 net::URLRequestContext* SystemURLRequestContextGetter::GetURLRequestContext() {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  if (!io_thread_)
+  if (!io_thread_) {
     return nullptr;
+  }
   DCHECK(io_thread_->globals()->system_request_context.get());
 
   return io_thread_->globals()->system_request_context.get();
@@ -147,8 +148,9 @@ IOSIOThread::Globals::SystemRequestContextLeakChecker::
 
 IOSIOThread::Globals::SystemRequestContextLeakChecker::
     ~SystemRequestContextLeakChecker() {
-  if (globals_->system_request_context.get())
+  if (globals_->system_request_context.get()) {
     globals_->system_request_context->AssertNoURLRequests();
+  }
 }
 
 IOSIOThread::Globals::Globals() : system_request_context_leak_checker(this) {}
@@ -210,8 +212,9 @@ net::URLRequestContextGetter* IOSIOThread::system_url_request_context_getter() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   if (!system_url_request_context_getter_.get()) {
     // If we're in unit_tests, IOSIOThread may not be run.
-    if (!web::WebThread::IsThreadInitialized(web::WebThread::IO))
+    if (!web::WebThread::IsThreadInitialized(web::WebThread::IO)) {
       return nullptr;
+    }
     system_url_request_context_getter_ =
         new SystemURLRequestContextGetter(this);
   }
@@ -277,8 +280,9 @@ void IOSIOThread::ClearHostCache() {
 
   net::HostCache* host_cache =
       globals_->system_request_context->host_resolver()->GetHostCache();
-  if (host_cache)
+  if (host_cache) {
     host_cache->clear();
+  }
 }
 
 const net::HttpNetworkSessionParams& IOSIOThread::NetworkSessionParams() const {

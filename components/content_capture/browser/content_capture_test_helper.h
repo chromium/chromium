@@ -19,6 +19,8 @@ class FakeContentCaptureSender {
 
   void Bind(content::RenderFrameHost* frame);
 
+  void DidCompleteBatchCaptureContent();
+
   void DidCaptureContent(const ContentCaptureData& captured_content,
                          bool first_data);
 
@@ -58,6 +60,9 @@ class ContentCaptureConsumerHelper : public ContentCaptureConsumer {
   ~ContentCaptureConsumerHelper() override;
 
   // ContentCaptureConsumer
+  void FlushCaptureContent(const ContentCaptureSession& session,
+                           const ContentCaptureFrame& data) override;
+
   void DidCaptureContent(const ContentCaptureSession& parent_session,
                          const ContentCaptureFrame& data) override;
 

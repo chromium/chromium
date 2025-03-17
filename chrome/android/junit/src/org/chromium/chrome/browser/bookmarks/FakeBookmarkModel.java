@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import androidx.annotation.NonNull;
+
 import org.mockito.Mockito;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -42,6 +44,8 @@ public class FakeBookmarkModel extends BookmarkModel {
     // Used to assign nodes unique ids.
     private int mNextNodeId;
 
+    // Stores a mapping from parent BookmarkId to ordered lists of child BookmarkIds.
+    private final Map<BookmarkId, List<BookmarkId>> mBookmarkIdToChildIdsMap = new HashMap<>();
     // Stores a mapping from BookmarkId to BookmarkItem, and also serves parent lookup requests.
     private final Map<BookmarkId, BookmarkItem> mBookmarkIdToItemMap = new HashMap<>();
     // Stores a mapping from BookmarkId to PowerBookmarkMeta (in byte[] form).
@@ -88,6 +92,19 @@ public class FakeBookmarkModel extends BookmarkModel {
                 /* isManaged= */ false,
                 /* read= */ false,
                 /* isAccountBookmark= */ false);
+    }
+
+    /**
+     * Runs the specified runnable, bookending it with extensive change markers. This allows users
+     * to batch multiple model changes together and limits the number of events propagated to
+     * observers.
+     *
+     * @param runnable the runnable to run, bookended with extensive change markers.
+     */
+    public void performExtensiveBookmarkChanges(@NonNull Runnable runnable) {
+        extensiveBookmarkChangesBeginning();
+        runnable.run();
+        extensiveBookmarkChangesEnded();
     }
 
     public void setAreAccountBookmarkFoldersActive(boolean active) {
@@ -162,11 +179,19 @@ public class FakeBookmarkModel extends BookmarkModel {
 
     private BookmarkId addBookmark(
             @BookmarkType int type, BookmarkId parent, String title, GURL url) {
+        // NOTE: When `index` is omitted the added bookmark is appended to its `parent`.
+        final int index = getMutableChildIds(parent).size();
+        return addBookmark(type, parent, index, title, url);
+    }
+
+    private BookmarkId addBookmark(
+            @BookmarkType int type, BookmarkId parent, int index, String title, GURL url) {
         assert !parent.equals(mRootFolderId);
         assert type == parent.getType();
         return addBookmarkItem(
                 type,
                 parent,
+                index,
                 title,
                 url,
                 /* isFolder= */ false,
@@ -176,16 +201,19 @@ public class FakeBookmarkModel extends BookmarkModel {
                 FakeBookmarkModel.this.isAccountBookmark(parent));
     }
 
-    private BookmarkId addFolder(BookmarkId parent, String title) {
-        return addFolder(parent, title, /* isManaged= */ false);
+    private BookmarkId addFolder(BookmarkId parent, String title, boolean isManaged) {
+        // NOTE: When `index` is omitted the added folder is appended to its `parent`.
+        final int index = getMutableChildIds(parent).size();
+        return addFolder(parent, index, title, isManaged);
     }
 
-    private BookmarkId addFolder(BookmarkId parent, String title, boolean isManaged) {
+    private BookmarkId addFolder(BookmarkId parent, int index, String title, boolean isManaged) {
         assert !parent.equals(mRootFolderId);
         assert parent.getType() == BookmarkType.NORMAL;
         return addBookmarkItem(
                 BookmarkType.NORMAL,
                 parent,
+                index,
                 title,
                 /* url= */ null,
                 /* isFolder= */ true,
@@ -219,6 +247,32 @@ public class FakeBookmarkModel extends BookmarkModel {
             boolean isManaged,
             boolean read,
             boolean isAccountBookmark) {
+        // NOTE: When `index` is omitted the added item is appended to its `parent`.
+        final int index = getMutableChildIds(parent).size();
+        return addBookmarkItem(
+                type,
+                parent,
+                index,
+                title,
+                url,
+                isFolder,
+                isEditable,
+                isManaged,
+                read,
+                isAccountBookmark);
+    }
+
+    private BookmarkId addBookmarkItem(
+            @BookmarkType int type,
+            BookmarkId parent,
+            int index,
+            String title,
+            GURL url,
+            boolean isFolder,
+            boolean isEditable,
+            boolean isManaged,
+            boolean read,
+            boolean isAccountBookmark) {
         BookmarkId id = new BookmarkId(mNextNodeId++, type);
         return addBookmarkItem(
                 id, parent, title, url, isFolder, isEditable, isManaged, read, isAccountBookmark);
@@ -227,6 +281,32 @@ public class FakeBookmarkModel extends BookmarkModel {
     private BookmarkId addBookmarkItem(
             BookmarkId id,
             BookmarkId parent,
+            String title,
+            GURL url,
+            boolean isFolder,
+            boolean isEditable,
+            boolean isManaged,
+            boolean read,
+            boolean isAccountBookmark) {
+        // NOTE: When `index` is omitted the added item is appended to its `parent`.
+        final int index = getMutableChildIds(parent).size();
+        return addBookmarkItem(
+                id,
+                parent,
+                index,
+                title,
+                url,
+                isFolder,
+                isEditable,
+                isManaged,
+                read,
+                isAccountBookmark);
+    }
+
+    private BookmarkId addBookmarkItem(
+            BookmarkId id,
+            BookmarkId parent,
+            int index,
             String title,
             GURL url,
             boolean isFolder,
@@ -249,7 +329,51 @@ public class FakeBookmarkModel extends BookmarkModel {
                         read,
                         /* dateLastOpened= */ 0,
                         isAccountBookmark));
+
+        // NOTE: `parent` is `null` when adding permanent folders.
+        mBookmarkIdToItemMap.values().stream()
+                .filter(item -> Objects.equals(item.getId(), parent))
+                .findFirst()
+                .ifPresent(
+                        node -> {
+                            getMutableChildIds(parent).add(index, id);
+                            bookmarkNodeAdded(node, index);
+                        });
+
         return id;
+    }
+
+    private @NonNull List<BookmarkId> getMutableChildIds(@NonNull BookmarkId parent) {
+        return mBookmarkIdToChildIdsMap.computeIfAbsent(parent, key -> new ArrayList<>());
+    }
+
+    private void moveBookmarkItem(@NonNull BookmarkId id, @NonNull BookmarkId parent, int index) {
+        final BookmarkItem item = mBookmarkIdToItemMap.get(id);
+        assert item != null;
+
+        // Remove `item` from `oldParent`.
+        final BookmarkId oldParent = item.getParentId();
+        final List<BookmarkId> oldParentChildIds = getMutableChildIds(oldParent);
+        final int oldIndex = oldParentChildIds.indexOf(id);
+        oldParentChildIds.remove(oldIndex);
+
+        // Add `item` to new `parent`.
+        mBookmarkIdToItemMap.put(
+                id,
+                new BookmarkItem(
+                        item.getId(),
+                        item.getTitle(),
+                        item.getUrl(),
+                        item.isFolder(),
+                        parent,
+                        item.isEditable(),
+                        item.isManaged(),
+                        item.getDateAdded(),
+                        item.isRead(),
+                        item.getDateLastOpened(),
+                        item.isAccountBookmark()));
+        getMutableChildIds(parent).add(index, id);
+        bookmarkNodeMoved(getBookmarkById(oldParent), oldIndex, getBookmarkById(parent), index);
     }
 
     private void updateBookmarkItem(
@@ -263,8 +387,7 @@ public class FakeBookmarkModel extends BookmarkModel {
             boolean read,
             boolean isAccountBookmark) {
         assert mBookmarkIdToItemMap.containsKey(id);
-        mBookmarkIdToItemMap.put(
-                id,
+        final BookmarkItem item =
                 new BookmarkItem(
                         id,
                         title,
@@ -276,7 +399,9 @@ public class FakeBookmarkModel extends BookmarkModel {
                         /* dateAdded= */ 0,
                         read,
                         /* dateLastOpened= */ 0,
-                        isAccountBookmark));
+                        isAccountBookmark);
+        mBookmarkIdToItemMap.put(id, item);
+        bookmarkNodeChanged(item);
     }
 
     // BookmarkBridge.Natives implementation.
@@ -405,12 +530,7 @@ public class FakeBookmarkModel extends BookmarkModel {
         public void getChildIds(
                 long nativeBookmarkBridge, long id, int type, List<BookmarkId> bookmarksList) {
             BookmarkId parentId = new BookmarkId(id, type);
-            bookmarksList.addAll(
-                    mBookmarkIdToItemMap.values().stream()
-                            .filter(item -> Objects.equals(item.getParentId(), parentId))
-                            .map(item -> item.getId())
-                            .sorted((first, second) -> Long.compare(first.getId(), second.getId()))
-                            .collect(Collectors.toList()));
+            bookmarksList.addAll(getMutableChildIds(parentId));
         }
 
         @Override
@@ -505,19 +625,36 @@ public class FakeBookmarkModel extends BookmarkModel {
         @Override
         public BookmarkId addFolder(
                 long nativeBookmarkBridge, BookmarkId parent, int index, String title) {
-            return FakeBookmarkModel.this.addFolder(parent, title);
+            return FakeBookmarkModel.this.addFolder(parent, index, title, /* isManaged= */ false);
         }
 
         @Override
         public void deleteBookmark(long nativeBookmarkBridge, BookmarkId bookmarkId) {
-            mBookmarkIdToItemMap.remove(bookmarkId);
+            // Clean up children.
+            final List<BookmarkId> childIds = getMutableChildIds(bookmarkId);
+            for (int i = childIds.size() - 1; i >= 0; i--) {
+                deleteBookmark(nativeBookmarkBridge, childIds.get(i));
+            }
+            assert childIds.isEmpty();
+            mBookmarkIdToChildIdsMap.remove(bookmarkId);
+
+            // Clean up item.
+            BookmarkItem item = mBookmarkIdToItemMap.remove(bookmarkId);
             mBookmarkIdToPowerBookmarkMetaMap.remove(bookmarkId);
+
+            // Clean up parent.
+            final BookmarkId parent = item.getParentId();
+            final List<BookmarkId> parentChildIds = getMutableChildIds(parent);
+            final int index = parentChildIds.indexOf(bookmarkId);
+            parentChildIds.remove(index);
+            bookmarkNodeRemoved(FakeBookmarkModel.this.getBookmarkById(parent), index, item);
         }
 
         @Override
         public void removeAllUserBookmarks(long nativeBookmarkBridge) {
+            mBookmarkIdToChildIdsMap.clear();
             mBookmarkIdToItemMap.clear();
-            setupTopLevelFolders();
+            performExtensiveBookmarkChanges(FakeBookmarkModel.this::setupTopLevelFolders);
         }
 
         @Override
@@ -526,23 +663,14 @@ public class FakeBookmarkModel extends BookmarkModel {
                 BookmarkId bookmarkId,
                 BookmarkId newParentId,
                 int index) {
-            BookmarkItem item = FakeBookmarkModel.this.getBookmarkById(bookmarkId);
-            FakeBookmarkModel.this.updateBookmarkItem(
-                    bookmarkId,
-                    newParentId,
-                    item.getTitle(),
-                    item.getUrl(),
-                    item.isFolder(),
-                    item.isEditable(),
-                    item.isManaged(),
-                    item.isRead(),
-                    item.isAccountBookmark());
+            FakeBookmarkModel.this.moveBookmarkItem(bookmarkId, newParentId, index);
         }
 
         @Override
         public BookmarkId addBookmark(
                 long nativeBookmarkBridge, BookmarkId parent, int index, String title, GURL url) {
-            return FakeBookmarkModel.this.addBookmark(BookmarkType.NORMAL, parent, title, url);
+            return FakeBookmarkModel.this.addBookmark(
+                    BookmarkType.NORMAL, parent, index, title, url);
         }
 
         @Override
@@ -646,8 +774,9 @@ public class FakeBookmarkModel extends BookmarkModel {
 
         @Override
         public void destroy(long nativeBookmarkBridge) {
+            mBookmarkIdToChildIdsMap.clear();
             mBookmarkIdToItemMap.clear();
-            setupTopLevelFolders();
+            performExtensiveBookmarkChanges(FakeBookmarkModel.this::setupTopLevelFolders);
         }
 
         @Override

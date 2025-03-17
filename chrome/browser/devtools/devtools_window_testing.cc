@@ -4,10 +4,11 @@
 
 #include "chrome/browser/devtools/devtools_window_testing.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
@@ -40,7 +41,7 @@ DevToolsWindowTesting::DevToolsWindowTesting(DevToolsWindow* window)
 DevToolsWindowTesting::~DevToolsWindowTesting() {
   DevToolsWindowTestings* instances =
       g_devtools_window_testing_instances.Pointer();
-  auto it = base::ranges::find(*instances, this);
+  auto it = std::ranges::find(*instances, this);
   CHECK(it != instances->end());
   instances->erase(it);
   if (!close_callback_.is_null())

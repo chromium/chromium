@@ -4,6 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(!is_android && !is_ios)
 
@@ -48,6 +49,7 @@ build_webui("build") {
   ts_out_dir =
       "$root_gen_dir/ui/webui/resources/tsc/cr_components/theme_color_picker"
   ts_composite = true
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_389737066.json"
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",
@@ -58,4 +60,5 @@ build_webui("build") {
   webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
+  generate_code_cache = enable_webui_generate_code_cache
 }

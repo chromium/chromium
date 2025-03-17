@@ -7,7 +7,7 @@ import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {findChildText} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
+import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 declare interface AutofillFormFieldData {
   name: string;
@@ -31,6 +31,7 @@ declare interface AutofillFormFieldData {
   identifier?: string;
   name_attribute?: string;
   id_attribute?: string;
+  pattern_attribute?: string;
 }
 
 declare interface AutofillFormData {
@@ -329,7 +330,7 @@ function sanitizeValueForInputElement(
   // chromium/src/third_party/WebKit/Source/core/html/). Currently only
   // TextFieldInputType is relevant and sanitizeValue() for other types of
   // input elements has not been implemented.
-  if (gCrWeb.common.isTextField(element)) {
+  if (isTextField(element)) {
     return sanitizeValueForTextFieldInputType(
         proposedValue, element as HTMLInputElement);
   }

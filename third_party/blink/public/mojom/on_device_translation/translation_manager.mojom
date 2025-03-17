@@ -27,27 +27,31 @@ enum CanCreateTranslatorResult {
   // Both the library and the language packs need to be downloaded.
   kAfterDownloadLibraryAndLanguagePackNotReady = 3,
 
+  // The resources for translation are downloaded and a translator needs to be
+  // created for the translation to become readily available.
+  kAfterDownloadTranslatorCreationRequired = 4,
+
   // The translator cannot be created because the transltion for the specified
   // language pair is not supported.
-  kNoNotSupportedLanguage = 4,
+  kNoNotSupportedLanguage = 5,
 
   // The translator cannot be created because the Accept-Language check failed.
-  kNoAcceptLanguagesCheckFailed = 5,
+  kNoAcceptLanguagesCheckFailed = 6,
 
   // The translator cannot be created. New models need to be downloaded,
   // but the number of downloaded language packs will exceedd the limit.
-  kNoExceedsLanguagePackCountLimitation = 6,
+  kNoExceedsLanguagePackCountLimitation = 7,
 
   // The translator cannot be created, because the translator service crashed.
-  kNoServiceCrashed = 7,
+  kNoServiceCrashed = 8,
 
   // The translator cannot be created, because the use of Translator API is
   // disallowed by `TranslatorAPIAllowed` Enterprise policy
-  kNoDisallowedByPolicy = 8,
+  kNoDisallowedByPolicy = 9,
 
   // The translator cannot be created, because the number of services exceeds
   // the limitation.
-  kNoExceedsServiceCountLimitation = 9,
+  kNoExceedsServiceCountLimitation = 10,
 };
 
 // The error of TranslationManager's CreateTranslator IPC.
@@ -88,6 +92,9 @@ enum CreateTranslatorError {
   // The translator cannot be created, because the number of pending tasks
   // exceeds the limitation.
   kExceedsPendingTaskCountLimitation = 10,
+
+  // The translator cannot be created because the library version is invalid.
+  kInvalidVersion = 11,
 };
 
 // The result of TranslationManager's CreateTranslator IPC.
@@ -145,7 +152,8 @@ struct TranslatorAvailabilityInfo {
   TranslationAvailability availability;
 };
 
-// The manager for on-device translation.
+// Interface to manage translation between languages on-device. Process called
+// from the renderer and used to implement the translation in the browser process.
 interface TranslationManager {
   // Returns if it is supported to create a translator that could translate
   // texts from `source_lang` to `target_lang`.
@@ -169,4 +177,9 @@ interface TranslationManager {
 
   // Get the necessary information to calculate translator availability.
   GetTranslatorAvailabilityInfo() => (TranslatorAvailabilityInfo info);
+
+  // Returns the availability of the language pair translation.
+  TranslationAvailable(
+      TranslatorLanguageCode source_lang, TranslatorLanguageCode target_lang)
+      => (CanCreateTranslatorResult result);
 };

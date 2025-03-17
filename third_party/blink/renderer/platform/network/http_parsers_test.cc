@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 
 #include <string_view>
@@ -889,13 +894,14 @@ TEST(ParseSRIMessageSignaturesTest, NoSignatures) {
        "signature=:amDAmvl9bsfIcfA/bIJsBuBvInjJAax"
        "xNIlLOzNI3FkrnG2k52UxXJprz89+2aOwEAz3w6KjjZuGkdrOUwxhBQ==:"),
       // No `Signature` header.
-      ("HTTP/1.1 200 OK\r\nSignature-Input: signature=(\"identity-digest\";sf);"
+      ("HTTP/1.1 200 OK\r\nSignature-Input: "
+       "signature=(\"unencoded-digest\";sf);"
        "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
        "tag=\"sri\"")};
   for (const char* test : cases) {
     SCOPED_TRACE(test);
     auto result = ParseSRIMessageSignaturesFromHeaders(test);
-    EXPECT_TRUE(result.empty());
+    EXPECT_TRUE(result->signatures.empty());
   }
 }
 
@@ -904,23 +910,24 @@ TEST(ParseSRIMessageSignaturesTest, ValidSignature) {
       "HTTP/1.1 200 OK\r\n"
       "Signature: signature=:amDAmvl9bsfIcfA/bIJsBuBvInjJAaxxNIlLOzNI3FkrnG2k52"
       "UxXJprz89+2aOwEAz3w6KjjZuGkdrOUwxhBQ==:\r\n"
-      "Signature-Input: signature=(\"identity-digest\";sf);"
+      "Signature-Input: signature=(\"unencoded-digest\";sf);"
       "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
       "tag=\"sri\"\r\n\r\n";
 
-  auto result = ParseSRIMessageSignaturesFromHeaders(raw_header);
-  EXPECT_EQ(1u, result.size());
-  EXPECT_EQ("signature", result[0]->label);
-  EXPECT_FALSE(result[0]->created.has_value());
-  EXPECT_FALSE(result[0]->expires.has_value());
-  EXPECT_EQ("JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=", result[0]->keyid);
-  EXPECT_TRUE(result[0]->nonce.IsNull());
-  EXPECT_EQ("sri", result[0]->tag);
+  auto parsed = ParseSRIMessageSignaturesFromHeaders(raw_header);
+  EXPECT_EQ(1u, parsed->signatures.size());
+  EXPECT_EQ("signature", parsed->signatures[0]->label);
+  EXPECT_FALSE(parsed->signatures[0]->created.has_value());
+  EXPECT_FALSE(parsed->signatures[0]->expires.has_value());
+  EXPECT_EQ("JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=",
+            parsed->signatures[0]->keyid);
+  EXPECT_TRUE(parsed->signatures[0]->nonce.IsNull());
+  EXPECT_EQ("sri", parsed->signatures[0]->tag);
 
   EXPECT_EQ(
       "amDAmvl9bsfIcfA/bIJsBuBvInjJAaxxNIlLOzNI3FkrnG2k52UxXJprz89+2aOwEAz3w6Kj"
       "jZuGkdrOUwxhBQ==",
-      WTF::Base64Encode(result[0]->signature));
+      WTF::Base64Encode(parsed->signatures[0]->signature));
 }
 
 TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultURLVariance) {

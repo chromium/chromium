@@ -13,11 +13,11 @@
 namespace pdf {
 
 const chrome_pdf::AccessibilityTextRunInfo kFirstTextRun = {
-    15, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    15, "Span", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityTextRunInfo kSecondTextRun = {
-    15, gfx::RectF(28.0f, 117.0f, 152.0f, 19.0f),
+    15, "Span", gfx::RectF(28.0f, 117.0f, 152.0f, 19.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityCharInfo kDummyCharsData[] = {

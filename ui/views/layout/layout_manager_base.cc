@@ -17,7 +17,7 @@
 #include "ui/views/view_class_properties.h"
 
 #if DCHECK_IS_ON()
-#include "base/ranges/algorithm.h"
+#include <algorithm>
 #endif
 
 namespace views {
@@ -376,7 +376,7 @@ void LayoutManagerBase::AddOwnedLayoutInternal(
   // If `owned_layout` knows about views the root doesn't, something is going to
   // go wrong.
   const LayoutManagerBase* const root_layout = GetRootLayoutManager();
-  base::ranges::for_each(
+  std::ranges::for_each(
       owned_layout->view_observations_.sources(), [&](View* source) {
         DCHECK(root_layout->view_observations_.IsObservingSource(source));
       });

@@ -190,6 +190,12 @@ void MenuModelAdapter::ExecuteCommand(int id, int mouse_event_flags) {
 
 bool MenuModelAdapter::IsTriggerableEvent(MenuItemView* source,
                                           const ui::Event& e) {
+  // By default, a sub-menu is not triggerable.
+  // Subclass can override this behavior.
+  if (source->GetType() == MenuItemView::Type::kSubMenu) {
+    return false;
+  }
+
   return e.type() == ui::EventType::kGestureTap ||
          e.type() == ui::EventType::kGestureTapDown ||
          (e.IsMouseEvent() && (triggerable_event_flags_ & e.flags()));
@@ -270,6 +276,15 @@ void MenuModelAdapter::OnMenuClosed(MenuItemView* menu) {
 }
 
 // MenuModelDelegate overrides:
+void MenuModelAdapter::OnIconChanged(int command_id) {
+  ui::MenuModel* model = menu_model_;
+  size_t index;
+  menu_model_->GetModelAndIndexForCommandId(command_id, &model, &index);
+  views::MenuItemView* item = menu_->GetMenuItemByID(command_id);
+  CHECK(item);
+  item->SetIcon(model->GetIconAt(index));
+}
+
 void MenuModelAdapter::OnMenuStructureChanged() {
   if (menu_) {
     BuildMenu(menu_);

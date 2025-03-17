@@ -5,6 +5,7 @@
 #include "components/user_education/common/feature_promo/impl/feature_promo_queue.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -59,26 +60,34 @@ FeaturePromoResult FeaturePromoQueue::CanQueue(
     const FeaturePromoParams& promo_params) const {
   auto required =
       required_preconditions_provider_->GetPreconditions(spec, promo_params);
-  return required.CheckPreconditions().result();
+  ComputedData data;
+  return required.CheckPreconditions(data).result();
 }
 
 FeaturePromoResult FeaturePromoQueue::CanShow(
     const FeaturePromoSpecification& spec,
     const FeaturePromoParams& promo_params) const {
-  const auto can_queue = CanQueue(spec, promo_params);
-  if (!can_queue) {
-    return can_queue;
+  auto required =
+      required_preconditions_provider_->GetPreconditions(spec, promo_params);
+  ComputedData data;
+  auto result = required.CheckPreconditions(data).result();
+  if (!result) {
+    return result;
   }
   auto wait_for =
       wait_for_preconditions_provider_->GetPreconditions(spec, promo_params);
-  return wait_for.CheckPreconditions().result();
+  result = wait_for.CheckPreconditions(data).result();
+  // Release references to data before the precondition lists go away.
+  data.release_all_references();
+  return result;
 }
 
 void FeaturePromoQueue::TryToQueue(const FeaturePromoSpecification& spec,
                                    FeaturePromoParams promo_params) {
   auto required =
       required_preconditions_provider_->GetPreconditions(spec, promo_params);
-  const auto required_check_result = required.CheckPreconditions();
+  ComputedData data;
+  const auto required_check_result = required.CheckPreconditions(data);
   if (!required_check_result) {
     SendFailureReport(std::move(promo_params.show_promo_result_callback),
                       *required_check_result.failure());
@@ -110,14 +119,16 @@ bool FeaturePromoQueue::Cancel(const base::Feature& iph_feature) {
 }
 
 const base::Feature* FeaturePromoQueue::UpdateAndIdentifyNextEligiblePromo() {
-  RemoveIneligiblePromos();
-  return IdentifyNextEligiblePromo();
+  ComputedDataMap data = RemovePromosWithFailedPreconditions();
+  RemoveTimedOutPromos(data);
+  return IdentifyNextEligiblePromo(data);
 }
 
 EligibleFeaturePromo FeaturePromoQueue::UnqueueEligiblePromo(
     const base::Feature& iph_feature) {
   const auto it = FindQueuedPromo(iph_feature);
   CHECK(it != queued_promos_.end());
+  RecordQueueTime(*it, /*succeeded=*/true);
   EligibleFeaturePromo eligible_promo(std::move(it->params));
   it->required_preconditions.ExtractCachedData(eligible_promo.cached_data);
   it->wait_for_preconditions.ExtractCachedData(eligible_promo.cached_data);
@@ -126,8 +137,8 @@ EligibleFeaturePromo FeaturePromoQueue::UnqueueEligiblePromo(
 }
 
 void FeaturePromoQueue::RemoveIneligiblePromos() {
-  RemovePromosWithFailedPreconditions();
-  RemoveTimedOutPromos();
+  ComputedDataMap data = RemovePromosWithFailedPreconditions();
+  RemoveTimedOutPromos(data);
 }
 
 void FeaturePromoQueue::FailAll(FeaturePromoResult::Failure failure_reason) {
@@ -154,14 +165,39 @@ void FeaturePromoQueue::SendFailureReport(
   }
 }
 
-void FeaturePromoQueue::RemoveTimedOutPromos() {
+FeaturePromoQueue::ComputedDataMap
+FeaturePromoQueue::RemovePromosWithFailedPreconditions() {
+  ComputedDataMap data;
+  for (auto it = queued_promos_.begin(); it != queued_promos_.end();) {
+    ComputedData temp;
+    const auto check_result =
+        it->required_preconditions.CheckPreconditions(temp);
+    if (!check_result) {
+      temp.release_all_references();
+      RecordQueueTime(*it, /*succeeded=*/false);
+      SendFailureReport(std::move(it->params.show_promo_result_callback),
+                        *check_result.failure());
+      it = queued_promos_.erase(it);
+    } else {
+      data.emplace(&it->params.feature.get(), std::move(temp));
+      ++it;
+    }
+  }
+  return data;
+}
+
+void FeaturePromoQueue::RemoveTimedOutPromos(ComputedDataMap& data) {
   const auto now = time_provider_->GetCurrentTime();
   for (auto it = queued_promos_.begin(); it != queued_promos_.end();) {
     if (now - it->queue_time >= queue_timeout_) {
       // The promo is expired, now to find out why.
+      const auto temp = data.find(&it->params.feature.get());
+      CHECK(temp != data.end());
       const auto latest_result =
-          it->wait_for_preconditions.CheckPreconditions();
+          it->wait_for_preconditions.CheckPreconditions(temp->second);
+      data.erase(temp);
       // If there was no identifiable reason, fall back to "timed out".
+      RecordQueueTime(*it, /*succeeded=*/false);
       SendFailureReport(
           std::move(it->params.show_promo_result_callback),
           latest_result.failure().value_or(FeaturePromoResult::kTimedOut));
@@ -172,22 +208,13 @@ void FeaturePromoQueue::RemoveTimedOutPromos() {
   }
 }
 
-void FeaturePromoQueue::RemovePromosWithFailedPreconditions() {
-  for (auto it = queued_promos_.begin(); it != queued_promos_.end();) {
-    const auto check_result = it->required_preconditions.CheckPreconditions();
-    if (!check_result) {
-      SendFailureReport(std::move(it->params.show_promo_result_callback),
-                        *check_result.failure());
-      it = queued_promos_.erase(it);
-    } else {
-      ++it;
-    }
-  }
-}
-
-const base::Feature* FeaturePromoQueue::IdentifyNextEligiblePromo() {
+const base::Feature* FeaturePromoQueue::IdentifyNextEligiblePromo(
+    ComputedDataMap& data) {
   for (const auto& promo : queued_promos_) {
-    const auto result = promo.wait_for_preconditions.CheckPreconditions();
+    const auto temp = data.find(&promo.params.feature.get());
+    CHECK(temp != data.end());
+    const auto result =
+        promo.wait_for_preconditions.CheckPreconditions(temp->second);
     if (result) {
       return &promo.params.feature.get();
     }
@@ -200,6 +227,25 @@ FeaturePromoQueue::Queue::iterator FeaturePromoQueue::FindQueuedPromo(
   return std::find_if(
       queued_promos_.begin(), queued_promos_.end(),
       [&feature](auto& entry) { return &feature == &*entry.params.feature; });
+}
+
+void FeaturePromoQueue::RecordQueueTime(
+    const internal::QueuedFeaturePromo& promo,
+    bool succeeded) {
+  std::string name = succeeded ? "UserEducation.MessageShown.TimeInQueue"
+                               : "UserEducation.MessageNotShown.TimeInQueue";
+
+  // Record generic queue time histogram (all promos).
+  base::UmaHistogramCustomTimes(
+      name, time_provider_->GetCurrentTime() - promo.queue_time,
+      base::Milliseconds(250), base::Seconds(30), 50);
+
+  // Record promo-specific queue time histogram.
+  name += ".";
+  name += promo.params.feature->name;
+  base::UmaHistogramCustomTimes(
+      name, time_provider_->GetCurrentTime() - promo.queue_time,
+      base::Milliseconds(250), base::Seconds(30), 50);
 }
 
 }  // namespace user_education::internal

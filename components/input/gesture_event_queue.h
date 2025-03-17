@@ -7,13 +7,14 @@
 
 #include <stddef.h>
 
+#include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/input/dispatch_to_renderer_callback.h"
 #include "components/input/event_with_latency_info.h"
 #include "components/input/fling_controller.h"
-#include "base/component_export.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
@@ -24,6 +25,19 @@ class MockRenderWidgetHost;
 namespace input {
 class GestureEventQueueTest;
 
+class GestureEventWithLatencyInfoAndCallback
+    : public GestureEventWithLatencyInfo {
+ public:
+  GestureEventWithLatencyInfoAndCallback(
+      const GestureEventWithLatencyInfo&,
+      DispatchToRendererCallback dispatch_callback);
+  GestureEventWithLatencyInfoAndCallback(
+      GestureEventWithLatencyInfoAndCallback&& event);
+  ~GestureEventWithLatencyInfoAndCallback();
+
+  DispatchToRendererCallback dispatch_callback;
+};
+
 // Interface with which the GestureEventQueue can forward gesture events, and
 // dispatch gesture event responses.
 class COMPONENT_EXPORT(INPUT) GestureEventQueueClient {
@@ -31,7 +45,8 @@ class COMPONENT_EXPORT(INPUT) GestureEventQueueClient {
   virtual ~GestureEventQueueClient() = default;
 
   virtual void SendGestureEventImmediately(
-      const GestureEventWithLatencyInfo& event) = 0;
+      const GestureEventWithLatencyInfo& event,
+      DispatchToRendererCallback& dispatch_callback) = 0;
 
   virtual void OnGestureEventAck(
       const GestureEventWithLatencyInfo& event,
@@ -63,7 +78,8 @@ class COMPONENT_EXPORT(INPUT) GestureEventQueueClient {
 // event is ACK'd.
 class COMPONENT_EXPORT(INPUT) GestureEventQueue {
  public:
-  using GestureQueue = base::circular_deque<GestureEventWithLatencyInfo>;
+  using GestureWithCallbackQueue =
+      base::circular_deque<GestureEventWithLatencyInfoAndCallback>;
   struct COMPONENT_EXPORT(INPUT) Config {
     Config();
 
@@ -94,14 +110,16 @@ class COMPONENT_EXPORT(INPUT) GestureEventQueue {
 
   // Filter the event for debouncing or forward it to the renderer. Returns
   // true if the event was forwarded, false if was filtered for debouncing.
-  bool DebounceOrForwardEvent(const GestureEventWithLatencyInfo&);
+  bool DebounceOrForwardEvent(const GestureEventWithLatencyInfo&,
+                              DispatchToRendererCallback& dispatch_callback);
 
   // Adds a gesture to the queue of events that needs to be deferred until the
   // touch action is known.
-  void QueueDeferredEvents(const GestureEventWithLatencyInfo&);
+  void QueueDeferredEvents(const GestureEventWithLatencyInfo&,
+                           DispatchToRendererCallback&);
 
   // Returns events in the |deferred_gesture_queue_| and empty the queue.
-  GestureQueue TakeDeferredEvents();
+  GestureWithCallbackQueue TakeDeferredEvents();
 
   // Indicates that the caller has received an acknowledgement from the renderer
   // with state |ack_result| and event |type|.
@@ -116,8 +134,8 @@ class COMPONENT_EXPORT(INPUT) GestureEventQueue {
 
   // Sends the gesture event to the renderer. Stores the sent event for when
   // the renderer replies with an ACK.
-  void ForwardGestureEvent(
-      const GestureEventWithLatencyInfo& gesture_event);
+  void ForwardGestureEvent(const GestureEventWithLatencyInfo& gesture_event,
+                           DispatchToRendererCallback& dispatch_callback);
 
   bool empty() const {
     return sent_events_awaiting_ack_.empty() &&
@@ -175,7 +193,8 @@ class COMPONENT_EXPORT(INPUT) GestureEventQueue {
 
   // Sub-filter for removing bounces from in-progress scrolls.
   bool ShouldForwardForBounceReduction(
-      const GestureEventWithLatencyInfo& gesture_event);
+      const GestureEventWithLatencyInfo& gesture_event,
+      DispatchToRendererCallback& dispatch_callback);
 
   // ACK completed events in order until we have reached an incomplete event.
   // Will preserve the FIFO order as events originally arrived.
@@ -209,11 +228,11 @@ class COMPONENT_EXPORT(INPUT) GestureEventQueue {
   base::OneShotTimer debounce_deferring_timer_;
 
   // Queue of events that have been deferred for debounce.
-  GestureQueue debouncing_deferral_queue_;
+  GestureWithCallbackQueue debouncing_deferral_queue_;
 
   // Queue of gesture events that have been deferred until the main thread touch
   // action is known.
-  GestureQueue deferred_gesture_queue_;
+  GestureWithCallbackQueue deferred_gesture_queue_;
 
   // Time window in which to debounce scroll/fling ends. Note that an interval
   // of zero effectively disables debouncing.

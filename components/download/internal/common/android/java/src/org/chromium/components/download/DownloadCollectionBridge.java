@@ -4,6 +4,8 @@
 
 package org.chromium.components.download;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -155,6 +157,7 @@ public class DownloadCollectionBridge {
         try {
             PendingSession session = openPendingUri(destinationUri);
             OutputStream out = session.openOutputStream();
+            assumeNonNull(out);
             InputStream in = new FileInputStream(sourcePath);
             FileUtils.copy(in, out);
             in.close();

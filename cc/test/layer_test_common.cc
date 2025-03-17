@@ -29,13 +29,6 @@ LayerTreeSettings CommitToActiveTreeLayerListSettings() {
   return settings;
 }
 
-LayerTreeSettings CommitToActiveTreeLayerTreeSettings() {
-  LayerTreeSettings settings;
-  settings.commit_to_active_tree = true;
-  settings.use_layer_lists = false;
-  return settings;
-}
-
 LayerTreeSettings CommitToPendingTreeLayerListSettings() {
   LayerTreeSettings settings;
   settings.commit_to_active_tree = false;

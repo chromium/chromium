@@ -12,6 +12,7 @@
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <string_view>
 
@@ -23,7 +24,6 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -392,7 +392,7 @@ void ClipboardMac::ReadFilenames(ClipboardBuffer buffer,
 
   std::vector<ui::FileInfo> files =
       clipboard_util::FilesFromPasteboard(GetPasteboard());
-  base::ranges::move(files, std::back_inserter(*result));
+  std::ranges::move(files, std::back_inserter(*result));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -433,17 +433,20 @@ void ClipboardMac::ReadData(const ClipboardFormatType& format,
 void ClipboardMac::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
+    const std::vector<RawData>& raw_objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     uint32_t privacy_types) {
   WritePortableAndPlatformRepresentationsInternal(
-      buffer, objects, std::move(platform_representations), std::move(data_src),
-      GetPasteboard(), privacy_types);
+      buffer, objects, std::move(raw_objects),
+      std::move(platform_representations), std::move(data_src), GetPasteboard(),
+      privacy_types);
 }
 
 void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
+    const std::vector<RawData>& raw_objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     NSPasteboard* pasteboard,
@@ -458,8 +461,12 @@ void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
   [pasteboard declareTypes:@[] owner:nil];
 
   DispatchPlatformRepresentations(std::move(platform_representations));
-  for (const auto& object : objects)
+  for (const auto& object : objects) {
     DispatchPortableRepresentation(object.second);
+  }
+  for (const auto& raw_object : raw_objects) {
+    DispatchPortableRepresentation(raw_object);
+  }
 
   if (data_src && data_src->IsUrlType()) {
     [pasteboard setString:base::SysUTF8ToNSString(data_src->GetURL()->spec())

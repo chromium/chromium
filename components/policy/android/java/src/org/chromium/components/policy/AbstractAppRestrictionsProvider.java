@@ -17,17 +17,20 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Retrieves app restrictions and provides them to the parent class as Bundles.
  *
  * Needs to be subclassed to specify how to retrieve the restrictions.
  */
+@NullMarked
 public abstract class AbstractAppRestrictionsProvider extends PolicyProvider {
     private static final String TAG = "policy";
 
     /** {@link Bundle} holding the restrictions to be used during tests. */
-    private static Bundle sTestRestrictions;
+    private static @Nullable Bundle sTestRestrictions;
 
     private final Context mContext;
     private final BroadcastReceiver mAppRestrictionsChangedReceiver =

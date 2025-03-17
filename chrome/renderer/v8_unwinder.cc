@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/profiler/register_context_registers.h"
 #include "build/build_config.h"
 #include "v8/include/v8-isolate.h"
 

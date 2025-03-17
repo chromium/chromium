@@ -300,7 +300,6 @@ void TouchSelectionMagnifierAura::CreateMagnifierLayer() {
   // Create the zoom layer, which will show the zoomed contents.
   zoom_layer_ = std::make_unique<Layer>(LAYER_SOLID_COLOR);
   zoom_layer_->SetBackgroundZoom(kMagnifierScale, 0);
-  zoom_layer_->SetFillsBoundsOpaquely(false);
   // BackdropFilterBounds applies after the backdrop filter (the zoom effect)
   // but before anything else, meaning its clipping effect is transformed by
   // the layer_offset() filter operation. SetRoundedCornerRadius() applies too

@@ -40,6 +40,7 @@ class RegisterScreenRequest : public google_apis::UrlFetchRequestBase {
   RegisterScreenRequest(google_apis::RequestSender* sender,
                         std::string session_id,
                         RegisterScreenParam register_screen_param,
+                        std::string url_base,
                         RegisterScreenRequestCallback callback);
   RegisterScreenRequest(const RegisterScreenRequest&) = delete;
   RegisterScreenRequest& operator=(const RegisterScreenRequest&) = delete;

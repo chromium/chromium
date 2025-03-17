@@ -38,9 +38,13 @@ DiceTabHelper::GetEnableSyncCallbackForBrowser() {
       return;
     }
 
-    bool is_sync_promo = access_point ==
-                         signin_metrics::AccessPoint::
-                             ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
+    bool is_sync_promo =
+        access_point ==
+        signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
+    if (switches::IsImprovedSettingsUIOnDesktopEnabled()) {
+      is_sync_promo = is_sync_promo ||
+                      access_point == signin_metrics::AccessPoint::kSettings;
+    }
     TurnSyncOnHelper::SigninAbortedMode abort_mode =
         is_sync_promo ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT
                       : TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT;
@@ -142,8 +146,7 @@ void DiceTabHelper::InitializeSigninFlow(
 
   if (signin_util::IsSigninPending(identity_manager)) {
     base::UmaHistogramEnumeration(
-        "Signin.SigninPending.ResolutionSourceStarted", access_point,
-        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+        "Signin.SigninPending.ResolutionSourceStarted", access_point);
   }
 }
 

@@ -89,7 +89,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         // TODO(b/336589861): Use savedTabGroupId to reassociate this tab group with a sync entity.
 
         if (tabIds.length == 1) {
-            groupFilter.createSingleTabGroup(tabIds[0], false);
+            groupFilter.createSingleTabGroup(tabIds[0]);
         } else {
             for (int id : tabIds) {
                 if (id == rootId) continue;

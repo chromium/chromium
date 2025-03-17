@@ -500,8 +500,8 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
         transform_tree_.EnsureStickyPositionData(id);
     sticky_data.constraints = *sticky_constraint;
     const auto& scroll_ancestor = transform_node.NearestScrollTranslationNode();
-    sticky_data.scroll_ancestor = EnsureCompositorScrollAndTransformNode(
-        scroll_ancestor, InfiniteIntRect());
+    sticky_data.scroll_ancestor =
+        EnsureCompositorScrollAndTransformNode(scroll_ancestor);
     const auto& scroll_ancestor_compositor_node =
         *scroll_tree_.Node(sticky_data.scroll_ancestor);
     if (scroll_ancestor_compositor_node.scrolls_outer_viewport)
@@ -673,8 +673,7 @@ int PropertyTreeManager::EnsureCompositorScrollNodeInternal(
 }
 
 int PropertyTreeManager::EnsureCompositorScrollAndTransformNode(
-    const TransformPaintPropertyNode& scroll_translation,
-    const gfx::Rect& scrolling_contents_cull_rect) {
+    const TransformPaintPropertyNode& scroll_translation) {
   EnsureCompositorTransformNode(scroll_translation);
   int id = scroll_translation.ScrollNode()->CcNodeId(new_sequence_number_);
   DCHECK(scroll_tree_.Node(id));
@@ -683,16 +682,14 @@ int PropertyTreeManager::EnsureCompositorScrollAndTransformNode(
 
 int PropertyTreeManager::EnsureCompositorInnerScrollAndTransformNode(
     const TransformPaintPropertyNode& scroll_translation) {
-  int node_id = EnsureCompositorScrollAndTransformNode(scroll_translation,
-                                                       InfiniteIntRect());
+  int node_id = EnsureCompositorScrollAndTransformNode(scroll_translation);
   scroll_tree_.Node(node_id)->scrolls_inner_viewport = true;
   return node_id;
 }
 
 int PropertyTreeManager::EnsureCompositorOuterScrollAndTransformNode(
     const TransformPaintPropertyNode& scroll_translation) {
-  int node_id = EnsureCompositorScrollAndTransformNode(scroll_translation,
-                                                       InfiniteIntRect());
+  int node_id = EnsureCompositorScrollAndTransformNode(scroll_translation);
   scroll_tree_.Node(node_id)->scrolls_outer_viewport = true;
   return node_id;
 }
@@ -735,7 +732,7 @@ void PropertyTreeManager::EmitClipMaskLayer() {
   mask_layer->SetTransformTreeIndex(
       EnsureCompositorTransformNode(*current_.transform));
   int scroll_id = EnsureCompositorScrollAndTransformNode(
-      current_.transform->NearestScrollTranslationNode(), InfiniteIntRect());
+      current_.transform->NearestScrollTranslationNode());
   mask_layer->SetScrollTreeIndex(scroll_id);
   mask_layer->SetClipTreeIndex(mask_effect.clip_id);
   mask_layer->SetEffectTreeIndex(mask_effect.id);
@@ -1307,7 +1304,9 @@ void PropertyTreeManager::PopulateCcEffectNode(
   effect_node.opacity = effect.Opacity();
   const auto& transform = effect.LocalTransformSpace().Unalias();
   effect_node.transform_id = EnsureCompositorTransformNode(transform);
+  effect_node.has_2d_scale_transform = effect.Has2DScaleTransform();
   if (effect.MayHaveBackdropEffect()) {
+    effect_node.may_have_backdrop_effect = true;
     // We never have backdrop effect and filter on the same effect node.
     DCHECK(effect.Filter().IsEmpty());
     if (auto* backdrop_filter = effect.BackdropFilter()) {
@@ -1330,16 +1329,22 @@ void PropertyTreeManager::PopulateCcEffectNode(
 }
 
 void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
-    const cc::LayerList& layers) {
+    const cc::LayerList& layers,
+    const HashSet<int>& layers_having_text) {
   // This vector is indexed by effect node id. The value is the number of
   // layers and sub-render-surfaces controlled by this effect.
   wtf_size_t tree_size = base::checked_cast<wtf_size_t>(effect_tree_.size());
   Vector<int> effect_layer_counts(tree_size);
+  Vector<bool> has_text(tree_size);
   Vector<bool> has_child_surface(tree_size);
+  Vector<bool> has_backdrop_effect_descendant(tree_size);
   // Initialize the vector to count directly controlled layers.
   for (const auto& layer : layers) {
-    if (layer->draws_content())
+    if (layer->draws_content()) {
       effect_layer_counts[layer->effect_tree_index()]++;
+      has_text[layer->effect_tree_index()] |=
+          layers_having_text.Contains(layer->id());
+    }
   }
 
   // In the effect tree, parent always has lower id than children, so the
@@ -1347,6 +1352,16 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
   // effect_layer_counts.
   for (int id = tree_size - 1; id > cc::kSecondaryRootPropertyNodeId; id--) {
     auto* effect = effect_tree_.Node(id);
+
+    if (RuntimeEnabledFeatures::RenderSurfaceFor2DScaleTransformEnabled() &&
+        effect->render_surface_reason == cc::RenderSurfaceReason::kNone &&
+        !has_backdrop_effect_descendant[id] &&
+        !effect->may_have_backdrop_effect && effect->has_2d_scale_transform &&
+        effect_layer_counts[id] >= 2 && !has_text[id]) {
+      effect->render_surface_reason =
+          cc::RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants;
+    }
+
     if (effect_layer_counts[id] < 2 &&
         IsConditionalRenderSurfaceReason(effect->render_surface_reason) &&
         // kBlendModeDstIn should create a render surface if the mask itself
@@ -1369,6 +1384,12 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
       // Otherwise all layers count as controlled layers of the parent.
       effect_layer_counts[effect->parent_id] += effect_layer_counts[id];
       has_child_surface[effect->parent_id] |= has_child_surface[id];
+      has_text[effect->parent_id] |= has_text[id];
+    }
+
+    if (effect->may_have_backdrop_effect ||
+        has_backdrop_effect_descendant[id]) {
+      has_backdrop_effect_descendant[effect->parent_id] = true;
     }
 
 #if DCHECK_IS_ON()

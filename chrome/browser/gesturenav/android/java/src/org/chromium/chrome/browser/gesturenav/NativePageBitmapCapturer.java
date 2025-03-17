@@ -19,6 +19,8 @@ import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.back_press.BackPressMetrics;
+import org.chromium.chrome.browser.back_press.BackPressMetrics.CaptureNativeViewResult;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -51,7 +53,9 @@ public class NativePageBitmapCapturer implements UnownedUserData {
             return false;
         }
 
-        if (shouldUseFallbackUx(tab)) {
+        int result = shouldUseFallbackUx(tab);
+        BackPressMetrics.recordCaptureNativeViewResult(result);
+        if (result != CaptureNativeViewResult.CAPTURE_SCREENSHOT) {
             PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> callback.onResult(null));
             return true;
         }
@@ -118,18 +122,22 @@ public class NativePageBitmapCapturer implements UnownedUserData {
         return true;
     }
 
-    private static boolean shouldUseFallbackUx(Tab tab) {
-        if (tab.getWindowAndroid() == null) return true;
+    private static @CaptureNativeViewResult int shouldUseFallbackUx(Tab tab) {
+        if (tab.getWindowAndroid() == null) {
+            return CaptureNativeViewResult.NULL_WINDOW_ANDROID;
+        }
 
         View view = tab.getView();
         // The view is not laid out yet.
-        if (view.getWidth() == 0 || view.getHeight() == 0) return true;
+        if (view.getWidth() == 0 || view.getHeight() == 0) {
+            return CaptureNativeViewResult.VIEW_NOT_LAID_OUT;
+        }
         if (tab.getWebContents() == null
                 || tab.getWebContents().getViewAndroidDelegate() == null
                 || tab.getWebContents().getViewAndroidDelegate().getContainerView() == null
                 || tab.getWebContents().getViewAndroidDelegate().getContainerView().getHeight()
                         == 0) {
-            return true;
+            return CaptureNativeViewResult.VIEW_NOT_LAID_OUT;
         }
 
         GURL lastCommittedUrl = tab.getWebContents().getLastCommittedUrl();
@@ -141,10 +149,10 @@ public class NativePageBitmapCapturer implements UnownedUserData {
         // TODO(crbug.com/378565245): Capture screenshots when navigating between native pages.
         if (isLastPageNative
                 && NativePage.isNativePageUrl(tab.getUrl(), tab.isIncognitoBranded(), false)) {
-            return true;
+            return CaptureNativeViewResult.BETWEEN_NATIVE_PAGES;
         }
 
-        return false;
+        return CaptureNativeViewResult.CAPTURE_SCREENSHOT;
     }
 
     private static Bitmap capture(Tab tab, boolean fullscreen, int topControlsHeight) {
@@ -187,7 +195,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
     }
 
     private static boolean enableHardwareDraw() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.NATIVE_PAGE_TRANSITION_HARDWARE_CAPTURE);
     }

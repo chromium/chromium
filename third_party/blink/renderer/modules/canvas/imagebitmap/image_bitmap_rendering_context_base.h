@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
@@ -43,9 +44,11 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
   void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
 
   SkAlphaType GetAlphaType() const override { return kPremul_SkAlphaType; }
-  SkColorType GetSkColorType() const override { return kN32_SkColorType; }
-  sk_sp<SkColorSpace> GetSkColorSpace() const override {
-    return SkColorSpace::MakeSRGB();
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return GetN32FormatForCanvas();
+  }
+  gfx::ColorSpace GetColorSpace() const override {
+    return gfx::ColorSpace::CreateSRGB();
   }
   bool IsComposited() const final { return true; }
   bool PushFrame() override;

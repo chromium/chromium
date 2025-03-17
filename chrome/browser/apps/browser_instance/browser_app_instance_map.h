@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_BROWSER_INSTANCE_BROWSER_APP_INSTANCE_MAP_H_
 #define CHROME_BROWSER_APPS_BROWSER_INSTANCE_BROWSER_APP_INSTANCE_MAP_H_
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -12,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 
 namespace apps {
 
@@ -64,7 +64,7 @@ template <typename KeyT, typename ValueT, typename PredicateT>
 const ValueT* FindInstanceIf(
     const BrowserAppInstanceMap<KeyT, ValueT>& instances,
     PredicateT predicate) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       instances, predicate,
       [](const auto& pair) -> const ValueT& { return *pair.second; });
   if (it == instances.end()) {

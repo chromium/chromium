@@ -9,7 +9,10 @@ import android.util.Log;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Simple object representing the bookmark id. */
+@NullMarked
 public class BookmarkId {
     public static final int INVALID_FOLDER_ID = -2;
     public static final int INVALID_ID = -1;

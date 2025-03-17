@@ -163,15 +163,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2" label="(Obsolete) Notification's button clicked"/>
 </enum>
 
-<enum name="AshNightLightDisplayCrtcCtmSupportType">
-  <summary>
-    Defines the possible displays' color transform matrix support types
-  </summary>
-  <int value="0" label="No display support"/>
-  <int value="1" label="Mixed display support"/>
-  <int value="2" label="All displays support"/>
-</enum>
-
 <enum name="AshNightLightScheduleType">
   <summary>Defines the possible Night Light schedule types</summary>
   <int value="0" label="None"/>
@@ -343,27 +334,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
 <enum name="BooleanThumbsUp">
   <int value="0" label="Thumbs down"/>
   <int value="1" label="Thumbs up"/>
-</enum>
-
-<enum name="BrowserDataBackMigratorFinalStatus">
-  <int value="0" label="Succeeded"/>
-  <int value="1" label="PreMigrationCleanUpDeleteTmpDirFailed"/>
-  <int value="2" label="MergeSplitItemsCreateTmpDirFailed"/>
-  <int value="3" label="MergeSplitItemsCopyExtensionsFailed"/>
-  <int value="4" label="MergeSplitItemsCopyExtensionStorageFailed"/>
-  <int value="5" label="MergeSplitItemsCreateDirFailed"/>
-  <int value="6" label="MergeSplitItemsMergeIndexedDBFailed"/>
-  <int value="7" label="MergeSplitItemsMergePrefsFailed"/>
-  <int value="8" label="MergeSplitItemsMergeLocalStorageLevelDBFailed"/>
-  <int value="9" label="MergeSplitItemsMergeStateStoreLevelDBFailed"/>
-  <int value="10" label="MergeSplitItemsMergeSyncDataFailed"/>
-  <int value="11" label="DeleteAshItemsDeleteExtensionsFailed"/>
-  <int value="12" label="DeleteAshItemsDeleteLacrosItemFailed"/>
-  <int value="13" label="DeleteTmpDirDeleteFailed"/>
-  <int value="14" label="DeleteLacrosDirDeleteFailed"/>
-  <int value="15" label="MoveLacrosItemsToAshDirFailed"/>
-  <int value="16" label="MoveMergedItemsBackToAshMoveFileFailed"/>
-  <int value="17" label="MoveMergedItemsBackToAshCopyDirectoryFailed"/>
 </enum>
 
 <enum name="CalendarDataFetchApiError">
@@ -559,6 +529,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2" label="SaveAsDeskTemplate"/>
 </enum>
 
+<enum name="CoralSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="PostLogin"/>
+  <int value="2" label="InSession"/>
+</enum>
+
 <enum name="CriticalNotificationOutcome">
   <int value="0" label="NotificationShown"/>
   <int value="1" label="Crashed"/>
@@ -572,11 +548,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="0" label="PostLoginFullRestore"/>
   <int value="1" label="Overview"/>
   <int value="2" label="Calendar"/>
-</enum>
-
-<enum name="DeprecatedAcceleratorUsage">
-  <int value="0" label="Deprecated key accelerator is used"/>
-  <int value="1" label="New key accelerator is used"/>
 </enum>
 
 <!-- LINT.IfChange(DeskBarVisibility) -->
@@ -601,18 +572,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2" label="Invalid argument (e.g. wrong ID format)"/>
   <int value="3" label="Exceeed maximum number of templates"/>
   <int value="4" label="Desk template is too large"/>
-</enum>
-
-<enum name="DeskProfilesSelectProfileSource">
-  <int value="0" label="Profile button"/>
-  <int value="1" label="Desk action context menu"/>
-  <int value="2" label="New desk button drop"/>
-</enum>
-
-<enum name="DeskProfilesUsageStatus">
-  <int value="0" label="Conditions are not met"/>
-  <int value="1" label="Conditions are met"/>
-  <int value="2" label="Desk profiles are enabled"/>
 </enum>
 
 <enum name="DesksAssignToAllDesksSource">
@@ -680,26 +639,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2" label="AlreadyOff"/>
   <int value="3" label="TurnedOn"/>
   <int value="4" label="TurnedOff"/>
-</enum>
-
-<enum name="DockedAction">
-  <int value="0" label="None"/>
-  <int value="1" label="Dock"/>
-  <int value="2" label="Undock"/>
-  <int value="3" label="Resize"/>
-  <int value="4" label="Reorder"/>
-  <int value="5" label="Evict"/>
-  <int value="6" label="Maximize"/>
-  <int value="7" label="Minimize"/>
-  <int value="8" label="Restore"/>
-  <int value="9" label="Close"/>
-</enum>
-
-<enum name="DockedActionSource">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Mouse"/>
-  <int value="2" label="Touch"/>
-  <int value="3" label="Keyboard"/>
 </enum>
 
 <enum name="DriveFileSuggestDataValidationStatus">
@@ -891,10 +830,14 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="921600" label="1280 x 720"/>
   <int value="927658" label="761 x 1219"/>
   <int value="927659" label="1219 x 761"/>
+  <int value="929446" label="787 x 1181"/>
+  <int value="929447" label="1181 x 787"/>
   <int value="940103" label="792 x 1187"/>
   <int value="940104" label="1187 x 792"/>
   <int value="941290" label="793 x 1187 (deprecated)"/>
   <int value="941291" label="1187 x 793 (deprecated)"/>
+  <int value="944639" label="768 x 1230"/>
+  <int value="944640" label="1230 x 768"/>
   <int value="948999" label="730 x 1300"/>
   <int value="949000" label="1300 x 730"/>
   <int value="950299" label="731 x 1300 (deprecated)"/>
@@ -925,6 +868,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1087762" label="1391 x 782"/>
   <int value="1087999" label="850 x 1280"/>
   <int value="1088000" label="1280 x 850"/>
+  <int value="1091839" label="853 x 1280"/>
+  <int value="1091840" label="1280 x 853"/>
   <int value="1095859" label="785 x 1396"/>
   <int value="1095860" label="1396 x 785"/>
   <int value="1110388" label="833 x 1333"/>
@@ -957,6 +902,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1187918" label="1454 x 817"/>
   <int value="1189371" label="818 x 1454 (deprecated)"/>
   <int value="1189372" label="1454 x 818 (deprecated)"/>
+  <int value="1208778" label="869 x 1391"/>
+  <int value="1208779" label="1391 x 869"/>
   <int value="1214999" label="900 x 1350 (deprecated)"/>
   <int value="1215000" label="1350 x 900 (deprecated)"/>
   <int value="1217311" label="872 x 1396"/>
@@ -981,6 +928,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1294001" label="1517 x 853 (deprecated)"/>
   <int value="1295999" label="900 x 1440"/>
   <int value="1296000" label="1440 x 900"/>
+  <int value="1298279" label="930 x 1396"/>
+  <int value="1298280" label="1396 x 930"/>
   <int value="1303687" label="856 x 1523"/>
   <int value="1303688" label="1523 x 856"/>
   <int value="1305210" label="857 x 1523 (deprecated)"/>
@@ -1019,6 +968,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1565522" label="1669 x 938"/>
   <int value="1567190" label="939 x 1669 (deprecated)"/>
   <int value="1567191" label="1669 x 939 (deprecated)"/>
+  <int value="1572863" label="1024 x 1536"/>
+  <int value="1572864" label="1536 x 1024"/>
   <int value="1585175" label="1028 x 1542 (deprecated)"/>
   <int value="1585176" label="1542 x 1028 (deprecated)"/>
   <int value="1599999" label="1000 x 1600"/>
@@ -1045,6 +996,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1711845" label="1745 x 981"/>
   <int value="1724117" label="1038 x 1661"/>
   <int value="1724118" label="1661 x 1038"/>
+  <int value="1740431" label="1077 x 1616"/>
+  <int value="1740432" label="1616 x 1077"/>
   <int value="1740766" label="1043 x 1669"/>
   <int value="1740767" label="1669 x 1043"/>
   <int value="1775222" label="999 x 1777"/>
@@ -1067,8 +1020,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1879184" label="1828 x 1028"/>
   <int value="1902049" label="1090 x 1745"/>
   <int value="1902050" label="1745 x 1090"/>
+  <int value="1939721" label="1137 x 1706"/>
+  <int value="1939722" label="1706 x 1137"/>
   <int value="1957387" label="1142 x 1714"/>
   <int value="1957388" label="1714 x 1142"/>
+  <int value="1972469" label="1110 x 1777"/>
+  <int value="1972470" label="1777 x 1110"/>
   <int value="2040102" label="1129 x 1807"/>
   <int value="2040103" label="1807 x 1129"/>
   <int value="2068587" label="1174 x 1762"/>
@@ -1079,10 +1036,14 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2073600" label="1920 x 1080"/>
   <int value="2159999" label="1200 x 1800 (deprecated)"/>
   <int value="2160000" label="1800 x 1200 (deprecated)"/>
+  <int value="2175627" label="1204 x 1807"/>
+  <int value="2175628" label="1807 x 1204"/>
   <int value="2181973" label="1279 x 1706"/>
   <int value="2181974" label="1706 x 1279"/>
   <int value="2183679" label="1280 x 1706 (deprecated)"/>
   <int value="2183680" label="1706 x 1280 (deprecated)"/>
+  <int value="2213231" label="1176 x 1882"/>
+  <int value="2213232" label="1882 x 1176"/>
   <int value="2217363" label="1213 x 1828"/>
   <int value="2217364" label="1828 x 1213"/>
   <int value="2219191" label="1214 x 1828 (deprecated)"/>
@@ -1097,6 +1058,10 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2355640" label="1880 x 1253"/>
   <int value="2411735" label="1268 x 1902"/>
   <int value="2411736" label="1902 x 1268"/>
+  <int value="2457599" label="1280 x 1920"/>
+  <int value="2457600" label="1920 x 1280"/>
+  <int value="2499999" label="1250 x 2000"/>
+  <int value="2500000" label="2000 x 1250"/>
   <int value="2557466" label="1199 x 2133"/>
   <int value="2557467" label="2133 x 1199"/>
   <int value="2559599" label="1200 x 2133 (deprecated)"/>
@@ -1107,6 +1072,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2702788" label="2014 x 1342"/>
   <int value="2707395" label="1234 x 2194"/>
   <int value="2707396" label="2194 x 1234"/>
+  <int value="2843288" label="1333 x 2133"/>
+  <int value="2843289" label="2133 x 1333"/>
   <int value="2936224" label="1285 x 2285"/>
   <int value="2936225" label="2285 x 1285"/>
   <int value="3007973" label="1371 x 2194"/>
@@ -1117,8 +1084,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="3110400" label="2160 x 1440"/>
   <int value="3145727" label="1536 x 2048"/>
   <int value="3145728" label="2048 x 1536"/>
+  <int value="3207627" label="1462 x 2194"/>
+  <int value="3207628" label="2194 x 1462"/>
   <int value="3239999" label="1350 x 2400"/>
   <int value="3240000" label="2400 x 1350"/>
+  <int value="3262979" label="1428 x 2285"/>
+  <int value="3262980" label="2285 x 1428"/>
   <int value="3285599" label="1480 x 2220"/>
   <int value="3285600" label="2220 x 1480"/>
   <int value="3393023" label="1504 x 2256"/>
@@ -1131,6 +1102,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="3996334" label="2666 x 1499"/>
   <int value="3998999" label="1500 x 2666 (deprecated)"/>
   <int value="3999000" label="2666 x 1500 (deprecated)"/>
+  <int value="4095999" label="1600 x 2560"/>
+  <int value="4096000" label="2560 x 1600"/>
   <int value="4351999" label="1700 x 2560"/>
   <int value="4352000" label="2560 x 1700"/>
   <int value="4665599" label="1620 x 2880"/>
@@ -1333,28 +1306,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="8" label="FailedToGetNssCerts"/>
 </enum>
 
-<enum name="LacrosLaunchMode">
-  <int value="0" label="Only Ash browser"/>
-  <int value="1" label="Ash and Lacros browser available"/>
-  <int value="2" label="Lacros browser is primary"/>
-  <int value="3" label="Only Lacros browser"/>
-</enum>
-
-<enum name="LacrosLaunchModeAndSource">
-  <int value="0" label="Default or user set, only Ash browser"/>
-  <int value="1" label="Default or user set, Ash and Lacros browser available"/>
-  <int value="2" label="Default or user set, Lacros browser is primary"/>
-  <int value="3" label="Default or user set, only Lacros browser"/>
-  <int value="4" label="User forced, only Ash browser"/>
-  <int value="5" label="User forced, Ash and Lacros browser available"/>
-  <int value="6" label="User forced, Lacros browser is primary"/>
-  <int value="7" label="User forced, only Lacros browser"/>
-  <int value="8" label="Policy forced, only Ash browser"/>
-  <int value="9" label="Policy forced, Ash and Lacros browser available"/>
-  <int value="10" label="Policy forced, Lacros browser is primary"/>
-  <int value="11" label="Policy forced, only Lacros browser"/>
-</enum>
-
 <enum name="LobsterState">
   <int value="0" label="Shown Opportunity"/>
   <int value="1" label="Blocked"/>
@@ -1385,6 +1336,19 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="26" label="Commit As Insert"/>
   <int value="27" label="Commit As Insert Success"/>
   <int value="28" label="Commit As Insert Error"/>
+  <int value="29" label="Feedback Thumbs Up"/>
+  <int value="30" label="Feedback Thumbs Down"/>
+  <int value="31" label="Blocked by invalid consent"/>
+  <int value="32" label="Blocked by invalid account capabilities"/>
+  <int value="33" label="Blocked by an invalid account type"/>
+  <int value="34" label="Blocked by geolocation restrictions"/>
+  <int value="35" label="Blocked by invalid input field"/>
+  <int value="36" label="Blocked by user settings"/>
+  <int value="37" label="Blocked by lack of internet connection"/>
+  <int value="38" label="Blocked by invalid input method"/>
+  <int value="39" label="Blocked by feature flag restrictions"/>
+  <int value="40" label="Blocked by unsupported hardware"/>
+  <int value="41" label="Blocked by Kiosk mode"/>
 </enum>
 
 <enum name="LockScreenUserClickTarget">
@@ -1445,45 +1409,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
 <enum name="ModifyGlanceablesTaskResult">
   <int value="0" label="Change committed"/>
   <int value="1" label="No change"/>
-</enum>
-
-<enum name="MoveMigratorResumeStep">
-  <int value="0" label="Start"/>
-  <int value="1" label="MoveSplitItems"/>
-  <int value="2" label="MoveLacrosItems"/>
-  <int value="3" label="MoveTmpDir"/>
-  <int value="4" label="Completed"/>
-</enum>
-
-<enum name="MoveMigratorTaskStatus">
-  <int value="0" label="Succeeded"/>
-  <int value="1" label="Cancelled"/>
-  <int value="2" label="PreMigrationCleanUpDeleteLacrosDirFailed"/>
-  <int value="3" label="PreMigrationCleanUpDeleteTmpDirFailed"/>
-  <int value="4" label="PreMigrationCleanUpDeleteTmpSplitDirFailed"/>
-  <int value="5" label="PreMigrationCleanUpNotEnoughSpace"/>
-  <int value="6" label="SetupLacrosDirCreateTmpDirFailed"/>
-  <int value="7" label="SetupLacrosDirCreateTmpProfileDirFailed"/>
-  <int value="8" label="SetupLacrosDirCopyTargetItemsFailed"/>
-  <int value="9" label="SetupLacrosDirWriteFirstRunSentinelFileFailed"/>
-  <int value="10" label="SetupAshDirCreateSplitDirFailed"/>
-  <int value="11" label="SetupAshDirMigrateLevelDBForLocalStateFailed"/>
-  <int value="12" label="SetupAshDirMigrateLevelDBForStateFailed"/>
-  <int value="13" label="SetupAshDirMigratePreferencesFailed"/>
-  <int value="14" label="MoveLacrosItemsToNewDirNoWritePerm"/>
-  <int value="15" label="MoveLacrosItemsToNewDirMoveFailed"/>
-  <int value="16" label="MoveSplitItemsToOriginalDirMoveSplitItemsFailed"/>
-  <int value="17" label="MoveSplitItemsToOriginalDirCreateDirFailed"/>
-  <int value="18" label="MoveSplitItemsToOriginalDirMoveExtensionsFailed"/>
-  <int value="19" label="MoveSplitItemsToOriginalDirMoveIndexedDBFailed"/>
-  <int value="20" label="MoveTmpDirToLacrosDirMoveFailed"/>
-  <int value="21" label="SetupAshDirCreateDirFailed"/>
-  <int value="22" label="SetupAshDirCopyExtensionsFailed"/>
-  <int value="23" label="SetupAshDirCopyIndexedDBFailed"/>
-  <int value="24" label="SetupAshDirMigrateLevelDBForSyncDataFailed"/>
-  <int value="25" label="SetupAshDirCopyStorageFailed"/>
-  <int value="26" label="MoveSplitItemsToOriginalDirMoveStorageFailed"/>
-  <int value="27" label="MoveLacrosItemsCreateDirFailed"/>
 </enum>
 
 <enum name="MultitaskMenuActionType">
@@ -1630,6 +1555,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="6" label="Use as personal device button"/>
   <int value="7" label="OsInstall button"/>
   <int value="8" label="Unexpected click"/>
+</enum>
+
+<enum name="OverviewBasedScreenshotKeyboardType">
+  <int value="0" label="Non-ChromeOS Keyboard"/>
+  <int value="1" label="ChromeOS Keyboard WITH Screenshot key"/>
+  <int value="2" label="ChromeOS Keyboard WITHOUT Screenshot key"/>
 </enum>
 
 <enum name="OverviewDragAction">
@@ -2012,11 +1943,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="Consent disclaimer rejected"/>
   <int value="2" label="Sunfish screen entered via shortcut"/>
   <int value="3"
-      label="Sunfish screen: initial screen capture sent to scanner server"/>
+      label="DEPRECATED: Sunfish screen: initial screen capture sent to
+             scanner server"/>
   <int value="4" label="Screen capture mode: Scanner button shown"/>
   <int value="5"
-      label="Screen capture mode: initial screen capture sent to scanner
-             server"/>
+      label="DEPRECATED: Screen capture mode: initial screen capture sent to
+             scanner server"/>
   <int value="6" label="No actions detected"/>
   <int value="7" label="New calendar event action detected"/>
   <int value="8" label="New calendar event action finished successfully"/>
@@ -2041,6 +1973,67 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="25" label="New Google Doc populated action failed on execution"/>
   <int value="26"
       label="Copy to clipboard populated action failed on execution"/>
+  <int value="27"
+      label="UI access checks resulted in &quot;do not show UI&quot;"/>
+  <int value="28"
+      label="UI access checks resulted in &quot;show UI, but user not
+             consented&quot;"/>
+  <int value="29"
+      label="UI access checks resulted in &quot;show UI and user
+             consented&quot;"/>
+  <int value="30"
+      label="&quot;Do not show UI&quot; resulted from no Shell instance"/>
+  <int value="31"
+      label="&quot;Do not show UI&quot; resulted from no ScannerController on
+             Shell"/>
+  <int value="32"
+      label="&quot;Do not show UI&quot; resulted from enterprise policy"/>
+  <int value="33"
+      label="&quot;Do not show UI&quot; resulted from no profile scoped
+             delegate"/>
+  <int value="34"
+      label="&quot;Do not show UI&quot; resulted from settings toggle"/>
+  <int value="35"
+      label="&quot;Do not show UI&quot; resulted from feature flag"/>
+  <int value="36"
+      label="&quot;Do not show UI&quot; resulted from feature management"/>
+  <int value="37" label="&quot;Do not show UI&quot; resulted from secret key"/>
+  <int value="38"
+      label="&quot;Do not show UI&quot; resulted from account capabilities"/>
+  <int value="39" label="&quot;Do not show UI&quot; resulted from country"/>
+  <int value="40" label="&quot;Do not show UI&quot; resulted from kiosk mode"/>
+  <int value="41" label="Launcher was shown without Sunfish-session button"/>
+  <int value="42" label="Launcher was shown with Sunfish-session button"/>
+  <int value="43"
+      label="Image captured in Sunfish-session, and actions were not fetched"/>
+  <int value="44"
+      label="Image captured in Sunfish-session, and actions started fetching"/>
+  <int value="45"
+      label="Image captured from smart actions button, and actions were not
+             fetched"/>
+  <int value="46"
+      label="Image captured from smart actions button, and actions started
+             fetching"/>
+  <int value="47"
+      label="Smart actions button was not shown because UI access checks for
+             both Sunfish and Scanner resulted in &quot;do not show UI&quot;"/>
+  <int value="48"
+      label="Smart actions button was not shown because text detection was
+             cancelled"/>
+  <int value="49"
+      label="Smart actions button was not shown because no text was detected"/>
+  <int value="50"
+      label="Smart actions button was not shown because UI access checks
+             resulted in &quot;do not show UI&quot; after text detection"/>
+  <int value="51"
+      label="Smart actions button was not shown because network connection
+             was offline after text detection"/>
+  <int value="52" label="Sunfish-session started using the Ash debug shortcut"/>
+  <int value="53" label="Sunfish-session started using the button in Launcher"/>
+  <int value="54"
+      label="Sunfish-session started using a long-press on the home button"/>
+  <int value="55" label="Feedback dialog was opened"/>
+  <int value="56" label="Feedback sent"/>
 </enum>
 
 <!-- LINT.ThenChange(//ash/scanner/scanner_metrics.h:ScannerFeatureUserState) -->
@@ -2301,11 +2294,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="5" label="Session exit due to converting to tablet mode"/>
 </enum>
 
-<enum name="SplitViewSwapWindowsSource">
-  <int value="0" label="Double tap"/>
-  <int value="1" label="Swap windows button"/>
-</enum>
-
 <enum name="SwipeHomeToOverviewResult">
   <int value="0" label="Remained on the home screen"/>
   <int value="1" label="Transitioned to overview"/>
@@ -2393,6 +2381,9 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="58" label="Coral Saved Groups Limit Max"/>
   <int value="59" label="Scanner Action Success"/>
   <int value="60" label="Scanner Action Failure"/>
+  <int value="61" label="Apps Can Access Camera"/>
+  <int value="62" label="Apps Can't Access Camera"/>
+  <int value="63" label="Can't Turn On Camera Access Remotely"/>
 </enum>
 
 <enum name="TogglePickerAction">

@@ -38,7 +38,7 @@ ActionResult InteractionTestUtilSimulatorMac::SelectMenuItem(
     LOG(ERROR) << "Cannot retrieve MenuControllerCocoa from menu.";
     return ActionResult::kFailed;
   }
-  ui::MenuModel* const model = [controller model];
+  ui::MenuModel* const model = controller.model;
   if (!model) {
     LOG(ERROR) << "Cannot retrieve MenuModel from controller.";
     return ActionResult::kFailed;

@@ -40,6 +40,10 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
+  // This enum is also used in Java.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.identitymanager
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AccountManagedStatusFinderOutcome
+  //
   // LINT.IfChange(AccountManagedStatusFinderOutcome)
   enum class Outcome {
     // Check isn't complete yet.
@@ -86,9 +90,20 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
   void OnRefreshTokensLoaded() override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Implementation for JNI methods.
+  void DestroyNativeObject(JNIEnv* env);
+  jint GetOutcomeFromNativeObject(JNIEnv* env) const;
+#endif
 
  private:
   void OnTimeoutReached();
@@ -99,6 +114,7 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
 
   raw_ptr<signin::IdentityManager> identity_manager_;
   const CoreAccountInfo account_;
+  bool ignore_persistent_auth_errors_ = true;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

@@ -9,7 +9,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -419,8 +418,15 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   base::CallbackListSubscription subscription_;
 };
 
+#if BUILDFLAG(IS_MAC)
+// https://crbug.com/385697200
+#define MAYBE_ShowsMetadataAndControlsMedia \
+  DISABLED_ShowsMetadataAndControlsMedia
+#else
+#define MAYBE_ShowsMetadataAndControlsMedia ShowsMetadataAndControlsMedia
+#endif
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       ShowsMetadataAndControlsMedia) {
+                       MAYBE_ShowsMetadataAndControlsMedia) {
   // The toolbar icon should not start visible.
   EXPECT_FALSE(ui_.IsToolbarIconVisible());
 
@@ -468,8 +474,16 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_FALSE(ui_.IsDialogVisible());
 }
 
+#if BUILDFLAG(IS_MAC)
+// https://crbug.com/385697200
+#define MAYBE_ShowsMetadataAndControlsMediaInRTL \
+  DISABLED_ShowsMetadataAndControlsMediaInRTL
+#else
+#define MAYBE_ShowsMetadataAndControlsMediaInRTL \
+  ShowsMetadataAndControlsMediaInRTL
+#endif
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       ShowsMetadataAndControlsMediaInRTL) {
+                       MAYBE_ShowsMetadataAndControlsMediaInRTL) {
   base::i18n::SetICUDefaultLocale("ar");
   ASSERT_TRUE(base::i18n::IsRTL());
 
@@ -559,8 +573,14 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsMultipleMediaSessions) {
   ui_.WaitForDialogToContainText(u"Another Artist");
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/394510267): Flaky on mac
+#define MAYBE_ClickingOnItemGoesBackToTab DISABLED_ClickingOnItemGoesBackToTab
+#else
+#define MAYBE_ClickingOnItemGoesBackToTab ClickingOnItemGoesBackToTab
+#endif
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       ClickingOnItemGoesBackToTab) {
+                       MAYBE_ClickingOnItemGoesBackToTab) {
   // Open a tab and play media.
   OpenTestURL();
   StartPlayback();
@@ -626,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
   ui_.WaitForItemCount(1);
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/1224071
 #define MAYBE_PictureInPicture DISABLED_PictureInPicture
 #else
@@ -906,7 +926,13 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }
 
-IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveTranslate) {
+#if BUILDFLAG(IS_MAC)
+// https://crbug.com/385697200
+#define MAYBE_LiveTranslate DISABLED_LiveTranslate
+#else
+#define MAYBE_LiveTranslate LiveTranslate
+#endif
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveTranslate) {
   // Live captioning is not currently supported on Win Arm64.
   if (!captions::IsLiveCaptionFeatureSupported()) {
     GTEST_SKIP() << "Live caption feature not supported";
@@ -947,7 +973,14 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveTranslate) {
       prefs::kLiveTranslateEnabled));
 }
 
-IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, TargetLanguageDropdown) {
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/394510267): Flaky on mac
+#define MAYBE_TargetLanguageDropdown DISABLED_TargetLanguageDropdown
+#else
+#define MAYBE_TargetLanguageDropdown TargetLanguageDropdown
+#endif
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
+                       MAYBE_TargetLanguageDropdown) {
   // Live Caption is currently not supported on Win Arm64.
   if (!captions::IsLiveCaptionFeatureSupported()) {
     GTEST_SKIP() << "Live caption feature not supported";

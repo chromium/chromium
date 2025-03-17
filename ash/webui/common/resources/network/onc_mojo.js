@@ -10,11 +10,28 @@
 
 import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {ActivationStateType, ApnProperties, AuthenticationType, ConfigProperties, DeviceStateProperties as MojomDeviceStateProperties, HiddenSsidMode, InhibitReason, IPConfigProperties, ManagedApnList, ManagedBoolean, ManagedInt32, ManagedProperties, ManagedString, ManagedStringList, ManagedSubjectAltNameMatchList, MatchType, NetworkStateProperties as MojomNetworkStateProperties, ProxyMode, SecurityType, SIMInfo, SIMLockStatus, SubjectAltName, SubjectAltName_Type, TetherStateProperties, TrafficCounterProperties, VpnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ActivationStateType, AuthenticationType, HiddenSsidMode, InhibitReason, MatchType, ProxyMode, SecurityType, SubjectAltName_Type, VpnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {IPAddress} from '//resources/mojo/services/network/public/mojom/ip_address.mojom-webui.js';
 
-
+// Type aliases for js-webui to ts-webui migration
+/** @typedef {*} ApnProperties */
+/** @typedef {*} ConfigProperties */
+/** @typedef {*} IPAddress */
+/** @typedef {*} IPConfigProperties */
+/** @typedef {*} ManagedApnList */
+/** @typedef {*} ManagedBoolean */
+/** @typedef {*} ManagedInt32 */
+/** @typedef {*} ManagedProperties */
+/** @typedef {*} ManagedString */
+/** @typedef {*} ManagedStringList */
+/** @typedef {*} ManagedSubjectAltNameMatchList */
+/** @typedef {*} MojomDeviceStateProperties */
+/** @typedef {*} MojomNetworkStateProperties */
+/** @typedef {*} SIMInfo */
+/** @typedef {*} SIMLockStatus */
+/** @typedef {*} SubjectAltName */
+/** @typedef {*} TetherStateProperties */
+/** @typedef {*} TrafficCounterProperties */
 
 // Used to indicate a saved but unknown credential value. Will appear as
 // placeholder character in the credential (passphrase, password, etc.) field by
@@ -34,7 +51,7 @@ export class OncMojo {
    * @return {string}
    */
   static getEnumString(value) {
-    if (value === undefined) {
+    if (value === undefined || value === null) {
       return 'undefined';
     }
     return value.toString();
@@ -1217,8 +1234,8 @@ export class OncMojo {
 
   /**
    * Returns true if the APN List matches.
-   * @param {Array<!ApnProperties>|undefined} a
-   * @param {Array<!ApnProperties>|undefined} b
+   * @param {Array<!ApnProperties>|undefined|null} a
+   * @param {Array<!ApnProperties>|undefined|null} b
    * @return {boolean}
    */
   static apnListMatch(a, b) {
@@ -1399,14 +1416,14 @@ OncMojo.ManagedProperty;
 /**
  * Modified version of IPConfigProperties to store routingPrefix as
  * a human-readable netmask string instead of as a number. Used in
- * network_ip_config.js.
+ * network_ip_config.ts.
  * @typedef {{
- *   gateway: (string|undefined),
- *   ipAddress: (string|undefined),
- *   nameServers: (Array<string>|undefined),
- *   netmask: (string|undefined),
+ *   gateway: (string|null),
+ *   ipAddress: (string|null),
+ *   nameServers: (Array<string>|null),
+ *   netmask: (string|null),
  *   type: !IPConfigType,
- *   webProxyAutoDiscoveryUrl: (string|undefined),
+ *   webProxyAutoDiscoveryUrl: (string|null),
  * }}
  */
 OncMojo.IPConfigUIProperties;

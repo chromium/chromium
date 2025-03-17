@@ -18,8 +18,9 @@ FakeDownloadTask::FakeDownloadTask(const GURL& original_url,
 
 FakeDownloadTask::~FakeDownloadTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDownloadDestroyed(this);
+  }
 }
 
 WebState* FakeDownloadTask::GetWebState() {
@@ -65,6 +66,15 @@ NSString* FakeDownloadTask::GetIdentifier() const {
 const GURL& FakeDownloadTask::GetOriginalUrl() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return original_url_;
+}
+
+const GURL& FakeDownloadTask::GetRedirectedUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Replicate the logic of the download task.
+  if (!redirected_url_.is_empty()) {
+    return redirected_url_;
+  }
+  return GetOriginalUrl();
 }
 
 NSString* FakeDownloadTask::GetOriginatingHost() const {
@@ -225,10 +235,21 @@ void FakeDownloadTask::SetPerformedBackgroundDownload(bool flag) {
   has_performed_background_download_ = flag;
 }
 
+void FakeDownloadTask::SetOriginatingHost(NSString* originating_host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  originating_host_ = [originating_host copy];
+}
+
+void FakeDownloadTask::SetRedirectedURL(const GURL& redirected_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  redirected_url_ = redirected_url;
+}
+
 void FakeDownloadTask::OnDownloadUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDownloadUpdated(this);
+  }
 }
 
 }  // namespace web

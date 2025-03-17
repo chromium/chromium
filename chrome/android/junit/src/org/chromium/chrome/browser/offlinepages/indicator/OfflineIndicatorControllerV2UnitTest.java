@@ -61,7 +61,7 @@ public class OfflineIndicatorControllerV2UnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mContext = Robolectric.buildActivity(Activity.class).get();
-        mContext.setTheme(org.chromium.chrome.tab_ui.R.style.Theme_BrowserUI_DayNight);
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mOfflineString = mContext.getString(R.string.offline_indicator_v2_offline_text);
         mOnlineString = mContext.getString(R.string.offline_indicator_v2_back_online_text);

@@ -261,7 +261,11 @@ export enum UserAction {
   OPEN_INK2_BOTTOM_TOOLBAR_FIRST = 97,
   OPEN_INK2_BOTTOM_TOOLBAR = 98,
 
-  NUMBER_OF_ACTIONS = 99,
+  // Recorded when the user triggers a save of the searchified document.
+  SAVE_SEARCHIFIED_FIRST = 99,
+  SAVE_SEARCHIFIED = 100,
+
+  NUMBER_OF_ACTIONS = 101,
 }
 
 function createFirstMap(): Map<UserAction, UserAction> {
@@ -274,7 +278,7 @@ function createFirstMap(): Map<UserAction, UserAction> {
   const entriesWithFirst = entries.slice(1, entries.length - 1);
   const map = new Map();
   for (let i = 0; i < entriesWithFirst.length - 1; i += 2) {
-    map.set(entriesWithFirst[i + 1]![1]!, entriesWithFirst[i]![1]!);
+    map.set(entriesWithFirst[i + 1]![1], entriesWithFirst[i]![1]);
   }
   return map;
 }

@@ -23,9 +23,9 @@ namespace blink {
 
 namespace {
 
-static WebVector<media::EmeInitDataType> ConvertInitDataTypes(
+static std::vector<media::EmeInitDataType> ConvertInitDataTypes(
     const Vector<String>& init_data_types) {
-  WebVector<media::EmeInitDataType> result(init_data_types.size());
+  std::vector<media::EmeInitDataType> result(init_data_types.size());
   for (wtf_size_t i = 0; i < init_data_types.size(); ++i)
     result[i] = EncryptedMediaUtils::ConvertToInitDataType(init_data_types[i]);
   return result;
@@ -44,9 +44,9 @@ ConvertEncryptionScheme(const String& encryption_scheme) {
   return WebMediaKeySystemMediaCapability::EncryptionScheme::kUnrecognized;
 }
 
-static WebVector<WebMediaKeySystemMediaCapability> ConvertCapabilities(
+static std::vector<WebMediaKeySystemMediaCapability> ConvertCapabilities(
     const HeapVector<Member<MediaKeySystemMediaCapability>>& capabilities) {
-  WebVector<WebMediaKeySystemMediaCapability> result(capabilities.size());
+  std::vector<WebMediaKeySystemMediaCapability> result(capabilities.size());
   for (wtf_size_t i = 0; i < capabilities.size(); ++i) {
     const WebString& content_type = capabilities[i]->contentType();
     result[i].content_type = content_type;
@@ -74,9 +74,9 @@ static WebVector<WebMediaKeySystemMediaCapability> ConvertCapabilities(
   return result;
 }
 
-static WebVector<WebEncryptedMediaSessionType> ConvertSessionTypes(
+static std::vector<WebEncryptedMediaSessionType> ConvertSessionTypes(
     const Vector<String>& session_types) {
-  WebVector<WebEncryptedMediaSessionType> result(session_types.size());
+  std::vector<WebEncryptedMediaSessionType> result(session_types.size());
   for (wtf_size_t i = 0; i < session_types.size(); ++i)
     result[i] = EncryptedMediaUtils::ConvertToSessionType(session_types[i]);
   return result;
@@ -129,7 +129,7 @@ MediaKeySystemAccessInitializerBase::MediaKeySystemAccessInitializerBase(
       // If this member is not present when the dictionary is passed to
       // requestMediaKeySystemAccess(), the dictionary will be treated
       // as if this member is set to [ "temporary" ].
-      WebVector<WebEncryptedMediaSessionType> session_types(
+      std::vector<WebEncryptedMediaSessionType> session_types(
           static_cast<size_t>(1));
       session_types[0] = WebEncryptedMediaSessionType::kTemporary;
       web_config.session_types = session_types;

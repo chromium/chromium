@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system_web_apps/apps/personalization_app",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/lifetime",
   "+chrome/browser/policy/networking",
   "+chrome/browser/policy/profile_policy_connector.h",

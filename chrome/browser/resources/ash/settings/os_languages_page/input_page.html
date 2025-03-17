@@ -67,6 +67,7 @@
     width: 16px;
   }
 
+  #inputMethodsManagedbyPolicyIcon,
   iron-icon[icon='cr20:domain'] {
     margin-inline-end: 10px;
   }
@@ -122,6 +123,11 @@
     margin-top: 16px;
   }
 
+  #inputMethodTitle {
+    display: flex;
+    justify-content: space-between;
+  }
+
   cr-button[disabled] iron-icon {
     --iron-icon-fill-color: var(--cros-button-icon-color-primary-disabled);
   }
@@ -158,14 +164,16 @@
           lastUsedImeAccelerator_, nextImeAccelerator_, metaKey_)]]">
     </keyboard-shortcut-banner>
   </template>
-  <h2>$i18n{inputMethodListTitle}</h2>
-  <template is="dom-if" if="[[inputMethodsLimitedByPolicy_(
-      prefs.settings.language.allowed_input_methods.*)]]">
-    <div class="cr-row continuation" id="inputMethodsManagedbyPolicy">
-      <iron-icon icon="cr20:domain"></iron-icon>
-      <div class="secondary">$i18n{inputMethodsManagedbyPolicy}</div>
-    </div>
-  </template>
+  <h2 id="inputMethodTitle">
+    $i18n{inputMethodListTitle}
+    <template is="dom-if" if="[[inputMethodsLimitedByPolicy_(
+        prefs.settings.language.allowed_input_methods.*)]]">
+      <cr-tooltip-icon tooltip-text="$i18n{inputMethodsManagedbyPolicy}"
+                       icon-class="cr20:domain"
+                       icon-aria-label="$i18n{inputMethodsManagedbyPolicy}"
+                       id="inputMethodsManagedbyPolicyIcon"></cr-tooltip-icon>
+    </template>
+  </h2>
   <div class="list-frame vertical-list" id="inputMethodsList">
     <template is="dom-repeat"
         items="[[languages.inputMethods.enabled]]">
@@ -237,7 +245,8 @@
     <div class="list-item">
       <cr-button id="addInputMethod" on-click="onAddInputMethodClick_"
           deep-link-focus-id$="[[Setting.kAddInputMethod]]"
-          disabled$="[[inputMethodsEnabledByPolicy_(
+          disabled$="[[addInputMethodButtonDisabled_(
+              languages.inputMethods.enabled.*,
               prefs.settings.language.allowed_input_methods_force_enabled.value
               )]]">
         <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
@@ -380,6 +389,8 @@
 <template is="dom-if" if="[[showAddInputMethodsDialog_]]" restamp>
   <os-settings-add-input-methods-dialog languages="[[languages]]"
       language-helper="[[languageHelper]]"
+      limited-by-policy="[[inputMethodsLimitedByPolicy_(
+          prefs.settings.language.allowed_input_methods.*)]]"
       on-close="onAddInputMethodsDialogClose_">
   </os-settings-add-input-methods-dialog>
 </template>

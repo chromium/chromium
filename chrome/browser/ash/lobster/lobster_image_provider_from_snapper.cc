@@ -1,0 +1,274 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/lobster/lobster_image_provider_from_snapper.h"
+
+#include <string>
+
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/lobster/lobster_result.h"
+#include "base/barrier_callback.h"
+#include "base/containers/span.h"
+#include "base/logging.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/types/expected.h"
+#include "components/manta/snapper_provider.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/geometry/size.h"
+
+namespace {
+
+constexpr gfx::Size kPreviewImageSize = gfx::Size(512, 512);
+constexpr gfx::Size kFullImageSize = gfx::Size(1024, 1024);
+constexpr char kLobsterUseQueryRewriterFlag[] = "use_query_rewrite";
+constexpr auto kLobsterTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("chromeos_inline_image_request", R"(
+      semantics {
+        sender: "ChromeOS Inline Image"
+        description:
+          "Requests inline images from Google's servers. Google returns "
+          "suggested images which users may choose to insert into selected "
+          "text field, or download into Downloads folder."
+        trigger:
+          "User right clicks in an editable text field or triggers "
+          "Quick Insert and select Inline Image option."
+        internal {
+          contacts {
+            email: "e14s-eng@google.com"
+          }
+        }
+        user_data {
+          type: USER_CONTENT
+        }
+        data:
+          "A free-form user query. Query metadata includes a flag to indicate "
+          "if user wants to get their query rewritten, and is also sent."
+        destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2025-03-14"
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "No setting. Users must take explicit action to trigger the feature."
+        policy_exception_justification:
+          "Not implemented, not considered useful. This request is part of a "
+          "flow which is user-initiated."
+      }
+    )");
+
+manta::proto::Request CreateMantaRequest(std::string_view query,
+                                         std::optional<uint32_t> seed,
+                                         const gfx::Size& image_size,
+                                         int num_outputs) {
+  manta::proto::Request request;
+  manta::proto::RequestConfig& request_config =
+      *request.mutable_request_config();
+  manta::proto::ImageDimensions& image_dimensions =
+      *request_config.mutable_image_dimensions();
+  manta::proto::InputData& query_input_data = *request.add_input_data();
+
+  request_config.set_num_outputs(num_outputs);
+  request.set_feature_name(manta::proto::FeatureName::CHROMEOS_LOBSTER);
+  image_dimensions.set_width(image_size.width());
+  image_dimensions.set_height(image_size.height());
+  query_input_data.set_text(query.data(), query.size());
+
+  if (seed.has_value()) {
+    request_config.set_generation_seed(seed.value());
+  }
+
+  manta::proto::InputData& query_rewritter_input_data =
+      *request.add_input_data();
+  query_rewritter_input_data.set_tag(kLobsterUseQueryRewriterFlag);
+  query_rewritter_input_data.set_text(
+      ash::features::IsLobsterUseRewrittenQuery() ? "true" : "false");
+
+  return request;
+}
+
+ash::LobsterErrorCode MantaToLobsterStatusCode(
+    manta::MantaStatusCode manta_status_code) {
+  switch (manta_status_code) {
+    case manta::MantaStatusCode::kGenericError:
+    case manta::MantaStatusCode::kMalformedResponse:
+    case manta::MantaStatusCode::kNoIdentityManager:
+    case manta::MantaStatusCode::kImageHasPerson:
+      return ash::LobsterErrorCode::kUnknown;
+    case manta::MantaStatusCode::kInvalidInput:
+      return ash::LobsterErrorCode::kInvalidArgument;
+    case manta::MantaStatusCode::kResourceExhausted:
+    case manta::MantaStatusCode::kPerUserQuotaExceeded:
+      return ash::LobsterErrorCode::kResourceExhausted;
+    case manta::MantaStatusCode::kBackendFailure:
+      return ash::LobsterErrorCode::kBackendFailure;
+    case manta::MantaStatusCode::kNoInternetConnection:
+      return ash::LobsterErrorCode::kNoInternetConnection;
+    case manta::MantaStatusCode::kUnsupportedLanguage:
+      return ash::LobsterErrorCode::kUnsupportedLanguage;
+    case manta::MantaStatusCode::kBlockedOutputs:
+      return ash::LobsterErrorCode::kBlockedOutputs;
+    case manta::MantaStatusCode::kRestrictedCountry:
+      return ash::LobsterErrorCode::kRestrictedRegion;
+    case manta::MantaStatusCode::kOk:
+      NOTREACHED();
+  }
+}
+
+std::optional<ash::LobsterImageCandidate> ToLobsterImageCandidate(
+    uint32_t id,
+    uint32_t seed,
+    const std::string& query,
+    const SkBitmap& decoded_bitmap) {
+  base::AssertLongCPUWorkAllowed();
+
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(decoded_bitmap, /*quality=*/100);
+  if (!data) {
+    return std::nullopt;
+  }
+
+  return ash::LobsterImageCandidate(
+      /*id=*/id, /*image_bytes=*/
+      std::string(base::as_string_view(data.value())),
+      /*seed=*/seed,
+      /*query=*/query.data());
+}
+
+void EncodeBitmap(
+    uint32_t id,
+    uint32_t seed,
+    const std::string& query,
+    base::OnceCallback<void(std::optional<ash::LobsterImageCandidate>)>
+        callback,
+    const SkBitmap& decoded_bitmap) {
+  if (decoded_bitmap.empty()) {
+    LOG(ERROR) << "Failed to decode jpg bytes";
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ToLobsterImageCandidate, id, seed, query, decoded_bitmap),
+      std::move(callback));
+}
+
+void SanitizePreviewJpgBytes(
+    const manta::proto::OutputData& output_data,
+    data_decoder::DataDecoder* data_decoder,
+    uint32_t id,
+    const std::string& query,
+    base::OnceCallback<void(std::optional<ash::LobsterImageCandidate>)>
+        callback) {
+  data_decoder::DecodeImage(
+      data_decoder, base::as_byte_span(output_data.image().serialized_bytes()),
+      data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
+      base::BindOnce(&EncodeBitmap, id, output_data.generation_seed(),
+                     // if the `generative_prompt`is populated with the
+                     // rewritten query if query rewritter is enabled, and is
+                     // populated with the original query otherwise.
+                     output_data.generative_prompt(), std::move(callback)));
+}
+
+}  // namespace
+
+LobsterImageProviderFromSnapper::LobsterImageProviderFromSnapper(
+    manta::SnapperProvider* provider,
+    LobsterCandidateIdGenerator* id_generator)
+    : provider_(provider), id_generator_(id_generator) {}
+
+LobsterImageProviderFromSnapper::~LobsterImageProviderFromSnapper() = default;
+
+void LobsterImageProviderFromSnapper::RequestMultipleCandidates(
+    const std::string& query,
+    int num_candidates,
+    ash::RequestCandidatesCallback callback) {
+  if (provider_ == nullptr) {
+    LOG(ERROR) << "Provider is not available";
+    std::move(callback).Run(base::unexpected(ash::LobsterError(
+        /*status_code=*/MantaToLobsterStatusCode(
+            manta::MantaStatusCode::kGenericError),
+        /*message=*/"Provider is not available")));
+    return;
+  }
+
+  auto request = CreateMantaRequest(/*query=*/query, /*seed=*/std::nullopt,
+                                    /*image_size=*/kPreviewImageSize,
+                                    /*num_outputs=*/num_candidates);
+  provider_->Call(
+      request, kLobsterTrafficAnnotation,
+      base::BindOnce(&LobsterImageProviderFromSnapper::OnCandidatesRequested,
+                     weak_ptr_factory_.GetWeakPtr(), query,
+                     std::move(callback)));
+}
+
+void LobsterImageProviderFromSnapper::RequestSingleCandidateWithSeed(
+    const std::string& query,
+    uint32_t seed,
+    ash::RequestCandidatesCallback callback) {
+  if (provider_ == nullptr) {
+    LOG(ERROR) << "Provider is not available";
+    std::move(callback).Run(base::unexpected(ash::LobsterError(
+        /*status_code=*/MantaToLobsterStatusCode(
+            manta::MantaStatusCode::kGenericError),
+        /*message=*/"Provider is not available")));
+    return;
+  }
+
+  auto request =
+      CreateMantaRequest(/*query=*/query, /*seed=*/seed,
+                         /*image_size=*/kFullImageSize, /*num_outputs=*/1);
+  provider_->Call(
+      request, kLobsterTrafficAnnotation,
+      base::BindOnce(&LobsterImageProviderFromSnapper::OnCandidatesRequested,
+                     weak_ptr_factory_.GetWeakPtr(), query,
+                     std::move(callback)));
+}
+
+void LobsterImageProviderFromSnapper::OnCandidatesRequested(
+    const std::string& query,
+    ash::RequestCandidatesCallback callback,
+    std::unique_ptr<manta::proto::Response> response,
+    manta::MantaStatus status) {
+  if (status.status_code != manta::MantaStatusCode::kOk) {
+    std::move(callback).Run(base::unexpected(ash::LobsterError(
+        /*status_code=*/MantaToLobsterStatusCode(status.status_code),
+        /*message=*/status.message)));
+    return;
+  }
+
+  std::unique_ptr<data_decoder::DataDecoder> data_decoder =
+      std::make_unique<data_decoder::DataDecoder>();
+  const auto barrier_callback =
+      base::BarrierCallback<std::optional<ash::LobsterImageCandidate>>(
+          response->output_data_size(),
+          base::BindOnce(&LobsterImageProviderFromSnapper::OnImagesSanitized,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  for (auto& data : *response->mutable_output_data()) {
+    SanitizePreviewJpgBytes(data, data_decoder.get(),
+                            id_generator_->GenerateNextId(), query,
+                            barrier_callback);
+  }
+}
+
+void LobsterImageProviderFromSnapper::OnImagesSanitized(
+    ash::RequestCandidatesCallback callback,
+    const std::vector<std::optional<ash::LobsterImageCandidate>>&
+        sanitized_image_candidates) {
+  std::vector<ash::LobsterImageCandidate> image_candidates;
+
+  for (auto& candidate : sanitized_image_candidates) {
+    if (candidate.has_value()) {
+      image_candidates.push_back(candidate.value());
+    }
+  }
+  std::move(callback).Run(std::move(image_candidates));
+}

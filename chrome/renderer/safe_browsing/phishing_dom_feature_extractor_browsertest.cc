@@ -131,9 +131,23 @@ class TestChromeContentRendererClient : public ChromeContentRendererClient {
   TestChromeContentRendererClient() = default;
   ~TestChromeContentRendererClient() override = default;
   // Since visited_link_reader_ in ChromeContentRenderClient never get
-  // initiated, overrides VisitedLinkedHash() function to prevent crashing.
+  // initiated, overrides visited link functions to prevent crashing.
   uint64_t VisitedLinkHash(std::string_view canonical_url) override {
     return 0;
+  }
+
+  uint64_t PartitionedVisitedLinkFingerprint(
+      std::string_view canonical_link_url,
+      const net::SchemefulSite& top_level_site,
+      const url::Origin& frame_origin) override {
+    return 0;
+  }
+
+  bool IsLinkVisited(uint64_t link_hash) override { return false; }
+
+  void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
+                                  uint64_t salt) override {
+    return;
   }
 };
 

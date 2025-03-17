@@ -112,7 +112,7 @@ class NumberLabel : public views::Label {
 
   ~NumberLabel() override = default;
 
-  void SetText(const std::u16string& text) override {
+  void SetText(std::u16string_view text) override {
     SetFontList(text.length() > 1 ? double_digit_font_ : single_digit_font_);
     Label::SetText(text);
   }
@@ -256,20 +256,16 @@ TabCounterAnimator::TabCounterAnimator(views::Label* appearing_label,
                                        views::Throbber* throbber)
     : appearing_label_(appearing_label),
       disappearing_label_(disappearing_label),
-      label_animation_(std::vector<gfx::MultiAnimation::Part>{
+      label_animation_(gfx::MultiAnimation::Parts{
           // Stay in place.
-          gfx::MultiAnimation::Part(kFirstPartDuration, gfx::Tween::Type::ZERO),
+          {kFirstPartDuration, gfx::Tween::Type::ZERO},
           // Swap out to the new label.
-          gfx::MultiAnimation::Part(base::Milliseconds(200),
-                                    gfx::Tween::Type::EASE_IN_OUT)}),
+          {base::Milliseconds(200), gfx::Tween::Type::EASE_IN_OUT}}),
       border_view_(border_view),
-      border_animation_(std::vector<gfx::MultiAnimation::Part>{
-          gfx::MultiAnimation::Part(kFirstPartDuration,
-                                    gfx::Tween::Type::EASE_OUT),
-          gfx::MultiAnimation::Part(base::Milliseconds(150),
-                                    gfx::Tween::Type::EASE_IN_OUT),
-          gfx::MultiAnimation::Part(base::Milliseconds(50),
-                                    gfx::Tween::Type::EASE_IN_OUT)}),
+      border_animation_(gfx::MultiAnimation::Parts{
+          {kFirstPartDuration, gfx::Tween::Type::EASE_OUT},
+          {base::Milliseconds(150), gfx::Tween::Type::EASE_IN_OUT},
+          {base::Milliseconds(50), gfx::Tween::Type::EASE_IN_OUT}}),
       throbber_(throbber) {
   label_animation_.set_delegate(this);
   label_animation_.set_continuous(false);

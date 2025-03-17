@@ -37,6 +37,7 @@ if (is_win) {
       "//chrome/common:constants",
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:with_rc_strings",
+      "//chrome/windows_services/elevated_tracing_service:integration",
       "//components/crash/core/app:app",
       "//components/crash/core/app:crash_export_thunks",
       "//components/crash/core/app:run_as_crashpad_handler",
@@ -76,6 +77,8 @@ if (is_win) {
       "modify_params.h",
       "progress_calculator.cc",
       "progress_calculator.h",
+      "scoped_thread_pool.cc",
+      "scoped_thread_pool.h",
       "setup_constants.cc",
       "setup_constants.h",
       "setup_install_details.cc",
@@ -98,6 +101,7 @@ if (is_win) {
     ]
 
     deps = [
+      "//base",
       "//build:branding_buildflags",
       "//chrome/common:constants",
       "//chrome/common:version_header",

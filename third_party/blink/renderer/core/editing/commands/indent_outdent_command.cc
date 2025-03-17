@@ -116,7 +116,12 @@ bool IndentOutdentCommand::TryIndentingAsListItem(
       end.AnchorNode()->IsDescendantOf(selected_list_item->lastChild());
 
   const VisiblePosition& start_of_paragraph_to_move =
-      CreateVisiblePosition(start);
+      (RuntimeEnabledFeatures::
+           AdjustStartOfParagraphToMoveDuringIndentEnabled() &&
+       !should_keep_selected_list)
+          ? VisiblePosition::BeforeNode(*selected_list_item->firstChild())
+          : CreateVisiblePosition(start);
+
   const VisiblePosition& end_of_paragraph_to_move =
       should_keep_selected_list
           ? CreateVisiblePosition(end)

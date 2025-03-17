@@ -8,7 +8,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "url/gurl.h"

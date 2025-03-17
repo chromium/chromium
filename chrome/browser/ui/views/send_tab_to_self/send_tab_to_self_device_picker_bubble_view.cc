@@ -130,8 +130,8 @@ void SendTabToSelfDevicePickerBubbleView::Init() {
   AddChildView(std::make_unique<views::Separator>());
   views::View* footer = AddChildView(
       BuildManageAccountDevicesLinkView(/*show_link=*/true, controller_));
-  footer->SetBackground(views::CreateThemedSolidBackground(
-      ui::kColorMenuItemBackgroundHighlighted));
+  footer->SetBackground(
+      views::CreateSolidBackground(ui::kColorMenuItemBackgroundHighlighted));
 }
 
 void SendTabToSelfDevicePickerBubbleView::AddedToWidget() {

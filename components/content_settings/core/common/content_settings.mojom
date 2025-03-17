@@ -71,6 +71,7 @@ struct RuleMetaData {
   TpcdMetadataRuleSource tpcd_metadata_rule_source;
   TpcdMetadataCohort tpcd_metadata_cohort;
   bool decided_by_related_website_sets;
+  mojo_base.mojom.Value rule_options;
 };
 
 // This mirrors the C++ type in content_settings.h.

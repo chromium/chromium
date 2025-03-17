@@ -33,9 +33,8 @@ async function testSaveWithAnnotations() {
 
   // Click on "Edited".
   const buttons = actionMenu.querySelectorAll('button');
-  assert(buttons);
   assert(buttons.length === 2);
-  buttons[0].click();
+  buttons[0]!.click();
 
   // A message should be sent to the plugin to save as annotated.
   await onSave;
@@ -116,9 +115,8 @@ chrome.test.runTests([
 
     // Click on "Original".
     const buttons = actionMenu.querySelectorAll('button');
-    assert(buttons);
     assert(buttons.length === 2);
-    buttons[1].click();
+    buttons[1]!.click();
 
     // A message should be sent to the plugin to save as annotated.
     await onSave;

@@ -108,7 +108,7 @@ void BitmapImageMetrics::CountDecodedImageDensity(const String& type,
   }
 
   density_histogram->CountMany(
-      base::saturated_cast<base::Histogram::Sample>(density_centi_bpp),
+      base::saturated_cast<base::Histogram::Sample32>(density_centi_bpp),
       image_size_kib);
 }
 

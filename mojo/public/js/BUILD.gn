@@ -8,6 +8,8 @@ import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/node/node.gni")
 import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_code_cache.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
 interfaces_bindings_gen_dir = "$root_gen_dir/mojo/public/interfaces/bindings"
@@ -226,6 +228,26 @@ grit("resources") {
     ":bindings_module",
     "//mojo/public/mojom/base:base_js",
   ]
+}
+
+if (enable_webui_generate_code_cache) {
+  generate_code_cache("build_code_cache") {
+    visibility = [ ":build_code_cache_grdp" ]
+    in_folder = target_gen_dir
+    in_files = [ "bindings.js" ]
+    out_folder = "$target_gen_dir/code_cache"
+    out_manifest = "$target_gen_dir/build_code_cache_manifest.json"
+
+    deps = [ ":bindings_module" ]
+  }
+
+  generate_grd("build_code_cache_grdp") {
+    grd_prefix = "mojo_public_js_code_cache"
+    out_grd = "$target_gen_dir/code_cache_resources.grdp"
+    resource_path_prefix = "mojo/mojo/public/js"
+    manifest_files = [ "$target_gen_dir/build_code_cache_manifest.json" ]
+    deps = [ ":build_code_cache" ]
+  }
 }
 
 group("tests") {

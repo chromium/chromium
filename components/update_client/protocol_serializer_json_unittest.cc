@@ -4,6 +4,7 @@
 
 #include "components/update_client/protocol_serializer_json.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -48,8 +49,8 @@ TEST(SerializeRequestJSON, Serialize) {
     std::vector<protocol_request::App> apps;
     apps.push_back(MakeProtocolApp(
         "id1", base::Version("1.0"), "ap1", "BRND", "ins_id", "lang", -1,
-        "source1", "location1", "fp1", {{"attr1", "1"}, {"attr2", "2"}}, "c1",
-        "ch1", "cn1", "test", {0, 1},
+        "source1", "location1", {{"attr1", "1"}, {"attr2", "2"}}, "c1", "ch1",
+        "cn1", "test", {0, 1}, /*cached_hashes=*/{},
         MakeProtocolUpdateCheck(true, "33.12", true, false),
         {{"install", "foobar_install_data_index", ""}},
         MakeProtocolPing("id1", metadata.get(), {}), std::move(events)));
@@ -61,17 +62,16 @@ TEST(SerializeRequestJSON, Serialize) {
                             std::move(apps)));
     constexpr char regex[] =
         R"({"request":{"@os":"\w+","@updater":"prod_id",)"
-        R"("acceptformat":"crx3,puff",)"
-        R"("app":\[{"ap":"ap1","appid":"id1","attr1":"1","attr2":"2",)"
+        R"("acceptformat":"crx3,download,puff,run",)"
+        R"("apps":\[{"ap":"ap1","appid":"id1","attr1":"1","attr2":"2",)"
         R"("brand":"BRND","cohort":"c1","cohorthint":"ch1","cohortname":"cn1",)"
         R"("data":\[{"index":"foobar_install_data_index","name":"install"}],)"
         R"("disabled":\[{"reason":0},{"reason":1}],"enabled":false,)"
-        R"("event":\[{"a":1,"b":"2"},{"error":0}],)"
+        R"("events":\[{"a":1,"b":"2"},{"error":0}],)"
         R"("iid":"ins_id",)"
         R"("installdate":-1,)"
         R"("installedby":"location1","installsource":"source1",)"
         R"("lang":"lang",)"
-        R"("packages":{"package":\[{"fp":"fp1"}]},)"
         R"("ping":{"ping_freshness":"{[-\w]{36}}","rd":1234},)"
         R"("release_channel":"test",)"
         R"("updatecheck":{"rollback_allowed":true,)"
@@ -84,7 +84,7 @@ TEST(SerializeRequestJSON, Serialize) {
         R"("ismachine":false,"nacl_arch":"[-\w]+",)"
         R"("os":{"arch":"[_,-.\w]+","platform":"OS",)"
         R"(("sp":"[\s\w]+",)?"version":"[+-.\w]+"},"prodchannel":"channel",)"
-        R"("prodversion":"1.0","protocol":"3.1","requestid":"{[-\w]{36}}",)"
+        R"("prodversion":"1.0","protocol":"4.0","requestid":"{[-\w]{36}}",)"
         R"("sessionid":"{[-\w]{36}}","updaterchannel":"channel",)"
         R"("updaterversion":"1.0"(,"wow64":true)?}})";
     EXPECT_TRUE(RE2::FullMatch(request, regex)) << request << "\n VS \n"
@@ -93,10 +93,11 @@ TEST(SerializeRequestJSON, Serialize) {
   {
     // Tests `sameversionupdate` presence with a minimal request for one app.
     std::vector<protocol_request::App> apps;
-    apps.push_back(MakeProtocolApp(
-        "id1", base::Version("1.0"), "", "", "", "", -2, "", "", "", {}, "", "",
-        "", "", {}, MakeProtocolUpdateCheck(false, "", false, true), {},
-        std::nullopt, std::nullopt));
+    apps.push_back(
+        MakeProtocolApp("id1", base::Version("1.0"), "", "", "", "", -2, "", "",
+                        {}, "", "", "", "", {}, /*cached_hashes=*/{},
+                        MakeProtocolUpdateCheck(false, "", false, true), {},
+                        std::nullopt, std::nullopt));
 
     const auto request = std::make_unique<ProtocolSerializerJSON>()->Serialize(
         MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
@@ -104,7 +105,7 @@ TEST(SerializeRequestJSON, Serialize) {
                             std::move(apps)));
 
     constexpr char regex[] =
-        R"("app":\[{"appid":"id1","enabled":true,)"
+        R"("apps":\[{"appid":"id1","enabled":true,)"
         R"("updatecheck":{"sameversionupdate":true},"version":"1.0"}])";
     EXPECT_TRUE(RE2::PartialMatch(request, regex)) << request << "\n VS \n"
                                                    << regex;
@@ -146,7 +147,7 @@ TEST(SerializeRequestJSON, UpdaterStateAttributes) {
       {}));
   constexpr char regex[] =
       R"({"request":{"@os":"\w+","@updater":"prod_id",)"
-      R"("acceptformat":"crx3,puff","arch":"\w+","dedup":"cr",)"
+      R"("acceptformat":"crx3,download,puff,run","arch":"\w+","dedup":"cr",)"
       R"("dlpref":"cacheable","domainjoined":true,"extra":"params",)"
       R"("hw":{"avx":(true|false),)"
       R"("physmemory":\d+,"sse":(true|false),"sse2":(true|false),)"
@@ -156,13 +157,14 @@ TEST(SerializeRequestJSON, UpdaterStateAttributes) {
       R"("nacl_arch":"[-\w]+",)"
       R"("os":{"arch":"[,-.\w]+","platform":"OS",("sp":"[\s\w]+",)?)"
       R"("version":"[+-.\w]+"},"prodchannel":"channel","prodversion":"1.0",)"
-      R"("protocol":"3.1","requestid":"{[-\w]{36}}","sessionid":"{[-\w]{36}}",)"
+      R"("protocol":"4.0","requestid":"{[-\w]{36}}","sessionid":"{[-\w]{36}}",)"
+      R"("updaterchannel":"channel",)"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      R"("updater":{"autoupdatecheckenabled":false,"ismachine":true,)"
+      R"("updaters":{"autoupdatecheckenabled":false,"ismachine":true,)"
       R"("lastchecked":2,"laststarted":1,"name":"Omaha","updatepolicy":-1,)"
       R"("version":"1\.2\.3\.4"},)"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      R"("updaterchannel":"channel","updaterversion":"1.0"(,"wow64":true)?}})";
+      R"("updaterversion":"1.0"(,"wow64":true)?}})";
   EXPECT_TRUE(RE2::FullMatch(request, regex)) << request << "\n VS \n" << regex;
 }
 

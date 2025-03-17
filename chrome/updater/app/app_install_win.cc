@@ -13,6 +13,7 @@
 #include <winhttp.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -61,12 +62,12 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer/exit_code.h"
 #include "chrome/updater/win/manifest_util.h"
+#include "chrome/updater/win/protocol_parser_xml.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/win_constants.h"
-#include "components/update_client/protocol_parser.h"
 #include "components/update_client/update_client_errors.h"
 #include "url/gurl.h"
 
@@ -408,7 +409,7 @@ class AppInstallControllerImpl : public AppInstallController,
                      const std::string& app_name,
                      base::OnceCallback<void(int)> callback);
   void DoInstallAppOffline(
-      const update_client::ProtocolParser::Results& results,
+      const OfflineManifestSystemRequirements& requirements,
       const std::string& installer_version,
       const base::FilePath& installer_path,
       const std::string& install_args,
@@ -532,8 +533,7 @@ void AppInstallControllerImpl::InstallApp(
           &UpdateService::Install, update_service_, request,
           GetDecodedInstallDataFromAppArgs(app_id_),
           GetInstallDataIndexFromAppArgs(app_id_),
-          UpdateService::Priority::kForeground,
-          tag_args ? tag_args->language : "",
+          UpdateService::Priority::kForeground, GetTagLanguage(),
           base::BindRepeating(&AppInstallControllerImpl::StateChange, this),
           base::BindOnce(&AppInstallControllerImpl::InstallComplete, this)));
 }
@@ -576,7 +576,7 @@ void AppInstallControllerImpl::InstallAppOffline(
           [](const std::string& app_id) {
             // Parse the offline manifest to get the install
             // command and install data.
-            update_client::ProtocolParser::Results results;
+            OfflineManifestSystemRequirements requirements;
             std::string installer_version;
             base::FilePath installer_path;
             std::string install_args;
@@ -584,13 +584,13 @@ void AppInstallControllerImpl::InstallAppOffline(
             ReadInstallCommandFromManifest(
                 base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
                     kOfflineDirSwitch),
-                app_id, GetInstallDataIndexFromAppArgs(app_id), results,
+                app_id, GetInstallDataIndexFromAppArgs(app_id), requirements,
                 installer_version, installer_path, install_args, install_data);
 
             const std::string client_install_data =
                 GetDecodedInstallDataFromAppArgs(app_id);
             return std::make_tuple(
-                results, installer_version, installer_path, install_args,
+                requirements, installer_version, installer_path, install_args,
                 client_install_data.empty() ? install_data
                                             : client_install_data);
           },
@@ -598,7 +598,7 @@ void AppInstallControllerImpl::InstallAppOffline(
       base::BindOnce(
           [](scoped_refptr<AppInstallControllerImpl> self,
              const std::tuple<
-                 update_client::ProtocolParser::Results /*results*/,
+                 OfflineManifestSystemRequirements /*requirements*/,
                  std::string /*installer_version*/,
                  base::FilePath /*installer_path*/, std::string /*arguments*/,
                  std::string /*install_data*/>& result) {
@@ -610,14 +610,14 @@ void AppInstallControllerImpl::InstallAppOffline(
 }
 
 void AppInstallControllerImpl::DoInstallAppOffline(
-    const update_client::ProtocolParser::Results& results,
+    const OfflineManifestSystemRequirements& requirements,
     const std::string& installer_version,
     const base::FilePath& installer_path,
     const std::string& install_args,
     const std::string& install_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsOsSupported(results)) {
+  if (!IsOsSupported(requirements)) {
     HandleOsNotSupported();
     return;
   }
@@ -629,7 +629,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   install_settings_dict.Set(kEnterpriseSwitch,
                             cmd_line.HasSwitch(kEnterpriseSwitch));
   install_settings_dict.Set(kSessionIdSwitch,
-                            cmd_line.GetSwitchValueASCII(kSessionIdSwitch));
+                            cmd_line.GetSwitchValueUTF8(kSessionIdSwitch));
 
   std::string install_settings;
   if (!JSONStringValueSerializer(&install_settings)
@@ -637,7 +637,6 @@ void AppInstallControllerImpl::DoInstallAppOffline(
     VLOG(1) << "Failed to serialize install settings.";
   }
 
-  std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   RegistrationRequest request;
   request.app_id = app_id_;
   request.version = base::Version(kNullVersion);
@@ -646,6 +645,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   if (app_args) {
     request.ap = app_args->ap;
   }
+  std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   if (tag_args) {
     request.brand_code = tag_args->brand_code;
     request.install_id = tag_args->installation_id;
@@ -681,18 +681,18 @@ void AppInstallControllerImpl::DoInstallAppOffline(
                                    self));
               },
               base::WrapRefCounted(this), installer_path, install_args,
-              install_data, install_settings,
-              tag_args ? tag_args->language : "")));
+              install_data, install_settings, GetTagLanguage())));
 }
 
 void AppInstallControllerImpl::HandleOsNotSupported() {
+  const std::wstring lang = base::UTF8ToWide(GetTagLanguage());
   UpdateService::UpdateState update_state;
   update_state.app_id = app_id_;
   update_state.state = UpdateService::UpdateState::State::kUpdateError;
   update_state.error_category = UpdateService::ErrorCategory::kInstall;
-  observer_completion_info_ = HandleInstallResult(update_state);
-  observer_completion_info_->completion_text =
-      base::WideToUTF16(GetLocalizedString(IDS_UPDATER_OS_NOT_SUPPORTED_BASE));
+  observer_completion_info_ = HandleInstallResult(update_state, lang);
+  observer_completion_info_->completion_text = base::WideToUTF16(
+      GetLocalizedString(IDS_UPDATER_OS_NOT_SUPPORTED_BASE, lang));
   InstallComplete(UpdateService::Result::kInstallFailed);
 }
 
@@ -719,7 +719,8 @@ void AppInstallControllerImpl::InstallComplete(UpdateService::Result result) {
           return UpdateService::ErrorCategory::kService;
       }
     }();
-    observer_completion_info_ = HandleInstallResult(update_state);
+    observer_completion_info_ =
+        HandleInstallResult(update_state, base::UTF8ToWide(GetTagLanguage()));
   }
   update_service_ = nullptr;
   CHECK(observer_completion_info_.has_value());
@@ -739,7 +740,8 @@ void AppInstallControllerImpl::Exit(int exit_code) {
   UpdateService::UpdateState update_state;
   update_state.state = UpdateService::UpdateState::State::kNotStarted;
   update_state.error_code = exit_code;
-  install_progress_observer_ipc_->OnComplete(HandleInstallResult(update_state));
+  install_progress_observer_ipc_->OnComplete(
+      HandleInstallResult(update_state, base::UTF8ToWide(GetTagLanguage())));
 }
 void AppInstallControllerImpl::StateChange(
     const UpdateService::UpdateState& update_state) {
@@ -785,7 +787,8 @@ void AppInstallControllerImpl::StateChange(
     case UpdateService::UpdateState::State::kUpdated:
     case UpdateService::UpdateState::State::kNoUpdate:
     case UpdateService::UpdateState::State::kUpdateError:
-      observer_completion_info_ = HandleInstallResult(update_state);
+      observer_completion_info_ =
+          HandleInstallResult(update_state, base::UTF8ToWide(GetTagLanguage()));
       break;
 
     case UpdateService::UpdateState::State::kUnknown:
@@ -879,8 +882,30 @@ void AppInstallControllerImpl::RunUI() {
   if (!callback_) {
     return;
   }
-  main_task_runner_->PostTask(FROM_HERE,
-                              base::BindOnce(std::move(callback_), kErrorOk));
+
+  main_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback_), [&]() {
+        if (!observer_completion_info_) {
+          return kErrorNoObserverCompletionInfo;
+        }
+
+        if (observer_completion_info_->completion_code !=
+            CompletionCodes::COMPLETION_CODE_ERROR) {
+          return kErrorOk;
+        }
+
+        if (observer_completion_info_->apps_info.empty()) {
+          return kErrorNoApps;
+        }
+
+        return std::ranges::max_element(
+                   observer_completion_info_->apps_info,
+                   [](const auto& app_info1, const auto& app_info2) {
+                     return GetPriority(app_info1.completion_code) <
+                            GetPriority(app_info2.completion_code);
+                   })
+            ->error_code;
+      }()));
 }
 
 void AppInstallControllerImpl::DoExit() {
@@ -933,24 +958,26 @@ void AppInstallControllerImpl::DoCancel() {
       base::BindOnce(&UpdateService::CancelInstalls, update_service_, app_id_));
 }
 
-std::wstring GetTextForStartupError(int error_code) {
+std::wstring GetTextForStartupError(int error_code, const std::wstring& lang) {
   switch (error_code) {
     case kErrorWrongUser:
       return GetLocalizedString(
           ::IsUserAnAdmin() ? IDS_WRONG_USER_DEELEVATION_REQUIRED_ERROR_BASE
-                            : IDS_WRONG_USER_ELEVATION_REQUIRED_ERROR_BASE);
+                            : IDS_WRONG_USER_ELEVATION_REQUIRED_ERROR_BASE,
+          lang);
     case kErrorFailedToLockSetupMutex:
-      return GetLocalizedString(IDS_UNABLE_TO_GET_SETUP_LOCK_BASE);
+      return GetLocalizedString(IDS_UNABLE_TO_GET_SETUP_LOCK_BASE, lang);
     default:
       return GetLocalizedStringF(IDS_GENERIC_STARTUP_ERROR_BASE,
-                                 GetTextForSystemError(error_code));
+                                 GetTextForSystemError(error_code), lang);
   }
 }
 
 }  // namespace
 
 [[nodiscard]] ObserverCompletionInfo HandleInstallResult(
-    const UpdateService::UpdateState& update_state) {
+    const UpdateService::UpdateState& update_state,
+    const std::wstring& lang) {
   CompletionCodes completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
   std::wstring completion_text;
   switch (update_state.state) {
@@ -958,22 +985,23 @@ std::wstring GetTextForStartupError(int error_code) {
       VLOG(1) << "Update success.";
       completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS;
       completion_text =
-          GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE);
+          GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE, lang);
       break;
     case UpdateService::UpdateState::State::kNoUpdate:
       VLOG(1) << "No updates.";
       completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-      completion_text = GetLocalizedString(IDS_NO_UPDATE_RESPONSE_BASE);
+      completion_text = GetLocalizedString(IDS_NO_UPDATE_RESPONSE_BASE, lang);
       break;
     case UpdateService::UpdateState::State::kUpdateError:
       VLOG(1) << "Updater error: " << update_state.error_code << ".";
       completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-      completion_text = GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE);
+      completion_text =
+          GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE, lang);
       break;
     case UpdateService::UpdateState::State::kNotStarted:
       VLOG(1) << "Updater error: " << update_state.error_code << ".";
       completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-      completion_text = GetTextForStartupError(update_state.error_code);
+      completion_text = GetTextForStartupError(update_state.error_code, lang);
       break;
     default:
       NOTREACHED();

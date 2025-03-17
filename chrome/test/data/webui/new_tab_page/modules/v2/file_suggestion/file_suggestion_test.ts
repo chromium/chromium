@@ -25,7 +25,7 @@ suite('FileSuggestion', () => {
         justificationText: `Edited ${i} days ago`,
         title: `${i} title`,
         id: `${i} id`,
-        mimeType: `application/vnd.google-apps.${i}`,
+        iconUrl: {url: `https://example.com/application/vnd.google-apps.${i}`},
         itemUrl: {url: 'https://${i}.com'},
       });
     }
@@ -34,12 +34,11 @@ suite('FileSuggestion', () => {
 
   test('files render correctly', async () => {
     const numFiles = 2;
-    fileSuggestion.imageSourceBaseUrl = 'https://example.com/';
     fileSuggestion.files = createFiles(numFiles);
     await microtasksFinished();
 
     const files =
-        fileSuggestion.shadowRoot!.querySelectorAll<HTMLElement>('.file');
+        fileSuggestion.shadowRoot.querySelectorAll<HTMLElement>('.file');
     assertEquals(numFiles, files.length);
 
     const file1 = files[0];
@@ -81,7 +80,7 @@ suite('FileSuggestion', () => {
         await microtasksFinished();
 
         const files =
-            fileSuggestion.shadowRoot!.querySelectorAll<HTMLElement>('.file');
+            fileSuggestion.shadowRoot.querySelectorAll<HTMLElement>('.file');
         const clickIndex = 1;
         assertTrue(!!files[clickIndex]);
         const usagePromise = eventToPromise('usage', fileSuggestion);

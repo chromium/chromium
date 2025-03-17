@@ -189,7 +189,7 @@ void TabHelper::SetReloadRequired(
       SitePermissionsHelper permissions_helper(profile_);
       const ExtensionSet& extensions =
           ExtensionRegistry::Get(profile_)->enabled_extensions();
-      reload_required_ = base::ranges::any_of(
+      reload_required_ = std::ranges::any_of(
           extensions, [&permissions_helper,
                        web_contents](scoped_refptr<const Extension> extension) {
             return permissions_helper.GetSiteInteraction(*extension,

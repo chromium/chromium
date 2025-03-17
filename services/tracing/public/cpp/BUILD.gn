@@ -60,6 +60,8 @@ target(tracing_lib_type, "cpp") {
     sources += [
       "perfetto/custom_event_recorder.cc",
       "perfetto/custom_event_recorder.h",
+      "perfetto/histogram_samples_data_source.cc",
+      "perfetto/histogram_samples_data_source.h",
       "perfetto/interning_index.h",
       "perfetto/metadata_data_source.cc",
       "perfetto/metadata_data_source.h",
@@ -132,12 +134,11 @@ target(tracing_lib_type, "cpp") {
     deps += [
       ":buildflags",
       "//build:chromecast_buildflags",
-      "//build:chromeos_buildflags",
       "//components/system_cpu:system_cpu",
       "//third_party/perfetto/protos/perfetto/trace/chrome:minimal_complete_lite",
     ]
 
-    if (!(is_chromeos_ash && target_cpu == "arm64" && current_cpu == "arm")) {
+    if (!(is_chromeos && target_cpu == "arm64" && current_cpu == "arm")) {
       deps += [ "//components/variations" ]
     }
 
@@ -165,7 +166,7 @@ target(tracing_lib_type, "cpp") {
       }
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//chromeos/dbus/constants" ]
     }
   }  # !is_ios && !is_nacl

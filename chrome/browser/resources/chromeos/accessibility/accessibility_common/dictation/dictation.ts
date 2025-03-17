@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Context} from '/common/action_fulfillment/context_checker.js';
-import {Macro} from '/common/action_fulfillment/macros/macro.js';
+import type {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 

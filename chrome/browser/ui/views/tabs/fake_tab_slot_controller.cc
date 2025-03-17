@@ -61,7 +61,11 @@ Tab* FakeTabSlotController::GetTabAt(const gfx::Point& point) {
   return nullptr;
 }
 
-const Tab* FakeTabSlotController::GetAdjacentTab(const Tab* tab, int offset) {
+Tab* FakeTabSlotController::GetAdjacentTab(const Tab* tab, int offset) {
+  return nullptr;
+}
+
+Tab* FakeTabSlotController::GetAdjacentSplitTab(const Tab* tab) {
   return nullptr;
 }
 
@@ -148,11 +152,6 @@ int FakeTabSlotController::GetInactiveTabWidth() const {
 
 bool FakeTabSlotController::IsFrameCondensed() const {
   return false;
-}
-
-std::optional<int> FakeTabSlotController::GetModelIndexOf(
-    const TabSlotView* view) const {
-  return std::nullopt;
 }
 
 TabGroup* FakeTabSlotController::GetTabGroup(

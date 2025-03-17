@@ -290,6 +290,10 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       }
       break;
     }
+    case ui::AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED: {
+      wcax->HandleImageAnnotationChanged(android_node->GetUniqueId());
+      break;
+    }
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED: {
       // This event is fired when an object appears in a live region.
       // Speak its text unless the experimental deprecation of the announce
@@ -372,7 +376,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::HASPOPUP_CHANGED:
     case ui::AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
     case ui::AXEventGenerator::Event::IGNORED_CHANGED:
-    case ui::AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
     case ui::AXEventGenerator::Event::INVALID_STATUS_CHANGED:
     case ui::AXEventGenerator::Event::KEY_SHORTCUTS_CHANGED:
     case ui::AXEventGenerator::Event::LABELED_BY_CHANGED:
@@ -416,9 +419,9 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
 void BrowserAccessibilityManagerAndroid::FireAriaNotificationEvent(
     ui::BrowserAccessibility* node,
     const std::string& announcement,
+    ax::mojom::AriaNotificationPriority priority_property,
     const std::string& notification_id,
-    ax::mojom::AriaNotificationInterrupt interrupt_property,
-    ax::mojom::AriaNotificationPriority priority_property) {
+    ax::mojom::AriaNotificationInterrupt interrupt_property) {
   DCHECK(node);
 
   auto* wcax = GetWebContentsAXFromRootManager();

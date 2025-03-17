@@ -15,10 +15,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_prepare_and_store_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
@@ -64,8 +64,8 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
       const base::FilePath& bundle_path) const {
     return is_dev_mode_
                ? IsolatedWebAppInstallSource::FromDevUi(
-                     IwaSourceBundleDevModeWithFileOp(bundle_path,
-                                                      kDefaultBundleDevFileOp))
+                     IwaSourceBundleDevModeWithFileOp(
+                         bundle_path, IwaSourceBundleDevFileOp::kCopy))
                : IsolatedWebAppInstallSource::FromGraphicalInstaller(
                      IwaSourceBundleProdModeWithFileOp(
                          bundle_path, IwaSourceBundleProdFileOp::kCopy));
@@ -128,8 +128,10 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
 
   bool is_dev_mode_ = GetParam();
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   base::test::ScopedFeatureList features_{
       component_updater::kIwaKeyDistributionComponent};
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // Override the pre-install component directory and its alternative directory
   // so that the component update will not find the pre-installed key dist

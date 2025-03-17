@@ -43,11 +43,6 @@ public class TestDataSharingService implements DataSharingService {
     }
 
     @Override
-    public void deleteGroup(String groupId, Callback<Integer> callback) {
-        Callback.runNullSafe(callback, PeopleGroupActionOutcome.PERSISTENT_FAILURE);
-    }
-
-    @Override
     public void inviteMember(String groupId, String inviteeEmail, Callback<Integer> callback) {
         Callback.runNullSafe(callback, PeopleGroupActionOutcome.PERSISTENT_FAILURE);
     }
@@ -85,7 +80,7 @@ public class TestDataSharingService implements DataSharingService {
     @Override
     public ParseUrlResult parseDataSharingUrl(GURL url) {
         return new ParseUrlResult(
-                new GroupToken(/* groupId= */ null, /* accessToken= */ null),
+                new GroupToken(/* collaborationId= */ null, /* accessToken= */ null),
                 ParseUrlStatus.UNKNOWN);
     }
 
@@ -109,6 +104,11 @@ public class TestDataSharingService implements DataSharingService {
 
     @Override
     public DataSharingUIDelegate getUiDelegate() {
+        return null;
+    }
+
+    @Override
+    public Logger getLogger() {
         return null;
     }
 }

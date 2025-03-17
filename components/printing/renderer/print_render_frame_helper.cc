@@ -11,11 +11,11 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
@@ -34,9 +34,9 @@
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/fixed_array.h"
@@ -123,11 +123,6 @@ bool g_is_preview_enabled = true;
 bool g_is_preview_enabled = false;
 #endif
 
-const char kPageLoadScriptFormat[] =
-    "document.open(); document.write(%s); document.close();";
-
-const char kPageSetupScriptFormat[] = "setupHeaderFooterTemplate(%s);";
-
 constexpr int kAllowedIpcDepthForPrint = 1;
 
 struct PageSizeMarginsWithOrientation {
@@ -179,14 +174,13 @@ void RecordDebugEvent(DebugEvent event) {
 }
 
 void ExecuteScript(blink::WebLocalFrame* frame,
-                   const char* script_format,
-                   const base::Value& parameters) {
+                   std::string_view prefix,
+                   const base::Value& parameters,
+                   std::string_view suffix) {
   std::string json;
   base::JSONWriter::Write(parameters, &json);
-  std::string script =
-      base::StringPrintfNonConstexpr(script_format, json.c_str());
-  frame->ExecuteScript(
-      blink::WebScriptSource(blink::WebString::FromUTF8(script)));
+  frame->ExecuteScript(blink::WebScriptSource(
+      blink::WebString::FromUTF8(base::StrCat({prefix, json, suffix}))));
 }
 
 int GetDPI(const mojom::PrintParams& print_params) {
@@ -579,7 +573,8 @@ void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_PRINT_HEADER_FOOTER_TEMPLATE_PAGE));
   // Load page with script to avoid async operations.
-  ExecuteScript(&frame, kPageLoadScriptFormat, html);
+  ExecuteScript(&frame, "document.open(); document.write(", html,
+                "); document.close();");
 
   const gfx::SizeF page_size(
       page_layout.margin_left + page_layout.margin_right +
@@ -606,8 +601,8 @@ void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
   options.Set("footerTemplate", params.footer_template);
   options.Set("isRtl", base::i18n::IsRTL());
 
-  ExecuteScript(&frame, kPageSetupScriptFormat,
-                base::Value(std::move(options)));
+  ExecuteScript(&frame, "setupHeaderFooterTemplate(",
+                base::Value(std::move(options)), ");");
 
   blink::WebPrintParams webkit_params(page_size);
   webkit_params.printer_dpi = GetDPI(params);
@@ -1532,11 +1527,14 @@ void PrintRenderFrameHelper::PrintFrameContent(
     return;
 
   ContentProxySet typeface_content_info;
+  ContentProxySet image_content_info;
   MetafileSkia metafile(mojom::SkiaDocumentType::kMSKP,
                         params->document_cookie);
 
-  // Provide a typeface context to use with serializing to the print compositor.
+  // Provide typeface and image contexts to use with serializing to the print
+  // compositor.
   metafile.UtilizeTypefaceContext(&typeface_content_info);
+  metafile.UtilizeImageContext(&image_content_info);
 
   gfx::Size area_size = params->printable_area.size();
   // Since GetVectorCanvasForNewPage() starts a new recording, it will return
@@ -1838,6 +1836,8 @@ bool PrintRenderFrameHelper::RenderPreviewPage(
   }
   render_metafile->UtilizeTypefaceContext(
       print_preview_context_.typeface_content_info());
+  render_metafile->UtilizeImageContext(
+      print_preview_context_.image_content_info());
   base::TimeTicks begin_time = base::TimeTicks::Now();
   PrintPageInternalResult result = PrintPageInternal(
       print_params, page_index, print_preview_context_.total_page_count(),
@@ -2246,12 +2246,15 @@ bool PrintRenderFrameHelper::PrintPagesNative(
   const mojom::PrintPagesParams& params = *print_pages_params_;
   const mojom::PrintParams& print_params = *params.params;
 
-  // Provide a typeface context to use with serializing to the print compositor.
+  // Provide typeface and image context to use with serializing to the print
+  // compositor.
   ContentProxySet typeface_content_info;
+  ContentProxySet image_content_info;
   MetafileSkia metafile(print_params.printed_doc_type,
                         print_params.document_cookie);
   CHECK(metafile.Init());
   metafile.UtilizeTypefaceContext(&typeface_content_info);
+  metafile.UtilizeImageContext(&image_content_info);
 
   bool generate_tagged_pdf = print_params.generate_tagged_pdf.value_or(
       delegate_->ShouldGenerateTaggedPDF());
@@ -3042,10 +3045,17 @@ PrintRenderFrameHelper::PrintPreviewContext::typeface_content_info() {
   return &typeface_content_info_;
 }
 
+ContentProxySet*
+PrintRenderFrameHelper::PrintPreviewContext::image_content_info() {
+  DCHECK(IsRendering());
+  return &image_content_info_;
+}
+
 void PrintRenderFrameHelper::PrintPreviewContext::ClearContext() {
   prep_frame_view_.reset();
   metafile_.reset();
   typeface_content_info_.clear();
+  image_content_info_.clear();
   pages_to_render_.clear();
   error_ = PrintPreviewErrorBuckets::kNone;
 }

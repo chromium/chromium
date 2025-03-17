@@ -41,7 +41,7 @@ NetworkTrayView::~NetworkTrayView() {
 }
 
 std::u16string NetworkTrayView::GetAccessibleNameString() const {
-  return GetCachedTooltipText();
+  return GetTooltipText();
 }
 
 views::View* NetworkTrayView::GetTooltipHandlerForPoint(
@@ -85,7 +85,7 @@ void NetworkTrayView::NetworkListChanged() {
 
 void NetworkTrayView::UpdateIcon(bool tray_icon_visible,
                                  const gfx::ImageSkia& image) {
-  image_view()->SetImage(image);
+  image_view()->SetImage(ui::ImageModel::FromImageSkia(image));
   SetVisible(tray_icon_visible);
   SchedulePaint();
 }
@@ -116,7 +116,7 @@ void NetworkTrayView::UpdateConnectionStatus(bool notify_a11y) {
   GetViewAccessibility().SetName(accessible_name);
   if (notify_a11y && !accessible_name.empty() &&
       accessible_name != prev_accessible_name) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
   }
 
   if (!accessible_description_.empty()) {
@@ -125,7 +125,7 @@ void NetworkTrayView::UpdateConnectionStatus(bool notify_a11y) {
     GetViewAccessibility().RemoveDescription();
   }
 
-  SetCachedTooltipText(tooltip);
+  SetTooltipText(tooltip);
 }
 
 network_icon::IconType NetworkTrayView::GetIconType() {

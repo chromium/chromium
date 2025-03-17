@@ -6,8 +6,9 @@
 
 #include <jni.h>
 
+#include <algorithm>
+
 #include "base/android/jni_android.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
@@ -38,7 +39,7 @@ void TabModelList::RemoveTabModel(TabModel* tab_model) {
   auto& tab_models = tab_model_list_.Get().models_;
 
   TabModelList::iterator remove_tab_model =
-      base::ranges::find(tab_models, tab_model);
+      std::ranges::find(tab_models, tab_model);
 
   if (remove_tab_model != tab_models.end()) {
     tab_models.erase(remove_tab_model);

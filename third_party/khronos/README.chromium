@@ -5,10 +5,11 @@ Version: N/A
 Date: 2018-07-25
 GLES Date: 2018-07-25
 EGL Date: 2022-03-23
-License: MIT/X11, SGI Free Software License B
+License: MIT, X11, SGI-B-2.0
 License File: LICENSE
 Security Critical: no
 Shipped: yes
+License Android Compatible: yes
 
 Description:
 This package contains header files for the EGL and OpenGL ES APIs from

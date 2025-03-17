@@ -10,7 +10,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** The class is Java's representative of components/content_capture/browser/content_capture_frame.h */
+@NullMarked
 public class ContentCaptureFrame extends ContentCaptureDataBase {
     private final String mUrl;
     private final String mTitle;

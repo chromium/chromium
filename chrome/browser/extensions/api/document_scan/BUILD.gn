@@ -20,6 +20,8 @@ source_set("document_scan") {
     "document_scan_type_converters.h",
     "scanner_discovery_runner.cc",
     "scanner_discovery_runner.h",
+    "simple_scan_runner.cc",
+    "simple_scan_runner.h",
     "start_scan_runner.cc",
     "start_scan_runner.h",
   ]

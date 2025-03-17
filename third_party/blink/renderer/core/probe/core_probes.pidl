@@ -149,6 +149,10 @@ interface CoreProbes {
   void WebTransportCreated([Keep] ExecutionContext*, uint64_t transport_id, const KURL& request_url);
   void WebTransportConnectionEstablished(ExecutionContext*, uint64_t transport_id);
   void WebTransportClosed(ExecutionContext*, uint64_t transport_id);
+  void DirectTCPSocketCreated([Keep] ExecutionContext*, uint64_t identifier, const String& remote_addr, uint16_t remote_port, protocol::Network::DirectTCPSocketOptions& options);
+  void DirectTCPSocketOpened(ExecutionContext*, uint64_t identifier, const String& remote_addr, uint16_t remote_port, std::optional<String> local_addr, std::optional<uint16_t> local_port);
+  void DirectTCPSocketAborted(ExecutionContext*, uint64_t identifier, int net_error);
+  void DirectTCPSocketClosed(ExecutionContext*, uint64_t identifier);
   void WillCreateP2PSocketUdp(ExecutionContext*, std::optional<base::UnguessableToken>* devtools_token);
   /* This is for pre-BlinkGenPropertyTrees. TODO(wangxianzhu): Remove this function for BlinkGenPropertyTrees. */
   void LayerTreeDidChange(LocalFrame*);
@@ -181,6 +185,7 @@ interface CoreProbes {
   InvokeCallback(ScriptState& script_state, const char* name, CallbackFunctionBase* callback, v8::MaybeLocal<v8::Value> function = v8::MaybeLocal<v8::Value>());
   InvokeEventHandler(ScriptState& script_state, Event* event = nullptr, JSBasedEventListener* listener = nullptr);
   UserEntryPoint([Keep] ExecutionContext* context, v8::Local<v8::Object> callback_object, size_t index);
+  FrameRelatedTask([Keep] ExecutionContext* context);
   V8Compile([Keep] ExecutionContext* context, const String& file_name, int line, int column);
   ParseHTML(Document* document, HTMLDocumentParser* parser);
   void ForcePseudoState([Keep] Element* element, CSSSelector::PseudoType pseudo_state, bool* result);
@@ -200,7 +205,7 @@ interface CoreProbes {
   void DidProduceCompilationCache(CoreProbeSink*, const ClassicScript&, v8::Local<v8::Script> script);
   void ApplyCompilationModeOverride(ExecutionContext*, const ClassicScript&, v8::ScriptCompiler::CachedData** cached_data, v8::ScriptCompiler::CompileOptions*);
   void NodeCreated([Keep] Node* node);
-  void FileChooserOpened([Keep] LocalFrame* frame, HTMLInputElement* element, bool multiple, bool* intercepted);
+  void FileChooserOpened([Keep] LocalFrame* frame, HTMLInputElement* element, bool multiple, bool* suppressed, bool* canceled);
   void PlayerErrorsRaised(ExecutionContext* context, String player_id, const Vector<InspectorPlayerError>& errors);
   void PlayerEventsAdded(ExecutionContext* context, String player_id, const Vector<InspectorPlayerEvent>& events);
   void PlayerMessagesLogged(ExecutionContext* context, String player_id, const Vector<InspectorPlayerMessage>& messages);
@@ -215,6 +220,7 @@ interface CoreProbes {
   void GetDisabledImageTypes(ExecutionContext*, HashSet<String>* result);
   void OnContentSecurityPolicyViolation(ExecutionContext* context, const blink::ContentSecurityPolicyViolationType violationType);
   void IsCacheDisabled(ExecutionContext*, bool* is_cache_disabled);
+  void ShouldApplyDevtoolsCookieSettingOverrides(ExecutionContext*, bool* is_network_enabled);
   void PerformanceEntryAdded([Keep] ExecutionContext*, PerformanceEntry*);
   void ApplyAutomationOverride(ExecutionContext*, bool& enabled);
   void DidAddSpeculationRuleSet([Keep] Document&, const SpeculationRuleSet& rule_set);

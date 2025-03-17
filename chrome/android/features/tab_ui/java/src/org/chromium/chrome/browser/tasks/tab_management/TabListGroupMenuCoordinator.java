@@ -11,7 +11,9 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -31,7 +33,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      */
     public TabListGroupMenuCoordinator(
-            OnItemClickedCallback onItemClicked,
+            OnItemClickedCallback<Token> onItemClicked,
             Supplier<TabModel> tabModelSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @NonNull CollaborationService collaborationService) {
@@ -49,16 +51,26 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
      */
     TabListMediator.TabActionListener getTabActionListener() {
         return (view, tabId) -> {
-            createAndShowMenu(view, tabId, (Activity) view.getContext());
+            @Nullable TabModel tabModel = getTabModel();
+            if (tabModel == null) return;
+
+            @Nullable Tab tab = tabModel.getTabById(tabId);
+            if (tab == null) return;
+
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId == null) return;
+
+            createAndShowMenu(view, tabGroupId, (Activity) view.getContext());
         };
     }
 
     @Override
-    protected void buildMenuActionItems(
-            ModelList itemList,
-            boolean isIncognito,
-            boolean isTabGroupSyncEnabled,
-            boolean hasCollaborationData) {
+    protected void buildMenuActionItems(ModelList itemList, Token tabGroupId) {
+        boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
+        @Nullable String collaborationId = getCollaborationIdOrNull(tabGroupId);
+        boolean hasCollaborationData =
+                TabShareUtils.isCollaborationIdValid(collaborationId)
+                        && mCollaborationService.getServiceStatus().isAllowedToJoin();
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.close_tab_group_menu_item,
@@ -100,7 +112,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             }
         }
         // Delete does not make sense for incognito since the tab group is not saved to sync.
-        if (isTabGroupSyncEnabled && !isIncognito && !hasCollaborationData) {
+        if (mTabGroupSyncService != null && !isIncognito && !hasCollaborationData) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.delete_tab_group_menu_item,

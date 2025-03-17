@@ -3,7 +3,7 @@ Short Name: mini_chromium
 URL: https://chromium.googlesource.com/chromium/mini_chromium/
 Version: N/A
 Revision: DEPS
-License: BSD 3-clause
+License: BSD-3-Clause
 License File: mini_chromium/LICENSE
 Security Critical: yes
 Shipped in Chromium: no

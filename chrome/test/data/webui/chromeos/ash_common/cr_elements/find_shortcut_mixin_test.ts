@@ -135,7 +135,7 @@ suite('find-shortcut', () => {
   });
 
   test('handled with modal context closed', async () => {
-    const testElement = document.createElement('find-shortcut-element')!;
+    const testElement = document.createElement('find-shortcut-element');
     const dialog = document.createElement('cr-dialog');
     document.body.appendChild(testElement);
     document.body.appendChild(dialog);

@@ -106,15 +106,11 @@ class AccountsPolicyManagerTest : public testing::Test {
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
-// All primary accounts are allowed on ChromeOS and Lacros, so this the
-// AccountsPolicyManagerTest does not clear the primary account on
-// ChromeOS.
+// All primary accounts are allowed on ChromeOS, so this
+// AccountsPolicyManagerTest does not clear the primary account on ChromeOS.
 //
 // TODO(msarda): Exclude |AccountsPolicyManager| from the ChromeOS
 // build.
-//
-// TODO(msarda): These tests are valid for secondary profiles on Lacros. Enable
-// them on Lacros.
 TEST_F(AccountsPolicyManagerTest, ClearPrimarySyncAccountWhenSigninNotAllowed) {
   GetIdentityTestEnv()->MakePrimaryAccountAvailable(
       "test@foo.com", signin::ConsentLevel::kSync);

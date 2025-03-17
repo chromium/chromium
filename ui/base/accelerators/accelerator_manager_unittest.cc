@@ -21,7 +21,7 @@ Accelerator GetAccelerator(KeyboardCode code, int mask) {
 }
 
 // Possible flags used for accelerators.
-const auto kAcceleratorModifiers = std::to_array<int>({
+constexpr auto kAcceleratorModifiers = std::to_array<int>({
     EF_SHIFT_DOWN,
     EF_CONTROL_DOWN,
     EF_ALT_DOWN,

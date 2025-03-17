@@ -153,10 +153,6 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
       window_(window),
       original_opacity_(window->layer()->GetTargetOpacity()),
       original_clip_rect_(window_->layer()->GetTargetClipRect()) {
-  raster_scale_observer_lock_.emplace(
-      (new RasterScaleLayerObserver(window_, window_->layer(), window_))
-          ->Lock());
-
   fill_mode_ = GetOverviewItemFillModeForWindow(window);
 
   std::vector<raw_ptr<aura::Window, VectorExperimental>>

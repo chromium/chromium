@@ -12,12 +12,38 @@
 
 namespace optimization_guide {
 
+class RemoteResponseHolder {
+ public:
+  RemoteResponseHolder();
+  ~RemoteResponseHolder();
+
+  OptimizationGuideModelExecutionResultCallback GetCallback();
+
+  bool GetFinalStatus() { return future_.Get(); }
+
+  std::string GetComposeOutput();
+
+  OptimizationGuideModelExecutionError::ModelExecutionError error() {
+    return result_->response.error().error();
+  }
+
+  ModelQualityLogEntry* log_entry() { return log_entry_.get(); }
+
+ private:
+  void OnResponse(OptimizationGuideModelExecutionResult result,
+                  std::unique_ptr<ModelQualityLogEntry> log_entry);
+
+  base::test::TestFuture<bool> future_;
+  std::optional<OptimizationGuideModelExecutionResult> result_;
+  std::unique_ptr<ModelQualityLogEntry> log_entry_;
+  base::WeakPtrFactory<RemoteResponseHolder> weak_ptr_factory_{this};
+};
+
 class ResponseHolder {
  public:
   ResponseHolder();
   ~ResponseHolder();
 
-  OptimizationGuideModelExecutionResultCallback GetCallback();
   OptimizationGuideModelExecutionResultStreamingCallback GetStreamingCallback();
 
   // Wait for and get the final execution status (true if completed without
@@ -36,27 +62,11 @@ class ResponseHolder {
   const std::optional<bool>& provided_by_on_device() const {
     return provided_by_on_device_;
   }
-  ModelQualityLogEntry* log_entry() { return log_entry_received_.get(); }
   proto::ModelExecutionInfo* model_execution_info() {
     return model_execution_info_received_.get();
   }
-  const auto& logged_executions() {
-    return log_entry()
-        ->log_ai_data_request()
-        ->model_execution_info()
-        .on_device_model_execution_info()
-        .execution_infos();
-  }
-
-  void ClearLogEntry() {
-    log_entry_received_.reset();
-    model_execution_info_received_.reset();
-  }
 
  private:
-  void Clear();
-  void OnResponse(OptimizationGuideModelExecutionResult result,
-                  std::unique_ptr<ModelQualityLogEntry> log_entry);
   void OnStreamingResponse(
       OptimizationGuideModelStreamingExecutionResult result);
 
@@ -64,7 +74,6 @@ class ResponseHolder {
   std::vector<std::string> partial_responses_;
   std::optional<std::string> response_received_;
   std::optional<bool> provided_by_on_device_;
-  std::unique_ptr<ModelQualityLogEntry> log_entry_received_;
   std::unique_ptr<proto::ModelExecutionInfo> model_execution_info_received_;
   std::optional<OptimizationGuideModelExecutionError::ModelExecutionError>
       response_error_;

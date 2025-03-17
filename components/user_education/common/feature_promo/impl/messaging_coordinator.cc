@@ -41,6 +41,10 @@ bool MessagingCoordinator::CanShowPromo(bool high_priority) const {
   return true;
 }
 
+bool MessagingCoordinator::IsBlockedByExternalPromo() const {
+  return !handle_ && controller_->has_current_notice();
+}
+
 void MessagingCoordinator::TransitionToState(PromoState promo_state) {
   switch (promo_state) {
     case PromoState::kNone:

@@ -375,6 +375,9 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   };
 
   // Used inline in calls to Builder::AddStep to specify step parameters.
+  //
+  // Methods intended to be used in Kombucha test bodies have rvalue versions
+  // to reduce the need for std::move().
   class COMPONENT_EXPORT(UI_BASE) StepBuilder {
    public:
     StepBuilder();
@@ -394,7 +397,8 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // Sets the context for the step; useful for setting up the initial
     // element of the sequence if you do not know the context ahead of time, or
     // to specify that a step should not use the default context.
-    StepBuilder& SetContext(StepContext context);
+    StepBuilder& SetContext(StepContext context) &;
+    StepBuilder&& SetContext(StepContext context) &&;
 
     // Sets the type of step. Required. You must set `event_type` if and only
     // if `step_type` is kCustomEvent.
@@ -417,13 +421,15 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // Indicates that the specified element must be visible at the start of the
     // step. Defaults to true for StepType::kActivated, false otherwise. Failure
     // To meet this condition will abort the sequence.
-    StepBuilder& SetMustBeVisibleAtStart(bool must_be_visible);
+    StepBuilder& SetMustBeVisibleAtStart(bool must_be_visible) &;
+    StepBuilder&& SetMustBeVisibleAtStart(bool must_be_visible) &&;
 
     // Indicates that the specified element must remain visible throughout the
     // step once it has been shown. Defaults to true for StepType::kShown, false
     // otherwise (and incompatible with StepType::kHidden). Failure to meet this
     // condition will abort the sequence.
-    StepBuilder& SetMustRemainVisible(bool must_remain_visible);
+    StepBuilder& SetMustRemainVisible(bool must_remain_visible) &;
+    StepBuilder&& SetMustRemainVisible(bool must_remain_visible) &&;
 
     // For kShown and kHidden events, if set to true, only allows a step
     // transition to happen when a "shown" or "hidden" event is received, and
@@ -442,7 +448,8 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // that is, waiting for an element to appear and then it... never does. In
     // this case, you will need an external way to terminate the sequence (a
     // timeout, user interaction, etc.)
-    StepBuilder& SetTransitionOnlyOnEvent(bool transition_only_on_event);
+    StepBuilder& SetTransitionOnlyOnEvent(bool transition_only_on_event) &;
+    StepBuilder&& SetTransitionOnlyOnEvent(bool transition_only_on_event) &&;
 
     // Sets the callback called at the start of the step.
     StepBuilder& SetStartCallback(StepStartCallback start_callback);
@@ -458,7 +465,8 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
 
     // Sets the step start mode for this step. If not set, inherits the default
     // mode from its sequence.
-    StepBuilder& SetStepStartMode(StepStartMode step_start_mode);
+    StepBuilder& SetStepStartMode(StepStartMode step_start_mode) &;
+    StepBuilder&& SetStepStartMode(StepStartMode step_start_mode) &&;
 
     // Sets the callback called at the end of the step. Guaranteed to be called
     // if the start callback is called, before the start callback of the next
@@ -471,11 +479,13 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     StepBuilder& SetEndCallback(base::OnceClosure end_callback);
 
     // Sets the description of the step.
-    StepBuilder& SetDescription(std::string_view description);
+    StepBuilder& SetDescription(std::string_view description) &;
+    StepBuilder&& SetDescription(std::string_view description) &&;
 
     // Prepends `prefix`, along with a colon and space, to this step's
     // description.
-    StepBuilder& AddDescriptionPrefix(std::string_view prefix);
+    StepBuilder& AddDescriptionPrefix(std::string_view prefix) &;
+    StepBuilder&& AddDescriptionPrefix(std::string_view prefix) &&;
 
     // Builds the step. The builder will not be valid after calling Build().
     std::unique_ptr<Step> Build();

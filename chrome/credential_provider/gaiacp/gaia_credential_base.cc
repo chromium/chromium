@@ -9,6 +9,7 @@
 
 #include <ntstatus.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -20,7 +21,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -480,7 +480,7 @@ HRESULT MakeUsernameForAccount(const base::Value::Dict& result,
 
   // Determine if the email is a consumer domain (gmail.com or googlemail.com).
   std::wstring email = GetDictString(result, kKeyEmail);
-  base::ranges::transform(email, email.begin(), ::tolower);
+  std::ranges::transform(email, email.begin(), ::tolower);
   std::wstring::size_type consumer_domain_pos = email.find(L"@gmail.com");
   if (consumer_domain_pos == std::wstring::npos)
     consumer_domain_pos = email.find(L"@googlemail.com");
@@ -804,7 +804,6 @@ bool CGaiaCredentialBase::IsCloudAssociationEnabled() {
 // static
 HRESULT CGaiaCredentialBase::OnDllRegisterServer() {
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
-
   if (!policy) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
@@ -870,60 +869,65 @@ HRESULT CGaiaCredentialBase::OnDllRegisterServer() {
 // static
 HRESULT CGaiaCredentialBase::OnDllUnregisterServer() {
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
-  if (policy) {
-    wchar_t password[kWindowsPasswordBufferLength];
+  if (!policy) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
+    return hr;
+  }
 
-    HRESULT hr = policy->RetrievePrivateData(kLsaKeyGaiaPassword, password,
-                                             std::size(password));
-    if (FAILED(hr))
-      LOGFN(ERROR) << "policy.RetrievePrivateData hr=" << putHR(hr);
+  wchar_t password[kWindowsPasswordBufferLength];
 
-    hr = policy->RemovePrivateData(kLsaKeyGaiaPassword);
-    if (FAILED(hr))
-      LOGFN(ERROR) << "policy.RemovePrivateData hr=" << putHR(hr);
+  HRESULT hr = policy->RetrievePrivateData(kLsaKeyGaiaPassword, password,
+                                           std::size(password));
+  if (FAILED(hr)) {
+    LOGFN(ERROR) << "policy.RetrievePrivateData hr=" << putHR(hr);
+  }
 
-    OSUserManager* manager = OSUserManager::Get();
-    PSID sid;
+  hr = policy->RemovePrivateData(kLsaKeyGaiaPassword);
+  if (FAILED(hr)) {
+    LOGFN(ERROR) << "policy.RemovePrivateData hr=" << putHR(hr);
+  }
 
-    wchar_t gaia_username[kWindowsUsernameBufferLength];
-    hr = policy->RetrievePrivateData(kLsaKeyGaiaUsername, gaia_username,
-                                     std::size(gaia_username));
+  OSUserManager* manager = OSUserManager::Get();
+  PSID sid;
 
-    if (SUCCEEDED(hr)) {
-      hr = policy->RemovePrivateData(kLsaKeyGaiaUsername);
-      if (FAILED(hr)) {
-        LOGFN(ERROR) << "RemovePrivateData GaiaUsername hr=" << putHR(hr);
-      }
-      hr = policy->RemovePrivateData(kLsaKeyGaiaSid);
-      if (FAILED(hr)) {
-        LOGFN(ERROR) << "RemovePrivateData kLsaKeyGaiaSid hr=" << putHR(hr);
-      }
+  wchar_t gaia_username[kWindowsUsernameBufferLength];
+  hr = policy->RetrievePrivateData(kLsaKeyGaiaUsername, gaia_username,
+                                   std::size(gaia_username));
 
-      std::wstring local_domain = OSUserManager::GetLocalDomain();
-
-      hr = manager->GetUserSID(local_domain.c_str(), gaia_username, &sid);
-      if (FAILED(hr)) {
-        LOGFN(ERROR) << "manager.GetUserSID hr=" << putHR(hr);
-        sid = nullptr;
-      }
-
-      hr = manager->RemoveUser(gaia_username, password);
-      if (FAILED(hr))
-        LOGFN(ERROR) << "manager->RemoveUser hr=" << putHR(hr);
-
-      // Remove the account from LSA after the OS account is deleted.
-      if (sid != nullptr) {
-        hr = policy->RemoveAccount(sid);
-        ::LocalFree(sid);
-        if (FAILED(hr))
-          LOGFN(ERROR) << "policy.RemoveAccount hr=" << putHR(hr);
-      }
-    } else {
-      LOGFN(ERROR) << "Get gaia username failed hr=" << putHR(hr);
+  if (SUCCEEDED(hr)) {
+    hr = policy->RemovePrivateData(kLsaKeyGaiaUsername);
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "RemovePrivateData GaiaUsername hr=" << putHR(hr);
+    }
+    hr = policy->RemovePrivateData(kLsaKeyGaiaSid);
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "RemovePrivateData kLsaKeyGaiaSid hr=" << putHR(hr);
     }
 
+    std::wstring local_domain = OSUserManager::GetLocalDomain();
+
+    hr = manager->GetUserSID(local_domain.c_str(), gaia_username, &sid);
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "manager.GetUserSID hr=" << putHR(hr);
+      sid = nullptr;
+    }
+
+    hr = manager->RemoveUser(gaia_username, password);
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "manager->RemoveUser hr=" << putHR(hr);
+    }
+
+    // Remove the account from LSA after the OS account is deleted.
+    if (sid != nullptr) {
+      hr = policy->RemoveAccount(sid);
+      ::LocalFree(sid);
+      if (FAILED(hr)) {
+        LOGFN(ERROR) << "policy.RemoveAccount hr=" << putHR(hr);
+      }
+    }
   } else {
-    LOGFN(ERROR) << "ScopedLsaPolicy::Create failed";
+    LOGFN(ERROR) << "Get gaia username failed hr=" << putHR(hr);
   }
 
   return S_OK;
@@ -1691,7 +1695,8 @@ HRESULT CGaiaCredentialBase::CreateGaiaLogonToken(
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
   if (!policy) {
-    LOGFN(ERROR) << "LsaOpenPolicy failed";
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
     return E_UNEXPECTED;
   }
 

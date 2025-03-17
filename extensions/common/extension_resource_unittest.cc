@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/common/extension_resource.h"
+
 #include <stddef.h>
+
+#include <algorithm>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_paths.h"
-#include "extensions/common/extension_resource.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -30,7 +32,7 @@ TEST(ExtensionResourceTest, CreateEmptyResource) {
 const base::FilePath::StringType ToLower(
     const base::FilePath::StringType& in_str) {
   base::FilePath::StringType str(in_str);
-  base::ranges::transform(str, str.begin(), tolower);
+  std::ranges::transform(str, str.begin(), tolower);
   return str;
 }
 

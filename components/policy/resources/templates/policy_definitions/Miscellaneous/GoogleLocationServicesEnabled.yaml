@@ -11,6 +11,7 @@ supported_on:
 - chrome_os:124-
 features:
   dynamic_refresh: true
+  internal_only: true
   per_profile: false
 schema:
   type: integer

@@ -1,9 +1,22 @@
 
 # cargo-vet imports lock
 
+[[publisher.hashbrown]]
+version = "0.15.2"
+when = "2024-11-25"
+user-id = 2915
+user-login = "Amanieu"
+user-name = "Amanieu d'Antras"
+
 [[publisher.libc]]
-version = "0.2.168"
-when = "2024-12-09"
+version = "0.2.171"
+when = "2025-03-11"
+user-id = 55123
+user-login = "rust-lang-owner"
+
+[[publisher.libm]]
+version = "0.2.11"
+when = "2024-10-28"
 user-id = 55123
 user-login = "rust-lang-owner"
 
@@ -134,6 +147,17 @@ version = "1.13.1"
 who = "George Burgess IV <gbiv@google.com>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 version = "1.4.0"
+
+[[audits.chromeos.audits.equivalent]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+version = "1.0.1"
+
+[[audits.chromeos.audits.equivalent]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "ub-risk-0"
+version = "1.0.1"
+notes = "`rg -i unsafe` resulted in zero hits for this package."
 
 [[audits.chromeos.audits.getrandom]]
 who = "Android Legacy"
@@ -277,3 +301,27 @@ who = [
 criteria = ["does-not-implement-crypto", "ub-risk-2"]
 version = "1.13.1"
 notes = "Reviewed in CL 561111794"
+
+[[audits.google.audits.strck]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "ub-risk-1"
+version = "1.0.0"
+notes = "Reviewed in CL 685732460"
+
+[[audits.google.audits.yoke]]
+who = "Luca Versari <veluca@google.com>"
+criteria = ["does-not-implement-crypto", "ub-risk-2"]
+version = "0.7.4"
+notes = """
+Reviewed in https://github.com/unicode-org/icu4x/pull/5046
+Review performed as PR: https://github.com/unicode-org/icu4x/pull/5046. Minor docs improvements, plus known currently-unsolvable issue around potential future noalias UB (https://github.com/unicode-org/icu4x/issues/2095)
+"""
+
+[[audits.google.audits.yoke]]
+who = "Luca Versari <veluca@google.com>"
+criteria = ["does-not-implement-crypto", "ub-risk-2"]
+delta = "0.7.4 -> 0.7.5"
+notes = """
+Reviewed in CL 700087030
+Patches from last review all applied
+"""

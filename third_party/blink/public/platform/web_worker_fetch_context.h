@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,7 +21,6 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
 
 namespace base {
@@ -95,7 +95,7 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
   virtual void FinalizeRequest(WebURLRequest&) = 0;
 
   // Creates URLLoaderThrottles for the `request`.
-  virtual WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+  virtual std::vector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       const network::ResourceRequest& request) = 0;
 
   // Returns whether a controller service worker exists and if it has fetch
@@ -143,10 +143,6 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
 
   // Returns the current list of user preferred languages.
   virtual blink::WebString GetAcceptLanguages() const = 0;
-
-  // This flag is set to disallow all network accesses in the context. Used for
-  // offline capability detection in service workers.
-  virtual void SetIsOfflineMode(bool is_offline_mode) = 0;
 
   // Creates a notifier used to notify loading stats for workers.
   virtual std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>

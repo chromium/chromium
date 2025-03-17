@@ -8,7 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#import "components/autofill/core/browser/data_model/autofill_profile.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_consumer.h"
@@ -46,7 +46,7 @@ std::vector<AutofillProfile> FetchAddresses(
   // Make copies of the received `fetched_addresses` to not make any assumption
   // over their lifetime and make sure that the AutofillProfile objects stay
   // valid throughout the lifetime of this class.
-  base::ranges::transform(
+  std::ranges::transform(
       fetched_addresses, std::back_inserter(addresses),
       [](const AutofillProfile* address) { return *address; });
 

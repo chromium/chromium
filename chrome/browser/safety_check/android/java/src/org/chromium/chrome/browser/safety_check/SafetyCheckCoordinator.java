@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
@@ -48,7 +47,6 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
      *     interface.
      * @param bridge An instances of {@link SafetyCheckBridge} to access C++ APIs.
      * @param signinLauncher An instance implementing {@link SigninAndHistorySyncActivityLauncher}.
-     * @param syncLauncher An instance implementing {@link SyncConsentActivityLauncher}.
      * @param modalDialogManagerSupplier An supplier for the {@link ModalDialogManager}.
      * @param passwordStoreBridge Provides access to stored passwords.
      * @param passwordManagerHelper An instance of {@link PasswordManagerHelper} that provides
@@ -62,7 +60,6 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             SafetyCheckUpdatesDelegate updatesClient,
             SafetyCheckBridge bridge,
             SigninAndHistorySyncActivityLauncher signinLauncher,
-            SyncConsentActivityLauncher syncLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService,
             PrefService prefService,
@@ -75,7 +72,6 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                 updatesClient,
                 bridge,
                 signinLauncher,
-                syncLauncher,
                 modalDialogManagerSupplier,
                 syncService,
                 prefService,
@@ -90,7 +86,6 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             SafetyCheckUpdatesDelegate updatesClient,
             SafetyCheckBridge bridge,
             SigninAndHistorySyncActivityLauncher signinLauncher,
-            SyncConsentActivityLauncher syncLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService,
             PrefService prefService,
@@ -139,7 +134,6 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                                                     mUpdatesClient,
                                                     bridge,
                                                     signinLauncher,
-                                                    syncLauncher,
                                                     syncService,
                                                     prefService,
                                                     passwordStoreBridge,

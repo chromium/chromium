@@ -5,6 +5,7 @@
 #include "content/browser/devtools/worker_devtools_manager.h"
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"

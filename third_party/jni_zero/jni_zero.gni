@@ -375,6 +375,10 @@ template("generate_jni_impl") {
         if (defined(invoker.namespace)) {
           args += [ "--namespace=${invoker.namespace}" ]
         }
+        if (defined(invoker.enable_definition_macros) &&
+            invoker.enable_definition_macros) {
+          args += [ "--enable-definition-macros" ]
+        }
 
         # Cronet needs to rename jni_zero classes
         if (defined(is_cronet_build) && is_cronet_build) {
@@ -447,6 +451,16 @@ template("generate_jni_impl") {
           ":$_jni_zero_action_target_name",
           "//third_party/jni_zero:gendeps_java",
         ]
+        if (defined(invoker.public_deps)) {
+          public_deps = []
+          foreach(_dep, invoker.public_deps) {
+            public_deps += [ "${_dep}_java" ]
+          }
+        }
+      }
+    } else {
+      java_group("${_final_target_name}_java") {
+        # Allows target to appear as a public_dep of another generate_jni().
       }
     }
 

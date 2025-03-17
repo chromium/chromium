@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 
 @protocol TabResumptionCommands;
+@class ShopCardData;
 
 namespace base {
 class Time;
@@ -64,6 +65,10 @@ enum TabResumptionItemType {
 // An ID used to collect metrics associated with the triggering visit for model
 // training purposes.
 @property(nonatomic, assign) segmentation_platform::TrainingRequestId requestID;
+
+// ShopCard related information to render the ShopCard variants of
+// tab-resumption.
+@property(nonatomic, strong) ShopCardData* shopCardData;
 
 // The Item's designated initializer.
 - (instancetype)initWithItemType:(TabResumptionItemType)itemType

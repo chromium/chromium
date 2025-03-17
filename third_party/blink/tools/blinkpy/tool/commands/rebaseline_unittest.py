@@ -141,7 +141,7 @@ class BaseTestCase(unittest.TestCase):
                     'args': ['--disable-site-isolation-trials'],
                 },
             ]))
-        for wpt_dir in self.mac_port.WPT_DIRS:
+        for wpt_dir in self.mac_port.wpt_dirs():
             self._write(self.tool.filesystem.join(wpt_dir, 'MANIFEST.json'),
                         json.dumps({}))
 

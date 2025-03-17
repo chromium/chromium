@@ -81,14 +81,29 @@ SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs) {
   }
 }
 
+void EnableSafeBrowsingSettingSetLocallyPref(PrefService* prefs) {
+  // Explicitly set the kSafeBrowsingSyncedEnhancedProtectionSetLocally to true
+  // after the user manually sets the safe browsing state using the settings UI.
+  // Setting this value in this API makes sure we do not show multiple Synced
+  // Enhanced Protection notifications or show it on the device where the user
+  // modified the setting.
+  if (base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting)) {
+    prefs->SetBoolean(prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally,
+                      true);
+    // Update the pref value whenever the Safe Browsing setting is changed.
+    prefs->SetTime(prefs::kSafeBrowsingSyncedEnhancedProtectionUpdateTimestamp,
+                   base::Time());
+  }
+}
+
 void SetSafeBrowsingState(PrefService* prefs,
                           SafeBrowsingState state,
-                          bool is_esb_enabled_in_sync) {
+                          bool is_esb_enabled_by_account_integration) {
   if (state == SafeBrowsingState::ENHANCED_PROTECTION) {
     SetEnhancedProtectionPref(prefs, true);
     SetStandardProtectionPref(prefs, true);
     prefs->SetBoolean(prefs::kEnhancedProtectionEnabledViaTailoredSecurity,
-                      is_esb_enabled_in_sync);
+                      is_esb_enabled_by_account_integration);
   } else if (state == SafeBrowsingState::STANDARD_PROTECTION) {
     SetEnhancedProtectionPref(prefs, false);
     SetStandardProtectionPref(prefs, true);
@@ -213,6 +228,12 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   }
   registry->RegisterBooleanPref(prefs::kSafeBrowsingProceedAnywayDisabled,
                                 false);
+  registry->RegisterIntegerPref(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionRetryState,
+      TailoredSecurityRetryState::UNSET);
+  registry->RegisterTimePref(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionNextRetryTimestamp,
+      base::Time());
   registry->RegisterDictionaryPref(prefs::kSafeBrowsingIncidentsSent);
   registry->RegisterDictionaryPref(
       prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
@@ -238,6 +259,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kAccountTailoredSecurityShownNotification, false);
   registry->RegisterBooleanPref(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
+  registry->RegisterBooleanPref(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally, false);
+  registry->RegisterTimePref(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionUpdateTimestamp,
+      base::Time());
   registry->RegisterTimePref(prefs::kTailoredSecuritySyncFlowLastRunTime,
                              base::Time());
   registry->RegisterTimePref(prefs::kTailoredSecurityNextSyncFlowTimestamp,
@@ -260,10 +286,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingSurveysEnabled, true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingDeepScanningEnabled, true);
-  registry->RegisterBooleanPref(
-      prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen, false);
-  registry->RegisterBooleanPref(prefs::kSafeBrowsingAutomaticDeepScanPerformed,
-                                false);
   registry->RegisterBooleanPref(
       prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated, false);
   registry->RegisterDictionaryPref(prefs::kExternalAppRedirectTimestamps);

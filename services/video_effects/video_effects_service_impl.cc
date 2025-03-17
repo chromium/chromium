@@ -32,12 +32,16 @@ VideoEffectsServiceImpl::VideoEffectsServiceImpl(
 
 VideoEffectsServiceImpl::~VideoEffectsServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (gpu_channel_host_provider_) {
+    gpu_channel_host_provider_->RemoveObserver(*this);
+  }
 }
 
 void VideoEffectsServiceImpl::CreateEffectsProcessor(
     const std::string& device_id,
     mojo::PendingRemote<viz::mojom::Gpu> gpu_remote,
-    mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
+    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+        manager_remote,
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -50,6 +54,7 @@ void VideoEffectsServiceImpl::CreateEffectsProcessor(
   if (!gpu_channel_host_provider_) {
     auto gpu = viz::Gpu::Create(std::move(gpu_remote), io_task_runner_);
     gpu_channel_host_provider_ = new VizGpuChannelHostProvider(std::move(gpu));
+    gpu_channel_host_provider_->AddObserver(*this);
   }
 
   if (device_) {
@@ -75,6 +80,21 @@ void VideoEffectsServiceImpl::CreateEffectsProcessor(
   // pending processors will be created when it is ready.
 }
 
+void VideoEffectsServiceImpl::OnPermanentError(
+    scoped_refptr<GpuChannelHostProvider>) {
+  LOG(WARNING) << "GPU context lost too many times.";
+  Cleanup();
+  // NOTE: We could LOG(FATAL) here as the process is now unusable.  Need to
+  // check that the VideoCaptureDeviceClient handles mojo disconnects correctly
+  // and cleans up any related state.
+}
+
+void VideoEffectsServiceImpl::OnContextLost(
+    scoped_refptr<GpuChannelHostProvider>) {
+  // Nothing to do - the video effects processors also get notified about
+  // context losses - they will reinitialize their GPU state themselves.
+}
+
 void VideoEffectsServiceImpl::CreateWebGpuDeviceAndEffectsProcessors() {
   CHECK(!webgpu_device_);
   CHECK(gpu_channel_host_provider_);
@@ -87,6 +107,7 @@ void VideoEffectsServiceImpl::CreateWebGpuDeviceAndEffectsProcessors() {
   // `WebGpuDevice`.
   auto device_lost_cb_on_current_sequence =
       base::BindPostTaskToCurrentDefault(std::move(device_lost_cb));
+
   webgpu_device_ = std::make_unique<WebGpuDevice>(
       gpu_channel_host_provider_->GetWebGpuContextProvider(),
       std::move(device_lost_cb_on_current_sequence));
@@ -115,13 +136,9 @@ void VideoEffectsServiceImpl::OnDeviceError(WebGpuDevice::Error error,
                                             std::string_view msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!device_);
-  LOG(ERROR) << "Unable to create wgpu::Device; error = "
-             << base::to_underlying(error) << ": " << msg;
-  // Abandon ship!
-  pending_processors_.clear();
-  webgpu_device_.reset();
-  // NOTE: Call CreateWgpuDeviceAndEffectsProcessors() again if we believe this
-  // was a transient failure?
+  LOG(WARNING) << "Unable to create wgpu::Device; error = "
+               << base::to_underlying(error) << ": " << msg;
+  Cleanup();
 }
 
 void VideoEffectsServiceImpl::OnDeviceLost(wgpu::DeviceLostReason reason,
@@ -129,15 +146,17 @@ void VideoEffectsServiceImpl::OnDeviceLost(wgpu::DeviceLostReason reason,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(ERROR) << "wgpu::Device was lost; reason = "
              << base::to_underlying(reason) << ": " << msg;
+  Cleanup();
+}
 
+void VideoEffectsServiceImpl::Cleanup() {
   // Abandon all hope, ye who enter here.
   pending_processors_.clear();
   processors_.clear();
   device_ = nullptr;
   webgpu_device_.reset();
-  // NOTE: Possibly attempt to revive current processors with a new
-  // wgpu::Device, either by having them support reinitialization with a new
-  // device, or replacing it with a new processor and re-binding its mojo pipes.
+  gpu_channel_host_provider_->RemoveObserver(*this);
+  gpu_channel_host_provider_ = nullptr;
 }
 
 void VideoEffectsServiceImpl::FinishCreatingEffectsProcessors() {
@@ -152,7 +171,8 @@ void VideoEffectsServiceImpl::FinishCreatingEffectsProcessors() {
 
 void VideoEffectsServiceImpl::FinishCreatingEffectsProcessor(
     const std::string& device_id,
-    mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
+    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+        manager_remote,
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver) {
   // Called in-sequence.
   if (!device_) {
@@ -173,26 +193,38 @@ void VideoEffectsServiceImpl::FinishCreatingEffectsProcessor(
     return;
   }
 
-  auto [_, inserted] = processors_.insert(
+  auto [processor_it, inserted] = processors_.insert(
       std::make_pair(device_id, std::move(effects_processor)));
   CHECK(inserted);
+
+  // If we already have the model file, we need to inform the newly created
+  // processor about it so it could finish its initialization:
+  if (model_) {
+    processor_it->second->SetBackgroundSegmentationModel(model_->bytes());
+  }
 }
 
 void VideoEffectsServiceImpl::SetBackgroundSegmentationModel(
     base::File model_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(bialpio): make a copy of the model blob to serve it every time new
-  // processor gets created.
-  base::MemoryMappedFile memory_mapped_model_file;
-  if (!memory_mapped_model_file.Initialize(std::move(model_file))) {
-    return;
-  }
+  // If we have received an invalid model file, we should stop using the model
+  // we previously got as this is how the caller informs us that the old model
+  // is not supposed to be used anymore but there is no new model to use.
+
+  // Throw out old model and attempt to initialize the memory mapping with the
+  // new one:
+  model_ = std::make_unique<base::MemoryMappedFile>();
+  // It doesn't matter if the initialization of the memory mapping succeeded
+  // or not. In case of a failure, the memory mapping will return empty span
+  // in `bytes()`, which we then will propagate to the lower layer that should
+  // handle it appropriately.
+  std::ignore = model_->Initialize(std::move(model_file));
 
   // Propagate the model to all already existing processors:
   for (auto& device_id_and_processor : processors_) {
     device_id_and_processor.second->SetBackgroundSegmentationModel(
-        memory_mapped_model_file.bytes());
+        model_->bytes());
   }
 }
 

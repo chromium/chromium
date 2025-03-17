@@ -234,6 +234,8 @@ class Dispatcher : public content::RenderThreadObserver,
       mojom::Renderer::SuspendExtensionCallback callback) override;
   void CancelSuspendExtension(const ExtensionId& extension_id) override;
   void SetDeveloperMode(bool current_developer_mode) override;
+  void SetUserScriptsAllowed(const ExtensionId& extension_id,
+                             bool allowed) override;
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session_type) override;
   void SetSystemFont(const std::string& font_family,

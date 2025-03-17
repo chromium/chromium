@@ -45,23 +45,23 @@ public class CalculatorAnswerTextLayoutUnitTest {
     public void testCalculatorAnswerAppearance() {
         // Layout text appearance is different based on whether the instance holds the answer.
         CalculatorAnswerTextLayout answerLayout =
-                new CalculatorAnswerTextLayout(mContext, "answer", /* isAnswer= */ true);
+                new CalculatorAnswerTextLayout(mContext, "answer", /* isAnswerLine= */ true);
         CalculatorAnswerTextLayout displayTextLayout =
-                new CalculatorAnswerTextLayout(mContext, "text", /* isAnswer= */ false);
+                new CalculatorAnswerTextLayout(mContext, "text", /* isAnswerLine= */ false);
 
-        Assert.assertEquals(answerLayout.getText().toString(), "answer");
-        Assert.assertEquals(displayTextLayout.getText().toString(), "text");
+        Assert.assertEquals("answer", answerLayout.getText().toString());
+        Assert.assertEquals("text", displayTextLayout.getText().toString());
 
         SpannableStringBuilder answerLayoutText = answerLayout.getText();
         TextAppearanceSpan[] answerTextAppearanceSpans =
                 answerLayoutText.getSpans(0, answerLayoutText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(answerTextAppearanceSpans.length, 1);
+        Assert.assertEquals(1, answerTextAppearanceSpans.length);
         Assert.assertEquals(answerTextAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
 
         SpannableStringBuilder displayLayoutText = displayTextLayout.getText();
         TextAppearanceSpan[] displayTextAppearanceSpans =
                 displayLayoutText.getSpans(0, displayLayoutText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(displayTextAppearanceSpans.length, 1);
+        Assert.assertEquals(1, displayTextAppearanceSpans.length);
         Assert.assertEquals(displayTextAppearanceSpans[0].getTextSize(), mMediumText.getTextSize());
     }
 }

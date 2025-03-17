@@ -15,12 +15,17 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "device/base/features.h"
 #include "device/bluetooth/android/wrappers.h"
+#include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 #include "device/bluetooth/test/bluetooth_scanner_callback.h"
 #include "device/bluetooth/test/bluetooth_test_android.h"
+#include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -337,6 +342,60 @@ TEST_F(BluetoothAdapterAndroidTest, ChromeBluetoothLeScannerFailToResume) {
   EXPECT_FALSE(scanner_test_util.ResumeScan());
   EXPECT_FALSE(scanner_test_util.IsScanning());
   EXPECT_EQ(bluetooth_scanner_callback_->GetScanFinishCount(), 1);
+}
+
+TEST_F(BluetoothAdapterAndroidTest, GetPairedDevices) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  SimulatePairedClassicDevice(1);
+  SimulatePairedClassicDevice(2);
+
+  adapter_->GetDevices();
+
+  BluetoothAdapter::DeviceList list = adapter_->GetDevices();
+  EXPECT_TRUE(adapter_->GetDevice(kTestDeviceAddress1));
+  EXPECT_TRUE(adapter_->GetDevice(kTestDeviceAddress2));
+}
+
+TEST_F(BluetoothAdapterAndroidTest, ExposeUuidFromPairedDevices) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  adapter_->GetDevices();
+
+  SimulatePairedClassicDevice(1);
+  BluetoothDevice* device = adapter_->GetDevice(kTestDeviceAddress1);
+  BluetoothDevice::UUIDSet uuids = device->GetUUIDs();
+  ASSERT_EQ(uuids.size(), 1u);
+  EXPECT_EQ(uuids.begin()->canonical_value(),
+            "00001101-0000-1000-8000-00805f9b34fb");
+
+  SimulatePairedClassicDevice(2);
+  device = adapter_->GetDevice(kTestDeviceAddress2);
+  uuids = device->GetUUIDs();
+  ASSERT_EQ(uuids.size(), 1u);
+  EXPECT_EQ(uuids.begin()->canonical_value(),
+            "00001101-0000-1000-8000-00805f9b34fb");
+}
+
+TEST_F(BluetoothAdapterAndroidTest, ScanFailsWithoutLeSupport) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  SetEnabledDeviceTransport(BLUETOOTH_TRANSPORT_CLASSIC);
+
+  base::RunLoop loop;
+  adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(), base::DoNothing(),
+      base::BindLambdaForTesting([&]() { loop.Quit(); }));
+  loop.Run();
 }
 
 }  // namespace device

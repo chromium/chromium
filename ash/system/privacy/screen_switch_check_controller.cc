@@ -24,7 +24,7 @@ class CancelCastingDialog : public views::DialogDelegateView {
  public:
   explicit CancelCastingDialog(base::OnceCallback<void(bool)> callback)
       : callback_(std::move(callback)) {
-    AddChildView(new views::MessageBoxView(
+    AddChildViewRaw(new views::MessageBoxView(
         l10n_util::GetStringUTF16(IDS_DESKTOP_CASTING_ACTIVE_MESSAGE)));
     SetLayoutManager(std::make_unique<views::FillLayout>());
     SetTitle(l10n_util::GetStringUTF16(IDS_DESKTOP_CASTING_ACTIVE_TITLE));

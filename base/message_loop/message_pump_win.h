@@ -5,8 +5,6 @@
 #ifndef BASE_MESSAGE_LOOP_MESSAGE_PUMP_WIN_H_
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_WIN_H_
 
-#include <windows.h>
-
 #include <atomic>
 #include <memory>
 #include <optional>
@@ -22,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/windows_types.h"
 
 namespace base {
 
@@ -219,9 +218,35 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
 //
 class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
  public:
-  struct BASE_EXPORT IOContext {
+  class BASE_EXPORT IOContext {
+   public:
     IOContext();
-    OVERLAPPED overlapped;
+    ~IOContext();
+
+    OVERLAPPED* GetOverlapped();
+
+   private:
+    // Hack: This header needs to be pulled in by files that should not
+    // `#include <windows.h>`, yet wants to store an `OVERLAPPED` inline.
+    // We can't simply define `OVERLAPPED` ourselves, or the compiler will
+    // complain about type redefinitions in files that _do_ see the real
+    // definition. Instead, define an identical struct, but use it only to
+    // align/size storage that we will construct a real `OVERLAPPED` in in the
+    // constructor.
+    struct Sizer {
+      ULONG_PTR Internal;
+      ULONG_PTR InternalHigh;
+      union {
+        struct {
+          DWORD Offset;
+          DWORD OffsetHigh;
+        } DUMMYSTRUCTNAME;
+        PVOID Pointer;
+      } DUMMYUNIONNAME;
+      HANDLE hEvent;
+    };
+
+    alignas(Sizer) unsigned char storage_[sizeof(Sizer)];
   };
 
   // Clients interested in receiving OS notifications when asynchronous IO

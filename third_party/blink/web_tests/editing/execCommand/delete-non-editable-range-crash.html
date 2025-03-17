@@ -1,38 +1,27 @@
 <!DOCTYPE html>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
-<script src="../assert_selection.js"></script>
+<div contenteditable id="start">
+  <span contenteditable="false">
+    <span contenteditable>
+      <span>foo</span>
+      <ol>bar</ol>
+    </span>
+    <ol>bar</ol>
+  </span>
+  <ol id="end">bar</ol>
+</div>
 <script>
-selection_test(
-    [
-      '<div contenteditable="true">',
-        '^<span contenteditable="false">',
-          '<span contenteditable="true">',
-            '<span>foo</span>',
-            '<ol>bar</ol>',
-          '</span>',
-          '<ol>bar</ol>',
-        '</span>',
-        '<ol>bar|</ol>',
-      '</div>',
-    ],
-    selection => {
-      selection.document.designMode = 'on';
-      selection.document.execCommand('indent');
-    },
-    // Note: This is a crash test. The output HTML only reflects the current
-    // behavior, which may be incorrect due to the unusual input HTML.
-    [
-      '<div contenteditable="true">',
-        '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
-          '<span>^foo<br></span>',
-          'bar<br>barbar',
-        '</blockquote>',
-        '<span contenteditable="false">|',
-          '<span contenteditable="true">',
-          '<ol></ol>',
-        '</span><ol>bar</ol></span>',
-      '</div>'
-    ],
-  'The test passes if it does not crash.');
+test(() => {
+  document.designMode = 'on';
+  const selection = window.getSelection();
+  const start = document.getElementById('start');
+  const end = document.getElementById('end');
+  selection.collapse(start, 0);
+  selection.extend(end.firstChild, 3);
+  // Note: This is a crash test. It only reflects the current behavior,
+  // which may be incorrect due to the unusual input HTML. Therefore
+  // `selection_test` is not currently applicable to verify.
+  document.execCommand('indent');
+}, 'The test passes if it does not crash');
 </script>

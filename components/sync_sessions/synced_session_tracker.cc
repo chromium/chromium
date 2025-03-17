@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -505,8 +504,8 @@ void SyncedSessionTracker::PutTabInWindow(const std::string& session_tag,
     for (auto& [existing_window_id, existing_window] :
          GetSession(session_tag)->windows) {
       auto existing_tab_iter =
-          base::ranges::find(existing_window->wrapped_window.tabs, tab_ptr,
-                             &std::unique_ptr<sessions::SessionTab>::get);
+          std::ranges::find(existing_window->wrapped_window.tabs, tab_ptr,
+                            &std::unique_ptr<sessions::SessionTab>::get);
       if (existing_tab_iter != existing_window->wrapped_window.tabs.end()) {
         tab = std::move(*existing_tab_iter);
         existing_window->wrapped_window.tabs.erase(existing_tab_iter);
@@ -672,8 +671,8 @@ void SyncedSessionTracker::ReassociateLocalTab(int tab_node_id,
              session->synced_session.windows) {
           auto& existing_window_tabs = existing_window->wrapped_window.tabs;
           auto tab_iter =
-              base::ranges::find(existing_window_tabs, new_tab_ptr,
-                                 &std::unique_ptr<sessions::SessionTab>::get);
+              std::ranges::find(existing_window_tabs, new_tab_ptr,
+                                &std::unique_ptr<sessions::SessionTab>::get);
           if (tab_iter != existing_window_tabs.end()) {
             existing_window_tabs.erase(tab_iter);
             break;

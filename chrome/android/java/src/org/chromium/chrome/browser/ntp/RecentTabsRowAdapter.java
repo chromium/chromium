@@ -39,11 +39,9 @@ import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -65,21 +63,17 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     @IntDef({
         ChildType.NONE,
         ChildType.DEFAULT_CONTENT,
-        ChildType.PERSONALIZED_SIGNIN_PROMO,
-        ChildType.PERSONALIZED_SYNC_PROMO,
-        ChildType.SYNC_PROMO
+        ChildType.SIGNIN_PROMO,
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface ChildType {
         // Values should be enumerated from 0 and can't have gaps.
         int NONE = 0;
         int DEFAULT_CONTENT = 1;
-        int PERSONALIZED_SIGNIN_PROMO = 2;
-        int PERSONALIZED_SYNC_PROMO = 3;
-        int SYNC_PROMO = 4;
+        int SIGNIN_PROMO = 2;
 
         /** Number of entries. */
-        int NUM_ENTRIES = 5;
+        int NUM_ENTRIES = 3;
     }
 
     @IntDef({GroupType.CONTENT, GroupType.VISIBLE_SEPARATOR, GroupType.INVISIBLE_SEPARATOR})
@@ -190,7 +184,6 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 viewHolder.textView = childView.findViewById(R.id.title_row);
                 viewHolder.domainView = childView.findViewById(R.id.domain_row);
                 viewHolder.imageView = childView.findViewById(R.id.recent_tabs_favicon);
-                viewHolder.imageView.setBackgroundResource(R.drawable.list_item_icon_modern_bg);
                 viewHolder.itemLayout = childView.findViewById(R.id.recent_tabs_list_item_layout);
                 childView.setTag(viewHolder);
             }
@@ -457,20 +450,11 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     }
 
     /** A group containing the personalized sync promo. */
-    class PersonalizedSyncPromoGroup extends PromoGroup {
-        private final @ChildType int mChildType;
-
-        PersonalizedSyncPromoGroup(@ChildType int childType) {
-            assert childType == ChildType.PERSONALIZED_SIGNIN_PROMO
-                            || childType == ChildType.PERSONALIZED_SYNC_PROMO
-                    : "Unsupported child type:" + childType;
-            mChildType = childType;
-        }
-
+    class PersonalizedSigninPromoGroup extends PromoGroup {
         @Override
         @ChildType
         int getChildType() {
-            return mChildType;
+            return ChildType.SIGNIN_PROMO;
         }
 
         @Override
@@ -491,34 +475,13 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     class SigninPromoGroup extends PromoGroup {
         @Override
         public @ChildType int getChildType() {
-            return ChildType.PERSONALIZED_SIGNIN_PROMO;
+            return ChildType.SIGNIN_PROMO;
         }
 
         @Override
         View getChildView(
                 int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
             return mRecentTabsManager.getSigninPromoView(parent);
-        }
-    }
-
-    /** A group containing the sync promo. */
-    class SyncPromoGroup extends PromoGroup {
-        @Override
-        public @ChildType int getChildType() {
-            return ChildType.SYNC_PROMO;
-        }
-
-        @Override
-        View getChildView(
-                int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView =
-                        LegacySyncPromoView.create(
-                                parent,
-                                mRecentTabsManager.getProfile(),
-                                SigninAccessPoint.RECENT_TABS);
-            }
-            return convertView;
         }
     }
 
@@ -1069,31 +1032,18 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             addGroup(new ForeignSessionGroup(session));
         }
 
-        switch (mRecentTabsManager.getPromoState()) {
-            case SyncPromoState.NO_PROMO:
-                boolean recentlyClosedGroupIsOnlyHeader =
-                        mRecentlyClosedTabsGroup.getChildrenCount() == 1;
-                if (ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        && recentlyClosedGroupIsOnlyHeader) {
-                    addGroup(new EmptyStatePromoGroup());
-                }
-                break;
-            case SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE:
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
-                    addGroup(new SigninPromoGroup());
-                } else {
-                    addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SIGNIN_PROMO));
-                }
-                break;
-            case SyncPromoState.PROMO_FOR_SIGNED_IN_STATE:
-                addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SYNC_PROMO));
-                break;
-            case SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE:
-                addGroup(new SyncPromoGroup());
-                break;
-            default:
-                assert false : "Unexpected value for promo type!";
+        if (mRecentTabsManager.shouldShowPromo()) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+                addGroup(new SigninPromoGroup());
+            } else {
+                addGroup(new PersonalizedSigninPromoGroup());
+            }
+        } else {
+            boolean recentlyClosedGroupIsOnlyHeader =
+                    mRecentlyClosedTabsGroup.getChildrenCount() == 1;
+            if (recentlyClosedGroupIsOnlyHeader) {
+                addGroup(new EmptyStatePromoGroup());
+            }
         }
 
         // Add separator line after the recently closed tabs group.

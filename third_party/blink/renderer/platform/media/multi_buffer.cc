@@ -7,14 +7,25 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/functional/bind.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+// Forces SuggestProviderState() to only suggest deferring when range requests
+// aren't supported. Will cause us to buffer up to preload then release the
+// loader -- creating a new one to refill beyond the preload amount. Increases
+// the number of network connections used during loading, but may prevent hangs.
+BASE_FEATURE(kMultiBufferNeverDefer,
+             "MultiBufferNeverDefer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Prune 80 blocks per 30 seconds.
 // This means a full cache will go away in ~5 minutes.
@@ -115,8 +126,10 @@ bool MultiBuffer::GlobalLRU::Pruneable() const {
 
 void MultiBuffer::GlobalLRU::SchedulePrune() {
   if (Pruneable() && !background_pruning_pending_) {
-    task_runner_->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&MultiBuffer::GlobalLRU::PruneTask, this),
+    PostDelayedCrossThreadTask(
+        *task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&MultiBuffer::GlobalLRU::PruneTask,
+                            WTF::RetainedRef(this)),
         base::Seconds(kBlockPruneInterval));
     background_pruning_pending_ = true;
   }
@@ -366,6 +379,10 @@ MultiBuffer::ProviderState MultiBuffer::SuggestProviderState(
     MultiBufferBlockId previous_writer_pos =
         ClosestPreviousEntry(writer_index_, pos - 1);
     if (previous_writer_pos < previous_reader_pos) {
+      if (base::FeatureList::IsEnabled(kMultiBufferNeverDefer) &&
+          RangeSupported()) {
+        return ProviderStateDead;
+      }
       return ProviderStateDefer;
     }
   }
@@ -448,6 +465,12 @@ void MultiBuffer::OnDataProviderEvent(DataProvider* provider_tmp) {
         RemoveProvider(provider_tmp);
         break;
     }
+  }
+}
+
+void MultiBuffer::StopWriters() {
+  for (auto& entry : writer_index_) {
+    entry.second->Invalidate();
   }
 }
 

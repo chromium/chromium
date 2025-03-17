@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/common/omnibox_features.h"
 
@@ -47,6 +48,14 @@ DocumentProvider::DocumentProvider() {
       base::FeatureParam<bool>(&omnibox::kDocumentProvider,
                                "DocumentProviderIgnoreWhenDebouncing", false)
           .Get();
+  scope_backoff_to_profile =
+      base::FeatureParam<bool>(&omnibox::kDocumentProvider,
+                               "DocumentProviderScopeBackoffToProfile", false)
+          .Get();
+  backoff_duration = base::FeatureParam<base::TimeDelta>(
+                         &omnibox::kDocumentProvider,
+                         "DocumentProviderBackoffDuration", base::TimeDelta())
+                         .Get();
 }
 
 // static
@@ -82,34 +91,103 @@ RealboxContextualAndTrendingSuggestions::
 // static
 BASE_FEATURE(SearchAggregatorProvider::kSearchAggregatorProvider,
              "SearchAggregatorProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 SearchAggregatorProvider::SearchAggregatorProvider() {
-  Init(
-      /*enabled=*/base::FeatureList::IsEnabled(kSearchAggregatorProvider),
-      /*name=*/
-      base::FeatureParam<std::string>(&kSearchAggregatorProvider, "name", "")
-          .Get(),
-      /*shortcut=*/
-      base::FeatureParam<std::string>(&kSearchAggregatorProvider, "shortcut",
-                                      "")
-          .Get(),
-      /*search_url=*/
-      base::FeatureParam<std::string>(&kSearchAggregatorProvider, "search_url",
-                                      "")
-          .Get(),
-      /*suggest_url=*/
-      base::FeatureParam<std::string>(&kSearchAggregatorProvider, "suggest_url",
-                                      "")
-          .Get(),
-      /*icon_url=*/
-      base::FeatureParam<std::string>(&kSearchAggregatorProvider, "icon_url",
-                                      "")
-          .Get(),
-      /*trigger_omnibox_blending=*/
+  enabled = base::FeatureList::IsEnabled(kSearchAggregatorProvider);
+
+  min_query_length =
+      base::FeatureParam<int>(&kSearchAggregatorProvider, "min_query_length", 4)
+          .Get();
+  parse_response_in_utility_process =
       base::FeatureParam<bool>(&kSearchAggregatorProvider,
-                               "trigger_omnibox_blending", false)
-          .Get());
+                               "parse_response_in_utility_process", true)
+          .Get();
+  use_discovery_engine_oauth_scope =
+      base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                               "use_discovery_engine_oauth_scope", false)
+          .Get();
+  disable_drive = base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                                           "disable_drive", true)
+                      .Get();
+
+  scoring_max_matches_created_per_type =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_max_matches_created_per_type", 40)
+          .Get();
+  scoring_max_scoped_matches_shown_per_type =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_max_scoped_matches_shown_per_type", 4)
+          .Get();
+  scoring_max_unscoped_matches_shown_per_type =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_max_unscoped_matches_shown_per_type",
+                                 2)
+          .Get();
+  scoring_min_char_for_strong_text_match =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_min_char_for_strong_text_match", 3)
+          .Get();
+  scoring_min_words_for_full_text_match_boost =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_min_words_for_full_text_match_boost",
+                                 2)
+          .Get();
+  scoring_full_text_match_score =
+      base::FeatureParam<int>(&kSearchAggregatorProvider,
+                              "scoring_full_text_match_score", 1000)
+          .Get();
+  scoring_score_per_strong_text_match =
+      base::FeatureParam<int>(&kSearchAggregatorProvider,
+                              "scoring_score_per_strong_text_match", 400)
+          .Get();
+  scoring_score_per_weak_text_match =
+      base::FeatureParam<int>(&kSearchAggregatorProvider,
+                              "scoring_score_per_weak_text_match", 100)
+          .Get();
+  scoring_max_text_score =
+      base::FeatureParam<int>(&kSearchAggregatorProvider,
+                              "scoring_max_text_score", 800)
+          .Get();
+  scoring_people_score_boost =
+      base::FeatureParam<int>(&kSearchAggregatorProvider,
+                              "scoring_people_score_boost", 100)
+          .Get();
+  scoring_prefer_contents_over_queries =
+      base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                               "scoring_prefer_contents_over_queries", true)
+          .Get();
+  scoring_scoped_max_low_quality_matches =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_scoped_max_low_quality_matches", 8)
+          .Get();
+  scoring_unscoped_max_low_quality_matches =
+      base::FeatureParam<size_t>(&kSearchAggregatorProvider,
+                                 "scoring_unscoped_max_low_quality_matches", 2)
+          .Get();
+  // 400 + 100
+  scoring_low_quality_threshold =
+      base::FeatureParam<int>(&kSearchAggregatorProvider,
+                              "scoring_low_quality_threshold", 500)
+          .Get();
+
+  name = base::FeatureParam<std::string>(&kSearchAggregatorProvider, "name", "")
+             .Get();
+  shortcut = base::FeatureParam<std::string>(&kSearchAggregatorProvider,
+                                             "shortcut", "")
+                 .Get();
+  search_url = base::FeatureParam<std::string>(&kSearchAggregatorProvider,
+                                               "search_url", "")
+                   .Get();
+  suggest_url = base::FeatureParam<std::string>(&kSearchAggregatorProvider,
+                                                "suggest_url", "")
+                    .Get();
+  icon_url = base::FeatureParam<std::string>(&kSearchAggregatorProvider,
+                                             "icon_url", "")
+                 .Get();
+  require_shortcut = base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                                              "require_shortcut", false)
+                         .Get();
 }
 
 SearchAggregatorProvider::SearchAggregatorProvider(
@@ -120,68 +198,33 @@ SearchAggregatorProvider& SearchAggregatorProvider::operator=(
 
 SearchAggregatorProvider::~SearchAggregatorProvider() = default;
 
-std::vector<base::Value> SearchAggregatorProvider::GetSearchEngines() const {
+bool SearchAggregatorProvider::AreMockEnginesValid() const {
+  return enabled && !shortcut.empty() && shortcut[0] != '@' && !name.empty() &&
+         !search_url.empty() &&
+         search_url.find("{searchTerms}") != std::string::npos &&
+         !suggest_url.empty();
+}
+
+std::vector<base::Value> SearchAggregatorProvider::CreateMockSearchEngines()
+    const {
   std::vector<base::Value> engines;
-  if (valid_search_engine()) {
-    engines.emplace_back(
-        CreateMockSearchAggregator(/*featured_by_policy=*/true));
-    engines.emplace_back(
-        CreateMockSearchAggregator(/*featured_by_policy=*/false));
-  }
+  engines.emplace_back(CreateMockSearchAggregator(/*featured_by_policy=*/true));
+  engines.emplace_back(
+      CreateMockSearchAggregator(/*featured_by_policy=*/false));
   return engines;
-}
-
-void SearchAggregatorProvider::Init(bool enabled,
-                                    const std::string& name,
-                                    const std::string& shortcut,
-                                    const std::string& search_url,
-                                    const std::string& suggest_url,
-                                    const std::string& icon_url,
-                                    bool trigger_omnibox_blending) {
-  enabled_ = enabled;
-  if (!enabled_) {
-    return;
-  }
-
-  name_ = name;
-  shortcut_ = shortcut;
-  search_url_ = search_url;
-  suggest_url_ = suggest_url;
-  icon_url_ = icon_url;
-  trigger_omnibox_blending_ = trigger_omnibox_blending;
-
-  // Perform some soft validation to prevent crashes downstream.
-  valid_search_engine_ =
-      !shortcut_.empty() && shortcut_[0] != '@' && !name_.empty() &&
-      !search_url_.empty() &&
-      search_url_.find("{searchTerms}") != std::string::npos &&
-      !suggest_url_.empty();
-  if (!valid_search_engine_) {
-    VLOG(2) << "Search aggregator injected by field trial is invalid";
-    return;
-  }
-}
-
-void SearchAggregatorProvider::Init(bool enabled,
-                                    bool trigger_omnibox_blending) {
-  Init(/*enabled=*/enabled,
-       /*name=*/"",
-       /*shortcut=*/"",
-       /*search_url=*/"",
-       /*suggest_url=*/"",
-       /*icon_url=*/"",
-       /*trigger_omnibox_blending=*/trigger_omnibox_blending);
 }
 
 base::Value::Dict SearchAggregatorProvider::CreateMockSearchAggregator(
     bool featured_by_policy) const {
+  CHECK(AreMockEnginesValid());
+
   base::Value::Dict result;
-  result.Set("short_name", name_);
-  result.Set("keyword", featured_by_policy ? '@' + shortcut_ : shortcut_);
-  result.Set("url", search_url_);
-  result.Set("suggestions_url", suggest_url_);
-  if (!icon_url_.empty()) {
-    result.Set("favicon_url", icon_url_);
+  result.Set("short_name", name);
+  result.Set("keyword", featured_by_policy ? '@' + shortcut : shortcut);
+  result.Set("url", search_url);
+  result.Set("suggestions_url", suggest_url);
+  if (!icon_url.empty()) {
+    result.Set("favicon_url", icon_url);
   }
 
   result.Set("policy_origin",
@@ -206,15 +249,21 @@ SuggestionAnswerMigration::SuggestionAnswerMigration() {
   enabled = base::FeatureList::IsEnabled(kOmniboxSuggestionAnswerMigration);
 }
 
-// static
-BASE_FEATURE(VitalizeAutocompletedKeywords::kVitalizeAutocompletedKeywords,
-             "OmniboxVitalizeAutocompletedKeywords",
+BASE_FEATURE(OmniboxUrlSuggestionsOnFocus::kOmniboxUrlSuggestionsOnFocus,
+             "OmniboxUrlSuggestionsOnFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
-VitalizeAutocompletedKeywords::VitalizeAutocompletedKeywords() {
-  enabled = base::FeatureList::IsEnabled(kVitalizeAutocompletedKeywords);
-  score = base::FeatureParam<int>(&kVitalizeAutocompletedKeywords,
-                                  "VitalizeAutocompletedKeywordsScore", 450)
-              .Get();
+OmniboxUrlSuggestionsOnFocus::OmniboxUrlSuggestionsOnFocus() {
+  enabled = base::FeatureList::IsEnabled(kOmniboxUrlSuggestionsOnFocus);
+  max_suggestions = base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
+                                               "OnFocusMaxSuggestions", 8)
+                        .Get();
+  max_search_suggestions =
+      base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
+                                 "OnFocusMaxSearchSuggestions", 4)
+          .Get();
+  max_url_suggestions =
+      base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
+                                 "OnFocusMaxUrlSuggestions", 4)
+          .Get();
 }
-
 }  // namespace omnibox_feature_configs

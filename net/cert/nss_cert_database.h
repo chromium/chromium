@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -153,6 +152,9 @@ class NET_EXPORT NSSCertDatabase {
 
   enum class NSSRootsHandling {
     kInclude,
+    // TODO(crbug.com/390333881): kExclude is only used by the old cert
+    // manager. Remove this and any other no-longer needed NSSCertDatabase
+    // features once the new cert manager is fully launched.
     kExclude,
   };
   // Asynchronously get a list of certificates along with additional

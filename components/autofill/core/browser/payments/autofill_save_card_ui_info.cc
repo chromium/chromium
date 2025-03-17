@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -78,6 +78,7 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
     bool is_for_upload,
     const CreditCard& card,
     int logo_icon_id,
+    const std::u16string& logo_icon_description,
     const LegalMessageLines& legal_message_lines,
     const AccountInfo& displayed_target_account,
     const std::u16string& title_text,
@@ -89,6 +90,7 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
   AutofillSaveCardUiInfo ui_info;
   ui_info.is_for_upload = is_for_upload;
   ui_info.logo_icon_id = logo_icon_id;
+  ui_info.logo_icon_description = logo_icon_description;
   ui_info.issuer_icon_id = CreditCard::IconResourceId(card.network());
   ui_info.card_network = card.NetworkForDisplay();
   ui_info.legal_message_lines = legal_message_lines;
@@ -161,7 +163,8 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
   NOTREACHED();
 #endif
   return CreateAutofillSaveCardUiInfo(
-      /*is_for_upload=*/false, card, save_card_icon_id, LegalMessageLines(),
+      /*is_for_upload=*/false, card, save_card_icon_id,
+      /*logo_icon_description=*/std::u16string(), LegalMessageLines(),
       AccountInfo(), l10n_util::GetStringUTF16(save_card_prompt_title_id),
       GetConfirmButtonText(options),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_NO_THANKS_MOBILE_LOCAL_SAVE),
@@ -188,6 +191,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
     const AccountInfo& displayed_target_account,
     bool is_google_pay_branding_enabled) {
   int save_card_icon_id;
+  std::u16string save_card_icon_description_text;
   int save_card_prompt_title_id;
   std::u16string description_text;
 #if BUILDFLAG(IS_ANDROID)
@@ -234,6 +238,8 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
   CHECK_NE(options.card_save_type, CardSaveType::kCvcSaveOnly);
   if (is_google_pay_branding_enabled) {
     save_card_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
+    save_card_icon_description_text =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
     save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3;
     description_text = l10n_util::GetStringUTF16(
         IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3);
@@ -245,7 +251,8 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
   NOTREACHED();
 #endif
   return CreateAutofillSaveCardUiInfo(
-      /*is_for_upload=*/true, card, save_card_icon_id, legal_message_lines,
+      /*is_for_upload=*/true, card, save_card_icon_id,
+      save_card_icon_description_text, legal_message_lines,
       displayed_target_account,
       l10n_util::GetStringUTF16(save_card_prompt_title_id),
       GetConfirmButtonText(options),

@@ -44,11 +44,6 @@ void GtkUiPlatformX11::OnInitialized(GtkWidget* widget) {
   x11::SetXlibErrorHandler();
 }
 
-GdkKeymap* GtkUiPlatformX11::GetGdkKeymap() {
-  DCHECK(!gtk::GtkCheckVersion(4));
-  return gdk_keymap_get_for_display(GetGdkDisplay());
-}
-
 GdkModifierType GtkUiPlatformX11::GetGdkKeyEventState(
     const ui::KeyEvent& key_event) {
   return gtk::GetGdkKeyEventState(key_event);

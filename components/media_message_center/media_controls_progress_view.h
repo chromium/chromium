@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_CONTROLS_PROGRESS_VIEW_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_CONTROLS_PROGRESS_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -49,14 +51,14 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   const views::ProgressBar* progress_bar_for_testing() const;
-  const std::u16string& progress_time_for_testing() const;
-  const std::u16string& duration_for_testing() const;
+  std::u16string_view progress_time_for_testing() const;
+  std::u16string_view duration_for_testing() const;
   bool is_duration_visible_for_testing() const;
 
  private:
   void SetBarProgress(double progress);
-  void SetProgressTime(const std::u16string& time);
-  void SetDuration(const std::u16string& duration);
+  void SetProgressTime(std::u16string_view time);
+  void SetDuration(std::u16string_view duration);
 
   void HandleSeeking(const gfx::Point& location);
 

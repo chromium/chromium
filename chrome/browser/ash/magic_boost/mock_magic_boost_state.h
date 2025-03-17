@@ -26,6 +26,7 @@ class MockMagicBoostState : public MagicBoostStateAsh {
               ShouldIncludeOrcaInOptIn,
               (base::OnceCallback<void(bool)>),
               (override));
+  MOCK_METHOD(bool, ShouldIncludeOrcaInOptInSync, (), (override));
   MOCK_METHOD(void, EnableOrcaFeature, (), (override));
   MOCK_METHOD(void, DisableOrcaFeature, (), (override));
 };

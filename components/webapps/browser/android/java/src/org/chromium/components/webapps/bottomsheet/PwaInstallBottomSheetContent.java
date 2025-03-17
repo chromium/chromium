@@ -7,10 +7,11 @@ package org.chromium.components.webapps.bottomsheet;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.R;
@@ -19,6 +20,7 @@ import org.chromium.components.webapps.R;
  * The class handling the bottom sheet install for PWA installs. The UI is shown on construction
  * using the supplied BottomSheetController.
  */
+@NullMarked
 public class PwaInstallBottomSheetContent implements BottomSheetContent {
     /** The view for our bottom sheet. */
     private final PwaInstallBottomSheetView mView;
@@ -46,9 +48,8 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
         return mView.getContentView();
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -84,22 +85,22 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.pwa_install_bottom_sheet_accessibility);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.pwa_install_bottom_sheet_accessibility;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.pwa_install_bottom_sheet_accessibility;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.pwa_install_bottom_sheet_accessibility;
     }
 }

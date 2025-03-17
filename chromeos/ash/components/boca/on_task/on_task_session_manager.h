@@ -56,6 +56,14 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
                   const GURL url) override;
   void OnTabRemoved(const SessionID tab_id) override;
 
+  boca::OnTaskSystemWebAppManager* GetOnTaskSystemWebAppManager() {
+    return system_web_app_manager_.get();
+  }
+
+  boca::OnTaskNotificationsManager* GetOnTaskNotificationsManager() {
+    return notifications_manager_.get();
+  }
+
  private:
   friend class OnTaskSessionManagerTest;
 
@@ -103,7 +111,10 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   // involves disabling relevant extensions and pinning the window if
   // `lock_window` is true, or re-enabling extensions and unpinning the window
   // otherwise.
-  void LockOrUnlockWindow(bool lock_window);
+  void LockOrUnlockWindow(bool lock_window, base::TimeDelta countdown);
+
+  // Show enter locked mode notification and lock the Boca SWA window.
+  void EnterLockedMode();
 
   // Callback triggered when a tab from the bundle is added.
   void OnBundleTabAdded(

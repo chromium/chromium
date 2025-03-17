@@ -61,7 +61,7 @@ using ::net::test_server::HttpResponse;
 const char kAccountId[] = "dla@example.com";
 const char kDisplayName[] = "display name";
 const char kManagedUser[] = "user@example.com";
-const char kManagedGaiaID[] = "33333";
+const GaiaId::Literal kManagedGaiaID("33333");
 const char kTosText[] = "By using this test you agree to fix future bugs";
 
 std::optional<std::string> ReadFileToOptionalString(
@@ -386,7 +386,7 @@ class ManagedUserTosScreenTest : public OobeBaseTest {
 
  protected:
   const LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId(kManagedUser, GaiaId(kManagedGaiaID))};
+      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
 
  private:
   void HandleScreenExit(TermsOfServiceScreen::Result result) {

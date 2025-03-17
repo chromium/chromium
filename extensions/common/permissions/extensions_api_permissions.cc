@@ -15,8 +15,7 @@
 
 using extensions::mojom::APIPermissionID;
 
-namespace extensions {
-namespace api_permissions {
+namespace extensions::api_permissions {
 
 namespace {
 
@@ -130,7 +129,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kSerial, "serial",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
-    {APIPermissionID::kSharedStoragePrivate, "sharedStoragePrivate"},
     {APIPermissionID::kSocket, "socket",
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning,
@@ -194,5 +192,5 @@ base::span<const Alias> GetPermissionAliases() {
   return base::span(aliases);
 }
 
-}  // namespace api_permissions
-}  // namespace extensions
+} // namespace extensions::api_permissions
+

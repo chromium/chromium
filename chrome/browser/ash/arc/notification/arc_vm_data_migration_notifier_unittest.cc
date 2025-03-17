@@ -4,12 +4,6 @@
 
 #include "chrome/browser/ash/arc/notification/arc_vm_data_migration_notifier.h"
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/session/arc_vm_data_migration_status.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
@@ -24,6 +18,12 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/session/arc_vm_data_migration_status.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -34,7 +34,7 @@ namespace arc {
 namespace {
 
 constexpr char kProfileName[] = "user@gmail.com";
-constexpr char kGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kGaiaId("1234567890");
 
 constexpr char kNotificationId[] = "arc_vm_data_migration_notification";
 
@@ -68,7 +68,7 @@ class ArcVmDataMigrationNotifierTest : public ash::AshTestBase {
     ASSERT_TRUE(profile_manager_->SetUp());
     testing_profile_ = profile_manager_->CreateTestingProfile(kProfileName);
     const AccountId account_id = AccountId::FromUserEmailGaiaId(
-        testing_profile_->GetProfileUserName(), GaiaId(kGaiaId));
+        testing_profile_->GetProfileUserName(), kGaiaId);
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
     DCHECK(ash::ProfileHelper::IsPrimaryProfile(testing_profile_));

@@ -4,9 +4,10 @@
 
 #include "components/browsing_topics/util.h"
 
+#include <algorithm>
+
 #include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "crypto/hmac.h"
 #include "crypto/sha2.h"
 #include "third_party/blink/public/common/features.h"
@@ -129,7 +130,7 @@ HashedHost HashMainFrameHostForStorage(const std::string& main_frame_host) {
 
 void OverrideHmacKeyForTesting(ReadOnlyHmacKey hmac_key) {
   g_hmac_key_overridden = true;
-  base::ranges::copy(hmac_key, GetHmacKeyOverrideForTesting().begin());
+  std::ranges::copy(hmac_key, GetHmacKeyOverrideForTesting().begin());
 }
 
 }  // namespace browsing_topics

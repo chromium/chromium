@@ -478,7 +478,8 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
           std::convertible_to<                                                \
               typename ::views::BaseViewBuilderT<OtherBuilder>::ViewClass_*,  \
               ViewClass_*>)                                                   \
-    view_class##BuilderT(::views::BaseViewBuilderT<OtherBuilder>&& other)     \
+    explicit view_class##BuilderT(                                            \
+        ::views::BaseViewBuilderT<OtherBuilder>&& other)                      \
         : ancestor##BuilderT<BuilderT>(std::move(other)) {}                   \
     view_class##BuilderT(view_class##BuilderT&&) = default;                   \
     view_class##BuilderT& operator=(view_class##BuilderT&&) = default;        \
@@ -686,7 +687,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
           std::convertible_to<                                               \
               typename ::views::BaseViewBuilderT<OtherBuilder>::ViewClass_*, \
               ViewClass_*>)                                                  \
-    Builder(::views::BaseViewBuilderT<OtherBuilder>&& other)                 \
+    explicit Builder(::views::BaseViewBuilderT<OtherBuilder>&& other)        \
         : view_class##BuilderT<Builder>(std::move(other)) {}                 \
     Builder(Builder&&) = default;                                            \
     Builder& operator=(Builder&&) = default;                                 \

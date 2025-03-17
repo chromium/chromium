@@ -28,7 +28,6 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.core.widget.ImageViewCompat;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -58,9 +57,11 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.ClientId;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -279,6 +280,7 @@ public class TrustedCdnPublisherUrlTest {
     @SmallTest
     @Feature({"UiCatalogue"})
     @OverrideTrustedCdn
+    @DisabledTest(message = "crbug.com/394357237")
     public void testReparent() throws Exception {
         GURL publisherUrl = new GURL("https://example.com/test");
         runTrustedCdnPublisherUrlTest(
@@ -419,10 +421,10 @@ public class TrustedCdnPublisherUrlTest {
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(targetContext, testUrl);
         intent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        connection.newSession(token);
-        connection.overridePackageNameForSessionForTesting(token, clientPackage);
+        connection.newSession(sessionHolder.getSessionAsCustomTab());
+        connection.overridePackageNameForSessionForTesting(sessionHolder, clientPackage);
         connection.setTrustedPublisherUrlPackageForTest("com.example.test");
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -445,8 +447,20 @@ public class TrustedCdnPublisherUrlTest {
     }
 
     private void verifySecurityIcon(int expectedSecurityIcon) {
+        // TODO(sinansahin): Clean up once the feature flag is removed.
+        boolean nestIcon = ChromeFeatureList.sCctNestedSecurityIcon.isEnabled();
+
+        if (nestIcon
+                && (expectedSecurityIcon == R.drawable.omnibox_https_valid_page_info
+                        || expectedSecurityIcon == R.drawable.omnibox_info)) {
+            expectedSecurityIcon = 0;
+        }
+
         ImageView securityButton =
-                mCustomTabActivityTestRule.getActivity().findViewById(R.id.security_button);
+                mCustomTabActivityTestRule
+                        .getActivity()
+                        .findViewById(nestIcon ? R.id.security_icon : R.id.security_button);
+        // Clean up -- end
 
         if (expectedSecurityIcon == 0) {
             Assert.assertEquals(View.INVISIBLE, securityButton.getVisibility());

@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="VisitedURLRanking.TransformType.{URLVisitAggregatesTransformType}.InOutPercentage"
-    units="%" expires_after="2025-06-08">
+    units="%" expires_after="2025-08-10">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -123,6 +123,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SegmentationMetricsData"
         summary="Segmentation metrics data"/>
     <variant name="ShoppingData" summary="Shopping data"/>
+    <variant name="TabEventsData" summary="Tab events data"/>
   </token>
 </histogram>
 
@@ -155,7 +156,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="VisitedURLRanking.TransformType.{URLVisitAggregatesTransformType}.Success"
-    enum="BooleanSuccess" expires_after="2025-06-08">
+    enum="BooleanSuccess" expires_after="2025-08-10">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>

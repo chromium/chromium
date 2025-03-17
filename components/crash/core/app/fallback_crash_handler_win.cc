@@ -90,7 +90,8 @@ bool FallbackCrashHandler::ParseCommandLine(const base::CommandLine& cmd_line) {
   if (!base::StringToUint(cmd_line.GetSwitchValueASCII("thread"), &thread_id)) {
     return false;
   }
-  thread_id_ = thread_id;
+  thread_id_ = base::PlatformThreadId(
+      static_cast<base::PlatformThreadId::UnderlyingType>(thread_id));
 
   // Retrieve the "exception-pointers" argument.
   uint64_t uint_exc_ptrs = 0;
@@ -116,7 +117,7 @@ bool FallbackCrashHandler::GenerateCrashDump(const std::string& product,
                                              const std::string& channel,
                                              const std::string& process_type) {
   MINIDUMP_EXCEPTION_INFORMATION exc_info = {};
-  exc_info.ThreadId = thread_id_;
+  exc_info.ThreadId = thread_id_.raw();
   exc_info.ExceptionPointers =
       reinterpret_cast<EXCEPTION_POINTERS*>(exception_ptrs_);
   exc_info.ClientPointers = TRUE;  // ExceptionPointers in client.

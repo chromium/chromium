@@ -8,7 +8,7 @@
 
 #include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/extension_info.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"

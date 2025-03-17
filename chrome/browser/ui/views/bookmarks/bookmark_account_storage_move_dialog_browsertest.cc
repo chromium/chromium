@@ -8,34 +8,22 @@
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/gfx/image/image_unittest_util.h"
 
 namespace {
-
-void SignInAndEnableAccountBookmarkNodes(Profile* profile) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "foo@gmail.com", signin::ConsentLevel::kSignin);
-  signin::SimulateAccountImageFetch(identity_manager, account_info.account_id,
-                                    "https://avatar.com/avatar.png",
-                                    gfx::test::CreateImage(/*size=*/32));
-  // Normally done by sync, but sync is not fully up in this test.
-  BookmarkModelFactory::GetForBrowserContext(profile)
-      ->CreateAccountPermanentFolders();
-}
 
 // Tests that show the dialog, take a screenshot and compare against a baseline.
 // Click handling is tested in a different suite.
@@ -73,12 +61,12 @@ class BookmarkAccountStorageMoveDialogPixelTest : public DialogBrowserTest {
     ASSERT_TRUE(target_folder_)
         << "Must call set_target_folder() before showing the dialog";
     ShowBookmarkAccountStorageMoveDialog(browser(), node_, target_folder_,
-                                         /*index=*/0, base::DoNothing());
+                                         /*index=*/0);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   raw_ptr<const bookmarks::BookmarkNode> node_ = nullptr;
   raw_ptr<const bookmarks::BookmarkNode> target_folder_ = nullptr;
 };
@@ -156,9 +144,14 @@ class BookmarkAccountStorageMoveDialogInteractiveTest
     SignInAndEnableAccountBookmarkNodes(browser()->profile());
   }
 
+  BookmarkMergedSurfaceService* service() {
+    return BookmarkMergedSurfaceServiceFactory::GetForProfile(
+        browser()->profile());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 };
 
 IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
@@ -210,6 +203,60 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
   RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogCancelButton));
 
   ASSERT_TRUE(closed_waiter.Wait());
+  ASSERT_EQ(target_folder->children().size(), 2u);
+  EXPECT_EQ(target_folder->children()[0].get(), first_target_folder_node);
+  EXPECT_EQ(target_folder->children()[1].get(), last_target_folder_node);
+  ASSERT_EQ(source_folder->children().size(), 1u);
+  EXPECT_EQ(source_folder->children()[0].get(), node);
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
+                       FullFlowAcceptMoveFromAccountToLocalStorage) {
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  const bookmarks::BookmarkNode* source_folder =
+      bookmark_model->account_bookmark_bar_node();
+  const bookmarks::BookmarkNode* node =
+      bookmark_model->AddFolder(source_folder, 0, u"Account");
+  const bookmarks::BookmarkNode* target_folder = bookmark_model->AddFolder(
+      bookmark_model->bookmark_bar_node(), 0, u"Local");
+  const bookmarks::BookmarkNode* first_target_folder_node =
+      bookmark_model->AddFolder(target_folder, 0, u"First");
+  const bookmarks::BookmarkNode* last_target_folder_node =
+      bookmark_model->AddFolder(target_folder, 1, u"Last");
+
+  BookmarkParentFolder destination =
+      BookmarkParentFolder::FromFolderNode(target_folder);
+  service()->Move(node, destination, 1, browser());
+  RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogOkButton));
+
+  ASSERT_EQ(target_folder->children().size(), 3u);
+  EXPECT_EQ(target_folder->children()[0].get(), first_target_folder_node);
+  EXPECT_EQ(target_folder->children()[1].get(), node);
+  EXPECT_EQ(target_folder->children()[2].get(), last_target_folder_node);
+  EXPECT_EQ(source_folder->children().size(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
+                       FullFlowCancelMoveDialog) {
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  const bookmarks::BookmarkNode* source_folder =
+      bookmark_model->bookmark_bar_node();
+  const bookmarks::BookmarkNode* node =
+      bookmark_model->AddFolder(source_folder, 0, u"Local");
+  const bookmarks::BookmarkNode* target_folder = bookmark_model->AddFolder(
+      bookmark_model->account_bookmark_bar_node(), 0, u"Account");
+  const bookmarks::BookmarkNode* first_target_folder_node =
+      bookmark_model->AddFolder(target_folder, 0, u"First");
+  const bookmarks::BookmarkNode* last_target_folder_node =
+      bookmark_model->AddFolder(target_folder, 1, u"Last");
+
+  BookmarkParentFolder destination =
+      BookmarkParentFolder::FromFolderNode(target_folder);
+  service()->Move(node, destination, 1, browser());
+  RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogCancelButton));
+
   ASSERT_EQ(target_folder->children().size(), 2u);
   EXPECT_EQ(target_folder->children()[0].get(), first_target_folder_node);
   EXPECT_EQ(target_folder->children()[1].get(), last_target_folder_node);

@@ -4,11 +4,12 @@
 
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
@@ -110,7 +111,7 @@ std::unique_ptr<PermissionPrompt> MockPermissionPromptFactory::DoNotCreate(
 }
 
 void MockPermissionPromptFactory::HideView(MockPermissionPrompt* prompt) {
-  auto it = base::ranges::find(prompts_, prompt);
+  auto it = std::ranges::find(prompts_, prompt);
   if (it != prompts_.end())
     prompts_.erase(it);
 }

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -67,7 +68,6 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
 
   // CloudPolicyService::Observer:
   void OnCloudPolicyServiceInitializationCompleted() override;
-  std::string_view name() const override;
 
   // Returns whether OAuth token fetch is currently in progress.
   bool IsTokenFetchInProgressForTesting() const;
@@ -107,6 +107,9 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
 
   // Points to the base::DefaultClock by default.
   raw_ptr<const base::Clock> clock_;
+
+  base::ScopedObservation<CloudPolicyService, CloudPolicyService::Observer>
+      cloud_policy_service_observation_{this};
 
   base::WeakPtrFactory<UserCloudPolicyTokenForwarder> weak_ptr_factory_{this};
 };

@@ -107,8 +107,9 @@ void ScopedFxLogger::LogMessage(std::string_view file,
                                 uint32_t line_number,
                                 std::string_view msg,
                                 logging::LogSeverity severity) {
-  if (!socket_.is_valid())
+  if (!socket_.is_valid()) {
     return;
+  }
 
   auto fuchsia_severity = LogSeverityToFuchsiaLogSeverity(severity);
 
@@ -117,15 +118,17 @@ void ScopedFxLogger::LogMessage(std::string_view file,
   // global logs to the system logger.
 
   fuchsia_syslog::LogBuffer buffer;
-  buffer.BeginRecord(
-      fuchsia_severity, cpp17::string_view(file.data(), file.size()),
-      line_number, cpp17::string_view(msg.data(), msg.size()), socket_.borrow(),
-      0, base::Process::Current().Pid(), base::PlatformThread::CurrentId());
+  buffer.BeginRecord(fuchsia_severity,
+                     cpp17::string_view(file.data(), file.size()), line_number,
+                     cpp17::string_view(msg.data(), msg.size()),
+                     socket_.borrow(), 0, base::Process::Current().Pid(),
+                     base::PlatformThread::CurrentId().raw());
   for (const auto& tag : tags_) {
     buffer.WriteKeyValue("tag", tag);
   }
-  if (!buffer.FlushRecord())
+  if (!buffer.FlushRecord()) {
     fprintf(stderr, "fuchsia_syslog.LogBuffer.FlushRecord() failed\n");
+  }
 }
 
 ScopedFxLogger::ScopedFxLogger(std::vector<std::string_view> tags,

@@ -19,10 +19,10 @@
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/platform_color.h"
 
 namespace cc {
@@ -32,15 +32,6 @@ TextureLayerImpl::TextureLayerImpl(LayerTreeImpl* tree_impl, int id)
 
 TextureLayerImpl::~TextureLayerImpl() {
   FreeTransferableResource();
-
-  LayerTreeFrameSink* sink = layer_tree_impl()->layer_tree_frame_sink();
-  // The LayerTreeFrameSink may be gone, in which case there's no need to
-  // unregister anything.
-  if (sink) {
-    for (const auto& pair : registered_bitmaps_) {
-      sink->DidDeleteSharedBitmap(pair.first);
-    }
-  }
 }
 
 mojom::LayerType TextureLayerImpl::GetLayerType() const {
@@ -70,12 +61,6 @@ void TextureLayerImpl::PushPropertiesTo(LayerImpl* layer) {
                                            std::move(release_callback_));
     own_resource_ = false;
   }
-  for (auto& pair : to_register_bitmaps_)
-    texture_layer->RegisterSharedBitmapId(pair.first, std::move(pair.second));
-  to_register_bitmaps_.clear();
-  for (const auto& id : to_unregister_bitmap_ids_)
-    texture_layer->UnregisterSharedBitmapId(id);
-  to_unregister_bitmap_ids_.clear();
 }
 
 bool TextureLayerImpl::WillDraw(
@@ -128,21 +113,10 @@ bool TextureLayerImpl::WillDraw(
   return resource_id_ != viz::kInvalidResourceId;
 }
 
-void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
+void TextureLayerImpl::AppendQuads(const AppendQuadsContext& context,
+                                   viz::CompositorRenderPass* render_pass,
                                    AppendQuadsData* append_quads_data) {
   DCHECK(resource_id_);
-
-  LayerTreeFrameSink* sink = layer_tree_impl()->layer_tree_frame_sink();
-  for (const auto& pair : to_register_bitmaps_) {
-    sink->DidAllocateSharedBitmap(pair.second->shared_region().Duplicate(),
-                                  pair.first);
-  }
-  // All |to_register_bitmaps_| have been registered above, so we can move them
-  // all to the |registered_bitmaps_|.
-  registered_bitmaps_.insert(
-      std::make_move_iterator(to_register_bitmaps_.begin()),
-      std::make_move_iterator(to_register_bitmaps_.end()));
-  to_register_bitmaps_.clear();
 
   SkColor4f bg_color =
       blend_background_color_ ? background_color() : SkColors::kTransparent;
@@ -199,9 +173,6 @@ SimpleEnclosedRegion TextureLayerImpl::VisibleOpaqueRegion() const {
 
 void TextureLayerImpl::OnPurgeMemory() {
   // Do nothing here intentionally as the LayerTreeFrameSink isn't lost.
-  // Unregistering SharedBitmapIds with the LayerTreeFrameSink wouldn't free
-  // the shared memory, as the TextureLayer and/or TextureLayerClient will still
-  // have a reference to it.
 }
 
 void TextureLayerImpl::ReleaseResources() {
@@ -209,19 +180,6 @@ void TextureLayerImpl::ReleaseResources() {
   // resources are still valid, and we can keep them here in that case.
   if (!transferable_resource_.is_software)
     FreeTransferableResource();
-
-  // The LayerTreeFrameSink is gone and being replaced, so we will have to
-  // re-register all SharedBitmapIds on the new LayerTreeFrameSink. We don't
-  // need to do that until the SharedBitmapIds will be used, in AppendQuads(),
-  // but we mark them all as to be registered here.
-  to_register_bitmaps_.insert(
-      std::make_move_iterator(registered_bitmaps_.begin()),
-      std::make_move_iterator(registered_bitmaps_.end()));
-  registered_bitmaps_.clear();
-  // The |to_unregister_bitmap_ids_| are kept since the active layer will re-
-  // register its SharedBitmapIds with a new LayerTreeFrameSink in the future,
-  // so we must remember that we want to unregister it (or avoid registering at
-  // all) instead.
 }
 
 gfx::ContentColorUsage TextureLayerImpl::GetContentColorUsage() const {
@@ -259,38 +217,6 @@ void TextureLayerImpl::SetTransferableResource(
   transferable_resource_ = resource;
   release_callback_ = std::move(release_callback);
   own_resource_ = true;
-}
-
-void TextureLayerImpl::RegisterSharedBitmapId(
-    viz::SharedBitmapId id,
-    scoped_refptr<CrossThreadSharedBitmap> bitmap) {
-  // If a TextureLayer leaves and rejoins a tree without the TextureLayerImpl
-  // being destroyed, then it will re-request registration of ids that are still
-  // registered on the impl side, so we can just ignore these requests.
-  if (!base::Contains(registered_bitmaps_, id)) {
-    // If this is a pending layer, these will be moved to the active layer
-    // when we PushPropertiesTo(). Otherwise, we don't need to notify these to
-    // the LayerTreeFrameSink until we're going to use them, so defer it until
-    // AppendQuads().
-    to_register_bitmaps_[id] = std::move(bitmap);
-  }
-  std::erase(to_unregister_bitmap_ids_, id);
-}
-
-void TextureLayerImpl::UnregisterSharedBitmapId(viz::SharedBitmapId id) {
-  if (IsActive()) {
-    LayerTreeFrameSink* sink = layer_tree_impl()->layer_tree_frame_sink();
-    if (sink && base::Contains(registered_bitmaps_, id)) {
-      sink->DidDeleteSharedBitmap(id);
-    }
-    to_register_bitmaps_.erase(id);
-    registered_bitmaps_.erase(id);
-  } else {
-    // The active layer will unregister. We do this because it may be using the
-    // SharedBitmapId, so we should remove the SharedBitmapId only after we've
-    // had a chance to replace it with activation.
-    to_unregister_bitmap_ids_.push_back(id);
-  }
 }
 
 void TextureLayerImpl::FreeTransferableResource() {

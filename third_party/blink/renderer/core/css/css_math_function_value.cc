@@ -221,6 +221,10 @@ bool CSSMathFunctionValue::IsComputationallyIndependent() const {
   return expression_->IsComputationallyIndependent();
 }
 
+bool CSSMathFunctionValue::IsElementDependent() const {
+  return expression_->IsElementDependent();
+}
+
 scoped_refptr<const CalculationValue> CSSMathFunctionValue::ToCalcValue(
     const CSSLengthResolver& length_resolver) const {
   DCHECK_NE(value_range_in_target_context_,

@@ -4,12 +4,12 @@
 
 #include "ui/views/touchui/touch_selection_menu_views.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -123,9 +123,9 @@ bool TouchSelectionMenuViews::IsMenuAvailable(
   const auto is_enabled = [client](MenuCommand command) {
     return client->IsCommandIdEnabled(command.command_id);
   };
-  bool is_available = base::ranges::any_of(kMenuCommands, is_enabled);
+  bool is_available = std::ranges::any_of(kMenuCommands, is_enabled);
   is_available |= ::features::IsTouchTextEditingRedesignEnabled() &&
-                  base::ranges::any_of(kMenuSelectCommands, is_enabled);
+                  std::ranges::any_of(kMenuSelectCommands, is_enabled);
   return is_available;
 }
 

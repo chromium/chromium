@@ -48,36 +48,10 @@ bool FindBuffer::ShouldIgnoreContents(const Node& node) {
   if (node.getNodeType() == Node::kCommentNode) {
     return true;
   }
-
-  // A modal dialog and fullscreen element can escape inertness of ancestors.
-  // See https://issues.chromium.org/issues/40506558.
-  if (RuntimeEnabledFeatures::InertElementNonSearchableEnabled()) {
-    const Element* modal_element = node.GetDocument().ActiveModalDialog();
-    if (!modal_element) {
-      modal_element = Fullscreen::FullscreenElementFrom(node.GetDocument());
-    }
-    if (modal_element && modal_element != &node) {
-      // If `modal_element` is the child of `node`, `node` should not ignore
-      // contents to avoid skipping `modal_element`.
-      if (FlatTreeTraversal::IsDescendantOf(*modal_element, node)) {
-        return false;
-      }
-      // https://html.spec.whatwg.org/multipage/interaction.html#modal-dialogs-and-inert-subtrees
-      // > While document is so blocked, every node that is connected to
-      // > document, with the exception of the subject element and its flat tree
-      // > descendants, must become inert.
-      if (!FlatTreeTraversal::IsDescendantOf(node, *modal_element)) {
-        return true;
-      }
-    }
-  }
-
   const auto* element = DynamicTo<HTMLElement>(node);
   if (!element)
     return false;
-  return (RuntimeEnabledFeatures::InertElementNonSearchableEnabled() &&
-          element->IsInertRoot()) ||
-         (!element->ShouldSerializeEndTag() &&
+  return (!element->ShouldSerializeEndTag() &&
           !IsA<HTMLInputElement>(*element)) ||
          (IsA<TextControlElement>(*element) &&
           !To<TextControlElement>(*element).SuggestedValue().empty()) ||
@@ -122,8 +96,9 @@ Node* GetOutermostNonSearchableAncestor(const Node& node) {
     Element* element_ancestor = DynamicTo<Element>(&ancestor);
     if (!element_ancestor)
       continue;
-    const ComputedStyle* style = element_ancestor->GetComputedStyle();
-    if (!style || style->IsEnsuredInDisplayNone()) {
+    const ComputedStyle* style =
+        ComputedStyle::NullifyEnsured(element_ancestor->GetComputedStyle());
+    if (!style) {
       display_none = element_ancestor;
       continue;
     }
@@ -145,6 +120,16 @@ const ComputedStyle* EnsureComputedStyleForFind(Node& node) {
     return element->EnsureComputedStyle();
   }
   return nullptr;
+}
+
+bool VisibleForStyle(const ComputedStyle* style) {
+  if (!style) {
+    return false;
+  }
+  if (style->Visibility() != EVisibility::kVisible) {
+    return false;
+  }
+  return !style->IsInert();
 }
 
 // Returns the next/previous node after |start_node| (including start node) that
@@ -169,10 +154,8 @@ Node* GetVisibleTextNode(Node& start_node) {
       node = Direction::NextSkippingSubtree(*node);
       continue;
     }
-    if (style && style->Visibility() == EVisibility::kVisible &&
-        node->IsTextNode() &&
-        (!RuntimeEnabledFeatures::FindTextSkipCollapsedTextEnabled() ||
-         node->GetLayoutObject())) {
+    if (VisibleForStyle(style) && node->IsTextNode() &&
+        node->GetLayoutObject()) {
       return node;
     }
     // This element is hidden, but node might be visible,
@@ -342,11 +325,9 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
   // in between that has a separate block flow. An example is an input field.
   for (const Node* node = &start_node; !node->isSameNode(&end_node);
        node = FlatTreeTraversal::Next(*node)) {
-    const ComputedStyle* style =
-        GetComputedStyleForElementOrLayoutObject(*node);
-    if (ShouldIgnoreContents(*node) || !style ||
-        style->Display() == EDisplay::kNone ||
-        style->Visibility() != EVisibility::kVisible) {
+    const ComputedStyle* style = ComputedStyle::NullifyEnsured(
+        GetComputedStyleForElementOrLayoutObject(*node));
+    if (ShouldIgnoreContents(*node) || !VisibleForStyle(style)) {
       continue;
     }
 
@@ -394,10 +375,6 @@ FindResults FindBuffer::FindMatches(const String& search_text,
   if (buffer_.empty() || !offset_mapping_) {
     return FindResults();
   }
-  if (!RuntimeEnabledFeatures::FindDecomposedInShortTextEnabled() &&
-      search_text.length() > buffer_.size()) {
-    return FindResults();
-  }
   String search_text_16_bit = search_text;
   search_text_16_bit.Ensure16Bit();
   FoldQuoteMarksAndSoftHyphens(search_text_16_bit);
@@ -439,13 +416,9 @@ void FindBuffer::CollectTextUntilBlockBoundary(
   // We will also stop if we encountered/passed |end_node|.
   Node* end_node = range.EndPosition().NodeAsRangeLastNode();
 
-  bool use_chunk_graph = false;
-  if (RuntimeEnabledFeatures::FindRubyInPageEnabled()) {
-    use_chunk_graph = ruby_support == RubySupport::kEnabledForcefully ||
-                      (ruby_support == RubySupport::kEnabledIfNecessary &&
-                       IsIfcWithRuby(block_ancestor));
-  }
-  if (use_chunk_graph) {
+  if (ruby_support == RubySupport::kEnabledForcefully ||
+      (ruby_support == RubySupport::kEnabledIfNecessary &&
+       IsIfcWithRuby(block_ancestor))) {
     auto [corpus_chunk_list, level_list, next_node] =
         BuildChunkGraph(*node, end_node, block_ancestor, just_after_block);
     node_after_block_ = next_node;
@@ -493,8 +466,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       continue;
     }
 
-    if (style->Visibility() == EVisibility::kVisible &&
-        node->GetLayoutObject()) {
+    if (VisibleForStyle(style) && node->GetLayoutObject()) {
       // This node is in its own sub-block separate from our starting position.
       if (last_added_text_node && last_added_text_node->GetLayoutObject() &&
           !IsInSameUninterruptedBlock(*last_added_text_node, *node))

@@ -11,7 +11,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -33,8 +32,9 @@ void OnAccessTokenFetchComplete(
     GoogleServiceAuthError error,
     AccessTokenInfo access_token_info) {
   EXPECT_EQ(expected_error, error);
-  if (expected_error == GoogleServiceAuthError::AuthErrorNone())
+  if (expected_error == GoogleServiceAuthError::AuthErrorNone()) {
     EXPECT_EQ(expected_access_token_info, access_token_info);
+  }
 
   std::move(done_closure).Run();
 }
@@ -454,7 +454,7 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest, IdentityManagerShutdownNoAccount) {
   ShutdownIdentityManager();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(PrimaryAccountAccessTokenFetcherTest,
        ShouldNotRetryCanceledAccessTokenRequestIfSignedOut) {
@@ -531,7 +531,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(ConsentLevel::kSignin,
                                          ConsentLevel::kSync));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Chrome OS can directly set the unconsented primary account during login,
 // so it has additional tests.
 TEST_F(PrimaryAccountAccessTokenFetcherTest,
@@ -595,6 +595,6 @@ TEST_F(PrimaryAccountAccessTokenFetcherTest,
       access_token_info().token, access_token_info().expiration_time,
       access_token_info().id_token);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace signin

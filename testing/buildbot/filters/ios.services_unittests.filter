@@ -1,0 +1,3 @@
+# TODO(crbug.com/399539023): iOS Blink port doesn't allow mach ports
+# to be passed to child test processes.
+-All/TraceStartupSharedMemoryTest.PassSharedMemoryRegion/0

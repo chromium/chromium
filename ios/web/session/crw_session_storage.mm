@@ -46,7 +46,7 @@ NSString* const kLastCommittedItemIndexDeprecatedKey =
 // external tab helper.
 // TODO(crbug.com/40208116): Remove this key.
 NSString* const kTabIdKey = @"TabId";
-}
+}  // namespace
 
 @implementation CRWSessionStorage
 
@@ -175,8 +175,9 @@ NSString* const kTabIdKey = @"TabId";
     }
 
     // Prior to M34, 0 was used as "no index" instead of -1; adjust for that.
-    if (!_itemStorages.count)
+    if (!_itemStorages.count) {
       _lastCommittedItemIndex = -1;
+    }
 
     // In a respin of M-117, a data corruption was introduced that may cause
     // last_committed_item_index to be out-of-bound. Force the value back in

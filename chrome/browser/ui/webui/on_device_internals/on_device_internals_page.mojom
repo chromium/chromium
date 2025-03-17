@@ -21,6 +21,11 @@ struct OnDeviceInternalsData {
   map<string, string> registration_criteria;
   // Whether each supplementary model is downloaded.
   array<OnDeviceSupplementaryModelInfo> supp_models;
+  // The crash count for the on-device model service.
+  int32 model_crash_count;
+  // The maximum crash count for the on-device model
+  // allowed before the service is disabled.
+  int32 max_model_crash_count;
 };
 
 // Struct containing name of supplementary model and whether they are ready.
@@ -46,7 +51,8 @@ interface OnDeviceInternalsPageHandler {
   LoadModel(mojo_base.mojom.FilePath model_path,
             on_device_model.mojom.ModelPerformanceHint performance_hint,
             pending_receiver<on_device_model.mojom.OnDeviceModel> model) =>
-      (on_device_model.mojom.LoadModelResult result);
+      (on_device_model.mojom.LoadModelResult result,
+       on_device_model.mojom.Capabilities capabilities);
 
   // Returns the performance class based on benchmarks run on the device.
   GetEstimatedPerformanceClass() =>
@@ -58,6 +64,9 @@ interface OnDeviceInternalsPageHandler {
   // Decodes a bitmap from an image buffer.
   DecodeBitmap(mojo_base.mojom.BigBuffer image_buffer) =>
       (skia.mojom.BitmapMappedFromTrustedProcess? bitmap);
+
+  // Reset the crash count for the on-device model service.
+  ResetModelCrashCount();
 };
 
 

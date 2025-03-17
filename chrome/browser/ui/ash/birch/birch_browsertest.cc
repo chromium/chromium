@@ -256,8 +256,7 @@ void ClickOnView(views::View* target_view) {
 class BirchBrowserTest : public InProcessBrowserTest {
  public:
   BirchBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kBirchWeather}, {});
+    feature_list_.InitAndEnableFeature(features::kForestFeature);
   }
   ~BirchBrowserTest() override = default;
   BirchBrowserTest(const BirchBrowserTest&) = delete;

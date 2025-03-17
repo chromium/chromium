@@ -267,9 +267,10 @@ WebViewEvents.prototype.handleLoadAbortEvent = function(event, eventName) {
     window.console.warn(tagLogMessage(
         this.view.getLogTag(),
         $String.replace(
+        $String.replace(
             $String.replace(
                 WebViewConstants.WARNING_MSG_LOAD_ABORTED, '%1', event.code),
-            '%2', event.reason)));
+            '%2', event.reason), '%3', event.url)));
   }
 };
 

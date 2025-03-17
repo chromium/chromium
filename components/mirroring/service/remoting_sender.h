@@ -111,7 +111,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
   // The backing frame sender implementation.
   std::unique_ptr<media::cast::FrameSender> frame_sender_;
 
-  raw_ptr<const base::TickClock> clock_;
+  raw_ref<const base::TickClock> clock_;
 
   // Callback that is run to notify when a fatal error occurs.
   base::OnceClosure error_callback_;

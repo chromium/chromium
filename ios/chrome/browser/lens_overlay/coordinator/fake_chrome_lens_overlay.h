@@ -25,6 +25,8 @@ class GURL;
 @property(nonatomic, strong) id<ChromeLensOverlayResult> lastResult;
 /// Last reloaded result.
 @property(nonatomic, strong) id<ChromeLensOverlayResult> lastReload;
+/// Whether the current mode is translate.
+@property(nonatomic, readonly) BOOL translateFilterActive;
 
 /// Simulates a selection update and generate new results.
 - (void)simulateSelectionUpdate;

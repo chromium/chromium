@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <set>
 #include <string>
@@ -15,7 +16,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -201,7 +201,7 @@ enum UpdateBehavior {
 bool UpdateOverridesList(base::Value::List& overrides_list,
                          const std::string& override_url,
                          UpdateBehavior behavior) {
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       overrides_list, [&override_url](const base::Value& value) {
         if (!value.is_dict())
           return false;
@@ -255,6 +255,7 @@ void UpdateOverridesLists(Profile* profile,
       base::RepeatingCallback<void(WebContents*)> callback =
           base::BindRepeating(&UnregisterAndReplaceOverrideForWebContents,
                               page_override_pair.first, profile);
+      // Apply to all existing tabs.
       extensions::ExtensionTabUtil::ForEachTab(callback);
     }
   }

@@ -260,41 +260,41 @@ TEST_F(ChooseFileJavaScriptFeatureTest, TestInvalidPayload) {
   // Test synchronisation
   web::test::ExecuteJavaScriptForFeature(
       web_state_.get(),
-      @"__gCrWeb.common.sendWebKitMessage('ChooseFileHandler', "
+      @"window.webkit.messageHandlers['ChooseFileHandler'].postMessage("
       @"{'acceptType':0,'hasMultiple':true,'hasSelectedFile':false});",
       ChooseFileJavaScriptFeature::GetInstance());
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", 1);
 
   web::test::ExecuteJavaScriptForFeature(
       web_state_.get(),
-      @"__gCrWeb.common.sendWebKitMessage('ChooseFileHandler', {});",
+      @"window.webkit.messageHandlers['ChooseFileHandler'].postMessage({});",
       ChooseFileJavaScriptFeature::GetInstance());
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", 1);
 
   web::test::ExecuteJavaScriptForFeature(
       web_state_.get(),
-      @"__gCrWeb.common.sendWebKitMessage('ChooseFileHandler', "
+      @"window.webkit.messageHandlers['ChooseFileHandler'].postMessage("
       @"{'acceptType':-2, 'hasMultiple':true,'hasSelectedFile':false});",
       ChooseFileJavaScriptFeature::GetInstance());
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", 1);
 
   web::test::ExecuteJavaScriptForFeature(
       web_state_.get(),
-      @"__gCrWeb.common.sendWebKitMessage('ChooseFileHandler', "
+      @"window.webkit.messageHandlers['ChooseFileHandler'].postMessage("
       @"{'acceptType':37, 'hasMultiple':true,'hasSelectedFile':false});",
       ChooseFileJavaScriptFeature::GetInstance());
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", 1);
 
   web::test::ExecuteJavaScriptForFeature(
       web_state_.get(),
-      @"__gCrWeb.common.sendWebKitMessage('ChooseFileHandler', "
+      @"window.webkit.messageHandlers['ChooseFileHandler'].postMessage("
       @"{'acceptType':'invalid', 'hasMultiple':true,'hasSelectedFile':false});",
       ChooseFileJavaScriptFeature::GetInstance());
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", 1);
 
   web::test::ExecuteJavaScriptForFeature(
       web_state_.get(),
-      @"__gCrWeb.common.sendWebKitMessage('ChooseFileHandler', "
+      @"window.webkit.messageHandlers['ChooseFileHandler'].postMessage("
       @"{'missing':'invalid', 'hasMultiple':true,'hasSelectedFile':false});",
       ChooseFileJavaScriptFeature::GetInstance());
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", 1);
@@ -302,7 +302,7 @@ TEST_F(ChooseFileJavaScriptFeatureTest, TestInvalidPayload) {
   // Test synchronisation
   web::test::ExecuteJavaScriptForFeature(
       web_state_.get(),
-      @"__gCrWeb.common.sendWebKitMessage('ChooseFileHandler', "
+      @"window.webkit.messageHandlers['ChooseFileHandler'].postMessage("
       @"{'acceptType':0,'hasMultiple':true,'hasSelectedFile':false});",
       ChooseFileJavaScriptFeature::GetInstance());
   histogram_tester.ExpectTotalCount("IOS.Web.FileInput.Clicked", 2);

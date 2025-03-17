@@ -400,7 +400,7 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
     identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
         gaia_id_, email_, result.refresh_token,
         result.is_under_advanced_protection,
-        signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN,
+        signin_metrics::AccessPoint::kForcedSignin,
         signin_metrics::SourceForRefreshTokenOperation::
             kInlineLoginHandler_Signin);
   } else {
@@ -457,7 +457,7 @@ void InlineSigninHelper::CreateSyncStarter(const std::string& refresh_token) {
       identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
           gaia_id_, email_, refresh_token,
           /*is_under_advanced_protection=*/false,
-          signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN,
+          signin_metrics::AccessPoint::kForcedSignin,
           signin_metrics::SourceForRefreshTokenOperation::
               kInlineLoginHandler_Signin);
 

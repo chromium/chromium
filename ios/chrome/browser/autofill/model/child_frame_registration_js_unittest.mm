@@ -32,7 +32,7 @@
 
 - (void)userContentController:(WKUserContentController*)userContentController
       didReceiveScriptMessage:(WKScriptMessage*)message {
-    ++self.registrationsCount;
+  ++self.registrationsCount;
 }
 
 @end

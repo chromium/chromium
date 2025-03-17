@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -152,10 +151,6 @@ BrowserLiveTabContext::GetVisualDataForGroup(
 const std::optional<base::Uuid>
 BrowserLiveTabContext::GetSavedTabGroupIdForGroup(
     const tab_groups::TabGroupId& group) const {
-  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
-    return std::nullopt;
-  }
-
   Profile* profile = browser_->profile();
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
@@ -240,8 +235,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
           group_id.value(), tab.group_visual_data.value());
 
       // Save the group if it was not saved.
-      if (!tab_group_service->GetGroup(group_id.value()).has_value() &&
-          tab_groups::IsTabGroupsSaveV2Enabled()) {
+      if (!tab_group_service->GetGroup(group_id.value()).has_value()) {
         tab_group_service->SaveGroup(
             tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
                 tab.group.value()));

@@ -4,6 +4,7 @@
 
 #include "ash/accelerators/accelerator_commands.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "ash/accelerators/accelerator_lookup.h"
@@ -51,6 +52,8 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/power/power_button_controller.h"
+#include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_model.h"
@@ -89,7 +92,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
@@ -146,6 +148,9 @@ constexpr char kAssistantErrorToastId[] = "assistant_error";
 // Toast ID for the notification center tray "No notifications" toast.
 constexpr char kNotificationCenterTrayNoNotificationsToastId[] =
     "notification_center_tray_toast_ids.no_notifications";
+// Toast IDs for the Toggle Camera Allowed shortcut.
+constexpr char kToggleCameraToastId[] = "toggle_camera_toast";
+constexpr char kCameraForceDisabledToastId[] = "camera_force_disabled_toast";
 
 // These values are written to logs.  New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.
@@ -1227,7 +1232,7 @@ void ShiftPrimaryDisplay() {
   const display::Displays& active_display_list =
       display_manager->active_display_list();
 
-  auto primary_display_iter = base::ranges::find(
+  auto primary_display_iter = std::ranges::find(
       active_display_list, primary_display_id, &display::Display::id);
 
   DCHECK(primary_display_iter != active_display_list.end());
@@ -1436,6 +1441,54 @@ void ToggleCalendar() {
   tray->bubble()->ShowCalendarView(
       calendar_metrics::CalendarViewShowSource::kAccelerator,
       calendar_metrics::CalendarEventSource::kKeyboard);
+}
+
+void ToggleCameraAllowed() {
+  if (!features::IsToggleCameraShortcutEnabled()) {
+    return;
+  }
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!pref_service) {
+    return;
+  }
+
+  PrivacyHubController* privacy_hub_controller =
+      Shell::Get()->privacy_hub_controller();
+  if (!privacy_hub_controller) {
+    return;
+  }
+
+  CameraPrivacySwitchController* camera_privacy_switch_controller =
+      privacy_hub_controller->camera_controller();
+  if (!camera_privacy_switch_controller) {
+    return;
+  }
+
+  // Camera access may be force-disabled in cases where an admin is using Remote
+  // Desktop to control a user's device. This shortcut should respect that
+  // setting and should not enable the camera in such situations.
+  if (camera_privacy_switch_controller->IsCameraAccessForceDisabled()) {
+    ShowToast(kCameraForceDisabledToastId,
+              ToastCatalogName::kCameraForceDisabled,
+              l10n_util::GetStringUTF16(IDS_ASH_CAMERA_ACCESS_DISABLED));
+    return;
+  }
+
+  // Toggle the value of the pref.
+  const bool wasCameraPreviouslyAllowed =
+      pref_service->GetBoolean(prefs::kUserCameraAllowed);
+  const bool isCameraNowAllowed = !wasCameraPreviouslyAllowed;
+  pref_service->SetBoolean(prefs::kUserCameraAllowed, isCameraNowAllowed);
+
+  if (isCameraNowAllowed) {
+    ShowToast(kToggleCameraToastId, ToastCatalogName::kCameraNowAllowed,
+              l10n_util::GetStringUTF16(IDS_ASH_CAMERA_NOW_ALLOWED));
+  } else {
+    ShowToast(kToggleCameraToastId, ToastCatalogName::kCameraNowAllowed,
+              l10n_util::GetStringUTF16(IDS_ASH_CAMERA_NOW_DISALLOWED));
+  }
 }
 
 void ToggleCapsLock() {

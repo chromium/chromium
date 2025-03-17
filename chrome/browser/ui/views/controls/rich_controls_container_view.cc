@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 
+#include <string_view>
+
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -101,7 +103,7 @@ views::Label* RichControlsContainerView::AddSecondaryLabel(
       text, views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4);
   secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   secondary_label->SetMultiLine(true);
-  secondary_label->SetEnabledColorId(kColorPageInfoSubtitleForeground);
+  secondary_label->SetEnabledColor(kColorPageInfoSubtitleForeground);
 
   return labels_wrapper_->AddChildView(std::move(secondary_label));
 }
@@ -148,10 +150,10 @@ void RichControlsContainerView::SetTitleTextStyleAndColor(
     int style,
     ui::ColorId color_id) {
   title_->SetTextStyle(style);
-  title_->SetEnabledColorId(color_id);
+  title_->SetEnabledColor(color_id);
 }
 
-const std::u16string& RichControlsContainerView::GetTitleForTesting() {
+std::u16string_view RichControlsContainerView::GetTitleForTesting() const {
   return title_->GetText();
 }
 

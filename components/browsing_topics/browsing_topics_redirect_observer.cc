@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "components/browsing_topics/browsing_topics_page_load_data_tracker.h"
 #include "content/public/browser/navigation_handle.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace browsing_topics {
@@ -14,7 +15,7 @@ namespace browsing_topics {
 // static
 void BrowsingTopicsRedirectObserver::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
+  if (!base::FeatureList::IsEnabled(network::features::kBrowsingTopics)) {
     return;
   }
 
@@ -28,6 +29,35 @@ BrowsingTopicsRedirectObserver::BrowsingTopicsRedirectObserver(
           *web_contents) {}
 
 BrowsingTopicsRedirectObserver::~BrowsingTopicsRedirectObserver() = default;
+
+BrowsingTopicsRedirectObserver::PendingNavigationRedirectState::
+    PendingNavigationRedirectState(
+        std::set<HashedHost>
+            pending_navigation_redirect_hosts_with_topics_invoked,
+        ukm::SourceId source_id_before_redirects)
+    : pending_navigation_redirect_hosts_with_topics_invoked(
+          std::move(pending_navigation_redirect_hosts_with_topics_invoked)),
+      source_id_before_redirects(source_id_before_redirects) {}
+
+BrowsingTopicsRedirectObserver::PendingNavigationRedirectState::
+    ~PendingNavigationRedirectState() = default;
+
+BrowsingTopicsRedirectObserver::PendingNavigationRedirectState::
+    PendingNavigationRedirectState(PendingNavigationRedirectState&& other)
+    : pending_navigation_redirect_hosts_with_topics_invoked(std::move(
+          other.pending_navigation_redirect_hosts_with_topics_invoked)),
+      source_id_before_redirects(other.source_id_before_redirects) {}
+
+BrowsingTopicsRedirectObserver::PendingNavigationRedirectState&
+BrowsingTopicsRedirectObserver::PendingNavigationRedirectState::operator=(
+    PendingNavigationRedirectState&& other) {
+  if (this != &other) {
+    pending_navigation_redirect_hosts_with_topics_invoked =
+        std::move(other.pending_navigation_redirect_hosts_with_topics_invoked);
+    source_id_before_redirects = other.source_id_before_redirects;
+  }
+  return *this;
+}
 
 void BrowsingTopicsRedirectObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -65,24 +95,11 @@ void BrowsingTopicsRedirectObserver::ReadyToCommitNavigation(
               ->GetPrimaryMainFrame()
               ->GetPage());
 
-  int pending_navigation_redirect_count =
-      previous_page_tracker->redirect_count() + 1;
-  int pending_navigation_redirect_with_topics_invoked_count =
-      previous_page_tracker->redirect_with_topics_invoked_count();
-  ukm::SourceId source_id_before_redirects =
-      previous_page_tracker->source_id_before_redirects();
-
-  if (previous_page_tracker->topics_invoked()) {
-    pending_navigation_redirect_with_topics_invoked_count++;
-  }
-
   pending_navigations_redirect_state_.emplace(
       navigation_handle,
-      PendingNavigationRedirectState{
-          .redirect_count = pending_navigation_redirect_count,
-          .redirect_with_topics_invoked_count =
-              pending_navigation_redirect_with_topics_invoked_count,
-          .source_id_before_redirects = source_id_before_redirects});
+      PendingNavigationRedirectState(
+          previous_page_tracker->redirect_hosts_with_topics_invoked(),
+          previous_page_tracker->source_id_before_redirects()));
 }
 
 void BrowsingTopicsRedirectObserver::DidFinishNavigation(
@@ -114,8 +131,9 @@ void BrowsingTopicsRedirectObserver::DidFinishNavigation(
   // URL params).
   if (!page_tracker) {
     BrowsingTopicsPageLoadDataTracker::CreateForPage(
-        page, extracted.mapped().redirect_count,
-        extracted.mapped().redirect_with_topics_invoked_count,
+        page,
+        std::move(extracted.mapped()
+                      .pending_navigation_redirect_hosts_with_topics_invoked),
         extracted.mapped().source_id_before_redirects);
   }
 }

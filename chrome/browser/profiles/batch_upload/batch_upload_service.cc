@@ -34,10 +34,11 @@ constexpr base::TimeDelta kBatchUploadAvatarButtonOverrideTextDuration =
 // This list contains all the data types that are available for the Batch Upload
 // dialog. Data types should not be repeated and the list is ordered based on
 // the priority of showing in the dialog.
-const std::array<syncer::DataType, 3> kBatchUploadOrderedAvailableTypes{
+const std::array<syncer::DataType, 4> kBatchUploadOrderedAvailableTypes{
     syncer::DataType::PASSWORDS,
     syncer::DataType::BOOKMARKS,
     syncer::DataType::CONTACT_INFO,
+    syncer::DataType::THEMES,
 };
 
 // Data descriptions with no local data will be filtered out.
@@ -158,7 +159,7 @@ void BatchUploadService::OnBatchUploadDialogResult(
     return;
   }
 
-  sync_service_->TriggerLocalDataMigration(item_ids_to_move);
+  sync_service_->TriggerLocalDataMigrationForItems(item_ids_to_move);
 
   // `browser` may be null in tests.
   if (browser) {

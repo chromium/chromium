@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace signin {
@@ -125,7 +126,7 @@ class AccountReconcilorDelegateTest
     std::vector<gaia::ListedAccount> gaia_accounts;
     for (char c : account_string) {
       gaia::ListedAccount account;
-      account.id = CoreAccountId::FromGaiaId(std::string(1, c));
+      account.id = CoreAccountId::FromGaiaId(GaiaId(std::string(1, c)));
       gaia_accounts.push_back(account);
     }
     return gaia_accounts;
@@ -135,11 +136,11 @@ class AccountReconcilorDelegateTest
 TEST_P(AccountReconcilorDelegateTest, ReorderChromeAccountsForReconcile) {
   // Decode test parameters.
   CoreAccountId first_account =
-      CoreAccountId::FromGaiaId(GetParam().first_account);
+      CoreAccountId::FromGaiaId(GaiaId(GetParam().first_account));
   std::vector<CoreAccountId> chrome_accounts;
   for (char chrome_account : GetParam().chrome_accounts) {
     chrome_accounts.push_back(
-        CoreAccountId::FromGaiaId(std::string(1, chrome_account)));
+        CoreAccountId::FromGaiaId(GaiaId(std::string(1, chrome_account))));
   }
   ASSERT_TRUE(first_account.empty() ||
               base::Contains(chrome_accounts, first_account))

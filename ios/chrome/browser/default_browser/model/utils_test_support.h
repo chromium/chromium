@@ -33,4 +33,8 @@ void SimulateUserInterestedDefaultBrowserUserActivity(
     DefaultPromoType type,
     const base::TimeDelta& timeAgo);
 
+// Overwrite local storage for non-modal promo interaction.
+void SimulateUserInteractionWithNonModalPromo(base::TimeDelta time_ago,
+                                              int interaction_count);
+
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_UTILS_TEST_SUPPORT_H_

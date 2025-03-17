@@ -191,7 +191,7 @@ void ContentSetting::HandleFunction(const std::string& method_name,
         args.push_back(object);
       }
       JSRunner::Get(context)->RunJSFunction(parse_result.callback, context,
-                                            args.size(), args.data());
+                                            args);
     }
     return;
   }

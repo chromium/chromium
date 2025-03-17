@@ -36,7 +36,7 @@ void ProfileTokenQualityTestApi::AddObservation(
 
 std::vector<ProfileTokenQualityTestApi::FormSignatureHash>
 ProfileTokenQualityTestApi::GetHashesForStoredType(FieldType type) const {
-  CHECK(GetDatabaseStoredTypesOfAutofillProfile().contains(type));
+  CHECK(AutofillProfile::kDatabaseStoredTypes.contains(type));
   auto it = quality_->observations_.find(type);
   if (it == quality_->observations_.end()) {
     return {};

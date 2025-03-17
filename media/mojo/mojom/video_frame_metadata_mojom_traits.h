@@ -57,8 +57,8 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.end_of_stream;
   }
 
-  static bool texture_owner(const media::VideoFrameMetadata& input) {
-    return input.texture_owner;
+  static bool in_surface_view(const media::VideoFrameMetadata& input) {
+    return input.in_surface_view;
   }
 
   static bool wants_promotion_hint(const media::VideoFrameMetadata& input) {
@@ -181,6 +181,11 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
   static std::optional<uint64_t> frame_sequence(
       const media::VideoFrameMetadata& input) {
     return input.frame_sequence;
+  }
+
+  static std::optional<uint64_t> source_id(
+      const media::VideoFrameMetadata& input) {
+    return input.source_id;
   }
 
   static intermediate::EffectState background_blur(

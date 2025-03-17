@@ -4,7 +4,6 @@
 
 #include "extensions/renderer/guest_view/mime_handler_view/post_message_support.h"
 
-#include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"

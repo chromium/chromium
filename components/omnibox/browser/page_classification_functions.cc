@@ -4,6 +4,8 @@
 #include "components/omnibox/browser/page_classification_functions.h"
 
 #include "base/check.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
+#include "page_classification_functions.h"
 
 namespace omnibox {
 
@@ -53,11 +55,28 @@ bool IsAndroidHub(OEP::PageClassification classification) {
   return classification == OEP::ANDROID_HUB;
 }
 
+bool IsWebUISearchbox(OEP::PageClassification classification) {
+  return classification == OEP::NTP_REALBOX || IsLensSearchbox(classification);
+}
+
 void CheckObsoletePageClass(OEP::PageClassification classification) {
   CHECK(classification != OEP::OBSOLETE_INSTANT_NTP &&
         classification !=
             OEP::OBSOLETE_INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS)
       << "b/357961079: invalid/unexpected page context. Please report.";
+}
+
+bool SupportsMostVisitedSites(OEP::PageClassification classification) {
+  if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled) {
+    // This provider doesn't actually run on SRP_ZPS_PREFETCH page
+    // classification since it doesn't implement prefetching.
+    return classification == OEP::OTHER_ON_CCT ||
+           classification == OEP::OTHER || IsSearchResultsPage(classification);
+  }
+
+  return classification == OEP::OTHER ||
+         classification == OEP::ANDROID_SEARCH_WIDGET ||
+         classification == OEP::ANDROID_SHORTCUTS_WIDGET;
 }
 
 }  // namespace omnibox

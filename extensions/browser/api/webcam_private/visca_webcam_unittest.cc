@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/webcam_private/visca_webcam.h"
 
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -50,11 +46,6 @@ class MockSerialConnection : public SerialConnection {
                     SendCompleteCallback callback));
 };
 
-template <size_t N>
-std::vector<uint8_t> ToByteVector(const uint8_t (&array)[N]) {
-  return std::vector<uint8_t>(array, array + N);
-}
-
 }  // namespace
 
 class ViscaWebcamTest : public testing::Test {
@@ -82,11 +73,11 @@ TEST_F(ViscaWebcamTest, Zoom) {
   const uint8_t kGetZoomCommand[] = {0x81, 0x09, 0x04, 0x47, 0xFF};
   const uint8_t kGetZoomResponse[] = {0x00, 0x50, 0x01, 0x02, 0x03, 0x04, 0xFF};
 
-  EXPECT_CALL(*serial_connection(), Send(ToByteVector(kGetZoomCommand), _))
+  EXPECT_CALL(*serial_connection(), Send(base::ToVector(kGetZoomCommand), _))
       .WillOnce(RunOnceCallback<1>(sizeof(kGetZoomCommand),
                                    api::serial::SendError::kNone));
   EXPECT_CALL(*serial_connection(), StartPolling(_))
-      .WillOnce(RunCallback<0>(ToByteVector(kGetZoomResponse),
+      .WillOnce(RunCallback<0>(base::ToVector(kGetZoomResponse),
                                api::serial::ReceiveError::kNone));
 
   {
@@ -107,16 +98,17 @@ TEST_F(ViscaWebcamTest, Zoom) {
   }
 
   // Check setting the zoom.
-  const uint8_t kSetZoomCommand[] = {0x81, 0x01, 0x04, 0x47, 0x06,
-                                     0x02, 0x05, 0x03, 0xFF};
+  static constexpr uint8_t kSetZoomCommand[] = {0x81, 0x01, 0x04, 0x47, 0x06,
+                                                0x02, 0x05, 0x03, 0xFF};
   // Note: this is a valid, but empty value because nothing is checking it.
-  const uint8_t kSetZoomResponse[] = {0x00, 0x50, 0x00, 0x00, 0x00, 0x00, 0xFF};
+  static constexpr uint8_t kSetZoomResponse[] = {0x00, 0x50, 0x00, 0x00,
+                                                 0x00, 0x00, 0xFF};
 
-  EXPECT_CALL(*serial_connection(), Send(ToByteVector(kSetZoomCommand), _))
+  EXPECT_CALL(*serial_connection(), Send(base::ToVector(kSetZoomCommand), _))
       .WillOnce(RunOnceCallback<1>(sizeof(kSetZoomCommand),
                                    api::serial::SendError::kNone));
   EXPECT_CALL(*serial_connection(), StartPolling(_))
-      .WillOnce(RunCallback<0>(ToByteVector(kSetZoomResponse),
+      .WillOnce(RunCallback<0>(base::ToVector(kSetZoomResponse),
                                api::serial::ReceiveError::kNone));
 
   {

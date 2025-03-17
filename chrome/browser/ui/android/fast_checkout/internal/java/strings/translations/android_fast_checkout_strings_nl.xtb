@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1122068467107743258">Werk</translation>
 <translation id="1275718070701477396">Geselecteerd</translation>
 <translation id="138513070655895675">Verander van betaalmethode via dit menu-item.</translation>
 <translation id="2129442648318919291">Beheer adressen.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Verzendadres</translation>
 <translation id="8873105120914375071">Sneller betalen?</translation>
 <translation id="9032876013752408138">Mijn gegevens automatisch invullen</translation>
+<translation id="932327136139879170">Homepage</translation>
 <translation id="984275831282074731">Betaalmethoden</translation>
 </translationbundle>

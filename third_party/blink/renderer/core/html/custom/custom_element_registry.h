@@ -103,9 +103,9 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
 
   Member<const LocalDOMWindow> owner_;
 
-  using UpgradeCandidateSet = HeapHashSet<WeakMember<Element>>;
+  using UpgradeCandidateSet = GCedHeapHashSet<WeakMember<Element>>;
   using UpgradeCandidateMap =
-      HeapHashMap<AtomicString, Member<UpgradeCandidateSet>>;
+      GCedHeapHashMap<AtomicString, Member<UpgradeCandidateSet>>;
 
   // Candidate elements that can be upgraded with this registry later.
   // To make implementation simpler, we maintain a superset here, and remove
@@ -119,7 +119,7 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
 
   // Weak ordered set of all documents where this registry is used, in the order
   // of association between this registry and any tree scope in the document.
-  using AssociatedDocumentSet = HeapLinkedHashSet<WeakMember<Document>>;
+  using AssociatedDocumentSet = GCedHeapLinkedHashSet<WeakMember<Document>>;
   Member<AssociatedDocumentSet> associated_documents_;
 
   FRIEND_TEST_ALL_PREFIXES(

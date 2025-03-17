@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {ContainerInfo, ContainerSelectElement, CrostiniBrowserProxyImpl, CrostiniPortForwardingElement, CrostiniPortSetting} from 'chrome://os-settings/lazy_load.js';
-import {CrInputElement, CrToastElement, CrToggleElement, Router, routes} from 'chrome://os-settings/os_settings.js';
+import type {ContainerInfo, ContainerSelectElement, CrostiniPortForwardingElement, CrostiniPortSetting} from 'chrome://os-settings/lazy_load.js';
+import {CrostiniBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {CrInputElement, CrToastElement, CrToggleElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

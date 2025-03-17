@@ -18,13 +18,14 @@
 #include "net/base/isolation_info.h"
 #include "net/base/request_priority.h"
 #include "net/cookies/site_for_cookies.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/socket_tag.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/attribution.mojom.h"
@@ -62,7 +63,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   struct COMPONENT_EXPORT(NETWORK_CPP_BASE) TrustedParams {
     TrustedParams();
     ~TrustedParams();
-    // TODO(altimin): Make this move-only to avoid cloning mojo interfaces.
+    // TODO(crbug.com/332706093): Make this move-only to avoid cloning mojo
+    // interfaces.
     TrustedParams(const TrustedParams& params);
     TrustedParams& operator=(const TrustedParams& other);
     TrustedParams(TrustedParams&& other);
@@ -216,12 +218,22 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
-  std::optional<std::vector<net::SourceStream::SourceType>>
+  std::optional<std::vector<net::SourceStreamType>>
       devtools_accepted_stream_types;
   std::optional<net::NetLogSource> net_log_create_info;
   std::optional<net::NetLogSource> net_log_reference_info;
+
+  // Used internally by the network service. Should not be modified by external
+  // callers, which should pass in address space of the request initiator via
+  // the ClientSecurityState includde either in URLLoaderFactoryParams or
+  // ResourceRequest::TrustedParams.
+  //
+  // See
+  // https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/mojom/url_request.mojom
+  // for more details.
   mojom::IPAddressSpace target_ip_address_space =
       mojom::IPAddressSpace::kUnknown;
+
   net::StorageAccessApiStatus storage_access_api_status =
       net::StorageAccessApiStatus::kNone;
   network::mojom::AttributionSupport attribution_reporting_support =
@@ -232,8 +244,16 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   std::optional<base::UnguessableToken> attribution_reporting_src_token;
   std::optional<base::UnguessableToken> keepalive_token;
   bool is_ad_tagged = false;
+  bool client_side_content_decoding_enabled = false;
   std::optional<base::UnguessableToken> prefetch_token;
   net::SocketTag socket_tag;
+
+  // Whether this request is allowed to register device bound sessions
+  // or accept challenges for device bound sessions (e.g. due to an
+  // origin trial).
+  bool allows_device_bound_sessions = false;
+
+  std::optional<network::PermissionsPolicy> permissions_policy;
 };
 // LINT.ThenChange(//services/network/prefetch_matches.cc)
 

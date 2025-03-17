@@ -1,0 +1,12 @@
+diff --git a/src/google/protobuf/compiler/csharp/csharp_names.h b/src/google/protobuf/compiler/csharp/csharp_names.h
+new file mode 100644
+index 0000000000000..6d55b01a2c2d5
+--- /dev/null
++++ b/src/google/protobuf/compiler/csharp/csharp_names.h
+@@ -0,0 +1,6 @@
++// Copyright 2025 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++// Redirect for GRPC's sake. See README.chromium
++#include "google/protobuf/compiler/csharp/names.h"

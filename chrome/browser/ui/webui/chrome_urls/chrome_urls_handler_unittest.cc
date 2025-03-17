@@ -6,13 +6,13 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/chrome_urls_ui/mojom/chrome_urls.mojom.h"
+#include "components/webui/chrome_urls/features.h"
+#include "components/webui/chrome_urls/mojom/chrome_urls.mojom.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -111,7 +111,8 @@ class ChromeUrlsHandlerTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_{features::kInternalOnlyUisPref};
+  base::test::ScopedFeatureList feature_list_{
+      chrome_urls::kInternalOnlyUisPref};
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<TestingProfile> profile_;
@@ -213,13 +214,13 @@ TEST_F(ChromeUrlsHandlerTest, GetUrls) {
   base::span<const base::cstring_view> expected_urls =
       chrome::ChromeDebugURLs();
   for (const GURL& url : url_data->command_urls) {
-    EXPECT_TRUE(base::Contains(expected_urls, url));
+    EXPECT_TRUE(base::Contains(expected_urls, url.spec()));
   }
 }
 
 TEST_F(ChromeUrlsHandlerTest, SetDebugPagesEnabled) {
   // Initialize the pref to false.
-  local_state_.Get()->SetUserPref(prefs::kInternalOnlyUisEnabled,
+  local_state_.Get()->SetUserPref(chrome_urls::kInternalOnlyUisEnabled,
                                   std::make_unique<base::Value>(false));
   base::MockCallback<base::RepeatingClosure> callback;
   EXPECT_CALL(callback, Run).Times(1);
@@ -227,7 +228,7 @@ TEST_F(ChromeUrlsHandlerTest, SetDebugPagesEnabled) {
 
   // Pref value is true after SetDebugPagesEnabled() is called.
   const base::Value* pref =
-      local_state_.Get()->GetUserPref(prefs::kInternalOnlyUisEnabled);
+      local_state_.Get()->GetUserPref(chrome_urls::kInternalOnlyUisEnabled);
   EXPECT_TRUE(!!pref && pref->GetBool());
 }
 

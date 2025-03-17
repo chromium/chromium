@@ -33,8 +33,9 @@ std::u16string GenerateKeywordFromNavigationItem(
     const web::NavigationItem* item) {
   // Don't autogenerate keywords for pages that are the result of form
   // submissions.
-  if (IsFormSubmit(item))
+  if (IsFormSubmit(item)) {
     return std::u16string();
+  }
 
   // The code from Desktop will try NavigationEntry::GetUserTypedURL() first if
   // available since that represents what the user typed to get here, and fall
@@ -59,7 +60,7 @@ std::u16string GenerateKeywordFromNavigationItem(
 
   return TemplateURL::GenerateKeyword(url);
 }
-}
+}  // namespace
 
 SearchEngineTabHelper::~SearchEngineTabHelper() {}
 
@@ -89,8 +90,9 @@ void SearchEngineTabHelper::OnFaviconUpdated(
   TemplateURLService* url_service =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
   const GURL potential_search_url = driver->GetActiveURL();
-  if (url_service && url_service->loaded() && potential_search_url.is_valid())
+  if (url_service && url_service->loaded() && potential_search_url.is_valid()) {
     url_service->UpdateProviderFavicons(potential_search_url, icon_url);
+  }
 }
 
 // When the page is loaded, checks if `searchable_url_` has a value generated
@@ -126,8 +128,9 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
   // When `page_url` has file: scheme, this method doesn't work because of
   // http://b/issue?id=863583. For that reason, this doesn't check and allow
   // urls referring to osdd urls with same schemes.
-  if (!osdd_url.is_valid() || !osdd_url.SchemeIsHTTPOrHTTPS())
+  if (!osdd_url.is_valid() || !osdd_url.SchemeIsHTTPOrHTTPS()) {
     return;
+  }
 
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
@@ -142,18 +145,21 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
   const web::NavigationManager* manager = web_state_->GetNavigationManager();
   const web::NavigationItem* item = nullptr;
   for (int index = manager->GetLastCommittedItemIndex(); true; --index) {
-    if (index < 0)
+    if (index < 0) {
       return;
+    }
     item = manager->GetItemAtIndex(index);
-    if (!IsFormSubmit(item))
+    if (!IsFormSubmit(item)) {
       break;
+    }
   }
 
   // Autogenerate a keyword for the autodetected case; in the other cases we'll
   // generate a keyword later after fetching the OSDD.
   std::u16string keyword = GenerateKeywordFromNavigationItem(item);
-  if (keyword.empty())
+  if (keyword.empty()) {
     return;
+  }
 
   // Download the OpenSearch description document. If this is successful, a
   // new keyword will be created when done. For `render_frame_id` arg, it's used
@@ -188,20 +194,23 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
   int last_index = manager->GetLastCommittedItemIndex();
   // When there was no previous page, the last index will be 0. This is
   // normally due to a form submit that opened in a new tab.
-  if (last_index <= 0)
+  if (last_index <= 0) {
     return;
+  }
   const web::NavigationItem* current_item = manager->GetItemAtIndex(last_index);
   const web::NavigationItem* previous_item =
       manager->GetItemAtIndex(last_index - 1);
 
   std::u16string keyword(GenerateKeywordFromNavigationItem(previous_item));
-  if (keyword.empty())
+  if (keyword.empty()) {
     return;
+  }
 
   TemplateURLService* url_service =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
-  if (!url_service)
+  if (!url_service) {
     return;
+  }
 
   if (!url_service->loaded()) {
     url_service->Load();

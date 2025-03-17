@@ -6,7 +6,7 @@
  * @fileoverview The implementation of Desk API
  */
 
-import {DeskApi, LaunchOptions, RemoveDeskOptions, WindowProperties} from './types.js';
+import type {DeskApi, LaunchOptions, RemoveDeskOptions, WindowProperties} from './types.js';
 
 
 /**

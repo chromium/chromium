@@ -73,7 +73,7 @@ constexpr char kNoBindingChallenge[] = "";
 
 struct ExtractCredentialsTestCase {
   struct AccountCredentials {
-    std::string gaia_id;
+    GaiaId gaia_id;
     std::string refresh_token;
     std::vector<uint8_t> binding_key;
   };
@@ -86,33 +86,37 @@ struct ExtractCredentialsTestCase {
 
 const ExtractCredentialsTestCase kExtractCredentialsTestCases[] = {
     {.test_suffix = "NotMovedKeyConflictExistingBound",
-     .account_before_move = {"A", "new_tokenA", {1}},
-     .existing_accounts = {{"A", "old_tokenA", {2}}, {"B", "old_tokenB", {2}}},
-     .account_after_move = {"A", "old_tokenA", {2}}},
+     .account_before_move = {GaiaId("A"), "new_tokenA", {1}},
+     .existing_accounts = {{GaiaId("A"), "old_tokenA", {2}},
+                           {GaiaId("B"), "old_tokenB", {2}}},
+     .account_after_move = {GaiaId("A"), "old_tokenA", {2}}},
     {.test_suffix = "NotMovedKeyConflictExistingUnbound",
-     .account_before_move = {"A", "new_tokenA", {1}},
-     .existing_accounts = {{"A", "old_tokenA"}, {"B", "old_tokenB", {2}}},
-     .account_after_move = {"A", "old_tokenA"}},
+     .account_before_move = {GaiaId("A"), "new_tokenA", {1}},
+     .existing_accounts = {{GaiaId("A"), "old_tokenA"},
+                           {GaiaId("B"), "old_tokenB", {2}}},
+     .account_after_move = {GaiaId("A"), "old_tokenA"}},
     {.test_suffix = "MovedBoundOverridesExisting",
-     .account_before_move = {"A", "new_tokenA", {1}},
-     .existing_accounts = {{"A", "old_tokenA", {2}}, {"B", "old_tokenB"}},
-     .account_after_move = {"A", "new_tokenA", {1}}},
+     .account_before_move = {GaiaId("A"), "new_tokenA", {1}},
+     .existing_accounts = {{GaiaId("A"), "old_tokenA", {2}},
+                           {GaiaId("B"), "old_tokenB"}},
+     .account_after_move = {GaiaId("A"), "new_tokenA", {1}}},
     {.test_suffix = "MovedUnboundOverridesExisting",
-     .account_before_move = {"A", "new_tokenA"},
-     .existing_accounts = {{"A", "old_tokenA", {2}}, {"B", "old_tokenB", {2}}},
-     .account_after_move = {"A", "new_tokenA"}},
+     .account_before_move = {GaiaId("A"), "new_tokenA"},
+     .existing_accounts = {{GaiaId("A"), "old_tokenA", {2}},
+                           {GaiaId("B"), "old_tokenB", {2}}},
+     .account_after_move = {GaiaId("A"), "new_tokenA"}},
     {.test_suffix = "MovedBoundNoExisting",
-     .account_before_move = {"A", "new_tokenA", {1}},
-     .existing_accounts = {{"B", "old_tokenB"}},
-     .account_after_move = {"A", "new_tokenA", {1}}},
+     .account_before_move = {GaiaId("A"), "new_tokenA", {1}},
+     .existing_accounts = {{GaiaId("B"), "old_tokenB"}},
+     .account_after_move = {GaiaId("A"), "new_tokenA", {1}}},
     {.test_suffix = "MovedWithoutTokenKeyConflictNoExisting",
-     .account_before_move = {"A", "new_tokenA", {1}},
-     .existing_accounts = {{"B", "old_tokenB", {2}}},
-     .account_after_move = {"A", GaiaConstants::kInvalidRefreshToken}},
+     .account_before_move = {GaiaId("A"), "new_tokenA", {1}},
+     .existing_accounts = {{GaiaId("B"), "old_tokenB", {2}}},
+     .account_after_move = {GaiaId("A"), GaiaConstants::kInvalidRefreshToken}},
 };
 
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-}
+}  // namespace
 
 class MutableProfileOAuth2TokenServiceDelegateTest
     : public testing::Test,
@@ -370,8 +374,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, PersistenceDBUpgrade) {
   AddAuthTokenManually("kObfuscatedGaiaId", "primaryLegacyRefreshToken");
 
   // Force LoadCredentials.
-  oauth2_service_delegate_->LoadCredentials(primary_account_id,
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(primary_account_id);
   WaitForRefreshTokensLoaded();
 
   // 1. Legacy tokens get all discarded.
@@ -431,8 +434,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_NOT_STARTED,
             oauth2_service_delegate_->load_credentials_state());
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
   WaitForRefreshTokensLoaded();
   EXPECT_EQ(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
@@ -473,8 +475,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
   AddAuthTokenManually("AccountId-" + account1.ToString(), "refresh_token");
   AddAuthTokenManually("AccountId-" + account2.ToString(), "refresh_token");
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
   WaitForRefreshTokensLoaded();
 
   EXPECT_EQ(1, tokens_loaded_count_);
@@ -504,7 +505,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   // Perform a load from an empty DB.
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_NOT_STARTED,
             oauth2_service_delegate_->load_credentials_state());
-  oauth2_service_delegate_->LoadCredentials(account_id, /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(account_id);
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS,
             oauth2_service_delegate_->load_credentials_state());
   WaitForRefreshTokensLoaded();
@@ -542,7 +543,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   EXPECT_EQ(2, auth_error_changed_count_);
   ResetObserverCounts();
 
-  oauth2_service_delegate_->LoadCredentials(account_id, /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(account_id);
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS,
             oauth2_service_delegate_->load_credentials_state());
   WaitForRefreshTokensLoaded();
@@ -584,8 +585,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   // Perform a load from an empty DB.
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_NOT_STARTED,
             oauth2_service_delegate_->load_credentials_state());
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS,
             oauth2_service_delegate_->load_credentials_state());
   WaitForRefreshTokensLoaded();
@@ -609,8 +609,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   EXPECT_EQ(2, auth_error_changed_count_);
   ResetObserverCounts();
 
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS,
             oauth2_service_delegate_->load_credentials_state());
   WaitForRefreshTokensLoaded();
@@ -644,7 +643,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
   oauth2_service_delegate_->LoadCredentials(
-      /*primary_account_id=*/CoreAccountId(), /*is_syncing=*/false);
+      /*primary_account_id=*/CoreAccountId());
   WaitForRefreshTokensLoaded();
 
   // No tokens were loaded.
@@ -1159,8 +1158,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
                        "refresh_token");
   AddAuthTokenManually("AccountId-" + secondary_account.ToString(),
                        "refresh_token");
-  oauth2_service_delegate_->LoadCredentials(primary_account,
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(primary_account);
   WaitForRefreshTokensLoaded();
 
   EXPECT_EQ(1, tokens_loaded_count_);
@@ -1361,7 +1359,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 // updates the database, and is applied only once.
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
   client_->SetNetworkCallsDelayed(true);
-  revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kDeleteSiteDataOnExit;
+  revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kExplicitRevoke;
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
   CoreAccountId primary_account =
       CoreAccountId::FromGaiaId(GaiaId("primaryaccount"));
@@ -1375,9 +1373,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
                        "refresh_token");
   AddAuthTokenManually("AccountId-" + secondary_account.ToString(),
                        "refresh_token");
-  // With explicit signin, tokens are only cleared at startup for syncing users.
-  oauth2_service_delegate_->LoadCredentials(primary_account,
-                                            /*is_syncing=*/true);
+
+  // When signed in, tokens are only cleared when using
+  // `RevokeAllTokensOnLoad::kExplicitRevoke`.
+  oauth2_service_delegate_->LoadCredentials(primary_account);
   WaitForRefreshTokensLoaded();
 
   EXPECT_EQ(1, tokens_loaded_count_);
@@ -1405,8 +1404,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
   // Check that the changes have been persisted in the database: tokens are not
   // revoked again on the server.
   client_->SetNetworkCallsDelayed(true);
-  oauth2_service_delegate_->LoadCredentials(primary_account,
-                                            /*is_syncing=*/true);
+  oauth2_service_delegate_->LoadCredentials(primary_account);
   WaitForRefreshTokensLoaded();
   EXPECT_TRUE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
@@ -1443,7 +1441,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   {
     base::HistogramTester h_tester;
     AddAuthTokenManually("account_id", "refresh_token");
-    token_service.LoadCredentials(account_id, /*is_syncing=*/false);
+    token_service.LoadCredentials(account_id);
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ("TokenService::LoadCredentials",
@@ -1505,8 +1503,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ExtractCredentials) {
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
 
@@ -1517,7 +1514,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ExtractCredentials) {
       std::make_unique<FakeProfileOAuth2TokenServiceDelegate>();
   FakeProfileOAuth2TokenServiceDelegate* other_delegate = delegate.get();
   ProfileOAuth2TokenService other_token_service(&prefs, std::move(delegate));
-  other_token_service.LoadCredentials(CoreAccountId(), /*is_syncing=*/false);
+  other_token_service.LoadCredentials(CoreAccountId());
 
   // Add credentials to the first token service delegate.
   oauth2_service_delegate_->UpdateCredentials(account_id, "token");
@@ -1547,7 +1544,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
   auto SetUpTestAndReturnScopedCleanup =
       [this](bool new_encryption_enabled, bool expect_reencrypt,
              std::string_view key_prefix,
-             base::HistogramBase::Count expected_writes)
+             base::HistogramBase::Count32 expected_writes)
       -> base::ScopedClosureRunner {
     auto histograms = std::make_unique<base::HistogramTester>();
     auto features = std::make_unique<base::test::ScopedFeatureList>();
@@ -1607,8 +1604,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
     AddAuthTokenManually("invalid-token", "foo");
 
     ResetObserverCounts();
-    oauth2_service_delegate_->LoadCredentials(primary_account,
-                                              /*is_syncing=*/false);
+    oauth2_service_delegate_->LoadCredentials(primary_account);
     WaitForRefreshTokensLoaded();
 
     EXPECT_EQ(1, tokens_loaded_count_);
@@ -1632,8 +1628,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
     AddAuthTokenManually("invalid-token", "foo");
 
     ResetObserverCounts();
-    oauth2_service_delegate_->LoadCredentials(primary_account,
-                                              /*is_syncing=*/false);
+    oauth2_service_delegate_->LoadCredentials(primary_account);
     WaitForRefreshTokensLoaded();
 
     EXPECT_EQ(1, tokens_loaded_count_);
@@ -1652,8 +1647,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
         os_crypt_async::kDefaultTestKeyPrefix, /*expected_writes=*/0);
 
     ResetObserverCounts();
-    oauth2_service_delegate_->LoadCredentials(primary_account,
-                                              /*is_syncing=*/false);
+    oauth2_service_delegate_->LoadCredentials(primary_account);
     WaitForRefreshTokensLoaded();
 
     EXPECT_EQ(1, tokens_loaded_count_);
@@ -1672,8 +1666,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
         /*expected_writes=*/1);
 
     ResetObserverCounts();
-    oauth2_service_delegate_->LoadCredentials(primary_account,
-                                              /*is_syncing=*/false);
+    oauth2_service_delegate_->LoadCredentials(primary_account);
     WaitForRefreshTokensLoaded();
 
     EXPECT_EQ(1, tokens_loaded_count_);
@@ -1788,8 +1781,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   ShutdownOAuth2ServiceDelegate();
   InitializeOAuth2ServiceDelegateWithTokenBinding();
   base::HistogramTester histogram_tester;
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
   WaitForRefreshTokensLoaded();
 
   EXPECT_TRUE(oauth2_service_delegate_->RefreshTokenIsAvailable(kAccountId));
@@ -1837,8 +1829,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   ShutdownOAuth2ServiceDelegate();
   InitializeOAuth2ServiceDelegateWithTokenBinding();
   base::HistogramTester histogram_tester;
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
   WaitForRefreshTokensLoaded();
 
   for (const CoreAccountId& account_id :
@@ -1873,8 +1864,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
                        "refresh_token", kFakePrimaryWrappedBindingKey);
   AddAuthTokenManually("AccountId-" + kSecondaryAccount.ToString(),
                        "refresh_token", kFakeSecondaryWrappedBindingKey);
-  oauth2_service_delegate_->LoadCredentials(kPrimaryAccount,
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(kPrimaryAccount);
   WaitForRefreshTokensLoaded();
 
   EXPECT_TRUE(
@@ -1895,8 +1885,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   // Check that the changes have been persisted in the database: tokens are not
   // revoked again on the server.
   client_->SetNetworkCallsDelayed(true);
-  oauth2_service_delegate_->LoadCredentials(kPrimaryAccount,
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(kPrimaryAccount);
   WaitForRefreshTokensLoaded();
   EXPECT_TRUE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(kPrimaryAccount));
@@ -1913,8 +1902,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
        GenerateRefreshTokenBindingKeyAssertionForMultilogin) {
   InitializeOAuth2ServiceDelegateWithTokenBinding();
 
-  const CoreAccountId kAccountId =
-      account_tracker_service_.SeedAccountInfo("account_id", "test@google.com");
+  const CoreAccountId kAccountId = account_tracker_service_.SeedAccountInfo(
+      GaiaId("account_id"), "test@google.com");
   const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
 
   oauth2_service_delegate_->UpdateCredentials(
@@ -1941,8 +1930,8 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
   ProfileOAuth2TokenService::RegisterProfilePrefs(pref_service_.registry());
   InitializeOAuth2ServiceDelegateWithTokenBinding();
 
-  const CoreAccountId account_id =
-      account_tracker_service_.SeedAccountInfo("account_id", "test@google.com");
+  const CoreAccountId account_id = account_tracker_service_.SeedAccountInfo(
+      GaiaId("account_id"), "test@google.com");
   const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
 
   oauth2_service_delegate_->UpdateCredentials(
@@ -1996,8 +1985,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateExtractCredentialsParamTest,
 
   // Initialize the source token service.
   InitializeOAuth2ServiceDelegateWithTokenBinding();
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
   // Create the target token service.
   sync_preferences::TestingPrefServiceSyncable prefs;
   ProfileOAuth2TokenService::RegisterProfilePrefs(prefs.registry());
@@ -2005,7 +1993,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateExtractCredentialsParamTest,
       std::make_unique<FakeProfileOAuth2TokenServiceDelegate>();
   FakeProfileOAuth2TokenServiceDelegate* target_delegate = delegate.get();
   ProfileOAuth2TokenService target_token_service(&prefs, std::move(delegate));
-  target_token_service.LoadCredentials(CoreAccountId(), /*is_syncing=*/false);
+  target_token_service.LoadCredentials(CoreAccountId());
 
   // Add credentials to the source token service.
   AddAccount(*oauth2_service_delegate_, GetParam().account_before_move);
@@ -2041,17 +2029,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
-class MutableProfileOAuth2TokenServiceDelegateWithUnoDesktopTest
-    : public MutableProfileOAuth2TokenServiceDelegateTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-};
-
 // Checks that, for a signed in non-syncing account in UNO with clear on exit,
 // set_revoke_all_tokens_on_first_load() keeps the tokens for the primary and
 // secondary accounts, updates the database, and is applied only once.
-TEST_F(MutableProfileOAuth2TokenServiceDelegateWithUnoDesktopTest,
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        KeepPrimaryAccountTokenOnStartupWithClearOnExit) {
   client_->SetNetworkCallsDelayed(true);
   revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kDeleteSiteDataOnExit;
@@ -2070,8 +2051,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateWithUnoDesktopTest,
                        refresh_token_primary);
   AddAuthTokenManually("AccountId-" + secondary_account.ToString(),
                        refresh_token_secondary);
-  oauth2_service_delegate_->LoadCredentials(primary_account,
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(primary_account);
   WaitForRefreshTokensLoaded();
 
   EXPECT_EQ(1, tokens_loaded_count_);
@@ -2097,8 +2077,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateWithUnoDesktopTest,
   // Check that the changes have been persisted in the database: tokens are not
   // revoked again on the server.
   client_->SetNetworkCallsDelayed(true);
-  oauth2_service_delegate_->LoadCredentials(primary_account,
-                                            /*is_syncing=*/false);
+  oauth2_service_delegate_->LoadCredentials(primary_account);
   WaitForRefreshTokensLoaded();
   EXPECT_TRUE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));

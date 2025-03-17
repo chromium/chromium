@@ -404,7 +404,7 @@ TEST_F(MixingGraphInputTest, OutOfRange) {
 // Verifies that invalid input is sanitized.
 TEST_F(MixingGraphInputTest, InvalidInput) {
   // Pairs of input values and expected output values.
-  std::array<std::pair<float, float>, 8> test_values = {{
+  std::array<std::pair<float, float>, 9> test_values = {{
       {-1.5f, -1.0f},                                    // Negative overflow.
       {2.0f, 1.0f},                                      // Positive overflow.
       {-0.8, -0.8f},                                     // Valid.
@@ -412,7 +412,8 @@ TEST_F(MixingGraphInputTest, InvalidInput) {
       {0.0, 0.0f},                                       // Valid.
       {std::numeric_limits<float>::infinity(), 1.0f},    // Positive infinity.
       {-std::numeric_limits<float>::infinity(), -1.0f},  // Negative infinity.
-      {NAN, 1.0f},                                       // NaN.
+      {std::numeric_limits<float>::quiet_NaN(), 0.0f},   // NaN.
+      {std::numeric_limits<float>::signaling_NaN(), 0.0f},  // NaN.
   }};
   for (const auto& test_pair : test_values) {
     float input_value = test_pair.first;

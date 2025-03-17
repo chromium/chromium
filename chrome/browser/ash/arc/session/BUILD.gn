@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("session") {
   sources = [
@@ -26,8 +26,6 @@ static_library("session") {
     "arc_provisioning_result.h",
     "arc_requirement_checker.cc",
     "arc_requirement_checker.h",
-    "arc_reven_hardware_checker.cc",
-    "arc_reven_hardware_checker.h",
     "arc_service_launcher.cc",
     "arc_service_launcher.h",
     "arc_session_manager.cc",
@@ -35,16 +33,11 @@ static_library("session") {
     "arc_session_manager_observer.h",
     "arc_vm_data_migration_necessity_checker.cc",
     "arc_vm_data_migration_necessity_checker.h",
-    "mock_arc_reven_hardware_checker.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc:arc_app_constants",
-    "//ash/components/arc/intent_helper",
-    "//ash/components/arc/media_session",
     "//ash/public/cpp",
     "//base",
     "//chrome/app/vector_icons",
@@ -57,6 +50,7 @@ static_library("session") {
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/arc/bluetooth",
     "//chrome/browser/ash/arc/boot_phase_monitor",
+    "//chrome/browser/ash/arc/dlc_installer",
     "//chrome/browser/ash/arc/enterprise",
     "//chrome/browser/ash/arc/enterprise/cert_store",
     "//chrome/browser/ash/arc/error_notification",
@@ -67,26 +61,21 @@ static_library("session") {
     "//chrome/browser/ash/arc/input_method_manager",
     "//chrome/browser/ash/arc/input_overlay",
     "//chrome/browser/ash/arc/intent_helper",
-    "//chrome/browser/ash/arc/keymaster",
-    "//chrome/browser/ash/arc/keymint",
     "//chrome/browser/ash/arc/metrics",
     "//chrome/browser/ash/arc/nearby_share",
     "//chrome/browser/ash/arc/net",
     "//chrome/browser/ash/arc/notification",
-    "//chrome/browser/ash/arc/oemcrypto",
     "//chrome/browser/ash/arc/optin",
     "//chrome/browser/ash/arc/pip",
     "//chrome/browser/ash/arc/policy",
     "//chrome/browser/ash/arc/print_spooler",
     "//chrome/browser/ash/arc/privacy_items",
-    "//chrome/browser/ash/arc/process",
     "//chrome/browser/ash/arc/screen_capture",
     "//chrome/browser/ash/arc/sharesheet",
     "//chrome/browser/ash/arc/survey",
     "//chrome/browser/ash/arc/tracing",
     "//chrome/browser/ash/arc/tts",
     "//chrome/browser/ash/arc/user_session",
-    "//chrome/browser/ash/arc/video",
     "//chrome/browser/ash/arc/vmm",
     "//chrome/browser/ash/arc/wallpaper",
     "//chrome/browser/ash/crostini",
@@ -105,6 +94,7 @@ static_library("session") {
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/common",
     "//chrome/common:channel_info",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/arc:arcvm_data_migrator_proto_lib",
     "//chromeos/ash/components/dbus/cdm_factory_daemon",
@@ -117,8 +107,16 @@ static_library("session") {
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/memory",
-    "//chromeos/ash/services/cros_healthd/public/cpp",
-    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/keymaster",
+    "//chromeos/ash/experiences/arc/keymint",
+    "//chromeos/ash/experiences/arc/media_session",
+    "//chromeos/ash/experiences/arc/oemcrypto",
+    "//chromeos/ash/experiences/arc/process",
+    "//chromeos/ash/experiences/arc/video",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//components/consent_auditor",
@@ -163,15 +161,12 @@ source_set("unit_tests") {
     "arc_disk_space_monitor_unittest.cc",
     "arc_play_store_enabled_preference_handler_unittest.cc",
     "arc_provisioning_result_unittest.cc",
-    "arc_reven_hardware_checker_unittest.cc",
     "arc_session_manager_unittest.cc",
     "arc_vm_data_migration_necessity_checker_unittest.cc",
   ]
 
   deps = [
     ":session",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/app/vector_icons",
@@ -190,16 +185,19 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/login:test_support",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/resourced",
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/memory",
-    "//chromeos/ash/components/mojo_service_manager:fake_mojo_service_manager",
-    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//components/strings:components_strings_grit",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
 
@@ -212,7 +210,6 @@ source_set("browser_tests") {
 
   deps = [
     ":session",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser",
     "//chrome/browser:browser_process",
@@ -221,9 +218,12 @@ source_set("browser_tests") {
     "//chrome/browser/ash/arc/test:arc_test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/test_support",
+    "//chrome/browser/ash/test:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/account_id",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",

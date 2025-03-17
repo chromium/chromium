@@ -1,7 +1,6 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
@@ -37,7 +36,6 @@ mojom("mojom") {
     "compositing/resource_id.mojom",
     "compositing/returned_resource.mojom",
     "compositing/selection.mojom",
-    "compositing/shared_bitmap_id.mojom",
     "compositing/shared_quad_state.mojom",
     "compositing/subtree_capture_id.mojom",
     "compositing/surface_id.mojom",
@@ -55,6 +53,14 @@ mojom("mojom") {
     "hit_test/hit_test_region_list.mojom",
     "hit_test/input_target_client.mojom",
   ]
+
+  # Used in thread.mojom
+  enabled_features = []
+  if (is_fuchsia || is_apple) {
+    enabled_features += [ "thread_id_is_64_bit" ]
+  } else {
+    enabled_features += [ "thread_id_is_32_bit" ]
+  }
 
   deps = [ "//gpu/ipc/common:gmb_interface" ]
 
@@ -75,7 +81,7 @@ mojom("mojom") {
     "//ui/gl/mojom",
     "//ui/latency/mojom",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public_deps += [ "//components/chromeos_camera/common" ]
   }
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
@@ -216,17 +222,6 @@ mojom("mojom") {
       traits_public_deps = [
         "//components/viz/common",
         "//ui/gfx/geometry/mojom",
-      ]
-    },
-    {
-      types = [
-        {
-          mojom = "viz.mojom.SharedBitmapId"
-          cpp = "::viz::SharedBitmapId"
-        },
-      ]
-      traits_headers = [
-        "//services/viz/public/cpp/compositing/shared_bitmap_id_mojom_traits.h",
       ]
     },
   ]

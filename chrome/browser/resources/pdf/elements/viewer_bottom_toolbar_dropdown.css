@@ -5,6 +5,7 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=./pdf_shared.css.js
+ * #import=./shared_vars.css.js
  * #include=pdf-shared
  * #css_wrapper_metadata_end */
 
@@ -14,6 +15,7 @@
 }
 
 cr-button {
+  --cr-focus-outline-color: var(--viewer-icon-focus-outline-color);
   --iron-icon-fill-color: var(--viewer-icon-ink-fill-color);
   border: none;
   height: var(--dropdown-button-size);

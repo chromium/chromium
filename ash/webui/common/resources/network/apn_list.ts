@@ -16,14 +16,16 @@ import './apn_selection_dialog.js';
 import '//resources/ash/common/cr_elements/icons.html.js';
 
 import {assert} from '//resources/js/assert.js';
-import {ApnProperties, ApnSource, ApnState, ManagedCellularProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import type {ApnProperties, ManagedCellularProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnSource, ApnState} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 
-import {ApnDetailDialog} from './apn_detail_dialog.js';
+import type {ApnDetailDialog} from './apn_detail_dialog.js';
 import {getTemplate} from './apn_list.html.js';
-import {ApnDetailDialogMode, ApnEventData, isAttachApn, isDefaultApn} from './cellular_utils.js';
+import type {ApnEventData} from './cellular_utils.js';
+import {ApnDetailDialogMode, isAttachApn, isDefaultApn} from './cellular_utils.js';
 
 const SHILL_INVALID_APN_ERROR = 'invalid-apn';
 

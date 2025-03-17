@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/devtools/device/android_device_manager.h"
 
 #include <stddef.h>
@@ -44,7 +49,7 @@ const int kBufferSize = 16 * 1024;
 
 static const char kModelOffline[] = "Offline";
 
-static const char kRequestLineFormat[] = "GET %s HTTP/1.1";
+static const char kRequestLineFormat[] = "PUT %s HTTP/1.1";
 
 net::NetworkTrafficAnnotationTag kAndroidDeviceManagerTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("android_device_manager_socket", R"(

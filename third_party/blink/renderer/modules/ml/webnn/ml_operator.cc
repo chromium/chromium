@@ -64,6 +64,8 @@ String MLOperator::OperatorKindToString(
           return "lesser";
         case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
           return "lesserOrEqual";
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kNotEqual:
+          return "notEqual";
         case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalAnd:
           return "logicalAnd";
         case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalOr:
@@ -323,7 +325,7 @@ void MLOperator::Connect(HeapVector<Member<MLOperand>> inputs,
     input->AddDependentOperator(this);
   }
 
-  inputs_.assign(inputs);
+  inputs_ = std::move(inputs);
   outputs_ = std::move(outputs);
 }
 

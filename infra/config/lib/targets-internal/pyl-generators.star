@@ -163,7 +163,7 @@ def _generate_swarming_values(formatter, swarming):
     if swarming.service_account:
         formatter.add_line("'service_account': '{}',".format(swarming.service_account))
 
-def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
+def _generate_mixin_values(formatter, mixin):
     """Generate the pyl definitions for mixin fields.
 
     Mixin fields are fields that are common to mixins, variants and test
@@ -172,10 +172,6 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
     Args:
         formatter: The formatter object used for generating indented output.
         mixin: Dict containing the mixin values to output.
-        generate_skylab_container: Whether or not to generate the skylab key to
-            contain the fields of the skylab value. Mixins and the generated
-            test have those fields at top-level, but variants have them under a
-            skylab key.
     """
     if "description" in mixin:
         formatter.add_line("'description': '{}',".format(mixin["description"]))
@@ -210,9 +206,6 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
     if "isolate_profile_data" in mixin:
         formatter.add_line("'isolate_profile_data': {},".format(mixin["isolate_profile_data"]))
 
-    if "timeout_sec" in mixin:
-        formatter.add_line("'timeout_sec': {},".format(mixin["timeout_sec"]))
-
     for swarming_attr in ("swarming", "android_swarming", "chromeos_swarming"):
         if swarming_attr in mixin:
             swarming = mixin[swarming_attr]
@@ -233,8 +226,13 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
 
     if "skylab" in mixin:
         skylab = mixin["skylab"]
-        if generate_skylab_container:
-            formatter.open_scope("'skylab': {")
+        formatter.open_scope("'skylab': {")
+        if skylab.tast_expr:
+            formatter.add_line("'tast_expr': '{}',".format(skylab.tast_expr))
+        if skylab.test_level_retries:
+            formatter.add_line("'test_level_retries': {},".format(skylab.test_level_retries))
+        if skylab.timeout_sec:
+            formatter.add_line("'timeout_sec': {},".format(skylab.timeout_sec))
         if skylab.cros_board:
             formatter.add_line("'cros_board': '{}',".format(skylab.cros_board))
         if skylab.cros_build_target:
@@ -259,10 +257,7 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
             formatter.add_line("'public_builder_bucket': '{}',".format(skylab.public_builder_bucket))
         if skylab.shards:
             formatter.add_line("'shards': {},".format(skylab.shards))
-        if skylab.args:
-            formatter.add_line("'args': {},".format(skylab.args))
-        if generate_skylab_container:
-            formatter.close_scope("},")
+        formatter.close_scope("},")
 
     if "resultdb" in mixin:
         resultdb = mixin["resultdb"]
@@ -325,7 +320,7 @@ def _generate_variants_pyl(ctx):
         if not n.props.enabled:
             formatter.add_line("'enabled': {},".format(n.props.enabled))
 
-        _generate_mixin_values(formatter, mixin, generate_skylab_container = True)
+        _generate_mixin_values(formatter, mixin)
 
         mixins = []
 
@@ -441,11 +436,6 @@ def _generate_test_suites_pyl(ctx):
 
             if target_test_config.telemetry_test_name:
                 test_formatter.add_line("'telemetry_test_name': '{}',".format(target_test_config.telemetry_test_name))
-
-            if suite_test_config.tast_expr:
-                test_formatter.add_line("'tast_expr': '{}',".format(suite_test_config.tast_expr))
-            if suite_test_config.test_level_retries:
-                test_formatter.add_line("'test_level_retries': {},".format(suite_test_config.test_level_retries))
 
             # The order that mixins are declared is significant,
             # DEFINITION_ORDER preserves the order that the edges were added

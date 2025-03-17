@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -16,14 +17,15 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/account_pref_utils.h"
 #include "components/sync/base/features.h"
@@ -55,12 +57,12 @@ constexpr char kObsoleteAutofillWalletImportEnabledMigrated[] =
 constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
     "sync.encryption_bootstrap_token_per_account_migration_done";
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Pref to record if the one-off MaybeMigrateAutofillToPerAccountPref()
 // migration ran.
 constexpr char kAutofillPerAccountPrefMigrationDone[] =
     "sync.passwords_per_account_pref_migration_done";
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  //  BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 constexpr int kNotMigrated = 0;
 constexpr int kMigratedPart1ButNot2 = 1;
@@ -179,6 +181,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::internal::kSyncEncryptionBootstrapToken,
                                std::string());
 
+  // Cached notion of whether or not a persistent auth error exists.
+  registry->RegisterBooleanPref(
+      prefs::internal::kSyncCachedPersistentAuthErrorForMetrics, false);
+
   // The encryption bootstrap token represents a user-entered passphrase per
   // account.
   registry->RegisterDictionaryPref(
@@ -192,9 +198,9 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::internal::kSyncPassphrasePromptMutedProductVersion, 0);
   registry->RegisterBooleanPref(prefs::kEnableLocalSyncBackend, false);
   registry->RegisterFilePathPref(prefs::kLocalSyncBackendDir, base::FilePath());
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   registry->RegisterBooleanPref(kAutofillPerAccountPrefMigrationDone, false);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   registry->RegisterTimePref(
       prefs::internal::kFirstTimeTriedToMigrateSyncFeaturePausedToSignin,
       base::Time());
@@ -253,7 +259,9 @@ bool SyncPrefs::HasKeepEverythingSynced() const {
 }
 
 UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
-    const signin::GaiaIdHash& gaia_id_hash) const {
+    const GaiaId& gaia_id) const {
+  const signin::GaiaIdHash gaia_id_hash =
+      signin::GaiaIdHash::FromGaiaId(gaia_id);
   UserSelectableTypeSet selected_types;
 
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
@@ -293,23 +301,39 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         type_enabled =
             pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
 #endif
-      } else if (type == UserSelectableType::kBookmarks ||
-                 type == UserSelectableType::kReadingList) {
-        type_enabled = true;
-        // Consider kBookmarks and kReadingList off by default until
+      } else if (type == UserSelectableType::kBookmarks) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+        type_enabled =
+            base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+#else
+        // Bookmarks require a specific explicit sign in.
+        type_enabled = SigninPrefs(*pref_service_)
+                           .GetBookmarksExplicitBrowserSignin(gaia_id) ||
+                       base::FeatureList::IsEnabled(
+                           kEnableBookmarksSelectedTypeOnSigninForTesting);
+#endif
+      } else if (type == UserSelectableType::kReadingList) {
+        // Consider kReadingList off by default until
         // `kReplaceSyncPromosWithSignInPromos` is enabled. For existing clients
         // at the time the feature transitions from disabled to enabled, the
         // state at the time is captured as explicit value in
         // `MaybeMigratePrefsForSyncToSigninPart1()`.
-        if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
-            !base::FeatureList::IsEnabled(
-                kEnableBookmarksSelectedTypeOnSigninForTesting)) {
-          type_enabled = false;
-        }
-      } else if (type == UserSelectableType::kExtensions) {
-        // Extensions require an explicit sign in.
         type_enabled =
-            pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
+            base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) ||
+            base::FeatureList::IsEnabled(
+                kEnableBookmarksSelectedTypeOnSigninForTesting);
+      } else if (type == UserSelectableType::kExtensions) {
+        // Extensions require a specific explicit sign in.
+        type_enabled = SigninPrefs(*pref_service_)
+                           .GetExtensionsExplicitBrowserSignin(gaia_id);
+      } else if (type == UserSelectableType::kPreferences ||
+                 type == UserSelectableType::kThemes) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+        type_enabled = true;
+#else
+        type_enabled = pref_service_->GetBoolean(
+            ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
+#endif
       } else {
         // All other types are always enabled by default.
         type_enabled = true;
@@ -394,25 +418,6 @@ bool SyncPrefs::IsTypeDisabledByUserForAccount(
   return false;
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-int SyncPrefs::GetNumberOfAccountsWithPasswordsSelected() const {
-  int n_accounts = 0;
-  for (auto [serialized_gaia_id_hash, selected_types] :
-       pref_service_->GetDict(prefs::internal::kSelectedTypesPerAccount)) {
-    // `selected_types` should be a dict but doesn't hurt to check and be safe.
-    bool enabled =
-        selected_types.is_dict() &&
-        selected_types.GetDict()
-            .FindBool(GetPrefNameForType(UserSelectableType::kPasswords))
-            .value_or(false);
-    if (enabled) {
-      n_accounts++;
-    }
-  }
-  return n_accounts;
-}
-#endif
-
 void SyncPrefs::SetSelectedTypesForSyncingUser(
     bool keep_everything_synced,
     UserSelectableTypeSet registered_types,
@@ -447,6 +452,16 @@ void SyncPrefs::SetSelectedTypeForAccount(
   SetAccountKeyedPrefDictEntry(
       pref_service_, prefs::internal::kSelectedTypesPerAccount, gaia_id_hash,
       GetPrefNameForType(type), base::Value(is_type_on));
+}
+
+void SyncPrefs::ResetSelectedTypeForAccount(
+    UserSelectableType type,
+    const signin::GaiaIdHash& gaia_id_hash) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RemoveAccountKeyedPrefDictEntry(pref_service_,
+                                  prefs::internal::kSelectedTypesPerAccount,
+                                  gaia_id_hash, GetPrefNameForType(type));
 }
 
 void SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(
@@ -586,6 +601,26 @@ void SyncPrefs::ClearCachedPassphraseType() {
   pref_service_->ClearPref(prefs::internal::kSyncCachedPassphraseType);
 }
 
+bool SyncPrefs::HasCachedPersistentAuthErrorForMetrics() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetBoolean(
+      prefs::internal::kSyncCachedPersistentAuthErrorForMetrics);
+}
+
+void SyncPrefs::SetHasCachedPersistentAuthErrorForMetrics(
+    bool has_persistent_auth_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->SetBoolean(
+      prefs::internal::kSyncCachedPersistentAuthErrorForMetrics,
+      has_persistent_auth_error);
+}
+
+void SyncPrefs::ClearCachedPersistentAuthErrorForMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->ClearPref(
+      prefs::internal::kSyncCachedPersistentAuthErrorForMetrics);
+}
+
 std::optional<sync_pb::TrustedVaultAutoUpgradeExperimentGroup>
 SyncPrefs::GetCachedTrustedVaultAutoUpgradeExperimentGroup() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -719,17 +754,26 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
   // Features to be enabled.
   switch (type) {
     case UserSelectableType::kBookmarks:
-      return base::FeatureList::IsEnabled(kSyncEnableBookmarksInTransportMode);
+      return base::FeatureList::IsEnabled(
+          switches::kSyncEnableBookmarksInTransportMode);
     case UserSelectableType::kReadingList:
       return syncer::IsReadingListAccountStorageEnabled();
     case UserSelectableType::kPreferences:
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
-             base::FeatureList::IsEnabled(kEnablePreferencesAccountStorage);
+      if (!base::FeatureList::IsEnabled(
+              switches::kEnablePreferencesAccountStorage)) {
+        return false;
+      }
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+#else
+      // Search engines are behind `UserSelectableType::kPreferences`.
+      return base::FeatureList::IsEnabled(
+          kSeparateLocalAndAccountSearchEngines);
+#endif
     case UserSelectableType::kPasswords:
       return true;
     case UserSelectableType::kAutofill:
-      return base::FeatureList::IsEnabled(
-          kSyncEnableContactInfoDataTypeInTransportMode);
+      return true;
     case UserSelectableType::kPayments:
       // Always supported, since AUTOFILL_WALLET_DATA is supported in
       // transport mode everywhere.
@@ -745,9 +789,17 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
     case UserSelectableType::kSavedTabGroups:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
     case UserSelectableType::kExtensions:
-      return base::FeatureList::IsEnabled(kSyncEnableExtensionsInTransportMode);
-    case UserSelectableType::kApps:
+      return base::FeatureList::IsEnabled(
+          switches::kEnableExtensionsExplicitBrowserSignin);
     case UserSelectableType::kThemes:
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      return false;
+#else
+      return base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
+             base::FeatureList::IsEnabled(
+                 syncer::kSeparateLocalAndAccountThemes);
+#endif
+    case UserSelectableType::kApps:
     case UserSelectableType::kCookies:
       // These types are not supported in transport mode yet.
       return false;
@@ -1054,18 +1106,10 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(
                            kMigratedPart2AndFullyDone);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 void SyncPrefs::MaybeMigrateAutofillToPerAccountPref(
     PrefService* pref_service) {
-  if (!base::FeatureList::IsEnabled(
-          switches::kExplicitBrowserSigninUIOnDesktop)) {
-    // Ensures the migration happens again if the experiment gets rolled back
-    // then rolled out a second time.
-    pref_service->ClearPref(kAutofillPerAccountPrefMigrationDone);
-    return;
-  }
-
   if (pref_service->GetBoolean(kAutofillPerAccountPrefMigrationDone)) {
     return;
   }
@@ -1095,7 +1139,7 @@ void SyncPrefs::MaybeMigrateAutofillToPerAccountPref(
         pref_name_for_type, base::Value(false));
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void SyncPrefs::MarkPartialSyncToSigninMigrationFullyDone() {
   // If the first part of the migration has run, but the second part has not,

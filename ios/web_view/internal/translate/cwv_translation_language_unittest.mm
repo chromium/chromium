@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/translate/cwv_translation_language_internal.h"
-
 #import <Foundation/Foundation.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web_view/internal/translate/cwv_translation_language_internal.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

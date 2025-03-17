@@ -4,12 +4,18 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.TextPaint;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -19,6 +25,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -40,6 +48,9 @@ public class RecentActivityListViewBinderUnitTest {
     private PropertyModel mPropertyModel;
     @Mock private OnClickListener mOnClickListener;
     @Mock private Drawable mDrawable;
+    @Mock private Context mContext;
+    @Mock private TextPaint mTextPaint;
+    @Captor private ArgumentCaptor<Runnable> mPostedTask;
 
     @Before
     public void setup() {
@@ -47,6 +58,8 @@ public class RecentActivityListViewBinderUnitTest {
         when(mListRowView.findViewById(R.id.description)).thenReturn(mDescriptionView);
         when(mListRowView.findViewById(R.id.favicon)).thenReturn(mFaviconView);
         when(mListRowView.findViewById(R.id.avatar)).thenReturn(mAvatarView);
+        when(mDescriptionView.getContext()).thenReturn(mContext);
+        when(mDescriptionView.getPaint()).thenReturn(mTextPaint);
 
         mPropertyModel = new PropertyModel.Builder(RecentActivityListProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(
@@ -61,10 +74,41 @@ public class RecentActivityListViewBinderUnitTest {
     }
 
     @Test
-    public void testDescription() {
-        final String description = "Description 1";
-        mPropertyModel.set(RecentActivityListProperties.DESCRIPTION_TEXT, description);
-        verify(mDescriptionView).setText(eq(description));
+    public void testDescriptionWithTimestamp() {
+        DescriptionAndTimestamp descriptionAndTimestamp =
+                new DescriptionAndTimestamp(
+                        /* description= */ "description 1",
+                        /* separator= */ ".",
+                        /* timestamp= */ "8h ago",
+                        /* descriptionFullTextResId= */ 5);
+        mPropertyModel.set(
+                RecentActivityListProperties.DESCRIPTION_AND_TIMESTAMP_TEXT,
+                descriptionAndTimestamp);
+        verify(mDescriptionView).post(mPostedTask.capture());
+
+        String combinedString = "sample full description";
+        when(mContext.getString(anyInt(), any(), any(), any())).thenReturn(combinedString);
+
+        mPostedTask.getValue().run();
+        verify(mDescriptionView, times(1)).setText(eq(combinedString));
+    }
+
+    @Test
+    public void testTimestampWithEmptyDescription() {
+        DescriptionAndTimestamp descriptionAndTimestamp =
+                new DescriptionAndTimestamp(
+                        /* description= */ "",
+                        /* separator= */ ".",
+                        /* timestamp= */ "8h ago",
+                        /* descriptionFullTextResId= */ 5);
+        mPropertyModel.set(
+                RecentActivityListProperties.DESCRIPTION_AND_TIMESTAMP_TEXT,
+                descriptionAndTimestamp);
+        verify(mDescriptionView).post(mPostedTask.capture());
+
+        mPostedTask.getValue().run();
+        verify(mContext, never()).getString(anyInt(), any(), any(), any());
+        verify(mDescriptionView, times(1)).setText(eq(descriptionAndTimestamp.timestamp));
     }
 
     @Test
@@ -75,6 +119,13 @@ public class RecentActivityListViewBinderUnitTest {
         InOrder inOrder = Mockito.inOrder(mFaviconView);
         inOrder.verify(mFaviconView).setImageDrawable(eq(null));
         inOrder.verify(mFaviconView).setImageDrawable(eq(mDrawable));
+    }
+
+    @Test
+    public void testFavicon_nullProvider() {
+        mPropertyModel.set(RecentActivityListProperties.FAVICON_PROVIDER, null);
+        InOrder inOrder = Mockito.inOrder(mFaviconView);
+        inOrder.verify(mFaviconView).setVisibility(eq(View.GONE));
     }
 
     @Test

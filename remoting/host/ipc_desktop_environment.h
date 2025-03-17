@@ -16,14 +16,16 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/active_display_monitor.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_session_connector.h"
-#include "remoting/host/file_transfer/ipc_file_operations.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/protocol/desktop_capturer.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -76,7 +78,7 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
       override;
   std::string GetCapabilities() const override;
   void SetCapabilities(const std::string& capabilities) override;
-  uint32_t GetDesktopSessionId() const override;
+  std::uint32_t GetDesktopSessionId() const override;
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() override;
 
@@ -104,10 +106,10 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
   ~IpcDesktopEnvironmentFactory() override;
 
   // DesktopEnvironmentFactory implementation.
-  std::unique_ptr<DesktopEnvironment> Create(
-      base::WeakPtr<ClientSessionControl> client_session_control,
-      base::WeakPtr<ClientSessionEvents> client_session_events,
-      const DesktopEnvironmentOptions& options) override;
+  void Create(base::WeakPtr<ClientSessionControl> client_session_control,
+              base::WeakPtr<ClientSessionEvents> client_session_events,
+              const DesktopEnvironmentOptions& options,
+              CreateCallback callback) override;
   bool SupportsAudioCapture() const override;
 
   // DesktopSessionConnector implementation.

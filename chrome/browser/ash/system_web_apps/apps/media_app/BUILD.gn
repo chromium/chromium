@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("media_app") {
   sources = [
@@ -21,7 +19,8 @@ static_library("media_app") {
     "//ash/webui/media_app_ui:mojo_bindings_untrusted",
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/system_web_apps/types",
+    "//chromeos/ash/experiences/system_web_apps/types",
+    "//chromeos/ash/components/specialized_features",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//storage/browser",
@@ -36,7 +35,6 @@ static_library("media_app") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/app_list/arc",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/hats",
     "//chrome/browser/ash/system_web_apps/apps",
@@ -84,7 +82,6 @@ source_set("browser_tests") {
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:constants",

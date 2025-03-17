@@ -98,20 +98,24 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
                               QuadList::ConstIterator quad_list_end) const;
 
   // Returns true if any of the quads in the list given by |quad_list_begin|
-  // and |quad_list_end| have an associated filter and occlude |candidate|.
-  bool IsOccludedByFilteredQuad(
-      const OverlayCandidate& candidate,
+  // and |quad_list_end| have an associated filter and occlude |quad|.
+  // |quad| should normally be at |quad_list_end| since we only want to check
+  // for occlusion with quads above it.
+  static bool IsOccludedByFilteredQuad(
+      const DrawQuad& quad,
       QuadList::ConstIterator quad_list_begin,
       QuadList::ConstIterator quad_list_end,
       const base::flat_map<AggregatedRenderPassId,
                            raw_ptr<cc::FilterOperations, CtnExperimental>>&
-          render_pass_backdrop_filters) const;
+          render_pass_backdrop_filters);
 
   // Returns true if any of the quads in the list given by |quad_list_begin|
-  // and |quad_list_end| occlude |candidate|.
-  bool IsOccluded(const OverlayCandidate& candidate,
-                  QuadList::ConstIterator quad_list_begin,
-                  QuadList::ConstIterator quad_list_end) const;
+  // and |quad_list_end| occlude |quad|.
+  // |quad| should normally be at |quad_list_end| since we only want to check
+  // for occlusion with quads above it.
+  static bool IsOccluded(const DrawQuad& quad,
+                         QuadList::ConstIterator quad_list_begin,
+                         QuadList::ConstIterator quad_list_end);
 
   gfx::Rect GetUnassignedDamage() { return unassigned_surface_damage_; }
 

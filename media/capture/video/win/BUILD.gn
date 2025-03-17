@@ -44,7 +44,6 @@ source_set("win") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//media",
     "//media/base/win:color_space_util_win",
     "//media/capture/mojom:image_capture",
@@ -84,7 +83,6 @@ source_set("win_unittests") {
 
   deps = [
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//media:test_support",
     "//media/capture:capture",

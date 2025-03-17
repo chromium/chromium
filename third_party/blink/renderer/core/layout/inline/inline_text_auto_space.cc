@@ -8,6 +8,7 @@
 #include <unicode/uscript.h>
 
 #include "base/check.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 
 namespace blink {
@@ -49,12 +50,14 @@ inline bool MaybeIdeograph(UScriptCode script, StringView text) {
 // should be added to the end of the previous item. This class keeps the
 // previous item's `shape_result_` for this purpose.
 class SpacingApplier {
+  STACK_ALLOCATED();
+
  public:
   void SetSpacing(const Vector<wtf_size_t, 16>& offsets,
                   const InlineItem* current_item,
                   const ComputedStyle& style) {
     DCHECK(current_item->TextShapeResult());
-    const float spacing = TextAutoSpace::GetSpacingWidth(&style.GetFont());
+    const float spacing = TextAutoSpace::GetSpacingWidth(style.GetFont());
     auto offset = offsets.begin();
     if (!offsets.empty() && *offset == current_item->StartOffset()) {
       DCHECK(last_item_);
@@ -115,7 +118,7 @@ class SpacingApplier {
 }  // namespace
 
 void InlineTextAutoSpace::Initialize(const InlineItemsData& data) {
-  const HeapVector<InlineItem>& items = data.items;
+  const InlineItems& items = data.items;
   if (items.empty()) [[unlikely]] {
     return;
   }
@@ -125,7 +128,8 @@ void InlineTextAutoSpace::Initialize(const InlineItemsData& data) {
   // packed in `InlineItemSegments` to save memory.
   const String& text = data.text_content;
   if (!data.segments) {
-    for (const InlineItem& item : items) {
+    for (const Member<InlineItem>& item_ptr : items) {
+      const InlineItem& item = *item_ptr;
       if (item.Type() != InlineItem::kText) {
         // Only `kText` has the data, see `InlineItem::SetSegmentData`.
         continue;
@@ -167,7 +171,8 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
   // whether to add spacing into the bound of two items.
   TextDirection last_direction = TextDirection::kLtr;
   SpacingApplier applier;
-  for (const InlineItem& item : data.items) {
+  for (const Member<InlineItem>& item_ptr : data.items) {
+    const InlineItem& item = *item_ptr;
     if (item.Type() != InlineItem::kText) {
       if (item.Length()) {
         // If `item` has a length, e.g., inline-block, set the `last_type`.

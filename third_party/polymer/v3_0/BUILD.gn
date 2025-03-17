@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_code_cache.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
 
@@ -12,9 +13,7 @@ assert(!is_android && !is_ios)
 
 js_files = [
   "iron-a11y-keys-behavior/iron-a11y-keys-behavior.js",
-  "iron-a11y-keys/iron-a11y-keys.js",
   "iron-list/iron-list.js",
-  "iron-media-query/iron-media-query.js",
   "iron-resizable-behavior/iron-resizable-behavior.js",
   "iron-scroll-target-behavior/iron-scroll-target-behavior.js",
 ]
@@ -22,6 +21,7 @@ js_files = [
 if (is_chromeos_ash) {
   js_files += [
     "iron-a11y-announcer/iron-a11y-announcer.js",
+    "iron-a11y-keys/iron-a11y-keys.js",
     "iron-behaviors/iron-control-state.js",
     "iron-collapse/iron-collapse.js",
     "iron-dropdown/iron-dropdown.js",
@@ -32,6 +32,7 @@ if (is_chromeos_ash) {
     "iron-iconset-svg/iron-iconset-svg.js",
     "iron-location/iron-location.js",
     "iron-location/iron-query-params.js",
+    "iron-media-query/iron-media-query.js",
     "iron-meta/iron-meta.js",
     "iron-overlay-behavior/iron-focusables-helper.js",
     "iron-overlay-behavior/iron-overlay-backdrop.js",
@@ -87,6 +88,24 @@ generate_grd("build_grdp") {
   resource_path_prefix = "polymer/v3_0"
 }
 
+if (enable_webui_generate_code_cache) {
+  generate_code_cache("build_code_cache") {
+    visibility = [ ":build_code_cache_grdp" ]
+    in_folder = "//third_party/polymer/v3_0/components-chromium/polymer"
+    in_files = [ "polymer_bundled.min.js" ]
+    out_folder = "$target_gen_dir/code_cache"
+    out_manifest = "$target_gen_dir/build_code_cache_manifest.json"
+  }
+
+  generate_grd("build_code_cache_grdp") {
+    grd_prefix = "polymer_v3_0_code_cache"
+    out_grd = "$target_gen_dir/code_cache_resources.grdp"
+    resource_path_prefix = "polymer/v3_0/polymer"
+    manifest_files = [ "$target_gen_dir/build_code_cache_manifest.json" ]
+    deps = [ ":build_code_cache" ]
+  }
+}
+
 ts_library("library") {
   visibility = [
     # Lit has officially being declared as the preferred framework (over
@@ -94,7 +113,7 @@ ts_library("library") {
     #
     # [1] https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Lit
     # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Polymer
-    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md
+    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/webui_using_lit.md
 
     # Use Lit instead of Polymer (see //third_party/lit/v3_0:build_ts). Consult
     # with //ui/webui/PLATFORM_OWNERS or g/chrome-webui if you think there is a
@@ -103,13 +122,11 @@ ts_library("library") {
     "//chrome/browser/resources/about_nacl:build_ts",
     "//chrome/browser/resources/access_code_cast:build_ts",
     "//chrome/browser/resources/app_service_internals:build_ts",
-    "//chrome/browser/resources/bookmarks:build_ts",
     "//chrome/browser/resources/commerce/product_specifications:build_ts",
     "//chrome/browser/resources/compose:build_ts",
     "//chrome/browser/resources/discards:build_ts",
     "//chrome/browser/resources/history:build_ts",
     "//chrome/browser/resources/inline_login:build_ts",
-    "//chrome/browser/resources/internals/user_education:build_ts",
     "//chrome/browser/resources/lens/overlay:build_ts",
     "//chrome/browser/resources/lens/shared:build_ts",
     "//chrome/browser/resources/new_tab_page:build_ts",
@@ -123,44 +140,32 @@ ts_library("library") {
     "//chrome/browser/resources/settings_shared:build_ts",
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
     "//chrome/browser/resources/side_panel/commerce:build_ts",
-    "//chrome/browser/resources/side_panel/read_anything:build_ts",
     "//chrome/browser/resources/side_panel/shared:build_ts",
     "//chrome/browser/resources/suggest_internals:build_ts",
     "//chrome/browser/resources/support_tool:build_ts",
     "//chrome/test/data/webui:build_ts",
-    "//chrome/test/data/webui/bookmarks:build_ts",
     "//chrome/test/data/webui/cr_components:build_ts",
     "//chrome/test/data/webui/cr_components/certificate_manager:build_ts",
     "//chrome/test/data/webui/cr_components/help_bubble:build_ts",
     "//chrome/test/data/webui/cr_elements:build_ts",
     "//chrome/test/data/webui/history:build_ts",
     "//chrome/test/data/webui/inline_login:build_ts",
-    "//chrome/test/data/webui/js:build_ts",
     "//chrome/test/data/webui/new_tab_page:build_ts",
     "//chrome/test/data/webui/password_manager:build_ts",
     "//chrome/test/data/webui/print_preview:build_ts",
     "//chrome/test/data/webui/privacy_sandbox:build_ts",
     "//chrome/test/data/webui/settings:build_ts",
     "//chrome/test/data/webui/side_panel:build_ts",
-    "//chrome/test/data/webui/side_panel/read_anything:build_ts",
     "//chrome/test/data/webui/support_tool:build_ts",
     "//ui/webui/resources/cr_components/certificate_manager:build_ts",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
-    "//ui/webui/resources/cr_components/history_embeddings:build_ts",
     "//ui/webui/resources/cr_components/searchbox:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
   ]
 
   if (is_win) {
     visibility += [ "//chrome/browser/resources/conflicts:build_ts" ]
-  }
-
-  if (is_chromeos) {
-    visibility += [
-      "//chrome/browser/resources/chromeos/kerberos:build_ts",
-      "//chrome/browser/resources/dlp_internals:build_ts",
-    ]
   }
 
   if (is_chromeos_ash) {
@@ -175,13 +180,12 @@ ts_library("library") {
     ]
   }
 
+  tsconfig_base = "tsconfig_base.json"
   composite = true
   definitions = [
     "components-chromium/iron-a11y-keys-behavior/iron-a11y-keys-behavior.d.ts",
-    "components-chromium/iron-a11y-keys/iron-a11y-keys.d.ts",
     "components-chromium/iron-behaviors/iron-control-state.d.ts",
     "components-chromium/iron-list/iron-list.d.ts",
-    "components-chromium/iron-media-query/iron-media-query.d.ts",
     "components-chromium/iron-resizable-behavior/iron-resizable-behavior.d.ts",
     "components-chromium/iron-scroll-target-behavior/iron-scroll-target-behavior.d.ts",
     "components-chromium/polymer/interfaces.d.ts",
@@ -245,6 +249,7 @@ ts_library("library") {
   if (is_chromeos_ash) {
     definitions += [
       "components-chromium/iron-a11y-announcer/iron-a11y-announcer.d.ts",
+      "components-chromium/iron-a11y-keys/iron-a11y-keys.d.ts",
       "components-chromium/iron-collapse/iron-collapse.d.ts",
       "components-chromium/iron-dropdown/iron-dropdown.d.ts",
       "components-chromium/iron-dropdown/iron-dropdown-scroll-manager.d.ts",
@@ -253,6 +258,7 @@ ts_library("library") {
       "components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts",
       "components-chromium/iron-location/iron-location.d.ts",
       "components-chromium/iron-location/iron-query-params.d.ts",
+      "components-chromium/iron-media-query/iron-media-query.d.ts",
       "components-chromium/iron-meta/iron-meta.d.ts",
       "components-chromium/iron-overlay-behavior/iron-focusables-helper.d.ts",
       "components-chromium/iron-overlay-behavior/iron-overlay-backdrop.d.ts",

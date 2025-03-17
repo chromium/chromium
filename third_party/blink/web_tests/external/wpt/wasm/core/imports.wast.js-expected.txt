@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #3 Test that WebAssembly compilation fails
+  assert_equals: expected true but got false
+[FAIL] #4 Test that WebAssembly compilation fails
+  assert_equals: expected true but got false
+[FAIL] #5 Test that WebAssembly compilation fails
+  assert_equals: expected true but got false
+[FAIL] #209 Test that WebAssembly compilation fails
+  assert_true: \n    at module (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:146:15)\n    at assert_invalid (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:174:3)\n    at imports_wast_js (http://web-platform.test:8001/wasm/core/js/imports.wast.js:385:1)\n    at http://web-platform.test:8001/wasm/core/js/imports.wast.js:537:3 expected true got false
+[FAIL] #210 Test that WebAssembly compilation fails
+  assert_true: \n    at module (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:146:15)\n    at assert_invalid (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:174:3)\n    at imports_wast_js (http://web-platform.test:8001/wasm/core/js/imports.wast.js:388:1)\n    at http://web-platform.test:8001/wasm/core/js/imports.wast.js:537:3 expected true got false
+[FAIL] #211 Test that WebAssembly compilation fails
+  assert_true: \n    at module (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:146:15)\n    at assert_invalid (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:174:3)\n    at imports_wast_js (http://web-platform.test:8001/wasm/core/js/imports.wast.js:391:1)\n    at http://web-platform.test:8001/wasm/core/js/imports.wast.js:537:3 expected true got false
+Harness: the test ran to completion.

@@ -22,6 +22,7 @@ namespace blink {
 
 class AffineTransform;
 class PropertyTreeState;
+class ScrollPaintPropertyNode;
 class TransformPaintPropertyNode;
 
 class PLATFORM_EXPORT CullRect {
@@ -59,6 +60,8 @@ class PLATFORM_EXPORT CullRect {
 
   const gfx::Rect& Rect() const { return rect_; }
 
+  static bool CanExpandForScroll(const ScrollPaintPropertyNode&);
+
   bool HasScrolledEnough(const gfx::Vector2dF& delta,
                          const TransformPaintPropertyNode&,
                          float expansion_ratio);
@@ -84,6 +87,7 @@ class PLATFORM_EXPORT CullRect {
   bool ChangedEnough(const std::pair<bool, bool>& expanded,
                      const CullRect& old_cull_rect,
                      const std::optional<gfx::Rect>& expansion_bounds,
+                     const TransformPaintPropertyNode& local_transform,
                      float expansion_ratio) const;
 
   gfx::Rect rect_;

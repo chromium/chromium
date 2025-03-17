@@ -346,7 +346,7 @@ public class AutofillRequestTest {
     public void testFocusedField() {
         AutofillRequest request = createSampleRequest();
         TestViewStructure structure = new TestViewStructure();
-        request.getForm().fillViewStructure(structure, /* focusedIndex= */ (short) 1);
+        request.getForm().fillViewStructure(structure, /* focusFieldIndex= */ (short) 1);
 
         assertFalse(structure.getChild(0).getFocused());
         assertTrue(structure.getChild(1).getFocused());

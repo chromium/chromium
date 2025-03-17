@@ -20,8 +20,9 @@ namespace {
 // `wk_result` up to a depth of `max_depth`.
 std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result,
                                                      int max_depth) {
-  if (!wk_result)
+  if (!wk_result) {
     return nullptr;
+  }
 
   std::unique_ptr<base::Value> result;
 

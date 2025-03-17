@@ -4,13 +4,14 @@
 
 package org.chromium.components.payments;
 
-import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
@@ -33,6 +34,7 @@ import java.util.Map;
  * the native pointer.
  */
 @JNINamespace("payments::android")
+@NullMarked
 public class PaymentRequestSpec {
     private long mNativePointer;
 
@@ -112,7 +114,7 @@ public class PaymentRequestSpec {
      * @return The id of the request, found in PaymentDetails. This method cannot be used after the
      *         instance is destroyed.
      */
-    public String getId() {
+    public @Nullable String getId() {
         return getPaymentDetails().id;
     }
 
@@ -145,7 +147,7 @@ public class PaymentRequestSpec {
      * The raw total amount being charged, as it was received from the website. This data is passed
      * to the payment app. This method cannot be used after the instance is destroyed.
      */
-    public PaymentItem getRawTotal() {
+    public @Nullable PaymentItem getRawTotal() {
         return getPaymentDetails().total;
     }
 
@@ -185,8 +187,7 @@ public class PaymentRequestSpec {
      * Returns the selected shipping option error. This cannot be used after the instance is
      * destroyed.
      */
-    @Nullable
-    public String selectedShippingOptionError() {
+    public @Nullable String selectedShippingOptionError() {
         return PaymentRequestSpecJni.get().selectedShippingOptionError(mNativePointer);
     }
 

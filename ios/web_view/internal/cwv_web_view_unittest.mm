@@ -28,7 +28,6 @@ class CWVWebViewTest : public TestWithLocaleAndResources {
  public:
   void SetUp() override {
     TestWithLocaleAndResources::SetUp();
-    CWVWebView.customUserAgent = nil;
 
     configuration_ = [[CWVWebViewConfiguration alloc]
         initWithBrowserState:std::make_unique<WebViewBrowserState>(
@@ -41,7 +40,6 @@ class CWVWebViewTest : public TestWithLocaleAndResources {
     [configuration_ shutDown];
     configuration_ = nil;
 
-    CWVWebView.customUserAgent = nil;
     TestWithLocaleAndResources::TearDown();
   }
 
@@ -68,13 +66,6 @@ class CWVWebViewTest : public TestWithLocaleAndResources {
   web::ScopedTestingWebClient web_client_;
   CWVWebViewConfiguration* configuration_;
 };
-
-// Test +[CWVWebView customUserAgent].
-TEST_F(CWVWebViewTest, CustomUserAgent) {
-  EXPECT_FALSE(CWVWebView.customUserAgent);
-  CWVWebView.customUserAgent = @"FooCustomUserAgent";
-  EXPECT_NSEQ(@"FooCustomUserAgent", CWVWebView.customUserAgent);
-}
 
 // Test CWVWebView's inputAccessoryView controls whether or not the overriding
 // behavior is enabled.

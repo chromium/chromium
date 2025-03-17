@@ -34,8 +34,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_size.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -63,7 +62,8 @@ class CORE_EXPORT BasicShape : public RefCounted<BasicShape> {
     kBasicShapeCircleType,
     kBasicShapeInsetType,
     kStyleRayType,
-    kStylePathType
+    kStylePathType,
+    kStyleShapeType,
   };
 
   bool IsSameType(const BasicShape& other) const {

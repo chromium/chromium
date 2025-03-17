@@ -83,12 +83,14 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   DESERIALIZE_INTO_OPT(capture_counter);
   output->sub_capture_target_version = input.sub_capture_target_version();
   output->frame_sequence = input.frame_sequence();
+  output->source_id = input.source_id();
+  output->background_blur = FromMojom(input.background_blur());
 
   // bool.
   output->allow_overlay = input.allow_overlay();
   output->copy_required = input.copy_required();
   output->end_of_stream = input.end_of_stream();
-  output->texture_owner = input.texture_owner();
+  output->in_surface_view = input.in_surface_view();
   output->wants_promotion_hint = input.wants_promotion_hint();
   output->protected_video = input.protected_video();
   output->hw_protected = input.hw_protected();
@@ -127,10 +129,6 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   READ_AND_ASSIGN_OPT(base::TimeDelta, frame_duration, FrameDuration);
   READ_AND_ASSIGN_OPT(base::TimeDelta, wallclock_frame_duration,
                       WallclockFrameDuration);
-
-  output->background_blur = FromMojom(input.background_blur());
-
-  output->frame_sequence = input.frame_sequence();
 
   return true;
 }

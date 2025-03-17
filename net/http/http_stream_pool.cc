@@ -74,6 +74,14 @@ constexpr base::FeatureParam<base::TimeDelta>
         HttpStreamPool::kConnectionAttemptDelayParamName.data(),
         HttpStreamPool::kDefaultConnectionAttemptDelay};
 
+constexpr base::FeatureParam<HttpStreamPool::StreamAttemptDelayBehavior>
+    kStreamAttemptDelayBehavior{
+        &features::kHappyEyeballsV3,
+        HttpStreamPool::kStreamAttemptDelayBehaviorParamName.data(),
+        HttpStreamPool::StreamAttemptDelayBehavior::
+            kStartTimerOnFirstQuicAttempt,
+        HttpStreamPool::kStreamAttemptDelayBehaviorOptions};
+
 constexpr base::FeatureParam<bool> kVerboseNetLog{
     &features::kHappyEyeballsV3, HttpStreamPool::kVerboseNetLogParamName.data(),
     false};
@@ -117,6 +125,12 @@ std::ostream& operator<<(std::ostream& os, const StreamCounts& counts) {
 // static
 base::TimeDelta HttpStreamPool::GetConnectionAttemptDelay() {
   return kHttpStreamPoolConnectionAttemptDelay.Get();
+}
+
+// static
+HttpStreamPool::StreamAttemptDelayBehavior
+HttpStreamPool::GetStreamAttemptDelayBehavior() {
+  return kStreamAttemptDelayBehavior.Get();
 }
 
 // static
@@ -178,6 +192,9 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
   // make sure `job_controllers_` always contains `controller` when
   // OnJobControllerComplete() is called.
   job_controllers_.emplace(std::move(controller));
+  if (controller_raw_ptr->respect_limits() == RespectLimits::kIgnore) {
+    ++limit_ignoring_job_controller_counts_;
+  }
 
   return controller_raw_ptr->RequestStream(delegate, net_log);
 }
@@ -192,6 +209,7 @@ int HttpStreamPool::Preconnect(HttpStreamPoolRequestInfo request_info,
       /*enable_ip_based_pooling=*/true,
       /*enable_alternative_services=*/true);
   JobController* controller_raw_ptr = controller.get();
+  CHECK_EQ(controller_raw_ptr->respect_limits(), RespectLimits::kRespect);
   // SAFETY: Using base::Unretained() is safe because `this` will own
   // `controller` when Preconnect() return ERR_IO_PENDING.
   int rv = controller_raw_ptr->Preconnect(
@@ -204,8 +222,15 @@ int HttpStreamPool::Preconnect(HttpStreamPoolRequestInfo request_info,
   return rv;
 }
 
+bool HttpStreamPool::EnsureTotalActiveStreamCountBelowLimit() const {
+  if (limit_ignoring_job_controller_counts_ > 0) {
+    return true;
+  }
+  return TotalActiveStreamCount() < max_stream_sockets_per_pool_;
+}
+
 void HttpStreamPool::IncrementTotalIdleStreamCount() {
-  CHECK_LT(TotalActiveStreamCount(), kDefaultMaxStreamSocketsPerPool);
+  CHECK(EnsureTotalActiveStreamCountBelowLimit());
   ++total_idle_stream_count_;
 }
 
@@ -215,7 +240,7 @@ void HttpStreamPool::DecrementTotalIdleStreamCount() {
 }
 
 void HttpStreamPool::IncrementTotalHandedOutStreamCount() {
-  CHECK_LT(TotalActiveStreamCount(), kDefaultMaxStreamSocketsPerPool);
+  CHECK(EnsureTotalActiveStreamCountBelowLimit());
   ++total_handed_out_stream_count_;
 }
 
@@ -225,7 +250,7 @@ void HttpStreamPool::DecrementTotalHandedOutStreamCount() {
 }
 
 void HttpStreamPool::IncrementTotalConnectingStreamCount() {
-  CHECK_LT(TotalActiveStreamCount(), kDefaultMaxStreamSocketsPerPool);
+  CHECK(EnsureTotalActiveStreamCountBelowLimit());
   ++total_connecting_stream_count_;
 }
 
@@ -272,9 +297,14 @@ void HttpStreamPool::OnGroupComplete(Group* group) {
 }
 
 void HttpStreamPool::OnJobControllerComplete(JobController* job_controller) {
+  if (job_controller->respect_limits() == RespectLimits::kIgnore) {
+    CHECK_GT(limit_ignoring_job_controller_counts_, 0u);
+    --limit_ignoring_job_controller_counts_;
+  }
   auto it = job_controllers_.find(job_controller);
   CHECK(it != job_controllers_.end());
   job_controllers_.erase(it);
+  CHECK_GE(job_controllers_.size(), limit_ignoring_job_controller_counts_);
 }
 
 void HttpStreamPool::FlushWithError(

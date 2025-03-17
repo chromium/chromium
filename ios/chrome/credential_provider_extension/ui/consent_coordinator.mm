@@ -65,8 +65,8 @@
 
 #pragma mark - PromoStyleViewControllerDelegate
 
-// Invoked when the primary action button is tapped.
-- (void)didTapPrimaryActionButton {
+// Invoked when the dismiss button is tapped.
+- (void)didTapDismissButton {
   [self.credentialResponseHandler completeExtensionConfigurationRequest];
 }
 

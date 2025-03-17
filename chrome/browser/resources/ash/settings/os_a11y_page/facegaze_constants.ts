@@ -157,10 +157,10 @@ export class AssignedKeyCombo {
 }
 
 export const FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME =
-    'facegaze-command-pair-added' as const;
+    'facegaze-command-pair-added';
 
 export const FACEGAZE_ACTION_ASSIGN_GESTURE_EVENT_NAME =
-    'facegaze-assign-gesture' as const;
+    'facegaze-assign-gesture';
 
 export class FaceGazeUtils {
   /**

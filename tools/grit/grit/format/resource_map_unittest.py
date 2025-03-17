@@ -114,6 +114,58 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
     self.assertTrue(str(assertion_error.exception). \
         startswith('resource_path attribute missing for IDR_FOO_BAR_BAZ_JS'))
 
+  def testFormatWithAddFilepathToResourceMapEnvVariable(self):
+    grd = util.ParseGrdForUnittest('''\
+        <outputs>
+          <output type="rc_header" filename="the_rc_header.h" />
+          <output type="resource_map_header"
+                  filename="resource_map_header.h" />
+        </outputs>
+        <release seq="3">
+          <includes first_id="10000">
+            <include type="BINDATA"
+                     file="a/b/c/baz.js"
+                     resource_path="d/e/f/baz.js"
+                     name="IDR_D_E_F_BAZ_JS" />
+            <include type="BINDATA"
+                     file="${root_gen_dir}/g/h/i/baz.js"
+                     resource_path="j/k/l/baz.js"
+                     name="IDR_G_H_I_BAZ_JS"
+                     use_base_dir="false" />
+         </includes>
+        </release>''',
+                                   run_gatherers=True)
+    grd.base_dir = '.'
+    os.environ["root_gen_dir"] = "gen"
+
+    os.environ["add_filepath_to_resource_map"] = "true"
+    output = util.StripBlankLinesAndComments(''.join(
+        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', '.')))
+    self.assertMultiLineEqual(
+        output, '''#include "resource_map_header.h"
+#include <stddef.h>
+#include <iterator>
+#include "the_rc_header.h"
+const webui::ResourcePath kTheRcHeader[2] = {
+  {"d/e/f/baz.js", IDR_D_E_F_BAZ_JS, "a/b/c/baz.js"},
+  {"j/k/l/baz.js", IDR_G_H_I_BAZ_JS, "gen/g/h/i/baz.js"},
+};
+const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''')
+
+    os.environ["add_filepath_to_resource_map"] = "false"
+    output = util.StripBlankLinesAndComments(''.join(
+        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', '.')))
+    self.assertMultiLineEqual(
+        output, '''#include "resource_map_header.h"
+#include <stddef.h>
+#include <iterator>
+#include "the_rc_header.h"
+const webui::ResourcePath kTheRcHeader[2] = {
+  {"d/e/f/baz.js", IDR_D_E_F_BAZ_JS},
+  {"j/k/l/baz.js", IDR_G_H_I_BAZ_JS},
+};
+const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''')
+
   def testFormatResourceMapWithOutputAllEqualsFalseForStructures(self):
     grd = util.ParseGrdForUnittest('''
         <outputs>

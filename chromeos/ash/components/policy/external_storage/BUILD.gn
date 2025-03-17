@@ -1,0 +1,63 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("external_storage") {
+  output_name = "chromeos_ash_components_policy_external_storage"
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
+
+  public = [
+    "device_id.h",
+    "external_storage_policy_controller.h",
+  ]
+
+  sources = [
+    "device_id.cc",
+    "external_storage_policy_controller.cc",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//chromeos/ash/components/disks",
+    "//chromeos/components/disks:prefs",
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "device_id_unittest.cc",
+    "external_storage_policy_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":external_storage",
+    "//base",
+    "//chromeos/ash/components/disks",
+    "//chromeos/components/disks:prefs",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public = [ "test_support.h" ]
+
+  sources = [ "test_support.cc" ]
+
+  public_deps = [ ":external_storage" ]
+
+  deps = [
+    "//base",
+    "//chromeos/components/disks:prefs",
+    "//components/prefs",
+  ]
+}

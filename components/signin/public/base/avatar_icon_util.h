@@ -9,6 +9,17 @@ class GURL;
 
 namespace signin {
 
+// The avatar service supports multiple types of cropping. The default
+// will request a square-cropped image.
+enum class AvatarCropType {
+  // Requests the avatar image cropped into a circle.
+  kCircle,
+  // Requests the avatar image cropped into a square. Default.
+  kSquare,
+  // The default value. Behaves the same as kSquare crop.
+  kDefault,
+};
+
 // Size of |AccountInfo| image.
 extern const int kAccountInfoImageSize;
 
@@ -21,9 +32,11 @@ extern const int kAccountInfoImageSize;
 //   https://example.com/--Abc/AAAAAAAAAAI/AAAAAAAAACQ/Efg/s64-c-ns/photo.jpg
 // then return value would be:
 //   https://example.com/--Abc/AAAAAAAAAAI/AAAAAAAAACQ/Efg/s256-c-ns/photo.jpg
-GURL GetAvatarImageURLWithOptions(const GURL& old_url,
-                                  int image_size,
-                                  bool no_silhouette);
+GURL GetAvatarImageURLWithOptions(
+    const GURL& old_url,
+    int image_size,
+    bool no_silhouette,
+    AvatarCropType crop = AvatarCropType::kDefault);
 
 }  // namespace signin
 

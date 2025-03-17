@@ -26,8 +26,6 @@ class ChromeosInfoPrivateGetFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void RespondWithResult(base::Value result);
-
   // Returns a newly allocate value, or null.
   std::unique_ptr<base::Value> GetValue(const std::string& property_name);
 
@@ -45,7 +43,6 @@ class ChromeosInfoPrivateSetFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void RespondWithResult(bool found);
   std::string param_name_;
 
   DECLARE_EXTENSION_FUNCTION("chromeosInfoPrivate.set", CHROMEOSINFOPRIVATE_SET)
@@ -63,28 +60,8 @@ class ChromeosInfoPrivateIsTabletModeEnabledFunction
   ResponseAction Run() override;
 
  private:
-  void RespondWithResult(bool enabled);
-
   DECLARE_EXTENSION_FUNCTION("chromeosInfoPrivate.isTabletModeEnabled",
                              CHROMEOSINFOPRIVATE_ISTABLETMODEENABLED)
-};
-
-// API function that is called to return the lacros enabled status as a
-// boolean.
-// TODO(337089191): Deprecate this function after Lacros migration is completed.
-class ChromeosInfoPrivateIsRunningOnLacrosFunction : public ExtensionFunction {
- public:
-  ChromeosInfoPrivateIsRunningOnLacrosFunction();
-
- protected:
-  ~ChromeosInfoPrivateIsRunningOnLacrosFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
- private:
-  DECLARE_EXTENSION_FUNCTION("chromeosInfoPrivate.isRunningOnLacros",
-                             CHROMEOSINFOPRIVATE_ISRUNNINGONLACROS)
 };
 
 }  // namespace extensions

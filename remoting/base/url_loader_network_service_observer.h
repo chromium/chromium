@@ -25,7 +25,8 @@ namespace remoting {
 class UrlLoaderNetworkServiceObserver
     : public network::mojom::URLLoaderNetworkServiceObserver {
  public:
-  UrlLoaderNetworkServiceObserver();
+  explicit UrlLoaderNetworkServiceObserver(
+      std::unique_ptr<net::ClientCertStore> client_cert_store);
   ~UrlLoaderNetworkServiceObserver() override;
 
   UrlLoaderNetworkServiceObserver(const UrlLoaderNetworkServiceObserver&) =
@@ -85,11 +86,15 @@ class UrlLoaderNetworkServiceObserver
           listener) override;
   void OnWebSocketConnectedToPrivateNetwork(
       network::mojom::IPAddressSpace ip_address_space) override;
+  void OnUrlLoaderConnectedToPrivateNetwork(
+      const GURL& request_url,
+      network::mojom::IPAddressSpace response_address_space,
+      network::mojom::IPAddressSpace client_address_space,
+      network::mojom::IPAddressSpace target_address_space) override;
 
   void OnCertificatesSelected(
       mojo::PendingRemote<network::mojom::ClientCertificateResponder>
           client_cert_responder,
-      std::unique_ptr<net::ClientCertStore> cert_store,
       const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
       net::ClientCertIdentityList selected_certs);
 
@@ -102,6 +107,7 @@ class UrlLoaderNetworkServiceObserver
   SEQUENCE_CHECKER(sequence_checker_);
 
   mojo::ReceiverSet<network::mojom::URLLoaderNetworkServiceObserver> receivers_;
+  std::unique_ptr<net::ClientCertStore> client_cert_store_;
   base::WeakPtrFactory<UrlLoaderNetworkServiceObserver> weak_factory_{this};
 };
 

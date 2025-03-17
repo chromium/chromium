@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/small_caps_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/symbols_iterator.h"
@@ -59,7 +58,7 @@ bool RunSegmenter::Consume(RunSegmenterRange* next_range) {
     unsigned positions[] = {script_run_iterator_position_,
                             symbols_iterator_position_,
                             orientation_iterator_position_};
-    last_split_ = *base::ranges::min_element(positions);
+    last_split_ = *std::ranges::min_element(positions);
   } else {
     last_split_ =
         std::min(script_run_iterator_position_, symbols_iterator_position_);

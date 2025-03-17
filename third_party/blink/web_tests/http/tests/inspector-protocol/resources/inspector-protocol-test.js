@@ -63,6 +63,10 @@ var TestRunner = class {
     ]
   };
 
+  setAllowUnsafeOperations(enabled) {
+    DevToolsAPI.setAllowUnsafeOperations(enabled);
+  }
+
   startDumpingProtocolMessages() {
     this._dumpInspectorProtocolMessages = true;
   };
@@ -661,6 +665,14 @@ DevToolsAPI.dispatchMessage = function(messageOrObject) {
     DevToolsAPI._die(`Exception when dispatching message\n${JSON.stringify(messageObject)}`, e);
   }
 };
+
+DevToolsAPI.setAllowUnsafeOperations = function (enabled) {
+  const embedderMessage = {
+    method: 'setAllowUnsafeOperations',
+    params: [enabled],
+  };
+  DevToolsHost.sendMessageToEmbedder(JSON.stringify(embedderMessage));
+}
 
 DevToolsAPI._sendCommand = function(sessionId, method, params, timeout = 0) {
   var requestId = ++DevToolsAPI._requestId;

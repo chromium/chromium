@@ -7,6 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
@@ -30,7 +31,11 @@ class DataSharingUIDelegateAndroid : public DataSharingUIDelegate {
   ScopedJavaLocalRef<jobject> GetJavaObject() override;
 
  private:
+  void LazyInitializeIfNeeded();
+
   ScopedJavaGlobalRef<jobject> java_obj_;
+
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 }  // namespace data_sharing

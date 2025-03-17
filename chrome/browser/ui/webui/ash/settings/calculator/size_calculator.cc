@@ -8,9 +8,6 @@
 #include <numeric>
 #include <type_traits>
 
-#include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
@@ -34,6 +31,9 @@
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "chromeos/ash/experiences/arc/disk_space/arc_disk_space_bridge.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/conditional_cache_counting_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
@@ -444,8 +444,8 @@ void AppsSizeCalculator::OnGetBorealisAppsSize(
     UpdateAppsAndExtensionsSize();
     return;
   }
-  auto image = base::ranges::find(response->images(), "borealis",
-                                  &vm_tools::concierge::VmDiskInfo::name);
+  auto image = std::ranges::find(response->images(), "borealis",
+                                 &vm_tools::concierge::VmDiskInfo::name);
   if (image == response->images().end()) {
     LOG(ERROR) << "Couldn't find Borealis VM";
     has_borealis_apps_size_ = true;
@@ -510,8 +510,8 @@ void CrostiniSizeCalculator::OnGetCrostiniSize(
   if (borealis::BorealisServiceFactory::GetForProfile(profile_)
           ->Features()
           .IsEnabled()) {
-    auto image = base::ranges::find(response->images(), "borealis",
-                                    &vm_tools::concierge::VmDiskInfo::name);
+    auto image = std::ranges::find(response->images(), "borealis",
+                                   &vm_tools::concierge::VmDiskInfo::name);
     if (image == response->images().end()) {
       LOG(ERROR) << "Couldn't find Borealis VM";
     } else {
@@ -532,7 +532,7 @@ void OtherUsersSizeCalculator::PerformCalculation() {
   other_users_.clear();
   user_sizes_.clear();
   const user_manager::UserList& users =
-      user_manager::UserManager::Get()->GetUsers();
+      user_manager::UserManager::Get()->GetPersistedUsers();
   for (user_manager::User* user : users) {
     if (user->is_active()) {
       continue;

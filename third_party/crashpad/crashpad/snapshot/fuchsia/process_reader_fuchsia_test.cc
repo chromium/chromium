@@ -147,7 +147,7 @@ CRASHPAD_CHILD_TEST_MAIN(ProcessReaderChildThreadsTestMain) {
   EXPECT_EQ(status, ZX_OK);
 
   constexpr size_t kNumThreads = 5;
-  struct ThreadData thread_data[kNumThreads] = {{0, 0}};
+  struct ThreadData thread_data[kNumThreads] = {{0, ""}};
 
   for (size_t i = 0; i < kNumThreads; ++i) {
     thread_data[i] = {

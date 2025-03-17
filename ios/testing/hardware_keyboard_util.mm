@@ -100,12 +100,14 @@ enum {
 static uint32_t keyCodeForFunctionKey(NSString* key) {
   // Compare the input string with the function-key names (i.e. "F1",...,"F24").
   for (int i = 1; i <= 12; ++i) {
-    if ([key isEqualToString:[NSString stringWithFormat:@"F%d", i]])
+    if ([key isEqualToString:[NSString stringWithFormat:@"F%d", i]]) {
       return kHIDUsage_KeyboardF1 + i - 1;
+    }
   }
   for (int i = 13; i <= 24; ++i) {
-    if ([key isEqualToString:[NSString stringWithFormat:@"F%d", i]])
+    if ([key isEqualToString:[NSString stringWithFormat:@"F%d", i]]) {
       return kHIDUsage_KeyboardF13 + i - 13;
+    }
   }
   return 0;
 }
@@ -118,14 +120,17 @@ static inline uint32_t hidUsageCodeForCharacter(NSString* key) {
   if (key.length == 1) {
     // Handle alphanumeric characters and basic symbols.
     int keyCode = [key characterAtIndex:0];
-    if (97 <= keyCode && keyCode <= 122)  // Handle a-z.
+    if (97 <= keyCode && keyCode <= 122) {  // Handle a-z.
       return keyCode - lowercaseAlphabeticOffset;
+    }
 
-    if (65 <= keyCode && keyCode <= 90)  // Handle A-Z.
+    if (65 <= keyCode && keyCode <= 90) {  // Handle A-Z.
       return keyCode - uppercaseAlphabeticOffset;
+    }
 
-    if (49 <= keyCode && keyCode <= 57)  // Handle 1-9.
+    if (49 <= keyCode && keyCode <= 57) {  // Handle 1-9.
       return keyCode - numericNonZeroOffset;
+    }
 
     // Handle all other cases.
     switch (keyCode) {
@@ -196,57 +201,85 @@ static inline uint32_t hidUsageCodeForCharacter(NSString* key) {
   }
 
   uint32_t keyCode = keyCodeForFunctionKey(key);
-  if (keyCode)
+  if (keyCode) {
     return keyCode;
+  }
 
-  if ([key isEqualToString:@"capsLock"] || [key isEqualToString:@"capsLockKey"])
+  if ([key isEqualToString:@"capsLock"] ||
+      [key isEqualToString:@"capsLockKey"]) {
     return kHIDUsage_KeyboardCapsLock;
-  if ([key isEqualToString:@"pageUp"])
+  }
+  if ([key isEqualToString:@"pageUp"]) {
     return kHIDUsage_KeyboardPageUp;
-  if ([key isEqualToString:@"pageDown"])
+  }
+  if ([key isEqualToString:@"pageDown"]) {
     return kHIDUsage_KeyboardPageDown;
-  if ([key isEqualToString:@"home"])
+  }
+  if ([key isEqualToString:@"home"]) {
     return kHIDUsage_KeyboardHome;
-  if ([key isEqualToString:@"insert"])
+  }
+  if ([key isEqualToString:@"insert"]) {
     return kHIDUsage_KeyboardInsert;
-  if ([key isEqualToString:@"end"])
+  }
+  if ([key isEqualToString:@"end"]) {
     return kHIDUsage_KeyboardEnd;
-  if ([key isEqualToString:@"escape"])
+  }
+  if ([key isEqualToString:@"escape"]) {
     return kHIDUsage_KeyboardEscape;
-  if ([key isEqualToString:@"return"] || [key isEqualToString:@"enter"])
+  }
+  if ([key isEqualToString:@"return"] || [key isEqualToString:@"enter"]) {
     return kHIDUsage_KeyboardReturnOrEnter;
-  if ([key isEqualToString:@"leftArrow"])
+  }
+  if ([key isEqualToString:@"leftArrow"]) {
     return kHIDUsage_KeyboardLeftArrow;
-  if ([key isEqualToString:@"rightArrow"])
+  }
+  if ([key isEqualToString:@"rightArrow"]) {
     return kHIDUsage_KeyboardRightArrow;
-  if ([key isEqualToString:@"upArrow"])
+  }
+  if ([key isEqualToString:@"upArrow"]) {
     return kHIDUsage_KeyboardUpArrow;
-  if ([key isEqualToString:@"downArrow"])
+  }
+  if ([key isEqualToString:@"downArrow"]) {
     return kHIDUsage_KeyboardDownArrow;
-  if ([key isEqualToString:@"delete"])
+  }
+  if ([key isEqualToString:@"delete"]) {
     return kHIDUsage_KeyboardDeleteOrBackspace;
-  if ([key isEqualToString:@"forwardDelete"])
+  }
+  if ([key isEqualToString:@"forwardDelete"]) {
     return kHIDUsage_KeyboardDeleteForward;
-  if ([key isEqualToString:@"leftCommand"] || [key isEqualToString:@"metaKey"])
+  }
+  if ([key isEqualToString:@"leftCommand"] ||
+      [key isEqualToString:@"metaKey"]) {
     return kHIDUsage_KeyboardLeftGUI;
-  if ([key isEqualToString:@"rightCommand"])
+  }
+  if ([key isEqualToString:@"rightCommand"]) {
     return kHIDUsage_KeyboardRightGUI;
-  if ([key isEqualToString:@"clear"])  // Num Lock / Clear
+  }
+  if ([key isEqualToString:@"clear"]) {  // Num Lock / Clear
     return kHIDUsage_KeypadNumLock;
-  if ([key isEqualToString:@"leftControl"] || [key isEqualToString:@"ctrlKey"])
+  }
+  if ([key isEqualToString:@"leftControl"] ||
+      [key isEqualToString:@"ctrlKey"]) {
     return kHIDUsage_KeyboardLeftControl;
-  if ([key isEqualToString:@"rightControl"])
+  }
+  if ([key isEqualToString:@"rightControl"]) {
     return kHIDUsage_KeyboardRightControl;
-  if ([key isEqualToString:@"leftShift"] || [key isEqualToString:@"shiftKey"])
+  }
+  if ([key isEqualToString:@"leftShift"] || [key isEqualToString:@"shiftKey"]) {
     return kHIDUsage_KeyboardLeftShift;
-  if ([key isEqualToString:@"rightShift"])
+  }
+  if ([key isEqualToString:@"rightShift"]) {
     return kHIDUsage_KeyboardRightShift;
-  if ([key isEqualToString:@"leftAlt"] || [key isEqualToString:@"altKey"])
+  }
+  if ([key isEqualToString:@"leftAlt"] || [key isEqualToString:@"altKey"]) {
     return kHIDUsage_KeyboardLeftAlt;
-  if ([key isEqualToString:@"rightAlt"])
+  }
+  if ([key isEqualToString:@"rightAlt"]) {
     return kHIDUsage_KeyboardRightAlt;
-  if ([key isEqualToString:@"numpadComma"])
+  }
+  if ([key isEqualToString:@"numpadComma"]) {
     return kHIDUsage_KeypadComma;
+  }
 
   return 0;
 }

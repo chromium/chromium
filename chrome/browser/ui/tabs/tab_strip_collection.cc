@@ -18,7 +18,9 @@
 
 namespace tabs {
 
-TabStripCollection::TabStripCollection() {
+TabStripCollection::TabStripCollection()
+    : TabCollection(TabCollection::Type::TABSTRIP),
+      impl_(std::make_unique<TabCollectionStorage>(*this)) {
   impl_ = std::make_unique<TabCollectionStorage>(*this);
   pinned_collection_ = static_cast<PinnedTabCollection*>(
       impl_->AddCollection(std::make_unique<PinnedTabCollection>(), 0));
@@ -120,9 +122,8 @@ void TabStripCollection::MoveTabsRecursive(
   }
 }
 
-void TabStripCollection::MoveGroupTo(const TabGroupModel* group_model,
-                                     const tab_groups::TabGroupId& group,
-                                     int to_index) {
+void TabStripCollection::MoveTabGroupTo(const tab_groups::TabGroupId& group,
+                                        int to_index) {
   tabs::TabGroupTabCollection* group_collection =
       unpinned_collection_->GetTabGroupCollection(group);
 
@@ -130,6 +131,21 @@ void TabStripCollection::MoveGroupTo(const TabGroupModel* group_model,
 
   unpinned_collection_->MoveGroupToRecursive(
       to_index - pinned_collection_->TabCountRecursive(), group_collection);
+}
+
+void TabStripCollection::InsertTabGroupAt(
+    std::unique_ptr<TabGroupTabCollection> group_collection,
+    int index) {
+  CHECK(index >= static_cast<int>(pinned_collection_->TabCountRecursive()));
+
+  const int dst_index =
+      (index == static_cast<int>(TabCountRecursive()))
+          ? unpinned_collection_->ChildCount()
+          : unpinned_collection_
+                ->GetDirectChildIndexOfCollectionContainingTab(
+                    GetTabAtIndexRecursive(index))
+                .value();
+  unpinned_collection_->AddTabGroup(std::move(group_collection), dst_index);
 }
 
 tabs::TabModel* TabStripCollection::GetTabAtIndexRecursive(size_t index) const {
@@ -228,6 +244,17 @@ size_t TabStripCollection::TotalTabCount() const {
   return TabCountRecursive();
 }
 
+void TabStripCollection::CreateTabGroup(
+    std::unique_ptr<tabs::TabGroupTabCollection> tab_group_collection) {
+  CHECK(tab_group_collection);
+  detached_group_collections_.push_back(std::move(tab_group_collection));
+}
+
+void TabStripCollection::CloseDetachedTabGroup(
+    const tab_groups::TabGroupId& group_id) {
+  PopDetachedGroupCollection(group_id).reset();
+}
+
 TabGroupTabCollection* TabStripCollection::MaybeCreateNewGroupCollectionForTab(
     int index,
     const tab_groups::TabGroupId& new_group) {
@@ -247,7 +274,25 @@ TabGroupTabCollection* TabStripCollection::MaybeCreateNewGroupCollectionForTab(
                 .value();
 
   return unpinned_collection_->AddTabGroup(
-      std::make_unique<TabGroupTabCollection>(new_group), dst_index);
+      PopDetachedGroupCollection(new_group), dst_index);
+}
+
+std::unique_ptr<tabs::TabGroupTabCollection>
+TabStripCollection::PopDetachedGroupCollection(
+    const tab_groups::TabGroupId& group_id) {
+  auto it = std::find_if(
+      detached_group_collections_.begin(), detached_group_collections_.end(),
+      [group_id](
+          const std::unique_ptr<tabs::TabGroupTabCollection>& collection) {
+        return collection->GetTabGroupId() == group_id;
+      });
+  CHECK(it != detached_group_collections_.end());
+
+  std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
+      std::move(*it);
+  detached_group_collections_.erase(it);
+
+  return group_collection;
 }
 
 void TabStripCollection::MaybeRemoveGroupCollection(
@@ -256,11 +301,13 @@ void TabStripCollection::MaybeRemoveGroupCollection(
       unpinned_collection_->GetTabGroupCollection(group);
 
   if (group_collection && group_collection->TabCountRecursive() == 0) {
-    unpinned_collection_->CloseTabGroup(group_collection);
+    detached_group_collections_.push_back(
+        unpinned_collection_->RemoveGroup(group_collection));
   }
 }
 
-void TabStripCollection::ValidateData(const TabGroupModel* group_model) {
+void TabStripCollection::ValidateData() {
+  CHECK(detached_group_collections_.empty());
   unpinned_collection_->ValidateCollections();
 }
 

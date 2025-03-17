@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_TEST_KIOSK_MIXIN_H_
 #define CHROME_BROWSER_ASH_APP_MODE_TEST_KIOSK_MIXIN_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -13,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
@@ -88,6 +90,24 @@ class KioskMixin : public InProcessBrowserTestMixin {
     std::string crx_version;
   };
 
+  // Option for a Chrome app hosted outside CWS. Tests should make sure the app
+  // is actually hosted in `update_url`, for example using `FakeCwsMixin`.
+  struct SelfHostedChromeAppOption {
+    SelfHostedChromeAppOption(std::string_view account_id,
+                              std::string_view app_id,
+                              const GURL& update_url);
+
+    SelfHostedChromeAppOption(const SelfHostedChromeAppOption&);
+    SelfHostedChromeAppOption(SelfHostedChromeAppOption&&);
+    SelfHostedChromeAppOption& operator=(const SelfHostedChromeAppOption&);
+    SelfHostedChromeAppOption& operator=(SelfHostedChromeAppOption&&);
+    ~SelfHostedChromeAppOption();
+
+    std::string account_id;
+    std::string app_id;
+    GURL update_url;
+  };
+
   // Option for an Isolated Web App served at the given `update_manifest_url`.
   // When using this option make sure to also create the actual server before
   // launching the app.
@@ -116,6 +136,7 @@ class KioskMixin : public InProcessBrowserTestMixin {
   using Option = std::variant<DefaultServerWebAppOption,
                               WebAppOption,
                               CwsChromeAppOption,
+                              SelfHostedChromeAppOption,
                               IsolatedWebAppOption>;
 
   // Encapsulates the data used to configure Kiosk.
@@ -141,6 +162,11 @@ class KioskMixin : public InProcessBrowserTestMixin {
     // The list of `Option`s to configure Kiosk.
     std::vector<Option> options;
   };
+
+  // Helper alias to create `ScopedUserPolicyUpdate` instances for `Configure`.
+  using UserPolicyUpdateCallback =
+      base::RepeatingCallback<std::unique_ptr<ScopedUserPolicyUpdate>(
+          std::string_view)>;
 
   // Returns the gtest parameter name for this `Config`.
   static std::string ConfigName(const testing::TestParamInfo<Config>& info);
@@ -183,12 +209,20 @@ class KioskMixin : public InProcessBrowserTestMixin {
 
   ~KioskMixin() override;
 
-  // Sets up Kiosk policies corresponding to the `config` in the given
-  // `scoped_update`.
+  // Sets up Kiosk device policies corresponding to `config` in the given
+  // `device_policy_update`, and sets device local account policies
+  // for each account in `config` via the updates returned by
+  // `user_policy_update_callback`.
   //
   // This can be used to simulate a policy change mid test, for example when
   // combined with a `policy::DevicePolicyCrosTestHelper`.
-  void Configure(ScopedDevicePolicyUpdate& scoped_update, const Config& config);
+  void Configure(ScopedDevicePolicyUpdate& device_policy_update,
+                 UserPolicyUpdateCallback user_policy_update_callback,
+                 const Config& config);
+  // Similar to above but defaults to a `user_policy_update_callback` that sets
+  // policies using `DeviceStateMixin`.
+  void Configure(ScopedDevicePolicyUpdate& device_policy_update,
+                 const Config& config);
 
   // Launches the given `app`, simulating a manual launch from the login screen.
   // Returns true if the launch started.

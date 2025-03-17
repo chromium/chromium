@@ -39,7 +39,8 @@ CreateModelExecutionStreamingResponder(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     AIMetrics::AISessionType session_type,
     base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
-        complete_callback);
+        complete_callback,
+    base::RepeatingClosure overflow_callback);
 
 // Creates a ModelStreamingResponder that handles the streaming output of the
 // model execution. The responder will resolves given resolver with the full
@@ -53,7 +54,14 @@ CreateModelExecutionResponder(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     AIMetrics::AISessionType session_type,
     base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
-        complete_callback);
+        complete_callback,
+    base::RepeatingClosure overflow_callback);
+
+// Creates a closed ReadableStream without any chunk.
+MODULES_EXPORT
+ReadableStream* CreateEmptyReadableStream(
+    ScriptState* script_state,
+    AIMetrics::AISessionType session_type);
 
 }  // namespace blink
 

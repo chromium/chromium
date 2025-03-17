@@ -9,6 +9,7 @@
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
 #include "content/public/browser/background_tracing_manager.h"
+#include "content/public/browser/tracing_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -52,6 +53,26 @@ class MockTracePage : public trace_report::mojom::Page {
   mojo::Receiver<trace_report::mojom::Page> receiver_{this};
 };
 
+class MockTracingDelegate : public TracingDelegate {
+ public:
+  MOCK_METHOD(bool, IsRecordingAllowed, (bool), (const, override));
+  MOCK_METHOD(bool, ShouldSaveUnuploadedTrace, (), (const, override));
+#if BUILDFLAG(IS_WIN)
+  MOCK_METHOD(void,
+              GetSystemTracingState,
+              (base::OnceCallback<void(bool, bool)>),
+              (override));
+  MOCK_METHOD(void,
+              EnableSystemTracing,
+              (base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void,
+              DisableSystemTracing,
+              (base::OnceCallback<void(bool)>),
+              (override));
+#endif
+};
+
 // A fixture to test TraceReportHandler.
 class TraceReportHandlerTest : public testing::Test {
  public:
@@ -66,7 +87,7 @@ class TraceReportHandlerTest : public testing::Test {
     handler_ = std::make_unique<TraceReportHandler>(
         mojo::PendingReceiver<trace_report::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), fake_trace_upload_list_,
-        *background_tracing_manager_);
+        *background_tracing_manager_, &mock_tracing_delegate_);
   }
 
  protected:
@@ -74,6 +95,7 @@ class TraceReportHandlerTest : public testing::Test {
   std::unique_ptr<BackgroundTracingManagerImpl> background_tracing_manager_;
   testing::StrictMock<FakeTraceUploadList> fake_trace_upload_list_;
   testing::NiceMock<MockTracePage> mock_page_;
+  testing::NiceMock<MockTracingDelegate> mock_tracing_delegate_;
   std::unique_ptr<TraceReportHandler> handler_;
 };
 
@@ -171,5 +193,28 @@ TEST_F(TraceReportHandlerTest, DownloadTrace) {
           });
   handler_->DownloadTrace(uuid, callback.Get());
 }
+
+#if BUILDFLAG(IS_WIN)
+// Tests that TraceReportHandler delegates GetSystemTracingState to the
+// TracingDelegate.
+TEST_F(TraceReportHandlerTest, GetSystemTracingState) {
+  EXPECT_CALL(mock_tracing_delegate_, GetSystemTracingState(testing::_));
+  handler_->GetSystemTracingState({});
+}
+
+// Tests that TraceReportHandler delegates EnableSystemTracing to the
+// TracingDelegate.
+TEST_F(TraceReportHandlerTest, EnableSystemTracing) {
+  EXPECT_CALL(mock_tracing_delegate_, EnableSystemTracing(testing::_));
+  handler_->EnableSystemTracing({});
+}
+
+// Tests that TraceReportHandler delegates DisableSystemTracing to the
+// TracingDelegate.
+TEST_F(TraceReportHandlerTest, DisableSystemTracing) {
+  EXPECT_CALL(mock_tracing_delegate_, DisableSystemTracing(testing::_));
+  handler_->DisableSystemTracing({});
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

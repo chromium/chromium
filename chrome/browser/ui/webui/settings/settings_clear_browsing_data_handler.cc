@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -20,7 +20,6 @@
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
@@ -243,27 +242,13 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   browsing_data::RecordDeleteBrowsingDataAction(
       browsing_data::DeleteBrowsingDataAction::kClearBrowsingDataDialog);
 
-  std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion>
-      scoped_data_deletion;
-
-  // If Sync is running, prevent it from being paused during the operation.
-  // However, if Sync is in error, clearing cookies should pause it.
-  if (!profile_->IsGuestSession() &&
-      GetSyncStatusMessageType(profile_) == SyncStatusMessageType::kSynced) {
-    // Settings can not be opened in incognito windows.
-    DCHECK(!profile_->IsOffTheRecord());
-    scoped_data_deletion = AccountReconcilorFactory::GetForProfile(profile_)
-                               ->GetScopedSyncDataDeletion();
-  }
-
   int period_selected = args_list[2].GetInt();
 
   content::BrowsingDataRemover* remover = profile_->GetBrowsingDataRemover();
 
-  base::OnceCallback<void(uint64_t)> callback =
-      base::BindOnce(&ClearBrowsingDataHandler::OnClearingTaskFinished,
-                     weak_ptr_factory_.GetWeakPtr(), webui_callback_id,
-                     std::move(data_types), std::move(scoped_data_deletion));
+  base::OnceCallback<void(uint64_t)> callback = base::BindOnce(
+      &ClearBrowsingDataHandler::OnClearingTaskFinished,
+      weak_ptr_factory_.GetWeakPtr(), webui_callback_id, std::move(data_types));
   browsing_data::TimePeriod time_period =
       static_cast<browsing_data::TimePeriod>(period_selected);
 
@@ -277,7 +262,6 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
 void ClearBrowsingDataHandler::OnClearingTaskFinished(
     const std::string& webui_callback_id,
     const base::flat_set<BrowsingDataType>& data_types,
-    std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion,
     uint64_t failed_data_types) {
   PrefService* prefs = profile_->GetPrefs();
   int history_notice_shown_times = prefs->GetInteger(
@@ -310,7 +294,7 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
   if (toast_features::IsEnabled(toast_features::kClearBrowsingDataToast)) {
     tabs::TabInterface* tab =
         tabs::TabInterface::MaybeGetFromContents(web_ui()->GetWebContents());
-    if (tab && tab->IsInForeground()) {
+    if (tab && tab->IsActivated()) {
       CHECK(tab->GetBrowserWindowInterface());
       ToastController* const toast_controller =
           tab->GetBrowserWindowInterface()->GetFeatures().toast_controller();

@@ -22,7 +22,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.logo.LogoUtils.LogoSizeForLogoPolish;
+import org.chromium.chrome.browser.logo.LogoUtils.DoodleSize;
 
 /** Unit tests for the {@link LogoViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -39,56 +39,27 @@ public class LogoUtilsUnitTest {
 
     @Test
     @SmallTest
-    public void testSetLogoViewLayoutParams() {
+    public void testSetLogoViewLayoutParamsForDoodle() {
         MarginLayoutParams layoutParams = new MarginLayoutParams(0, 0);
         when(mLogoView.getLayoutParams()).thenReturn(layoutParams);
 
-        int logoHeight = mResources.getDimensionPixelSize(R.dimen.ntp_logo_height);
-        int logoTopMargin = mResources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+        int doodleHeight = mResources.getDimensionPixelSize(R.dimen.doodle_height);
+        int doodleHeightForTabletSplitScreen =
+                mResources.getDimensionPixelSize(R.dimen.doodle_height_tablet_split_screen);
+        int doodleTopMargin = mResources.getDimensionPixelSize(R.dimen.doodle_margin_top);
 
-        int logoHeightLargeForLogoPolish =
-                mResources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_large);
-        int logoHeightMediumForLogoPolish =
-                mResources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_medium);
-        int logoHeightSmallForLogoPolish =
-                mResources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_small);
-        int logoTopMarginForLogoPolish =
-                mResources.getDimensionPixelSize(R.dimen.logo_margin_top_logo_polish);
+        // Verifies the layout params for doodle.
+        LogoUtils.setLogoViewLayoutParamsForDoodle(
+                mLogoView, mResources, /* doodleSize= */ DoodleSize.REGULAR);
+        testSetLogoViewLayoutParamsForDoodleImpl(doodleHeight, doodleTopMargin, layoutParams);
 
-        LogoUtils.setLogoViewLayoutParams(
-                mLogoView,
-                mResources,
-                /* isLogoPolishEnabled= */ false,
-                /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.LARGE);
-        testSetLogoViewLayoutParamsImpl(logoHeight, logoTopMargin, layoutParams);
-
-        // Verifies the layout params for Logo Polish.
-        LogoUtils.setLogoViewLayoutParams(
-                mLogoView,
-                mResources,
-                /* isLogoPolishEnabled= */ true,
-                /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.LARGE);
-        testSetLogoViewLayoutParamsImpl(
-                logoHeightLargeForLogoPolish, logoTopMarginForLogoPolish, layoutParams);
-
-        LogoUtils.setLogoViewLayoutParams(
-                mLogoView,
-                mResources,
-                /* isLogoPolishEnabled= */ true,
-                /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.MEDIUM);
-        testSetLogoViewLayoutParamsImpl(
-                logoHeightMediumForLogoPolish, logoTopMarginForLogoPolish, layoutParams);
-
-        LogoUtils.setLogoViewLayoutParams(
-                mLogoView,
-                mResources,
-                /* isLogoPolishEnabled= */ true,
-                /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.SMALL);
-        testSetLogoViewLayoutParamsImpl(
-                logoHeightSmallForLogoPolish, logoTopMarginForLogoPolish, layoutParams);
+        LogoUtils.setLogoViewLayoutParamsForDoodle(
+                mLogoView, mResources, /* doodleSize= */ DoodleSize.TABLET_SPLIT_SCREEN);
+        testSetLogoViewLayoutParamsForDoodleImpl(
+                doodleHeightForTabletSplitScreen, doodleTopMargin, layoutParams);
     }
 
-    private void testSetLogoViewLayoutParamsImpl(
+    private void testSetLogoViewLayoutParamsForDoodleImpl(
             int logoHeight, int logoTopMargin, MarginLayoutParams layoutParams) {
         Assert.assertEquals(logoHeight, layoutParams.height);
         Assert.assertEquals(logoTopMargin, layoutParams.topMargin);

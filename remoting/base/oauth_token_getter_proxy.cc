@@ -73,4 +73,8 @@ void OAuthTokenGetterProxy::InvalidateCache() {
   }
 }
 
+base::WeakPtr<OAuthTokenGetter> OAuthTokenGetterProxy::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace remoting

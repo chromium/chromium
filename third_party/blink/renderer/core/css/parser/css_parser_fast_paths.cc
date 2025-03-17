@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 
 #ifdef __SSE2__
@@ -15,6 +10,7 @@
 #include <arm_neon.h>
 #endif
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
@@ -36,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -124,11 +121,11 @@ ALWAYS_INLINE static bool ParseSimpleLength(const LChar* characters,
                                             unsigned length,
                                             CSSPrimitiveValue::UnitType& unit,
                                             double& number) {
-  if (length > 2 && (characters[length - 2] | 0x20) == 'p' &&
-      (characters[length - 1] | 0x20) == 'x') {
+  if (length > 2 && (UNSAFE_TODO(characters[length - 2]) | 0x20) == 'p' &&
+      (UNSAFE_TODO(characters[length - 1]) | 0x20) == 'x') {
     length -= 2;
     unit = CSSPrimitiveValue::UnitType::kPixels;
-  } else if (length > 1 && characters[length - 1] == '%') {
+  } else if (length > 1 && UNSAFE_TODO(characters[length - 1]) == '%') {
     length -= 1;
     unit = CSSPrimitiveValue::UnitType::kPercentage;
   }
@@ -136,7 +133,8 @@ ALWAYS_INLINE static bool ParseSimpleLength(const LChar* characters,
   // We rely on ParseDoubleWithPrefix() for validation as well. The function
   // will return a length different from “length” if the entire passed-in
   // character range does not represent a double.
-  if (!ParseDoubleWithPrefix(characters, characters + length, number)) {
+  if (!ParseDoubleWithPrefix(characters, UNSAFE_TODO(characters + length),
+                             number)) {
     return false;
   }
   number = ClampTo<double>(number, -std::numeric_limits<float>::max(),
@@ -188,41 +186,45 @@ ALWAYS_INLINE static unsigned ParseSimpleAngle(
     double& number) {
   int number_length;
   if (length > 0 && *characters == '-') {
-    number_length =
-        ParsePositiveDouble(characters + 1, characters + length, number);
+    number_length = ParsePositiveDouble(
+        UNSAFE_TODO(characters + 1), UNSAFE_TODO(characters + length), number);
     if (number_length == 0) {
       return number_length;
     }
     ++number_length;
     number = -std::min<double>(number, std::numeric_limits<float>::max());
   } else {
-    number_length =
-        ParsePositiveDouble(characters, characters + length, number);
+    number_length = ParsePositiveDouble(
+        characters, UNSAFE_TODO(characters + length), number);
     if (number_length == 0) {
       return number_length;
     }
     number = std::min<double>(number, std::numeric_limits<float>::max());
   }
 
-  characters += number_length;
+  UNSAFE_TODO(characters += number_length);
   length -= number_length;
 
   if (length >= 3 && (characters[0] | 0x20) == 'd' &&
-      (characters[1] | 0x20) == 'e' && (characters[2] | 0x20) == 'g') {
+      (UNSAFE_TODO(characters[1]) | 0x20) == 'e' &&
+      (UNSAFE_TODO(characters[2]) | 0x20) == 'g') {
     unit = CSSPrimitiveValue::UnitType::kDegrees;
     return number_length + 3;
   } else if (length >= 4 && (characters[0] | 0x20) == 'g' &&
-             (characters[1] | 0x20) == 'r' && (characters[2] | 0x20) == 'a' &&
-             (characters[3] | 0x20) == 'd') {
+             (UNSAFE_TODO(characters[1]) | 0x20) == 'r' &&
+             (UNSAFE_TODO(characters[2]) | 0x20) == 'a' &&
+             (UNSAFE_TODO(characters[3]) | 0x20) == 'd') {
     unit = CSSPrimitiveValue::UnitType::kGradians;
     return number_length + 4;
   } else if (length >= 3 && (characters[0] | 0x20) == 'r' &&
-             (characters[1] | 0x20) == 'a' && (characters[2] | 0x20) == 'd') {
+             (UNSAFE_TODO(characters[1]) | 0x20) == 'a' &&
+             (UNSAFE_TODO(characters[2]) | 0x20) == 'd') {
     unit = CSSPrimitiveValue::UnitType::kRadians;
     return number_length + 3;
-  } else if (length >= 4 && (characters[0] | 0x20) == 't' &&
-             (characters[1] | 0x20) == 'u' && (characters[2] | 0x20) == 'r' &&
-             (characters[3] | 0x20) == 'n') {
+  } else if (length >= 4 && (UNSAFE_TODO(characters[0]) | 0x20) == 't' &&
+             (UNSAFE_TODO(characters[1]) | 0x20) == 'u' &&
+             (UNSAFE_TODO(characters[2]) | 0x20) == 'r' &&
+             (UNSAFE_TODO(characters[3]) | 0x20) == 'n') {
     unit = CSSPrimitiveValue::UnitType::kTurns;
     return number_length + 4;
   } else {
@@ -366,8 +368,8 @@ static unsigned FindLengthOfValidDouble(const LChar* string, const LChar* end) {
 #endif  // defined(__SSE2__) || defined(__ARM_NEON__)
 
   for (; valid_length < length; ++valid_length) {
-    if (!IsASCIIDigit(string[valid_length])) {
-      if (!decimal_mark_seen && string[valid_length] == '.') {
+    if (!IsASCIIDigit(UNSAFE_TODO(string[valid_length]))) {
+      if (!decimal_mark_seen && UNSAFE_TODO(string[valid_length]) == '.') {
         decimal_mark_seen = true;
       } else {
         break;
@@ -375,7 +377,7 @@ static unsigned FindLengthOfValidDouble(const LChar* string, const LChar* end) {
     }
   }
 
-  if (valid_length > 0 && string[valid_length - 1] == '.') {
+  if (valid_length > 0 && UNSAFE_TODO(string[valid_length - 1]) == '.') {
     return 0;
   }
 
@@ -395,8 +397,8 @@ static bool ContainsCharAtPos(const LChar* string,
   if (pos >= static_cast<int>(end - string)) {
     return false;
   }
-  return string[pos] == ch ||
-         (also_accept_whitespace && IsHTMLSpace(string[pos]));
+  return UNSAFE_TODO(string[pos]) == ch ||
+         (also_accept_whitespace && IsHTMLSpace(UNSAFE_TODO(string[pos])));
 }
 
 // Like ParsePositiveDouble(), but also accepts initial whitespace and negative
@@ -412,14 +414,14 @@ static bool ParseDoubleWithPrefix(const LChar* string,
                                   const LChar* end,
                                   double& value) {
   while (string < end && IsHTMLSpace(*string)) {
-    ++string;
+    UNSAFE_TODO(++string);
   }
   if (string < end && *string == '-') {
     if (end - string == 1) {
       return false;
     }
     double v;
-    if (ParsePositiveDouble(string + 1, end, v) !=
+    if (ParsePositiveDouble(UNSAFE_TODO(string + 1), end, v) !=
         static_cast<unsigned>(end - string - 1)) {
       return false;
     }
@@ -452,10 +454,10 @@ ALWAYS_INLINE static unsigned ParsePositiveDouble(const LChar* string,
   // The consumed characters here are guaranteed to be
   // ASCII digits with or without a decimal mark
   for (; position < length; ++position) {
-    if (string[position] == '.') {
+    if (UNSAFE_TODO(string[position]) == '.') {
       break;
     }
-    local_value = local_value * 10 + (string[position] - '0');
+    local_value = local_value * 10 + (UNSAFE_TODO(string[position]) - '0');
   }
 
   if (++position >= length) {
@@ -487,8 +489,8 @@ ALWAYS_INLINE static unsigned ParsePositiveDouble(const LChar* string,
   // widening to 32-bit for free, so that we do not get overflow
   // from the 16-bit values. Still, we need a little bit of care,
   // since we cannot store the largest weights directly; see below.
-  if (end - (string + position) >= 7) {
-    __m128i bytes = _mm_loadu_si64(string + position - 1);
+  if (end - (UNSAFE_TODO(string + position)) >= 7) {
+    __m128i bytes = _mm_loadu_si64(UNSAFE_TODO(string + position - 1));
     __m128i words = _mm_unpacklo_epi8(bytes, _mm_setzero_si128());
     words = _mm_sub_epi16(words, _mm_set1_epi16('0'));
 
@@ -503,7 +505,7 @@ ALWAYS_INLINE static unsigned ParsePositiveDouble(const LChar* string,
         (__m128i)(__v8hi){0, 25000, 2500, 250, 1000, 100, 10, 0},
         (__m128i)(__v8hi){0, 25000, 2500, 250, 1000, 100, 10, 1},
     };
-    __m128i v = _mm_madd_epi16(words, kWeights[num_decimals]);
+    __m128i v = _mm_madd_epi16(words, UNSAFE_TODO(kWeights[num_decimals]));
 
     // Now we have, ignoring scale factors:
     //
@@ -534,8 +536,8 @@ ALWAYS_INLINE static unsigned ParsePositiveDouble(const LChar* string,
   // structure with slightly more explicit widening, and an extra mul
   // by 10000. We can join the subtraction of '0' and the widening to
   // 16-bit into one operation, though, as NEON has widening subtraction.
-  if (end - (string + position) >= 7) {
-    uint8x8_t bytes = vld1_u8(string + position - 1);
+  if (end - UNSAFE_TODO((string + position)) >= 7) {
+    uint8x8_t bytes = vld1_u8(UNSAFE_TODO(string + position - 1));
     uint16x8_t words = vsubl_u8(bytes, vdup_n_u8('0'));
     static constexpr uint16x8_t kWeights[kMaxDecimals + 1] = {
         (uint16x8_t){0, 0, 0, 0, 0, 0, 0, 0},
@@ -547,7 +549,8 @@ ALWAYS_INLINE static unsigned ParsePositiveDouble(const LChar* string,
         (uint16x8_t){0, 100, 10, 1, 1000, 100, 10, 0},
         (uint16x8_t){0, 100, 10, 1, 1000, 100, 10, 1},
     };
-    uint32x4_t pairs = vpaddlq_u16(vmulq_u16(words, kWeights[num_decimals]));
+    uint32x4_t pairs =
+        vpaddlq_u16(vmulq_u16(words, UNSAFE_TODO(kWeights[num_decimals])));
 
     // Now we have:
     //
@@ -569,7 +572,7 @@ ALWAYS_INLINE static unsigned ParsePositiveDouble(const LChar* string,
   double fraction = 0;
   double scale = 1;
   for (unsigned i = 0; i < num_decimals; ++i) {
-    fraction = fraction * 10 + (string[position + i] - '0');
+    fraction = fraction * 10 + (UNSAFE_TODO(string[position + i]) - '0');
     scale *= 10;
   }
 
@@ -589,11 +592,11 @@ ALWAYS_INLINE static bool ParseFloatWithMaxValue(const LChar*& string,
   value = 0.0;
   const LChar* current = string;
   while (current != end && IsHTMLSpace(*current)) {
-    current++;
+    UNSAFE_TODO(current++);
   }
   if (current != end && *current == '-') {
     negative = true;
-    current++;
+    UNSAFE_TODO(current++);
   } else {
     negative = false;
   }
@@ -601,12 +604,12 @@ ALWAYS_INLINE static bool ParseFloatWithMaxValue(const LChar*& string,
     return false;
   }
   while (current != end && IsASCIIDigit(*current)) {
-    double new_value = value * 10 + (*current++ - '0');
+    double new_value = value * 10 + (*UNSAFE_TODO(current++) - '0');
     if (new_value >= max_value) {
       // Clamp values at 255 or 100 (depending on the caller).
       value = max_value;
       while (current != end && IsASCIIDigit(*current)) {
-        ++current;
+        UNSAFE_TODO(++current);
       }
       break;
     }
@@ -621,7 +624,7 @@ ALWAYS_INLINE static bool ParseFloatWithMaxValue(const LChar*& string,
     if (num_characters_parsed == 0) {
       return false;
     }
-    current += num_characters_parsed;
+    UNSAFE_TODO(current += num_characters_parsed);
     value += fractional;
   }
 
@@ -656,14 +659,14 @@ static bool SkipToTerminator(const LChar*& string,
   const LChar* current = string;
 
   while (current != end && IsHTMLSpace(*current)) {
-    current++;
+    UNSAFE_TODO(current++);
   }
 
   switch (terminator_status) {
     case kCouldWhitespaceTerminate:
       if (current != end && *current == terminator) {
         terminator_status = kMustCharacterTerminate;
-        ++current;
+        UNSAFE_TODO(++current);
         break;
       }
       terminator_status = kMustWhitespaceTerminate;
@@ -680,7 +683,7 @@ static bool SkipToTerminator(const LChar*& string,
       if (current == end || *current != terminator) {
         return false;
       }
-      ++current;  // Skip over the terminator.
+      UNSAFE_TODO(++current);  // Skip over the terminator.
       break;
   }
 
@@ -718,7 +721,7 @@ static bool ParseColorNumberOrPercentage(const LChar*& string,
     if (local_value > 255) {
       local_value = 255;
     }
-    current++;
+    UNSAFE_TODO(current++);
   } else {
     expect = CSSPrimitiveValue::UnitType::kNumber;
   }
@@ -750,7 +753,7 @@ ALWAYS_INLINE static bool ParsePercentage(const LChar*& string,
     return false;
   }
 
-  ++current;
+  UNSAFE_TODO(++current);
   if (negative) {
     value = 0.0;
   } else {
@@ -767,13 +770,13 @@ ALWAYS_INLINE static bool ParsePercentage(const LChar*& string,
 
 static inline bool IsTenthAlpha(const LChar* string, const wtf_size_t length) {
   // "0.X"
-  if (length == 3 && string[0] == '0' && string[1] == '.' &&
-      IsASCIIDigit(string[2])) {
+  if (length == 3 && string[0] == '0' && UNSAFE_TODO(string[1]) == '.' &&
+      IsASCIIDigit(UNSAFE_TODO(string[2]))) {
     return true;
   }
 
   // ".X"
-  if (length == 2 && string[0] == '.' && IsASCIIDigit(string[1])) {
+  if (length == 2 && string[0] == '.' && IsASCIIDigit(UNSAFE_TODO(string[1]))) {
     return true;
   }
 
@@ -785,14 +788,14 @@ ALWAYS_INLINE static bool ParseAlphaValue(const LChar*& string,
                                           const char terminator,
                                           int& value) {
   while (string != end && IsHTMLSpace(*string)) {
-    string++;
+    UNSAFE_TODO(string++);
   }
 
   bool negative = false;
 
   if (string != end && *string == '-') {
     negative = true;
-    string++;
+    UNSAFE_TODO(string++);
   }
 
   value = 0;
@@ -802,7 +805,8 @@ ALWAYS_INLINE static bool ParseAlphaValue(const LChar*& string,
     return false;
   }
 
-  if (string[length - 1] != terminator || !IsASCIIDigit(string[length - 2])) {
+  if (UNSAFE_TODO(string[length - 1]) != terminator ||
+      !IsASCIIDigit(UNSAFE_TODO(string[length - 2]))) {
     return false;
   }
 
@@ -829,7 +833,8 @@ ALWAYS_INLINE static bool ParseAlphaValue(const LChar*& string,
     // where 0.1 alpha is value 26 (25.5 rounded) and so on.
     static const int kTenthAlphaValues[] = {0,   26,  51,  77,  102,
                                             128, 153, 179, 204, 230};
-    value = negative ? 0 : kTenthAlphaValues[string[length - 2] - '0'];
+    value =
+        negative ? 0 : UNSAFE_TODO(kTenthAlphaValues[string[length - 2] - '0']);
     string = end;
     return true;
   }
@@ -871,12 +876,34 @@ static inline bool ConsumeMatchingLiteral(const LChar** a,
   if (!MatchesLiteral(*a, b)) {
     return false;
   }
-  *a += N - 1;
+  UNSAFE_TODO(*a += N - 1);
 
   // Skip trailing whitespace.
   while (*a != end && IsHTMLSpace(**a)) {
-    (*a)++;
+    UNSAFE_TODO((*a)++);
   }
+  return true;
+}
+
+static inline bool ConsumeFallbackValuesAndEndOfEnv(const LChar** a,
+                                                    const LChar* end) {
+  while (true) {
+    if (**a == *end) {
+      return false;
+    }
+    char ch = **a;
+    if (ch == ')') {
+      ConsumeMatchingLiteral(a, end, ")");
+      break;
+    }
+    // Tolerate simple fallback values like ", 0px".
+    if (!(IsHTMLSpace(ch) || ch == ',' || ch == '-' || ch == '.' ||
+          (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9'))) {
+      return false;
+    }
+    UNSAFE_TODO((*a)++);
+  }
+
   return true;
 }
 
@@ -926,8 +953,9 @@ static inline bool MightBeRGBOrRGBA(const LChar* characters, unsigned length) {
     return false;
   }
   return MatchesLiteral(characters, "rgb") &&
-         (characters[3] == '(' ||
-          (characters[3] == 'a' && characters[4] == '('));
+         (UNSAFE_TODO(characters[3]) == '(' ||
+          (UNSAFE_TODO(characters[3]) == 'a' &&
+           UNSAFE_TODO(characters[4]) == '('));
 }
 
 static inline bool MightBeHSLOrHSLA(const LChar* characters, unsigned length) {
@@ -935,8 +963,9 @@ static inline bool MightBeHSLOrHSLA(const LChar* characters, unsigned length) {
     return false;
   }
   return MatchesLiteral(characters, "hsl") &&
-         (characters[3] == '(' ||
-          (characters[3] == 'a' && characters[4] == '('));
+         (UNSAFE_TODO(characters[3]) == '(' ||
+          (UNSAFE_TODO(characters[3]) == 'a' &&
+           UNSAFE_TODO(characters[4]) == '('));
 }
 
 static bool FastParseColorInternal(Color& color,
@@ -944,20 +973,22 @@ static bool FastParseColorInternal(Color& color,
                                    unsigned length,
                                    bool quirks_mode) {
   if (length >= 4 && characters[0] == '#') {
-    return Color::ParseHexColor(base::span(characters + 1, length - 1), color);
+    return Color::ParseHexColor(
+        UNSAFE_TODO(base::span(characters + 1, length - 1)), color);
   }
 
   if (quirks_mode && (length == 3 || length == 6)) {
-    if (Color::ParseHexColor(base::span(characters, length), color)) {
+    if (Color::ParseHexColor(UNSAFE_TODO(base::span(characters, length)),
+                             color)) {
       return true;
     }
   }
 
   // rgb() and rgba() have the same syntax.
   if (MightBeRGBOrRGBA(characters, length)) {
-    int length_to_add = (characters[3] == 'a') ? 5 : 4;
-    const LChar* current = characters + length_to_add;
-    const LChar* end = characters + length;
+    int length_to_add = (UNSAFE_TODO(characters[3]) == 'a') ? 5 : 4;
+    const LChar* current = UNSAFE_TODO(characters + length_to_add);
+    const LChar* end = UNSAFE_TODO(characters + length);
     int red;
     int green;
     int blue;
@@ -1018,14 +1049,14 @@ static bool FastParseColorInternal(Color& color,
   // grammar and behavior to hsl().
 
   if (MightBeHSLOrHSLA(characters, length)) {
-    int length_to_add = (characters[3] == 'a') ? 5 : 4;
-    const LChar* current = characters + length_to_add;
-    const LChar* end = characters + length;
+    int length_to_add = (UNSAFE_TODO(characters[3]) == 'a') ? 5 : 4;
+    const LChar* current = UNSAFE_TODO(characters + length_to_add);
+    const LChar* end = UNSAFE_TODO(characters + length);
     bool should_have_alpha = false;
 
     // Skip any whitespace before the hue.
     while (current != end && IsHTMLSpace(*current)) {
-      current++;
+      UNSAFE_TODO(current++);
     }
 
     CSSPrimitiveValue::UnitType hue_unit = CSSPrimitiveValue::UnitType::kNumber;
@@ -1063,7 +1094,7 @@ static bool FastParseColorInternal(Color& color,
       hue = fmod(hue, 360.0);
     }
 
-    current += hue_length;
+    UNSAFE_TODO(current += hue_length);
 
     TerminatorStatus terminator_status = kCouldWhitespaceTerminate;
     if (!SkipToTerminator(current, end, ',', terminator_status)) {
@@ -1208,6 +1239,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kBorderInlineEndStyle:
     case CSSPropertyID::kBorderInlineStartStyle:
     case CSSPropertyID::kColumnRuleStyle:
+    case CSSPropertyID::kRowRuleStyle:
       return IsBorderStyleValue(value_id);
     case CSSPropertyID::kBoxSizing:
       return value_id == CSSValueID::kBorderBox ||
@@ -1237,6 +1269,11 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kOptimizespeed ||
              value_id == CSSValueID::kOptimizequality;
+    case CSSPropertyID::kColumnRuleBreak:
+    case CSSPropertyID::kRowRuleBreak:
+      return value_id == CSSValueID::kNone ||
+             value_id == CSSValueID::kSpanningItem ||
+             value_id == CSSValueID::kIntersection;
     case CSSPropertyID::kDirection:
       return value_id == CSSValueID::kLtr || value_id == CSSValueID::kRtl;
     case CSSPropertyID::kDominantBaseline:
@@ -1258,6 +1295,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kForcedColorAdjust:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kPreserveParentColor;
+    case CSSPropertyID::kGapRulePaintOrder:
+      return value_id == CSSValueID::kRowOverColumn ||
+             value_id == CSSValueID::kColumnOverRow;
     case CSSPropertyID::kImageRendering:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kWebkitOptimizeContrast ||
@@ -1354,7 +1394,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kFlexFlow ||
              value_id == CSSValueID::kGridRows ||
              value_id == CSSValueID::kGridColumns ||
-             value_id == CSSValueID::kGridOrder;
+             value_id == CSSValueID::kGridOrder ||
+             value_id == CSSValueID::kSourceOrder;
     case CSSPropertyID::kResize:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kBoth ||
              value_id == CSSValueID::kHorizontal ||
@@ -1364,6 +1405,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kInternalTextareaAuto ||
              (RuntimeEnabledFeatures::CSSResizeAutoEnabled() &&
               value_id == CSSValueID::kAuto);
+    case CSSPropertyID::kScrollMarkerContain:
+      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
     case CSSPropertyID::kScrollMarkerGroup:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAfter ||
              value_id == CSSValueID::kBefore;
@@ -1468,7 +1511,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
               value_id == CSSValueID::kSearchfield ||
               value_id == CSSValueID::kTextfield ||
               value_id == CSSValueID::kTextarea) ||
-             (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+             /* This can't check for origin trials, unfortunately. */
+             (HTMLSelectElement::CustomizableSelectEnabledNoDocument() &&
               value_id == CSSValueID::kBaseSelect) ||
              (RuntimeEnabledFeatures::
                   NonStandardAppearanceValueSliderVerticalEnabled() &&
@@ -1501,10 +1545,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kCenter ||
              value_id == CSSValueID::kBaseline;
     case CSSPropertyID::kBoxDecorationBreak:
-      if (!RuntimeEnabledFeatures::BoxDecorationBreakEnabled()) {
-        return false;
-      }
-      [[fallthrough]];
     case CSSPropertyID::kWebkitBoxDecorationBreak:
       return value_id == CSSValueID::kClone || value_id == CSSValueID::kSlice;
     case CSSPropertyID::kWebkitBoxDirection:
@@ -1593,7 +1633,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kSub ||
              value_id == CSSValueID::kSuper;
     case CSSPropertyID::kFontVariantEmoji:
-      DCHECK(RuntimeEnabledFeatures::FontVariantEmojiEnabled());
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kText ||
              value_id == CSSValueID::kEmoji || value_id == CSSValueID::kUnicode;
     case CSSPropertyID::kLineBreak:
@@ -1669,15 +1708,11 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id >= CSSValueID::kHorizontalTb &&
              value_id <= CSSValueID::kVerticalLr;
     case CSSPropertyID::kWritingMode:
-      if (RuntimeEnabledFeatures::SidewaysWritingModesEnabled()) {
-        if (value_id == CSSValueID::kSidewaysRl ||
-            value_id == CSSValueID::kSidewaysLr) {
-          return true;
-        }
-      }
       return value_id == CSSValueID::kHorizontalTb ||
              value_id == CSSValueID::kVerticalRl ||
              value_id == CSSValueID::kVerticalLr ||
+             value_id == CSSValueID::kSidewaysRl ||
+             value_id == CSSValueID::kSidewaysLr ||
              value_id == CSSValueID::kLrTb || value_id == CSSValueID::kRlTb ||
              value_id == CSSValueID::kTbRl || value_id == CSSValueID::kLr ||
              value_id == CSSValueID::kRl || value_id == CSSValueID::kTb;
@@ -1743,6 +1778,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kColorInterpolation,
     CSSPropertyID::kColorInterpolationFilters,
     CSSPropertyID::kColorRendering,
+    CSSPropertyID::kColumnRuleBreak,
     CSSPropertyID::kDirection,
     CSSPropertyID::kDominantBaseline,
     CSSPropertyID::kEmptyCells,
@@ -1750,6 +1786,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kFloat,
     CSSPropertyID::kFieldSizing,
     CSSPropertyID::kForcedColorAdjust,
+    CSSPropertyID::kGapRulePaintOrder,
     CSSPropertyID::kHyphens,
     CSSPropertyID::kImageRendering,
     CSSPropertyID::kInternalOverflowBlock,
@@ -1778,6 +1815,8 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kPositionTryOrder,
     CSSPropertyID::kReadingFlow,
     CSSPropertyID::kResize,
+    CSSPropertyID::kRowRuleBreak,
+    CSSPropertyID::kScrollMarkerContain,
     CSSPropertyID::kScrollMarkerGroup,
     CSSPropertyID::kScrollBehavior,
     CSSPropertyID::kOverscrollBehaviorInline,
@@ -1862,24 +1901,24 @@ bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {
 static inline CSSValue* ParseCSSWideKeywordValue(const LChar* ptr,
                                                  unsigned length) {
   if (length == 7 && MatchesCaseInsensitiveLiteral4(ptr, "init") &&
-      MatchesCaseInsensitiveLiteral4(ptr + 3, "tial")) {
+      MatchesCaseInsensitiveLiteral4(UNSAFE_TODO(ptr + 3), "tial")) {
     return CSSInitialValue::Create();
   }
   if (length == 7 && MatchesCaseInsensitiveLiteral4(ptr, "inhe") &&
-      MatchesCaseInsensitiveLiteral4(ptr + 3, "erit")) {
+      MatchesCaseInsensitiveLiteral4(UNSAFE_TODO(ptr + 3), "erit")) {
     return CSSInheritedValue::Create();
   }
   if (length == 5 && MatchesCaseInsensitiveLiteral4(ptr, "unse") &&
-      IsASCIIAlphaCaselessEqual(ptr[4], 't')) {
+      IsASCIIAlphaCaselessEqual(UNSAFE_TODO(ptr[4]), 't')) {
     return cssvalue::CSSUnsetValue::Create();
   }
   if (length == 6 && MatchesCaseInsensitiveLiteral4(ptr, "reve") &&
-      MatchesCaseInsensitiveLiteral2(ptr + 4, "rt")) {
+      MatchesCaseInsensitiveLiteral2(UNSAFE_TODO(ptr + 4), "rt")) {
     return cssvalue::CSSRevertValue::Create();
   }
   if (length == 12 && MatchesCaseInsensitiveLiteral4(ptr, "reve") &&
-      MatchesCaseInsensitiveLiteral4(ptr + 4, "rt-l") &&
-      MatchesCaseInsensitiveLiteral4(ptr + 8, "ayer")) {
+      MatchesCaseInsensitiveLiteral4(UNSAFE_TODO(ptr + 4), "rt-l") &&
+      MatchesCaseInsensitiveLiteral4(UNSAFE_TODO(ptr + 8), "ayer")) {
     return cssvalue::CSSRevertLayerValue::Create();
   }
   return nullptr;
@@ -1950,8 +1989,8 @@ static bool ParseTransformTranslateArguments(
     unsigned expected_count,
     CSSFunctionValue* transform_value) {
   while (expected_count) {
-    wtf_size_t delimiter =
-        WTF::Find(base::span(pos, end), expected_count == 1 ? ')' : ',');
+    wtf_size_t delimiter = WTF::Find(UNSAFE_TODO(base::span(pos, end)),
+                                     expected_count == 1 ? ')' : ',');
     if (delimiter == kNotFound) {
       return false;
     }
@@ -1967,7 +2006,7 @@ static bool ParseTransformTranslateArguments(
     }
     transform_value->Append(*CSSNumericLiteralValue::Create(
         number, CSSPrimitiveValue::UnitType::kPixels));
-    pos += argument_length + 1;
+    UNSAFE_TODO(pos += argument_length + 1);
     --expected_count;
   }
   return true;
@@ -1976,7 +2015,7 @@ static bool ParseTransformTranslateArguments(
 static bool ParseTransformRotateArgument(const LChar*& pos,
                                          const LChar* end,
                                          CSSFunctionValue* transform_value) {
-  wtf_size_t delimiter = WTF::Find(base::span(pos, end), ')');
+  wtf_size_t delimiter = WTF::Find(UNSAFE_TODO(base::span(pos, end)), ')');
   if (delimiter == kNotFound) {
     return false;
   }
@@ -1995,7 +2034,7 @@ static bool ParseTransformRotateArgument(const LChar*& pos,
     }
   }
   transform_value->Append(*CSSNumericLiteralValue::Create(number, unit));
-  pos += argument_length + 1;
+  UNSAFE_TODO(pos += argument_length + 1);
   return true;
 }
 
@@ -2004,19 +2043,20 @@ static bool ParseTransformNumberArguments(const LChar*& pos,
                                           unsigned expected_count,
                                           CSSFunctionValue* transform_value) {
   while (expected_count) {
-    wtf_size_t delimiter =
-        WTF::Find(base::span(pos, end), expected_count == 1 ? ')' : ',');
+    wtf_size_t delimiter = WTF::Find(UNSAFE_TODO(base::span(pos, end)),
+                                     expected_count == 1 ? ')' : ',');
     if (delimiter == kNotFound) {
       return false;
     }
     unsigned argument_length = static_cast<unsigned>(delimiter);
     double number;
-    if (!ParseDoubleWithPrefix(pos, pos + argument_length, number)) {
+    if (!ParseDoubleWithPrefix(pos, UNSAFE_TODO(pos + argument_length),
+                               number)) {
       return false;
     }
     transform_value->Append(*CSSNumericLiteralValue::Create(
         number, CSSPrimitiveValue::UnitType::kNumber));
-    pos += argument_length + 1;
+    UNSAFE_TODO(pos += argument_length + 1);
     --expected_count;
   }
   return true;
@@ -2036,24 +2076,28 @@ static CSSFunctionValue* ParseSimpleTransformValue(const LChar*& pos,
     CSSValueID transform_type;
     unsigned expected_argument_count = 1;
     unsigned argument_start = 11;
-    if (IsASCIIAlphaCaselessEqual(pos[9], 'x') && pos[10] == '(') {
+    if (IsASCIIAlphaCaselessEqual(UNSAFE_TODO(pos[9]), 'x') &&
+        UNSAFE_TODO(pos[10]) == '(') {
       transform_type = CSSValueID::kTranslateX;
-    } else if (IsASCIIAlphaCaselessEqual(pos[9], 'y') && pos[10] == '(') {
+    } else if (IsASCIIAlphaCaselessEqual(UNSAFE_TODO(pos[9]), 'y') &&
+               UNSAFE_TODO(pos[10]) == '(') {
       transform_type = CSSValueID::kTranslateY;
-    } else if (IsASCIIAlphaCaselessEqual(pos[9], 'z') && pos[10] == '(') {
+    } else if (IsASCIIAlphaCaselessEqual(UNSAFE_TODO(pos[9]), 'z') &&
+               UNSAFE_TODO(pos[10]) == '(') {
       transform_type = CSSValueID::kTranslateZ;
-    } else if (pos[9] == '(') {
+    } else if (UNSAFE_TODO(pos[9]) == '(') {
       transform_type = CSSValueID::kTranslate;
       expected_argument_count = 2;
       argument_start = 10;
-    } else if (pos[9] == '3' && pos[10] == 'd' && pos[11] == '(') {
+    } else if (UNSAFE_TODO(pos[9]) == '3' && UNSAFE_TODO(pos[10]) == 'd' &&
+               UNSAFE_TODO(pos[11]) == '(') {
       transform_type = CSSValueID::kTranslate3d;
       expected_argument_count = 3;
       argument_start = 12;
     } else {
       return nullptr;
     }
-    pos += argument_start;
+    UNSAFE_TODO(pos += argument_start);
     CSSFunctionValue* transform_value =
         MakeGarbageCollected<CSSFunctionValue>(transform_type);
     if (!ParseTransformTranslateArguments(pos, end, expected_argument_count,
@@ -2066,7 +2110,7 @@ static CSSFunctionValue* ParseSimpleTransformValue(const LChar*& pos,
   const bool is_matrix3d = MatchesLiteral(pos, "matrix3d(");
 
   if (is_matrix3d) {
-    pos += 9;
+    UNSAFE_TODO(pos += 9);
     CSSFunctionValue* transform_value =
         MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kMatrix3d);
     if (!ParseTransformNumberArguments(pos, end, 16, transform_value)) {
@@ -2078,7 +2122,7 @@ static CSSFunctionValue* ParseSimpleTransformValue(const LChar*& pos,
   const bool is_scale3d = MatchesLiteral(pos, "scale3d(");
 
   if (is_scale3d) {
-    pos += 8;
+    UNSAFE_TODO(pos += 8);
     CSSFunctionValue* transform_value =
         MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kScale3d);
     if (!ParseTransformNumberArguments(pos, end, 3, transform_value)) {
@@ -2091,11 +2135,12 @@ static CSSFunctionValue* ParseSimpleTransformValue(const LChar*& pos,
 
   if (is_rotate) {
     CSSValueID rotate_value_id = CSSValueID::kInvalid;
-    if (pos[6] == '(') {
-      pos += 7;
+    if (UNSAFE_TODO(pos[6]) == '(') {
+      UNSAFE_TODO(pos += 7);
       rotate_value_id = CSSValueID::kRotate;
-    } else if (IsASCIIAlphaCaselessEqual(pos[6], 'z') && pos[7] == '(') {
-      pos += 8;
+    } else if (IsASCIIAlphaCaselessEqual(UNSAFE_TODO(pos[6]), 'z') &&
+               UNSAFE_TODO(pos[7]) == '(') {
+      UNSAFE_TODO(pos += 8);
       rotate_value_id = CSSValueID::kRotateZ;
     } else {
       return nullptr;
@@ -2118,38 +2163,38 @@ static bool TransformCanLikelyUseFastPath(const LChar* chars, unsigned length) {
   // run into a transform component we don't understand.
   unsigned i = 0;
   while (i < length) {
-    if (chars[i] == ' ') {
+    if (UNSAFE_TODO(chars[i]) == ' ') {
       ++i;
       continue;
     }
     if (length - i < kShortestValidTransformStringLength) {
       return false;
     }
-    switch ((chars[i])) {
+    switch (UNSAFE_TODO(chars[i])) {
       case 't':
         // translate, translateX, translateY, translateZ, translate3d.
-        if (chars[i + 8] != 'e') {
+        if (UNSAFE_TODO(chars[i + 8]) != 'e') {
           return false;
         }
         i += 9;
         break;
       case 'm':
         // matrix3d.
-        if (chars[i + 7] != 'd') {
+        if (UNSAFE_TODO(chars[i + 7]) != 'd') {
           return false;
         }
         i += 8;
         break;
       case 's':
         // scale3d.
-        if (chars[i + 6] != 'd') {
+        if (UNSAFE_TODO(chars[i + 6]) != 'd') {
           return false;
         }
         i += 7;
         break;
       case 'r':
         // rotate.
-        if (chars[i + 5] != 'e') {
+        if (UNSAFE_TODO(chars[i + 5]) != 'e') {
           return false;
         }
         i += 6;
@@ -2158,7 +2203,8 @@ static bool TransformCanLikelyUseFastPath(const LChar* chars, unsigned length) {
         // All other things, ex. skew.
         return false;
     }
-    wtf_size_t arguments_end = WTF::Find(base::span(chars, length), ')', i);
+    wtf_size_t arguments_end =
+        WTF::Find(UNSAFE_TODO(base::span(chars, length)), ')', i);
     if (arguments_end == kNotFound) {
       return false;
     }
@@ -2181,11 +2227,11 @@ static CSSValue* ParseSimpleTransform(CSSPropertyID property_id,
   if (!TransformCanLikelyUseFastPath(pos, length)) {
     return nullptr;
   }
-  const auto* end = pos + length;
+  const auto* end = UNSAFE_TODO(pos + length);
   CSSValueList* transform_list = nullptr;
   while (pos < end) {
     while (pos < end && *pos == ' ') {
-      ++pos;
+      UNSAFE_TODO(++pos);
     }
     if (pos >= end) {
       break;
@@ -2248,7 +2294,7 @@ bool CSSParserFastPaths::IsSafeAreaInsetBottom(StringView string) {
     return false;
   }
   const LChar* pos = string.Characters8();
-  const LChar* end = pos + string.length();
+  const LChar* end = UNSAFE_TODO(pos + string.length());
 
   // We can be env(SAIB) or calc(env(SAIB) +/- ...).
   // If calc(), env(SAIB) must be the first operand.
@@ -2264,43 +2310,40 @@ bool CSSParserFastPaths::IsSafeAreaInsetBottom(StringView string) {
     if (!ConsumeMatchingLiteral(&pos, end, "safe-area-inset-bottom")) {
       return false;
     }
-    // Look for the end of the env(...)
-    while (true) {
-      if (pos == end) {
-        return false;
-      }
-      char ch = *pos;
-      if (ch == ')') {
-        ConsumeMatchingLiteral(&pos, end, ")");
-        break;
-      }
-      // Tolerate simple fallback values like ", 0px".
-      if (!(IsHTMLSpace(ch) || ch == ',' || ch == '-' || ch == '.' ||
-            (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9'))) {
-        return false;
-      }
-      pos++;
+    // Look for fallback values and the end of the env(...)
+    if (!ConsumeFallbackValuesAndEndOfEnv(&pos, end)) {
+      return false;
     }
+
     // Operator must be + or -
     if (ConsumeMatchingLiteral(&pos, end, "+") ||
         ConsumeMatchingLiteral(&pos, end, "-")) {
-      // Second operand can be var(--foo) or simple length like "10px".
+      // Second operand can be var(--foo), simple length like "10px" or
+      // env(SAMIB).
       if (ConsumeMatchingLiteral(&pos, end, "var(")) {
         // TODO(crbug.com/373980016): Verify that the var actually exists.
         while (pos != end && IsCustomIdentChar(*pos)) {
-          pos++;
+          UNSAFE_TODO(pos++);
         }
         while (pos != end && IsHTMLSpace(*pos)) {
-          pos++;
+          UNSAFE_TODO(pos++);
         }
         if (!ConsumeMatchingLiteral(&pos, end, ")")) {
+          return false;
+        }
+      } else if (ConsumeMatchingLiteral(&pos, end, "env(")) {
+        if (!ConsumeMatchingLiteral(&pos, end, "safe-area-max-inset-bottom")) {
+          return false;
+        }
+        // Look for fallback values and the end of the env(...)
+        if (!ConsumeFallbackValuesAndEndOfEnv(&pos, end)) {
           return false;
         }
       } else {
         // Look for simple length value.
         const LChar* tok_end = pos;
         while (tok_end != end && *tok_end != ')' && !IsHTMLSpace(*tok_end)) {
-          tok_end++;
+          UNSAFE_TODO(tok_end++);
         }
         double number;
         CSSPrimitiveValue::UnitType unit;
@@ -2309,7 +2352,7 @@ bool CSSParserFastPaths::IsSafeAreaInsetBottom(StringView string) {
         }
         pos = tok_end;
         while (pos != end && IsHTMLSpace(*pos)) {
-          pos++;
+          UNSAFE_TODO(pos++);
         }
       }
     }

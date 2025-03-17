@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/audio_power_monitor.h"
 
 #include <limits>
 #include <memory>
 
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,13 +27,12 @@ namespace {
 // Container for each parameterized test's data (input and expected results).
 class TestScenario {
  public:
-  TestScenario(const float* data,
+  TestScenario(base::span<const float> data,
                int num_channels,
-               int num_frames,
                float expected_power,
                bool expected_clipped)
       : expected_power_(expected_power), expected_clipped_(expected_clipped) {
-    CreatePopulatedBuffer(data, num_channels, num_frames);
+    CreatePopulatedBuffer(data, num_channels);
   }
 
   // Copy constructor and assignment operator for ::testing::Values(...).
@@ -51,7 +49,7 @@ class TestScenario {
   // of channel 0.
   TestScenario WithABadSample(float bad_value) const {
     TestScenario result(*this);
-    result.bus_->channel(0)[result.bus_->frames() / 2] = bad_value;
+    result.bus_->channel_span(0)[result.bus_->frames() / 2] = bad_value;
     return result;
   }
 
@@ -63,16 +61,32 @@ class TestScenario {
 
  private:
   // Creates an AudioBus, sized and populated with kFramesPerBuffer frames of
-  // data.  The given test |data| is repeated to fill the buffer.
-  void CreatePopulatedBuffer(const float* data,
-                             int num_channels,
-                             int num_frames) {
+  // data.  The given test `data` is repeated to fill the buffer.
+  void CreatePopulatedBuffer(base::span<const float> data, int num_channels) {
+    ASSERT_EQ(0u, data.size() % num_channels);
+    const size_t frames_per_channel = data.size() / num_channels;
+
+    // Split `data` into subspans of identical length, for each channel.
+    std::vector<AudioBus::ConstChannel> per_channel_data;
+    auto data_reader = base::SpanReader(data);
+    while (data_reader.remaining() > 0) {
+      per_channel_data.push_back(data_reader.Read(frames_per_channel).value());
+    }
+
     bus_ = AudioBus::Create(num_channels, kFramesPerBuffer);
-    for (int ch = 0; ch < num_channels; ++ch) {
-      for (int frames = 0; frames < kFramesPerBuffer; frames += num_frames) {
-        const int num_to_copy = std::min(num_frames, kFramesPerBuffer - frames);
-        memcpy(bus_->channel(ch) + frames, data + num_frames * ch,
-               sizeof(float) * num_to_copy);
+
+    // Completely fill `bus_` with repeating `per_channel_data`.
+    for (auto [channel, channel_data] :
+         base::zip(bus_->AllChannels(), per_channel_data)) {
+      auto writer = base::SpanWriter<float>(channel);
+      while (writer.remaining() > channel_data.size()) {
+        writer.Write(channel_data);
+      }
+
+      // Fill the leftover data, if `channel_data.size()` is not a multiple of
+      // `kFramesPerBuffer`
+      if (writer.remaining()) {
+        writer.Write(channel_data.first(writer.remaining()));
       }
     }
   }
@@ -96,9 +110,7 @@ class MeasurementObserver {
  public:
   explicit MeasurementObserver(float goal_power_measurement)
       : goal_power_measurement_(goal_power_measurement),
-        measurement_count_(0),
-        last_power_measurement_(AudioPowerMonitor::zero_power()),
-        last_clipped_(false) {}
+        last_power_measurement_(AudioPowerMonitor::zero_power()) {}
 
   MeasurementObserver(const MeasurementObserver&) = delete;
   MeasurementObserver& operator=(const MeasurementObserver&) = delete;
@@ -140,10 +152,10 @@ class MeasurementObserver {
 
  private:
   const float goal_power_measurement_;
-  int measurement_count_;
+  int measurement_count_ = 0;
   bool measurements_should_increase_;
   float last_power_measurement_;
-  bool last_clipped_;
+  bool last_clipped_ = false;
 };
 
 }  // namespace
@@ -260,54 +272,46 @@ INSTANTIATE_TEST_SUITE_P(
     Scenarios,
     AudioPowerMonitorTest,
     ::testing::Values(
-        TestScenario(kMonoSilentNoise, 1, 2, -40, false),
+        TestScenario(kMonoSilentNoise, 1, -40, false),
         TestScenario(kMonoMaxAmplitude,
-                     1,
                      1,
                      AudioPowerMonitor::max_power(),
                      false),
         TestScenario(kMonoMaxAmplitude2,
                      1,
-                     2,
                      AudioPowerMonitor::max_power(),
                      false),
-        TestScenario(kMonoHalfMaxAmplitude, 1, 4, -6, false),
+        TestScenario(kMonoHalfMaxAmplitude, 1, -6, false),
         TestScenario(kMonoAmplitudeClipped,
                      1,
-                     2,
                      AudioPowerMonitor::max_power(),
                      true),
         TestScenario(kMonoMaxAmplitudeWithClip,
                      1,
-                     4,
                      AudioPowerMonitor::max_power(),
                      true),
         TestScenario(kMonoMaxAmplitudeWithClip2,
                      1,
-                     4,
                      AudioPowerMonitor::max_power(),
                      true),
         TestScenario(kMonoSilentNoise,
                      1,
-                     2,
                      AudioPowerMonitor::zero_power(),
                      false)
             .WithABadSample(std::numeric_limits<float>::infinity()),
         TestScenario(kMonoHalfMaxAmplitude,
                      1,
-                     4,
                      AudioPowerMonitor::zero_power(),
                      false)
             .WithABadSample(std::numeric_limits<float>::quiet_NaN()),
-        TestScenario(kStereoSilentNoise, 2, 2, -46, false),
+        TestScenario(kStereoSilentNoise, 2, -46, false),
         TestScenario(kStereoMaxAmplitude,
-                     2,
                      2,
                      AudioPowerMonitor::max_power(),
                      false),
-        TestScenario(kRightChannelMaxAmplitude, 2, 4, -3, false),
-        TestScenario(kLeftChannelHalfMaxAmplitude, 2, 4, -9, false),
-        TestScenario(kStereoMixed, 2, 4, -2, false),
-        TestScenario(kStereoMixed2, 2, 8, -3, false)));
+        TestScenario(kRightChannelMaxAmplitude, 2, -3, false),
+        TestScenario(kLeftChannelHalfMaxAmplitude, 2, -9, false),
+        TestScenario(kStereoMixed, 2, -2, false),
+        TestScenario(kStereoMixed2, 2, -3, false)));
 
 }  // namespace media

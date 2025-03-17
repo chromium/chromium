@@ -153,6 +153,30 @@ std::string GetStringNameForOptimizationType(
       return "OptimizationGuideIconView";
     case proto::OptimizationType::PRIVACY_POLICY_ANNOTATION:
       return "PrivacyPolicyAnnotation";
+    case proto::OptimizationType::BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS:
+      return "BmoCreditCardAirMilesPartnerBenefits";
+    case proto::OptimizationType::BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS:
+      return "BmoCreditCardAlcoholStoreBenefits";
+    case proto::OptimizationType::BMO_CREDIT_CARD_DINING_BENEFITS:
+      return "BmoCreditCardDiningBenefits";
+    case proto::OptimizationType::BMO_CREDIT_CARD_DRUGSTORE_BENEFITS:
+      return "BmoCreditCardDrugstoreBenefits";
+    case proto::OptimizationType::BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS:
+      return "BmoCreditCardEntertainmentBenefits";
+    case proto::OptimizationType::BMO_CREDIT_CARD_GROCERY_BENEFITS:
+      return "BmoCreditCardGroceryBenefits";
+    case proto::OptimizationType::BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS:
+      return "BmoCreditCardOfficeSupplyBenefits";
+    case proto::OptimizationType::BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS:
+      return "BmoCreditCardRecurringBillBenefits";
+    case proto::OptimizationType::BMO_CREDIT_CARD_TRANSIT_BENEFITS:
+      return "BmoCreditCardTransitBenefits";
+    case proto::OptimizationType::BMO_CREDIT_CARD_TRAVEL_BENEFITS:
+      return "BmoCreditCardTravelBenefits";
+    case proto::OptimizationType::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS:
+      return "BmoCreditCardWholesaleClubBenefits";
+    case proto::OptimizationType::GLIC_CONTEXTUAL_CUEING:
+      return "GlicContextualCueing";
   }
 
   // The returned string is used to record histograms for the optimization type.

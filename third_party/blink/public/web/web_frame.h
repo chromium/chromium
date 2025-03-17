@@ -116,7 +116,7 @@ class BLINK_EXPORT WebFrame {
   mojom::InsecureRequestPolicy GetInsecureRequestPolicy() const;
 
   // The frame's upgrade insecure navigations set.
-  WebVector<unsigned> GetInsecureRequestToUpgrade() const;
+  std::vector<unsigned> GetInsecureRequestToUpgrade() const;
 
   // Hierarchy ----------------------------------------------------------
 

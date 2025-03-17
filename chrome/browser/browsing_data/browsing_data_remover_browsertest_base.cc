@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browsing_data/browsing_data_remover_browsertest_base.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"

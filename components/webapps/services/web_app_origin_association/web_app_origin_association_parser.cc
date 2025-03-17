@@ -119,23 +119,24 @@ WebAppOriginAssociationParser::ParseAssociatedWebApps(
 
 std::optional<GURL> WebAppOriginAssociationParser::ParseExtendedScope(
     const base::Value::Dict& extended_scope_info,
-    const url::Origin& origin) {
+    const url::Origin& associate_origin) {
   const std::string* extended_scope_ptr =
       extended_scope_info.FindString(kExtendedScope);
   if (!extended_scope_ptr || extended_scope_ptr->empty()) {
     // No explicit `scope` defaults to root ie the scope of associate's origin.
-    return origin.GetURL();
+    return associate_origin.GetURL();
   }
-  GURL result = origin.GetURL().Resolve(*extended_scope_ptr);
-  if (!result.is_valid()) {
+  GURL associate_extended_url =
+      associate_origin.GetURL().Resolve(*extended_scope_ptr);
+  if (!associate_extended_url.is_valid()) {
     AddErrorInfo(kInvalidScopeUrl);
     return std::nullopt;
   }
-  if (!UrlIsWithinScope(result, origin)) {
+  if (!UrlIsWithinScope(associate_extended_url, associate_origin)) {
     AddErrorInfo(kInvalidScopeUrl);
     return std::nullopt;
   }
-  return result;
+  return associate_extended_url;
 }
 
 void WebAppOriginAssociationParser::AddErrorInfo(const std::string& error_msg,
@@ -147,13 +148,12 @@ void WebAppOriginAssociationParser::AddErrorInfo(const std::string& error_msg,
   errors_.push_back(std::move(error));
 }
 
-// Determines whether |url| is within scope of |scope|.
+// Determines whether |url| is within scope of |extended_origin|'s path.
 bool WebAppOriginAssociationParser::UrlIsWithinScope(
     const GURL& url,
     const url::Origin& extended_origin) {
-  // Uses the same within-scope rules as WebAppRegistrar::IsUrlInAppScope
-  return base::StartsWith(url.spec(), extended_origin.GetURL().spec(),
-                          base::CompareCase::SENSITIVE) > 0;
+  return extended_origin.IsSameOriginWith(url) &&
+         url.path().starts_with(extended_origin.GetURL().path());
 }
 
 }  // namespace webapps

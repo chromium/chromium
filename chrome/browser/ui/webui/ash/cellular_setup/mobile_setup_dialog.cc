@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_dialog.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/mobile/mobile_activator.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/common/url_constants.h"
@@ -77,22 +76,9 @@ std::string MobileSetupDialog::GetDialogArgs() const {
 
 void MobileSetupDialog::OnCloseContents(content::WebContents* source,
                                         bool* out_close_dialog) {
-  // If we're exiting, popping up the confirmation dialog can cause a
-  // crash. Note: IsTryingToQuit can be cancelled on other platforms by the
-  // onbeforeunload handler, except on ChromeOS. So IsTryingToQuit is the
-  // appropriate check to use here.
-  bool running_activation = MobileActivator::GetInstance()->RunningActivation();
-  NET_LOG(EVENT) << "Closing MobileSetupDialog. Activation running = "
-                 << running_activation;
-  if (!dialog_window() || !running_activation ||
-      browser_shutdown::IsTryingToQuit()) {
-    *out_close_dialog = true;
-    return;
-  }
-
-  *out_close_dialog = chrome::ShowQuestionMessageBoxSync(
-      dialog_window(), l10n_util::GetStringUTF16(IDS_MOBILE_SETUP_TITLE),
-      l10n_util::GetStringUTF16(IDS_MOBILE_CANCEL_ACTIVATION));
+  // If we're exiting, popping up the confirmation dialog can cause a crash.
+  NET_LOG(EVENT) << "Closing MobileSetupDialog.";
+  *out_close_dialog = true;
 }
 
 }  // namespace ash::cellular_setup

@@ -120,7 +120,7 @@ class _Speedometer3Story(press_story.PressStory):
           startButton.click();
         }
         """)
-    action_runner.WaitForJavaScriptCondition('testDone', timeout=900)
+    action_runner.WaitForJavaScriptCondition('testDone', timeout=1800)
     if self._take_memory_measurement:
       action_runner.MeasureMemory(deterministic_mode=True)
 

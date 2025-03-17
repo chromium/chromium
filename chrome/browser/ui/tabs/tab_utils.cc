@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #endif
 
 std::vector<TabAlertState> GetTabAlertStatesForContents(
@@ -62,36 +63,36 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
   }
 
   if (contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kBluetoothConnected)) {
+          content::WebContentsCapabilityType::kBluetoothConnected)) {
     states.push_back(TabAlertState::BLUETOOTH_CONNECTED);
   }
 
   if (contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kBluetoothScanning)) {
+          content::WebContentsCapabilityType::kBluetoothScanning)) {
     states.push_back(TabAlertState::BLUETOOTH_SCAN_ACTIVE);
   }
 
-  if (contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kUSB)) {
+  if (contents->IsCapabilityActive(content::WebContentsCapabilityType::kUSB)) {
     states.push_back(TabAlertState::USB_CONNECTED);
   }
 
-  if (contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kHID)) {
+  if (contents->IsCapabilityActive(content::WebContentsCapabilityType::kHID)) {
     states.push_back(TabAlertState::HID_CONNECTED);
   }
 
   if (contents->IsCapabilityActive(
-          content::WebContents::CapabilityType::kSerial)) {
+          content::WebContentsCapabilityType::kSerial)) {
     states.push_back(TabAlertState::SERIAL_CONNECTED);
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (GlicEnabling::IsEnabledByFlags() &&
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-          contents->GetBrowserContext())
-              ->GetFocusedTab() == contents) {
-    states.push_back(TabAlertState::GLIC_ACCESSING);
+  if (Profile* const profile =
+          Profile::FromBrowserContext(contents->GetBrowserContext());
+      glic::GlicEnabling::IsProfileEligible(profile)) {
+    glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(profile);
+    if (glic_service && glic_service->IsContextAccessIndicatorShown(contents)) {
+      states.push_back(TabAlertState::GLIC_ACCESSING);
+    }
   }
 #endif
 
@@ -170,8 +171,12 @@ std::u16string GetTabAlertStateText(const TabAlertState alert_state) {
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING);
     case TabAlertState::GLIC_ACCESSING:
+#if BUILDFLAG(ENABLE_GLIC)
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING);
+#else
+      return u"";
+#endif
   }
   NOTREACHED();
 }

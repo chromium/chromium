@@ -11,9 +11,11 @@
 namespace safe_browsing {
 namespace download_type_util {
 
-// Returns the DownloadType of the file at |path|. This function is only valid
-// for paths that satisfy IsSupportedBinaryFile() above.
-ClientDownloadRequest::DownloadType GetDownloadType(const base::FilePath& file);
+// Returns the DownloadType of the file named `file_name`, based on the filename
+// extension. `file_name` should be a human-readable file name and not e.g. a
+// content-URI.
+ClientDownloadRequest::DownloadType GetDownloadType(
+    const base::FilePath& file_name);
 
 }  // namespace download_type_util
 }  // namespace safe_browsing

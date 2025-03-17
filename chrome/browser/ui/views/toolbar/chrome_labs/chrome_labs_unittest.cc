@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -16,18 +17,17 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_item_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_view_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/flags_ui/feature_entry_macros.h"
-#include "components/flags_ui/flags_state.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/user_education/views/new_badge_label.h"
 #include "components/version_info/channel.h"
+#include "components/webui/flags/feature_entry_macros.h"
+#include "components/webui/flags/flags_state.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -75,20 +75,20 @@ const flags_ui::FeatureEntry::FeatureVariation kTestVariations2[] = {
 
 std::vector<LabInfo> TestLabInfo() {
   std::vector<LabInfo> test_feature_info;
-  test_feature_info.emplace_back(LabInfo(kFirstTestFeatureId, u"", u"", "",
-                                         version_info::Channel::STABLE));
+  test_feature_info.emplace_back(kFirstTestFeatureId, u"", u"", "",
+                                 version_info::Channel::STABLE);
 
   std::vector<std::u16string> variation_descriptions = {u"Description"};
 
-  test_feature_info.emplace_back(LabInfo(kTestFeatureWithVariationId, u"", u"",
-                                         "", version_info::Channel::STABLE,
-                                         variation_descriptions));
+  test_feature_info.emplace_back(kTestFeatureWithVariationId, u"", u"", "",
+                                 version_info::Channel::STABLE,
+                                 variation_descriptions);
 
-  test_feature_info.emplace_back(LabInfo(kThirdTestFeatureId, u"", u"", "",
-                                         version_info::Channel::STABLE));
+  test_feature_info.emplace_back(kThirdTestFeatureId, u"", u"", "",
+                                 version_info::Channel::STABLE);
 
-  test_feature_info.emplace_back(LabInfo(kExpiredFlagTestFeatureId, u"", u"",
-                                         "", version_info::Channel::STABLE));
+  test_feature_info.emplace_back(kExpiredFlagTestFeatureId, u"", u"", "",
+                                 version_info::Channel::STABLE);
 
   return test_feature_info;
 }
@@ -139,6 +139,7 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
 
   void TearDown() override {
     about_flags::GetCurrentFlagsState()->Reset();
+    chrome_labs_coordinator_->TearDown();
     TestWithBrowserView::TearDown();
   }
 
@@ -265,12 +266,10 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
         TestingBrowserProcess::GetGlobal()->local_state());
 #endif
 
-    if (features::IsToolbarPinningEnabled()) {
-      browser_view()
-          ->toolbar()
-          ->pinned_toolbar_actions_container()
-          ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
-    }
+    browser_view()
+        ->toolbar()
+        ->pinned_toolbar_actions_container()
+        ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
 
     std::unique_ptr<ChromeLabsBubbleView> bubble_view =
         std::make_unique<ChromeLabsBubbleView>(GetChromeLabsButton(),

@@ -330,15 +330,19 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
        net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
                                net::SiteType::kPrimary, std::nullopt)}};
   global_sets.ApplyManuallySpecifiedSet(
-      net::LocalSetDeclaration(/*set_entries=*/manual_sets, /*aliases=*/{}));
+      net::LocalSetDeclaration::Create(/*set_entries=*/manual_sets,
+                                       /*aliases=*/{})
+          .value());
 
-  net::FirstPartySetsContextConfig config(
-      {{net::SchemefulSite(GURL(site_member1)),
-        net::FirstPartySetEntryOverride(
-            net::FirstPartySetEntry(net::SchemefulSite(GURL(primary_site)),
-                                    net::SiteType::kAssociated, std::nullopt))},
-       {net::SchemefulSite(GURL(site_member2)),
-        net::FirstPartySetEntryOverride()}});
+  net::FirstPartySetsContextConfig config =
+      net::FirstPartySetsContextConfig::Create(
+          {{net::SchemefulSite(GURL(site_member1)),
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                net::SchemefulSite(GURL(primary_site)),
+                net::SiteType::kAssociated, std::nullopt))},
+           {net::SchemefulSite(GURL(site_member2)),
+            net::FirstPartySetEntryOverride()}})
+          .value();
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -445,15 +449,19 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB_NoPublicSets) {
        net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
                                net::SiteType::kPrimary, std::nullopt)}};
   global_sets.ApplyManuallySpecifiedSet(
-      net::LocalSetDeclaration(/*set_entries=*/manual_sets, /*aliases=*/{}));
+      net::LocalSetDeclaration::Create(/*set_entries=*/manual_sets,
+                                       /*aliases=*/{})
+          .value());
 
-  net::FirstPartySetsContextConfig config(
-      {{net::SchemefulSite(GURL(site_member1)),
-        net::FirstPartySetEntryOverride(
-            net::FirstPartySetEntry(net::SchemefulSite(GURL(primary_site)),
-                                    net::SiteType::kAssociated, std::nullopt))},
-       {net::SchemefulSite(GURL(site_member2)),
-        net::FirstPartySetEntryOverride()}});
+  net::FirstPartySetsContextConfig config =
+      net::FirstPartySetsContextConfig::Create(
+          {{net::SchemefulSite(GURL(site_member1)),
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                net::SchemefulSite(GURL(primary_site)),
+                net::SiteType::kAssociated, std::nullopt))},
+           {net::SchemefulSite(GURL(site_member2)),
+            net::FirstPartySetEntryOverride()}})
+          .value();
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -592,15 +600,19 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
        net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
                                net::SiteType::kPrimary, std::nullopt)}};
   global_sets.ApplyManuallySpecifiedSet(
-      net::LocalSetDeclaration(/*set_entries=*/manual_sets, /*aliases=*/{}));
+      net::LocalSetDeclaration::Create(/*set_entries=*/manual_sets,
+                                       /*aliases=*/{})
+          .value());
 
-  net::FirstPartySetsContextConfig config(
-      {{net::SchemefulSite(GURL(site_member1)),
-        net::FirstPartySetEntryOverride(
-            net::FirstPartySetEntry(net::SchemefulSite(GURL(primary_site)),
-                                    net::SiteType::kAssociated, std::nullopt))},
-       {net::SchemefulSite(GURL(site_member2)),
-        net::FirstPartySetEntryOverride()}});
+  net::FirstPartySetsContextConfig config =
+      net::FirstPartySetsContextConfig::Create(
+          {{net::SchemefulSite(GURL(site_member1)),
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                net::SchemefulSite(GURL(primary_site)),
+                net::SiteType::kAssociated, std::nullopt))},
+           {net::SchemefulSite(GURL(site_member2)),
+            net::FirstPartySetEntryOverride()}})
+          .value();
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -991,7 +1003,9 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_NoPublicSets) {
        net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
                                std::nullopt)}};
   global_sets.ApplyManuallySpecifiedSet(
-      net::LocalSetDeclaration(/*set_entries=*/manual_sets, /*aliases=*/{}));
+      net::LocalSetDeclaration::Create(/*set_entries=*/manual_sets,
+                                       /*aliases=*/{})
+          .value());
 
   OpenDatabase();
   // Trigger the lazy-initialization and insert data with a invalid version, so
@@ -1177,13 +1191,18 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
        net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
                                std::nullopt)}};
   global_sets.ApplyManuallySpecifiedSet(
-      net::LocalSetDeclaration(/*set_entries=*/manual_sets, /*aliases=*/{}));
+      net::LocalSetDeclaration::Create(/*set_entries=*/manual_sets,
+                                       /*aliases=*/{})
+          .value());
 
-  net::FirstPartySetsContextConfig config(
-      {{config_site_member1,
-        net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-            config_primary_site, net::SiteType::kAssociated, std::nullopt))},
-       {config_site_member2, net::FirstPartySetEntryOverride()}});
+  net::FirstPartySetsContextConfig config =
+      net::FirstPartySetsContextConfig::Create(
+          {{config_site_member1,
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                config_primary_site, net::SiteType::kAssociated,
+                std::nullopt))},
+           {config_site_member2, net::FirstPartySetEntryOverride()}})
+          .value();
 
   OpenDatabase();
   // Trigger the lazy-initialization.

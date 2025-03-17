@@ -2,30 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/explainers-by-googlers/prompt-api
-
-enum AILanguageModelInitialPromptRole { "system", "user", "assistant" };
-enum AILanguageModelPromptRole { "user", "assistant" };
-
-[
-  Exposed=(Window,Worker),
-  SecureContext,
-  RuntimeEnabled=AIPromptAPI
-]
-interface AILanguageModelCapabilities {
-  [Measure]
-  readonly attribute AICapabilityAvailability available;
-  [Measure]
-  AICapabilityAvailability languageAvailable(DOMString languageTag);
-
-  // Always null if available === "no"
-  [Measure]
-  readonly attribute unsigned long? defaultTopK;
-  [Measure]
-  readonly attribute unsigned long? maxTopK;
-  [Measure]
-  readonly attribute float? defaultTemperature;
-};
+// https://github.com/webmachinelearning/prompt-api
 
 [
   Exposed=(Window,Worker),
@@ -38,13 +15,21 @@ interface AILanguageModelFactory {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AILanguageModelCapabilities> capabilities();
+  Promise<AILanguageModel> create(
+    optional AILanguageModelCreateOptions options = {}
+  );
   [
     Measure,
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AILanguageModel> create(
-    optional AILanguageModelCreateOptions options = {}
+  Promise<AIAvailability> availability(
+    optional AILanguageModelCreateCoreOptions options = {}
   );
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AILanguageModelParams?> params();
 };

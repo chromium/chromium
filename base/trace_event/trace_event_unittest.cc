@@ -95,18 +95,14 @@ class TraceEventTestFixture : public testing::Test {
                                            const char* key,
                                            const char* value);
   void DropTracedMetadataRecords();
-  bool FindMatchingValue(const char* key,
-                         const char* value);
-  bool FindNonMatchingValue(const char* key,
-                            const char* value);
+  bool FindMatchingValue(const char* key, const char* value);
+  bool FindNonMatchingValue(const char* key, const char* value);
   void Clear() {
     trace_parsed_ = Value::List();
     json_output_.json_output.clear();
   }
 
-  void BeginTrace() {
-    BeginSpecificTrace("*");
-  }
+  void BeginTrace() { BeginSpecificTrace("*"); }
 
   void BeginSpecificTrace(const std::string& filter) {
     TraceLog::GetInstance()->SetEnabled(TraceConfig(filter, ""));
@@ -171,8 +167,9 @@ class TraceEventTestFixture : public testing::Test {
     num_flush_callbacks_ = 0;
   }
   void TearDown() override {
-    if (TraceLog::GetInstance())
+    if (TraceLog::GetInstance()) {
       EXPECT_FALSE(TraceLog::GetInstance()->IsEnabled());
+    }
     PlatformThread::SetName(old_thread_name_);
     // We want our singleton torn down after each test.
     TraceLog::ResetForTesting();
@@ -216,11 +213,13 @@ void TraceEventTestFixture::OnTraceDataCollected(
 
   // Move items into our aggregate collection
   trace_parsed_.reserve(trace_parsed_.size() + root_list.size());
-  for (auto& value : root_list)
+  for (auto& value : root_list) {
     trace_parsed_.Append(std::move(value));
+  }
 
-  if (!has_more_events)
+  if (!has_more_events) {
     flush_complete_event->Signal();
+  }
 }
 
 static bool CompareJsonValues(const std::string& lhs,
@@ -239,13 +238,15 @@ static bool IsKeyValueInDict(const JsonKeyValue* key_value,
                              const Value::Dict* dict) {
   const std::string* value_str = dict->FindStringByDottedPath(key_value->key);
   if (value_str &&
-      CompareJsonValues(*value_str, key_value->value, key_value->op))
+      CompareJsonValues(*value_str, key_value->value, key_value->op)) {
     return true;
+  }
 
   // Recurse to test arguments
   const Value::Dict* args_dict = dict->FindDictByDottedPath("args");
-  if (args_dict)
+  if (args_dict) {
     return IsKeyValueInDict(key_value, args_dict);
+  }
 
   return false;
 }
@@ -323,14 +324,17 @@ bool TraceEventTestFixture::FindNonMatchingValue(const char* key,
 
 bool IsStringInDict(const char* string_to_match, const Value::Dict* dict) {
   for (const auto pair : *dict) {
-    if (pair.first.find(string_to_match) != std::string::npos)
+    if (pair.first.find(string_to_match) != std::string::npos) {
       return true;
+    }
 
-    if (!pair.second.is_string())
+    if (!pair.second.is_string()) {
       continue;
+    }
 
-    if (pair.second.GetString().find(string_to_match) != std::string::npos)
+    if (pair.second.GetString().find(string_to_match) != std::string::npos) {
       return true;
+    }
   }
 
   // Recurse to test arguments
@@ -452,8 +456,8 @@ void TraceWithAllMacroVariants(WaitableEvent* task_complete_event) {
     TRACE_EVENT_OBJECT_DELETED_WITH_ID("test_all", "tracked object 3",
                                        TRACE_ID_WITH_SCOPE("scope", 0x42));
 
-    TRACE_EVENT1(kControlCharacters, kControlCharacters,
-                 kControlCharacters, kControlCharacters);
+    TRACE_EVENT1(kControlCharacters, kControlCharacters, kControlCharacters,
+                 kControlCharacters);
 
     TRACE_EVENT_ASYNC_BEGIN0("test_all", "async default process scope", 0x1000);
     TRACE_EVENT_ASYNC_BEGIN0("test_all", "async local id",
@@ -465,22 +469,23 @@ void TraceWithAllMacroVariants(WaitableEvent* task_complete_event) {
         TRACE_ID_WITH_SCOPE("scope string", TRACE_ID_GLOBAL(0x4000)));
   }  // Scope close causes TRACE_EVENT0 etc to send their END events.
 
-  if (task_complete_event)
+  if (task_complete_event) {
     task_complete_event->Signal();
+  }
 }
 
 void ValidateAllTraceMacrosCreatedData(const Value::List& trace_parsed) {
   const Value::Dict* item = nullptr;
 
-#define EXPECT_FIND_(string) \
-    item = FindTraceEntry(trace_parsed, string); \
-    EXPECT_TRUE(item);
-#define EXPECT_NOT_FIND_(string) \
-    item = FindTraceEntry(trace_parsed, string); \
-    EXPECT_FALSE(item);
+#define EXPECT_FIND_(string)                   \
+  item = FindTraceEntry(trace_parsed, string); \
+  EXPECT_TRUE(item);
+#define EXPECT_NOT_FIND_(string)               \
+  item = FindTraceEntry(trace_parsed, string); \
+  EXPECT_FALSE(item);
 #define EXPECT_SUB_FIND_(string) \
-    if (item) \
-      EXPECT_TRUE(IsStringInDict(string, item));
+  if (item)                      \
+    EXPECT_TRUE(IsStringInDict(string, item));
 
   EXPECT_FIND_("TRACE_EVENT0 call");
   {
@@ -713,7 +718,8 @@ void ValidateAllTraceMacrosCreatedData(const Value::List& trace_parsed) {
   }
 }
 
-void TraceManyInstantEvents(int thread_id, int num_events,
+void TraceManyInstantEvents(int thread_id,
+                            int num_events,
                             WaitableEvent* task_complete_event) {
   for (int i = 0; i < num_events; i++) {
     TRACE_EVENT_INSTANT2("test_all", "multi thread event",
@@ -721,8 +727,9 @@ void TraceManyInstantEvents(int thread_id, int num_events,
                          i);
   }
 
-  if (task_complete_event)
+  if (task_complete_event) {
     task_complete_event->Signal();
+  }
 }
 
 void ValidateInstantEventPresentOnEveryThread(const Value::List& trace_parsed,
@@ -737,8 +744,9 @@ void ValidateInstantEventPresentOnEveryThread(const Value::List& trace_parsed,
     }
 
     const std::string* name = dict->FindString("name");
-    if (!name || *name != "multi thread event")
+    if (!name || *name != "multi thread event") {
       continue;
+    }
 
     std::optional<int> maybe_thread = dict->FindIntByDottedPath("args.thread");
     std::optional<int> maybe_event = dict->FindIntByDottedPath("args.event");
@@ -793,8 +801,7 @@ TEST_F(TraceEventTestFixture, DataDiscarded) {
   EXPECT_TRUE(trace_parsed_.empty());
 }
 
-class MockEnabledStateChangedObserver :
-      public TraceLog::EnabledStateObserver {
+class MockEnabledStateChangedObserver : public TraceLog::EnabledStateObserver {
  public:
   MOCK_METHOD0(OnTraceLogEnabled, void());
   MOCK_METHOD0(OnTraceLogDisabled, void());
@@ -804,8 +811,7 @@ TEST_F(TraceEventTestFixture, EnabledObserverFiresOnEnable) {
   MockEnabledStateChangedObserver observer;
   TraceLog::GetInstance()->AddEnabledStateObserver(&observer);
 
-  EXPECT_CALL(observer, OnTraceLogEnabled())
-      .Times(1);
+  EXPECT_CALL(observer, OnTraceLogEnabled()).Times(1);
   TraceLog::GetInstance()->SetEnabled(
       TraceConfig(kRecordAllCategoryFilter, ""));
   testing::Mock::VerifyAndClear(&observer);
@@ -823,8 +829,7 @@ TEST_F(TraceEventTestFixture, EnabledObserverFiresOnDisable) {
   MockEnabledStateChangedObserver observer;
   TraceLog::GetInstance()->AddEnabledStateObserver(&observer);
 
-  EXPECT_CALL(observer, OnTraceLogDisabled())
-      .Times(1);
+  EXPECT_CALL(observer, OnTraceLogDisabled()).Times(1);
   TraceLog::GetInstance()->SetDisabled();
   testing::Mock::VerifyAndClear(&observer);
 
@@ -879,8 +884,7 @@ TEST_F(TraceEventTestFixture, ObserversFireAfterStateChange) {
 }
 
 // Tests that a state observer can remove itself during a callback.
-class SelfRemovingEnabledStateObserver
-    : public TraceLog::EnabledStateObserver {
+class SelfRemovingEnabledStateObserver : public TraceLog::EnabledStateObserver {
  public:
   SelfRemovingEnabledStateObserver() = default;
   ~SelfRemovingEnabledStateObserver() override = default;
@@ -936,49 +940,6 @@ TEST_F(TraceEventTestFixture, NewTraceRecording) {
 
   // Cleanup.
   EndTraceAndFlush();
-}
-
-TEST_F(TraceEventTestFixture, AddMetadataEvent) {
-  int num_calls = 0;
-
-  class Convertable : public ConvertableToTraceFormat {
-   public:
-    explicit Convertable(int* num_calls) : num_calls_(num_calls) {}
-    ~Convertable() override = default;
-    void AppendAsTraceFormat(std::string* out) const override {
-      (*num_calls_)++;
-      out->append("\"metadata_value\"");
-    }
-
-   private:
-    raw_ptr<int> num_calls_;
-  };
-
-  std::unique_ptr<ConvertableToTraceFormat> conv1(new Convertable(&num_calls));
-  std::unique_ptr<Convertable> conv2(new Convertable(&num_calls));
-
-  BeginTrace();
-  TRACE_EVENT_API_ADD_METADATA_EVENT(
-      TraceLog::GetCategoryGroupEnabled("__metadata"), "metadata_event_1",
-      "metadata_arg_name", std::move(conv1));
-  TRACE_EVENT_API_ADD_METADATA_EVENT(
-      TraceLog::GetCategoryGroupEnabled("__metadata"), "metadata_event_2",
-      "metadata_arg_name", std::move(conv2));
-  // |AppendAsTraceFormat| should only be called on flush, not when the event
-  // is added.
-  ASSERT_EQ(0, num_calls);
-  EndTraceAndFlush();
-  ASSERT_EQ(2, num_calls);
-  EXPECT_TRUE(FindNamePhaseKeyValue("metadata_event_1", "M",
-                                    "metadata_arg_name", "metadata_value"));
-  EXPECT_TRUE(FindNamePhaseKeyValue("metadata_event_2", "M",
-                                    "metadata_arg_name", "metadata_value"));
-
-  // The metadata event should only be adde to the current trace. In this new
-  // trace, the event should not appear.
-  BeginTrace();
-  EndTraceAndFlush();
-  ASSERT_EQ(2, num_calls);
 }
 
 // Test that categories work.
@@ -1060,7 +1021,6 @@ TEST_F(TraceEventTestFixture, Categories) {
   EXPECT_TRUE(FindMatchingValue("cat", "test_inc,test_inc2"));
 }
 
-
 // Test ASYNC_BEGIN/END events
 TEST_F(TraceEventTestFixture, AsyncBeginEndEvents) {
   BeginTrace();
@@ -1127,45 +1087,6 @@ TEST_F(TraceEventTestFixture, AsyncBeginEndPointerNotMangled) {
   EXPECT_STREQ(async_begin_id_str.c_str(), async_end_id_str.c_str());
 }
 
-// Test that static strings are not copied.
-TEST_F(TraceEventTestFixture, StaticStringVsString) {
-  TraceLog* tracer = TraceLog::GetInstance();
-  // Make sure old events are flushed:
-  EXPECT_EQ(0u, tracer->GetStatus().event_count);
-  const unsigned char* category_group_enabled =
-      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("base");
-
-  {
-    BeginTrace();
-    // Test that string arguments are copied.
-    [[maybe_unused]] TraceEventHandle handle1 =
-        trace_event_internal::AddTraceEvent(
-            TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name1",
-            trace_event_internal::kGlobalScope, trace_event_internal::kNoId, 0,
-            trace_event_internal::kNoId, "arg1", std::string("argval"), "arg2",
-            std::string("argval"));
-    // Test that static TRACE_STR_COPY string arguments are copied.
-    [[maybe_unused]] TraceEventHandle handle2 =
-        trace_event_internal::AddTraceEvent(
-            TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name2",
-            trace_event_internal::kGlobalScope, trace_event_internal::kNoId, 0,
-            trace_event_internal::kNoId, "arg1", TRACE_STR_COPY("argval"),
-            "arg2", TRACE_STR_COPY("argval"));
-    EndTraceAndFlush();
-  }
-
-  {
-    BeginTrace();
-    // Test that static literal string arguments are not copied.
-    [[maybe_unused]] TraceEventHandle handle1 =
-        trace_event_internal::AddTraceEvent(
-            TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name1",
-            trace_event_internal::kGlobalScope, trace_event_internal::kNoId, 0,
-            trace_event_internal::kNoId, "arg1", "argval", "arg2", "argval");
-    EndTraceAndFlush();
-  }
-}
-
 // Test that data sent from other threads is gathered
 TEST_F(TraceEventTestFixture, DataCapturedOnThread) {
   BeginTrace();
@@ -1216,8 +1137,8 @@ TEST_F(TraceEventTestFixture, DataCapturedManyThreads) {
   }
 
   EndTraceAndFlushInThreadWithMessageLoop();
-  ValidateInstantEventPresentOnEveryThread(trace_parsed_,
-                                           num_threads, num_events);
+  ValidateInstantEventPresentOnEveryThread(trace_parsed_, num_threads,
+                                           num_events);
 
   // Let the other half of the threads end after flush.
   for (int i = num_threads / 2; i < num_threads; i++) {
@@ -1410,7 +1331,13 @@ class MyData : public ConvertableToTraceFormat {
   }
 };
 
-TEST_F(TraceEventTestFixture, ConvertableTypes) {
+// crbug.com/325641473: Flaky on Mac due to missing last event.
+#if BUILDFLAG(IS_APPLE)
+#define MAYBE_ConvertableTypes DISABLED_ConvertableTypes
+#else
+#define MAYBE_ConvertableTypes ConvertableTypes
+#endif
+TEST_F(TraceEventTestFixture, MAYBE_ConvertableTypes) {
   TraceLog::GetInstance()->SetEnabled(
       TraceConfig(kRecordAllCategoryFilter, ""));
 
@@ -1503,7 +1430,13 @@ TEST_F(TraceEventTestFixture, ConvertableTypes) {
   ASSERT_TRUE(convertable_dict);
 }
 
-TEST_F(TraceEventTestFixture, PrimitiveArgs) {
+// crbug.com/325641473: Flaky on Mac due to missing last event.
+#if BUILDFLAG(IS_APPLE)
+#define MAYBE_PrimitiveArgs DISABLED_PrimitiveArgs
+#else
+#define MAYBE_PrimitiveArgs PrimitiveArgs
+#endif
+TEST_F(TraceEventTestFixture, MAYBE_PrimitiveArgs) {
   TraceLog::GetInstance()->SetEnabled(
       TraceConfig(kRecordAllCategoryFilter, ""));
 
@@ -1657,90 +1590,6 @@ void BlockUntilStopped(WaitableEvent* task_start_event,
   task_stop_event->Wait();
 }
 
-TEST_F(TraceEventTestFixture, SetCurrentThreadBlocksMessageLoopBeforeTracing) {
-  BeginTrace();
-
-  Thread thread("1");
-  WaitableEvent task_complete_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                                    WaitableEvent::InitialState::NOT_SIGNALED);
-  thread.Start();
-  thread.task_runner()->PostTask(
-      FROM_HERE, BindOnce(&TraceLog::SetCurrentThreadBlocksMessageLoop,
-                          Unretained(TraceLog::GetInstance())));
-
-  thread.task_runner()->PostTask(
-      FROM_HERE, BindOnce(&TraceWithAllMacroVariants, &task_complete_event));
-  task_complete_event.Wait();
-
-  WaitableEvent task_start_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                                 WaitableEvent::InitialState::NOT_SIGNALED);
-  WaitableEvent task_stop_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                                WaitableEvent::InitialState::NOT_SIGNALED);
-  thread.task_runner()->PostTask(
-      FROM_HERE,
-      BindOnce(&BlockUntilStopped, &task_start_event, &task_stop_event));
-  task_start_event.Wait();
-
-  EndTraceAndFlush();
-  ValidateAllTraceMacrosCreatedData(trace_parsed_);
-
-  task_stop_event.Signal();
-  thread.Stop();
-}
-
-TEST_F(TraceEventTestFixture, ConvertTraceConfigToInternalOptions) {
-  TraceLog* trace_log = TraceLog::GetInstance();
-  EXPECT_EQ(TraceLog::kInternalRecordUntilFull,
-            trace_log->GetInternalOptionsFromTraceConfig(
-                TraceConfig(kRecordAllCategoryFilter, RECORD_UNTIL_FULL)));
-
-  EXPECT_EQ(TraceLog::kInternalRecordContinuously,
-            trace_log->GetInternalOptionsFromTraceConfig(
-                TraceConfig(kRecordAllCategoryFilter, RECORD_CONTINUOUSLY)));
-
-  EXPECT_EQ(TraceLog::kInternalEchoToConsole,
-            trace_log->GetInternalOptionsFromTraceConfig(
-                TraceConfig(kRecordAllCategoryFilter, ECHO_TO_CONSOLE)));
-
-  EXPECT_EQ(TraceLog::kInternalEchoToConsole,
-            trace_log->GetInternalOptionsFromTraceConfig(
-                TraceConfig("*", "trace-to-console,enable-systrace")));
-}
-
-void SetBlockingFlagAndBlockUntilStopped(WaitableEvent* task_start_event,
-                                         WaitableEvent* task_stop_event) {
-  TraceLog::GetInstance()->SetCurrentThreadBlocksMessageLoop();
-  BlockUntilStopped(task_start_event, task_stop_event);
-}
-
-TEST_F(TraceEventTestFixture, SetCurrentThreadBlocksMessageLoopAfterTracing) {
-  BeginTrace();
-
-  Thread thread("1");
-  WaitableEvent task_complete_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                                    WaitableEvent::InitialState::NOT_SIGNALED);
-  thread.Start();
-
-  thread.task_runner()->PostTask(
-      FROM_HERE, BindOnce(&TraceWithAllMacroVariants, &task_complete_event));
-  task_complete_event.Wait();
-
-  WaitableEvent task_start_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                                 WaitableEvent::InitialState::NOT_SIGNALED);
-  WaitableEvent task_stop_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                                WaitableEvent::InitialState::NOT_SIGNALED);
-  thread.task_runner()->PostTask(FROM_HERE,
-                                 BindOnce(&SetBlockingFlagAndBlockUntilStopped,
-                                          &task_start_event, &task_stop_event));
-  task_start_event.Wait();
-
-  EndTraceAndFlush();
-  ValidateAllTraceMacrosCreatedData(trace_parsed_);
-
-  task_stop_event.Signal();
-  thread.Stop();
-}
-
 TEST_F(TraceEventTestFixture, ThreadOnceBlocking) {
   BeginTrace();
 
@@ -1789,10 +1638,14 @@ TEST_F(TraceEventTestFixture, ThreadOnceBlocking) {
 }
 
 std::string* g_log_buffer = nullptr;
-bool MockLogMessageHandler(int, const char*, int, size_t,
+bool MockLogMessageHandler(int,
+                           const char*,
+                           int,
+                           size_t,
                            const std::string& str) {
-  if (!g_log_buffer)
+  if (!g_log_buffer) {
     g_log_buffer = new std::string();
+  }
   g_log_buffer->append(str);
   return false;
 }
@@ -1818,7 +1671,10 @@ TEST_F(TraceEventTestFixture, EchoToConsole) {
   g_log_buffer = nullptr;
 }
 
-bool LogMessageHandlerWithTraceEvent(int, const char*, int, size_t,
+bool LogMessageHandlerWithTraceEvent(int,
+                                     const char*,
+                                     int,
+                                     size_t,
                                      const std::string&) {
   TRACE_EVENT0("log", "trace_event");
   return false;

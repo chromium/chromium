@@ -19,9 +19,9 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/script_constants.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -76,12 +76,12 @@ std::unique_ptr<UserScript> CreateUserScript(
   // Manifest content scripts support `match_about_blank` (unlike
   // `SerializedUserScript`). If `match_about_blank` is specified, we'll
   // override the `match_origin_as_fallback` behavior on the user script later.
-  std::optional<MatchOriginAsFallbackBehavior>
+  std::optional<mojom::MatchOriginAsFallbackBehavior>
       match_origin_as_fallback_override;
   if (!serialized_script.match_origin_as_fallback.has_value() &&
       content_script.match_about_blank && *content_script.match_about_blank) {
     match_origin_as_fallback_override =
-        MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree;
+        mojom::MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree;
   }
 
   serialized_script.include_globs = std::move(content_script.include_globs);
@@ -164,8 +164,9 @@ bool ContentScriptsInfo::ExtensionHasScriptAtURL(const Extension* extension,
                                                  const GURL& url) {
   for (const std::unique_ptr<UserScript>& script :
        GetContentScripts(extension)) {
-    if (script->MatchesURL(url))
+    if (script->MatchesURL(url)) {
       return true;
+    }
   }
   return false;
 }
@@ -176,8 +177,9 @@ URLPatternSet ContentScriptsInfo::GetScriptableHosts(
   URLPatternSet scriptable_hosts;
   for (const std::unique_ptr<UserScript>& script :
        GetContentScripts(extension)) {
-    for (const URLPattern& pattern : script->url_patterns())
+    for (const URLPattern& pattern : script->url_patterns()) {
       scriptable_hosts.AddPattern(pattern);
+    }
   }
   return scriptable_hosts;
 }
@@ -210,8 +212,9 @@ bool ContentScriptsHandler::Parse(Extension* extension, std::u16string* error) {
         CreateUserScript(std::move(manifest_keys.content_scripts[i]), i,
                          can_execute_script_everywhere,
                          all_urls_includes_chrome_urls, extension, error);
-    if (!user_script)
+    if (!user_script) {
       return false;  // Failed to parse script context definition.
+    }
 
     user_script->set_host_id(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()));

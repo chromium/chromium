@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -267,8 +272,8 @@ void BufferFeeder::FeedBuffer() {
         size_bytes / (config_.bytes_per_channel * config_.channel_number);
     last_push_length_us_ = num_samples * base::Time::kMicrosecondsPerSecond /
                            (config_.samples_per_second * playback_rate_);
-    scoped_refptr<::media::DecoderBuffer> silence_buffer(
-        new ::media::DecoderBuffer(size_bytes));
+    auto silence_buffer =
+        base::MakeRefCounted<::media::DecoderBuffer>(size_bytes);
     memset(silence_buffer->writable_data(), 0, silence_buffer->size());
     pending_buffer_ = new media::DecoderBufferAdapter(silence_buffer);
     pending_buffer_->set_timestamp(base::Microseconds(pushed_us_));

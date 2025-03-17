@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
@@ -25,17 +26,24 @@
 #include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/ip_protection/common/ip_protection_status.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/global_request_id.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/base/features.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_string_util.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -54,6 +62,7 @@ constexpr char kCookieControlsActivatedSiteEngagementHistogram[] =
     "Privacy.CookieControlsActivated.SiteEngagementScore";
 constexpr char kCookieControlsActivatedSiteDataAccessHistogram[] =
     "Privacy.CookieControlsActivated.SiteDataAccessType";
+constexpr char kUrl[] = "https://example.com";
 
 class MockCookieControlsObserver
     : public content_settings::CookieControlsObserver {
@@ -130,7 +139,8 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<content_settings::CookieControlsController>(
             cookie_settings_, nullptr,
             HostContentSettingsMapFactory::GetForProfile(profile()),
-            tracking_protection_settings_);
+            tracking_protection_settings_,
+            /*is_incognito_profile=*/false);
     cookie_controls_->AddObserver(mock());
     testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -223,6 +233,18 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
     return {{FeatureType::kThirdPartyCookies, enforcement, blocking_status}};
   }
 
+  blink::mojom::ResourceLoadInfoPtr
+  CreateResourceLoadInfoWithIpProtectionChain() {
+    blink::mojom::ResourceLoadInfoPtr resource_load_info =
+        blink::mojom::ResourceLoadInfo::New();
+
+    resource_load_info->proxy_chain = net::ProxyChain::ForIpProtection(
+        {net::ProxyUriToProxyServer("foo:555", net::ProxyServer::SCHEME_HTTPS),
+         net::ProxyUriToProxyServer("foo:666",
+                                    net::ProxyServer::SCHEME_HTTPS)});
+    return resource_load_info;
+  }
+
  private:
   MockCookieControlsObserver mock_;
   base::test::ScopedFeatureList feature_list_;
@@ -238,7 +260,7 @@ TEST_F(CookieControlsUserBypassTest, CookieBlockingChanged) {
   // cookie blocking setting for the page has been changed by
   // `SetUserChangedCookieBlockingForSite`.
   cookie_controls()->Update(web_contents());
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 
   cookie_controls()->SetUserChangedCookieBlockingForSite(false);
@@ -254,7 +276,7 @@ TEST_F(CookieControlsUserBypassTest, CookieBlockingChanged) {
   // Navigating to the same page should clear it.
   cookie_controls()->SetUserChangedCookieBlockingForSite(true);
   EXPECT_TRUE(cookie_controls()->HasUserChangedCookieBlockingForSite());
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 
   // Navigating to a different page should also clear it.
@@ -268,7 +290,7 @@ TEST_F(CookieControlsUserBypassTest, SiteCounts) {
   base::HistogramTester t;
 
   // Visiting a website should enable the UI.
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
 
   EXPECT_CALL(*mock(),
               OnStatusChanged(
@@ -293,12 +315,12 @@ TEST_F(CookieControlsUserBypassTest, SiteCounts) {
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://anotherthirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/true);
+      /*blocked=*/true);
 
   // Enabling third-party cookies records metrics.
   EXPECT_CALL(*mock(), OnStatusChanged(
@@ -339,7 +361,7 @@ TEST_F(CookieControlsUserBypassTest, NewTabPage) {
 }
 
 TEST_F(CookieControlsUserBypassTest, PreferenceDisabled) {
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   EXPECT_CALL(*mock(),
               OnStatusChanged(
                   /*controls_visible=*/true, /*protections_on=*/true,
@@ -376,7 +398,7 @@ TEST_F(CookieControlsUserBypassTest, PreferenceDisabled) {
 }
 TEST_F(CookieControlsUserBypassTest, AllCookiesBlocked) {
   base::HistogramTester t;
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   EXPECT_CALL(*mock(),
               OnStatusChanged(
                   /*controls_visible=*/true, /*protections_on=*/true,
@@ -434,7 +456,7 @@ TEST_F(CookieControlsUserBypassTest, AllCookiesBlocked) {
 }
 
 TEST_F(CookieControlsUserBypassTest, DisableForSite) {
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   EXPECT_CALL(*mock(),
               OnStatusChanged(
                   /*controls_visible=*/true, /*protections_on=*/true,
@@ -486,7 +508,7 @@ TEST_F(CookieControlsUserBypassTest, DisableForSite) {
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Visiting example.com should turn protections off.
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   EXPECT_CALL(*mock(), OnStatusChanged(
                            /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
@@ -521,7 +543,7 @@ TEST_F(CookieControlsUserBypassTest, DisableForSite) {
 }
 
 TEST_F(CookieControlsUserBypassTest, Incognito) {
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
 
   EXPECT_CALL(*mock(),
               OnStatusChanged(
@@ -539,8 +561,7 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 
-  // Create incognito web_contents and
-  // content_settings::CookieControlsController.
+  // Create incognito web_contents and CookieControlsController.
   std::unique_ptr<content::WebContents> incognito_web_contents =
       content::WebContentsTester::CreateTestWebContents(
           profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr);
@@ -549,18 +570,19 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
       std::make_unique<PageSpecificContentSettingsDelegate>(
           incognito_web_contents.get()));
   auto* tester = content::WebContentsTester::For(incognito_web_contents.get());
-  MockCookieControlsObserver incognito_mock_;
+  MockCookieControlsObserver incognito_mock;
   content_settings::CookieControlsController incognito_cookie_controls(
       CookieSettingsFactory::GetForProfile(
           profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)),
       CookieSettingsFactory::GetForProfile(profile()),
       HostContentSettingsMapFactory::GetForProfile(profile()),
-      TrackingProtectionSettingsFactory::GetForProfile(profile()));
-  incognito_cookie_controls.AddObserver(&incognito_mock_);
+      TrackingProtectionSettingsFactory::GetForProfile(profile()),
+      /*is_incognito_profile=*/true);
+  incognito_cookie_controls.AddObserver(&incognito_mock);
 
   // Navigate incognito web_contents to the same URL.
-  tester->NavigateAndCommit(GURL("https://example.com"));
-  EXPECT_CALL(incognito_mock_,
+  tester->NavigateAndCommit(GURL(kUrl));
+  EXPECT_CALL(incognito_mock,
               OnStatusChanged(
                   /*controls_visible=*/true, /*protections_on=*/true,
                   CookieControlsEnforcement::kNoEnforcement,
@@ -570,13 +592,13 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
                       BlockingStatus::kBlocked)));
 
   EXPECT_CALL(
-      incognito_mock_,
+      incognito_mock,
       OnCookieControlsIconStatusChanged(
           /*icon_visible=*/false, /*protections_on=*/true,
           CookieBlocking3pcdStatus::kNotIn3pcd, /*should_highlight=*/false));
   incognito_cookie_controls.Update(incognito_web_contents.get());
   testing::Mock::VerifyAndClearExpectations(mock());
-  testing::Mock::VerifyAndClearExpectations(&incognito_mock_);
+  testing::Mock::VerifyAndClearExpectations(&incognito_mock);
 
   // Allow cookies in regular mode should also allow in incognito but enforced
   // through regular mode.
@@ -593,7 +615,7 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
 
-  EXPECT_CALL(incognito_mock_,
+  EXPECT_CALL(incognito_mock,
               OnStatusChanged(
                   /*controls_visible=*/true, /*protections_on=*/false,
                   CookieControlsEnforcement::kEnforcedByCookieSetting,
@@ -603,13 +625,13 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
                       BlockingStatus::kAllowed)));
 
   EXPECT_CALL(
-      incognito_mock_,
+      incognito_mock,
       OnCookieControlsIconStatusChanged(
           /*icon_visible=*/true, /*protections_on=*/false,
           CookieBlocking3pcdStatus::kNotIn3pcd, /*should_highlight=*/false));
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   testing::Mock::VerifyAndClearExpectations(mock());
-  testing::Mock::VerifyAndClearExpectations(&incognito_mock_);
+  testing::Mock::VerifyAndClearExpectations(&incognito_mock);
 
   // This should be enforced regardless of the default cookie setting in the
   // default profile.
@@ -629,7 +651,7 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
 
-  EXPECT_CALL(incognito_mock_,
+  EXPECT_CALL(incognito_mock,
               OnStatusChanged(
                   /*controls_visible=*/true, /*protections_on=*/false,
                   CookieControlsEnforcement::kEnforcedByCookieSetting,
@@ -639,7 +661,7 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
                       BlockingStatus::kAllowed)));
 
   EXPECT_CALL(
-      incognito_mock_,
+      incognito_mock,
       OnCookieControlsIconStatusChanged(
           /*icon_visible=*/true, /*protections_on=*/false,
           CookieBlocking3pcdStatus::kNotIn3pcd, /*should_highlight=*/false));
@@ -648,15 +670,15 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
       static_cast<int>(content_settings::CookieControlsMode::kIncognitoOnly));
   incognito_cookie_controls.Update(incognito_web_contents.get());
   testing::Mock::VerifyAndClearExpectations(mock());
-  testing::Mock::VerifyAndClearExpectations(&incognito_mock_);
+  testing::Mock::VerifyAndClearExpectations(&incognito_mock);
 }
 
 TEST_F(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
   // Create third party cookies exception.
   cookie_settings()->SetThirdPartyCookieSetting(
-      GURL("https://example.com"), ContentSetting::CONTENT_SETTING_ALLOW);
+      GURL(kUrl), ContentSetting::CONTENT_SETTING_ALLOW);
 
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   // Third-party cookie exceptions are handled in the same way as exceptions
   // created for user bypass.
   EXPECT_CALL(*mock(),
@@ -711,7 +733,7 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloads) {
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -724,7 +746,7 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloads) {
 
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Reload the page and simulate accessing storage on page load.
@@ -732,11 +754,11 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloads) {
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // After the second reload and accessing storage, UB should highlight.
@@ -745,18 +767,17 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloads) {
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/true));
 
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   cookie_controls()->OnEntryPointAnimated();
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // After the entry point was highlighted, a setting is recorded.
-  base::Value stored_value =
-      hcsm->GetWebsiteSetting(GURL("https://example.com"), GURL(),
-                              ContentSettingsType::COOKIE_CONTROLS_METADATA);
+  base::Value stored_value = hcsm->GetWebsiteSetting(
+      GURL(kUrl), GURL(), ContentSettingsType::COOKIE_CONTROLS_METADATA);
   EXPECT_TRUE(stored_value.is_dict());
   EXPECT_TRUE(stored_value.GetDict().FindBool("entry_point_animated").value());
 }
@@ -781,7 +802,7 @@ TEST_F(CookieControlsUserBypassTest,
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -792,7 +813,7 @@ TEST_F(CookieControlsUserBypassTest,
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -803,7 +824,7 @@ TEST_F(CookieControlsUserBypassTest,
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/true));
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 }
@@ -830,7 +851,7 @@ TEST_F(CookieControlsUserBypassTest,
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
   // Trigger reload heuristic.
@@ -838,7 +859,7 @@ TEST_F(CookieControlsUserBypassTest,
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -847,7 +868,7 @@ TEST_F(CookieControlsUserBypassTest,
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 }
@@ -856,7 +877,7 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
   base::HistogramTester t;
   cookie_controls()->Update(web_contents());
 
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   EXPECT_CALL(*mock(),
               OnStatusChanged(
                   /*controls_visible=*/true, /*protections_on=*/true,
@@ -881,7 +902,7 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Reload the page and simulate accessing storage on page load.
@@ -889,11 +910,11 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // After the second reload and accessing storage, UB should be highlighted.
@@ -901,11 +922,11 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/true));
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Enabling third-party cookies records metrics.
@@ -939,7 +960,7 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
 
 TEST_F(CookieControlsUserBypassTest, InfrequentPageReloads) {
   base::HistogramTester t;
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   EXPECT_CALL(*mock(),
               OnStatusChanged(
                   /*controls_visible=*/true, /*protections_on=*/true,
@@ -965,7 +986,7 @@ TEST_F(CookieControlsUserBypassTest, InfrequentPageReloads) {
 
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Reload the page and simulate accessing storage on page load.
@@ -973,11 +994,11 @@ TEST_F(CookieControlsUserBypassTest, InfrequentPageReloads) {
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Wait for 30 seconds.
@@ -988,11 +1009,11 @@ TEST_F(CookieControlsUserBypassTest, InfrequentPageReloads) {
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Enabling third-party cookies records metrics.
@@ -1063,7 +1084,7 @@ TEST_F(CookieControlsUserBypassTest, HighSiteEngagement) {
 
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   cookie_controls()->OnEntryPointAnimated();
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -1102,7 +1123,7 @@ TEST_F(CookieControlsUserBypassTest, HighSiteEngagement) {
 
       CreateUnpartitionedStorageKey(GURL("https://anotherthirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Revisiting high site engagement site doesn't highlight UB
@@ -1115,7 +1136,7 @@ TEST_F(CookieControlsUserBypassTest, HighSiteEngagement) {
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
@@ -1162,7 +1183,7 @@ TEST_F(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
 
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/false);
+      /*blocked=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Enabling third-party cookies records metrics.
@@ -1372,7 +1393,7 @@ TEST_F(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
   // change, should not fire the observer.
   EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(0);
   cookie_controls()->Update(web_contents());
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
 
   // Loading the same page after not making an effective change should not fire.
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
@@ -1384,7 +1405,7 @@ TEST_F(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
       ThirdPartySiteDataAccessType::kNoThirdPartySiteAccesses);
 
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
 
   // Loading a different page after making an effective change should not fire.
   cookie_controls()->SetUserChangedCookieBlockingForSite(true);
@@ -1421,23 +1442,23 @@ TEST_F(CookieControlsUserBypassTest,
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
   EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(0);
   cookie_controls()->Update(web_contents());
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   testing::Mock::VerifyAndClearExpectations(mock());
 
   EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(0);
-  hcsm->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromString("https://example.com"),
-      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
-  NavigateAndCommit(GURL("https://example.com"));
+  hcsm->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                                     ContentSettingsPattern::FromString(kUrl),
+                                     ContentSettingsType::COOKIES,
+                                     CONTENT_SETTING_ALLOW);
+  NavigateAndCommit(GURL(kUrl));
   testing::Mock::VerifyAndClearExpectations(mock());
 
   EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(0);
-  hcsm->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromString("https://example.com"),
-      ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
-  NavigateAndCommit(GURL("https://example.com"));
+  hcsm->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                                     ContentSettingsPattern::FromString(kUrl),
+                                     ContentSettingsType::COOKIES,
+                                     CONTENT_SETTING_BLOCK);
+  NavigateAndCommit(GURL(kUrl));
   testing::Mock::VerifyAndClearExpectations(mock());
 
   EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(0);
@@ -1445,16 +1466,16 @@ TEST_F(CookieControlsUserBypassTest,
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString("[*.]example.com"),
       ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
 TEST_F(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/true);
+      /*blocked=*/true);
 
   EXPECT_CALL(*mock(),
               OnStatusChanged(
@@ -1493,18 +1514,18 @@ TEST_F(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
       blink::mojom::EngagementLevel::NONE,
       ThirdPartySiteDataAccessType::kAnyBlockedThirdPartySiteAccesses);
 
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Wait for exception to expire.
   FastForwardTo(expiration() + base::Days(1));
 
   // Visiting the site after exception expires highlights UB.
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/true);
+      /*blocked=*/true);
   EXPECT_CALL(*mock(),
               OnStatusChanged(
                   /*controls_visible=*/true, /*protections_on=*/true,
@@ -1523,11 +1544,11 @@ TEST_F(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
 
   // Revisiting the site again after 30 seconds shouldn't highlight UB.
   FastForwardBy(base::Seconds(30));
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
-      /*blocked_by_policy=*/true);
+      /*blocked=*/true);
   EXPECT_CALL(*mock(),
               OnStatusChanged(
                   /*controls_visible=*/true, /*protections_on=*/true,
@@ -1546,7 +1567,7 @@ TEST_F(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
 }
 
 TEST_F(CookieControlsUserBypassTest, StatefulBounce) {
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   page_specific_content_settings()->IncrementStatefulBounceCount();
 
   EXPECT_CALL(*mock(),
@@ -1571,10 +1592,10 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlocked) {
       fingerprinting_protection_filter::features::
           kEnableFingerprintingProtectionFilter);
   CreateFingerprintingProtectionWebContentsHelper(
-      web_contents(), /*pref_service=*/nullptr,
+      web_contents(), /*pref_service=*/nullptr, /*content_settings=*/nullptr,
       /*tracking_protection_settings=*/nullptr, /*is_incognito=*/false);
 
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
       FromWebContents(web_contents())
           ->NotifyOnBlockedSubresource(
@@ -1602,14 +1623,44 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlockedInIncognito) {
       fingerprinting_protection_filter::features::
           kEnableFingerprintingProtectionFilterInIncognito);
   CreateFingerprintingProtectionWebContentsHelper(
-      web_contents(), /*pref_service=*/nullptr,
+      web_contents(), /*pref_service=*/nullptr, /*content_settings=*/nullptr,
       /*tracking_protection_settings=*/nullptr, /*is_incognito=*/true);
 
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
       FromWebContents(web_contents())
           ->NotifyOnBlockedSubresource(
               subresource_filter::mojom::ActivationLevel::kEnabled);
+
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(
+                  /*controls_visible=*/true, /*protections_on=*/true,
+                  CookieControlsEnforcement::kNoEnforcement,
+                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
+                  GetThirdPartyCookiesFeatureForEnforcement(
+                      CookieControlsEnforcement::kNoEnforcement,
+                      BlockingStatus::kBlocked)));
+
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/true, /*protections_on=*/true,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/false));
+  cookie_controls()->Update(web_contents());
+}
+
+TEST_F(CookieControlsUserBypassTest, SubresourceProxied) {
+  base::test::ScopedFeatureList ip_protection_feature_list;
+  ip_protection_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+
+  ip_protection::IpProtectionStatus::CreateForWebContents(web_contents());
+
+  NavigateAndCommit(GURL(kUrl));
+
+  ip_protection::IpProtectionStatus::FromWebContents(web_contents())
+      ->ResourceLoadComplete(ChromeRenderViewHostTestHarness::main_rfh(),
+                             content::GlobalRequestID(),
+                             *CreateResourceLoadInfoWithIpProtectionChain());
 
   EXPECT_CALL(*mock(),
               OnStatusChanged(
@@ -1632,7 +1683,7 @@ TEST_F(CookieControlsUserBypassTest, SandboxedTopLevelFrame) {
   headers->SetHeader("Content-Security-Policy", "sandbox");
 
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL("https://example.com"), web_contents());
+      GURL(kUrl), web_contents());
   navigation->SetResponseHeaders(headers);
   navigation->Start();
   navigation->Commit();
@@ -1646,15 +1697,14 @@ TEST_F(CookieControlsUserBypassTest, SandboxedTopLevelFrame) {
 
 TEST_F(CookieControlsUserBypassTest,
        FrequentPageReloadsWithoutUpdateBeingCalled) {
-  NavigateAndCommit(GURL("https://example.com"));
+  NavigateAndCommit(GURL(kUrl));
   // Call the entry point animated function without setting up the observer.
   cookie_controls()->OnEntryPointAnimated();
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
 
   // A setting is not recorded.
-  base::Value stored_value =
-      hcsm->GetWebsiteSetting(GURL("https://example.com"), GURL(),
-                              ContentSettingsType::COOKIE_CONTROLS_METADATA);
+  base::Value stored_value = hcsm->GetWebsiteSetting(
+      GURL(kUrl), GURL(), ContentSettingsType::COOKIE_CONTROLS_METADATA);
   EXPECT_TRUE(stored_value.is_none());
   testing::Mock::VerifyAndClearExpectations(mock());
 }
@@ -1682,6 +1732,134 @@ TEST_F(CookieControlsUserBypassTest,
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
+class CookieControlsUserBypassIncognitoTest
+    : public CookieControlsUserBypassTest {
+ public:
+  CookieControlsUserBypassIncognitoTest() = default;
+  ~CookieControlsUserBypassIncognitoTest() override = default;
+
+  void SetUp() override {
+    CookieControlsUserBypassTest::SetUp();
+    feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kTrackingProtectionContentSettingUbControl);
+
+    incognito_cookie_controls_ =
+        std::make_unique<content_settings::CookieControlsController>(
+            CookieSettingsFactory::GetForProfile(incognito_profile()),
+            CookieSettingsFactory::GetForProfile(profile()),
+            HostContentSettingsMapFactory::GetForProfile(incognito_profile()),
+            TrackingProtectionSettingsFactory::GetForProfile(
+                incognito_profile()),
+            /*is_incognito_profile=*/true);
+
+    incognito_cookie_controls_->AddObserver(mock());
+  }
+
+  void TearDown() override {
+    incognito_cookie_controls_->RemoveObserver(mock());
+    incognito_cookie_controls_.reset();
+    CookieControlsUserBypassTest::TearDown();
+  }
+
+  content_settings::CookieControlsController* incognito_cookie_controls() {
+    return incognito_cookie_controls_.get();
+  }
+
+  Profile* incognito_profile() {
+    return profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<content_settings::CookieControlsController>
+      incognito_cookie_controls_;
+};
+
+TEST_F(CookieControlsUserBypassIncognitoTest, AddTrackingProtectionException) {
+  NavigateAndCommit(GURL(kUrl));
+  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings =
+      TrackingProtectionSettingsFactory::GetForProfile(incognito_profile());
+
+  incognito_cookie_controls()->Update(web_contents());
+  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(false);
+
+  EXPECT_TRUE(
+      tracking_protection_settings->HasTrackingProtectionException(GURL(kUrl)));
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_F(CookieControlsUserBypassIncognitoTest,
+       RemoveTrackingProtectionException) {
+  NavigateAndCommit(GURL(kUrl));
+  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings =
+      TrackingProtectionSettingsFactory::GetForProfile(incognito_profile());
+  incognito_cookie_controls()->Update(web_contents());
+  // Ensure tracking protection exception is created.
+  tracking_protection_settings->AddTrackingProtectionException(GURL(kUrl));
+  EXPECT_TRUE(
+      tracking_protection_settings->HasTrackingProtectionException(GURL(kUrl)));
+
+  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(true);
+
+  EXPECT_FALSE(
+      tracking_protection_settings->HasTrackingProtectionException(GURL(kUrl)));
+
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_F(CookieControlsUserBypassIncognitoTest, ToggleUpdatesUi) {
+  incognito_cookie_controls()->Update(web_contents());
+  NavigateAndCommit(GURL(kUrl));
+
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(
+                  /*controls_visible=*/true, /*protections_on=*/false,
+                  CookieControlsEnforcement::kNoEnforcement,
+                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
+                  GetThirdPartyCookiesFeatureForEnforcement(
+                      CookieControlsEnforcement::kNoEnforcement,
+                      BlockingStatus::kAllowed)));
+
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/true, /*protections_on=*/false,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/false));
+
+  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_F(CookieControlsUserBypassIncognitoTest, SubresourceProxied) {
+  base::test::ScopedFeatureList ip_protection_feature_list;
+  ip_protection_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+
+  ip_protection::IpProtectionStatus::CreateForWebContents(web_contents());
+
+  NavigateAndCommit(GURL(kUrl));
+
+  ip_protection::IpProtectionStatus::FromWebContents(web_contents())
+      ->ResourceLoadComplete(ChromeRenderViewHostTestHarness::main_rfh(),
+                             content::GlobalRequestID(),
+                             *CreateResourceLoadInfoWithIpProtectionChain());
+
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(
+                  /*controls_visible=*/true, /*protections_on=*/true,
+                  CookieControlsEnforcement::kNoEnforcement,
+                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
+                  GetThirdPartyCookiesFeatureForEnforcement(
+                      CookieControlsEnforcement::kNoEnforcement,
+                      BlockingStatus::kBlocked)));
+
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/true, /*protections_on=*/true,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/false));
+
+  incognito_cookie_controls()->Update(web_contents());
+}
+
 class CookieControlsUserBypassTrackingProtectionUiTest
     : public CookieControlsUserBypassTest,
       public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
@@ -1689,29 +1867,50 @@ class CookieControlsUserBypassTrackingProtectionUiTest
   CookieControlsUserBypassTrackingProtectionUiTest() = default;
   ~CookieControlsUserBypassTrackingProtectionUiTest() override = default;
 
+  void TearDown() override {
+    incognito_cookie_controls_->RemoveObserver(incognito_mock());
+    incognito_cookie_controls_.reset();
+    incognito_web_contents_ = nullptr;
+    incognito_profile_ = nullptr;
+    CookieControlsUserBypassTest::TearDown();
+  }
+
   void SetUp() override {
     CookieControlsUserBypassTest::SetUp();
-    if (std::get<0>(GetParam())) {
-      cookie_settings()->SetThirdPartyCookieSetting(
-          GURL("https://example.com"), ContentSetting::CONTENT_SETTING_BLOCK);
-    } else {
-      tracking_protection_settings()->AddTrackingProtectionException(
-          GURL("https://example.com"));
-      cookie_settings()->SetThirdPartyCookieSetting(
-          GURL("https://example.com"), ContentSetting::CONTENT_SETTING_ALLOW);
-    }
 
-    std::vector<base::test::FeatureRef> enabled_features = {};
+    std::vector<base::test::FeatureRef> enabled_features = {
+        privacy_sandbox::kTrackingProtectionContentSettingUbControl};
     if (std::get<1>(GetParam())) {
-      enabled_features.push_back(privacy_sandbox::kIpProtectionUserBypass);
-      enabled_features.push_back(privacy_sandbox::kIpProtectionV1);
+      enabled_features.push_back(privacy_sandbox::kActUserBypassUx);
+      enabled_features.push_back(privacy_sandbox::kIpProtectionUx);
       profile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
     }
     if (std::get<2>(GetParam())) {
-      enabled_features.push_back(
-          privacy_sandbox::kFingerprintingProtectionUserBypass);
+      enabled_features.push_back(privacy_sandbox::kActUserBypassUx);
+      enabled_features.push_back(privacy_sandbox::kFingerprintingProtectionUx);
+      profile()->GetPrefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
+                                        true);
     }
     feature_list_.InitWithFeatures(enabled_features, {});
+
+    incognito_profile_ =
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    incognito_web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        incognito_profile_, nullptr);
+    content_settings::PageSpecificContentSettings::CreateForWebContents(
+        incognito_web_contents_.get(),
+        std::make_unique<PageSpecificContentSettingsDelegate>(
+            incognito_web_contents_.get()));
+
+    incognito_cookie_controls_ =
+        std::make_unique<content_settings::CookieControlsController>(
+            CookieSettingsFactory::GetForProfile(incognito_profile_),
+            CookieSettingsFactory::GetForProfile(profile()),
+            HostContentSettingsMapFactory::GetForProfile(incognito_profile_),
+            TrackingProtectionSettingsFactory::GetForProfile(
+                incognito_profile_),
+            /*is_incognito_profile=*/true);
+    incognito_cookie_controls_->AddObserver(incognito_mock());
   }
 
   std::vector<TrackingProtectionFeature> GetFeatureVector(
@@ -1720,7 +1919,10 @@ class CookieControlsUserBypassTrackingProtectionUiTest
     std::vector<TrackingProtectionFeature> features_list;
     features_list.push_back(
         {FeatureType::kThirdPartyCookies, enforcement,
-         protections_on ? BlockingStatus::kBlocked : BlockingStatus::kAllowed});
+         protections_on &&
+                 enforcement == CookieControlsEnforcement::kNoEnforcement
+             ? BlockingStatus::kBlocked
+             : BlockingStatus::kAllowed});
     // Currently these ACT features do not support different enforcement types.
     if (std::get<1>(GetParam())) {
       features_list.push_back({FeatureType::kIpProtection,
@@ -1737,27 +1939,104 @@ class CookieControlsUserBypassTrackingProtectionUiTest
     return features_list;
   }
 
+  content::WebContents* incognito_web_contents() {
+    return incognito_web_contents_.get();
+  }
+
+  Profile* incognito_profile() { return incognito_profile_.get(); }
+
+  MockCookieControlsObserver* incognito_mock() { return &incognito_mock_; }
+
+  content_settings::CookieControlsController* incognito_cookie_controls() {
+    return incognito_cookie_controls_.get();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  MockCookieControlsObserver incognito_mock_;
+  raw_ptr<Profile> incognito_profile_;
+  std::unique_ptr<content::WebContents> incognito_web_contents_;
+  std::unique_ptr<content_settings::CookieControlsController>
+      incognito_cookie_controls_;
 };
 
 TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
-       AddsActFeaturesToVectorBasedOnFeatureAndExceptionStatus) {
-  NavigateAndCommit(GURL("https://example.com"));
-  EXPECT_CALL(*mock(),
+       AddsActFeaturesToVectorInIncognitoBasedOnFeatureAndExceptionStatus) {
+  auto* tester = content::WebContentsTester::For(incognito_web_contents());
+  tester->NavigateAndCommit(GURL(kUrl));
+  incognito_cookie_controls()->Update(incognito_web_contents());
+  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(
+      std::get<0>(GetParam()));
+
+  EXPECT_CALL(*incognito_mock(),
               OnStatusChanged(
                   /*controls_visible=*/true, std::get<0>(GetParam()),
                   CookieControlsEnforcement::kNoEnforcement,
                   CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
                   GetFeatureVector(CookieControlsEnforcement::kNoEnforcement)));
+  incognito_cookie_controls()->Update(incognito_web_contents());
+  testing::Mock::VerifyAndClearExpectations(incognito_mock());
+}
 
+TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
+       ProtectionsOnForActFeaturesWhenCookiesAreEnforced) {
+  NavigateAndCommit(GURL(kUrl));
   cookie_controls()->Update(web_contents());
+  auto* tester = content::WebContentsTester::For(incognito_web_contents());
+  tester->NavigateAndCommit(GURL(kUrl));
+  incognito_cookie_controls()->Update(incognito_web_contents());
+  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(
+      std::get<0>(GetParam()));
+
+  // Allowing 3PCs in regular mode should allow & enforce them in incognito.
+  // Protections (i.e. the toggle) should still be on iff ACT features are
+  // enabled.
+  EXPECT_CALL(*mock(), OnStatusChanged(
+                           /*controls_visible=*/true,
+                           /*protections_on=*/false,
+                           CookieControlsEnforcement::kNoEnforcement,
+                           CookieBlocking3pcdStatus::kNotIn3pcd, expiration(),
+                           GetThirdPartyCookiesFeatureForEnforcement(
+                               CookieControlsEnforcement::kNoEnforcement,
+                               BlockingStatus::kAllowed)));
+
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/true,
+                           /*protections_on=*/false,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/false));
+
+  bool act_features_enabled =
+      std::get<1>(GetParam()) || std::get<2>(GetParam());
+  bool protections_on = act_features_enabled && std::get<0>(GetParam());
+
+  EXPECT_CALL(
+      *incognito_mock(),
+      OnStatusChanged(
+          /*controls_visible=*/true, protections_on,
+          CookieControlsEnforcement::kEnforcedByCookieSetting,
+          CookieBlocking3pcdStatus::kNotIn3pcd,
+          std::get<0>(GetParam()) && !act_features_enabled ? expiration()
+                                                           : zero_expiration(),
+          GetFeatureVector(
+              CookieControlsEnforcement::kEnforcedByCookieSetting)));
+
+  EXPECT_CALL(*incognito_mock(),
+              OnCookieControlsIconStatusChanged(
+                  /*icon_visible=*/
+                  !protections_on,  // Icon shown when
+                                    // protections are off
+                  protections_on, CookieBlocking3pcdStatus::kNotIn3pcd,
+                  /*should_highlight=*/false));
+
+  cookie_controls()->OnCookieBlockingEnabledForSite(false);
   testing::Mock::VerifyAndClearExpectations(mock());
+  testing::Mock::VerifyAndClearExpectations(incognito_mock());
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     CookieControlsUserBypassTrackingProtectionUiTest,
     testing::Combine(/*protections_on*/ testing::Bool(),
-                     /*kIpProtectionUserBypass*/ testing::Bool(),
-                     /*kFingerprintingProtectionUserBypass*/ testing::Bool()));
+                     /*kIpProtectionUx*/ testing::Bool(),
+                     /*kFingerprintingProtectionUx*/ testing::Bool()));

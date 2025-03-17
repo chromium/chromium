@@ -8,14 +8,12 @@
 
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_trace_processor.h"
 #include "components/input/features.h"
 #include "components/viz/common/constants.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/input/mock_input_manager.h"
 #include "components/viz/service/input/render_input_router_iterator_impl.h"
@@ -72,8 +70,7 @@ struct RootCompositorFrameSinkData {
 class FrameSinkManagerTest : public testing::Test {
  public:
   FrameSinkManagerTest()
-      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_,
-                                                  &output_surface_provider_)) {}
+      : manager_(FrameSinkManagerImpl::InitParams(&output_surface_provider_)) {}
   ~FrameSinkManagerTest() override = default;
 
   RootCompositorFrameSinkImpl* GetRootCompositorFrameSinkImpl() {
@@ -180,7 +177,6 @@ class FrameSinkManagerTest : public testing::Test {
 
  protected:
   DebugRendererSettings debug_settings_;
-  ServerSharedBitmapManager shared_bitmap_manager_;
   TestOutputSurfaceProvider output_surface_provider_;
   FrameSinkManagerImpl manager_;
   FakeSurfaceObserver surface_observer_{manager_.surface_manager()};
@@ -881,13 +877,7 @@ TEST_F(FrameSinkManagerTest, EvictRootSurfaceId) {
       local_surface_id, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
   manager_.EvictSurfaces({surface_id});
-
-  // Eviction of the root surface takes a snapshot, so the root surface will
-  // not be evicted immediately.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return !GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid();
-  }));
-
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
   manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
 }
 
@@ -912,13 +902,7 @@ TEST_F(FrameSinkManagerTest, EvictNewerRootSurfaceId) {
   const LocalSurfaceId next_local_surface_id =
       allocator.GetCurrentLocalSurfaceId();
   manager_.EvictSurfaces({{kFrameSinkIdRoot, next_local_surface_id}});
-
-  // Eviction of the root surface takes a snapshot, so the root surface will
-  // not be evicted immediately.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return !GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid();
-  }));
-
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
   manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
 }
 
@@ -942,16 +926,8 @@ TEST_F(FrameSinkManagerTest, SubmitCompositorFrameWithEvictedSurfaceId) {
   GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
       local_surface_id, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
-  manager_.EvictSurfaces({surface_id});
-
-  // Eviction of the root surface takes a snapshot, so the root surface will
-  // not be evicted immediately.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return !GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid();
-  }));
-
-  manager_.EvictSurfaces({surface_id2});
-
+  manager_.EvictSurfaces({surface_id, surface_id2});
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
   GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
       local_surface_id2, MakeDefaultCompositorFrame(), std::nullopt, 0);
 

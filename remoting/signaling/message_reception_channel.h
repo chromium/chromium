@@ -12,8 +12,8 @@
 
 namespace remoting {
 
+class HttpStatus;
 class ScopedProtobufHttpRequest;
-class ProtobufHttpStatus;
 
 // Interface for starting or closing the server stream to receive messages from
 // FTL backend.
@@ -24,12 +24,10 @@ class MessageReceptionChannel {
           base::OnceClosure on_channel_ready,
           const base::RepeatingCallback<void(
               std::unique_ptr<ftl::ReceiveMessagesResponse>)>& on_incoming_msg,
-          base::OnceCallback<void(const ProtobufHttpStatus&)>
-              on_channel_closed)>;
+          base::OnceCallback<void(const HttpStatus&)> on_channel_closed)>;
   using MessageCallback =
       base::RepeatingCallback<void(const ftl::InboxMessage& message)>;
-  using DoneCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus& status)>;
+  using DoneCallback = base::OnceCallback<void(const HttpStatus& status)>;
 
   MessageReceptionChannel() = default;
 

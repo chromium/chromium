@@ -12,12 +12,11 @@ source_set("internal_debug_pages_disabled") {
 
   deps = [
     "//base",
-    "//chrome/app:branded_strings",
-    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/resources:dev_ui_resources",
     "//chrome/common",
+    "//components/resources",
+    "//components/strings",
     "//content/public/common",
     "//ui/base",
     "//url",

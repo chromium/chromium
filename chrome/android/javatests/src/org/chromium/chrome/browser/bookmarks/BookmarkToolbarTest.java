@@ -20,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.IdRes;
+import androidx.core.view.ViewCompat;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -101,11 +102,10 @@ public class BookmarkToolbarTest {
     @Mock BookmarkDelegate mBookmarkDelegate;
     @Mock SelectionDelegate<BookmarkId> mSelectionDelegate;
     @Mock SearchDelegate mSearchDelegate;
-    @Mock BookmarkModel mBookmarkModel;
-    @Mock BookmarkOpener mBookmarkOpener;
     @Mock Runnable mNavigateBackRunnable;
     @Mock Profile mProfile;
 
+    private BookmarkModel mBookmarkModel;
     private WindowAndroid mWindowAndroid;
     private ViewGroup mContentView;
     private BookmarkToolbar mBookmarkToolbar;
@@ -120,6 +120,7 @@ public class BookmarkToolbarTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        mBookmarkModel = ThreadUtils.runOnUiThreadBlocking(() -> Mockito.mock(BookmarkModel.class));
         when(mBookmarkDelegate.getModel()).thenReturn(mBookmarkModel);
         when(mBookmarkDelegate.getSelectionDelegate()).thenReturn(mSelectionDelegate);
 
@@ -440,5 +441,56 @@ public class BookmarkToolbarTest {
         // The filter button visibility should be carried over through a selection event.
         verifyMenuEnabled(
                 BookmarkToolbarMediator.SORT_MENU_IDS, BookmarkToolbarMediator.SORT_MENU_IDS);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testAccessibilityPaneDescription_beforeSelection() {
+        initializeNormal();
+        assertNull(ViewCompat.getAccessibilityPaneTitle(mBookmarkToolbar));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testAccessibilityPaneDescription_afterSelectOne() {
+        initializeNormal();
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
+        mBookmarkToolbar.onSelectionStateChange(List.of(BOOKMARK_ID_ONE));
+        assertEquals(
+                mBookmarkToolbar
+                        .getContext()
+                        .getString(R.string.accessibility_toolbar_screen_position, 1),
+                ViewCompat.getAccessibilityPaneTitle(mBookmarkToolbar));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testAccessibilityPaneDescription_afterSelectTwo() {
+        initializeNormal();
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
+        mBookmarkToolbar.onSelectionStateChange(List.of(BOOKMARK_ID_ONE));
+        mBookmarkToolbar.onSelectionStateChange(List.of(BOOKMARK_ID_ONE, BOOKMARK_ID_TWO));
+        assertEquals(
+                mBookmarkToolbar
+                        .getContext()
+                        .getString(R.string.accessibility_toolbar_multi_select, 2),
+                ViewCompat.getAccessibilityPaneTitle(mBookmarkToolbar));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testAccessibilityPaneDescription_afterSelectThenDeselect() {
+        initializeNormal();
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
+        mBookmarkToolbar.onSelectionStateChange(List.of(BOOKMARK_ID_ONE, BOOKMARK_ID_TWO));
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(false);
+        mBookmarkToolbar.onSelectionStateChange(List.of());
+        assertEquals(
+                mBookmarkToolbar.getContext().getString(R.string.accessibility_toolbar_exit_select),
+                ViewCompat.getAccessibilityPaneTitle(mBookmarkToolbar));
     }
 }

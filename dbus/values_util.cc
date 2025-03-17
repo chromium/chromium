@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -69,7 +70,7 @@ bool PopDictionaryEntries(MessageReader* reader,
 // Gets the D-Bus type signature for the value.
 std::string GetTypeSignature(base::ValueView value) {
   struct Visitor {
-    std::string operator()(absl::monostate) {
+    std::string operator()(std::monostate) {
       DLOG(ERROR) << "Unexpected type " << base::Value::Type::NONE;
       return std::string();
     }
@@ -220,7 +221,7 @@ void AppendBasicTypeValueData(MessageWriter* writer, base::ValueView value) {
   struct Visitor {
     raw_ptr<MessageWriter> writer;
 
-    void operator()(absl::monostate) {
+    void operator()(std::monostate) {
       DLOG(ERROR) << "Unexpected type: " << base::Value::Type::NONE;
     }
 
@@ -262,7 +263,7 @@ void AppendValueData(MessageWriter* writer, base::ValueView value) {
   struct Visitor {
     raw_ptr<MessageWriter> writer;
 
-    void operator()(absl::monostate) {
+    void operator()(std::monostate) {
       DLOG(ERROR) << "Unexpected type: " << base::Value::Type::NONE;
     }
 

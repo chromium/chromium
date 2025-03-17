@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 
@@ -40,6 +41,9 @@ bool ScrollStateQuerySnapshot::UpdateScrollState() {
       } else if (sticky_offset.top < 0) {
         stuck_vertical = ContainerStuckPhysical::kBottom;
       }
+    }
+    if (layout_object->IsDocumentElement()) {
+      layout_object = layout_object->View();
     }
     if (PaintLayerScrollableArea* scrollable_area =
             layout_object->GetScrollableArea()) {

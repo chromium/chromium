@@ -4,7 +4,6 @@
 
 #include "components/os_crypt/sync/os_crypt.h"
 
-#include <CommonCrypto/CommonCryptor.h>  // for kCCBlockSizeAES128
 #include <stddef.h>
 
 #include "base/command_line.h"
@@ -19,10 +18,11 @@
 #include "components/os_crypt/sync/keychain_password_mac.h"
 #include "components/os_crypt/sync/os_crypt_metrics.h"
 #include "components/os_crypt/sync/os_crypt_switches.h"
+#include "crypto/aes_cbc.h"
 #include "crypto/apple_keychain.h"
-#include "crypto/encryptor.h"
+#include "crypto/kdf.h"
 #include "crypto/mock_apple_keychain.h"
-#include "crypto/symmetric_key.h"
+#include "crypto/subtle_passkey.h"
 
 namespace os_crypt {
 class EncryptionKeyCreationUtil;
@@ -30,19 +30,15 @@ class EncryptionKeyCreationUtil;
 
 namespace {
 
-// Salt for Symmetric key derivation.
-constexpr char kSalt[] = "saltysalt";
-
-// Key size required for 128 bit AES.
-constexpr size_t kDerivedKeySizeInBits = 128;
-
-// Constant for Symmetic key derivation.
-constexpr size_t kEncryptionIterations = 1003;
-
 // Prefix for cypher text returned by current encryption version.  We prefix
 // the cypher text with this string so that future data migration can detect
 // this and migrate to different encryption without data loss.
-constexpr char kEncryptionVersionPrefix[] = "v10";
+constexpr char kObfuscationPrefixV10[] = "v10";
+
+constexpr std::array<uint8_t, crypto::aes_cbc::kBlockSize> kIv{
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+};
 
 }  // namespace
 
@@ -85,22 +81,38 @@ OSCryptImpl* OSCryptImpl::GetInstance() {
 OSCryptImpl::OSCryptImpl() = default;
 OSCryptImpl::~OSCryptImpl() = default;
 
-// Generates a newly allocated SymmetricKey object based on the password found
-// in the Keychain.  The generated key is for AES encryption.  Returns NULL key
-// in the case password access is denied or key generation error occurs.
-crypto::SymmetricKey* OSCryptImpl::GetEncryptionKey() {
+bool OSCryptImpl::DeriveKey() {
   base::AutoLock auto_lock(OSCryptImpl::GetLock());
 
-  if (use_mock_keychain_ && use_locked_mock_keychain_)
-    return nullptr;
+  // Fast fail when there's no key and derivation already failed in an earlier
+  // call to DeriveKey().
+  if (!try_keychain_ && !key_) {
+    return false;
+  }
 
-  if (key_is_cached_)
-    return cached_encryption_key_.get();
+  // Fast fail if this object is pretending to have a locked keychain.
+  // TODO(https://crbug.com/389737048): Replace this with a setter on the mock
+  // keychain once it's possible to inject a mock keychain.
+  if (use_mock_keychain_ && use_locked_mock_keychain_) {
+    return false;
+  }
+
+  // If the key's already present, we are done.
+  if (key_) {
+    return true;
+  }
 
   const bool mock_keychain_command_line_flag =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           os_crypt::switches::kUseMockKeychain);
 
+  // Do the actual key derivation: for a mock keychain use the keychain's
+  // password directly, and for a real keychain, use a randomly-generated
+  // password stored inside the keychain.
+  // TODO(https://crbug.com/389737048): These code paths should be identical -
+  // it is dangerous that the test key derivation code path is different like
+  // this. At minimum, the test code path should also use `KeychainPassword`'s
+  // logic.
   std::string password;
   if (use_mock_keychain_ || mock_keychain_command_line_flag) {
     crypto::MockAppleKeychain keychain;
@@ -111,33 +123,46 @@ crypto::SymmetricKey* OSCryptImpl::GetEncryptionKey() {
     password = encryptor_password.GetPassword();
   }
 
-  key_is_cached_ = true;
-  if (password.empty())
-    return cached_encryption_key_.get();
+  // At this point, whether `encryptor_password.GetPassword()` succeeded or
+  // failed, the keychain has been tried. Never try it again.
+  try_keychain_ = false;
+  if (password.empty()) {
+    return false;
+  }
 
-  const std::string salt(kSalt);
+  static constexpr auto kSalt =
+      std::to_array<uint8_t>({'s', 'a', 'l', 't', 'y', 's', 'a', 'l', 't'});
+  static constexpr size_t kIterations = 1003;
 
-  // Create an encryption key from our password and salt.
-  cached_encryption_key_ =
-      crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-          crypto::SymmetricKey::AES, password, salt, kEncryptionIterations,
-          kDerivedKeySizeInBits);
-  DCHECK(cached_encryption_key_);
-  return cached_encryption_key_.get();
+  std::array<uint8_t, kDerivedKeySize> key;
+  crypto::kdf::DeriveKeyPbkdf2HmacSha1({.iterations = kIterations},
+                                       base::as_byte_span(password), kSalt, key,
+                                       crypto::SubtlePassKey{});
+  key_ = key;
+  return true;
 }
 
 std::string OSCryptImpl::GetRawEncryptionKey() {
-  if (crypto::SymmetricKey* key = GetEncryptionKey())
-    return key->key();
-  return std::string();
+  return DeriveKey() ? std::string(base::as_string_view(*key_)) : std::string();
 }
 
 void OSCryptImpl::SetRawEncryptionKey(const std::string& raw_key) {
   base::AutoLock auto_lock(OSCryptImpl::GetLock());
-  DCHECK(!cached_encryption_key_) << "Encryption key already set.";
-  cached_encryption_key_ =
-      crypto::SymmetricKey::Import(crypto::SymmetricKey::AES, raw_key);
-  key_is_cached_ = true;
+  CHECK(!key_);
+
+  // Only an input of exactly `kDerivedKeySize` is acceptable for the key.
+  auto input = base::as_byte_span(raw_key).to_fixed_extent<kDerivedKeySize>();
+  if (input) {
+    key_ = std::array<uint8_t, kDerivedKeySize>();
+    base::span(*key_).copy_from(*input);
+  }
+
+  // This method is used over IPC to configure OSCryptImpl instances in
+  // sandboxed helper processes. Those helper processes don't have access to
+  // the keychain anyway, and if they try to access it, they'll crash.
+  // Therefore, never try the keychain in this mode, even when given an empty
+  // key.
+  try_keychain_ = false;
 }
 
 bool OSCryptImpl::EncryptString16(const std::u16string& plaintext,
@@ -148,8 +173,9 @@ bool OSCryptImpl::EncryptString16(const std::u16string& plaintext,
 bool OSCryptImpl::DecryptString16(const std::string& ciphertext,
                               std::u16string* plaintext) {
   std::string utf8;
-  if (!DecryptString(ciphertext, &utf8))
+  if (!DecryptString(ciphertext, &utf8)) {
     return false;
+  }
 
   *plaintext = base::UTF8ToUTF16(utf8);
   return true;
@@ -162,20 +188,16 @@ bool OSCryptImpl::EncryptString(const std::string& plaintext,
     return true;
   }
 
-  crypto::SymmetricKey* encryption_key = GetEncryptionKey();
-  if (!encryption_key)
+  if (!DeriveKey()) {
+    VLOG(1) << "Key derivation failed";
     return false;
-
-  const std::string iv(kCCBlockSizeAES128, ' ');
-  crypto::Encryptor encryptor;
-  if (!encryptor.Init(encryption_key, crypto::Encryptor::CBC, iv))
-    return false;
-
-  if (!encryptor.Encrypt(plaintext, ciphertext))
-    return false;
+  }
 
   // Prefix the cypher text with version information.
-  ciphertext->insert(0, kEncryptionVersionPrefix);
+  *ciphertext = kObfuscationPrefixV10;
+  ciphertext->append(base::as_string_view(
+      crypto::aes_cbc::Encrypt(*key_, kIv, base::as_byte_span(plaintext))));
+
   return true;
 }
 
@@ -192,54 +214,53 @@ bool OSCryptImpl::DecryptString(const std::string& ciphertext,
   // Credit card numbers are current legacy data, so false match with prefix
   // won't happen.
   const os_crypt::EncryptionPrefixVersion encryption_version =
-      ciphertext.find(kEncryptionVersionPrefix) == 0
+      ciphertext.find(kObfuscationPrefixV10) == 0
           ? os_crypt::EncryptionPrefixVersion::kVersion10
           : os_crypt::EncryptionPrefixVersion::kNoVersion;
 
   os_crypt::LogEncryptionVersion(encryption_version);
 
   if (encryption_version == os_crypt::EncryptionPrefixVersion::kNoVersion) {
-    *plaintext = ciphertext;
-    return true;
+    return false;
+  }
+
+  if (!DeriveKey()) {
+    VLOG(1) << "Key derivation failed";
+    return false;
   }
 
   // Strip off the versioning prefix before decrypting.
-  const std::string raw_ciphertext =
-      ciphertext.substr(strlen(kEncryptionVersionPrefix));
+  base::span<const uint8_t> raw_ciphertext =
+      base::as_byte_span(ciphertext).subspan(strlen(kObfuscationPrefixV10));
 
-  crypto::SymmetricKey* encryption_key = GetEncryptionKey();
-  if (!encryption_key) {
-    VLOG(1) << "Decryption failed: could not get the key";
-    return false;
-  }
+  std::optional<std::vector<uint8_t>> maybe_plain =
+      crypto::aes_cbc::Decrypt(*key_, kIv, base::as_byte_span(raw_ciphertext));
 
-  const std::string iv(kCCBlockSizeAES128, ' ');
-  crypto::Encryptor encryptor;
-  if (!encryptor.Init(encryption_key, crypto::Encryptor::CBC, iv))
-    return false;
-
-  if (!encryptor.Decrypt(raw_ciphertext, plaintext)) {
+  if (!maybe_plain) {
     VLOG(1) << "Decryption failed";
     return false;
   }
 
+  plaintext->assign(base::as_string_view(*maybe_plain));
   return true;
 }
 
 bool OSCryptImpl::IsEncryptionAvailable() {
-  return GetEncryptionKey() != nullptr;
+  return DeriveKey();
 }
 
 void OSCryptImpl::UseMockKeychainForTesting(bool use_mock) {
   use_mock_keychain_ = use_mock;
-  if (!use_mock_keychain_)
+  if (!use_mock_keychain_) {
     use_locked_mock_keychain_ = false;
+  }
 }
 
 void OSCryptImpl::UseLockedMockKeychainForTesting(bool use_locked) {
   use_locked_mock_keychain_ = use_locked;
-  if (use_locked_mock_keychain_)
+  if (use_locked_mock_keychain_) {
     use_mock_keychain_ = true;
+  }
 }
 
 // static

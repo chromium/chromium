@@ -37,13 +37,14 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.DisableAutomaticNetLog;
+import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.CronetTestRule.IntFlag;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDelegate;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.httpflags.BaseFeature;
 import org.chromium.net.httpflags.FlagValue;
-import org.chromium.net.httpflags.Flags;
 import org.chromium.net.impl.CronetExceptionImpl;
 import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetManifest;
@@ -173,7 +174,7 @@ public class CronetUrlRequestContextTest {
         mTestRule
                 .getTestFramework()
                 .setHttpFlags(
-                        Flags.newBuilder()
+                        org.chromium.net.httpflags.Flags.newBuilder()
                                 .putFlags(
                                         CronetLibraryLoader.LOG_FLAG_NAME,
                                         FlagValue.newBuilder()
@@ -325,7 +326,7 @@ public class CronetUrlRequestContextTest {
 
     private void setChromiumBaseFeatureLogFlag(boolean enable, String marker) {
         var flags =
-                Flags.newBuilder()
+                org.chromium.net.httpflags.Flags.newBuilder()
                         .putFlags(
                                 BaseFeature.FLAG_PREFIX + "CronetLogMe",
                                 FlagValue.newBuilder()
@@ -2040,7 +2041,7 @@ public class CronetUrlRequestContextTest {
                         getTestStorage(mTestRule.getTestFramework().getContext()));
     }
 
-    private static class TestBadLibraryLoader extends CronetEngine.Builder.LibraryLoader {
+    public static class TestBadLibraryLoader extends CronetEngine.Builder.LibraryLoader {
         private boolean mWasCalled;
 
         @Override
@@ -2052,29 +2053,6 @@ public class CronetUrlRequestContextTest {
         boolean wasCalled() {
             return mWasCalled;
         }
-    }
-
-    @Test
-    @SmallTest
-    @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason = "LibraryLoader is supported only by the native implementation")
-    public void testSetLibraryLoaderIsEnforcedByDefaultEmbeddedProvider() throws Exception {
-        CronetEngine.Builder builder =
-                new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
-        TestBadLibraryLoader loader = new TestBadLibraryLoader();
-        builder.setLibraryLoader(loader);
-
-        assertThrows(
-                "Native library should not be loaded", UnsatisfiedLinkError.class, builder::build);
-        assertThat(loader.wasCalled()).isTrue();
-
-        // The init thread is started *before* the library is loaded, so the init thread is running
-        // despite the library loading failure. Init thread initialization can race against test
-        // cleanup (e.g. Context access). We work around the issue by ensuring test cleanup will
-        // call shutdown() on a real engine, which will block until the init thread initialization
-        // is done.
-        mTestRule.getTestFramework().startEngine();
     }
 
     @Test
@@ -2205,26 +2183,19 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
+    @Flags(
+            intFlags = {
+                @IntFlag(
+                        name = CronetUrlRequestContext.OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME,
+                        value = 13)
+            })
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
             reason =
                     "Fallback implementation doesn't support HTTP flags; AOSP doesn't have this"
-                        + " logic yet")
+                            + " logic yet")
     public void testCronetEngineThreadPriority_honorsHttpFlag() throws Exception {
         final int flagValue = 13;
-        mTestRule
-                .getTestFramework()
-                .setHttpFlags(
-                        Flags.newBuilder()
-                                .putFlags(
-                                        CronetUrlRequestContext
-                                                .OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME,
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setIntValue(flagValue))
-                                                .build())
-                                .build());
         CronetEngine engine =
                 mTestRule
                         .getTestFramework()
@@ -2242,26 +2213,19 @@ public class CronetUrlRequestContextTest {
     @Test
     @SmallTest
     @RequiresMinApi(6) // setThreadPriority added in API 6: crrev.com/472449
+    @Flags(
+            intFlags = {
+                @IntFlag(
+                        name = CronetUrlRequestContext.OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME,
+                        value = 13)
+            })
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
             reason =
                     "Fallback implementation doesn't support HTTP flags; AOSP doesn't have this"
-                        + " logic yet")
+                            + " logic yet")
     public void testCronetEngineThreadPriority_httpFlagOverridesBuilderOption() throws Exception {
         final int flagValue = 13;
-        mTestRule
-                .getTestFramework()
-                .setHttpFlags(
-                        Flags.newBuilder()
-                                .putFlags(
-                                        CronetUrlRequestContext
-                                                .OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME,
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setIntValue(flagValue))
-                                                .build())
-                                .build());
         CronetEngine engine =
                 mTestRule
                         .getTestFramework()

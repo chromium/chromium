@@ -12,7 +12,6 @@
 #include "components/account_id/account_id.h"
 #include "components/manta/anchovy/anchovy_provider.h"
 #include "components/manta/provider_params.h"
-#include "components/manta/sparky/system_info_delegate.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -24,7 +23,6 @@
 #include "components/manta/orca_provider.h"
 #include "components/manta/scanner_provider.h"
 #include "components/manta/snapper_provider.h"
-#include "components/manta/sparky/sparky_provider.h"
 #include "components/manta/walrus_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -142,19 +140,6 @@ std::unique_ptr<MahiProvider> MantaService::CreateMahiProvider() {
       /*use_api_key=*/is_demo_mode_, chrome_version_, chrome_channel_, locale_};
   return std::make_unique<MahiProvider>(shared_url_loader_factory_,
                                         identity_manager_, provider_params);
-}
-
-std::unique_ptr<SparkyProvider> MantaService::CreateSparkyProvider(
-    std::unique_ptr<SparkyDelegate> sparky_delegate,
-    std::unique_ptr<SystemInfoDelegate> system_info_delegate) {
-  if (!identity_manager_ || !sparky_delegate || !system_info_delegate) {
-    return nullptr;
-  }
-  const ProviderParams provider_params = {
-      /*use_api_key=*/is_demo_mode_, chrome_version_, chrome_channel_, locale_};
-  return std::make_unique<SparkyProvider>(
-      shared_url_loader_factory_, identity_manager_, provider_params,
-      std::move(sparky_delegate), std::move(system_info_delegate));
 }
 
 std::unique_ptr<WalrusProvider> MantaService::CreateWalrusProvider() {

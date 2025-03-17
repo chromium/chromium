@@ -278,6 +278,21 @@ public class ColorUtils {
     }
 
     /**
+     * Applies a transparency to the given color. Takes into account the color's existing alpha,
+     * combining it with the passed in alpha param.
+     *
+     * @param color The original color to fade. If fully opaque, this will have the safe effect as
+     *     the setAlphaComponent methods.
+     * @param alpha The alpha to fade the color by, should be between (inclusive) 0 and 1.
+     * @return The new faded color.
+     */
+    public static @ColorInt int applyAlphaFloat(
+            @ColorInt int color, @FloatRange(from = 0f, to = 1f) float alpha) {
+        int newAlpha = Math.round(Color.alpha(color) * alpha);
+        return setAlphaComponent(color, newAlpha);
+    }
+
+    /**
      * Calculates the luminosity for the given color. This should match Android's region sampling
      * calculation (go/android-luma-calculation).
      *

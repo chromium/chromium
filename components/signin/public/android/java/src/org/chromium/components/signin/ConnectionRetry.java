@@ -7,6 +7,8 @@ package org.chromium.components.signin;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.net.NetworkChangeNotifier;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @param <T> Return type of the AuthTask launched by ConnectionRetry.
  */
+@NullMarked
 public class ConnectionRetry<T> implements NetworkChangeNotifier.ConnectionTypeObserver {
     /**
      * Authentication Task used together with ConnectionRetry class.
@@ -62,9 +65,9 @@ public class ConnectionRetry<T> implements NetworkChangeNotifier.ConnectionTypeO
         ThreadUtils.assertOnUiThread();
         // Clear any transient error.
         mIsTransientError.set(false);
-        new AsyncTask<T>() {
+        new AsyncTask<@Nullable T>() {
             @Override
-            public T doInBackground() {
+            public @Nullable T doInBackground() {
                 try {
                     return mAuthTask.run();
                 } catch (AuthException ex) {
@@ -75,7 +78,7 @@ public class ConnectionRetry<T> implements NetworkChangeNotifier.ConnectionTypeO
             }
 
             @Override
-            public void onPostExecute(T result) {
+            public void onPostExecute(@Nullable T result) {
                 if (result != null) {
                     mAuthTask.onSuccess(result);
                 } else if (!mIsTransientError.get()

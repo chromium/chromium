@@ -15,10 +15,6 @@ GtkUiPlatformStub::~GtkUiPlatformStub() = default;
 
 void GtkUiPlatformStub::OnInitialized(GtkWidget* widget) {}
 
-GdkKeymap* GtkUiPlatformStub::GetGdkKeymap() {
-  return nullptr;
-}
-
 GdkModifierType GtkUiPlatformStub::GetGdkKeyEventState(
     const ui::KeyEvent& key_event) {
   return static_cast<GdkModifierType>(0);

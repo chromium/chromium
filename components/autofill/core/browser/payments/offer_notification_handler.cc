@@ -4,8 +4,8 @@
 
 #include "components/autofill/core/browser/payments/offer_notification_handler.h"
 
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
@@ -57,8 +57,10 @@ void OfferNotificationHandler::UpdateOfferNotificationVisibility(
     bool offer_id_has_shown_before = shown_notification_ids_.contains(offer_id);
     client.GetPaymentsAutofillClient()->UpdateOfferNotification(
         *offer,
-        {.notification_has_been_shown = offer_id_has_shown_before,
-         .show_notification_automatically = !offer_id_has_shown_before});
+        {
+            .notification_has_been_shown = offer_id_has_shown_before,
+            .show_notification_automatically = !offer_id_has_shown_before,
+        });
     shown_notification_ids_.insert(offer_id);
   } else {
     client.GetPaymentsAutofillClient()->DismissOfferNotification();

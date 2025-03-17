@@ -19,7 +19,7 @@ import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
 // clang-format on
@@ -246,7 +246,7 @@ suite('SafetyHubPage', function() {
         isChildVisible(testElement, 'settings-safety-hub-extensions-module'));
   });
 
-  test('Password Card', async function() {
+  test('Password Card', function() {
     assertTrue(isChildVisible(testElement, '#passwords'));
 
     // Card header and subheader should be what the browser proxy provides.
@@ -297,7 +297,7 @@ suite('SafetyHubPage', function() {
     assertEquals(PasswordManagerPage.CHECKUP, param);
   });
 
-  test('Version Card', async function() {
+  test('Version Card', function() {
     assertTrue(isChildVisible(testElement, '#version'));
 
     // Card header and subheader should be what the browser proxy provides.
@@ -348,7 +348,7 @@ suite('SafetyHubPage', function() {
         testElement.$.version.getAttribute('aria-description'),
         testElement.i18n('safetyHubVersionRelaunchAriaLabel'));
 
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     lifetimeBrowserProxy.setShouldShowRelaunchConfirmationDialog(true);
     lifetimeBrowserProxy.setRelaunchConfirmationDialogDescription(
         'Test description.');
@@ -356,7 +356,7 @@ suite('SafetyHubPage', function() {
 
     testElement.$.version.click();
 
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     // Ensure the confirmation dialog is always shown.
     await eventToPromise('cr-dialog-open', testElement);
     const relaunchConfirmationDialogElement =
@@ -367,7 +367,7 @@ suite('SafetyHubPage', function() {
     const dialog = relaunchConfirmationDialogElement.shadowRoot!.querySelector(
         'cr-dialog')!;
     const description =
-        dialog.shadowRoot!.querySelector<HTMLSlotElement>('slot[name=body]')!;
+        dialog.shadowRoot.querySelector<HTMLSlotElement>('slot[name=body]')!;
     assertEquals(
         'Test description.', description.assignedNodes()[0]!.textContent);
 
@@ -385,21 +385,21 @@ suite('SafetyHubPage', function() {
     return lifetimeBrowserProxy.whenCalled('relaunch');
   });
 
-  test('Version Card Clicked via Enter', async function() {
+  test('Version Card Clicked via Enter', function() {
     testElement.$.passwords.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
     // Ensure the About page is shown.
     assertEquals(routes.ABOUT, Router.getInstance().getCurrentRoute());
   });
 
-  test('Version Card Clicked via Space', async function() {
+  test('Version Card Clicked via Space', function() {
     testElement.$.passwords.dispatchEvent(
         new KeyboardEvent('keydown', {key: ' ', bubbles: true}));
     // Ensure the About page is shown.
     assertEquals(routes.ABOUT, Router.getInstance().getCurrentRoute());
   });
 
-  test('Version Card updates upon Chrome version change', async function() {
+  test('Version Card updates upon Chrome version change', function() {
     const safeCardData = versionCardMockData;
     const warningCardData: CardInfo = {
       header: 'Chrome is not up to date',
@@ -432,7 +432,7 @@ suite('SafetyHubPage', function() {
             .textContent!.trim());
   });
 
-  test('Safe Browsing Card', async function() {
+  test('Safe Browsing Card', function() {
     assertTrue(isChildVisible(testElement, '#safeBrowsing'));
 
     // Card header and subheader should be what the browser proxy provides.
@@ -467,14 +467,14 @@ suite('SafetyHubPage', function() {
     assertEquals(safeBrowsingCardMockData.state, result[1]);
   });
 
-  test('Safe Browsing Card Clicked via Enter', async function() {
+  test('Safe Browsing Card Clicked via Enter', function() {
     testElement.$.passwords.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
     // Ensure the Security Settings page is shown.
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
   });
 
-  test('Safe Browsing Card Clicked via Space', async function() {
+  test('Safe Browsing Card Clicked via Space', function() {
     testElement.$.passwords.dispatchEvent(
         new KeyboardEvent('keydown', {key: ' ', bubbles: true}));
     // Ensure the Security Settings page is shown.

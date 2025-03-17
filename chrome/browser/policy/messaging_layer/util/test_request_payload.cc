@@ -6,11 +6,11 @@
 
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
 #include "base/json/json_reader.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
@@ -232,7 +232,7 @@ bool RequestIdMatcher::MatchAndExplain(const base::Value::Dict& arg,
     *listener << "Request ID is empty.";
     return false;
   }
-  if (!base::ranges::all_of(*request_id, base::IsHexDigit<char>)) {
+  if (!std::ranges::all_of(*request_id, base::IsHexDigit<char>)) {
     *listener << "Request ID is not a hexadecimal number.";
     return false;
   }

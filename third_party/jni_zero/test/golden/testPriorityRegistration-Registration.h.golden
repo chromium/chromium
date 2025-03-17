@@ -72,7 +72,7 @@ JNI_ZERO_MUXED_ENTRYPOINT jboolean Muxed_org_jni_1zero_TinySample_bar(
 JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_TinySample_foo(JNIEnv* env, jint b, jobject a);
 
 // Multiplexing Methods.
-JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V(JNIEnv* env, jclass jcaller, jint switch_num) {
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_V(JNIEnv* env, jclass jcaller, jint switch_num) {
   JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 1);
   switch (switch_num) {
     case 0:
@@ -81,11 +81,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V(JNIEnv* env, jclass jcaller, jint swi
       __builtin_unreachable();
   }
 }
-JNI_ZERO_BOUNDARY_EXPORT jint Java_J_N__1I_1I(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num,
-    jint p0) {
+JNI_ZERO_BOUNDARY_EXPORT jint Java_J_N_II(JNIEnv* env, jclass jcaller, jint switch_num, jint p0) {
   JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 1);
   switch (switch_num) {
     case 0:
@@ -94,7 +90,7 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_J_N__1I_1I(
       __builtin_unreachable();
   }
 }
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1O(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OO(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num,
@@ -107,7 +103,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1O(
       __builtin_unreachable();
   }
 }
-JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N__1Z_1O(
+JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N_ZO(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num,
@@ -120,7 +116,7 @@ JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N__1Z_1O(
       __builtin_unreachable();
   }
 }
-JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V_1IO(
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_VIO(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num,
@@ -138,7 +134,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V_1IO(
       __builtin_unreachable();
   }
 }
-JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V_1OO(
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_VOO(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num,
@@ -152,7 +148,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V_1OO(
       __builtin_unreachable();
   }
 }
-JNI_ZERO_BOUNDARY_EXPORT jint Java_J_N__1I_1OO(
+JNI_ZERO_BOUNDARY_EXPORT jint Java_J_N_IOO(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num,
@@ -166,7 +162,7 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_J_N__1I_1OO(
       __builtin_unreachable();
   }
 }
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1OO(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OOO(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num,
@@ -182,7 +178,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1OO(
       __builtin_unreachable();
   }
 }
-JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N__1Z_1IO(
+JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N_ZIO(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num,

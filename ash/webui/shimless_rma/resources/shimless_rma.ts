@@ -30,14 +30,15 @@ import './wrapup_restock_page.js';
 import './wrapup_wait_for_manual_wp_enable_page.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CriticalErrorPage} from './critical_error_page.js';
-import {CLICK_EXIT_BUTTON, CLICK_NEXT_BUTTON, DISABLE_ALL_BUTTONS, DISABLE_NEXT_BUTTON, DisableAllButtonsEvent, DisableNextButtonEvent, ENABLE_ALL_BUTTONS, FATAL_HARDWARE_ERROR, FatalHardwareEvent, OPEN_LOGS_DIALOG, SET_NEXT_BUTTON_LABEL, SetNextButtonLabelEvent, TRANSITION_STATE, TransitionStateEvent} from './events.js';
+import type {DisableAllButtonsEvent, DisableNextButtonEvent, FatalHardwareEvent, SetNextButtonLabelEvent, TransitionStateEvent} from './events.js';
+import {CLICK_EXIT_BUTTON, CLICK_NEXT_BUTTON, DISABLE_ALL_BUTTONS, DISABLE_NEXT_BUTTON, ENABLE_ALL_BUTTONS, FATAL_HARDWARE_ERROR, OPEN_LOGS_DIALOG, SET_NEXT_BUTTON_LABEL, TRANSITION_STATE} from './events.js';
 import {HardwareErrorPage} from './hardware_error_page.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {OnboardingChooseDestinationPageElement} from './onboarding_choose_destination_page.js';
@@ -57,9 +58,10 @@ import {ReimagingCalibrationSetupPage} from './reimaging_calibration_setup_page.
 import {ReimagingDeviceInformationPage} from './reimaging_device_information_page.js';
 import {UpdateRoFirmwarePage} from './reimaging_firmware_update_page.js';
 import {ReimagingProvisioningPage} from './reimaging_provisioning_page.js';
-import {Shimless3pDiagnostics} from './shimless_3p_diagnostics.js';
+import type {Shimless3pDiagnostics} from './shimless_3p_diagnostics.js';
 import {getTemplate} from './shimless_rma.html.js';
-import {ErrorObserverReceiver, ExternalDiskStateObserverReceiver, RmadErrorCode, ShimlessRmaServiceInterface, State, StateResult} from './shimless_rma.mojom-webui.js';
+import type {ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import {ErrorObserverReceiver, ExternalDiskStateObserverReceiver, RmadErrorCode, State} from './shimless_rma.mojom-webui.js';
 import {SplashScreen} from './splash_screen.js';
 import {WrapupFinalizePage} from './wrapup_finalize_page.js';
 import {WrapupRepairCompletePage} from './wrapup_repair_complete_page.js';
@@ -779,7 +781,7 @@ export class ShimlessRma extends ShimlessRmaBase {
       return;
     }
 
-    component!.allButtonsDisabled = this.allButtonsDisabled;
+    component.allButtonsDisabled = this.allButtonsDisabled;
   }
 
   updateButtonState(buttonName: string, buttonState: ButtonState): void {
@@ -800,15 +802,15 @@ export class ShimlessRma extends ShimlessRmaBase {
     const page = this.loadComponent(this.currentPage.componentIs);
     assert(page, 'Could not find page ' + this.currentPage.componentIs);
     assert(
-        page!.onNextButtonClick,
+        page.onNextButtonClick,
         'No onNextButtonClick for ' + this.currentPage.componentIs);
     assert(
-        typeof page!.onNextButtonClick === 'function',
+        typeof page.onNextButtonClick === 'function',
         'onNextButtonClick not a function for ' + this.currentPage.componentIs);
     this.nextButtonClicked = true;
     this.setAllButtonsState(
         /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
-    page!.onNextButtonClick()
+    page.onNextButtonClick()
         .then((stateResult) => {
           this.processStateResult(stateResult);
         })
@@ -853,7 +855,7 @@ export class ShimlessRma extends ShimlessRmaBase {
     // Show exit button spinner on the landing page
     const currentPageComponent =
         this.loadComponent(this.currentPage.componentIs);
-    currentPageComponent!.confirmExitButtonClicked = true;
+    currentPageComponent.confirmExitButtonClicked = true;
 
     this.setAllButtonsState(
         /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);

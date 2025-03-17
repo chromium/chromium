@@ -10,12 +10,11 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
+import androidx.preference.Preference;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
@@ -49,9 +48,8 @@ public class AddressBarSettingsFragmentUnitTest {
     private AddressBarSettingsFragment mSettings;
     private RadioButtonWithDescription mTopButton;
     private RadioButtonWithDescription mBottomButton;
-    private TextView mDescription;
-    private ImageView mToolbarOnTopImage;
-    private ImageView mToolbarOnBottomImage;
+    private Preference mAddressBarTitle;
+    private ImageView mToolbarPositionImage;
 
     @Before
     public void setUp() {
@@ -82,7 +80,7 @@ public class AddressBarSettingsFragmentUnitTest {
         mActivityScenarioRule.getScenario().moveToState(State.STARTED);
 
         assertEquals(
-                mActivity.getString(R.string.address_bar_settings), mSettings.getPageTitle().get());
+                AddressBarSettingsFragment.getTitle(mActivity), mSettings.getPageTitle().get());
 
         AddressBarPreference addressBarPreference =
                 (AddressBarPreference)
@@ -90,14 +88,14 @@ public class AddressBarSettingsFragmentUnitTest {
                                 AddressBarSettingsFragment.PREF_ADDRESS_BAR_PREFERENCE);
         mTopButton = (RadioButtonWithDescription) addressBarPreference.getTopRadioButton();
         mBottomButton = (RadioButtonWithDescription) addressBarPreference.getBottomRadioButton();
-        mDescription = addressBarPreference.getDescription();
+        mAddressBarTitle =
+                mSettings.findPreference(AddressBarSettingsFragment.PREF_ADDRESS_BAR_TITLE);
 
         AddressBarHeaderPreference addressBarHeaderPreference =
                 (AddressBarHeaderPreference)
                         mSettings.findPreference(
                                 AddressBarSettingsFragment.PREF_ADDRESS_BAR_HEADER);
-        mToolbarOnTopImage = addressBarHeaderPreference.getToolbarOnTopImage();
-        mToolbarOnBottomImage = addressBarHeaderPreference.getToolbarOnBottomImage();
+        mToolbarPositionImage = addressBarHeaderPreference.getToolbarPositionImage();
     }
 
     @Test
@@ -108,11 +106,13 @@ public class AddressBarSettingsFragmentUnitTest {
         launchFragment();
         assertEquals(
                 mActivity.getString(R.string.address_bar_settings_description),
-                mDescription.getText());
+                mAddressBarTitle.getSummary());
         assertTrue(mTopButton.isChecked());
         assertFalse(mBottomButton.isChecked());
-        assertEquals(View.VISIBLE, mToolbarOnTopImage.getVisibility());
-        assertEquals(View.GONE, mToolbarOnBottomImage.getVisibility());
+        assertTrue(mToolbarPositionImage.isSelected());
+        assertEquals(
+                mActivity.getString(R.string.address_bar_settings_currently_on_top),
+                mToolbarPositionImage.getContentDescription());
 
         mBottomButton.performClick();
 
@@ -121,8 +121,10 @@ public class AddressBarSettingsFragmentUnitTest {
         assertFalse(
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true));
-        assertEquals(View.GONE, mToolbarOnTopImage.getVisibility());
-        assertEquals(View.VISIBLE, mToolbarOnBottomImage.getVisibility());
+        assertFalse(mToolbarPositionImage.isSelected());
+        assertEquals(
+                mActivity.getString(R.string.address_bar_settings_currently_on_bottom),
+                mToolbarPositionImage.getContentDescription());
     }
 
     @Test
@@ -133,8 +135,7 @@ public class AddressBarSettingsFragmentUnitTest {
         launchFragment();
         assertFalse(mTopButton.isChecked());
         assertTrue(mBottomButton.isChecked());
-        assertEquals(View.GONE, mToolbarOnTopImage.getVisibility());
-        assertEquals(View.VISIBLE, mToolbarOnBottomImage.getVisibility());
+        assertFalse(mToolbarPositionImage.isSelected());
 
         mTopButton.performClick();
 
@@ -143,13 +144,12 @@ public class AddressBarSettingsFragmentUnitTest {
         assertTrue(
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false));
-        assertEquals(View.VISIBLE, mToolbarOnTopImage.getVisibility());
-        assertEquals(View.GONE, mToolbarOnBottomImage.getVisibility());
+        assertTrue(mToolbarPositionImage.isSelected());
     }
 
     @Test
     @SmallTest
-    @Config(minSdk = android.os.Build.VERSION_CODES.R)
+    @Config(sdk = android.os.Build.VERSION_CODES.R)
     public void testFoldable() {
         ShadowPackageManager shadowPackageManager =
                 Shadows.shadowOf(ContextUtils.getApplicationContext().getPackageManager());
@@ -159,6 +159,6 @@ public class AddressBarSettingsFragmentUnitTest {
         launchFragment();
         assertEquals(
                 mActivity.getString(R.string.address_bar_settings_description_foldable),
-                mDescription.getText());
+                mAddressBarTitle.getSummary());
     }
 }

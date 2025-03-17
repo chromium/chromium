@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,11 +28,11 @@ class MockAutofillWebDataService : public AutofillWebDataService {
               (const std::u16string& name,
                const std::u16string& prefix,
                int limit,
-               WebDataServiceConsumer* consumer),
+               WebDataServiceRequestCallback),
               (override));
   MOCK_METHOD(WebDataServiceBase::Handle,
               RemoveExpiredAutocompleteEntries,
-              (WebDataServiceConsumer * consumer),
+              (WebDataServiceRequestCallback),
               (override));
 
  protected:

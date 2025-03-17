@@ -305,10 +305,10 @@ void GroupContainerCycleView::OnAccessibleIgnoredStateChanged(
 }
 
 bool GroupContainerCycleView::Contains(aura::Window* window) const {
-  return base::ranges::any_of(mini_views_,
-                              [window](const WindowCycleItemView* mini_view) {
-                                return mini_view->Contains(window);
-                              });
+  return std::ranges::any_of(mini_views_,
+                             [window](const WindowCycleItemView* mini_view) {
+                               return mini_view->Contains(window);
+                             });
 }
 
 aura::Window* GroupContainerCycleView::GetWindowAtPoint(
@@ -407,14 +407,14 @@ void GroupContainerCycleView::SetSelectedWindowForFocus(aura::Window* window) {
   if (old_is_first_focus_selection_request &&
       window_util::GetActiveWindow() == mini_views_[1]->source_window()) {
     mini_views_[0]->UpdateFocusState(/*focus=*/true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
   } else {
     // For normal use case, follow the window cycle order and `UpdateFocusState`
     // on the cycle item that contains the target window.
     for (WindowCycleItemView* mini_view : mini_views_) {
       if (mini_view->Contains(window)) {
         mini_view->UpdateFocusState(/*focus=*/true);
-        NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+        NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
         break;
       }
     }

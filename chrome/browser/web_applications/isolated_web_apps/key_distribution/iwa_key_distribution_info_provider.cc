@@ -12,10 +12,11 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
@@ -83,6 +84,24 @@ base::OneShotEvent& AlreadySignalled() {
   return *kEvent;
 }
 
+base::TaskPriority GetLoadTaskPriority() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return base::TaskPriority::USER_VISIBLE;
+#else
+  return base::TaskPriority::BEST_EFFORT;
+#endif
+}
+
+bool IsOnDemandUpdateSupported() {
+  // `switches::kDisableComponentUpdate` is set by default in
+  // browsertests.
+  return component_updater::IwaKeyDistributionComponentInstallerPolicy::
+             IsSupported() &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kDisableComponentUpdate) &&
+         g_browser_process && g_browser_process->component_updater();
+}
+
 }  // namespace
 
 BASE_FEATURE(kIwaKeyDistributionDevMode,
@@ -146,19 +165,18 @@ void IwaKeyDistributionInfoProvider::LoadKeyDistributionData(
                                  IwaComponentUpdateError::kStaleVersion);
     return;
   }
+
   // `base::Unretained(this)` is fine as this is a singleton that never goes
   // away.
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&LoadKeyDistributionDataImpl, file_path),
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), GetLoadTaskPriority()},
+      base::BindOnce(&LoadKeyDistributionDataImpl, file_path),
       base::BindOnce(
           &IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded,
           base::Unretained(this), component_version, is_preloaded));
 }
 
-IwaKeyDistributionInfoProvider::IwaKeyDistributionInfoProvider()
-    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
-
+IwaKeyDistributionInfoProvider::IwaKeyDistributionInfoProvider() = default;
 IwaKeyDistributionInfoProvider::~IwaKeyDistributionInfoProvider() = default;
 
 void IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded(
@@ -203,11 +221,7 @@ void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
 
 base::OneShotEvent&
 IwaKeyDistributionInfoProvider::OnMaybeDownloadedComponentDataReady() {
-  if (!base::FeatureList::IsEnabled(
-          component_updater::kIwaKeyDistributionComponent) ||
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableComponentUpdate)) {
-    // `switches::kDisableComponentUpdate` is set by default in browsertests.
+  if (!IsOnDemandUpdateSupported()) {
     return AlreadySignalled();
   }
 
@@ -264,7 +278,7 @@ void IwaKeyDistributionInfoProvider::WriteComponentMetadata(
 
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateSuccess(
     const base::Version& version,
-    bool is_preloaded) const {
+    bool is_preloaded) {
   if (data_ && version.IsValid()) {
     // Custom key rotations via chrome://web-app-internals (indicated by an
     // invalid version) should not be logged.
@@ -274,19 +288,15 @@ void IwaKeyDistributionInfoProvider::DispatchComponentUpdateSuccess(
                                       : IwaComponentUpdateSource::kDownloaded);
   }
 
-  for (auto& observer : observers_) {
-    observer.OnComponentUpdateSuccess(version, is_preloaded);
-  }
+  observers_.Notify(&Observer::OnComponentUpdateSuccess, version, is_preloaded);
 }
 
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateError(
-    const base::Version& component_version,
-    IwaComponentUpdateError error) const {
+    const base::Version& version,
+    IwaComponentUpdateError error) {
   base::UmaHistogramEnumeration(kIwaKeyDistributionComponentUpdateError, error);
 
-  for (auto& observer : observers_) {
-    observer.OnComponentUpdateError(component_version, error);
-  }
+  observers_.Notify(&Observer::OnComponentUpdateError, version, error);
 }
 
 void IwaKeyDistributionInfoProvider::

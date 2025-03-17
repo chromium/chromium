@@ -77,7 +77,6 @@ const CGFloat kPositionCoefficient = 0.25;
     [UIView addKeyframeWithRelativeStartTime:0
                             relativeDuration:kTabFadeInRelativeDuration
                                   animations:tabFadeAnimation];
-
   };
   UIViewPropertyAnimator* tabfadeAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kAnimationDuration

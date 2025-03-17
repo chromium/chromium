@@ -59,9 +59,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandToplevelExtension {
   virtual bool SupportsPointerLock() = 0;
   virtual void LockPointer(bool enabled) = 0;
 
-  // Retrieve current layout state.
-  virtual bool GetTabletMode() = 0;
-
  protected:
   virtual ~WaylandToplevelExtension();
 

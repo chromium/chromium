@@ -4,6 +4,7 @@
 
 #include "components/permissions/permission_hats_trigger_helper.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -11,7 +12,6 @@
 #include "base/check_is_test.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -42,11 +42,10 @@ std::vector<std::string> SplitCsvString(const std::string& csv_string) {
 
 bool StringMatchesFilter(const std::string& string, const std::string& filter) {
   return filter.empty() ||
-         base::ranges::any_of(SplitCsvString(filter),
-                              [string](std::string_view current_filter) {
-                                return base::EqualsCaseInsensitiveASCII(
-                                    string, current_filter);
-                              });
+         std::ranges::any_of(
+             SplitCsvString(filter), [string](std::string_view current_filter) {
+               return base::EqualsCaseInsensitiveASCII(string, current_filter);
+             });
 }
 
 std::map<std::string, std::pair<std::string, std::string>>
@@ -117,7 +116,7 @@ bool IsValidConfiguration(
   }
 
   // Returns false if all filter parameters are empty.
-  return !base::ranges::all_of(filter_pair_map, [](const auto& entry) {
+  return !std::ranges::all_of(filter_pair_map, [](const auto& entry) {
     return entry.second.second.empty();
   });
 }

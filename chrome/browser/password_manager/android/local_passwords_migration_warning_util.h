@@ -10,28 +10,6 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace local_password_migration {
-
-// Shows the local password migration warning.
-void ShowWarning(
-    const gfx::NativeWindow window,
-    Profile* profile,
-    password_manager::metrics_util::PasswordMigrationWarningTriggers
-        trigger_source);
-
-// Shows the local password migration warning. `activity` is provided from
-// java.
-void ShowWarningWithActivity(
-    const base::android::JavaParamRef<jobject>& activity,
-    const base::android::JavaParamRef<jobject>& bottom_sheet_controller,
-    Profile* profile,
-    password_manager::metrics_util::PasswordMigrationWarningTriggers
-        trigger_source);
-
-// Returns whether the UPM local passwords migration warning should be
-// displayed. `profile` is used to retrieve necessary services for checking
-// the conditions.
-bool ShouldShowWarning(Profile* profile);
-
 // Tries to show the post passwords migration sheet.
 void MaybeShowPostMigrationSheet(const gfx::NativeWindow window,
                                  Profile* profile);

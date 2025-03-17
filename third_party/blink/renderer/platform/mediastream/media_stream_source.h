@@ -53,9 +53,6 @@
 
 namespace blink {
 
-class AudioBus;
-class WebAudioDestinationConsumer;
-
 // GarbageCollected wrapper of a WebPlatformMediaStreamSource, which acts as a
 // source backing one or more MediaStreamTracks.
 class PLATFORM_EXPORT MediaStreamSource final
@@ -158,41 +155,14 @@ class PLATFORM_EXPORT MediaStreamSource final
     capabilities_ = capabilities;
   }
 
-  void SetAudioFormat(int number_of_channels, float sample_rate);
-  void ConsumeAudio(AudioBus*, int number_of_frames);
-
-  // Only used if this is a WebAudio source.
-  // The WebAudioDestinationConsumer is not owned, and has to be disposed of
-  // separately after calling removeAudioConsumer.
-  bool RequiresAudioConsumer() const { return requires_consumer_; }
-  void SetAudioConsumer(WebAudioDestinationConsumer*);
-  bool RemoveAudioConsumer();
-
   void OnDeviceCaptureConfigurationChange(const MediaStreamDevice& device);
   void OnDeviceCaptureHandleChange(const MediaStreamDevice& device);
   void OnZoomLevelChange(const MediaStreamDevice& device, int zoom_level);
 
   void Trace(Visitor*) const;
-
   void Dispose();
 
  private:
-  class PLATFORM_EXPORT ConsumerWrapper final {
-    USING_FAST_MALLOC(ConsumerWrapper);
-
-   public:
-    explicit ConsumerWrapper(WebAudioDestinationConsumer* consumer);
-
-    void SetFormat(int number_of_channels, float sample_rate);
-    void ConsumeAudio(AudioBus* bus, int number_of_frames);
-
-    // m_consumer is not owned by this class.
-    raw_ptr<WebAudioDestinationConsumer, DanglingUntriaged> consumer_;
-    // bus_vector_ must only be used in ConsumeAudio. The only reason it's a
-    // member variable is to not have to reallocate it for each call.
-    Vector<const float*> bus_vector_;
-  };
-
   // The ID of this MediaStreamSource object itself.
   String id_;
   // If this MediaStreamSource object is associated with a display,
@@ -205,11 +175,7 @@ class PLATFORM_EXPORT MediaStreamSource final
   String group_id_;
   bool remote_;
   ReadyState ready_state_;
-  bool requires_consumer_;
   HeapHashSet<WeakMember<Observer>> observers_;
-  base::Lock audio_consumer_lock_;
-  std::unique_ptr<ConsumerWrapper> audio_consumer_
-      GUARDED_BY(audio_consumer_lock_);
   std::unique_ptr<WebPlatformMediaStreamSource> platform_source_;
   Capabilities capabilities_;
   std::optional<bool> echo_cancellation_;

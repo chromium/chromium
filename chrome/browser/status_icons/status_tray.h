@@ -44,8 +44,9 @@ class StatusTray {
                                const gfx::ImageSkia& image,
                                const std::u16string& tool_tip);
 
-  // Removes |icon| from this status tray.
-  void RemoveStatusIcon(StatusIcon* icon);
+  // Removes |icon| from this status tray. Returns the `std::unique_ptr` to the
+  // icon so it can be cleaned up safely.
+  std::unique_ptr<StatusIcon> RemoveStatusIcon(StatusIcon* icon);
 
   // Checks if a status icon of a specific type exists in the status tray.
   bool HasStatusIconOfTypeForTesting(StatusIconType type) const;

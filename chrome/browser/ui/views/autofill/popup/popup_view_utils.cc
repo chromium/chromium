@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
@@ -102,6 +103,18 @@ gfx::Size GetExpandedPopupSize(const gfx::Rect& content_area_bounds,
   return {width, height};
 }
 
+// Returns whether there is a visible view with `view_id` that overlaps
+// `screen_bounds`.
+bool BoundsOverlapWithView(const gfx::Rect& screen_bounds,
+                           BrowserView* browser_view,
+                           ui::ElementIdentifier view_id) {
+  auto* view_tracker = views::ElementTrackerViews::GetInstance();
+  views::View* view = view_tracker->GetFirstMatchingView(
+      view_id, view_tracker->GetContextForView(browser_view));
+  return view &&
+         view->GetWidget()->GetWindowBoundsInScreen().Intersects(screen_bounds);
+}
+
 }  // namespace
 
 void CalculatePopupYAndHeight(int popup_preferred_height,
@@ -182,8 +195,8 @@ bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
   top_level_view = platform_util::GetParent(top_level_view)
                        ? platform_util::GetParent(top_level_view)
                        : top_level_view;
-  views::Widget::Widgets all_widgets;
-  views::Widget::GetAllChildWidgets(top_level_view, &all_widgets);
+  views::Widget::Widgets all_widgets =
+      views::Widget::GetAllChildWidgets(top_level_view);
   return std::ranges::any_of(
       all_widgets, [&screen_bounds, web_contents_widget](views::Widget* w) {
         return w->IsDialogBox() &&
@@ -205,18 +218,10 @@ bool BoundsOverlapWithOpenPermissionsPrompt(
     return false;
   }
 
-  views::View* const permission_bubble_view =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          PermissionPromptBubbleBaseView::kMainViewId,
-          views::ElementTrackerViews::GetInstance()->GetContextForView(
-              browser_view));
-  if (!permission_bubble_view) {
-    return false;
-  }
-
-  return permission_bubble_view->GetWidget()
-      ->GetWindowBoundsInScreen()
-      .Intersects(screen_bounds);
+  return BoundsOverlapWithView(screen_bounds, browser_view,
+                               PermissionPromptBubbleBaseView::kMainViewId) ||
+         BoundsOverlapWithView(screen_bounds, browser_view,
+                               EmbeddedPermissionPromptBaseView::kMainViewId);
 }
 
 bool BoundsOverlapWithPictureInPictureWindow(const gfx::Rect& screen_bounds) {
@@ -450,26 +455,21 @@ bool IsExpandableSuggestionType(SuggestionType type) {
   switch (type) {
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kCreditCardEntry:
     case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kCreditCardEntry:
     case SuggestionType::kDevtoolsTestAddresses:
-    case SuggestionType::kPasswordEntry:
     case SuggestionType::kFillAutofillAi:
-    case SuggestionType::kAutofillAiError:
+    case SuggestionType::kPasswordEntry:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kAutocompleteEntry:
-    case SuggestionType::kManageAddress:
-    case SuggestionType::kManageCreditCard:
-    case SuggestionType::kManageIban:
-    case SuggestionType::kManagePlusAddress:
-    case SuggestionType::kUndoOrClear:
-    case SuggestionType::kComposeResumeNudge:
+    case SuggestionType::kBnplEntry:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeSavedStateNotification:
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kCreateNewPlusAddressInline:
@@ -480,30 +480,27 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kFillPassword:
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kIbanEntry:
-    case SuggestionType::kBnplEntry:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageAutofillAi:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManagePlusAddress:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kMixedFormMessage:
-    case SuggestionType::kPasswordAccountStorageEmpty:
-    case SuggestionType::kPasswordAccountStorageOptIn:
-    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
-    case SuggestionType::kPasswordAccountStorageReSignin:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPlusAddressError:
-    case SuggestionType::kAutofillAiFeedback:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kTitle:
+    case SuggestionType::kUndoOrClear:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
-    case SuggestionType::kRetrieveAutofillAi:
-    case SuggestionType::kEditAutofillAiData:
-    case SuggestionType::kAutofillAiLoadingState:
       return false;
   }
 }

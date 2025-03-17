@@ -38,10 +38,10 @@ class OverviewDropTargetView : public views::View {
     background_view_ = AddChildView(std::make_unique<views::View>());
 
     const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
-    background_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+    background_view_->SetBackground(views::CreateRoundedRectBackground(
         kColorAshShieldAndBase20, corner_radius));
 
-    SetBorder(views::CreateThemedRoundedRectBorder(
+    SetBorder(views::CreateRoundedRectBorder(
         kDropTargetBorderThickness, corner_radius,
         cros_tokens::kCrosSysSystemBaseElevated));
   }

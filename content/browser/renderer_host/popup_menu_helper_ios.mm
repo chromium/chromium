@@ -8,12 +8,13 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_ios.h"
 #include "content/browser/renderer_host/web_menu_runner_ios.h"
+#include "content/common/content_export.h"
 
 namespace content {
 
 namespace {
 
-bool g_allow_showing_popup_menus_on_ios = true;
+bool g_allow_showing_popup_menus = true;
 
 }  // namespace
 
@@ -39,13 +40,12 @@ PopupMenuHelper::~PopupMenuHelper() {
 
 void PopupMenuHelper::ShowPopupMenu(
     const gfx::Rect& bounds,
-    int item_height,
     double item_font_size,
     int selected_item,
     std::vector<blink::mojom::MenuItemPtr> items,
     bool right_aligned,
     bool allow_multiple_selection) {
-  if (!g_allow_showing_popup_menus_on_ios) {
+  if (!g_allow_showing_popup_menus) {
     return;
   }
 
@@ -93,9 +93,9 @@ void PopupMenuHelper::RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) {
   observation_.Reset();
 }
 
-// static
-void PopupMenuHelper::DontShowPopupMenuForTesting() {
-  g_allow_showing_popup_menus_on_ios = false;
+// As declared in //content/public/browser/popup_menu.h.
+CONTENT_EXPORT void DontShowPopupMenus() {
+  g_allow_showing_popup_menus = false;
 }
 
 }  // namespace content

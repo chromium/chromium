@@ -30,6 +30,7 @@ class ChromeSupervisedUserWebContentHandlerBase
   void CleanUpInfoBarOnMainFrame() override;
   int64_t GetInterstitialNavigationId() const override;
   void GoBack() override;
+  void MaybeCloseLocalApproval() override;
 
  protected:
   ChromeSupervisedUserWebContentHandlerBase(content::WebContents* web_contents,

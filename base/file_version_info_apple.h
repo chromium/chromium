@@ -5,11 +5,11 @@
 #ifndef BASE_FILE_VERSION_INFO_APPLE_H_
 #define BASE_FILE_VERSION_INFO_APPLE_H_
 
-#include "base/file_version_info.h"
-
 #include <CoreFoundation/CoreFoundation.h>
 
 #include <string>
+
+#include "base/file_version_info.h"
 
 @class NSBundle;
 

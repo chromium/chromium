@@ -4253,11 +4253,13 @@ TEST_P(SpdyNetworkTransactionTest, GracefulGoaway) {
                      SecureDnsPolicy::kAllow,
                      /*disable_cert_verification_network_fetches=*/false);
   EXPECT_TRUE(
-      spdy_session_pool->HasAvailableSession(key, /* is_websocket = */ false));
+      spdy_session_pool->HasAvailableSession(key,
+                                             /*enable_ip_based_pooling=*/true,
+                                             /*is_websocket=*/false));
   base::WeakPtr<SpdySession> spdy_session =
-      spdy_session_pool->FindAvailableSession(
-          key, /* enable_ip_based_pooling = */ true,
-          /* is_websocket = */ false, log_);
+      spdy_session_pool->FindAvailableSession(key,
+                                              /*enable_ip_based_pooling=*/true,
+                                              /*is_websocket=*/false, log_);
   EXPECT_TRUE(spdy_session);
 
   // Start second transaction.
@@ -4290,7 +4292,9 @@ TEST_P(SpdyNetworkTransactionTest, GracefulGoaway) {
 
   // Graceful GOAWAY was received, SpdySession should be unavailable.
   EXPECT_FALSE(
-      spdy_session_pool->HasAvailableSession(key, /* is_websocket = */ false));
+      spdy_session_pool->HasAvailableSession(key,
+                                             /*enable_ip_based_pooling=*/true,
+                                             /*is_websocket=*/false));
   spdy_session = spdy_session_pool->FindAvailableSession(
       key, /* enable_ip_based_pooling = */ true,
       /* is_websocket = */ false, log_);
@@ -7564,7 +7568,7 @@ TEST_P(SpdyNetworkTransactionTest,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                       /*disable_cert_verification_network_fetches=*/false);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->HasAvailableSession(
-      key1, /* is_websocket = */ false));
+      key1, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
   base::WeakPtr<SpdySession> spdy_session1 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
           key1, /* enable_ip_based_pooling = */ true,
@@ -7582,7 +7586,9 @@ TEST_P(SpdyNetworkTransactionTest,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                       /*disable_cert_verification_network_fetches=*/false);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->HasAvailableSession(
-      key2, /* is_websocket = */ true));
+      key2, /*enable_ip_based_pooling=*/true, /*is_websocket=*/true));
+  EXPECT_FALSE(helper.session()->spdy_session_pool()->HasAvailableSession(
+      key2, /*enable_ip_based_pooling=*/false, /*is_websocket=*/false));
   base::WeakPtr<SpdySession> spdy_session2 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
           key1, /* enable_ip_based_pooling = */ true,

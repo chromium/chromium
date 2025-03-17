@@ -65,7 +65,6 @@ class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
                        const blink::WebGPUExecutionContextToken& token,
                        GetIsolationKeyCallback cb) override {}
   void MaybeExitOnContextLost(
-      bool synthetic_loss,
       error::ContextLostReason context_lost_reason) override {
     is_exiting_ = true;
   }

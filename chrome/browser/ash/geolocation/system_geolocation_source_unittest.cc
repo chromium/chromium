@@ -27,6 +27,15 @@ class SystemGeolocationSourceTests : public AshTestBase {
   // AshTestBase:
   void SetUp() override { AshTestBase::SetUp(); }
 
+  // Bind the `source` to subscribe to the active user's pref service.
+  // NOTE: In production the singleton `SystemGeolocationSource` automatically
+  // subscribes to the Primary user's pref service. However `AshTestBase`
+  // deviates from this behavior, requiring manual subscription.
+  void SubscribeToActiveUserPrefService(SystemGeolocationSource& source) {
+    source.OnActiveUserPrefServiceChanged(
+        Shell::Get()->session_controller()->GetActivePrefService());
+  }
+
   void SetUserPref(GeolocationAccessLevel access_level) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
         prefs::kUserGeolocationAccessLevel, static_cast<int>(access_level));
@@ -62,9 +71,12 @@ class SystemGeolocationSourceTestsGeolocationOff
 TEST_F(SystemGeolocationSourceTestsGeolocationOn, PrefChange) {
   EXPECT_TRUE(ash::features::IsCrosPrivacyHubLocationEnabled());
 
+  // Initialize `SystemGeolocationSource` and start observing the active user's
+  // pref changes.
   SystemGeolocationSource source;
-  base::test::TestFuture<device::LocationSystemPermissionStatus> status;
+  SubscribeToActiveUserPrefService(source);
 
+  base::test::TestFuture<device::LocationSystemPermissionStatus> status;
   source.RegisterPermissionUpdateCallback(status.GetRepeatingCallback());
 
   // Initial value should be to allow.
@@ -88,7 +100,11 @@ TEST_F(SystemGeolocationSourceTestsGeolocationOn, PrefChange) {
 TEST_F(SystemGeolocationSourceTestsGeolocationOff, DisabledInV0) {
   EXPECT_FALSE(ash::features::IsCrosPrivacyHubLocationEnabled());
 
+  // Initialize `SystemGeolocationSource` and start observing the active user's
+  // pref changes.
   SystemGeolocationSource source;
+  SubscribeToActiveUserPrefService(source);
+
   base::test::TestFuture<device::LocationSystemPermissionStatus> status;
   source.RegisterPermissionUpdateCallback(base::BindLambdaForTesting(
       [&status](device::LocationSystemPermissionStatus value) {

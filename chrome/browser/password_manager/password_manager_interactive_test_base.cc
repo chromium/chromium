@@ -4,7 +4,8 @@
 
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "content/public/test/browser_test_utils.h"
@@ -37,11 +38,11 @@ void PasswordManagerInteractiveTestBase::FillElementWithValue(
   for (char16_t character : value) {
     ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
     const ui::PrintableCodeEntry* code_entry =
-        base::ranges::find_if(ui::kPrintableCodeMap,
-                              [character](const ui::PrintableCodeEntry& entry) {
-                                return entry.character[0] == character ||
-                                       entry.character[1] == character;
-                              });
+        std::ranges::find_if(ui::kPrintableCodeMap,
+                             [character](const ui::PrintableCodeEntry& entry) {
+                               return entry.character[0] == character ||
+                                      entry.character[1] == character;
+                             });
     ASSERT_TRUE(code_entry != std::end(ui::kPrintableCodeMap));
     bool shift = code_entry->character[1] == character;
     ui::DomCode dom_code = code_entry->dom_code;

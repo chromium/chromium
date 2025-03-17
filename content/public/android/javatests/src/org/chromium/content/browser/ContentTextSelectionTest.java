@@ -34,12 +34,14 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.input.ChromiumBaseInputConnection;
 import org.chromium.content.browser.input.ImeTestUtils;
 import org.chromium.content.browser.selection.SelectActionMenuHelper.DefaultItemOrder;
 import org.chromium.content.browser.selection.SelectActionMenuHelper.GroupItemOrder;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
+import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionMenuGroup;
@@ -51,6 +53,7 @@ import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -445,6 +448,9 @@ public class ContentTextSelectionTest {
     @Test
     @MediumTest
     @Feature({"TextSelection"})
+    // TODO(crbug.com/385205045) Re-enable on automotive devices once fixed / made less flaky on
+    // auto.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testCorrectSelectionMenuItemsAddedForPlainTextSelection() throws Throwable {
         SelectionActionMenuDelegate selectionActionMenuDelegate =
                 new TestSelectionActionMenuDelegate();
@@ -463,6 +469,7 @@ public class ContentTextSelectionTest {
         waitForPastePopupStatus(false);
         SelectionMenuGroup[] menuGroups =
                 mSelectionPopupController.getMenuItems().toArray(new SelectionMenuGroup[0]);
+
         // Default, primary assist, and text processing item groups are added to the menu.
         Assert.assertEquals(GroupItemOrder.ASSIST_ITEMS, menuGroups[0].order);
         Assert.assertEquals(GroupItemOrder.DEFAULT_ITEMS, menuGroups[1].order);
@@ -471,15 +478,27 @@ public class ContentTextSelectionTest {
         Assert.assertEquals(
                 "Map", menuGroups[0].items.first().getTitle(mActivityTestRule.getActivity()));
         Assert.assertTrue(menuGroups[0].items.first().isEnabled);
+
         // Default items.
         SelectionMenuItem[] defaultItems = menuGroups[1].items.toArray(new SelectionMenuItem[0]);
+
+        // MENU_ITEM_SHARE and MENU_ITEM_WEB_SEARCH are added to the menu by default but can
+        // be removed if there are no activities that can resolve their intents on the system.
+        // So check if they're present first.
+        if (mSelectionPopupController.isSelectActionModeAllowed(
+                ActionModeCallbackHelper.MENU_ITEM_SHARE)) {
+            Assert.assertTrue(defaultItems[DefaultItemOrder.SHARE - 1].isEnabled);
+        }
+        if (mSelectionPopupController.isSelectActionModeAllowed(
+                ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH)) {
+            Assert.assertTrue(defaultItems[DefaultItemOrder.WEB_SEARCH - 1].isEnabled);
+        }
         Assert.assertTrue(defaultItems[DefaultItemOrder.COPY - 1].isEnabled);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.SHARE - 1].isEnabled);
         Assert.assertTrue(defaultItems[DefaultItemOrder.SELECT_ALL - 1].isEnabled);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.WEB_SEARCH - 1].isEnabled);
         Assert.assertFalse(defaultItems[DefaultItemOrder.CUT - 1].isEnabled);
         Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE - 1].isEnabled);
         Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE_AS_PLAIN_TEXT - 1].isEnabled);
+
         // The text processing menu item we created is added to the menu.
         Assert.assertEquals(
                 "testTextProcessingItem",
@@ -826,7 +845,7 @@ public class ContentTextSelectionTest {
         DOMUtils.longPressNode(mWebContents, "plain_text_1");
         waitForSelectActionBarVisible(true);
         Assert.assertTrue(mSelectionPopupController.hasSelection());
-        Assert.assertEquals(mSelectionPopupController.getSelectedText(), "SamplePlainTextOne");
+        Assert.assertEquals("SamplePlainTextOne", mSelectionPopupController.getSelectedText());
         Assert.assertTrue(mSelectionPopupController.isActionModeValid());
         selectActionBarCut();
         waitForSelectActionBarVisible(true);
@@ -843,13 +862,13 @@ public class ContentTextSelectionTest {
         DOMUtils.longPressNode(mWebContents, "input_text");
         waitForSelectActionBarVisible(true);
         Assert.assertTrue(mSelectionPopupController.hasSelection());
-        Assert.assertEquals(mSelectionPopupController.getSelectedText(), "SampleInputText");
+        Assert.assertEquals("SampleInputText", mSelectionPopupController.getSelectedText());
         Assert.assertTrue(mSelectionPopupController.isActionModeValid());
         selectActionBarCut();
         waitForSelectActionBarVisible(false);
-        Assert.assertEquals(mSelectionPopupController.getSelectedText(), "");
+        Assert.assertEquals("", mSelectionPopupController.getSelectedText());
         waitForClipboardContents("SampleInputText");
-        Assert.assertEquals(mSelectionPopupController.getSelectedText(), "");
+        Assert.assertEquals("", mSelectionPopupController.getSelectedText());
     }
 
     @Test
@@ -876,13 +895,13 @@ public class ContentTextSelectionTest {
         DOMUtils.longPressNode(mWebContents, "textarea");
         waitForSelectActionBarVisible(true);
         Assert.assertTrue(mSelectionPopupController.hasSelection());
-        Assert.assertEquals(mSelectionPopupController.getSelectedText(), "SampleTextArea");
+        Assert.assertEquals("SampleTextArea", mSelectionPopupController.getSelectedText());
         Assert.assertTrue(mSelectionPopupController.isActionModeValid());
         selectActionBarCut();
         waitForSelectActionBarVisible(false);
-        Assert.assertEquals(mSelectionPopupController.getSelectedText(), "");
+        Assert.assertEquals("", mSelectionPopupController.getSelectedText());
         waitForClipboardContents("SampleTextArea");
-        Assert.assertEquals(mSelectionPopupController.getSelectedText(), "");
+        Assert.assertEquals("", mSelectionPopupController.getSelectedText());
     }
 
     @Test
@@ -910,7 +929,7 @@ public class ContentTextSelectionTest {
         selectActionBarSelectAll();
         Assert.assertTrue(mSelectionPopupController.hasSelection());
         waitForSelectActionBarVisible(true);
-        Assert.assertEquals(mSelectionPopupController.getSelectedText(), "SampleInputText");
+        Assert.assertEquals("SampleInputText", mSelectionPopupController.getSelectedText());
     }
 
     @Test
@@ -937,7 +956,7 @@ public class ContentTextSelectionTest {
         selectActionBarSelectAll();
         Assert.assertTrue(mSelectionPopupController.hasSelection());
         waitForSelectActionBarVisible(true);
-        Assert.assertEquals(mSelectionPopupController.getSelectedText(), "SampleTextArea");
+        Assert.assertEquals("SampleTextArea", mSelectionPopupController.getSelectedText());
     }
 
     private CharSequence getTextBeforeCursor(final int length, final int flags) {
@@ -963,7 +982,7 @@ public class ContentTextSelectionTest {
         waitForSelectActionBarVisible(true);
         Assert.assertTrue(mSelectionPopupController.hasSelection());
         Assert.assertTrue(mSelectionPopupController.isActionModeValid());
-        Assert.assertEquals(mSelectionPopupController.getSelectedText(), "SampleTextArea");
+        Assert.assertEquals("SampleTextArea", mSelectionPopupController.getSelectedText());
         hideSelectActionMode();
         waitForSelectActionBarVisible(false);
         CriteriaHelper.pollInstrumentationThread(
@@ -1032,7 +1051,7 @@ public class ContentTextSelectionTest {
         Assert.assertTrue(mSelectionPopupController.isActionModeValid());
         selectActionBarPaste();
         waitForSelectActionBarVisible(false);
-        Assert.assertEquals(mSelectionPopupController.getSelectedText(), "");
+        Assert.assertEquals("", mSelectionPopupController.getSelectedText());
 
         // Ensure the new text matches the pasted text. Note that we can't
         // actually compare strings as password field selections only provide
@@ -1059,7 +1078,7 @@ public class ContentTextSelectionTest {
         DOMUtils.longPressNode(mWebContents, "textarea");
         waitForSelectActionBarVisible(true);
         Assert.assertTrue(mSelectionPopupController.hasSelection());
-        Assert.assertEquals(mSelectionPopupController.getSelectedText(), "SampleTextToCopy");
+        Assert.assertEquals("SampleTextToCopy", mSelectionPopupController.getSelectedText());
     }
 
     @Test

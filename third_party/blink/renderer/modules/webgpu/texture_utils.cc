@@ -187,7 +187,7 @@ TexelBlockInfo GetTexelBlockInfoForCopy(wgpu::TextureFormat format,
 
 }  // anonymous namespace
 
-size_t EstimateWriteTextureBytesUpperBound(wgpu::TextureDataLayout layout,
+size_t EstimateWriteTextureBytesUpperBound(wgpu::TexelCopyBufferLayout layout,
                                            wgpu::Extent3D extent,
                                            wgpu::TextureFormat format,
                                            wgpu::TextureAspect aspect) {

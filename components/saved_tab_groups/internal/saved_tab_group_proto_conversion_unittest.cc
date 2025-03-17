@@ -11,6 +11,7 @@
 #include "components/saved_tab_groups/internal/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/public/utils.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -117,6 +118,7 @@ TEST_F(SavedTabGroupConversionTest, GroupToDataRetainsData) {
       base::Uuid::GenerateRandomV4();
   group.SetLastUserInteractionTime(time_);
   group.SetOriginatingTabGroupGuid(kOriginatingSavedTabGroupGuid);
+  group.SetIsHidden(true);
 
   proto::SavedTabGroupData proto =
       SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(group);
@@ -202,6 +204,7 @@ TEST_F(SavedTabGroupConversionTest, VerifyLocalFieldsOnProtoToGroupConversion) {
   pb_local_group_data->set_created_before_syncing_tab_groups(true);
   pb_local_group_data->set_last_user_interaction_time_windows_epoch_micros(
       time_in_micros);
+  pb_local_group_data->set_is_group_hidden(true);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   std::string serialized_local_id = base::Token::CreateRandom().ToString();
@@ -258,7 +261,7 @@ TEST_F(SavedTabGroupConversionTest, MergedTabHoldsCorrectData) {
   // Create a new group with the same data and update it. Calling set functions
   // should internally update update_time_windows_epoch_micros.
   SavedTabGroupTab tab2(tab1);
-  tab2.SetURL(GURL("new url"));
+  tab2.SetURL(GURL("http://xyz.com"));
   tab2.SetTitle(u"New Title");
   tab2.SetCreatorCacheGuid("creator_cache_guid");
   tab2.SetLastUpdaterCacheGuid("last_updater_cache_guid");
@@ -267,6 +270,30 @@ TEST_F(SavedTabGroupConversionTest, MergedTabHoldsCorrectData) {
   // the same data as tab2 after the merge.
   tab1.MergeRemoteTab(tab2);
   CompareTabs(tab1, tab2);
+}
+
+// Verifies that merging 2 tab objects (1 Sync, 1 SavedTabGroupTab)
+TEST_F(SavedTabGroupConversionTest, MergedTabWithUnsupportedURL) {
+  GURL tab1_url = GURL("http://xyz.com");
+  std::u16string title = u"Test Title";
+  SavedTabGroupTab tab1(tab1_url, title, base::Uuid::GenerateRandomV4(),
+                        /*position=*/0);
+
+  // Create a new tab with the same data and update it. Calling set functions
+  // should internally update update_time_windows_epoch_micros.
+  SavedTabGroupTab remote_tab(tab1);
+  remote_tab.SetURL(GURL(kChromeSavedTabGroupUnsupportedURL));
+  remote_tab.SetTitle(u"New Title");
+  remote_tab.SetCreatorCacheGuid("creator_cache_guid");
+  remote_tab.SetLastUpdaterCacheGuid("last_updater_cache_guid");
+
+  // Merge existing tab with incoming remote tab. The existing tab
+  // should keep its title and URL and accept all other fields.
+  tab1.MergeRemoteTab(remote_tab);
+  EXPECT_EQ(tab1.url(), tab1_url);
+  EXPECT_EQ(tab1.title(), title);
+  EXPECT_EQ(tab1.creator_cache_guid(), "creator_cache_guid");
+  EXPECT_EQ(tab1.last_updater_cache_guid(), "last_updater_cache_guid");
 }
 
 }  // namespace tab_groups

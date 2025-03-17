@@ -170,7 +170,7 @@ class AutofillDriverRouter {
       FormData form,
       const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds);
-  void TextFieldDidChange(
+  void TextFieldValueChanged(
       RoutedCallback<const FormData&, const FieldGlobalId&, base::TimeTicks>
           callback,
       AutofillDriver& source,
@@ -182,7 +182,7 @@ class AutofillDriverRouter {
       AutofillDriver& source,
       FormData form,
       const FieldGlobalId& field_id);
-  void SelectControlDidChange(
+  void SelectControlSelectionChanged(
       RoutedCallback<const FormData&, const FieldGlobalId&> callback,
       AutofillDriver& source,
       FormData form,
@@ -215,15 +215,14 @@ class AutofillDriverRouter {
   void FocusOnNonFormField(RoutedCallback<> callback, AutofillDriver& source);
   // This event is broadcast to all drivers.
   void HidePopup(RoutedCallback<> callback, AutofillDriver& source);
-  void JavaScriptChangedAutofilledValue(RoutedCallback<const FormData&,
-                                                       const FieldGlobalId&,
-                                                       const std::u16string&,
-                                                       bool> callback,
-                                        AutofillDriver& source,
-                                        FormData form,
-                                        const FieldGlobalId& field_id,
-                                        const std::u16string& old_value,
-                                        bool formatting_only);
+  void JavaScriptChangedAutofilledValue(
+      RoutedCallback<const FormData&,
+                     const FieldGlobalId&,
+                     const std::u16string&> callback,
+      AutofillDriver& source,
+      FormData form,
+      const FieldGlobalId& field_id,
+      const std::u16string& old_value);
   void SelectFieldOptionsDidChange(RoutedCallback<const FormData&> callback,
                                    AutofillDriver& source,
                                    FormData form);

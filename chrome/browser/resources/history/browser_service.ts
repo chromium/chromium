@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import {PageCallbackRouter, PageHandler} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {RESULTS_PER_PAGE} from './constants.js';
-import type {ForeignSession, HistoryEntry, HistoryQuery} from './externs.js';
+import type {ForeignSession} from './externs.js';
 
 export type RemoveVisitsRequest = Array<{
   url: string,
   timestamps: number[],
 }>;
-
-export interface QueryResult {
-  info: HistoryQuery;
-  value: HistoryEntry[];
-}
 
 /**
  * @fileoverview Defines a singleton object, history.BrowserService, which
@@ -23,44 +19,47 @@ export interface QueryResult {
  */
 
 export interface BrowserService {
+  handler: PageHandlerRemote;
+  callbackRouter: PageCallbackRouter;
   getForeignSessions(): Promise<ForeignSession[]>;
-  removeBookmark(url: string): void;
-  removeVisits(removalList: RemoveVisitsRequest): Promise<void>;
-  setLastSelectedTab(lastSelectedTab: number): void;
   openForeignSessionAllTabs(sessionTag: string): void;
   openForeignSessionTab(sessionTag: string, tabId: number, e: MouseEvent): void;
   deleteForeignSession(sessionTag: string): void;
-  openClearBrowsingData(): void;
   recordHistogram(histogram: string, value: number, max: number): void;
   recordAction(action: string): void;
   recordTime(histogram: string, time: number): void;
   recordLongTime(histogram: string, time: number): void;
   navigateToUrl(url: string, target: string, e: MouseEvent): void;
   otherDevicesInitialized(): void;
-  queryHistoryContinuation(): Promise<QueryResult>;
-  queryHistory(searchTerm: string, beginTime?: number): Promise<QueryResult>;
   startTurnOnSyncFlow(): void;
 }
 
 export class BrowserServiceImpl implements BrowserService {
+  handler: PageHandlerRemote;
+  callbackRouter: PageCallbackRouter;
+
+  constructor(handler: PageHandlerRemote, callbackRouter: PageCallbackRouter) {
+    this.handler = handler;
+    this.callbackRouter = callbackRouter;
+  }
+
+  static getInstance(): BrowserService {
+    if (instance) {
+      return instance;
+    }
+
+    const handler = PageHandler.getRemote();
+    const callbackRouter = new PageCallbackRouter();
+    handler.setPage(callbackRouter.$.bindNewPipeAndPassRemote());
+    return instance = new BrowserServiceImpl(handler, callbackRouter);
+  }
+
+  static setInstance(obj: BrowserService) {
+    instance = obj;
+  }
+
   getForeignSessions() {
     return sendWithPromise('getForeignSessions');
-  }
-
-  removeBookmark(url: string) {
-    chrome.send('removeBookmark', [url]);
-  }
-
-  /**
-   * @return Promise that is resolved when items are deleted
-   *     successfully or rejected when deletion fails.
-   */
-  removeVisits(removalList: RemoveVisitsRequest) {
-    return sendWithPromise('removeVisits', removalList);
-  }
-
-  setLastSelectedTab(lastSelectedTab: number) {
-    chrome.send('setLastSelectedTab', [lastSelectedTab]);
   }
 
   openForeignSessionAllTabs(sessionTag: string) {
@@ -81,10 +80,6 @@ export class BrowserServiceImpl implements BrowserService {
 
   deleteForeignSession(sessionTag: string) {
     chrome.send('deleteForeignSession', [sessionTag]);
-  }
-
-  openClearBrowsingData() {
-    chrome.send('clearBrowsingData');
   }
 
   recordHistogram(histogram: string, value: number, max: number) {
@@ -123,25 +118,8 @@ export class BrowserServiceImpl implements BrowserService {
     chrome.send('otherDevicesInitialized');
   }
 
-  queryHistoryContinuation() {
-    return sendWithPromise('queryHistoryContinuation');
-  }
-
-  queryHistory(searchTerm: string, beginTime?: number) {
-    return sendWithPromise(
-        'queryHistory', searchTerm, RESULTS_PER_PAGE, beginTime);
-  }
-
   startTurnOnSyncFlow() {
     chrome.send('startTurnOnSyncFlow');
-  }
-
-  static getInstance(): BrowserService {
-    return instance || (instance = new BrowserServiceImpl());
-  }
-
-  static setInstance(obj: BrowserService) {
-    instance = obj;
   }
 }
 

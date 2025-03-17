@@ -40,14 +40,6 @@ namespace {
 constexpr char kSaltForHkdf[] = "fdo_portal_secret_salt";
 constexpr char kInfoForHkdf[] = "HKDF-SHA-256 AES-256-GCM";
 
-scoped_refptr<dbus::Bus> CreateBus() {
-  dbus::Bus::Options options;
-  options.bus_type = dbus::Bus::SESSION;
-  options.connection_type = dbus::Bus::PRIVATE;
-  options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
-  return base::MakeRefCounted<dbus::Bus>(options);
-}
-
 }  // namespace
 
 // static
@@ -59,12 +51,12 @@ void SecretPortalKeyProvider::RegisterLocalPrefs(PrefRegistrySimple* registry) {
 
 SecretPortalKeyProvider::SecretPortalKeyProvider(PrefService* local_state,
                                                  bool use_for_encryption)
-    : SecretPortalKeyProvider(local_state, CreateBus(), use_for_encryption) {}
+    : SecretPortalKeyProvider(local_state,
+                              dbus_thread_linux::GetSharedSessionBus(),
+                              use_for_encryption) {}
 
 SecretPortalKeyProvider::~SecretPortalKeyProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bus_->GetDBusTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, bus_));
 }
 
 SecretPortalKeyProvider::SecretPortalKeyProvider(PrefService* local_state,
@@ -132,15 +124,8 @@ void SecretPortalKeyProvider::OnPortalServiceStarted(
       bus_, secret_proxy, kInterfaceSecret, kMethodRetrieveSecret,
       DbusUnixFd(std::move(write_fd)), std::move(options),
       base::BindOnce(&SecretPortalKeyProvider::OnRetrieveSecret,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  // Read the secret from the pipe.  This must happen asynchronously because the
-  // file may not become readable until the keyring is unlocked by typing a
-  // password.
-  read_watcher_ = base::FileDescriptorWatcher::WatchReadable(
-      read_fd_.get(),
-      base::BindRepeating(&SecretPortalKeyProvider::OnFdReadable,
-                          weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      GetSecretServiceName());
 }
 
 void SecretPortalKeyProvider::OnSignalConnected(
@@ -178,6 +163,14 @@ void SecretPortalKeyProvider::OnRetrieveSecret(
     }
   }
 
+  // Read the secret from the pipe.  This must happen asynchronously because the
+  // file may not become readable until the keyring is unlocked by typing a
+  // password.
+  read_watcher_ = base::FileDescriptorWatcher::WatchReadable(
+      read_fd_.get(),
+      base::BindRepeating(&SecretPortalKeyProvider::OnFdReadable,
+                          weak_ptr_factory_.GetWeakPtr()));
+
   // Though it is documented in the spec, xdg-desktop-portal does not currently
   // implement returning a token.
   auto* token = results->GetAs<DbusString>("token");
@@ -197,7 +190,7 @@ void SecretPortalKeyProvider::OnFdReadable() {
   }
   if (bytes_read > 0) {
     auto buffer_span =
-        base::span(buffer).subspan(0u, base::checked_cast<size_t>(bytes_read));
+        base::span(buffer).first(base::checked_cast<size_t>(bytes_read));
     secret_.insert(secret_.end(), buffer_span.begin(), buffer_span.end());
     return;
   }
@@ -226,7 +219,7 @@ void SecretPortalKeyProvider::ReceivedSecret() {
 
 void SecretPortalKeyProvider::Finalize(InitStatus init_status) {
   CHECK_NE(init_status, InitStatus::kSuccess);
-  Finalize(init_status, std::string(), std::nullopt);
+  Finalize(init_status, kKeyTag, std::nullopt);
 }
 
 void SecretPortalKeyProvider::Finalize(InitStatus init_status,
@@ -239,7 +232,14 @@ void SecretPortalKeyProvider::Finalize(InitStatus init_status,
     return;
   }
 
-  std::move(key_callback_).Run(tag, std::move(key));
+  if (key.has_value()) {
+    std::move(key_callback_).Run(tag, std::move(*key));
+  } else {
+    // TODO(crbug.com/389016528): Indicate whether this is a temporary or
+    // permanent failure depending on the `init_status`.
+    std::move(key_callback_)
+        .Run(tag, base::unexpected(KeyError::kTemporarilyUnavailable));
+  }
 
   read_watcher_.reset();
   read_fd_.reset();

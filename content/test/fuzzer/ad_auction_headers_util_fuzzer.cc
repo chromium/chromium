@@ -28,6 +28,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string header_value(reinterpret_cast<const char*>(data), size);
 
   ParseAdAuctionResultResponseHeader(header_value);
+  ParseAdAuctionResultNonceResponseHeader(header_value);
 
   std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>> output;
   base::expected<void, std::string> result =

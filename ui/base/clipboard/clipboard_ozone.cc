@@ -575,8 +575,9 @@ void ClipboardOzone::ReadDataTransferCustomData(
   auto custom_data = async_clipboard_ozone_->ReadClipboardDataAndWait(
       buffer, kMimeTypeDataTransferCustomData);
 
-  if (!IsReadAllowed(GetSource(buffer), data_dst, custom_data))
+  if (!IsReadAllowed(GetSource(buffer), data_dst, custom_data)) {
     return;
+  }
 
   RecordRead(ClipboardFormatMetric::kCustomData);
   if (std::optional<std::u16string> maybe_data =
@@ -657,6 +658,7 @@ void ClipboardOzone::WritePortableTextRepresentation(ClipboardBuffer buffer,
 void ClipboardOzone::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
+    const std::vector<RawData>& raw_objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     uint32_t privacy_types) {
@@ -667,8 +669,12 @@ void ClipboardOzone::WritePortableAndPlatformRepresentations(
 
   AddSourceToClipboard(buffer, std::move(data_src));
 
-  for (const auto& object : objects)
+  for (const auto& object : objects) {
     DispatchPortableRepresentation(object.second);
+  }
+  for (const auto& raw_object : raw_objects) {
+    DispatchPortableRepresentation(raw_object);
+  }
   async_clipboard_ozone_->OfferData(buffer);
 
   WritePortableTextRepresentation(buffer, objects);

@@ -25,7 +25,7 @@ void ProtobufHttpRequest::SetTimeoutDuration(base::TimeDelta timeout_duration) {
   timeout_duration_ = timeout_duration;
 }
 
-void ProtobufHttpRequest::OnAuthFailed(const ProtobufHttpStatus& status) {
+void ProtobufHttpRequest::OnAuthFailed(const HttpStatus& status) {
   RunResponseCallback(status);
 }
 
@@ -47,7 +47,7 @@ base::TimeDelta ProtobufHttpRequest::GetRequestTimeoutDuration() const {
 
 void ProtobufHttpRequest::OnResponse(
     std::unique_ptr<std::string> response_body) {
-  ProtobufHttpStatus url_loader_status = GetUrlLoaderStatus();
+  HttpStatus url_loader_status = GetUrlLoaderStatus();
   // Move variables out of |this| as the callback can potentially delete |this|.
   auto invalidator = std::move(invalidator_);
 
@@ -58,7 +58,7 @@ void ProtobufHttpRequest::OnResponse(
     protobufhttpclient::Status api_status;
     if (response_body && api_status.ParseFromString(*response_body) &&
         api_status.code() > 0) {
-      RunResponseCallback(ProtobufHttpStatus(api_status, *response_body));
+      RunResponseCallback(HttpStatus(api_status, *response_body));
     } else {
       // Fallback to just return the status from URL loader.
       RunResponseCallback(url_loader_status);
@@ -69,21 +69,20 @@ void ProtobufHttpRequest::OnResponse(
   std::move(invalidator).Run();
 }
 
-ProtobufHttpStatus ProtobufHttpRequest::ParseResponse(
+HttpStatus ProtobufHttpRequest::ParseResponse(
     std::unique_ptr<std::string> response_body) {
   if (!response_body) {
     LOG(ERROR) << "Server returned no response body";
-    return ProtobufHttpStatus(net::ERR_EMPTY_RESPONSE);
+    return HttpStatus(net::ERR_EMPTY_RESPONSE);
   }
   if (!response_message_->ParseFromString(*response_body)) {
     LOG(ERROR) << "Failed to parse response body";
-    return ProtobufHttpStatus(net::ERR_INVALID_RESPONSE);
+    return HttpStatus(net::ERR_INVALID_RESPONSE);
   }
-  return ProtobufHttpStatus::OK();
+  return HttpStatus::OK();
 }
 
-void ProtobufHttpRequest::RunResponseCallback(
-    const ProtobufHttpStatus& status) {
+void ProtobufHttpRequest::RunResponseCallback(const HttpStatus& status) {
   // Drop unowned reference before invoking callback which destroys it.
   response_message_ = nullptr;
   std::move(response_callback_).Run(status);

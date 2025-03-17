@@ -338,8 +338,8 @@ public class DesktopSiteSettingsIphControllerUnitTest {
         IphCommand command = mIphCommandCaptor.getValue();
         Assert.assertEquals(
                 "IphCommand feature should match.",
-                command.featureName,
-                FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
+                FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE,
+                command.featureName);
         Assert.assertEquals(
                 "IphCommand stringId should match.",
                 switchToDesktop

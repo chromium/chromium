@@ -5,11 +5,12 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {LINK_TOGGLE_BUTTON_ID, PauseActionSource, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {LINK_TOGGLE_BUTTON_ID, PauseActionSource, SpeechBrowserProxyImpl, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './common.js';
+import {createApp, emitEvent, setupBasicSpeech} from './common.js';
+import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('LinksToggledIntegration', () => {
   let app: AppElement;
@@ -39,7 +40,9 @@ suite('LinksToggledIntegration', () => {
       {
         id: 3,
         role: 'staticText',
-        name: 'This is a link.',
+        // The space at the end is needed so that we can parse two separate
+        // sentences.
+        name: 'This is a link. ',
       },
       {
         id: 4,
@@ -56,36 +59,32 @@ suite('LinksToggledIntegration', () => {
     ],
   };
 
-  function assertContainerHasLinks(hasLinks: boolean) {
-    const innerHTML = app.$.container.innerHTML;
-    assertEquals(hasLinks, innerHTML.includes('a href'));
+  function hasLinks() {
+    return !!(app.$.container.querySelector('a[href]'));
   }
 
   setup(async () => {
-    suppressInnocuousErrors();
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
-    await microtasksFinished();
+    app = await createApp();
     linksToggleButton =
-        app.$.toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
+        app.$.toolbar.shadowRoot.querySelector<CrIconButtonElement>(
             '#' + LINK_TOGGLE_BUTTON_ID);
     assertTrue(!!linksToggleButton);
-    chrome.readingMode.setContentForTesting(axTree, [2, 4]);
-    app.enabledLangs = ['en-US'];
-    const selectedVoice =
-        createSpeechSynthesisVoice({lang: 'en-US', name: 'Google Kristi'});
-    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
-    return microtasksFinished();
+    chrome.readingMode.setContentForTesting(axTree, [3, 5]);
+
+    const speech = new TestSpeechBrowserProxy();
+    SpeechBrowserProxyImpl.setInstance(speech);
+    setupBasicSpeech(app, speech);
   });
 
   test('container has links by default', () => {
-    assertContainerHasLinks(true);
+    assertTrue(hasLinks());
   });
 
   test('container has no highlight by default', () => {
@@ -94,24 +93,25 @@ suite('LinksToggledIntegration', () => {
     assertFalse(!!currentHighlight);
   });
 
-  test('on first toggle, links are disabled', () => {
+  test('on first toggle, links are disabled', async () => {
     linksToggleButton!.click();
-    assertContainerHasLinks(false);
+    await microtasksFinished();
+    assertFalse(hasLinks());
   });
 
-  test('on next toggle, links are enabled', () => {
+  test('on next toggle, links are enabled', async () => {
     linksToggleButton!.click();
-    assertContainerHasLinks(true);
+    await microtasksFinished();
+    assertTrue(hasLinks());
   });
 
   suite('after speech starts', () => {
     setup(() => {
       app.playSpeech();
-      return microtasksFinished();
     });
 
     test('container does not have links', () => {
-      assertContainerHasLinks(false);
+      assertFalse(hasLinks());
     });
 
     test('container has highlight', () => {
@@ -120,17 +120,13 @@ suite('LinksToggledIntegration', () => {
       assertTrue(!!currentHighlight);
     });
 
-    suite('and after speech finishes', () => {
-      setup(async () => {
-        for (let i = 0; i < axTree.nodes.length + 1; i++) {
-          emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
-          await microtasksFinished();
-        }
-      });
 
-      test('container has links again', () => {
-        assertContainerHasLinks(true);
-      });
+    test('and after speech finishes, container has links again', async () => {
+      for (let i = 0; i < axTree.nodes.length + 1; i++) {
+        emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
+      }
+      await microtasksFinished();
+      assertTrue(hasLinks());
     });
   });
 
@@ -138,11 +134,10 @@ suite('LinksToggledIntegration', () => {
     setup(() => {
       app.playSpeech();
       app.stopSpeech(PauseActionSource.BUTTON_CLICK);
-      return microtasksFinished();
     });
 
     test('container has links again', () => {
-      assertContainerHasLinks(true);
+      assertTrue(hasLinks());
     });
 
     test('container still has highlight', () => {
@@ -159,21 +154,19 @@ suite('LinksToggledIntegration', () => {
       if (chrome.readingMode.linksEnabled) {
         linksToggleButton!.click();
       }
-      return microtasksFinished();
     });
 
     test('container does not have links', () => {
-      assertContainerHasLinks(false);
+      assertFalse(hasLinks());
     });
 
     suite('after speech starts', () => {
       setup(() => {
         app.playSpeech();
-        return microtasksFinished();
       });
 
       test('container does not have links', () => {
-        assertContainerHasLinks(false);
+        assertFalse(hasLinks());
       });
 
       test('container has highlight', () => {
@@ -190,7 +183,7 @@ suite('LinksToggledIntegration', () => {
       });
 
       test('container does not have links', () => {
-        assertContainerHasLinks(false);
+        assertFalse(hasLinks());
       });
 
       test('container still has highlight', () => {

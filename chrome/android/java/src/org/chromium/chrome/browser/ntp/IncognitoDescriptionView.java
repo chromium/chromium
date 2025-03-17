@@ -27,6 +27,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.SwitchCompat;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
@@ -133,6 +134,17 @@ public class IncognitoDescriptionView extends LinearLayout {
         }
 
         String text = context.getString(R.string.new_tab_otr_third_party_blocked_cookie_part_two);
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)) {
+            TextView title = layout.findViewById(R.id.tracking_protection_card_title);
+            title.setText(
+                    context.getString(R.string.incognito_ntp_block_third_party_cookies_header));
+            layout.findViewById(R.id.tracking_protection_description_one).setVisibility(View.GONE);
+            text =
+                    context.getString(
+                            R.string.incognito_ntp_block_third_party_cookies_description_android);
+        }
+
         ChromeClickableSpan span =
                 new ChromeClickableSpan(
                         getContext(),

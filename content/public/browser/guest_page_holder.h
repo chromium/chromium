@@ -12,6 +12,7 @@
 #include "base/process/kill.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/media_stream_request.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -78,6 +79,9 @@ class GuestPageHolder : public base::SupportsUserData {
     // The guest was resized.
     virtual void GuestResizeDueToAutoResize(const gfx::Size& new_size) = 0;
 
+    // The guest's preferred size changed.
+    virtual void GuestUpdateWindowPreferredSize(const gfx::Size& pref_size) = 0;
+
     // Return the prospective outer document. Should only be called when
     // unattached.
     virtual RenderFrameHost* GetProspectiveOuterDocument() = 0;
@@ -94,6 +98,22 @@ class GuestPageHolder : public base::SupportsUserData {
     virtual void GuestOpenURL(const OpenURLParams& params,
                               base::OnceCallback<void(NavigationHandle&)>
                                   navigation_handle_callback) = 0;
+
+    // Close the current window.
+    virtual void GuestClose() = 0;
+
+    // Asks permission to use the camera and/or microphone.
+    // See `WebContentsDelegate::RequestMediaAccessPermission`
+    virtual void GuestRequestMediaAccessPermission(
+        const MediaStreamRequest& request,
+        MediaResponseCallback callback) = 0;
+
+    // Checks if we have permission to access the microphone or camera.
+    // See `WebContentsDelegate::CheckMediaAccessPermission`
+    virtual bool GuestCheckMediaAccessPermission(
+        RenderFrameHost* render_frame_host,
+        const url::Origin& security_origin,
+        blink::mojom::MediaStreamType type) = 0;
 
     // TODO(40202416): Guest implementations need to be informed of several
     // other events that they currently get through primary main frame specific

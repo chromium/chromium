@@ -18,7 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "remoting/base/fake_oauth_token_getter.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/host/heartbeat_service_client.h"
 #include "remoting/signaling/fake_signal_strategy.h"
 #include "remoting/signaling/signal_strategy.h"
@@ -37,10 +37,10 @@ using testing::InSequence;
 using testing::Return;
 
 using LegacyHeartbeatResponseCallback =
-    base::OnceCallback<void(const ProtobufHttpStatus&,
+    base::OnceCallback<void(const HttpStatus&,
                             std::unique_ptr<apis::v1::HeartbeatResponse>)>;
 using SendHeartbeatResponseCallback =
-    base::OnceCallback<void(const ProtobufHttpStatus&,
+    base::OnceCallback<void(const HttpStatus&,
                             std::unique_ptr<apis::v1::SendHeartbeatResponse>)>;
 
 constexpr char kOAuthAccessToken[] = "fake_access_token";
@@ -80,8 +80,7 @@ decltype(auto) DoValidateLegacyHeartbeatAndRespondOk(
     }
 
     base::TimeDelta wait_interval = base::Seconds(kGoodIntervalSeconds);
-    std::move(callback).Run(ProtobufHttpStatus::OK(),
-                            std::make_optional(wait_interval),
+    std::move(callback).Run(HttpStatus::OK(), std::make_optional(wait_interval),
                             options.host_owner, options.require_session_auth,
                             std::make_optional(options.use_lite_heartbeat));
   };
@@ -90,9 +89,8 @@ decltype(auto) DoValidateLegacyHeartbeatAndRespondOk(
 decltype(auto) DoValidateSendHeartbeatAndRespondOk() {
   return [=](HeartbeatServiceClient::HeartbeatResponseCallback callback) {
     base::TimeDelta wait_interval = base::Seconds(kGoodIntervalSeconds);
-    std::move(callback).Run(ProtobufHttpStatus::OK(),
-                            std::make_optional(wait_interval), kUserEmail,
-                            false, std::nullopt);
+    std::move(callback).Run(HttpStatus::OK(), std::make_optional(wait_interval),
+                            kUserEmail, false, std::nullopt);
   };
 }
 
@@ -359,8 +357,7 @@ TEST_F(HeartbeatSenderTest, UnknownHostId) {
              std::optional<std::string> offline_reason,
              HeartbeatServiceClient::HeartbeatResponseCallback callback) {
             std::move(callback).Run(
-                ProtobufHttpStatus(ProtobufHttpStatus::Code::NOT_FOUND,
-                                   "not found"),
+                HttpStatus(HttpStatus::Code::NOT_FOUND, "not found"),
                 std::nullopt, "", false, std::nullopt);
           });
 
@@ -389,8 +386,7 @@ TEST_F(HeartbeatSenderTest, FailedToHeartbeat_Backoff) {
                 std::optional<std::string> offline_reason,
                 HeartbeatServiceClient::HeartbeatResponseCallback callback) {
               std::move(callback).Run(
-                  ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE,
-                                     "unavailable"),
+                  HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable"),
                   std::nullopt, "", false, std::nullopt);
             });
 
@@ -430,8 +426,7 @@ TEST_F(HeartbeatSenderTest, HostComesBackOnlineAfterServiceOutage) {
                 std::optional<std::string> offline_reason,
                 HeartbeatServiceClient::HeartbeatResponseCallback callback) {
               std::move(callback).Run(
-                  ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE,
-                                     "unavailable"),
+                  HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable"),
                   std::nullopt, "", false, std::nullopt);
             });
 
@@ -467,8 +462,8 @@ TEST_F(HeartbeatSenderTest, Unauthenticated) {
               HeartbeatServiceClient::HeartbeatResponseCallback callback) {
             legacy_heartbeat_count++;
             std::move(callback).Run(
-                ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAUTHENTICATED,
-                                   "unauthenticated"),
+                HttpStatus(HttpStatus::Code::UNAUTHENTICATED,
+                           "unauthenticated"),
                 std::nullopt, "", false, std::nullopt);
           });
   EXPECT_CALL(*mock_client_, SendLiteHeartbeat(_)).Times(0);

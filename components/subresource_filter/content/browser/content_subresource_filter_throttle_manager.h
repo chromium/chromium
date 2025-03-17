@@ -346,10 +346,6 @@ class ContentSubresourceFilterThrottleManager
       const mojom::ActivationLevel& activation_level,
       bool did_inherit_opener_activation);
 
-  void RecordExperimentalUmaHistogramsForNavigation(
-      content::NavigationHandle* navigation_handle,
-      bool passed_through_ready_to_commit);
-
   // Sets whether the frame is considered an ad frame. If the value has changed,
   // we also update the replication state and inform observers.
   void SetIsAdFrame(content::RenderFrameHost* render_frame_host,
@@ -369,10 +365,6 @@ class ContentSubresourceFilterThrottleManager
   std::map<int64_t,
            raw_ptr<ActivationStateComputingNavigationThrottle, CtnExperimental>>
       ongoing_activation_throttles_;
-
-  // The set of navigations that have passed through ReadyToCommitNavigation,
-  // but haven't yet passed through DidFinishNavigation. Keyed by navigation id.
-  base::flat_set<int64_t> ready_to_commit_navigations_;
 
   // Set of frames that have been identified as ads, identified by FrameTreeNode
   // ID. A RenderFrameHost is an ad frame iff the FrameAdEvidence

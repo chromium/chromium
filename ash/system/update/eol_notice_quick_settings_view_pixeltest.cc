@@ -17,7 +17,7 @@ using EolNoticeQuickSettingsViewPixelTest =
 
 TEST_F(EolNoticeQuickSettingsViewPixelTest, Basics) {
   AddChildView(std::make_unique<EolNoticeQuickSettingsView>());
-  DiffView(/*revision_number=*/0);
+  DiffView(/*revision_number=*/1);
 }
 
 }  // namespace ash

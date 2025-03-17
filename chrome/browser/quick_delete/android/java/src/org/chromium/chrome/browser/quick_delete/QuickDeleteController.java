@@ -21,8 +21,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -30,7 +28,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -54,8 +51,6 @@ public class QuickDeleteController {
     private final QuickDeleteMediator mQuickDeleteMediator;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
-    private final TabModelSelector mTabModelSelector;
-    private CurrentTabObserver mCurrentTabObserver;
 
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
@@ -65,9 +60,8 @@ public class QuickDeleteController {
      * @param modalDialogManager A {@link ModalDialogManager} to show the quick delete modal dialog.
      * @param snackbarManager A {@link SnackbarManager} to show the quick delete snackbar.
      * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
-     * @param tabModelSelector {@link TabModelSelector} to use for opening the links in search
-     *     history disambiguation notice.
-     * @param archivedTabModel The {@link TabModel} for archived tabs.
+     * @param tabModelSelector {@link TabModelSelector} for regular tabs.
+     * @param archivedTabModelSelector The {@link TabModelSelector} for archived tabs.
      */
     public QuickDeleteController(
             @NonNull Context context,
@@ -87,19 +81,18 @@ public class QuickDeleteController {
                 new QuickDeleteTabsFilter(
                         tabModelSelector
                                 .getTabGroupModelFilterProvider()
-                                .getTabGroupModelFilter(/* incognito= */ false));
+                                .getTabGroupModelFilter(/* isIncognito= */ false));
         if (archivedTabModelSelector != null) {
             mDeleteArchivedTabsFilter =
                     new QuickDeleteTabsFilter(
                             archivedTabModelSelector
                                     .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(/* incognito= */ false));
+                                    .getTabGroupModelFilter(/* isIncognito= */ false));
         } else {
             mDeleteArchivedTabsFilter = null;
         }
         mProfile = tabModelSelector.getCurrentModel().getProfile();
         mQuickDeleteBridge = new QuickDeleteBridge(mProfile);
-        mTabModelSelector = tabModelSelector;
 
         // MVC setup.
         View quickDeleteView =
@@ -136,24 +129,13 @@ public class QuickDeleteController {
     void destroy() {
         mPropertyModelChangeProcessor.destroy();
         mQuickDeleteBridge.destroy();
-
-        if (mCurrentTabObserver != null) {
-            mCurrentTabObserver.destroy();
-            mCurrentTabObserver = null;
-        }
-    }
-
-    /** returns True, if quick delete follow up is enabled, false otherwise */
-    public static boolean isQuickDeleteFollowupEnabled() {
-        return ChromeFeatureList.sQuickDeleteAndroidFollowup.isEnabled();
     }
 
     /**
      * @return True, if quick delete survey is enabled, false otherwise
      */
     public static boolean isQuickDeleteSurveyEnabled() {
-        return isQuickDeleteFollowupEnabled()
-                && ChromeFeatureList.sQuickDeleteAndroidSurvey.isEnabled();
+        return ChromeFeatureList.sQuickDeleteAndroidSurvey.isEnabled();
     }
 
     /** A method called when the user confirms or cancels the dialog. */
@@ -210,7 +192,7 @@ public class QuickDeleteController {
             mDeleteArchivedTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
         }
         boolean isTabModelEmpty = mTabModel.getCount() == 0;
-        if (isQuickDeleteFollowupEnabled() && !isTabModelEmpty) {
+        if (!isTabModelEmpty) {
             List<Tab> tabs =
                     mDeleteRegularTabsFilter
                             .getListOfTabsFilteredToBeClosedExcludingPlaceholderTabGroups();
@@ -239,28 +221,8 @@ public class QuickDeleteController {
         trackerLock.release();
 
         if (isQuickDeleteSurveyEnabled()) {
-            assert mCurrentTabObserver == null;
-            mCurrentTabObserver =
-                    new CurrentTabObserver(
-                            mTabModelSelector.getCurrentTabSupplier(),
-                            new EmptyTabObserver() {
-                                @Override
-                                public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
-                                    WebContents webContents = tab.getWebContents();
-                                    if (!tab.isOffTheRecord() && webContents != null) {
-                                        showSurvey(webContents);
-                                    }
-                                }
-                            },
-                            /* swapCallback= */ null);
+            mDelegate.triggerHatsSurvey();
         }
-    }
-
-    /**
-     * @see {@link QuickDeleteBridge#showSurvey(WebContents)}
-     */
-    private void showSurvey(@NonNull WebContents webContents) {
-        mQuickDeleteBridge.showSurvey(webContents);
         destroy();
     }
 

@@ -576,6 +576,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityPerformIncrement) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-perform-increment.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityPerformDecrement) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-perform-decrement.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityPlaceholderValue) {
   RunTypedTest<kMacMethods>("accessibility-placeholder-value.html");
 }
@@ -592,6 +602,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityRows) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityRowHeaderUIElements) {
   RunTypedTest<kMacMethods>("accessibility-row-header-ui-elements.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityScrollbars) {
+  RunTypedTest<kMacMethods>("accessibility-scrollbars.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilitySelected) {
@@ -756,6 +770,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        IAccessibleTextSelectionContainerSetSelections) {
   RunTypedTest<kIAccessibleTextSelectionContainer>(
       L"iaccessibletextselectioncontainer-set-selections.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       IAccessibleTextSelectionContainerClearSelections) {
+  RunTypedTest<kIAccessibleTextSelectionContainer>(
+      L"iaccessibletextselectioncontainer-clear-selections.html");
 }
 
 #endif

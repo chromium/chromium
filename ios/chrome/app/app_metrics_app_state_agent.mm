@@ -38,6 +38,8 @@ NSString* const kDeferredInitializationBlocksComplete =
 
   if (!_firstSceneHasConnected) {
     _firstSceneHasConnected = YES;
+    self.appState.startupInformation.firstSceneConnectionTime =
+        base::TimeTicks::Now();
 
     const AppInitStage initStage = self.appState.initStage;
     if (initStage >= AppInitStage::kBrowserObjectsForBackgroundHandlers) {
@@ -90,14 +92,19 @@ NSString* const kDeferredInitializationBlocksComplete =
   [MetricsMediator logStartupDuration:self.appState.startupInformation];
   if (ios::provider::IsPrimesSupported()) {
     ios::provider::PrimesAppReady();
-    [self.appState.deferredRunner
-        enqueueBlockNamed:kTakeStartupMemorySnapshot
-                    block:^{
+  }
+  [self.appState.deferredRunner
+      enqueueBlockNamed:kTakeStartupMemorySnapshot
+                  block:^{
+                    if (ios::provider::IsPrimesSupported()) {
                       ios::provider::PrimesTakeMemorySnapshot(
                           kDeferredInitializationBlocksComplete);
                       tests_hook::SignalAppLaunched();
-                    }];
-  }
+                    }
+                    [MetricsMediator
+                        logMemoryToUMA:
+                            "Memory.Browser.MemoryFootprint.Startup"];
+                  }];
 }
 
 @end

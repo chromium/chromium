@@ -38,7 +38,7 @@ function displayList() {
 
   // TrustedTypes is not supported on iOS
   if (window.trustedTypes) {
-    logMessageContainer.innerHTML = window.trustedTypes!.emptyHTML;
+    logMessageContainer.innerHTML = window.trustedTypes.emptyHTML;
   } else {
     logMessageContainer.innerHTML = '';
   }

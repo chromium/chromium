@@ -46,5 +46,14 @@ found in the LICENSE file.
         android:ellipsize="end"
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+      <TextView
+          android:id="@+id/secondary_description"
+          android:visibility="gone"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:maxLines="1"
+          android:ellipsize="end"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
   </LinearLayout>
 </LinearLayout>

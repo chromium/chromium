@@ -143,6 +143,8 @@ source_set("ink") {
     "src/ink/strokes/internal/extrusion_points.h",
     "src/ink/strokes/internal/legacy_vertex.cc",
     "src/ink/strokes/internal/legacy_vertex.h",
+    "src/ink/strokes/internal/noise_generator.cc",
+    "src/ink/strokes/internal/noise_generator.h",
     "src/ink/strokes/internal/rounded_polygon.cc",
     "src/ink/strokes/internal/rounded_polygon.h",
     "src/ink/strokes/internal/stroke_input_modeler.cc",

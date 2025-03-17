@@ -14,7 +14,7 @@
 
 #include "base/containers/map_util.h"
 #include "base/scoped_observation.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -74,7 +74,7 @@ class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier,
     Widget::Widgets result;
     if (aura::test::AuraTestHelper* const aura_test_helper =
             aura::test::AuraTestHelper::GetInstance()) {
-      Widget::GetAllChildWidgets(aura_test_helper->GetContext(), &result);
+      result.merge(Widget::GetAllChildWidgets(aura_test_helper->GetContext()));
     }
     return result;
 #else
@@ -351,19 +351,18 @@ gfx::NativeWindow InteractiveViewsTestPrivate::GetNativeWindowFromContext(
 std::string InteractiveViewsTestPrivate::DebugDumpWidget(
     const Widget& widget) const {
   std::string description = widget.GetName();
-  return base::StringPrintf(
-      "%s \"%s\" at %s", widget.GetClassName(), widget.GetName().c_str(),
-      DebugDumpBounds(widget.GetWindowBoundsInScreen()).c_str());
+  return base::StrCat({widget.GetClassName(), " \"", widget.GetName(), "\" at ",
+                       DebugDumpBounds(widget.GetWindowBoundsInScreen())});
 }
 
 InteractiveViewsTestPrivate::DebugTreeNode
 InteractiveViewsTestPrivate::DebugDumpElement(
     const ui::TrackedElement* el) const {
   if (const auto* view = el->AsA<TrackedElementViews>()) {
-    return DebugTreeNode(base::StringPrintf(
-        "%s%s - %s at %s", (view->view()->HasFocus() ? "[FOCUSED] " : ""),
-        view->view()->GetClassName(), el->identifier().GetName().c_str(),
-        DebugDumpBounds(el->GetScreenBounds())));
+    return DebugTreeNode(base::StrCat(
+        {(view->view()->HasFocus() ? "[FOCUSED] " : ""),
+         view->view()->GetClassName(), " - ", el->identifier().GetName(),
+         " at ", DebugDumpBounds(el->GetScreenBounds())}));
   }
   return InteractiveTestPrivate::DebugDumpElement(el);
 }

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -19,6 +20,7 @@
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/test/mock_trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,9 +30,9 @@ namespace {
 using testing::_;
 using testing::Eq;
 
-CoreAccountInfo MakeAccountInfoWithGaiaId(const GaiaId& gaia_id) {
+CoreAccountInfo MakeAccountInfoWithGaiaId(const std::string& gaia_id) {
   CoreAccountInfo account_info;
-  account_info.gaia = gaia_id;
+  account_info.gaia = GaiaId(gaia_id);
   return account_info;
 }
 
@@ -454,6 +456,95 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
   task_environment().FastForwardBy(
       long_refresh_period() -
       base::Minutes(1) + base::Milliseconds(1));
+}
+
+TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
+       ShouldRecordDegradedRecoverabilityStatusOnRequestCompletion) {
+  testing::NiceMock<MockTrustedVaultConnection> connection;
+  testing::NiceMock<MockDelegate> delegate;
+
+  // Start the handler, this will trigger the first request.
+  std::unique_ptr<TrustedVaultDegradedRecoverabilityHandler>
+      degraded_recoverability_handler =
+          std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
+              &connection, &delegate, MakeAccountInfoWithGaiaId("user"),
+              trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState());
+  {
+    base::RunLoop run_loop;
+    ON_CALL(connection, DownloadIsRecoverabilityDegraded(
+                            Eq(MakeAccountInfoWithGaiaId("user")), _))
+        .WillByDefault(
+            [&](const CoreAccountInfo&,
+                MockTrustedVaultConnection::IsRecoverabilityDegradedCallback
+                    callback) {
+              std::move(callback).Run(
+                  TrustedVaultRecoverabilityStatus::kNotDegraded);
+              run_loop.Quit();
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+
+    base::HistogramTester histogram_tester;
+    // This will start the handler and trigger the first request.
+    degraded_recoverability_handler->GetIsRecoverabilityDegraded(
+        base::DoNothing());
+    run_loop.Run();
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.RecoverabilityStatusOnRequestCompletion",
+        /*sample=*/
+        TrustedVaultRecoverabilityStatus::kNotDegraded,
+        /*expected_bucket_count=*/1);
+  }
+
+  {
+    base::RunLoop run_loop;
+    ON_CALL(connection, DownloadIsRecoverabilityDegraded(
+                            Eq(MakeAccountInfoWithGaiaId("user")), _))
+        .WillByDefault(
+            [&](const CoreAccountInfo&,
+                MockTrustedVaultConnection::IsRecoverabilityDegradedCallback
+                    callback) {
+              std::move(callback).Run(
+                  TrustedVaultRecoverabilityStatus::kDegraded);
+              run_loop.Quit();
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+
+    base::HistogramTester histogram_tester;
+    // This will force a request.
+    degraded_recoverability_handler->HintDegradedRecoverabilityChanged(
+        TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA());
+    run_loop.Run();
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.RecoverabilityStatusOnRequestCompletion",
+        /*sample=*/
+        TrustedVaultRecoverabilityStatus::kDegraded,
+        /*expected_bucket_count=*/1);
+  }
+
+  {
+    base::RunLoop run_loop;
+    ON_CALL(connection, DownloadIsRecoverabilityDegraded(
+                            Eq(MakeAccountInfoWithGaiaId("user")), _))
+        .WillByDefault(
+            [&](const CoreAccountInfo&,
+                MockTrustedVaultConnection::IsRecoverabilityDegradedCallback
+                    callback) {
+              std::move(callback).Run(TrustedVaultRecoverabilityStatus::kError);
+              run_loop.Quit();
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+
+    base::HistogramTester histogram_tester;
+    // This will force a request.
+    degraded_recoverability_handler->HintDegradedRecoverabilityChanged(
+        TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA());
+    run_loop.Run();
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.RecoverabilityStatusOnRequestCompletion",
+        /*sample=*/
+        TrustedVaultRecoverabilityStatus::kError,
+        /*expected_bucket_count=*/1);
+  }
 }
 
 }  // namespace

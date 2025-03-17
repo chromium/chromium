@@ -114,8 +114,8 @@ String QualifiedName::ToString() const {
 }
 
 // Global init routines
-DEFINE_GLOBAL(QualifiedName, g_any_name);
-DEFINE_GLOBAL(QualifiedName, g_null_name);
+DEFINE_GLOBAL(, QualifiedName, g_any_name);
+DEFINE_GLOBAL(, QualifiedName, g_null_name);
 
 void QualifiedName::InitAndReserveCapacityForSize(unsigned size) {
   DCHECK(g_star_atom.Impl());

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 
+#include <array>
 #include <limits>
 #include <optional>
 #include <utility>
@@ -832,14 +828,15 @@ TEST_F(RulesetMatcherTest, RegexRules_Metadata) {
 // Ensures that RulesetMatcher combines the results of regex and filter-list
 // style redirect rules correctly.
 TEST_F(RulesetMatcherTest, RegexAndFilterListRules_RedirectPriority) {
-  struct {
+  struct RuleInfo {
     size_t id;
     size_t priority;
     const char* action_type;
     const char* filter;
     bool is_regex_rule;
     std::optional<std::string> redirect_url;
-  } rule_info[] = {
+  };
+  auto rule_info = std::to_array<RuleInfo>({
       {1, 1, "redirect", "filter.com", false, "http://redirect_filter.com"},
       {2, 1, "upgradeScheme", "regex\\.com", true, std::nullopt},
       {3, 9, "redirect", "common1.com", false, "http://common1_filter.com"},
@@ -848,7 +845,7 @@ TEST_F(RulesetMatcherTest, RegexAndFilterListRules_RedirectPriority) {
       {6, 9, "upgradeScheme", "common2\\.com", true, std::nullopt},
       {7, 10, "redirect", "abc\\.com", true, "http://example1.com"},
       {8, 9, "redirect", "abc", true, "http://example2.com"},
-  };
+  });
 
   std::vector<TestRule> rules;
   for (const auto& info : rule_info) {
@@ -1367,16 +1364,19 @@ TEST_F(AllowAllRequestsTest, AllowlistedFrameTracking) {
 // Ensures that GetBeforeRequestAction correctly incorporates allowAllRequests
 // rules.
 TEST_F(AllowAllRequestsTest, GetBeforeRequestAction) {
-  struct {
+  struct RuleData {
     int id;
     int priority;
     std::string action_type;
     std::string url_filter;
     bool is_regex_rule;
-  } rule_data[] = {{1, 1, "allowAllRequests", "google", true},
-                   {2, 3, "block", "||match", false},
-                   {3, 2, "allowAllRequests", "match1", true},
-                   {4, 4, "allowAllRequests", "match2", false}};
+  };
+  auto rule_data = std::to_array<RuleData>({
+      {1, 1, "allowAllRequests", "google", true},
+      {2, 3, "block", "||match", false},
+      {3, 2, "allowAllRequests", "match1", true},
+      {4, 4, "allowAllRequests", "match2", false},
+  });
 
   std::vector<TestRule> test_rules;
   for (const auto& rule : rule_data) {
@@ -1639,12 +1639,13 @@ TEST_F(RulesetMatcherResponseHeadersTest, OnHeadersReceivedAction_Regex) {
                             CreateTemporarySource(), &matcher));
   ASSERT_TRUE(matcher);
 
-  struct {
+  struct Cases {
     std::string url;
     std::optional<RequestAction> expected_before_request_action;
     std::optional<RequestAction> expected_headers_received_action;
     std::optional<std::string> expected_redirect_url;
-  } cases[] = {
+  };
+  auto cases = std::to_array<Cases>({
       // The request to google.com will match `before_request_rule` for
       // GetBeforeRequestAction and `url_response_headers_rule` because of its
       // higher priority for GetOnHeadersReceivedAction.
@@ -1662,7 +1663,7 @@ TEST_F(RulesetMatcherResponseHeadersTest, OnHeadersReceivedAction_Regex) {
        CreateRequestActionForTesting(RequestAction::Type::REDIRECT,
                                      kMinValidID + 2, kMinValidPriority + 1),
        std::string("http://regexmatch.com")},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
@@ -1734,11 +1735,12 @@ TEST_F(RulesetMatcherResponseHeadersTest, MatchOnResponseHeaders) {
                                     CreateTemporarySource(), &matcher));
   ASSERT_TRUE(matcher);
 
-  struct {
+  struct Cases {
     std::string url;
     std::string response_headers;
     std::optional<RequestAction> expected_action;
-  } cases[] = {
+  };
+  auto cases = std::to_array<Cases>({
       // No match for a non-matching URL.
       {"http://nomatch.com", "HTTP/1.0 200 OK\r\nKey1: Value1\r\n",
        std::nullopt},
@@ -1807,7 +1809,7 @@ TEST_F(RulesetMatcherResponseHeadersTest, MatchOnResponseHeaders) {
        "HTTP/1.0 200 OK\r\ncontent-type: application/pdf; charset=utf-8\r\n",
        CreateRequestActionForTesting(RequestAction::Type::COLLAPSE,
                                      kMinValidID + 2)},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));

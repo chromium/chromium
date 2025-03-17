@@ -4,14 +4,23 @@
 
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 
+#import "base/check.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/reading_list/core/reading_list_entry.h"
+#import "components/reading_list/core/reading_list_model.h"
+#import "components/send_tab_to_self/features.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -23,12 +32,22 @@ TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
       active_web_state_observer_(
           std::make_unique<ActiveWebStateObservationForwarder>(web_state_list_,
                                                                this)),
+      bookmark_model_(
+          ios::BookmarkModelFactory::GetForProfile(browser->GetProfile())),
+      reading_list_model_(
+          ReadingListModelFactory::GetForProfile(browser->GetProfile())),
       url_loading_notifier_(
           UrlLoadingNotifierBrowserAgent::FromBrowser(browser)),
       command_dispatcher_(browser->GetCommandDispatcher()),
-      engagement_tracker_(
-          feature_engagement::TrackerFactory::GetForProfile(browser->GetProfile())) {
+      engagement_tracker_(feature_engagement::TrackerFactory::GetForProfile(
+          browser->GetProfile())) {
   browser->AddObserver(this);
+  if (send_tab_to_self::
+          IsSendTabIOSPushNotificationsEnabledWithTabReminders() &&
+      bookmark_model_) {
+    bookmark_model_observation_.Observe(bookmark_model_.get());
+    reading_list_model_observation_.Observe(reading_list_model_.get());
+  }
   url_loading_notifier_->AddObserver(this);
 }
 
@@ -80,16 +99,92 @@ void TabBasedIPHBrowserAgent::NotifySwitchToAdjacentTabFromTabGrid() {
   tapped_adjacent_tab_ = true;
 }
 
+#pragma mark - bookmarks::BaseBookmarkModelObserver
+
+void TabBasedIPHBrowserAgent::BookmarkModelChanged() {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+}
+
+void TabBasedIPHBrowserAgent::BookmarkModelBeingDeleted() {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  StopObservingBookmarkModel();
+}
+
+void TabBasedIPHBrowserAgent::BookmarkNodeAdded(
+    const bookmarks::BookmarkNode* parent,
+    size_t index,
+    bool added_by_user) {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  if (added_by_user) {
+    // The bookmark was manually added by the user and not via syncing or
+    // duplicating the bookmark.
+
+    [PopupMenuHandler() displayPopupMenuTabRemindersIPH];
+  }
+}
+
 #pragma mark - BrowserObserver
 
 void TabBasedIPHBrowserAgent::BrowserDestroyed(Browser* browser) {
   active_web_state_observer_.reset();
   url_loading_notifier_->RemoveObserver(this);
   browser->RemoveObserver(this);
+
+  if (send_tab_to_self::
+          IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
+    StopObservingBookmarkModel();
+    StopObservingReadingListModel();
+  }
+
   web_state_list_ = nil;
   url_loading_notifier_ = nil;
   command_dispatcher_ = nil;
   engagement_tracker_ = nil;
+}
+
+#pragma mark - ReadingListModelObserver
+
+void TabBasedIPHBrowserAgent::ReadingListModelLoaded(
+    const ReadingListModel* model) {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  reading_list_model_loaded_ = true;
+}
+
+void TabBasedIPHBrowserAgent::ReadingListModelBeingShutdown(
+    const ReadingListModel* model) {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(reading_list_model_loaded_);
+
+  // The model passed is `const`, which makes it impossible to call
+  // `model->RemoveObserver(...)`. Other `ReadingListModelObserver`
+  // clients address this by removing themselves as observers using a reference
+  // to the model maintained in their class, so a similar approach is followed
+  // in `StopObservingReadingListModel()`. Fortunately,
+  // `reading_list_model_observation_` will gracefully handle removing
+  // `TabBasedIPHBrowserAgent` as an observer if all else fails.
+  StopObservingReadingListModel();
+}
+
+void TabBasedIPHBrowserAgent::ReadingListDidAddEntry(
+    const ReadingListModel* model,
+    const GURL& url,
+    reading_list::EntrySource source) {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(reading_list_model_loaded_);
+
+  if (source == reading_list::EntrySource::ADDED_VIA_CURRENT_APP) {
+    // A reading list entry was manually added by the user.
+    [PopupMenuHandler() displayPopupMenuTabRemindersIPH];
+  }
 }
 
 #pragma mark - UrlLoadingObserver
@@ -196,6 +291,27 @@ void TabBasedIPHBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
 
 #pragma mark - Private
 
+void TabBasedIPHBrowserAgent::StopObservingBookmarkModel() {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  bookmark_model_ = nullptr;
+  bookmark_model_observation_.Reset();
+}
+
+void TabBasedIPHBrowserAgent::StopObservingReadingListModel() {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  if (reading_list_model_) {
+    reading_list_model_->RemoveObserver(this);
+  }
+
+  reading_list_model_ = nullptr;
+  reading_list_model_observation_.Reset();
+  reading_list_model_loaded_ = false;
+}
+
 void TabBasedIPHBrowserAgent::ResetFeatureStatesAndRemoveIPHViews() {
   multi_gesture_refresh_ = false;
   back_forward_button_tapped_ = false;
@@ -208,6 +324,10 @@ void TabBasedIPHBrowserAgent::ResetFeatureStatesAndRemoveIPHViews() {
 
 id<HelpCommands> TabBasedIPHBrowserAgent::HelpHandler() {
   return HandlerForProtocol(command_dispatcher_, HelpCommands);
+}
+
+id<PopupMenuCommands> TabBasedIPHBrowserAgent::PopupMenuHandler() {
+  return HandlerForProtocol(command_dispatcher_, PopupMenuCommands);
 }
 
 BROWSER_USER_DATA_KEY_IMPL(TabBasedIPHBrowserAgent)

@@ -46,8 +46,7 @@ class TestWebContentsDisplayObserverView
 class WebContentsDisplayObserverViewTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  WebContentsDisplayObserverViewTest()
-      : ChromeRenderViewHostTestHarness(), display1_(101), display2_(102) {}
+  WebContentsDisplayObserverViewTest() : display1_(101), display2_(102) {}
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();

@@ -3,20 +3,29 @@
 // found in the LICENSE file.
 
 #include "base/features.h"
+#include "base/files/file.h"
 #include "base/path_service.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
+#include "extensions/common/extension_set.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 
@@ -64,14 +73,51 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
 
 class DevToolsExtensionsProtocolWithUnsafeDebuggingTest
     : public DevToolsExtensionsProtocolTest {
+ public:
+  DevToolsExtensionsProtocolWithUnsafeDebuggingTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionDisableUnsupportedDeveloper);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevToolsExtensionsProtocolTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(::switches::kEnableUnsafeExtensionDebugging);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CannotInstallExtension) {
   ASSERT_FALSE(SendLoadUnpackedCommand("simple_background_page"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
+                       CannotUninstallExtension) {
+  auto extension =
+      extensions::ExtensionBuilder("unpacked")
+          .SetLocation(extensions::mojom::ManifestLocation::kUnpacked)
+          .Build();
+  extensions::ExtensionSystem::Get(browser()->profile())
+      ->extension_service()
+      ->AddExtension(extension.get());
+
+  std::string id = extension.get()->id();
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+  const extensions::Extension* extension_before =
+      registry->GetInstalledExtension(id);
+  ASSERT_TRUE(extension_before);
+
+  base::Value::Dict params;
+  params.Set("id", id);
+  const base::Value::Dict* uninstall_result =
+      SendCommandSync("Extensions.uninstall", std::move(params));
+  ASSERT_FALSE(uninstall_result);
+
+  const extensions::Extension* extension_after =
+      registry->GetInstalledExtension(id);
+  ASSERT_TRUE(extension_after);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
@@ -95,6 +141,77 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                        ThrowsOnWrongPath) {
   const base::Value::Dict* result = SendLoadUnpackedCommand("non-existent");
   ASSERT_FALSE(result);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       CanUninstallExtension) {
+  const base::Value::Dict* install_result =
+      SendLoadUnpackedCommand("simple_background_page");
+
+  std::string id = *install_result->FindString("id");
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+  const extensions::Extension* extension_before =
+      registry->GetInstalledExtension(id);
+  ASSERT_TRUE(extension_before);
+
+  base::Value::Dict params;
+  params.Set("id", id);
+  const base::Value::Dict* uninstall_result =
+      SendCommandSync("Extensions.uninstall", std::move(params));
+  ASSERT_TRUE(uninstall_result);
+
+  const extensions::Extension* extension_after =
+      registry->GetInstalledExtension(id);
+  ASSERT_FALSE(extension_after);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       CannotUninstallNonUnpackedExtension) {
+  auto extension =
+      extensions::ExtensionBuilder("unpacked")
+          .SetLocation(extensions::mojom::ManifestLocation::kComponent)
+          .Build();
+  extensions::ExtensionSystem::Get(browser()->profile())
+      ->extension_service()
+      ->AddExtension(extension.get());
+
+  std::string id = extension.get()->id();
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+  const extensions::Extension* extension_before =
+      registry->GetInstalledExtension(id);
+  ASSERT_TRUE(extension_before);
+
+  base::Value::Dict params;
+  params.Set("id", id);
+  const base::Value::Dict* uninstall_result =
+      SendCommandSync("Extensions.uninstall", std::move(params));
+  ASSERT_FALSE(uninstall_result);
+
+  const extensions::Extension* extension_after =
+      registry->GetInstalledExtension(id);
+  ASSERT_TRUE(extension_after);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       FailsToUninstallNonexistentExtension) {
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+
+  std::string id = "non-existent-id";
+  const extensions::Extension* extension = registry->GetInstalledExtension(id);
+  ASSERT_FALSE(extension);
+
+  base::Value::Dict params;
+  params.Set("id", id);
+  const base::Value::Dict* uninstallResult =
+      SendCommandSync("Extensions.uninstall", std::move(params));
+  ASSERT_FALSE(uninstallResult);
+
+  const extensions::Extension* extensionAfter =
+      registry->GetInstalledExtension(id);
+  ASSERT_FALSE(extensionAfter);
 }
 
 // Returns the `DevToolsAgentHost` associated with an extension's service

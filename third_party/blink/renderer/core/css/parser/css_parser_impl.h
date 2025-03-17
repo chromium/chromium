@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/parser/allowed_rules.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
@@ -44,7 +45,6 @@ class StyleRuleKeyframe;
 class StyleRuleKeyframes;
 class StyleRuleMedia;
 class StyleRuleNamespace;
-class StyleRuleNestedDeclarations;
 class StyleRulePage;
 class StyleRulePositionTry;
 class StyleRuleProperty;
@@ -66,26 +66,95 @@ class CORE_EXPORT CSSParserImpl {
   CSSParserImpl(const CSSParserImpl&) = delete;
   CSSParserImpl& operator=(const CSSParserImpl&) = delete;
 
-  enum AllowedRulesType {
-    // As per css-syntax, css-cascade and css-namespaces, @charset rules
-    // must come first, followed by @layer, @import then @namespace.
-    // AllowImportRules actually means we allow @import and any rules that
-    // may follow it, i.e. @namespace rules and regular rules.
-    // AllowCharsetRules and AllowNamespaceRules behave similarly.
-    kAllowCharsetRules,
-    kAllowLayerStatementRules,
-    kAllowImportRules,
-    kAllowNamespaceRules,
-    kRegularRules,
-    kKeyframeRules,
-    kFontFeatureRules,
-    // For parsing at-rules inside declaration lists.
-    kNoRules,
-    // https://drafts.csswg.org/css-nesting/#nested-group-rules
-    kNestedGroupRules,
-    // https://www.w3.org/TR/css-page-3/#syntax-page-selector
-    kPageMarginRules,
+  // Regular rules are rules that are valid within a top-level grouping rule,
+  // like @media, @supports, etc.
+  static constexpr AllowedRules kRegularRules =
+      AllowedRules{QualifiedRuleType::kStyle} |
+      AllowedRules{
+          CSSAtRuleID::kCSSAtRuleViewTransition,
+          CSSAtRuleID::kCSSAtRuleFontFace,
+          CSSAtRuleID::kCSSAtRuleFontPaletteValues,
+          CSSAtRuleID::kCSSAtRuleKeyframes,
+          CSSAtRuleID::kCSSAtRuleLayer,
+          CSSAtRuleID::kCSSAtRuleMedia,
+          CSSAtRuleID::kCSSAtRulePage,
+          CSSAtRuleID::kCSSAtRulePositionTry,
+          CSSAtRuleID::kCSSAtRuleProperty,
+          CSSAtRuleID::kCSSAtRuleContainer,
+          CSSAtRuleID::kCSSAtRuleCounterStyle,
+          CSSAtRuleID::kCSSAtRuleScope,
+          CSSAtRuleID::kCSSAtRuleStartingStyle,
+          CSSAtRuleID::kCSSAtRuleSupports,
+          CSSAtRuleID::kCSSAtRuleWebkitKeyframes,
+          CSSAtRuleID::kCSSAtRuleFontFeatureValues,
+          CSSAtRuleID::kCSSAtRuleFunction,
+          CSSAtRuleID::kCSSAtRuleMixin,
+      };
+
+  // A few rules are only valid top-level. For example, you may not specify
+  // an @import rule within @media.
+  static constexpr AllowedRules kTopLevelRules =
+      kRegularRules | AllowedRules{
+                          CSSAtRuleID::kCSSAtRuleCharset,
+                          CSSAtRuleID::kCSSAtRuleImport,
+                          CSSAtRuleID::kCSSAtRuleNamespace,
+                      };
+
+  // Valid rules within @keyframes.
+  static constexpr AllowedRules kKeyframeRules = {QualifiedRuleType::kKeyframe};
+
+  // Valid rules within @font-feature-values.
+  static constexpr AllowedRules kFontFeatureRules = {
+      CSSAtRuleID::kCSSAtRuleAnnotation,
+      CSSAtRuleID::kCSSAtRuleCharacterVariant,
+      CSSAtRuleID::kCSSAtRuleOrnaments,
+      CSSAtRuleID::kCSSAtRuleStylistic,
+      CSSAtRuleID::kCSSAtRuleStyleset,
+      CSSAtRuleID::kCSSAtRuleSwash,
   };
+
+  // Valid rules within @page.
+  static constexpr AllowedRules kPageMarginRules = {
+      CSSAtRuleID::kCSSAtRuleTopLeftCorner,
+      CSSAtRuleID::kCSSAtRuleTopLeft,
+      CSSAtRuleID::kCSSAtRuleTopCenter,
+      CSSAtRuleID::kCSSAtRuleTopRight,
+      CSSAtRuleID::kCSSAtRuleTopRightCorner,
+      CSSAtRuleID::kCSSAtRuleBottomLeftCorner,
+      CSSAtRuleID::kCSSAtRuleBottomLeft,
+      CSSAtRuleID::kCSSAtRuleBottomCenter,
+      CSSAtRuleID::kCSSAtRuleBottomRight,
+      CSSAtRuleID::kCSSAtRuleBottomRightCorner,
+      CSSAtRuleID::kCSSAtRuleLeftTop,
+      CSSAtRuleID::kCSSAtRuleLeftMiddle,
+      CSSAtRuleID::kCSSAtRuleLeftBottom,
+      CSSAtRuleID::kCSSAtRuleRightTop,
+      CSSAtRuleID::kCSSAtRuleRightMiddle,
+      CSSAtRuleID::kCSSAtRuleRightBottom,
+  };
+
+  // Conditional rules can nest inside style rules (see kNestedGroupRules)
+  // and are valid within @function.
+  //
+  // https://drafts.csswg.org/css-conditional-3/#conditional-group-rule
+  // https://drafts.csswg.org/css-mixins-1/#conditional-rules
+  static constexpr AllowedRules kConditionalRules = {
+      CSSAtRuleID::kCSSAtRuleMedia,
+      CSSAtRuleID::kCSSAtRuleSupports,
+      CSSAtRuleID::kCSSAtRuleContainer,
+  };
+
+  // Rules that are valid when nested within a style rule.
+  //
+  // https://drafts.csswg.org/css-nesting/#nested-group-rules
+  static constexpr AllowedRules kNestedGroupRules =
+      kConditionalRules | AllowedRules{
+                              CSSAtRuleID::kCSSAtRuleLayer,
+                              CSSAtRuleID::kCSSAtRuleScope,
+                              CSSAtRuleID::kCSSAtRuleStartingStyle,
+                              CSSAtRuleID::kCSSAtRuleViewTransition,
+                              CSSAtRuleID::kCSSAtRuleApplyMixin,
+                          };
 
   // Represents the start and end offsets of a CSSParserTokenRange.
   struct RangeOffset {
@@ -106,6 +175,16 @@ class CORE_EXPORT CSSParserImpl {
       StringView,
       bool important,
       const CSSParserContext*);
+  // Same as above, but always in a style rule, never !important,
+  // and ends in a vector instead of a MutableCSSPropertyValueSet
+  // (which means we don't do e.g. any deduplication). Returns
+  // the number of properties that were added (always 0 or 1
+  // if the property is a longhand). This is used for parsing
+  // presentation style.
+  static unsigned ParseValue(HeapVector<CSSPropertyValue, 8>&,
+                             CSSPropertyID,
+                             StringView,
+                             const CSSParserContext*);
   static MutableCSSPropertyValueSet::SetResult ParseVariableValue(
       MutableCSSPropertyValueSet*,
       const AtomicString& property_name,
@@ -139,7 +218,7 @@ class CORE_EXPORT CSSParserImpl {
                                   CSSNestingType,
                                   StyleRule* parent_rule_for_nesting,
                                   StyleSheetContents*,
-                                  AllowedRulesType);
+                                  AllowedRules);
   static ParseSheetResult ParseStyleSheet(
       const String&,
       const CSSParserContext*,
@@ -181,33 +260,27 @@ class CORE_EXPORT CSSParserImpl {
  private:
   friend class TestCSSParserImpl;
 
-  enum RuleListType {
-    kTopLevelRuleList,
-    kRegularRuleList,
-    kKeyframesRuleList,
-    kFontFeatureRuleList,
-  };
-
   // Returns whether the first encountered rule was valid
   template <typename T>
   bool ConsumeRuleList(CSSParserTokenStream&,
-                       RuleListType,
+                       AllowedRules allowed_rules,
+                       bool allow_cdo_cdc_tokens,
                        CSSNestingType,
                        StyleRule* parent_rule_for_nesting,
                        T callback);
 
   // These functions update the stream they're given
   StyleRuleBase* ConsumeAtRule(CSSParserTokenStream&,
-                               AllowedRulesType,
+                               AllowedRules,
                                CSSNestingType,
                                StyleRule* parent_rule_for_nesting);
   StyleRuleBase* ConsumeAtRuleContents(CSSAtRuleID id,
                                        CSSParserTokenStream& stream,
-                                       AllowedRulesType allowed_rules,
+                                       AllowedRules allowed_rules,
                                        CSSNestingType,
                                        StyleRule* parent_rule_for_nesting);
   StyleRuleBase* ConsumeQualifiedRule(CSSParserTokenStream&,
-                                      AllowedRulesType,
+                                      AllowedRules,
                                       CSSNestingType,
                                       StyleRule* parent_rule_for_nesting);
 
@@ -253,8 +326,8 @@ class CORE_EXPORT CSSParserImpl {
   StyleRulePositionTry* ConsumePositionTryRule(CSSParserTokenStream&);
 
   StyleRuleFunction* ConsumeFunctionRule(CSSParserTokenStream& stream);
-  std::optional<Vector<StyleRuleFunction::Parameter>> ConsumeFunctionParameters(
-      CSSParserTokenStream& stream);
+  std::optional<HeapVector<StyleRuleFunction::Parameter>>
+  ConsumeFunctionParameters(CSSParserTokenStream& stream);
   StyleRuleMixin* ConsumeMixinRule(CSSParserTokenStream& stream);
   StyleRuleApplyMixin* ConsumeApplyMixinRule(CSSParserTokenStream& stream);
 
@@ -291,7 +364,6 @@ class CORE_EXPORT CSSParserImpl {
 
   void ConsumeRuleListOrNestedDeclarationList(
       CSSParserTokenStream&,
-      bool is_nested_group_rule,
       CSSNestingType,
       StyleRule* parent_rule_for_nesting,
       HeapVector<Member<StyleRuleBase>, 4>* child_rules);
@@ -365,22 +437,27 @@ class CORE_EXPORT CSSParserImpl {
 
   // Creates a new "nested declarations rule", consisting of the declarations
   // (parsed_properties_) in the range [start_index, end_index).
+  // or (depending on `nesting_type`) a "function declarations rule",
+  // which works similarly, but contains function descriptors rather
+  // than regular properties.
+  //
   // The parsed properties in the range are left as-is, i.e. not removed
   // from parsed_properties_.
   //
   // https://drafts.csswg.org/css-nesting-1/#nested-declarations-rule
-  StyleRuleNestedDeclarations* CreateNestedDeclarationsRule(
-      CSSNestingType nesting_type,
-      const CSSSelector* selector_list,
-      wtf_size_t start_index,
-      wtf_size_t end_index);
+  // https://drafts.csswg.org/css-mixins-1/#cssfunctiondeclarations
+  StyleRuleBase* CreateDeclarationsRule(CSSNestingType nesting_type,
+                                        const CSSSelector* selector_list,
+                                        wtf_size_t start_index,
+                                        wtf_size_t end_index);
 
   // Adds a new "nested declarations rule" to child_rules, consisting of
   // the declarations (parsed_properties_) from start_index until the end.
   // The affected declarations (if any) are removed from parsed_properties_.
   // See also the "CSSNestedDeclarations" comment above for more information
   // on what this is used for.
-  void EmitNestedDeclarationsRuleIfNeeded(
+  void EmitDeclarationsRuleIfNeeded(
+      StyleRule::RuleType,
       CSSNestingType,
       StyleRule* parent_rule_for_nesting,
       wtf_size_t start_index,

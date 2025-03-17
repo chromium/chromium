@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "extensions/browser/api/storage/storage_frontend.h"
 
 #include <memory>
@@ -58,6 +63,15 @@ events::HistogramValue StorageAreaToEventHistogram(
     case StorageAreaNamespace::kInvalid:
       NOTREACHED();
   }
+}
+
+void GetKeysWithValueStore(
+    base::OnceCallback<void(ValueStore::ReadResult)> callback,
+    ValueStore* store) {
+  ValueStore::ReadResult result = store->GetKeys();
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 void GetWithValueStore(
@@ -213,14 +227,18 @@ void StorageFrontend::OnReadFinished(
 
 void StorageFrontend::OnReadKeysFinished(
     base::OnceCallback<void(GetKeysResult)> callback,
-    GetResult get_result) {
+    ValueStore::ReadResult result) {
+  bool success = result.status().ok();
+
   GetKeysResult get_keys_result;
 
-  get_keys_result.status = get_result.status;
-  get_keys_result.data =
-      get_result.status.success
-          ? std::optional(KeysFromDict(std::move(*get_result.data)))
-          : std::nullopt;
+  get_keys_result.status.success = success;
+  get_keys_result.status.error =
+      success ? std::nullopt : std::optional(result.status().message);
+
+  if (success) {
+    get_keys_result.data = KeysFromDict(result.PassSettings());
+  }
 
   std::move(callback).Run(std::move(get_keys_result));
 }
@@ -290,9 +308,40 @@ void StorageFrontend::GetKeys(
     scoped_refptr<const Extension> extension,
     StorageAreaNamespace storage_area,
     base::OnceCallback<void(GetKeysResult)> callback) {
-  GetValues(extension, storage_area, std::nullopt,
-            base::BindOnce(&StorageFrontend::OnReadKeysFinished,
-                           weak_factory_.GetWeakPtr(), std::move(callback)));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (storage_area == StorageAreaNamespace::kSession) {
+    SessionStorageManager* storage_manager =
+        SessionStorageManager::GetForBrowserContext(browser_context_);
+
+    std::vector<std::string> keys = storage_manager->GetKeys(extension->id());
+
+    base::Value::List list = base::Value::List::with_capacity(keys.size());
+    for (std::string key : keys) {
+      list.Append(key);
+    }
+
+    GetKeysResult get_keys_result;
+    get_keys_result.data = std::move(list);
+
+    // Using a task here is important since we want to consistently fire the
+    // callback asynchronously.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(get_keys_result)));
+    return;
+  }
+
+  settings_namespace::Namespace settings_namespace =
+      StorageAreaToSettingsNamespace(storage_area);
+
+  CHECK(StorageFrontend::IsStorageEnabled(settings_namespace));
+
+  base::OnceCallback<void(ValueStore::ReadResult)> test =
+      base::BindOnce(&StorageFrontend::OnReadKeysFinished,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+  RunWithStorage(extension, settings_namespace,
+                 base::BindOnce(&GetKeysWithValueStore, std::move(test)));
 }
 
 void StorageFrontend::GetBytesInUse(

@@ -8,11 +8,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller_delegate.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -32,11 +33,7 @@ class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
   }
 
   void WaitUntilBrowserBecomeActiveOrLastActive(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    ui_test_utils::WaitUntilBrowserBecomeActive(browser);
-#else
     ui_test_utils::WaitForBrowserSetLastActive(browser);
-#endif
   }
 
   BrowserView* browser_view() {
@@ -55,7 +52,7 @@ class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kToolbarPinning};
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
@@ -69,15 +66,56 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
   EXPECT_TRUE(bubble_controller()->IsBubbleShowing());
 }
 
+IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
+                       ControllerExists) {
+  const std::vector<std::unique_ptr<ReceivingUiHandler>>& handlers =
+      send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
+          ->GetHandlers();
+  bool toolbar_button_controller_exists = false;
+  for (const std::unique_ptr<ReceivingUiHandler>& handler : handlers) {
+    auto* button_controller =
+        static_cast<SendTabToSelfToolbarIconController*>(handler.get());
+    if (button_controller &&
+        button_controller->profile() == browser()->profile()) {
+      toolbar_button_controller_exists = true;
+    }
+  }
+  EXPECT_TRUE(toolbar_button_controller_exists);
+}
+
 // This test cannot work on Wayland because the platform does not allow clients
 // to position top level windows, activate them, and set focus.
 #if !(BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_CHROMEOS))
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
-                       StorePendingNewEntry) {
+                       StorePendingNewEntryFromIncognitoBrowser) {
   ASSERT_TRUE(browser()->IsActive());
 
   Browser* incognito_browser = CreateIncognitoBrowser();
   WaitUntilBrowserBecomeActiveOrLastActive(incognito_browser);
+
+  SendTabToSelfEntry entry("a", GURL("http://www.example-a.com"), "a site",
+                           base::Time(), "device a", "device b");
+
+  EXPECT_FALSE(browser()->IsActive());
+  controller()->DisplayNewEntries({&entry});
+  EXPECT_FALSE(bubble_controller()->IsBubbleShowing());
+
+  browser_view()->Activate();
+  WaitUntilBrowserBecomeActiveOrLastActive(browser());
+  EXPECT_TRUE(bubble_controller()->IsBubbleShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
+                       StorePendingNewEntryFromWebApp) {
+  ASSERT_TRUE(browser()->IsActive());
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.org/"));
+  webapps::AppId app_id = web_app::test::InstallWebApp(browser()->profile(),
+                                                       std::move(web_app_info));
+  Browser* app_browser =
+      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+  app_browser->GetBrowserView().Activate();
+  WaitUntilBrowserBecomeActiveOrLastActive(app_browser);
 
   SendTabToSelfEntry entry("a", GURL("http://www.example-a.com"), "a site",
                            base::Time(), "device a", "device b");

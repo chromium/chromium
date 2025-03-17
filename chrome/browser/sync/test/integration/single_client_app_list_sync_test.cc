@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   base::RunLoop().RunUntilIdle();
 
   for (const std::string& app_id : app_ids) {
-    service->SetPinPosition(app_id, pin_position, /*pinned_by_policy=*/false);
+    service->SetPinPosition(app_id, pin_position);
     pin_position = pin_position.CreateAfter();
   }
   EXPECT_TRUE(SyncItemsHaveNames(service));
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
 
   // Change data when sync is off.
   for (const std::string& app_id : app_ids) {
-    service->SetPinPosition(app_id, pin_position, /*pinned_by_policy=*/false);
+    service->SetPinPosition(app_id, pin_position);
     pin_position = pin_position.CreateAfter();
   }
   SyncAppListHelper::GetInstance()->MoveAppFromFolder(profile, app_ids[0],

@@ -95,7 +95,7 @@ export class AppElement extends AppElementBase {
         // Fetch the favicon from the Favicon Service for custom search
         // engines.
         searchEngine.iconPath =
-            getFaviconForPageURL(searchEngine.url!, false, '', 24);
+            getFaviconForPageURL(searchEngine.url, false, '', 24);
       } else {
         searchEngine.iconPath = 'image-set(url(' + searchEngine.iconPath +
             ') 1x, url(' + searchEngine.iconPath + '@2x) 2x)';

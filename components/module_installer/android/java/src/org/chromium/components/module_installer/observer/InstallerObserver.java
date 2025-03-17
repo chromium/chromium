@@ -4,7 +4,10 @@
 
 package org.chromium.components.module_installer.observer;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Listener for 'module installed' notifications. */
+@NullMarked
 public interface InstallerObserver {
     void onModuleInstalled();
 }

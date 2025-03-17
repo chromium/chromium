@@ -33,6 +33,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/shared_worker_instance.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -323,6 +324,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   // cross-origin-isolated, create a new non-isolated SiteInstance for the
   // worker. This is because we have to assume the worker is non-isolated
   // because we don't know its COEP header.
+  // Note that Isolated Web Apps are exempt from this restriction as all IWA
+  // pages are served with COEP of `require-corp` by default.
   //
   // TODO(crbug.com/40122193): Move process allocation to after the
   // script is loaded so that the process allocation can take COEP header into
@@ -331,15 +334,21 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   if (site_instance->IsCrossOriginIsolated()) {
     site_instance = SiteInstanceImpl::CreateForUrlInfo(
         partition->browser_context(),
-        UrlInfo(UrlInfoInit(instance.url())
-                    .WithStoragePartitionConfig(partition->GetConfig())
-                    .WithWebExposedIsolationInfo(
-                        WebExposedIsolationInfo::CreateNonIsolated())),
+        UrlInfo(
+            UrlInfoInit(instance.url())
+                .WithStoragePartitionConfig(partition->GetConfig())
+                .WithWebExposedIsolationInfo(
+                    SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+                        partition->browser_context(), instance.url())
+                        ? WebExposedIsolationInfo::CreateIsolatedApplication(
+                              url::Origin::Create(instance.url()))
+                        : WebExposedIsolationInfo::CreateNonIsolated())),
         partition->is_guest(), site_instance->GetIsolationContext().is_fenced(),
         site_instance->IsFixedStoragePartition());
   }
 
-  RenderProcessHost* worker_process_host = site_instance->GetProcess();
+  RenderProcessHost* worker_process_host = site_instance->GetOrCreateProcess(
+      ProcessAllocationContext{ProcessAllocationSource::kSharedWorker});
   DCHECK(worker_process_host);
   DCHECK(worker_process_host->InSameStoragePartition(partition));
 

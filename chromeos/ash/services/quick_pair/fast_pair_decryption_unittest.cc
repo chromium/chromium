@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_encryption.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,12 +31,12 @@ TEST_F(FastPairDecryptionTest, ParseDecryptedResponse_Success) {
 
   // Address bytes.
   std::array<uint8_t, 6> address_bytes = {0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
-  base::ranges::copy(address_bytes, std::back_inserter(response_bytes));
+  std::ranges::copy(address_bytes, std::back_inserter(response_bytes));
 
   // Random salt
   std::array<uint8_t, 9> salt = {0x08, 0x09, 0x0A, 0x0B, 0x0C,
                                  0x0D, 0x0E, 0x0F, 0x00};
-  base::ranges::copy(salt, std::back_inserter(response_bytes));
+  std::ranges::copy(salt, std::back_inserter(response_bytes));
 
   std::array<uint8_t, kBlockByteSize> response_bytes_array;
   std::copy_n(response_bytes.begin(), kBlockByteSize,
@@ -100,11 +99,11 @@ TEST_F(FastPairDecryptionTest, ParseDecryptedExtendedResponseOneAddr_Success) {
 
   // Address bytes.
   std::array<uint8_t, 6> address_bytes = {0x04, 0x05, 0x06, 0x07, 0x08, 0x09};
-  base::ranges::copy(address_bytes, std::back_inserter(response_bytes));
+  std::ranges::copy(address_bytes, std::back_inserter(response_bytes));
 
   // Random salt
   std::array<uint8_t, 7> salt = {0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00};
-  base::ranges::copy(salt, std::back_inserter(response_bytes));
+  std::ranges::copy(salt, std::back_inserter(response_bytes));
   std::array<uint8_t, 9> expected_salt;
   expected_salt.fill(0);
   std::copy(salt.begin(), salt.end(), expected_salt.begin());
@@ -150,17 +149,17 @@ TEST_F(FastPairDecryptionTest, ParseDecryptedExtendedResponseTwoAddr_Success) {
 
   // Address bytes.
   std::array<uint8_t, 6> address_bytes = {0x04, 0x05, 0x06, 0x07, 0x08, 0x09};
-  base::ranges::copy(address_bytes, std::back_inserter(response_bytes));
+  std::ranges::copy(address_bytes, std::back_inserter(response_bytes));
 
   // Secondary address bytes.
   std::array<uint8_t, 6> secondary_address_bytes = {0x0A, 0x0B, 0x0C,
                                                     0x0D, 0x0E, 0x0F};
-  base::ranges::copy(secondary_address_bytes,
-                     std::back_inserter(response_bytes));
+  std::ranges::copy(secondary_address_bytes,
+                    std::back_inserter(response_bytes));
 
   // Random salt
   std::array<uint8_t, 1> salt = {0x10};
-  base::ranges::copy(salt, std::back_inserter(response_bytes));
+  std::ranges::copy(salt, std::back_inserter(response_bytes));
   std::array<uint8_t, 9> expected_salt;
   expected_salt.fill(0);
   std::copy(salt.begin(), salt.end(), expected_salt.begin());
@@ -201,7 +200,7 @@ TEST_F(FastPairDecryptionTest, ParseDecryptedPasskey_Success) {
   // Random salt
   std::array<uint8_t, 12> salt = {0x08, 0x09, 0x0A, 0x08, 0x09, 0x0E,
                                   0x0A, 0x0C, 0x0D, 0x0E, 0x05, 0x02};
-  base::ranges::copy(salt, std::back_inserter(passkey_bytes));
+  std::ranges::copy(salt, std::back_inserter(passkey_bytes));
 
   std::array<uint8_t, kBlockByteSize> passkey_bytes_array;
   std::copy_n(passkey_bytes.begin(), kBlockByteSize,

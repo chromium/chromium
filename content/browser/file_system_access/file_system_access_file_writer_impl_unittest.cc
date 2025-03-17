@@ -356,8 +356,7 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
 
     // Check default bucket exists.
     return quota_manager_proxy_sync
-        .GetBucket(kTestStorageKey, storage::kDefaultBucketName,
-                   blink::mojom::StorageType::kTemporary)
+        .GetBucket(kTestStorageKey, storage::kDefaultBucketName)
         .transform([&](storage::BucketInfo result) {
           EXPECT_EQ(result.name, storage::kDefaultBucketName);
           EXPECT_EQ(result.storage_key, kTestStorageKey);
@@ -555,9 +554,7 @@ TEST_F(FileSystemAccessSandboxedFileWriterImplTest, SkipQuarantine) {
 
 TEST_F(FileSystemAccessSandboxedFileWriterImplTest, QuotaError) {
   ASSERT_TRUE(quota_manager_);
-  quota_manager_->SetQuota(kTestStorageKey,
-                           blink::mojom::StorageType::kTemporary,
-                           /*quota=*/1);
+  quota_manager_->SetQuota(kTestStorageKey, /*quota=*/1);
 
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);

@@ -9,11 +9,12 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/queueable_resource_state_base.h"
 #include "services/webnn/resource_task.h"
-#include "services/webnn/tflite/buffer_content.h"
+#include "services/webnn/tflite/buffer_content_tflite.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/tflite/src/tensorflow/lite/util.h"
 
@@ -26,16 +27,8 @@ TensorImplTflite::Create(
     WebNNContextImpl* context,
     mojom::TensorInfoPtr tensor_info) {
   size_t size = tensor_info->descriptor.PackedByteLength();
-
-  // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
-  //
-  // TODO(crbug.com/356670455): Consider moving this check to the renderer and
-  // throwing a TypeError.
-  if (!base::IsValueInRangeForNumericType<int>(size)) {
-    LOG(ERROR) << "[WebNN] Tensor is too large to create.";
-    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
-                                              "Failed to create tensor."));
-  }
+  // Invalid values are rejected in GraphBuilder.
+  CHECK(base::IsValueInRangeForNumericType<int>(size));
 
   auto buffer_content = std::make_unique<BufferContent>(size);
   auto buffer_state =
@@ -67,10 +60,14 @@ TensorImplTflite::GetBufferState() const {
 
 void TensorImplTflite::ReadTensorImpl(ReadTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ScopedTrace scoped_trace("TensorImplTflite::ReadTensorImpl");
+
   // Lock the buffer contents as shared/read-only.
   std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources = {
       buffer_state_};
 
+  scoped_trace.AddStep("Wait for tensor");
   auto task = base::MakeRefCounted<ResourceTask>(
       std::move(shared_resources),
       /*exclusive_resources=*/
@@ -78,25 +75,32 @@ void TensorImplTflite::ReadTensorImpl(ReadTensorCallback callback) {
       base::BindOnce(
           [](scoped_refptr<QueueableResourceState<BufferContent>>
                  content_handle,
-             ReadTensorCallback callback,
+             ReadTensorCallback callback, ScopedTrace scoped_trace,
              base::OnceClosure completion_closure) {
+            scoped_trace.AddStep("Begin read");
             // Memory copies are fast, avoid the overhead of posting a task
             // to the thread pool and do the work synchronously.
             std::move(callback).Run(
                 mojom::ReadTensorResult::NewBuffer(mojo_base::BigBuffer(
                     content_handle->GetSharedLockedResource().AsSpan())));
+
+            scoped_trace.AddStep("End read");
             std::move(completion_closure).Run();
           },
-          buffer_state_, std::move(callback)));
+          buffer_state_, std::move(callback), std::move(scoped_trace)));
   task->Enqueue();
 }
 
 void TensorImplTflite::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ScopedTrace scoped_trace("TensorImplTflite::WriteTensorImpl");
+
   // Take an exclusive lock to the buffer contents while reading.
   std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources = {
       buffer_state_};
 
+  scoped_trace.AddStep("Wait for tensor");
   auto task = base::MakeRefCounted<ResourceTask>(
       /*shared_resources=*/std::vector<
           scoped_refptr<QueueableResourceStateBase>>(),
@@ -104,16 +108,19 @@ void TensorImplTflite::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
       base::BindOnce(
           [](scoped_refptr<QueueableResourceState<BufferContent>>
                  content_handle,
-             mojo_base::BigBuffer src_buffer,
+             mojo_base::BigBuffer src_buffer, ScopedTrace scoped_trace,
              base::OnceClosure completion_closure) {
+            scoped_trace.AddStep("Begin write");
             // Memory copies are fast, avoid the overhead of posting a task to
             // the thread pool and do the work synchronously.
             content_handle->GetExclusivelyLockedResource()
                 ->AsSpan()
                 .copy_prefix_from(src_buffer);
+
+            scoped_trace.AddStep("End write");
             std::move(completion_closure).Run();
           },
-          buffer_state_, std::move(src_buffer)));
+          buffer_state_, std::move(src_buffer), std::move(scoped_trace)));
   task->Enqueue();
 }
 

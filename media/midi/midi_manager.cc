@@ -6,7 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -15,7 +16,7 @@ namespace midi {
 
 namespace {
 
-using Sample = base::HistogramBase::Sample;
+using Sample32 = base::HistogramBase::Sample32;
 using midi::mojom::PortState;
 using midi::mojom::Result;
 
@@ -44,7 +45,7 @@ enum class SendReceiveUsage {
 };
 
 void ReportUsage(Usage usage) {
-  UMA_HISTOGRAM_ENUMERATION("Media.Midi.Usage", usage);
+  base::UmaHistogramEnumeration("Media.Midi.Usage", usage);
 }
 
 }  // namespace
@@ -62,15 +63,23 @@ MidiManager::~MidiManager() {
     session_thread_runner_ = nullptr;
   }
 
-  if (result_ == Result::INITIALIZATION_ERROR)
+  if (result_ == Result::INITIALIZATION_ERROR) {
     ReportUsage(Usage::ERROR_OBSERVED);
+  }
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Media.Midi.SendReceiveUsage",
+  SendReceiveUsage usage =
       data_sent_ ? (data_received_ ? SendReceiveUsage::SENT_AND_RECEIVED
                                    : SendReceiveUsage::SENT)
                  : (data_received_ ? SendReceiveUsage::RECEIVED
-                                   : SendReceiveUsage::NO_USE));
+                                   : SendReceiveUsage::NO_USE);
+
+  base::UmaHistogramEnumeration("Media.Midi.SendReceiveUsage", usage);
+  const char* backend_name = GetBackendName();
+  if (backend_name) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({
+        "Media.Midi.SendReceiveUsage.", backend_name}), usage);
+  }
 }
 
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN) && \
@@ -175,6 +184,10 @@ void MidiManager::EndAllSessions() {
   }
   pending_clients_.clear();
   clients_.clear();
+}
+
+const char* MidiManager::GetBackendName() const {
+  return nullptr;
 }
 
 void MidiManager::StartInitialization() {

@@ -22,9 +22,10 @@ if (enable_java_templates) {
     jinja_template(_manifest_target) {
       input = "//third_party/android_sdk/AndroidManifest.xml.jinja2"
       output = _manifest_path
-      _library_name = invoker.library_name
       if (defined(invoker.runtime_library_name)) {
         _library_name = invoker.runtime_library_name
+      } else {
+        _library_name = invoker.library_name
       }
       variables = [
         "library_name=$_library_name",
@@ -59,6 +60,11 @@ if (enable_java_templates) {
   }
   android_sdk_optional_library("android_car_java") {
     library_name = "android.car"
+    required = false
+  }
+  android_sdk_optional_library("android_xr_extensions_java") {
+    runtime_library_name = "com.android.extensions.xr"
+    input_jars_paths = "xr_extensions/com.android.extensions.xr.jar"
     required = false
   }
   if (!limit_android_deps) {

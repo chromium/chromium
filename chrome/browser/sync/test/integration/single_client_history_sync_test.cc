@@ -35,6 +35,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
@@ -60,8 +61,15 @@ using testing::UnorderedElementsAre;
 
 namespace {
 
-const char kRedirectFromPath[] = "/redirect.html";
-const char kRedirectToPath[] = "/sync/simple.html";
+constexpr char kRedirectFromPath[] = "/redirect.html";
+constexpr char kRedirectToPath[] = "/sync/simple.html";
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+constexpr char kMetricNameWithHistorySync[] =
+    "Session.TotalDurationMax1Day.WithHistorySync";
+constexpr char kMetricNameWithHistorySyncWithoutAuthError[] =
+    "Session.TotalDurationMax1Day.WithHistorySyncWithoutAuthError";
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 GURL GetFileUrl(const char* file) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -294,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 }
 
 // TODO(crbug.com/40871747): EnterSyncPausedStateForPrimaryAccount is currently
-// not supported on Android. Enable this test once it is.
+// not supported on Android. Enable these tests once it is.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DoesNotUploadWhilePaused) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
@@ -338,6 +346,64 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DoesNotUploadWhilePaused) {
       UnorderedElementsAre(UrlIs(synced_url1.spec()), UrlIs(synced_url2.spec()),
                            UrlIs(synced_url3.spec()))));
 }
+
+// Session total duration is not instrumented on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       PRE_ReportsSessionTotalDurationWhilePaused) {
+  {
+    ASSERT_TRUE(SetupSync());
+
+    base::HistogramTester histograms;
+    metrics::DesktopSessionDurationTracker::Get()->EndSessionForTesting();
+
+    histograms.ExpectTotalCount(kMetricNameWithHistorySync, 1);
+    histograms.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 1);
+  }
+
+  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::PAUSED);
+  ASSERT_TRUE(GetSyncService(0)->HasCachedPersistentAuthErrorForMetrics());
+
+  base::HistogramTester histograms;
+  metrics::DesktopSessionDurationTracker::Get()->EndSessionForTesting();
+
+  histograms.ExpectTotalCount(kMetricNameWithHistorySync, 1);
+  histograms.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       ReportsSessionTotalDurationWhilePaused) {
+  // Invoke the base class directly as this test doesn't need a tab, and it
+  // allows verifying that the very initial transport state is *not* PAUSED.
+  ASSERT_TRUE(SyncTest::SetupClients());
+
+  ASSERT_NE(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::PAUSED);
+  ASSERT_TRUE(GetSyncService(0)->HasCachedPersistentAuthErrorForMetrics());
+
+  {
+    base::HistogramTester histograms;
+    metrics::DesktopSessionDurationTracker::Get()->EndSessionForTesting();
+
+    histograms.ExpectTotalCount(kMetricNameWithHistorySync, 1);
+    histograms.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
+  }
+
+  GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+
+  {
+    base::HistogramTester histograms;
+    metrics::DesktopSessionDurationTracker::Get()->EndSessionForTesting();
+
+    histograms.ExpectTotalCount(kMetricNameWithHistorySync, 1);
+    histograms.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 1);
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsAllFields) {
@@ -882,8 +948,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.HISTORY", 1);
 }
 
-// Signing out or turning off Sync isn't possible in ChromeOS-Ash.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Signing out or turning off Sync isn't possible on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
                        ClearsForeignHistoryOnTurningSyncOff) {
@@ -1034,7 +1100,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   EXPECT_EQ(history_helper::GetVisitsFromClient(0, row.id()).size(), 1u);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // On Android, switches::kSyncUserForTest isn't supported (the passed-in
 // username gets ignored in SyncSigninDelegateAndroid::SigninFake()), so it's

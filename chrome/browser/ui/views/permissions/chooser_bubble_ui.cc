@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
+#include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
@@ -127,7 +128,7 @@ ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   device_chooser_content_view_ =
       new DeviceChooserContentView(this, std::move(chooser_controller));
-  AddChildView(device_chooser_content_view_.get());
+  AddChildViewRaw(device_chooser_content_view_.get());
 
   SetExtraView(device_chooser_content_view_->CreateExtraView());
 
@@ -285,6 +286,7 @@ base::OnceClosure ShowDeviceChooserDialog(
   base::OnceClosure close_closure = bubble->MakeCloseClosure();
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
+  widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelSecurity);
   if (browser->window()->IsActive()) {
     widget->Show();
   } else {

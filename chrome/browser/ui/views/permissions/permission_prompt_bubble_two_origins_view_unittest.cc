@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_two_origins_view.h"
 
+#include <algorithm>
+
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -86,6 +87,9 @@ class TestDelegateTwoOrigins : public permissions::PermissionPrompt::Delegate {
   void SetPromptShown() override {}
   void SetDecisionTime() override {}
   bool RecreateView() override { return false; }
+  const permissions::PermissionPrompt* GetCurrentPrompt() const override {
+    return nullptr;
+  }
 
   base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
@@ -147,8 +151,8 @@ TEST_F(PermissionPromptBubbleTwoOriginsViewTest,
   auto bubble = CreateBubble(&delegate);
 
   const auto title = base::UTF16ToUTF8(bubble->GetWindowTitle());
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "info they've saved about you",
-                      title);
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring,
+                      "information they've saved about you", title);
   // The scheme is not included. Only the origin should be visible.
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "requesting.com", title);
   EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "https://", title);

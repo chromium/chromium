@@ -11,19 +11,18 @@ import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
+import '//resources/cr_elements/cr_scrollable.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/md_select.css.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {CrA11yAnnouncerElement} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrChipElement} from '//resources/cr_elements/cr_chip/cr_chip.js';
 import type {CrFeedbackButtonsElement} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {CrScrollObserverMixin} from '//resources/cr_elements/cr_scroll_observer_mixin.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -93,7 +92,7 @@ export interface ComposeAppElement {
  */
 export const TIMEOUT_MS: number = 700;
 
-const ComposeAppElementBase = I18nMixin(CrScrollObserverMixin(PolymerElement));
+const ComposeAppElementBase = I18nMixin(PolymerElement);
 
 // Enumerates trigger points of compose or regenerate calls.
 // Used to mark where a compose call was made so focus
@@ -335,12 +334,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
         (partialResponse: PartialComposeResponse) => {
           this.partialComposeResponseReceived_(partialResponse);
         });
-  }
-
-  // Overridden from CrScrollObserverMixin in order to change the scrolling
-  // container based on the UI Refinements flag.
-  override getContainer(): HTMLElement {
-    return this.$.resultTextContainer;
   }
 
   private getResponseText_(): TextInput {
@@ -1009,7 +1002,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private screenReaderAnnounce_(message: string, wait: number = 0) {
     setTimeout(() => {
-      const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
+      const announcer = getAnnouncerInstance();
       announcer.announce(message, wait);
     });
   }

@@ -64,16 +64,17 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     GLuint shared_image_texture_id,
-    const SkImageInfo& sk_image_info,
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
     scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-    viz::ReleaseCallback release_callback,
-    bool supports_display_compositing,
-    bool is_overlay_candidate) {
+    viz::ReleaseCallback release_callback) {
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      std::move(shared_image), sync_token, shared_image_texture_id,
-      sk_image_info, supports_display_compositing, is_overlay_candidate,
+      std::move(shared_image), sync_token, shared_image_texture_id, size,
+      format, alpha_type, color_space.ToSkColorSpace(),
       ImageOrientationEnum::kDefault, std::move(context_provider_wrapper),
       context_thread_ref, std::move(context_task_runner),
       std::move(release_callback)));
@@ -82,11 +83,12 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
 // static
 scoped_refptr<AcceleratedStaticBitmapImage>
 AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
-    const gpu::ExportedSharedImage& exported_shared_image,
+    gpu::ExportedSharedImage exported_shared_image,
     const gpu::SyncToken& sync_token,
-    const SkImageInfo& sk_image_info,
-    bool supports_display_compositing,
-    bool is_overlay_candidate,
+    const gfx::Size& size,
+    SkColorType sk_color_type,
+    SkAlphaType alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     base::OnceCallback<void(const gpu::SyncToken&)> external_callback) {
   auto shared_gpu_context = blink::SharedGpuContext::ContextProviderWrapper();
   if (!shared_gpu_context) {
@@ -98,7 +100,7 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
   }
 
   scoped_refptr<gpu::ClientSharedImage> shared_image =
-      sii->ImportSharedImage(exported_shared_image);
+      sii->ImportSharedImage(std::move(exported_shared_image));
   auto release_token = sii->GenVerifiedSyncToken();
   // No need to keep the original image after the new reference has been added.
   // Need to update the sync token, however.
@@ -116,10 +118,10 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
       shared_gpu_context, shared_image);
 
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      std::move(shared_image), sync_token, 0u, sk_image_info,
-      supports_display_compositing, is_overlay_candidate,
-      ImageOrientationEnum::kDefault, shared_gpu_context,
-      base::PlatformThreadRef(),
+      std::move(shared_image), sync_token, 0u, size,
+      viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type), alpha_type,
+      std::move(sk_color_space), ImageOrientationEnum::kDefault,
+      shared_gpu_context, base::PlatformThreadRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
       std::move(release_callback)));
 }
@@ -128,9 +130,10 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     GLuint shared_image_texture_id,
-    const SkImageInfo& sk_image_info,
-    bool supports_display_compositing,
-    bool is_overlay_candidate,
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     const ImageOrientation& orientation,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
@@ -138,9 +141,10 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     viz::ReleaseCallback release_callback)
     : StaticBitmapImage(orientation),
       shared_image_(std::move(shared_image)),
-      sk_image_info_(sk_image_info),
-      supports_display_compositing_(supports_display_compositing),
-      is_overlay_candidate_(is_overlay_candidate),
+      size_(size),
+      format_(format),
+      alpha_type_(alpha_type),
+      sk_color_space_(std::move(sk_color_space)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       mailbox_ref_(
           base::MakeRefCounted<MailboxRef>(sync_token,
@@ -155,10 +159,6 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
 
 AcceleratedStaticBitmapImage::~AcceleratedStaticBitmapImage() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-}
-
-SkImageInfo AcceleratedStaticBitmapImage::GetSkImageInfo() const {
-  return sk_image_info_;
 }
 
 scoped_refptr<StaticBitmapImage>
@@ -190,14 +190,17 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
   auto source_si_texture = shared_image_->CreateGLTexture(dest_gl);
   auto source_scoped_si_access = source_si_texture->BeginAccess(
       mailbox_ref_->sync_token(), /*readonly=*/true);
+  const bool do_alpha_multiply = GetAlphaType() == kUnpremul_SkAlphaType &&
+                                 unpack_premultiply_alpha == true;
+  const bool do_alpha_unmultiply = GetAlphaType() == kPremul_SkAlphaType &&
+                                   unpack_premultiply_alpha == false;
   dest_gl->CopySubTextureCHROMIUM(
       source_scoped_si_access->texture_id(), 0, dest_target, dest_texture_id,
       dest_level, dest_point.x(), dest_point.y(), source_sub_rectangle.x(),
       source_sub_rectangle.y(), source_sub_rectangle.width(),
       source_sub_rectangle.height(), unpack_flip_y,
-      /*unpack_premultiply_alpha=*/GL_FALSE,
-      /*unpack_unmultiply_alpha=*/
-      unpack_premultiply_alpha ? GL_FALSE : GL_TRUE);
+      do_alpha_multiply ? GL_TRUE : GL_FALSE,
+      do_alpha_unmultiply ? GL_TRUE : GL_FALSE);
   auto sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
       std::move(source_scoped_si_access));
 
@@ -319,8 +322,8 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
     DCHECK_EQ(shared_image_texture_id, 0u);
     skia_context_provider_wrapper_ = context_provider_wrapper;
     texture_backing_ = sk_make_sp<MailboxTextureBacking>(
-        shared_image_->mailbox(), mailbox_ref_, sk_image_info_,
-        std::move(context_provider_wrapper));
+        shared_image_->mailbox(), mailbox_ref_, GetSize(), GetSkColorType(),
+        GetAlphaType(), GetSkColorSpace(), std::move(context_provider_wrapper));
     return;
   }
 
@@ -347,10 +350,9 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   texture_info.fID = shared_context_texture_id;
   texture_info.fFormat =
       context_provider_wrapper->ContextProvider().GetGrGLTextureFormat(
-          viz::SkColorTypeToSinglePlaneSharedImageFormat(
-              sk_image_info_.colorType()));
+          GetSharedImageFormat());
   auto backend_texture =
-      GrBackendTextures::MakeGL(sk_image_info_.width(), sk_image_info_.height(),
+      GrBackendTextures::MakeGL(GetSize().width(), GetSize().height(),
                                 skgpu::Mipmapped::kNo, texture_info);
 
   GrSurfaceOrigin origin = IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
@@ -363,15 +365,14 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   release_ctx->context_provider_wrapper = context_provider_wrapper;
 
   sk_sp<SkImage> sk_image = SkImages::BorrowTextureFrom(
-      shared_gr_context, backend_texture, origin, sk_image_info_.colorType(),
-      sk_image_info_.alphaType(), sk_image_info_.refColorSpace(),
-      &ReleaseTexture, release_ctx);
+      shared_gr_context, backend_texture, origin, GetSkColorType(),
+      GetAlphaType(), GetSkColorSpace(), &ReleaseTexture, release_ctx);
 
   if (sk_image) {
     skia_context_provider_wrapper_ = context_provider_wrapper;
     texture_backing_ = sk_make_sp<MailboxTextureBacking>(
-        std::move(sk_image), mailbox_ref_, sk_image_info_,
-        std::move(context_provider_wrapper));
+        std::move(sk_image), mailbox_ref_, GetSize(), GetSkColorType(),
+        GetAlphaType(), GetSkColorSpace(), std::move(context_provider_wrapper));
   }
 }
 
@@ -432,7 +433,8 @@ void AcceleratedStaticBitmapImage::Transfer() {
 }
 
 bool AcceleratedStaticBitmapImage::CurrentFrameKnownToBeOpaque() {
-  return sk_image_info_.isOpaque();
+  return SkAlphaTypeIsOpaque(GetAlphaType()) ||
+         SkColorTypeIsAlwaysOpaque(GetSkColorType());
 }
 
 }  // namespace blink

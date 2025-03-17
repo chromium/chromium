@@ -129,8 +129,6 @@ std::set<HMONITOR>* GetHDRMonitors() {
 IDCompositionDevice3* g_dcomp_device = nullptr;
 // Global d3d11 device used by direct composition.
 ID3D11Device* g_d3d11_device = nullptr;
-// Whether swap chain present failed and direct composition should be disabled.
-bool g_direct_composition_swap_chain_failed = false;
 
 // Preferred overlay format set when detecting overlay support during
 // initialization.  Set to NV12 by default so that it's used when enabling
@@ -618,10 +616,61 @@ void UpdateVideoProcessorAutoHDRSupport() {
 
 }  // namespace
 
+// Pointers to DirectComposition functions, dcomp.dll loaded at runtime in
+// InitializeDirectComposition when compositor clock vsync interval is enabled.
+// DcompositionWaitForCompositorClock function pointer
+using PFN_DCOMPOSITION_WAIT = HRESULT(WINAPI*)(UINT count,
+                                               const HANDLE* handles,
+                                               DWORD timeoutInMs);
+PFN_DCOMPOSITION_WAIT g_wait_for_compositor_clock_function = nullptr;
+
+// DCompositionGetFrameId function pointer
+using PFN_DCOMPOSITION_GET_FRAME_ID =
+    HRESULT(WINAPI*)(COMPOSITION_FRAME_ID_TYPE frameIdType,
+                     COMPOSITION_FRAME_ID* frameId);
+PFN_DCOMPOSITION_GET_FRAME_ID g_get_frame_id_function = nullptr;
+
+// DCompositionGetStatistics function pointer
+using PFN_DCOMPOSITION_GET_STATISTICS =
+    HRESULT(WINAPI*)(COMPOSITION_FRAME_ID frameId,
+                     COMPOSITION_FRAME_STATS* frameStats,
+                     UINT targetIdCount,
+                     COMPOSITION_TARGET_ID* targetIds,
+                     UINT* actualTargetIdCount);
+PFN_DCOMPOSITION_GET_STATISTICS g_get_statistics_function = nullptr;
+
+HRESULT DCompositionWaitForCompositorClock(UINT count,
+                                           const HANDLE* handles,
+                                           DWORD timeoutInMs) {
+  DCHECK(g_wait_for_compositor_clock_function);
+  return g_wait_for_compositor_clock_function(count, handles, timeoutInMs);
+}
+
+HRESULT DCompositionGetFrameId(COMPOSITION_FRAME_ID_TYPE frameIdType,
+                               COMPOSITION_FRAME_ID* frameId) {
+  DCHECK(g_get_frame_id_function);
+  return g_get_frame_id_function(frameIdType, frameId);
+}
+
+HRESULT DCompositionGetStatistics(COMPOSITION_FRAME_ID frameId,
+                                  COMPOSITION_FRAME_STATS* frameStats,
+                                  UINT targetIdCount,
+                                  COMPOSITION_TARGET_ID* targetIds,
+                                  UINT* actualTargetIdCount) {
+  DCHECK(g_get_statistics_function);
+  return g_get_statistics_function(frameId, frameStats, targetIdCount,
+                                   targetIds, actualTargetIdCount);
+}
+
 void InitializeDirectComposition(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
-  DCHECK(!g_dcomp_device);
-  if (GetGlWorkarounds().disable_direct_composition) {
+  CHECK(!g_dcomp_device);
+  if (!d3d11_device) {
+    return;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableDirectComposition)) {
     return;
   }
 
@@ -675,6 +724,22 @@ void InitializeDirectComposition(
 
   g_d3d11_device = d3d11_device.Detach();
 
+  if (features::UseCompositorClockVSyncInterval()) {
+    g_get_frame_id_function = reinterpret_cast<PFN_DCOMPOSITION_GET_FRAME_ID>(
+        ::GetProcAddress(dcomp_module, "DCompositionGetFrameId"));
+    CHECK(g_get_frame_id_function);
+
+    g_get_statistics_function =
+        reinterpret_cast<PFN_DCOMPOSITION_GET_STATISTICS>(
+            ::GetProcAddress(dcomp_module, "DCompositionGetStatistics"));
+    CHECK(g_get_statistics_function);
+
+    g_wait_for_compositor_clock_function =
+        reinterpret_cast<PFN_DCOMPOSITION_WAIT>(::GetProcAddress(
+            dcomp_module, "DCompositionWaitForCompositorClock"));
+    CHECK(g_wait_for_compositor_clock_function);
+  }
+
   UpdateVideoProcessorAutoHDRSupport();
 }
 
@@ -696,7 +761,7 @@ ID3D11Device* GetDirectCompositionD3D11Device() {
 }
 
 bool DirectCompositionSupported() {
-  return g_dcomp_device && !g_direct_composition_swap_chain_failed;
+  return g_dcomp_device;
 }
 
 bool DirectCompositionOverlaysSupported() {
@@ -1021,14 +1086,6 @@ void SetDirectCompositionOverlayWorkarounds(
   g_force_rgb10a2_overlay_support = workarounds.force_rgb10a2_overlay_support;
   g_check_ycbcr_studio_g22_left_p709_for_nv12_support =
       workarounds.check_ycbcr_studio_g22_left_p709_for_nv12_support;
-}
-
-void SetDirectCompositionSwapChainFailed() {
-  if (!g_direct_composition_swap_chain_failed) {
-    g_direct_composition_swap_chain_failed = true;
-    DirectCompositionOverlayCapsMonitor::GetInstance()
-        ->NotifyOverlayCapsChanged();
-  }
 }
 
 void SetDirectCompositionMonitorInfoForTesting(

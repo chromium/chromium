@@ -236,8 +236,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings20:keyboard-lock',
       enabledLabel: 'siteSettingsKeyboardLockAllowed',
       disabledLabel: 'siteSettingsKeyboardLockBlocked',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
+      shouldShow: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
     },
     {
       route: routes.SITE_SETTINGS_LOCAL_FONTS,
@@ -246,6 +245,16 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'privacy:font-download',
       enabledLabel: 'siteSettingsFontsAllowed',
       disabledLabel: 'siteSettingsFontsBlocked',
+    },
+    {
+      route: routes.SITE_SETTINGS_LOCAL_NETWORK_ACCESS,
+      id: Id.LOCAL_NETWORK_ACCESS,
+      label: 'siteSettingsLocalNetworkAccess',
+      icon: 'settings:devices',
+      enabledLabel: 'siteSettingsLocalNetworkAccessAsk',
+      disabledLabel: 'siteSettingsLocalNetworkAccessBlock',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
     },
     {
       route: routes.SITE_SETTINGS_MICROPHONE,
@@ -308,16 +317,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings:performance',
       enabledLabel: 'siteSettingsPerformanceSublabel',
       disabledLabel: 'siteSettingsPerformanceSublabel',
-    },
-    {
-      route: routes.SITE_SETTINGS_POINTER_LOCK,
-      id: Id.POINTER_LOCK,
-      label: 'siteSettingsPointerLock',
-      icon: 'settings20:pointer-lock',
-      enabledLabel: 'siteSettingsPointerLockAllowed',
-      disabledLabel: 'siteSettingsPointerLockBlocked',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
     },
     {
       route: routes.SITE_SETTINGS_POPUPS,
@@ -531,11 +530,11 @@ export class SettingsSiteSettingsPageElement extends
               Id.AUTO_PICTURE_IN_PICTURE,
               Id.CAPTURED_SURFACE_CONTROL,
               Id.KEYBOARD_LOCK,
-              Id.POINTER_LOCK,
               // <if expr="is_chromeos">
               Id.SMART_CARD_READERS,
               // </if>
               Id.WEB_APP_INSTALLATION,
+              Id.LOCAL_NETWORK_ACCESS,
             ]),
             contentBasic: buildItemListFromIds([
               Id.COOKIES,
@@ -580,13 +579,6 @@ export class SettingsSiteSettingsPageElement extends
         type: Boolean,
         value: () => loadTimeData.getBoolean(
             'safetyHubAbusiveNotificationRevocationEnabled'),
-      },
-
-      enableSafetyHub_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableSafetyHub');
-        },
       },
 
       unusedSitePermissionsHeader_: String,
@@ -669,13 +661,13 @@ export class SettingsSiteSettingsPageElement extends
         permissions.length > 0 && !loadTimeData.getBoolean('isGuest');
     this.unusedSitePermissionsHeader_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckUnusedSitePermissionsPrimaryLabel', permissions.length);
+            'safetyHubUnusedSitePermissionsPrimaryLabel', permissions.length);
     // TODO(crbug/342210522): Add test for this.
     this.unusedSitePermissionsSubheader_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             this.safetyHubAbusiveNotificationRevocationEnabled_ ?
                 'safetyHubRevokedPermissionsSecondaryLabel' :
-                'safetyCheckUnusedSitePermissionsSecondaryLabel',
+                'safetyHubUnusedSitePermissionsSecondaryLabel',
             permissions.length);
   }
 

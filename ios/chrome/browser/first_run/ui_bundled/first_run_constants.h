@@ -16,6 +16,11 @@ extern NSString* const kFirstRunSignInScreenAccessibilityIdentifier;
 // run.
 extern NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier;
 
+// The accessibility identifier for the animated Default browser screen shown in
+// first run.
+extern NSString* const
+    kFirstRunAnimatedDefaultBrowserScreenAccessibilityIdentifier;
+
 // The accessibility identifier for the Omnibox position choice screen shown in
 // first run.
 extern NSString* const
@@ -33,6 +38,6 @@ extern NSString* const kLaunchScreenAccessibilityIdentifier;
 // Accessibility identifier of the enterprise loading screen.
 extern NSString* const kEnterpriseLoadingScreenAccessibilityIdentifier;
 
-}  // first_run
+}  // namespace first_run
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FIRST_RUN_CONSTANTS_H_

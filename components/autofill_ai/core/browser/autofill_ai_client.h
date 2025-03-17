@@ -5,24 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_CLIENT_H_
 #define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_CLIENT_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
-#include "components/user_annotations/user_annotations_types.h"
-
-class GURL;
-
-namespace optimization_guide::proto {
-class AXTreeUpdate;
-}
-
-namespace url {
-class Origin;
-}  // namespace url
-
-namespace user_annotations {
-class UserAnnotationsService;
-}
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill_ai {
 
@@ -32,85 +21,64 @@ class AutofillAiManager;
 // An interface for embedder actions, e.g. Chrome on Desktop.
 //
 // A client should be created only if
-// `IsAutofillAiSupported()`. However,
-// `IsAutofillAiSupported()` is not necessarily a constant
-// over the lifetime of the client. For example, the user may disable Autofill
-// in the settings while the client is alive.
+// `AutofillAiIsPlatformAndEnterprisePolicyEligible()`. However,
+// `AutofillAiIsPlatformAndEnterprisePolicyEligible()` is not necessarily a
+// constant over the lifetime of the client. For example, the user may disable
+// Autofill in the settings while the client is alive.
 class AutofillAiClient {
  public:
-  // The callback to extract the accessibility tree snapshot.
-  using AXTreeCallback =
-      base::OnceCallback<void(optimization_guide::proto::AXTreeUpdate)>;
+  // Contains the result of a user interaction with the save/update AutofillAi
+  // prompt.
+  struct SaveOrUpdatePromptResult final {
+    SaveOrUpdatePromptResult();
+    SaveOrUpdatePromptResult(bool did_user_decline,
+                             std::optional<autofill::EntityInstance> entity);
+    SaveOrUpdatePromptResult(const SaveOrUpdatePromptResult&);
+    SaveOrUpdatePromptResult(SaveOrUpdatePromptResult&&);
+    SaveOrUpdatePromptResult& operator=(const SaveOrUpdatePromptResult&);
+    SaveOrUpdatePromptResult& operator=(SaveOrUpdatePromptResult&&);
+    ~SaveOrUpdatePromptResult();
+
+    // Whether the user explicitly declined the dialog.
+    bool did_user_decline = false;
+
+    // Non-empty iff the prompt was accepted.
+    std::optional<autofill::EntityInstance> entity;
+  };
+  using SaveOrUpdatePromptResultCallback =
+      base::OnceCallback<void(SaveOrUpdatePromptResult result)>;
 
   virtual ~AutofillAiClient() = default;
 
   // Returns the AutofillClient that is scoped to the same object (e.g., tab) as
   // this AutofillAiClient.
   virtual autofill::AutofillClient& GetAutofillClient() = 0;
-
-  // Calls `callback` with the accessibility tree snapshot.
-  virtual void GetAXTree(AXTreeCallback callback) = 0;
+  const autofill::AutofillClient& GetAutofillClient() const {
+    return const_cast<const autofill::AutofillClient&>(
+        const_cast<AutofillAiClient*>(this)->GetAutofillClient());
+  }
 
   // Returns the `AutofillAiManager` associated with this
   // client.
   virtual AutofillAiManager& GetManager() = 0;
 
-  // Returns the Autofill AI model executor associated with the client's web
-  // contents.
-  // TODO(crbug.com/372432481): Make this return a reference.
-  virtual AutofillAiModelExecutor* GetModelExecutor() = 0;
+  // Returns a pointer to the current profile's `autofill::EntityDataManager`.
+  // Can be `nullptr` if `features::kAutofillAiWithDataSchema` is disabled.
+  virtual autofill::EntityDataManager* GetEntityDataManager() = 0;
 
-  // Returns the last committed URL of the primary main frame.
-  virtual const GURL& GetLastCommittedURL() = 0;
-
-  // Returns the last committed origin of the primary main frame.
-  virtual const url::Origin& GetLastCommittedOrigin() = 0;
-
-  // Returns the title of the web contents.
-  virtual std::string GetTitle() = 0;
-
-  // Returns a pointer to the current profile's `UserAnnotationsService`. Can be
-  // `nullptr`.
-  virtual user_annotations::UserAnnotationsService*
-  GetUserAnnotationsService() = 0;
-
-  // Returns whether the feature is enabled in the prefs
-  // (`autofill::prefs::kAutofillAisEnabled`).
-  //
-  // This is different from `IsAutofillAiSupported()`, which
-  // checks if the user could enable the feature in the first case (if not, the
-  // client is not instantiated in the first place).
-  virtual bool IsAutofillAiEnabledPref() const = 0;
-
-  // Opens the feedback page if the feature is allowed for feedback.
-  virtual void TryToOpenFeedbackPage(const std::string& feedback_id) = 0;
-
-  // Opens the settings page for Autofill AI.
-  virtual void OpenAutofillAiSettings() = 0;
-
-  // Returns whether the current user is eligible for Autofill AI.
-  virtual bool IsUserEligible() = 0;
-
-  // Returns a pointer to a FormStructure for the corresponding `form_data`
+  // Returns a pointer to a `FormStructure` for the corresponding `form_id`
   // from the Autofill cache. Can be a `nullptr` when the structure was not
   // found or if the driver is not available.
   virtual autofill::FormStructure* GetCachedFormStructure(
-      const autofill::FormData& form_data) = 0;
+      const autofill::FormGlobalId& form_id) = 0;
 
-  // Returns the Autofill filling value for `field` of type `field_type` for the
-  // Autofill profile identified by `autofill_profile_guid`, if any. Only
-  // supports name types, and returns an empty string for all other types.
-  virtual std::u16string GetAutofillNameFillingValue(
-      const std::string& autofill_profile_guid,
-      autofill::FieldType field_type,
-      const autofill::FormFieldData& field) = 0;
-
-  // Shows a bubble asking whether the user wants to save Autofill AI data.
-  virtual void ShowSaveAutofillAiBubble(
-      std::unique_ptr<user_annotations::FormAnnotationResponse>
-          form_annotation_response,
-      user_annotations::PromptAcceptanceCallback
-          prompt_acceptance_callback) = 0;
+  // Shows a bubble asking whether the user wants to save or update Autofill AI
+  // data. `old_entity` is present in the update cases. It is used to give users
+  // a better understanding of what was updated.
+  virtual void ShowSaveOrUpdateBubble(
+      autofill::EntityInstance new_entity,
+      std::optional<autofill::EntityInstance> old_entity,
+      SaveOrUpdatePromptResultCallback save_prompt_acceptance_callback) = 0;
 };
 
 }  // namespace autofill_ai

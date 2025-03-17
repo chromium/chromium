@@ -4,16 +4,20 @@
 
 #include "chrome/browser/ui/views/payments/shipping_address_editor_view_controller.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/validating_combobox.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
@@ -30,6 +34,7 @@
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/payments_profile_comparator.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/variations/service/variations_service.h"
 #include "third_party/libaddressinput/messages.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
@@ -138,9 +143,14 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
   switch (type) {
     case autofill::ADDRESS_HOME_COUNTRY: {
       auto model = std::make_unique<autofill::CountryComboboxModel>();
-      model->SetCountries(*state()->GetPersonalDataManager(),
-                          base::RepeatingCallback<bool(const std::string&)>(),
-                          state()->GetApplicationLocale());
+      const variations::VariationsService* variations_service =
+          g_browser_process->variations_service();
+      model->SetCountries(
+          GeoIpCountryCode(variations_service
+                               ? variations_service->GetLatestCountry()
+                               : std::string()),
+          base::RepeatingCallback<bool(const std::string&)>(),
+          state()->GetApplicationLocale());
       if (model->countries().size() != countries_.size()) {
         UpdateCountries(model.get());
       }
@@ -237,15 +247,14 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 
 std::u16string
 ShippingAddressEditorViewController::ShippingAddressValidationDelegate::Format(
-    const std::u16string& text) {
+    std::u16string_view text) {
   if (controller_ &&
       controller_->chosen_country_index_ < controller_->countries_.size()) {
     return base::UTF8ToUTF16(autofill::i18n::FormatPhoneForDisplay(
         base::UTF16ToUTF8(text),
         controller_->countries_[controller_->chosen_country_index_].first));
-  } else {
-    return text;
   }
+  return std::u16string(text);
 }
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
@@ -296,7 +305,7 @@ void ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 }
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
-    ValidateValue(const std::u16string& value, std::u16string* error_message) {
+    ValidateValue(std::u16string_view value, std::u16string* error_message) {
   if (!controller_ || !controller_->spec()) {
     return false;
   }
@@ -391,21 +400,24 @@ void ShippingAddressEditorViewController::UpdateCountries(
     autofill::CountryComboboxModel* model) {
   autofill::CountryComboboxModel local_model;
   if (!model) {
+    const variations::VariationsService* variations_service =
+        g_browser_process->variations_service();
     local_model.SetCountries(
-        *state()->GetPersonalDataManager(),
+        GeoIpCountryCode(variations_service
+                             ? variations_service->GetLatestCountry()
+                             : std::string()),
         base::RepeatingCallback<bool(const std::string&)>(),
         state()->GetApplicationLocale());
     model = &local_model;
   }
 
-  for (size_t i = 0; i < model->countries().size(); ++i) {
-    autofill::AutofillCountry* country(model->countries()[i].get());
+  for (const auto& i : model->countries()) {
+    autofill::AutofillCountry* country(i.get());
     if (country) {
-      countries_.push_back(
-          std::make_pair(country->country_code(), country->name()));
+      countries_.emplace_back(country->country_code(), country->name());
     } else {
       // Separator, kept to make sure the size of the vector stays the same.
-      countries_.push_back(std::make_pair("", u""));
+      countries_.emplace_back("", u"");
     }
   }
   // If there is a profile to edit, make sure to use its country for the initial
@@ -536,8 +548,8 @@ bool ShippingAddressEditorViewController::SaveFieldsToProfile(
   for (const auto& field : text_fields()) {
     // ValidatingTextfield* is the key, EditorField is the value.
     if (field.first->IsValid()) {
-      success =
-          profile->SetInfo(field.second.type, field.first->GetText(), locale);
+      success = profile->SetInfo(
+          field.second.type, std::u16string(field.first->GetText()), locale);
     } else {
       success = false;
     }

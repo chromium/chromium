@@ -86,7 +86,7 @@ CloseButton::CloseButton(PressedCallback callback,
   // Add a rounded rect background. The rounding will be half the button size so
   // it is a circle.
   if (!IsFloatingCloseButton(type_)) {
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         background_color_id, GetCloseButtonSize(type_) / 2));
   }
 

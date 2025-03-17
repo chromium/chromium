@@ -35,15 +35,17 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -51,6 +53,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -67,11 +70,9 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit test suite for AutofillProfilesFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE,
-    ChromeFeatureList.PLUS_ADDRESSES_ENABLED
-})
-// TODO(crbug.com/344657376): Failing when batched, batch this again.
+@EnableFeatures({ChromeFeatureList.PLUS_ADDRESSES_ENABLED})
+@Batch(Batch.PER_CLASS)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutofillProfilesFragmentTest {
     private static final AutofillProfile sLocalOrSyncProfile =
             AutofillProfile.builder()
@@ -676,25 +677,14 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
-        assertEquals(0, findPreference(sAccountProfile.getFullName()).getWidgetLayoutResource());
         assertEquals(
-                0, findPreference(sLocalOrSyncProfile.getFullName()).getWidgetLayoutResource());
-    }
-
-    /** Cloud off icons are shown conditionally depending on the 2 feature flags being turned on. */
-    @Test
-    @MediumTest
-    @Feature({"Preferences"})
-    @DisableFeatures({ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE})
-    public void testLocalProfiles_NoRequiredFeatureFlags() throws Exception {
-        setUpMockPrimaryAccount("test@account.com");
-        setUpMockSyncService(false, new HashSet());
-
-        // Trigger address profile list rebuild.
-        mHelper.setProfile(sAccountProfile);
-        assertEquals(0, findPreference(sAccountProfile.getFullName()).getWidgetLayoutResource());
+                0,
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
         assertEquals(
-                0, findPreference(sLocalOrSyncProfile.getFullName()).getWidgetLayoutResource());
+                0,
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
     }
 
     @Test
@@ -706,10 +696,14 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
-        assertEquals(0, findPreference(sAccountProfile.getFullName()).getWidgetLayoutResource());
+        assertEquals(
+                0,
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
         assertEquals(
                 R.layout.autofill_local_profile_icon,
-                findPreference(sLocalOrSyncProfile.getFullName()).getWidgetLayoutResource());
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
     }
 
     @Test
@@ -721,10 +715,14 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
-        assertEquals(0, findPreference(sAccountProfile.getFullName()).getWidgetLayoutResource());
+        assertEquals(
+                0,
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
         assertEquals(
                 R.layout.autofill_local_profile_icon,
-                findPreference(sLocalOrSyncProfile.getFullName()).getWidgetLayoutResource());
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
     }
 
     @Test
@@ -736,9 +734,14 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
-        assertEquals(0, findPreference(sAccountProfile.getFullName()).getWidgetLayoutResource());
         assertEquals(
-                0, findPreference(sLocalOrSyncProfile.getFullName()).getWidgetLayoutResource());
+                0,
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
+        assertEquals(
+                0,
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
     }
 
     private void checkPreferenceCount(int expectedPreferenceCount) {

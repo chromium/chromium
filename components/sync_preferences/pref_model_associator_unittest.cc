@@ -19,6 +19,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
@@ -739,7 +740,7 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
     : public testing::Test {
  protected:
   PrefModelAssociatorWithPreferencesAccountStorageTest()
-      : feature_list_(syncer::kEnablePreferencesAccountStorage),
+      : feature_list_(switches::kEnablePreferencesAccountStorage),
         client_(base::MakeRefCounted<TestPrefModelAssociatorClient>()),
         pref_registry_(
             base::MakeRefCounted<user_prefs::PrefRegistrySyncable>()),

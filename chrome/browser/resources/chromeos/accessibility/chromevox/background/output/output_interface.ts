@@ -5,12 +5,12 @@
 /**
  * @fileoverview Interface for the central output class for ChromeVox.
  */
-import {CursorRange} from '/common/cursors/range.js';
+import type {CursorRange} from '/common/cursors/range.js';
 
-import {Spannable} from '../../common/spannable.js';
+import type {Spannable} from '../../common/spannable.js';
 
-import {OutputFormatLogger} from './output_logger.js';
-import {OutputAction, OutputEventType} from './output_types.js';
+import type {OutputFormatLogger} from './output_logger.js';
+import type {OutputAction, OutputEventType} from './output_types.js';
 
 import AutomationNode = chrome.automation.AutomationNode;
 

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.media;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -94,15 +96,15 @@ public class MediaViewerUtilsTest {
 
         mCustomTabActivityTestRule.waitForActivityCompletelyLoaded();
 
-        ViewGroup customActionButtons =
-                mCustomTabActivityTestRule.getActivity().findViewById(R.id.action_buttons);
+        Activity activity = mCustomTabActivityTestRule.getActivity();
+        ViewGroup container = activity.findViewById(R.id.action_buttons);
         Assert.assertEquals(
                 "allowShareAction = false will lead to no custom action being added.",
                 0,
-                customActionButtons.getChildCount());
+                CustomTabToolbar.getCustomActionButtonCountForTesting(container));
         Assert.assertNull(
                 "allowExternalAppHandlers = false will lead to 0 menu items in CCT. "
                         + "Menu button should be hidden.",
-                mCustomTabActivityTestRule.getActivity().findViewById(R.id.menu_button_wrapper));
+                activity.findViewById(R.id.menu_button_wrapper));
     }
 }

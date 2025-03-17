@@ -4,14 +4,19 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.Button;
 
-import androidx.annotation.Nullable;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A preference with a highlighted background and prominent call to action button. */
+@NullMarked
 public class CardWithButtonPreference extends ChromeBasePreference {
     private @Nullable CharSequence mButtonText;
     private @Nullable Runnable mOnButtonClick;
@@ -35,6 +40,7 @@ public class CardWithButtonPreference extends ChromeBasePreference {
         holder.itemView.setClickable(false);
 
         Button button = (Button) holder.findViewById(R.id.card_button);
+        assumeNonNull(button);
         button.setText(mButtonText);
         button.setOnClickListener(
                 (v) -> {

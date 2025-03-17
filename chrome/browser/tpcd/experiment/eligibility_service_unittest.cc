@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/to_string.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -48,10 +49,6 @@ using TpcdExperimentEligibility = privacy_sandbox::TpcdExperimentEligibility;
 constexpr char kReasonForEligibilityStoredInPrefsHistogram[] =
     "PrivacySandbox.CookieDeprecationFacilitatedTesting."
     "ReasonForEligibilityStoredInPrefs";
-
-constexpr char kReasonForComputedEligibilityForProfileHistogram[] =
-    "PrivacySandbox.CookieDeprecationFacilitatedTesting."
-    "ReasonForComputedEligibilityForProfile";
 
 }  // namespace
 
@@ -113,10 +110,6 @@ TEST_F(EligibilityServiceTest, ClientEligibilityKnown_ClientEligibilityNotSet) {
                                          experiment_manager_.get());
 
   histograms.ExpectTotalCount(kReasonForEligibilityStoredInPrefsHistogram, 0);
-  histograms.ExpectUniqueSample(
-      kReasonForComputedEligibilityForProfileHistogram,
-      /*sample=*/TpcdExperimentEligibility::Reason::kEligible,
-      /*expected_bucket_count=*/1);
 }
 
 TEST_F(EligibilityServiceTest,
@@ -140,10 +133,6 @@ TEST_F(EligibilityServiceTest,
 
   histograms.ExpectUniqueSample(
       kReasonForEligibilityStoredInPrefsHistogram,
-      /*sample=*/TpcdExperimentEligibility::Reason::k3pCookiesBlocked,
-      /*expected_bucket_count=*/1);
-  histograms.ExpectUniqueSample(
-      kReasonForComputedEligibilityForProfileHistogram,
       /*sample=*/TpcdExperimentEligibility::Reason::k3pCookiesBlocked,
       /*expected_bucket_count=*/1);
 }
@@ -171,10 +160,6 @@ TEST_F(EligibilityServiceTest,
       kReasonForEligibilityStoredInPrefsHistogram,
       /*sample=*/TpcdExperimentEligibility::Reason::kEligible,
       /*expected_bucket_count=*/1);
-  histograms.ExpectUniqueSample(
-      kReasonForComputedEligibilityForProfileHistogram,
-      /*sample=*/TpcdExperimentEligibility::Reason::kEligible,
-      /*expected_bucket_count=*/1);
 }
 
 class EligibilityServiceOTRProfileTest
@@ -184,7 +169,7 @@ class EligibilityServiceOTRProfileTest
   EligibilityServiceOTRProfileTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
-        {{"enable_otr_profiles", GetParam() ? "true" : "false"}});
+        {{"enable_otr_profiles", base::ToString(GetParam())}});
   }
 
  private:

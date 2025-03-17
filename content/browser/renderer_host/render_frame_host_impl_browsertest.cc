@@ -102,6 +102,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -217,6 +218,9 @@ class FirstPartySchemeContentBrowserClient
 class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
  public:
   using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
+  using NavigationStartAdjustmentType =
+      NavigationRequest::NavigationStartAdjustmentType;
+
   RenderFrameHostImplBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
   ~RenderFrameHostImplBrowserTest() override = default;
@@ -244,6 +248,11 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
                                     "--expose_gc");
 
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "WebOTP");
+
+    // URLLoaderFactoryNotTrusted test could trigger ReportBadMessage and crash
+    // network service process. Use kIgnoreBadMessageForTesting switch to
+    // ignore the bad message.
+    command_line->AppendSwitch(network::switches::kIgnoreBadMessageForTesting);
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
@@ -743,8 +752,17 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   TestJavaScriptDialogManager dialog_manager;
   web_contents()->SetDelegate(&dialog_manager);
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(), GetTestUrl("render_frame_host", "beforeunload.html")));
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(NavigateToURL(
+        shell(), GetTestUrl("render_frame_host", "beforeunload.html")));
+    histogram_tester.ExpectUniqueSample("Navigation.StartAdjustment.AllFrames",
+                                        NavigationStartAdjustmentType::kNone,
+                                        1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.MainFrameOnly",
+        NavigationStartAdjustmentType::kNone, 1);
+  }
   // Disable the hang monitor, otherwise there will be a race between the
   // beforeunload dialog and the beforeunload hang timer.
   web_contents()
@@ -753,8 +771,21 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Reload. There should be no beforeunload dialog because there was no gesture
   // on the page. If there was, this WaitForLoadStop call will hang.
-  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  {
+    base::HistogramTester histogram_tester;
+    web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.AllFrames",
+        NavigationStartAdjustmentType::kBeforeUnloadHandlers, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.MainFrameOnly",
+        NavigationStartAdjustmentType::kBeforeUnloadHandlers, 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.BeforeUnloadHandlers", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.BeforeUnloadHandlers.Percentage", 1);
+  }
 
   // Give the page a user gesture and try reloading again. This time there
   // should be a dialog. If there is no dialog, the call to Wait will hang.
@@ -762,17 +793,156 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       ->GetPrimaryMainFrame()
       ->ExecuteJavaScriptWithUserGestureForTests(
           std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
-  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
-  dialog_manager.Wait();
+  {
+    base::HistogramTester histogram_tester;
+    web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+    dialog_manager.Wait();
 
-  // Answer the dialog.
-  dialog_manager.Run(true, std::u16string());
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    // Answer the dialog.
+    dialog_manager.Run(true, std::u16string());
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.AllFrames",
+        NavigationStartAdjustmentType::kBeforeUnloadDialog, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.MainFrameOnly",
+        NavigationStartAdjustmentType::kBeforeUnloadDialog, 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.BeforeUnloadDialog", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.BeforeUnloadDialog.Percentage", 1);
+  }
 
   // The reload should have cleared the user gesture bit, so upon leaving again
   // there should be no beforeunload dialog.
   shell()->LoadURL(GURL("about:blank"));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  web_contents()->SetDelegate(nullptr);
+}
+
+// Test that beforeunload handlers registered in out-of-process iframes can
+// display dialogs, even during renderer-initiated navigations in a process that
+// does not have a beforeunload handler. Also verifies that the correct metrics
+// are recorded.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       BeforeUnloadDialogInOOPIF) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  TestJavaScriptDialogManager dialog_manager;
+  web_contents()->SetDelegate(&dialog_manager);
+
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+
+  // A same-document navigation does not result in an adjustment, nor does it
+  // record an adjustment metric.
+  {
+    base::HistogramTester histogram_tester;
+    TestNavigationObserver nav_observer(web_contents());
+    ASSERT_TRUE(ExecJs(shell(), "location.hash = 'foo';"));
+    nav_observer.WaitForNavigationFinished();
+    histogram_tester.ExpectTotalCount("Navigation.StartAdjustment.AllFrames",
+                                      0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.MainFrameOnly", 0);
+  }
+
+  // Create an out-of-process iframe.
+  GURL subframe_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  {
+    base::HistogramTester histogram_tester;
+    std::string subframe_script = JsReplace(
+        "var f = document.createElement('iframe');"
+        "f.id = 'subframe';"
+        "f.src = $1;"
+        "document.body.append(f);",
+        subframe_url);
+    ASSERT_TRUE(ExecJs(shell(), subframe_script));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    // No adjustment is made on a renderer-initiated navigation that targets a
+    // local frame.
+    histogram_tester.ExpectUniqueSample("Navigation.StartAdjustment.AllFrames",
+                                        NavigationStartAdjustmentType::kNone,
+                                        1);
+    // This does not contribute to MainFrameOnly counts.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.MainFrameOnly", 0);
+  }
+  ASSERT_EQ(1u, root->child_count());
+  FrameTreeNode* child = root->child_at(0u);
+  EXPECT_NE(root->current_frame_host()->GetProcess(),
+            child->current_frame_host()->GetProcess());
+
+  // Navigate the remote iframe to a page with a beforeunload handler.
+  GURL beforeunload_url(embedded_test_server()->GetURL(
+      "b.com", "/render_frame_host/beforeunload.html"));
+  {
+    base::HistogramTester histogram_tester;
+    TestFrameNavigationObserver nav_observer(child->current_frame_host());
+    std::string subframe_script = JsReplace(
+        "iframe = document.querySelector('#subframe');"
+        "iframe.contentWindow.location.href = $1;",
+        beforeunload_url);
+    ASSERT_TRUE(ExecJs(shell(), subframe_script));
+    // It is important to use `Wait` and not `WaitForCommit` here, to allow the
+    // load to finish and the beforeunload handler to be registered with the
+    // browser process. If the next navigation starts in the main frame's
+    // process and reaches the browser process before the beforeunload handler
+    // is registered, the dialog will not be displayed.
+    nav_observer.Wait();
+    EXPECT_TRUE(child->current_frame_host()->GetSuddenTerminationDisablerState(
+        blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler));
+    // A legacy PostTask is used when a renderer-initiated navigation targets a
+    // remote frame that has no beforeunload handler.
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.AllFrames",
+        NavigationStartAdjustmentType::kLegacyPostTask, 1);
+    // This does not contribute to MainFrameOnly counts.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.MainFrameOnly", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.LegacyPostTask", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.LegacyPostTask.Percentage", 1);
+  }
+  EXPECT_NE(root->current_frame_host()->GetProcess(),
+            child->current_frame_host()->GetProcess());
+
+  // Disable hang monitor and grant a user gesture to all frames, so that the
+  // dialog will reliably appear.
+  PrepContentsForBeforeUnloadTest(web_contents(),
+                                  /*trigger_user_activation=*/true);
+  ASSERT_TRUE(child->HasTransientUserActivation());
+
+  // Navigate the iframe from the main frame's process, which doesn't know about
+  // the beforeunload handler. The browser process should check with the
+  // subframe's process and show a beforeunload dialog. If there is no dialog,
+  // the call to Wait will hang.
+  {
+    base::HistogramTester histogram_tester;
+    TestFrameNavigationObserver nav_observer(child->current_frame_host());
+    std::string subframe_script = JsReplace(
+        "iframe = document.querySelector('#subframe');"
+        "iframe.contentWindow.location.href = $1;",
+        subframe_url);
+    ASSERT_TRUE(ExecJs(shell(), subframe_script));
+    dialog_manager.Wait();
+
+    // Answer the dialog.
+    dialog_manager.Run(true, std::u16string());
+    nav_observer.Wait();
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.AllFrames",
+        NavigationStartAdjustmentType::kBeforeUnloadDialog, 1);
+    // This does not contribute to MainFrameOnly counts.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.MainFrameOnly", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.BeforeUnloadDialog", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.BeforeUnloadDialog.Percentage", 1);
+  }
 
   web_contents()->SetDelegate(nullptr);
 }
@@ -2139,10 +2309,57 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, POSTNavigation) {
                   ->GetHasPostData());
 
   // Reload and verify the form was submitted.
-  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  {
+    base::HistogramTester histogram_tester;
+    web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+    // This browser-initiated reload adjusts navigation start time for a legacy
+    // PostTask, without any beforeunload handlers present.
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.AllFrames",
+        NavigationStartAdjustmentType::kLegacyPostTask, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.MainFrameOnly",
+        NavigationStartAdjustmentType::kLegacyPostTask, 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.LegacyPostTask", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.LegacyPostTask.Percentage", 1);
+  }
   EXPECT_EQ("text=&select=a", base::UTF16ToASCII(web_contents()->GetTitle()));
   CHECK_EQ(2, post_counter);
+}
+
+// Tests navigation metrics for back to back reloads, without waiting for the
+// first reload to complete. This currently incorrectly creates a negative
+// adjustment to the start time, because a posted task from the first navigation
+// updates the start time of the second navigation (after the first is
+// canceled). See https://crbug.com/385170155.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, BackToBackReloads) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  base::HistogramTester histogram_tester;
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // The negative adjustment counts as a legacy post task case, but its time
+  // should show up in a separate negative time bucket, without a corresponding
+  // percentage value.
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.StartAdjustment.AllFrames",
+      NavigationStartAdjustmentType::kLegacyPostTask, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.StartAdjustment.MainFrameOnly",
+      NavigationStartAdjustmentType::kLegacyPostTask, 1);
+  histogram_tester.ExpectTotalCount(
+      "Navigation.StartAdjustment.LegacyPostTask.Negative", 1);
+  histogram_tester.ExpectTotalCount("Navigation.StartAdjustment.LegacyPostTask",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Navigation.StartAdjustment.LegacyPostTask.Percentage", 0);
 }
 
 namespace {
@@ -6104,6 +6321,120 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
                      ->IsProcessShutdownDelayedForTesting());
   }
 }
+
+// Renderer process reuse with empty available renderers tests. Feature flag
+// kTrackEmptyRendererProcessesForReuse controls enablement.
+class RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kTrackEmptyRendererProcessesForReuse);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    RenderFrameHostImplBrowserTest::SetUpCommandLine(command_line);
+    IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest,
+                       ReuseEmptyAvailableRenderForMainFrame) {
+  // The test assumes that the main frame RFH will be reused when navigating.
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  auto* first_navigation_rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+
+  // Normally, a policy above //content (e.g., KeepAliveDSEPolicy, like via
+  // SetDSEKeepAlive()) might keep an empty process alive using
+  // IncrementPendingReuseRefCount(). This emulates such a policy directly and
+  // force the renderer process to remain alive for reuse.
+  first_navigation_rph->IncrementPendingReuseRefCount();
+  EXPECT_EQ(1, first_navigation_rph->GetPendingReuseRefCountForTesting());
+  EXPECT_TRUE(first_navigation_rph->IsInitializedAndNotDead());
+
+  // Navigate to a different page.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  auto* second_navigation_rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_NE(first_navigation_rph->GetID(), second_navigation_rph->GetID());
+
+  // Make sure the initial renderer is still available.
+  EXPECT_EQ(1, first_navigation_rph->GetPendingReuseRefCountForTesting());
+
+  // Navigate back to the initial page should take the empty renderer process
+  // being kept alive from the first navigation.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  auto* third_navigation_rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_EQ(first_navigation_rph->GetID(), third_navigation_rph->GetID());
+}
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+// On Android, the OS can kill the renderer process at any point without the
+// browser's control. Therefore, the Android version of the test below cannot
+// guarantee that the original process will still be alive and available for
+// reuse. It checks if it's still alive; if so, it should be reused. If not,
+// a new process will be created, which is also acceptable. This is different
+// from the Desktop scenario where the browser has more control over the process
+// lifecycle.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest,
+                       ReuseEmptyAvailableRenderIfAvailableForMainFrame) {
+  // The test assumes that the main frame RFH will be reused when navigating.
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  auto* first_navigation_rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+
+  // Normally, a policy above //content (e.g., KeepAliveDSEPolicy, like via
+  // SetDSEKeepAlive()) might keep an empty process alive using
+  // IncrementPendingReuseRefCount(). This emulates such a policy directly and
+  // force the renderer process to remain alive for reuse.
+  first_navigation_rph->IncrementPendingReuseRefCount();
+  EXPECT_EQ(1, first_navigation_rph->GetPendingReuseRefCountForTesting());
+  EXPECT_TRUE(first_navigation_rph->IsInitializedAndNotDead());
+
+  // Navigate to a different page.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  auto* second_navigation_rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_NE(first_navigation_rph->GetID(), second_navigation_rph->GetID());
+
+  // Make sure the initial renderer is still available.
+  EXPECT_EQ(1, first_navigation_rph->GetPendingReuseRefCountForTesting());
+
+  // Navigate back to the initial page should take the empty renderer process
+  // being kept alive from the first navigation.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  auto* third_navigation_rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  if (first_navigation_rph->IsInitializedAndNotDead()) {
+    EXPECT_EQ(first_navigation_rph->GetID(), third_navigation_rph->GetID());
+  } else {
+    EXPECT_NE(first_navigation_rph->GetID(), third_navigation_rph->GetID());
+  }
+}
+#endif
 
 // Test that multiple subframe-shutdown delays from the same source can be in
 // effect, and that cancelling one delay does not cancel the others.

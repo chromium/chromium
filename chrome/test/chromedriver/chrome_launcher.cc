@@ -714,7 +714,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
 #else
     const int chrome_exit_code = WEXITSTATUS(exit_code);
 #endif
-    if (chrome_exit_code == chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED ||
+    if (chrome_exit_code == CHROME_RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED ||
         chrome_exit_code == content::RESULT_CODE_NORMAL_EXIT) {
       return Status(kSessionNotCreated,
                     "probably user data directory is already in use, "
@@ -772,7 +772,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
           capabilities.page_load_strategy, std::move(process), command,
           &user_data_dir_temp_dir, &extension_dir,
           capabilities.network_emulation_enabled, !capabilities.web_socket_url,
-          capabilities.enable_extension_targets);
+          capabilities.enable_extension_targets, capabilities.quit_gracefully);
   if (capabilities.enable_extension_targets &&
       !capabilities.extension_load_timeout.is_zero()) {
     for (const std::string& url : extension_bg_pages) {

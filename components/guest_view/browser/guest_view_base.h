@@ -300,6 +300,8 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
       std::pair<base::Value::Dict, content::WebContents::CreateParams>>&
   GetCreateParams() const;
 
+  zoom::ZoomController* GetZoomController() const;
+
   // Convenience method for `CreateInnerPage` implementations when not creating
   // a guest.
   void RejectGuestCreation(std::unique_ptr<GuestViewBase> owned_this,
@@ -318,6 +320,8 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Return the GuestPageHolder. Can only be called for mparch guests.
   content::GuestPageHolder& GetGuestPageHolder();
 
+  void SetGuestPageHolder(content::GuestPageHolder* guest_page_holder);
+
   // Called when the current `owner_rfh()` is in a different WebContents from
   // the frame that will be used for attachment. `owner_rfh` is the parent of
   // the RenderFrameHost that will be used for attachment.
@@ -335,6 +339,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // WebContentsObserver implementation.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
   void WebContentsDestroyed() override;
 
   // Given a set of initialization parameters, a concrete subclass of
@@ -457,6 +462,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void GuestDidChangeLoadProgress(double progress) final;
   void GuestMainFrameProcessGone(base::TerminationStatus status) final;
   void GuestResizeDueToAutoResize(const gfx::Size& new_size) final;
+  void GuestUpdateWindowPreferredSize(const gfx::Size& pref_size) final;
   content::GuestPageHolder* GuestCreateNewWindow(
       WindowOpenDisposition disposition,
       const GURL& url,
@@ -466,6 +472,14 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void GuestOpenURL(const content::OpenURLParams& params,
                     base::OnceCallback<void(content::NavigationHandle&)>
                         navigation_handle_callback) override;
+  void GuestClose() override;
+  void GuestRequestMediaAccessPermission(
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  bool GuestCheckMediaAccessPermission(
+      content::RenderFrameHost* render_frame_host,
+      const url::Origin& security_origin,
+      blink::mojom::MediaStreamType type) override;
 
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;

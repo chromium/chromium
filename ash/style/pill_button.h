@@ -5,10 +5,14 @@
 #ifndef ASH_STYLE_PILL_BUTTON_H_
 #define ASH_STYLE_PILL_BUTTON_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -23,8 +27,6 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   METADATA_HEADER(PillButton, views::LabelButton)
 
  public:
-  using ColorVariant = absl::variant<SkColor, ui::ColorId>;
-
   static constexpr int kPillButtonHorizontalSpacing = 16;
   static constexpr int kPaddingReductionForIcon = 4;
 
@@ -183,7 +185,7 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   gfx::Insets GetInsets() const override;
   void UpdateBackgroundColor() override;
   views::PropertyEffects UpdateStyleToIndicateDefaultStatus() override;
-  void SetText(const std::u16string& text) override;
+  void SetText(std::u16string_view text) override;
   void OnSetTooltipText(const std::u16string& tooltip_text) override;
 
   // Sets the button's background color, text's color or icon's color. Note, do
@@ -237,9 +239,9 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   int padding_reduction_for_icon_;
 
   // Custom colors and color IDs.
-  ColorVariant background_color_ = gfx::kPlaceholderColor;
-  ColorVariant text_color_ = gfx::kPlaceholderColor;
-  ColorVariant icon_color_ = gfx::kPlaceholderColor;
+  std::optional<ui::ColorVariant> background_color_;
+  std::optional<ui::ColorVariant> text_color_;
+  std::optional<ui::ColorVariant> icon_color_;
 
   bool enable_background_blur_ = false;
   std::unique_ptr<BlurredBackgroundShield> blurred_background_;

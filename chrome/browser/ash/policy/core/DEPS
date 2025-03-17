@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/attestation",
   "+chrome/browser/ash/cert_provisioning",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/extensions",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/notifications",

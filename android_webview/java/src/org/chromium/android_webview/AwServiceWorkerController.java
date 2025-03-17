@@ -6,6 +6,7 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,26 +19,26 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 /** Manages clients and settings for Service Workers. */
 @Lifetime.Profile
 public class AwServiceWorkerController {
-    @GuardedBy("mAwServiceWorkerClientLock")
+
+    private final Object mLock = new Object();
+
+    @GuardedBy("mLock")
     private AwServiceWorkerClient mServiceWorkerClient;
 
     @DoNotInline // Native stores this as a weak reference.
     @NonNull
     private final AwContentsIoThreadClient mServiceWorkerIoThreadClient;
 
-    @NonNull private final AwContentsBackgroundThreadClient mServiceWorkerBackgroundThreadClient;
+    @NonNull private final ShouldInterceptRequestMediator mShouldInterceptRequestMediator;
     @NonNull private final AwServiceWorkerSettings mServiceWorkerSettings;
     @NonNull private final AwBrowserContext mBrowserContext;
-
-    // Lock to protect access to the |mServiceWorkerClient|
-    private final Object mAwServiceWorkerClientLock = new Object();
 
     public AwServiceWorkerController(
             @NonNull Context applicationContext, @NonNull AwBrowserContext browserContext) {
         mBrowserContext = browserContext;
         mServiceWorkerSettings = new AwServiceWorkerSettings(applicationContext, mBrowserContext);
-        mServiceWorkerBackgroundThreadClient = new ServiceWorkerBackgroundThreadClientImpl();
-        mServiceWorkerIoThreadClient = new ServiceWorkerIoThreadClientImpl();
+        mShouldInterceptRequestMediator = new ServiceWorkerShouldInterceptRequestMediator();
+        mServiceWorkerIoThreadClient = new ServiceWorkerIoThreadClient();
         mBrowserContext.setServiceWorkerIoThreadClient(mServiceWorkerIoThreadClient);
     }
 
@@ -48,14 +49,14 @@ public class AwServiceWorkerController {
 
     /** Set custom client to receive callbacks from Service Workers. Can be null. */
     public void setServiceWorkerClient(@Nullable AwServiceWorkerClient client) {
-        synchronized (mAwServiceWorkerClientLock) {
+        synchronized (mLock) {
             mServiceWorkerClient = client;
         }
     }
 
     // Helper classes implementations
 
-    private class ServiceWorkerIoThreadClientImpl extends AwContentsIoThreadClient {
+    private class ServiceWorkerIoThreadClient extends AwContentsIoThreadClient {
         // All methods are called on the IO thread.
 
         @Override
@@ -64,8 +65,8 @@ public class AwServiceWorkerController {
         }
 
         @Override
-        public AwContentsBackgroundThreadClient getBackgroundThreadClient() {
-            return mServiceWorkerBackgroundThreadClient;
+        public ShouldInterceptRequestMediator getShouldInterceptRequestMediator() {
+            return mShouldInterceptRequestMediator;
         }
 
         @Override
@@ -106,18 +107,39 @@ public class AwServiceWorkerController {
         }
     }
 
-    private class ServiceWorkerBackgroundThreadClientImpl extends AwContentsBackgroundThreadClient {
+    @AnyThread
+    public void setAsyncShouldInterceptRequestCallback(
+            AsyncShouldInterceptRequestCallback callback) {
+        mShouldInterceptRequestMediator.setAsyncCallback(callback);
+    }
+
+    @AnyThread
+    public void clearAsyncShouldInterceptRequestCallback() {
+        mShouldInterceptRequestMediator.setAsyncCallback(null);
+    }
+
+    private class ServiceWorkerShouldInterceptRequestMediator
+            extends ShouldInterceptRequestMediator {
         // All methods are called on the background thread.
         @Override
-        public WebResourceResponseInfo shouldInterceptRequest(
-                AwContentsClient.AwWebResourceRequest request) {
+        public void shouldInterceptRequest(
+                AwContentsClient.AwWebResourceRequest request,
+                WebResponseCallback callback,
+                AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
             // TODO: Consider analogy with AwContentsClient, i.e.
             //  - do we need an onloadresource callback?
             //  - do we need to post an error if the response data == null?
-            synchronized (mAwServiceWorkerClientLock) {
-                return mServiceWorkerClient != null
-                        ? mServiceWorkerClient.shouldInterceptRequest(request)
-                        : null;
+            synchronized (mLock) {
+                if (asyncShouldInterceptRequestCallback == null) {
+                    WebResourceResponseInfo response = null;
+                    if (mServiceWorkerClient != null) {
+                        response = mServiceWorkerClient.shouldInterceptRequest(request);
+                    }
+                    callback.intercept(response);
+                } else {
+                    asyncShouldInterceptRequestCallback.shouldInterceptRequestAsync(
+                            request, callback);
+                }
             }
         }
     }

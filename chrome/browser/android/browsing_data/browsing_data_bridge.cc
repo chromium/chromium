@@ -26,7 +26,11 @@
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/android/browsing_data_model_android.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -37,6 +41,8 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/BrowsingDataBridge_jni.h"
@@ -62,15 +68,6 @@ void OnBrowsingDataRemoverDone(const ScopedJavaGlobalRef<jobject>& callback,
 
 PrefService* GetPrefService(Profile* profile) {
   return profile->GetOriginalProfile()->GetPrefs();
-}
-
-browsing_data::ClearBrowsingDataTab ToTabEnum(jint clear_browsing_data_tab) {
-  DCHECK_GE(clear_browsing_data_tab, 0);
-  DCHECK_LE(clear_browsing_data_tab,
-            static_cast<int>(browsing_data::ClearBrowsingDataTab::MAX_VALUE));
-
-  return static_cast<browsing_data::ClearBrowsingDataTab>(
-      clear_browsing_data_tab);
 }
 
 void OnBrowsingDataModelBuilt(JNIEnv* env,
@@ -225,8 +222,7 @@ static void JNI_BrowsingDataBridge_MarkOriginAsImportantForTesting(
 static jboolean JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
     JNIEnv* env,
     Profile* profile,
-    jint data_type,
-    jint clear_browsing_data_tab) {
+    jint data_type) {
   DCHECK_GE(data_type, 0);
   DCHECK_LE(data_type,
             static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));
@@ -238,7 +234,7 @@ static jboolean JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
   std::string pref;
   if (!browsing_data::GetDeletionPreferenceFromDataType(
           static_cast<browsing_data::BrowsingDataType>(data_type),
-          ToTabEnum(clear_browsing_data_tab), &pref)) {
+          browsing_data::ClearBrowsingDataTab::ADVANCED, &pref)) {
     return false;
   }
 
@@ -249,7 +245,6 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
     JNIEnv* env,
     Profile* profile,
     jint data_type,
-    jint clear_browsing_data_tab,
     jboolean value) {
   DCHECK_GE(data_type, 0);
   DCHECK_LE(data_type,
@@ -258,7 +253,7 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
   std::string pref;
   if (!browsing_data::GetDeletionPreferenceFromDataType(
           static_cast<browsing_data::BrowsingDataType>(data_type),
-          ToTabEnum(clear_browsing_data_tab), &pref)) {
+          browsing_data::ClearBrowsingDataTab::ADVANCED, &pref)) {
     return;
   }
 
@@ -267,23 +262,21 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
 
 static jint JNI_BrowsingDataBridge_GetBrowsingDataDeletionTimePeriod(
     JNIEnv* env,
-    Profile* profile,
-    jint clear_browsing_data_tab) {
+    Profile* profile) {
   return GetPrefService(profile)->GetInteger(
       browsing_data::GetTimePeriodPreferenceName(
-          ToTabEnum(clear_browsing_data_tab)));
+          browsing_data::ClearBrowsingDataTab::ADVANCED));
 }
 
 static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
     JNIEnv* env,
     Profile* profile,
-    jint clear_browsing_data_tab,
     jint time_period) {
   DCHECK_GE(time_period, 0);
   DCHECK_LE(time_period,
             static_cast<int>(browsing_data::TimePeriod::TIME_PERIOD_LAST));
   const char* pref_name = browsing_data::GetTimePeriodPreferenceName(
-      ToTabEnum(clear_browsing_data_tab));
+      browsing_data::ClearBrowsingDataTab::ADVANCED);
   PrefService* prefs = GetPrefService(profile);
   int previous_value = prefs->GetInteger(pref_name);
   if (time_period != previous_value) {
@@ -291,22 +284,6 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
         static_cast<browsing_data::TimePeriod>(time_period));
     prefs->SetInteger(pref_name, time_period);
   }
-}
-
-static jint JNI_BrowsingDataBridge_GetLastClearBrowsingDataTab(
-    JNIEnv* env,
-    Profile* profile) {
-  return GetPrefService(profile)->GetInteger(
-      browsing_data::prefs::kLastClearBrowsingDataTab);
-}
-
-static void JNI_BrowsingDataBridge_SetLastClearBrowsingDataTab(JNIEnv* env,
-                                                               Profile* profile,
-                                                               jint tab_index) {
-  DCHECK_GE(tab_index, 0);
-  DCHECK_LT(tab_index, 2);
-  GetPrefService(profile)->SetInteger(
-      browsing_data::prefs::kLastClearBrowsingDataTab, tab_index);
 }
 
 static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
@@ -317,4 +294,36 @@ static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
       profile, ChromeBrowsingDataModelDelegate::CreateForProfile(profile),
       base::BindOnce(&OnBrowsingDataModelBuilt, env,
                      ScopedJavaGlobalRef<jobject>(java_callback)));
+}
+
+static void JNI_BrowsingDataBridge_TriggerHatsSurvey(
+    JNIEnv* env,
+    Profile* profile,
+    content::WebContents* web_contents,
+    jboolean quick_delete) {
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+
+  std::string trigger = quick_delete ? kHatsSurveyTriggerQuickDelete
+                                     : kHatsSurveyTriggerClearBrowsingData;
+  messages::MessageIdentifier message_id =
+      quick_delete
+          ? messages::MessageIdentifier::PROMPT_HATS_QUICK_DELETE
+          : messages::MessageIdentifier::PROMPT_HATS_CLEAR_BROWSING_DATA;
+
+  if (hats_service) {
+    hats_service->LaunchDelayedSurveyForWebContents(
+        trigger, web_contents,
+        /*timeout_ms=*/5000,
+        /*product_specific_bits_data=*/{},
+        /*product_specific_string_data=*/{},
+        HatsService::NavigationBehaviour::ALLOW_ANY,
+        /*success_callback=*/base::DoNothing(),
+        /*failure_callback=*/base::DoNothing(),
+        /*supplied_trigger_id=*/std::nullopt,
+        HatsService::SurveyOptions(
+            l10n_util::GetStringUTF16(
+                IDS_QUICK_DELETE_PROMPT_SURVEY_CUSTOM_INVITATION),
+            message_id));
+  }
 }

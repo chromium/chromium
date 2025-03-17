@@ -23,18 +23,16 @@ BrowserAccessibilityWin::BrowserAccessibilityWin(
     AXNode* node)
     : BrowserAccessibility(manager, node) {
   win::CreateATLModuleIfNeeded();
-  HRESULT hr = CComObject<BrowserAccessibilityComWin>::CreateInstance(
-      &browser_accessibility_com_.AsEphemeralRawAddr());
+  CComObject<BrowserAccessibilityComWin>* instance = nullptr;
+  HRESULT hr =
+      CComObject<BrowserAccessibilityComWin>::CreateInstance(&instance);
   DCHECK(SUCCEEDED(hr));
-  browser_accessibility_com_->AddRef();
-  browser_accessibility_com_->Init(this);
+  instance->Init(this);
+  instance->AddRef();
+  browser_accessibility_com_.reset(instance);
 }
 
-BrowserAccessibilityWin::~BrowserAccessibilityWin() {
-  if (browser_accessibility_com_) {
-    browser_accessibility_com_.ExtractAsDangling()->Destroy();
-  }
-}
+BrowserAccessibilityWin::~BrowserAccessibilityWin() = default;
 
 void BrowserAccessibilityWin::UpdatePlatformAttributes() {
   GetCOM()->UpdateStep1ComputeWinAttributes();
@@ -154,7 +152,8 @@ gfx::NativeViewAccessible BrowserAccessibilityWin::GetNativeViewAccessible() {
 
 BrowserAccessibilityComWin* BrowserAccessibilityWin::GetCOM() const {
   DCHECK(browser_accessibility_com_);
-  return browser_accessibility_com_;
+  return static_cast<BrowserAccessibilityComWin*>(
+      browser_accessibility_com_.get());
 }
 
 BrowserAccessibilityWin* ToBrowserAccessibilityWin(BrowserAccessibility* obj) {

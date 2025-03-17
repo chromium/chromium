@@ -6,17 +6,20 @@ package org.chromium.components.thinwebview;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.thinwebview.internal.CompositorViewImpl;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Factory for creating a {@link CompositorView}. */
+@NullMarked
 public class CompositorViewFactory {
     /**
-     * Creates a {@link CompositorView} backed by a {@link Surface}. The surface is provided by
-     * a either a {@link TextureView} or {@link SurfaceView}.
+     * Creates a {@link CompositorView} backed by a {@link Surface}. The surface is provided by a
+     * either a {@link TextureView} or {@link SurfaceView}.
+     *
      * @param context The context to create this view.
      * @param windowAndroid The associated {@code WindowAndroid} on which the view is to be
-     *         displayed.
+     *     displayed.
      * @param constraints A set of constraints associated with this view.
      */
     public static CompositorView create(

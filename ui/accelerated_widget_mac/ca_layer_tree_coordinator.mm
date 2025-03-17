@@ -25,13 +25,10 @@ namespace ui {
 
 CALayerTreeCoordinator::CALayerTreeCoordinator(
     bool allow_av_sample_buffer_display_layer,
-    bool new_presentation_feedback_timestamps,
     BufferPresentedCallback buffer_presented_callback)
     : allow_remote_layers_(ui::RemoteLayerAPISupported()),
       allow_av_sample_buffer_display_layer_(
           allow_av_sample_buffer_display_layer),
-      new_presentation_feedback_timestamps_(
-          new_presentation_feedback_timestamps),
       buffer_presented_callback_(buffer_presented_callback) {
   if (allow_remote_layers_) {
     root_ca_layer_ = [[CALayer alloc] init];
@@ -190,7 +187,6 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
   feedback.ca_layer_error_code = frame->ca_layer_error_code;
 
 #if BUILDFLAG(IS_MAC)
-  if (new_presentation_feedback_timestamps_) {
     feedback.ready_timestamp = frame->ready_timestamp;
     feedback.latch_timestamp = base::TimeTicks::Now();
     feedback.interval = frame_interval;
@@ -201,10 +197,6 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
     // update vsync params.
     feedback.flags = gfx::PresentationFeedback::kHWCompletion |
                      gfx::PresentationFeedback::kVSync;
-  }
-#else
-  // Disable -Wunused-private-field warning.
-  (void)new_presentation_feedback_timestamps_;
 #endif
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

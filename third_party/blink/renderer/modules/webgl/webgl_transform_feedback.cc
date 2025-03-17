@@ -18,6 +18,10 @@ WebGLTransformFeedback::WebGLTransformFeedback(WebGL2RenderingContextBase* ctx,
       program_(nullptr),
       active_(false),
       paused_(false) {
+  if (ctx->isContextLost()) {
+    return;
+  }
+
   GLint max_attribs = ctx->GetMaxTransformFeedbackSeparateAttribs();
   DCHECK_GE(max_attribs, 0);
   bound_indexed_transform_feedback_buffers_.resize(max_attribs);
@@ -37,6 +41,8 @@ WebGLTransformFeedback::WebGLTransformFeedback(WebGL2RenderingContextBase* ctx,
 WebGLTransformFeedback::~WebGLTransformFeedback() = default;
 
 void WebGLTransformFeedback::DispatchDetached(gpu::gles2::GLES2Interface* gl) {
+  // Context loss is checked at higher levels.
+
   for (WebGLBuffer* buffer : bound_indexed_transform_feedback_buffers_) {
     if (buffer)
       buffer->OnDetached(gl);

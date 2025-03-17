@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/borealis/borealis_beta_badge.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -89,7 +88,7 @@ BorealisSplashScreenView::BorealisSplashScreenView(Profile* profile)
   set_corner_radius(kCornerRadius);
   set_use_custom_frame(true);
   SetBackground(
-      views::CreateThemedSolidBackground(kColorBorealisSplashScreenBackground));
+      views::CreateSolidBackground(kColorBorealisSplashScreenBackground));
 
   views::LayoutProvider* provider = views::LayoutProvider::Get();
 

@@ -59,14 +59,7 @@
 
 namespace blink {
 
-namespace {
-
-enum class GlobalScope {
-  kWindow,
-  kSharedStorageWorklet,
-};
-
-enum class SharedStorageSetterMethod {
+enum class SharedStorage::SharedStorageSetterMethod : uint8_t {
   kSet = 0,
   kAppend = 1,
   kDelete = 2,
@@ -74,9 +67,17 @@ enum class SharedStorageSetterMethod {
   kBatchUpdate = 4,
 };
 
-void LogTimingHistogramForSetterMethod(SharedStorageSetterMethod method,
-                                       GlobalScope global_scope,
-                                       base::TimeTicks start_time) {
+namespace {
+
+enum class GlobalScope {
+  kWindow,
+  kSharedStorageWorklet,
+};
+
+void LogTimingHistogramForSetterMethod(
+    SharedStorage::SharedStorageSetterMethod method,
+    GlobalScope global_scope,
+    base::TimeTicks start_time) {
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
 
   std::string histogram_prefix = (global_scope == GlobalScope::kWindow)
@@ -84,23 +85,23 @@ void LogTimingHistogramForSetterMethod(SharedStorageSetterMethod method,
                                      : "Storage.SharedStorage.Worklet.";
 
   switch (method) {
-    case SharedStorageSetterMethod::kSet:
+    case SharedStorage::SharedStorageSetterMethod::kSet:
       base::UmaHistogramMediumTimes(
           base::StrCat({histogram_prefix, "Timing.Set"}), elapsed_time);
       break;
-    case SharedStorageSetterMethod::kAppend:
+    case SharedStorage::SharedStorageSetterMethod::kAppend:
       base::UmaHistogramMediumTimes(
           base::StrCat({histogram_prefix, "Timing.Append"}), elapsed_time);
       break;
-    case SharedStorageSetterMethod::kDelete:
+    case SharedStorage::SharedStorageSetterMethod::kDelete:
       base::UmaHistogramMediumTimes(
           base::StrCat({histogram_prefix, "Timing.Delete"}), elapsed_time);
       break;
-    case SharedStorageSetterMethod::kClear:
+    case SharedStorage::SharedStorageSetterMethod::kClear:
       base::UmaHistogramMediumTimes(
           base::StrCat({histogram_prefix, "Timing.Clear"}), elapsed_time);
       break;
-    case SharedStorageSetterMethod::kBatchUpdate:
+    case SharedStorage::SharedStorageSetterMethod::kBatchUpdate:
       base::UmaHistogramMediumTimes(
           base::StrCat({histogram_prefix, "Timing.BatchUpdate"}), elapsed_time);
       break;
@@ -109,12 +110,13 @@ void LogTimingHistogramForSetterMethod(SharedStorageSetterMethod method,
   }
 }
 
-void OnSharedStorageUpdateFinished(ScriptPromiseResolver<IDLAny>* resolver,
-                                   SharedStorage* shared_storage,
-                                   SharedStorageSetterMethod method,
-                                   GlobalScope global_scope,
-                                   base::TimeTicks start_time,
-                                   const String& error_message) {
+void OnSharedStorageUpdateFinished(
+    ScriptPromiseResolver<IDLAny>* resolver,
+    SharedStorage* shared_storage,
+    SharedStorage::SharedStorageSetterMethod method,
+    GlobalScope global_scope,
+    base::TimeTicks start_time,
+    const String& error_message) {
   DCHECK(resolver);
   ScriptState* script_state = resolver->GetScriptState();
 
@@ -383,6 +385,36 @@ void SharedStorage::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
+void SharedStorage::UpdateDocumentSharedStorage(
+    ExecutionContext* execution_context,
+    network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr method,
+    ScriptPromiseResolver<IDLAny>* resolver,
+    SharedStorageSetterMethod setter_method,
+    base::TimeTicks start_time) {
+  GetSharedStorageDocumentService(execution_context)
+      ->SharedStorageUpdate(
+          std::move(method),
+          WTF::BindOnce(&OnSharedStorageUpdateFinished,
+                        WrapPersistent(resolver), WrapWeakPersistent(this),
+                        setter_method, GlobalScope::kWindow, start_time));
+}
+
+void SharedStorage::BatchUpdateDocumentSharedStorage(
+    ExecutionContext* execution_context,
+    std::optional<String> optional_with_lock,
+    Vector<network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>
+        methods,
+    ScriptPromiseResolver<IDLAny>* resolver,
+    base::TimeTicks start_time) {
+  GetSharedStorageDocumentService(execution_context)
+      ->SharedStorageBatchUpdate(
+          std::move(methods), std::move(optional_with_lock),
+          WTF::BindOnce(&OnSharedStorageUpdateFinished,
+                        WrapPersistent(resolver), WrapWeakPersistent(this),
+                        SharedStorageSetterMethod::kBatchUpdate,
+                        GlobalScope::kWindow, start_time));
+}
+
 ScriptPromise<IDLAny> SharedStorage::set(ScriptState* script_state,
                                          const String& key,
                                          const String& value,
@@ -414,14 +446,18 @@ ScriptPromise<IDLAny> SharedStorage::set(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  if (execution_context->IsWindow()) {
-    GetSharedStorageDocumentService(execution_context)
-        ->SharedStorageUpdate(
-            method->TakeMojomMethod(),
-            WTF::BindOnce(&OnSharedStorageUpdateFinished,
-                          WrapPersistent(resolver), WrapPersistent(this),
-                          SharedStorageSetterMethod::kSet, GlobalScope::kWindow,
-                          start_time));
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    if (window->document() && window->document()->IsPrerendering()) {
+      window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+          &SharedStorage::UpdateDocumentSharedStorage, WrapWeakPersistent(this),
+          WrapWeakPersistent(execution_context), method->TakeMojomMethod(),
+          WrapPersistent(resolver), SharedStorageSetterMethod::kSet,
+          start_time));
+    } else {
+      UpdateDocumentSharedStorage(execution_context, method->TakeMojomMethod(),
+                                  resolver, SharedStorageSetterMethod::kSet,
+                                  start_time);
+    }
   } else {
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
@@ -466,14 +502,18 @@ ScriptPromise<IDLAny> SharedStorage::append(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  if (execution_context->IsWindow()) {
-    GetSharedStorageDocumentService(execution_context)
-        ->SharedStorageUpdate(
-            method->TakeMojomMethod(),
-            WTF::BindOnce(&OnSharedStorageUpdateFinished,
-                          WrapPersistent(resolver), WrapPersistent(this),
-                          SharedStorageSetterMethod::kAppend,
-                          GlobalScope::kWindow, start_time));
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    if (window->document() && window->document()->IsPrerendering()) {
+      window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+          &SharedStorage::UpdateDocumentSharedStorage, WrapWeakPersistent(this),
+          WrapWeakPersistent(execution_context), method->TakeMojomMethod(),
+          WrapPersistent(resolver), SharedStorageSetterMethod::kAppend,
+          start_time));
+    } else {
+      UpdateDocumentSharedStorage(execution_context, method->TakeMojomMethod(),
+                                  resolver, SharedStorageSetterMethod::kAppend,
+                                  start_time);
+    }
   } else {
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
@@ -516,14 +556,18 @@ ScriptPromise<IDLAny> SharedStorage::Delete(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  if (execution_context->IsWindow()) {
-    GetSharedStorageDocumentService(execution_context)
-        ->SharedStorageUpdate(
-            method->TakeMojomMethod(),
-            WTF::BindOnce(&OnSharedStorageUpdateFinished,
-                          WrapPersistent(resolver), WrapPersistent(this),
-                          SharedStorageSetterMethod::kDelete,
-                          GlobalScope::kWindow, start_time));
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    if (window->document() && window->document()->IsPrerendering()) {
+      window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+          &SharedStorage::UpdateDocumentSharedStorage, WrapWeakPersistent(this),
+          WrapWeakPersistent(execution_context), method->TakeMojomMethod(),
+          WrapPersistent(resolver), SharedStorageSetterMethod::kDelete,
+          start_time));
+    } else {
+      UpdateDocumentSharedStorage(execution_context, method->TakeMojomMethod(),
+                                  resolver, SharedStorageSetterMethod::kDelete,
+                                  start_time);
+    }
   } else {
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
@@ -564,14 +608,18 @@ ScriptPromise<IDLAny> SharedStorage::clear(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  if (execution_context->IsWindow()) {
-    GetSharedStorageDocumentService(execution_context)
-        ->SharedStorageUpdate(
-            method->TakeMojomMethod(),
-            WTF::BindOnce(&OnSharedStorageUpdateFinished,
-                          WrapPersistent(resolver), WrapPersistent(this),
-                          SharedStorageSetterMethod::kClear,
-                          GlobalScope::kWindow, start_time));
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    if (window->document() && window->document()->IsPrerendering()) {
+      window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+          &SharedStorage::UpdateDocumentSharedStorage, WrapWeakPersistent(this),
+          WrapWeakPersistent(execution_context), method->TakeMojomMethod(),
+          WrapPersistent(resolver), SharedStorageSetterMethod::kClear,
+          start_time));
+    } else {
+      UpdateDocumentSharedStorage(execution_context, method->TakeMojomMethod(),
+                                  resolver, SharedStorageSetterMethod::kClear,
+                                  start_time);
+    }
   } else {
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
@@ -632,19 +680,31 @@ ScriptPromise<IDLAny> SharedStorage::batchUpdate(
   }
 
   String with_lock = options->getWithLockOr(/*fallback_value=*/String());
+  if (IsReservedLockName(with_lock)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      network::kReservedLockNameErrorMessage);
+    return promise;
+  }
 
-  if (execution_context->IsWindow()) {
-    GetSharedStorageDocumentService(execution_context)
-        ->SharedStorageBatchUpdate(
-            std::move(mojom_methods), with_lock,
-            WTF::BindOnce(&OnSharedStorageUpdateFinished,
-                          WrapPersistent(resolver), WrapPersistent(this),
-                          SharedStorageSetterMethod::kBatchUpdate,
-                          GlobalScope::kWindow, start_time));
+  std::optional<String> optional_with_lock =
+      with_lock ? std::optional(with_lock) : std::nullopt;
+
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    if (window->document() && window->document()->IsPrerendering()) {
+      window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+          &SharedStorage::BatchUpdateDocumentSharedStorage,
+          WrapWeakPersistent(this), WrapWeakPersistent(execution_context),
+          optional_with_lock, std::move(mojom_methods),
+          WrapPersistent(resolver), start_time));
+    } else {
+      BatchUpdateDocumentSharedStorage(
+          execution_context, std::move(optional_with_lock),
+          std::move(mojom_methods), resolver, start_time);
+    }
   } else {
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageBatchUpdate(
-            std::move(mojom_methods), with_lock,
+            std::move(mojom_methods), optional_with_lock,
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kBatchUpdate,
@@ -696,8 +756,8 @@ ScriptPromise<IDLString> SharedStorage::get(ScriptState* script_state,
     }
 
     if (!execution_context->IsFeatureEnabled(
-        mojom::blink::PermissionsPolicyFeature::
-            kFencedUnpartitionedStorageRead)) {
+            network::mojom::PermissionsPolicyFeature::
+                kFencedUnpartitionedStorageRead)) {
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kOperationError,
           "Cannot call get() in a fenced frame without the "

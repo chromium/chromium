@@ -234,7 +234,18 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
             int prevWidth = lp.width;
             int prevGravity = lp.gravity;
 
-            if (mIsTablet) {
+            if (SnackbarManager.isFloatingSnackbarEnabled()) {
+                // If floating snackbar is enabled, set a max width of 600dp for both mobile and
+                // tablet.
+                int maxWidth =
+                        mParent.getResources().getDimensionPixelSize(R.dimen.snackbar_width_max);
+                int snackbarMargin =
+                        mParent.getResources()
+                                .getDimensionPixelSize(R.dimen.snackbar_floating_margin);
+                lp.width = Math.min(maxWidth, mParent.getWidth() - 2 * snackbarMargin);
+                lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
+            } else if (mIsTablet) {
+                // Floating Snackbar disabled && mIsTablet.
                 int margin =
                         mParent.getResources()
                                 .getDimensionPixelSize(R.dimen.snackbar_margin_tablet);
@@ -290,7 +301,10 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                                     .getString(R.string.bottom_bar_screen_position));
         }
 
-        ViewCompat.setAccessibilityPaneTitle(mMessageView, accessibilityText);
+        // This post call is required to ensure the pane title change results in a
+        // reliable announcement to the user. See https://crbug.com/395925721
+        mMessageView.post(
+                () -> ViewCompat.setAccessibilityPaneTitle(mMessageView, accessibilityText));
     }
 
     /**
@@ -371,10 +385,6 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         if (SnackbarManager.isFloatingSnackbarEnabled()) {
             // Round the corners for snackbars in both tablets and non-tablets.
             mSnackbarView.setBackgroundResource(R.drawable.snackbar_background);
-
-            GradientDrawable backgroundDrawable =
-                    (GradientDrawable) mSnackbarView.getBackground().mutate();
-            backgroundDrawable.setColor(mBackgroundColor);
         } else if (mIsTablet) {
             // isFloatingSnackbarEnabled == false, mIsTablet == true
             // On tablet, snackbars have rounded corners.

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
 
 #include "cc/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/skia/include/core/SkClipOp.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"

@@ -594,6 +594,7 @@ ResultCode LaunchWithoutSandbox(
     base::Process* process) {
   base::LaunchOptions options;
   options.handles_to_inherit = handles_to_inherit;
+  options.feedback_cursor_off = true;
   // Network process runs in a job even when unsandboxed. This is to ensure it
   // does not outlive the browser, which could happen if there is a lot of I/O
   // on process shutdown, in which case TerminateProcess can fail. See
@@ -827,6 +828,16 @@ class BrokerServicesDelegateImpl : public BrokerServicesDelegate {
     creation_threads_in_use_--;
     TRACE_EVENT_NESTABLE_ASYNC_END1("startup", "TargetProcess::Create",
                                     trace_id, "pid", process_id);
+  }
+
+  void OnCreateThreadActionCreateFailure(DWORD last_error) override {
+    UMA_HISTOGRAM_SPARSE(
+        "Process.Sandbox.IPC.ThreadCreateRemoteThreadErrorCode", last_error);
+  }
+
+  void OnCreateThreadActionDuplicateFailure(DWORD last_error) override {
+    UMA_HISTOGRAM_SPARSE("Process.Sandbox.IPC.ThreadDuplicateHandleErrorCode",
+                         last_error);
   }
 
  private:

@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_number.h"
 
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
@@ -125,7 +120,7 @@ static SVGParsingError ParseNumberOrPercentage(const CharType*& ptr,
                            ptr - start);
   if (ptr < end && *ptr == '%') {
     number /= 100;
-    ptr++;
+    UNSAFE_TODO(ptr++);
   }
   if (SkipOptionalSVGSpaces(ptr, end))
     return SVGParsingError(SVGParseStatus::kTrailingGarbage, ptr - start);

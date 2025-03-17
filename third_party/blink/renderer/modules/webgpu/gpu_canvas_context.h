@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 
 namespace blink {
@@ -63,8 +63,8 @@ class GPUCanvasContext : public CanvasRenderingContext,
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
   SkAlphaType GetAlphaType() const override;
-  SkColorType GetSkColorType() const override;
-  sk_sp<SkColorSpace> GetSkColorSpace() const override;
+  viz::SharedImageFormat GetSharedImageFormat() const override;
+  gfx::ColorSpace GetColorSpace() const override;
   // Produces a snapshot of the current contents of the swap chain if possible.
   // If that texture has already been sent to the compositor, will produce a
   // snapshot of the just released texture associated to this gpu context.

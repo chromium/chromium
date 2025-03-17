@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 
+#include <algorithm>
+
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
@@ -51,6 +52,11 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   web_contents_ = web_contents->GetWeakPtr();
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const int bottom_margin =
+      layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+  // The last view is a RichHoverButton, which overrides the bottom
+  // dialog inset in favor of its own.
+  SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, bottom_margin, 0));
 
   // Use the same insets as buttons and permission rows in the main page for
   // consistency.
@@ -80,7 +86,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
                                      views::style::CONTEXT_DIALOG_BODY_TEXT));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-  title_->SetEnabledColorId(kColorPageInfoForeground);
+  title_->SetEnabledColor(kColorPageInfoForeground);
 
   // Without this, the title text inside the submenu of
   // |CAPTURED_SURFACE_CONTROL| permission type would be the same as in the main
@@ -93,7 +99,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   state_label_ = label_wrapper->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_BODY_4));
-  state_label_->SetEnabledColorId(kColorPageInfoSubtitleForeground);
+  state_label_->SetEnabledColor(kColorPageInfoSubtitleForeground);
   state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Add extra details as sublabel.
@@ -102,7 +108,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
     auto detail_label = std::make_unique<views::Label>(
         detail, views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4);
     detail_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    detail_label->SetEnabledColorId(kColorPageInfoSubtitleForeground);
+    detail_label->SetEnabledColor(kColorPageInfoSubtitleForeground);
     label_wrapper->AddChildView(std::move(detail_label));
   }
 
@@ -196,8 +202,8 @@ PageInfoPermissionContentView::~PageInfoPermissionContentView() {
 void PageInfoPermissionContentView::SetPermissionInfo(
     const PermissionInfoList& permission_info_list,
     ChosenObjectInfoList chosen_object_info_list) {
-  auto permission_it = base::ranges::find(permission_info_list, type_,
-                                          &PageInfo::PermissionInfo::type);
+  auto permission_it = std::ranges::find(permission_info_list, type_,
+                                         &PageInfo::PermissionInfo::type);
 
   CHECK(permission_it != permission_info_list.end());
 
@@ -322,7 +328,7 @@ void PageInfoPermissionContentView::SetTitleTextAndTooltip(
     const std::vector<std::string>& device_names) {
   title_->SetText(l10n_util::GetStringFUTF16(
       message_id, base::NumberToString16(device_names.size())));
-  title_->SetTooltipText(
+  title_->SetCustomTooltipText(
       base::UTF8ToUTF16(base::JoinString(device_names, "\n")));
 }
 #endif

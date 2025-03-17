@@ -4,27 +4,32 @@
 
 #include <tuple>
 
-// No expected rewrite:
-// We don't handle global C arrays.
-// TODO(364338808) Handle this case.
+// Expected rewrite:
+// struct GlobalBuffer {
+//   int val;
+// };
+// std::array<GlobalBuffer, 4> globalBuffer;
 struct {
   int val;
 } globalBuffer[4];
 
-// No expected rewrite:
-// We don't handle global C arrays.
-// TODO(364338808) Handle this case.
+// Expected rewrite:
+// struct GlobalHasName {
+//   int val;
+// };
+// std::array<GlobalHasName, 4> globalNamedBuffer;
 struct GlobalHasName {
   int val;
 } globalNamedBuffer[4];
 
-// No expected rewrite:
-// We don't handle global C arrays.
-// TODO(364338808) Handle this case.
+// Expected rewrite:
+// std::array<GlobalHasName, 4> globalNamedBufferButNotInline;
 GlobalHasName globalNamedBufferButNotInline[4];
 
+int UnsafeIndex();  // This function might return an out-of-bound index.
+
 void fct() {
-  // Expected rewrite
+  // Expected rewrite:
   // struct FuncBuffer {
   //   int val;
   // };
@@ -41,7 +46,7 @@ void fct() {
   const struct {
     int val;
   } kTestCases[4] = {{1}, {2}, {3}, {4}};
-  std::ignore = kTestCases[2].val;  // Unsafe access to trigger spanification.
+  std::ignore = kTestCases[UnsafeIndex()].val;  // Trigger spanification.
 
   // Expected rewrite:
   // struct GTestCases {
@@ -51,7 +56,7 @@ void fct() {
   const struct {
     int val;
   } gTestCases[4] = {{1}, {2}, {3}, {4}};
-  std::ignore = gTestCases[2].val;  // Unsafe access to trigger spanification.
+  std::ignore = gTestCases[UnsafeIndex()].val;  // Trigger spanification.
 
   // Expected rewrite:
   // struct Knights {
@@ -61,7 +66,7 @@ void fct() {
   const struct {
     int val;
   } knights[4] = {{1}, {2}, {3}, {4}};
-  std::ignore = knights[2].val;  // Unsafe access to trigger spanification.
+  std::ignore = knights[UnsafeIndex()].val;  // Trigger spanification.
 
   // Expected rewrite:
   // struct funcHasName {
@@ -86,7 +91,7 @@ void fct() {
     int val;
   } func_buffer2[] = {{1}, {2}, {3}, {4}};
 
-  // Expected rewrite
+  // Expected rewrite:
   // struct FuncBufferWithComment {
   //   int val; // Comment
   // };
@@ -96,7 +101,7 @@ void fct() {
   } funcBufferWithComment[4];
 
   // Classes can also be used in a similar way.
-  // Expected rewrite
+  // Expected rewrite:
   // class UnnamedClassBuffer {
   //  public:
   //   int val;
@@ -108,7 +113,7 @@ void fct() {
   } unnamedClassBuffer[4];
 
   // Unions can also be used in a similar way.
-  // Expected rewrite
+  // Expected rewrite:
   // union UnnamedUnionBuffer {
   //   int val;
   //   float fval;
@@ -119,7 +124,7 @@ void fct() {
     float fval;
   } unnamedUnionBuffer[4];
 
-  // Expected rewrite
+  // Expected rewrite:
   // struct NestedStructBuffer {
   //   struct {
   //     int val;
@@ -133,15 +138,63 @@ void fct() {
   } nestedStructBuffer[4];
 
   // Buffer accesses to trigger spanification.
-  func_buffer[2].val = 3;
-  globalBuffer[2].val = 3;
-  funcNamedBuffer[2].val = 3;
-  globalNamedBuffer[2].val = 3;
-  globalNamedBufferButNotInline[2].val = 3;
-  funcNamedBufferButNotInline[3].val = 3;
-  (void)func_buffer2[2].val;
-  funcBufferWithComment[2].val = 3;
-  unnamedClassBuffer[2].val = 3;
-  unnamedUnionBuffer[2].val = 3;
-  nestedStructBuffer[2].inner.val = 3;
+  func_buffer[UnsafeIndex()].val = 3;
+  globalBuffer[UnsafeIndex()].val = 3;
+  funcNamedBuffer[UnsafeIndex()].val = 3;
+  globalNamedBuffer[UnsafeIndex()].val = 3;
+  globalNamedBufferButNotInline[UnsafeIndex()].val = 3;
+  funcNamedBufferButNotInline[UnsafeIndex()].val = 3;
+  (void)func_buffer2[UnsafeIndex()].val;
+  funcBufferWithComment[UnsafeIndex()].val = 3;
+  unnamedClassBuffer[UnsafeIndex()].val = 3;
+  unnamedUnionBuffer[UnsafeIndex()].val = 3;
+  nestedStructBuffer[UnsafeIndex()].inner.val = 3;
+}
+
+// `const` makes the decl have internal linkage, so this should be rewritten
+// regardless of crbug.com/364338808.
+// Expected rewrite:
+// struct MyGlobalStruct1 {
+//   int val;
+// };
+// const std::array<MyGlobalStruct1, 1 + 2> my_global_struct1 = {{
+//     {1},
+//     {2},
+//     {3},
+// }};
+const struct MyGlobalStruct1 {
+  int val;
+} my_global_struct1[1 + 2] = {
+    {1},
+    {2},
+    {3},
+};
+
+namespace {
+
+// Anonymous namespace makes the decl have internal linkage, so this should be
+// rewritten regardless of crbug.com/364338808.
+// Expected rewrite:
+// struct MyGlobalStruct2 {
+//   int val;
+// };
+// auto my_global_struct2 = std::to_array<MyGlobalStruct2>({
+//     {1},
+//     {2},
+//     {3},
+// });
+struct MyGlobalStruct2 {
+  int val;
+} my_global_struct2[] = {
+    {1},
+    {2},
+    {3},
+};
+
+}  // namespace
+
+void named_global_struct_with_var_decl() {
+  // Buffer accesses to trigger spanification for the global structs above.
+  std::ignore = my_global_struct1[UnsafeIndex()].val;
+  std::ignore = my_global_struct2[UnsafeIndex()].val;
 }

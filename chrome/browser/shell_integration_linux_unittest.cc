@@ -56,13 +56,11 @@ class MockEnvironment : public base::Environment {
     variables_[std::string(name)] = value;
   }
 
-  bool GetVar(std::string_view variable_name, std::string* result) override {
-    if (base::Contains(variables_, std::string(variable_name))) {
-      *result = variables_[std::string(variable_name)];
-      return true;
+  std::optional<std::string> GetVar(std::string_view variable_name) override {
+    if (!base::Contains(variables_, std::string(variable_name))) {
+      return std::nullopt;
     }
-
-    return false;
+    return variables_[std::string(variable_name)];
   }
 
   bool SetVar(std::string_view variable_name,

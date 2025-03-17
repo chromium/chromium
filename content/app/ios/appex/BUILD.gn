@@ -8,7 +8,10 @@ import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
 
 source_set("child_process_bridge_header") {
-  sources = [ "child_process_bridge.h" ]
+  sources = [
+    "child_process_bridge.h",
+    "child_process_sandbox.h",
+  ]
 
   frameworks = [ "Foundation.framework" ]
 }
@@ -19,6 +22,7 @@ source_set("child_process_bridge") {
   deps = [
     ":child_process_bridge_header",
     "//base",
+    "//gpu/ipc/common",
   ]
   frameworks = [ "Foundation.framework" ]
 }

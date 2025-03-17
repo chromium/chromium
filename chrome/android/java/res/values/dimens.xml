@@ -80,11 +80,6 @@ found in the LICENSE file.
     <dimen name="password_entry_editor_field_large_top_margin">16dp</dimen>
     <dimen name="password_entry_editor_field_top_margin">8dp</dimen>
 
-    <!-- Password generation popup dimensions -->
-    <dimen name="password_generation_text_size">14sp</dimen>
-    <dimen name="password_generation_horizontal_margin">10dp</dimen>
-    <dimen name="password_generation_text_vertical_margin">12dp</dimen>
-
     <!-- Password manager illustration dialogs -->
     <dimen name="password_manager_dialog_padding">8dp</dimen>
     <dimen name="password_manager_dialog_illustration_height">156dp</dimen>
@@ -101,8 +96,6 @@ found in the LICENSE file.
     <dimen name="compositor_tab_title_text_size">13sp</dimen>
     <!-- The size of the bounding box for favicons. -->
     <dimen name="compositor_tab_title_favicon_size">16dp</dimen>
-    <!-- Slop value for allowing slight misses on the compositor button. -->
-    <dimen name="compositor_button_slop">10dp</dimen>
 
     <!-- The activity indicator bubble dimensions on tab favicons for tablet tab strip. -->
     <dimen name="compositor_tab_title_favicon_bubble_inner_size">6dp</dimen>
@@ -110,7 +103,6 @@ found in the LICENSE file.
     <dimen name="compositor_tab_title_favicon_bubble_offset">6dp</dimen>
 
     <!-- First Run Experience dimensions -->
-    <dimen name="fre_tos_image_height">110dp</dimen>
     <dimen name="fre_loading_spinner_size">48dp</dimen>
     <dimen name="fre_policy_privacy_disclaimer_icon_size">18dp</dimen>
     <dimen name="fre_policy_privacy_disclaimer_icon_padding">8dp</dimen>
@@ -169,6 +161,9 @@ found in the LICENSE file.
     <dimen name="recent_tabs_default_group_item_height">48dp</dimen>
     <dimen name="recent_tabs_count_text_size">10dp</dimen>
 
+    <!-- New Tab Animation -->
+    <dimen name="new_tab_animation_rect_corner_radius">10dp</dimen>
+
     <!-- Bookmarks dimensions -->
     <dimen name="bookmark_minimum_dialog_size_tablet">500dp</dimen>
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
@@ -200,7 +195,17 @@ found in the LICENSE file.
     <dimen name="bookmark_widget_min_height">48dp</dimen>
 
     <!-- Bookmark bar -->
-    <dimen name="bookmark_bar_min_height">48dp</dimen>
+    <dimen name="bookmark_bar_button_padding_horizontal">8dp</dimen>
+    <dimen name="bookmark_bar_button_padding_vertical">4dp</dimen>
+    <dimen name="bookmark_bar_button_icon_margin_end">8dp</dimen>
+    <dimen name="bookmark_bar_button_icon_size">24dp</dimen>
+    <dimen name="bookmark_bar_divider_height">20dp</dimen>
+    <dimen name="bookmark_bar_divider_width">2dp</dimen>
+    <dimen name="bookmark_bar_item_max_width">187dp</dimen>
+    <dimen name="bookmark_bar_item_spacing">@dimen/bookmark_bar_spacing</dimen>
+    <dimen name="bookmark_bar_overflow_button_size">24dp</dimen>
+    <dimen name="bookmark_bar_padding">8dp</dimen>
+    <dimen name="bookmark_bar_spacing">8dp</dimen>
 
     <!-- Custom Tabs dimensions -->
     <dimen name="custom_tabs_drag_handle_padding_top">12dp</dimen>
@@ -218,7 +223,13 @@ found in the LICENSE file.
     <dimen name="custom_tabs_shadow_offset">4dp</dimen>
     <dimen name="custom_tabs_outline_width">1dp</dimen>
     <dimen name="custom_tabs_default_corner_radius">16dp</dimen>
-
+    <dimen name="custom_tabs_security_icon_width">32dp</dimen>
+    <dimen name="custom_tabs_security_icon_padding_left">0dp</dimen>
+    <dimen name="custom_tabs_security_icon_padding_right">8dp</dimen>
+    <dimen name="custom_tabs_security_icon_width_nested">20dp</dimen>
+    <dimen name="custom_tabs_security_icon_padding_left_nested">0dp</dimen>
+    <dimen name="custom_tabs_security_icon_padding_right_nested">4dp</dimen>
+    <dimen name="custom_tabs_location_bar_horizontal_padding">12dp</dimen>
     <dimen name="custom_tabs_menu_footer_icon_size">16sp</dimen>
     <dimen name="custom_tabs_menu_footer_margin_horizontal">8dp</dimen>
     <dimen name="custom_tabs_menu_footer_margin_vertical">12dp</dimen>

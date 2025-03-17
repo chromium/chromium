@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/omnibox/browser/shortcuts_backend.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -212,8 +211,8 @@ bool ShortcutsBackendTest::ShortcutExists(const std::u16string& terms) const {
 
 std::vector<std::u16string> ShortcutsBackendTest::ShortcutsMapTexts() const {
   std::vector<std::u16string> texts;
-  base::ranges::transform(shortcuts_map(), std::back_inserter(texts),
-                          [](const auto& entry) { return entry.second.text; });
+  std::ranges::transform(shortcuts_map(), std::back_inserter(texts),
+                         [](const auto& entry) { return entry.second.text; });
   return texts;
 }
 

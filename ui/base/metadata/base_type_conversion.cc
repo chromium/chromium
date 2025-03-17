@@ -14,7 +14,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
@@ -114,8 +113,8 @@ std::u16string TypeConverter<gfx::ShadowValues>::ToString(
     const gfx::ShadowValues& source_value) {
   std::vector<std::string> shadow_strings;
   shadow_strings.reserve(source_value.size());
-  base::ranges::transform(source_value, std::back_inserter(shadow_strings),
-                          &gfx::ShadowValue::ToString);
+  std::ranges::transform(source_value, std::back_inserter(shadow_strings),
+                         &gfx::ShadowValue::ToString);
   return base::ASCIIToUTF16(
       base::StrCat({"[", base::JoinString(shadow_strings, "; "), "]"}));
 }
@@ -450,7 +449,7 @@ bool TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::GetNextColor(
     if (!tokenizer.token_is_delim()) {
       std::u16string_view token = tokenizer.token_piece();
       std::u16string::const_iterator start_color = tokenizer.token_begin();
-      if (base::ranges::find(schemes.begin(), schemes.end(), token) !=
+      if (std::ranges::find(schemes.begin(), schemes.end(), token) !=
           schemes.end()) {
         if (!tokenizer.GetNext() || *tokenizer.token_begin() != open_paren)
           return false;

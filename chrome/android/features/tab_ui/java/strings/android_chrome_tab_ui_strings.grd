@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- android_chrome_strings.grd contains strings for tab ui DFM of Chrome for Android. -->
-<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+<grit current_release="1" latest_public_release="0">
   <outputs>
     <output filename="values-af/android_chrome_tab_ui_strings.xml" lang="af" type="android" />
     <output filename="values-am/android_chrome_tab_ui_strings.xml" lang="am" type="android" />
@@ -200,6 +200,9 @@
       <message name="IDS_TAB_GRID_MANAGE_BUTTON_TEXT" desc="Text for managing the sharing of the current tab group from the tab group dialog toolbar.">
         Manage
       </message>
+      <message name="IDS_MANAGE_SHARING_CONTENT_DESCRIPTION" desc="Content description for the account avatar button that manages sharing for a shared tab group.">
+        Manage sharing
+      </message>
 
       <!-- Bottom Tab Strip strings -->
       <message name="IDS_ACCESSIBILITY_BOTTOM_TAB_STRIP_EXPAND_TAB_SHEET" desc="Accessibility string for BottomTabStripToolbar button indicated visually by the '^' sign.">
@@ -209,6 +212,29 @@
       <!-- Tab Group Tab Switcher strings -->
       <message name="IDS_ACCESSIBILITY_TAB_SWITCHER" desc="Accessibility string for Tab Switcher view. This string is announced when the Tab Switcher is shown to screen.">
         Tab Switcher
+      </message>
+
+      <!-- Tab Group Share Notice Bottom Sheet -->
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The description of the Tab Group Share Notice bottom sheet.">
+         Notice: Changes to this shared Tab Group are visible to everyone. Everyone can make changes to your shared tab groups
+      </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_HALF_HEIGHT" desc="The announcement when the Tab Group Share Notice bottom sheet is opened to half height.">
+         Notice about Shared Tab Group changes at half height
+      </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_FULL_HEIGHT" desc="The announcement when the Tab Group Share Notice bottom sheet is opened to full height.">
+         Notice about Shared Tab Group changes opened at full height
+      </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_CLOSED" desc="The announcement when the Tab Group Share Notice bottom sheet is closed.">
+         Notice about Shared Tab Group changes closed
+      </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_TITLE" desc="Title text for the Tab Group Share Notice bottom sheet.">
+         Everyone can make changes to your shared tab groups
+      </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_SUBTITLE" desc="Subtitle text for the Tab Group Share Notice bottom sheet.">
+         Changes made are seen by everyone in the group
+      </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_BUTTON_TEXT" desc="Text for the confirm button on the Tab Group Share Notice bottom sheet.">
+         Got it
       </message>
 
       <!-- Tab Selection Editor strings -->
@@ -279,6 +305,30 @@
           other {Group <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
         }
       </message>
+      <message name="IDS_ADD_TAB_TO_NEW_GROUP_MENU_ITEM" desc="This text menu item is shown in several menus and starts the UI flow for adding a tab to a new group.">
+        {TABS_COUNT, plural,
+          =1 {Add tab to new group}
+          other {Add tabs to new group}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_ADD_TAB_TO_NEW_GROUP_MENU_ITEM" desc="The accessibility text to read when the 'Add tab to new group' menu item is focused. When this menu item is tapped, the selected tab will be added to a new tab group.">
+        {TABS_COUNT, plural,
+          =1 {Add <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> tab to group}
+          other {Add <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> tabs to group}
+        }
+      </message>
+      <message name="IDS_ADD_TAB_TO_GROUP_MENU_ITEM" desc="This text menu item is shown in several menus and starts the UI flow for adding one or more tabs to a new or pre-existing group.">
+        {TABS_COUNT, plural,
+          =1 {Add tab to group}
+          other {Add tabs to group}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_ADD_TAB_TO_GROUP_MENU_ITEM" desc="The accessibility text to read when the 'Add tab to group' menu item is focused. When this menu item is tapped, the selected tabs will be added to a new or pre-existing tab group.">
+        {TABS_COUNT, plural,
+          =1 {Add <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab to group}
+          other {Add <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs to group}
+        }
+      </message>
       <message name="IDS_TAB_SELECTION_EDITOR_UNGROUP_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Ungroup' is a verb. When the user taps the menu item, Chrome removes the selected tabs from the group. [CHAR_LIMIT=27]">
         {TABS_COUNT, plural,
           =1 {Ungroup tab}
@@ -308,7 +358,7 @@
       </message>
 
       <!-- Tab Grid Dialog strings -->
-      <message name="IDS_TAB_GRID_DIALOG_REMOVE_FROM_GROUP" desc="This text shows on the ungroup bar in TabGridDialog. When user drags a tab and drops it on the ungroup bar, this tab will be moved out of the group.">
+      <message name="IDS_REMOVE_TAB_FROM_GROUP" desc="Content description for an action which removes a tab from its group.">
         Remove from group
       </message>
       <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_EDIT_GROUP_NAME" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the group name field will be focused and the keyboard will show for users to edit the group name.">
@@ -324,7 +374,7 @@
         Close group
       </message>
       <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_MANAGE_SHARING" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the manage sharing UI is shown.">
-        Manage sharing
+        Manage access
       </message>
       <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_RECENT_ACTIVITY" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the recent activity UI is shown.">
         Recent activity
@@ -340,44 +390,20 @@
       </message>
       <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_ADDED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were only added.">
         {NUMBER_OF_TABS_ADDED, plural,
-          =1 {<ph name="ONE_ADDED">%1$d<ex>1</ex></ph> tab added}
-          other {<ph name="MANY_ADDED">%1$d<ex>2</ex></ph> tabs added}
-        }
-      </message>
-      <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_ADDED_CHANGED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were added, and changed.">
-        {NUMBER_OF_TABS_ADDED, plural,
-          =1 {<ph name="ONE_ADDED">%1$d<ex>1</ex></ph> tab added, <ph name="ANY_CHANGED">%2$d<ex>2</ex></ph> changed}
-          other {<ph name="MANY_ADDED">%1$d<ex>2</ex></ph> tabs added, <ph name="ANY_CHANGED">%2$d<ex>2</ex></ph> changed}
+          =1 {<ph name="ONE_ADDED">%1$d<ex>1</ex></ph> new tab}
+          other {<ph name="MANY_ADDED">%1$d<ex>2</ex></ph> new tabs}
         }
       </message>
       <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_ADDED_CLOSED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were added, and closed.">
         {NUMBER_OF_TABS_ADDED, plural,
-          =1 {<ph name="ONE_ADDED">%1$d<ex>1</ex></ph> tab added, <ph name="ANY_CLOSED">%3$d<ex>2</ex></ph> closed}
-          other {<ph name="MANY_ADDED">%1$d<ex>2</ex></ph> tabs added, <ph name="ANY_CLOSED">%3$d<ex>2</ex></ph> closed}
-        }
-      </message>
-      <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_ADDED_CHANGED_CLOSED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were added, changed, and closed.">
-        {NUMBER_OF_TABS_ADDED, plural,
-          =1 {<ph name="ONE_ADDED">%1$d<ex>1</ex></ph> tab added, <ph name="ANY_CHANGED">%2$d<ex>2</ex></ph> changed, <ph name="ANY_CLOSED">%3$d<ex>2</ex></ph> closed}
-          other {<ph name="MANY_ADDED">%1$d<ex>2</ex></ph> tabs added, <ph name="ANY_CHANGED">%2$d<ex>2</ex></ph> changed, <ph name="ANY_CLOSED">%3$d<ex>2</ex></ph> closed}
-        }
-      </message>
-      <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_CHANGED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were only changed.">
-        {NUMBER_OF_TABS_CHANGED, plural,
-          =1 {<ph name="ONE_CHANGED">%2$d<ex>1</ex></ph> tab changed}
-          other {<ph name="MANY_CHANGED">%2$d<ex>2</ex></ph> tabs changed}
-        }
-      </message>
-      <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_CHANGED_CLOSED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were changed, and closed.">
-        {NUMBER_OF_TABS_CHANGED, plural,
-          =1 {<ph name="ONE_CHANGED">%2$d<ex>1</ex></ph> tab changed, <ph name="ANY_CLOSED">%3$d<ex>2</ex></ph> closed}
-          other {<ph name="MANY_CHANGED">%2$d<ex>2</ex></ph> tabs changed, <ph name="ANY_CLOSED">%3$d<ex>2</ex></ph> closed}
+          =1 {<ph name="ONE_ADDED">%1$d<ex>1</ex></ph> new tab, <ph name="ANY_CLOSED">%2$d<ex>2</ex></ph> closed}
+          other {<ph name="MANY_ADDED">%1$d<ex>2</ex></ph> new tabs, <ph name="ANY_CLOSED">%2$d<ex>2</ex></ph> closed}
         }
       </message>
       <message name="IDS_TAB_GRID_DIALOG_COLLABORATION_ACTIVITY_TABS_CLOSED" desc="This text shows in a message card in the TabGridDialog if there are activity updates about the state of the tab group such as tabs being added, changed, or closed. This text describes that tabs were only closed.">
         {NUMBER_OF_TABS_CLOSED, plural,
-          =1 {<ph name="ONE_CLOSED">%3$d<ex>1</ex></ph> tab closed}
-          other {<ph name="MANY_CLOSED">%3$d<ex>2</ex></ph> tabs closed}
+          =1 {<ph name="ONE_CLOSED">%2$d<ex>1</ex></ph> tab closed}
+          other {<ph name="MANY_CLOSED">%2$d<ex>2</ex></ph> tabs closed}
         }
       </message>
 
@@ -699,6 +725,45 @@
           other {Created <ph name="NUM_YEARS_MANY">%d<ex>2</ex></ph> years ago}
         }
       </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_NOW" desc="A subtitle on a row for a tab group. Explains the group was updated less than a minute ago.">
+        Updated just now
+      </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_MINUTES" desc="A subtitle on a row for a tab group. Explains how many minutes ago the group was updated.">
+        {NUM_MINS, plural,
+          =1 {Updated <ph name="NUM_MINS_ONE">%d<ex>1</ex></ph> minute ago}
+          other {Updated <ph name="NUM_MINS_MANY">%d<ex>2</ex></ph> minutes ago}
+        }
+      </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_HOURS" desc="A subtitle on a row for a tab group. Explains how many hours ago the group was updated.">
+        {NUM_HOURS, plural,
+          =1 {Updated <ph name="NUM_HOURS_ONE">%d<ex>1</ex></ph> hour ago}
+          other {Updated <ph name="NUM_HOURS_MANY">%d<ex>2</ex></ph> hours ago}
+        }
+      </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_DAYS" desc="A subtitle on a row for a tab group. Explains how many days ago the group was updated.">
+        {NUM_DAYS, plural,
+          =1 {Updated <ph name="NUM_DAYS_ONE">%d<ex>1</ex></ph> day ago}
+          other {Updated <ph name="NUM_DAYS_MANY">%d<ex>2</ex></ph> days ago}
+        }
+      </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_WEEKS" desc="A subtitle on a row for a tab group. Explains how many weeks ago the group was updated.">
+        {NUM_WEEKS, plural,
+          =1 {Updated <ph name="NUM_WEEKS_ONE">%d<ex>1</ex></ph> week ago}
+          other {Updated <ph name="NUM_WEEKS_MANY">%d<ex>2</ex></ph> weeks ago}
+        }
+      </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_MONTHS" desc="A subtitle on a row for a tab group. Explains how many months ago the group was updated.">
+              {NUM_MONTHS, plural,
+                =1 {Updated <ph name="NUM_MONTHS_ONE">%d<ex>1</ex></ph> month ago}
+                other {Updated <ph name="NUM_MONTHS_MANY">%d<ex>2</ex></ph> months ago}
+              }
+            </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_YEARS" desc="A subtitle on a row for a tab group. Explains how many years ago the group was updated.">
+        {NUM_MONTHS, plural,
+          =1 {Updated <ph name="NUM_YEARS_ONE">%d<ex>1</ex></ph> year ago}
+          other {Updated <ph name="NUM_YEARS_MANY">%d<ex>2</ex></ph> years ago}
+        }
+      </message>
       <message name="IDS_PLUS_HIDDEN_TAB_COUNT" desc="A string to show how many other tabs are contained in a tab group who's favicons are not shown. [CHAR_LIMIT=5]">
         +<ph name="HIDDEN_TABS_COUNT">%1$s<ex>3</ex></ph>
       </message>
@@ -717,17 +782,20 @@
       <message name="IDS_DELETE_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to delete a tab group.">
         Delete
       </message>
+      <message name="IDS_DELETE_SHARED_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to delete a tab group that is shared with other users.">
+        Delete group?
+      </message>
       <message name="IDS_DELETE_SHARED_TAB_GROUP_DESCRIPTION" desc="Menu item text which will prompt a confirmation dialog to delete a tab group that is shared with other users.">
-        Everyone will immediately lose access to the <ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph> tab group, and it will be deleted from all devices
+        Everyone will immediately lose access to the "<ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph>" tab group, and it will be deleted from all devices
       </message>
       <message name="IDS_LEAVE_TAB_GROUP_MENU_ITEM" desc="Menu item text for an item which will leave a group the user does not own.">
         Leave
       </message>
       <message name="IDS_LEAVE_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to leave a shared tab group.">
-        Leave tab group?
+        Leave group?
       </message>
       <message name="IDS_LEAVE_TAB_GROUP_DESCRIPTION" desc="Description of the action of leaving a shared tab group, shown in a confirmation dialog.">
-        You’ll immediately lose access to the <ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph> tab group
+        You’ll immediately lose access to the "<ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph>" tab group, and it will be deleted from all your devices
       </message>
       <message name="IDS_UNGROUP_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to ungroup all tabs in a group.">
         Ungroup tab group?
@@ -783,13 +851,13 @@
         Close tab and delete group?
       </message>
       <message name="IDS_KEEP_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking the user if they want to keep the tab group.">
-        Keep tab group?
+        Keep group?
       </message>
       <message name="IDS_KEEP_TAB_GROUP_DIALOG_DESCRIPTION_OWNER" desc="Main text content of a dialog asking the owner of a shared group if they want to keep it. The &#10; is a newline character to force formatting.">
         Keep this group to add tabs later, or delete it if you no longer need it.&#10;&#10;If you delete it, everyone will immediately lose access to the "<ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>" tab group, and it will be deleted from all devices.
       </message>
-      <message name="IDS_KEEP_TAB_GROUP_DIALOG_DESCRIPTION_MEMBER" desc="Main text content of a dialog asking a member of a shared group if they want to keep it or leave. The &#10; is a newline character to force formatting.">
-        Keep this group to add tabs later, or leave.&#10;&#10;If you leave, you will immediately lose access to the "<ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>" tab group.
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_DESCRIPTION_MEMBER" desc="Main text content of a dialog asking a member of a shared group if they want to keep it or leave.">
+        Keep this group to add tabs later, or leave it if you no longer want access to it
       </message>
       <message name="IDS_KEEP_TAB_GROUP_DIALOG_KEEP_ACTION" desc="Action button to keep the tab group in the keep group dialog.">
         Keep group
@@ -859,6 +927,9 @@
       </message>
       <message name="IDS_TAB_GROUP_MENU_ACCESSIBILITY_TEXT" desc="Content description for accessibility to describe the action of tapping on the more menu button.">
         <ph name="TITLE_OF_GROUP">%s<ex>shopping</ex></ph> tab group options
+      </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTIFICATION_BUBBLE_IPH" desc="IPH text highlighting notification bubble displayed on the tablet tab strip when a shared tab group receives updates from other members.">
+        Changes made are seen by everyone in the group
       </message>
 
       <!-- Tabs Settings Strings -->
@@ -947,6 +1018,58 @@
       </message>
       <message name="IDS_ACCESSIBILITY_ARCHIVED_TABS_DIALOG" desc="Accessibility string for archived tabs dialog. This string is announced when the Tab Selection Editor is shown to screen.">
         Inactive tabs dialog
+      </message>
+
+      <message name="IDS_SEND_FEEDBACK_TAB_GRID_DIALOG" desc="Button to send feedback on shared tab groups.">
+        Send feedback
+      </message>
+
+      <!-- Tab Group Removed Message Strings -->
+      <message name="IDS_ONE_TAB_GROUP_REMOVED_MESSAGE_CARD_DESCRIPTION" desc="Description text on the message card which is shown when user is no longer a part of one tab group. [CHAR_LIMIT=40]">
+        "<ph name="TAB_GROUP_NAME">%1$s<ex>Vacation</ex></ph>" tab group no longer available
+      </message>
+      <message name="IDS_TWO_TAB_GROUPS_REMOVED_MESSAGE_CARD_DESCRIPTION" desc="Description text on the message card which is shown when user is no longer a part of two tab groups. [CHAR_LIMIT=60]">
+         "<ph name="TAB_GROUP_NAME_1">%1$s<ex>Travel</ex></ph>" and "<ph name="TAB_GROUP_NAME_2">%2$s<ex>Vacation</ex></ph>" tab groups no longer available
+      </message>
+      <message name="IDS_GENERIC_TAB_GROUPS_REMOVED_MESSAGE_CARD_DESCRIPTION" desc="Generic description text on the message card which is shown when user is no longer a part of 1 or more tab groups. [CHAR_LIMIT=40]">
+          {TAB_GROUPS_COUNT, plural,
+            =1 {<ph name="TAB_GROUPS_COUNT_ONE">%1$d<ex>1</ex></ph> tab group no longer available}
+            other {<ph name="TAB_GROUPS_COUNT_MANY">%1$d<ex>5</ex></ph> tab groups no longer available}
+          }
+       </message>
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_REMOVED_DISMISS_BUTTON" desc="The accessibility text to read when the 'X' button on the tab removed message card is focused">
+        Dismiss the card.
+      </message>
+
+      <!-- Tab context menu (for individual tabs) -->
+      <message name="IDS_ADD_TAB_TO_GROUP" desc="Content description for an action which adds a tab to a group.">
+        Add to group
+      </message>
+      <message name="IDS_ADD_TO_BOOKMARKS" desc="Content description for an action which adds a tab to the bookmarks.">
+        Add to bookmarks
+      </message>
+
+      <!-- Tab Group List Bottom Sheet -->
+      <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_TITLE" desc="Title text for a bottom sheet which is used to add a tab to a tab group.">
+        Add to
+      </message>
+      <message name="IDS_CREATE_NEW_GROUP_ROW_TITLE" desc="Description text for an option in a bottom sheet to create a new tab group.">
+        New tab group
+      </message>
+      <message name="IDS_TAB_GROUP_LIST_WITH_ADD_BUTTON_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The content description for the bottom sheet containing a list of tab groups and the option to create a new tab group.">
+        Select tab group or create new tab group
+      </message>
+      <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The content description for the bottom sheet containing a list of tab groups.">
+        Select tab group
+      </message>
+      <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_HALF_HEIGHT" desc="The content description for the bottom sheet containing a list of tab groups, when opened at half height.">
+        Tab group list, opened at half height
+      </message>
+      <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_FULL_HEIGHT" desc="The content description for the bottom sheet containing a list of tab groups, when opened at full height.">
+        Tab group list, opened at full height
+      </message>
+      <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_CLOSED" desc="The accessibility announcement made when the bottom sheet containing a list of tab groups is closed.">
+        Tab group list closed
       </message>
     </messages>
   </release>

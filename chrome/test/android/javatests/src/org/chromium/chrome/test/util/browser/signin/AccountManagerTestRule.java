@@ -156,6 +156,11 @@ public class AccountManagerTestRule implements TestRule {
         if (mFakeAccountInfoService != null) mFakeAccountInfoService.addAccountInfo(accountInfo);
     }
 
+    /** Updates an account in the fake AccountManagerFacade and {@link FakeAccountInfoService}. */
+    public void updateAccount(AccountInfo accountInfo) {
+        mFakeAccountManagerFacade.updateAccount(accountInfo);
+    }
+
     /**
      * Initializes the next add account flow with a given account to add.
      *

@@ -7,7 +7,9 @@
 #include <optional>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/types/pass_key.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -77,6 +79,8 @@ std::optional<viz::SharedImageFormat> GetSharedImageFormat(
 class MojoStableVideoDecoder::SharedImageHolder
     : public base::RefCountedThreadSafe<SharedImageHolder> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   static scoped_refptr<SharedImageHolder> CreateFromFrameResource(
       const scoped_refptr<FrameResource>& frame_resource,
       scoped_refptr<gpu::SharedImageInterface> sii) {
@@ -129,15 +133,21 @@ class MojoStableVideoDecoder::SharedImageHolder
       return nullptr;
     }
 
-    return base::WrapRefCounted(new SharedImageHolder(
-        frame_resource->GetSharedMemoryId(), std::move(new_client_shared_image),
-        frame_resource->ColorSpace(), std::move(sii)));
+    return base::MakeRefCounted<SharedImageHolder>(
+        base::PassKey<SharedImageHolder>(), std::move(new_client_shared_image),
+        frame_resource->ColorSpace(), std::move(sii));
   }
+
+  SharedImageHolder(base::PassKey<SharedImageHolder>,
+                    scoped_refptr<gpu::ClientSharedImage> client_shared_image,
+                    const gfx::ColorSpace& color_space,
+                    scoped_refptr<gpu::SharedImageInterface> sii)
+      : color_space_(color_space),
+        sii_(std::move(sii)),
+        client_shared_image_(std::move(client_shared_image)) {}
 
   SharedImageHolder(const SharedImageHolder&) = delete;
   SharedImageHolder& operator=(const SharedImageHolder&) = delete;
-
-  gfx::GenericSharedMemoryId id() const { return id_; }
 
   const scoped_refptr<gpu::ClientSharedImage> client_shared_image() const {
     return client_shared_image_;
@@ -164,19 +174,8 @@ class MojoStableVideoDecoder::SharedImageHolder
 
  private:
   friend class base::RefCountedThreadSafe<SharedImageHolder>;
-
-  SharedImageHolder(gfx::GenericSharedMemoryId id,
-                    scoped_refptr<gpu::ClientSharedImage> client_shared_image,
-                    const gfx::ColorSpace& color_space,
-                    scoped_refptr<gpu::SharedImageInterface> sii)
-      : id_(id),
-        color_space_(color_space),
-        sii_(std::move(sii)),
-        client_shared_image_(std::move(client_shared_image)) {}
-
   ~SharedImageHolder() { CHECK(client_shared_image_->HasOneRef()); }
 
-  const gfx::GenericSharedMemoryId id_;
   const gfx::ColorSpace color_space_;
   const scoped_refptr<gpu::SharedImageInterface> sii_;
 
@@ -341,13 +340,14 @@ MojoStableVideoDecoder::CreateOrUpdateSharedImageForFrame(
     const scoped_refptr<FrameResource>& frame_resource) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const gfx::GenericSharedMemoryId frame_id =
-      frame_resource->GetSharedMemoryId();
-  CHECK(frame_id.is_valid());
+  const base::UnguessableToken frame_token = frame_resource->tracking_token();
+  CHECK(!frame_token.is_empty());
 
   // First, let's see if the buffer for this frame already has a SharedImage
   // that can be re-used.
-  SharedImageHolder* shared_image_holder = shared_images_.Lookup(frame_id);
+  const auto iter = shared_images_.find(frame_token);
+  SharedImageHolder* shared_image_holder =
+      iter != shared_images_.end() ? iter->second.get() : nullptr;
   if (shared_image_holder &&
       shared_image_holder->IsCompatibleWith(frame_resource)) {
     shared_image_holder->Update();
@@ -370,31 +370,30 @@ MojoStableVideoDecoder::CreateOrUpdateSharedImageForFrame(
     // SharedImage if the user of the decoded frames still hasn't released all
     // frames that use that SharedImage.
     shared_image_holder = nullptr;
-    shared_images_.Replace(frame_id, new_shared_image);
+    shared_images_.insert_or_assign(frame_token, new_shared_image);
   } else {
     // In this case, the buffer does not have a SharedImage associated with it.
     // Therefore, we need to ask the containing FrameResource to notify us when
     // it's about to be destroyed so that we can release the reference to
     // whatever SharedImage is associated with it.
     FrameResource* original_frame_resource =
-        oop_video_decoder()->GetOriginalFrame(frame_id);
+        oop_video_decoder()->GetOriginalFrame(frame_resource->tracking_token());
     CHECK(original_frame_resource);
-    shared_images_.AddWithID(new_shared_image, frame_id);
+    shared_images_.insert_or_assign(frame_token, new_shared_image);
     original_frame_resource->AddDestructionObserver(
         base::BindPostTaskToCurrentDefault(
             base::BindOnce(&MojoStableVideoDecoder::UnregisterSharedImage,
-                           weak_this_factory_.GetWeakPtr(), frame_id)));
+                           weak_this_factory_.GetWeakPtr(), frame_token)));
   }
 
   return new_shared_image;
 }
 
 void MojoStableVideoDecoder::UnregisterSharedImage(
-    gfx::GenericSharedMemoryId frame_id) {
+    base::UnguessableToken frame_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(frame_id.is_valid());
-  CHECK(shared_images_.Lookup(frame_id));
-  shared_images_.Remove(frame_id);
+  CHECK(!frame_token.is_empty());
+  CHECK_EQ(1u, shared_images_.erase(frame_token));
 }
 
 void MojoStableVideoDecoder::OnFrameResourceDecoded(

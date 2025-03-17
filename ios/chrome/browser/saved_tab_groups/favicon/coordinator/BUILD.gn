@@ -13,10 +13,12 @@ source_set("coordinator") {
     "//components/saved_tab_groups/public",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/saved_tab_groups/favicon/ui",
+    "//ios/chrome/browser/share_kit/model:items",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util:image_util",
     "//ui/gfx",
   ]
 }

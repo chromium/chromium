@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.tab.state;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 import java.util.List;
 
 /** Storage for {@link PersistedTabData} */
+@NullMarked
 public interface PersistedTabDataStorage {
     /**
      * @param tabId identifier for the {@link Tab}
@@ -35,14 +38,14 @@ public interface PersistedTabDataStorage {
      * @param tabDataId unique identifier representing the type of {@link PersistedTabData}
      * @param callback to pass back the seraizliaed {@link PersistedTabData} in
      */
-    void restore(int tabId, String tabDataId, Callback<ByteBuffer> callback);
+    void restore(int tabId, String tabDataId, Callback<@Nullable ByteBuffer> callback);
 
     /**
      * @param tabId identifier for the {@link Tab}
      * @param tabDataId unique identifier representing the type of {@link PersistedTabData}
      * @return serialized {@link PersitsedTabData}
      */
-    ByteBuffer restore(int tabId, String tabDataId);
+    @Nullable ByteBuffer restore(int tabId, String tabDataId);
 
     /**
      * @param <U> a {@link PersistedTabDataResult}
@@ -51,7 +54,7 @@ public interface PersistedTabDataStorage {
      * @param mapper converts a raw result from storage to a {@link PersistedTabDataResult}
      * @return a {@link PersistedTabDataResult}
      */
-    <U extends PersistedTabDataResult> U restore(
+    <U extends PersistedTabDataResult> @Nullable U restore(
             int tabId, String dataId, PersistedTabDataMapper<U> mapper);
 
     /**

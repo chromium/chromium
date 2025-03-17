@@ -4,15 +4,17 @@
 
 #include "cc/metrics/event_latency_tracing_recorder.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace cc {
@@ -25,8 +27,6 @@ bool IsTracingEnabled() {
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(kTracingCategory, &enabled);
   return enabled;
 }
-
-constexpr base::TimeDelta high_latency_threshold = base::Milliseconds(90);
 
 constexpr perfetto::protos::pbzero::EventLatency::EventType ToProtoEnum(
     EventMetrics::EventType event_type) {
@@ -214,33 +214,22 @@ const char* EventLatencyTracingRecorder::GetDispatchToTerminationBreakdownName(
 void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
     EventMetrics* event_metrics,
     base::TimeTicks termination_time,
-    base::TimeDelta vsync_interval,
+    const viz::BeginFrameArgs* args,
     const std::vector<CompositorFrameReporter::StageData>* stage_history,
-    const CompositorFrameReporter::ProcessedVizBreakdown* viz_breakdown) {
+    const CompositorFrameReporter::ProcessedVizBreakdown* viz_breakdown,
+    std::optional<int64_t> display_trace_id) {
+  DCHECK(event_metrics);
+
   // As there are multiple teardown paths for EventMetrics, we want to denote
   // the attempt to trace, even if tracing is currently disabled.
-  if (IsTracingEnabled()) {
-    RecordEventLatencyTraceEventInternal(event_metrics, termination_time,
-                                         vsync_interval, stage_history,
-                                         viz_breakdown);
+  absl::Cleanup mark_recorded = [event_metrics] {
+    event_metrics->tracing_recorded();
+  };
+
+  if (!IsTracingEnabled()) {
+    return;
   }
-  event_metrics->tracing_recorded();
-}
 
-// static
-bool EventLatencyTracingRecorder::IsEventLatencyTracingEnabled() {
-  return IsTracingEnabled() ||
-         !base::FeatureList::IsEnabled(
-             ::features::kMetricsTracingCalculationReduction);
-}
-
-void EventLatencyTracingRecorder::RecordEventLatencyTraceEventInternal(
-    const EventMetrics* event_metrics,
-    base::TimeTicks termination_time,
-    base::TimeDelta vsync_interval,
-    const std::vector<CompositorFrameReporter::StageData>* stage_history,
-    const CompositorFrameReporter::ProcessedVizBreakdown* viz_breakdown) {
-  DCHECK(event_metrics);
   DCHECK(event_metrics->should_record_tracing());
 
   const base::TimeTicks generated_timestamp =
@@ -256,8 +245,9 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEventInternal(
             context.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* event_latency = event->set_event_latency();
         event_latency->set_event_type(ToProtoEnum(event_metrics->type()));
+        static constexpr auto kHighLatencyThreshold = base::Milliseconds(90);
         bool has_high_latency =
-            (termination_time - generated_timestamp) > high_latency_threshold;
+            (termination_time - generated_timestamp) > kHighLatencyThreshold;
         event_latency->set_has_high_latency(has_high_latency);
         for (auto stage : event_metrics->GetHighLatencyStages()) {
           // TODO(crbug.com/40228308): Consider changing the high_latency_stage
@@ -277,7 +267,14 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEventInternal(
           event_latency->set_is_janky_scrolled_frame(
               scroll_update->is_janky_scrolled_frame().value());
         }
-        event_latency->set_vsync_interval_ms(vsync_interval.InMillisecondsF());
+        if (args) {
+          event_latency->set_vsync_interval_ms(
+              args->interval.InMillisecondsF());
+          event_latency->set_surface_frame_trace_id(args->trace_id);
+        }
+        if (display_trace_id) {
+          event_latency->set_display_trace_id(*display_trace_id);
+        }
       });
 
   // Event dispatch stages.
@@ -315,7 +312,7 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEventInternal(
     DCHECK(viz_breakdown);
     // Find the first compositor stage that starts at the same time or after the
     // end of the final event dispatch stage.
-    auto stage_it = base::ranges::lower_bound(
+    auto stage_it = std::ranges::lower_bound(
         *stage_history, dispatch_timestamp, {},
         &CompositorFrameReporter::StageData::start_time);
     // TODO(crbug.com/40843545): Ideally, at least the start time of
@@ -384,11 +381,6 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEventInternal(
               // (because swap-end is actually the time the post swap end
               // callback is run, which can happen after presentation). In this
               // case we truncate the breakdown to presentation.
-              DCHECK(
-                  breakdown == CompositorFrameReporter::VizBreakdown::
-                                   kSwapStartToSwapEnd ||
-                  breakdown ==
-                      CompositorFrameReporter::VizBreakdown::kLatchToSwapEnd);
               breakdown_name = GetVizBreakdownToPresentationName(breakdown);
             } else {
               breakdown_name =
@@ -414,6 +406,13 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEventInternal(
     TRACE_EVENT_END(kTracingCategory, trace_track, termination_time);
   }
   TRACE_EVENT_END(kTracingCategory, trace_track, termination_time);
+}
+
+// static
+bool EventLatencyTracingRecorder::IsEventLatencyTracingEnabled() {
+  return IsTracingEnabled() ||
+         !base::FeatureList::IsEnabled(
+             ::features::kMetricsTracingCalculationReduction);
 }
 
 }  // namespace cc

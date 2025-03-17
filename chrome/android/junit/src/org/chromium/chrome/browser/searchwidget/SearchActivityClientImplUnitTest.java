@@ -231,9 +231,9 @@ public class SearchActivityClientImplUnitTest {
                 IntentUtils.safeHasExtra(
                         intentForResult.intent, SearchActivityExtras.EXTRA_IS_INCOGNITO));
         assertEquals(
+                true,
                 IntentUtils.safeGetBooleanExtra(
-                        intentForResult.intent, SearchActivityExtras.EXTRA_IS_INCOGNITO, false),
-                true);
+                        intentForResult.intent, SearchActivityExtras.EXTRA_IS_INCOGNITO, false));
         assertEquals(mClient.getClientUniqueRequestCode(), intentForResult.requestCode);
     }
 

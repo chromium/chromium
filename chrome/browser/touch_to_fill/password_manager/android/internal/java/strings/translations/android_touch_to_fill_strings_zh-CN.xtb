@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">轻触即可填充的凭据的列表已全屏打开。</translation>
 <translation id="5591247451101092906">使用已保存的密码或通行密钥？</translation>
 <translation id="5624120631404540903">管理密码</translation>
+<translation id="592182999816790476">为 <ph name="WEBSITE" /> 保存的 <ph name="USERNAME" /> 密码</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> 的通行密钥，请使用您的屏幕锁定设置</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{用于登录此网站的新密码}other{用于登录此网站的新密码}}</translation>
 <translation id="7286867818472074330">选择通行密钥</translation>

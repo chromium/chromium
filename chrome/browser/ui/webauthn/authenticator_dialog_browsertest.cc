@@ -2,40 +2,57 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
+#include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
+#include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/trusted_vault/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -43,6 +60,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
@@ -65,9 +83,19 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
   AuthenticatorDialogTest& operator=(const AuthenticatorDialogTest&) = delete;
 
   void SetUpOnMainThread() override {
+    DialogBrowserTest::SetUpOnMainThread();
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(browser()->profile()),
         "user@example.com", signin::ConsentLevel::kSync);
+  }
+
+  void TearDownOnMainThread() override {
+    if (controller_) {
+      // Close the dialog before the entire browser is torn down.
+      controller_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kClosed);
+    }
+    DialogBrowserTest::TearDownOnMainThread();
   }
 
   // DialogBrowserTest:
@@ -365,7 +393,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     }
 #endif
 
-    controller_->StartFlow(std::move(transport_availability));
+    controller_->StartFlow(std::move(transport_availability), {});
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;
       model_->OnSheetModelChanged();
@@ -589,12 +617,21 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_phone_confirmation) {
 //   --ui=GPMPasskeysAuthenticatorDialogTest.InvokeUi_${test_name}
 //
 // where test_name is the second arg to IN_PROC_BROWSER_TEST_F().
-class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
+class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
  public:
   void SetUpOnMainThread() override {
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(browser()->profile()),
         "user@example.com", signin::ConsentLevel::kSync);
+  }
+
+  void TearDownOnMainThread() override {
+    if (controller_) {
+      // Close the dialog before the entire browser is torn down.
+      controller_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kClosed);
+    }
+    DialogBrowserTest::TearDownOnMainThread();
   }
 
   // AuthenticatorDialogTest:
@@ -627,23 +664,38 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     device::DiscoverableCredentialMetadata gpm_cred(
         device::AuthenticatorType::kEnclave, "example.com", {1},
         device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
     device::DiscoverableCredentialMetadata local_cred1(
         device::AuthenticatorType::kTouchID, "example.com", {1},
         device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
     device::DiscoverableCredentialMetadata local_cred2(
         device::AuthenticatorType::kTouchID, "example.com", {2},
         device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
     device::DiscoverableCredentialMetadata phone_cred1(
         device::AuthenticatorType::kPhone, "example.com", {3},
         device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
     device::DiscoverableCredentialMetadata phone_cred2(
         device::AuthenticatorType::kPhone, "example.com", {4},
         device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
-                                              "Elisa Beckett"));
+                                              "Elisa Beckett"),
+        std::nullopt);
+    device::DiscoverableCredentialMetadata ick_cred1(
+        device::AuthenticatorType::kICloudKeychain, "example.com", {5},
+        device::PublicKeyCredentialUserEntity({1}, "elisa.beckett@gmail.com",
+                                              "Elisa Beckett"),
+        "Example Passkey Provider");
+    device::DiscoverableCredentialMetadata ick_cred2(
+        device::AuthenticatorType::kICloudKeychain, "example.com", {6},
+        device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
+                                              "Elisa Beckett"),
+        "Another Example Passkey Provider");
     model_->user_entity = local_cred1.user;
 
     // Configure a phone from sync.
@@ -785,10 +837,17 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     } else if (name == "gpm_locked_pin") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMLockedPin);
+    } else if (name == "icloud_keychain_cred") {
+      transport_availability.has_empty_allow_list = true;
+      controller_->set_allow_icloud_keychain(true);
+      transport_availability.recognized_credentials = {
+          std::move(ick_cred1),
+          std::move(ick_cred2),
+      };
     } else {
       NOTREACHED();
     }
-    controller_->StartFlow(std::move(transport_availability));
+    controller_->StartFlow(std::move(transport_availability), {});
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;
       model_->OnSheetModelChanged();
@@ -798,8 +857,6 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
  private:
   scoped_refptr<AuthenticatorRequestDialogModel> model_;
   std::unique_ptr<AuthenticatorRequestDialogController> controller_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnEnclaveAuthenticator};
 };
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
@@ -936,6 +993,11 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_icloud_keychain_cred) {
+  ShowAndVerifyUi();
+}
+
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest, InvokeUi_touchid) {
   if (__builtin_available(macos 12, *)) {
@@ -947,12 +1009,6 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest, InvokeUi_touchid) {
 // Tests the UI steps that show a pop-up window.
 class AuthenticatorWindowTest : public InProcessBrowserTest {
  public:
-  AuthenticatorWindowTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnEnclaveAuthenticator},
-        /*disabled_features=*/{});
-  }
-
   void SetUp() override {
     https_server_.RegisterRequestHandler(
         base::BindRepeating(&AuthenticatorWindowTest::HandleNetworkRequest,
@@ -1024,8 +1080,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     return response;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1112,4 +1166,45 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, UINavigatesAway) {
   model_->SetStep(
       AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   model_->SetStep(AuthenticatorRequestDialogModel::Step::kNotStarted);
+}
+
+// Run with:
+//
+// browser_tests
+//   --gtest_filter=BrowserUiTest.Invoke --test-launcher-interactive \
+//   --ui=PasskeyUpgradeConfirmationBubbleTest.InvokeUi_${test_name}
+//
+// where test_name is the second arg to IN_PROC_BROWSER_TEST_F().
+class PasskeyUpgradeConfirmationBubbleTest : public DialogBrowserTest {
+ public:
+  PasskeyUpgradeConfirmationBubbleTest() = default;
+  PasskeyUpgradeConfirmationBubbleTest(
+      const PasskeyUpgradeConfirmationBubbleTest&) = delete;
+  PasskeyUpgradeConfirmationBubbleTest& operator=(
+      const PasskeyUpgradeConfirmationBubbleTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    DialogBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(browser()->profile()),
+        "user@gmail.com", signin::ConsentLevel::kSync);
+  }
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    // Bubble can only show on webby URLs
+    ASSERT_TRUE(embedded_test_server()->Start());
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("a.test", "/empty.html")));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    auto* controller =
+        ManagePasswordsUIController::FromWebContents(web_contents);
+    controller->OnPasskeyUpgrade("example.com");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PasskeyUpgradeConfirmationBubbleTest, InvokeUi_default) {
+  ShowAndVerifyUi();
 }

@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram
+    name="FingerprintingProtection.BlockedDomainListComponent.InstallationResult"
+    enum="FingerprintingProtectionComponentInstallationResult"
+    expires_after="2025-10-10">
+  <owner>trishalfonso@google.com</owner>
+  <owner>src/components/fingerprinting_protection_filter/OWNERS</owner>
+  <summary>
+    Whenever a new blocked domain list component is installed, log the result of
+    the installation, i.e. success or failure reason.
+  </summary>
+</histogram>
+
 <histogram name="FingerprintingProtection.DocumentLoad.RulesetIsAvailable"
     enum="BooleanAvailable" expires_after="2025-10-10">
   <owner>rizvis@google.com</owner>
@@ -63,8 +75,36 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.NameAlias.{Result}.Incognito"
+    units="microseconds" expires_after="2025-08-29">
+  <owner>thesalsa@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>johnykim@google.com</owner>
+  <summary>
+    Records the total time a child frame navigation was delayed due to alias
+    checking in incognito, whether the check was triggered, and calculating
+    whether it should be disallowed. Logged for all navigations in incognito
+    that were marked {Result}.
+
+    A {Result} marked as Checked indicates that the alias check was triggered,
+    while Disallowed and WouldDisallow are LoadPolicy decisions determined by
+    alias checking. Because alias checks are counted with
+    FingerprintingProtection.DocumentLoad.SubframeFilteringDelay, alias allowed
+    decisions can be derived.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
+  </summary>
+  <token key="Result">
+    <variant name="Checked"/>
+    <variant name="Disallowed"/>
+    <variant name="WouldDisallow"/>
+  </token>
+</histogram>
+
+<histogram
     name="FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.{Result}"
-    units="microseconds" expires_after="2025-04-30">
+    units="microseconds" expires_after="2025-09-07">
   <owner>thesalsa@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <owner>rizvis@google.com</owner>
@@ -84,8 +124,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.{Result}.Incognito"
+    units="microseconds" expires_after="2025-07-06">
+  <owner>thesalsa@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    Records the total time a child frame navigation in incognito was delayed
+    while calculating whether it should be disallowed or not. Logged for all
+    navigations that were marked {Result} in incognito.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
+  </summary>
+  <token key="Result">
+    <variant name="Allowed"/>
+    <variant name="Disallowed"/>
+    <variant name="WouldDisallow"/>
+  </token>
+</histogram>
+
 <histogram name="FingerprintingProtection.IndexRuleset.CPUDuration" units="ms"
-    expires_after="2025-06-28">
+    expires_after="2025-08-31">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -98,7 +160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.IndexRuleset.NumUnsupportedRules"
-    units="rules" expires_after="2025-04-30">
+    units="rules" expires_after="2025-08-31">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -143,7 +205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.IndexRuleset.WallDuration" units="ms"
-    expires_after="2025-06-28">
+    expires_after="2025-08-31">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -171,7 +233,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="FingerprintingProtection.PageLoad.ActivationDecision"
     enum="FingerprintingProtectionActivationDecision"
-    expires_after="2025-04-30">
+    expires_after="2025-08-31">
   <owner>thesalsa@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <owner>rizvis@google.com</owner>
@@ -185,7 +247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.PageLoad.ActivationLevel"
-    enum="FingerprintingProtectionActivationLevel" expires_after="2025-04-30">
+    enum="FingerprintingProtectionActivationLevel" expires_after="2025-06-29">
   <owner>thesalsa@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <owner>rizvis@google.com</owner>
@@ -214,6 +276,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Disallowed.Incognito"
+    units="resource loads" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load associated with an incognito profile is finished with
+    subresource filtering activated, records the total number of subresource
+    loads that have been disallowed. This only differs from `MatchedRules` when
+    filtering is performed in dry-run mode.
+  </summary>
+</histogram>
+
+<histogram
     name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Evaluated"
     units="resource loads" expires_after="2025-08-05">
   <owner>rizvis@google.com</owner>
@@ -225,6 +302,22 @@ chromium-metrics-reviews@google.com.
     records the total number of subresource loads that have been evaluated. This
     only differs from 'Total' when some of subdocuments is subject to a
     deactivating rule with DOCUMENT activation type.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Evaluated.Incognito"
+    units="resource loads" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load associated with an incognito profile is finished with
+    subresource filtering activated, records the total number of subresource
+    loads that have been evaluated. This only differs from 'Total' when some of
+    subdocuments is subject to a deactivating rule with DOCUMENT activation
+    type.
   </summary>
 </histogram>
 
@@ -243,6 +336,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="FingerprintingProtection.PageLoad.NumSubresourceLoads.MatchedRules.Incognito"
+    units="resource loads" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load associated with an incognito profile is finished with
+    subresource filtering activated, records the total number of subresource
+    loads that have matched filtering rules. This only differs from `Disallowed`
+    when filtering is performed in dry-run mode.
+  </summary>
+</histogram>
+
 <histogram name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Total"
     units="resource loads" expires_after="2025-08-05">
   <owner>rizvis@google.com</owner>
@@ -250,15 +358,62 @@ chromium-metrics-reviews@google.com.
   <owner>tanub@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <summary>
-    Whenever a page load is finished with subresource filtering activated,
-    records the total number of subresource loads that have gone through the
-    subresource filtering pipeline.
+    Whenever a page load associated is finished with subresource filtering
+    activated, records the total number of subresource loads that have gone
+    through the subresource filtering pipeline.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Total.Incognito"
+    units="resource loads" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load associated with an incognito profile is finished with
+    subresource filtering activated, records the total number of subresource
+    loads that have gone through the subresource filtering pipeline.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.RefreshCount.SiteHasBreakageException"
+    enum="BooleanAvailable" expires_after="2025-07-01">
+  <owner>aabeshouse@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    When a document loads, records if the site has an exception created by the
+    refresh count breakage heuristic. In that case, fingerprinting protection
+    filtering is disabled due to the exception.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.RefreshCount.SiteHasBreakageExceptionWallDuration"
+    units="microseconds" expires_after="2025-07-01">
+  <owner>aabeshouse@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    See
+    `FingerprintingProtection.PageLoad.RefreshCount.SiteHasBreakageException`.
+    Measures the wall time taken to check for a breakage exception.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
   </summary>
 </histogram>
 
 <histogram
     name="FingerprintingProtection.PageLoad.RootNavigation.ActivationState"
-    enum="SubresourceFilterActivationState" expires_after="2025-07-01">
+    enum="SubresourceFilterActivationState" expires_after="2025-08-31">
   <owner>rizvis@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <owner>thesalsa@google.com</owner>
@@ -373,8 +528,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="FingerprintingProtection.WebContentsObserver.RefreshCount.AddBreakageException"
+    enum="BooleanAvailable" expires_after="2025-07-01">
+  <owner>aabeshouse@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    Logs when a breakage exception is added based on the refresh count
+    heuristic.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.WebContentsObserver.RefreshCount.AddBreakageExceptionWallDuration"
+    units="microseconds" expires_after="2025-07-01">
+  <owner>aabeshouse@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    See
+    `FingerprintingProtection.WebContentsObserver.RefreshCount.AddBreakageException`.
+    Measures the wall time taken to add a breakage exception.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="FingerprintingProtection.WriteRuleset.Result"
-    enum="SubresourceFilterWriteRulesetResult" expires_after="2025-04-30">
+    enum="SubresourceFilterWriteRulesetResult" expires_after="2025-08-31">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>

@@ -6,6 +6,7 @@
 
   data: [
     "back-forward-cache-restoration",
+    "container",
     "element",
     "event",
     "first-input",

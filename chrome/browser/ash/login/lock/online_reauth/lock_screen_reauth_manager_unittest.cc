@@ -33,11 +33,11 @@
 
 namespace ash {
 namespace {
-const char kSAMLUserId1[] = "12345";
-const char kSAMLUserEmail1[] = "alice@corp.example.com";
+constexpr GaiaId::Literal kSAMLUserId1("12345");
+constexpr char kSAMLUserEmail1[] = "alice@corp.example.com";
 
-const char kSAMLUserId2[] = "67891";
-const char kSAMLUserEmail2[] = "bob@corp.example.com";
+constexpr GaiaId::Literal kSAMLUserId2("67891");
+constexpr char kSAMLUserEmail2[] = "bob@corp.example.com";
 
 constexpr base::TimeDelta kSamlOnlineShortDelay = base::Seconds(10);
 
@@ -64,10 +64,10 @@ class LockScreenReauthManagerTest : public testing::Test {
   void LockScreen();
 
   const AccountId saml_login_account_id1_ =
-      AccountId::FromUserEmailGaiaId(kSAMLUserEmail1, GaiaId(kSAMLUserId1));
+      AccountId::FromUserEmailGaiaId(kSAMLUserEmail1, kSAMLUserId1);
 
   const AccountId saml_login_account_id2_ =
-      AccountId::FromUserEmailGaiaId(kSAMLUserEmail2, GaiaId(kSAMLUserId2));
+      AccountId::FromUserEmailGaiaId(kSAMLUserEmail2, kSAMLUserId2);
 
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,

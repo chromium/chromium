@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
@@ -28,7 +29,7 @@ class DisabledAuthMessageView : public views::View {
     explicit TestApi(DisabledAuthMessageView* view);
     ~TestApi();
 
-    const std::u16string& GetDisabledAuthMessageContent() const;
+    std::u16string_view GetDisabledAuthMessageContent() const;
 
     void SetDisabledAuthMessageTitleForTesting(std::u16string message_title);
 

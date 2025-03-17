@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/mojo/services/stable_video_decoder_service.h"
+
 #include <sys/mman.h>
 
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/mojom/media_log.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/services/stable_video_decoder_factory_service.h"
-#include "media/mojo/services/stable_video_decoder_service.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -46,7 +49,8 @@ VideoDecoderConfig CreateValidVideoDecoderConfig() {
   return config;
 }
 
-scoped_refptr<VideoFrame> CreateTestNV12GpuMemoryBufferVideoFrame() {
+scoped_refptr<VideoFrame> CreateTestNV12MappableVideoFrame(
+    scoped_refptr<gpu::TestSharedImageInterface> test_sii) {
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::NATIVE_PIXMAP;
 
@@ -78,28 +82,30 @@ scoped_refptr<VideoFrame> CreateTestNV12GpuMemoryBufferVideoFrame() {
   uv_plane.fd = std::move(uv_fd);
   gmb_handle.native_pixmap_handle.planes.push_back(std::move(uv_plane));
 
-  gpu::GpuMemoryBufferSupport gmb_support;
-  auto gmb = gmb_support.CreateGpuMemoryBufferImplFromHandle(
-      std::move(gmb_handle), gfx::Size(640, 368),
-      gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferUsage::SCANOUT_VDA_WRITE,
-      base::DoNothing());
-  if (!gmb) {
+  // Setting some default usage in order to get a mappable shared image.
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  auto shared_image = test_sii->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, gfx::Size(640, 368), gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "StableVideoDecoderServiceTest"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_VDA_WRITE,
+      std::move(gmb_handle));
+
+  auto video_frame = VideoFrame::WrapMappableSharedImage(
+      std::move(shared_image), test_sii->GenVerifiedSyncToken(),
+      base::NullCallback(), /*visible_rect=*/gfx::Rect(640, 368),
+      /*natural_size=*/gfx::Size(640, 368), base::TimeDelta());
+  if (!video_frame) {
     return nullptr;
   }
 
-  auto gmb_video_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      /*visible_rect=*/gfx::Rect(640, 368),
-      /*natural_size=*/gfx::Size(640, 368), std::move(gmb), base::TimeDelta());
-  if (!gmb_video_frame) {
-    return nullptr;
-  }
+  video_frame->metadata().allow_overlay = true;
+  video_frame->metadata().end_of_stream = false;
+  video_frame->metadata().read_lock_fences_enabled = true;
+  video_frame->metadata().power_efficient = true;
 
-  gmb_video_frame->metadata().allow_overlay = true;
-  gmb_video_frame->metadata().end_of_stream = false;
-  gmb_video_frame->metadata().read_lock_fences_enabled = true;
-  gmb_video_frame->metadata().power_efficient = true;
-
-  return gmb_video_frame;
+  return video_frame;
 }
 
 class MockVideoFrameHandleReleaser : public mojom::VideoFrameHandleReleaser {
@@ -367,6 +373,7 @@ class StableVideoDecoderServiceTest : public testing::Test {
         std::move(stable_video_decoder_factory_receiver),
         /*disconnect_cb=*/base::DoNothing());
     ASSERT_TRUE(stable_video_decoder_factory_remote_.is_connected());
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   }
 
  protected:
@@ -399,6 +406,7 @@ class StableVideoDecoderServiceTest : public testing::Test {
   mojo::Remote<stable::mojom::StableVideoDecoderFactory>
       stable_video_decoder_factory_remote_;
   mojo::Remote<stable::mojom::StableVideoDecoder> stable_video_decoder_remote_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 // Tests that we can create multiple StableVideoDecoder implementation instances
@@ -778,7 +786,7 @@ TEST_F(StableVideoDecoderServiceTest,
 
   const auto token_for_release = base::UnguessableToken::Create();
   scoped_refptr<VideoFrame> video_frame_to_send =
-      CreateTestNV12GpuMemoryBufferVideoFrame();
+      CreateTestNV12MappableVideoFrame(test_sii_);
   ASSERT_TRUE(video_frame_to_send);
   stable::mojom::VideoFramePtr video_frame_received;
   constexpr bool kCanReadWithoutStalling = true;

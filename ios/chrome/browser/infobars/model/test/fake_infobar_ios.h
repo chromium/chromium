@@ -7,10 +7,9 @@
 
 #include <memory>
 
+#include "base/strings/utf_string_conversions.h"
 #include "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
-
-#include "base/strings/utf_string_conversions.h"
 
 class FakeInfobarDelegate;
 

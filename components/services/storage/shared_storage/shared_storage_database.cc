@@ -144,6 +144,15 @@ std::string SerializeSite(const net::SchemefulSite& site) {
   return true;
 }
 
+void RecordDataDurationHistogram(base::TimeDelta data_duration) {
+  constexpr size_t kExclusiveMax = 61;
+
+  base::UmaHistogramExactLinear(
+      "Storage.SharedStorage.OnDataClearedForOrigin.DataDurationInDays",
+      data_duration.InDays(),
+      /*exclusive_max=*/kExclusiveMax);
+}
+
 }  // namespace
 
 SharedStorageDatabase::GetResult::GetResult() = default;
@@ -209,12 +218,18 @@ SharedStorageDatabase::SharedStorageDatabase(
     base::FilePath db_path,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<SharedStorageDatabaseOptions> options)
-    : db_({.wal_mode = base::FeatureList::IsEnabled(
-               blink::features::kSharedStorageAPIEnableWALForDatabase),
-           // We DCHECK that the page size is valid in the constructor for
-           // `SharedStorageOptions`.
-           .page_size = options->max_page_size,
-           .cache_size = options->max_cache_size},
+    : db_(sql::DatabaseOptions()
+              .set_preload(base::FeatureList::IsEnabled(
+                  sql::features::kPreOpenPreloadDatabase))
+              .set_wal_mode(base::FeatureList::IsEnabled(
+                  blink::features::kSharedStorageAPIEnableWALForDatabase))
+              // Prevent SQLite from trying to use mmap, as SandboxedVfs does
+              // not currently support this.
+              .set_mmap_enabled(false)
+              // We DCHECK that the page size is valid in the constructor for
+              // `SharedStorageOptions`.
+              .set_page_size(options->max_page_size)
+              .set_cache_size(options->max_cache_size),
           /*tag=*/"SharedStorage"),
       db_path_(std::move(db_path)),
       special_storage_policy_(std::move(special_storage_policy)),
@@ -436,7 +451,8 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Delete(
 }
 
 SharedStorageDatabase::OperationResult SharedStorageDatabase::Clear(
-    url::Origin context_origin) {
+    url::Origin context_origin,
+    DataClearSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
@@ -448,7 +464,7 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Clear(
       return OperationResult::kInitFailure;
   }
 
-  if (!Purge(SerializeOrigin(context_origin))) {
+  if (!Purge(SerializeOrigin(context_origin), source)) {
     return OperationResult::kSqlError;
   }
   return OperationResult::kSuccess;
@@ -771,8 +787,9 @@ SharedStorageDatabase::PurgeMatchingOrigins(
       continue;
     }
 
-    if (!Purge(origin))
+    if (!Purge(origin, DataClearSource::kUI)) {
       return OperationResult::kSqlError;
+    }
   }
 
   if (!transaction.Commit())
@@ -831,6 +848,26 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::PurgeStale() {
   if (!entries_statement.Run())
     return OperationResult::kSqlError;
 
+  static constexpr char kGetCreationTimeSql[] =
+      "SELECT creation_time "
+      "FROM per_origin_mapping "
+      "WHERE num_bytes<=0";
+
+  sql::Statement creation_time_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kGetCreationTimeSql));
+
+  base::Time now = clock_->Now();
+
+  while (creation_time_statement.Step()) {
+    base::Time creation_time = creation_time_statement.ColumnTime(0);
+    base::TimeDelta data_duration = now - creation_time;
+    RecordDataDurationHistogram(data_duration);
+  }
+
+  if (!creation_time_statement.Succeeded()) {
+    return OperationResult::kSqlError;
+  }
+
   static constexpr char kDeleteOriginsSql[] =
       "DELETE FROM per_origin_mapping WHERE num_bytes<=0";
   sql::Statement origins_statement(
@@ -874,7 +911,7 @@ std::vector<mojom::StorageUsageInfoPtr> SharedStorageDatabase::FetchOrigins() {
   while (statement.Step()) {
     fetched_origin_infos.emplace_back(mojom::StorageUsageInfo::New(
         blink::StorageKey::CreateFirstParty(
-            url::Origin::Create(GURL(statement.ColumnString(0)))),
+            url::Origin::Create(GURL(statement.ColumnStringView(0)))),
         statement.ColumnInt64(2), statement.ColumnTime(1)));
   }
 
@@ -1275,8 +1312,9 @@ bool SharedStorageDatabase::OpenDatabase() {
     if (!db_.is_open() && !OpenImpl()) {
       return false;
     }
-
-    db_.Preload();
+    if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
+      db_.Preload();
+    }
   } else {
     if (!db_.OpenInMemory())
       return false;
@@ -1366,7 +1404,8 @@ bool SharedStorageDatabase::Vacuum() {
   return db_.Execute("VACUUM");
 }
 
-bool SharedStorageDatabase::Purge(const std::string& context_origin) {
+bool SharedStorageDatabase::Purge(const std::string& context_origin,
+                                  DataClearSource source) {
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return false;
@@ -1382,7 +1421,7 @@ bool SharedStorageDatabase::Purge(const std::string& context_origin) {
   if (!statement.Run())
     return false;
 
-  if (!DeleteFromPerOriginMapping(context_origin)) {
+  if (!DeleteFromPerOriginMapping(context_origin, source)) {
     return false;
   }
 
@@ -1667,7 +1706,33 @@ bool SharedStorageDatabase::UpdateValuesMapping(
 }
 
 bool SharedStorageDatabase::DeleteFromPerOriginMapping(
-    const std::string& context_origin) {
+    const std::string& context_origin,
+    DataClearSource source) {
+  if (source != DataClearSource::kSite) {
+    // In theory, there ought to be at most one entry found. But we make no
+    // assumption about the state of the disk. In the rare case that multiple
+    // entries are found, we return only the value from the first entry found.
+    static constexpr char kGetCreationTimeSql[] =
+        "SELECT creation_time "
+        "FROM per_origin_mapping "
+        "WHERE context_origin=? "
+        "LIMIT 1";
+
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kGetCreationTimeSql));
+    statement.BindString(0, context_origin);
+
+    if (statement.Step()) {
+      base::Time creation_time = statement.ColumnTime(0);
+      base::TimeDelta data_duration = clock_->Now() - creation_time;
+      RecordDataDurationHistogram(data_duration);
+    }
+
+    if (!statement.Succeeded()) {
+      return false;
+    }
+  }
+
   static constexpr char kDeleteSql[] =
       "DELETE FROM per_origin_mapping "
       "WHERE context_origin=?";
@@ -1714,7 +1779,7 @@ bool SharedStorageDatabase::UpdatePerOriginMapping(
     return InsertIntoPerOriginMapping(context_origin, creation_time, num_bytes);
   }
   if (origin_exists) {
-    return DeleteFromPerOriginMapping(context_origin);
+    return DeleteFromPerOriginMapping(context_origin, DataClearSource::kSite);
   }
 
   //  Origin does not exist and we are trying to set the `num_bytes` to 0, so
@@ -1773,7 +1838,9 @@ bool SharedStorageDatabase::ManualPurgeExpiredValues(
   // There are no entries left for `context_origin`, so remove it from
   // `per_origin_mapping`.
   if (!num_bytes) {
-    return DeleteFromPerOriginMapping(context_origin) && transaction.Commit();
+    return DeleteFromPerOriginMapping(context_origin,
+                                      DataClearSource::kExpiration) &&
+           transaction.Commit();
   }
 
   // Update the `per_origin_mapping` row for `context_origin`.

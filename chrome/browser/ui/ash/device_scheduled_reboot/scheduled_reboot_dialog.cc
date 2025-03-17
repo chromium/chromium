@@ -57,9 +57,11 @@ void ScheduledRebootDialog::ShowBubble(const base::Time& reboot_time,
                       base::TimeFormatShortDate(reboot_time)))
                   .set_is_secondary())
           .Build();
-
+  // TODO(crbug.com/41493925): Autosizing this bubble once this bubble's anchor
+  // point is in the correct position.
   auto bubble = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::mojom::ModalType::kSystem);
+      std::move(dialog_model), ui::mojom::ModalType::kSystem,
+      /*autosize=*/false);
   dialog_delegate_ = bubble.get();
   bubble->SetOwnedByWidget(true);
   constrained_window::CreateBrowserModalDialogViews(std::move(bubble),

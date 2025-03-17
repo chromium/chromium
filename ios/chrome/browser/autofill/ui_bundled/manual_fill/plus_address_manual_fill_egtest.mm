@@ -11,14 +11,14 @@
 #import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -121,18 +121,13 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 
   // Enable the Keyboard Accessory Upgrade feature.
   config.features_enabled_and_params.push_back(
-      {kIOSKeyboardAccessoryUpgrade, {}});
+      {kIOSKeyboardAccessoryUpgradeForIPad, {}});
 
   return config;
 }
 
 - (void)setUp {
   [super setUp];
-
-  // TODO(crbug.com/327838014): Fix and enable tests for iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    return;
-  }
 
   // Set up server.
   net::test_server::RegisterDefaultHandlers(self.testServer);
@@ -184,10 +179,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 // Tests that the plus address fallback is shown in the address and the
 // password segment.
 - (void)testPlusAddressFallback {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   // Open the expanded manual fill view for an address field.
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
@@ -213,10 +204,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 // Tests that the plus address manage action are shown in the address and
 // password segments.
 - (void)testPlusAddressManageAction {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
 
@@ -249,10 +236,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 // Tests that tapping on the create plus address action in the address manual
 // fill view opens up the bottomsheet to create one.
 - (void)testPlusAddressCreateActionFromAddressView {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   [PlusAddressAppInterface setShouldOfferPlusAddressCreation:YES];
   [PlusAddressAppInterface setShouldReturnNoAffiliatedPlusProfiles:YES];
 
@@ -280,10 +263,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 // Tests that tapping on the create plus address action in the password manual
 // fill view opens up the bottomsheet to create one.
 - (void)testPlusAddressCreateActionFromPasswordView {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   [PlusAddressAppInterface setShouldOfferPlusAddressCreation:YES];
   [PlusAddressAppInterface setShouldReturnNoAffiliatedPlusProfiles:YES];
 
@@ -313,10 +292,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 // Tests that tapping on the select plus address action shows a sheet with the
 // list of all plus addresses from the address manual fill view.
 - (void)testSelectPlusAddressActionFromAddressFillView {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
   [PlusAddressAppInterface addPlusAddressProfile];
 
@@ -373,10 +348,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 
 // Tests the search functionality in the select plus address sheet view.
 - (void)testSearchPlusAddress {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
   [PlusAddressAppInterface addPlusAddressProfile];
 
@@ -409,11 +380,9 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 
 // Tests that for the plus address manual fallback suggestion, in the overflow
 // menu, there is an option to manage the plus address.
-- (void)testOverflowMenuManageActionInAddressManualFillMenu {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
+// TODO(crbug.com/391354601): Reenable when the flakiness source has been found
+// and dealt with.
+- (void)FLAKY_testOverflowMenuManageActionInAddressManualFillMenu {
   // Open the expanded manual fill view for an address field.
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
@@ -443,17 +412,12 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 // Tests that the "Manage" action in the overflow menu is displayed in the
 // select plus address view.
 - (void)testOverflowMenuManageActionInSelectPlusAddressView {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails for iPad");
-  }
-
   [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
   [PlusAddressAppInterface addPlusAddressProfile];
 
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
-  id<GREYMatcher> selectPlusAddressMatcher = grey_accessibilityID(
-      manual_fill::kSelectPlusAddressAccessibilityIdentifier);
+  id<GREYMatcher> selectPlusAddressMatcher = PlusAddressSelectActionMatcher();
 
   [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];

@@ -11,15 +11,9 @@
 #include <string_view>
 
 #include "base/containers/flat_set.h"
+#include "base/i18n/transliterator.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/icu/source/common/unicode/uniset.h"
-
-// 'icu' does not work. Use U_ICU_NAMESPACE.
-namespace U_ICU_NAMESPACE {
-
-class Transliterator;
-
-}  // namespace U_ICU_NAMESPACE
 
 struct USpoofChecker;
 
@@ -91,7 +85,6 @@ class SkeletonGenerator {
                           int32_t src_char,
                           int32_t mapped_char,
                           Skeletons* skeletons);
-  void MaybeRemoveDiacritics(icu::UnicodeString& hostname);
   // Returns true if supplemental hostnames of `input_hostname` should be
   // generated without removing its diacritics.
   bool ShouldComputeSupplementalHostnamesWithDiacritics(
@@ -99,8 +92,8 @@ class SkeletonGenerator {
 
   icu::UnicodeSet lgc_letters_n_ascii_;
 
-  std::unique_ptr<icu::Transliterator> diacritic_remover_;
-  std::unique_ptr<icu::Transliterator> extra_confusable_mapper_;
+  std::unique_ptr<base::i18n::Transliterator> diacritic_remover_;
+  std::unique_ptr<base::i18n::Transliterator> extra_confusable_mapper_;
 
   // Map of characters to their skeletons. This map is manually curated.
   std::map<char16_t, Skeletons> character_map_;

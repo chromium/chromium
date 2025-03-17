@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/nacl/common/buildflags.h"
 #include "ui/base/models/table_model.h"
@@ -87,7 +86,7 @@ inline constexpr std::array kColumns = {
         .initial_sort_is_ascending = false,
         .default_visibility = true},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     TableColumnData{.id = IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN,
                     .align = ui::TableColumn::RIGHT,
                     .width = -1,

@@ -25,7 +25,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/browser_process.h"
@@ -82,17 +81,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #endif  // BUILDFLAG(IS_MAC)
 #endif
-
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/crosapi/mojom/local_printer.mojom.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #endif
 
 #if DCHECK_IS_ON()
@@ -181,6 +175,9 @@ const char kColor[] = "color";
 const char kDuplex[] = "duplex";
 // Name of a dictionary pref holding the policy value for the pin setting.
 const char kPin[] = "pin";
+// Name of a dictionary field indicating whether the user's Drive directory is
+// mounted.
+const char kIsDriveMounted[] = "isDriveMounted";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 // Name of a dictionary field indicating whether the 'Save to PDF' destination
 // is disabled.
@@ -188,11 +185,6 @@ const char kPdfPrinterDisabled[] = "pdfPrinterDisabled";
 // Name of a dictionary field indicating whether the destinations are managed by
 // the PrinterTypeDenyList enterprise policy.
 const char kDestinationsManaged[] = "destinationsManaged";
-#if BUILDFLAG(IS_CHROMEOS)
-// Name of a dictionary field indicating whether the user's Drive directory is
-// mounted.
-const char kIsDriveMounted[] = "isDriveMounted";
-#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Name of a dictionary pref holding the policy value for whether the
 // "Print as image" option should be available to the user in the Print Preview
@@ -426,7 +418,7 @@ base::Value::Dict GetPolicies(const PrefService& prefs) {
 }  // namespace
 
 PrintPreviewHandler::PrintPreviewHandler() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DCHECK(crosapi::CrosapiManager::IsInitialized());
   local_printer_ =
       crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
@@ -961,7 +953,7 @@ void PrintPreviewHandler::SendInitialSettings(
   initial_settings.Set(kDocumentTitle, print_preview_ui()->initiator_title());
   initial_settings.Set(kSettingPreviewModifiable,
                        request_params->is_modifiable);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool source_is_arc = request_params->is_from_arc;
 #else
   bool source_is_arc = false;
@@ -1008,7 +1000,7 @@ void PrintPreviewHandler::SendInitialSettings(
 
   GetLocaleInformation(&initial_settings);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   drive::DriveIntegrationService* drive_service =
       drive::DriveIntegrationServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui()));

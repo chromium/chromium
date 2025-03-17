@@ -9,8 +9,8 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/event_router.h"
 
 namespace extensions {
@@ -29,8 +29,18 @@ class TestEventRouterObserver : public EventRouter::TestObserver {
   // Clears all recorded events.
   void ClearEvents();
 
+  // Methods returning at most one event of each type, not preserving the order
+  // they were dispatched across event types.
   const EventMap& events() const { return events_; }
   const EventMap& dispatched_events() const { return dispatched_events_; }
+
+  // Methods returning all events, in dispatch order.
+  const std::vector<std::unique_ptr<Event>>& all_events() const {
+    return all_events_;
+  }
+  const std::vector<std::unique_ptr<Event>>& all_dispatched_events() const {
+    return all_dispatched_events_;
+  }
 
   // Waits until `events()` contains an event with `name`.
   void WaitForEventWithName(const std::string& name);
@@ -42,7 +52,10 @@ class TestEventRouterObserver : public EventRouter::TestObserver {
 
   EventMap events_;
   EventMap dispatched_events_;
-  raw_ptr<EventRouter> event_router_;
+  std::vector<std::unique_ptr<Event>> all_events_;
+  std::vector<std::unique_ptr<Event>> all_dispatched_events_;
+  base::ScopedObservation<EventRouter, EventRouter::TestObserver> observation_{
+      this};
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

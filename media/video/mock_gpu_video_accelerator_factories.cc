@@ -115,20 +115,6 @@ bool MockGpuVideoAcceleratorFactories::IsGpuVideoEncodeAcceleratorEnabled() {
   return true;
 }
 
-std::unique_ptr<gfx::GpuMemoryBuffer>
-MockGpuVideoAcceleratorFactories::CreateGpuMemoryBuffer(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage /* usage */) {
-  base::AutoLock guard(lock_);
-  if (fail_to_allocate_gpu_memory_buffer_)
-    return nullptr;
-  auto ret = std::make_unique<GpuMemoryBufferImpl>(
-      size, format, fail_to_map_gpu_memory_buffer_);
-  created_memory_buffers_.push_back(ret.get());
-  return ret;
-}
-
 base::UnsafeSharedMemoryRegion
 MockGpuVideoAcceleratorFactories::CreateSharedMemoryRegion(size_t size) {
   return base::UnsafeSharedMemoryRegion::Create(size);

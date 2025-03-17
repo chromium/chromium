@@ -30,6 +30,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -301,7 +302,7 @@ bool BucketMatchesOriginsForDeletion(
   for (auto& requested_origin : origins) {
     if (bucket_key.origin() == requested_origin ||
         (bucket_key.IsThirdPartyContext() &&
-         bucket_key.top_level_site() == net::SchemefulSite(requested_origin))) {
+         bucket_key.top_level_site().IsSameSiteWith(requested_origin))) {
       return true;
     }
   }
@@ -456,10 +457,10 @@ void CacheStorageManager::NotifyCacheListChanged(
 
 void CacheStorageManager::NotifyCacheContentChanged(
     const storage::BucketLocator& bucket_locator,
-    const std::string& name) {
+    const std::u16string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& observer : observers_) {
-    observer->OnCacheContentChanged(bucket_locator, name);
+    observer->OnCacheContentChanged(bucket_locator, base::UTF16ToUTF8(name));
   }
 }
 

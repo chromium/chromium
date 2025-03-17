@@ -148,7 +148,7 @@ class StaticMap {
    public:
     ValueInserter(const char* file_and_line, const KeyType& key,
                   const MediaPipeTypeData& value) {
-      MapName* static_map = GetMap();
+      StaticMap* static_map = GetMap();
       absl::MutexLock l(&(static_map->map_lock_));
 
       typename MapType::iterator it = static_map->internal_map_.find(key);
@@ -216,6 +216,11 @@ class StaticMap {
     // initialization if gtl::NoDestructor will be open sourced by ABSL.
     static MapName* instance = new MapName();
     return instance;
+  }
+
+  // Workaround for http://crbug.com/393942204
+  void Unused() {
+    absl::MutexLock l(&map_lock_);
   }
 
   absl::Mutex map_lock_;

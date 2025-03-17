@@ -34,12 +34,8 @@ class PasswordGenerationPopupView {
   // returns |false|, and they must not be used after that.
   [[nodiscard]] virtual bool UpdateBoundsAndRedrawPopup() = 0;
 
-  // Called when the password selection state has changed.
-  virtual void PasswordSelectionUpdated() = 0;
-
-  // Called when the nudge password selection state has changed.
-  // TODO(crbug.com/41492898): Clean up this method after experiment.
-  virtual void NudgePasswordSelectionUpdated() = 0;
+  // Called when the button selection state has changed.
+  virtual void ButtonSelectionUpdated() = 0;
 
   // Note that PasswordGenerationPopupView owns itself, and will only be deleted
   // when Hide() is called.

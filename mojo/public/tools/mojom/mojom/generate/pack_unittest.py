@@ -254,12 +254,12 @@ class PackTest(unittest.TestCase):
 
     fields = pack.PackedStruct(struct).packed_fields_in_ordinal_order
 
-    self.assertEquals(2, len(fields))
+    self.assertEqual(2, len(fields))
 
-    self.assertEquals('field_$flag', fields[0].field.name)
-    self.assertEquals(mojom.BOOL, fields[0].field.kind)
-    self.assertEquals('true', fields[0].field.default)
+    self.assertEqual('field_$flag', fields[0].field.name)
+    self.assertEqual(mojom.BOOL, fields[0].field.kind)
+    self.assertEqual('true', fields[0].field.default)
 
-    self.assertEquals('field_$value', fields[1].field.name)
-    self.assertEquals(mojom.INT32, fields[1].field.kind)
-    self.assertEquals(5, fields[1].field.default)
+    self.assertEqual('field_$value', fields[1].field.name)
+    self.assertEqual(mojom.INT32, fields[1].field.kind)
+    self.assertEqual(5, fields[1].field.default)

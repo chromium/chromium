@@ -14,13 +14,13 @@
 
 SafeBrowsingClientImpl::SafeBrowsingClientImpl(
     PrefService* pref_service,
-    safe_browsing::RealTimeUrlLookupService* lookup_service,
     safe_browsing::HashRealTimeService* hash_real_time_service,
-    PrerenderService* prerender_service)
+    PrerenderService* prerender_service,
+    UrlLookupServiceFactory url_lookup_service_factory)
     : pref_service_(pref_service),
-      lookup_service_(lookup_service),
       hash_real_time_service_(hash_real_time_service),
-      prerender_service_(prerender_service) {}
+      prerender_service_(prerender_service),
+      url_lookup_service_factory_(url_lookup_service_factory) {}
 
 SafeBrowsingClientImpl::~SafeBrowsingClientImpl() = default;
 
@@ -36,9 +36,9 @@ SafeBrowsingService* SafeBrowsingClientImpl::GetSafeBrowsingService() {
   return GetApplicationContext()->GetSafeBrowsingService();
 }
 
-safe_browsing::RealTimeUrlLookupService*
+safe_browsing::RealTimeUrlLookupServiceBase*
 SafeBrowsingClientImpl::GetRealTimeUrlLookupService() {
-  return lookup_service_;
+  return url_lookup_service_factory_.Run();
 }
 
 safe_browsing::HashRealTimeService*

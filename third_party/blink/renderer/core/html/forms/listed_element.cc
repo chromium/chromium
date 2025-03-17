@@ -29,17 +29,20 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/validity_state.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -49,8 +52,6 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
-#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -540,11 +541,26 @@ Element& ListedElement::ValidationAnchor() const {
   return const_cast<HTMLElement&>(ToHTMLElement());
 }
 
+Element& ListedElement::GetHostOrFocusDelegate() const {
+  const HTMLElement& host = ToHTMLElement();
+  // If host is a shadow host with delegatesFocus, then the element to get
+  // focus should be its focusable area.
+  if (RuntimeEnabledFeatures::
+          FormValidationCustomElementsDelegatesFocusFixEnabled() &&
+      host.IsShadowHostWithDelegatesFocus()) {
+    if (Element* focusable_area =
+            host.GetFocusableArea(/*in_descendant_traversal=*/true)) {
+      return *focusable_area;
+    }
+  }
+  return const_cast<HTMLElement&>(host);
+}
+
 bool ListedElement::ValidationAnchorOrHostIsFocusable() const {
   const Element& anchor = ValidationAnchor();
-  const HTMLElement& host = ToHTMLElement();
   if (anchor.IsFocusable())
     return true;
+  const Element& host = GetHostOrFocusDelegate();
   if (&anchor == &host)
     return false;
   return host.IsFocusable();
@@ -567,10 +583,12 @@ bool ListedElement::checkValidity(List* unhandled_invalid_controls) {
 void ListedElement::ShowValidationMessage() {
   Element& element = ValidationAnchor();
   element.scrollIntoViewIfNeeded(false);
-  if (element.IsFocusable())
+  if (element.IsFocusable()) {
     element.Focus();
-  else
-    ToHTMLElement().Focus();
+  } else {
+    Element& host = GetHostOrFocusDelegate();
+    host.Focus();
+  }
   UpdateVisibleValidationMessage();
 }
 
@@ -713,6 +731,28 @@ void ListedElement::TakeStateAndRestore() {
     ToHTMLElement().GetDocument().GetFormController().RestoreControlStateFor(
         *this);
   }
+}
+
+HTMLFormElement* ListedElement::GetOwningFormForAutofill() const {
+  // The owning form is the furthest ancestor form element, if there is one.
+  HTMLFormElement* owner = nullptr;
+  // Look for ancestors of the associated form of this element inside the same
+  // tree.
+  for (Node* ancestor = Form(); ancestor; ancestor = ancestor->parentNode()) {
+    if (auto* form = DynamicTo<HTMLFormElement>(ancestor)) {
+      owner = form;
+    }
+  }
+
+  // If this element is inside Shadow DOM, also consider ancestors of this
+  // element.
+  for (Node* ancestor = ToHTMLElement().OwnerShadowHost(); ancestor;
+       ancestor = ancestor->ParentOrShadowHostNode()) {
+    if (auto* form = DynamicTo<HTMLFormElement>(ancestor)) {
+      owner = form;
+    }
+  }
+  return owner;
 }
 
 void ListedElement::SetFormAttributeTargetObserver(

@@ -367,6 +367,11 @@
 #define GL_RG8_EXT 0x822B
 #endif /* GL_EXT_texture_rg */
 
+#ifndef GL_EXT_texture_type_2_10_10_10_REV
+#define GL_EXT_texture_type_2_10_10_10_REV 1
+#define GL_UNSIGNED_INT_2_10_10_10_REV_EXT 0x8368
+#endif /* GL_EXT_texture_type_2_10_10_10_REV */
+
 // This is from NV_path_rendering, but the GL header is not up to date with the
 // most recent version of the extension. This definition could be removed once
 // glext.h r27498 or later is imported.

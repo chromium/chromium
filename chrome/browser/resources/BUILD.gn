@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
@@ -17,7 +16,7 @@ assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 group("resources") {
   public_deps = [
-    "data_sharing_internals:resources",
+    "saved_tab_groups_unsupported:resources",
     "segmentation_internals:resources",
   ]
 
@@ -36,7 +35,7 @@ group("resources") {
       "feedback:resources",
       "gaia_auth_host:resources",
       "history:resources",
-      "identity_internals:resources",
+      "inspect:resources",
       "key_value_pair_viewer_shared:resources",
       "lens/overlay:resources",
       "lens/shared:resources",
@@ -73,20 +72,17 @@ group("resources") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public_deps += [
       "ash/extended_updates:resources",
       "ash/inline_login:resources",
       "ash/settings:resources",
       "chromeos:resources",
+      "chromeos/dlp_internals:resources",
     ]
   }
 
-  if (is_chromeos_lacros && enable_extensions) {
-    public_deps += [ "accessibility:extension_resources" ]
-  }
-
-  if (!is_chromeos_lacros && enable_extensions) {
+  if (enable_extensions) {
     public_deps += [ "accessibility:reading_mode_gdocs_extension_resources" ]
   }
 
@@ -97,16 +93,11 @@ group("resources") {
     ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos_ash) {
-    public_deps += [ "connectors_internals:resources" ]
-  }
-
-  if (is_chromeos) {
-    public_deps += [ "chromeos/dlp_internals:resources" ]
-  }
-
   if (is_win || is_mac || is_linux || is_chromeos) {
-    public_deps += [ "discards:resources" ]
+    public_deps += [
+      "connectors_internals:resources",
+      "discards:resources",
+    ]
   }
 
   if (is_win || is_mac || is_linux) {
@@ -119,7 +110,7 @@ group("resources") {
     ]
   }
 
-  if (!is_android && !is_chromeos_ash) {
+  if (!is_android && !is_chromeos) {
     public_deps += [
       "inline_login:resources",
       "signin/profile_picker:resources",
@@ -130,6 +121,7 @@ group("resources") {
     public_deps += [
       "intro:resources",
       "signin/batch_upload:resources",
+      "signin/signout_confirmation:resources",
     ]
   }
 
@@ -137,7 +129,7 @@ group("resources") {
     public_deps += [ "tab_strip:resources" ]
   }
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     public_deps += [ "extensions:resources" ]
   }
 
@@ -146,7 +138,11 @@ group("resources") {
   }
 
   if (enable_print_preview) {
-    public_deps += [ "print_preview:resources" ]
+    if (is_chromeos) {
+      public_deps += [ "ash/print_preview:resources" ]
+    } else {
+      public_deps += [ "print_preview:resources" ]
+    }
   }
 
   if (enable_webui_certificate_viewer) {
@@ -158,11 +154,14 @@ group("resources") {
   }
 
   if (enable_glic) {
-    public_deps += [ "glic:resources" ]
+    public_deps += [
+      "glic:resources",
+      "glic/fre:resources",
+    ]
   }
 }
 
-if (is_chromeos_ash && enable_js_type_check) {
+if (is_chromeos && enable_js_type_check) {
   group("closure_compile") {
     deps = [
       "chromeos:closure_compile",
@@ -185,6 +184,7 @@ if (!is_android) {
     # build time so we include them as explicit dependencies here
     if (is_chromeos) {
       deps = [
+        "chromeos/accessibility/braille_ime:ts_build",
         "chromeos/contact_center_insights:generate_ccaas_deps",
         "chromeos/desk_api:generate_desk_api_bundle",
       ]
@@ -250,7 +250,6 @@ group("dev_ui_resources") {
     "device_log:resources",
     "engagement:resources",
     "family_link_user_internals:resources",
-    "internal_debug_pages_disabled:resources",
     "location_internals:resources",
     "media:resources",
     "memory_internals:resources",
@@ -259,8 +258,8 @@ group("dev_ui_resources") {
     "predictors:resources",
     "privacy_sandbox/internals:resources",
     "usb_internals:resources",
-    "//chrome/browser:dev_ui_browser_resources",
     "//components/commerce/core/internals/resources",
+    "//components/data_sharing/data_sharing_internals/resources",
     "//components/download/resources/download_internals:resources",
     "//components/history_clusters/history_clusters_internals/resources",
     "//components/metrics/debug:resources",
@@ -279,7 +278,7 @@ group("dev_ui_resources") {
     "//content/browser/webrtc/resources",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public_deps += [ "//chromeos/ash/components/kiosk/vision/webui:resources" ]
   }
 
@@ -314,11 +313,9 @@ repack("dev_ui_paks") {
     "$root_gen_dir/chrome/bluetooth_internals_resources.pak",
     "$root_gen_dir/chrome/browsing_topics_internals_resources.pak",
     "$root_gen_dir/chrome/components_resources.pak",
-    "$root_gen_dir/chrome/dev_ui_browser_resources.pak",
     "$root_gen_dir/chrome/device_log_resources.pak",
     "$root_gen_dir/chrome/engagement_resources.pak",
     "$root_gen_dir/chrome/family_link_user_internals_resources.pak",
-    "$root_gen_dir/chrome/internal_debug_pages_disabled_resources.pak",
     "$root_gen_dir/chrome/location_internals_resources.pak",
     "$root_gen_dir/chrome/media_resources.pak",
     "$root_gen_dir/chrome/memory_internals_resources.pak",
@@ -328,6 +325,7 @@ repack("dev_ui_paks") {
     "$root_gen_dir/chrome/privacy_sandbox_internals_resources.pak",
     "$root_gen_dir/chrome/usb_internals_resources.pak",
     "$root_gen_dir/components/commerce_internals_resources.pak",
+    "$root_gen_dir/components/data_sharing_internals_resources.pak",
     "$root_gen_dir/components/dev_ui_components_resources.pak",
     "$root_gen_dir/components/download_internals_resources.pak",
     "$root_gen_dir/components/history_clusters_internals_resources.pak",

@@ -4,6 +4,8 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -30,6 +32,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.content_public.browser.bluetooth_scanning.Event;
@@ -46,6 +49,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  * The dialog is shown by create(), and always runs finishDialog() as it's closing.
  */
 @JNINamespace("permissions")
+@NullMarked
 public class BluetoothScanningPermissionDialog {
     // How much of the height of the screen should be taken up by the listview.
     private static final float LISTVIEW_HEIGHT_PERCENT = 0.30f;
@@ -100,10 +104,12 @@ public class BluetoothScanningPermissionDialog {
             int securityLevel,
             BluetoothScanningPromptAndroidDelegate delegate,
             long nativeBluetoothScanningPermissionDialogPtr) {
-        mActivity = windowAndroid.getActivity().get();
-        assert mActivity != null;
-        mContext = windowAndroid.getContext().get();
-        assert mContext != null;
+        Activity activity = windowAndroid.getActivity().get();
+        assert activity != null;
+        mActivity = activity;
+        Context context = windowAndroid.getContext().get();
+        assert context != null;
+        mContext = context;
         mDelegate = delegate;
         mNativeBluetoothScanningPermissionDialogPtr = nativeBluetoothScanningPermissionDialogPtr;
 
@@ -278,7 +284,7 @@ public class BluetoothScanningPermissionDialog {
                         LinearLayout.LayoutParams.MATCH_PARENT));
         mDialog.setOnCancelListener(dialog -> finishDialog(Event.CANCELED));
 
-        Window window = mDialog.getWindow();
+        Window window = assumeNonNull(mDialog.getWindow());
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
             // On smaller screens, make the dialog fill the width of the screen,
             // and appear at the top.

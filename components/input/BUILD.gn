@@ -16,6 +16,8 @@ component("input") {
     "child_frame_input_helper.h",
     "cursor_manager.cc",
     "cursor_manager.h",
+    "dispatch_to_renderer_callback.cc",
+    "dispatch_to_renderer_callback.h",
     "event_with_latency_info.h",
     "events_helper.cc",
     "events_helper.h",
@@ -28,6 +30,7 @@ component("input") {
     "gesture_event_queue.h",
     "gesture_event_stream_validator.cc",
     "gesture_event_stream_validator.h",
+    "input_constants.h",
     "input_disposition_handler.h",
     "input_event_ack_state.cc",
     "input_event_ack_state.h",
@@ -122,6 +125,7 @@ component("input") {
       "web_input_event_builders_android.cc",
       "web_input_event_builders_android.h",
     ]
+    deps += [ "//components/input/android:jni_headers" ]
   }
   if (is_ios) {
     sources += [

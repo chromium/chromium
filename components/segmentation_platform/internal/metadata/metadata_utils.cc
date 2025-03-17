@@ -6,12 +6,14 @@
 
 #include <inttypes.h>
 
+#include <algorithm>
+
 #include "base/metrics/metrics_hashes.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
@@ -186,7 +188,7 @@ ValidationResult ValidateMetadataSqlFeature(const proto::SqlFeature& feature) {
     total_tensor_length += bind_value.value().tensor_length();
   }
 
-  if (total_tensor_length != base::ranges::count(feature.sql(), '?')) {
+  if (total_tensor_length != std::ranges::count(feature.sql(), '?')) {
     return ValidationResult::kFeatureBindValuesInvalid;
   }
 
@@ -498,9 +500,8 @@ std::string SegmetationModelMetadataToString(
                                      model_metadata.result_time_to_live()));
   }
   if (model_metadata.has_upload_tensors()) {
-    result.append(
-        base::StringPrintf("upload_tensors: %s",
-                           model_metadata.upload_tensors() ? "true" : "false"));
+    result.append(base::StringPrintf(
+        "upload_tensors: %s", base::ToString(model_metadata.upload_tensors())));
   }
 
   if (base::EndsWith(result, ", "))

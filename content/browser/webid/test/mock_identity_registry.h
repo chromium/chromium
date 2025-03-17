@@ -16,7 +16,7 @@ class MockIdentityRegistry : public IdentityRegistry {
  public:
   explicit MockIdentityRegistry(
       content::WebContents* web_contents,
-      base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
+      base::WeakPtr<IdentityRegistryDelegate> delegate,
       const GURL& idp_config_url);
 
   ~MockIdentityRegistry() override;

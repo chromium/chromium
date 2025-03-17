@@ -5,6 +5,8 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_THREAD_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_THREAD_MOJOM_TRAITS_H_
 
+#include "base/bit_cast.h"
+#include "base/threading/platform_thread.h"
 #include "components/viz/common/performance_hint_utils.h"
 #include "services/viz/public/mojom/compositing/thread.mojom-shared.h"
 
@@ -19,7 +21,13 @@ struct EnumTraits<viz::mojom::ThreadType, viz::Thread::Type> {
 
 template <>
 struct StructTraits<viz::mojom::ThreadDataView, viz::Thread> {
-  static uint32_t id(const viz::Thread& thread) { return thread.id; }
+  static auto id(const viz::Thread& thread) {
+    // Use bit_cast to convert the raw thread id to the mojo thread id type,
+    // which should have the same size (guaranteed by the bit_cast) but may
+    // differ in sign (ignored when converting back using StructTraits::Read).
+    using IdType = decltype(std::declval<viz::mojom::ThreadDataView>().id());
+    return base::bit_cast<IdType>(thread.id.raw());
+  }
 
   static viz::mojom::ThreadType type(const viz::Thread& thread) {
     return static_cast<viz::mojom::ThreadType>(thread.type);

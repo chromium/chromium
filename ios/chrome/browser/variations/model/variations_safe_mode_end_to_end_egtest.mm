@@ -17,7 +17,6 @@
 #import "components/variations/pref_names.h"
 #import "components/variations/service/safe_seed_manager.h"
 #import "components/variations/variations_test_utils.h"
-
 #import "ios/chrome/browser/variations/model/variations_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"

@@ -134,7 +134,7 @@ bool DeserializeDict(DeserializerState* state, base::Value::Dict* dict) {
       return false;
     }
     auto key = tokenizer->GetString8();
-    std::string name(reinterpret_cast<const char*>(key.begin()), key.size());
+    std::string name(reinterpret_cast<const char*>(key.data()), key.size());
     tokenizer->Next();
     base::Value value;
     if (!ProtocolTypeTraits<base::Value>::Deserialize(state, &value))

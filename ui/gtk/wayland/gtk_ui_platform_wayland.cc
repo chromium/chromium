@@ -37,11 +37,6 @@ void GtkUiPlatformWayland::OnInitialized(GtkWidget* widget) {
   // Nothing to do upon initialization for Wayland.
 }
 
-GdkKeymap* GtkUiPlatformWayland::GetGdkKeymap() {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-}
-
 GdkModifierType GtkUiPlatformWayland::GetGdkKeyEventState(
     const ui::KeyEvent& key_event) {
   // We first reconstruct the state that was stored as a property by

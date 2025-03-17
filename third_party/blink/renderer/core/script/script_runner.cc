@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
-#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -173,8 +172,8 @@ void ScriptRunner::RemoveDelayReason(DelayReason delay_reason) {
   DCHECK(IsActive(delay_reason));
   active_delay_reasons_ &= ~static_cast<DelayReasons>(delay_reason);
 
-  HeapVector<Member<PendingScript>> pending_async_scripts;
-  CopyKeysToVector(pending_async_scripts_, pending_async_scripts);
+  HeapVector<Member<PendingScript>> pending_async_scripts(
+      pending_async_scripts_.Keys());
   for (PendingScript* pending_script : pending_async_scripts) {
     RemoveDelayReasonFromScript(pending_script, delay_reason);
   }

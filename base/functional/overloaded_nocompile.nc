@@ -17,7 +17,10 @@ void LambdaMissingForVariantElement() {
   struct A {};
   struct B {};
   absl::variant<A, B> var = A{};
-  absl::visit(Overloaded{[](A& pack) { return "A"; }}, var);  // expected-error-re@*:* {{no type named 'type' in 'absl::type_traits_internal::result_of<base::Overloaded<(lambda at {{.*}})> (B &)>'}}
+  absl::visit(Overloaded{[](A& pack) { return "A"; }}, var);  // expected-error-re@*:* {{static assertion failed due to requirement {{.*}} `std::visit` requires the visitor to be exhaustive}}
+  // expected-error@*:* {{attempt to use a deleted function}}
+  // expected-error@*:* {{attempt to use a deleted function}}
+  // expected-error@*:* {{cannot deduce return type 'auto' from returned value of type '<overloaded function type>'}}
 }
 
 }  // namespace base

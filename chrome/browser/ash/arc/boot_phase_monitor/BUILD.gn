@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("boot_phase_monitor") {
   sources = [
@@ -15,13 +15,13 @@ static_library("boot_phase_monitor") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
     "//base",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/experiences/arc",
     "//components/account_id",
     "//components/prefs",
     "//components/user_prefs",
@@ -35,8 +35,6 @@ source_set("unit_tests") {
 
   deps = [
     ":boot_phase_monitor",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
@@ -46,6 +44,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
     "//content/test:test_support",

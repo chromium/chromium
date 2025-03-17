@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_NETWORK_SERVICE_H_
 #define SERVICES_NETWORK_NETWORK_SERVICE_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -18,14 +19,15 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
+#include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
+#include "components/ip_protection/common/probabilistic_reveal_token_registry.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -227,6 +229,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojo_base::ProtoWrapper masked_domain_list,
       const std::vector<std::string>& exclusion_list) override;
 
+  void UpdateMaskedDomainListFlatbuffer(
+      base::File default_file,
+      uint64_t default_file_size,
+      base::File regular_browsing_file,
+      uint64_t regular_browsing_file_size) override;
+
+  void UpdateProbabilisticRevealTokenRegistry(
+      base::Value::Dict registry) override;
+
 #if BUILDFLAG(IS_ANDROID)
   void DumpWithoutCrashing(base::Time dump_request_time) override;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -301,6 +312,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     return masked_domain_list_manager_.get();
   }
 
+  ip_protection::ProbabilisticRevealTokenRegistry*
+  probabilistic_reveal_token_registry() const {
+    return probabilistic_reveal_token_registry_.get();
+  }
+
   void set_host_resolver_factory_for_testing(
       std::unique_ptr<net::HostResolver::Factory> host_resolver_factory) {
     host_resolver_factory_ = std::move(host_resolver_factory);
@@ -358,6 +374,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // For tests to clear the metrics updater to avoid time out due to its poor
   // interaction with TaskEnvironment::FastForward*() methods with long delays.
   void ResetMetricsUpdaterForTesting();
+
+  void disable_exclusive_cookie_database_locking_for_testing() {
+    exclusive_cookie_database_locking_ = false;
+  }
+
+  bool exclusive_cookie_database_locking() const {
+    return exclusive_cookie_database_locking_;
+  }
 
   static NetworkService* GetNetworkServiceForTesting();
 
@@ -462,6 +486,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<ip_protection::MaskedDomainListManager>
       masked_domain_list_manager_;
 
+  // Holds the list of domains that have registered to receive Probabilistic
+  // Reveal Tokens.
+  std::unique_ptr<ip_protection::ProbabilisticRevealTokenRegistry>
+      probabilistic_reveal_token_registry_;
+
   // A per-process_id map of origins that are white-listed to allow
   // them to request raw headers for resources they request.
   std::map<int32_t, base::flat_set<url::Origin>>
@@ -507,6 +536,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #endif  // BUILDFLAG(IS_LINUX)
 
   std::unique_ptr<network::tpcd::metadata::Manager> tpcd_metadata_manager_;
+
+  bool exclusive_cookie_database_locking_ = true;
 
   base::WeakPtrFactory<NetworkService> weak_factory_{this};
 };

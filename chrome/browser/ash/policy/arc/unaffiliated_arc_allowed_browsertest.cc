@@ -4,7 +4,6 @@
 
 #include <set>
 
-#include "ash/components/arc/test/arc_util_test_support.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

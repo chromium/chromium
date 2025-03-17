@@ -577,6 +577,9 @@ class WizardController : public OobeUI::Observer {
   void MaybeAbortQuickStartFlow(
       quick_start::QuickStartController::AbortFlowReason reason);
 
+  // Tries to enable pre-consent metrics.
+  void MaybeEnablePreConsentMetrics();
+
   std::unique_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ChoobeFlowController> choobe_flow_controller_;
   std::unique_ptr<quick_start::QuickStartController> quickstart_controller_;

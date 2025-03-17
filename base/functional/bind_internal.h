@@ -19,16 +19,18 @@
 #include "base/functional/callback_internal.h"
 #include "base/functional/unretained_traits.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "base/types/always_false.h"
 #include "base/types/is_complete.h"
 #include "base/types/is_instantiation.h"
 #include "base/types/to_address.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/functional/function_ref.h"
+
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
+#endif
 
 // See docs/callback.md for user documentation.
 //

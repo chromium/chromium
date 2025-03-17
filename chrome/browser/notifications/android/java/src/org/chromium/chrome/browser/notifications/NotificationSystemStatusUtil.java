@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 /**
@@ -20,6 +21,7 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
  * Chrome, which is obviously very bad. While we have a strong focus on providing clear attribution
  * and ways of revoking notifications for a particular website, measuring this is still important.
  */
+@NullMarked
 public class NotificationSystemStatusUtil {
     // Status codes returned by {@link #getAppNotificationStatus}.
     static final int APP_NOTIFICATIONS_STATUS_UNDETERMINABLE = 0;

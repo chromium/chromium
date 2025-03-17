@@ -240,7 +240,6 @@ class EmbeddedWorkerTestHelper {
       fake_loader_factory_wrapper_;
 
   const base::FilePath user_data_directory_;
-  scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
   std::unique_ptr<storage::ServiceWorkerStorageControlImpl> storage_control_;
 
   base::queue<std::unique_ptr<FakeEmbeddedWorkerInstanceClient>>

@@ -86,9 +86,6 @@ class DbusMemoryPressureEvaluatorLinux
   // Handles the availability response from above.
   void CheckIfPortalIsAvailableResponse(std::optional<bool> is_available);
 
-  // Shuts down the given bus on the D-Bus thread and clears the pointer.
-  void ResetBus(scoped_refptr<dbus::Bus>& bus);
-
   void OnSignalConnected(const std::string& interface,
                          const std::string& signal,
                          bool connected);

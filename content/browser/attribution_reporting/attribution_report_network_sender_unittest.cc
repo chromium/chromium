@@ -676,8 +676,8 @@ TEST_F(AttributionReportNetworkSenderTest,
   const auto verify_histogram = [](base::HistogramTester& histograms,
                                    std::string_view suffix,
                                    bool has_trigger_context_id,
-                                   base::HistogramBase::Sample sample,
-                                   base::HistogramBase::Count count) {
+                                   base::HistogramBase::Sample32 sample,
+                                   base::HistogramBase::Count32 count) {
     histograms.ExpectUniqueSample(base::StrCat({"Conversions.", suffix}),
                                   sample, count);
     if (has_trigger_context_id) {
@@ -1075,8 +1075,8 @@ TEST_F(AttributionReportNetworkSenderTest,
   const auto verify_histogram = [](base::HistogramTester& histograms,
                                    std::string_view suffix,
                                    bool has_trigger_context_id,
-                                   base::HistogramBase::Sample sample,
-                                   base::HistogramBase::Count count) {
+                                   base::HistogramBase::Sample32 sample,
+                                   base::HistogramBase::Count32 count) {
     histograms.ExpectUniqueSample(base::StrCat({"Conversions.", suffix}),
                                   sample, count);
     if (has_trigger_context_id) {

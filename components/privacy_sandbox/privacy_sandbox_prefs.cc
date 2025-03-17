@@ -71,6 +71,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                              base::Time());
   registry->RegisterTimePref(prefs::kPrivacySandboxFakeNoticeFirstSignOutTime,
                              base::Time());
+
+  registry->RegisterBooleanPref(
+      prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial, false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(prefs::kPrivacySandboxActivityTypeRecord2);
 #endif

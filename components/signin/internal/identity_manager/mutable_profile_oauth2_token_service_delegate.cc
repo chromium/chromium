@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <string>
@@ -15,7 +21,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -82,8 +87,9 @@ std::string ApplyAccountIdPrefix(const std::string& account_id) {
 // (|prefixed_account_id|) and returns the non-prefixed account id or an empty
 // account id if |prefixed_account_id| is not correctly prefixed.
 CoreAccountId RemoveAccountIdPrefix(const std::string& prefixed_account_id) {
-  if (!base::StartsWith(prefixed_account_id, kAccountIdPrefix))
+  if (!base::StartsWith(prefixed_account_id, kAccountIdPrefix)) {
     return CoreAccountId();
+  }
 
   return CoreAccountId::FromString(
       prefixed_account_id.substr(/*pos=*/strlen(kAccountIdPrefix)));
@@ -178,16 +184,6 @@ bool CanMoveAccountToService(
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
-// This feature controls whether or not token data is re-encrypted when OSCrypt
-// indicates that it should be. This is intended as an emergency 'off-switch' in
-// case any unexpected issues are encountered in the key migration.
-// TODO(crbug.com/366375488): Remove once migration is proven to work reliably.
-namespace features {
-BASE_FEATURE(kEnableReEncryptOfTokenData,
-             "EnableReEncryptOfTokenData",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace features
-
 }  // namespace
 
 // This class sends a request to GAIA to revoke the given refresh token from
@@ -252,8 +248,9 @@ MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
 bool MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
     ShouldRetry(GaiaAuthConsumer::TokenRevocationStatus status) {
   // Token revocation can be retried up to 3 times.
-  if (attempt_ >= 2)
+  if (attempt_ >= 2) {
     return false;
+  }
 
   switch (status) {
     case GaiaAuthConsumer::TokenRevocationStatus::kServerError:
@@ -280,7 +277,7 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
   }
   // |this| pointer will be deleted when removed from the vector, so don't
   // access any members after call to erase().
-  token_service_delegate_->server_revokes_.erase(base::ranges::find(
+  token_service_delegate_->server_revokes_.erase(std::ranges::find(
       token_service_delegate_->server_revokes_, this,
       &std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate::
                            RevokeServerRefreshToken>::get));
@@ -351,9 +348,11 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (token_binding_helper_ &&
       token_binding_helper_->HasBindingKey(account_id)) {
-    const GaiaId gaia_id =
-        account_tracker_service_->GetAccountInfo(account_id).gaia;
-    CHECK(!gaia_id.empty());
+    // `CoreAccountId` is always equal to Gaia ID on DICE platforms.
+    // We cannot get Gaia ID from `account_tracker_service_` as it's sometimes
+    // unknown and the only way of getting it requires an access token, which
+    // requires a known Gaia ID (see https://crbug.com/386841916).
+    const GaiaId gaia_id(account_id.ToString());
     // `GaiaAccessTokenFetcher` doesn't support bound refresh tokens.
     auto fetcher = std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
         consumer, url_loader_factory, gaia_id, refresh_token,
@@ -475,8 +474,7 @@ void MutableProfileOAuth2TokenServiceDelegate::InvalidateTokenForMultilogin(
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::LoadCredentialsInternal(
-    const CoreAccountId& primary_account_id,
-    bool is_syncing) {
+    const CoreAccountId& primary_account_id) {
   if (load_credentials_state() ==
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS) {
     VLOG(1) << "Load credentials operation already in progress";
@@ -486,8 +484,9 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadCredentialsInternal(
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS);
 
-  if (!primary_account_id.empty())
+  if (!primary_account_id.empty()) {
     ValidateAccountId(primary_account_id);
+  }
   DCHECK(loading_primary_account_id_.empty());
   DCHECK_EQ(0, web_data_service_request_);
 
@@ -510,7 +509,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadCredentialsInternal(
   }
 
   loading_primary_account_id_ = primary_account_id;
-  loading_is_syncing_ = is_syncing;
   web_data_service_request_ = token_web_data_->GetAllTokens(this);
 }
 
@@ -569,7 +567,6 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
 #endif
 
   loading_primary_account_id_ = CoreAccountId();
-  loading_is_syncing_ = false;
   FinishLoadingCredentials();
 }
 
@@ -613,14 +610,9 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
       case RevokeAllTokensOnLoad::kNo:
         break;
       case RevokeAllTokensOnLoad::kDeleteSiteDataOnExit:
-        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-          // With Uno, tokens are not revoked when clearing cookies if the user
-          // is signed in non-syncing.
-          revoke_token =
-              loading_primary_account_id_.empty() || loading_is_syncing_;
-        } else {
-          revoke_token = true;
-        }
+        // Tokens are not revoked when clearing cookies if the user
+        // is signed in non-syncing.
+        revoke_token = loading_primary_account_id_.empty();
         break;
       case RevokeAllTokensOnLoad::kExplicitRevoke:
         revoke_token = true;
@@ -650,8 +642,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
 
     if (load_account) {
       if (!revoke_token && should_reencrypt) {
-        if (base::FeatureList::IsEnabled(
-                features::kEnableReEncryptOfTokenData)) {
           did_reencrypt = true;
           PersistCredentials(account_id, refresh_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -659,7 +649,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
                              wrapped_binding_key
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
           );
-        }
       }
       RecordAccountAvailabilityStartup(account_id, refresh_token);
 
@@ -756,8 +745,9 @@ void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentialsInMemory(
     // when it is updated to a new valid one (otherwise the new refresh token
     // would also be invalidated server-side).
     // See http://crbug.com/865189 for more information about this regression.
-    if (is_refresh_token_invalidated)
+    if (is_refresh_token_invalidated) {
       RevokeCredentialsOnServer(refresh_tokens_.at(account_id).value());
+    }
 
     refresh_tokens_.insert_or_assign(account_id,
                                      crypto::ProcessBoundString(refresh_token));
@@ -815,21 +805,23 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeAllCredentialsInternal(
     // then the tokens should be revoked on load.
     revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kExplicitRevoke;
     loading_primary_account_id_ = CoreAccountId();
-    loading_is_syncing_ = false;
   }
 
   // Make a temporary copy of the account ids.
   std::vector<CoreAccountId> accounts;
-  for (const auto& token : refresh_tokens_)
+  for (const auto& token : refresh_tokens_) {
     accounts.push_back(token.first);
-  for (const auto& account : accounts)
+  }
+  for (const auto& account : accounts) {
     RevokeCredentials(account, source);
+  }
 
   DCHECK_EQ(0u, refresh_tokens_.size());
 
   // Make sure all tokens are removed from storage.
-  if (token_web_data_)
+  if (token_web_data_) {
     token_web_data_->RemoveAllTokens();
+  }
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::RevokeCredentialsInternal(
@@ -852,8 +844,9 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeCredentialsOnServer(
     const std::string& refresh_token) {
   DCHECK(!refresh_token.empty());
 
-  if (refresh_token == GaiaConstants::kInvalidRefreshToken)
+  if (refresh_token == GaiaConstants::kInvalidRefreshToken) {
     return;
+  }
 
   // Keep track or all server revoke requests.  This way they can be deleted
   // before the token service is shutdown and won't outlive the profile.

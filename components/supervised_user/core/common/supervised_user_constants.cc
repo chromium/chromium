@@ -5,6 +5,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "components/supervised_user/core/common/pref_names.h"
 
 namespace supervised_user {
@@ -109,8 +110,14 @@ const char kSupervisedUserTopLevelURLFilteringResultHistogramName[] =
 const char kSupervisedUserTopLevelURLFilteringResult2HistogramName[] =
     "ManagedUsers.TopLevelFilteringResult2";
 
+const char kLocalWebApprovalResultHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalResult";
+
 const char kManagedByParentUiMoreInfoUrl[] =
     "https://familylink.google.com/setting/resource/94";
+
+const char kFamilyManagementUrl[] =
+    "https://myaccount.google.com/family/details";
 
 const char kDefaultEmptyFamilyMemberRole[] = "not_in_family";
 
@@ -124,5 +131,11 @@ const char kClassifiedLaterThanContentResponseHistogramName[] =
     "SupervisedUsers.ClassifyUrlThrottle.LaterThanContentResponse";
 extern const char kClassifyUrlThrottleStatusHistogramName[] =
     "SupervisedUsers.ClassifyUrlThrottle.Status";
+extern const char kClassifyUrlThrottleFinalStatusHistogramName[] =
+    "SupervisedUsers.ClassifyUrlThrottle.FinalStatus";
 
+const char kLocalWebApprovalDurationMillisecondsHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";
+const char kLocalWebApprovalErrorTypeHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalErrorType";
 }  // namespace supervised_user

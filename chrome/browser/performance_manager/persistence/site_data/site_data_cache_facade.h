@@ -33,7 +33,7 @@ class SiteDataCacheFacade : public KeyedService,
 
   ~SiteDataCacheFacade() override;
 
-  void IsDataCacheRecordingForTesting(base::OnceCallback<void(bool)> cb);
+  bool IsDataCacheRecordingForTesting();
 
   void WaitUntilCacheInitializedForTesting();
 

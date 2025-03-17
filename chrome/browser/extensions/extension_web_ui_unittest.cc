@@ -355,9 +355,10 @@ TEST_F(ExtensionWebUIOverrideURLTest,
       registry()->disabled_extensions().Contains(kNtpOverrideExtensionId));
   EXPECT_FALSE(
       registry()->enabled_extensions().Contains(kNtpOverrideExtensionId));
-  EXPECT_EQ(disable_reason::DISABLE_EXTERNAL_EXTENSION,
-            ExtensionPrefs::Get(profile())->GetDisableReasons(
-                kNtpOverrideExtensionId));
+  EXPECT_THAT(ExtensionPrefs::Get(profile())->GetDisableReasons(
+                  kNtpOverrideExtensionId),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_EXTERNAL_EXTENSION));
 
   // URLOverrides pref should not be updated for disabled by default extension.
   PrefService* prefs = profile()->GetPrefs();

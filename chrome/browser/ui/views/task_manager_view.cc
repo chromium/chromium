@@ -6,13 +6,14 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -40,6 +42,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -56,7 +59,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/apps/icon_standardizer.h"
@@ -64,7 +67,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/profiles/profile.h"
@@ -82,14 +85,9 @@ TaskManagerView* g_task_manager_view = nullptr;
 
 const auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>(
     {{
-         .associated_category = DisplayCategory::kTabs,
-         .title_id = IDS_TASK_MANAGER_CATEGORY_TABS_NAME,
+         .associated_category = DisplayCategory::kTabsAndExtensions,
+         .title_id = IDS_TASK_MANAGER_CATEGORY_TABS_AND_EXTENSIONS_NAME,
          .icon = &views::kNewTabIcon,
-     },
-     {
-         .associated_category = DisplayCategory::kExtensions,
-         .title_id = IDS_TASK_MANAGER_CATEGORY_EXTENSIONS_NAME,
-         .icon = &vector_icons::kExtensionChromeRefreshIcon,
      },
      {
          .associated_category = DisplayCategory::kSystem,
@@ -104,7 +102,7 @@ const auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>(
 
 TaskManagerView::~TaskManagerView() {
   // Delete child views now, while our table model still exists.
-  end_process_btn_ = nullptr;  // Destroyed by `right_aligned_container` below.
+  tabs_ = nullptr;  // Destroyed by `container` below.
   RemoveAllChildViews();
 
   // When the view is destroyed, the lifecycle of the Task Manager is complete.
@@ -148,7 +146,7 @@ task_manager::TaskManagerTableModel* TaskManagerView::Show(
   g_task_manager_view->SelectTaskOfActiveTab(browser);
   g_task_manager_view->GetWidget()->Show();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   aura::Window* window = g_task_manager_view->GetWidget()->GetNativeWindow();
   // An app id for task manager windows, also used to identify the shelf item.
   // Generated as crx_file::id_util::GenerateId("org.chromium.taskmanager")
@@ -252,7 +250,7 @@ bool TaskManagerView::ExecuteWindowsCommand(int command_id) {
 
 ui::ImageModel TaskManagerView::GetWindowIcon() {
   TRACE_EVENT0("ui", "TaskManagerView::GetWindowIcon");
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40739545): Move apps::CreateStandardIconImage to some
   // where lower in the stack.
   return ui::ImageModel::FromImageSkia(apps::CreateStandardIconImage(
@@ -298,9 +296,6 @@ void TaskManagerView::GetGroupRange(size_t model_index,
 
 void TaskManagerView::OnSelectionChanged() {
   DialogModelChanged();
-  if (end_process_btn_) {
-    end_process_btn_->SetEnabled(IsEndProcessButtonEnabled());
-  }
 }
 
 void TaskManagerView::OnDoubleClick() {
@@ -311,6 +306,11 @@ void TaskManagerView::OnKeyDown(ui::KeyboardCode keycode) {
   if (keycode == ui::VKEY_RETURN) {
     ActivateSelectedTab();
   }
+}
+
+void TaskManagerView::OnWidgetInitialized() {
+  GetOkButton()->GetViewAccessibility().SetDescription(
+      l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL_ACCESSIBILITY_NAME));
 }
 
 void TaskManagerView::ShowContextMenuForViewImpl(
@@ -348,14 +348,25 @@ void TaskManagerView::MenuClosed(ui::SimpleMenuModel* source) {
   menu_runner_.reset();
 }
 
+void TaskManagerView::SearchBarOnInputChanged(std::u16string_view query) {
+  const auto selected_category =
+      query.empty()
+          ? kTabDefinitions[tabs_->GetSelectedTabIndex()].associated_category
+          : DisplayCategory::kAll;
+
+  tabs_->SetEnabled(query.empty());
+  PerformFilter(selected_category, query);
+}
+
 TaskManagerView::TaskManagerView(StartAction start_action)
     : tab_table_(nullptr),
       tab_table_parent_(nullptr),
+      table_config_(GetTableConfigs()),
       is_always_on_top_(false) {
   task_manager::RecordNewOpenEvent(start_action);
   set_use_custom_frame(false);
   SetHasWindowSizeControls(true);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS, the widget's frame should not show the window title.
   SetTitle(IDS_TASK_MANAGER_TITLE);
 #endif
@@ -380,156 +391,168 @@ TaskManagerView::TableConfigs TaskManagerView::GetTableConfigs() {
       base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh);
   return TableConfigs{
       .table_has_border = !tm_refresh_enabled,
-      .header_padding = tm_refresh_enabled,
+      .header_style = tm_refresh_enabled,
+      .table_refresh = tm_refresh_enabled,
       .scroll_view_rounded = tm_refresh_enabled,
       .layout_refresh = tm_refresh_enabled,
       .dialog_button_disabled = tm_refresh_enabled,
+      .sort_on_cpu_by_default = tm_refresh_enabled,
   };
-}
-
-void TaskManagerView::PerformFilter(DisplayCategory category) {
-  // Clear the old model.
-  tab_table_->SetModel(nullptr);
-
-  // Create and set the new model.
-  table_model_ = std::make_unique<TaskManagerTableModel>(this, category);
-  tab_table_->SetModel(table_model_.get());
-
-  // Columns are already retrieved, however since the table model changed, the
-  // refresh types for this model need to be set for each column. Otherwise, the
-  // values for each column will stop updating.
-  table_model_->RetrieveSavedColumnsSettingsAndUpdateTable();
-
-  // Redraw the table immediately by scheduling a paint since the rows most
-  // likely changed in between switching models.
-  tab_table_->OnItemsChanged(/*start=*/0, table_model_->RowCount());
 }
 
 void TaskManagerView::TabSelectedAt(int index) {
   PerformFilter(kTabDefinitions[index].associated_category);
 }
 
+void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
+  const int separator_spacing =
+      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
+
+  // The strategy to get the TabStrip Selector and the Separator to overlap
+  // involves using a parent FillLayout (which will allow the child views to
+  // overlap), and then attaching the content container (tabs, search bar, and
+  // end process button), along with a separator container (where the separator
+  // is locked at the bottom using a BoxLayout).
+  auto parent_container =
+      views::Builder<views::View>().SetUseDefaultFillLayout(true).Build();
+
+  auto content_container = CreateHeaderContent(provider);
+  auto separator_container = CreateHeaderSeparatorUnderlay(/*height=*/2);
+
+  // Attach separator below header, and then contents over top.
+  parent_container->AddChildView(std::move(separator_container));
+  parent_container->AddChildView(std::move(content_container));
+
+  // Add some spacing at the bottom between the header and the next view.
+  parent_container->SetProperty(views::kMarginsKey,
+                                gfx::Insets::TLBR(0, 0, separator_spacing, 0));
+
+  // Attach header to the top of the dialog contents.
+  AddChildView(std::move(parent_container));
+}
+
+std::unique_ptr<views::View> TaskManagerView::CreateHeaderContent(
+    const ChromeLayoutProvider* provider) {
+  // Header Parent
+  auto header_layout = std::make_unique<views::BoxLayout>();
+  header_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
+  header_layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
+
+  auto container = std::make_unique<views::View>();
+
+  auto tabs = CreateTabbedPane(
+      provider,
+      /*title_insets=*/
+      gfx::Insets::TLBR(0, views::TabbedPaneTab::kDefaultTitleLeftMargin, 0, 0),
+      /*tab_outsets=*/gfx::Outsets::VH(0, 16));
+
+  // Empty Container, Search Bar
+  auto empty_view = std::make_unique<views::View>();
+  auto search_bar_container = CreateSearchBar(provider);
+
+  // Allow empty spacing and the search bar to flex freely.
+  header_layout->SetFlexForView(empty_view.get(), 7);
+  header_layout->SetFlexForView(search_bar_container.get(), 3);
+
+  // Set the layout manager for the content container to BoxLayout.
+  container->SetLayoutManager(std::move(header_layout));
+
+  // Compose all parts into header.
+  tabs_ = container->AddChildView(std::move(tabs));
+  container->AddChildView(std::move(empty_view));
+  container->AddChildView(std::move(search_bar_container));
+
+  return container;
+}
+
+std::unique_ptr<views::View> TaskManagerView::CreateHeaderSeparatorUnderlay(
+    int height) {
+  auto separator_container = std::make_unique<views::View>();
+  auto separator_container_layout = std::make_unique<views::BoxLayout>();
+  separator_container_layout->SetOrientation(
+      views::LayoutOrientation::kHorizontal);
+  separator_container_layout->set_cross_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  auto separator =
+      views::Builder<views::Separator>().SetPreferredLength(height).Build();
+  separator_container_layout->SetFlexForView(separator.get(), 1);
+  separator_container->SetLayoutManager(std::move(separator_container_layout));
+  separator_container->AddChildView(std::move(separator));
+  return separator_container;
+}
+
+void TaskManagerView::PerformFilter(DisplayCategory category,
+                                    std::u16string_view search_term) {
+  // When `select_on_remove_` is enabled, the selection will automatically jump
+  // to some next/previous row if available. However, this setting needs to be
+  // temporarily disabled during model updates to achieve the desired selection
+  // changes. Specifically:
+  // 1. When a tab is changed, some number of rows will get added and removed.
+  // The intended behavior is to clear the selection between this tab switch.
+  // 2. When the search term changes, if the selection should always be kept if
+  // it's in the current list. If it's not (i.e. "Tab: unusual" is selected, and
+  // the search term changes from "un" -> "unh"), then it should be removed, but
+  // no other selection should be applied (a.k.a the selection should clear).
+
+  tab_table_->SetSelectOnRemove(false);
+  if (table_model_->UpdateModel(category, search_term)) {
+    // Model row count may differ, leading to off-screen row rendering.
+    // Recompute scroll position.
+    tab_table_->InvalidateLayout();
+  }
+  tab_table_->SetSelectOnRemove(true);
+}
+
 std::unique_ptr<views::TabbedPaneTabStrip> TaskManagerView::CreateTabbedPane(
-    const gfx::Insets& tab_strip_margin,
-    const gfx::Insets& title_margin,
-    const gfx::Insets& icon_margin,
-    int spacing_between_tabs) {
+    const ChromeLayoutProvider* provider,
+    const gfx::Insets& title_insets,
+    const gfx::Outsets& tab_outsets) {
+  const int tab_height =
+      provider->GetDistanceMetric(DISTANCE_TASK_MANAGER_TAB_HEIGHT);
+  const auto dialog_insets = provider->GetInsetsMetric(INSETS_TASK_MANAGER);
+
   auto tabs = std::make_unique<views::TabbedPaneTabStrip>(
       views::TabbedPane::Orientation::kHorizontal,
-      views::TabbedPane::TabStripStyle::kCompactWithIcon,
+      views::TabbedPane::TabStripStyle::kWithIcon,
       /*tabbed_pane=*/nullptr);
   tabs->SetDefaultFlex(0);
   tabs->SetDrawTabDivider(false);
-  tabs->SetProperty(views::kMarginsKey, tab_strip_margin);
-  tabs->SetTabSpacing(spacing_between_tabs);
 
   for (const auto& tab_definition : kTabDefinitions) {
     auto* tab = tabs->AddTab(l10n_util::GetStringUTF16(tab_definition.title_id),
                              tab_definition.icon);
-    tab->SetTitleMargin(title_margin);
-    tab->SetIconMargin(icon_margin);
+    tab->SetTitleMargin(title_insets);
+    tab->SetTabOutsets(tab_outsets);
+
+    // Assume some arbitrary spec_height. Set the height of the tabs as
+    // (spec_height - task_manager_dialog_insets), so that the focus ring around
+    // the tabbed pane isn't touching the title bar.
+    tab->SetHeight(tab_height - dialog_insets.top());
   }
   tabs->set_listener(this);
 
   return tabs;
 }
 
-void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
-  // Header Parent
-  auto header_layout = std::make_unique<views::BoxLayout>();
-  header_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
-  header_layout->set_cross_axis_alignment(views::LayoutAlignment::kEnd);
-
-  auto container = std::make_unique<views::View>();
-
-  const int vertical_spacing = provider->GetDistanceMetric(
-      DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING);
-  const int horizontal_spacing = provider->GetDistanceMetric(
-      DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING);
-  const int separator_spacing =
-      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
-
-  const int tab_spacing =
-      provider->GetDistanceMetric(DISTANCE_TASK_MANAGER_TAB_SPACING);
-
-  auto tabs = CreateTabbedPane(
-      /*tab_strip_margin=*/gfx::Insets::TLBR(0, 10, 0, 0),
-      /*title_margin=*/
-      gfx::Insets::TLBR(0, views::TabbedPaneTab::kDefaultTitleLeftMargin,
-                        horizontal_spacing, 0),
-      /*icon_margin=*/gfx::Insets::TLBR(0, 0, horizontal_spacing, 0),
-      /*spacing_between_tabs=*/tab_spacing);
-
-  // Empty Container, Search Bar, End Task Button, and Separator
-  auto empty_view = std::make_unique<views::View>();
-  empty_view->SetProperty(views::kMarginsKey,
-                          gfx::Insets::VH(0, horizontal_spacing));
-
-  auto search_bar_container = CreateSearchBar(provider);
-
-  auto end_process_btn = CreateEndProcessButton(
-      gfx::Insets::TLBR(0, horizontal_spacing, vertical_spacing, 0));
-
-  auto separator =
-      CreateSeparator(gfx::Insets::TLBR(0, 0, separator_spacing, 0));
-  // Allow empty spacing and the search bar to flex freely.
-  header_layout->SetFlexForView(empty_view.get(), 2);
-  header_layout->SetFlexForView(search_bar_container.get(), 3);
-
-  // Set the layout manager for the parent container to BoxLayout.
-  container->SetLayoutManager(std::move(header_layout));
-
-  auto right_aligned_container = std::make_unique<views::View>();
-  right_aligned_container->SetProperty(views::kMarginsKey,
-                                       gfx::Insets::VH(0, horizontal_spacing));
-  // The container holds search bar and end process button, so their layout
-  // could keep consistent during resizing.
-  auto right_aligned_container_layout = std::make_unique<views::BoxLayout>();
-  right_aligned_container_layout->SetOrientation(
-      views::LayoutOrientation::kHorizontal);
-  right_aligned_container_layout->set_cross_axis_alignment(
-      views::LayoutAlignment::kCenter);
-  right_aligned_container->SetLayoutManager(
-      std::move(right_aligned_container_layout));
-
-  search_bar_ =
-      right_aligned_container->AddChildView(std::move(search_bar_container));
-  end_process_btn_ =
-      right_aligned_container->AddChildView(std::move(end_process_btn));
-
-  // Compose all parts into header.
-  tabs_ = container->AddChildView(std::move(tabs));
-  container->AddChildView(std::move(empty_view));
-  container->AddChildView(std::move(right_aligned_container));
-
-  // Attach header to the top of the dialog contents.
-  AddChildView(std::move(container));
-
-  // Attach separator below header.
-  AddChildView(std::move(separator));
-}
-
 std::unique_ptr<views::View> TaskManagerView::CreateSearchBar(
     const ChromeLayoutProvider* provider) {
-  const int vertical_spacing = provider->GetDistanceMetric(
-      DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING);
   const int horizontal_spacing = provider->GetDistanceMetric(
-      DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING);
+      DISTANCE_TASK_MANAGER_SEARCH_BAR_ICON_AND_BUTTON_HORIZONTAL_SPACING);
   const int search_bar_container_radius = provider->GetCornerRadiusMetric(
       views::ShapeContextTokens::kOmniboxExpandedRadius);
 
   auto search_bar_layout = std::make_unique<views::BoxLayout>();
   search_bar_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
-  search_bar_layout->set_main_axis_alignment(views::LayoutAlignment::kEnd);
-  search_bar_layout->set_cross_axis_alignment(views::LayoutAlignment::kEnd);
+  search_bar_layout->set_cross_axis_alignment(views::LayoutAlignment::kStart);
 
   auto search_bar_container = std::make_unique<views::View>();
-  search_bar_container->SetBackground(views::CreateThemedRoundedRectBackground(
+  search_bar_container->SetBackground(views::CreateRoundedRectBackground(
       kColorTaskManagerSearchBarBackground, search_bar_container_radius));
   search_bar_container->SetLayoutManager(std::move(search_bar_layout));
-  search_bar_container->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0, vertical_spacing, horizontal_spacing));
+  const gfx::Size search_bar_size{
+      provider->GetDistanceMetric(DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_WIDTH),
+      provider->GetDistanceMetric(DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_HEIGHT)};
+  search_bar_container->SetPreferredSize(search_bar_size);
 
   auto search_bar = std::make_unique<TaskManagerSearchBarView>(
       l10n_util::GetStringUTF16(IDS_TASK_MANAGER_SEARCH_PLACEHOLDER),
@@ -537,42 +560,6 @@ std::unique_ptr<views::View> TaskManagerView::CreateSearchBar(
   search_bar_container->AddChildView(std::move(search_bar));
 
   return search_bar_container;
-}
-
-std::unique_ptr<views::MdTextButton> TaskManagerView::CreateEndProcessButton(
-    const gfx::Insets& margins) {
-  auto button = std::make_unique<views::MdTextButton>();
-  button->SetText(l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
-  button->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL_ACCESSIBILITY_NAME));
-  button->SetStyle(ui::ButtonStyle::kProminent);
-  button->SetProperty(views::kMarginsKey, margins);
-  button->SetCallback(base::BindRepeating(&TaskManagerView::EndSelectedProcess,
-                                          base::Unretained(this)));
-  return button;
-}
-
-std::unique_ptr<views::Separator> TaskManagerView::CreateSeparator(
-    const gfx::Insets& margins) {
-  auto separator = std::make_unique<views::Separator>();
-  separator->SetProperty(views::kMarginsKey, margins);
-  return separator;
-}
-
-void TaskManagerView::SearchBarOnInputChanged(const std::u16string& query) {
-  tabs_->SetEnabled(query.empty());
-}
-
-void TaskManagerView::SearchBarOnHoverChange(const bool is_hover_on) {
-  // Only show the hover effect when search bar is in unfocused steady state.
-  auto background_color_id = is_hover_on && !search_bar_->HasFocus()
-                                 ? kColorTaskManagerSearchBarHoverOn
-                                 : kColorTaskManagerSearchBarBackground;
-  const int search_bar_container_radius =
-      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-          views::ShapeContextTokens::kOmniboxExpandedRadius);
-  search_bar_->SetBackground(views::CreateThemedRoundedRectBackground(
-      background_color_id, search_bar_container_radius));
 }
 
 std::unique_ptr<views::ScrollView> TaskManagerView::CreateProcessView(
@@ -594,13 +581,11 @@ std::unique_ptr<views::ScrollView> TaskManagerView::CreateProcessView(
 }
 
 void TaskManagerView::Init() {
-  const auto table_config = GetTableConfigs();
-
   // Create the table columns.
   for (size_t i = 0; i < kColumnsSize; ++i) {
     const auto& col_data = kColumns[i];
-    columns_.push_back(ui::TableColumn(col_data.id, col_data.align,
-                                       col_data.width, col_data.percent));
+    columns_.emplace_back(col_data.id, col_data.align, col_data.width,
+                          col_data.percent);
     columns_.back().sortable = col_data.sortable;
     columns_.back().initial_sort_is_ascending =
         col_data.initial_sort_is_ascending;
@@ -611,38 +596,66 @@ void TaskManagerView::Init() {
       nullptr, columns_, views::TableType::kIconAndText, false);
   tab_table_ = tab_table.get();
   table_model_ = std::make_unique<TaskManagerTableModel>(
-      this, table_config.layout_refresh ? DisplayCategory::kTabs
-                                        : DisplayCategory::kAll);
+      this, table_config_.layout_refresh ? DisplayCategory::kTabsAndExtensions
+                                         : DisplayCategory::kAll);
   tab_table->SetModel(table_model_.get());
   tab_table->SetGrouper(this);
+  tab_table->SetGrouperVisibility(!table_config_.layout_refresh);
   tab_table->SetSortOnPaint(true);
+  if (table_config_.layout_refresh) {
+    // Disables alternating row colors on all platforms, including macOS.
+    tab_table->SetAlternatingRowColorsEnabled(base::PassKey<TaskManagerView>(),
+                                              false);
+    tab_table->SetMouseHoveringEnabled(false);
+
+    tab_table->SetRowPadding(views::DISTANCE_TABLE_VERTICAL_TEXT_PADDING);
+  }
   tab_table->set_observer(this);
   tab_table->set_context_menu_controller(this);
   set_context_menu_controller(this);
 
-  if (table_config.dialog_button_disabled) {
-    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  } else {
-    SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
-    SetButtonLabel(ui::mojom::DialogButton::kOk,
-                   l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
-  }
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 l10n_util::GetStringUTF16(table_config_.layout_refresh
+                                               ? IDS_TASK_MANAGER_KILL_V2
+                                               : IDS_TASK_MANAGER_KILL));
 
-  if (table_config.header_padding) {
+  if (table_config_.header_style) {
     views::TableHeaderStyle header_style = {
-        .cell_vertical_padding = 16,
+        .cell_vertical_padding = 14,
         .cell_horizontal_padding = 12,
         .resize_bar_vertical_padding = 16,
-        .separator_horizontal_padding = 6,
-        .font_weight = gfx::Font::Weight::MEDIUM};
+        .separator_horizontal_padding = 0,
+        .font_weight = gfx::Font::Weight::MEDIUM,
+        .separator_horizontal_color_id = ui::kColorSysDivider,
+        .separator_vertical_color_id = ui::kColorSysDivider,
+        .background_color_id = kColorTaskManagerTableHeaderBackground};
     tab_table->SetHeaderStyle(header_style);
+  }
+
+  if (table_config_.table_refresh) {
+    views::TableStyle table_style = {
+        .background_tokens =
+            views::TableBackgroundStyle{
+                .background = kColorTaskManagerTableBackground,
+                .alternate = kColorTaskManagerTableBackgroundAlternate,
+                .selected_focused =
+                    kColorTaskManagerTableBackgroundSelectedFocused,
+                .selected_unfocused =
+                    kColorTaskManagerTableBackgroundSelectedUnfocused,
+            },
+        .icons_have_background = true,
+        .inset_focus_ring = true,
+    };
+    tab_table->SetTableStyle(table_style);
   }
 
   const auto* provider = ChromeLayoutProvider::Get();
 
   // Margins around all contents
-  const gfx::Insets dialog_insets =
-      provider->GetInsetsMetric(views::INSETS_DIALOG);
+  const gfx::Insets dialog_insets = provider->GetInsetsMetric(
+      table_config_.layout_refresh ? static_cast<int>(INSETS_TASK_MANAGER)
+                                   : views::INSETS_DIALOG);
   // We don't use ChromeLayoutProvider::GetDialogInsetsForContentType because we
   // don't have a title.
   const auto content_insets = gfx::Insets::TLBR(
@@ -653,7 +666,7 @@ void TaskManagerView::Init() {
   SetBorder(views::CreateEmptyBorder(content_insets));
 
   // Setup Layout Manager for Dialog
-  if (table_config.layout_refresh) {
+  if (table_config_.layout_refresh) {
     views::FlexLayout* content_layout =
         SetLayoutManager(std::make_unique<views::FlexLayout>());
     content_layout->SetOrientation(views::LayoutOrientation::kVertical);
@@ -665,10 +678,10 @@ void TaskManagerView::Init() {
 
   // Add Process List (a.k.a Scroll View)
   tab_table_parent_ = AddChildView(
-      CreateProcessView(std::move(tab_table), table_config.table_has_border,
-                        table_config.layout_refresh));
+      CreateProcessView(std::move(tab_table), table_config_.table_has_border,
+                        table_config_.layout_refresh));
 
-  if (table_config.scroll_view_rounded) {
+  if (table_config_.scroll_view_rounded) {
     tab_table_parent_->SetPaintToLayer(ui::LAYER_TEXTURED);
     ui::Layer* scroll_view_layer = tab_table_parent_->layer();
 
@@ -678,7 +691,8 @@ void TaskManagerView::Init() {
     scroll_view_layer->SetIsFastRoundedCorner(true);
   }
 
-  table_model_->RetrieveSavedColumnsSettingsAndUpdateTable();
+  table_model_->RetrieveSavedColumnsSettingsAndUpdateTable(
+      table_config_.sort_on_cpu_by_default);
 
   AddAccelerator(ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN));
   AddAccelerator(

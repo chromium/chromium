@@ -90,7 +90,7 @@ class SystemFonts {
   static Font GetFontFromLOGFONT(const LOGFONT& logfont) {
     // Finds a matching font by triggering font mapping. The font mapper finds
     // the closest physical font for a given logical font.
-    base::win::ScopedHFONT font(::CreateFontIndirect(&logfont));
+    base::win::ScopedGDIObject<HFONT> font(::CreateFontIndirect(&logfont));
     base::win::ScopedGetDC screen_dc(NULL);
     base::win::ScopedSelectObject scoped_font(screen_dc, font.get());
 

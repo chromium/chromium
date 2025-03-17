@@ -4,7 +4,8 @@
 
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/task/sequenced_task_runner.h"
 
 namespace web_app {
@@ -44,8 +45,8 @@ void FakeExternallyManagedAppManager::InstallApps(
     return;
   }
 
-  base::ranges::copy(install_options_list,
-                     std::back_inserter(install_requests_));
+  std::ranges::copy(install_options_list,
+                    std::back_inserter(install_requests_));
   if (!drop_requests_for_testing_) {
     ExternallyManagedAppManager::InstallApps(install_options_list, callback);
   }
@@ -55,7 +56,7 @@ void FakeExternallyManagedAppManager::UninstallApps(
     std::vector<GURL> uninstall_urls,
     ExternalInstallSource install_source,
     const UninstallCallback& callback) {
-  base::ranges::copy(uninstall_urls, std::back_inserter(uninstall_requests_));
+  std::ranges::copy(uninstall_urls, std::back_inserter(uninstall_requests_));
   if (handle_uninstall_request_callback_) {
     for (auto& app_url : uninstall_urls) {
       base::SequencedTaskRunner::GetCurrentDefault()

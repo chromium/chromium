@@ -23,7 +23,7 @@ final class SyncTestTabGroupHelpers {
     @CalledByNative
     private static Token createGroupFromTab(Tab tab) {
         TabGroupModelFilter tabGroupModelFilter = TabModelUtils.getTabGroupModelFilterByTab(tab);
-        tabGroupModelFilter.createSingleTabGroup(tab, false);
+        tabGroupModelFilter.createSingleTabGroup(tab);
 
         return tab.getTabGroupId();
     }
@@ -40,7 +40,7 @@ final class SyncTestTabGroupHelpers {
             Tab tabInGroup, String title, @TabGroupColorId int color) {
         TabGroupModelFilter tabGroupModelFilter =
                 TabModelUtils.getTabGroupModelFilterByTab(tabInGroup);
-        int rootId = tabGroupModelFilter.getRootIdFromStableId(tabInGroup.getTabGroupId());
+        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabInGroup.getTabGroupId());
         tabGroupModelFilter.setTabGroupColor(rootId, color);
         tabGroupModelFilter.setTabGroupTitle(rootId, title);
     }

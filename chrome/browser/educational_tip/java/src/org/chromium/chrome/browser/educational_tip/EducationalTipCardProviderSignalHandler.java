@@ -4,9 +4,15 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -16,18 +22,20 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.ProcessedValue;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 /** Provides information about the signals of cards in the educational tip module. */
 public class EducationalTipCardProviderSignalHandler {
     /** Creates an instance of InputContext. */
     @VisibleForTesting
     static InputContext createInputContext(
-            @EducationalTipCardType int cardType,
+            @ModuleType int moduleType,
             EducationTipModuleActionDelegate actionDelegate,
+            @NonNull Profile profile,
             Tracker tracker) {
         InputContext inputContext = new InputContext();
-        switch (cardType) {
-            case EducationalTipCardType.DEFAULT_BROWSER_PROMO:
+        switch (moduleType) {
+            case ModuleType.DEFAULT_BROWSER_PROMO:
                 inputContext.addEntry(
                         "should_show_non_role_manager_default_browser_promo",
                         ProcessedValue.fromFloat(
@@ -37,7 +45,7 @@ public class EducationalTipCardProviderSignalHandler {
                         ProcessedValue.fromFloat(
                                 hasDefaultBrowserPromoShownInOtherSurface(tracker)));
                 return inputContext;
-            case EducationalTipCardType.TAB_GROUP:
+            case ModuleType.TAB_GROUP_PROMO:
                 inputContext.addEntry(
                         "tab_group_exists",
                         ProcessedValue.fromFloat(tabGroupExists(actionDelegate)));
@@ -45,9 +53,12 @@ public class EducationalTipCardProviderSignalHandler {
                         "number_of_tabs",
                         ProcessedValue.fromFloat(getCurrentTabCount(actionDelegate)));
                 return inputContext;
-            case EducationalTipCardType.TAB_GROUP_SYNC:
+            case ModuleType.TAB_GROUP_SYNC_PROMO:
+                inputContext.addEntry(
+                        "synced_tab_group_exists",
+                        ProcessedValue.fromFloat(syncedTabGroupExists(profile)));
                 return inputContext;
-            case EducationalTipCardType.QUICK_DELETE:
+            case ModuleType.QUICK_DELETE_PROMO:
                 return inputContext;
             default:
                 assert false : "Card type not supported!";
@@ -63,7 +74,9 @@ public class EducationalTipCardProviderSignalHandler {
     private static float shouldShowNonRoleManagerDefaultBrowserPromo(
             EducationTipModuleActionDelegate actionDelegate) {
         return DefaultBrowserPromoUtils.getInstance()
-                        .shouldShowNonRoleManagerPromo(actionDelegate.getContext())
+                                .shouldShowNonRoleManagerPromo(actionDelegate.getContext())
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
                 ? 1.0f
                 : 0.0f;
     }
@@ -98,8 +111,28 @@ public class EducationalTipCardProviderSignalHandler {
     /** Returns the total number of tabs across both regular and incognito browsing modes. */
     private static float getCurrentTabCount(EducationTipModuleActionDelegate actionDelegate) {
         TabModelSelector tabModelSelector = actionDelegate.getTabModelSelector();
-        TabModel normalModel = tabModelSelector.getModel(/* incognito= */ false);
-        TabModel incognitoModel = tabModelSelector.getModel(/* incognito= */ true);
-        return normalModel.getCount() + incognitoModel.getCount();
+
+        if (tabModelSelector.isTabStateInitialized()) {
+            TabModel normalModel = tabModelSelector.getModel(/* incognito= */ false);
+            TabModel incognitoModel = tabModelSelector.getModel(/* incognito= */ true);
+            return normalModel.getCount() + incognitoModel.getCount();
+        }
+
+        return actionDelegate.getTabCountForRelaunchFromSharedPrefs();
+    }
+
+    /** Returns a value of 1.0f if a synced tab group exists. Otherwise, it returns 0.0f. */
+    private static float syncedTabGroupExists(Profile profile) {
+        @Nullable TabGroupSyncService tabGroupSyncService = null;
+        if (TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) {
+            tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        }
+
+        if (tabGroupSyncService == null) {
+            return 0.0f;
+        }
+
+        int syncedGroupCount = tabGroupSyncService.getAllGroupIds().length;
+        return syncedGroupCount > 0 ? 1.0f : 0.0f;
     }
 }

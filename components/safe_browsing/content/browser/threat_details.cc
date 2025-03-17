@@ -413,8 +413,9 @@ ClientSafeBrowsingReportRequest::Resource* ThreatDetails::AddUrl(
   }
   if (children) {
     for (auto it = children->begin(); it != children->end(); ++it) {
-      // TODO(lpz): Should this first check if the child URL is reportable
-      // before creating the resource?
+      if (it->is_empty() || !client_report_utils::IsReportableUrl(*it)) {
+        continue;
+      }
       ClientSafeBrowsingReportRequest::Resource* child_resource =
           FindOrCreateResource(*it);
       bool duplicate_child = false;

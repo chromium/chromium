@@ -19,6 +19,7 @@ import org.chromium.base.TerminationStatus;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.usb.UsbNotificationManager;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.net.NetError;
@@ -54,7 +56,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
     private final TabImpl mTab;
     private final ObserverList<Callback<WebContents>> mInitObservers = new ObserverList<>();
-    private WebContentsObserver mObserver;
+    private Observer mObserver;
     private GURL mLastUrl;
 
     public static TabWebContentsObserver from(Tab tab) {
@@ -109,7 +111,8 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
     @Override
     public void cleanupWebContents(WebContents webContents) {
         if (mObserver != null) {
-            mObserver.destroy();
+            mObserver.updateNotificationsForTab();
+            mObserver.observe(null);
             mObserver = null;
         }
     }
@@ -212,6 +215,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void didFinishLoadInPrimaryMainFrame(
+                Page page,
                 GlobalRenderFrameHostId frameId,
                 GURL url,
                 boolean isKnownValid,
@@ -358,6 +362,17 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         @Override
         public void viewportFitChanged(@WebContentsObserver.ViewportFitType int value) {
             DisplayCutoutTabHelper.from(mTab).setViewportFit(value);
+            if (ChromeFeatureList.sEdgeToEdgeSafeAreaConstraint.isEnabled()) {
+                DisplayCutoutTabHelper.from(mTab)
+                        .setSafeAreaConstraint(value == ViewportFit.CONTAIN);
+            }
+        }
+
+        @Override
+        public void safeAreaConstraintChanged(boolean hasConstraint) {
+            if (ChromeFeatureList.sEdgeToEdgeSafeAreaConstraint.isEnabled()) {
+                DisplayCutoutTabHelper.from(mTab).setSafeAreaConstraint(hasConstraint);
+            }
         }
 
         @Override
@@ -369,7 +384,11 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void destroy() {
+        public void webContentsDestroyed() {
+            updateNotificationsForTab();
+        }
+
+        void updateNotificationsForTab() {
             MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
                     ContextUtils.getApplicationContext(), mTab.getId(), null, mLastUrl);
             BluetoothNotificationManager.updateBluetoothNotificationForTab(
@@ -386,7 +405,6 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                     null,
                     mLastUrl,
                     mTab.isIncognito());
-            super.destroy();
         }
     }
 }

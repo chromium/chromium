@@ -15,8 +15,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -59,8 +60,8 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     }
 
     @Override
-    public @Nullable UpdateStatusProvider.UpdateStatus getUpdateStatus() {
-        return SafetyHubFetchServiceFactory.getForProfile(mProfile).getUpdateStatus();
+    public void showLocalPasswordCheckUi(Context context) {
+        SafetyHubUtils.showLocalPasswordCheckUi(context, mProfile, mModalDialogManagerSupplier);
     }
 
     @Override
@@ -80,17 +81,58 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
 
     @Override
     public int getAccountPasswordsCount(@Nullable PasswordStoreBridge passwordStoreBridge) {
-        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         if (passwordStoreBridge == null
-                || !PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
-                || !passwordManagerHelper.canUseUpm()) return INVALID_PASSWORD_COUNT;
+                || !PasswordManagerHelper.hasChosenToSyncPasswords(syncService)) {
+            return INVALID_PASSWORD_COUNT;
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
+            if (PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
+                return passwordStoreBridge.getPasswordStoreCredentialsCountForAccountStore();
+            }
+            return INVALID_PASSWORD_COUNT;
+        }
+
+        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
+        if (!passwordManagerHelper.canUseUpm()) {
+            return INVALID_PASSWORD_COUNT;
+        }
 
         if (usesSplitStoresAndUPMForLocal(UserPrefs.get(mProfile))) {
             return passwordStoreBridge.getPasswordStoreCredentialsCountForAccountStore();
         }
         // If using split stores is disabled, all passwords reside in the profile store.
         return passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore();
+    }
+
+    @Override
+    public int getLocalPasswordsCount(@Nullable PasswordStoreBridge passwordStoreBridge) {
+        if (passwordStoreBridge == null) {
+            return INVALID_PASSWORD_COUNT;
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
+            if (PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
+                return passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore();
+            }
+            return INVALID_PASSWORD_COUNT;
+        }
+
+        // There are two cases where a user has local passwords in the profile store:
+        //    1. If split stores are in use for local passwords, then profile store stores local
+        // passwords.
+        //    2. If they're not in use, but the user is not syncing, then profile store stores
+        // local passwords.
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        boolean isSyncingPasswords = PasswordManagerHelper.hasChosenToSyncPasswords(syncService);
+        if (usesSplitStoresAndUPMForLocal(UserPrefs.get(mProfile)) || !isSyncingPasswords) {
+            return passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore();
+        }
+
+        // If split stores for local passwords are not in use and the user is syncing, then the
+        // profile store doesn't store local passwords.
+        return 0;
     }
 
     @Override

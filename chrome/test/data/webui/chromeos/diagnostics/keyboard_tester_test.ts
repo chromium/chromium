@@ -8,7 +8,7 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {BottomLeftLayout, BottomRightLayout, ConnectionType, MechanicalLayout, NumberPadPresence, NumpadLayout, PhysicalLayout, TopRightKey} from 'chrome://diagnostics/input.mojom-webui.js';
 import {KeyEventType} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
-import {KeyboardTesterElement} from 'chrome://diagnostics/keyboard_tester.js';
+import type {KeyboardTesterElement} from 'chrome://diagnostics/keyboard_tester.js';
 import {KeyboardDiagramElement, TopRightKey as DiagramTopRightKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';

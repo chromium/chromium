@@ -6,7 +6,10 @@ package org.chromium.components.browser_ui.settings;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** CCT-related helpers and interfaces. */
+@NullMarked
 public interface SettingsCustomTabLauncher {
     /**
      * Interface for injecting a SettingsCustomTabHelper to a fragment. This is useful for fragments

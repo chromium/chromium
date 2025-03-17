@@ -40,7 +40,7 @@ class LogoutButtonTrayTest : public NoSessionAshTestBase {
   // NoSessionAshTestBase:
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
-    SimulateUserLogin(kUserEmail);
+    SimulateUserLogin({kUserEmail});
   }
 
   LogoutButtonTray* tray() {
@@ -96,7 +96,7 @@ TEST_F(LogoutButtonTrayTest, DISABLED_ButtonPressed) {
       Shell::Get()->session_controller()->GetUserPrefServiceForUser(
           AccountId::FromUserEmail(kUserEmail));
 
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
   EXPECT_EQ(0, session_client->request_sign_out_count());
   EXPECT_EQ(0, user_action_tester.GetActionCount(kUserAction));
   EXPECT_EQ(0, Shell::Get()

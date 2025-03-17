@@ -1,11 +1,12 @@
 include_rules = [
-  "+ash/components/arc/mojom",
   "+ash/shell.h",
+  "+chromeos/ash/experiences/arc/mojom",
   "+content/public/browser",
   "+content/public/test",
   "+media/base",
   "+media/cdm",
   "+media/mojo/mojom",
+  "+mojo/core",
   "+ui/display",
   "+ui/gfx/geometry",
 ]

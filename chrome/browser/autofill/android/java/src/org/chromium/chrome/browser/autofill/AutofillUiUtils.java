@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -145,9 +146,7 @@ public class AutofillUiUtils {
          * @return {@link CardIconSpecs} instance containing the specs for the card icon.
          */
         public static CardIconSpecs create(Context context, @ImageSize int cardIconSize) {
-            if (cardIconSize == ImageSize.LARGE
-                    && ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            if (cardIconSize == ImageSize.LARGE) {
                 return new CardIconSpecs(
                         context,
                         R.dimen.large_card_icon_width,
@@ -588,18 +587,15 @@ public class AutofillUiUtils {
         StringBuilder url = new StringBuilder(customIconUrl.getSpec());
         url.append("=w").append(width).append("-h").append(height);
 
-        // If SCS supports stretching, add it as a param to fetch images of exact dimensions.
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)) {
-            url.append("-s");
-        }
         return new GURL(url.toString());
     }
 
     /**
-     * Always show the Capital One virtual card icon for virtual cards if the card icon URL is
-     * available for the card. Never show the Capital One virtual card icon for FPAN. Show rich card
-     * art when the metadata experiment is enabled.
+     * Always show the Capital One virtual card icon for virtual cards if the card
+     * icon URL is available for the card. Never show the Capital One virtual card
+     * icon for FPAN.
+     * Otherwise, show rich card art.
+     *
      * @param customIconUrl {@link GURL} for fetching the custom icon.
      * @param isVirtualCard Whether or not the card is a virtual card.
      * @return True if the custom icon should be shown. False otherwise.
@@ -613,8 +609,7 @@ public class AutofillUiUtils {
             return true;
         }
 
-        if (!customIconUrl.getSpec().equals(CAPITAL_ONE_ICON_URL)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)) {
+        if (!customIconUrl.getSpec().equals(CAPITAL_ONE_ICON_URL)) {
             return true;
         }
 
@@ -650,9 +645,7 @@ public class AutofillUiUtils {
             return defaultIcon;
         }
 
-        if (cardArtUrl.getSpec().equals(CAPITAL_ONE_ICON_URL)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+        if (cardArtUrl.getSpec().equals(CAPITAL_ONE_ICON_URL)) {
             return AppCompatResources.getDrawable(context, R.drawable.capitalone_metadata_card);
         }
 
@@ -668,20 +661,17 @@ public class AutofillUiUtils {
 
     /**
      * Resize the bitmap to the required specs, round corners, and add grey border.
+     *
      * @param bitmap to be updated.
      * @param cardIconSpecs {@link CardIconSpecs} instance containing the specs for the card icon.
      * @param addRoundedCornersAndGreyBorder If true, the bitmap corners are rounded, and a grey
-     *         border is added. If false, no enhancements are applied to the bitmap.
+     *     border is added. If false, no enhancements are applied to the bitmap.
      * @return Resized {@link Bitmap} with rounded corners and grey border.
      */
     public static Bitmap resizeAndAddRoundedCornersAndGreyBorder(
             Bitmap bitmap, CardIconSpecs cardIconSpecs, boolean addRoundedCornersAndGreyBorder) {
-        // Until AutofillEnableCardArtServerSideStretching is rolled out, the server maintains the
-        // card art image's aspect ratio, so the fetched image might not be the exact required size.
-        // Scale the icon to the desired dimension.
-        // TODO(crbug.com/40274131): Remove scaling when AutofillEnableCardArtServerSideStretching
-        // is
-        // rolled out.
+        // The server maintains the card art image's aspect ratio, so the fetched image might not be
+        // the exact required size. Scale the icon to the desired dimension.
         if (bitmap.getWidth() != cardIconSpecs.getWidth()
                 || bitmap.getHeight() != cardIconSpecs.getHeight()) {
             bitmap =
@@ -694,6 +684,48 @@ public class AutofillUiUtils {
 
         if (!addRoundedCornersAndGreyBorder) {
             return bitmap;
+        }
+
+        Context context = ContextUtils.getApplicationContext();
+
+        // Square logos have their corners rounded off, and then placed in a rectangular white
+        // background of size `ImageSize.LARGE`. The rectangular composite asset further has its
+        // corners rounded, and outlined with a grey border similar to other rectangular assets.
+        if (cardIconSpecs.getWidth() == cardIconSpecs.getHeight()) {
+            Bitmap squareBitmap =
+                    Bitmap.createBitmap(
+                            bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas squareCanvas = new Canvas(squareBitmap);
+            Paint squarePaint = new Paint();
+            squarePaint.setAntiAlias(true);
+            RectF squareRectF = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            squareCanvas.drawRoundRect(
+                    squareRectF,
+                    cardIconSpecs.getCornerRadius(),
+                    cardIconSpecs.getCornerRadius(),
+                    squarePaint);
+            squarePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            squareCanvas.drawBitmap(bitmap, 0, 0, squarePaint);
+
+            CardIconSpecs backgroundSpecs = CardIconSpecs.create(context, ImageSize.LARGE);
+            Bitmap backgroundBitmap =
+                    Bitmap.createBitmap(
+                            backgroundSpecs.getWidth(),
+                            backgroundSpecs.getHeight(),
+                            Bitmap.Config.ARGB_8888);
+            Canvas backgroundCanvas = new Canvas(backgroundBitmap);
+            Paint backgroundPaint = new Paint();
+            backgroundPaint.setColor(Color.WHITE);
+            backgroundPaint.setAntiAlias(true);
+            backgroundCanvas.drawRect(
+                    0, 0, backgroundSpecs.getWidth(), backgroundSpecs.getHeight(), backgroundPaint);
+            int left = (backgroundSpecs.getWidth() - bitmap.getWidth()) / 2;
+            int top = (backgroundSpecs.getHeight() - bitmap.getHeight()) / 2;
+            backgroundCanvas.drawBitmap(squareBitmap, left, top, null);
+
+            // It can now be treated as a rectangular image asset, and enhancements can be applied.
+            bitmap = backgroundBitmap;
+            cardIconSpecs = backgroundSpecs;
         }
 
         // Round the corners.
@@ -710,8 +742,7 @@ public class AutofillUiUtils {
         canvas.drawBitmap(bitmap, rect, rect, paint);
 
         // Add the grey border.
-        Context context = ContextUtils.getApplicationContext();
-        int greyColor = ContextCompat.getColor(context, R.color.baseline_neutral_90);
+        int greyColor = ContextCompat.getColor(context, R.color.baseline_neutral_variant_90);
         paint.setColor(greyColor);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(cardIconSpecs.getBorderWidth());

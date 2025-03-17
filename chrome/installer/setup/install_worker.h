@@ -22,6 +22,7 @@ class Version;
 
 namespace installer {
 
+class InstallationState;
 class InstallerState;
 struct InstallParams;
 
@@ -136,7 +137,8 @@ void AddChannelSelectionWorkItems(const InstallerState& installer_state,
 // Adds work items to be done when finalizing an update. This happens both
 // after the executables get renamed for an in-use update or as the last steps
 // for a regular update.
-void AddFinalizeUpdateWorkItems(const base::Version& new_version,
+void AddFinalizeUpdateWorkItems(const InstallationState& original_state,
+                                const base::Version& new_version,
                                 const InstallerState& installer_state,
                                 const base::FilePath& setup_path,
                                 WorkItemList* list);

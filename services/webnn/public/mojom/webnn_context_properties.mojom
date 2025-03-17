@@ -36,6 +36,16 @@ struct SupportedDataTypes {
   bool uint4;
 };
 
+struct SupportedRanks {
+  uint32 min;
+  uint32 max;
+};
+
+struct SupportedTensors {
+  SupportedDataTypes data_types;
+  SupportedRanks ranks;
+};
+
 // Represents the data type limits exposed through
 // `MLContext::opSupportLimits()`.
 // Keep the order as the same as build methods of `MLGraphBuilder`, for
@@ -45,138 +55,164 @@ struct DataTypeLimits {
   SupportedDataTypes constant;
 
   // ArgMin/Max.
-  SupportedDataTypes arg_min_max_input;
+  SupportedTensors arg_min_max_input;
   SupportedDataTypes arg_min_max_output;
 
-  SupportedDataTypes batch_normalization_input;
-  SupportedDataTypes cast_input;
-  SupportedDataTypes clamp_input;
-  SupportedDataTypes concat_inputs;
-  SupportedDataTypes conv2d_input;
-  SupportedDataTypes conv_transpose2d_input;
-  SupportedDataTypes cumulative_sum_input;
+  SupportedTensors batch_normalization_input;
+  // Also used to validate variance, scale and bias.
+  SupportedTensors batch_normalization_mean;
+  SupportedTensors cast_input;
+  SupportedTensors clamp_input;
+  SupportedTensors concat_inputs;
+  // Also used to validate filter.
+  SupportedTensors conv2d_input;
+  SupportedTensors conv2d_bias;
+  // Also used to validate filter.
+  SupportedTensors conv_transpose2d_input;
+  SupportedTensors conv_transpose2d_bias;
+  SupportedTensors cumulative_sum_input;
 
   // DequantizeLinear.
-  SupportedDataTypes dequantize_linear_input;
-  SupportedDataTypes dequantize_linear_scale;
+  SupportedTensors dequantize_linear_input;
+  SupportedTensors dequantize_linear_scale;
+  SupportedTensors dequantize_linear_zero_point;
 
   // Element-wise binary ops.
-  SupportedDataTypes add_input;
-  SupportedDataTypes sub_input;
-  SupportedDataTypes mul_input;
-  SupportedDataTypes div_input;
-  SupportedDataTypes max_input;
-  SupportedDataTypes min_input;
-  SupportedDataTypes pow_input;
+  SupportedTensors add_input;
+  SupportedTensors sub_input;
+  SupportedTensors mul_input;
+  SupportedTensors div_input;
+  SupportedTensors max_input;
+  SupportedTensors min_input;
+  SupportedTensors pow_input;
 
   // Element-wise logical ops.
-  SupportedDataTypes equal_input;
-  SupportedDataTypes greater_input;
-  SupportedDataTypes greater_or_equal_input;
-  SupportedDataTypes lesser_input;
-  SupportedDataTypes lesser_or_equal_input;
-  SupportedDataTypes logical_and_input;
-  SupportedDataTypes logical_or_input;
-  SupportedDataTypes logical_xor_input;
-  SupportedDataTypes logical_not_input;
+  SupportedTensors equal_input;
+  SupportedTensors greater_input;
+  SupportedTensors greater_or_equal_input;
+  SupportedTensors lesser_input;
+  SupportedTensors lesser_or_equal_input;
+  SupportedTensors not_equal_input;
+  SupportedTensors logical_and_input;
+  SupportedTensors logical_or_input;
+  SupportedTensors logical_xor_input;
+  SupportedTensors logical_not_input;
   SupportedDataTypes logical_output;
 
   // Element-wise unary ops.
-  SupportedDataTypes abs_input;
-  SupportedDataTypes ceil_input;
-  SupportedDataTypes cos_input;
-  SupportedDataTypes erf_input;
-  SupportedDataTypes exp_input;
-  SupportedDataTypes floor_input;
-  SupportedDataTypes identity_input;
-  SupportedDataTypes log_input;
-  SupportedDataTypes neg_input;
-  SupportedDataTypes reciprocal_input;
-  SupportedDataTypes sign_input;
-  SupportedDataTypes sin_input;
-  SupportedDataTypes sqrt_input;
-  SupportedDataTypes tan_input;
+  SupportedTensors abs_input;
+  SupportedTensors ceil_input;
+  SupportedTensors cos_input;
+  SupportedTensors erf_input;
+  SupportedTensors exp_input;
+  SupportedTensors floor_input;
+  SupportedTensors identity_input;
+  SupportedTensors log_input;
+  SupportedTensors neg_input;
+  SupportedTensors reciprocal_input;
+  SupportedTensors sign_input;
+  SupportedTensors sin_input;
+  SupportedTensors sqrt_input;
+  SupportedTensors tan_input;
 
-  SupportedDataTypes elu_input;
-  SupportedDataTypes expand_input;
+  SupportedTensors elu_input;
+  SupportedTensors expand_input;
 
   // Gather.
-  SupportedDataTypes gather_input;
-  SupportedDataTypes gather_indices;
+  SupportedTensors gather_input;
+  SupportedTensors gather_indices;
 
   // GatherElements.
-  SupportedDataTypes gather_elements_input;
-  SupportedDataTypes gather_elements_indices;
+  SupportedTensors gather_elements_input;
+  SupportedTensors gather_elements_indices;
 
   // GatherND.
-  SupportedDataTypes gather_nd_input;
-  SupportedDataTypes gather_nd_indices;
+  SupportedTensors gather_nd_input;
+  SupportedTensors gather_nd_indices;
 
-  SupportedDataTypes gelu_input;
-  SupportedDataTypes gemm_input;
-  SupportedDataTypes gru_input;
-  SupportedDataTypes gru_cell_input;
-  SupportedDataTypes hard_sigmoid_input;
-  SupportedDataTypes hard_swish_input;
-  SupportedDataTypes instance_normalization_input;
-  SupportedDataTypes layer_normalization_input;
-  SupportedDataTypes leaky_relu_input;
-  SupportedDataTypes linear_input;
-  SupportedDataTypes lstm_input;
-  SupportedDataTypes lstm_cell_input;
-  SupportedDataTypes matmul_input;
-  SupportedDataTypes pad_input;
+  SupportedTensors gelu_input;
+  // Also used to validate b;
+  SupportedTensors gemm_a;
+  SupportedTensors gemm_c;
+  // Also used to validate weight, recurrentWeight and initialHiddenState.
+  SupportedTensors gru_input;
+  // Also used to validate recurrentBias.
+  SupportedTensors gru_bias;
+  // Also used to validate weight, recurrentWeight and hiddenState.
+  SupportedTensors gru_cell_input;
+  // Also used to validate recurrentBias.
+  SupportedTensors gru_cell_bias;
+  SupportedTensors hard_sigmoid_input;
+  SupportedTensors hard_swish_input;
+  SupportedTensors instance_normalization_input;
+  // Also used to validate bias.
+  SupportedTensors instance_normalization_scale;
+  SupportedTensors layer_normalization_input;
+  SupportedTensors leaky_relu_input;
+  SupportedTensors linear_input;
+  // Also used to validate weight, recurrentWeight, initialHiddenState and
+  // initialCellState.
+  SupportedTensors lstm_input;
+  // Also used to validate recurrentBias and peepholeWeight.
+  SupportedTensors lstm_bias;
+  // Also used to validate weight, recurrentWeight, hiddenState and cellState.
+  SupportedTensors lstm_cell_input;
+  // Also used to validate recurrentBias and peepholeWeight.
+  SupportedTensors lstm_cell_bias;
+  SupportedTensors matmul_input;
+  SupportedTensors pad_input;
 
   // Pool2d.
-  SupportedDataTypes average_pool2d_input;
-  SupportedDataTypes l2_pool2d_input;
-  SupportedDataTypes max_pool2d_input;
+  SupportedTensors average_pool2d_input;
+  SupportedTensors l2_pool2d_input;
+  SupportedTensors max_pool2d_input;
 
-  SupportedDataTypes prelu_input;
+  SupportedTensors prelu_input;
 
   // QuantizeLinear.
-  SupportedDataTypes quantize_linear_input;
-  SupportedDataTypes quantize_linear_zero_point;
+  SupportedTensors quantize_linear_input;
+  SupportedTensors quantize_linear_zero_point;
 
   // Reduction ops.
-  SupportedDataTypes reduce_l1_input;
-  SupportedDataTypes reduce_l2_input;
-  SupportedDataTypes reduce_log_sum_input;
-  SupportedDataTypes reduce_log_sum_exp_input;
-  SupportedDataTypes reduce_max_input;
-  SupportedDataTypes reduce_mean_input;
-  SupportedDataTypes reduce_min_input;
-  SupportedDataTypes reduce_product_input;
-  SupportedDataTypes reduce_sum_input;
-  SupportedDataTypes reduce_sum_square_input;
+  SupportedTensors reduce_l1_input;
+  SupportedTensors reduce_l2_input;
+  SupportedTensors reduce_log_sum_input;
+  SupportedTensors reduce_log_sum_exp_input;
+  SupportedTensors reduce_max_input;
+  SupportedTensors reduce_mean_input;
+  SupportedTensors reduce_min_input;
+  SupportedTensors reduce_product_input;
+  SupportedTensors reduce_sum_input;
+  SupportedTensors reduce_sum_square_input;
 
-  SupportedDataTypes relu_input;
-  SupportedDataTypes resample2d_input;
-  SupportedDataTypes reshape_input;
-  SupportedDataTypes reverse_input;
+  SupportedTensors relu_input;
+  SupportedTensors resample2d_input;
+  SupportedTensors reshape_input;
+  SupportedTensors reverse_input;
 
   // ScatterElements.
-  SupportedDataTypes scatter_elements_input;
-  SupportedDataTypes scatter_elements_indices;
+  SupportedTensors scatter_elements_input;
+  SupportedTensors scatter_elements_indices;
 
   // ScatterND.
-  SupportedDataTypes scatter_nd_input;
-  SupportedDataTypes scatter_nd_indices;
+  SupportedTensors scatter_nd_input;
+  SupportedTensors scatter_nd_indices;
+  SupportedTensors scatter_nd_updates;
 
-  SupportedDataTypes sigmoid_input;
-  SupportedDataTypes slice_input;
-  SupportedDataTypes softmax_input;
-  SupportedDataTypes softplus_input;
-  SupportedDataTypes softsign_input;
-  SupportedDataTypes split_input;
-  SupportedDataTypes tanh_input;
-  SupportedDataTypes tile_input;
-  SupportedDataTypes transpose_input;
-  SupportedDataTypes triangular_input;
+  SupportedTensors sigmoid_input;
+  SupportedTensors slice_input;
+  SupportedTensors softmax_input;
+  SupportedTensors softplus_input;
+  SupportedTensors softsign_input;
+  SupportedTensors split_input;
+  SupportedTensors tanh_input;
+  SupportedTensors tile_input;
+  SupportedTensors transpose_input;
+  SupportedTensors triangular_input;
 
   // Where.
-  SupportedDataTypes where_condition;
-  SupportedDataTypes where_value;
+  SupportedTensors where_condition;
+  SupportedTensors where_value;
 };
 
 // Represents properties of the `WebNNContext` implementation that has been
@@ -184,5 +220,7 @@ struct DataTypeLimits {
 struct ContextProperties {
   InputOperandLayout input_operand_layout;
   Resample2DAxes resample_2d_axes;
+  // All tensors in graph will not exceed the byte length limit.
+  uint64 tensor_byte_length_limit;
   DataTypeLimits data_type_limits;
 };

@@ -150,6 +150,16 @@ void SharedImageStub::ExecuteDeferredRequest(
       break;
     }
 
+    case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImagePool:
+      OnCreateSharedImagePool(
+          std::move(request->get_create_shared_image_pool()));
+      break;
+
+    case mojom::DeferredSharedImageRequest::Tag::kDestroySharedImagePool:
+      OnDestroySharedImagePool(
+          std::move(request->get_destroy_shared_image_pool()));
+      break;
+
 #if BUILDFLAG(IS_WIN)
     case mojom::DeferredSharedImageRequest::Tag::kCreateSwapChain:
       OnCreateSwapChain(std::move(request->get_create_swap_chain()));
@@ -276,6 +286,31 @@ void SharedImageStub::OnCreateSharedImage(
           params->si_info->meta.usage, GetLabel(params->si_info->debug_label),
           std::move(params->pool_id))) {
     LOG(ERROR) << kSICreationFailureError;
+    OnError();
+    return;
+  }
+}
+
+void SharedImageStub::OnCreateSharedImagePool(
+    mojom::CreateSharedImagePoolParamsPtr params) {
+  TRACE_EVENT1("gpu", "SharedImageStub::OnCreateSharedImagePool", "pool_id",
+               params->pool_id.ToString());
+
+  if (!factory_->CreateSharedImagePool(params->pool_id,
+                                       std::move(params->client_remote))) {
+    LOG(ERROR) << "Unable to create SharedImagePool.";
+    OnError();
+    return;
+  }
+}
+
+void SharedImageStub::OnDestroySharedImagePool(
+    mojom::DestroySharedImagePoolParamsPtr params) {
+  TRACE_EVENT1("gpu", "SharedImageStub::OnDestroySharedImagePool", "pool_id",
+               params->pool_id.ToString());
+
+  if (!factory_->DestroySharedImagePool(params->pool_id)) {
+    LOG(ERROR) << "Unable to destroy SharedImagePool.";
     OnError();
     return;
   }

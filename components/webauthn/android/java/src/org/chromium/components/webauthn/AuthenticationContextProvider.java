@@ -6,18 +6,18 @@ package org.chromium.components.webauthn;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 
+@NullMarked
 public interface AuthenticationContextProvider {
-    Context getContext();
+    @Nullable Context getContext();
 
-    @Nullable
-    RenderFrameHost getRenderFrameHost();
+    @Nullable RenderFrameHost getRenderFrameHost();
 
     FidoIntentSender getIntentSender();
 
-    WebContents getWebContents();
+    @Nullable WebContents getWebContents();
 }

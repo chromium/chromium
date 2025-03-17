@@ -47,16 +47,16 @@ GURL GetURL(const content::ClipboardEndpoint& endpoint) {
   return *endpoint.data_transfer_endpoint()->GetURL();
 }
 
-safe_browsing::EventResult GetEventResult(Rule::Level level) {
+enterprise_connectors::EventResult GetEventResult(Rule::Level level) {
   switch (level) {
     case Rule::Level::kNotSet:
     case Rule::Level::kAllow:
     case Rule::Level::kReport:
-      return safe_browsing::EventResult::ALLOWED;
+      return enterprise_connectors::EventResult::ALLOWED;
     case Rule::Level::kBlock:
-      return safe_browsing::EventResult::BLOCKED;
+      return enterprise_connectors::EventResult::BLOCKED;
     case Rule::Level::kWarn:
-      return safe_browsing::EventResult::WARNED;
+      return enterprise_connectors::EventResult::WARNED;
   }
 }
 
@@ -177,7 +177,7 @@ void ReportingService::ReportPasteWarningBypassed(
   ReportCopyOrPaste(
       source, destination, metadata, verdict,
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-      safe_browsing::EventResult::BYPASSED);
+      enterprise_connectors::EventResult::BYPASSED);
 }
 
 void ReportingService::ReportCopy(const content::ClipboardEndpoint& source,
@@ -196,7 +196,7 @@ void ReportingService::ReportCopyWarningBypassed(
   ReportCopyOrPaste(
       source, /*destination=*/std::nullopt, metadata, verdict,
       extensions::SafeBrowsingPrivateEventRouter::kTriggerClipboardCopy,
-      safe_browsing::EventResult::BYPASSED);
+      enterprise_connectors::EventResult::BYPASSED);
 }
 
 void ReportingService::ReportCopyOrPaste(
@@ -205,7 +205,7 @@ void ReportingService::ReportCopyOrPaste(
     const content::ClipboardMetadata& metadata,
     const Verdict& verdict,
     const std::string& trigger,
-    safe_browsing::EventResult event_result) {
+    enterprise_connectors::EventResult event_result) {
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
           &profile_.get());

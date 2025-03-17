@@ -43,8 +43,9 @@ constexpr base::TimeDelta kNewUploadFrequency = base::Hours(10);
 
 ACTION_P(ScheduleGeneratorCallback, request_number) {
   ReportRequestQueue requests;
-  for (int i = 0; i < request_number; i++)
+  for (int i = 0; i < request_number; i++) {
     requests.push(std::make_unique<ReportRequest>(ReportType::kFull));
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(arg0), std::move(requests)));
 }
@@ -139,8 +140,9 @@ class ReportSchedulerIOSTest : public PlatformTest {
 
   ReportRequestQueue CreateRequests(int number) {
     ReportRequestQueue requests;
-    for (int i = 0; i < number; i++)
+    for (int i = 0; i < number; i++) {
       requests.push(std::make_unique<ReportRequest>(ReportType::kFull));
+    }
     return requests;
   }
 

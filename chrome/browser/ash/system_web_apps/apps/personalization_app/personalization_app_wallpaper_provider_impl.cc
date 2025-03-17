@@ -44,6 +44,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
+#include "chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -101,6 +102,20 @@ GURL GetBitmapJpegDataUrl(const SkBitmap& bitmap) {
   // @see `url.mojom` warning about dropping urls that are too long.
   DCHECK_LT(data_url.spec().size(), url::mojom::kMaxURLChars);
   return data_url;
+}
+
+std::optional<GURL> GetActionUrlIfValid(const backdrop::Image& image) {
+  if (!image.has_action_url()) {
+    return std::nullopt;
+  }
+
+  const GURL action_url(image.action_url());
+  if (!action_url.is_valid()) {
+    LOG(WARNING) << "Invalid action_url ignored";
+    return std::nullopt;
+  }
+
+  return action_url;
 }
 
 }  // namespace
@@ -372,7 +387,8 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
           ash::personalization_app::mojom::CurrentWallpaper::New(
               info->layout, info->type, key,
               /*description_title=*/std::string(),
-              /*description_content=*/std::string()));
+              /*description_content=*/std::string(),
+              /*action_url=*/std::nullopt));
 
       // Do not show file extension in user-visible selected details text.
       std::vector<std::string> attribution = {
@@ -402,7 +418,8 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
           ash::personalization_app::mojom::CurrentWallpaper::New(
               info->layout, info->type, key,
               /*description_title=*/std::string(),
-              /*description_content=*/std::string()));
+              /*description_content=*/std::string(),
+              /*action_url=*/std::nullopt));
       NotifyAttributionChanged(
           ash::personalization_app::mojom::CurrentAttribution::New(
               std::vector<std::string>(), key));
@@ -422,7 +439,8 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
               info->layout, info->type,
               /*key=*/base::NumberToString(id.value()),
               /*description_title=*/std::string(),
-              /*description_content=*/std::string()));
+              /*description_content=*/std::string(),
+              /*action_url=*/std::nullopt));
       FindSeaPenWallpaperAttribution(id.value());
       return;
     }
@@ -438,7 +456,8 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
   NotifyWallpaperChanged(ash::personalization_app::mojom::CurrentWallpaper::New(
       info->layout, ash::WallpaperType::kOneShot, key,
       /*description_title=*/std::string(),
-      /*description_content=*/std::string()));
+      /*description_content=*/std::string(),
+      /*action_url=*/std::nullopt));
   NotifyAttributionChanged(
       ash::personalization_app::mojom::CurrentAttribution::New(
           std::vector<std::string>(), key));
@@ -860,11 +879,11 @@ void PersonalizationAppWallpaperProviderImpl::OnFetchCollectionImages(
   std::optional<std::vector<backdrop::Image>> result;
   if (success && !images.empty()) {
     // Do first pass to clear all unit_id associated with the images.
-    base::ranges::for_each(images, [&](auto& proto_image) {
+    std::ranges::for_each(images, [&](auto& proto_image) {
       image_unit_id_map_.erase(proto_image.unit_id());
     });
     // Do second pass to repopulate the map with fresh data.
-    base::ranges::for_each(images, [&](auto& proto_image) {
+    std::ranges::for_each(images, [&](auto& proto_image) {
       if (proto_image.has_asset_id() && proto_image.has_unit_id() &&
           proto_image.has_image_url()) {
         image_unit_id_map_[proto_image.unit_id()].push_back(
@@ -990,7 +1009,8 @@ void PersonalizationAppWallpaperProviderImpl::FindAttribution(
         ash::personalization_app::mojom::CurrentWallpaper::New(
             info.layout, info.type, key,
             /*description_title=*/std::string(),
-            /*description_content=*/std::string()));
+            /*description_content=*/std::string(),
+            /*action_url=*/std::nullopt));
     NotifyAttributionChanged(
         ash::personalization_app::mojom::CurrentAttribution::New(
             std::vector<std::string>(), key));
@@ -1042,7 +1062,8 @@ void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
             info.layout, info.type,
             /*key=*/base::NumberToString(backend_image->unit_id()),
             backend_image->description_title(),
-            backend_image->description_content()));
+            backend_image->description_content(),
+            /*action_url=*/GetActionUrlIfValid(*backend_image)));
     std::vector<std::string> attributions;
     for (const auto& attr : backend_image->attribution()) {
       attributions.push_back(attr.text());
@@ -1062,7 +1083,8 @@ void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
         ash::personalization_app::mojom::CurrentWallpaper::New(
             info.layout, info.type, key,
             /*description_title=*/std::string(),
-            /*description_content=*/std::string()));
+            /*description_content=*/std::string(),
+            /*action_url=*/std::nullopt));
     NotifyAttributionChanged(
         ash::personalization_app::mojom::CurrentAttribution::New(
             std::vector<std::string>(), key));
@@ -1144,7 +1166,8 @@ void PersonalizationAppWallpaperProviderImpl::SendGooglePhotosAttribution(
       info.layout, info.type,
       /*key=*/info.dedup_key.value_or(info.location),
       /*description_title=*/std::string(),
-      /*description_content=*/std::string()));
+      /*description_content=*/std::string(),
+      /*action_url=*/std::nullopt));
   std::vector<std::string> attribution;
   if (!photo.is_null()) {
     attribution.push_back(photo->name);

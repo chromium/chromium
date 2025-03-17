@@ -7,7 +7,12 @@
   <meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script';">
   <title>$i18n{primaryParagraph}</title>
   <link rel="stylesheet" href="interstitial_webview_supervised_user.css">
+<if expr="not optimize_webui">
   <script src="%ROOT_GEN_DIR%/components/security_interstitials/core/browser/resources/interstitial_webview_supervised_user/interstitial_webview_supervised_user.rollup.js"></script>
+</if>
+<if expr="optimize_webui">
+  <script src="%ROOT_GEN_DIR%/components/security_interstitials/core/browser/resources/minified/interstitial_webview_supervised_user/interstitial_webview_supervised_user.rollup.js"></script>
+</if>
 </head>
 
 <body id="body">

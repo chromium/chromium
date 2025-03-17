@@ -66,9 +66,7 @@ needing mirrored changes within ONC itself.
 The core difference between the ONC and Shill formats is in the structure; ONC
 is nested, similar to JSON, and the Shill format is flat. This can be more
 clearly seen when inspecting the properties of a network using
-[`chrome://network`](chrome://network) ([`os://network`](os://network) when
-using
-[Lacros](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/lacros.md)).
+[`chrome://network`](chrome://network).
 
 **ONC**
 ```

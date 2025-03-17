@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_PDF_RENDERER_INTERNAL_PLUGIN_RENDERER_HELPERS_H_
 #define COMPONENTS_PDF_RENDERER_INTERNAL_PLUGIN_RENDERER_HELPERS_H_
 
-#include <memory>
+#include "base/containers/span.h"
+#include "url/origin.h"
 
 namespace blink {
 class WebPlugin;
@@ -17,8 +18,6 @@ class RenderFrame;
 }  // namespace content
 
 namespace pdf {
-
-class PdfInternalPluginDelegate;
 
 // Returns `true` if the current process is a PDF renderer.
 bool IsPdfRenderer();
@@ -33,7 +32,7 @@ bool IsPdfRenderer();
 blink::WebPlugin* CreateInternalPlugin(
     blink::WebPluginParams params,
     content::RenderFrame* render_frame,
-    std::unique_ptr<PdfInternalPluginDelegate> delegate);
+    base::span<const url::Origin> additional_allowed_origins);
 
 }  // namespace pdf
 

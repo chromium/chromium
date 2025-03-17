@@ -37,8 +37,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -65,7 +63,6 @@ import java.util.Set;
 /** Instrumentation tests for {@link SignOutDialogCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class SignOutCoordinatorTest {
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -159,7 +156,7 @@ public class SignOutCoordinatorTest {
                     Assert.assertTrue(mSnackbarManager.isShowing());
                     Snackbar currentSnackbar = mSnackbarManager.getCurrentSnackbarForTesting();
                     Assert.assertEquals(
-                            currentSnackbar.getIdentifierForTesting(), Snackbar.UMA_SIGN_OUT);
+                            Snackbar.UMA_SIGN_OUT, currentSnackbar.getIdentifierForTesting());
                     Assert.assertEquals(
                             currentSnackbar.getTextForTesting(),
                             mActivityTestRule
@@ -320,7 +317,7 @@ public class SignOutCoordinatorTest {
                     Assert.assertTrue(mSnackbarManager.isShowing());
                     Snackbar currentSnackbar = mSnackbarManager.getCurrentSnackbarForTesting();
                     Assert.assertEquals(
-                            currentSnackbar.getIdentifierForTesting(), Snackbar.UMA_SIGN_OUT);
+                            Snackbar.UMA_SIGN_OUT, currentSnackbar.getIdentifierForTesting());
                     Assert.assertEquals(
                             currentSnackbar.getTextForTesting(),
                             mActivityTestRule

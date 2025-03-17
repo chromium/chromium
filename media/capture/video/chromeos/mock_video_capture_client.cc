@@ -56,8 +56,8 @@ void MockVideoCaptureClient::OnIncomingCapturedData(
     std::move(frame_cb_).Run();
 }
 
-void MockVideoCaptureClient::OnIncomingCapturedGfxBuffer(
-    gfx::GpuMemoryBuffer* buffer,
+void MockVideoCaptureClient::OnIncomingCapturedImage(
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     const VideoCaptureFormat& frame_format,
     int clockwise_rotation,
     base::TimeTicks reference_time,
@@ -65,8 +65,8 @@ void MockVideoCaptureClient::OnIncomingCapturedGfxBuffer(
     std::optional<base::TimeTicks> capture_begin_time,
     const std::optional<media::VideoFrameMetadata>& metadata,
     int frame_feedback_id) {
-  ASSERT_TRUE(buffer);
-  ASSERT_GT(buffer->GetSize().width() * buffer->GetSize().height(), 0);
+  ASSERT_TRUE(shared_image);
+  ASSERT_FALSE(shared_image->size().IsEmpty());
   if (frame_cb_)
     std::move(frame_cb_).Run();
 }

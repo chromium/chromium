@@ -29,6 +29,9 @@ bool HasSessionStartupPref(PrefService* prefs);
 // 'Ask every time'. Otherwise, return false for 'Do not restore'.
 bool CanPerformRestore(PrefService* prefs);
 
+// Returns true if the restore pref exists, and is set to 'Ask every time'.
+bool IsAskEveryTime(PrefService* prefs);
+
 // Sets the default restore pref |kRestoreAppsAndPagesPrefName| based on the
 // current browser restore settings. If it is the first time to run Chrome OS,
 // or the browser restore settings doesn't exist, set the restore pref setting

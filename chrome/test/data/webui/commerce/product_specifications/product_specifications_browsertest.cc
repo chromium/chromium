@@ -22,7 +22,8 @@ class ProductSpecificationsTest : public WebUIMochaBrowserTest {
  protected:
   ProductSpecificationsTest()
       : prefs_(std::make_unique<TestingPrefServiceSimple>()),
-        account_checker_(std::make_unique<commerce::MockAccountChecker>()) {
+        account_checker_(std::make_unique<
+                         testing::NiceMock<commerce::MockAccountChecker>>()) {
     account_checker_->SetCountry("US");
     account_checker_->SetLocale("en-us");
     account_checker_->SetSignedIn(true);
@@ -69,8 +70,7 @@ class ProductSpecificationsTest : public WebUIMochaBrowserTest {
   base::WeakPtrFactory<ProductSpecificationsTest> weak_ptr_factory_{this};
 };
 
-// TODO(crbug.com/385024070): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DISABLED_App) {
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, App) {
   RunTest("commerce/product_specifications/app_test.js", "mocha.run()");
 }
 

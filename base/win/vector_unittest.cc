@@ -21,11 +21,11 @@ namespace Collections {
 // using `uuidgen`.
 template <>
 struct __declspec(uuid("21c2c195-91a4-4fce-8346-2a85f4478e26"))
-    IObservableVector<int> : IObservableVector_impl<int> {};
+IObservableVector<int> : IObservableVector_impl<int> {};
 
 template <>
 struct __declspec(uuid("86b0071e-5e72-4d3d-82d3-420ebd2b2716"))
-    VectorChangedEventHandler<int> : VectorChangedEventHandler_impl<int> {};
+VectorChangedEventHandler<int> : VectorChangedEventHandler_impl<int> {};
 
 namespace {
 using UriPtrAggregate = Internal::AggregateType<Uri*, IUriRuntimeClass*>;
@@ -33,31 +33,31 @@ using UriPtrAggregate = Internal::AggregateType<Uri*, IUriRuntimeClass*>;
 
 template <>
 struct __declspec(uuid("12311764-f245-4245-9dc9-bab258eddd4e"))
-    IObservableVector<Uri*> : IObservableVector_impl<UriPtrAggregate> {};
+IObservableVector<Uri*> : IObservableVector_impl<UriPtrAggregate> {};
 
 template <>
 struct __declspec(uuid("050e4b78-71b2-43ff-bf7c-f6ba589aced9"))
-    VectorChangedEventHandler<Uri*>
+VectorChangedEventHandler<Uri*>
     : VectorChangedEventHandler_impl<UriPtrAggregate> {};
 
 #ifdef NTDDI_WIN10_VB  // Windows 10.0.19041
 // Specialization templates that used to be in windows.foundation.h, removed in
 // the 10.0.19041.0 SDK, so placed here instead.
 template <>
-struct __declspec(uuid("b939af5b-b45d-5489-9149-61442c1905fe")) IVector<int>
-    : IVector_impl<int> {};
+struct __declspec(uuid("b939af5b-b45d-5489-9149-61442c1905fe"))
+IVector<int> : IVector_impl<int> {};
 
 template <>
-struct __declspec(uuid("8d720cdf-3934-5d3f-9a55-40e8063b086a")) IVectorView<int>
-    : IVectorView_impl<int> {};
+struct __declspec(uuid("8d720cdf-3934-5d3f-9a55-40e8063b086a"))
+IVectorView<int> : IVectorView_impl<int> {};
 
 template <>
-struct __declspec(uuid("bfea7f78-50c2-5f1d-a6ea-9e978d2699ff")) IIterator<int>
-    : IIterator_impl<int> {};
+struct __declspec(uuid("bfea7f78-50c2-5f1d-a6ea-9e978d2699ff"))
+IIterator<int> : IIterator_impl<int> {};
 
 template <>
-struct __declspec(uuid("81a643fb-f51c-5565-83c4-f96425777b66")) IIterable<int>
-    : IIterable_impl<int> {};
+struct __declspec(uuid("81a643fb-f51c-5565-83c4-f96425777b66"))
+IIterable<int> : IIterable_impl<int> {};
 
 template <>
 struct __declspec(uuid("0d82bd8d-fe62-5d67-a7b9-7886dd75bc4e")) IVector<Uri*>
@@ -65,7 +65,7 @@ struct __declspec(uuid("0d82bd8d-fe62-5d67-a7b9-7886dd75bc4e")) IVector<Uri*>
 
 template <>
 struct __declspec(uuid("4b8385bd-a2cd-5ff1-bf74-7ea580423e50"))
-    IVectorView<Uri*>
+IVectorView<Uri*>
     : IVectorView_impl<Internal::AggregateType<Uri*, IUriRuntimeClass*>> {};
 
 template <>

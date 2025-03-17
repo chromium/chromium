@@ -131,6 +131,7 @@ class TestSyncService : public SyncService {
   bool HasSyncConsent() const override;
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
+  bool HasCachedPersistentAuthErrorForMetrics() const override;
   bool RequiresClientUpgrade() const override;
 
   std::unique_ptr<SyncSetupInProgressHandle> GetSetupInProgressHandle()
@@ -138,6 +139,7 @@ class TestSyncService : public SyncService {
   bool IsSetupInProgress() const override;
 
   DataTypeSet GetPreferredDataTypes() const override;
+  DataTypeSet GetDataTypesForTransportOnlyMode() const override;
   DataTypeSet GetActiveDataTypes() const override;
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   void OnDataTypeRequestsSyncStartup(DataType type) override;
@@ -174,9 +176,12 @@ class TestSyncService : public SyncService {
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback) override;
   void TriggerLocalDataMigration(DataTypeSet types) override;
-  void TriggerLocalDataMigration(
-      std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items)
+  void TriggerLocalDataMigrationForItems(
+      std::map<DataType, std::vector<LocalDataItemModel::DataId>> items)
       override;
+  void SelectTypeAndMigrateLocalDataItemsWhenActive(
+      DataType data_type,
+      std::vector<LocalDataItemModel::DataId> items) override;
 
   // KeyedService implementation.
   void Shutdown() override;

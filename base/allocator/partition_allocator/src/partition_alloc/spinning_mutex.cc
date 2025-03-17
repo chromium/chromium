@@ -142,8 +142,33 @@ void SpinningMutex::LockSlow() {
 
 #elif PA_BUILDFLAG(IS_APPLE)
 
+// TODO(verwaest): We should use the constants from the header, but they aren't
+// exposed until macOS 15. See their definition here:
+// https://github.com/apple-oss-distributions/libplatform/blob/4f6349dfea579c35b8fa838d785644e441d14e0e/private/os/lock_private.h#L265
+//
+// The first flag prevents the runtime from creating more threads in response to
+// contention. The second will spin in the kernel if the lock owner is currently
+// running.
+#define OS_UNFAIR_LOCK_DATA_SYNCHRONIZATION 0x00010000
+#define OS_UNFAIR_LOCK_ADAPTIVE_SPIN 0x00040000
+
+typedef uint32_t os_unfair_lock_options_t;
+
+extern "C" {
+void __attribute__((weak))
+os_unfair_lock_lock_with_options(os_unfair_lock* lock,
+                                 os_unfair_lock_options_t);
+}
+
 void SpinningMutex::LockSlow() {
-  return os_unfair_lock_lock(&unfair_lock_);
+  if (os_unfair_lock_lock_with_options) {
+    const os_unfair_lock_options_t options =
+        static_cast<os_unfair_lock_options_t>(
+            OS_UNFAIR_LOCK_DATA_SYNCHRONIZATION | OS_UNFAIR_LOCK_ADAPTIVE_SPIN);
+    os_unfair_lock_lock_with_options(&unfair_lock_, options);
+  } else {
+    os_unfair_lock_lock(&unfair_lock_);
+  }
 }
 
 #elif PA_BUILDFLAG(IS_POSIX)

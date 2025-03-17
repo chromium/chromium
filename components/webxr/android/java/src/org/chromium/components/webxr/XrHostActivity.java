@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.SurfaceView;
 
+import org.chromium.base.Log;
+
 // TODO(crbug.com/40904930): Investigate if this would benefit from
 // extending ChromeBaseAppCompatActivity
 
@@ -19,12 +21,17 @@ import android.view.SurfaceView;
  * browser when done cleaner.
  */
 public class XrHostActivity extends Activity {
+    private static final String TAG = "XrHostActivity";
+    private static final boolean DEBUG_LOGS = false;
+
     /**
      * Creates an Intent to start the {@link XrHostActivity}.
-     * @param context  Context to use when constructing the Intent.
+     *
+     * @param context Context to use when constructing the Intent.
      * @return Intent that can be used to begin presenting with OpenXR.
      */
     public static Intent createIntent(Context context) {
+        if (DEBUG_LOGS) Log.i(TAG, "createIntent");
         Intent intent = new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setClassName(context.getPackageName(), XrHostActivity.class.getName());
@@ -33,6 +40,7 @@ public class XrHostActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        if (DEBUG_LOGS) Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
         // The activity should only be created by the XrSessionCoordinator during an active session.
@@ -48,6 +56,7 @@ public class XrHostActivity extends Activity {
 
     @Override
     public void onAttachedToWindow() {
+        if (DEBUG_LOGS) Log.i(TAG, "onAttachedToWindow");
         super.onAttachedToWindow();
 
         boolean result = XrSessionCoordinator.onXrHostActivityReady(this);
@@ -56,6 +65,7 @@ public class XrHostActivity extends Activity {
 
     @Override
     public void onStop() {
+        if (DEBUG_LOGS) Log.i(TAG, "onStop");
         super.onStop();
 
         XrSessionCoordinator.endActiveSessionFromXrHost();
@@ -65,6 +75,7 @@ public class XrHostActivity extends Activity {
 
     @Override
     public void onBackPressed() {
+        if (DEBUG_LOGS) Log.i(TAG, "onBackPressed");
         super.onBackPressed();
 
         XrSessionCoordinator.endActiveSessionFromXrHost();

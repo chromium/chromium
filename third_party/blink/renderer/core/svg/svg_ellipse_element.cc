@@ -129,7 +129,7 @@ void SVGEllipseElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGEllipseElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
       {cx_.Get(), cy_.Get(), rx_.Get(), ry_.Get()});
   AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);

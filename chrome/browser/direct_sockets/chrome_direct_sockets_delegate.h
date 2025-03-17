@@ -10,13 +10,23 @@
 class ChromeDirectSocketsDelegate : public content::DirectSocketsDelegate {
  public:
   // content::DirectSocketsDelegate:
-  bool IsAPIAccessAllowed(content::RenderFrameHost& rfh) override;
-  bool ValidateAddressAndPort(content::RenderFrameHost& rfh,
-                              const std::string& address,
-                              uint16_t port,
-                              ProtocolType protocol) override;
-  void RequestPrivateNetworkAccess(content::RenderFrameHost& rfh,
-                                   base::OnceCallback<void(bool)>) override;
+  bool ValidateRequest(content::RenderFrameHost& rfh,
+                       const RequestDetails&) override;
+  bool ValidateRequestForSharedWorker(content::BrowserContext* browser_context,
+                                      const GURL& shared_worker_url,
+                                      const RequestDetails&) override;
+  bool ValidateRequestForServiceWorker(content::BrowserContext* browser_context,
+                                       const url::Origin& origin,
+                                       const RequestDetails&) override;
+  void RequestPrivateNetworkAccess(
+      content::RenderFrameHost& rfh,
+      base::OnceCallback<void(/*access_allowed=*/bool)>) override;
+  bool IsPrivateNetworkAccessAllowedForSharedWorker(
+      content::BrowserContext* browser_context,
+      const GURL& shared_worker_url) override;
+  bool IsPrivateNetworkAccessAllowedForServiceWorker(
+      content::BrowserContext* browser_context,
+      const url::Origin& origin) override;
 };
 
 #endif  // CHROME_BROWSER_DIRECT_SOCKETS_CHROME_DIRECT_SOCKETS_DELEGATE_H_

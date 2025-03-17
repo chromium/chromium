@@ -9,7 +9,7 @@
   const {windowId} = (await dp.Browser.getWindowForTarget()).result;
 
   const HttpInterceptor =
-      await testRunner.loadScript('../helpers/http-interceptor.js');
+      await testRunner.loadScriptAbsolute('../resources/http-interceptor.js');
   const httpInterceptor = await (new HttpInterceptor(testRunner, dp)).init();
   httpInterceptor.setDisableRequestedUrlsLogging(true);
 
@@ -27,14 +27,12 @@
     const {bounds} = (await dp.Browser.getWindowBounds({windowId})).result;
     const screen = await session.evaluateAsync(async () => {
       const cs = (await getScreenDetails()).currentScreen;
-      console.log(`Window: ${screenX},${screenY} ${outerWidth}x${
-          outerHeight}, screen: ${cs.label}`);
       return cs.label;
     });
 
     testRunner.log(
         `Window` +
-        ` ${bounds.top},${bounds.left} ${bounds.width}x${bounds.height}` +
+        ` ${bounds.left},${bounds.top} ${bounds.width}x${bounds.height}` +
         `, screen ${screen}`);
   }
 

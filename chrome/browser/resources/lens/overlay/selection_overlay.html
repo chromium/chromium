@@ -53,6 +53,8 @@
     pointer-events: none;
   }
 
+  :host([simplified-selection-enabled]) #selectTextContextMenuItem,
+  :host(:not([simplified-selection-enabled])) #copyDetectedTextContextMenuItem,
   :host([suppress-copy-and-save-as-image]) .copy-as-image-context-menu-item,
   :host([suppress-copy-and-save-as-image]) .save-as-image-context-menu-item,
   :host(:not([enable-copy-as-image])) .copy-as-image-context-menu-item,
@@ -247,6 +249,10 @@
     mask-image: url('copy.svg');
   }
 
+  .menu-item-icon.copy-image {
+    mask-image: url('copy_image.svg');
+  }
+
   .menu-item-icon.download {
     mask-image: url('download.svg');
   }
@@ -367,8 +373,15 @@
     <region-selection id="regionSelectionLayer" theme="[[theme]]"
         screenshot-data-uri="[[screenshotDataUri]]"
         selection-overlay-rect="[[selectionOverlayRect]]"></region-selection>
-    <lens-text-layer id="textSelectionLayer"
-        selection-overlay-rect="[[selectionOverlayRect]]"></lens-text-layer>
+    <template is="dom-if" if="[[!simplifiedSelectionEnabled]]">
+      <lens-text-layer id="textSelectionLayer"
+          selection-overlay-rect="[[selectionOverlayRect]]"></lens-text-layer>
+    </template>
+    <template is="dom-if" if="[[simplifiedSelectionEnabled]]">
+      <lens-simplified-text-layer
+          selection-overlay-rect="[[selectionOverlayRect]]">
+      </lens-simplified-text-layer>
+    </template>
   </div>
   <div id="initialFlashScrim"></div>
   <div id="contextMenuOverlay">
@@ -392,7 +405,14 @@
                                       selectedRegionContextMenuY)]]"
         on-pointerenter="handlePointerEnterContextMenu"
         on-pointerleave="handlePointerLeaveContextMenu">
-      <div class="context-menu-item detected-text-context-menu-option"
+      <div id="copyDetectedTextContextMenuItem"
+          class="context-menu-item detected-text-context-menu-option"
+          role="menuitem" on-pointerup="handleCopyDetectedText">
+        <span class="menu-item-icon copy"></span>
+        <span class="menu-item-label">$i18n{copyText}</span>
+      </div>
+      <div id="selectTextContextMenuItem"
+          class="context-menu-item detected-text-context-menu-option"
           role="menuitem" on-pointerup="handleSelectText">
         <span class="menu-item-icon text"></span>
         <span class="menu-item-label">$i18n{selectText}</span>
@@ -405,7 +425,7 @@
       </div>
       <div class="context-menu-item copy-as-image-context-menu-item"
           role="menuitem" on-pointerup="handleCopyAsImage">
-        <span class="menu-item-icon copy"></span>
+        <span class="menu-item-icon copy-image"></span>
         <span class="menu-item-label">$i18n{copyAsImage}</span>
       </div>
       <div class="context-menu-item save-as-image-context-menu-item"

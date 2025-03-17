@@ -1,0 +1,13 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable label='Animal collapsed' actions='{DEFAULT}' value='Eggplant'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN focusable selected label='Eggplant' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Broccolini' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Rutabaga' actions='{DEFAULT}'
+++++++UNKNOWN focusable label='Fruit expanded' actions='{DEFAULT}' value='Mango'
+++++++++UNKNOWN
+++++++++++UNKNOWN focusable label='Orange' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable has_input_focus selected label='Mango' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable label='Star fruit' actions='{DEFAULT}'

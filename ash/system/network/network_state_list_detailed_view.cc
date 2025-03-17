@@ -137,7 +137,7 @@ class NetworkStateListDetailedView::InfoBubble
     set_shadow(views::BubbleBorder::NO_SHADOW);
     SetNotifyEnterExitOnChild(true);
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    AddChildView(content);
+    AddChildViewRaw(content);
   }
 
   InfoBubble(const InfoBubble&) = delete;
@@ -392,7 +392,8 @@ void NetworkStateListDetailedView::ToggleInfoBubble() {
 
   info_bubble_ = new InfoBubble(tri_view(), CreateNetworkInfoView(), this);
   views::BubbleDialogDelegateView::CreateBubble(info_bubble_)->Show();
-  info_bubble_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, false);
+  info_bubble_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                   false);
 }
 
 bool NetworkStateListDetailedView::ResetInfoBubble() {

@@ -437,9 +437,9 @@ void TablePainter::PaintBoxDecorationBackground(
   }
 
   // Optimization: only traverse colgroups with backgrounds.
-  const TableFragmentData::ColumnGeometries* column_geometries_original =
+  const TableColumnGeometries* column_geometries_original =
       fragment_.TableColumnGeometries();
-  TableFragmentData::ColumnGeometries column_geometries_with_background;
+  TableColumnGeometries column_geometries_with_background;
   if (column_geometries_original) {
     for (const auto& column_geometry : *column_geometries_original) {
       if (column_geometry.node.Style().HasBoxDecorationBackground()) {
@@ -523,8 +523,8 @@ void TablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
   const TableBorders* collapsed_borders = fragment_.TableCollapsedBorders();
   if (!collapsed_borders)
     return;
-  const TableFragmentData::CollapsedBordersGeometry*
-      collapsed_borders_geometry = fragment_.TableCollapsedBordersGeometry();
+  const CollapsedTableBordersGeometry* collapsed_borders_geometry =
+      fragment_.TableCollapsedBordersGeometry();
   CHECK(collapsed_borders_geometry);
 
   const auto& layout_table = *To<LayoutTable>(fragment_.GetLayoutObject());
@@ -768,7 +768,7 @@ void TableSectionPainter::PaintColumnsBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& section_paint_offset,
     const PhysicalRect& columns_paint_rect,
-    const TableFragmentData::ColumnGeometries& column_geometries) {
+    const TableColumnGeometries& column_geometries) {
   for (const PhysicalFragmentLink& row : fragment_.Children()) {
     if (!row.fragment->IsTableRow()) {
       continue;
@@ -829,7 +829,7 @@ void TableRowPainter::PaintColumnsBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& row_paint_offset,
     const PhysicalRect& columns_paint_rect,
-    const TableFragmentData::ColumnGeometries& column_geometries) {
+    const TableColumnGeometries& column_geometries) {
   WritingModeConverter converter(fragment_.Style().GetWritingDirection(),
                                  columns_paint_rect.size);
   for (const PhysicalFragmentLink& child : fragment_.Children()) {

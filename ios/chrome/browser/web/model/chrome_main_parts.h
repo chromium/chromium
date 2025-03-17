@@ -27,6 +27,10 @@ class IOSChromeMainParts : public web::WebMainParts {
 
   ~IOSChromeMainParts() override;
 
+  // Initializes the field trials and feature list. This should be called early
+  // before features such as mojo are initialized.
+  void InitializeFieldTrialAndFeatureList();
+
  private:
   // web::WebMainParts implementation.
   void PreCreateMainMessageLoop() override;
@@ -46,6 +50,12 @@ class IOSChromeMainParts : public web::WebMainParts {
 
   // Constructs the metrics service and initializes metrics recording.
   void SetupMetrics();
+
+  // Create the application context.
+  void CreateApplicationContext();
+
+  // Apply the command line to the feature list.
+  void ApplyFeatureList();
 
   // Starts recording of metrics. This can only be called after we have a file
   // thread.

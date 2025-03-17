@@ -1,0 +1,3 @@
+Tests that client-side navigation can be cancelled.
+http://first.test:8000/inspector-protocol/resources/test-page.html
+

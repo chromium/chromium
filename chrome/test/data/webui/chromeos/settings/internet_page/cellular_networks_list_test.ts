@@ -4,14 +4,16 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CellularNetworksListElement, NetworkListElement} from 'chrome://os-settings/lazy_load.js';
-import {createRouterForTesting, LocalizedLinkElement, MultiDeviceBrowserProxyImpl, MultiDeviceFeatureState, PaperSpinnerLiteElement, Router} from 'chrome://os-settings/os_settings.js';
+import type {CellularNetworksListElement, NetworkListElement} from 'chrome://os-settings/lazy_load.js';
+import type {LocalizedLinkElement, PaperSpinnerLiteElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, MultiDeviceBrowserProxyImpl, MultiDeviceFeatureState, Router} from 'chrome://os-settings/os_settings.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DeviceStateProperties, GlobalPolicy, InhibitReason, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {DeviceStateProperties, GlobalPolicy, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeESimManagerRemote} from 'chrome://webui-test/chromeos/cellular_setup/fake_esim_manager_remote.js';
@@ -584,5 +586,5 @@ suite('<cellular-networks-list>', () => {
     const numGetPageContentDataCalls =
         browserProxy.getCallCount('getPageContentData');
     assertEquals(0, numGetPageContentDataCalls);
-  })
+  });
 });

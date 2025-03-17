@@ -27,7 +27,7 @@
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -49,6 +50,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -58,6 +60,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
@@ -67,8 +70,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_data.h"
 #endif
 
 namespace web_app {
@@ -309,6 +312,12 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
     web_app->SetManifestId(web_app_info.manifest_id());
   }
 
+  for (auto& scope_extension : validated_scope_extensions) {
+    // This is done to prune any queries or fragments from the scope URL which
+    // may have been skipped by WebAppOriginAssociationManager validation.
+    scope_extension = ScopeExtensionInfo::CreateForScope(
+        scope_extension.scope, scope_extension.has_origin_wildcard);
+  }
   web_app->SetValidatedScopeExtensions(validated_scope_extensions);
 
   const base::Time now_time = base::Time::Now();
@@ -350,6 +359,14 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   ApplyUserDisplayModeSyncMitigations(options, *web_app);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_MAC)
+  // Only set this flag for newly installed DIY apps on Mac
+  if (web_app->is_diy_app() &&
+      (!existing_web_app || options.overwrite_existing_manifest_fields)) {
+    web_app->SetDiyAppIconsMaskedOnMac(true);
+  }
+#endif
+
   // `WebApp::chromeos_data` has a default value already. Only override if the
   // caller provided a new value.
   if (options.chromeos_data.has_value())
@@ -363,7 +380,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
     web_app->SetWebAppChromeOsData(std::move(cros_data));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // `WebApp::system_web_app_data` has a default value already. Only override if
   // the caller provided a new value.
   if (options.system_web_app_data.has_value()) {
@@ -377,6 +394,15 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
         web_app.get(), options.iwa_options->location,
         web_app_info.isolated_web_app_version,
         options.iwa_options->integrity_block_data);
+
+    if (options.source == WebAppManagement::kIwaPolicy) {
+      HostContentSettingsMap* const host_content_settings_map =
+          HostContentSettingsMapFactory::GetForProfile(profile_);
+
+      host_content_settings_map->SetContentSettingDefaultScope(
+          web_app_info.scope, web_app_info.scope, ContentSettingsType::POPUPS,
+          CONTENT_SETTING_ALLOW);
+    }
   }
 
   web_app->SetParentAppId(web_app_info.parent_app_id);

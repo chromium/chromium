@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Optional;
 
 /**
  * A class that can be observed to be notified of changes to the visual state of the omnibox
  * suggestions.
  */
+@NullMarked
 public interface OmniboxSuggestionsVisualState {
 
     /**

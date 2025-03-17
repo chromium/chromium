@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -163,13 +164,23 @@ public class TabListEditorManager {
                             ShowMode.MENU_ONLY,
                             ButtonType.ICON_AND_TEXT,
                             IconPosition.START));
-            mTabListEditorActions.add(
-                    TabListEditorGroupAction.createAction(
-                            mActivity,
-                            mTabGroupCreationDialogManager,
-                            ShowMode.MENU_ONLY,
-                            ButtonType.ICON_AND_TEXT,
-                            IconPosition.START));
+            if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+                mTabListEditorActions.add(
+                        TabListEditorAddToGroupAction.createAction(
+                                mActivity,
+                                mTabGroupCreationDialogManager,
+                                ShowMode.MENU_ONLY,
+                                ButtonType.ICON_AND_TEXT,
+                                IconPosition.START));
+            } else {
+                mTabListEditorActions.add(
+                        TabListEditorLegacyGroupAction.createAction(
+                                mActivity,
+                                mTabGroupCreationDialogManager,
+                                ShowMode.MENU_ONLY,
+                                ButtonType.ICON_AND_TEXT,
+                                IconPosition.START));
+            }
             mTabListEditorActions.add(
                     TabListEditorBookmarkAction.createAction(
                             mActivity,

@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.RequiredCallback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -120,17 +121,21 @@ public class InterceptNavigationDelegateTest {
                     InterceptNavigationDelegateImpl delegate =
                             new InterceptNavigationDelegateImpl(client) {
                                 @Override
-                                public boolean shouldIgnoreNavigation(
+                                public void shouldIgnoreNavigation(
                                         NavigationHandle navigationHandle,
                                         GURL escapedUrl,
                                         boolean hiddenCrossFrame,
-                                        boolean isSandboxedFrame) {
+                                        boolean isSandboxedFrame,
+                                        boolean shouldRunAsync,
+                                        RequiredCallback resultCallback) {
                                     mNavParamHistory.add(navigationHandle);
-                                    return super.shouldIgnoreNavigation(
+                                    super.shouldIgnoreNavigation(
                                             navigationHandle,
                                             escapedUrl,
                                             hiddenCrossFrame,
-                                            isSandboxedFrame);
+                                            isSandboxedFrame,
+                                            shouldRunAsync,
+                                            resultCallback);
                                 }
 
                                 @Override

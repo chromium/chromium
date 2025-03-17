@@ -11,6 +11,7 @@
 #include "net/base/net_errors.h"
 #include "net/dns/dns_alias_utility.h"
 #include "net/dns/dns_task_results_manager.h"
+#include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -69,6 +70,10 @@ HostResolverManager::ServiceEndpointRequestImpl::~ServiceEndpointRequestImpl() {
   delegate_ = nullptr;
 
   job_.value()->CancelServiceEndpointRequest(this);
+  // TODO(crbug.com/397597592): Remove the following CHECKs after we identified
+  // the cause of the bug.
+  CHECK(previous() == nullptr);
+  CHECK(next() == nullptr);
 }
 
 int HostResolverManager::ServiceEndpointRequestImpl::Start(Delegate* delegate) {
@@ -87,12 +92,35 @@ int HostResolverManager::ServiceEndpointRequestImpl::Start(Delegate* delegate) {
   return DoLoop(OK);
 }
 
+const HostCache::EntryStaleness*
+HostResolverManager::ServiceEndpointRequestImpl::GetStaleInfo() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::OptionalToPtr(stale_info_);
+}
+
+bool HostResolverManager::ServiceEndpointRequestImpl::IsStaleWhileRefresing()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return parameters_.cache_usage == ResolveHostParameters::CacheUsage::
+                                        STALE_ALLOWED_WHILE_REFRESHING &&
+         stale_info_.has_value() && stale_info_.value().is_stale();
+}
+
 const std::vector<ServiceEndpoint>&
 HostResolverManager::ServiceEndpointRequestImpl::GetEndpointResults() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (finalized_result_.has_value()) {
     return finalized_result_->endpoints;
+  }
+
+  // There are two cases where `stale_endpoints_` is empty:
+  //  * No stale results received yet.
+  //  * The stale result is negative.
+  // In either case, providing stale results isn't useful, so provide stale
+  // results only if it's not empty.
+  if (!stale_endpoints_.empty()) {
+    return stale_endpoints_;
   }
 
   if (job_ && job_.value()->dns_task_results_manager()) {
@@ -112,7 +140,6 @@ HostResolverManager::ServiceEndpointRequestImpl::GetDnsAliasResults() {
   }
 
   if (job_ && job_.value()->dns_task_results_manager()) {
-    // TODO(crbug.com/41493696): Call dns_alias_utility::FixUpDnsAliases().
     return job_.value()->dns_task_results_manager()->GetAliases();
   }
 
@@ -165,6 +192,7 @@ void HostResolverManager::ServiceEndpointRequestImpl::OnJobCompleted(
 
   job_.reset();
   SetFinalizedResultFromLegacyResults(results);
+  MaybeClearStaleResults();
 
   const bool is_secure_network_error =
       obtained_securely && results.error() != OK;
@@ -201,6 +229,10 @@ void HostResolverManager::ServiceEndpointRequestImpl::
   if (finalized_result_.has_value()) {
     return;
   }
+
+  // There are fresh endpoints available. Clear stale endpoints and info if this
+  // request allows stale results while refreshing.
+  MaybeClearStaleResults();
 
   CHECK(job_);
   CHECK(delegate_);
@@ -274,14 +306,79 @@ int HostResolverManager::ServiceEndpointRequestImpl::DoResolveLocally() {
   manager_->InitializeJobKeyAndIPAddress(
       network_anonymization_key_, parameters_, net_log_, *job_key_, ip_address);
 
-  // Try to resolve locally first.
-  std::optional<HostCache::EntryStaleness> stale_info;
+  const bool only_ipv6_reachable = false;
+  const bool stale_allowed_while_refreshing =
+      parameters_.cache_usage ==
+      ResolveHostParameters::CacheUsage::STALE_ALLOWED_WHILE_REFRESHING;
+
+  // HostResolverManager doesn't recognize STALE_ALLOWED_WHILE_REFRESHING. This
+  // class implements stale-while-refreshing logic (see the following comments).
+  // Use ALLOWED when the parameter's the source is LOCAL_ONLY. Otherwise, use
+  // STALE_ALLOWED to provide stale results as intermediate results.
+  ResolveHostParameters::CacheUsage cache_usage = parameters_.cache_usage;
+  if (stale_allowed_while_refreshing) {
+    cache_usage = parameters_.source == HostResolverSource::LOCAL_ONLY
+                      ? ResolveHostParameters::CacheUsage::ALLOWED
+                      : ResolveHostParameters::CacheUsage::STALE_ALLOWED;
+  }
+
   HostCache::Entry results = manager_->ResolveLocally(
-      /*only_ipv6_reachable=*/false, *job_key_, ip_address,
-      parameters_.cache_usage, parameters_.secure_dns_policy,
-      parameters_.source, net_log_, host_cache(), &tasks_, &stale_info);
-  if (results.error() != ERR_DNS_CACHE_MISS ||
-      parameters_.source == HostResolverSource::LOCAL_ONLY || tasks_.empty()) {
+      only_ipv6_reachable, *job_key_, ip_address, cache_usage,
+      parameters_.secure_dns_policy, parameters_.source, net_log_, host_cache(),
+      &tasks_, &stale_info_);
+  bool is_stale = results.error() == OK && stale_info_.has_value() &&
+                  stale_info_->is_stale();
+
+  if (is_stale && stale_allowed_while_refreshing) {
+    // When a stale result is found, ResolveLocally() returns the stale result
+    // without executing the remaining tasks, including local tasks such as
+    // INSECURE_CACHE_LOOKUP and HOSTS. These tasks may be able to provide a
+    // fresh result, and are always expected to be tried (and removed from
+    // `tasks_`) before starting an async Job. Call ResolveLocally() again with
+    // CacheUsage::ALLOWED to see we can get a fresh result.
+    // TODO(crbug.com/383174960): Consider refactoring ResolveLocally() so that
+    // we don't have to call ResolveLocally() twice.
+    CHECK_EQ(cache_usage, ResolveHostParameters::CacheUsage::STALE_ALLOWED);
+    tasks_.clear();
+    std::optional<HostCache::EntryStaleness> maybe_fresh_info;
+    HostCache::Entry maybe_non_stale_results = manager_->ResolveLocally(
+        only_ipv6_reachable, *job_key_, ip_address,
+        ResolveHostParameters::CacheUsage::ALLOWED,
+        parameters_.secure_dns_policy, parameters_.source, net_log_,
+        host_cache(), &tasks_, &maybe_fresh_info);
+    CHECK(!maybe_fresh_info.has_value() || !maybe_fresh_info->is_stale());
+    if (maybe_non_stale_results.error() != ERR_DNS_CACHE_MISS ||
+        tasks_.empty()) {
+      stale_info_ = maybe_fresh_info;
+      results = std::move(maybe_non_stale_results);
+      is_stale = false;
+    }
+    CHECK(parameters_.source != HostResolverSource::LOCAL_ONLY);
+  }
+
+  if (is_stale && stale_allowed_while_refreshing) {
+    stale_endpoints_ = results.ConvertToServiceEndpoints(host_.GetPort());
+    if (!stale_endpoints_.empty()) {
+      net_log_.AddEvent(
+          NetLogEventType::HOST_RESOLVER_SERVICE_ENDPOINTS_STALE_RESULTS, [&] {
+            base::Value::List endpoints;
+            for (const auto& endpoint : stale_endpoints_) {
+              endpoints.Append(endpoint.ToValue());
+            }
+            return base::Value::Dict().Set("endpoints", std::move(endpoints));
+          });
+
+      // Notify delegate of stale results asynchronously because notifying
+      // delegate may delete `this`.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ServiceEndpointRequestImpl::NotifyDelegateOfUpdated,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
+    CHECK(!tasks_.empty());
+  } else if (results.error() != ERR_DNS_CACHE_MISS ||
+             parameters_.source == HostResolverSource::LOCAL_ONLY ||
+             tasks_.empty()) {
     SetFinalizedResultFromLegacyResults(results);
     error_info_ = ResolveErrorInfo(results.error());
     return results.error();
@@ -315,9 +412,32 @@ void HostResolverManager::ServiceEndpointRequestImpl::
   }
 }
 
+void HostResolverManager::ServiceEndpointRequestImpl::MaybeClearStaleResults() {
+  if (parameters_.cache_usage ==
+          ResolveHostParameters::CacheUsage::STALE_ALLOWED_WHILE_REFRESHING &&
+      stale_info_.has_value()) {
+    stale_endpoints_.clear();
+    stale_info_.reset();
+  }
+}
+
 void HostResolverManager::ServiceEndpointRequestImpl::LogCancelRequest() {
   net_log_.AddEvent(NetLogEventType::CANCELLED);
   net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_REQUEST);
+}
+
+void HostResolverManager::ServiceEndpointRequestImpl::
+    NotifyDelegateOfUpdated() {
+  // This method is called asynchronously via a posted task. `job_` could
+  // be completed or cancelled before executing the task.
+  if (finalized_result_.has_value()) {
+    return;
+  }
+
+  CHECK(job_);
+  CHECK(delegate_);
+  delegate_->OnServiceEndpointsUpdated();
+  // Do not add code below. `this` may be deleted at this point.
 }
 
 ClientSocketFactory*

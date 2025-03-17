@@ -4,6 +4,7 @@
 
 #include "services/network/trust_tokens/boringssl_trust_token_test_utils.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -12,7 +13,6 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -161,11 +161,11 @@ bssl::UniquePtr<TRUST_TOKEN> TestTrustTokenIssuer::Redeem(
   };
 
   EXPECT_EQ(received_private_metadata, kPrivateMetadata);
-  EXPECT_NE(base::ranges::find_if(keys_,
-                                  [&received_public_metadata](auto& key) {
-                                    return key.key_id ==
-                                           received_public_metadata;
-                                  }),
+  EXPECT_NE(std::ranges::find_if(keys_,
+                                 [&received_public_metadata](auto& key) {
+                                   return key.key_id ==
+                                          received_public_metadata;
+                                 }),
             std::end(keys_));
 
   return bssl::UniquePtr<TRUST_TOKEN>(redeemed_token);
@@ -200,11 +200,11 @@ bssl::UniquePtr<TRUST_TOKEN> TestTrustTokenIssuer::RedeemOverMessage(
   }
 
   EXPECT_EQ(received_private_metadata, 1);
-  EXPECT_NE(base::ranges::find_if(keys_,
-                                  [&received_public_metadata](auto& key) {
-                                    return key.key_id ==
-                                           received_public_metadata;
-                                  }),
+  EXPECT_NE(std::ranges::find_if(keys_,
+                                 [&received_public_metadata](auto& key) {
+                                   return key.key_id ==
+                                          received_public_metadata;
+                                 }),
             std::end(keys_));
 
   return bssl::UniquePtr<TRUST_TOKEN>(redeemed_token);

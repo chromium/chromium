@@ -176,8 +176,10 @@ xmlCtxtErrMemory(xmlParserCtxtPtr ctxt)
     xmlGenericErrorFunc channel = NULL;
     void *data;
 
-    if (ctxt == NULL)
+    if (ctxt == NULL) {
+        xmlRaiseMemoryError(NULL, NULL, NULL, XML_FROM_PARSER, NULL);
         return;
+    }
 
     ctxt->errNo = XML_ERR_NO_MEMORY;
     ctxt->instate = XML_PARSER_EOF; /* TODO: Remove after refactoring */
@@ -254,22 +256,16 @@ xmlCtxtErrIO(xmlParserCtxtPtr ctxt, int code, const char *uri)
                msg, str1, str2);
 }
 
-static int
-xmlCtxtIsCatastrophicError(xmlParserCtxtPtr ctxt) {
+int
+xmlIsCatastrophicError(int level, int code) {
     int fatal = 0;
-    int code;
 
-    if (ctxt == NULL)
-        return(1);
-
-    if (ctxt->lastError.level != XML_ERR_FATAL)
+    if (level != XML_ERR_FATAL)
         return(0);
-
-    code = ctxt->lastError.code;
 
     switch (code) {
         case XML_ERR_NO_MEMORY:
-        case XML_ERR_RESOURCE_LIMIT:
+        /* case XML_ERR_RESOURCE_LIMIT: */
         case XML_ERR_SYSTEM:
         case XML_ERR_ARGUMENT:
         case XML_ERR_INTERNAL_ERROR:
@@ -282,6 +278,15 @@ xmlCtxtIsCatastrophicError(xmlParserCtxtPtr ctxt) {
     }
 
     return(fatal);
+}
+
+int
+xmlCtxtIsCatastrophicError(xmlParserCtxtPtr ctxt) {
+    if (ctxt == NULL)
+        return(1);
+
+    return(xmlIsCatastrophicError(ctxt->lastError.level,
+                                  ctxt->lastError.code));
 }
 
 /**
@@ -319,21 +324,34 @@ xmlCtxtVErr(xmlParserCtxtPtr ctxt, xmlNodePtr node, xmlErrorDomain domain,
         return;
     }
 
-    if (ctxt == NULL)
+    if (ctxt == NULL) {
+        res = xmlVRaiseError(NULL, NULL, NULL, NULL, node, domain, code,
+                             level, NULL, 0, (const char *) str1,
+                             (const char *) str2, (const char *) str3,
+                             int1, 0, msg, ap);
+        if (res < 0)
+            xmlRaiseMemoryError(NULL, NULL, NULL, XML_FROM_PARSER, NULL);
+
         return;
+    }
 
     if (PARSER_STOPPED(ctxt))
 	return;
 
+    /* Don't overwrite catastrophic errors */
+    if (xmlCtxtIsCatastrophicError(ctxt))
+        return;
+
     if (level == XML_ERR_WARNING) {
         if (ctxt->nbWarnings >= XML_MAX_ERRORS)
-            goto done;
+            return;
         ctxt->nbWarnings += 1;
     } else {
         /* Report at least one fatal error. */
         if ((ctxt->nbErrors >= XML_MAX_ERRORS) &&
-            ((level < XML_ERR_FATAL) || (ctxt->wellFormed == 0)))
-            goto done;
+            ((level < XML_ERR_FATAL) || (ctxt->wellFormed == 0)) &&
+            (!xmlIsCatastrophicError(level, code)))
+            return;
         ctxt->nbErrors += 1;
     }
 
@@ -384,7 +402,6 @@ xmlCtxtVErr(xmlParserCtxtPtr ctxt, xmlNodePtr node, xmlErrorDomain domain,
         return;
     }
 
-done:
     if (level >= XML_ERR_ERROR)
         ctxt->errNo = code;
     if (level == XML_ERR_FATAL) {
@@ -990,6 +1007,8 @@ xmlStringCurrentChar(xmlParserCtxtPtr ctxt ATTRIBUTE_UNUSED,
  * @out:  pointer to an array of xmlChar
  * @val:  the char value
  *
+ * DEPRECATED: Internal function, don't use.
+ *
  * append the char value in the array
  *
  * Returns the number of xmlChar written
@@ -1338,7 +1357,16 @@ xmlInputSetEncodingHandler(xmlParserInputPtr input,
         input->consumed += processed;
         in->rawconsumed = processed;
 
-        nbchars = 4000 /* MINLEN */;
+        /*
+         * If we're push-parsing, we must convert the whole buffer.
+         *
+         * If we're pull-parsing, we could be parsing from a huge
+         * memory buffer which we don't want to convert completely.
+         */
+        if (input->flags & XML_INPUT_PROGRESSIVE)
+            nbchars = ((size_t) - 1);
+        else
+            nbchars = 4000 /* MINLEN */;
         res = xmlCharEncInput(in, &nbchars);
         if (res < 0)
             code = in->error;
@@ -2753,7 +2781,7 @@ xmlInitSAXParserCtxt(xmlParserCtxtPtr ctxt, const xmlSAXHandler *sax,
     }
     if (ctxt->inputTab == NULL)
 	return(-1);
-    while ((input = inputPop(ctxt)) != NULL) { /* Non consuming */
+    while ((input = xmlCtxtPopInput(ctxt)) != NULL) { /* Non consuming */
         xmlFreeInputStream(input);
     }
     ctxt->inputNr = 0;
@@ -2894,7 +2922,7 @@ xmlFreeParserCtxt(xmlParserCtxtPtr ctxt)
 
     if (ctxt == NULL) return;
 
-    while ((input = inputPop(ctxt)) != NULL) { /* Non consuming */
+    while ((input = xmlCtxtPopInput(ctxt)) != NULL) { /* Non consuming */
         xmlFreeInputStream(input);
     }
     if (ctxt->spaceTab != NULL) xmlFree(ctxt->spaceTab);

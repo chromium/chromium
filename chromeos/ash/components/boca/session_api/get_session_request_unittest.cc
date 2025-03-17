@@ -278,11 +278,12 @@ class GetSessionRequestTest : public testing::Test {
 };
 
 TEST_F(GetSessionRequestTest, GetSessionWithFullProducerInputAndSucceed) {
-  EXPECT_CALL(request_handler(),
-              HandleRequest(
-                  AllOf(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-                        Field(&HttpRequest::relative_url,
-                              Eq("/v1/users/123/sessions:getActive")))))
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(AllOf(
+          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+          Field(&HttpRequest::relative_url,
+                Eq("/v1/users/123/sessions:getActive?device.device_id=000")))))
       .WillOnce(
           Return(ByMove(MockRequestHandler::CreateFullProducerResponse())));
 
@@ -292,9 +293,12 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullProducerInputAndSucceed) {
 
   const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
+                                          /*is_producer=*/true, gaia_id,
                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
+  request->set_device_id("000");
+
   request_sender()->StartRequestWithAuthRetry(std::move(request));
 
   auto result = future.Take();
@@ -377,11 +381,12 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullProducerInputAndSucceed) {
 }
 
 TEST_F(GetSessionRequestTest, GetSessionWithFullConsumerInputAndSucceed) {
-  EXPECT_CALL(request_handler(),
-              HandleRequest(
-                  AllOf(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-                        Field(&HttpRequest::relative_url,
-                              Eq("/v1/users/123/sessions:getActive")))))
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(AllOf(
+          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+          Field(&HttpRequest::relative_url,
+                Eq("/v1/users/123/sessions:getActive?device.device_id=000")))))
       .WillOnce(Return(ByMove(MockRequestHandler::CreateConsumerResponse())));
 
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
@@ -390,9 +395,12 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullConsumerInputAndSucceed) {
 
   const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), false, gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
+                                          /*is_producer=*/false, gaia_id,
                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
+  request->set_device_id("000");
+
   request_sender()->StartRequestWithAuthRetry(std::move(request));
 
   auto result = future.Take();
@@ -443,11 +451,12 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullConsumerInputAndSucceed) {
 
 TEST_F(GetSessionRequestTest, CreateSessionWithDefaultInputAndSucceed) {
   net::test_server::HttpRequest http_request;
-  EXPECT_CALL(request_handler(),
-              HandleRequest(
-                  AllOf(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-                        Field(&HttpRequest::relative_url,
-                              Eq("/v1/users/123/sessions:getActive")))))
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(AllOf(
+          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+          Field(&HttpRequest::relative_url,
+                Eq("/v1/users/123/sessions:getActive?device.device_id=000")))))
       .WillOnce(Return(ByMove(MockRequestHandler::CreateDefaultResponse())));
 
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
@@ -456,8 +465,10 @@ TEST_F(GetSessionRequestTest, CreateSessionWithDefaultInputAndSucceed) {
 
   const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
+                                          /*is_producer=*/true, gaia_id,
                                           future.GetCallback());
+  request->set_device_id("000");
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
 
@@ -501,11 +512,12 @@ TEST_F(GetSessionRequestTest, CreateSessionWithDefaultInputAndSucceed) {
 
 TEST_F(GetSessionRequestTest, CreateSessionWithEmptyInputAndSucceed) {
   net::test_server::HttpRequest http_request;
-  EXPECT_CALL(request_handler(),
-              HandleRequest(
-                  AllOf(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-                        Field(&HttpRequest::relative_url,
-                              Eq("/v1/users/123/sessions:getActive")))))
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(AllOf(
+          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+          Field(&HttpRequest::relative_url,
+                Eq("/v1/users/123/sessions:getActive?device.device_id=000")))))
       .WillOnce(Return(ByMove(MockRequestHandler::CreateEmptyResponse())));
 
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
@@ -514,9 +526,12 @@ TEST_F(GetSessionRequestTest, CreateSessionWithEmptyInputAndSucceed) {
 
   const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
+                                          /*is_producer=*/true, gaia_id,
                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
+  request->set_device_id("000");
+
   request_sender()->StartRequestWithAuthRetry(std::move(request));
 
   auto result = future.Take();
@@ -525,11 +540,12 @@ TEST_F(GetSessionRequestTest, CreateSessionWithEmptyInputAndSucceed) {
 
 TEST_F(GetSessionRequestTest, CreateSessionWithFailedResponse) {
   net::test_server::HttpRequest http_request;
-  EXPECT_CALL(request_handler(),
-              HandleRequest(
-                  AllOf(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-                        Field(&HttpRequest::relative_url,
-                              Eq("/v1/users/123/sessions:getActive")))))
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(AllOf(
+          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+          Field(&HttpRequest::relative_url,
+                Eq("/v1/users/123/sessions:getActive?device.device_id=000")))))
       .WillOnce(Return(ByMove(MockRequestHandler::CreateFailedResponse())));
 
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
@@ -538,9 +554,11 @@ TEST_F(GetSessionRequestTest, CreateSessionWithFailedResponse) {
 
   const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
+      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
+                                          /*is_producer=*/true, gaia_id,
                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
+  request->set_device_id("000");
   request_sender()->StartRequestWithAuthRetry(std::move(request));
 
   auto result = future.Take();

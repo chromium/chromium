@@ -14,6 +14,7 @@ to set the default value. Can also be accessed through `ci.defaults`.
 """
 
 load("//project.star", "settings")
+load("./notifiers.star", "notifiers")
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./builder_config.star", "builder_config")
@@ -91,7 +92,6 @@ def ci_builder(
     tree_closing = defaults.get_value("tree_closing", tree_closing)
     if tree_closing:
         tree_closing_notifiers = defaults.get_value("tree_closing_notifiers", tree_closing_notifiers, merge = args.MERGE_LIST)
-        tree_closing_notifiers = args.listify("chromium-tree-closer", "chromium-tree-closer-email", tree_closing_notifiers)
         if notifies != None:
             notifies = args.listify(notifies, tree_closing_notifiers)
 
@@ -126,11 +126,11 @@ def ci_builder(
     merged_resultdb_bigquery_exports.extend(resultdb_bigquery_exports or [])
 
     branch_gardener_rotations = list({
-        platform_settings.gardener_rotation: None
+        builders.rotation(platform_settings.gardener_rotation, None, None): None
         for platform, platform_settings in settings.platforms.items()
-        if branches.matches(branch_selector, platform = platform)
+        if branches.matches(branch_selector, platform = platform) and platform_settings.gardener_rotation
     })
-    gardener_rotations = args.listify(gardener_rotations, branch_gardener_rotations)
+    branch_gardener_rotations = args.listify(gardener_rotations, branch_gardener_rotations)
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
@@ -139,7 +139,7 @@ def ci_builder(
         branch_selector = branch_selector,
         console_view_entry = console_view_entry,
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
-        gardener_rotations = gardener_rotations,
+        gardener_rotations = branch_gardener_rotations,
         resultdb_index_by_timestamp = settings.project.startswith("chromium"),
         **kwargs
     )
@@ -188,6 +188,21 @@ def ci_builder(
                     category = overview_console_category,
                     short_name = entry.short_name,
                 )
+            gardener_rotations = defaults.get_value("gardener_rotations", gardener_rotations, merge = args.MERGE_LIST)
+            for rotation in gardener_rotations:
+                luci.console_view_entry(
+                    builder = builder,
+                    console_view = rotation.console_name,
+                    category = overview_console_category,
+                    short_name = entry.short_name,
+                )
+                if tree_closing and notifiers.tree_closer_branch():
+                    luci.console_view_entry(
+                        builder = builder,
+                        console_view = rotation.tree_closer_console,
+                        category = overview_console_category,
+                        short_name = entry.short_name,
+                    )
 
 def _gpu_linux_builder(*, name, **kwargs):
     """Defines a GPU-related linux builder.
@@ -219,6 +234,7 @@ def _gpu_windows_builder(*, name, **kwargs):
     kwargs.setdefault("builderless", True)
     kwargs.setdefault("cores", 8)
     kwargs.setdefault("os", os.WINDOWS_ANY)
+    kwargs.setdefault("ssd", None)
     return ci.builder(name = name, **kwargs)
 
 def thin_tester(
@@ -261,6 +277,8 @@ def thin_tester(
         **kwargs
     )
 
+_DEFAULT_TREE_CLOSING_NOTIFIERS = ["chromium-tree-closer", "chromium-tree-closer-email"]
+
 ci = struct(
     # Module-level defaults for ci functions
     defaults = defaults,
@@ -276,6 +294,7 @@ ci = struct(
     DEFAULT_POOL = "luci.chromium.ci",
     DEFAULT_SERVICE_ACCOUNT = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     DEFAULT_SHADOW_SERVICE_ACCOUNT = "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
+    DEFAULT_TREE_CLOSING_NOTIFIERS = _DEFAULT_TREE_CLOSING_NOTIFIERS,
 
     # Functions and constants for the GPU-related builder groups
     gpu = struct(
@@ -285,6 +304,6 @@ ci = struct(
         POOL = "luci.chromium.gpu.ci",
         SERVICE_ACCOUNT = "chromium-ci-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
         SHADOW_SERVICE_ACCOUNT = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
-        TREE_CLOSING_NOTIFIERS = ["gpu-tree-closer-email"],
+        TREE_CLOSING_NOTIFIERS = _DEFAULT_TREE_CLOSING_NOTIFIERS + ["gpu-tree-closer-email"],
     ),
 )

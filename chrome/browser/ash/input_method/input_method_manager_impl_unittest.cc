@@ -1532,10 +1532,12 @@ TEST_F(InputMethodManagerImplTest, AllowedInputMethodsAndExtensions) {
 
 class InputMethodManagerImplKioskTest : public InputMethodManagerImplTest {
  public:
-  void LogIn(const std::string& email) override {
+  std::optional<std::string> GetDefaultProfileName() override {
+    return "test@kiosk-apps.device-local.localhost";
+  }
+
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     chromeos::SetUpFakeKioskSession(email);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(
-        email, user_manager::UserType::kKioskApp);
   }
 };
 

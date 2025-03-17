@@ -29,9 +29,6 @@ class CalendarUpNextViewBackground : public views::Background {
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override;
   void OnViewThemeChanged(views::View* view) override;
-
- private:
-  ui::ColorId color_id_;
 };
 
 }  // namespace ash

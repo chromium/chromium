@@ -11,6 +11,7 @@ import android.util.Size;
 import android.view.View;
 import android.view.WindowInsets;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
@@ -58,7 +59,7 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
 
     /**
      * Create a rect provider for a specific inset type. This class should only be used for Android
-     * V+.
+     * R+.
      *
      * @param insetObserver {@link InsetObserver} that's attached to the root view.
      * @param insetType {@link InsetsType} this provider is observing.
@@ -69,7 +70,7 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
     public InsetsRectProvider(
             InsetObserver insetObserver,
             @InsetsType int insetType,
-            WindowInsetsCompat initialInsets,
+            @Nullable WindowInsetsCompat initialInsets,
             @InsetConsumerSource int insetConsumerSource) {
         mInsetType = insetType;
         mBoundingRects = List.of();
@@ -142,8 +143,18 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         }
 
         // Consume the insets if used to adjust any view.
+        return buildInsets(windowInsetsCompat, mInsetType, Insets.NONE);
+    }
+
+    /**
+     * Build a new {@link WindowInsetsCompat} object. This is exposed to allow testing to override
+     * this method, as the {@link WindowInsetsCompat.Builder} does not work in Robolectric tests.
+     */
+    @VisibleForTesting
+    protected WindowInsetsCompat buildInsets(
+            WindowInsetsCompat windowInsetsCompat, int insetType, Insets insets) {
         return new WindowInsetsCompat.Builder(windowInsetsCompat)
-                .setInsets(mInsetType, Insets.NONE)
+                .setInsets(insetType, insets)
                 .build();
     }
 

@@ -23,15 +23,9 @@ enum class MagicCommentMode {
 
 inline MagicCommentMode GetMagicCommentMode(
     ExecutionContext* execution_context) {
-  if (RuntimeEnabledFeatures::JavaScriptCompileHintsMagicAlwaysRuntimeEnabled(
-          execution_context)) {
-    return MagicCommentMode::kAlways;
-  }
-  if (RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
-          execution_context)) {
-    return MagicCommentMode::kWhenProducingCodeCache;
-  }
-  return MagicCommentMode::kNever;
+  // TODO(42203853): Clean this up once compile hints have stabilized. This will
+  // change once the per-function compile hints prototype is added.
+  return MagicCommentMode::kAlways;
 }
 
 static constexpr int kBloomFilterKeySize = 16;

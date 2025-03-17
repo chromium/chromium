@@ -11,26 +11,29 @@ import android.credentials.CreateCredentialRequest;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This class is responsible for holding the arguments to create a valid {@link
  * CreateCredentialRequest}. The request can be formed using the `getCreateCredentialRequest`
  * method.
  */
+@NullMarked
 class CredManCreateCredentialRequestHelper {
-    private static CredManCreateCredentialRequestHelper sInstanceForTesting;
+    private static @Nullable CredManCreateCredentialRequestHelper sInstanceForTesting;
 
-    private String mRequestAsJson;
-    private byte[] mClientDataHash;
-    @Nullable private String mOrigin;
-    @Nullable private byte[] mUserId;
+    private @Nullable String mRequestAsJson;
+    private byte @Nullable [] mClientDataHash;
+    private @Nullable String mOrigin;
+    private byte @Nullable [] mUserId;
 
     static class Builder {
         private CredManCreateCredentialRequestHelper mHelper;
 
-        Builder(String requestAsJson, byte[] clientDataHash) {
+        Builder(String requestAsJson, byte @Nullable [] clientDataHash) {
             mHelper = CredManCreateCredentialRequestHelper.getInstance();
             mHelper.mRequestAsJson = requestAsJson;
             mHelper.mClientDataHash = clientDataHash;
@@ -64,11 +67,11 @@ class CredManCreateCredentialRequestHelper {
         return builder.build();
     }
 
-    String getOrigin() {
+    @Nullable String getOrigin() {
         return mOrigin;
     }
 
-    byte[] getUserId() {
+    byte @Nullable [] getUserId() {
         return mUserId;
     }
 

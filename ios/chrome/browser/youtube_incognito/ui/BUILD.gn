@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "youtube_incognito_enterprise_sheet.h",
+    "youtube_incognito_enterprise_sheet.mm",
     "youtube_incognito_sheet.h",
     "youtube_incognito_sheet.mm",
     "youtube_incognito_sheet_delegate.h",
@@ -15,5 +17,6 @@ source_set("ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert:confirmation_alert",
     "//ios/chrome/common/ui/util",
+    "//ui/base",
   ]
 }

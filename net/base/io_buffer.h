@@ -15,10 +15,13 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/free_deleter.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
-#include "base/pickle.h"
 #include "net/base/net_export.h"
+
+namespace base {
+class Pickle;
+}
 
 namespace net {
 
@@ -82,21 +85,31 @@ namespace net {
 // Base class, never instantiated, does not own the buffer.
 class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
  public:
-  int size() const { return size_; }
-
-  char* data() { return data_; }
-  const char* data() const { return data_; }
-
-  uint8_t* bytes() { return reinterpret_cast<uint8_t*>(data()); }
-  const uint8_t* bytes() const {
-    return reinterpret_cast<const uint8_t*>(data());
+  // Returns the length from bytes() to the end of the buffer. Many methods that
+  // take an IOBuffer also take a size indicated the number of IOBuffer bytes to
+  // use from the start of bytes(). That number must be no more than the size()
+  // of the passed in IOBuffer.
+  int size() const {
+    // SetSpan() ensures this fits in an int.
+    return static_cast<int>(span_.size());
   }
 
-  base::span<uint8_t> span() {
-    return UNSAFE_TODO(base::span(bytes(), static_cast<size_t>(size_)));
-  }
+  char* data() { return reinterpret_cast<char*>(bytes()); }
+  const char* data() const { return reinterpret_cast<const char*>(bytes()); }
+
+  uint8_t* bytes() { return span_.data(); }
+  const uint8_t* bytes() const { return span_.data(); }
+
+  base::span<uint8_t> span() { return span_; }
   base::span<const uint8_t> span() const {
-    return UNSAFE_TODO(base::span(bytes(), static_cast<size_t>(size_)));
+    // Converts a const base::span<uint8_t> to a base::span<const uint8_t>.
+    return base::as_byte_span(span_);
+  }
+
+  // Convenience methods for accessing the buffer as a span.
+  base::span<uint8_t> first(size_t count) { return span().first(count); }
+  base::span<const uint8_t> first(size_t count) const {
+    return span().first(count);
   }
 
  protected:
@@ -105,13 +118,21 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
   static void AssertValidBufferSize(size_t size);
 
   IOBuffer();
-  explicit IOBuffer(base::span<char> data);
-  explicit IOBuffer(base::span<uint8_t> data);
+  explicit IOBuffer(base::span<char> span);
+  explicit IOBuffer(base::span<uint8_t> span);
 
   virtual ~IOBuffer();
 
-  raw_ptr<char, AllowPtrArithmetic> data_ = nullptr;
-  int size_ = 0;
+  // Sets `span_` to `span`. CHECKs if its size is too big to fit in an int.
+  void SetSpan(base::span<uint8_t> span);
+
+  // Like SetSpan(base::span<uint8_t>()), but without a size check. Particularly
+  // useful to call in the destructor of subclasses, to avoid failing raw
+  // reference checks.
+  void ClearSpan();
+
+ private:
+  base::raw_span<uint8_t> span_;
 };
 
 // Class which owns its buffer and manages its destruction.
@@ -124,7 +145,22 @@ class NET_EXPORT IOBufferWithSize : public IOBuffer {
   ~IOBufferWithSize() override;
 
  private:
-  base::HeapArray<char> storage_;
+  base::HeapArray<uint8_t> storage_;
+};
+
+// This is like IOBufferWithSize, except its constructor takes a vector.
+// IOBufferWithSize uses a HeapArray instead of a vector so that it can avoid
+// initializing its data. VectorIOBuffer is primarily useful useful for writing
+// data, while IOBufferWithSize is primarily useful for reading data.
+class NET_EXPORT VectorIOBuffer : public IOBuffer {
+ public:
+  explicit VectorIOBuffer(std::vector<uint8_t> vector);
+  explicit VectorIOBuffer(base::span<uint8_t> span);
+
+ private:
+  ~VectorIOBuffer() override;
+
+  std::vector<uint8_t> vector_;
 };
 
 // This is a read only IOBuffer.  The data is stored in a string and
@@ -140,7 +176,8 @@ class NET_EXPORT StringIOBuffer : public IOBuffer {
 };
 
 // This version wraps an existing IOBuffer and provides convenient functions
-// to progressively read all the data.
+// to progressively read all the data. The values returned by size() and bytes()
+// are updated as bytes are consumed from the buffer.
 //
 // DrainableIOBuffer is useful when you have an IOBuffer that contains data
 // to be written progressively, and Write() function takes an IOBuffer rather
@@ -158,6 +195,10 @@ class NET_EXPORT StringIOBuffer : public IOBuffer {
 //
 class NET_EXPORT DrainableIOBuffer : public IOBuffer {
  public:
+  // `base` should be treated as exclusively owned by the DrainableIOBuffer as
+  // long as the latter exists. Specifically, the span pointed to by `base`,
+  // including its size, must not change, as the `DrainableIOBuffer` maintains a
+  // copy of them internally.
   DrainableIOBuffer(scoped_refptr<IOBuffer> base, size_t size);
 
   // DidConsume() changes the |data_| pointer so that |data_| always points
@@ -181,7 +222,9 @@ class NET_EXPORT DrainableIOBuffer : public IOBuffer {
   int used_ = 0;
 };
 
-// This version provides a resizable buffer and a changeable offset.
+// This version provides a resizable buffer and a changeable offset. The values
+// returned by size() and bytes() are updated whenever the offset of the buffer
+// is set, or the buffer's capacity is changed.
 //
 // GrowableIOBuffer is useful when you read data progressively without
 // knowing the total size in advance. GrowableIOBuffer can be used as
@@ -206,9 +249,14 @@ class NET_EXPORT GrowableIOBuffer : public IOBuffer {
   void SetCapacity(int capacity);
   int capacity() { return capacity_; }
 
-  // |offset| moves the |data_| pointer, allowing "seeking" in the data.
+  // `offset` moves the `data_` pointer, allowing "seeking" in the data.
   void set_offset(int offset);
   int offset() { return offset_; }
+
+  // Advances the offset by `bytes`. It's equivalent to `set_offset(offset() +
+  // bytes)`, though does not accept negative values, as they likely indicate a
+  // bug.
+  void DidConsume(int bytes);
 
   int RemainingCapacity();
 
@@ -229,27 +277,21 @@ class NET_EXPORT GrowableIOBuffer : public IOBuffer {
   // TODO(329476354): Convert to std::vector, use reserve()+resize() to make
   // exact reallocs, and remove `capacity_`. Possibly with an allocator the
   // default-initializes, if it's important to not initialize the new memory?
-  std::unique_ptr<char, base::FreeDeleter> real_data_;
+  std::unique_ptr<uint8_t, base::FreeDeleter> real_data_;
   int capacity_ = 0;
   int offset_ = 0;
 };
 
-// This versions allows a pickle to be used as the storage for a write-style
+// This version allows a Pickle to be used as the storage for a write-style
 // operation, avoiding an extra data copy.
 class NET_EXPORT PickledIOBuffer : public IOBuffer {
  public:
-  PickledIOBuffer();
-
-  base::Pickle* pickle() { return &pickle_; }
-
-  // Signals that we are done writing to the pickle and we can use it for a
-  // write-style IO operation.
-  void Done();
+  explicit PickledIOBuffer(std::unique_ptr<const base::Pickle> pickle);
 
  private:
   ~PickledIOBuffer() override;
 
-  base::Pickle pickle_;
+  const std::unique_ptr<const base::Pickle> pickle_;
 };
 
 // This class allows the creation of a temporary IOBuffer that doesn't really

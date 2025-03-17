@@ -15,7 +15,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
@@ -32,6 +31,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/origin.h"
@@ -39,6 +39,7 @@
 namespace {
 constexpr base::TimeDelta kMinimumNotificationPresenceTime = base::Seconds(6);
 constexpr char kUserMail[] = "testingprofile@chromium.org";
+constexpr GaiaId::Literal kFakeGaia("fakegaia");
 
 class MockMultiCaptureService : public crosapi::mojom::MultiCaptureService {
  public:
@@ -95,7 +96,7 @@ class MultiCaptureNotificationsTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     UserDataAuthClient::InitializeFake();
 
-    LogIn(kUserMail);
+    LogIn(kUserMail, kFakeGaia);
     auto* user_profile = CreateProfile(kUserMail);
     ASSERT_TRUE(user_profile);
 

@@ -15,7 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -78,8 +78,10 @@ class CreditCardSaveManager {
     // Phone number was found on any address (not currently used).
     PHONE_NUMBER = 1 << 11,
     // Set if cardholder name was explicitly requested in the offer-to-save
-    // dialog.  In general, this should happen when name is conflicting/missing
-    // and the user does not have a Google Payments account.
+    // dialog. In general, this should happen when name is conflicting/missing
+    // and the user does not have a Google Payments account. On iOS, this is set
+    // when cardholder name is conflicting/missing even when the user already
+    // has a Google Payments account.
     USER_PROVIDED_NAME = 1 << 12,
     // Set if expiration date was explicitly requested in the offer-to-save
     // dialog. In general, this should happen when expiration date month or year
@@ -428,19 +430,6 @@ class CreditCardSaveManager {
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
   base::WeakPtrFactory<CreditCardSaveManager> weak_ptr_factory_{this};
-
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      UploadCreditCard_ShouldRequestCardholderName_ResetBetweenConsecutiveSaves);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      UploadCreditCard_ShouldRequestExpirationDate_ResetBetweenConsecutiveSaves);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      UploadCreditCard_WalletSyncTransportEnabled_ShouldNotRequestExpirationDate);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      UploadCreditCard_WalletSyncTransportNotEnabled_ShouldRequestExpirationDate);
 };
 
 }  // namespace autofill

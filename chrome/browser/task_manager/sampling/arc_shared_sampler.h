@@ -10,12 +10,12 @@
 #include <map>
 #include <optional>
 
-#include "ash/components/arc/mojom/process.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
+#include "chromeos/ash/experiences/arc/mojom/process.mojom.h"
 
 namespace task_manager {
 

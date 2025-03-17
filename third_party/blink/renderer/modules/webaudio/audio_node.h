@@ -145,11 +145,11 @@ class MODULES_EXPORT AudioNode : public EventTarget,
   // Represents audio node graph with Oilpan references. N-th HeapHashSet
   // represents a set of AudioNode objects connected to this AudioNode's N-th
   // output.
-  HeapVector<Member<HeapHashSet<Member<AudioNode>>>> connected_nodes_;
+  HeapVector<Member<GCedHeapHashSet<Member<AudioNode>>>> connected_nodes_;
   // Represents audio node graph with Oilpan references. N-th HeapHashSet
   // represents a set of AudioParam objects connected to this AudioNode's N-th
   // output.
-  HeapVector<Member<HeapHashSet<Member<AudioParam>>>> connected_params_;
+  HeapVector<Member<GCedHeapHashSet<Member<AudioParam>>>> connected_params_;
 };
 
 }  // namespace blink

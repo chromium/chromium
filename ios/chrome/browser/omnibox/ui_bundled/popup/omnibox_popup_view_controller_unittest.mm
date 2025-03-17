@@ -71,10 +71,12 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
 
     first_suggestion_group_ = [AutocompleteSuggestionGroupImpl
         groupWithTitle:@""
-           suggestions:GenerateMockSuggestions(5u)];
+           suggestions:GenerateMockSuggestions(5u)
+                  type:SuggestionGroupType::kUnspecifiedSuggestionGroup];
     second_suggestion_group_ = [AutocompleteSuggestionGroupImpl
         groupWithTitle:@""
-           suggestions:GenerateMockSuggestions(10u)];
+           suggestions:GenerateMockSuggestions(10u)
+                  type:SuggestionGroupType::kUnspecifiedSuggestionGroup];
     suggestion_groups_ = @[ first_suggestion_group_, second_suggestion_group_ ];
   }
 

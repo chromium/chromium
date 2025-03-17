@@ -477,7 +477,7 @@ cbor::Value BuildGetAssertionCommand(
                       cbor::Value(std::move(*secret)));
   }
 
-  int passkey_byte_size = passkey.ByteSize();
+  int passkey_byte_size = passkey.ByteSizeLong();
   std::vector<uint8_t> serialized_passkey;
   serialized_passkey.resize(passkey_byte_size);
   CHECK(passkey.SerializeToArray(serialized_passkey.data(), passkey_byte_size));

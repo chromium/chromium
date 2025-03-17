@@ -3,7 +3,7 @@
 
 const char* NullToEmpty(const char *Str);
 const wchar* NullToEmpty(const wchar *Str);
-void IntToExt(const std::string &Src,std::string &Dest);
+void OemToExt(const std::string &Src,std::string &Dest);
 
 enum ACTW_ENCODING { ACTW_DEFAULT, ACTW_OEM, ACTW_UTF8};
 void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding);

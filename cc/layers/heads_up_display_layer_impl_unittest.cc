@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/layers/heads_up_display_layer_impl.h"
+
 #include <stddef.h>
 
 #include <utility>
 
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
-#include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
@@ -28,8 +30,10 @@ void CheckDrawLayer(HeadsUpDisplayLayerImpl* layer,
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   bool will_draw = layer->WillDraw(draw_mode, resource_provider);
-  if (will_draw)
-    layer->AppendQuads(render_pass.get(), &data);
+  if (will_draw) {
+    layer->AppendQuads(AppendQuadsContext{draw_mode, {}, false},
+                       render_pass.get(), &data);
+  }
   viz::CompositorRenderPassList pass_list;
   pass_list.push_back(std::move(render_pass));
   RasterCapabilities raster_caps;
@@ -59,7 +63,7 @@ TEST_F(HeadsUpDisplayLayerImplTest, ResourcelessSoftwareDrawAfterResourceLoss) {
   auto* root = EnsureRootLayerInPendingTree();
   auto* layer = AddLayerInPendingTree<HeadsUpDisplayLayerImpl>(std::string());
   layer->SetBounds(gfx::Size(100, 100));
-  layer->set_visible_layer_rect(gfx::Rect(100, 100));
+  layer->SetVisibleLayerRectForTesting(gfx::Rect(100, 100));
   CopyProperties(root, layer);
 
   UpdatePendingTreeDrawProperties();

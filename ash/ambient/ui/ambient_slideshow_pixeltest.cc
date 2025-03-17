@@ -133,9 +133,11 @@ TEST_P(AmbientSlideshowPixelTest, ShowMediaStringView) {
         media_session::mojom::MediaPlaybackState::kPlaying);
   }
 
+  // https://crbug.com/346918516, increase revision number for slight
+  // font rendering pixel changes when moving to Fontations.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "AmbientSlideshow",
-      /*revision_number=*/1, ash::Shell::GetPrimaryRootWindow()));
+      /*revision_number=*/2, ash::Shell::GetPrimaryRootWindow()));
 }
 
 }  // namespace ash

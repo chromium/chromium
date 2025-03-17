@@ -55,19 +55,19 @@ suite('cr-lazy-render', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     parent = document.createElement('test-element') as TestElement;
     document.body.appendChild(parent);
-    lazy = parent.shadowRoot!.querySelector('cr-lazy-render-lit')!;
+    lazy = parent.shadowRoot.querySelector('cr-lazy-render-lit')!;
   });
 
   test('stamps after get()', function() {
-    assertFalse(!!parent.shadowRoot!.querySelector('h1'));
+    assertFalse(!!parent.shadowRoot.querySelector('h1'));
     assertFalse(!!lazy.getIfExists());
 
     const inner = lazy.get();
-    assertEquals(inner, parent.shadowRoot!.querySelector('h1'));
+    assertEquals(inner, parent.shadowRoot.querySelector('h1'));
     assertEquals(inner, lazy.previousElementSibling);
-    assertEquals(lazy.getIfExists(), parent.shadowRoot!.querySelector('h1'));
+    assertEquals(lazy.getIfExists(), parent.shadowRoot.querySelector('h1'));
     assertEquals('H1', inner.nodeName);
-    assertEquals(inner, parent.shadowRoot!.querySelector('h1'));
+    assertEquals(inner, parent.shadowRoot.querySelector('h1'));
   });
 
   test('one-way binding works', async function() {
@@ -75,7 +75,7 @@ suite('cr-lazy-render', function() {
 
     const inner = lazy.get();
 
-    const checkbox = parent.shadowRoot!.querySelector('cr-checkbox');
+    const checkbox = parent.shadowRoot.querySelector('cr-checkbox');
     assertTrue(!!checkbox);
     assertFalse(checkbox.checked);
     assertNotEquals(-1, inner.textContent!.indexOf('Wings'));
@@ -89,7 +89,7 @@ suite('cr-lazy-render', function() {
     parent.checked = true;
 
     lazy.get();
-    const checkbox = parent.shadowRoot!.querySelector('cr-checkbox');
+    const checkbox = parent.shadowRoot.querySelector('cr-checkbox');
     assertTrue(!!checkbox);
     assertTrue(checkbox.checked);
 
@@ -102,11 +102,11 @@ suite('cr-lazy-render', function() {
   test('SameInstanceAfterRerender', async function() {
     assertFalse(!!lazy.getIfExists());
     const inner1 = lazy.get();
-    assertEquals(inner1, parent.shadowRoot!.querySelector('h1'));
+    assertEquals(inner1, parent.shadowRoot.querySelector('h1'));
     parent.name = 'Something';
     await microtasksFinished();
     const inner2 = lazy.get();
-    assertEquals(inner2, parent.shadowRoot!.querySelector('h1'));
+    assertEquals(inner2, parent.shadowRoot.querySelector('h1'));
     assertEquals(inner1, inner2);
   });
 });

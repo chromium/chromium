@@ -89,7 +89,6 @@ absl_source_set("log") {
 }
 
 absl_source_set("log_entry") {
-  sources = [ "log_entry.cc" ]
   public = [ "log_entry.h" ]
   deps = [
     "//third_party/abseil-cpp/absl/base:config",
@@ -327,6 +326,7 @@ absl_test("log_format_test") {
     ":check",
     ":log",
     ":scoped_mock_log",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/log/internal:test_matchers",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:str_format",

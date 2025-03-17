@@ -73,6 +73,7 @@ class KeyEvent;
 
 namespace views {
 
+class FocusManager;
 class FocusManagerDelegate;
 class FocusSearch;
 class View;
@@ -109,6 +110,9 @@ class VIEWS_EXPORT FocusChangeListener {
 
   // Called after focus state has changed.
   virtual void OnDidChangeFocus(View* focused_before, View* focused_now) = 0;
+
+  // TODO(crbug.com/348369180): Remove this. Debug only.
+  virtual void OnFocusManagerDestroying(FocusManager* focus_manager) {}
 
  protected:
   virtual ~FocusChangeListener() = default;
@@ -315,10 +319,9 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   // ViewObserver:
   void OnViewIsDeleting(View* view) override;
 
-  // Try to redirect the accelerator to bubble's anchor widget to process it if
-  // the bubble didn't.
-  bool RedirectAcceleratorToBubbleAnchorWidget(
-      const ui::Accelerator& accelerator);
+  // Try to redirect the accelerator to the parent widget to process it if
+  // `widget_` didn't.
+  bool RedirectAcceleratorToParentWidget(const ui::Accelerator& accelerator);
 
   // Returns true if arrow key traversal is enabled for the current widget.
   bool IsArrowKeyTraversalEnabledForWidget() const;

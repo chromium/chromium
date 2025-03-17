@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("apps") {
   testonly = true
@@ -15,8 +15,8 @@ static_library("apps") {
   ]
 
   public_deps = [
-    "//ash/components/arc/mojom",
     "//base",
+    "//chromeos/ash/experiences/arc/mojom",
   ]
 
   deps = [ "//extensions/common" ]

@@ -37,23 +37,23 @@ class PinnedToolbarActionsModel : public KeyedService {
     // Signals that `id` has been added to the model. This will
     // *only* be called after the model has been initialized. N.B. Direct pref
     // updates which happen to add an action WILL NOT call this method.
-    virtual void OnActionAddedLocally(const actions::ActionId& id) = 0;
+    virtual void OnActionAddedLocally(const actions::ActionId& id) {}
 
     // Signals that the given action with `id` has been removed from the
     // model. N.B. Direct pref updates which happen to remove an action WILL NOT
     // call this method.
-    virtual void OnActionRemovedLocally(const actions::ActionId& id) = 0;
+    virtual void OnActionRemovedLocally(const actions::ActionId& id) {}
 
     // Signals that the given action with `id` has been moved in the model.
     // N.B. Direct pref updates which happen to move an action WILL NOT call
     // this method.
     virtual void OnActionMovedLocally(const actions::ActionId& id,
                                       int from_index,
-                                      int to_index) = 0;
+                                      int to_index) {}
 
     // Called when the pinned actions change, in any way for any reason. Unlike
     // the above methods, this does include pref updates.
-    virtual void OnActionsChanged() = 0;
+    virtual void OnActionsChanged() {}
 
    protected:
     virtual ~Observer() = default;
@@ -92,8 +92,9 @@ class PinnedToolbarActionsModel : public KeyedService {
   // otherwise managed by this model.
   bool IsDefault() const;
 
-  // TODO(b/353323253): Remove after Pinned Chrome Labs migration is complete.
-  void MaybeMigrateChromeLabsPinnedState();
+  // TODO(crbug.com/353323253): Remove after Pinned Chrome Labs and Cast
+  // migrations are complete.
+  void MaybeMigrateExistingPinnedStates();
 
   // Returns the ordered list of pinned ActionIds.
   virtual const std::vector<actions::ActionId>& PinnedActionIds() const;

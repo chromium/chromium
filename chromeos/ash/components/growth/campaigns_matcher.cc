@@ -500,6 +500,12 @@ bool CampaignsMatcher::MatchRetailers(
 
 bool CampaignsMatcher::MatchDemoModeAppVersion(
     const DemoModeTargeting& targeting) const {
+  const auto max_version = targeting.GetAppMaxVersion();
+  const auto min_version = targeting.GetAppMinVersion();
+  if (!max_version && !min_version) {
+    return true;
+  }
+
   return MatchVersion(client_->GetDemoModeAppVersion(),
                       targeting.GetAppMinVersion(),
                       targeting.GetAppMaxVersion());

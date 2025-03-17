@@ -6,18 +6,24 @@
 #define CHROME_BROWSER_AUTOCOMPLETE_UNSCOPED_EXTENSION_PROVIDER_DELEGATE_IMPL_H_
 
 #include <string>
+#include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_input_watcher.h"
 #include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/browser/unscoped_extension_provider_delegate.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_id.h"
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
 #error "Should not be included when extensions are disabled"
 #endif
+
+namespace omnibox_api = extensions::api::omnibox;
 
 class UnscopedExtensionProvider;
 class Profile;
@@ -39,30 +45,57 @@ class UnscopedExtensionProviderDelegateImpl
   ~UnscopedExtensionProviderDelegateImpl() override;
 
   // UnscopedExtensionProviderDelegate:
-  bool Start(const AutocompleteInput& input,
+  void Start(const AutocompleteInput& input,
              bool minimal_changes,
              std::set<std::string> unscoped_mode_extension_ids) override;
-  void IncrementRequestId() override;
+  void Stop(bool clear_cached_results) override;
+  void DeleteSuggestion(const TemplateURL* template_url,
+                        const std::u16string& suggestion_text) override;
 
   // OmniboxInputWatcher::Observer:
   void OnOmniboxInputEntered() override;
+  // OmniboxSuggestionsWatcher::Observer:
+  void OnOmniboxSuggestionsReady(
+      omnibox_api::SendSuggestions::Params* suggestions,
+      const std::string& extension_id) override;
 
  private:
-  void set_done(bool done) { provider_->set_done(done); }
-  bool done() const { return provider_->done(); }
+  // Creates an `AutocompleteMatch` for the suggestion.
+  AutocompleteMatch CreateAutocompleteMatch(
+      const omnibox_api::SuggestResult& suggestion,
+      int relevance,
+      const std::string& extension_id);
 
-  // Identifies the current input state. This is incremented each time the
-  // autocomplete edit's input changes in any way. It is used to tell whether
-  // suggest results from the extension are current.
+  // Returns true if an extension is enabled.
+  bool IsEnabledExtension(const std::string& extension_id);
+
+  // Clears the current list of cached matches and suggestion group information.
+  void ClearSuggestions();
+
+  void OnActionExecuted(const std::string& extension_id,
+                        const std::string& action_name,
+                        const std::string& contents);
+
+  // Incremented each time a new request for suggestions is sent to extensions
+  // or when the input is accepted. Used to discard any suggestions that may be
+  // incoming later with a stale request ID.
   int current_request_id_ = 0;
 
-  // The input from the last request to the extension.
-  AutocompleteInput extension_suggest_last_input_;
-
-  // TODO(378538411): populate this once the suggestions logic is implemented.
-  //  Saved suggestions that were received from the extension used
-  //  for resetting matches without asking the extension again.
+  // Current list of matches received from the extensions. Used to update the
+  // list of matches in the provider.
   std::vector<AutocompleteMatch> extension_suggest_matches_;
+
+  // Next group available to be given to a set of extension suggestions.
+  // Possible groups are defined in `kReservedGroupIdMap`.
+  size_t next_available_group_index_ = 0;
+  // Next section available to be given to a set of extension suggestions.
+  // Possible sections are defined in `kReservedSectionMap`.
+  size_t next_available_section_index_ = 0;
+
+  // Maps extension IDs to group IDs. Allows suggestions from different
+  // extensions to have distinct headers.
+  std::unordered_map<extensions::ExtensionId, omnibox::GroupId>
+      extension_id_to_group_id_map_;
 
   raw_ptr<Profile> profile_;
 
@@ -71,6 +104,12 @@ class UnscopedExtensionProviderDelegateImpl
 
   base::ScopedObservation<OmniboxInputWatcher, OmniboxInputWatcher::Observer>
       omnibox_input_observation_{this};
+  base::ScopedObservation<OmniboxSuggestionsWatcher,
+                          OmniboxSuggestionsWatcher::Observer>
+      omnibox_suggestions_observation_{this};
+
+  base::WeakPtrFactory<UnscopedExtensionProviderDelegateImpl> weak_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_UNSCOPED_EXTENSION_PROVIDER_DELEGATE_IMPL_H_

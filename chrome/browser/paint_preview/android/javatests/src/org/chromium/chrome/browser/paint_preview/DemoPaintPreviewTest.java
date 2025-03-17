@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.Callback;
@@ -53,8 +52,7 @@ public class DemoPaintPreviewTest {
 
     private static final String TEST_URL = "/chrome/test/data/android/about.html";
 
-    // @Mock to tell R8 not to break the ability to mock the class.
-    @Mock private static PaintPreviewTabService sMockService;
+    private static PaintPreviewTabService sMockService;
 
     @BeforeClass
     public static void setUp() {

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import static org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.canUpdateHistorySyncValue;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,11 +57,19 @@ public class HistorySyncFragment extends PrivacyGuideBasePage
     }
 
     private void setHistorySyncSwitchState() {
-        mHistorySyncSwitch.setChecked(PrivacyGuideUtils.isHistorySyncEnabled(getProfile()));
+        boolean newState = PrivacyGuideUtils.isHistorySyncEnabled(getProfile());
+        boolean currentState = mHistorySyncSwitch.isChecked();
+        if (newState != currentState) {
+            mHistorySyncSwitch.setChecked(newState);
+        }
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (!canUpdateHistorySyncValue(getProfile())) {
+            return;
+        }
+
         PrivacyGuideMetricsDelegate.recordMetricsOnHistorySyncChange(isChecked);
 
         mSyncService.setSelectedType(UserSelectableType.HISTORY, isChecked);

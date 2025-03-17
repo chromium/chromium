@@ -20,6 +20,7 @@ export interface BookmarksApiProxy {
       void;
   contextMenuOpenBookmarkInNewTabGroup(ids: string[], source: ActionSource):
       void;
+  contextMenuEdit(ids: string[], source: ActionSource): void;
   contextMenuAddToBookmarksBar(id: string, source: ActionSource): void;
   contextMenuRemoveFromBookmarksBar(id: string, source: ActionSource): void;
   contextMenuDelete(ids: string[], source: ActionSource): void;
@@ -92,6 +93,10 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   contextMenuOpenBookmarkInNewTabGroup(ids: string[], source: ActionSource) {
     this.handler.executeOpenInNewTabGroupCommand(
         ids.map(id => BigInt(id)), source);
+  }
+
+  contextMenuEdit(ids: string[], source: ActionSource) {
+    this.handler.executeEditCommand(ids.map(id => BigInt(id)), source);
   }
 
   contextMenuAddToBookmarksBar(id: string, source: ActionSource) {

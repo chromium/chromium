@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.content_extraction;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 import java.util.Optional;
 
+@NullMarked
 public class InnerTextBridge {
     public static void getInnerText(
             RenderFrameHost webContents, Callback<Optional<String>> innerTextCallback) {

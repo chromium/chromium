@@ -22,7 +22,6 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/cbor/reader.h"
@@ -385,7 +384,7 @@ std::optional<Components> Parse(const std::string& qr_url) {
   if (qr_secret.size() != ret.secret.size()) {
     return std::nullopt;
   }
-  base::ranges::copy(qr_secret, ret.secret.begin());
+  std::ranges::copy(qr_secret, ret.secret.begin());
 
   std::optional<std::array<uint8_t, device::kP256X962Length>> peer_identity =
       DecompressPublicKey(compressed_public_key);

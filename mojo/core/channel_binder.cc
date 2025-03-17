@@ -16,6 +16,7 @@
 #include <optional>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/android/binder.h"
@@ -42,7 +43,6 @@
 #include "mojo/core/ipcz_driver/envelope.h"
 #include "mojo/public/cpp/platform/binder_exchange.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace mojo::core {
 
@@ -162,7 +162,7 @@ struct PayloadBuffer {
   size_t size;
 };
 using ReceivedPayload =
-    absl::variant<PayloadBuffer, base::ReadOnlySharedMemoryMapping>;
+    std::variant<PayloadBuffer, base::ReadOnlySharedMemoryMapping>;
 base::android::BinderStatusOr<ReceivedPayload> ReadMessagePayload(
     const base::android::ParcelReader& in) {
   ASSIGN_OR_RETURN(const auto type, in.ReadInt32());
@@ -255,7 +255,7 @@ void ChannelBinder::Start() {
   std::optional<base::android::BinderRef> exchange;
   {
     base::AutoLock lock(lock_);
-    exchange = absl::get<PendingExchange>(peer_).binder;
+    exchange = std::get<PendingExchange>(peer_).binder;
     CHECK(exchange);
     peer_ = PendingConnection{};
     receiver_ = base::MakeRefCounted<Receiver>(this);
@@ -286,8 +286,8 @@ void ChannelBinder::ShutDownImpl() {
     receiver_.swap(receiver);
     outgoing_messages_.swap(outgoing_messages);
     peer_.swap(peer);
-    if (leak_peer_ && absl::holds_alternative<Receiver::Proxy>(peer)) {
-      std::ignore = absl::get<Receiver::Proxy>(peer).release();
+    if (leak_peer_ && std::holds_alternative<Receiver::Proxy>(peer)) {
+      std::ignore = std::get<Receiver::Proxy>(peer).release();
     }
   }
   receiver->ShutDown();
@@ -333,19 +333,19 @@ base::android::BinderStatusOr<void> ChannelBinder::WriteOrEnqueue(
   std::optional<Receiver::Proxy> receiver;
   {
     base::AutoLock lock(lock_);
-    if (absl::holds_alternative<Disconnected>(peer_) || reject_writes_) {
+    if (std::holds_alternative<Disconnected>(peer_) || reject_writes_) {
       return base::ok();
     }
 
-    if (absl::holds_alternative<PendingExchange>(peer_) ||
-        absl::holds_alternative<PendingConnection>(peer_) ||
+    if (std::holds_alternative<PendingExchange>(peer_) ||
+        std::holds_alternative<PendingConnection>(peer_) ||
         !outgoing_messages_.empty() || is_writing_) {
       outgoing_messages_.push_back(std::move(message));
       return base::ok();
     }
 
     is_writing_ = true;
-    receiver = absl::get<Receiver::Proxy>(peer_);
+    receiver = std::get<Receiver::Proxy>(peer_);
   }
 
   // If this returns on error, `is_writing_` will remain true. This is fine
@@ -362,12 +362,12 @@ base::android::BinderStatusOr<void> ChannelBinder::WriteOrEnqueue(
 base::android::BinderStatusOr<void> ChannelBinder::FlushOutgoingMessages()
     EXCLUSIVE_LOCKS_REQUIRED(lock_) {
   DCHECK(is_writing_);
-  if (absl::holds_alternative<Disconnected>(peer_)) {
+  if (std::holds_alternative<Disconnected>(peer_)) {
     // If we're already disconnected we don't need to do any flushing.
     return base::ok();
   }
 
-  Receiver::Proxy receiver = absl::get<Receiver::Proxy>(peer_);
+  Receiver::Proxy receiver = std::get<Receiver::Proxy>(peer_);
   while (!outgoing_messages_.empty()) {
     base::circular_deque<MessagePtr> messages;
     messages.swap(outgoing_messages_);
@@ -386,12 +386,12 @@ base::android::BinderStatusOr<void> ChannelBinder::FlushOutgoingMessages()
 
 void ChannelBinder::SetPeerReceiver(base::android::BinderRef receiver) {
   base::AutoLock lock(lock_);
-  if (absl::holds_alternative<Disconnected>(peer_)) {
+  if (std::holds_alternative<Disconnected>(peer_)) {
     // Channel is already shutdown. Silently drop the peer endpoint.
     return;
   }
 
-  DCHECK(absl::holds_alternative<PendingConnection>(peer_));
+  DCHECK(std::holds_alternative<PendingConnection>(peer_));
   if (!receiver) {
     // Connection failed.
     peer_ = Disconnected{};
@@ -489,7 +489,7 @@ ChannelBinder::Receiver::OnBinderTransaction(
   }
 
   ASSIGN_OR_RETURN(const auto payload, ReadMessagePayload(in));
-  const auto bytes = absl::visit(
+  const auto bytes = std::visit(
       base::Overloaded{
           [](const PayloadBuffer& payload) {
             return base::span<const uint8_t>(payload.data.get(), payload.size);

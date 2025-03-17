@@ -20,7 +20,6 @@ component("base") {
     "//base",
     "//device/vr/buildflags",
   ]
-  deps = [ "//build:chromeos_buildflags" ]
 
   if (is_win) {
     sources += [

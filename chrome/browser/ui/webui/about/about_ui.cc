@@ -35,7 +35,6 @@
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -46,10 +45,11 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/about_ui/credit_utils.h"
 #include "components/grit/components_resources.h"
 #include "components/strings/grit/components_locale_settings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/webui/about/credit_utils.h"
+#include "components/webui/chrome_urls/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -65,7 +65,7 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include <map>
 
 #include "base/base64.h"
@@ -86,10 +86,6 @@
 #include "third_party/zlib/google/compression_utils.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/common/webui_url_constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 using content::BrowserThread;
 
 namespace {
@@ -99,7 +95,7 @@ constexpr char kCreditsCssPath[] = "credits.css";
 constexpr char kStatsJsPath[] = "stats.js";
 constexpr char kStringsJsPath[] = "strings.js";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 constexpr char kTerminaCreditsPath[] = "about_os_credits.html";
 
@@ -528,7 +524,7 @@ ChromeURLsUIConfig::ChromeURLsUIConfig()
 std::unique_ptr<content::WebUIController>
 ChromeURLsUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                           const GURL& url) {
-  if (base::FeatureList::IsEnabled(features::kInternalOnlyUisPref)) {
+  if (base::FeatureList::IsEnabled(chrome_urls::kInternalOnlyUisPref)) {
     return std::make_unique<chrome_urls::ChromeUrlsUI>(web_ui);
   }
   return std::make_unique<AboutUI>(web_ui, url);
@@ -547,7 +543,7 @@ LinuxProxyConfigUI::LinuxProxyConfigUI()
     : AboutUIConfigBase(chrome::kChromeUILinuxProxyConfigHost) {}
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 OSCreditsUI::OSCreditsUI()
     : AboutUIConfigBase(chrome::kChromeUIOSCreditsHost) {}
 
@@ -598,7 +594,7 @@ void AboutUIHTMLSource::StartDataRequest(
   } else if (source_name_ == chrome::kChromeUILinuxProxyConfigHost) {
     response = AboutLinuxProxyConfig();
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   } else if (source_name_ == chrome::kChromeUIOSCreditsHost ||
              source_name_ == chrome::kChromeUICrostiniCreditsHost ||
              source_name_ == chrome::kChromeUIBorealisCreditsHost) {
@@ -627,7 +623,7 @@ void AboutUIHTMLSource::StartDataRequest(
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   } else if (source_name_ == chrome::kChromeUITermsHost) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (!path.empty()) {
       ChromeOSTermsHandler::Start(path, std::move(callback));
       return;
@@ -664,7 +660,7 @@ std::string AboutUIHTMLSource::GetMimeType(const GURL& url) {
 
 std::string AboutUIHTMLSource::GetAccessControlAllowOriginForOrigin(
     const std::string& origin) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Allow chrome://oobe to load chrome://terms via XHR.
   if (source_name_ == chrome::kChromeUITermsHost &&
       base::StartsWith(chrome::kChromeUIOobeURL, origin,

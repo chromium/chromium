@@ -34,7 +34,7 @@ namespace {
 
 // Various tests rely on functionality (capabilities) enabled by these extension
 // strings.
-const auto kExtensions = std::to_array<const char*>({
+constexpr auto kExtensions = std::to_array<const char*>({
     "GL_ARB_texture_rectangle",
     "GL_EXT_stencil_wrap",
     "GL_EXT_texture_format_BGRA8888",

@@ -383,7 +383,7 @@ class MenuItemViewLayoutTest : public ViewsTestBase {
     ASSERT_TRUE(submenu->owned_by_client());
 
     submenu_parent_ = std::make_unique<View>();
-    submenu_parent_->AddChildView(submenu);
+    submenu_parent_->AddChildViewRaw(submenu);
     submenu_parent_->SetPosition(gfx::Point(0, 0));
     submenu_parent_->SetSize(submenu->GetPreferredSize({}));
   }
@@ -624,17 +624,10 @@ TEST_F(MenuItemViewPaintUnitTest,
 
   // The selected bit and selection based state should both update for all menu
   // items while they and their anscestors remain part of the menu.
-  if (views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
-    // On Windows, we automatically select the first item when the menu is
-    // opened from the keyboard.
-    EXPECT_TRUE(submenu_item->IsSelected());
-    EXPECT_TRUE(submenu_item->last_paint_as_selected_for_testing());
-  } else {
-    // On other platforms, we don't automatically select the first item when the
-    // menu is opened from the keyboard.
-    EXPECT_FALSE(submenu_item->IsSelected());
-    EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
-  }
+  EXPECT_EQ(submenu_item->IsSelected(),
+            views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard);
+  EXPECT_EQ(submenu_item->last_paint_as_selected_for_testing(),
+            views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard);
 
   submenu_item->SetSelected(true);
   EXPECT_TRUE(submenu_item->IsSelected());
@@ -680,15 +673,8 @@ TEST_F(MenuItemViewPaintUnitTest, SelectionBasedStateUpdatedWhenIconChanges) {
                            MenuAnchorPosition::kTopLeft,
                            ui::mojom::MenuSourceType::kKeyboard);
 
-  if (views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
-    // On Windows, we automatically select the first item when the menu is
-    // opened from the keyboard.
-    EXPECT_TRUE(child_menu_item->last_paint_as_selected_for_testing());
-  } else {
-    // On other platforms, we don't automatically select the first item when the
-    // menu is opened from the keyboard.
-    EXPECT_FALSE(child_menu_item->last_paint_as_selected_for_testing());
-  }
+  EXPECT_EQ(child_menu_item->last_paint_as_selected_for_testing(),
+            views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard);
 
   child_menu_item->SetSelected(true);
   EXPECT_TRUE(child_menu_item->IsSelected());
@@ -966,9 +952,10 @@ TEST_F(MenuItemViewA11yTest, TooltipText) {
                                   std::nullopt, std::nullopt, std::nullopt);
 
   menu_item_view()->SetTooltip(u"Tooltip", id);
-  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetCachedTooltipText(),
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetTooltipText(),
             u"Tooltip");
-  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetTooltipText(gfx::Point()),
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetRenderedTooltipText(
+                gfx::Point()),
             u"Tooltip");
 }
 
@@ -988,7 +975,7 @@ TEST_F(MenuItemViewA11yTest, TooltipTextAccessibility) {
       ->GetMenuItemByID(id)
       ->GetViewAccessibility()
       .GetAccessibleNodeData(&data);
-  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetCachedTooltipText(),
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetTooltipText(),
             u"Tooltip");
   // When no description is explicitly set, the tooltip should be used.
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),

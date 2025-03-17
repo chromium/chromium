@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.enterprise.util;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -22,6 +24,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 
 import java.util.LinkedList;
@@ -29,25 +33,26 @@ import java.util.Queue;
 import java.util.concurrent.RejectedExecutionException;
 
 /** The typical implementation of {@link EnterpriseInfo} at runtime. */
+@NullMarked
 public class EnterpriseInfoImpl extends EnterpriseInfo {
     private static final String TAG = "EnterpriseInfoImpl";
     private final Handler mHandler;
 
     // Only ever read/written on the UI thread.
-    private OwnedState mOwnedState;
-    private Queue<Callback<OwnedState>> mCallbackList;
+    private @Nullable OwnedState mOwnedState;
+    private Queue<Callback<@Nullable OwnedState>> mCallbackList;
 
     private boolean mSkipAsyncCheckForTesting;
 
     EnterpriseInfoImpl() {
         mOwnedState = null;
         mCallbackList = new LinkedList<>();
-        mHandler = new Handler(Looper.myLooper());
+        mHandler = new Handler(assumeNonNull(Looper.myLooper()));
     }
 
     @Override
     @SuppressWarnings("QueryPermissionsNeeded")
-    public void getDeviceEnterpriseInfo(Callback<OwnedState> callback) {
+    public void getDeviceEnterpriseInfo(Callback<@Nullable OwnedState> callback) {
         // AsyncTask requires being called from UI thread.
         ThreadUtils.assertOnUiThread();
         assert callback != null;
@@ -76,7 +81,7 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
     }
 
     @Override
-    public OwnedState getDeviceEnterpriseInfoSync() {
+    public @Nullable OwnedState getDeviceEnterpriseInfoSync() {
         if (mOwnedState != null) {
             return mOwnedState;
         }
@@ -149,7 +154,7 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
 
             // There will only ever be a single item in the queue as we only try()/catch() on the
             // first item.
-            Callback<OwnedState> failedRunCallback = mCallbackList.remove();
+            Callback<@Nullable OwnedState> failedRunCallback = mCallbackList.remove();
             mHandler.post(() -> failedRunCallback.onResult(null));
         }
     }
@@ -178,14 +183,10 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
 
     @Override
     public void logDeviceEnterpriseInfo() {
-        Callback<OwnedState> callback =
-                (result) -> {
-                    recordManagementHistograms(result);
-                };
-        getDeviceEnterpriseInfo(callback);
+        getDeviceEnterpriseInfo(result -> recordManagementHistograms(result));
     }
 
-    private static void recordManagementHistograms(OwnedState state) {
+    private static void recordManagementHistograms(@Nullable OwnedState state) {
         if (state == null) return;
 
         RecordHistogram.recordBooleanHistogram("EnterpriseCheck.IsManaged2", state.mProfileOwned);

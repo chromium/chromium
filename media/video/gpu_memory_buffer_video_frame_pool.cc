@@ -14,6 +14,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
+#include <array>
 #include <atomic>
 #include <list>
 #include <memory>
@@ -32,7 +34,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -921,9 +922,11 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
 
       VideoPixelFormat pixel_format = VideoFormat(output_format);
       for (int dst_plane = 0; dst_plane < 3; ++dst_plane) {
-        static constexpr VideoFrame::Plane kSrcPlanes[3] = {
-            VideoFrame::Plane::kY, VideoFrame::Plane::kV,
-            VideoFrame::Plane::kU};
+        constexpr static std::array<VideoFrame::Plane, 3> kSrcPlanes = {
+            VideoFrame::Plane::kY,
+            VideoFrame::Plane::kV,
+            VideoFrame::Plane::kU,
+        };
         VideoFrame::Plane src_plane = kSrcPlanes[dst_plane];
 
         const size_t plane_row_start =
@@ -979,7 +982,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
     // Drop the resource if there was an error with it. If we're not in
     // shutdown we also need to remove the pool entry for the resource.
     if (!in_shutdown_) {
-      auto it = base::ranges::find(resources_pool_, frame_resource);
+      auto it = std::ranges::find(resources_pool_, frame_resource);
       CHECK(it != resources_pool_.end(), base::NotFatalUntil::M130);
       resources_pool_.erase(it);
     }
@@ -1203,29 +1206,20 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResource(
                                         gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-    bool add_scanout_usage = true;
-
-    // SCANOUT usage was historically added unconditionally. However, it
-    // actually should be added only if scanout of SharedImages for this use
-    // case is supported.
-    // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
-    if (base::FeatureList::IsEnabled(
-            features::
-                kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-      auto si_caps = sii->GetCapabilities();
-
+    // SCANOUT usage should be added only if scanout of SharedImages for this
+    // use case is supported.
+    auto si_caps = sii->GetCapabilities();
 #if BUILDFLAG(IS_WIN)
-      // On Windows, overlays are in general not supported. However, in some
-      // cases they are supported for the software video frame use case in
-      // particular. This cap details whether that support is present.
-      add_scanout_usage =
-          si_caps.supports_scanout_shared_images_for_software_video_frames;
+    // On Windows, overlays are in general not supported. However, in some
+    // cases they are supported for the software video frame use case in
+    // particular. This cap details whether that support is present.
+    bool add_scanout_usage =
+        si_caps.supports_scanout_shared_images_for_software_video_frames;
 #else
-      // On all other platforms, whether scanout for SharedImages is supported
-      // for this particular use case is no different than the general case.
-      add_scanout_usage = si_caps.supports_scanout_shared_images;
+    // On all other platforms, whether scanout for SharedImages is supported
+    // for this particular use case is no different than the general case.
+    bool add_scanout_usage = si_caps.supports_scanout_shared_images;
 #endif
-    }
 
     if (add_scanout_usage) {
       si_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;

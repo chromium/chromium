@@ -10,11 +10,11 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/app/arc_app_constants.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
 #include "components/services/app_service/public/cpp/intent.h"
 
 class Profile;

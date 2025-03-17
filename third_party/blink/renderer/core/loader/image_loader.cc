@@ -20,11 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/loader/image_loader.h"
 
 #include <memory>
@@ -68,6 +63,7 @@
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
+#include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -192,51 +188,57 @@ void ImageLoader::DispatchDecodeRequestsIfComplete() {
   }
 
   LocalFrame* frame = GetElement()->GetDocument().GetFrame();
-  auto it = decode_requests_.begin();
-  while (it != decode_requests_.end()) {
-    // If the image already in kDispatched state or still in kPendingMicrotask
-    // state, then we don't dispatch decodes for it. So, the only case to handle
-    // is if we're in kPendingLoad state.
-    auto& request = *it;
-    if (request->state() != DecodeRequest::kPendingLoad) {
-      ++it;
-      continue;
-    }
-    Image* image = GetContent()->GetImage();
-    if (!ImageTypeNeedsDecode(*image)) {
-      // If the image is of a type that doesn't need decode, resolve the
-      // promise.
-      request->Resolve();
-      it = decode_requests_.erase(it);
-      continue;
-    }
-    // ImageLoader should be kept alive when decode is still pending. JS may
-    // invoke 'decode' without capturing the Image object. If GC kicks in,
-    // ImageLoader will be destroyed, leading to unresolved/unrejected Promise.
-    frame->GetChromeClient().RequestDecode(
-        frame, image->PaintImageForCurrentFrame(),
-        WTF::BindOnce(&ImageLoader::DecodeRequestFinished,
-                      MakeUnwrappingCrossThreadHandle(this),
-                      request->request_id()));
-    request->NotifyDecodeDispatched();
-    ++it;
-  }
+  WTF::EraseIf(decode_requests_, ([&](const auto& request) {
+                 // If the image already in kDispatched state or still in
+                 // kPendingMicrotask
+                 // state, then we don't dispatch decodes for it. So, the only
+                 // case to handle is if we're in kPendingLoad state.
+                 if (request->state() != DecodeRequest::kPendingLoad) {
+                   return false;
+                 }
+                 Image* image = GetContent()->GetImage();
+                 if (!ImageTypeNeedsDecode(*image)) {
+                   // If the image is of a type that doesn't need decode,
+                   // resolve the promise.
+                   request->Resolve();
+                   return true;
+                 }
+                 cc::DrawImage draw_image(
+                     image->PaintImageForCurrentFrame(),
+                     /*use_dark_mode=*/false,
+                     SkIRect::MakeWH(image->width(), image->height()),
+                     cc::PaintFlags::FilterQuality::kNone, SkM44(),
+                     PaintImage::kDefaultFrameIndex);
+                 // ImageLoader should be kept alive when decode is still
+                 // pending. JS may invoke 'decode' without capturing the Image
+                 // object. If GC kicks in, ImageLoader will be destroyed,
+                 // leading to unresolved/unrejected Promise.
+                 frame->GetChromeClient().RequestDecode(
+                     frame, draw_image,
+                     WTF::BindOnce(&ImageLoader::DecodeRequestFinished,
+                                   MakeUnwrappingCrossThreadHandle(this),
+                                   request->request_id()));
+                 request->NotifyDecodeDispatched();
+                 return false;
+               }));
 }
 
 void ImageLoader::DecodeRequestFinished(uint64_t request_id, bool success) {
   // First we find the corresponding request id, then we either resolve or
   // reject it and remove it from the list.
-  for (auto it = decode_requests_.begin(); it != decode_requests_.end(); ++it) {
-    auto& request = *it;
-    if (request->request_id() != request_id)
-      continue;
+  auto it = std::find_if(decode_requests_.begin(), decode_requests_.end(),
+                         [request_id](const auto& request) {
+                           return request->request_id() == request_id;
+                         });
 
-    if (success)
+  if (it != decode_requests_.end()) {
+    auto& request = *it;
+    if (success) {
       request->Resolve();
-    else
+    } else {
       request->Reject();
+    }
     decode_requests_.erase(it);
-    break;
   }
 }
 
@@ -249,16 +251,14 @@ void ImageLoader::RejectPendingDecodes(UpdateType update_type) {
   // have to reject even the pending mutation requests because conceptually they
   // would have been scheduled before the synchronous update ran, so they
   // referred to the old image.
-  for (auto it = decode_requests_.begin(); it != decode_requests_.end();) {
-    auto& request = *it;
-    if (update_type == UpdateType::kAsync &&
-        request->state() == DecodeRequest::kPendingMicrotask) {
-      ++it;
-      continue;
-    }
-    request->Reject();
-    it = decode_requests_.erase(it);
-  }
+  WTF::EraseIf(decode_requests_, ([&](const auto& request) {
+                 if (update_type == UpdateType::kAsync &&
+                     request->state() == DecodeRequest::kPendingMicrotask) {
+                   return false;
+                 }
+                 request->Reject();
+                 return true;
+               }));
 }
 
 void ImageLoader::Trace(Visitor* visitor) const {
@@ -488,8 +488,7 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
     if (IsA<HTMLImageElement>(GetElement())) {
       if (GetElement()->FastHasAttribute(html_names::kAttributionsrcAttr) &&
           frame->GetAttributionSrcLoader()->CanRegister(
-              url, To<HTMLImageElement>(GetElement()),
-              /*request_id=*/std::nullopt)) {
+              url, To<HTMLImageElement>(GetElement()))) {
         resource_request.SetAttributionReportingEligibility(
             network::mojom::AttributionReportingEligibility::
                 kEventSourceOrTrigger);
@@ -503,6 +502,14 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
           !SecurityOrigin::Create(url)->IsOpaque();
       resource_request.SetSharedStorageWritableOptedIn(
           shared_storage_writable_opted_in);
+      if (GetElement()->FastHasAttribute(html_names::kBrowsingtopicsAttr) &&
+          RuntimeEnabledFeatures::TopicsAPIEnabled(
+              GetElement()->GetExecutionContext()) &&
+          GetElement()->GetExecutionContext()->IsSecureContext()) {
+        resource_request.SetBrowsingTopics(true);
+        UseCounter::Count(document, mojom::blink::WebFeature::kTopicsAPIImg);
+        UseCounter::Count(document, mojom::blink::WebFeature::kTopicsAPIAll);
+      }
     }
 
     bool page_is_being_dismissed =
@@ -571,7 +578,7 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
   if (update_behavior == kUpdateSizeChanged && element_->GetLayoutObject() &&
       element_->GetLayoutObject()->IsImage() &&
       new_image_content == old_image_content) {
-    To<LayoutImage>(element_->GetLayoutObject())->IntrinsicSizeChanged();
+    To<LayoutImage>(element_->GetLayoutObject())->NaturalSizeChanged();
   } else {
     bool is_lazyload = lazy_image_load_state_ == LazyImageLoadState::kDeferred;
 
@@ -851,6 +858,36 @@ void ImageLoader::UpdateLayoutObject() {
   if (image_content_ != cached_image_content &&
       (image_complete_ || !cached_image_content))
     image_resource->SetImageResource(image_content_.Get());
+}
+
+gfx::Size ImageLoader::AccessNaturalSize() const {
+  if (!image_content_ || !image_content_->HasImage() ||
+      image_content_->ErrorOccurred()) {
+    return gfx::Size();
+  }
+  Image& image = *image_content_->GetImage();
+  gfx::Size size = image.Size(kRespectImageOrientation);
+
+  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+    gfx::Size concrete_object_size;
+    if (std::optional<NaturalSizingInfo> sizing_info =
+            SVGImageForContainer::GetNaturalDimensions(*svg_image, nullptr)) {
+      concrete_object_size =
+          ToRoundedSize(PhysicalSize::FromSizeFFloor(blink::ConcreteObjectSize(
+              *sizing_info, gfx::SizeF(LayoutReplaced::kDefaultWidth,
+                                       LayoutReplaced::kDefaultHeight))));
+      size = ToRoundedSize(PhysicalSize::FromSizeFFloor(
+          blink::ConcreteObjectSize(*sizing_info, gfx::SizeF())));
+    }
+    if (size != concrete_object_size) {
+      element_->GetDocument().CountUse(
+          WebFeature::kHTMLImageElementNaturalSizeDiffersForSvgImage);
+    }
+    if (!RuntimeEnabledFeatures::HTMLImageElementActualNaturalSizeEnabled()) {
+      size = concrete_object_size;
+    }
+  }
+  return size;
 }
 
 ResourcePriority ImageLoader::ComputeResourcePriority() const {

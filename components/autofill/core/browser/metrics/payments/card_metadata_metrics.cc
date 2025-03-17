@@ -75,6 +75,8 @@ std::string_view GetCardIssuerIdOrNetworkSuffix(
     return kAmericanExpress;
   } else if (card_issuer_id_or_network == kAnzCardIssuerId) {
     return kAnz;
+  } else if (card_issuer_id_or_network == kBmoCardIssuerId) {
+    return kBmo;
   } else if (card_issuer_id_or_network == kCapitalOneCardIssuerId) {
     return kCapitalOne;
   } else if (card_issuer_id_or_network == kChaseCardIssuerId) {
@@ -119,8 +121,7 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
     // denote in the `metadata_logging_context` that we have shown an enriched
     // card art so we can log it later.
     if (card.HasRichCardArtImageFromMetadata()) {
-      metadata_logging_context.card_art_image_shown =
-          base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage);
+      metadata_logging_context.card_art_image_shown = true;
     }
 
     bool card_has_metadata = !card.product_description().empty() ||

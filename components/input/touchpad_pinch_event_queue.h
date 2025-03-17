@@ -8,10 +8,11 @@
 #include <memory>
 #include <optional>
 
+#include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "components/input/dispatch_to_renderer_callback.h"
 #include "components/input/event_with_latency_info.h"
-#include "base/component_export.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
@@ -31,8 +32,10 @@ class COMPONENT_EXPORT(INPUT) TouchpadPinchEventQueueClient {
       blink::mojom::InputEventResultState ack_result)>;
 
   virtual void SendMouseWheelEventForPinchImmediately(
+      const blink::WebGestureEvent& pinch_event,
       const MouseWheelEventWithLatencyInfo& event,
-      MouseWheelEventHandledCallback callback) = 0;
+      MouseWheelEventHandledCallback callback,
+      DispatchToRendererCallback& dispatch_callback) = 0;
   virtual void OnGestureEventForPinchAck(
       const GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
@@ -57,7 +60,8 @@ class COMPONENT_EXPORT(INPUT) TouchpadPinchEventQueue {
 
   // Adds the given touchpad pinch |event| to the queue. The event may be
   // coalesced with previously queued events.
-  void QueueEvent(const GestureEventWithLatencyInfo& event);
+  void QueueEvent(const GestureEventWithLatencyInfo& event,
+                  DispatchToRendererCallback& dispatch_callback);
 
   [[nodiscard]] bool has_pending() const;
 

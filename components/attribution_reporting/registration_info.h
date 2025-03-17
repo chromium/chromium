@@ -45,14 +45,12 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrationInfo {
   // `preferred-platform=web` or `preferred-platform=os` or
   // `report-header-errors` or `preferred-platform=web,report-header-errors`
   static base::expected<RegistrationInfo, RegistrationInfoError> ParseInfo(
-      std::string_view,
-      bool cross_app_web_enabled);
+      std::string_view);
 
   // Same as the above, but using an already-parsed structured-header
   // dictionary.
   static base::expected<RegistrationInfo, RegistrationInfoError> ParseInfo(
-      const net::structured_headers::Dictionary&,
-      bool cross_app_web_enabled);
+      const net::structured_headers::Dictionary&);
 
   friend bool operator==(const RegistrationInfo&,
                          const RegistrationInfo&) = default;

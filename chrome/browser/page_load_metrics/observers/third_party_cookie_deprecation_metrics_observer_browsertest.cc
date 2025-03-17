@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -364,7 +365,7 @@ class ThirdPartyCookieDeprecationObserverBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kCookieDeprecationFacilitatedTesting,
           {{tpcd::experiment::kDisable3PCookiesName,
-            is_experiment_cookies_disabled_ ? "true" : "false"}}},
+            base::ToString(is_experiment_cookies_disabled_)}}},
          {subresource_filter::kTPCDAdHeuristicSubframeRequestTagging, {}}},
         {content_settings::features::kTrackingProtection3pcd});
   }

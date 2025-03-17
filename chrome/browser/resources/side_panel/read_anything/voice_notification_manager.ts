@@ -7,7 +7,7 @@ import type {VoiceClientSideStatusCode} from './voice_language_util.js';
 
 export interface VoiceNotificationListener {
   // Listeners should notify via their UI of language pack status changes.
-  notify(language: string, type: NotificationType): void;
+  notify(type: NotificationType, language?: string): void;
 }
 
 // Notifies listeners of language pack status changes.
@@ -22,7 +22,7 @@ export class VoiceNotificationManager {
     this.listeners_.add(listener);
     // Tell listeners of all current downloading languages.
     this.downloadingLanguages_.forEach(
-        language => listener.notify(language, NotificationType.DOWNLOADING));
+        language => listener.notify(NotificationType.DOWNLOADING, language));
   }
 
   removeListener(listener: VoiceNotificationListener) {
@@ -47,15 +47,21 @@ export class VoiceNotificationManager {
     }
 
     this.listeners_.forEach(
-        listener => listener.notify(language, notification));
+        listener => listener.notify(notification, language));
   }
 
   onCancelDownload(language: string) {
     if (this.downloadingLanguages_.has(language)) {
       this.downloadingLanguages_.delete(language);
       this.listeners_.forEach(
-          listener => listener.notify(language, NotificationType.NONE));
+          listener => listener.notify(NotificationType.NONE, language));
     }
+  }
+
+  onNoEngineConnection() {
+    this.listeners_.forEach(
+        listener =>
+            listener.notify(NotificationType.GOOGLE_VOICES_UNAVAILABLE));
   }
 
   static getInstance(): VoiceNotificationManager {

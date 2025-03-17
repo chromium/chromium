@@ -64,7 +64,7 @@ class SharedWorkerHostTest : public testing::Test {
         &mock_render_process_host_factory_);
     site_instance_ =
         SiteInstanceImpl::CreateForTesting(&browser_context_, kWorkerUrl);
-    RenderProcessHost* rph = site_instance_->GetProcess();
+    RenderProcessHost* rph = site_instance_->GetOrCreateProcess();
 
     std::vector<std::unique_ptr<MockRenderProcessHost>>* processes =
         mock_render_process_host_factory_.GetProcesses();
@@ -134,7 +134,8 @@ class SharedWorkerHostTest : public testing::Test {
             ->service_worker_client_owner()
             .CreateServiceWorkerClientForWorker(
                 mock_render_process_host_->GetDeprecatedID(),
-                ServiceWorkerClientInfo(host->token())));
+                ServiceWorkerClientInfo(host->token())),
+        net::IsolationInfo());
     host->SetServiceWorkerHandle(std::move(service_worker_handle));
 
     TestContentBrowserClient client;

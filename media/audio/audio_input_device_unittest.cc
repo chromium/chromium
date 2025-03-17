@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "media/audio/audio_input_device.h"
 
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
@@ -168,9 +174,9 @@ TEST_P(AudioInputDeviceTest, Noop) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO);
   MockAudioInputIPC* input_ipc = new MockAudioInputIPC();
-  scoped_refptr<AudioInputDevice> device(new AudioInputDevice(
+  auto device = base::MakeRefCounted<AudioInputDevice>(
       base::WrapUnique(input_ipc), AudioInputDevice::Purpose::kUserInput,
-      AudioInputDeviceTest::GetParam()));
+      AudioInputDeviceTest::GetParam());
 }
 
 ACTION_P(ReportStateChange, device) {
@@ -185,9 +191,9 @@ TEST_P(AudioInputDeviceTest, FailToCreateStream) {
 
   MockCaptureCallback callback;
   MockAudioInputIPC* input_ipc = new MockAudioInputIPC();
-  scoped_refptr<AudioInputDevice> device(new AudioInputDevice(
+  auto device = base::MakeRefCounted<AudioInputDevice>(
       base::WrapUnique(input_ipc), AudioInputDevice::Purpose::kUserInput,
-      AudioInputDeviceTest::GetParam()));
+      AudioInputDeviceTest::GetParam());
   device->Initialize(params, &callback);
   EXPECT_CALL(*input_ipc, CreateStream(_, _, _, _))
       .WillOnce(ReportStateChange(device.get()));

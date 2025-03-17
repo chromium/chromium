@@ -15,7 +15,7 @@
 
 namespace ios_web_view {
 class WebViewTranslateClient;
-}  // namespace is_web_view
+}  // namespace ios_web_view
 
 namespace web {
 class WebState;

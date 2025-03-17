@@ -28,6 +28,10 @@ size_t WeakUnlimitedSettingsStorage::GetBytesInUse() {
   return delegate_->GetBytesInUse();
 }
 
+ValueStore::ReadResult WeakUnlimitedSettingsStorage::GetKeys() {
+  return delegate_->GetKeys();
+}
+
 ValueStore::ReadResult WeakUnlimitedSettingsStorage::Get(
     const std::string& key) {
   return delegate_->Get(key);

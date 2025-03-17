@@ -28,7 +28,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -39,7 +38,6 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -296,40 +294,7 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    public void testPrimaryAccountRenaming_updatesLegacySyncAccountEmail() {
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        SigninTestUtil.signin(TestAccounts.ACCOUNT1);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assertEquals(
-                            SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),
-                            TestAccounts.ACCOUNT1.getEmail());
-                });
-
-        AccountInfo renamedAccount =
-                new AccountInfo.Builder("renamed@gmail.com", TestAccounts.ACCOUNT1.getGaiaId())
-                        .build();
-        try (var ignored = mSigninTestRule.blockGetCoreAccountInfosUpdate(true)) {
-            mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-            mSigninTestRule.addAccount(renamedAccount);
-        }
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assertEquals(
-                            mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN).getEmail(),
-                            renamedAccount.getEmail());
-                    assertEquals(
-                            SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),
-                            renamedAccount.getEmail());
-                });
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF})
-    public void testSignInAndSignOut_updateLegacySyncAccountEmail() {
+    public void testSignInAndSignOut_updatesLegacyPrimaryAccountEmail() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -350,8 +315,7 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF})
-    public void testPrimaryAccountRenaming_updatesLegacySyncAccountEmail_whenSignedIn() {
+    public void testPrimaryAccountRenaming_updatesLegacyPrimaryAccountEmail() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -364,11 +328,7 @@ public class SigninManagerIntegrationTest {
         AccountInfo renamedAccount =
                 new AccountInfo.Builder("renamed@gmail.com", TestAccounts.ACCOUNT1.getGaiaId())
                         .build();
-
-        try (var ignored = mSigninTestRule.blockGetCoreAccountInfosUpdate(true)) {
-            mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-            mSigninTestRule.addAccount(renamedAccount);
-        }
+        mSigninTestRule.updateAccount(renamedAccount);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

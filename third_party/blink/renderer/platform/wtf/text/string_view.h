@@ -240,6 +240,10 @@ class WTF_EXPORT StringView {
   // Returns i+1 otherwise.
   unsigned NextCodePointOffset(unsigned i) const;
 
+  // Does `CodepointAt()`, and the specified `i` is updated by
+  // `NextCodePointOffset()`.
+  UChar32 CodePointAtAndNext(unsigned& i) const;
+
   const void* Bytes() const { return bytes_; }
 
   base::span<const uint8_t> RawByteSpan() const {

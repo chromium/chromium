@@ -100,8 +100,6 @@ struct AttributionInteropConfig {
   double max_event_level_epsilon = 0;
   uint32_t max_trigger_state_cardinality = 0;
   bool needs_cross_app_web = false;
-  bool needs_attribution_scopes = false;
-  bool needs_aggregatable_named_budgets = false;
   std::vector<url::Origin> aggregation_coordinator_origins;
 
   AttributionInteropConfig();

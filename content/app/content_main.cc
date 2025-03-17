@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "content/public/app/content_main.h"
 
 #include <memory>
@@ -34,6 +39,7 @@
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
+#include "components/embedder_support/switches.h"
 #include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/app/content_main_runner_impl.h"
@@ -303,7 +309,12 @@ NO_STACK_PROTECTOR int RunContentProcess(
 #if BUILDFLAG(IS_IOS)
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(switches::kEnableViewport);
-    command_line->AppendSwitch(switches::kUseMobileUserAgent);
+    command_line->AppendSwitch(embedder_support::kUseMobileUserAgent);
+
+#if BUILDFLAG(IS_IOS_TVOS)
+    // Set tvOS to single-process mode by default.
+    command_line->AppendSwitch(switches::kSingleProcess);
+#endif
 #endif
 
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && !defined(COMPONENT_BUILD)

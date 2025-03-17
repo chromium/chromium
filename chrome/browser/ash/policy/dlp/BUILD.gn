@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("dlp") {
   sources = [
@@ -26,6 +26,8 @@ static_library("dlp") {
     "files_policy_notification_manager_factory.h",
     "files_policy_string_util.cc",
     "files_policy_string_util.h",
+    "window_util.cc",
+    "window_util.h",
   ]
 
   public_deps = [
@@ -77,10 +79,10 @@ static_library("dlp") {
     # TODO(b/354095042): Use targets having headers directly included from
     # chrome/browser/ash/policy/dlp/files_policy_notification_manager.cc
     # instead after fixing cyclic dependency.
-    "//ash/components/arc/mojom:mojom",
     "//chrome/app/vector_icons:vector_icons",
     "//chromeos/ash/components/dbus:vm_applications_apps_proto",
     "//chromeos/ash/components/drivefs",
+    "//chromeos/ash/experiences/arc/mojom:mojom",
     "//components/paint_preview/buildflags",
 
     # TODO(b/354095042): Use targets having headers directly included from

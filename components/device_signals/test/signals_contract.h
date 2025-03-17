@@ -16,7 +16,7 @@ namespace device_signals::test {
 // This represents the inline flow contract.
 base::flat_map<std::string,
                base::RepeatingCallback<bool(const base::Value::Dict&)>>
-GetSignalsContract();
+GetSignalsContract(bool is_av_signal_enabled);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Returns a map from a signal name to a predicate which evaluates an
@@ -24,7 +24,7 @@ GetSignalsContract();
 // This represents the inline flow contract for unmanaged devices (crOS).
 base::flat_map<std::string,
                base::RepeatingCallback<bool(const base::Value::Dict&)>>
-GetSignalsContractForUnmanagedDevices();
+GetSignalsContractForUnmanagedDevices(bool is_av_signal_enabled);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace device_signals::test

@@ -4,7 +4,7 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
 static_library("fusebox") {
   sources = [

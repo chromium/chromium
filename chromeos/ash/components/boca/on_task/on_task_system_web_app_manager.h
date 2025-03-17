@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_H_
 
 #include "base/functional/callback_forward.h"
+#include "chromeos/ash/components/boca/boca_window_observer.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
@@ -56,10 +57,13 @@ class OnTaskSystemWebAppManager {
       SessionID window_id,
       const std::set<SessionID>& tab_ids_to_remove) = 0;
 
-  // Sets up the specified Boca SWA window for OnTask. This may remove all
-  // pre-existing content tabs except for the homepage one, normally required
-  // when the app instance was restored manually.
-  virtual void PrepareSystemWebAppWindowForOnTask(SessionID window_id) = 0;
+  // Sets up the specified Boca SWA window for OnTask. Setting
+  // `close_bundle_content` will remove all pre-existing content tabs except for
+  // the homepage one, normally required at the onset of a new session or when
+  // the app instance was restored manually in the middle of an active session.
+  virtual void PrepareSystemWebAppWindowForOnTask(
+      SessionID window_id,
+      bool close_bundle_content) = 0;
 
   // Returns a valid tab id associated with the active tab. If
   // there is no valid active tab, it returns `SessionID::InvalidValue()`.
@@ -67,6 +71,9 @@ class OnTaskSystemWebAppManager {
 
   // Switch to the tab with associated with `tab_id`.
   virtual void SwitchToTab(SessionID tab_id) = 0;
+
+  // Mute/unmute all tabs in all browser instances.
+  virtual void SetAllChromeTabsMuted(bool muted) = 0;
 
  protected:
   OnTaskSystemWebAppManager() = default;

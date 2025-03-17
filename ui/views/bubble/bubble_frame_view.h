@@ -10,7 +10,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -191,9 +193,8 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   bool GetDisplayVisibleArrow() const;
 
   // Set the background color of the bubble border.
-  // TODO(b/261653838): Update this function to use color id instead.
-  void SetBackgroundColor(SkColor color);
-  SkColor GetBackgroundColor() const;
+  void SetBackgroundColor(ui::ColorVariant color);
+  ui::ColorVariant background_color() const { return bubble_border_->color(); }
 
   // For masking reasons, the ClientView may be painted to a textured layer. To
   // ensure bubbles that rely on the frame background color continue to work as
@@ -341,6 +342,9 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
       const std::u16string& label_text,
       style::TextContext text_context,
       style::TextStyle text_style);
+
+  // Note: The method is defined for meta data framework.
+  SkColor GetBackgroundColor() const;
 
   // The bubble border.
   raw_ptr<BubbleBorder> bubble_border_ = nullptr;

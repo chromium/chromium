@@ -60,7 +60,7 @@ class MEDIA_EXPORT AudioPullFifo {
 
   // Temporary audio bus to hold the data from the producer.
   std::unique_ptr<AudioBus> fifo_;
-  int fifo_index_;
+  size_t fifo_index_;
 };
 
 }  // namespace media

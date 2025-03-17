@@ -102,15 +102,20 @@ class CaptureModeBehavior {
   virtual bool ShouldReShowUisAtPerformingCapture(
       PerformCaptureType capture_type) const;
   // Returns true if the behavior should show default action buttons such as
-  // search and copy text after region selection.
-  virtual bool ShouldShowDefaultActionButtonsAfterRegionSelected() const;
-  virtual bool CanShowSmartActionsButton() const;
+  // search, copy text and smart actions in the action container IF the action
+  // container is shown.
+  virtual bool ShouldShowDefaultActionButtonsInActionContainer() const;
   // Returns true if the behavior can show action buttons at all.
   // TODO(b/377570562): Consolidate these APIs.
   virtual bool CanShowActionButtons() const;
+  virtual bool ShouldPaintSunfishCaptureRegion() const;
   virtual bool ShouldShowCaptureButtonAfterRegionSelected() const;
   virtual bool ShouldEndSessionOnShowingSearchResults() const;
   virtual bool ShouldEndSessionOnSearchResultClicked() const;
+  // Returns true if a disclaimer dialog needs to be shown when a capture mode
+  // session is initialized with this behavior.
+  virtual bool NeedsDisclaimerOnInit() const;
+  virtual bool ShouldAnnounceCaptureModeUIOnDisclaimerDismissed() const;
   // Returns the full path for the capture file. If the creation of the path
   // failed, the path provided will be empty.
   using OnCaptureFolderCreatedCallback =
@@ -134,6 +139,20 @@ class CaptureModeBehavior {
   // a capture region phase.
   virtual const std::u16string GetCaptureLabelRegionText() const;
 
+  // Returns the title to use for the action button container window. This will
+  // be announced by a screen reader when the user navigates to the action
+  // button container.
+  virtual const std::u16string GetActionButtonContainerTitle() const;
+
+  // Returns the title to use for the capture mode bar window. This will be
+  // announced by a screen reader when the user navigates to the capture mode
+  // bar.
+  virtual const std::u16string GetCaptureModeBarTitle() const;
+
+  // Returns the text to be announced by a screen reader when capture mode is
+  // opened with this behavior.
+  virtual const std::string GetCaptureModeOpenAnnouncement() const;
+
   // Creates the capture mode bar view, which might look different depending on
   // the actual type of the behavior.
   virtual std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView();
@@ -152,9 +171,10 @@ class CaptureModeBehavior {
   // settings restoration or not.
   virtual void OnDemoToolsSettingsChanged();
 
-  // Notifies the behavior that a region was selected or adjusted. By default
-  // this will do nothing.
-  virtual void OnRegionSelectedOrAdjusted();
+  // Notifies the behavior that a region was selected or adjusted when the
+  // action container is showing. By default this will do nothing, but should be
+  // overridden to add buttons to the action container when needed.
+  virtual void OnRegionSelectedOrAdjustedWhenActionContainerShowing();
 
   // Called when the `Enter` key is pressed. By default this will perform image
   // capture.

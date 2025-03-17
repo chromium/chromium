@@ -1503,6 +1503,84 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
+// The color picker's popup behaves differently on Android/iOS-Blink, this test
+// doesn't apply.
+// TODO(crbug.com/40835208): This test is consistently failing in Fuchsia.
+// Similar to the test `ControlsIdsForDateTimePopup`, we should try to re-enable
+// it when content_browsertests runs in non-headless mode.
+#if !BUILDFLAG(IS_ANDROID) && !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)) && \
+    !BUILDFLAG(IS_FUCHSIA)
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       GetBoundsRectIframesForColorPicker) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <iframe style='border-width: 80px; padding: 20px;'
+            srcdoc="
+              <input type='color' aria-label='Input' />
+            ">
+          </iframe>
+        </body>
+      </html>)HTML"));
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Input");
+
+  ui::AXNode* root = GetManager()->GetRoot();
+  ASSERT_NE(nullptr, root);
+
+  const ui::AXNode* iframe = root->children()[0]->children()[0]->children()[0];
+  ASSERT_NE(nullptr, iframe);
+  ASSERT_EQ(iframe->GetRole(), ax::mojom::Role::kIframe);
+
+  const ui::AXTreeID iframe_tree_id = ui::AXTreeID::FromString(
+      iframe->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
+  ui::BrowserAccessibilityManager* iframe_manager =
+      ui::BrowserAccessibilityManager::FromID(iframe_tree_id);
+  ASSERT_NE(nullptr, iframe_manager);
+
+  ui::AXNode* input_node =
+      iframe_manager->GetRoot()->children()[0]->children()[0]->children()[0];
+  ASSERT_NE(nullptr, input_node);
+  ui::BrowserAccessibility* input = iframe_manager->GetFromAXNode(input_node);
+
+  // Get the list of ControlsIds; should initially be empty.
+  {
+    const auto& controls_ids =
+        input->GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
+    ASSERT_EQ(0u, controls_ids.size());
+  }
+  // Expand the popup and wait for it to appear.
+  {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ui::kAXModeComplete,
+                                           ax::mojom::Event::kClicked);
+
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kDoDefault;
+    input->AccessibilityPerformAction(action_data);
+
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+  // Get the list of ControlsIds again; should now include the popup.
+  {
+    const auto& controls_ids =
+        input->GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
+    ASSERT_EQ(1u, controls_ids.size());
+    const ui::BrowserAccessibility* popup_area =
+        iframe_manager->GetFromID(controls_ids[0]);
+    ASSERT_NE(nullptr, popup_area);
+
+    // Ensure that the bounding box of the popup area is at least 100 pixels
+    // (iframe's border-with and padding) from the origin.
+    gfx::Rect popup_bounds = popup_area->GetUnclippedRootFrameBoundsRect();
+    EXPECT_GT(popup_bounds.x(), 100);
+    EXPECT_GT(popup_bounds.y(), 100);
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !(BUILDFLAG(IS_IOS) &&
+        // BUILDFLAG(USE_BLINK))
+
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        PlatformIterator) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
@@ -2589,6 +2667,16 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       AccessibilityEventsImmediateRefresh) {
+  LoadInitialAccessibilityTreeFromHtmlFilePath(
+      "/accessibility/event/immediate-refresh.html");
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+  ASSERT_TRUE(waiter.WaitForNotification());
+}
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        NavigateInIframe) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(
       "/accessibility/regression/iframe-navigation.html");
@@ -2994,6 +3082,23 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       TestAccessibilityFocus) {
+  LoadInitialAccessibilityTreeFromHtml("<button>ok</button>");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(), "ok");
+
+  ui::BrowserAccessibility* button_node = FindNode("ok");
+  ASSERT_NE(button_node, nullptr);
+
+  ui::BrowserAccessibilityManager* manager = button_node->manager();
+  manager->ScrollToMakeVisible(*button_node, gfx::Rect());
+
+  EXPECT_EQ(manager->GetAccessibilityFocus(), button_node);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 class AriaNotifyCrossPlatformAccessibilityBrowserTest
     : public CrossPlatformAccessibilityBrowserTest {
  public:
@@ -3030,7 +3135,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
       function otherNotify(clickedElement) {
         clickedElement.ariaNotify("world", {"interrupt": "pending",
                                             "notificationId": "test",
-                                            "priority": "important"});
+                                            "priority": "high"});
       }
       </script>)HTML");
 
@@ -3066,7 +3171,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
 
     EXPECT_EQ(
         std::vector<int32_t>{
-            static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNone)},
+            static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNormal)},
         button->GetIntListAttribute(
             ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
   }
@@ -3087,19 +3192,22 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
         button->GetStringListAttribute(
             ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
 
-    EXPECT_EQ(std::vector<std::string>{"test"},
+    // For v1 of the feature, notificationId should have a default value of
+    // empty string.
+    EXPECT_EQ(std::vector<std::string>{""},
               button->GetStringListAttribute(
                   ax::mojom::StringListAttribute::kAriaNotificationIds));
 
+    // For v1 of the feature, interrupt should have a default value of none.
     EXPECT_EQ(
-        std::vector<int32_t>{static_cast<int32_t>(
-            ax::mojom::AriaNotificationInterrupt::kPending)},
+        std::vector<int32_t>{
+            static_cast<int32_t>(ax::mojom::AriaNotificationInterrupt::kNone)},
         button->GetIntListAttribute(
             ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties));
 
     EXPECT_EQ(
-        std::vector<int32_t>{static_cast<int32_t>(
-            ax::mojom::AriaNotificationPriority::kImportant)},
+        std::vector<int32_t>{
+            static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kHigh)},
         button->GetIntListAttribute(
             ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
   }
@@ -3150,7 +3258,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
 
     EXPECT_EQ(
         std::vector<int32_t>{
-            static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNone)},
+            static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNormal)},
         button->GetIntListAttribute(
             ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
   };
@@ -3160,6 +3268,8 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
   }
 }
 
+// For v1 of the feature, notificationId should have a default value of empty
+// string and interrupt should have the default value of none.
 IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
                        TestConsecutiveAriaNotifications) {
   const std::string url_str(R"HTML(
@@ -3171,7 +3281,187 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
       function notify(clickedElement) {
         clickedElement.ariaNotify("one", {"notificationId": "kOne",
                                           "interrupt": "all"});
-        clickedElement.ariaNotify("two", {"priority": "important"});
+        clickedElement.ariaNotify("two", {"priority": "high"});
+        clickedElement.ariaNotify("three", {"notificationId": "kThree",
+                                            "interrupt": "pending"});
+      }
+      </script>)HTML");
+
+  LoadInitialAccessibilityTreeFromHtml(url_str);
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Container");
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED);
+
+    ExecuteScript("document.getElementById('a').click();");
+    ASSERT_TRUE(waiter.WaitForNotification());
+
+    const auto* button = FindNode("a");
+    ASSERT_NE(button, nullptr);
+
+    EXPECT_EQ(
+        std::vector<std::string>({"one", "two", "three"}),
+        button->GetStringListAttribute(
+            ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
+
+    EXPECT_EQ(
+        std::vector<int32_t>(
+            {static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNormal),
+             static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kHigh),
+             static_cast<int32_t>(
+                 ax::mojom::AriaNotificationPriority::kNormal)}),
+        button->GetIntListAttribute(
+            ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
+
+    EXPECT_EQ(std::vector<std::string>({"", "", ""}),
+              button->GetStringListAttribute(
+                  ax::mojom::StringListAttribute::kAriaNotificationIds));
+
+    EXPECT_EQ(
+        std::vector<int32_t>(
+            {static_cast<int32_t>(ax::mojom::AriaNotificationInterrupt::kNone),
+             static_cast<int32_t>(ax::mojom::AriaNotificationInterrupt::kNone),
+             static_cast<int32_t>(
+                 ax::mojom::AriaNotificationInterrupt::kNone)}),
+        button->GetIntListAttribute(
+            ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties));
+  }
+}
+
+class AriaNotifyV2CrossPlatformAccessibilityBrowserTest
+    : public AriaNotifyCrossPlatformAccessibilityBrowserTest {
+ public:
+  AriaNotifyV2CrossPlatformAccessibilityBrowserTest() = default;
+
+  AriaNotifyV2CrossPlatformAccessibilityBrowserTest(
+      const AriaNotifyV2CrossPlatformAccessibilityBrowserTest&) = delete;
+  AriaNotifyCrossPlatformAccessibilityBrowserTest& operator=(
+      const AriaNotifyV2CrossPlatformAccessibilityBrowserTest&) = delete;
+
+  ~AriaNotifyV2CrossPlatformAccessibilityBrowserTest() override = default;
+
+  void ChooseFeatures(
+      std::vector<base::test::FeatureRef>* enabled_features,
+      std::vector<base::test::FeatureRef>* disabled_features) override {
+    CrossPlatformAccessibilityBrowserTest::ChooseFeatures(enabled_features,
+                                                          disabled_features);
+    enabled_features->emplace_back(blink::features::kAriaNotify);
+    enabled_features->emplace_back(blink::features::kAriaNotifyV2);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AriaNotifyV2CrossPlatformAccessibilityBrowserTest,
+                       TestSingleAriaNotification) {
+  const std::string url_str(R"HTML(
+      <!DOCTYPE html>
+      <div aria-label="Container">
+        <button aria-label="a" id="a" onclick="notify(this)"></button>
+        <button aria-label="b" id="b" onclick="otherNotify(this)"></button>
+      </div>
+      <script>
+      function notify(clickedElement) {
+        clickedElement.ariaNotify("hello");
+      }
+      function otherNotify(clickedElement) {
+        clickedElement.ariaNotify("world", {"interrupt": "pending",
+                                            "notificationId": "test",
+                                            "priority": "high"});
+      }
+      </script>)HTML");
+
+  LoadInitialAccessibilityTreeFromHtml(url_str);
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Container");
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED);
+
+    ExecuteScript("document.getElementById('a').click();");
+    ASSERT_TRUE(waiter.WaitForNotification());
+
+    const auto* button = FindNode("a");
+    ASSERT_NE(button, nullptr);
+
+    EXPECT_EQ(
+        std::vector<std::string>{"hello"},
+        button->GetStringListAttribute(
+            ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
+
+    EXPECT_EQ(std::vector<std::string>{""},
+              button->GetStringListAttribute(
+                  ax::mojom::StringListAttribute::kAriaNotificationIds));
+
+    EXPECT_EQ(
+        std::vector<int32_t>{
+            static_cast<int32_t>(ax::mojom::AriaNotificationInterrupt::kNone)},
+        button->GetIntListAttribute(
+            ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties));
+
+    EXPECT_EQ(
+        std::vector<int32_t>{
+            static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNormal)},
+        button->GetIntListAttribute(
+            ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
+  }
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED);
+
+    ExecuteScript("document.getElementById('b').click();");
+    ASSERT_TRUE(waiter.WaitForNotification());
+
+    const auto* button = FindNode("b");
+    ASSERT_NE(button, nullptr);
+
+    EXPECT_EQ(
+        std::vector<std::string>{"world"},
+        button->GetStringListAttribute(
+            ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
+
+    EXPECT_EQ(std::vector<std::string>{"test"},
+              button->GetStringListAttribute(
+                  ax::mojom::StringListAttribute::kAriaNotificationIds));
+
+    EXPECT_EQ(
+        std::vector<int32_t>{
+            static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kHigh)},
+        button->GetIntListAttribute(
+            ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
+
+    EXPECT_EQ(
+        std::vector<int32_t>{static_cast<int32_t>(
+            ax::mojom::AriaNotificationInterrupt::kPending)},
+        button->GetIntListAttribute(
+            ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties));
+  }
+}
+
+// For v2 of the feature, notificationId and interrupt should have their given
+// values.
+IN_PROC_BROWSER_TEST_F(AriaNotifyV2CrossPlatformAccessibilityBrowserTest,
+                       TestConsecutiveAriaNotificationsV2) {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+  enabled_features.emplace_back(blink::features::kAriaNotifyV2);
+  ChooseFeatures(&enabled_features, &disabled_features);
+
+  const std::string url_str(R"HTML(
+      <!DOCTYPE html>
+      <div aria-label="Container">
+        <button aria-label="a" id="a" onclick="notify(this)"></button>
+      </div>
+      <script>
+      function notify(clickedElement) {
+        clickedElement.ariaNotify("one", {"notificationId": "kOne",
+                                          "interrupt": "all"});
+        clickedElement.ariaNotify("two", {"priority": "high"});
         clickedElement.ariaNotify("three", {"notificationId": "kThree",
                                             "interrupt": "pending"});
       }
@@ -3212,10 +3502,10 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
 
     EXPECT_EQ(
         std::vector<int32_t>(
-            {static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNone),
+            {static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNormal),
+             static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kHigh),
              static_cast<int32_t>(
-                 ax::mojom::AriaNotificationPriority::kImportant),
-             static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNone)}),
+                 ax::mojom::AriaNotificationPriority::kNormal)}),
         button->GetIntListAttribute(
             ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
   }

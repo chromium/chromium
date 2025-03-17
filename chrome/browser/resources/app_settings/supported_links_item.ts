@@ -30,7 +30,7 @@ import type {SupportedLinksOverlappingAppsDialogElement} from './supported_links
 import {createDummyApp} from './web_app_settings_utils.js';
 
 type PreferenceType = 'preferred'|'browser';
-const PREFERRED_APP_PREF = 'preferred' as const;
+const PREFERRED_APP_PREF = 'preferred';
 
 export interface SupportedLinksItemElement {
   $: {
@@ -249,7 +249,7 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
     this.showOverlappingAppsDialog_ = false;
 
     const overlapDialog = castExists(
-        this.shadowRoot!
+        this.shadowRoot
             .querySelector<SupportedLinksOverlappingAppsDialogElement>(
                 '#overlapDialog'));
     if (overlapDialog.wasConfirmed()) {
@@ -258,8 +258,8 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
       focusWithoutInk(this.$.preferredRadioButton);
     } else {
       // Reset the radio button.
-      this.shadowRoot!.querySelector<CrRadioGroupElement>(
-                          '#radioGroup')!.selected =
+      this.shadowRoot.querySelector<CrRadioGroupElement>(
+                         '#radioGroup')!.selected =
           this.getCurrentPreferredApp_();
       // Return keyboard focus to the browser radio button.
       focusWithoutInk(this.$.browserRadioButton);

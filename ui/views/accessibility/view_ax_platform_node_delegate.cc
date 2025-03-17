@@ -16,7 +16,6 @@
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -33,6 +32,7 @@
 #include "ui/base/layout.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/controls/native/native_view_host.h"
@@ -68,28 +68,6 @@ bool g_is_queueing_events = false;
 // FlushQueue(). While flushing, no new events should be added to the queue, see
 // https://crbug.com/358404368
 bool g_is_flushing = false;
-
-bool IsAccessibilityFocusableWhenEnabled(View* view) {
-  return view->GetFocusBehavior() != View::FocusBehavior::NEVER &&
-         view->IsDrawn();
-}
-
-// Used to determine if a View should be ignored by accessibility clients by
-// being a non-keyboard-focusable child of a keyboard-focusable ancestor. E.g.,
-// LabelButtons contain Labels, but a11y should just show that there's a button.
-bool IsViewUnfocusableDescendantOfFocusableAncestor(View* view) {
-  if (IsAccessibilityFocusableWhenEnabled(view)) {
-    return false;
-  }
-
-  while (view->parent()) {
-    view = view->parent();
-    if (IsAccessibilityFocusableWhenEnabled(view)) {
-      return true;
-    }
-  }
-  return false;
-}
 
 ui::AXPlatformNode* FromNativeWindow(gfx::NativeWindow native_window) {
   Widget* widget = Widget::GetWidgetForNativeWindow(native_window);
@@ -182,9 +160,15 @@ ViewAXPlatformNodeDelegate::~ViewAXPlatformNodeDelegate() {
       ax_platform_node_->GetNativeViewAccessible()) {
     ui::AXPlatformNode::SetPopupFocusOverride(nullptr);
   }
-  // Call ExtractAsDangling() first to clear the underlying pointer and return
-  // another raw_ptr instance that is allowed to dangle.
-  ax_platform_node_.ExtractAsDangling()->Destroy();
+}
+
+void ViewAXPlatformNodeDelegate::EnsureAtomicViewAXTreeManager() {
+  if (atomic_view_ax_tree_manager_) {
+    return;
+  }
+
+  atomic_view_ax_tree_manager_ =
+      views::AtomicViewAXTreeManager::Create(this, GetData());
 }
 
 bool ViewAXPlatformNodeDelegate::IsAccessibilityFocusable() const {
@@ -210,7 +194,7 @@ void ViewAXPlatformNodeDelegate::EndPopupFocusOverride() {
 
 void ViewAXPlatformNodeDelegate::FireFocusAfterMenuClose() {
   ui::AXPlatformNodeBase* focused_node =
-      static_cast<ui::AXPlatformNodeBase*>(ax_platform_node_);
+      static_cast<ui::AXPlatformNodeBase*>(ax_platform_node_.get());
   // Continue to drill down focused nodes to get to the "deepest" node that is
   // focused. This is not necessarily a view. It could be web content.
   while (focused_node) {
@@ -233,18 +217,21 @@ void ViewAXPlatformNodeDelegate::FireFocusAfterMenuClose() {
   }
 }
 
-bool ViewAXPlatformNodeDelegate::GetIsIgnored() const {
-  // TODO(accessibility): Make `ViewAccessibility::GetIsIgnored()` non-virtual
-  // and delete this method. For this to happen the logic relevant to
-  // `IsViewUnfocusableDescendantOfFocusableAncestor()` needs to be moved to be
-  // part of a "push" system rather than "pull".
-  // For more info: https://crbug.com/325137417
-  return GetData().IsIgnored();
-}
-
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNativeObject() const {
   DCHECK(ax_platform_node_);
   return ax_platform_node_->GetNativeViewAccessible();
+}
+
+void ViewAXPlatformNodeDelegate::OnWidgetUpdated(Widget* widget,
+                                                 Widget* old_widget) {
+  ViewAccessibility::OnWidgetUpdated(widget, old_widget);
+
+  // Initialize the AtomicViewAXTreeManager if necessary when the view gets
+  // added to the widget. We must wait for the widget to become available to
+  // get valid data our of GetData().
+  if (widget && needs_ax_tree_manager()) {
+    EnsureAtomicViewAXTreeManager();
+  }
 }
 
 void ViewAXPlatformNodeDelegate::FireNativeEvent(ax::mojom::Event event_type) {
@@ -352,34 +339,6 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
   }
 
   GetAccessibleNodeData(&data_);
-
-  // View::IsDrawn is true if a View is visible and all of its ancestors are
-  // visible too, since invisibility inherits.
-  //
-  // (We could try to move this logic to ViewAccessibility, but
-  // that would require ensuring that Chrome OS invalidates the whole
-  // subtree when a View changes its visibility state.)
-  if (!view()->IsDrawn()) {
-    data_.AddState(ax::mojom::State::kInvisible);
-  }
-
-  // Make sure this element is excluded from the a11y tree if there's a
-  // focusable parent. All keyboard focusable elements should be leaf nodes.
-  // Exceptions to this rule will themselves be accessibility focusable.
-  //
-  // Note: this code was added to support MacViews accessibility,
-  // because we needed a way to mark a View as a leaf node in the
-  // accessibility tree. We need to replace this with a cross-platform
-  // solution that works for ChromeVox, too, and move it to ViewAccessibility.
-  if (IsViewUnfocusableDescendantOfFocusableAncestor(view())) {
-    data_.AddState(ax::mojom::State::kIgnored);
-  }
-
-#if BUILDFLAG(IS_WIN)
-  if (view()->GetViewAccessibility().needs_ax_tree_manager()) {
-    view()->GetViewAccessibility().EnsureAtomicViewAXTreeManager();
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
   return data_;
 }
@@ -556,6 +515,23 @@ const ui::AXSelection ViewAXPlatformNodeDelegate::GetUnignoredSelection()
   return selection;
 }
 
+const ui::AXSelection ViewAXPlatformNodeDelegate::GetHypertextSelection()
+    const {
+  const ui::AXSelection& selection = GetUnignoredSelection();
+  // In Views, the selection is purely used for textfields, and therefore the
+  // does not need to be adjusted away from leaf node endpoints for
+  // text/hypertext interfaces.
+#if DCHECK_IS_ON()
+  if (selection.anchor_offset != ax::mojom::kNoSelectionOffset) {
+    DCHECK_EQ(data_.id, selection.anchor_object_id);
+    DCHECK_EQ(data_.id, selection.focus_object_id);
+    DCHECK(data_.IsAtomicTextField());
+  }
+#endif
+
+  return selection;
+}
+
 // Since AtomicViewAXTreeManager only ever contains a single node, we can be
 // sure that we are in a leaf node and only need to return a text position.
 ui::AXNodePosition::AXPositionInstance
@@ -630,18 +606,6 @@ bool ViewAXPlatformNodeDelegate::IsInvisibleOrIgnored() const {
 
 bool ViewAXPlatformNodeDelegate::IsFocused() const {
   return GetFocus() == GetNativeObject();
-}
-
-bool ViewAXPlatformNodeDelegate::IsToplevelBrowserWindow() {
-  // Note: only used on Desktop Linux. Other platforms don't have an application
-  // node so this would never return true.
-  ui::AXNodeData data = GetData();
-  if (data.role != ax::mojom::Role::kWindow) {
-    return false;
-  }
-
-  AXPlatformNodeDelegate* parent = GetParentDelegate();
-  return parent && parent->GetData().role == ax::mojom::Role::kApplication;
 }
 
 gfx::Rect ViewAXPlatformNodeDelegate::GetBoundsRect(
@@ -816,7 +780,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
     return child->HitTestPoint(point_in_child_coords);
   };
   const auto i =
-      base::ranges::find_if(base::Reversed(v->children()), is_point_in_child);
+      std::ranges::find_if(base::Reversed(v->children()), is_point_in_child);
   // If it's not inside any of our children, it's inside this view.
   return (i == v->children().rend()) ? GetNativeViewAccessible()
                                      : (*i)->GetNativeViewAccessible();
@@ -1025,7 +989,7 @@ std::optional<int> ViewAXPlatformNodeDelegate::GetPosInSet() const {
     return std::nullopt;
   }
   // Check this is in views_in_group; it may be removed if it is ignored.
-  auto found_view = base::ranges::find(views_in_group, view());
+  auto found_view = std::ranges::find(views_in_group, view());
   if (found_view == views_in_group.end()) {
     return std::nullopt;
   }
@@ -1049,7 +1013,7 @@ std::optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {
     return std::nullopt;
   }
   // Check this is in views_in_group; it may be removed if it is ignored.
-  auto found_view = base::ranges::find(views_in_group, view());
+  auto found_view = std::ranges::find(views_in_group, view());
   if (found_view == views_in_group.end()) {
     return std::nullopt;
   }
@@ -1099,12 +1063,12 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
     return ChildWidgetsResult();
   }
 
-  std::set<raw_ptr<Widget, SetExperimental>> owned_widgets;
-  Widget::GetAllOwnedWidgets(widget->GetNativeView(), &owned_widgets);
+  Widget::Widgets owned_widgets =
+      Widget::GetAllOwnedWidgets(widget->GetNativeView());
 
   std::vector<raw_ptr<Widget, VectorExperimental>> visible_widgets;
-  base::ranges::copy_if(owned_widgets, std::back_inserter(visible_widgets),
-                        &Widget::IsVisible);
+  std::ranges::copy_if(owned_widgets, std::back_inserter(visible_widgets),
+                       &Widget::IsVisible);
 
   // Focused child widgets should take the place of the web page they cover in
   // the accessibility tree.
@@ -1115,7 +1079,7 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
     return ViewAccessibilityUtils::IsFocusedChildWidget(child_widget,
                                                         focused_view);
   };
-  const auto i = base::ranges::find_if(visible_widgets, is_focused_child);
+  const auto i = std::ranges::find_if(visible_widgets, is_focused_child);
   // In order to support the "read title (NVDAKey+T)" and "read window
   // (NVDAKey+B)" commands in the NVDA screen reader, hide the rest of the UI
   // from the accessibility tree when a modal dialog is showing.

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
@@ -14,7 +13,6 @@ import org.chromium.base.IntStringCallback;
 import org.chromium.chrome.browser.password_manager.settings.PasswordListObserver;
 import org.chromium.chrome.browser.password_manager.settings.PasswordManagerHandler;
 import org.chromium.chrome.browser.password_manager.settings.SavedPasswordEntry;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.ArrayList;
 
@@ -37,8 +35,6 @@ public final class FakePasswordManagerHandler implements PasswordManagerHandler 
 
     @Nullable private String mExportTargetPath;
 
-    private boolean mShowWarningWasCalled;
-
     private int mSerializationInvocationCount;
 
     public void setSavedPasswords(ArrayList<SavedPasswordEntry> savedPasswords) {
@@ -59,10 +55,6 @@ public final class FakePasswordManagerHandler implements PasswordManagerHandler 
 
     public String getExportTargetPath() {
         return mExportTargetPath;
-    }
-
-    public boolean wasShowWarningCalled() {
-        return mShowWarningWasCalled;
     }
 
     /**
@@ -130,12 +122,6 @@ public final class FakePasswordManagerHandler implements PasswordManagerHandler 
     public void showPasswordEntryEditingView(
             Context context, int index, boolean isBlockedCredential) {
         assert false : "Define this method before starting to use it in tests.";
-    }
-
-    @Override
-    public void showMigrationWarning(
-            Activity activity, BottomSheetController bottomSheetController) {
-        mShowWarningWasCalled = true;
     }
 
     @Override

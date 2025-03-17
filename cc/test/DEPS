@@ -36,9 +36,8 @@ specific_include_rules = {
   "layer_tree_test\.cc": [
     "+gpu/config/gpu_switches.h",
   ],
-  "test_layer_tree_frame_sink\.h": [
+  "test_layer_tree_frame_sink\.cc": [
     "+gpu/command_buffer/service/shared_image/shared_image_manager.h",
-    "+gpu/command_buffer/service/sync_point_manager.h",
     "+gpu/command_buffer/service/scheduler.h",
   ],
 }

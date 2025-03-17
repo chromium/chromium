@@ -14,6 +14,8 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
@@ -320,6 +322,35 @@ bool MixedContentChecker::ShouldBlockInternal(
     case blink::mojom::MixedContentContextType::kNotMixedContent:
       NOTREACHED();
   };
+
+  // Skip mixed content check for .local domains and private IP literals if the
+  // request is a Local Network Access (LNA) request. LNA checks later on will
+  // ensure that (a) the request is actually an LNA request, and (b) the user
+  // has given permission for the LNA request to go through.
+  //
+  // Reference:
+  // https://github.com/explainers-by-googlers/local-network-access
+  //
+  // This only checks for mixed content subframe navigations; subresource mixed
+  // content is checked in
+  // third_party/blink/renderer/core/loader/mixed_content_checker.cc.
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks)) {
+    // This request is a possible LNA request if one of the following is true:
+    //
+    // (1) The host is a private IP address literal
+    // (2) The hostname is a .local domain (per RFC 6762).
+    //
+    // There is no check for loopback addresses because loopback addresses are
+    // considered secure and not mixed content.
+    //
+    // TODO(crbug.com/395895368): check the IP address space for initiator, only
+    // skip when the initiator is more public.
+    if (network::ParsePrivateIpFromUrl(url) ||
+        network::IsRFC6762LocalDomain(url)) {
+      allowed = true;
+    }
+  }
 
   if (should_report_to_renderer) {
     *should_report_to_renderer = true;

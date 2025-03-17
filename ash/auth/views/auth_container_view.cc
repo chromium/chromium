@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/auth/views/auth_input_row_view.h"
 #include "ash/auth/views/auth_view_utils.h"
@@ -58,13 +59,13 @@ class PinObserverAdapter : public PinContainerView::Observer {
   PinObserverAdapter& operator=(const PinObserverAdapter&) = delete;
 
   // PinContainerView::Observer:
-  void OnSubmit(const std::u16string& text) override {
+  void OnSubmit(std::u16string_view text) override {
     auth_container_->PinSubmit(text);
   }
 
   void OnEscape() override { auth_container_->Escape(); }
 
-  void OnContentsChanged(const std::u16string& text) override {
+  void OnContentsChanged(std::u16string_view text) override {
     auth_container_->ContentsChanged();
   }
 
@@ -85,13 +86,13 @@ class PasswordObserverAdapter : public AuthInputRowView::Observer {
   PasswordObserverAdapter& operator=(const PasswordObserverAdapter&) = delete;
 
   // AuthInputRowView::Observer:
-  void OnSubmit(const std::u16string& text) override {
+  void OnSubmit(std::u16string_view text) override {
     auth_container_->PasswordSubmit(text);
   }
 
   void OnEscape() override { auth_container_->Escape(); }
 
-  void OnContentsChanged(const std::u16string& text) override {
+  void OnContentsChanged(std::u16string_view text) override {
     auth_container_->ContentsChanged();
   }
 
@@ -324,7 +325,7 @@ void AuthContainerView::SetPinStatus(
   PreferredSizeChanged();
 }
 
-const std::u16string& AuthContainerView::GetPinStatusMessage() const {
+std::u16string_view AuthContainerView::GetPinStatusMessage() const {
   return pin_status_->GetCurrentText();
 }
 
@@ -424,13 +425,13 @@ void AuthContainerView::UpdateSwitchButtonState() {
   }
 }
 
-void AuthContainerView::PinSubmit(const std::u16string& pin) const {
+void AuthContainerView::PinSubmit(std::u16string_view pin) const {
   for (auto& observer : observers_) {
     observer.OnPinSubmit(pin);
   }
 }
 
-void AuthContainerView::PasswordSubmit(const std::u16string& password) const {
+void AuthContainerView::PasswordSubmit(std::u16string_view password) const {
   for (auto& observer : observers_) {
     observer.OnPasswordSubmit(password);
   }

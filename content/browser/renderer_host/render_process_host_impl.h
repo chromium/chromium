@@ -47,6 +47,7 @@
 #include "content/common/renderer_host.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/process_allocation_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-forward.h"
@@ -209,8 +210,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Exposed as a public constant to share with other entities that need to
   // accommodate frame/process shutdown delays.
-  static constexpr int kKeepAliveHandleFactoryTimeoutInMSec = 30 * 1000;
-  static const base::TimeDelta kKeepAliveHandleFactoryTimeout;
+  static constexpr base::TimeDelta kKeepAliveHandleFactoryTimeout =
+      base::Seconds(30);
 
   // Create a new RenderProcessHost. The storage partition for the process
   // is retrieved from |browser_context| based on information in
@@ -241,6 +242,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool IsForGuestsOnly() override;
   bool IsJitDisabled() override;
   bool AreV8OptimizationsDisabled() override;
+  bool DisallowV8FeatureFlagOverrides() override;
   bool IsPdf() override;
   StoragePartitionImpl* GetStoragePartition() override;
   bool Shutdown(int exit_code) override;
@@ -317,6 +319,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void DecrementWorkerRefCount() override;
   void IncrementPendingReuseRefCount() override;
   void DecrementPendingReuseRefCount() override;
+  int GetPendingReuseRefCountForTesting() const override;
   void DisableRefCounts() override;
   bool AreRefCountsDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
@@ -338,6 +341,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       const network::DocumentIsolationPolicy& document_isolation_policy,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter,
       const storage::BucketLocator& bucket_locator,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
   void BindIndexedDB(
@@ -535,7 +540,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // - process creation when an existing process couldn't be found: see
   //   CreateRenderProcessHost.
   static RenderProcessHost* GetProcessHostForSiteInstance(
-      SiteInstanceImpl* site_instance);
+      SiteInstanceImpl* site_instance,
+      const ProcessAllocationContext& allocation_context);
 
   // Should be called when `site_instance` is used in a navigation.
   //
@@ -635,6 +641,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   void OnBoostForLoadingAdded() override;
   void OnBoostForLoadingRemoved() override;
+
+  void OnImmersiveXrSessionStarted() override;
+  void OnImmersiveXrSessionStopped() override;
 
   // Sets the global factory used to create new RenderProcessHosts in unit
   // tests.  It may be nullptr, in which case the default RenderProcessHost will
@@ -747,7 +756,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void BindWebrtcVideoPerfHistory(
       mojo::PendingReceiver<media::mojom::WebrtcVideoPerfHistory> receiver);
 
-  // Binds `receiever` to the `PushMessagingManager` instance owned by the
+  // Binds `receiver` to the `PushMessagingManager` instance owned by the
   // render process host, and is used by workers via `BrowserInterfaceBroker`.
   void BindPushMessaging(
       mojo::PendingReceiver<blink::mojom::PushMessaging> receiver);
@@ -934,14 +943,12 @@ class CONTENT_EXPORT RenderProcessHostImpl
     // contents.
     kPdf = 1 << 2,
 
-#if BUILDFLAG(IS_WIN)
-    // Indicates whether this RenderProcessHost should use FontDataManager as
-    // the default font manager.
-    kFontDataManager = 1 << 3,
-#endif
-
     // Indicates whether v8 optimizations are disabled in this renderer process.
-    kV8OptimizationsDisabled = 1 << 4,
+    kV8OptimizationsDisabled = 1 << 3,
+
+    // Indicates whether v8 feature flag overrides are disallowed in this
+    // renderer process.
+    kDisallowV8FeatureFlagOverrides = 1 << 4,
   };
 
   // A RenderProcessHostImpl's IO thread implementation of the
@@ -993,6 +1000,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   RenderProcessHostImpl(BrowserContext* browser_context,
                         StoragePartitionImpl* storage_partition_impl,
                         int flags);
+
+  void MaybeNotifyVizOfRendererBlockStateChanged(bool blocked);
 
   // Initializes a new IPC::ChannelProxy in |channel_|, which will be
   // connected to the next child process launched for this host, if any.
@@ -1449,7 +1458,28 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // The memory allocator, if any, in which the renderer will write its metrics.
   std::unique_ptr<base::PersistentMemoryAllocator> metrics_allocator_;
-  base::UnsafeSharedMemoryRegion metrics_memory_region_;
+
+  // The histogram shared memory region used to transmit metrics. The memory
+  // region is allocated by the process host (this object) but ownership is
+  // shared with the child process launcher/helper which runs, and is destroyed,
+  // asynchronously. Depending on the feature configuration, either the host or
+  // the launcher is responsible for passing the memory region to the child.
+  // The destruction order of the host, launcher and child are indeterminate.
+  scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+      metrics_memory_region_;
+
+  // The tracing config memory region. The memory region is allocated by the
+  // process host (this object) but ownership is shared with the child process
+  // launcher/helper which runs, and is destroyed, asynchronously.
+  scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
+      tracing_config_memory_region_;
+
+  // The tracing output memory region.  Ownership of the memory region is
+  // allocated by the process host (this object) but ownership is shared with
+  // the child process launcher/helper which runs, and is destroyed,
+  // asynchronously.
+  scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+      tracing_output_memory_region_;
 
   bool channel_connected_ = false;
   bool sent_render_process_ready_ = false;
@@ -1495,6 +1525,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Tracks the count of render frame host that requested prioritize the
   // processing commit navigation and initial loading (crbug/351953350).
   int boost_for_loading_count_ = 0;
+
+  // Tracks whether or not the current process is in an immersive webxr session.
+  // Used to determine if a process should not be backgrounded.
+  bool has_immersive_xr_session_ = false;
 
   std::unique_ptr<mojo::Receiver<viz::mojom::CompositingModeReporter>>
       compositing_mode_reporter_;

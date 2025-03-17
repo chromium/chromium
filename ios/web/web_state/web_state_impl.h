@@ -145,9 +145,6 @@ class WebStateImpl final : public WebState {
   // changed.
   void OnStateChangedForPermission(Permission permission);
 
-  // Notifies the observers that the under pagebackground color was changed.
-  void OnUnderPageBackgroundColorChanged();
-
   // Returns the NavigationManager for this WebState.
   NavigationManagerImpl& GetNavigationManagerImpl();
 
@@ -428,10 +425,9 @@ class WebStateImpl final : public WebState {
   WebStatePolicyDeciderList policy_deciders_;
 
   // The instances of the two internal classes used to implement the
-  // "unrealized" state of the WebState. One important invariant is
-  // that except at all point either `pimpl_` or `saved_` is valid
-  // and not null (except right at the end of the destructor or at
-  // the beginning of the constructor).
+  // "unrealized" state of the WebState. One important invariant is that at all
+  // point either `pimpl_` or `saved_` is valid and not null (except right at
+  // the end of the destructor or at the beginning of the constructor).
   std::unique_ptr<RealizedWebState> pimpl_;
   std::unique_ptr<SerializedData> saved_;
 

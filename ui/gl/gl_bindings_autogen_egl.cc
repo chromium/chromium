@@ -156,6 +156,8 @@ void DriverEGL::InitializeStaticBindings() {
       reinterpret_cast<eglInitializeProc>(GetGLProcAddress("eglInitialize"));
   fn.eglLabelObjectKHRFn = reinterpret_cast<eglLabelObjectKHRProc>(
       GetGLProcAddress("eglLabelObjectKHR"));
+  fn.eglLockVulkanQueueANGLEFn = reinterpret_cast<eglLockVulkanQueueANGLEProc>(
+      GetGLProcAddress("eglLockVulkanQueueANGLE"));
   fn.eglMakeCurrentFn =
       reinterpret_cast<eglMakeCurrentProc>(GetGLProcAddress("eglMakeCurrent"));
   fn.eglPostSubBufferNVFn = reinterpret_cast<eglPostSubBufferNVProc>(
@@ -244,6 +246,9 @@ void DriverEGL::InitializeStaticBindings() {
       GetGLProcAddress("eglSwapInterval"));
   fn.eglTerminateFn =
       reinterpret_cast<eglTerminateProc>(GetGLProcAddress("eglTerminate"));
+  fn.eglUnlockVulkanQueueANGLEFn =
+      reinterpret_cast<eglUnlockVulkanQueueANGLEProc>(
+          GetGLProcAddress("eglUnlockVulkanQueueANGLE"));
   fn.eglWaitClientFn =
       reinterpret_cast<eglWaitClientProc>(GetGLProcAddress("eglWaitClient"));
   fn.eglWaitGLFn =
@@ -328,6 +333,8 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
       extensions, "EGL_ANGLE_create_context_webgl_compatibility");
   b_EGL_ANGLE_d3d_share_handle_client_buffer =
       gfx::HasExtension(extensions, "EGL_ANGLE_d3d_share_handle_client_buffer");
+  b_EGL_ANGLE_device_vulkan =
+      gfx::HasExtension(extensions, "EGL_ANGLE_device_vulkan");
   b_EGL_ANGLE_display_semaphore_share_group =
       gfx::HasExtension(extensions, "EGL_ANGLE_display_semaphore_share_group");
   b_EGL_ANGLE_display_texture_share_group =
@@ -781,6 +788,10 @@ EGLint EGLApiBase::eglLabelObjectKHRFn(EGLDisplay display,
   return driver_->fn.eglLabelObjectKHRFn(display, objectType, object, label);
 }
 
+void EGLApiBase::eglLockVulkanQueueANGLEFn(EGLDisplay dpy) {
+  driver_->fn.eglLockVulkanQueueANGLEFn(dpy);
+}
+
 EGLBoolean EGLApiBase::eglMakeCurrentFn(EGLDisplay dpy,
                                         EGLSurface draw,
                                         EGLSurface read,
@@ -996,6 +1007,10 @@ EGLBoolean EGLApiBase::eglSwapIntervalFn(EGLDisplay dpy, EGLint interval) {
 
 EGLBoolean EGLApiBase::eglTerminateFn(EGLDisplay dpy) {
   return driver_->fn.eglTerminateFn(dpy);
+}
+
+void EGLApiBase::eglUnlockVulkanQueueANGLEFn(EGLDisplay dpy) {
+  driver_->fn.eglUnlockVulkanQueueANGLEFn(dpy);
 }
 
 EGLBoolean EGLApiBase::eglWaitClientFn(void) {
@@ -1454,6 +1469,11 @@ EGLint TraceEGLApi::eglLabelObjectKHRFn(EGLDisplay display,
   return egl_api_->eglLabelObjectKHRFn(display, objectType, object, label);
 }
 
+void TraceEGLApi::eglLockVulkanQueueANGLEFn(EGLDisplay dpy) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglLockVulkanQueueANGLE");
+  egl_api_->eglLockVulkanQueueANGLEFn(dpy);
+}
+
 EGLBoolean TraceEGLApi::eglMakeCurrentFn(EGLDisplay dpy,
                                          EGLSurface draw,
                                          EGLSurface read,
@@ -1719,6 +1739,12 @@ EGLBoolean TraceEGLApi::eglSwapIntervalFn(EGLDisplay dpy, EGLint interval) {
 EGLBoolean TraceEGLApi::eglTerminateFn(EGLDisplay dpy) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglTerminate");
   return egl_api_->eglTerminateFn(dpy);
+}
+
+void TraceEGLApi::eglUnlockVulkanQueueANGLEFn(EGLDisplay dpy) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
+                                "TraceEGLAPI::eglUnlockVulkanQueueANGLE");
+  egl_api_->eglUnlockVulkanQueueANGLEFn(dpy);
 }
 
 EGLBoolean TraceEGLApi::eglWaitClientFn(void) {
@@ -2379,6 +2405,11 @@ EGLint LogEGLApi::eglLabelObjectKHRFn(EGLDisplay display,
   return result;
 }
 
+void LogEGLApi::eglLockVulkanQueueANGLEFn(EGLDisplay dpy) {
+  GL_SERVICE_LOG("eglLockVulkanQueueANGLE" << "(" << dpy << ")");
+  egl_api_->eglLockVulkanQueueANGLEFn(dpy);
+}
+
 EGLBoolean LogEGLApi::eglMakeCurrentFn(EGLDisplay dpy,
                                        EGLSurface draw,
                                        EGLSurface read,
@@ -2753,6 +2784,11 @@ EGLBoolean LogEGLApi::eglTerminateFn(EGLDisplay dpy) {
   EGLBoolean result = egl_api_->eglTerminateFn(dpy);
   GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
+}
+
+void LogEGLApi::eglUnlockVulkanQueueANGLEFn(EGLDisplay dpy) {
+  GL_SERVICE_LOG("eglUnlockVulkanQueueANGLE" << "(" << dpy << ")");
+  egl_api_->eglUnlockVulkanQueueANGLEFn(dpy);
 }
 
 EGLBoolean LogEGLApi::eglWaitClientFn(void) {

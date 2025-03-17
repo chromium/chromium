@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ENTERPRISE_ARC_ENTERPRISE_REPORTING_SERVICE_H_
 #define CHROME_BROWSER_ASH_ARC_ENTERPRISE_ARC_ENTERPRISE_REPORTING_SERVICE_H_
 
-#include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "chromeos/ash/experiences/arc/mojom/enterprise_reporting.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

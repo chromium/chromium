@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
 
 #include <string>
@@ -43,9 +48,7 @@ namespace {
 class TestBackForwardMenuDelegate : public ui::MenuModelDelegate {
  public:
   explicit TestBackForwardMenuDelegate(base::OnceClosure quit_closure)
-      : was_icon_changed_called_(false),
-        was_menu_model_changed_called_(false),
-        quit_closure_(std::move(quit_closure)) {}
+      : quit_closure_(std::move(quit_closure)) {}
 
   TestBackForwardMenuDelegate(const TestBackForwardMenuDelegate&) = delete;
   TestBackForwardMenuDelegate& operator=(const TestBackForwardMenuDelegate&) =
@@ -67,8 +70,8 @@ class TestBackForwardMenuDelegate : public ui::MenuModelDelegate {
   }
 
  private:
-  bool was_icon_changed_called_;
-  bool was_menu_model_changed_called_;
+  bool was_icon_changed_called_ = false;
+  bool was_menu_model_changed_called_ = false;
   base::OnceClosure quit_closure_;
 };
 

@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
@@ -88,15 +89,13 @@ public class TopToolbarCoordinator implements Toolbar {
         void onOverviewAlphaChanged(float fraction);
     }
 
-    public static final int TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS = 200;
-    public static final int TAB_SWITCHER_MODE_GTS_ANIMATION_DURATION_MS = 150;
-
     private final ToolbarLayout mToolbarLayout;
     private final ObservableSupplierImpl<Tracker> mTrackerSupplier;
 
     private OptionalBrowsingModeButtonController mOptionalButtonController;
 
     private MenuButtonCoordinator mMenuButtonCoordinator;
+    private @Nullable final ReloadButtonCoordinator mReloadButtonCoordinator;
     private ObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
@@ -156,6 +155,8 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param tabStripTransitionDelegateSupplier Supplier for the {@link
      *     TabStripTransitionDelegate}.
      * @param onLongClickListener OnLongClickListener for the toolbar.
+     * @param reloadButtonCoordinator Component that encapsulates interactions with a reload button.
+     *     It only presents on tablet.
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
@@ -185,10 +186,12 @@ public class TopToolbarCoordinator implements Toolbar {
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
             @Nullable OnLongClickListener onLongClickListener,
-            ToolbarProgressBar progressBar) {
+            ToolbarProgressBar progressBar,
+            @Nullable ReloadButtonCoordinator reloadButtonCoordinator) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
+        mReloadButtonCoordinator = reloadButtonCoordinator;
         mOptionalButtonController =
                 new OptionalBrowsingModeButtonController(
                         buttonDataProviders,
@@ -266,7 +269,7 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<Tab> tabSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TopUiThemeColorProvider topUiThemeColorProvider,
-            Supplier<Integer> bottomToolbarControlsOffsetSupplier) {
+            ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier) {
         assert mTabModelSelectorSupplier.get() != null;
         mTrackerSupplier.set(TrackerFactory.getTrackerForProfile(profile));
         mToolbarLayout.setTabCountSupplier(
@@ -506,7 +509,8 @@ public class TopToolbarCoordinator implements Toolbar {
 
     @Override
     public void updateReloadButtonVisibility(boolean isReloading) {
-        mToolbarLayout.updateReloadButtonVisibility(isReloading);
+        if (mReloadButtonCoordinator == null) return;
+        mReloadButtonCoordinator.setReloading(isReloading);
     }
 
     /**
@@ -602,11 +606,6 @@ public class TopToolbarCoordinator implements Toolbar {
         return mToolbarLayout.isReadyForTextureCapture();
     }
 
-    @Override
-    public boolean setForceTextureCapture(boolean forceTextureCapture) {
-        return mToolbarLayout.setForceTextureCapture(forceTextureCapture);
-    }
-
     /**
      * @param attached Whether or not the web content is attached to the view heirarchy.
      */
@@ -621,6 +620,10 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void setTabSwitcherMode(boolean inTabSwitcherMode) {
         mToolbarLayout.setTabSwitcherMode(inTabSwitcherMode);
+
+        if (mReloadButtonCoordinator != null) {
+            mReloadButtonCoordinator.setEnabled(!inTabSwitcherMode);
+        }
     }
 
     /**

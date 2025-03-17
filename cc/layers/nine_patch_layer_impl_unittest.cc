@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/layers/nine_patch_layer_impl.h"
+
 #include <stddef.h>
 
 #include <algorithm>
@@ -9,8 +11,9 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
-#include "cc/layers/nine_patch_layer_impl.h"
+#include "cc/layers/draw_mode.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_client.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
@@ -72,7 +75,9 @@ void NinePatchLayerLayoutTest(const gfx::Size& bitmap_size,
   UpdateDrawProperties(host_impl.active_tree());
 
   AppendQuadsData data;
-  host_impl.active_tree()->root_layer()->AppendQuads(render_pass.get(), &data);
+  host_impl.active_tree()->root_layer()->AppendQuads(
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
 
   // Verify quad rects
   const auto& quads = render_pass->quad_list;
@@ -184,7 +189,9 @@ void NinePatchLayerLayoutTestWithOcclusion(const gfx::Size& bitmap_size,
   UpdateDrawProperties(host_impl.active_tree());
 
   AppendQuadsData data;
-  host_impl.active_tree()->root_layer()->AppendQuads(render_pass.get(), &data);
+  host_impl.active_tree()->root_layer()->AppendQuads(
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
 
   // Verify quad rects
   const auto& quads = render_pass->quad_list;

@@ -26,12 +26,17 @@ class GetSessionRequest : public google_apis::UrlFetchRequestBase {
                      google_apis::ApiErrorCode> result)>;
 
   GetSessionRequest(google_apis::RequestSender* sender,
+                    std::string url_base,
                     bool is_producer,
                     GaiaId gaia_id,
                     Callback callback);
   GetSessionRequest(const GetSessionRequest&) = delete;
   GetSessionRequest& operator=(const GetSessionRequest&) = delete;
   ~GetSessionRequest() override;
+
+  void set_device_id(std::string device_id) {
+    device_id_ = std::move(device_id);
+  }
 
   // For testing.
   void OverrideURLForTesting(std::string url);
@@ -55,6 +60,7 @@ class GetSessionRequest : public google_apis::UrlFetchRequestBase {
   bool is_producer_;
   GaiaId gaia_id_;
   std::string url_base_;
+  std::string device_id_;
   Callback callback_;
 
   base::WeakPtrFactory<GetSessionRequest> weak_ptr_factory_{this};

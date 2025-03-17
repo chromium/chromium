@@ -6,7 +6,10 @@ package org.chromium.components.browser_ui.edge_to_edge;
 
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A supplier notifying of whether edge to edge is on and the value of the bottom inset. */
+@NullMarked
 public interface EdgeToEdgeSupplier {
 
     /**
@@ -27,6 +30,14 @@ public interface EdgeToEdgeSupplier {
          */
         void onToEdgeChange(
                 @Px int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge);
+
+        /**
+         * Whether any constraint exists to retain web content to within the safe area.
+         *
+         * @param hasConstraint Whether to retain the web content within the safe area.
+         */
+        // TODO(https://crbug.com/385221500): Consider add hasConstraint to #onToEdgeChange.
+        default void onSafeAreaConstraintChanged(boolean hasConstraint) {}
     }
 
     /** Registers an automatic adjuster of padding for a view. See {@link EdgeToEdgePadAdjuster}. */

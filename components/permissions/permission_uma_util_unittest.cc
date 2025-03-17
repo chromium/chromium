@@ -30,8 +30,10 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_frame_host.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace permissions {
 
@@ -51,14 +53,15 @@ constexpr const char* kGeolocationPermissionsPolicyActionHistogramName =
     "Permissions.Action.Geolocation.CrossOriginFrame."
     "TopLevelHeaderPolicy";
 
-blink::ParsedPermissionsPolicy CreatePermissionsPolicy(
-    blink::mojom::PermissionsPolicyFeature feature,
+network::ParsedPermissionsPolicy CreatePermissionsPolicy(
+    network::mojom::PermissionsPolicyFeature feature,
     const std::vector<std::string>& origins,
     bool matches_all_origins = false) {
-  std::vector<blink::OriginWithPossibleWildcards> allow_origins;
+  std::vector<network::OriginWithPossibleWildcards> allow_origins;
   for (const auto& origin : origins) {
-    allow_origins.emplace_back(*blink::OriginWithPossibleWildcards::FromOrigin(
-        url::Origin::Create(GURL(origin))));
+    allow_origins.emplace_back(
+        *network::OriginWithPossibleWildcards::FromOrigin(
+            url::Origin::Create(GURL(origin))));
   }
   return {{feature, allow_origins, /*self_if_matches=*/std::nullopt,
            matches_all_origins,
@@ -74,7 +77,7 @@ PermissionRequestManager* SetupRequestManager(
 struct PermissionsDelegationTestConfig {
   ContentSettingsType type;
   PermissionAction action;
-  std::optional<blink::mojom::PermissionsPolicyFeature> feature_overriden;
+  std::optional<network::mojom::PermissionsPolicyFeature> feature_overriden;
 
   bool matches_all_origins;
   std::vector<std::string> origins;
@@ -135,7 +138,7 @@ class PermissionsDelegationUmaUtilTest
   content::RenderFrameHost* AddChildFrameWithPermissionsPolicy(
       content::RenderFrameHost* parent,
       const char* origin,
-      blink::ParsedPermissionsPolicy policy) {
+      network::ParsedPermissionsPolicy policy) {
     content::RenderFrameHost* result =
         content::RenderFrameHostTester::For(parent)->AppendChildWithPolicy(
             "", policy);
@@ -148,7 +151,7 @@ class PermissionsDelegationUmaUtilTest
   // The permissions policy is invariant and required the page to be
   // refreshed
   void RefreshAndSetPermissionsPolicy(content::RenderFrameHost** rfh,
-                                      blink::ParsedPermissionsPolicy policy) {
+                                      network::ParsedPermissionsPolicy policy) {
     content::RenderFrameHost* current = *rfh;
     auto navigation = content::NavigationSimulator::CreateRendererInitiated(
         current->GetLastCommittedURL(), current);
@@ -359,6 +362,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, UsageAndPromptInTopLevelFrame) {
       /* ui_reason*/ std::nullopt,
       /*variants*/ {},
       /*predicted_grant_likelihood*/ std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
@@ -698,6 +702,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, SiteLevelAndOSPromptVariantsTest) {
       PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE,
       /* ui_reason*/ std::nullopt, variants,
       /*predicted_grant_likelihood*/ std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ true,
       /*did_click_managed*/ false,
@@ -723,7 +728,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
   auto* child_frame = AddChildFrameWithPermissionsPolicy(
       main_frame, kSameOriginFrameUrl,
       CreatePermissionsPolicy(
-          blink::mojom::PermissionsPolicyFeature::kGeolocation,
+          network::mojom::PermissionsPolicyFeature::kGeolocation,
           {std::string(kTopLevelUrl), std::string(kSameOriginFrameUrl)},
           /*matches_all_origins*/ true));
   histograms.ExpectTotalCount(kGeolocationUsageHistogramName, 0);
@@ -745,6 +750,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
       /* ui_reason*/ std::nullopt,
       /*variants*/ {},
       /*predicted_grant_likelihood*/ std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
@@ -765,7 +771,7 @@ TEST_P(PermissionsDelegationUmaUtilTest, TopLevelFrame) {
   base::HistogramTester histograms;
   auto* main_frame = GetMainFrameAndNavigate(kTopLevelUrl);
   auto feature = PermissionUtil::GetPermissionsPolicyFeature(type);
-  blink::ParsedPermissionsPolicy top_policy;
+  network::ParsedPermissionsPolicy top_policy;
   if (feature.has_value() &&
       (GetParam().matches_all_origins || !GetParam().origins.empty())) {
     top_policy = CreatePermissionsPolicy(
@@ -819,8 +825,8 @@ INSTANTIATE_TEST_SUITE_P(
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION,
             PermissionAction::GRANTED,
-            std::make_optional<blink::mojom::PermissionsPolicyFeature>(
-                blink::mojom::PermissionsPolicyFeature::kCamera),
+            std::make_optional<network::mojom::PermissionsPolicyFeature>(
+                network::mojom::PermissionsPolicyFeature::kCamera),
             /*matches_all_origins*/ false,
             {std::string(kTopLevelUrl)},
             PermissionHeaderPolicyForUMA::FEATURE_NOT_PRESENT},
@@ -861,7 +867,7 @@ TEST_P(CrossFramePermissionsDelegationUmaUtilTest, CrossOriginFrame) {
   base::HistogramTester histograms;
   auto* main_frame = GetMainFrameAndNavigate(kTopLevelUrl);
   auto feature = PermissionUtil::GetPermissionsPolicyFeature(type);
-  blink::ParsedPermissionsPolicy top_policy;
+  network::ParsedPermissionsPolicy top_policy;
   if (feature.has_value() &&
       (GetParam().matches_all_origins || !GetParam().origins.empty())) {
     top_policy = CreatePermissionsPolicy(
@@ -876,7 +882,7 @@ TEST_P(CrossFramePermissionsDelegationUmaUtilTest, CrossOriginFrame) {
   }
 
   // Add nested subframes A(B(C))
-  blink::ParsedPermissionsPolicy empty_policy;
+  network::ParsedPermissionsPolicy empty_policy;
   auto* child_frame = AddChildFrameWithPermissionsPolicy(
       main_frame, kCrossOriginFrameUrl,
       feature.has_value()
@@ -920,6 +926,7 @@ TEST_P(CrossFramePermissionsDelegationUmaUtilTest, CrossOriginFrame) {
       /* ui_reason*/ std::nullopt,
       /*variants*/ {},
       /*predicted_grant_likelihood*/ std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
@@ -969,8 +976,8 @@ INSTANTIATE_TEST_SUITE_P(
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION,
             PermissionAction::GRANTED,
-            std::make_optional<blink::mojom::PermissionsPolicyFeature>(
-                blink::mojom::PermissionsPolicyFeature::kCamera),
+            std::make_optional<network::mojom::PermissionsPolicyFeature>(
+                network::mojom::PermissionsPolicyFeature::kCamera),
             /*matches_all_origins*/ false,
             {std::string(kTopLevelUrl), std::string(kCrossOriginFrameUrl)},
             PermissionHeaderPolicyForUMA::FEATURE_NOT_PRESENT},

@@ -4,25 +4,27 @@
 
 import 'chrome://internet-detail-dialog/internet_detail_dialog.js';
 
-import {InternetDetailDialogElement} from 'chrome://internet-detail-dialog/internet_detail_dialog.js';
-import {InternetDetailDialogBrowserProxy, InternetDetailDialogBrowserProxyImpl} from 'chrome://internet-detail-dialog/internet_detail_dialog_browser_proxy.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
-import {ApnListElement} from 'chrome://resources/ash/common/network/apn_list.js';
+import type {InternetDetailDialogElement} from 'chrome://internet-detail-dialog/internet_detail_dialog.js';
+import type {InternetDetailDialogBrowserProxy} from 'chrome://internet-detail-dialog/internet_detail_dialog_browser_proxy.js';
+import {InternetDetailDialogBrowserProxyImpl} from 'chrome://internet-detail-dialog/internet_detail_dialog_browser_proxy.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
+import type {ApnListElement} from 'chrome://resources/ash/common/network/apn_list.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkApnListElement} from 'chrome://resources/ash/common/network/network_apnlist.js';
-import {NetworkChooseMobileElement} from 'chrome://resources/ash/common/network/network_choose_mobile.js';
-import {NetworkIpConfigElement} from 'chrome://resources/ash/common/network/network_ip_config.js';
-import {NetworkNameserversElement} from 'chrome://resources/ash/common/network/network_nameservers.js';
-import {NetworkPropertyListMojoElement} from 'chrome://resources/ash/common/network/network_property_list_mojo.js';
-import {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
-import {NetworkSiminfoElement} from 'chrome://resources/ash/common/network/network_siminfo.js';
+import type {NetworkApnListElement} from 'chrome://resources/ash/common/network/network_apnlist.js';
+import type {NetworkChooseMobileElement} from 'chrome://resources/ash/common/network/network_choose_mobile.js';
+import type {NetworkIpConfigElement} from 'chrome://resources/ash/common/network/network_ip_config.js';
+import type {NetworkNameserversElement} from 'chrome://resources/ash/common/network/network_nameservers.js';
+import type {NetworkPropertyListMojoElement} from 'chrome://resources/ash/common/network/network_property_list_mojo.js';
+import type {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
+import type {NetworkSiminfoElement} from 'chrome://resources/ash/common/network/network_siminfo.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnSource, ApnState, ApnType, GlobalPolicy, InhibitReason, MAX_NUM_CUSTOM_APNS, SIMInfo} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {ApnProperties, GlobalPolicy, SIMInfo} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnAuthenticationType, ApnIpType, ApnSource, ApnState, ApnType, InhibitReason, MAX_NUM_CUSTOM_APNS} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import type {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -77,7 +79,7 @@ suite('internet-detail-dialog', () => {
     return result;
   }
 
-  setup(async () => {
+  setup(() => {
     assert(window.trustedTypes);
     document.body.innerHTML = window.trustedTypes.emptyHTML;
     InternetDetailDialogBrowserProxyImpl.setInstance(
@@ -116,16 +118,18 @@ suite('internet-detail-dialog', () => {
       cellularNetwork.typeProperties.cellular.iccid = testIccid;
       // Required for networkChooseMobile to be rendered.
       cellularNetwork.typeProperties.cellular.supportNetworkScan = true;
-      cellularNetwork.typeProperties.cellular.connectedApn = connectedApn;
-      cellularNetwork.typeProperties.cellular.customApnList = customApnList;
+      cellularNetwork.typeProperties.cellular.connectedApn =
+          connectedApn || null;
+      cellularNetwork.typeProperties.cellular.customApnList =
+          customApnList || null;
     }
     // Required for connectDisconnectButton to be rendered.
     cellularNetwork.connectionState = isPrimary ?
         ConnectionStateType.kConnected :
         ConnectionStateType.kNotConnected;
-    cellularNetwork.errorState = errorState;
+    cellularNetwork.errorState = errorState || null;
     if (portalState) {
-      cellularNetwork.portalState = portalState;
+      cellularNetwork.portalState = portalState || null;
     }
 
     mojoApi.setManagedPropertiesForTest(cellularNetwork);
@@ -150,16 +154,16 @@ suite('internet-detail-dialog', () => {
       deviceState: deviceState,
       inhibitReason: inhibitReason ? inhibitReason :
                                      InhibitReason.kNotInhibited,
-      simInfos: simInfos ? simInfos : undefined,
-      ipv4Address: undefined,
-      ipv6Address: undefined,
-      imei: undefined,
-      macAddress: macAddress,
+      simInfos: simInfos || null,
+      ipv4Address: null,
+      ipv6Address: null,
+      imei: null,
+      macAddress: macAddress || null,
       scanning: false,
-      simLockStatus: undefined,
+      simLockStatus: null,
       simAbsent: false,
       managedNetworkAvailable: false,
-      serial: undefined,
+      serial: null,
       isCarrierLocked: false,
       isFlashing: false,
     });
@@ -169,14 +173,14 @@ suite('internet-detail-dialog', () => {
       accessPointName: string, source: ApnSource, name?: string) {
     return {
       accessPointName: accessPointName,
-      id: undefined,
+      id: null,
       authentication: ApnAuthenticationType.kAutomatic,
-      language: undefined,
-      localizedName: undefined,
-      name: name,
-      password: undefined,
-      username: undefined,
-      attach: undefined,
+      language: null,
+      localizedName: null,
+      name: name || null,
+      password: null,
+      username: null,
+      attach: null,
       state: ApnState.kEnabled,
       ipType: ApnIpType.kAutomatic,
       apnTypes: [ApnType.kDefault],

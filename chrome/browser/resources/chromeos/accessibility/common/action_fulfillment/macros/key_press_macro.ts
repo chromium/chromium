@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import {EventGenerator} from '../../event_generator.js';
-import {KeyCode} from '../../key_code.js';
+import type {KeyCode} from '../../key_code.js';
 
-import {Macro, MacroError, RunMacroResult} from './macro.js';
-import {MacroName} from './macro_names.js';
+import type {RunMacroResult} from './macro.js';
+import {Macro, MacroError} from './macro.js';
+import type {MacroName} from './macro_names.js';
 
 export interface KeyCombination {
   key: KeyCode;

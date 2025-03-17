@@ -32,7 +32,7 @@ PasswordFeatureManagerImpl::PasswordFeatureManagerImpl(
 bool PasswordFeatureManagerImpl::IsGenerationEnabled() const {
   switch (password_manager::sync_util::GetPasswordSyncState(sync_service_)) {
     case sync_util::SyncState::kNotActive:
-      return ShouldShowAccountStorageOptIn();
+      return false;
     case sync_util::SyncState::kActiveWithNormalEncryption:
     case sync_util::SyncState::kActiveWithCustomPassphrase:
       return true;
@@ -64,30 +64,8 @@ bool PasswordFeatureManagerImpl::IsBiometricAuthenticationBeforeFillingEnabled()
 #endif
 }
 
-bool PasswordFeatureManagerImpl::IsOptedInForAccountStorage() const {
-  return features_util::IsOptedInForAccountStorage(pref_service_,
-                                                   sync_service_);
-}
-
-bool PasswordFeatureManagerImpl::ShouldShowAccountStorageOptIn() const {
-  return features_util::ShouldShowAccountStorageOptIn(pref_service_,
-                                                      sync_service_);
-}
-
-bool PasswordFeatureManagerImpl::ShouldShowAccountStorageReSignin(
-    const GURL& current_page_url) const {
-  return features_util::ShouldShowAccountStorageReSignin(
-      pref_service_, sync_service_, current_page_url);
-}
-
-PasswordForm::Store PasswordFeatureManagerImpl::GetDefaultPasswordStore()
-    const {
-  DCHECK(pref_service_);
-  return features_util::GetDefaultPasswordStore(pref_service_, sync_service_);
-}
-
-bool PasswordFeatureManagerImpl::IsDefaultPasswordStoreSet() const {
-  return features_util::IsDefaultPasswordStoreSet(pref_service_, sync_service_);
+bool PasswordFeatureManagerImpl::IsAccountStorageEnabled() const {
+  return features_util::IsAccountStorageEnabled(pref_service_, sync_service_);
 }
 
 features_util::PasswordAccountStorageUsageLevel
@@ -95,36 +73,6 @@ PasswordFeatureManagerImpl::ComputePasswordAccountStorageUsageLevel() const {
   return features_util::ComputePasswordAccountStorageUsageLevel(pref_service_,
                                                                 sync_service_);
 }
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-void PasswordFeatureManagerImpl::OptInToAccountStorage() {
-  features_util::OptInToAccountStorage(pref_service_, sync_service_);
-}
-
-void PasswordFeatureManagerImpl::OptOutOfAccountStorage() {
-  features_util::OptOutOfAccountStorage(pref_service_, sync_service_);
-}
-
-void PasswordFeatureManagerImpl::OptOutOfAccountStorageAndClearSettings() {
-  features_util::OptOutOfAccountStorageAndClearSettings(pref_service_,
-                                                        sync_service_);
-}
-
-void PasswordFeatureManagerImpl::SetDefaultPasswordStore(
-    const PasswordForm::Store& store) {
-  features_util::SetDefaultPasswordStore(pref_service_, sync_service_, store);
-}
-
-bool PasswordFeatureManagerImpl::
-    ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const {
-  return ShouldShowAccountStorageOptIn() && !IsDefaultPasswordStoreSet();
-}
-
-bool PasswordFeatureManagerImpl::ShouldChangeDefaultPasswordStore() const {
-  return IsOptedInForAccountStorage() && IsDefaultPasswordStoreSet() &&
-         GetDefaultPasswordStore() == PasswordForm::Store::kProfileStore;
-}
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
 bool PasswordFeatureManagerImpl::ShouldUpdateGmsCore() {

@@ -4,7 +4,10 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Used by {@link PlayerFrameView} to delegate view events to {@link PlayerFrameMediator}. */
+@NullMarked
 interface PlayerFrameViewDelegate {
     /** Called on layout with the attributed width and height. */
     void setLayoutDimensions(int width, int height);

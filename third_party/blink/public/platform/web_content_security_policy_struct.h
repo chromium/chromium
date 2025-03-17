@@ -32,11 +32,11 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CONTENT_SECURITY_POLICY_STRUCT_H_
 
 #include <optional>
+#include <vector>
 
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-shared.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 
@@ -51,13 +51,13 @@ struct WebCSPSource {
 
 struct WebCSPHashSource {
   network::mojom::IntegrityAlgorithm algorithm;
-  WebVector<uint8_t> value;
+  std::vector<uint8_t> value;
 };
 
 struct WebCSPSourceList {
-  WebVector<WebCSPSource> sources;
-  WebVector<WebString> nonces;
-  WebVector<WebCSPHashSource> hashes;
+  std::vector<WebCSPSource> sources;
+  std::vector<WebString> nonces;
+  std::vector<WebCSPHashSource> hashes;
   bool allow_self;
   bool allow_star;
   bool allow_inline;
@@ -82,7 +82,7 @@ struct WebContentSecurityPolicyRawDirective {
 };
 
 struct WebCSPTrustedTypes {
-  WebVector<WebString> list;
+  std::vector<WebString> list;
   bool allow_any;
   bool allow_duplicates;
 };
@@ -97,8 +97,8 @@ struct WebContentSecurityPolicyHeader {
 
 struct WebContentSecurityPolicy {
   WebCSPSource self_origin;
-  WebVector<WebContentSecurityPolicyRawDirective> raw_directives;
-  WebVector<WebContentSecurityPolicyDirective> directives;
+  std::vector<WebContentSecurityPolicyRawDirective> raw_directives;
+  std::vector<WebContentSecurityPolicyDirective> directives;
   bool upgrade_insecure_requests;
   bool treat_as_public_address;
   bool block_all_mixed_content;
@@ -106,10 +106,11 @@ struct WebContentSecurityPolicy {
       network::mojom::WebSandboxFlags::kNone;
   WebContentSecurityPolicyHeader header;
   bool use_reporting_api;
-  WebVector<WebString> report_endpoints;
+  std::vector<WebString> report_endpoints;
+  network::mojom::CSPRequireSRIFor require_sri_for;
   network::mojom::CSPRequireTrustedTypesFor require_trusted_types_for;
   std::optional<WebCSPTrustedTypes> trusted_types;
-  WebVector<WebString> parsing_errors;
+  std::vector<WebString> parsing_errors;
 };
 
 }  // namespace blink

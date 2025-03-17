@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("app_mode") {
   sources = [
@@ -106,7 +106,6 @@ static_library("app_mode") {
     "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/app_mode/metrics",
     "//chrome/browser/ash/app_mode/web_app",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/app_mode",
@@ -182,6 +181,7 @@ static_library("test_support") {
     "//testing/gmock",
   ]
   deps = [
+    "//chrome/browser/app_mode/test:test_support",
     "//chrome/browser/ash/login/screens",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/ownership",
@@ -228,7 +228,6 @@ source_set("unit_tests") {
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network:test_support",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/sync_wifi:test_support",
     "//components/prefs:test_support",
     "//components/webapps/browser",
@@ -259,7 +258,6 @@ source_set("browser_tests") {
     "kiosk_crash_restore_browsertest.cc",
     "kiosk_guest_view_browsertest.cc",
     "kiosk_network_state_observer_browsertest.cc",
-    "kiosk_system_web_app_browsertest.cc",
     "kiosk_troubleshooting_tools_browsertest.cc",
   ]
   deps = [

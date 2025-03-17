@@ -19,8 +19,13 @@ namespace prerender {
 class NoStatePrefetchManager;
 }  // namespace prerender
 
+namespace content {
+class Page;
+}  // namespace content
+
 namespace page_content_annotations {
 
+class AnnotatedPageContentRequest;
 class PageContentAnnotationsService;
 
 // This class is used to dispatch page content to the
@@ -48,12 +53,19 @@ class PageContentAnnotationsWebContentsObserver
 
   // content::WebContentsObserver:
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+  void DidStopLoading() override;
+  void PrimaryPageChanged(content::Page& page) override;
+  void OnFirstContentfulPaintInPrimaryMainFrame() override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // Invoked when related searches have been extracted for |visit|.
   void OnRelatedSearchesExtracted(
       const HistoryVisit& visit,
       continuous_search::SearchResultExtractorClientStatus status,
       continuous_search::mojom::CategoryResultsPtr results);
+
+  std::unique_ptr<AnnotatedPageContentRequest> annotated_page_content_request_;
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<TemplateURLService> template_url_service_;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 
 #include <utility>
@@ -25,18 +20,9 @@
 #include "services/tracing/public/cpp/perfetto/macros.h"
 
 namespace cc {
-namespace {
-using SmoothThread = CompositorFrameReporter::SmoothThread;
+
 using StageType = CompositorFrameReporter::StageType;
 using FrameTerminationStatus = CompositorFrameReporter::FrameTerminationStatus;
-
-constexpr int kNumOfCompositorStages =
-    static_cast<int>(StageType::kStageTypeCount) - 1;
-constexpr int kNumDispatchStages =
-    static_cast<int>(EventMetrics::DispatchStage::kMaxValue);
-constexpr base::TimeDelta kDefaultLatencyPredictionDeviationThreshold =
-    viz::BeginFrameArgs::DefaultInterval() / 2;
-}  // namespace
 
 CompositorFrameReportingController::CompositorFrameReportingController(
     bool should_report_histograms,
@@ -51,9 +37,12 @@ CompositorFrameReportingController::CompositorFrameReportingController(
       scroll_jank_ukm_reporter_(std::make_unique<ScrollJankUkmReporter>()),
       previous_latency_predictions_main_(base::Microseconds(-1)),
       previous_latency_predictions_impl_(base::Microseconds(-1)),
-      event_latency_predictions_(
-          CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
-                                                    kNumOfCompositorStages)) {
+      event_latency_predictions_(CompositorFrameReporter::EventLatencyInfo(
+          /*num_dispatch_stages=*/static_cast<int>(
+              EventMetrics::DispatchStage::kMaxValue),
+          /*num_compositor_stages=*/static_cast<int>(
+              StageType::kStageTypeCount) -
+              1)) {
   if (should_report_ukm) {
     // UKM metrics should be reported if and only if `latency_ukm_reporter` is
     // set on `global_trackers_`.
@@ -71,6 +60,10 @@ CompositorFrameReportingController::CompositorFrameReportingController(
 }
 
 CompositorFrameReportingController::~CompositorFrameReportingController() {
+  if (global_trackers_.dropped_frame_counter) {
+    global_trackers_.dropped_frame_counter->SetSortedFrameCallback(
+        base::NullCallback());
+  }
   base::TimeTicks now = Now();
   for (int i = 0; i < PipelineStage::kNumPipelineStages; ++i) {
     if (reporters_[i]) {
@@ -573,6 +566,9 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     reporter->TerminateFrame(termination_status,
                              details.presentation_feedback.timestamp);
 
+    static constexpr base::TimeDelta
+        kDefaultLatencyPredictionDeviationThreshold =
+            viz::BeginFrameArgs::DefaultInterval() / 2;
     base::TimeDelta latency_prediction_deviation_threshold;
     if (EventLatencyTracingRecorder::IsEventLatencyTracingEnabled()) {
       latency_prediction_deviation_threshold =
@@ -840,7 +836,7 @@ void CompositorFrameReportingController::SetSourceId(ukm::SourceId source_id) {
   latency_ukm_reporter_->SetSourceId(source_id);
 }
 
-CompositorFrameReporter::SmoothThread
+CompositorFrameReportingController::SmoothThread
 CompositorFrameReportingController::GetSmoothThread() const {
   if (is_main_thread_driving_smoothness_) {
     return is_compositor_thread_driving_smoothness_ ? SmoothThread::kSmoothBoth
@@ -855,7 +851,7 @@ CompositorFrameReportingController::GetSmoothThread() const {
              : SmoothThread::kSmoothNone;
 }
 
-CompositorFrameReporter::SmoothThread
+CompositorFrameReportingController::SmoothThread
 CompositorFrameReportingController::GetSmoothThreadAtTime(
     base::TimeTicks timestamp) const {
   auto last_smooth_thread = smooth_thread_history_.lower_bound(timestamp);

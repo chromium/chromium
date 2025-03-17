@@ -561,6 +561,9 @@ void EnrollmentLauncherImpl::ReportEnrollmentStatus(
         case policy::DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK:
           UMA(policy::kMetricEnrollmentInvalidPackagedDeviceForKIOSK);
           break;
+        case policy::DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED:
+          UMA(policy::kMetricEnrollmentOrgUnitEnrollmentLimitExceeded);
+          break;
       }
       break;
     case policy::EnrollmentStatus::Code::kRegistrationBadMode:

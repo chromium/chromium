@@ -302,6 +302,17 @@ String FontCustomPlatformData::FamilyNameForInspector() const {
   return String::FromUTF8(base::as_byte_span(localized_string.fString));
 }
 
+String FontCustomPlatformData::GetPostScriptNameOrFamilyNameForInspector()
+    const {
+  SkString postscript_name;
+  bool success = base_typeface_->getPostScriptName(&postscript_name);
+  if (!success) {
+    return FamilyNameForInspector();
+  }
+
+  return postscript_name.c_str();
+}
+
 FontCustomPlatformData* FontCustomPlatformData::Create(
     SharedBuffer* buffer,
     String& ots_parse_message) {

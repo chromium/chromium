@@ -24,7 +24,7 @@ concept IsSupportedTokenType = IsAnyOf<T,
 
 template <typename WebNNTokenType>
   requires internal::IsSupportedTokenType<WebNNTokenType>
-class COMPONENT_EXPORT(WEBNN_UTILS) WebNNObjectImpl {
+class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNObjectImpl {
  public:
   WebNNObjectImpl() = default;
 

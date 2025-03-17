@@ -268,7 +268,6 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
   execution_it->second->config->iph_title = message;
   execution_it->second->config->iph_text =
       l10n_util::GetStringUTF8(IDS_INSIGHTS_RICH_IPH_TEXT);
-  execution_it->second->config->iph_image_name = "rich_iph_price_insights";
 }
 
 PriceInsightsItemConfiguration::PriceInsightsItemConfiguration()
@@ -296,7 +295,6 @@ PriceInsightsItemConfiguration::PriceInsightsItemConfiguration(
   relevance = config->relevance;
   iph_title = config->iph_title;
   iph_text = config->iph_text;
-  iph_image_name = config->iph_image_name;
 }
 
 PriceInsightsExecution::PriceInsightsExecution() = default;

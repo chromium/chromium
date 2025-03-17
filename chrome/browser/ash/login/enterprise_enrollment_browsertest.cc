@@ -41,7 +41,7 @@ constexpr char kEnrollmentUI[] = "enterprise-enrollment";
 const test::UIPath kWebview = {kEnrollmentUI, "step-signin", "signin-frame"};
 
 constexpr char kTestUserEmail[] = "testuser@test.com";
-constexpr char kTestUserGaiaId[] = "test_user_gaia_id";
+constexpr GaiaId::Literal kTestUserGaiaId("test_user_gaia_id");
 constexpr char kTestUserPassword[] = "test_user_password";
 
 }  // namespace
@@ -58,7 +58,7 @@ class EnterpriseEnrollmentTestBase : public OobeBaseTest {
   void SubmitEnrollmentCredentials() {
     login::OnlineSigninArtifacts signin_artifacts;
     signin_artifacts.email = kTestUserEmail;
-    signin_artifacts.gaia_id = GaiaId(kTestUserGaiaId);
+    signin_artifacts.gaia_id = kTestUserGaiaId;
     signin_artifacts.password = kTestUserPassword;
     signin_artifacts.using_saml = false;
 

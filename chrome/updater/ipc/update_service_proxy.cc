@@ -19,6 +19,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
+#include "components/policy/core/common/policy_types.h"
 
 namespace updater {
 namespace {
@@ -74,10 +75,11 @@ void UpdateServiceProxy::GetVersion(
       base::Version(), 1));
 }
 
-void UpdateServiceProxy::FetchPolicies(base::OnceCallback<void(int)> callback) {
+void UpdateServiceProxy::FetchPolicies(policy::PolicyFetchReason reason,
+                                       base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto call =
-      base::BindRepeating(&UpdateServiceProxyImpl::FetchPolicies, proxy_);
+  auto call = base::BindRepeating(&UpdateServiceProxyImpl::FetchPolicies,
+                                  proxy_, reason);
   call.Run(base::BindOnce(static_cast<DoneFunc<int>>(&CallDone),
                           base::WrapRefCounted(this), call, std::move(callback),
                           kErrorIpcDisconnect, 1));

@@ -19,7 +19,6 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
@@ -82,17 +81,8 @@ ViewTreeHostRootViewFrameFactory::CreateUiResource(
 
   gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-  bool add_scanout_usage = is_overlay_candidate;
-
-  // Scanout usage should be added only if scanout of SharedImages is supported.
-  // However, historically this was not checked.
-  // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
-  if (base::FeatureList::IsEnabled(
-          features::kViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    add_scanout_usage &= sii->GetCapabilities().supports_scanout_shared_images;
-  }
-
-  if (add_scanout_usage) {
+  if (is_overlay_candidate &&
+      sii->GetCapabilities().supports_scanout_shared_images) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 

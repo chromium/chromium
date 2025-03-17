@@ -11,7 +11,6 @@
 #include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
 
@@ -218,7 +217,7 @@ TEST_F(AdaptPerfettoConfigForChromeTest, ProcessFilter) {
             PrintConfigToText(perfetto_config));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CASTOS)
 TEST_F(AdaptPerfettoConfigForChromeTest, Systrace) {
   auto perfetto_config = ParsePerfettoConfigFromText(R"pb(
     data_sources: { config: { name: "org.chromium.trace_system" } }
@@ -233,6 +232,54 @@ TEST_F(AdaptPerfettoConfigForChromeTest, Systrace) {
             PrintConfigToText(GetDataSourceConfig(
                 perfetto_config, "org.chromium.trace_system")));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CASTOS)
+
+TEST_F(AdaptPerfettoConfigForChromeTest, EnableSystemBackend_NonChrome) {
+  auto perfetto_config = ParsePerfettoConfigFromText(R"pb(
+    data_sources: { config: { name: "linux.some_system_ds" } }
+    data_sources: { config: { name: "linux.ftrace" } }
+  )pb");
+
+  EXPECT_TRUE(AdaptPerfettoConfigForChrome(
+      &perfetto_config, false, false,
+      perfetto::protos::gen::ChromeConfig::USER_INITIATED, true));
+
+  // System data sources are not adapted.
+  for (auto& ds : perfetto_config.data_sources()) {
+    EXPECT_FALSE(ds.config().has_chrome_config());
+  }
+}
+
+TEST_F(AdaptPerfettoConfigForChromeTest, EnableSystemBackend_Chrome) {
+  auto perfetto_config = ParsePerfettoConfigFromText(R"pb(
+    data_sources: {
+      config: {
+        name: "org.chromium.trace_event"
+        track_event_config: {
+          enabled_categories: [ "foo", "__metadata" ]
+          disabled_categories: [ "*" ]
+        }
+      }
+    }
+    data_sources: {
+      config: {
+        name: "track_event"
+        track_event_config: {
+          enabled_categories: [ "foo", "__metadata" ]
+          disabled_categories: [ "*" ]
+        }
+      }
+    }
+    data_sources: { config: { name: "org.chromium.trace_metadata" } }
+  )pb");
+
+  EXPECT_TRUE(AdaptPerfettoConfigForChrome(
+      &perfetto_config, false, false,
+      perfetto::protos::gen::ChromeConfig::USER_INITIATED, true));
+
+  for (auto& ds : perfetto_config.data_sources()) {
+    EXPECT_TRUE(ds.config().has_chrome_config());
+  }
+}
 
 }  // namespace tracing

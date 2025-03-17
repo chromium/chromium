@@ -44,14 +44,14 @@ int main(int argc, char** argv) {
 
   uint64_t count = 1;
   if (command_line->HasSwitch("count")) {
-    if (!base::StringToUint64(command_line->GetSwitchValueASCII("count"),
+    if (!base::StringToUint64(command_line->GetSwitchValueUTF8("count"),
                               &count)) {
       return ERANGE;
     }
   }
 
   std::string text = command_line->HasSwitch("text")
-                         ? command_line->GetSwitchValueASCII("text")
+                         ? command_line->GetSwitchValueUTF8("text")
                          : "text";
 
   for (uint64_t i = 0; i < count; i++) {

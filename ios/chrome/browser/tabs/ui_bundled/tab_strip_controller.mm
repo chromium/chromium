@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -54,7 +55,6 @@
 #import "ios/chrome/browser/tabs/ui_bundled/tab_strip_view.h"
 #import "ios/chrome/browser/tabs/ui_bundled/tab_view.h"
 #import "ios/chrome/browser/tabs/ui_bundled/target_frame_cache.h"
-#import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/model/web_state_list_favicon_driver_observer.h"
@@ -461,8 +461,9 @@ const CGFloat kSymbolSize = 18;
     _view.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
                               UIViewAutoresizingFlexibleBottomMargin);
     _view.backgroundColor = BackgroundColor();
-    if (UseRTLLayout())
+    if (UseRTLLayout()) {
       _view.transform = CGAffineTransformMakeScale(-1, 1);
+    }
 
     // `self.tabStripView` setup.
     _tabStripView = [[TabStripView alloc] initWithFrame:_view.bounds];
@@ -622,8 +623,9 @@ const CGFloat kSymbolSize = 18;
 - (TabView*)createTabViewForWebState:(web::WebState*)webState
                           isSelected:(BOOL)isSelected {
   TabView* view = [[TabView alloc] initWithEmptyView:NO selected:isSelected];
-  if (UseRTLLayout())
+  if (UseRTLLayout()) {
     [view setTransform:CGAffineTransformMakeScale(-1, 1)];
+  }
   [view setIncognitoStyle:(_style == INCOGNITO)];
   [view setContentMode:UIViewContentModeRedraw];
   [self updateTabView:view withWebState:webState];
@@ -650,10 +652,11 @@ const CGFloat kSymbolSize = 18;
 }
 
 - (void)setHighlightsSelectedTab:(BOOL)highlightsSelectedTab {
-  if (highlightsSelectedTab)
+  if (highlightsSelectedTab) {
     [self installDimmingViewWithAnimation:YES];
-  else
+  } else {
     [self removeDimmingViewWithAnimation:YES];
+  }
 
   _highlightsSelectedTab = highlightsSelectedTab;
 }
@@ -666,10 +669,11 @@ const CGFloat kSymbolSize = 18;
 
   // Create the dimming view if it doesn't exist.  In all cases, make sure it's
   // set up correctly.
-  if (_dimmingView)
+  if (_dimmingView) {
     [_dimmingView setFrame:frame];
-  else
+  } else {
     _dimmingView = [[UIView alloc] initWithFrame:frame];
+  }
 
   // Enable user interaction in order to eat touches from views behind it.
   [_dimmingView setUserInteractionEnabled:YES];
@@ -767,11 +771,13 @@ const CGFloat kSymbolSize = 18;
   NSUInteger index = modelIndex;
   NSUInteger i = 0;
   for (TabView* tab in _tabArray) {
-    if ([_closingTabs containsObject:tab])
+    if ([_closingTabs containsObject:tab]) {
       ++index;
+    }
 
-    if (i == index)
+    if (i == index) {
       break;
+    }
 
     ++i;
   }
@@ -784,13 +790,15 @@ const CGFloat kSymbolSize = 18;
   NSUInteger arrayIndex = 0;
   for (TabView* tab in _tabArray) {
     if (arrayIndex == index) {
-      if ([_closingTabs containsObject:tab])
+      if ([_closingTabs containsObject:tab]) {
         return WebStateList::kInvalidIndex;
+      }
       return listIndex;
     }
 
-    if (![_closingTabs containsObject:tab])
+    if (![_closingTabs containsObject:tab]) {
       ++listIndex;
+    }
 
     ++arrayIndex;
   }
@@ -810,8 +818,9 @@ const CGFloat kSymbolSize = 18;
       favicon::WebFaviconDriver::FromWebState(webState);
   if (faviconDriver && faviconDriver->FaviconIsValid()) {
     gfx::Image favicon = faviconDriver->GetFavicon();
-    if (!favicon.IsEmpty())
+    if (!favicon.IsEmpty()) {
       [view setFavicon:favicon.ToUIImage()];
+    }
   }
   [_tabStripView setNeedsLayout];
 }
@@ -851,8 +860,9 @@ const CGFloat kSymbolSize = 18;
   // Sanity checks.
   int index = [self webStateListIndexForTabView:view];
   DCHECK_NE(WebStateList::kInvalidIndex, index);
-  if (index == WebStateList::kInvalidIndex)
+  if (index == WebStateList::kInvalidIndex) {
     return;
+  }
 
   // Install the dimming view, hide the new tab button, and select the tab so it
   // appears highlighted.
@@ -869,10 +879,11 @@ const CGFloat kSymbolSize = 18;
 
   // Update the autoscroll distance and timer.
   [self computeAutoscrollDistanceForTabView:_draggedTab];
-  if (_autoscrollDistance != 0)
+  if (_autoscrollDistance != 0) {
     [self installAutoscrollTimerIfNeeded];
-  else
+  } else {
     [self removeAutoscrollTimer];
+  }
 
   // Disable fullscreen during drags.
   _fullscreenDisabler = std::make_unique<ScopedFullscreenDisabler>(
@@ -893,10 +904,11 @@ const CGFloat kSymbolSize = 18;
 
   // Update the autoscroll distance and timer.
   [self computeAutoscrollDistanceForTabView:_draggedTab];
-  if (_autoscrollDistance != 0)
+  if (_autoscrollDistance != 0) {
     [self installAutoscrollTimerIfNeeded];
-  else
+  } else {
     [self removeAutoscrollTimer];
+  }
 
   [self setNeedsLayoutWithAnimation];
 }
@@ -977,8 +989,9 @@ const CGFloat kSymbolSize = 18;
     if (CGRectContainsPoint(tabView.frame, contentPoint)) {
       int index = [self webStateListIndexForTabView:tabView];
       DCHECK_NE(WebStateList::kInvalidIndex, index);
-      if (index == WebStateList::kInvalidIndex)
+      if (index == WebStateList::kInvalidIndex) {
         return;
+      }
       NSUInteger insertionIndex = base::checked_cast<NSUInteger>(index);
       if (contentPoint.x > CGRectGetMidX(tabView.frame)) {
         insertionIndex++;
@@ -993,8 +1006,9 @@ const CGFloat kSymbolSize = 18;
 #pragma mark - Autoscroll methods
 
 - (void)installAutoscrollTimerIfNeeded {
-  if (_autoscrollTimer)
+  if (_autoscrollTimer) {
     return;
+  }
 
   _autoscrollTimer =
       [NSTimer scheduledTimerWithTimeInterval:(1.0 / 60.0)
@@ -1048,8 +1062,9 @@ const CGFloat kSymbolSize = 18;
   CGFloat distanceFromEdge =
       MIN(CGRectGetMinX(viewFrame) - CGRectGetMinX(scrollBounds),
           CGRectGetMaxX(scrollBounds) - CGRectGetMaxX(viewFrame));
-  if (distanceFromEdge < 0)
+  if (distanceFromEdge < 0) {
     distanceFromEdge = 0;
+  }
 
   // Negative if the tab is closer to the left edge of the scroll view, positive
   // if it is closer to the right edge.
@@ -1071,13 +1086,15 @@ const CGFloat kSymbolSize = 18;
   // Check to make sure there is no overscroll off the right edge.
   CGFloat maxOffset = [_tabStripView contentSize].width -
                       CGRectGetWidth([_tabStripView bounds]);
-  if (offset.x + _autoscrollDistance > maxOffset)
+  if (offset.x + _autoscrollDistance > maxOffset) {
     _autoscrollDistance = (maxOffset - offset.x);
+  }
 
   // Perform the left edge check after the right edge check, to prevent
   // right-justifying the tabs when there is no overflow.
-  if (offset.x + _autoscrollDistance < 0)
+  if (offset.x + _autoscrollDistance < 0) {
     _autoscrollDistance = -offset.x;
+  }
 }
 
 #pragma mark - CRWWebStateObserver methods
@@ -1086,11 +1103,13 @@ const CGFloat kSymbolSize = 18;
   // webState can start loading before didChangeWebStateList with kInsert is
   // called, in that case early return as there is no view to update yet.
   if (static_cast<NSUInteger>(_webStateList->count()) >
-      _tabArray.count - _closingTabs.count)
+      _tabArray.count - _closingTabs.count) {
     return;
+  }
 
-  if (IsVisibleURLNewTabPage(webState))
+  if (IsVisibleURLNewTabPage(webState)) {
     return;
+  }
 
   TabView* view = [self tabViewForWebState:webState];
   if (!view) {
@@ -1219,8 +1238,8 @@ const CGFloat kSymbolSize = 18;
     case WebStateListChange::Type::kGroupVisualDataUpdate:
     case WebStateListChange::Type::kGroupMove:
     case WebStateListChange::Type::kGroupDelete:
-      // This can happen on iPad if tab-groups-in-grid and tab-groups-on-ipad
-      // are enabled, but not modern-tab-strip.
+      // This can happen on iPad if tab-groups-on-ipad is enabled, but not
+      // modern-tab-strip.
       base::debug::DumpWithoutCrashing();
       break;
   }
@@ -1253,8 +1272,9 @@ const CGFloat kSymbolSize = 18;
 // Observer method. `webState` got a favicon update.
 - (void)faviconDriver:(favicon::FaviconDriver*)driver
     didUpdateFaviconForWebState:(web::WebState*)webState {
-  if (!driver)
+  if (!driver) {
     return;
+  }
 
   int listIndex = _webStateList->GetIndexOfWebState(webState);
   if (listIndex == WebStateList::kInvalidIndex) {
@@ -1269,8 +1289,9 @@ const CGFloat kSymbolSize = 18;
 
   if (driver->FaviconIsValid()) {
     gfx::Image favicon = driver->GetFavicon();
-    if (!favicon.IsEmpty())
+    if (!favicon.IsEmpty()) {
       [view setFavicon:favicon.ToUIImage()];
+    }
   }
 }
 
@@ -1278,8 +1299,9 @@ const CGFloat kSymbolSize = 18;
 
 - (TabView*)tabViewForWebState:(web::WebState*)webState {
   int listIndex = _webStateList->GetIndexOfWebState(webState);
-  if (listIndex == WebStateList::kInvalidIndex)
+  if (listIndex == WebStateList::kInvalidIndex) {
     return nil;
+  }
   NSUInteger index = [self indexForWebStateListIndex:listIndex];
   return [_tabArray objectAtIndex:index];
 }
@@ -1305,8 +1327,9 @@ const CGFloat kSymbolSize = 18;
   // TODO(rohitrao): The following lines are duplicated in
   // layoutTabStripSubviews.  Find a way to consolidate this logic.
   const NSUInteger tabCount = [_tabArray count] - [_closingTabs count];
-  if (!tabCount)
+  if (!tabCount) {
     return;
+  }
   const CGFloat tabHeight = CGRectGetHeight([_tabStripView bounds]);
   CGFloat visibleSpace = [self tabStripVisibleSpace];
   _currentTabWidth =
@@ -1320,8 +1343,9 @@ const CGFloat kSymbolSize = 18;
       (_currentTabWidth * tabCount) - ([self tabOverlap] * (tabCount - 1)) +
           CGRectGetWidth([_buttonNewTab frame]) - kNewTabOverlap,
       tabHeight);
-  if (CGSizeEqualToSize([_tabStripView contentSize], contentSize))
+  if (CGSizeEqualToSize([_tabStripView contentSize], contentSize)) {
     return;
+  }
 
   // Background: The scroll view might change the content offset when updating
   // the content size.  This can happen when the old content offset would result
@@ -1350,10 +1374,11 @@ const CGFloat kSymbolSize = 18;
   CGFloat minX = CGRectGetMinX(frame);
   CGFloat maxX = CGRectGetMaxX(frame);
 
-  if (CGRectGetMinX(frame) < CGRectGetMinX(frameOnTop))
+  if (CGRectGetMinX(frame) < CGRectGetMinX(frameOnTop)) {
     maxX = CGRectGetMinX(frameOnTop);
-  else
+  } else {
     minX = CGRectGetMaxX(frameOnTop);
+  }
 
   frame.origin.x = minX;
   frame.size.width = maxX - minX;
@@ -1408,8 +1433,9 @@ const CGFloat kSymbolSize = 18;
 
   int i = 0;
   for (TabView* tab in _tabArray) {
-    if ([_closingTabs containsObject:tab])
+    if ([_closingTabs containsObject:tab]) {
       ++i;
+    }
 
     if (i == static_cast<int>(tabIndex)) {
       break;
@@ -1460,8 +1486,9 @@ const CGFloat kSymbolSize = 18;
       TabView* tabView = [_tabArray objectAtIndex:webStateIndex];
       CGRect scrollRect =
           CGRectInset(tabView.frame, -_tabStripView.contentInset.right, 0);
-      if (tabView)
+      if (tabView) {
         [_tabStripView scrollRectToVisible:scrollRect animated:YES];
+      }
     }
   }
 }
@@ -1479,8 +1506,9 @@ const CGFloat kSymbolSize = 18;
 - (void)layoutTabStripSubviews {
   const int tabCount =
       static_cast<int>([_tabArray count] - [_closingTabs count]);
-  if (!tabCount)
+  if (!tabCount) {
     return;
+  }
   BOOL animate = _animateLayout;
   _animateLayout = NO;
   // Disable the animation if the tab count is changing from 0 to 1.
@@ -1573,12 +1601,14 @@ const CGFloat kSymbolSize = 18;
 
     // Ignore closing tabs when repositioning.
     int currentListIndex = [self webStateListIndexForIndex:arrayIndex];
-    if (currentListIndex == WebStateList::kInvalidIndex)
+    if (currentListIndex == WebStateList::kInvalidIndex) {
       continue;
+    }
 
     // Ignore the tab that is currently being dragged.
-    if (_isReordering && view == _draggedTab)
+    if (_isReordering && view == _draggedTab) {
       continue;
+    }
 
     // `realMinX` is the furthest left the tab can be, in real coordinates.
     // This is computed by counting the number of possible collapsed tabs that
@@ -1633,8 +1663,9 @@ const CGFloat kSymbolSize = 18;
       // value will be used as the new model index for the dragged tab when it
       // is dropped.
       _placeholderGapWebStateListIndex = currentListIndex;
-      if ([self webStateListIndexForTabView:_draggedTab] < currentListIndex)
+      if ([self webStateListIndexForTabView:_draggedTab] < currentListIndex) {
         _placeholderGapWebStateListIndex--;
+      }
     }
 
     // `tabX` stores where we are placing the tab, in real coordinates.  Start
@@ -1660,8 +1691,9 @@ const CGFloat kSymbolSize = 18;
 
       // The selected tab can never be collapsed, since no tab will ever be
       // z-ordered above it to obscure it.
-      if (isSelectedTab)
+      if (isSelectedTab) {
         [view setCollapsed:NO];
+      }
     } else {
       CGRect visibleRect =
           [self calculateVisibleFrameForFrame:frame
@@ -1672,11 +1704,13 @@ const CGFloat kSymbolSize = 18;
     }
 
     if (animate) {
-      if (!CGRectEqualToRect(frame, [view frame]))
+      if (!CGRectEqualToRect(frame, [view frame])) {
         [tabsNeedingAnimation addObject:view];
+      }
     } else {
-      if (!CGRectEqualToRect(frame, [view frame]))
+      if (!CGRectEqualToRect(frame, [view frame])) {
         [view setFrame:frame];
+      }
     }
 
     // Throw the target frame into the dictionary so we can animate it later.
@@ -1700,8 +1734,9 @@ const CGFloat kSymbolSize = 18;
   // If in reordering mode and there was no placeholder gap, then the dragged
   // tab must be all the way to the right of the other tabs.  Set the
   // _placeholderGapWebStateListIndex accordingly.
-  if (!hasPlaceholderGap && _isReordering)
+  if (!hasPlaceholderGap && _isReordering) {
     _placeholderGapWebStateListIndex = _webStateList->count() - 1;
+  }
 
   // Do not move the new tab button if it is hidden.  This will lead to better
   // animations when exiting drag and drop mode, as the new tab button will not
@@ -1710,8 +1745,9 @@ const CGFloat kSymbolSize = 18;
   BOOL moveNewTab =
       (newTabFrame.origin.x != virtualMaxX) && !_buttonNewTab.hidden;
   newTabFrame.origin = CGPointMake(virtualMaxX - kNewTabOverlap, 0);
-  if (!animate && moveNewTab)
+  if (!animate && moveNewTab) {
     [_buttonNewTab setFrame:newTabFrame];
+  }
 
   [_buttonNewTab setNeedsUpdateConfiguration];
 
@@ -1748,8 +1784,9 @@ const CGFloat kSymbolSize = 18;
     DCHECK(_targetFrames.HasFrame(view));
     [view setFrame:_targetFrames.GetFrame(view)];
   }
-  if (moveNewTab)
+  if (moveNewTab) {
     [_buttonNewTab setFrame:newTabFrame];
+  }
 }
 
 - (void)setNeedsLayoutWithAnimation {
@@ -1762,13 +1799,15 @@ const CGFloat kSymbolSize = 18;
 // Called when the TabView was tapped.
 - (void)tabViewTapped:(TabView*)tabView {
   // Ignore taps while in reordering mode.
-  if ([self isReorderingTabs])
+  if ([self isReorderingTabs]) {
     return;
+  }
 
   int index = [self webStateListIndexForTabView:tabView];
   DCHECK_NE(WebStateList::kInvalidIndex, index);
-  if (index == WebStateList::kInvalidIndex)
+  if (index == WebStateList::kInvalidIndex) {
     return;
+  }
 
   base::UmaHistogramBoolean(kUMATabStripTapInteractionHistogram,
                             index != _webStateList->active_index());
@@ -1786,21 +1825,24 @@ const CGFloat kSymbolSize = 18;
 - (void)tabViewCloseButtonPressed:(TabView*)tabView {
   // Ignore taps while in reordering mode.
   // TODO(crbug.com/40534506): We should just hide the close buttons instead.
-  if ([self isReorderingTabs])
+  if ([self isReorderingTabs]) {
     return;
+  }
 
   base::RecordAction(UserMetricsAction("MobileTabStripCloseTab"));
   int webStateListIndex = [self webStateListIndexForTabView:tabView];
-  if (webStateListIndex != WebStateList::kInvalidIndex)
+  if (webStateListIndex != WebStateList::kInvalidIndex) {
     _webStateList->CloseWebStateAt(webStateListIndex,
                                    WebStateList::CLOSE_USER_ACTION);
+  }
 }
 
 - (void)tabView:(TabView*)tabView receivedDroppedURL:(GURL)url {
   int index = [self webStateListIndexForTabView:tabView];
   DCHECK_NE(WebStateList::kInvalidIndex, index);
-  if (index == WebStateList::kInvalidIndex)
+  if (index == WebStateList::kInvalidIndex) {
     return;
+  }
   web::WebState* webState = _webStateList->GetWebStateAt(index);
 
   web::NavigationManager::WebLoadParams params(url);

@@ -41,8 +41,8 @@ class TransferCacheTest : public testing::Test {
     gpu::ContextCreationAttribs attribs;
     attribs.fail_if_major_perf_caveat = false;
     attribs.bind_generates_resource = false;
-    // Enable OOP rasterization.
-    attribs.enable_oop_rasterization = true;
+    // Enable GPU rasterization.
+    attribs.enable_gpu_rasterization = true;
     attribs.enable_raster_interface = true;
     attribs.enable_gles2_interface = false;
 

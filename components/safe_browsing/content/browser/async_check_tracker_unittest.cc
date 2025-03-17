@@ -63,8 +63,7 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
       : RenderViewHostTestHarness(
             content::BrowserTaskEnvironment::REAL_IO_THREAD,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    std::vector<base::test::FeatureRef> enabled = {
-        kSafeBrowsingAsyncRealTimeCheck};
+    std::vector<base::test::FeatureRef> enabled = {};
 #if BUILDFLAG(IS_ANDROID)
     enabled.push_back(kSafeBrowsingSyncCheckerCheckAllowlist);
 #endif

@@ -3,12 +3,8 @@
 // META: timeout=long
 
 promise_test(async t => {
-  // Make sure the prompt api is enabled.
-  assert_true(!!ai);
-  // Make sure the session could be created.
-  const capabilities = await ai.languageModel.capabilities();
-  const status = capabilities.available;
-  assert_true(status !== "no");
+  await ensureLanguageModel();
+
   // Start a new session.
   const session = await ai.languageModel.create();
   // Test the streaming prompt API.
@@ -16,7 +12,10 @@ promise_test(async t => {
     session.promptStreaming(kTestPrompt);
   // Run GC.
   gc();
-  assert_true(Object.prototype.toString.call(streamingResponse) === "[object ReadableStream]");
+  assert_equals(
+    Object.prototype.toString.call(streamingResponse),
+    "[object ReadableStream]"
+  );
   const reader = streamingResponse.getReader();
   let result = "";
   while (true) {
@@ -24,7 +23,9 @@ promise_test(async t => {
     if (done) {
       break;
     }
-    result = value;
+    if (value) {
+      result += value;
+    }
   }
-  assert_true(result.length > 0);
+  assert_greater_than(result.length, 0, "The result should not be empty.");
 }, 'Prompt Streaming API must continue even after GC has been performed.');

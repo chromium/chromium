@@ -57,7 +57,7 @@ class SVGImageChromeClient;
 class SVGImageForContainer;
 class SVGSVGElement;
 class SVGViewSpec;
-struct IntrinsicSizingInfo;
+struct NaturalSizingInfo;
 
 // A collection of "viewport defining" parameters for an SVGImage.
 class SVGImageViewInfo final : public GarbageCollected<SVGImageViewInfo> {
@@ -156,7 +156,8 @@ class CORE_EXPORT SVGImage final : public Image {
 
   // Get the intrinsic dimensions (width, height and aspect ratio) from this
   // SVGImage. Returns true if successful.
-  bool GetIntrinsicSizingInfo(const SVGViewSpec*, IntrinsicSizingInfo&) const;
+  std::optional<NaturalSizingInfo> GetNaturalDimensions(
+      const SVGViewSpec*) const;
 
   String FilenameExtension() const override;
 
@@ -255,11 +256,6 @@ class CORE_EXPORT SVGImage final : public Image {
   Persistent<IsolatedSVGDocumentHost> document_host_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
 
-  // When an SVG image has no intrinsic size, the size depends on the default
-  // object size, which in turn depends on the container. One SVGImage may
-  // belong to multiple containers so the final image size can't be known in
-  // SVGImage. SVGImageForContainer carries the final image size, also called
-  // the "concrete object size". For more, see: SVGImageForContainer.h
   PhysicalSize intrinsic_size_;
   bool has_pending_timeline_rewind_;
 

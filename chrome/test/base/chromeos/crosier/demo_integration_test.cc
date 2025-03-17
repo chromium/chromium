@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/test_switches.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
 #include "chrome/test/base/chromeos/crosier/crosier_util.h"

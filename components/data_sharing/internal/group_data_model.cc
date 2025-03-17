@@ -6,6 +6,7 @@
 
 #include <iterator>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -25,6 +26,7 @@ namespace data_sharing {
 namespace {
 
 const size_t kMaxRecordedGroupEvents = 1000;
+const size_t kReadGroupsBatchSize = 50;
 
 VersionToken ComputeVersionToken(
     const sync_pb::CollaborationGroupSpecifics& specifics) {
@@ -53,6 +55,7 @@ GroupDataModel::GroupDataModel(
       collaboration_group_sync_bridge_(collaboration_group_sync_bridge),
       sdk_delegate_(sdk_delegate) {
   CHECK(collaboration_group_sync_bridge_);
+  CHECK(sdk_delegate_);
   collaboration_group_sync_bridge_->AddObserver(this);
 
   if (collaboration_group_sync_bridge_->IsDataLoaded()) {
@@ -116,6 +119,12 @@ GroupDataModel::GetPossiblyRemovedGroupMember(
     }
   }
 
+  for (const auto& member : group_data_opt->former_members) {
+    if (member.gaia_id == member_gaia_id) {
+      return GroupMemberPartialData::FromGroupMember(member);
+    }
+  }
+
   // TODO(crbug.com/373628741): attempt to read the data from the database with
   // removed members once it is implemented.
   return std::nullopt;
@@ -157,6 +166,13 @@ void GroupDataModel::OnCollaborationGroupSyncDataLoaded() {
   }
 }
 
+void GroupDataModel::OnSyncBridgeUpdateTypeChanged(
+    SyncBridgeUpdateType sync_bridge_update_type) {
+  for (auto& observer : observers_) {
+    observer.OnSyncBridgeUpdateTypeChanged(sync_bridge_update_type);
+  }
+}
+
 void GroupDataModel::OnGroupDataStoreLoaded(
     GroupDataStore::DBInitStatus status) {
   base::UmaHistogramBoolean("DataSharing.GroupDBInitSuccess",
@@ -188,9 +204,9 @@ void GroupDataModel::ProcessGroupChanges(bool is_initial_load) {
 
   // Handle deletions synchronously, since they don't need SDK call.
   std::vector<GroupId> deleted_group_ids;
-  base::ranges::set_difference(store_groups.begin(), store_groups.end(),
-                               bridge_groups.begin(), bridge_groups.end(),
-                               std::back_inserter(deleted_group_ids));
+  std::ranges::set_difference(store_groups.begin(), store_groups.end(),
+                              bridge_groups.begin(), bridge_groups.end(),
+                              std::back_inserter(deleted_group_ids));
 
   std::unordered_map<GroupId, std::optional<GroupData>> deleted_groups;
   for (const auto& group_id : deleted_group_ids) {
@@ -265,10 +281,29 @@ void GroupDataModel::ScheduleNextPeriodicPolling() {
 void GroupDataModel::FetchGroupsFromSDK(
     const std::vector<GroupId>& added_or_updated_groups) {
   has_ongoing_group_fetch_ = true;
+  outstanding_batches_ = static_cast<size_t>(
+      std::ceil(static_cast<double>(added_or_updated_groups.size()) /
+                kReadGroupsBatchSize));
 
+  // The ReadGroups API has a restrictions groups that can be
+  // fetched in one request. So, we break the request into batches and issue
+  // them in parallel.
+  for (size_t i = 0; i < added_or_updated_groups.size();
+       i += kReadGroupsBatchSize) {
+    std::vector<GroupId> batch(
+        added_or_updated_groups.begin() + i,
+        added_or_updated_groups.begin() +
+            std::min(i + kReadGroupsBatchSize, added_or_updated_groups.size()));
+
+    FetchBatchOfGroupsFromSDK(batch);
+  }
+}
+
+void GroupDataModel::FetchBatchOfGroupsFromSDK(
+    const std::vector<GroupId>& batch) {
   std::map<GroupId, VersionToken> group_versions;
   data_sharing_pb::ReadGroupsParams params;
-  for (const GroupId& group_id : added_or_updated_groups) {
+  for (const GroupId& group_id : batch) {
     auto collaboration_group_specifics_opt =
         collaboration_group_sync_bridge_->GetSpecifics(group_id);
     CHECK(collaboration_group_specifics_opt.has_value());
@@ -283,23 +318,19 @@ void GroupDataModel::FetchGroupsFromSDK(
         collaboration_group_specifics_opt->consistency_token());
   }
 
-  sdk_delegate_.ReadGroups(
-      params, base::BindOnce(&GroupDataModel::OnGroupsFetchedFromSDK,
+  sdk_delegate_->ReadGroups(
+      params, base::BindOnce(&GroupDataModel::OnBatchOfGroupsFetchedFromSDK,
                              weak_ptr_factory_.GetWeakPtr(), group_versions,
                              base::Time::Now()));
 }
 
-void GroupDataModel::OnGroupsFetchedFromSDK(
+void GroupDataModel::OnBatchOfGroupsFetchedFromSDK(
     const std::map<GroupId, VersionToken>& requested_groups_and_versions,
     const base::Time& requested_at_timestamp,
     const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
         read_groups_result) {
   if (!read_groups_result.has_value()) {
-    has_ongoing_group_fetch_ = false;
-    if (has_pending_changes_) {
-      // Some changes happened while the fetch was in flight, process them now.
-      ProcessGroupChanges(/*is_initial_load=*/false);
-    }
+    HandleBatchCompletion();
     // TODO(crbug.com/301390275): handle entire request failure.
     return;
   }
@@ -338,10 +369,16 @@ void GroupDataModel::OnGroupsFetchedFromSDK(
     }
   }
 
-  has_ongoing_group_fetch_ = false;
-  if (has_pending_changes_) {
-    // Some changes happened while the fetch was in flight, process them now.
-    ProcessGroupChanges(/*is_initial_load=*/false);
+  HandleBatchCompletion();
+}
+
+void GroupDataModel::HandleBatchCompletion() {
+  if (--outstanding_batches_ == 0) {
+    has_ongoing_group_fetch_ = false;
+    if (has_pending_changes_) {
+      // Some changes happened while the fetch was in flight, process them now.
+      ProcessGroupChanges(/*is_initial_load=*/false);
+    }
   }
 }
 
@@ -358,13 +395,13 @@ void GroupDataModel::NotifyObserversAboutChangedMembers(
   }
 
   std::vector<GaiaId> added_members_gaia_ids;
-  base::ranges::set_difference(
+  std::ranges::set_difference(
       new_members_gaia_ids.begin(), new_members_gaia_ids.end(),
       old_members_gaia_ids.begin(), old_members_gaia_ids.end(),
       std::back_inserter(added_members_gaia_ids));
 
   std::vector<GaiaId> removed_members_gaia_ids;
-  base::ranges::set_difference(
+  std::ranges::set_difference(
       old_members_gaia_ids.begin(), old_members_gaia_ids.end(),
       new_members_gaia_ids.begin(), new_members_gaia_ids.end(),
       std::back_inserter(removed_members_gaia_ids));

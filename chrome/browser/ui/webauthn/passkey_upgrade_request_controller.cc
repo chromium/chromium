@@ -4,77 +4,145 @@
 
 #include "chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <tuple>
+#include <utility>
+
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/notimplemented.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
+#include "chrome/browser/webauthn/gpm_enclave_transaction.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
+#include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 using RenderFrameHost = content::RenderFrameHost;
 
-DOCUMENT_USER_DATA_KEY_IMPL(PasskeyUpgradeRequestController);
+enum class PasskeyUpgradeRequestController::RequestError {
+  kEnclaveNotInitialized,
+  kPasswordStoreError,
+  kNotEligible,
+  kEnclaveError,
+  kOptOut,
+};
+
+enum class PasskeyUpgradeRequestController::EnclaveState {
+  kUnknown,
+  kReady,
+  kError,
+};
+
+PasskeyUpgradeRequestController::PasskeyUpgradeRequestController(
+    RenderFrameHost* rfh,
+    EnclaveRequestCallback enclave_request_callback)
+    : frame_host_id_(rfh->GetGlobalId()),
+      enclave_manager_(
+          EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile())),
+      enclave_request_callback_(enclave_request_callback) {
+  if (enclave_manager_->is_loaded()) {
+    OnEnclaveLoaded();
+    return;
+  }
+  enclave_manager_->Load(
+      base::BindOnce(&PasskeyUpgradeRequestController::OnEnclaveLoaded,
+                     weak_factory_.GetWeakPtr()));
+}
 
 PasskeyUpgradeRequestController::~PasskeyUpgradeRequestController() = default;
 
-void PasskeyUpgradeRequestController::InitializeEnclaveRequestCallback(
-    device::FidoDiscoveryFactory* discovery_factory) {
-  using EnclaveEventStream = device::FidoDiscoveryBase::EventStream<
-      std::unique_ptr<device::enclave::CredentialRequest>>;
-  std::unique_ptr<EnclaveEventStream> event_stream;
-  std::tie(enclave_request_callback_, event_stream) = EnclaveEventStream::New();
-  discovery_factory->set_enclave_ui_request_stream(std::move(event_stream));
-}
-
 void PasskeyUpgradeRequestController::TryUpgradePasswordToPasskey(
     std::string rp_id,
-    const std::string& user_name,
-    base::OnceCallback<void(bool success)> callback) {
+    const std::string& username,
+    Delegate* delegate) {
   FIDO_LOG(EVENT) << "Passkey upgrade request started";
-  CHECK(enclave_request_callback_);
-  CHECK(!pending_callback_);
-  pending_callback_ = std::move(callback);
+  CHECK(enclave_request_callback_)
+      << "InitializeEnclaveRequestCallback() must be called first";
+  CHECK(!pending_request_);
+  CHECK(delegate);
+  CHECK(!delegate_);
+
+  pending_request_ = true;
+  delegate_ = delegate;
   rp_id_ = std::move(rp_id);
-  user_name_ = base::UTF8ToUTF16(user_name);
+  username_ = base::UTF8ToUTF16(username);
+
+  if (!profile()->GetPrefs()->GetBoolean(
+          password_manager::prefs::kAutomaticPasskeyUpgrades)) {
+    SignalRequestFailure(RequestError::kOptOut);
+    return;
+  }
 
   switch (enclave_state_) {
     case EnclaveState::kUnknown:
       // EnclaveLoaded() will invoke ContinuePendingUpgradeRequest().
-      pending_upgrade_request_ = true;
       break;
-    case EnclaveState::kNotReady:
-      FIDO_LOG(EVENT) << "Passkey upgrade request failed because the enclave "
-                         "isn't initialized.";
-      std::move(pending_callback_).Run(false);
+    case EnclaveState::kError:
+      SignalRequestFailure(RequestError::kEnclaveNotInitialized);
       break;
     case EnclaveState::kReady:
-      pending_upgrade_request_ = true;
       ContinuePendingUpgradeRequest();
       break;
   }
 }
 
 void PasskeyUpgradeRequestController::ContinuePendingUpgradeRequest() {
-  CHECK_EQ(enclave_state_, EnclaveState::kReady);
-  CHECK(pending_upgrade_request_);
-  pending_upgrade_request_ = false;
+  CHECK(pending_request_);
 
-  // TODO(crbug.com/377758786): The profile password store is probably wrong in
-  // some cases. Find out how to query GPM specifically.
-  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-      ProfilePasswordStoreFactory::GetForProfile(
-          profile(), ServiceAccessType::EXPLICIT_ACCESS);
-  GURL url = origin().GetURL();
+  // When looking for passwords that might be eligible to be upgraded, only
+  // consider passwords stored in GPM.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile());
+  password_manager::PasswordStoreInterface* password_store = nullptr;
+  if (password_manager::features_util::IsAccountStorageEnabled(
+          profile()->GetPrefs(), sync_service)) {
+    password_store = AccountPasswordStoreFactory::GetForProfile(
+                         profile(), ServiceAccessType::EXPLICIT_ACCESS)
+                         .get();
+  } else if (password_manager::sync_util::
+                 IsSyncFeatureEnabledIncludingPasswords(sync_service)) {
+    password_store = ProfilePasswordStoreFactory::GetForProfile(
+                         profile(), ServiceAccessType::EXPLICIT_ACCESS)
+                         .get();
+  }
+
+  if (!password_store) {
+    FIDO_LOG(EVENT)
+        << "Passkey upgrade failed without available password store";
+    SignalRequestFailure(RequestError::kPasswordStoreError);
+    return;
+  }
+
+  GURL url = render_frame_host().GetLastCommittedOrigin().GetURL();
   password_manager::PasswordFormDigest form_digest(
       password_manager::PasswordForm::Scheme::kHtml,
       password_manager::GetSignonRealm(url), url);
@@ -87,30 +155,41 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
   if (absl::holds_alternative<password_manager::PasswordStoreBackendError>(
           results_or_error)) {
     FIDO_LOG(EVENT) << "Passkey upgrade failed due to password store error";
+    SignalRequestFailure(RequestError::kPasswordStoreError);
+    return;
   }
-  CHECK(pending_callback_);
   password_manager::LoginsResult result =
       password_manager::GetLoginsOrEmptyListOnFailure(results_or_error);
-  bool found = false;
-  // Passwords must have been used within the last 90 days in order to be
-  // eligible.
-  const auto min_last_used = base::Time::Now() - base::Days(90);
+  bool upgrade_eligible = false;
+  bool match_not_recent = false;
+  // A password with a matching username must have been used within the last 5
+  // minutes in order for the automatic passkey upgrade to succeed.
+  base::TimeDelta kLastUsedThreshold = base::Minutes(5);
+  const auto min_last_used = base::Time::Now() - kLastUsedThreshold;
   for (const password_manager::PasswordForm& password_form : result) {
-    if (password_form.username_value == user_name_ &&
-        password_form.date_last_used >= min_last_used) {
-      found = true;
-      break;
+    if (password_form.username_value != username_) {
+      continue;
     }
+    if (password_form.date_last_used < min_last_used) {
+      match_not_recent = true;
+      continue;
+    }
+    upgrade_eligible = true;
+    break;
   }
 
-  if (!found) {
-    FIDO_LOG(EVENT) << "Passkey upgrade request failed, no matching password";
-    std::move(pending_callback_).Run(false);
+  if (!upgrade_eligible) {
+    if (match_not_recent) {
+      FIDO_LOG(EVENT) << "Passkey upgrade request failed, matching password "
+                         "not recently used";
+    } else {
+      FIDO_LOG(EVENT) << "Passkey upgrade request failed, no matching password";
+    }
+    SignalRequestFailure(RequestError::kNotEligible);
     return;
   }
 
   CHECK(enclave_request_callback_);
-  // TODO(crbug.com/377758786): Make the request up=0.
   enclave_transaction_ = std::make_unique<GPMEnclaveTransaction>(
       /*delegate=*/this, PasskeyModelFactory::GetForProfile(profile()),
       device::FidoRequestType::kMakeCredential, rp_id_,
@@ -122,11 +201,8 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
 }
 
 void PasskeyUpgradeRequestController::HandleEnclaveTransactionError() {
-  if (!pending_callback_) {
-    return;
-  }
   FIDO_LOG(ERROR) << "Passkey upgrade failed on enclave error";
-  std::move(pending_callback_).Run(false);
+  SignalRequestFailure(RequestError::kEnclaveError);
 }
 
 void PasskeyUpgradeRequestController::BuildUVKeyOptions(
@@ -147,12 +223,17 @@ void PasskeyUpgradeRequestController::OnPasskeyCreated(
       PasswordsClientUIDelegateFromWebContents(
           content::WebContents::FromRenderFrameHost(&render_frame_host()));
   FIDO_LOG(EVENT) << "Passkey upgrade request succeeded";
+  delegate_->PasskeyUpgradeSucceeded();
   if (manage_passwords_ui_controller) {
     manage_passwords_ui_controller->OnPasskeyUpgrade(rp_id_);
   }
+}
 
-  CHECK(pending_callback_);
-  std::move(pending_callback_).Run(true);
+content::RenderFrameHost& PasskeyUpgradeRequestController::render_frame_host()
+    const {
+  auto* rfh = content::RenderFrameHost::FromID(frame_host_id_);
+  CHECK(rfh);
+  return *rfh;
 }
 
 Profile* PasskeyUpgradeRequestController::profile() const {
@@ -161,24 +242,20 @@ Profile* PasskeyUpgradeRequestController::profile() const {
 
 void PasskeyUpgradeRequestController::OnEnclaveLoaded() {
   CHECK(enclave_manager_->is_loaded());
-  CHECK_EQ(enclave_state_, EnclaveState::kUnknown);
   enclave_state_ = enclave_manager_->is_ready() ? EnclaveState::kReady
-                                                : EnclaveState::kNotReady;
-  if (pending_upgrade_request_) {
+                                                : EnclaveState::kError;
+  if (!pending_request_) {
+    return;
+  }
+  if (enclave_state_ == EnclaveState::kReady) {
     ContinuePendingUpgradeRequest();
+  } else {
+    SignalRequestFailure(RequestError::kEnclaveNotInitialized);
   }
 }
 
-PasskeyUpgradeRequestController::PasskeyUpgradeRequestController(
-    RenderFrameHost* rfh)
-    : content::DocumentUserData<PasskeyUpgradeRequestController>(rfh),
-      enclave_manager_(
-          EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile())) {
-  if (enclave_manager_->is_loaded()) {
-    OnEnclaveLoaded();
-    return;
-  }
-  enclave_manager_->Load(
-      base::BindOnce(&PasskeyUpgradeRequestController::OnEnclaveLoaded,
-                     weak_factory_.GetWeakPtr()));
+void PasskeyUpgradeRequestController::SignalRequestFailure(RequestError error) {
+  FIDO_LOG(EVENT) << "Passkey upgrade request failed: "
+                  << static_cast<int>(error);
+  delegate_->PasskeyUpgradeFailed();
 }

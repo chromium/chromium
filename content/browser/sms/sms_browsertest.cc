@@ -43,6 +43,7 @@ using ::testing::Return;
 
 namespace content {
 
+using OriginList = SmsFetcher::OriginList;
 using UserConsent = SmsFetcher::UserConsent;
 
 namespace {

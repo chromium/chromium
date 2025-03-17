@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "base/win/registry.h"
@@ -100,7 +101,7 @@ void SetInitialCrashKeys(const InstallerState& state) {
   operation.Set(OperationToString(state.operation()));
 
   static CrashKeyString<6> is_system_level("system-level");
-  is_system_level.Set(state.system_install() ? "true" : "false");
+  is_system_level.Set(base::ToString(state.system_install()));
 
   // This is a Windows registry key, which maxes out at 255 chars.
   static CrashKeyString<256> state_crash_key("state-key");

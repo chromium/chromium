@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
   absl::ParseCommandLine(argc, argv);
 
   ABSL_QCHECK(absl::GetFlag(FLAGS_model_path).has_value())
-      << "--vocab_model is required.";
+      << "--model_path is required.";
   const std::string model_path = absl::GetFlag(FLAGS_model_path).value();
   std::string cache_dir;
   if (absl::GetFlag(FLAGS_cache_dir).has_value()) {
@@ -162,9 +162,15 @@ int main(int argc, char** argv) {
   // ABSL_LOG(INFO) << "Number of tokens for input prompt: " << num_tokens;
 
   ABSL_LOG(INFO) << "PredictAsync";
-  LlmInferenceEngine_Session_PredictAsync(llm_engine_session,
-                                          /*callback_context=*/nullptr,
-                                          async_callback_print);
+  error_code = LlmInferenceEngine_Session_PredictAsync(
+      llm_engine_session,
+      /*callback_context=*/nullptr, &error_msg, async_callback_print);
+  if (error_code) {
+    ABSL_LOG(ERROR) << "Failed to predict asyncously: "
+                    << std::string(error_msg);
+    free(error_msg);
+    return EXIT_FAILURE;
+  }
 
   // Optional to use the following for the sync version.
   // ABSL_LOG(INFO) << "PredictSync";

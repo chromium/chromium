@@ -51,7 +51,7 @@ const tests = [
 
     // Test that the correct number of viewer-thumbnail elements was created.
     const thumbnails =
-        thumbnailBar.shadowRoot!.querySelectorAll('viewer-thumbnail');
+        thumbnailBar.shadowRoot.querySelectorAll('viewer-thumbnail');
     chrome.test.assertEq(testDocLength, thumbnails.length);
 
     function testNavigateThumbnail(
@@ -88,13 +88,13 @@ const tests = [
     thumbnailBar.style.display = 'block';
 
     // Remove any padding from the scroller.
-    const scroller = thumbnailBar.$.thumbnails!;
+    const scroller = thumbnailBar.$.thumbnails;
     scroller.style.padding = '';
 
     await microtasksFinished();
 
     const thumbnails =
-        thumbnailBar.shadowRoot!.querySelectorAll('viewer-thumbnail');
+        thumbnailBar.shadowRoot.querySelectorAll('viewer-thumbnail');
 
     // Only two thumbnails should be "painted" upon load.
     const whenRequestedPaintingFirst = [
@@ -241,7 +241,7 @@ const tests = [
     chrome.test.assertTrue(scroller.hidden);
 
     const thumbnail =
-        thumbnailBar.shadowRoot!.querySelector('viewer-thumbnail')!;
+        thumbnailBar.shadowRoot.querySelector('viewer-thumbnail')!;
 
     const whenPaintTriggered = whenThumbnailPainted(thumbnail).then(() => {
       // The thumbnail shouldn't paint when the controller is inactive.

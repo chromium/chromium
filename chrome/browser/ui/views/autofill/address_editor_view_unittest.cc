@@ -180,9 +180,7 @@ TEST_F(AddressEditorViewTest, WholeFormValidationState) {
 
 TEST_F(AddressEditorViewTest, InitialFocusViewPointsToCountryCombobox) {
   EXPECT_NE(view_->initial_focus_view(), nullptr);
-  EXPECT_EQ(
-      std::string(view_->initial_focus_view()->GetClassMetaData()->type_name()),
-      "Combobox");
+  EXPECT_EQ(view_->initial_focus_view()->GetClassName(), "Combobox");
 }
 
 TEST_F(AddressEditorViewTest, FocusIsNotLostAfterEditorContentChange) {

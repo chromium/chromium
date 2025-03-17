@@ -53,8 +53,6 @@
 
 namespace {
 
-using ToShowVirtualKeyboard =
-    password_manager::PasswordManagerDriver::ToShowVirtualKeyboard;
 using autofill::mojom::SubmissionReadinessState;
 using base::test::RunOnceCallback;
 using device_reauth::MockDeviceAuthenticator;
@@ -187,14 +185,6 @@ class TouchToFillControllerAutofillTest
     return *touch_to_fill_controller_;
   }
 
-  base::MockCallback<base::RepeatingCallback<
-      void(gfx::NativeWindow,
-           Profile*,
-           password_manager::metrics_util::PasswordMigrationWarningTriggers)>>&
-  show_password_migration_warning() {
-    return show_password_migration_warning_;
-  }
-
   std::unique_ptr<TouchToFillControllerAutofillDelegate>
   MakeTouchToFillControllerDelegate(
       autofill::mojom::SubmissionReadinessState submission_readiness,
@@ -216,7 +206,7 @@ class TouchToFillControllerAutofillTest
         web_contents(), std::move(authenticator),
         webauthn_credentials_delegate_.AsWeakPtr(), std::move(filler),
         form_to_fill, focused_field_renderer_id, should_show_hybrid_option,
-        show_password_migration_warning().Get(), std::move(mock_bridge));
+        std::move(mock_bridge));
   }
 
   password_manager::MockWebAuthnCredentialsDelegate&
@@ -274,11 +264,6 @@ class TouchToFillControllerAutofillTest
       visibility_controller_;
   std::unique_ptr<TouchToFillController> touch_to_fill_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::MockCallback<base::RepeatingCallback<void(
-      gfx::NativeWindow,
-      Profile*,
-      password_manager::metrics_util::PasswordMigrationWarningTriggers)>>
-      show_password_migration_warning_;
   raw_ptr<MockPasswordAccessLossWarningBridge> mock_access_loss_warning_bridge_;
   raw_ptr<MockPasswordCredentialFiller> weak_filler_;
   password_manager::PasswordForm form_to_fill_;
@@ -352,7 +337,8 @@ TEST_F(TouchToFillControllerAutofillTest,
   scoped_feature_list().InitWithFeatures(
       {password_manager::features::
            kUnifiedPasswordManagerLocalPasswordsMigrationWarning},
-      {});
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning});
   profile()->GetPrefs()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
@@ -379,10 +365,6 @@ TEST_F(TouchToFillControllerAutofillTest,
       .WillOnce(RunOnceCallback<2>(/*trigger_submission=*/false));
   EXPECT_CALL(*last_mock_filler(), UpdateTriggerSubmission(false));
   EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(_)).Times(0);
-  EXPECT_CALL(show_password_migration_warning(),
-              Run(_, _,
-                  password_manager::metrics_util::
-                      PasswordMigrationWarningTriggers::kTouchToFill));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }
@@ -724,7 +706,6 @@ TEST_F(TouchToFillControllerAutofillTest, Dismiss) {
        /*cred_man_delegate=*/nullptr);
 
   EXPECT_CALL(client(), MarkSharedCredentialsAsNotified(GURL(kExampleCom)));
-  EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(true)));
   touch_to_fill_controller().OnDismiss();
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
@@ -756,7 +737,6 @@ TEST_F(TouchToFillControllerAutofillTest, ManagePasswordsSelected) {
        /*cred_man_delegate=*/nullptr);
 
   EXPECT_CALL(client(), MarkSharedCredentialsAsNotified(GURL(kExampleCom)));
-  EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_CALL(client(),
               NavigateToManagePasswordsPage(
                   password_manager::ManagePasswordsReferrer::kTouchToFill));
@@ -824,7 +804,6 @@ TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
 
   EXPECT_CALL(webauthn_credentials_delegate(),
               SelectPasskey(base::Base64Encode(credential.credential_id()), _));
-  EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword(_, _, _)).Times(0);
   touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[0]);
   histogram_tester().ExpectUniqueSample(
@@ -919,9 +898,6 @@ TEST_F(TouchToFillControllerAutofillTest, NoCredManEntryIfNoPasskeys) {
 
 TEST_F(TouchToFillControllerAutofillTest,
        ShouldNotShowTouchToFillForNewPasswordField) {
-  base::test::ScopedFeatureList enabledFeatures(
-      password_manager::features::kPasswordSuggestionBottomSheetV2);
-
   const UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
   MockWebAuthnCredManDelegate cred_man_delegate;
@@ -1033,7 +1009,6 @@ TEST_P(TouchToFillControllerAutofillTestWithSubmissionReadinessVariationTest,
            TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
        /*cred_man_delegate=*/nullptr);
 
-  EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(true)));
   touch_to_fill_controller().OnDismiss();
 
   uma_recorder.ExpectUniqueSample(

@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/credential_provider_extension/ui/new_password_coordinator.h"
-#import "ios/chrome/credential_provider_extension/ui/new_password_coordinator+Testing.h"
 
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/credential_provider_extension/ui/new_password_coordinator+Testing.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_view_controller.h"
 #import "testing/platform_test.h"
 

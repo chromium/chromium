@@ -27,8 +27,8 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -1110,7 +1110,8 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
       StartRunAndSelectOptions({address_form->form_signature()});
   AddFormToAutofillManagerCache(std::move(address_form));
 
-  personal_data_manager()->RemoveByGUID(autofill_profile->guid());
+  personal_data_manager()->address_data_manager().RemoveProfile(
+      autofill_profile->guid());
 
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
   EXPECT_CALL(*autofill_manager(), FillOrPreviewProfileForm).Times(0);

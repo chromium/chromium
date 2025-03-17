@@ -78,53 +78,8 @@ class ContentBrowserTest : public BrowserTestBase {
   // File path to test data, relative to DIR_SRC_TEST_DATA_ROOT.
   base::FilePath GetTestDataFilePath();
 
-  // Returns the HTTPS embedded test server.
-  // By default, the HTTPS test server is configured to have a valid
-  // certificate for the set of hostnames:
-  //   - [*.]example.com
-  //   - [*.]foo.com
-  //   - [*.]bar.com
-  //   - [*.]a.com
-  //   - [*.]b.com
-  //   - [*.]c.com
-  //
-  // After starting the server, you can get a working HTTPS URL for any of
-  // those hostnames. For example:
-  //
-  // ```
-  //   void SetUpOnMainThread() override {
-  //     host_resolver()->AddRule("*", "127.0.0.1");
-  //     ASSERT_TRUE(embedded_https_test_server().Start());
-  //     InProcessBrowserTest::SetUpOnMainThread();
-  //   }
-  //   ...
-  //   (later in the test logic):
-  //   embedded_https_test_server().GetURL("foo.com", "/simple.html");
-  // ```
-  //
-  // Tests can override the set of valid hostnames by calling
-  // `net::EmbeddedTestServer::SetCertHostnames()` before starting the test
-  // server, and a valid test certificate will be automatically generated for
-  // the hostnames passed in. For example:
-  //
-  //   ```
-  //   embedded_https_test_server().SetCertHostnames(
-  //       {"example.com", "example.org"});
-  //   ASSERT_TRUE(embedded_https_test_server().Start());
-  //   embedded_https_test_server().GetURL("example.org", "/simple.html");
-  //   ```
-  const net::EmbeddedTestServer& embedded_https_test_server() const {
-    return *embedded_https_test_server_;
-  }
-  net::EmbeddedTestServer& embedded_https_test_server() {
-    return *embedded_https_test_server_;
-  }
-
  private:
   raw_ptr<Shell, AcrossTasksDanglingUntriaged> shell_ = nullptr;
-
-  // Embedded HTTPS test server, cheap to create, started on demand.
-  std::unique_ptr<net::EmbeddedTestServer> embedded_https_test_server_;
 
 #if BUILDFLAG(IS_MAC)
   // On Mac, without the following autorelease pool, code which is directly

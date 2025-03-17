@@ -1,0 +1,11 @@
+{
+  "extends": "../../../../../../tools/typescript/tsconfig_base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "tsc"
+  },
+  "files": [
+    "no_violations.ts",
+    "with_violations.ts"
+  ]
+}

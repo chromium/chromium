@@ -31,6 +31,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -41,7 +42,6 @@
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_renderer_sink.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_destination_uma_reporter.h"
 #include "third_party/blink/renderer/platform/audio/audio_io_callback.h"
@@ -169,12 +169,17 @@ class PLATFORM_EXPORT AudioDestination final
                          size_t frames_to_render,
                          base::TimeDelta delay,
                          base::TimeTicks delay_timestamp,
-                         const media::AudioGlitchInfo& glitch_info);
-  void RequestRender(size_t frames_requested,
+                         const media::AudioGlitchInfo& glitch_info,
+                         base::TimeTicks request_timestamp);
+
+  // Returns true if it was able to provide audio, false otherwise (this would
+  // happen if and only if rendering is stopping or stopped.
+  bool RequestRender(size_t frames_requested,
                      size_t frames_to_render,
                      base::TimeDelta delay,
                      base::TimeTicks delay_timestamp,
                      const media::AudioGlitchInfo& glitch_info,
+                     base::TimeTicks request_timestamp,
                      bool has_fifo_underrun_occurred = false);
 
   // Provide input to the resampler (if used).
@@ -246,7 +251,7 @@ class PLATFORM_EXPORT AudioDestination final
   AudioCallbackMetricReporter metric_reporter_;
   AudioDestinationUmaReporter uma_reporter_;
 
-  // Collect the device latency matric only from the initial callback.
+  // Collect the device latency metric only from the initial callback.
   bool is_latency_metric_collected_ = false;
 
   // This WaitableEvent is only for use with the kWebAudioBypassOutputBuffering
@@ -254,6 +259,7 @@ class PLATFORM_EXPORT AudioDestination final
   base::WaitableEvent output_buffer_bypass_wait_event_;
 
   const bool is_output_buffer_bypassed_ = false;
+  bool state_change_underrun_in_bypass_mode_ = false;
 };
 
 }  // namespace blink

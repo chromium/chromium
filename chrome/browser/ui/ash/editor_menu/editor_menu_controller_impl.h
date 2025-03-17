@@ -11,12 +11,14 @@
 #include "ash/lobster/lobster_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_manager.h"
+#include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/ash/editor_menu/lobster_manager.h"
-#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
+#include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_card_controller.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "content/public/browser/browser_context.h"
 
 namespace views {
@@ -56,8 +58,8 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
 
   bool SetBrowserContext(content::BrowserContext* context);
   void LogEditorMode(const EditorMode& editor_mode);
-  void GetEditorContext(
-      base::OnceCallback<void(const EditorContext&)> callback);
+  void GetEditorMenuCardContext(
+      base::OnceCallback<void(const EditorMenuCardContext&)> callback);
   void DismissCard();
   void TryCreatingEditorSession();
 
@@ -79,7 +81,7 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   // user's view.
   class EditorCardSession : public EditorManager::Observer {
    public:
-    enum class Tab { kEditor, kLobster };
+    enum class ActiveFeature { kEditor, kLobster };
 
     explicit EditorCardSession(EditorMenuControllerImpl* controller,
                                std::unique_ptr<EditorManager> editor_manager,
@@ -87,20 +89,24 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
     ~EditorCardSession() override;
 
     // EditorManager::Observer overrides
-    void OnEditorModeChanged(const EditorMode& mode) override;
+    void OnEditorModeChanged(EditorMode mode) override;
 
     void StartFlowWithFreeformText(const std::string& freeform_text);
     void StartFlowWithPreset(const std::string& preset_id);
 
     void OpenSettings();
 
-    EditorManager* editor_manager() { return editor_manager_.get(); }
+    EditorManager* editor_manager() const { return editor_manager_.get(); }
 
-    LobsterManager* lobster_manager() { return lobster_manager_.get(); }
+    LobsterManager* lobster_manager() const { return lobster_manager_.get(); }
+
+    LobsterMode GetLobsterMode() const;
+
+    void SetActiveFeature(ActiveFeature active_feature);
 
     void OnSelectedTextChanged(const std::string& text);
 
-    Tab current_tab = Tab::kEditor;
+    ActiveFeature active_feature = ActiveFeature::kEditor;
 
    private:
     // Not owned by this class
@@ -116,10 +122,12 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
     std::string selected_text_;
   };
 
-  void OnGetEditorContext(
-      base::OnceCallback<void(const EditorContext&)> callback,
+  void OnGetEditorCardMenuContext(
+      base::OnceCallback<void(const EditorMenuCardContext&)> callback,
+      LobsterMode lobster_mode,
       const EditorContext& context);
   void OnGetAnchorBoundsAndEditorContext(const gfx::Rect& anchor_bounds,
+                                         LobsterMode lobster_mode,
                                          const EditorContext& context);
 
   // This method is fired whenever the EditorPromoCard, or EditorMenu cards are

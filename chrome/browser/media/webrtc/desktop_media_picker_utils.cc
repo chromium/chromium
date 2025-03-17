@@ -9,23 +9,12 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 
+#include "base/notreached.h"
+#include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "media/base/video_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
-
-void RecordUma(GDMPreferCurrentTabResult result,
-               base::TimeTicks dialog_open_time) {
-  base::UmaHistogramEnumeration(
-      "Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.UserInteraction", result);
-
-  const base::TimeDelta elapsed = base::TimeTicks::Now() - dialog_open_time;
-  base::HistogramBase* histogram = base::LinearHistogram::FactoryTimeGet(
-      "Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.DialogDuration",
-      /*minimum=*/base::Milliseconds(500), /*maximum=*/base::Seconds(45),
-      /*bucket_count=*/91, base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->AddTime(elapsed);
-}
 
 gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size) {
   const gfx::Rect scaled_rect = media::ComputeLetterboxRegion(
@@ -53,4 +42,35 @@ gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size) {
   }
 
   return gfx::ImageSkia::CreateFrom1xBitmap(result);
+}
+
+content::DesktopMediaID::Type AsDesktopMediaIdType(
+    DesktopMediaList::Type type) {
+  switch (type) {
+    case DesktopMediaList::Type::kScreen:
+      return content::DesktopMediaID::Type::TYPE_SCREEN;
+    case DesktopMediaList::Type::kWindow:
+      return content::DesktopMediaID::Type::TYPE_WINDOW;
+    case DesktopMediaList::Type::kWebContents:
+    case DesktopMediaList::Type::kCurrentTab:
+      return content::DesktopMediaID::Type::TYPE_WEB_CONTENTS;
+    case DesktopMediaList::Type::kNone:
+      return content::DesktopMediaID::Type::TYPE_NONE;
+  }
+  NOTREACHED();
+}
+
+DesktopMediaList::Type AsDesktopMediaListType(
+    content::DesktopMediaID::Type type) {
+  switch (type) {
+    case content::DesktopMediaID::Type::TYPE_SCREEN:
+      return DesktopMediaList::Type::kScreen;
+    case content::DesktopMediaID::Type::TYPE_WINDOW:
+      return DesktopMediaList::Type::kWindow;
+    case content::DesktopMediaID::Type::TYPE_WEB_CONTENTS:
+      return DesktopMediaList::Type::kWebContents;
+    case content::DesktopMediaID::Type::TYPE_NONE:
+      return DesktopMediaList::Type::kNone;
+  }
+  NOTREACHED();
 }

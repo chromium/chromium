@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.hats;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -14,9 +13,13 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Java equivalent of C++ survey::SurveyConfig. All member variable are kept package protected, as
@@ -24,10 +27,11 @@ import java.util.Map;
  * //chrome/browser/ui/hats/survey_config.*
  */
 @JNINamespace("hats")
+@NullMarked
 public class SurveyConfig {
 
     private static boolean sForceUsingTestingConfig;
-    private static SurveyConfig sConfigForTesting;
+    private static @Nullable SurveyConfig sConfigForTesting;
 
     /** Unique key associate with the config. */
     final String mTrigger;
@@ -55,6 +59,13 @@ public class SurveyConfig {
     /** Product Specific String Data fields which are sent with the survey response. */
     final String[] mPsdStringDataFields;
 
+    /**
+     * Optional parameter which overrides the default survey cooldown period, see {@link
+     * SurveyThrottler#MIN_DAYS_BETWEEN_ANY_PROMPT_DISPLAYED}. This value is set only if the survey
+     * feature launched for a specific list of users defined by some Google group.
+     */
+    final Optional<Integer> mCooldownPeriodOverride;
+
     /** Not generated from java. */
     @VisibleForTesting
     SurveyConfig(
@@ -63,13 +74,15 @@ public class SurveyConfig {
             double probability,
             boolean userPrompted,
             String[] psdBitDataFields,
-            String[] psdStringDataFields) {
+            String[] psdStringDataFields,
+            Optional<Integer> cooldownPeriodOverride) {
         mTrigger = trigger;
         mTriggerId = triggerId;
         mProbability = probability;
         mUserPrompted = userPrompted;
         mPsdBitDataFields = psdBitDataFields;
         mPsdStringDataFields = psdStringDataFields;
+        mCooldownPeriodOverride = cooldownPeriodOverride;
     }
 
     /**
@@ -79,9 +92,8 @@ public class SurveyConfig {
      * @param trigger The trigger associated with the SurveyConfig.
      * @return SurveyConfig if the survey exists and is enabled.
      */
-    @Nullable
-    public static SurveyConfig get(String trigger) {
-        return get(trigger, "");
+    public static @Nullable SurveyConfig get(Profile profile, String trigger) {
+        return get(profile, trigger, "");
     }
 
     /**
@@ -93,15 +105,15 @@ public class SurveyConfig {
      *     triggerId set to suppliedTriggerId
      * @return SurveyConfig if the survey exists and is enabled.
      */
-    @Nullable
-    public static SurveyConfig get(String trigger, String suppliedTriggerId) {
+    public static @Nullable SurveyConfig get(
+            Profile profile, String trigger, String suppliedTriggerId) {
         SurveyConfig config;
         if (sForceUsingTestingConfig) {
             config = sConfigForTesting;
         } else if (sConfigForTesting != null && sConfigForTesting.mTrigger.equals(trigger)) {
             config = sConfigForTesting;
         } else {
-            config = Holder.getInstance().getSurveyConfig(trigger);
+            config = Holder.getInstance(profile).getSurveyConfig(trigger);
         }
         return getConfigWithSuppliedTriggerIdIfPresent(config, suppliedTriggerId);
     }
@@ -145,11 +157,11 @@ public class SurveyConfig {
 
     /** Clear all the initialized configs. */
     static void clearAll() {
-        Holder.getInstance().destroy();
+        Holder.clearAll();
     }
 
-    static SurveyConfig getConfigWithSuppliedTriggerIdIfPresent(
-            SurveyConfig config, String suppliedTriggerId) {
+    static @Nullable SurveyConfig getConfigWithSuppliedTriggerIdIfPresent(
+            @Nullable SurveyConfig config, String suppliedTriggerId) {
         if (config != null && !TextUtils.isEmpty(suppliedTriggerId)) {
             return new SurveyConfig(
                     config.mTrigger,
@@ -157,7 +169,8 @@ public class SurveyConfig {
                     config.mProbability,
                     config.mUserPrompted,
                     config.mPsdBitDataFields,
-                    config.mPsdStringDataFields);
+                    config.mPsdStringDataFields,
+                    config.mCooldownPeriodOverride);
         }
         return config;
     }
@@ -170,7 +183,8 @@ public class SurveyConfig {
             double probability,
             boolean userPrompted,
             String[] psdBitDataFields,
-            String[] psdStringDataFields) {
+            String[] psdStringDataFields,
+            int cooldownPeriodOverride) {
         holder.mTriggers.put(
                 trigger,
                 new SurveyConfig(
@@ -179,29 +193,38 @@ public class SurveyConfig {
                         probability,
                         userPrompted,
                         psdBitDataFields,
-                        psdStringDataFields));
+                        psdStringDataFields,
+                        cooldownPeriodOverride == 0
+                                ? Optional.empty()
+                                : Optional.of(cooldownPeriodOverride)));
     }
 
     /** Holder that stores all the active surveys for Android. */
     static class Holder {
 
-        private static Holder sInstance;
+        private static @Nullable Holder sInstance;
         private final Map<String, SurveyConfig> mTriggers;
         private long mNativeInstance;
 
-        private Holder() {
+        private Holder(Profile profile) {
             mTriggers = new HashMap<>();
-            mNativeInstance = SurveyConfigJni.get().initHolder(this);
+            mNativeInstance = SurveyConfigJni.get().initHolder(this, profile);
         }
 
-        static Holder getInstance() {
+        static Holder getInstance(Profile profile) {
             if (sInstance == null) {
-                sInstance = new Holder();
+                sInstance = new Holder(profile);
             }
             return sInstance;
         }
 
-        SurveyConfig getSurveyConfig(String trigger) {
+        static void clearAll() {
+            if (sInstance != null) {
+                sInstance.destroy();
+            }
+        }
+
+        @Nullable SurveyConfig getSurveyConfig(String trigger) {
             return mTriggers.get(trigger);
         }
 
@@ -214,7 +237,7 @@ public class SurveyConfig {
     @NativeMethods
     interface Natives {
 
-        long initHolder(Holder caller);
+        long initHolder(Holder caller, Profile profile);
 
         void destroy(long nativeSurveyConfigHolder);
     }

@@ -6,12 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_adbd_monitor_instance.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -23,6 +17,12 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_adbd_monitor_instance.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -158,7 +158,7 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdSuccess) {
   EXPECT_EQ(ops[1].type, ash::FakeUpstartClient::UpstartOperationType::START);
 
   // Check the environment variables when starting arcvm-adbd Upstart job.
-  const auto it_cid = base::ranges::find(
+  const auto it_cid = std::ranges::find(
       ops[1].env,
       base::StringPrintf("ARCVM_CID=%" PRId64, kArcVmCidForTesting));
   EXPECT_NE(it_cid, ops[1].env.end());
@@ -166,7 +166,7 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdSuccess) {
       arc::ArcSessionManager::Get()->GetSerialNumber();
   ASSERT_FALSE(serial_number.empty());
   const auto it_serial =
-      base::ranges::find(ops[1].env, "SERIALNUMBER=" + serial_number);
+      std::ranges::find(ops[1].env, "SERIALNUMBER=" + serial_number);
   EXPECT_NE(it_serial, ops[1].env.end());
 }
 

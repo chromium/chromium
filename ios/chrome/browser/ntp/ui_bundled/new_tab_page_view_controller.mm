@@ -43,6 +43,7 @@
 #import "ui/base/device_form_factor.h"
 
 namespace {
+
 // Animation time for the shift up/down animations to focus/defocus omnibox.
 const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // The minimum height of the feed container.
@@ -50,6 +51,14 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
 // Added height to the feed container so that it doesn't end abruptly on
 // overscroll.
 const CGFloat kFeedContainerExtraHeight = 500;
+
+// Vertical spacing between modules.
+CGFloat SpaceBetweenModules() {
+  return GetDeprecateFeedHeaderParameterValueAsDouble(
+      kDeprecateFeedHeaderParameterSpaceBetweenModules,
+      /*default_value=*/14);
+}
+
 }  // namespace
 
 @interface NewTabPageViewController () <UICollectionViewDelegate,
@@ -388,7 +397,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
                         if (self.feedVisible) {
                           [self updateFeedInsetsForMinimumHeight];
                         }
-                        [self updateFeedContainerHeight];
+                        [self updateFeedContainerSizeAndPosition];
                       }];
 }
 
@@ -531,7 +540,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
     [self setMinimumHeight];
   }
 
-  [self updateAccessibilityElements];
+  [self updateAccessibilityElementsForSwitchControl];
 }
 
 - (void)willUpdateSnapshot {
@@ -632,7 +641,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
         (viewController == self.magicStackCollectionView ||
          viewController == self.contentSuggestionsViewController ||
          viewController == self.feedHeaderViewController)) {
-      heightAboveFeed += kSpaceBetweenModules;
+      heightAboveFeed += SpaceBetweenModules();
     }
   }
   if (!IsHomeCustomizationEnabled()) {
@@ -640,7 +649,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
       heightAboveFeed += kBottomMagicStackPadding;
     }
     if (!self.contentSuggestionsViewController) {
-      heightAboveFeed += content_suggestions::HeaderBottomPadding();
+      heightAboveFeed +=
+          content_suggestions::HeaderBottomPadding(self.traitCollection);
     }
   }
   return heightAboveFeed;
@@ -681,13 +691,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
 }
 
 - (void)feedLayoutDidEndUpdatesWithType:(FeedLayoutUpdateType)type {
-  if (_feedContainer) {
-    // Feed content gets added to the top of the subview array, so after content
-    // loads the feed container needs to be sent to the back so that it isn't
-    // in front of the new content and doesn't intercept taps / interactions
-    // that are meant for the feed content.
-    [self.collectionView sendSubviewToBack:_feedContainer];
-  }
   [self updateFeedInsetsForMinimumHeight];
   // Updating insets can influence contentOffset, so update saved scroll state
   // after it. This handles what the starting offset be with the feed enabled,
@@ -700,7 +703,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
     [self setContentOffset:self.savedScrollOffset];
   }
 
-  [self updateFeedContainerHeight];
+  [self updateFeedContainerSizeAndPosition];
 }
 
 - (void)invalidate {
@@ -817,13 +820,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
   }
 
   [self updateScrollPositionToSave];
-
-  // The feed model callbacks don't always reliably tell us that the content has
-  // paginated, so check if the container should be extended.
-  if (self.collectionView.contentSize.height >
-      self.feedContainerHeightConstraint.constant) {
-    [self updateFeedContainerHeight];
-  }
+  [self updateFeedContainerSizeAndPosition];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
@@ -967,11 +964,11 @@ const CGFloat kFeedContainerExtraHeight = 500;
       // wait for it to finish to focus the omnibox.
       __weak __typeof(self) weakSelf = self;
       [UIView animateWithDuration:kMaterialDuration6
-          animations:^{
-            weakSelf.collectionView.contentOffset =
-                CGPoint(0, pinnedOffsetBeforeAnimation);
-            [weakSelf resetFakeOmniboxConstraints];
-          }];
+                       animations:^{
+                         weakSelf.collectionView.contentOffset =
+                             CGPoint(0, pinnedOffsetBeforeAnimation);
+                         [weakSelf resetFakeOmniboxConstraints];
+                       }];
     }
     [self.headerViewController
         completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:
@@ -1229,7 +1226,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
       self.fakeOmniboxConstraints = @[
         [viewBelowHeader.topAnchor
             constraintEqualToAnchor:self.headerViewController.view.bottomAnchor
-                           constant:kSpaceBetweenModules],
+                           constant:SpaceBetweenModules()],
       ];
     }
   } else {
@@ -1245,7 +1242,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
       self.fakeOmniboxConstraints = @[
         [self.magicStackCollectionView.view.topAnchor
             constraintEqualToAnchor:self.headerViewController.view.bottomAnchor
-                           constant:content_suggestions::HeaderBottomPadding()],
+                           constant:content_suggestions::HeaderBottomPadding(
+                                        self.traitCollection)],
       ];
     }
   }
@@ -1359,6 +1357,10 @@ const CGFloat kFeedContainerExtraHeight = 500;
              selector:@selector(deviceOrientationDidChange)
                  name:UIDeviceOrientationDidChangeNotification
                object:nil];
+  [center addObserver:self
+             selector:@selector(updateAccessibilityElementsForSwitchControl)
+                 name:UIAccessibilitySwitchControlStatusDidChangeNotification
+               object:nil];
 }
 
 // Handles device rotation.
@@ -1464,7 +1466,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
       [_feedContainer.topAnchor
           constraintEqualToAnchor:self.feedHeaderViewController.view.topAnchor],
     ]];
-    [self updateFeedContainerHeight];
+    [self updateFeedContainerSizeAndPosition];
   }
 
   [NSLayoutConstraint activateConstraints:@[
@@ -1519,7 +1521,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
       UIView* viewAbove = self.viewControllersAboveFeed[index - 1].view;
       [NSLayoutConstraint activateConstraints:@[
         [view.topAnchor constraintEqualToAnchor:viewAbove.bottomAnchor
-                                       constant:kSpaceBetweenModules],
+                                       constant:SpaceBetweenModules()],
       ]];
     }
   }
@@ -1571,16 +1573,23 @@ const CGFloat kFeedContainerExtraHeight = 500;
   }
 }
 
-// Updates the accessibilityElements used by VoiceOver / Switch Control to
-// iterate through on-screen elements. The feed collectionView does not seem to
-// include non-feed items in its `accessibilityElements` so they are added here.
-- (void)updateAccessibilityElements {
+// The default behavior of Switch Control does not iterate through elements
+// added to the collection view by default; manually setting
+// `accessibilityElements` for these elements to be recognized by Switch
+// Control.
+- (void)updateAccessibilityElementsForSwitchControl {
+  if (!UIAccessibilityIsSwitchControlRunning()) {
+    // Reset to `nil` after switch control has been turned off. Other a11y
+    // features can handle the iteration correctly.
+    self.containerView.accessibilityElements = nil;
+    return;
+  }
   NSMutableArray* elements = [[NSMutableArray alloc] init];
   for (UIViewController* viewController in self.viewControllersAboveFeed) {
     [elements addObject:viewController.view];
   }
   [elements addObject:self.collectionView];
-  self.view.accessibilityElements = elements;
+  self.containerView.accessibilityElements = elements;
 }
 
 // Calculate the scroll position that should be saved in the NTP state and
@@ -1594,8 +1603,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
   self.mutator.scrollPositionToSave = scrollPositionToSave;
 }
 
-// Updates the feed container's height constraint.
-- (void)updateFeedContainerHeight {
+// Updates the feed container's height constraint and z-position.
+- (void)updateFeedContainerSizeAndPosition {
   if (!_feedContainer) {
     return;
   }
@@ -1611,6 +1620,12 @@ const CGFloat kFeedContainerExtraHeight = 500;
   self.feedContainerHeightConstraint =
       [_feedContainer.heightAnchor constraintEqualToConstant:containerHeight];
   self.feedContainerHeightConstraint.active = YES;
+
+  // Feed content gets added to the top of the subview array, so after content
+  // loads the feed container needs to be sent to the back so that it isn't
+  // in front of the new content and doesn't intercept taps / interactions
+  // that are meant for the feed content.
+  [self.collectionView sendSubviewToBack:_feedContainer];
 }
 
 // Updates the width constraint of `moduleLayoutGuide`.
@@ -1661,7 +1676,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
       // Add in half of the margin between the fakebox and the rest of the
       // content suggestions, to ensure there is enough height to fully
       // finish the fakebox to omnibox transition.
-      minimumHeight += content_suggestions::HeaderBottomPadding() / 2;
+      minimumHeight +=
+          content_suggestions::HeaderBottomPadding(self.traitCollection) / 2;
     }
   }
 

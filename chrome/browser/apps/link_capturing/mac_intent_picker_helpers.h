@@ -14,7 +14,8 @@
 namespace apps {
 
 // Returns a native Mac app, if any, registered to own the given `url`.
-std::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url);
+std::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url,
+                                                    int icon_size);
 
 // Launches a native Mac app, specified by the `launch_name` (the path) returned
 // by `FindMacAppForUrl` above, for the given `url`.

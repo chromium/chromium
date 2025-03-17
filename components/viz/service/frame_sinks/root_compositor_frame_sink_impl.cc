@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -36,7 +37,7 @@
 #endif
 
 #if BUILDFLAG(IS_IOS)
-#include "components/viz/service/frame_sinks/external_begin_frame_source_ios.h"
+#include "components/viz/common/frame_sinks/external_begin_frame_source_ios.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -145,11 +146,16 @@ RootCompositorFrameSinkImpl::Create(
     auto owned_external_begin_frame_source_mojo =
         std::make_unique<ExternalBeginFrameSourceMojo>(
             frame_sink_manager,
-            std::move(params->external_begin_frame_controller), restart_id);
+            std::move(params->external_begin_frame_controller),
+            std::move(params->external_begin_frame_controller_client),
+            restart_id);
     external_begin_frame_source_mojo =
         owned_external_begin_frame_source_mojo.get();
     external_begin_frame_source =
         std::move(owned_external_begin_frame_source_mojo);
+#if BUILDFLAG(IS_IOS)
+    hw_support_for_multiple_refresh_rates = true;
+#endif
   } else {
 #if BUILDFLAG(IS_ANDROID)
     hw_support_for_multiple_refresh_rates = true;
@@ -184,19 +190,11 @@ RootCompositorFrameSinkImpl::Create(
                 restart_id, base::SingleThreadTaskRunner::GetCurrentDefault());
       }
 #elif BUILDFLAG(IS_MAC)
-      if (features::IsCVDisplayLinkBeginFrameSourceEnabled()) {
         external_begin_frame_source =
             std::make_unique<ExternalBeginFrameSourceMac>(
                 restart_id, params->renderer_settings.display_id,
                 output_surface.get());
         created_external_begin_frame_source_mac = true;
-      } else {
-        auto time_source = std::make_unique<DelayBasedTimeSource>(
-            base::SingleThreadTaskRunner::GetCurrentDefault().get());
-        synthetic_begin_frame_source =
-            std::make_unique<DelayBasedBeginFrameSourceMac>(
-                std::move(time_source), restart_id);
-      }
 #endif
       if (!external_begin_frame_source && !synthetic_begin_frame_source) {
         auto time_source = std::make_unique<DelayBasedTimeSource>(
@@ -225,17 +223,14 @@ RootCompositorFrameSinkImpl::Create(
 #if !BUILDFLAG(IS_APPLE)
   auto* output_surface_ptr = output_surface.get();
 #endif
-  gpu::SharedImageInterface* sii = nullptr;
-  if (display_controller)
-    sii = display_controller->shared_image_interface();
 
   auto overlay_processor = OverlayProcessorInterface::CreateOverlayProcessor(
       output_surface.get(), output_surface->GetSurfaceHandle(),
-      output_surface->capabilities(),
-      display_controller.get(), sii, params->renderer_settings, debug_settings);
+      output_surface->capabilities(), display_controller.get(),
+      output_surface_provider->GetSharedImageManager(),
+      params->renderer_settings, debug_settings);
 
   auto display = std::make_unique<Display>(
-      frame_sink_manager->shared_bitmap_manager(),
       output_surface_provider->GetSharedImageManager(),
       output_surface_provider->GetGpuScheduler(), params->renderer_settings,
       debug_settings, params->frame_sink_id, std::move(display_controller),
@@ -299,9 +294,21 @@ RootCompositorFrameSinkImpl::~RootCompositorFrameSinkImpl() {
       begin_frame_source());
 }
 
-bool RootCompositorFrameSinkImpl::WillEvictSurface(
-    const SurfaceId& surface_id) {
-  return eviction_handler_.WillEvictSurface(surface_id);
+void RootCompositorFrameSinkImpl::DidEvictSurface(const SurfaceId& surface_id) {
+  const SurfaceId& current_surface_id = display_->CurrentSurfaceId();
+  if (!current_surface_id.is_valid()) {
+    return;
+  }
+  DCHECK_EQ(surface_id.frame_sink_id(), current_surface_id.frame_sink_id());
+
+  // This matches CompositorFrameSinkSupport's eviction logic, which will
+  // evict `surface_id` or matching but older ones. Avoid overwriting the
+  // contents of `current_surface_id` if it's newer here by doing the same
+  // check.
+  if (surface_id.local_surface_id().parent_sequence_number() >=
+      current_surface_id.local_surface_id().parent_sequence_number()) {
+    display_->InvalidateCurrentSurfaceId();
+  }
 }
 
 const SurfaceId& RootCompositorFrameSinkImpl::CurrentSurfaceId() const {
@@ -309,11 +316,6 @@ const SurfaceId& RootCompositorFrameSinkImpl::CurrentSurfaceId() const {
 }
 
 void RootCompositorFrameSinkImpl::SetDisplayVisible(bool visible) {
-  if (visible) {
-    // If the display has been explicitly set to visible, no need to push any
-    // eviction content.
-    eviction_handler_.MaybeFinishEvictionProcess();
-  }
   display_->SetVisible(visible);
 }
 
@@ -451,6 +453,15 @@ void RootCompositorFrameSinkImpl::UpdateRefreshRate(float refresh_rate) {
     external_begin_frame_source_->UpdateRefreshRate(refresh_rate);
 }
 
+void RootCompositorFrameSinkImpl::SetAdaptiveRefreshRateInfo(
+    bool has_support,
+    float suggested_normal,
+    float suggested_high,
+    const std::vector<float>& supported_refresh_rates,
+    float device_scale_factor) {
+  // TODO(crbug.com/402442892): Use this info.
+}
+
 void RootCompositorFrameSinkImpl::PreserveChildSurfaceControls() {
   display_->PreserveChildSurfaceControls();
 }
@@ -559,21 +570,6 @@ void RootCompositorFrameSinkImpl::DidNotProduceFrame(
   support_->DidNotProduceFrame(begin_frame_ack);
 }
 
-void RootCompositorFrameSinkImpl::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const SharedBitmapId& id) {
-  if (!support_->DidAllocateSharedBitmap(std::move(region), id)) {
-    DLOG(ERROR) << "DidAllocateSharedBitmap failed for duplicate "
-                << "SharedBitmapId";
-    compositor_frame_sink_receiver_.reset();
-  }
-}
-
-void RootCompositorFrameSinkImpl::DidDeleteSharedBitmap(
-    const SharedBitmapId& id) {
-  support_->DidDeleteSharedBitmap(id);
-}
-
 void RootCompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
     mojom::CompositorFrameSinkType type) {
   support_->InitializeCompositorFrameSinkType(type);
@@ -614,10 +610,7 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
           /*is_root=*/true)),
       synthetic_begin_frame_source_(std::move(synthetic_begin_frame_source)),
       external_begin_frame_source_(std::move(external_begin_frame_source)),
-      display_(std::move(display)),
-      eviction_handler_(display_.get(),
-                        support_.get(),
-                        frame_sink_manager->reserved_resource_id_tracker()) {
+      display_(std::move(display)) {
   DCHECK(display_);
   DCHECK(begin_frame_source());
   frame_sink_manager->RegisterBeginFrameSource(begin_frame_source(),
@@ -667,8 +660,12 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
 
 #if BUILDFLAG(IS_ANDROID)
   matchers.push_back(std::make_unique<OnlyVideoMatcher>());
-  matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
-  matchers.push_back(std::make_unique<OnlyScrollBarFadeOutAnimationMatcher>());
+  if (base::FeatureList::IsEnabled(
+          features::kUseFrameIntervalDeciderNewAndroidFeatures)) {
+    matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
+    matchers.push_back(
+        std::make_unique<OnlyScrollBarFadeOutAnimationMatcher>());
+  }
 #elif BUILDFLAG(IS_IOS)
   matchers.push_back(std::make_unique<OnlyVideoMatcher>());
 #else
@@ -776,6 +773,48 @@ void RootCompositorFrameSinkImpl::DisplayWillDrawAndSwap(
     AggregatedRenderPassList* render_passes) {
   DCHECK(support_->GetHitTestAggregator());
   support_->GetHitTestAggregator()->Aggregate(display_->CurrentSurfaceId());
+
+  if (external_begin_frame_source_ &&
+      external_begin_frame_source_->last_begin_frame_args().IsValid() &&
+      base::ShouldRecordSubsampledMetric(0.001)) {
+    const BeginFrameArgs& begin_frame_args =
+        external_begin_frame_source_->last_begin_frame_args();
+    constexpr base::TimeDelta kEpsilonTimeDelta = base::Milliseconds(0.5);
+    if (decided_display_interval_.is_zero()) {
+      base::UmaHistogramCustomTimes(
+          "Viz.FrameIntervalDecider.ActualIntervalDefault",
+          begin_frame_args.interval, base::Milliseconds(0),
+          base::Milliseconds(500), 50);
+    }
+    if ((decided_display_interval_ - base::Hertz(30)).magnitude() <
+        kEpsilonTimeDelta) {
+      base::UmaHistogramCustomTimes(
+          "Viz.FrameIntervalDecider.ActualIntervalFor30hz",
+          begin_frame_args.interval, base::Milliseconds(0),
+          base::Milliseconds(500), 50);
+    }
+    if ((decided_display_interval_ - base::Hertz(25)).magnitude() <
+        kEpsilonTimeDelta) {
+      base::UmaHistogramCustomTimes(
+          "Viz.FrameIntervalDecider.ActualIntervalFor25hz",
+          begin_frame_args.interval, base::Milliseconds(0),
+          base::Milliseconds(500), 50);
+    }
+    if ((decided_display_interval_ - base::Hertz(24)).magnitude() <
+        kEpsilonTimeDelta) {
+      base::UmaHistogramCustomTimes(
+          "Viz.FrameIntervalDecider.ActualIntervalFor24hz",
+          begin_frame_args.interval, base::Milliseconds(0),
+          base::Milliseconds(500), 50);
+    }
+    if ((decided_display_interval_ - base::Hertz(20)).magnitude() <
+        kEpsilonTimeDelta) {
+      base::UmaHistogramCustomTimes(
+          "Viz.FrameIntervalDecider.ActualIntervalFor20hz",
+          begin_frame_args.interval, base::Milliseconds(0),
+          base::Milliseconds(500), 50);
+    }
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -905,9 +944,7 @@ RootCompositorFrameSinkImpl::GetPreferredFrameIntervalForFrameSinkId(
       ->GetPreferredFrameIntervalForFrameSinkId(id, type);
 }
 
-void RootCompositorFrameSinkImpl::DisplayDidDrawAndSwap() {
-  eviction_handler_.DisplayDidDrawAndSwap();
-}
+void RootCompositorFrameSinkImpl::DisplayDidDrawAndSwap() {}
 
 BeginFrameSource* RootCompositorFrameSinkImpl::begin_frame_source() {
   if (external_begin_frame_source_) {

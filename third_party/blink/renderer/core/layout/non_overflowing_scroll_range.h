@@ -11,7 +11,7 @@
 
 namespace blink {
 
-class LayoutObject;
+class Element;
 
 // Helper structure for CSS anchor positioning's fallback positioning. Each
 // fallback position has a corresponding `NonOverflowingScrollRange`. See
@@ -25,7 +25,7 @@ struct NonOverflowingScrollRange {
   PhysicalScrollRange containing_block_range;
 
   // The default anchor used for the corresponding fallback position.
-  Member<const LayoutObject> anchor_object;
+  Member<const Element> anchor_element;
 
   // Checks if the given scroll offsets are within the scroll ranges, i.e., if
   // the fallback position's margin box overflows the bounds.
@@ -37,7 +37,7 @@ struct NonOverflowingScrollRange {
     return containing_block_range == other.containing_block_range;
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(anchor_object); }
+  void Trace(Visitor* visitor) const { visitor->Trace(anchor_element); }
 };
 
 }  // namespace blink

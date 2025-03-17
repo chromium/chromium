@@ -79,9 +79,17 @@ class WatermarkBrowserTest : public UiBrowserTest,
 
 }  // namespace
 
-// TODO(crbug.com/40261456): Fix and re-enable the test.
+// The test is enabled only for Windows since this is the standard for pixel
+// golden tests in general (single platform to account for variability in
+// rendering).
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_WatermarkShownAfterNavigation WatermarkShownAfterNavigation
+#else
+#define MAYBE_WatermarkShownAfterNavigation WatermarkShownAfterNavigation
+#endif
+
 IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest,
-                       DISABLED_WatermarkShownAfterNavigation) {
+                       MAYBE_WatermarkShownAfterNavigation) {
   NavigateToTestPage();
   ASSERT_TRUE(SetWatermark(GetParam()));
   ShowAndVerifyUi();

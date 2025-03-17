@@ -291,7 +291,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
 
   GURL GetDialogContentURL() const override {
     signin_metrics::AccessPoint access_point =
-        signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON;
+        signin_metrics::AccessPoint::kMachineLogon;
     signin_metrics::Reason reason = signin_metrics::Reason::kFetchLstOnly;
 
     auto base_url =

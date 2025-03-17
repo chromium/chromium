@@ -25,6 +25,7 @@
 #include "services/tracing/public/cpp/buildflags.h"
 #include "services/tracing/public/cpp/perfetto/interning_index.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
+#include "third_party/perfetto/include/perfetto/tracing/data_source.h"
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64) && \
     BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
@@ -57,6 +58,37 @@ class LoaderLockSamplingThread;
 // field |profiler_| to be thread-safe.
 class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
  public:
+  class COMPONENT_EXPORT(TRACING_CPP) DataSource
+      : public perfetto::DataSource<DataSource> {
+   public:
+    static constexpr bool kSupportsMultipleInstances = false;
+    static constexpr bool kRequiresCallbacksUnderLock = false;
+
+    using TraceContext = perfetto::DataSource<DataSource>::TraceContext;
+
+    DataSource() = default;
+    ~DataSource() override;
+
+    void OnSetup(const SetupArgs& args) override;
+    void OnStart(const StartArgs&) override;
+    void OnStop(const StopArgs&) override;
+    void WillClearIncrementalState(
+        const ClearIncrementalStateArgs& args) override;
+
+    // We create one trace writer per profiled thread. This is necessary because
+    // each profiler keeps its own interned data index, so to avoid collisions
+    // interned data should go into different writer sequences.
+    std::unique_ptr<perfetto::TraceWriterBase> CreateTraceWriter();
+
+    bool privacy_filtering_enabled() const {
+      return privacy_filtering_enabled_;
+    }
+
+   private:
+    bool privacy_filtering_enabled_ = false;
+  };
+  using TracePacketHandle = DataSource::TraceContext::TracePacketHandle;
+
   class COMPONENT_EXPORT(TRACING_CPP) StackProfileWriter {
    public:
     explicit StackProfileWriter(bool should_enable_filtering);
@@ -69,9 +101,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
     // corresponding to the callstack. Meanwhile it could emit extra entries
     // to intern data. |function_name| member in Frame could be std::move(ed) by
     // this method to reduce number of copies we have for function names.
-    InterningID GetCallstackIDAndMaybeEmit(
-        std::vector<base::Frame>& frames,
-        perfetto::TraceWriter::TracePacketHandle* trace_packet);
+    InterningID GetCallstackIDAndMaybeEmit(std::vector<base::Frame>& frames,
+                                           TracePacketHandle* trace_packet);
 
     void ResetEmittedState();
 
@@ -119,48 +150,16 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
     void OnProfileCompleted(base::TimeDelta profile_duration,
                             base::TimeDelta sampling_period) override {}
 
-    void SetTraceWriter(
-        std::unique_ptr<perfetto::TraceWriterBase> trace_writer);
-
     void SetUnwinderType(TracingSamplerProfiler::UnwinderType unwinder_type);
 
    private:
-    struct BufferedSample {
-      BufferedSample(base::TimeTicks, std::vector<base::Frame>&&);
-
-      BufferedSample(const BufferedSample&) = delete;
-      BufferedSample& operator=(const BufferedSample&) = delete;
-
-      BufferedSample(BufferedSample&& other);
-
-      ~BufferedSample();
-
-      base::TimeTicks timestamp;
-      std::vector<base::Frame> sample;
-    };
-
-    void WriteSampleToTrace(BufferedSample sample);
-
-    // TODO(ssid): Consider using an interning scheme to reduce memory usage
-    // and increase the sample size.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    // We usually sample at 50ms, and expect that tracing should have started in
-    // 10s (5s for 2 threads). Approximately 100 frames and 200 samples would use
-    // 300KiB.
-    constexpr static size_t kMaxBufferedSamples = 200;
-#else
-    // 2000 samples are enough to store samples for 100 seconds (50s for 2
-    // threads), and consumes about 3MiB of memory.
-    constexpr static size_t kMaxBufferedSamples = 2000;
-#endif
-    std::vector<BufferedSample> buffered_samples_;
+    void WriteSampleToTrace(std::vector<base::Frame> frames,
+                            base::TimeTicks sample_timestamp);
 
     base::ModuleCache module_cache_;
     const base::PlatformThreadId sampled_thread_id_;
-    base::Lock trace_writer_lock_;
     std::unique_ptr<perfetto::TraceWriterBase> trace_writer_;
     StackProfileWriter stack_profile_writer_;
-    bool reset_incremental_state_ = true;
     uint32_t last_incremental_state_reset_id_ = 0;
     base::TimeTicks last_timestamp_;
     base::RepeatingClosure sample_callback_for_testing_;
@@ -202,11 +201,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
           factory);
 
   // For tests.
-  static void SetupStartupTracingForTesting();
   static void DeleteOnChildThreadForTesting();
-  static void StartTracingForTesting();
-  static void StopTracingForTesting();
-  static void ResetDataSourceForTesting();
   // Returns whether of not the sampler profiling is able to unwind the stack
   // on this platform, ignoring any CoreUnwindersCallback provided.
   static bool IsStackUnwindingSupportedForTesting();
@@ -247,7 +242,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   UnwinderType unwinder_type_;
 
   base::Lock lock_;
-  std::unique_ptr<base::StackSamplingProfiler> profiler_;  // under |lock_|
+  std::unique_ptr<base::StackSamplingProfiler> profiler_ GUARDED_BY(lock_);
   // This dangling raw_ptr occurred in:
   // services_unittests: TracingSampleProfilerTest.SamplingChildThread
   // https://ci.chromium.org/ui/p/chromium/builders/try/win-rel/237204/test-results?q=ExactID%3Aninja%3A%2F%2Fservices%3Aservices_unittests%2FTracingSampleProfilerTest.SamplingChildThread+VHash%3A83af393c6a76b581

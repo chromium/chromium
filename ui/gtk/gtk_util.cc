@@ -66,6 +66,10 @@ GskRenderNode* GetRenderNodeChild(GskRenderNode* node) {
       return gsk_blur_node_get_child(node);
     case GSK_DEBUG_NODE:
       return gsk_debug_node_get_child(node);
+    case GSK_MASK_NODE:
+      return gsk_mask_node_get_mask(node);
+    case GSK_SUBSURFACE_NODE:
+      return gsk_subsurface_node_get_child(node);
     default:
       return nullptr;
   }
@@ -227,11 +231,12 @@ aura::Window* GetAuraTransientParent(GtkWidget* dialog) {
 }
 
 void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent) {
+  g_object_set_data(G_OBJECT(dialog), kAuraTransientParent, nullptr);
+
   if (!parent || !parent->GetHost()) {
     return;
   }
 
-  g_object_set_data(G_OBJECT(dialog), kAuraTransientParent, nullptr);
   gfx::AcceleratedWidget parent_id = parent->GetHost()->GetAcceleratedWidget();
   GtkUi::GetPlatform()->ClearTransientFor(parent_id);
 }
@@ -699,8 +704,7 @@ GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event) {
   int hw_code = GetKeyEventProperty(key_event, ui::kPropertyKeyboardHwKeyCode);
   int group = GetKeyEventProperty(key_event, ui::kPropertyKeyboardGroup);
 
-  // Get GdkKeymap
-  GdkKeymap* keymap = GtkUi::GetPlatform()->GetGdkKeymap();
+  GdkKeymap* keymap = gdk_keymap_get_for_display(gdk_display_get_default());
 
   // Get keyval and state
   GdkModifierType state = GetGdkKeyEventState(key_event);
@@ -768,8 +772,19 @@ GdkTexture* GetTextureFromRenderNode(GskRenderNode* node) {
     return nullptr;
   }
 
-  if (gsk_render_node_get_node_type(node) == GSK_TEXTURE_NODE) {
-    return gsk_texture_node_get_texture(node);
+  auto node_type = gsk_render_node_get_node_type(node);
+  if (node_type > GSK_RENDER_NODE_MAX_VALUE) {
+    LOG(ERROR) << "Unexpected node type: " << node_type;
+    return nullptr;
+  }
+
+  switch (node_type) {
+    case GSK_TEXTURE_NODE:
+      return gsk_texture_node_get_texture(node);
+    case GSK_TEXTURE_SCALE_NODE:
+      return gsk_texture_node_get_texture(node);
+    default:
+      break;
   }
 
   if (auto* texture = GetTextureFromRenderNode(GetRenderNodeChild(node))) {

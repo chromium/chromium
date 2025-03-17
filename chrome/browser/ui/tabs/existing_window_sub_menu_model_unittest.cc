@@ -12,75 +12,27 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "ui/gfx/text_elider.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/autotest_desks_api.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
-#include "ui/views/widget/widget.h"
-#endif
-
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class TestBrowserWindowViewsWithDesktopNativeWidgetAura
-    : public TestBrowserWindow {
- public:
-  explicit TestBrowserWindowViewsWithDesktopNativeWidgetAura(
-      bool popup = false);
-  TestBrowserWindowViewsWithDesktopNativeWidgetAura(
-      const TestBrowserWindowViewsWithDesktopNativeWidgetAura&) = delete;
-  TestBrowserWindowViewsWithDesktopNativeWidgetAura& operator=(
-      const TestBrowserWindowViewsWithDesktopNativeWidgetAura&) = delete;
-  ~TestBrowserWindowViewsWithDesktopNativeWidgetAura() override;
-
- private:
-  std::unique_ptr<views::Widget> CreateDesktopWidget(bool popup);
-
-  std::unique_ptr<views::Widget> widget_;
-};
-
-TestBrowserWindowViewsWithDesktopNativeWidgetAura::
-    TestBrowserWindowViewsWithDesktopNativeWidgetAura(bool popup) {
-  widget_ = CreateDesktopWidget(popup);
-  SetNativeWindow(widget_->GetNativeWindow());
-}
-
-TestBrowserWindowViewsWithDesktopNativeWidgetAura::
-    ~TestBrowserWindowViewsWithDesktopNativeWidgetAura() = default;
-
-std::unique_ptr<views::Widget>
-TestBrowserWindowViewsWithDesktopNativeWidgetAura::CreateDesktopWidget(
-    bool popup) {
-  auto widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-      popup ? views::Widget::InitParams::TYPE_POPUP
-            : views::Widget::InitParams::TYPE_WINDOW);
-  params.native_widget = new views::DesktopNativeWidgetAura(widget.get());
-  params.bounds = gfx::Rect(0, 0, 20, 20);
-  widget->Init(std::move(params));
-  return widget;
-}
-#endif
 
 class ExistingWindowSubMenuModelTest : public BrowserWithTestWindowTest {
  public:
-  ExistingWindowSubMenuModelTest() : BrowserWithTestWindowTest() {}
+  ExistingWindowSubMenuModelTest() = default;
 
  protected:
   std::unique_ptr<Browser> CreateTestBrowser(bool incognito, bool popup);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<Browser> CreateTestBrowserOnWorkspace(std::string desk_index);
 #endif
   void AddTabWithTitle(Browser* browser, std::string title);
@@ -93,13 +45,7 @@ class ExistingWindowSubMenuModelTest : public BrowserWithTestWindowTest {
 std::unique_ptr<Browser> ExistingWindowSubMenuModelTest::CreateTestBrowser(
     bool incognito,
     bool popup) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto window =
-      std::make_unique<TestBrowserWindowViewsWithDesktopNativeWidgetAura>(
-          popup);
-#else
   auto window = std::make_unique<TestBrowserWindow>();
-#endif
   Profile* profile = incognito ? browser()->profile()->GetPrimaryOTRProfile(
                                      /*create_if_needed=*/true)
                                : browser()->profile();
@@ -113,7 +59,7 @@ std::unique_ptr<Browser> ExistingWindowSubMenuModelTest::CreateTestBrowser(
   return browser;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<Browser>
 ExistingWindowSubMenuModelTest::CreateTestBrowserOnWorkspace(
     std::string desk_index) {
@@ -347,7 +293,7 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuPopups) {
   chrome::CloseTab(popup_browser_2.get());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Ensure that when there are multiple desks the browsers are grouped by which
 // desk they belong to.
 TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuGroupedByDesks) {

@@ -91,7 +91,7 @@ class YUVReadbackTest : public testing::Test {
     auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json_data);
     CHECK(parsed_json.has_value())
         << "JSON parsing failed (" << parsed_json.error().message
-        << ") JSON data:" << std::endl
+        << ") JSON data:\n"
         << json_data;
 
     CHECK(parsed_json->is_list());
@@ -459,7 +459,14 @@ class YUVReadbackTest : public testing::Test {
   gl::DisableNullDrawGLBindings enable_pixel_output_;
 };
 
-TEST_F(YUVReadbackTest, YUVReadbackOptTest) {
+// TODO(crbug.com/388544212): Failing on linux and chromeOS MSAN.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(MEMORY_SANITIZER)
+#define MAYBE_YUVReadbackOptTest DISABLED_YUVReadbackOptTest
+#else
+#define MAYBE_YUVReadbackOptTest YUVReadbackOptTest
+#endif
+
+TEST_F(YUVReadbackTest, MAYBE_YUVReadbackOptTest) {
   for (int use_mrt = 0; use_mrt <= 1; ++use_mrt) {
     // This test uses the gpu.service/gpu.decoder tracing events to detect how
     // many scaling passes are actually performed by the YUV readback pipeline.

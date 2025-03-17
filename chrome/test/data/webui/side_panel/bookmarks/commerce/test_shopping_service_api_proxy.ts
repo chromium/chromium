@@ -53,6 +53,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'getPriceTrackingStatusForCurrentUrl',
       'getPriceInsightsInfoForUrl',
       'getProductInfoForUrl',
+      'getProductInfoForUrls',
       'getProductSpecificationsForUrls',
       'getAllProductSpecificationsSets',
       'getProductSpecificationsSetByUuid',
@@ -73,6 +74,11 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
   getProductInfoForUrl(url: Url) {
     this.methodCalled('getProductInfoForUrl', url);
     return Promise.resolve({productInfo: this.product_});
+  }
+
+  getProductInfoForUrls(urls: Url[]) {
+    this.methodCalled('getProductInfoForUrls', urls);
+    return Promise.resolve({productInfos: [this.product_]});
   }
 
   getProductSpecificationsForUrls(urls: Url[]) {

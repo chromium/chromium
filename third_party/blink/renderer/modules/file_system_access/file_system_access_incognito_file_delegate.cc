@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_incognito_file_delegate.h"
 
 #include <optional>
@@ -59,8 +54,7 @@ void WriteDataToProducer(
       << "WriteDataToProducer must not be called on the main thread";
 
   auto data_source = std::make_unique<mojo::StringDataSource>(
-      base::span<const char>(reinterpret_cast<const char*>(data->data.data()),
-                             data->data.size()),
+      base::as_chars(base::span(data->data)),
       mojo::StringDataSource::AsyncWritingMode::
           STRING_STAYS_VALID_UNTIL_COMPLETION);
 

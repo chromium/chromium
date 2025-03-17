@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DRAG_DATA_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DRAG_DATA_H_
 
+#include <vector>
+
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -41,11 +43,8 @@
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
-template <typename T>
-class WebVector;
 
 using FileSystemAccessDropData =
     base::RefCountedData<blink::CrossVariantMojoRemote<
@@ -105,9 +104,9 @@ class BLINK_PLATFORM_EXPORT WebDragData {
 
   ~WebDragData() = default;
 
-  const WebVector<Item>& Items() const { return item_list_; }
+  const std::vector<Item>& Items() const { return item_list_; }
 
-  void SetItems(WebVector<Item> item_list);
+  void SetItems(std::vector<Item> item_list);
 
   void AddItem(const Item&);
 
@@ -133,7 +132,7 @@ class BLINK_PLATFORM_EXPORT WebDragData {
   }
 
  private:
-  WebVector<Item> item_list_;
+  std::vector<Item> item_list_;
   WebString filesystem_id_;
 
   // If true, the renderer always performs the default action for the drop.

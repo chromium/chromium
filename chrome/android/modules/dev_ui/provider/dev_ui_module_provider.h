@@ -5,7 +5,7 @@
 #ifndef CHROME_ANDROID_MODULES_DEV_UI_PROVIDER_DEV_UI_MODULE_PROVIDER_H_
 #define CHROME_ANDROID_MODULES_DEV_UI_PROVIDER_DEV_UI_MODULE_PROVIDER_H_
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 
 namespace dev_ui {
 
@@ -38,5 +38,4 @@ class DevUiModuleProvider {
 };
 
 }  // namespace dev_ui
-
 #endif  // CHROME_ANDROID_MODULES_DEV_UI_PROVIDER_DEV_UI_MODULE_PROVIDER_H_

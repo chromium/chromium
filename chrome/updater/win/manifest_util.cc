@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/manifest_util.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -15,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
@@ -34,54 +34,52 @@ std::optional<base::FilePath> GetOfflineManifest(
     const base::FilePath& offline_dir,
     const std::string& app_id) {
   // Check manifest with fixed name first.
-  base::FilePath manifest_path = offline_dir.AppendASCII("OfflineManifest.gup");
+  base::FilePath manifest_path = offline_dir.Append(L"OfflineManifest.gup");
   if (base::PathExists(manifest_path)) {
     return manifest_path;
   }
 
   // Then check the legacy app specific manifest.
   manifest_path =
-      offline_dir.AppendASCII(app_id).AddExtension(FILE_PATH_LITERAL(".gup"));
+      offline_dir.AppendUTF8(app_id).AddExtension(FILE_PATH_LITERAL(".gup"));
   return base::PathExists(manifest_path)
              ? std::optional<base::FilePath>(manifest_path)
              : std::nullopt;
 }
 
-std::unique_ptr<ProtocolParserXML> ParseOfflineManifest(
+std::optional<ProtocolParserXML::Results> ParseOfflineManifest(
     const base::FilePath& offline_dir,
     const std::string& app_id) {
   std::optional<base::FilePath> manifest_path =
       GetOfflineManifest(offline_dir, app_id);
   if (!manifest_path) {
     VLOG(2) << "Cannot find manifest file in: " << offline_dir;
-    return nullptr;
+    return std::nullopt;
   }
 
   std::optional<int64_t> file_size = base::GetFileSize(manifest_path.value());
   if (!file_size.has_value()) {
     VLOG(2) << "Cannot determine manifest file size.";
-    return nullptr;
+    return std::nullopt;
   }
 
   constexpr int64_t kMaxManifestSize = 1024 * 1024;
   if (file_size.value() > kMaxManifestSize) {
     VLOG(2) << "Manifest file is too large.";
-    return nullptr;
+    return std::nullopt;
   }
 
   std::string contents(file_size.value(), '\0');
   if (base::ReadFile(manifest_path.value(), &contents[0], file_size.value()) ==
       -1) {
     VLOG(2) << "Failed to load manifest file: " << manifest_path.value();
-    return nullptr;
+    return std::nullopt;
   }
-  auto xml_parser = std::make_unique<ProtocolParserXML>();
-  if (!xml_parser->Parse(contents)) {
-    VLOG(2) << "Failed to parse XML manifest file: " << manifest_path.value();
-    return nullptr;
-  }
-
-  return xml_parser;
+  std::optional<ProtocolParserXML::Results> parsed_manifest =
+      ProtocolParserXML::Parse(contents);
+  VLOG_IF(2, !parsed_manifest)
+      << "Failed to parse XML manifest file: " << manifest_path.value();
+  return parsed_manifest;
 }
 
 }  // namespace
@@ -90,7 +88,7 @@ void ReadInstallCommandFromManifest(
     const std::wstring& offline_dir_guid,
     const std::string& app_id,
     const std::string& install_data_index,
-    update_client::ProtocolParser::Results& results,
+    OfflineManifestSystemRequirements& requirements,
     std::string& installer_version,
     base::FilePath& installer_path,
     std::string& install_args,
@@ -117,18 +115,17 @@ void ReadInstallCommandFromManifest(
     return;
   }
 
-  const std::unique_ptr<ProtocolParserXML> manifest_parser =
+  const std::optional<ProtocolParserXML::Results> manifest_parsed =
       ParseOfflineManifest(offline_dir, app_id);
-  if (!manifest_parser) {
+  if (!manifest_parsed) {
     return;
   }
 
-  results = manifest_parser->results();
-  const std::vector<update_client::ProtocolParser::Result>& app_list =
-      manifest_parser->results().list;
-  auto it = base::ranges::find_if(
-      app_list, [&app_id](const update_client::ProtocolParser::Result& result) {
-        return base::EqualsCaseInsensitiveASCII(result.extension_id, app_id);
+  requirements = manifest_parsed->system_requirements;
+  const std::vector<ProtocolParserXML::App>& app_list = manifest_parsed->apps;
+  auto it = std::ranges::find_if(
+      app_list, [&app_id](const ProtocolParserXML::App& result) {
+        return base::EqualsCaseInsensitiveASCII(result.app_id, app_id);
       });
   if (it == std::end(app_list)) {
     VLOG(2) << "No manifest data for app: " << app_id;
@@ -137,8 +134,8 @@ void ReadInstallCommandFromManifest(
 
   installer_version = it->manifest.version;
   installer_path = [&offline_dir, &app_id, &it] {
-    const base::FilePath app_dir(offline_dir.AppendASCII(app_id));
-    const base::FilePath path(app_dir.AppendASCII(it->manifest.run));
+    const base::FilePath app_dir(offline_dir.AppendUTF8(app_id));
+    const base::FilePath path(app_dir.AppendUTF8(it->manifest.run));
     return base::PathExists(path)
                ? path
                : base::FileEnumerator(
@@ -150,9 +147,9 @@ void ReadInstallCommandFromManifest(
   install_args = it->manifest.arguments;
 
   if (!install_data_index.empty()) {
-    auto data_iter = base::ranges::find(
-        it->data, install_data_index,
-        &update_client::ProtocolParser::Result::Data::install_data_index);
+    auto data_iter =
+        std::ranges::find(it->data, install_data_index,
+                          &ProtocolParserXML::Data::install_data_index);
     if (data_iter == std::end(it->data)) {
       VLOG(2) << "Install data index not found: " << install_data_index;
       return;
@@ -215,9 +212,9 @@ bool IsArchitectureCompatible(const std::string& arch_list,
     return true;
   }
 
-  base::ranges::sort(architectures);
+  std::ranges::sort(architectures);
 
-  if (base::ranges::find_if(
+  if (std::ranges::find_if(
           architectures, [&current_architecture](const std::string& narch) {
             if (narch[0] != '-') {
               return false;
@@ -236,7 +233,7 @@ bool IsArchitectureCompatible(const std::string& arch_list,
   std::erase_if(architectures,
                 [](const std::string& arch) { return arch[0] == '-'; });
   return architectures.empty() ||
-         base::ranges::find_if(
+         std::ranges::find_if(
              architectures, [&current_architecture](const std::string& arch) {
                return IsArchitectureSupported(arch, current_architecture);
              }) != architectures.end();
@@ -261,10 +258,8 @@ bool IsOSVersionCompatible(const std::string& min_os_version) {
          (current_version.CompareTo(other_version) >= 0);
 }
 
-bool IsOsSupported(const update_client::ProtocolParser::Results& results) {
-  const update_client::ProtocolParser::SystemRequirements& system_requirements =
-      results.system_requirements;
-
+bool IsOsSupported(
+    const OfflineManifestSystemRequirements& system_requirements) {
   return IsPlatformCompatible(system_requirements.platform) &&
          IsArchitectureCompatible(system_requirements.arch,
                                   update_client::GetArchitecture()) &&

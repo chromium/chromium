@@ -167,6 +167,9 @@ class ValueStore {
   // Gets the total amount of space being used by this storage area, in bytes.
   virtual size_t GetBytesInUse() = 0;
 
+  // Gets all keys from storage.
+  virtual ReadResult GetKeys() = 0;
+
   // Gets a single value from storage.
   virtual ReadResult Get(const std::string& key) = 0;
 

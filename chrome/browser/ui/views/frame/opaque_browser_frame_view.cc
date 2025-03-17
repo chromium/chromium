@@ -229,7 +229,7 @@ void OpaqueBrowserFrameView::InitViews() {
     window_title_->SetSubpixelRenderingEnabled(false);
     window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     window_title_->SetID(VIEW_ID_WINDOW_TITLE);
-    AddChildView(window_title_.get());
+    AddChildViewRaw(window_title_.get());
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -442,7 +442,7 @@ bool OpaqueBrowserFrameView::ShouldTabIconViewAnimate() const {
   // TabIconView we host is initialized, so we need to null check the selected
   // WebContents because in this condition there is not yet a selected tab.
   WebContents* current_tab = browser_view()->GetActiveWebContents();
-  return current_tab ? current_tab->IsLoading() : false;
+  return current_tab && current_tab->ShouldShowLoadingUI();
 }
 
 ui::ImageModel OpaqueBrowserFrameView::GetFaviconForTabIconView() {
@@ -630,7 +630,7 @@ void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
   if (GetFrameButtonStyle() == FrameButtonStyle::kMdButton) {
     for (views::Button* button :
          {minimize_button_, maximize_button_, restore_button_, close_button_}) {
-      DCHECK_EQ(std::string(views::FrameCaptionButton::kViewClassName),
+      DCHECK_EQ(views::FrameCaptionButton::kViewClassName,
                 button->GetClassName());
       views::FrameCaptionButton* frame_caption_button =
           static_cast<views::FrameCaptionButton*>(button);
@@ -720,7 +720,7 @@ void OpaqueBrowserFrameView::InitWindowCaptionButton(
   button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(accessibility_string_id));
   button->SetID(view_id);
-  AddChildView(button);
+  AddChildViewRaw(button);
 }
 
 gfx::Size OpaqueBrowserFrameView::GetThemeImageSize(int image_id) {

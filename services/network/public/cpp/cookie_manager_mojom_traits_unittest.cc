@@ -93,9 +93,9 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {
   net::CookieAccessResult original = net::CookieAccessResult(
       net::CookieEffectiveSameSite::LAX_MODE,
       net::CookieInclusionStatus::MakeFromReasonsForTesting(
-          {net::CookieInclusionStatus::
+          {net::CookieInclusionStatus::ExclusionReason::
                EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX},
-          {net::CookieInclusionStatus::
+          {net::CookieInclusionStatus::WarningReason::
                WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}),
       net::CookieAccessSemantics::LEGACY, net::CookieScopeSemantics::LEGACY,
       true /* is_allowed_to_access_secure_cookies */);
@@ -106,10 +106,10 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {
 
   EXPECT_EQ(original.effective_same_site, copied.effective_same_site);
   EXPECT_TRUE(copied.status.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::
+      {net::CookieInclusionStatus::ExclusionReason::
            EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
   EXPECT_TRUE(copied.status.HasExactlyWarningReasonsForTesting(
-      {net::CookieInclusionStatus::
+      {net::CookieInclusionStatus::WarningReason::
            WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
   EXPECT_EQ(original.is_allowed_to_access_secure_cookies,
             copied.is_allowed_to_access_secure_cookies);
@@ -313,8 +313,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContextMetadata) {
   metadata.redirect_type_bug_1221316 =
       net::CookieOptions::SameSiteCookieContext::ContextMetadata::
           ContextRedirectTypeBug1221316::kPartialSameSiteRedirect;
-  metadata.http_method_bug_1221316 = net::CookieOptions::SameSiteCookieContext::
-      ContextMetadata::HttpMethod::kPost;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::CookieSameSiteContextMetadata>(
           metadata, roundtrip));
@@ -335,15 +333,11 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
       ContextMetadata::ContextDowngradeType::kStrictToLax;
   metadata1.redirect_type_bug_1221316 =
       ContextMetadata::ContextRedirectTypeBug1221316::kCrossSiteRedirect;
-  metadata1.http_method_bug_1221316 = net::CookieOptions::
-      SameSiteCookieContext::ContextMetadata::HttpMethod::kGet;
   ContextMetadata metadata2;
   metadata2.cross_site_redirect_downgrade =
       ContextMetadata::ContextDowngradeType::kLaxToCross;
   metadata2.redirect_type_bug_1221316 =
       ContextMetadata::ContextRedirectTypeBug1221316::kNoRedirect;
-  metadata2.http_method_bug_1221316 = net::CookieOptions::
-      SameSiteCookieContext::ContextMetadata::HttpMethod::kGet;
 
   const ContextMetadata metadatas[]{ContextMetadata(), metadata1, metadata2};
 

@@ -193,7 +193,7 @@ TEST_F(CameraRollThumbnailTest, ViewLayout) {
 
   EXPECT_EQ(camera_roll_thumbnail()->GetFocusBehavior(),
             CameraRollThumbnail::FocusBehavior::ALWAYS);
-  EXPECT_STREQ("CameraRollThumbnail", camera_roll_thumbnail()->GetClassName());
+  EXPECT_EQ("CameraRollThumbnail", camera_roll_thumbnail()->GetClassName());
 }
 
 TEST_F(CameraRollThumbnailTest, ImageThumbnail) {

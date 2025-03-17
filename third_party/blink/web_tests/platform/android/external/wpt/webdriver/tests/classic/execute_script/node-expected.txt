@@ -1,0 +1,15 @@
+This is a wdspec test.
+[FAIL] test_not_supported_nodes[attribute]
+  AssertionError: assert 200 == 500
+[FAIL] test_not_supported_nodes[text]
+  AssertionError: assert 200 == 500
+[FAIL] test_not_supported_nodes[processing_instruction]
+  AssertionError: assert 200 == 500
+[FAIL] test_not_supported_nodes[comment]
+  AssertionError: assert 200 == 500
+[FAIL] test_not_supported_nodes[document]
+  AssertionError: assert 200 == 500
+[FAIL] test_not_supported_nodes[doctype]
+  AssertionError: assert 200 == 500
+Harness: the test ran to completion.
+

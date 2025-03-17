@@ -284,7 +284,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void OnFrameLockingChanged(Surface*, bool) override {}
   void OnDeskChanged(Surface*, int) override {}
   void OnTooltipShown(Surface* surface,
-                      const std::u16string& text,
+                      std::u16string_view text,
                       const gfx::Rect& bounds) override {}
   void OnTooltipHidden(Surface* surface) override {}
 
@@ -334,7 +334,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   // wm::TooltipObserver:
   void OnTooltipShown(aura::Window* target,
-                      const std::u16string& text,
+                      std::u16string_view text,
                       const gfx::Rect& bounds) override;
   void OnTooltipHidden(aura::Window* target) override;
 

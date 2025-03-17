@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_EVENTS_SHORTCUT_MAPPING_PREF_SERVICE_H_
 #define CHROME_BROWSER_ASH_EVENTS_SHORTCUT_MAPPING_PREF_SERVICE_H_
 
+#include "base/memory/raw_ref.h"
 #include "ui/base/shortcut_mapping_pref_delegate.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -13,7 +16,7 @@ namespace ash {
 // policy is deprecated.
 class ShortcutMappingPrefService : public ui::ShortcutMappingPrefDelegate {
  public:
-  ShortcutMappingPrefService();
+  explicit ShortcutMappingPrefService(PrefService& local_state);
   ShortcutMappingPrefService(const ShortcutMappingPrefService&) = delete;
   ShortcutMappingPrefService operator=(const ShortcutMappingPrefService&) =
       delete;
@@ -22,6 +25,9 @@ class ShortcutMappingPrefService : public ui::ShortcutMappingPrefDelegate {
   // ShortcutMappingPrefDelegate:
   bool IsDeviceEnterpriseManaged() const override;
   bool IsI18nShortcutPrefEnabled() const override;
+
+ private:
+  const raw_ref<PrefService> local_state_;
 };
 
 }  // namespace ash

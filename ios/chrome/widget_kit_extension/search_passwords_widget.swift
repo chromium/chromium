@@ -50,11 +50,12 @@ struct SearchPasswordsWidget: Widget {
 #endif
 
 struct SearchPasswordsWidgetEntryView: View {
-  var entry: Provider.Entry
+  var entry: ConfigureWidgetEntry
 
   var body: some View {
     SearchWidgetEntryViewTemplate(
-      destinationURL: WidgetConstants.SearchPasswordsWidget.url,
+      destinationURL: destinationURL(
+        url: WidgetConstants.SearchPasswordsWidget.url, gaia: entry.gaiaID),
       imageName: "widget_password_manager_logo",
       title: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_TITLE",
       accessibilityLabel: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_A11Y_LABEL", entry: entry)

@@ -17,8 +17,8 @@
 using alert_overlays::AlertRequest;
 using alert_overlays::AlertResponse;
 using alert_overlays::ButtonConfig;
-using app_launcher_overlays::AppLaunchConfirmationRequest;
 using app_launcher_overlays::AllowAppLaunchResponse;
+using app_launcher_overlays::AppLaunchConfirmationRequest;
 
 // Test fixture for app launcher overlays.
 using AppLauncherOverlayTest = PlatformTest;

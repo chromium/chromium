@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_source_view.h"
+#include "chrome/browser/ui/views/media_picker_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -55,6 +56,32 @@ constexpr int kTitleTopMargin = 16;
 constexpr gfx::Insets kAudioToggleInsets = gfx::Insets::VH(8, 16);
 constexpr int kAudioToggleChildSpacing = 8;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GDMPreferCurrentTabResult {
+  kDialogDismissed = 0,                  // Tab/window closed, navigation, etc.
+  kUserCancelled = 1,                    // User explicitly cancelled.
+  kUserSelectedScreen = 2,               // Screen selected.
+  kUserSelectedWindow = 3,               // Window selected.
+  kUserSelectedOtherTab = 4,             // Other tab selected from tab-list.
+  kUserSelectedThisTabAsGenericTab = 5,  // Current tab selected from tab-list.
+  kUserSelectedThisTab = 6,  // Current tab selected from current-tab menu.
+  kMaxValue = kUserSelectedThisTab
+};
+
+void RecordUma(GDMPreferCurrentTabResult result,
+               base::TimeTicks dialog_open_time) {
+  base::UmaHistogramEnumeration(
+      "Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.UserInteraction", result);
+
+  const base::TimeDelta elapsed = base::TimeTicks::Now() - dialog_open_time;
+  base::HistogramBase* histogram = base::LinearHistogram::FactoryTimeGet(
+      "Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.DialogDuration",
+      /*minimum=*/base::Milliseconds(500), /*maximum=*/base::Seconds(45),
+      /*bucket_count=*/91, base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->AddTime(elapsed);
+}
+
 void RecordUmaCancellation(base::TimeTicks dialog_open_time) {
   RecordUma(GDMPreferCurrentTabResult::kUserCancelled, dialog_open_time);
 }
@@ -77,7 +104,7 @@ bool ShouldAutoAcceptThisTabCapture() {
 
 ShareThisTabDialogView::ShareThisTabDialogView(
     const DesktopMediaPicker::Params& params,
-    ShareThisTabDialogViews* parent)
+    ShareThisTabMediaPicker* parent)
     : web_contents_(params.web_contents->GetWeakPtr()),
       app_name_(params.app_name),
       parent_(parent),
@@ -147,12 +174,9 @@ ShareThisTabDialogView::ShareThisTabDialogView(
                           base::BindOnce(&ShareThisTabDialogView::Activate,
                                          weak_factory_.GetWeakPtr()));
 
-  // If |params.web_contents| is set and it's not a background page then the
-  // picker will be shown modal to the web contents. Otherwise the picker is
-  // shown in a separate window.
-  if (params.web_contents &&
-      !params.web_contents->GetDelegate()->IsNeverComposited(
-          params.web_contents)) {
+  // Make sure web modal dialogs are supported before trying to show the picker
+  // as a web model dialog.
+  if (MediaPickerCanShowAsWebModal(params.web_contents)) {
     const Browser* browser = chrome::FindBrowserWithTab(params.web_contents);
     // Close the extension popup to prevent spoofing.
     if (browser && browser->window() &&
@@ -169,8 +193,8 @@ ShareThisTabDialogView::ShareThisTabDialogView(
     CreateDialogWidget(this, params.context, nullptr)->Show();
   }
 
-  source_view_->SetBorder(views::CreateThemedRoundedRectBorder(
-      1, 4, ui::kColorSysPrimaryContainer));
+  source_view_->SetBorder(
+      views::CreateRoundedRectBorder(1, 4, ui::kColorSysPrimaryContainer));
 
   SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_DIALOG_ALLOW));
@@ -266,7 +290,7 @@ void ShareThisTabDialogView::SetupAudioToggle() {
   audio_toggle_container->SetProperty(views::kMarginsKey,
                                       gfx::Insets::TLBR(8, 0, 0, 0));
   audio_toggle_container->SetBackground(
-      views::CreateThemedRoundedRectBackground(ui::kColorSysSurface4, 8));
+      views::CreateRoundedRectBackground(ui::kColorSysSurface4, 8));
 
   views::ImageView* audio_icon_view = audio_toggle_container->AddChildView(
       std::make_unique<views::ImageView>());
@@ -344,11 +368,11 @@ bool ShareThisTabDialogView::ShouldAutoReject() const {
 BEGIN_METADATA(ShareThisTabDialogView)
 END_METADATA
 
-ShareThisTabDialogViews::ShareThisTabDialogViews() : dialog_(nullptr) {
+ShareThisTabMediaPicker::ShareThisTabMediaPicker() : dialog_(nullptr) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-ShareThisTabDialogViews::~ShareThisTabDialogViews() {
+ShareThisTabMediaPicker::~ShareThisTabMediaPicker() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (dialog_) {
     dialog_->RecordUmaDismissal();
@@ -357,7 +381,7 @@ ShareThisTabDialogViews::~ShareThisTabDialogViews() {
   }
 }
 
-void ShareThisTabDialogViews::Show(
+void ShareThisTabMediaPicker::Show(
     const DesktopMediaPicker::Params& params,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
     DoneCallback done_callback) {
@@ -370,7 +394,7 @@ void ShareThisTabDialogViews::Show(
   dialog_ = new ShareThisTabDialogView(params, this);
 }
 
-void ShareThisTabDialogViews::NotifyDialogResult(
+void ShareThisTabMediaPicker::NotifyDialogResult(
     const content::DesktopMediaID& source) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

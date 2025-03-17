@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_chip_view.h"
 
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
-#include "chromeos/components/editor_menu/public/cpp/icon.h"
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/icon.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -34,7 +34,7 @@ EditorMenuChipView::EditorMenuChipView(views::Button::PressedCallback callback,
                     ui::kColorSysOnSurface, kIconSizeDip));
 
   SetLabelStyle(views::style::STYLE_BODY_4_EMPHASIS);
-  SetTextColorId(ButtonState::STATE_NORMAL, ui::kColorSysOnSurface);
+  SetTextColor(ButtonState::STATE_NORMAL, ui::kColorSysOnSurface);
   SetImageLabelSpacing(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_VECTOR_ICON_PADDING));
   SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(

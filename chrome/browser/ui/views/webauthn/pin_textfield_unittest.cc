@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/views/webauthn/pin_textfield.h"
 
+#include <memory>
+#include <string>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/gfx/render_text.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_base.h"
 

@@ -43,7 +43,9 @@ class ZoomRequestClient : public base::RefCounted<ZoomRequestClient> {
   friend class base::RefCounted<ZoomRequestClient>;
 };
 
-// Per-tab class to manage zoom changes and the Omnibox zoom icon. Lives on the
+// ZoomController manages zoom changes and the Omnibox zoom icon. It can be
+// created for main frames and subframes. Creating for subframes allows those
+// frames to have zoom behavior independent from the main frame's. Lives on the
 // UI thread.
 class ZoomController : public content::WebContentsObserver {
  public:
@@ -75,16 +77,24 @@ class ZoomController : public content::WebContentsObserver {
 
   struct ZoomChangedEventData {
     ZoomChangedEventData(content::WebContents* web_contents,
+                         content::FrameTreeNodeId ftn_id,
                          double old_zoom_level,
                          double new_zoom_level,
                          ZoomController::ZoomMode zoom_mode,
                          bool can_show_bubble)
         : web_contents(web_contents),
+          frame_tree_node_id(ftn_id),
           old_zoom_level(old_zoom_level),
           new_zoom_level(new_zoom_level),
           zoom_mode(zoom_mode),
           can_show_bubble(can_show_bubble) {}
     raw_ptr<content::WebContents> web_contents;
+    // Since there can be multiple ZoomControllers for a given WebContents,
+    // include the FrameTreeNodeId to uniquely identify which one created this
+    // struct. One case where a single WebContents will have multiple
+    // ZoomControllers is in a GuestView with features::kGuestViewMPArch
+    // enabled.
+    content::FrameTreeNodeId frame_tree_node_id;
     double old_zoom_level;
     double new_zoom_level;
     ZoomController::ZoomMode zoom_mode;
@@ -103,16 +113,20 @@ class ZoomController : public content::WebContentsObserver {
 
   // Use to create a ZoomController for a subframe in `web_contents`. The
   // specified `rfh_id` must be for a local-root RenderFrameHost.
-  // TODO(https://crbug.com/376084060); Implement this for the case where
-  // `rfh_id` isn't for the primary mainframe.
   static ZoomController* CreateForWebContentsAndRenderFrameHost(
       content::WebContents* web_contents,
-      const content::GlobalRenderFrameHostId rfh_id);
+      content::GlobalRenderFrameHostId rfh_id);
 
   // Retrieves the ZoomController for `web_contents` primary mainframe if it
   // exists, otherwise returns nullptr.
   static ZoomController* FromWebContents(
       const content::WebContents* web_contents);
+
+  // Retrieves the ZoomController for `web_contents` and the specified `rfh_id`
+  // if it exists, otherwise returns nullptr.
+  static ZoomController* FromWebContentsAndRenderFrameHost(
+      const content::WebContents* web_contents,
+      content::GlobalRenderFrameHostId rfh_id);
 
   ZoomController(const ZoomController&) = delete;
   ZoomController& operator=(const ZoomController&) = delete;
@@ -198,6 +212,10 @@ class ZoomController : public content::WebContentsObserver {
 
     ZoomController* GetZoomController(
         const content::GlobalRenderFrameHostId& rfh_id) const;
+
+    void AddZoomControllerIfNecessary(
+        content::WebContents* web_contents,
+        const content::GlobalRenderFrameHostId& rfh_id);
 
     // Called from ZoomController to notify that one of the ZoomControllers has
     // had its frame deleted, meaning the ZoomCOntroller itself should be

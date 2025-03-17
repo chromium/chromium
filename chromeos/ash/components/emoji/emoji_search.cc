@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/emoji/emoji_search.h"
 
+#include <algorithm>
+#include <functional>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -22,8 +24,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -185,18 +185,18 @@ std::vector<EmojiSearchEntry> SortEmojiResultsByCost(
     std::map<std::string_view, EmojiMatchCost> emoji_costs) {
   std::vector<std::pair<EmojiMatchCost, std::string_view>> emojis_by_cost;
   emojis_by_cost.reserve(emoji_costs.size());
-  base::ranges::transform(emoji_costs, std::back_inserter(emojis_by_cost),
-                          [](const auto& entry) {
-                            return std::make_pair(entry.second, entry.first);
-                          });
-  base::ranges::sort(emojis_by_cost);
+  std::ranges::transform(emoji_costs, std::back_inserter(emojis_by_cost),
+                         [](const auto& entry) {
+                           return std::make_pair(entry.second, entry.first);
+                         });
+  std::ranges::sort(emojis_by_cost);
   std::vector<EmojiSearchEntry> ret;
   ret.reserve(emojis_by_cost.size());
-  base::ranges::transform(emojis_by_cost, std::back_inserter(ret),
-                          [](const auto& entry) {
-                            return EmojiSearchEntry{-entry.first.relevance_cost,
-                                                    std::string(entry.second)};
-                          });
+  std::ranges::transform(emojis_by_cost, std::back_inserter(ret),
+                         [](const auto& entry) {
+                           return EmojiSearchEntry{-entry.first.relevance_cost,
+                                                   std::string(entry.second)};
+                         });
   return ret;
 }
 

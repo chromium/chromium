@@ -47,7 +47,7 @@
   LAZY_STREAM(logging::LogMessage(file_name, line_number, sev).stream(), \
               WEBRTC_ENABLE_LOGGING)
 
-namespace rtc {
+namespace webrtc {
 
 void (*g_logging_delegate_function)(const std::string&) = NULL;
 void (*g_extra_logging_init_function)(
@@ -98,8 +98,9 @@ static void LogExtra(std::ostringstream* print_stream,
                      LogErrorContext err_ctx,
                      int err,
                      const char* module) {
-  if (err_ctx == ERRCTX_NONE)
+  if (err_ctx == ERRCTX_NONE) {
     return;
+  }
 
   (*print_stream) << ": ";
   (*print_stream) << "[0x" << std::setfill('0') << std::hex << std::setw(8)
@@ -113,8 +114,9 @@ static void LogExtra(std::ostringstream* print_stream,
       char msgbuf[256];
       DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM;
       HMODULE hmod = GetModuleHandleA(module);
-      if (hmod)
+      if (hmod) {
         flags |= FORMAT_MESSAGE_FROM_HMODULE;
+      }
       if (DWORD len = FormatMessageA(
               flags, hmod, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
               msgbuf, sizeof(msgbuf) / sizeof(msgbuf[0]), NULL)) {
@@ -172,7 +174,7 @@ DiagnosticLogMessage::~DiagnosticLogMessage() {
     const std::string& str = print_stream_.str();
     if (log_to_chrome_) {
       LOG_LAZY_STREAM_DIRECT(file_name_, line_,
-                             rtc::WebRtcSevToChromeSev(severity_))
+                             WebRtcSevToChromeSev(severity_))
           << str;
     }
 
@@ -202,13 +204,15 @@ void InitDiagnosticLoggingDelegateFunction(
   // This function may be called with the same argument several times if the
   // page is reloaded or there are several PeerConnections on one page with
   // logging enabled. This is OK, we simply don't have to do anything.
-  if (delegate == g_logging_delegate_function)
+  if (delegate == g_logging_delegate_function) {
     return;
+  }
   CHECK(!g_logging_delegate_function);
   g_logging_delegate_function = delegate;
 
-  if (g_extra_logging_init_function)
+  if (g_extra_logging_init_function) {
     g_extra_logging_init_function(delegate);
+  }
 }
 
 void SetExtraLoggingInit(
@@ -218,11 +222,11 @@ void SetExtraLoggingInit(
   g_extra_logging_init_function = function;
 }
 
-bool CheckVlogIsOnHelper(rtc::LoggingSeverity severity,
+bool CheckVlogIsOnHelper(LoggingSeverity severity,
                          const char* file,
                          size_t N) {
-  return rtc::WebRtcVerbosityLevel(severity) <=
+  return WebRtcVerbosityLevel(severity) <=
          ::logging::GetVlogLevelHelper(file, N);
 }
 
-}  // namespace rtc
+}  // namespace webrtc

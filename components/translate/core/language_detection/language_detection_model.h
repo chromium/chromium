@@ -26,8 +26,6 @@ inline constexpr size_t kTextSampleLength = 256;
 // determining the language of the page content.
 inline constexpr int kNumTextSamples = 3;
 
-BASE_DECLARE_FEATURE(kTruncateLanguageDetectionSample);
-
 // A language detection model that will use a TFLite model to determine the
 // language of the content of the web page.
 class LanguageDetectionModel {

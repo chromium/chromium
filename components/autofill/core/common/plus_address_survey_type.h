@@ -19,8 +19,8 @@ enum class SurveyType {
   // The user has created a plus address by triggering the popup via the Chrome
   // context menu.
   kCreatedPlusAddressViaManualFallback = 4,
-  // The user was shown both an email and a plus address suggestion. The user
-  // accepted the plus address suggestion.
+  // The user was shown a plus address suggestion and potentially some number of
+  // other suggestions. The user accepted the plus address suggestion.
   kDidChoosePlusAddressOverEmail = 5,
   // The user was shown both an email and a plus address suggestion. The user
   // accepted the email suggestion.

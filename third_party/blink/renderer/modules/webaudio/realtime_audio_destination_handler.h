@@ -89,8 +89,11 @@ class MODULES_EXPORT RealtimeAudioDestinationHandler final
   void SetSinkDescriptor(const WebAudioSinkDescriptor& sink_descriptor,
                          media::OutputDeviceStatusCB callback);
 
-  // Methods for unit tests.
+  // Testing purposes only.
   void invoke_onrendererror_from_platform_for_testing();
+  bool is_silence_detection_active_for_testing() const {
+    return is_silence_detection_active_for_testing_;
+  }
   bool get_platform_destination_is_playing_for_testing();
 
  private:
@@ -152,8 +155,12 @@ class MODULES_EXPORT RealtimeAudioDestinationHandler final
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Represents the current condition of silence detection. By default, the
-  // silence detection is active.
+  // silence detection is active. Access only from the audio render thread.
   bool is_detecting_silence_ = true;
+
+  // Represents the silence detection status for integration tests. Access only
+  // from the main thread.
+  bool is_silence_detection_active_for_testing_ = true;
 
   // If true, attempt to update the echo cancellation reference the next time
   // the platform destination is started.

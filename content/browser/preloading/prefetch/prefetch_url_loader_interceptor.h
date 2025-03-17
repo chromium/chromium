@@ -21,7 +21,6 @@ namespace content {
 
 class BrowserContext;
 class PrefetchContainer;
-class PrefetchMatchResolver;
 
 using PrefetchCompleteCallbackForTesting =
     base::RepeatingCallback<void(PrefetchContainer*)>;
@@ -62,13 +61,7 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
   // from `PrefetchService` and then goes through other checks in
   // `PrefetchUrlLoaderHelper`.
   // The |get_prefetch_callback| is called with this associated prefetch.
-
-  // TODO(crbug.com/40274818): It might be better to store
-  // PrefetchMatchResolver as part of PrefetchUrlLoaderInterceptor
-  // as this is related to serving a navigation. It would simplify GetPrefetch
-  // call.
   void GetPrefetch(const network::ResourceRequest& tentative_resource_request,
-                   PrefetchMatchResolver& potential_prefetch_matches_container,
                    base::OnceCallback<void(PrefetchContainer::Reader)>
                        get_prefetch_callback) const;
 

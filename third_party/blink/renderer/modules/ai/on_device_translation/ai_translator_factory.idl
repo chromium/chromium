@@ -5,20 +5,25 @@
 ]
 interface AITranslatorFactory {
   [
+    Measure,
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AITranslator> create(optional AITranslatorCreateOptions options = {});
+  Promise<AIAvailability> availability(AITranslatorCreateCoreOptions options);
   [
+    Measure,
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AITranslatorCapabilities> capabilities();
+  Promise<AITranslator> create(AITranslatorCreateOptions options);
 };
 
-dictionary AITranslatorCreateOptions {
-  AbortSignal signal;
-  // TODO(crbug.com/322229993): Add AICreateMonitorCallback.
+dictionary AITranslatorCreateCoreOptions {
   required DOMString sourceLanguage;
   required DOMString targetLanguage;
+};
+
+dictionary AITranslatorCreateOptions : AITranslatorCreateCoreOptions {
+  AbortSignal signal;
+  AICreateMonitorCallback monitor;
 };

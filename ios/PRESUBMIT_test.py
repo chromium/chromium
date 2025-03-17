@@ -162,6 +162,165 @@ class _CheckCanImproveTestUsingExpectNSEQ(unittest.TestCase):
         self.assertTrue('ios/path/foo_unittest.mm:7' in errors[0].message)
         self.assertTrue('ios/path/foo_unittest.mm:8' in errors[0].message)
 
+class _CheckNotUsingNSUserDefaults(unittest.TestCase):
+    """Test the _CheckNotUsingNSUserDefaults presubmit. """
+
+    def testFindImprovableTestUsingExpectNSEQ(self):
+        good_lines = [
+          '[defaults dictionaryForKey:key_name];',
+          ]
+        bad_lines = [
+          '[[NSUserDefaults standardUserDefaults]',
+          'NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];',
+          '[[NSUserDefaults standardUserDefaults] setObject:object_name',
+        ]
+
+        mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile('ios/path/defaults_unittest.mm',
+                                          good_lines + bad_lines),
+        ]
+        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+        errors = PRESUBMIT._CheckNotUsingNSUserDefaults(
+            mock_input, mock_output)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('warning', errors[0].type)
+        self.assertFalse('ios/path/defaults_unittest.mm:1' in errors[0].message)
+        self.assertTrue('ios/path/defaults_unittest.mm:2' in errors[0].message)
+        self.assertTrue('ios/path/defaults_unittest.mm:3' in errors[0].message)
+        self.assertTrue('ios/path/defaults_unittest.mm:4' in errors[0].message)
+
+
+class CheckNewColorIntroductionTest(unittest.TestCase):
+    """Test the _CheckNewColorIntroduction presubmit check."""
+
+    def setUp(self):
+        self.mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        self.mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+
+    def testNoColorChanges(self):
+        """Test when there are no color file changes."""
+        self.mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile('ios/path/some_controller.mm', [])
+        ]
+        results = PRESUBMIT._CheckNewColorIntroduction(self.mock_input,
+                                                       self.mock_output)
+        self.assertEqual(len(results), 0)
+
+    def testNewColorInSharedDirectory(self):
+        """Test adding a new color in the shared directory."""
+        self.mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/chrome/common/ui/colors/resources/Assets.xcassets/'
+                'test_color.colorset/Contents.json', [],
+                action='A')
+        ]
+        results = PRESUBMIT._CheckNewColorIntroduction(self.mock_input,
+                                                       self.mock_output)
+        self.assertEqual(len(results), 1)
+        self.assertEqual('warning', results[0].type)
+        self.assertTrue('New color(s) added in' in results[0].message)
+        self.assertTrue(
+            'ensure the color does not already exist' in results[0].message)
+
+    def testNewColorOutsideSharedDirectory(self):
+        """Test adding a new color outside the shared directory."""
+        self.mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/chrome/browser/safety_check/resources/Assets.xcassets/'
+                'test_color.colorset/Contents.json', [],
+                action='A')
+        ]
+        results = PRESUBMIT._CheckNewColorIntroduction(self.mock_input,
+                                                       self.mock_output)
+        self.assertEqual(len(results), 1)
+        self.assertEqual('error', results[0].type)
+        self.assertTrue(
+            'New color(s) must be added to the' in results[0].message)
+        self.assertTrue('ios/chrome/common/ui/colors' in results[0].message)
+
+    def testModifiedColorInSharedDirectory(self):
+        """Test modifying an existing color in the shared directory."""
+        self.mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/chrome/common/ui/colors/resources/Assets.xcassets/'
+                'test_color.colorset/Contents.json', [],
+                action='M')
+        ]
+        results = PRESUBMIT._CheckNewColorIntroduction(self.mock_input,
+                                                       self.mock_output)
+        self.assertEqual(len(results), 1)
+        self.assertEqual('warning', results[0].type)
+        self.assertTrue('Color(s) modified in' in results[0].message)
+        self.assertTrue(
+            'ensure the color does not already exist' in results[0].message)
+
+    def testModifiedColorOutsideSharedDirectory(self):
+        """Test modifying an existing color outside the shared directory."""
+        self.mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/chrome/browser/safety_check/resources/Assets.xcassets/'
+                'test_color.colorset/Contents.json', [],
+                action='M')
+        ]
+        results = PRESUBMIT._CheckNewColorIntroduction(self.mock_input,
+                                                       self.mock_output)
+        self.assertEqual(len(results), 1)
+        self.assertEqual('warning', results[0].type)
+        self.assertTrue('Color(s) modified' in results[0].message)
+        self.assertTrue(
+            'ensure the color does not already exist' in results[0].message)
+
+    def testMultipleColorChanges(self):
+        """Test multiple color changes in different locations."""
+        self.mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/chrome/common/ui/colors/resources/Assets.xcassets/'
+                'color1.colorset/Contents.json', [],
+                action='A'),
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/chrome/browser/safety_check/resources/Assets.xcassets/'
+                'color2.colorset/Contents.json', [],
+                action='A'),
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/chrome/common/ui/colors/resources/Assets.xcassets/'
+                'color3.colorset/Contents.json', [],
+                action='M'),
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/chrome/browser/safety_check/resources/Assets.xcassets/'
+                'color4.colorset/Contents.json', [],
+                action='M')
+        ]
+        results = PRESUBMIT._CheckNewColorIntroduction(self.mock_input,
+                                                       self.mock_output)
+        self.assertEqual(len(results), 4)
+        # Check for error about new color outside shared directory
+        self.assertEqual('error', results[0].type)
+        self.assertTrue(
+            'New color(s) must be added to the' in results[0].message)
+        # Check for warning about new color in shared directory
+        self.assertEqual('warning', results[1].type)
+        self.assertTrue('New color(s) added in' in results[1].message)
+        # Check for warning about modified color in shared directory
+        self.assertEqual('warning', results[2].type)
+        self.assertTrue('Color(s) modified in' in results[2].message)
+        # Check for warning about modified color outside shared directory
+        self.assertEqual('warning', results[3].type)
+        self.assertTrue('Color(s) modified' in results[3].message)
+
+    def testNonColorsetFiles(self):
+        """Test that non-colorset files are ignored."""
+        self.mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/chrome/common/ui/colors/resources/Assets.xcassets/'
+                'test_file.json', [],
+                action='A'),
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/chrome/browser/ui/colors/test_file.mm', [], action='M')
+        ]
+        results = PRESUBMIT._CheckNewColorIntroduction(self.mock_input,
+                                                       self.mock_output)
+        self.assertEqual(len(results), 0)
 
 if __name__ == '__main__':
     unittest.main()

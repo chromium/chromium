@@ -27,7 +27,7 @@ constexpr test::UIPath kOpenSettingsButtonPath = {"redirect-dialog",
 
 bool IsSettingsWindowOpened() {
   auto* browser_list = BrowserList::GetInstance();
-  return base::ranges::count_if(*browser_list, [](Browser* browser) {
+  return std::ranges::count_if(*browser_list, [](Browser* browser) {
            return ash::IsBrowserForSystemWebApp(
                browser, ash::SystemWebAppType::SETTINGS);
          }) != 0;

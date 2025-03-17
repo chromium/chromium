@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import org.chromium.chrome.R;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 
 /**
  * A custom ListView to be able to set width and height using the contents. Width and height are
@@ -21,7 +22,7 @@ public class ContextMenuListView extends ListView {
 
     public ContextMenuListView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mLimitedByScreenWidth = ContextMenuUtils.usePopupContextMenuForContext(context);
+        mLimitedByScreenWidth = ContextMenuUtils.isPopupSupported(context);
     }
 
     @Override

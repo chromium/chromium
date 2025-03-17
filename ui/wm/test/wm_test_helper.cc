@@ -9,12 +9,14 @@
 
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/client/default_capture_client.h"
 #include "ui/aura/test/test_focus_client.h"
 #include "ui/aura/test/test_screen.h"
 #include "ui/aura/window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/wm/core/compound_event_filter.h"
+#include "ui/wm/core/cursor_loader.h"
 #include "ui/wm/core/default_activation_client.h"
 #include "ui/wm/core/wm_state.h"
 
@@ -43,12 +45,16 @@ WMTestHelper::WMTestHelper(const gfx::Size& default_window_size) {
 
   capture_client_ =
       std::make_unique<aura::client::DefaultCaptureClient>(host_->window());
+
+  cursor_shape_client_ = std::make_unique<wm::CursorLoader>();
+  aura::client::SetCursorShapeClient(cursor_shape_client_.get());
 }
 
 WMTestHelper::~WMTestHelper() {
   host_->window()->RemovePreTargetHandler(root_window_event_filter_.get());
   if (test_screen_)
     display::Screen::SetScreenInstance(nullptr);
+  aura::client::SetCursorShapeClient(nullptr);
 }
 
 aura::Window* WMTestHelper::GetDefaultParent(aura::Window* window,

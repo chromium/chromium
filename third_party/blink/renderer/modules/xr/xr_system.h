@@ -88,9 +88,6 @@ class XRSystem final : public EventTarget,
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(devicechange, kDevicechange)
 
-  ScriptPromise<IDLUndefined> supportsSession(ScriptState*,
-                                              const V8XRSessionMode&,
-                                              ExceptionState& exception_state);
   ScriptPromise<IDLBoolean> isSessionSupported(ScriptState*,
                                                const V8XRSessionMode&,
                                                ExceptionState& exception_state);
@@ -148,6 +145,8 @@ class XRSystem final : public EventTarget,
   void AddWebXrInternalsMessage(const String& message);
 
  private:
+  void DisableBackForwardCache();
+
   enum SensorRequirement {
     kNone,
     kOptional,
@@ -312,8 +311,7 @@ class XRSystem final : public EventTarget,
       : public GarbageCollected<PendingSupportsSessionQuery> {
    public:
     PendingSupportsSessionQuery(ScriptPromiseResolverBase*,
-                                device::mojom::blink::XRSessionMode,
-                                bool throw_on_unsupported);
+                                device::mojom::blink::XRSessionMode);
 
     PendingSupportsSessionQuery(const PendingSupportsSessionQuery&) = delete;
     PendingSupportsSessionQuery& operator=(const PendingSupportsSessionQuery&) =
@@ -350,8 +348,6 @@ class XRSystem final : public EventTarget,
     void RejectWithTypeError(const String& message,
                              ExceptionState* exception_state);
 
-    bool ThrowOnUnsupported() const { return throw_on_unsupported_; }
-
     device::mojom::blink::XRSessionMode mode() const;
 
     uint64_t TraceId() const { return trace_id_; }
@@ -364,19 +360,11 @@ class XRSystem final : public EventTarget,
 
     // Used for trace calls in order to correlate this request across processes.
     const uint64_t trace_id_;
-
-    // Only set when calling the deprecated supportsSession method.
-    const bool throw_on_unsupported_ = false;
   };
 
   // Helper, logs message to the console as well as DVLOGs.
   void AddConsoleMessage(mojom::blink::ConsoleMessageLevel error_level,
                          const String& message);
-
-  void InternalIsSessionSupported(ScriptPromiseResolverBase*,
-                                  const V8XRSessionMode&,
-                                  ExceptionState& exception_state,
-                                  bool throw_on_unsupported);
 
   const char* CheckInlineSessionRequestAllowed(
       LocalFrame* frame,

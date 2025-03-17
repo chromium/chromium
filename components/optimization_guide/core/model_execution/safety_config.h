@@ -35,7 +35,7 @@ class SafetyConfig final {
   // `check_idx` must be < `NumResponseChecks()`.
   std::optional<SubstitutionResult> GetRequestCheckInput(
       int check_idx,
-      const google::protobuf::MessageLite& request_metadata) const;
+      MultimodalMessageReadView request_metadata) const;
 
   // Whether this check is only for allowed languages.
   bool IsRequestCheckLanguageOnly(int check_idx) const;
@@ -73,8 +73,8 @@ class SafetyConfig final {
 
   std::optional<SubstitutionResult> GetResponseCheckInput(
       int check_idx,
-      const google::protobuf::MessageLite& request,
-      const google::protobuf::MessageLite& response) const;
+      MultimodalMessageReadView request,
+      MultimodalMessageReadView response) const;
 
   // Evaluates scores for a response safety check.
   // `check_idx` must be < `NumResponseChecks()`.
@@ -88,6 +88,10 @@ class SafetyConfig final {
       int check_idx,
       ResponseCompleteness completeness,
       const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
+
+  // Whether this config waits until a unsafe response is complete before
+  // canceling.
+  bool OnlyCancelUnsafeResponseOnComplete() const;
 
  private:
   // Whether the text is in a language not supported by the safety classifier,

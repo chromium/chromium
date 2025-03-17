@@ -22,6 +22,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -207,6 +208,7 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
+    @DisabledTest(message = "Flaky. See crbug.com/392607758")
     public void testGeolocationHeaderPrimingDisabledPermissionAsk() {
         setPermission(ContentSettingValues.ASK);
         checkHeaderPriming(/* shouldPrimeHeader= */ false);
@@ -216,6 +218,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     @RequiresRestart(value = "Needs to reset cached geolocation from previous tests")
+    @DisabledTest(message = "Flaky. See crbug.com/392607758")
     public void testGeolocationHeaderPrimingDisabledOsPermissionBlocked() {
         setPermission(ContentSettingValues.ALLOW);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
@@ -233,7 +236,7 @@ public class GeolocationHeaderTest {
                                     ContentSettingsType.GEOLOCATION,
                                     SEARCH_URL_1,
                                     null,
-                                    /* isEmbargo= */ false,
+                                    /* isEmbargoed= */ false,
                                     SessionModel.DURABLE);
                     infoHttps.setContentSetting(
                             ProfileManager.getLastUsedRegularProfile(), httpsPermission);
@@ -348,7 +351,7 @@ public class GeolocationHeaderTest {
                         ContentSettingsType.GEOLOCATION,
                         SEARCH_URL_1,
                         /* embedder= */ null,
-                        /* isEmbargo= */ false,
+                        /* isEmbargoed= */ false,
                         sessionModel);
 
         ThreadUtils.runOnUiThreadBlocking(

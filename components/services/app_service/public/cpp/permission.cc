@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "base/containers/to_value_list.h"
+#include "base/strings/to_string.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace apps {
@@ -71,7 +72,7 @@ std::string Permission::ToString() const {
   std::stringstream out;
   out << " permission type: " << EnumToString(permission_type) << std::endl;
   if (absl::holds_alternative<bool>(value)) {
-    out << " bool_value: " << (absl::get<bool>(value) ? "true" : "false");
+    out << " bool_value: " << base::ToString(absl::get<bool>(value));
   } else if (absl::holds_alternative<TriState>(value)) {
     out << " tristate_value: " << EnumToString(absl::get<TriState>(value));
   }
@@ -79,7 +80,7 @@ std::string Permission::ToString() const {
   if (details.has_value()) {
     out << " details: " << details.value() << std::endl;
   }
-  out << " is_managed: " << (is_managed ? "true" : "false") << std::endl;
+  out << " is_managed: " << base::ToString(is_managed) << std::endl;
   return out.str();
 }
 

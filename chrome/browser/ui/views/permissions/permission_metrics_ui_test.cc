@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptMetricsTest,
   histograms.ExpectUniqueSample(
       "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble."
       "IgnoredReason",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::PermissionIgnoredReason::TAB_CLOSED),
       1);
 }
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptMetricsTest,
   histograms.ExpectUniqueSample(
       "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble."
       "IgnoredReason",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::PermissionIgnoredReason::TAB_CLOSED),
       1);
 }
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptMetricsTest,
   histograms.ExpectUniqueSample(
       "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble."
       "IgnoredReason",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::PermissionIgnoredReason::WINDOW_CLOSED),
       1);
 }
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptMetricsTest,
   histograms.ExpectUniqueSample(
       "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble."
       "IgnoredReason",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::PermissionIgnoredReason::NAVIGATION),
       1);
 }

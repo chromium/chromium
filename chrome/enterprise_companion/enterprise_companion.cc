@@ -26,6 +26,7 @@
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
+#include "chrome/enterprise_companion/flags.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/enterprise_companion/ipc_support.h"
 
@@ -35,20 +36,6 @@
 #endif
 
 namespace enterprise_companion {
-
-// Command line arguments.
-const char kLoggingModuleSwitch[] = "vmodule";
-const char kLoggingModuleSwitchValue[] = "*/chrome/enterprise_companion/*=2";
-const char kCrashHandlerSwitch[] = "crash-handler";
-const char kCrashMeSwitch[] = "crash-me";
-const char kShutdownSwitch[] = "shutdown";
-const char kFetchPoliciesSwitch[] = "fetch-policies";
-const char kInstallSwitch[] = "install";
-const char kUninstallSwitch[] = "uninstall";
-
-#if BUILDFLAG(IS_MAC)
-const char kNetWorkerSwitch[] = "net-worker";
-#endif
 
 namespace {
 
@@ -190,7 +177,8 @@ int EnterpriseCompanionMain(int argc, const char* const* argv) {
 
 std::optional<base::FilePath> GetLogFilePath() {
   std::optional<base::FilePath> path = GetInstallDirectory();
-  return path ? path->AppendASCII("enterprise_companion.log") : path;
+  return path ? path->Append(FILE_PATH_LITERAL("enterprise_companion.log"))
+              : path;
 }
 
 }  // namespace enterprise_companion

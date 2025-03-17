@@ -15,6 +15,8 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -43,6 +45,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
@@ -171,11 +174,16 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
   }
 
   ProfileIOS* profile = self.browser->GetProfile();
-  self.mediator = [[PasswordDetailsMediator alloc] initWithPasswords:credentials
-                                                         displayName:displayName
-                                                             profile:profile
-                                                             context:_context
-                                                            delegate:self];
+  self.mediator = [[PasswordDetailsMediator alloc]
+         initWithPasswords:credentials
+               displayName:displayName
+                   context:_context
+                  delegate:self
+      passwordCheckManager:IOSChromePasswordCheckManagerFactory::GetForProfile(
+                               profile)
+                               .get()
+               prefService:profile->GetPrefs()
+               syncService:SyncServiceFactory::GetForProfile(profile)];
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
@@ -428,6 +436,11 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
        browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
     [self updateFormManagersForBrowser:browser];
   }
+}
+
+- (void)stopPasswordSharingFlowIfActive {
+  [self stopPasswordSharingCoordinator];
+  [self stopPasswordSharingFirstRunCoordinatorWithCompletion:nil];
 }
 
 #pragma mark - ReauthenticationCoordinatorDelegate

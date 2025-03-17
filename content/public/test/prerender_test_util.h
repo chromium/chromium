@@ -112,7 +112,8 @@ class PrerenderHostCreationWaiter {
 class ScopedPrerenderFeatureList {
  public:
   ScopedPrerenderFeatureList();
-  explicit ScopedPrerenderFeatureList(bool force_disable_prerender2fallback);
+  explicit ScopedPrerenderFeatureList(bool force_disable_prerender2_fallback,
+                                      bool force_enable_prerender2_in_new_tab);
   ScopedPrerenderFeatureList(const ScopedPrerenderFeatureList&) = delete;
   ScopedPrerenderFeatureList& operator=(const ScopedPrerenderFeatureList&) =
       delete;
@@ -126,7 +127,8 @@ class PrerenderTestHelper {
  public:
   explicit PrerenderTestHelper(const WebContents::Getter& fn);
   explicit PrerenderTestHelper(const WebContents::Getter& fn,
-                               bool force_disable_prerender2fallback);
+                               bool force_disable_prerender2_fallback,
+                               bool force_enable_prerender2_in_new_tab);
   ~PrerenderTestHelper();
   PrerenderTestHelper(const PrerenderTestHelper&) = delete;
   PrerenderTestHelper& operator=(const PrerenderTestHelper&) = delete;
@@ -232,16 +234,31 @@ class PrerenderTestHelper {
   // Navigations that could activate a prerendered page should use this function
   // instead of the NavigateToURL() test helper. This is because the test helper
   // could access a navigating frame being destroyed during activation and fail.
-  static void NavigatePrimaryPage(WebContents& web_contents, const GURL& url);
-  void NavigatePrimaryPage(const GURL& url);
+  // If `transition` is PAGE_TRANSITION_LINK, it is treated as renderer
+  // initiated, and this function waits for any ongoing navigation to complete
+  // before navigating to `url`.
+  static void NavigatePrimaryPage(
+      WebContents& web_contents,
+      const GURL& url,
+      ui::PageTransition transition = ui::PAGE_TRANSITION_LINK);
+  void NavigatePrimaryPage(
+      const GURL& url,
+      ui::PageTransition transition = ui::PAGE_TRANSITION_LINK);
 
   // Navigates the primary page to the URL but does not wait until the
   // completion of the navigation. Instead it returns a
   // content::TestNavigationObserver.
+  // If `transition` is PAGE_TRANSITION_LINK, it is treated as renderer
+  // initiated, and this function waits for any ongoing navigation to complete
+  // before navigating to `url`.
   static std::unique_ptr<content::TestNavigationObserver>
-  NavigatePrimaryPageAsync(WebContents& web_contents, const GURL& url);
+  NavigatePrimaryPageAsync(
+      WebContents& web_contents,
+      const GURL& url,
+      ui::PageTransition transition = ui::PAGE_TRANSITION_LINK);
   std::unique_ptr<content::TestNavigationObserver> NavigatePrimaryPageAsync(
-      const GURL& url);
+      const GURL& url,
+      ui::PageTransition transition = ui::PAGE_TRANSITION_LINK);
 
   // Opens a new window without an opener on the primary page of `web_contents`.
   // This is intended for activating a prerendered page initiated for a new

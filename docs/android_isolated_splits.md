@@ -334,10 +334,11 @@ Having Android Framework call `Bundle.setClassLoader()` is tracked in
 [a custom ClassLoader]: https://source.chromium.org/search?q=symbol:ChromeBaseAppCompatActivity.getClassLoader&ss=chromium
 [b/260574161]: https://issuetracker.google.com/260574161
 
-### Calling Methods Across a Split Boundary
+### Package Private Methods
 
 Due to having different ClassLoaders, package-private methods don't work across
-the boundary, even though they will compile.
+the boundary, even though they will compile. Release builds will fail during
+the R8 step, which has a check for cross-split package-private access.
 
 **Work around:**
 

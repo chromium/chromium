@@ -565,8 +565,8 @@ suite(`CrComponentsEsimFlowUiTest`, function() {
 
           assertTrue(!!discoveryListItem);
           assertEquals(discoveryListItem.length, profileCount);
-          assertTrue((discoveryListItem[0] as
-                      ProfileDiscoveryListItemElement)!.selected);
+          assertTrue((discoveryListItem[0] as ProfileDiscoveryListItemElement)
+                         .selected);
 
           let activeElement = getDeepActiveElement();
           assertEquals(activeElement, discoveryListItem[0]);

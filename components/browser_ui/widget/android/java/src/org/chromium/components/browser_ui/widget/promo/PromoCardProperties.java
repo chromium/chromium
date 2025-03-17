@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -17,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for PromoCardView. */
+@NullMarked
 public class PromoCardProperties {
     // Visible related properties
     public static final WritableBooleanPropertyKey HAS_SECONDARY_BUTTON =

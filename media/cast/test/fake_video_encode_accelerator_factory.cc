@@ -27,30 +27,42 @@ void FakeVideoEncodeAcceleratorFactory::SetInitializationWillSucceed(
 void FakeVideoEncodeAcceleratorFactory::SetAutoRespond(bool auto_respond) {
   auto_respond_ = auto_respond;
   if (auto_respond_) {
-    if (!vea_response_callback_.is_null())
+    if (!vea_response_callback_.is_null()) {
       RespondWithVideoEncodeAccelerator();
+    }
   }
 }
 
 void FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator(
     ReceiveVideoEncodeAcceleratorCallback callback) {
-  DCHECK(!callback.is_null());
-  DCHECK(!next_response_vea_);
+  CHECK(!callback.is_null());
+  CHECK(!next_response_vea_);
 
   FakeVideoEncodeAccelerator* const vea =
       new FakeVideoEncodeAccelerator(task_runner_);
   vea->SetWillInitializationSucceed(will_init_succeed_);
   next_response_vea_.reset(vea);
   vea_response_callback_ = std::move(callback);
-  if (auto_respond_)
+  if (auto_respond_) {
     RespondWithVideoEncodeAccelerator();
+  }
 }
 
 void FakeVideoEncodeAcceleratorFactory::RespondWithVideoEncodeAccelerator() {
-  DCHECK(next_response_vea_.get());
+  CHECK(next_response_vea_);
   ++vea_response_count_;
   std::move(vea_response_callback_)
       .Run(task_runner_, std::move(next_response_vea_));
+}
+
+std::unique_ptr<media::VideoEncodeAccelerator>
+FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAcceleratorSync() {
+  FakeVideoEncodeAccelerator* const vea =
+      new FakeVideoEncodeAccelerator(task_runner_);
+  vea->SetWillInitializationSucceed(will_init_succeed_);
+  ++vea_response_count_;
+
+  return std::unique_ptr<media::VideoEncodeAccelerator>(std::move(vea));
 }
 
 }  // namespace cast

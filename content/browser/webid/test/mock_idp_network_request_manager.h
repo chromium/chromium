@@ -51,7 +51,6 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
   MOCK_METHOD(void,
               SendSuccessfulTokenRequestMetrics,
               (const GURL&,
-               bool,
                base::TimeDelta,
                base::TimeDelta,
                base::TimeDelta,

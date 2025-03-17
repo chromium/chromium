@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/input_device_notifier.h"
 
+#include <algorithm>
 #include <functional>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_common.h"
@@ -39,10 +39,6 @@ using DeviceId = InputDeviceSettingsController::DeviceId;
 bool AreOnLoginScreen() {
   auto status = Shell::Get()->session_controller()->login_status();
   return status == LoginStatus::NOT_LOGGED_IN;
-}
-
-DeviceId ExtractDeviceIdFromInputDevice(const ui::InputDevice& device) {
-  return device.id;
 }
 
 template <class DeviceMojomPtr>
@@ -268,44 +264,50 @@ void GetAddedAndRemovedDevices(
   devices_to_add->clear();
   devices_to_remove->clear();
 
-  // Sort input device list by id as `base::ranges::set_difference` requires
-  // input lists are sorted.
-  // Remove any devices marked as imposters as well.
-  base::ranges::sort(updated_device_list, base::ranges::less(),
-                     ExtractDeviceIdFromInputDevice);
+  // Remove any devices marked as imposters.
   std::erase_if(updated_device_list, [&](const ui::InputDevice& device) {
     return IsDeviceASuspectedImposter<DeviceMojomPtr>(bluetooth_observer,
                                                       device);
   });
+
+  // Sort input device list by id as `std::ranges::set_difference` requires
+  // input lists are sorted.
+  std::vector<int> updated_device_ids;
+  updated_device_ids.reserve(updated_device_list.size());
+  std::ranges::transform(updated_device_list,
+                         std::back_inserter(updated_device_ids),
+                         &ui::InputDevice::id);
+  std::ranges::sort(updated_device_ids);
 
   // Generate a vector with only the device ids from the connected_devices
   // map. Guaranteed to be sorted as flat_map is always in sorted order by
   // key.
   std::vector<DeviceId> connected_devices_ids;
   connected_devices_ids.reserve(connected_devices.size());
-  base::ranges::transform(connected_devices,
-                          std::back_inserter(connected_devices_ids),
-                          ExtractDeviceIdFromDeviceMapPair<DeviceMojomPtr>);
-  DCHECK(base::ranges::is_sorted(connected_devices_ids));
+  std::ranges::transform(connected_devices,
+                         std::back_inserter(connected_devices_ids),
+                         ExtractDeviceIdFromDeviceMapPair<DeviceMojomPtr>);
+  DCHECK(std::ranges::is_sorted(connected_devices_ids));
 
-  // Compares the `id` field of `updated_device_list` to the ids in
-  // `connected_devices_ids`. Devices that are in `updated_device_list` but not
-  // in `connected_devices_ids` are inserted into `devices_to_add`.
-  // `updated_device_list` and `connected_device_ids` must be sorted.
-  base::ranges::set_difference(updated_device_list, connected_devices_ids,
-                               std::back_inserter(*devices_to_add),
-                               /*Comp=*/base::ranges::less(),
-                               /*Proj1=*/ExtractDeviceIdFromInputDevice);
+  // Compares `updated_device_ids` to the ids in `connected_devices_ids`.
+  // Devices that are in `updated_device_ids` but not in `connected_devices_ids`
+  // are inserted into `devices_to_add`. `updated_device_ids` and
+  // `connected_device_ids` must be sorted.
+  std::set<DeviceId> device_ids_to_add;
+  std::ranges::set_difference(
+      updated_device_ids, connected_devices_ids,
+      std::inserter(device_ids_to_add, device_ids_to_add.begin()));
+  std::ranges::copy_if(updated_device_list, std::back_inserter(*devices_to_add),
+                       [&](const auto& device) {
+                         return device_ids_to_add.contains(device.id);
+                       });
 
-  // Compares the `connected_devices_ids` to the id field of
-  // `updated_device_list`. Ids that are in `connected_devices_ids` but not in
-  // `updated_device_list` are inserted into `devices_to_remove`.
-  // `updated_device_list` and `connected_device_ids` must be sorted.
-  base::ranges::set_difference(connected_devices_ids, updated_device_list,
-                               std::back_inserter(*devices_to_remove),
-                               /*Comp=*/base::ranges::less(),
-                               /*Proj1=*/std::identity(),
-                               /*Proj2=*/ExtractDeviceIdFromInputDevice);
+  // Compares the `connected_devices_ids` to `updated_device_ids`. Ids that are
+  // in `connected_devices_ids` but not in `updated_device_ids` are inserted
+  // into `devices_to_remove`. `updated_device_ids` and `connected_device_ids`
+  // must be sorted.
+  std::ranges::set_difference(connected_devices_ids, updated_device_ids,
+                              std::back_inserter(*devices_to_remove));
 }
 
 }  // namespace

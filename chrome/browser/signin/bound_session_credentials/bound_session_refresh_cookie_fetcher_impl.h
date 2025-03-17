@@ -48,6 +48,7 @@ class BoundSessionRefreshCookieFetcherImpl
       std::optional<std::string> sec_session_challenge_response) override;
   bool IsChallengeReceived() const override;
   std::optional<std::string> TakeSecSessionChallengeResponseIfAny() override;
+  base::flat_set<std::string> GetNonRefreshedCookieNames() override;
 
  private:
   friend class BoundSessionRefreshCookieFetcherImplTest;
@@ -115,7 +116,9 @@ class BoundSessionRefreshCookieFetcherImpl
 
   RefreshCookieCompleteCallback callback_;
 
-  bool expected_cookies_set_ = false;
+  // Subset of `expected_cookie_names_` containing cookies that haven't been
+  // refreshed yet.
+  base::flat_set<std::string> non_refreshed_cookie_names_;
   base::OneShotTimer reported_cookies_notified_timer_;
   bool reported_cookies_notified_ = false;
 

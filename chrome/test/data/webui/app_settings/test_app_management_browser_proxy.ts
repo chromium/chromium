@@ -124,13 +124,12 @@ export class FakePageHandler implements PageHandlerInterface {
     this.methodCalled('setPreferredApp');
   }
 
-  async getOverlappingPreferredApps(_appId: string):
-      Promise<{appIds: string[]}> {
+  getOverlappingPreferredApps(_appId: string): Promise<{appIds: string[]}> {
     this.methodCalled('getOverlappingPreferredApps');
     if (!this.overlappingApps_) {
-      return {appIds: []};
+      return Promise.resolve({appIds: []});
     }
-    return {appIds: this.overlappingApps_};
+    return Promise.resolve({appIds: this.overlappingApps_});
   }
 
   showDefaultAppAssociationsUi() {

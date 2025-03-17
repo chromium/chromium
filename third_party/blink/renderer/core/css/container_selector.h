@@ -82,6 +82,11 @@ class CORE_EXPORT ContainerSelector {
            SelectsScrollableContainers();
   }
   bool HasUnknownFeature() const { return has_unknown_feature_; }
+  bool SelectsAnyContainer() const {
+    return !HasUnknownFeature() &&
+           (SelectsSizeContainers() || SelectsStyleContainers() ||
+            SelectsScrollStateContainers());
+  }
 
   PhysicalAxes GetPhysicalAxes() const { return physical_axes_; }
   LogicalAxes GetLogicalAxes() const { return logical_axes_; }

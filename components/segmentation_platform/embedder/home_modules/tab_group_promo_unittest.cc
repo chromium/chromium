@@ -25,6 +25,22 @@ class TabGroupPromoTest : public testing::Test {
 
   void TearDown() override { Test::TearDown(); }
 
+  void TestComputeCardResultImpl(bool hasTabGroupPromoInteracted,
+                                 float numberOfTabs,
+                                 float tabGroupExists,
+                                 float tabGroupPromoShownCount,
+                                 EphemeralHomeModuleRank position) {
+    pref_service_.SetUserPref(
+        kTabGroupPromoInteractedPref,
+        std::make_unique<base::Value>(hasTabGroupPromoInteracted));
+    auto card = std::make_unique<TabGroupPromo>(&pref_service_);
+    AllCardSignals all_signals = CreateAllCardSignals(
+        card.get(), {numberOfTabs, tabGroupExists, tabGroupPromoShownCount});
+    CardSelectionSignals card_signal(&all_signals, kTabGroupPromo);
+    CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
+    EXPECT_EQ(position, result.position);
+  }
+
  protected:
   TestingPrefServiceSimple pref_service_;
 };
@@ -41,48 +57,36 @@ TEST_F(TabGroupPromoTest, GetInputsReturnsExpectedInputs) {
             inputs.end());
 }
 
-// Validates that ComputeCardResult() returns kTop when tab group promo
+// Validates that ComputeCardResult() returns kLast when tab group promo
 // card is enabled.
 TEST_F(TabGroupPromoTest, TestComputeCardResultWithCardEnabled) {
-  pref_service_.SetUserPref(kTabGroupPromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<TabGroupPromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kNumberOfTabs */ 11, /* kTabGroupExists */ 0,
-                   /* kTabGroupPromoShownCount */ 0});
-  CardSelectionSignals card_signal(&all_signals, kTabGroupPromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
+  TestComputeCardResultImpl(/* hasTabGroupPromoInteracted */ false,
+                            /* numberOfTabs */ 11,
+                            /* tabGroupExists */ 0,
+                            /* tabGroupPromoShownCount */ 0,
+                            EphemeralHomeModuleRank::kLast);
 }
 
 // Validates that when the tab group promo card is disabled because the user
 // already has tab group, the ComputeCardResult() function returns kNotShown.
 TEST_F(TabGroupPromoTest,
        TestComputeCardResultWithCardDisabledForTabGroupExists) {
-  pref_service_.SetUserPref(kTabGroupPromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<TabGroupPromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kNumberOfTabs */ 11, /* kTabGroupExists */ 1,
-                   /* kTabGroupPromoShownCount */ 0});
-  CardSelectionSignals card_signal(&all_signals, kTabGroupPromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+  TestComputeCardResultImpl(/* hasTabGroupPromoInteracted */ false,
+                            /* numberOfTabs */ 11,
+                            /* tabGroupExists */ 1,
+                            /* tabGroupPromoShownCount */ 0,
+                            EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
 // user has 10 or fewer tabs.
 TEST_F(TabGroupPromoTest,
        TestComputeCardResultWithCardDisabledForNotEnoughTabs) {
-  pref_service_.SetUserPref(kTabGroupPromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<TabGroupPromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kNumberOfTabs */ 10, /* kTabGroupExists */ 0,
-                   /* kTabGroupPromoShownCount */ 0});
-  CardSelectionSignals card_signal(&all_signals, kTabGroupPromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+  TestComputeCardResultImpl(/* hasTabGroupPromoInteracted */ false,
+                            /* numberOfTabs */ 10,
+                            /* tabGroupExists */ 0,
+                            /* tabGroupPromoShownCount */ 0,
+                            EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
@@ -90,15 +94,11 @@ TEST_F(TabGroupPromoTest,
 // allows.
 TEST_F(TabGroupPromoTest,
        TestComputeCardResultWithCardDisabledForHasReachedSessionLimit) {
-  pref_service_.SetUserPref(kTabGroupPromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<TabGroupPromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kNumberOfTabs */ 11, /* kTabGroupExists */ 0,
-                   /* kTabGroupPromoShownCount */ 3});
-  CardSelectionSignals card_signal(&all_signals, kTabGroupPromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+  TestComputeCardResultImpl(/* hasTabGroupPromoInteracted */ false,
+                            /* numberOfTabs */ 11,
+                            /* tabGroupExists */ 0,
+                            /* tabGroupPromoShownCount */ 3,
+                            EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
@@ -106,15 +106,11 @@ TEST_F(TabGroupPromoTest,
 // the card.
 TEST_F(TabGroupPromoTest,
        TestComputeCardResultWithCardDisabledForUserInteraction) {
-  pref_service_.SetUserPref(kTabGroupPromoInteractedPref,
-                            std::make_unique<base::Value>(true));
-  auto card = std::make_unique<TabGroupPromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kNumberOfTabs */ 11, /* kTabGroupExists */ 0,
-                   /* kTabGroupPromoShownCount */ 0});
-  CardSelectionSignals card_signal(&all_signals, kTabGroupPromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+  TestComputeCardResultImpl(/* hasTabGroupPromoInteracted */ true,
+                            /* numberOfTabs */ 11,
+                            /* tabGroupExists */ 0,
+                            /* tabGroupPromoShownCount */ 0,
+                            EphemeralHomeModuleRank::kNotShown);
 }
 
 }  // namespace segmentation_platform::home_modules

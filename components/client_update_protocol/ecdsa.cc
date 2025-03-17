@@ -4,6 +4,7 @@
 
 #include "components/client_update_protocol/ecdsa.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <string_view>
@@ -13,7 +14,6 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -167,7 +167,7 @@ bool Ecdsa::ValidateResponse(std::string_view response_body,
   // request hash. (This is a quick rejection test; the signature test is
   // authoritative, but slower.)
   DCHECK_EQ(request_hash_.size(), crypto::kSHA256Length);
-  if (!base::ranges::equal(observed_request_hash, request_hash_)) {
+  if (!std::ranges::equal(observed_request_hash, request_hash_)) {
     return false;
   }
 

@@ -39,9 +39,10 @@ public class SyncedGroupTestHelper {
     /** Returns a list of tabs with the given urls set. */
     public static List<SavedTabGroupTab> tabsFromUrls(GURL... gurls) {
         List<SavedTabGroupTab> tabList = new ArrayList<>();
-        for (GURL gurl : gurls) {
+        for (int i = 0; i < gurls.length; i++) {
             SavedTabGroupTab tab = new SavedTabGroupTab();
-            tab.url = gurl;
+            tab.url = gurls[i];
+            tab.localId = i;
             tabList.add(tab);
         }
         return tabList;
@@ -89,6 +90,7 @@ public class SyncedGroupTestHelper {
      */
     public SavedTabGroup newTabGroup(String syncId, Token tabGroupId) {
         SavedTabGroup group = newTabGroup(syncId);
+        group.localId = new LocalTabGroupId(tabGroupId);
         when(mTabGroupSyncService.getGroup(argThat(matchesTabGroupToken(tabGroupId))))
                 .thenReturn(group);
         return group;

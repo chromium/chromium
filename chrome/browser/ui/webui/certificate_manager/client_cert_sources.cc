@@ -55,26 +55,26 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/client_certificates_service.h"
 #include "components/enterprise/client_certificates/core/features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/certificate_provider/certificate_provider.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/kcer/kcer.h"
-#include "ash/components/kcer/kcer_histograms.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/net/client_cert_store_kcer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
+#include "chromeos/ash/components/kcer/kcer.h"
+#include "chromeos/ash/components/kcer/kcer_histograms.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -130,7 +130,7 @@ class ClientCertStoreLoader {
       active_requests_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class ClientCertStoreFactoryAsh : public ClientCertStoreFactory {
  public:
   explicit ClientCertStoreFactoryAsh(Profile* profile) : profile_(profile) {}
@@ -177,7 +177,7 @@ class ClientCertStoreFactoryMac : public ClientCertStoreFactory {
 };
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
 std::unique_ptr<ClientCertStoreLoader> CreatePlatformClientCertLoader(
     Profile* profile) {
 #if BUILDFLAG(IS_WIN)
@@ -211,35 +211,53 @@ class NullClientCertStore : public net::ClientCertStore {
 class ClientCertStoreFactoryProvisioned : public ClientCertStoreFactory {
  public:
   explicit ClientCertStoreFactoryProvisioned(
-      client_certificates::CertificateProvisioningService* provisioning_service)
-      : provisioning_service_(provisioning_service) {}
+      client_certificates::CertificateProvisioningService*
+          profile_provisioning_service,
+      client_certificates::CertificateProvisioningService*
+          browser_provisioning_service)
+      : profile_provisioning_service_(profile_provisioning_service),
+        browser_provisioning_service_(browser_provisioning_service) {}
 
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
     return client_certificates::ClientCertificatesService::Create(
-        provisioning_service_, std::make_unique<NullClientCertStore>());
+        profile_provisioning_service_, browser_provisioning_service_,
+        std::make_unique<NullClientCertStore>());
   }
 
  private:
   raw_ptr<client_certificates::CertificateProvisioningService>
-      provisioning_service_;
+      profile_provisioning_service_;
+  raw_ptr<client_certificates::CertificateProvisioningService>
+      browser_provisioning_service_;
 };
 
 std::unique_ptr<ClientCertStoreLoader> CreateProvisionedClientCertLoader(
     Profile* profile) {
-  if (!profile || !client_certificates::features::
-                      IsManagedClientCertificateForUserEnabled()) {
-    return nullptr;
+  client_certificates::CertificateProvisioningService*
+      profile_provisioning_service = nullptr;
+  if (profile && client_certificates::features::
+                     IsManagedClientCertificateForUserEnabled()) {
+    profile_provisioning_service = client_certificates::
+        CertificateProvisioningServiceFactory::GetForProfile(profile);
   }
-  auto* provisioning_service =
-      client_certificates::CertificateProvisioningServiceFactory::GetForProfile(
-          profile);
-  if (!provisioning_service) {
+
+  client_certificates::CertificateProvisioningService*
+      browser_provisioning_service = nullptr;
+  if (client_certificates::features::
+          IsManagedBrowserClientCertificateEnabled()) {
+    browser_provisioning_service =
+        g_browser_process->browser_policy_connector()
+            ->chrome_browser_cloud_management_controller()
+            ->GetCertificateProvisioningService();
+  }
+
+  if (!profile_provisioning_service && !browser_provisioning_service) {
     return nullptr;
   }
 
   return std::make_unique<ClientCertStoreLoader>(
       std::make_unique<ClientCertStoreFactoryProvisioned>(
-          provisioning_service));
+          profile_provisioning_service, browser_provisioning_service));
 }
 #endif
 
@@ -350,7 +368,7 @@ class ClientCertSource : public CertificateManagerPageHandler::CertSource {
   std::optional<net::CertificateList> certs_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // ChromeOS currently can use either Kcer or NSS for listing client certs, and
 // Linux uses NSS only. This interface provides an abstraction to hide that
 // from WritableClientCertSource. Currently this class only handles reading
@@ -434,11 +452,21 @@ class WritableCertLoader : public CertificateManagerPageHandler::CertSource {
   base::WeakPtrFactory<WritableCertLoader> weak_ptr_factory_{this};
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class KcerLoader : public WritableCertLoader {
  public:
-  explicit KcerLoader(Profile* profile)
-      : profile_(profile), kcer_(kcer::KcerFactoryAsh::GetKcer(profile)) {}
+  explicit KcerLoader(
+      Profile* profile,
+      mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>*
+          remote_client)
+      : profile_(profile),
+        remote_client_(remote_client),
+        kcer_(kcer::KcerFactoryAsh::GetKcer(profile)) {
+    if (kcer_) {
+      observer_callback_ = kcer_->AddObserver(base::BindRepeating(
+          &KcerLoader::OnCertDbChanged, weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
   ~KcerLoader() override = default;
 
   void RefreshCachedCertificateList(base::OnceClosure callback) override {
@@ -452,7 +480,18 @@ class KcerLoader : public WritableCertLoader {
                                              std::move(callback)));
   }
 
+  void OnCertDbChanged() {
+    RefreshCachedCertificateList(base::BindOnce(
+        &KcerLoader::TriggerReload, weak_ptr_factory_.GetWeakPtr()));
+  }
+
  private:
+  void TriggerReload() {
+    (*remote_client_)
+        ->TriggerReload({certificate_manager_v2::mojom::CertificateSource::
+                             kPlatformClientCert});
+  }
+
   void GotKcerTokens(base::OnceClosure callback,
                      base::flat_set<kcer::Token> tokens) {
     if (!kcer_) {
@@ -499,17 +538,20 @@ class KcerLoader : public WritableCertLoader {
   }
 
   raw_ptr<Profile> profile_;
+  raw_ptr<mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>>
+      remote_client_;
   base::WeakPtr<kcer::Kcer> kcer_;
+  base::CallbackListSubscription observer_callback_;
   base::WeakPtrFactory<KcerLoader> weak_ptr_factory_{this};
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class NSSLoader : public WritableCertLoader {
  public:
   explicit NSSLoader(Profile* profile)
       : profile_(profile),
         loader_(std::make_unique<ClientCertStoreLoader>(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             std::make_unique<ClientCertStoreFactoryAsh>(profile)
 #else
             std::make_unique<ClientCertStoreFactoryNSS>()
@@ -567,9 +609,9 @@ class WritableClientCertSource
           remote_client,
       Profile* profile)
       : remote_client_(remote_client), profile_(profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (ash::features::ShouldUseKcerClientCertStore()) {
-      cert_loader_ = std::make_unique<KcerLoader>(profile);
+      cert_loader_ = std::make_unique<KcerLoader>(profile, remote_client);
     } else {
       cert_loader_ = std::make_unique<NSSLoader>(profile);
     }
@@ -668,7 +710,7 @@ class WritableClientCertSource
         base::FilePath(), &file_type_info,
         1,  // 1-based index for |file_type_info.extensions| to specify default.
         FILE_PATH_LITERAL("p12"), web_contents->GetTopLevelNativeWindow(),
-        /*params=*/nullptr);
+        /*caller=*/nullptr);
   }
 
   // ui::SelectFileDialog::Listener
@@ -785,7 +827,7 @@ class WritableClientCertSource
                          int nss_import_result) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (nss_import_result == net::OK) {
       kcer::RecordPkcs12MigrationUmaEvent(
           kcer::Pkcs12MigrationUmaEvent::kPkcs12ImportNssSuccess);
@@ -823,7 +865,7 @@ class WritableClientCertSource
     ReplyToImportCallback(nss_import_result);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void FinishedKcerImport(
       int nss_import_result,
       base::expected<void, kcer::Error> kcer_import_result) {
@@ -992,7 +1034,7 @@ class WritableClientCertSource
   raw_ptr<Profile> profile_;
   base::WeakPtrFactory<WritableClientCertSource> weak_ptr_factory_{this};
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ExtensionsClientCertSource
@@ -1057,7 +1099,7 @@ CreatePlatformClientCertSource(
     mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>*
         remote_client,
     Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   return std::make_unique<WritableClientCertSource>(remote_client, profile);
 #else
   return std::make_unique<ClientCertSource>(
@@ -1082,9 +1124,7 @@ CreateExtensionsClientCertSource(Profile* profile) {
   return std::make_unique<ExtensionsClientCertSource>(
       certificate_provider_service->CreateCertificateProvider());
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 ClientCertManagementAccessControls::ClientCertManagementAccessControls(
     Profile* profile)
     : is_guest_(

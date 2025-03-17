@@ -82,6 +82,7 @@ import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -181,7 +182,7 @@ public class AddressEditorTest {
     @Captor private ArgumentCaptor<AutofillAddress> mAddressCapture;
 
     private final CoreAccountInfo mAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId(USER_EMAIL, "gaia_id");
+            CoreAccountInfo.createFromEmailAndGaiaId(USER_EMAIL, new GaiaId("gaia_id"));
     // Note: can't initialize this list statically because of how Robolectric
     // initializes Android library dependencies.
     private final List<DropdownKeyValue> mSupportedCountries =
@@ -355,14 +356,14 @@ public class AddressEditorTest {
         // Fields obtained from backend must be placed after the country dropdown.
         validateTextField(
                 editorFields.get(1),
-                profile.getFullName(),
+                profile.getInfo(FieldType.NAME_FULL),
                 FieldType.NAME_FULL,
                 /* label= */ "full name label",
                 shouldMarkFieldsRequired,
                 /* isFullLine= */ true);
         validateTextField(
                 editorFields.get(2),
-                profile.getRegion(),
+                profile.getInfo(FieldType.ADDRESS_HOME_STATE),
                 FieldType.ADDRESS_HOME_STATE,
                 /* label= */ "admin area label",
                 /* isRequired= */ false,
@@ -370,7 +371,7 @@ public class AddressEditorTest {
         // Locality field is forced to occupy full line.
         validateTextField(
                 editorFields.get(3),
-                profile.getLocality(),
+                profile.getInfo(FieldType.ADDRESS_HOME_CITY),
                 FieldType.ADDRESS_HOME_CITY,
                 /* label= */ "locality label",
                 shouldMarkFieldsRequired,
@@ -382,7 +383,7 @@ public class AddressEditorTest {
         // profiles.
         validateTextField(
                 editorFields.get(4),
-                profile.getDependentLocality(),
+                profile.getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY),
                 FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
                 /* label= */ "dependent locality label",
                 shouldMarkFieldsRequiredWhenAddressFieldEmpty,
@@ -390,7 +391,7 @@ public class AddressEditorTest {
 
         validateTextField(
                 editorFields.get(5),
-                profile.getCompanyName(),
+                profile.getInfo(FieldType.COMPANY_NAME),
                 FieldType.COMPANY_NAME,
                 /* label= */ "organization label",
                 /* isRequired= */ false,
@@ -398,21 +399,21 @@ public class AddressEditorTest {
 
         validateTextField(
                 editorFields.get(6),
-                profile.getSortingCode(),
+                profile.getInfo(FieldType.ADDRESS_HOME_SORTING_CODE),
                 FieldType.ADDRESS_HOME_SORTING_CODE,
                 /* label= */ "sorting code label",
                 /* isRequired= */ false,
                 /* isFullLine= */ false);
         validateTextField(
                 editorFields.get(7),
-                profile.getPostalCode(),
+                profile.getInfo(FieldType.ADDRESS_HOME_ZIP),
                 FieldType.ADDRESS_HOME_ZIP,
                 /* label= */ "postal code label",
                 shouldMarkFieldsRequired,
                 /* isFullLine= */ false);
         validateTextField(
                 editorFields.get(8),
-                profile.getStreetAddress(),
+                profile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS),
                 FieldType.ADDRESS_HOME_STREET_ADDRESS,
                 /* label= */ "street address label",
                 shouldMarkFieldsRequired,
@@ -1113,9 +1114,11 @@ public class AddressEditorTest {
         verify(mDelegate, times(0)).onCancel();
         AutofillAddress address = mAddressCapture.getValue();
         assertNotNull(address);
-        assertEquals("New locality", address.getProfile().getLocality());
-        assertEquals("New dependent locality", address.getProfile().getDependentLocality());
-        assertEquals("New organization", address.getProfile().getCompanyName());
+        assertEquals("New locality", address.getProfile().getInfo(FieldType.ADDRESS_HOME_CITY));
+        assertEquals(
+                "New dependent locality",
+                address.getProfile().getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY));
+        assertEquals("New organization", address.getProfile().getInfo(FieldType.COMPANY_NAME));
     }
 
     @Test
@@ -1156,11 +1159,11 @@ public class AddressEditorTest {
         AutofillAddress address = mAddressCapture.getValue();
         assertNotNull(address);
         AutofillProfile profile = address.getProfile();
-        assertEquals(profile.getStreetAddress(), "111 First St");
-        assertEquals(profile.getDependentLocality(), "");
-        assertEquals(profile.getCompanyName(), "Google");
-        assertEquals(profile.getPostalCode(), "90291");
-        assertEquals(profile.getSortingCode(), "");
+        assertEquals("111 First St", profile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS));
+        assertEquals("", profile.getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY));
+        assertEquals("Google", profile.getInfo(FieldType.COMPANY_NAME));
+        assertEquals("90291", profile.getInfo(FieldType.ADDRESS_HOME_ZIP));
+        assertEquals("", profile.getInfo(FieldType.ADDRESS_HOME_SORTING_CODE));
     }
 
     @Test

@@ -372,7 +372,7 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
  private:
   void StartOrContinueRequest(const std::string* next_page_token = nullptr) {
     request_ = std::make_unique<TrustedVaultRequest>(
-        account_id_, TrustedVaultRequest::HttpMethod::kGet,
+        security_domain_, account_id_, TrustedVaultRequest::HttpMethod::kGet,
         next_page_token ? net::AppendQueryParameter(base_url_, "page_token",
                                                     *next_page_token)
                         : base_url_,
@@ -442,13 +442,20 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
       }
 
       if (member.member_type() == trusted_vault_pb::SecurityDomainMember::
-                                      MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN &&
-          member.member_metadata().has_google_password_manager_pin_metadata()) {
-        const auto& pin_metadata =
-            member.member_metadata().google_password_manager_pin_metadata();
-        result_.gpm_pin_metadata.emplace(
-            member.public_key(), pin_metadata.encrypted_pin_hash(),
-            ToTime(pin_metadata.expiration_time()));
+                                      MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN) {
+        if (member.member_metadata()
+                .has_google_password_manager_pin_metadata()) {
+          pin_status_ = TrustedVaultListSecurityDomainMembersPinStatus::
+              kPinPresentAndUsableForRecovery;
+          const auto& pin_metadata =
+              member.member_metadata().google_password_manager_pin_metadata();
+          result_.gpm_pin_metadata.emplace(
+              member.public_key(), pin_metadata.encrypted_pin_hash(),
+              ToTime(pin_metadata.expiration_time()));
+        } else {
+          pin_status_ = TrustedVaultListSecurityDomainMembersPinStatus::
+              kPinPresentButUnusableForRecovery;
+        }
       } else if (member.member_type() ==
                  trusted_vault_pb::SecurityDomainMember::
                      MEMBER_TYPE_ICLOUD_KEYCHAIN) {
@@ -502,6 +509,8 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
         "TrustedVault.DownloadAuthenticationFactorsRegistrationState." +
             GetSecurityDomainNameForUma(security_domain_),
         result_.state);
+    RecordTrustedVaultListSecurityDomainMembersPinStatus(security_domain_,
+                                                         pin_status_);
     std::move(callback_).Run(std::move(result_));
   }
 
@@ -515,6 +524,8 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
   base::RepeatingClosure keep_alive_callback_;
   std::unique_ptr<TrustedVaultRequest> request_;
   DownloadAuthenticationFactorsRegistrationStateResult result_;
+  TrustedVaultListSecurityDomainMembersPinStatus pin_status_ =
+      TrustedVaultListSecurityDomainMembersPinStatus::kNoPinPresent;
 };
 
 TrustedVaultURLFetchReasonForUMA
@@ -611,7 +622,8 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
   // TODO(crbug.com/40255601): consider retries for keys downloading after
   // initial failure returned to the upper layers.
   auto request = std::make_unique<TrustedVaultRequest>(
-      account_info.account_id, TrustedVaultRequest::HttpMethod::kGet,
+      security_domain_, account_info.account_id,
+      TrustedVaultRequest::HttpMethod::kGet,
       GetGetSecurityDomainMemberURL(
           trusted_vault_service_url_,
           device_key_pair->public_key().ExportToBytes()),
@@ -637,7 +649,8 @@ TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     IsRecoverabilityDegradedCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
-      account_info.account_id, TrustedVaultRequest::HttpMethod::kGet,
+      security_domain_, account_info.account_id,
+      TrustedVaultRequest::HttpMethod::kGet,
       GetGetSecurityDomainURL(trusted_vault_service_url_, security_domain_),
       /*serialized_request_proto=*/std::nullopt,
       /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
@@ -674,7 +687,8 @@ TrustedVaultConnectionImpl::SendJoinSecurityDomainsRequest(
     AuthenticationFactorType authentication_factor_type,
     JoinSecurityDomainsCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
-      account_info.account_id, TrustedVaultRequest::HttpMethod::kPost,
+      security_domain_, account_info.account_id,
+      TrustedVaultRequest::HttpMethod::kPost,
       GetJoinSecurityDomainURL(trusted_vault_service_url_, security_domain_),
       /*serialized_request_proto=*/
       CreateJoinSecurityDomainsRequest(security_domain_, member_keys_source,

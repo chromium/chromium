@@ -19,7 +19,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.Callback;
@@ -51,9 +50,6 @@ import java.util.concurrent.TimeoutException;
 public class TabbedPaintPreviewTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    // Tell R8 not to break the ability to mock the class.
-    @Mock private PaintPreviewTabService mUnused;
 
     private static final String TEST_URL = "/chrome/test/data/android/about.html";
 
@@ -329,8 +325,8 @@ public class TabbedPaintPreviewTest {
         public int showControlsPersistent() {
             Assert.assertEquals(
                     "Lock toolbar persistence is called before releasing a " + "previous token.",
-                    mLastToken,
-                    TokenHolder.INVALID_TOKEN);
+                    TokenHolder.INVALID_TOKEN,
+                    mLastToken);
             mLastToken = super.showControlsPersistent();
             return mLastToken;
         }
@@ -358,7 +354,7 @@ public class TabbedPaintPreviewTest {
                 boolean mainFrameMode,
                 @NonNull CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
-            Assert.assertEquals(nativeCaptureResultPtr, 0);
+            Assert.assertEquals(0, nativeCaptureResultPtr);
             Assert.assertFalse(mainFrameMode);
             new Handler()
                     .postDelayed(

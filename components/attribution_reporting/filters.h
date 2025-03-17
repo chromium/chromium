@@ -13,10 +13,15 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
+
+namespace base {
+class DictValue;
+class ListValue;
+class Value;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -80,7 +85,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
 
   const FilterValues& filter_values() const { return filter_values_; }
 
-  base::Value::Dict ToJson() const;
+  base::DictValue ToJson() const;
 
   bool Matches(mojom::SourceType,
                const base::Time& source_time,
@@ -124,9 +129,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterPair {
   // Destructively parses the `filters` and `not_filters` fields from the given
   // dict, if present.
   static base::expected<FilterPair, mojom::TriggerRegistrationError> FromJSON(
-      base::Value::Dict&);
+      base::DictValue&);
 
-  void SerializeIfNotEmpty(base::Value::Dict&) const;
+  void SerializeIfNotEmpty(base::DictValue&) const;
 
   friend bool operator==(const FilterPair&, const FilterPair&) = default;
 };
@@ -170,10 +175,10 @@ base::expected<FiltersDisjunction, mojom::TriggerRegistrationError>
 FiltersFromJSONForTesting(base::Value* input_value);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::Value::List ToJsonForTesting(const FiltersDisjunction& filters);
+base::ListValue ToJsonForTesting(const FiltersDisjunction& filters);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::Value::Dict FilterValuesToJson(const FilterValues&);
+base::DictValue FilterValuesToJson(const FilterValues&);
 
 }  // namespace attribution_reporting
 

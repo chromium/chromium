@@ -8,7 +8,9 @@ import android.content.Context;
 import android.os.PersistableBundle;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,6 +19,7 @@ import java.lang.annotation.RetentionPolicy;
  * TaskInfo represents a request to run a specific {@link BackgroundTask} given the required
  * parameters, such as whether a special type of network is available.
  */
+@NullMarked
 public class TaskInfo {
     public static final String SERIALIZED_TASK_EXTRAS = "serialized_task_extras";
 
@@ -345,7 +348,7 @@ public class TaskInfo {
     private final int mTaskId;
 
     /** The extras to provide to the {@link BackgroundTask} when it is run. */
-    @NonNull private final PersistableBundle mExtras;
+    private final PersistableBundle mExtras;
 
     /** The type of network the task requires to run. */
     @NetworkType private final int mRequiredNetworkType;
@@ -388,7 +391,6 @@ public class TaskInfo {
     }
 
     /** @return the extras that will be provided to the {@link BackgroundTask}. */
-    @NonNull
     public PersistableBundle getExtras() {
         return mExtras;
     }
@@ -431,7 +433,7 @@ public class TaskInfo {
      * @return the specific data if it is a one-off tasks and null otherwise.
      */
     @Deprecated
-    public OneOffInfo getOneOffInfo() {
+    public @Nullable OneOffInfo getOneOffInfo() {
         if (mTimingInfo instanceof OneOffInfo) return (OneOffInfo) mTimingInfo;
         return null;
     }
@@ -442,12 +444,14 @@ public class TaskInfo {
      * @return the specific data that if it is a periodic tasks and null otherwise.
      */
     @Deprecated
-    public PeriodicInfo getPeriodicInfo() {
+    public @Nullable PeriodicInfo getPeriodicInfo() {
         if (mTimingInfo instanceof PeriodicInfo) return (PeriodicInfo) mTimingInfo;
         return null;
     }
 
-    /** @return the specific data based on the type of task. */
+    /**
+     * @return the specific data based on the type of task.
+     */
     public TimingInfo getTimingInfo() {
         return mTimingInfo;
     }
@@ -477,29 +481,28 @@ public class TaskInfo {
      * @see TaskIds
      */
     public static Builder createTask(int taskId, TimingInfo timingInfo) {
-        return new Builder(taskId).setTimingInfo(timingInfo);
+        return new Builder(taskId, timingInfo);
     }
 
     /**
      * Schedule a one-off task to execute within a deadline. If windowEndTimeMs is 0, the task will
-     * run as soon as possible. For executing a task within a time window, see
-     * {@link #createOneOffTask(int, long, long)}.
+     * run as soon as possible. For executing a task within a time window, see {@link
+     * #createOneOffTask(int, long, long)}.
      *
      * @param taskId the unique task ID for this task. Should be listed in {@link TaskIds}.
      * @param windowEndTimeMs the end of the window that the task can begin executing as a delta in
-     * milliseconds from now. Note that the task begins executing at this point even if the
-     * prerequisite conditions are not met.
+     *     milliseconds from now. Note that the task begins executing at this point even if the
+     *     prerequisite conditions are not met.
      * @return the builder which can be used to continue configuration and {@link Builder#build()}.
      * @see TaskIds
-     *
      * @deprecated the {@see #createTask(int, Class, TimingInfo)} method should be used instead.
-     * This method requires an additional step for the caller: the creation of the specific
-     * {@link TimingInfo} object with the wanted properties.
+     *     This method requires an additional step for the caller: the creation of the specific
+     *     {@link TimingInfo} object with the wanted properties.
      */
     @Deprecated
     public static Builder createOneOffTask(int taskId, long windowEndTimeMs) {
         TimingInfo oneOffInfo = OneOffInfo.create().setWindowEndTimeMs(windowEndTimeMs).build();
-        return new Builder(taskId).setTimingInfo(oneOffInfo);
+        return new Builder(taskId, oneOffInfo);
     }
 
     /**
@@ -527,7 +530,7 @@ public class TaskInfo {
                         .setWindowStartTimeMs(windowStartTimeMs)
                         .setWindowEndTimeMs(windowEndTimeMs)
                         .build();
-        return new Builder(taskId).setTimingInfo(oneOffInfo);
+        return new Builder(taskId, oneOffInfo);
     }
 
     /**
@@ -555,7 +558,7 @@ public class TaskInfo {
     public static Builder createPeriodicTask(int taskId, long intervalMs, long flexMs) {
         TimingInfo periodicInfo =
                 PeriodicInfo.create().setIntervalMs(intervalMs).setFlexMs(flexMs).build();
-        return new Builder(taskId).setTimingInfo(periodicInfo);
+        return new Builder(taskId, periodicInfo);
     }
 
     /**
@@ -567,7 +570,7 @@ public class TaskInfo {
     public static final class Builder {
         private final int mTaskId;
 
-        private PersistableBundle mExtras;
+        private @Nullable PersistableBundle mExtras;
         @NetworkType private int mRequiredNetworkType;
         private boolean mRequiresCharging;
         private boolean mUserInitiated;
@@ -575,13 +578,9 @@ public class TaskInfo {
         private boolean mUpdateCurrent;
         private TimingInfo mTimingInfo;
 
-        Builder(int taskId) {
+        Builder(int taskId, TimingInfo timingInfo) {
             mTaskId = taskId;
-        }
-
-        Builder setTimingInfo(TimingInfo timingInfo) {
             mTimingInfo = timingInfo;
-            return this;
         }
 
         /**

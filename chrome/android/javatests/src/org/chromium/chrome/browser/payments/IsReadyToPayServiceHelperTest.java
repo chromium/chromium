@@ -331,10 +331,11 @@ public class IsReadyToPayServiceHelperTest {
                                             mErrorReceived = true;
                                         }
                                     });
+                    helper.setTimeoutsMsForTesting(10);
                     helper.query();
                 });
         // Assuming CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL >
-        // IsReadyToPayServiceHelper.SERVICE_CONNECTION_TIMEOUT_MS.
+        // IsReadyToPayServiceHelper.mServiceConnectionTimeoutMs.
         CriteriaHelper.pollInstrumentationThread(() -> mErrorReceived);
     }
 }

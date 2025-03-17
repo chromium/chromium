@@ -6,12 +6,14 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -165,14 +167,14 @@ bool GetFileTypesFromAcceptOption(
 // response to a chrome.fileSystem.chooseEntry() call.
 constexpr char kLastChooseEntryDirectory[] = "last_choose_file_directory";
 
-constexpr int kGraylistedPaths[] = {
+constexpr auto kGraylistedPaths = std::to_array<int>({
     base::DIR_HOME,
 #if BUILDFLAG(IS_WIN)
     base::DIR_PROGRAM_FILES,
     base::DIR_PROGRAM_FILESX86,
     base::DIR_WINDOWS,
 #endif
-};
+});
 
 using FileInfoOptCallback =
     base::OnceCallback<void(std::unique_ptr<base::File::Info>)>;

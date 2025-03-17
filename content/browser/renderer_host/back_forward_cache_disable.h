@@ -41,7 +41,7 @@ class CONTENT_EXPORT BackForwardCacheDisable {
 
     // TODO(crbug.com/40805561): Screen readers do not recognize a navigation
     // when the page is served from bfcache.
-    kScreenReader = 13,
+    kExtendedProperties = 13,
 
     // Documents that are cleared for discard should not be BFCached.
     kDiscarded = 14,

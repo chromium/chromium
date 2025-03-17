@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
@@ -11,19 +13,20 @@ import android.view.textclassifier.TextClassification;
 import android.view.textclassifier.TextClassifier;
 import android.view.textclassifier.TextSelection;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.selection.SmartSelectionClient;
 import org.chromium.ui.touch_selection.SelectionEventType;
 
 import java.util.List;
 
 /** Interface to a content layer client that can process and modify selection text. */
+@NullMarked
 public interface SelectionClient {
     /** The result of the text analysis. */
     public static class Result {
         /** The surrounding text including the selection. */
-        public String text;
+        public @Nullable String text;
 
         /** The start index of the selected text within the surrounding text. */
         public int start;
@@ -44,25 +47,25 @@ public interface SelectionClient {
         public int endAdjust;
 
         /** Label for the suggested menu item. */
-        public CharSequence label;
+        public @Nullable CharSequence label;
 
         /** Icon for the suggested menu item. */
-        public Drawable icon;
+        public @Nullable Drawable icon;
 
         /** Intent for the suggested menu item. */
-        public Intent intent;
+        public @Nullable Intent intent;
 
         /** OnClickListener for the suggested menu item. */
-        public OnClickListener onClickListener;
+        public @Nullable OnClickListener onClickListener;
 
         /** TextClassification for logging. */
-        public TextClassification textClassification;
+        public @Nullable TextClassification textClassification;
 
         /** TextSelection for logging. */
-        public TextSelection textSelection;
+        public @Nullable TextSelection textSelection;
 
         /** Icons for additional menu items. */
-        public List<Drawable> additionalIcons;
+        public @Nullable List<Drawable> additionalIcons;
 
         /**
          * Convenience method mainly for testing the behaviour of {@link
@@ -138,7 +141,7 @@ public interface SelectionClient {
     void cancelAllRequests();
 
     /** Returns a SelectionEventProcessor associated with the SelectionClient or null. */
-    default SelectionEventProcessor getSelectionEventProcessor() {
+    default @Nullable SelectionEventProcessor getSelectionEventProcessor() {
         return null;
     }
 
@@ -155,19 +158,21 @@ public interface SelectionClient {
      * has been set with setTextClassifier, returns that object, otherwise returns the system
      * classifier.
      */
-    default TextClassifier getTextClassifier() {
+    default @Nullable TextClassifier getTextClassifier() {
         return null;
     }
 
     /** Returns the TextClassifier which has been set with setTextClassifier(), or null. */
-    default TextClassifier getCustomTextClassifier() {
+    default @Nullable TextClassifier getCustomTextClassifier() {
         return null;
     }
 
     /** Creates a {@link SelectionClient} instance. */
-    public static SelectionClient createSmartSelectionClient(WebContents webContents) {
-        SelectionClient.ResultCallback callback =
-                SelectionPopupController.fromWebContents(webContents).getResultCallback();
+    public static @Nullable SelectionClient createSmartSelectionClient(WebContents webContents) {
+        SelectionPopupController selectionPopupController =
+                SelectionPopupController.fromWebContents(webContents);
+        assumeNonNull(selectionPopupController);
+        SelectionClient.ResultCallback callback = selectionPopupController.getResultCallback();
         return SmartSelectionClient.fromWebContents(callback, webContents);
     }
 }

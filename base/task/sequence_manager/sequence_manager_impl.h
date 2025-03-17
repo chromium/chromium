@@ -128,7 +128,6 @@ class BASE_EXPORT SequenceManagerImpl
   size_t GetPendingTaskCountForTesting() const override;
   TaskQueue::Handle CreateTaskQueue(const TaskQueue::Spec& spec) override;
   std::string DescribeAllPendingTasks() const override;
-  void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
   void AddTaskObserver(TaskObserver* task_observer) override;
   void RemoveTaskObserver(TaskObserver* task_observer) override;
   std::optional<WakeUp> GetNextDelayedWakeUp() const override;
@@ -137,13 +136,13 @@ class BASE_EXPORT SequenceManagerImpl
   // SequencedTaskSource implementation:
   void SetRunTaskSynchronouslyAllowed(
       bool can_run_tasks_synchronously) override;
-  std::optional<SelectedTask> SelectNextTask(
-      LazyNow& lazy_now,
-      SelectTaskOption option = SelectTaskOption::kDefault) override;
+  using internal::SequencedTaskSource::SelectNextTask;
+  std::optional<SelectedTask> SelectNextTask(LazyNow& lazy_now,
+                                             SelectTaskOption option) override;
   void DidRunTask(LazyNow& lazy_now) override;
-  std::optional<WakeUp> GetPendingWakeUp(
-      LazyNow* lazy_now,
-      SelectTaskOption option = SelectTaskOption::kDefault) override;
+  using internal::SequencedTaskSource::GetPendingWakeUp;
+  std::optional<WakeUp> GetPendingWakeUp(LazyNow* lazy_now,
+                                         SelectTaskOption option) override;
   bool HasPendingHighResolutionTasks() override;
   void OnBeginWork() override;
   bool OnIdle() override;

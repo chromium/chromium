@@ -18,6 +18,7 @@
 // Needed for base::FileDescriptorWatcher::Controller and for implementing
 // AddFileDescriptorWatch & RemoveFileDescriptorWatch.
 #include <map>
+
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 
@@ -48,7 +49,7 @@ class BASE_EXPORT PerfettoTaskRunner : public perfetto::base::TaskRunner {
                               std::function<void()>) override;
   void RemoveFileDescriptorWatch(perfetto::base::PlatformHandle) override;
 
-  void ResetTaskRunnerForTesting(scoped_refptr<base::SequencedTaskRunner>);
+  void ResetTaskRunner(scoped_refptr<base::SequencedTaskRunner>);
 
   WeakPtr<PerfettoTaskRunner> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

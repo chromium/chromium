@@ -17,7 +17,6 @@ class TabScrollingAnimation : public gfx::LinearAnimation,
   explicit TabScrollingAnimation(
       views::View* contents_view,
       gfx::AnimationContainer* bounds_animator_container,
-      base::TimeDelta duration,
       const gfx::Rect start_visible_rect,
       const gfx::Rect end_visible_rect);
 

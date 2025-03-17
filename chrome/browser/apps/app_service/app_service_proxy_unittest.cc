@@ -16,7 +16,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -37,14 +36,12 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/apps/app_service/subscriber_crosapi.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/services/app_service/public/cpp/types_util.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class FakePublisherForProxyTest : public AppPublisher {
  public:
   FakePublisherForProxyTest(AppServiceProxy* proxy,
@@ -132,9 +129,8 @@ class FakePublisherForProxyTest : public AppPublisher {
   std::vector<std::string> known_app_ids_;
   std::set<std::string> supported_link_apps_;
 };
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // FakeAppRegistryCacheObserver is used to test OnAppUpdate.
 class FakeAppRegistryCacheObserver : public apps::AppRegistryCache::Observer {
  public:
@@ -172,29 +168,7 @@ class FakeAppRegistryCacheObserver : public apps::AppRegistryCache::Observer {
 
   std::set<std::string> app_ids_;
 };
-
-class FakeSubscriberForProxyTest : public SubscriberCrosapi {
- public:
-  explicit FakeSubscriberForProxyTest(Profile* profile)
-      : SubscriberCrosapi(profile) {
-    apps::AppServiceProxyFactory::GetForProfile(profile)
-        ->RegisterCrosApiSubScriber(this);
-  }
-
-  PreferredAppsList& preferred_apps_list() { return preferred_apps_list_; }
-
-  void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override {
-    preferred_apps_list_.ApplyBulkUpdate(std::move(changes));
-  }
-
-  void InitializePreferredApps(apps::PreferredApps preferred_apps) override {
-    preferred_apps_list_.Init(std::move(preferred_apps));
-  }
-
- private:
-  apps::PreferredAppsList preferred_apps_list_;
-};
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class AppServiceProxyTest : public testing::Test {
  public:
@@ -399,7 +373,7 @@ TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {
   TestingProfile::Builder guest_builder;
   guest_builder.SetGuestSession();
   auto guest_profile = guest_builder.Build();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // App service is not available for original profile.
   EXPECT_FALSE(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       guest_profile.get()));
@@ -420,7 +394,7 @@ TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {
       apps::AppServiceProxyFactory::GetForProfile(guest_profile.get());
   EXPECT_TRUE(guest_proxy);
   EXPECT_NE(guest_proxy, proxy);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(AppServiceProxyTest, ReinitializeClearsCache) {
@@ -441,7 +415,6 @@ TEST_F(AppServiceProxyTest, ReinitializeClearsCache) {
             AppType::kUnknown);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
  public:
   void SetUp() override {
@@ -853,9 +826,8 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsDuplicatedSupportedLink) {
 
   EXPECT_EQ(3U, GetPreferredAppsList().GetEntrySize());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsSetSupportedLinks) {
   GetPreferredAppsList().Init();
 
@@ -869,8 +841,6 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsSetSupportedLinks) {
       apps_util::MakeIntentFilterForUrlScope(GURL("https://www.b.com/"));
   auto intent_filter_c =
       apps_util::MakeIntentFilterForUrlScope(GURL("https://www.c.com/"));
-
-  FakeSubscriberForProxyTest sub(proxy()->profile());
 
   FakePublisherForProxyTest pub(
       proxy(), AppType::kArc,
@@ -889,13 +859,6 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsSetSupportedLinks) {
   EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId2));
   EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId3));
 
-  EXPECT_EQ(kAppId1, sub.preferred_apps_list().FindPreferredAppForUrl(
-                         GURL("https://www.a.com/")));
-  EXPECT_EQ(kAppId1, sub.preferred_apps_list().FindPreferredAppForUrl(
-                         GURL("https://www.b.com/")));
-  EXPECT_EQ(kAppId2, sub.preferred_apps_list().FindPreferredAppForUrl(
-                         GURL("https://www.c.com/")));
-
   // App 3 overlaps with both App 1 and 2. Both previous apps should have all
   // their supported link filters removed.
   IntentFilters app_3_filters;
@@ -907,13 +870,6 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsSetSupportedLinks) {
   EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId2));
   EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId3));
 
-  EXPECT_EQ(std::nullopt, sub.preferred_apps_list().FindPreferredAppForUrl(
-                              GURL("https://www.a.com/")));
-  EXPECT_EQ(kAppId3, sub.preferred_apps_list().FindPreferredAppForUrl(
-                         GURL("https://www.b.com/")));
-  EXPECT_EQ(kAppId3, sub.preferred_apps_list().FindPreferredAppForUrl(
-                         GURL("https://www.c.com/")));
-
   // Setting App 3 as preferred again should not change anything.
   app_3_filters = std::vector<IntentFilterPtr>();
   app_3_filters.push_back(intent_filter_b->Clone());
@@ -921,14 +877,10 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsSetSupportedLinks) {
   proxy()->SetSupportedLinksPreference(kAppId3, std::move(app_3_filters));
 
   EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId3));
-  EXPECT_EQ(kAppId3, sub.preferred_apps_list().FindPreferredAppForUrl(
-                         GURL("https://www.c.com/")));
 
   proxy()->RemoveSupportedLinksPreference(kAppId3);
 
   EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId3));
-  EXPECT_EQ(std::nullopt, sub.preferred_apps_list().FindPreferredAppForUrl(
-                              GURL("https://www.c.com/")));
 }
 
 TEST_F(AppServiceProxyTest, LaunchCallback) {
@@ -1069,5 +1021,5 @@ TEST_F(AppServiceProxyTest, GetAppsForIntentBestHandler) {
   EXPECT_EQ("name 2", intent_launch_info[0].activity_name);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace apps

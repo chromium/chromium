@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/ink_overflow.h"
 
-#include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -371,7 +370,7 @@ InkOverflow::Type InkOverflow::SetTextInkOverflow(
   CheckType(type);
   DCHECK(type == Type::kNotSet || type == Type::kInvalidated);
   std::optional<PhysicalRect> ink_overflow =
-      ComputeTextInkOverflow(cursor, text_info, style, style.GetFont(),
+      ComputeTextInkOverflow(cursor, text_info, style, *style.GetFont(),
                              rect_in_container, inline_context);
   if (!ink_overflow) {
     *ink_overflow_out = {PhysicalOffset(), rect_in_container.size};
@@ -511,7 +510,7 @@ LogicalRect InkOverflow::ComputeEmphasisMarkOverflow(
   DCHECK(style.GetTextEmphasisMark() != TextEmphasisMark::kNone);
 
   LayoutUnit emphasis_mark_height = LayoutUnit(
-      style.GetFont().EmphasisMarkHeight(style.TextEmphasisMarkString()));
+      style.GetFont()->EmphasisMarkHeight(style.TextEmphasisMarkString()));
   DCHECK_GE(emphasis_mark_height, LayoutUnit());
 
   LogicalRect ink_overflow = ink_overflow_in;

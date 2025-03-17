@@ -47,6 +47,12 @@ class WebState;
 // User pressed the content settings from MiniMap screen.
 - (void)userOpenedSettingsFromMiniMap;
 
+// User pressed the disable address detection from MiniMap screen.
+- (void)userDisabledSettingFromMiniMap;
+
+// User pressed the done button in disable confirmation snackbar.
+- (void)userOpenedSettingsFromDisableConfirmation;
+
 // User pressed the "Report an issue" button from MiniMap screen.
 - (void)userReportedAnIssueFromMiniMap;
 

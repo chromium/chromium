@@ -4,7 +4,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -23,7 +23,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -42,7 +42,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -61,7 +61,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -81,7 +81,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -100,7 +100,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -119,7 +119,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -139,7 +139,7 @@
         "args": [
           "--git-revision=${got_revision}",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -164,7 +164,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -184,7 +184,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -203,7 +203,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -222,7 +222,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -241,7 +241,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -260,7 +260,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -279,7 +279,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -298,7 +298,26 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cast_unittests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cast_unittests",
+        "test_id_prefix": "ninja://media/cast:cast_unittests/"
+      },
+      {
+        "args": [
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -321,7 +340,7 @@
           "--test-arg=--headless",
           "--test-arg=--ozone-platform=headless",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -341,7 +360,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -353,7 +372,7 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "shards": 4
         },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/"
@@ -361,7 +380,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -383,7 +402,7 @@
           "--test-arg=--headless",
           "--test-arg=--ozone-platform=headless",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large",
+          "--device-spec=x64-emu-large",
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.coverage.content_browsertests.filter",
           "--test-launcher-jobs=1"
         ],
@@ -405,7 +424,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -425,7 +444,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -444,7 +463,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -463,7 +482,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -482,7 +501,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -501,7 +520,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -520,7 +539,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -540,7 +559,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -559,7 +578,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -578,7 +597,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -598,7 +617,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -617,7 +636,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -637,7 +656,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -656,7 +675,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -675,7 +694,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -694,7 +713,45 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "libjingle_xmpp_unittests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "libjingle_xmpp_unittests",
+        "test_id_prefix": "ninja://third_party/libjingle_xmpp:libjingle_xmpp_unittests/"
+      },
+      {
+        "args": [
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=x64-emu-large"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "liburlpattern_unittests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "liburlpattern_unittests",
+        "test_id_prefix": "ninja://third_party/liburlpattern:liburlpattern_unittests/"
+      },
+      {
+        "args": [
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -714,7 +771,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -733,7 +790,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -752,7 +809,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -772,7 +829,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -792,7 +849,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -813,7 +870,7 @@
         "args": [
           "--test-arg=--ozone-platform=headless",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -832,7 +889,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -851,7 +908,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -869,9 +926,28 @@
       },
       {
         "args": [
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=x64-emu-large"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "rust_gtest_interop_unittests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "rust_gtest_interop_unittests",
+        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
+      },
+      {
+        "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -891,7 +967,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -910,7 +986,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -929,7 +1005,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -948,7 +1024,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -967,7 +1043,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -987,7 +1063,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1006,7 +1082,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1025,7 +1101,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1044,7 +1120,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1064,7 +1140,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1084,7 +1160,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1104,7 +1180,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1123,7 +1199,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1143,7 +1219,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large",
+          "--device-spec=x64-emu-large",
           "--test-launcher-jobs=1"
         ],
         "isolate_profile_data": true,
@@ -1164,7 +1240,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1183,7 +1259,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1202,7 +1278,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1221,7 +1297,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1242,7 +1318,7 @@
       {
         "args": [
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=virtual_device_large"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {

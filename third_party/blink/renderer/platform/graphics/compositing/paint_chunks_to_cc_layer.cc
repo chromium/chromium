@@ -1178,7 +1178,7 @@ class LayerPropertiesUpdater {
   cc::Layer& layer_;
   const PaintChunkSubset& chunks_;
   cc::LayerSelection& layer_selection_;
-  bool selection_only_;
+  const bool selection_only_;
   const TransformPaintPropertyNode& layer_scroll_translation_;
 
   cc::TouchActionRegion touch_action_region_;
@@ -1277,7 +1277,8 @@ void LayerPropertiesUpdater::UpdateScrollHitTestData(const PaintChunk& chunk) {
     auto scroll_element_id = scroll_node->GetCompositorElementId();
     auto& scroll_tree =
         layer_.layer_tree_host()->property_trees()->scroll_tree_mutable();
-    if (hit_test_data.scrolling_contents_cull_rect.Contains(
+    if (hit_test_data.scrolling_contents_cull_rect == InfiniteIntRect() ||
+        hit_test_data.scrolling_contents_cull_rect.Contains(
             scroll_node->ContentsRect())) {
       scroll_tree.ClearScrollingContentsCullRect(scroll_element_id);
     } else {
@@ -1291,7 +1292,7 @@ void LayerPropertiesUpdater::UpdateScrollHitTestData(const PaintChunk& chunk) {
     }
   }
 
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled() &&
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() &&
       hit_test_data.scroll_translation) {
     CHECK_EQ(chunk.id.type, DisplayItem::Type::kScrollHitTest);
     AddNonCompositedScroll(chunk);
@@ -1329,7 +1330,7 @@ LayerPropertiesUpdater::TopNonCompositedScroll(
 }
 
 void LayerPropertiesUpdater::AddNonCompositedScroll(const PaintChunk& chunk) {
-  DCHECK(RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled());
+  DCHECK(RuntimeEnabledFeatures::RasterInducingScrollEnabled());
   const auto& scroll_translation = *chunk.hit_test_data->scroll_translation;
   const auto& top_scroll = TopNonCompositedScroll(scroll_translation);
   if (&top_scroll == &scroll_translation) {
@@ -1363,7 +1364,7 @@ void LayerPropertiesUpdater::UpdatePreviousNonCompositedScrolls(
   if (top_non_composited_scrolls_.empty()) {
     return;
   }
-  DCHECK(RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled());
+  DCHECK(RuntimeEnabledFeatures::RasterInducingScrollEnabled());
 
   if (chunk.hit_test_data && chunk.hit_test_data->scroll_translation) {
     // ScrollHitTest has been handled in AddNonCompositedScroll().
@@ -1499,7 +1500,17 @@ LayerPropertiesUpdater::PaintedSelectionBoundToLayerSelectionBound(
     const PaintedSelectionBound& bound) const {
   cc::LayerSelectionBound layer_bound;
   layer_bound.type = bound.type;
-  layer_bound.hidden = bound.hidden;
+  if (RuntimeEnabledFeatures::SelectionVisibilityAfterPaintEnabled()) {
+    // This is similar to ComputeViewportSelectionBound() but is a bit simpler.
+    // Use the end point expanded by 1 as the sample rect to check visibility.
+    gfx::Rect sample(bound.edge_end, gfx::Size());
+    sample.Outset(1);
+    // The bound is treated as visible if the sample rect mapped to layer is
+    // not empty.
+    layer_bound.hidden = chunk_to_layer_mapper_.MapVisualRect(sample).IsEmpty();
+  } else {
+    layer_bound.hidden = bound.hidden;
+  }
   layer_bound.edge_start = MapSelectionBoundPoint(bound.edge_start);
   layer_bound.edge_end = MapSelectionBoundPoint(bound.edge_end);
   return layer_bound;

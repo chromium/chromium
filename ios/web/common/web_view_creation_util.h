@@ -34,6 +34,6 @@ WKWebView* BuildWKWebView(CGRect frame, BrowserState* browser_state);
 //
 WKWebView* BuildWKWebViewForQueries(BrowserState* browser_state);
 
-}  // web
+}  // namespace web
 
 #endif  // IOS_WEB_COMMON_WEB_VIEW_CREATION_UTIL_H_

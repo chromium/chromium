@@ -63,14 +63,14 @@ class LocalFilesMigrationUI : public ui::MojoWebDialogUI,
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler) override;
 
   // Sets the initial dialog parameters.
-  void SetInitialDialogInfo(CloudProvider cloud_provider,
+  void SetInitialDialogInfo(MigrationDestination cloud_provider,
                             base::Time migration_start_time);
 
  private:
   // Processes the user's action and closes the dialog accordingly.
   void ProcessResponseAndCloseDialog(DialogAction action);
 
-  CloudProvider cloud_provider_;
+  MigrationDestination destination_;
   base::Time migration_start_time_;
 
   // Page handler for WebUI interaction

@@ -437,33 +437,6 @@ void MouseEventManager::SetElementUnderMouse(
   // Clear the "removed" state for the updated `element_under_mouse_`.
   original_element_under_mouse_removed_ = false;
 
-  // TODO(mustaq): Why do we need the `ScrollableArea` code below and not in
-  // `PointerEventManager::SetElementUnderPointer()`?
-  PaintLayer* layer_for_last_node =
-      event_handling_util::LayerForNode(last_element_under_mouse);
-  PaintLayer* layer_for_node_under_mouse =
-      event_handling_util::LayerForNode(element_under_mouse_.Get());
-  Page* page = frame_->GetPage();
-
-  if (page && (layer_for_last_node &&
-               (!layer_for_node_under_mouse ||
-                layer_for_node_under_mouse != layer_for_last_node))) {
-    // The mouse has moved between layers.
-    if (ScrollableArea* scrollable_area_for_last_node =
-            event_handling_util::AssociatedScrollableArea(layer_for_last_node))
-      scrollable_area_for_last_node->MouseExitedContentArea();
-  }
-
-  if (page && (layer_for_node_under_mouse &&
-               (!layer_for_last_node ||
-                layer_for_node_under_mouse != layer_for_last_node))) {
-    // The mouse has moved between layers.
-    if (ScrollableArea* scrollable_area_for_node_under_mouse =
-            event_handling_util::AssociatedScrollableArea(
-                layer_for_node_under_mouse))
-      scrollable_area_for_node_under_mouse->MouseEnteredContentArea();
-  }
-
   if (last_element_under_mouse &&
       last_element_under_mouse->GetDocument() != frame_->GetDocument()) {
     last_element_under_mouse = nullptr;
@@ -475,39 +448,35 @@ void MouseEventManager::SetElementUnderMouse(
 }
 
 void MouseEventManager::NodeChildrenWillBeRemoved(ContainerNode& container) {
-  if (RuntimeEnabledFeatures::BoundaryEventDispatchTracksNodeRemovalEnabled()) {
-    return;
-  }
-  if (container == mousedown_element_) {
-    return;
-  }
-  if (!mousedown_element_ ||
-      !container.IsShadowIncludingInclusiveAncestorOf(*mousedown_element_)) {
-    return;
-  }
-  mousedown_element_ = nullptr;
+  HandleRemoveSubtree(container, /*inclusive=*/false);
 }
 
 void MouseEventManager::NodeWillBeRemoved(Node& node_to_be_removed) {
-  if (mousedown_element_ &&
-      node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(
-          *mousedown_element_)) {
+  HandleRemoveSubtree(node_to_be_removed, /*inclusive=*/true);
+}
+
+void MouseEventManager::HandleRemoveSubtree(Node& node, bool inclusive) {
+  Node* remaining_node = inclusive ? node.parentNode() : &node;
+  if (mousedown_element_ && (inclusive || mousedown_element_ != node) &&
+      node.IsShadowIncludingInclusiveAncestorOf(*mousedown_element_)) {
     // We don't dispatch click events if the mousedown node is removed
     // before a mouseup event. It is compatible with IE and Firefox.
     mousedown_element_ = nullptr;
   }
-  if (mouse_press_node_ &&
-      node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(
-          *mouse_press_node_)) {
+  if (mouse_press_node_ && (inclusive || mouse_press_node_ != node) &&
+      node.IsShadowIncludingInclusiveAncestorOf(*mouse_press_node_)) {
     // If the mouse_press_node_ is removed, we should dispatch future default
     // keyboard actions (i.e. scrolling) to the still connected parent.
-    mouse_press_node_ = node_to_be_removed.parentNode();
+    mouse_press_node_ = remaining_node;
   }
   if (RuntimeEnabledFeatures::BoundaryEventDispatchTracksNodeRemovalEnabled() &&
-      element_under_mouse_ &&
-      node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(
-          *element_under_mouse_)) {
-    element_under_mouse_ = node_to_be_removed.parentElement();
+      element_under_mouse_ && (inclusive || element_under_mouse_ != node) &&
+      node.IsShadowIncludingInclusiveAncestorOf(*element_under_mouse_)) {
+    Element* remaining_element = DynamicTo<Element>(remaining_node);
+    if (!remaining_element) {
+      remaining_element = remaining_node->parentElement();
+    }
+    element_under_mouse_ = remaining_element;
     original_element_under_mouse_removed_ = true;
   }
 }

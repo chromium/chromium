@@ -403,6 +403,7 @@ class NavigationController {
   // associated with the NavigationController is already initialized, as a
   // FrameTree will always start with the initial NavigationEntry.
   virtual NavigationEntry* GetLastCommittedEntry() = 0;
+  virtual const NavigationEntry* GetLastCommittedEntry() const = 0;
 
   // Returns the index of the last committed entry.
   virtual int GetLastCommittedEntryIndex() = 0;

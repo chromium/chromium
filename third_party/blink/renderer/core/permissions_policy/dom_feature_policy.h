@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_DOM_FEATURE_POLICY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_DOM_FEATURE_POLICY_H_
 
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -47,13 +47,13 @@ class CORE_EXPORT DOMFeaturePolicy : public ScriptWrappable {
   // Inform the DOMFeaturePolicy object when the container policy on its frame
   // element has changed.
   virtual void UpdateContainerPolicy(
-      const ParsedPermissionsPolicy& container_policy = {},
+      const network::ParsedPermissionsPolicy& container_policy = {},
       scoped_refptr<const SecurityOrigin> src_origin = nullptr) {}
 
   void Trace(Visitor*) const override;
 
  protected:
-  virtual const PermissionsPolicy* GetPolicy() const {
+  virtual const network::PermissionsPolicy* GetPolicy() const {
     return context_->GetSecurityContext().GetPermissionsPolicy();
   }
 

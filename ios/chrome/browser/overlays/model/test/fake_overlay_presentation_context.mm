@@ -19,11 +19,13 @@ FakeOverlayPresentationContext::GetPresentationState(OverlayRequest* request) {
 
 void FakeOverlayPresentationContext::SetDismissalCallbacksEnabled(
     bool enabled) {
-  if (dismissal_callbacks_enabled_ == enabled)
+  if (dismissal_callbacks_enabled_ == enabled) {
     return;
+  }
   dismissal_callbacks_enabled_ = enabled;
-  if (dismissal_callbacks_enabled_)
+  if (dismissal_callbacks_enabled_) {
     RunPresentedRequestDismissalCallback();
+  }
 }
 
 bool FakeOverlayPresentationContext::AreDismissalCallbacksEnabled() const {
@@ -41,8 +43,9 @@ void FakeOverlayPresentationContext::SimulateDismissalForRequest(
 
 void FakeOverlayPresentationContext::SetPresentationCapabilities(
     UIPresentationCapabilities capabilities) {
-  if (capabilities_ == capabilities)
+  if (capabilities_ == capabilities) {
     return;
+  }
 
   for (auto& observer : observers_) {
     observer.OverlayPresentationContextWillChangePresentationCapabilities(
@@ -120,8 +123,9 @@ bool FakeOverlayPresentationContext::IsUIDisabled() {
 }
 
 void FakeOverlayPresentationContext::RunPresentedRequestDismissalCallback() {
-  if (!dismissal_callbacks_enabled_ || !presented_request_)
+  if (!dismissal_callbacks_enabled_ || !presented_request_) {
     return;
+  }
   FakeUIState& state = states_[presented_request_];
   OverlayDismissalReason reason = state.dismissal_reason;
   switch (reason) {

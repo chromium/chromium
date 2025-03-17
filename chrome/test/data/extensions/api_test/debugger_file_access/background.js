@@ -118,6 +118,30 @@ async function runNotAllowedTest(method, params, expectAllowed) {
       });
     },
 
+    function testCreateTarget() {
+      const url = chrome.runtime.getURL('dummy.html');
+      openTab(url).then((tab) => {
+        chrome.test.assertEq(url, tab.url);
+        const tabId = tab.id;
+        chrome.debugger.attach({tabId: tabId}, '1.1', function() {
+          chrome.test.assertNoLastError();
+          chrome.debugger.sendCommand({tabId: tabId}, 'Target.createTarget',
+                                      {url: fileUrl}, function() {
+            if (expectFileAccess) {
+              chrome.test.assertNoLastError();
+            } else {
+              chrome.test.assertLastError(JSON.stringify({
+                code: -32000,
+                message: 'Creating a target with a local URL is not allowed'
+              }));
+            }
+            chrome.tabs.remove(tabId);
+            chrome.test.succeed();
+          });
+        });
+      });
+    },
+
     // https://crbug.com/866426
     function setDownloadBehavior() {
       // We never allow to write local files.

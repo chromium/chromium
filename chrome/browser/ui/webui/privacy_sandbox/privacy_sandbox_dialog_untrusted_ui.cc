@@ -7,10 +7,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/privacy_sandbox_resources.h"
@@ -23,6 +23,9 @@
 #include "url/gurl.h"
 
 namespace {
+
+using enum privacy_sandbox::PrivacyPolicyDomainType;
+using enum privacy_sandbox::PrivacyPolicyColorScheme;
 
 PrivacySandboxService* GetPrivacySandboxService(content::WebUI* web_ui) {
   auto* privacy_sandbox_service =
@@ -75,25 +78,19 @@ PrivacySandboxDialogUntrustedUI::PrivacySandboxDialogUntrustedUI(
       IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_PRIVACY_POLICY_HTML);
 
   // Dark mode support.
-  ThemeService::BrowserColorScheme color_scheme =
+  ThemeService::BrowserColorScheme browser_color_scheme =
       ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))
           ->GetBrowserColorScheme();
   bool is_dark_mode =
-      (color_scheme == ThemeService::BrowserColorScheme::kSystem)
+      (browser_color_scheme == ThemeService::BrowserColorScheme::kSystem)
           ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-          : color_scheme == ThemeService::BrowserColorScheme::kDark;
+          : browser_color_scheme == ThemeService::BrowserColorScheme::kDark;
 
-  if (should_use_china_domain) {
-    untrusted_source->AddString(
-        "privacyPolicyURL",
-        is_dark_mode ? chrome::kPrivacyPolicyEmbeddedDarkModeURLPathChina
-                     : chrome::kPrivacyPolicyEmbeddedURLPathChina);
-  } else {
-    untrusted_source->AddString(
-        "privacyPolicyURL", is_dark_mode
-                                ? chrome::kPrivacyPolicyOnlineDarkModeURLPath
-                                : chrome::kPrivacyPolicyOnlineURLPath);
-  }
+  untrusted_source->AddString("privacyPolicyURL",
+                              privacy_sandbox::GetEmbeddedPrivacyPolicyURL(
+                                  should_use_china_domain ? kChina : kNonChina,
+                                  is_dark_mode ? kDarkMode : kLightMode,
+                                  g_browser_process->GetApplicationLocale()));
 
   untrusted_source->AddFrameAncestor(
       GURL(chrome::kChromeUIPrivacySandboxDialogURL));

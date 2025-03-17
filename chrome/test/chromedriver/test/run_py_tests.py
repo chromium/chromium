@@ -4241,6 +4241,11 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
         );
       """))
 
+  def testUnicodeLogTruncation(self):
+    """ Regression test for crbug.com/367752739 """
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/chromedriver/log_long_unicode_string.html'))
+
 class ChromeDriverBackgroundTest(ChromeDriverBaseTestWithWebServer):
   def setUp(self):
     self._driver1 = self.CreateDriver()
@@ -4612,7 +4617,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         self._driver.RemoveCredential(authenticatorId, credentialId)
 
   def testAddCredentialBase64Errors(self):
-    # Test that AddCredential checks UrlBase64 parameteres.
+    # Test that AddCredential checks UrlBase64 parameters.
     self._driver.Load(self.GetHttpsUrlForFile(
         '/chromedriver/webauthn_test.html', 'chromedriver.test'))
 
@@ -5769,7 +5774,7 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       bytes('<span>Ready, Steady, Go!</span>', 'utf-8'))
     self._http_server.SetDataForPath('/main.html',
       bytes('<iframe src="%s">' % remote_url, 'utf-8'))
-    # It was reproted that the test with 2 internal iterations fails twice in a
+    # It was reported that the test with 2 internal iterations fails twice in a
     # row with 2% rate on some Mac builders. This corresponds to 0.92 success
     # rate for a single iteration.
     # If we make 15 internal iterations the chance that two consecutive runs
@@ -6152,6 +6157,31 @@ class ChromeDriverAndroidTest(ChromeDriverBaseTest):
     self.assertGreaterEqual(size[0], 20)
     self.assertGreaterEqual(size[1], 20)
 
+  def testAndroidOpenNewWindow(self):
+      self._driver = self.CreateDriver()
+      size = self._driver.GetWindowRect()
+
+      old_window_handle = self._driver.GetCurrentWindowHandle()
+      # window1 = self._driver.SendCommandAndGetResult(
+      #     'Browser.getWindowForTarget', {'targetId': old_window_handle})
+      new_window = self._driver.NewWindow(window_type='window')
+      self._driver.SwitchToWindow(new_window['handle'])
+      self.assertTrue(
+          self.WaitForCondition(
+              lambda: self._driver.GetCurrentWindowHandle() !=
+                old_window_handle))
+      new_window_handle = self._driver.GetCurrentWindowHandle()
+      self.assertNotEqual(None, new_window_handle)
+      self.assertNotEqual(old_window_handle, new_window_handle)
+
+      # TODO(crbug.com/6236167): Until Browser.getWindowForTarget is supported
+      # on Android, it's not possible to assert window IDs of two tabs are
+      # different.
+      # window2 = self._driver.SendCommandAndGetResult(
+      #     'Browser.getWindowForTarget', {'targetId': new_window_handle})
+      # Verify that the second tab target is indeed a different window.
+      # self.assertNotEqual(window1['windowId'], window2['windowId'])
+
 class ChromeDownloadDirTest(ChromeDriverBaseTest):
 
   def RespondWithCsvFile(self, request):
@@ -6417,6 +6447,26 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     """Checks that chromedriver can take the extensions in zip format."""
     zip_1 = os.path.join(_TEST_DATA_DIR, 'ext_test_1.zip')
     self.CreateDriver(chrome_extensions=[self._PackExtension(zip_1)])
+
+  def testCanInspectExtensionWindows(self):
+    crx_unpacked = os.path.join(_TEST_DATA_DIR, 'extv2_new_window')
+    # This test exercises inspection of extension created new window.
+    # Extension created regular windows/tabs, unlike background_page, is not
+    # considered an extension target.
+    driver = self.CreateDriver(
+        chrome_switches=[
+          'disable-features=ExtensionManifestV2Disabled',
+          'load-extension=' + crx_unpacked
+        ])
+    time.sleep(0.5)
+    handles = driver.GetWindowHandles()
+    self.assertEqual(len(handles), 2)
+
+    for handle in handles:
+      driver.SwitchToWindow(handle)
+      if driver.GetCurrentUrl() == 'chrome://new-tab-page/':
+        return
+    self.fail("couldn't find extension-created window")
 
   def testCanInspectBackgroundPage(self):
     crx = os.path.join(_TEST_DATA_DIR, 'ext_bg_page.crx')
@@ -7792,7 +7842,7 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
       'method': 'browsingContext.handleUserPrompt',
       'params': {
           'context': context_id,
-          'acccpt': True,
+          'accept': True,
       }
     })
     conn.WaitForResponse(command_id)
@@ -7853,7 +7903,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       }
     }
     if channel is not None:
-      command['channel'] = channel
+      command['goog:channel'] = channel
     if id is not None:
       command['id'] = id
     return conn.PostCommand(command)
@@ -8037,6 +8087,21 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     resp = conn.WaitForResponse(cmd_id1, channel="abc")
     self.assertEqual(9, resp['result']['value'])
 
+  def testLegacyChannel(self):
+    conn = self.createWebSocketConnection()
+    context_id = self.getContextId(conn, 0)
+    self.assertIsNotNone(context_id)
+
+    cmd_id = conn.PostCommand({
+      'id': 10006,
+      'channel': 'some_legacy_channel',
+      'method': 'browsingContext.getTree',
+      'params': {}
+    })
+
+    with self.assertRaises(chromedriver.InvalidArgument):
+      conn.WaitForResponse(cmd_id)
+
   def testMultipleConnections(self):
     conn1 = self.createWebSocketConnection()
     context_id = self.getContextId(conn1, 0)
@@ -8117,7 +8182,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
           'events': [
               'browsingContext.load']}}
     if channel is not None:
-      command['channel'] = channel
+      command['goog:channel'] = channel
     return conn.SendCommand(command, channel=channel)
 
   def navigateTo(self, conn, url, context_id=None, channel=None):
@@ -8130,7 +8195,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
             'wait': 'complete',
             'context': context_id}}
     if channel is not None:
-      command['channel'] = channel
+      command['goog:channel'] = channel
     return conn.SendCommand(command, channel=channel)
 
   def navigateSomewhere(self, conn, context_id=None, channel=None):
@@ -8150,7 +8215,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     events = conn.TakeEvents()
     # The event for about:blank is also possible
     self.assertLessEqual(1, len(events))
-    self.assertFalse('channel' in events[0])
+    self.assertFalse('goog:channel' in events[0])
     self.assertEqual('browsingContext.load', events[0]['method'])
 
   def testEventChannel(self):
@@ -8164,7 +8229,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     events = conn.TakeEvents()
     # The event for about:blank is also possible
     self.assertLessEqual(1, len(events))
-    self.assertEqual('abc', events[0]['channel'])
+    self.assertEqual('abc', events[0]['goog:channel'])
     self.assertEqual('browsingContext.load', events[0]['method'])
 
   def testEventChannelAndNoChannel(self):
@@ -8177,18 +8242,18 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.navigateSomewhere(conn, context_id)
 
     all_events = conn.TakeEvents()
-    events = [evt for evt in all_events if 'channel' not in evt]
+    events = [evt for evt in all_events if 'goog:channel' not in evt]
     events_x = [evt for evt in all_events
-               if 'channel' in evt and evt['channel'] == 'x']
+               if 'goog:channel' in evt and evt['goog:channel'] == 'x']
 
     # The event for about:blank is also possible
     self.assertLessEqual(1, len(events))
-    self.assertFalse('channel' in events[0])
+    self.assertFalse('goog:channel' in events[0])
     self.assertEqual('browsingContext.load', events[0]['method'])
 
     # The event for about:blank is also possible
     self.assertLessEqual(1, len(events_x))
-    self.assertEqual('x', events_x[0]['channel'])
+    self.assertEqual('x', events_x[0]['goog:channel'])
     self.assertEqual('browsingContext.load', events[0]['method'])
 
   def testEventConnections(self):
@@ -8209,7 +8274,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(0, len(events1))
     # The event for about:blank is also possible
     self.assertLessEqual(1, len(events2))
-    self.assertFalse('channel' in events2[0])
+    self.assertFalse('goog:channel' in events2[0])
     self.assertEqual('browsingContext.load', events2[0]['method'])
 
   def testBrowserCrashWhileWaitingForEvents(self):
@@ -8219,7 +8284,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertIsNotNone(context_id)
 
     command = {
-        'method': 'cdp.sendCommand',
+        'method': 'goog:cdp.sendCommand',
         'params': {
           'method': 'Browser.crash',
           'params': {}}}
@@ -8460,8 +8525,15 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
 class CustomBidiMapperTest(CustomChromeDriverInstanceTest):
   """Base class for testing chromedriver with a custom bidi mapper path."""
 
+  def GetLogPath(self):
+    if '_MINIDUMP_PATH' in globals() and _MINIDUMP_PATH:
+      return os.path.join(_MINIDUMP_PATH, self.id() + '.chromedriver.log')
+    else:
+      _, log_path = tempfile.mkstemp(prefix='chromedriver_log_')
+      return log_path
+
   def CreateDriver(self, bidi_mapper_path=None, **kwargs):
-    log_path = os.path.join(_MINIDUMP_PATH, self.id() + '.chromedriver.log')
+    log_path = self.GetLogPath()
 
     chromedriver_server = self.CreateChromeDriverServer(
         _CHROMEDRIVER_BINARY,
@@ -8503,6 +8575,26 @@ class CustomBidiMapperTest(CustomChromeDriverInstanceTest):
                            'Failed to initialize BiDi Mapper: Error: ' +
                            'custom bidi mapper error from test_bidi_mapper.js',
                            self.CreateDriver, bidi_mapper_path=bidi_mapper_path)
+
+class UnsafeExtensionsDebuggingTest(CustomBidiMapperTest):
+  """Tests with custom BiDi mapper + unsafe-extension-debugging."""
+
+  def testCanLaunch(self):
+    # Test that we can use a custom bidi mapper path.
+
+    bidi_mapper_path = os.path.join(
+        os.path.realpath(os.path.dirname(os.path.dirname(__file__))),
+        'js', 'test_bidi_mapper.js')
+
+    # We test for a success by expecting a custom error from the
+    # custom mapper.
+    self.assertRaisesRegex(Exception,
+                           'unknown error: ' +
+                           'Failed to initialize BiDi Mapper: Error: ' +
+                           'custom bidi mapper error from test_bidi_mapper.js',
+                           self.CreateDriver,
+                           bidi_mapper_path=bidi_mapper_path,
+                           chrome_switches=['--enable-unsafe-extension-debugging'])
 
 class ClassicTest(ChromeDriverBaseTestWithWebServer):
 
@@ -8685,8 +8777,7 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
             'enable-experimental-web-platform-features']
     self._driver = self.CreateDriver(
         accept_insecure_certs=True,
-        chrome_switches=self.chrome_switches +
-            ["--enable-features=FedCmIdpSigninStatusEnabled"])
+        chrome_switches=self.chrome_switches)
 
     self._driver.Load(self._url_prefix + "/mark-signed-in")
 

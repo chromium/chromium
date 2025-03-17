@@ -46,7 +46,7 @@ int64_t GenerateAndStoreClientId(PrefService* pref_service) {
   }
 
   pref_service->SetInt64(optimization_guide::model_execution::prefs::
-                             localstate::kModelQualityLogggingClientId,
+                             localstate::kModelQualityLoggingClientId,
                          client_id);
   return client_id;
 }
@@ -68,11 +68,11 @@ int64_t GetOrCreateModelQualityClientId(
   }
   int64_t client_id =
       pref_service->GetInt64(optimization_guide::model_execution::prefs::
-                                 localstate::kModelQualityLogggingClientId);
+                                 localstate::kModelQualityLoggingClientId);
   if (!client_id) {
     client_id = GenerateAndStoreClientId(pref_service);
     pref_service->SetInt64(optimization_guide::model_execution::prefs::
-                               localstate::kModelQualityLogggingClientId,
+                               localstate::kModelQualityLoggingClientId,
                            client_id);
   }
 

@@ -64,6 +64,24 @@ void ProductSpecificationsHandler::ShowProductSpecificationsSetForUuid(
   delegate_->ShowProductSpecificationsSetForUuid(uuid, in_new_tab);
 }
 
+void ProductSpecificationsHandler::ShowProductSpecificationsSetsForUuids(
+    const std::vector<base::Uuid>& uuids,
+    const product_specifications::mojom::ShowSetDisposition disposition) {
+  if (!delegate_) {
+    return;
+  }
+
+  delegate_->ShowProductSpecificationsSetsForUuids(uuids, disposition);
+}
+
+void ProductSpecificationsHandler::ShowComparePage(bool in_new_tab) {
+  if (!delegate_) {
+    return;
+  }
+
+  delegate_->ShowComparePage(in_new_tab);
+}
+
 void ProductSpecificationsHandler::SetAcceptedDisclosureVersion(
     product_specifications::mojom::DisclosureVersion version) {
   if (!pref_service_) {

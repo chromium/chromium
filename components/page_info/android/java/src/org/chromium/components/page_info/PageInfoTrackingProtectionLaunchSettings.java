@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
+import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
@@ -96,6 +97,10 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         mRwsInUse.setVisible(false);
         mTpTitle = findPreference(TP_TITLE);
         mManagedTitle = findPreference(MANAGED_TITLE);
+        // This part is above the toggle and changes with it, so it has to be an a11y live region.
+        if (mTpTitle != null) {
+            mTpTitle.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+        }
     }
 
     @Override

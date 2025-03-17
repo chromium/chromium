@@ -55,9 +55,8 @@ PlaylistView::PlaylistView(focus_mode_util::SoundType type,
   // Set the `playlist_image_button_` background color and the opacity for the
   // initial loading state.
   SetCanProcessEventsWithinSubtree(false);
-  playlist_image_button_->SetBackground(
-      views::CreateThemedRoundedRectBackground(cros_tokens::kCrosSysOnSurface,
-                                               kLoadingBackgroundCornerRadius));
+  playlist_image_button_->SetBackground(views::CreateRoundedRectBackground(
+      cros_tokens::kCrosSysOnSurface, kLoadingBackgroundCornerRadius));
   playlist_image_button_->SetPaintToLayer();
   playlist_image_button_->layer()->SetFillsBoundsOpaquely(false);
   playlist_image_button_->layer()->SetOpacity(kLoadingLayerOpacity);
@@ -67,14 +66,14 @@ PlaylistView::PlaylistView(focus_mode_util::SoundType type,
   title_label_->SetMaximumWidthSingleLine(kSinglePlaylistViewWidth);
   title_label_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
       TypographyToken::kCrosAnnotation2));
-  title_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   title_label_->SetLineHeight(kPlaylistTitleLineHeight);
   title_label_->GetViewAccessibility().SetName(
       std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 
   // Set the `title_label_` background color and the opacity for the initial
   // loading state.
-  title_label_->SetBackground(views::CreateThemedRoundedRectBackground(
+  title_label_->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysOnSurface, kLoadingBackgroundCornerRadius));
   title_label_->SetPaintToLayer();
   title_label_->layer()->SetFillsBoundsOpaquely(false);
@@ -102,7 +101,7 @@ void PlaylistView::UpdateContents(
   if (const auto text = base::UTF8ToUTF16(playlist_data_.title);
       !text.empty()) {
     title_label_->SetText(text);
-    title_label_->SetTooltipText(text);
+    title_label_->SetCustomTooltipText(text);
     title_label_->GetViewAccessibility().SetName(text);
     playlist_image_button_->SetTooltipText(text);
     playlist_image_button_->GetViewAccessibility().SetName(

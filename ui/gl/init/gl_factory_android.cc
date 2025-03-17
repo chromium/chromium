@@ -5,6 +5,7 @@
 #include "ui/gl/init/gl_factory.h"
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/android/scoped_a_native_window.h"
@@ -18,6 +19,7 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_stub.h"
+#include "ui/gl/gl_utils.h"
 
 namespace gl {
 namespace init {
@@ -72,9 +74,14 @@ bool GLNonOwnedContext::IsCurrent(GLSurface* surface) {
 }  // namespace
 
 std::vector<GLImplementationParts> GetAllowedGLImplementations() {
+  static bool use_passthrough =
+      gl::UsePassthroughCommandDecoder(base::CommandLine::ForCurrentProcess());
   std::vector<GLImplementationParts> impls;
-  impls.emplace_back(kGLImplementationEGLGLES2);
-  impls.emplace_back(kGLImplementationEGLANGLE);
+  if (use_passthrough) {
+    impls.emplace_back(kGLImplementationEGLANGLE);
+  } else {
+    impls.emplace_back(kGLImplementationEGLGLES2);
+  }
   return impls;
 }
 

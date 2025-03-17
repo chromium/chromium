@@ -64,16 +64,18 @@ class DCOMPTextureBacking : public ClearTrackingSharedImageBacking {
   DCOMPTextureBacking(scoped_refptr<gl::DCOMPSurfaceProxy> dcomp_surface_proxy,
                       const Mailbox& mailbox,
                       const gfx::Size& size)
-      : ClearTrackingSharedImageBacking(mailbox,
-                                        viz::SinglePlaneFormat::kBGRA_8888,
-                                        size,
-                                        gfx::ColorSpace::CreateSRGB(),
-                                        kTopLeft_GrSurfaceOrigin,
-                                        kPremul_SkAlphaType,
-                                        gpu::SHARED_IMAGE_USAGE_SCANOUT,
-                                        {},
-                                        /*estimated_size=*/0,
-                                        /*is_thread_safe=*/false),
+      : ClearTrackingSharedImageBacking(
+            mailbox,
+            viz::SinglePlaneFormat::kBGRA_8888,
+            size,
+            gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                            gfx::ColorSpace::TransferID::BT709),
+            kTopLeft_GrSurfaceOrigin,
+            kPremul_SkAlphaType,
+            gpu::SHARED_IMAGE_USAGE_SCANOUT,
+            {},
+            /*estimated_size=*/0,
+            /*is_thread_safe=*/false),
         dcomp_surface_proxy_(std::move(dcomp_surface_proxy)) {
     SetCleared();
   }

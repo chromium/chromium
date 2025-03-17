@@ -224,7 +224,6 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // Called after the hide animation ends or aborts.
   base::OnceClosure on_hide_animation_ended_;
 
-  // See class comment in .cc file.
   std::unique_ptr<ButtonFocusSkipper> button_focus_skipper_;
 
   base::WeakPtrFactory<AppListBubbleView> weak_factory_{this};

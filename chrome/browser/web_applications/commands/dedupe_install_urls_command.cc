@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/commands/dedupe_install_urls_command.h"
 
+#include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"

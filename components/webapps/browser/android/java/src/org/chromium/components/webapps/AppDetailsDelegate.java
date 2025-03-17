@@ -4,7 +4,10 @@
 
 package org.chromium.components.webapps;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Fetches data about the given app. */
+@NullMarked
 public abstract class AppDetailsDelegate {
     /** Class to inform when the app's details have been retrieved. */
     public interface Observer {

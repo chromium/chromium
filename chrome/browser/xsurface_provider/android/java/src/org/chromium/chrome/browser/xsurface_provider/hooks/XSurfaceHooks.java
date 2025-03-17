@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.xsurface_provider.hooks;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 
 /** Provides access to internal XSurface implementations, if they are available. */
+@NullMarked
 public interface XSurfaceHooks {
     /** Whether the internal implementations of XSurface interfaces are available.*/
     default boolean isEnabled() {

@@ -37,4 +37,8 @@ const char kDisableExplicitDmaFences[] = "disable-explicit-dma-fences";
 // Specifies ozone screen size.
 const char kOzoneOverrideScreenSize[] = "ozone-override-screen-size";
 
+// Allows explicitly picking a DRM render node to create gbm_device for
+// rendering.
+const char kRenderNodeOverride[] = "render-node-override";
+
 }  // namespace switches

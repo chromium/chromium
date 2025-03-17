@@ -52,6 +52,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/views/side_panel",
+    "//components/data_sharing/public:features",
     "//components/plus_addresses:features",
     "//components/plus_addresses/resources/strings",
     "//components/safe_browsing/core/common:features",
@@ -93,6 +94,10 @@ source_set("interactive_ui_tests") {
     "//ui/views",
     "//ui/views:test_support",
   ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 source_set("browser_tests") {
@@ -110,6 +115,7 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ui:ui",
     "//chrome/test:test_support",
+    "//components/data_sharing/public:features",
     "//components/plus_addresses:features",
     "//components/safe_browsing/core/common:features",
     "//components/vector_icons",

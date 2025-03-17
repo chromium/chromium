@@ -6,11 +6,14 @@ package org.chromium.content.browser.input;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Represents an entry in a text suggestion popup menu. Contains the information
  * necessary to display the menu entry and the information necessary to apply
  * the suggestion.
  */
+@NullMarked
 public class SuggestionInfo {
     private final int mMarkerTag;
     private final int mSuggestionIndex;

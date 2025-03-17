@@ -87,8 +87,8 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                 new ButtonSpec(
                         /* drawable= */ AppCompatResources.getDrawable(
                                 context, R.drawable.price_tracking_enabled_filled),
-                        /* clickListener= */ this,
-                        /* longClickListener= */ null,
+                        /* onClickListener= */ this,
+                        /* onLongClickListener= */ null,
                         /* contentDescription= */ context.getString(
                                 R.string.disable_price_tracking_menu_item),
                         /* supportsTinting= */ true,
@@ -96,7 +96,8 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.PRICE_TRACKING,
                         /* actionChipLabelResId= */ Resources.ID_NULL,
                         /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showHoverHighlight= */ false);
+                        /* showHoverHighlight= */ false,
+                        /* hasErrorBadge= */ false);
 
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {
@@ -132,14 +133,16 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
     @Override
     public void onClick(View view) {
         if (mIsCurrentTabPriceTracked) {
+            Profile profile = mProfileSupplier.get();
             PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(
                     mBookmarkModelSupplier.get(),
                     mBookmarkModelSupplier.get().getUserBookmarkIdForTab(mActiveTabSupplier.get()),
                     /* enabled= */ false,
                     mSnackbarManager,
                     view.getResources(),
-                    mProfileSupplier.get(),
-                    (success) -> {});
+                    profile,
+                    (success) -> {},
+                    PriceDropNotificationManagerFactory.create(profile));
         } else {
             mTabBookmarkerSupplier.get().startOrModifyPriceTracking(mActiveTabSupplier.get());
         }

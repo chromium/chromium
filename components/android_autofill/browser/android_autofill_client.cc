@@ -92,6 +92,10 @@ autofill::PersonalDataManager& AndroidAutofillClient::GetPersonalDataManager() {
   NOTREACHED();
 }
 
+autofill::EntityDataManager* AndroidAutofillClient::GetEntityDataManager() {
+  return nullptr;
+}
+
 autofill::SingleFieldFillRouter&
 AndroidAutofillClient::GetSingleFieldFillRouter() {
   NOTREACHED();
@@ -196,10 +200,6 @@ void AndroidAutofillClient::UpdateAutofillDataListValues(
   // Leaving as an empty method since updating autofill popup window
   // dynamically does not seem to be a useful feature when delegating to Android
   // APIs.
-}
-
-void AndroidAutofillClient::PinAutofillSuggestions() {
-  NOTIMPLEMENTED();
 }
 
 void AndroidAutofillClient::HideAutofillSuggestions(

@@ -16,9 +16,7 @@ extern NSString* const kDataFromChromeSyncAccessibilityIdentifier;
 extern NSString* const kManageSyncTableViewAccessibilityIdentifier;
 
 // Accessibility identifiers for sync switch items.
-extern NSString* const kSyncEverythingItemAccessibilityIdentifier;
 extern NSString* const kSyncBookmarksIdentifier;
-extern NSString* const kSyncOmniboxHistoryIdentifier;
 extern NSString* const kSyncHistoryAndTabsIdentifier;
 extern NSString* const kSyncPasswordsIdentifier;
 extern NSString* const kSyncPaymentsIdentifier;
@@ -45,8 +43,10 @@ extern NSString* const kPersonalizeGoogleServicesViewIdentifier;
 typedef NS_ENUM(NSInteger, SyncSettingsSectionIdentifier) {
   // Section for all the sync settings.
   SyncDataTypeSectionIdentifier = kSectionIdentifierEnumZero,
-  // Manager and sign out options.
+  // Manage and sign out options.
   ManageAndSignOutSectionIdentifier,
+  // Switch account and sign out options.
+  SwitchAccountAndSignOutSectionIdentifier,
   // Advanced settings.
   AdvancedSettingsSectionIdentifier,
   // Sync errors.
@@ -59,10 +59,8 @@ typedef NS_ENUM(NSInteger, SyncSettingsSectionIdentifier) {
 // Types are used to uniquely identify SyncSwitchItem items.
 typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   // SyncDataTypeSectionIdentifier section.
-  // Sync everything item.
-  SyncEverythingItemType = kItemTypeEnumZero,
   // kSyncAutofill.
-  AutofillDataTypeItemType,
+  AutofillDataTypeItemType = kItemTypeEnumZero,
   // kSyncBookmarks.
   BookmarksDataTypeItemType,
   // kSyncOmniboxHistory.
@@ -80,8 +78,6 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   // Item for the header and the footer of the types list.
   TypesListHeaderOrFooterType,
   // ManageAndSignOutSectionIdentifier section.
-  // Sign out and turn off sync item,
-  SignOutAndTurnOffSyncItemType,
   // Sign out item.
   SignOutItemType,
   // Sign out item footer.
@@ -90,6 +86,9 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   ManageGoogleAccountItemType,
   // Manage accounts on this device item.
   ManageAccountsItemType,
+  // SwitchAccountAndSignOutSectionIdentifier section.
+  // Switch account item.
+  SwitchAccountItemType,
   // AdvancedSettingsSectionIdentifier section.
   // Encryption item.
   EncryptionItemType,
@@ -113,20 +112,8 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   BatchUploadButtonItemType,
   // Indicates the items to be uploaded to the account.
   BatchUploadRecommendationItemType,
-};
-
-// States for Sync Settings page to be in.
-enum class SyncSettingsAccountState {
-  // The user is viewing sync settings page when Sync-the-feature is on.
-  // TODO(crbug.com/40066949): Remove usage of kSyncing after kSync users are
-  // migrated to kSignin in phase 3. See ConsentLevel::kSync documentation for
-  // details.
-  kSyncing,
-  // The user is viewing sync settings page when signed-in not syncing.
-  kSignedIn,
-  // The user signed out from the sync settings page, and the UI is being
-  // dismissed.
-  kSignedOut,
+  // Open account storage management.
+  ManageAccountStorageType,
 };
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_CONSTANTS_H_

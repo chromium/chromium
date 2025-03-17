@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 
@@ -28,7 +29,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -102,7 +102,7 @@ class TimeManagementContainer : public views::FlexLayoutView {
         chromeos::features::IsSystemBlurEnabled()
             ? cros_tokens::kCrosSysSystemBaseElevated
             : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-    SetBackground(views::CreateThemedSolidBackground(background_color_id));
+    SetBackground(views::CreateSolidBackground(background_color_id));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kGlanceablesContainerCornerRadius,
         views::HighlightBorder::Type::kHighlightBorderOnShadow));

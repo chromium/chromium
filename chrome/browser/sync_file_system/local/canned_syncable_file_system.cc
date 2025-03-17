@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -14,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -155,7 +155,7 @@ class DirectoryHelper {
                        bool has_more) {
     DCHECK(entries_out);
     entries_out->reserve(entries_out->size() + entries.size());
-    base::ranges::copy(entries, std::back_inserter(*entries_out));
+    std::ranges::copy(entries, std::back_inserter(*entries_out));
 
     if (!has_more)
       std::move(callback_).Run(error);

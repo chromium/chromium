@@ -22,14 +22,14 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {PromoteUpdaterStatus} from 'chrome://settings/settings.js';
 // </if>
 
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import {UpdateStatus} from 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
 
-// <if expr="_google_chrome or not chromeos_ash">
+// <if expr="_google_chrome or not is_chromeos">
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
 
@@ -45,7 +45,7 @@ function setupRouter(): SettingsRoutes {
   return routes;
 }
 
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 function fireStatusChanged(
     status: UpdateStatus, options: {progress?: number, message?: string} = {}) {
   webUIListenerCallback('update-status-changed', {
@@ -89,16 +89,16 @@ suite('AllBuilds', function() {
     page = document.createElement('settings-about-page');
     Router.getInstance().navigateTo(testRoutes.ABOUT);
     document.body.appendChild(page);
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     return Promise.resolve();
     // </if>
 
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     return aboutBrowserProxy.whenCalled('refreshUpdateStatus');
     // </if>
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   const SPINNER_ICON: string = 'chrome://resources/images/throbber_small.svg';
 
   async function assertSpinnerVisible(visible: boolean) {
@@ -441,40 +441,40 @@ suite('OfficialBuild', function() {
 
     item = queryPromoteUpdater();
     assertTrue(!!item);
-    assertFalse(item!.hasAttribute('disabled'));
-    assertTrue(item!.hasAttribute('actionable'));
+    assertFalse(item.hasAttribute('disabled'));
+    assertTrue(item.hasAttribute('actionable'));
 
     arrow = queryArrowIcon();
     assertTrue(!!arrow);
-    assertEquals('CR-ICON-BUTTON', arrow!.parentElement!.tagName);
-    assertFalse(arrow!.parentElement!.hidden);
-    assertFalse(arrow!.hasAttribute('disabled'));
+    assertEquals('CR-ICON-BUTTON', arrow.parentElement!.tagName);
+    assertFalse(arrow.parentElement!.hidden);
+    assertFalse(arrow.hasAttribute('disabled'));
 
     firePromoteUpdaterStatusChanged(PromoStatusScenarios.IN_BETWEEN);
     flush();
     item = queryPromoteUpdater();
     assertTrue(!!item);
-    assertTrue(item!.hasAttribute('disabled'));
-    assertTrue(item!.hasAttribute('actionable'));
+    assertTrue(item.hasAttribute('disabled'));
+    assertTrue(item.hasAttribute('actionable'));
 
     arrow = queryArrowIcon();
     assertTrue(!!arrow);
-    assertEquals('CR-ICON-BUTTON', arrow!.parentElement!.tagName);
-    assertFalse(arrow!.parentElement!.hidden);
-    assertTrue(arrow!.hasAttribute('disabled'));
+    assertEquals('CR-ICON-BUTTON', arrow.parentElement!.tagName);
+    assertFalse(arrow.parentElement!.hidden);
+    assertTrue(arrow.hasAttribute('disabled'));
 
     firePromoteUpdaterStatusChanged(PromoStatusScenarios.PROMOTED);
     flush();
     item = queryPromoteUpdater();
     assertTrue(!!item);
-    assertTrue(item!.hasAttribute('disabled'));
-    assertFalse(item!.hasAttribute('actionable'));
+    assertTrue(item.hasAttribute('disabled'));
+    assertFalse(item.hasAttribute('actionable'));
 
     arrow = queryArrowIcon();
     assertTrue(!!arrow);
-    assertEquals('CR-ICON-BUTTON', arrow!.parentElement!.tagName);
-    assertTrue(arrow!.parentElement!.hidden);
-    assertTrue(arrow!.hasAttribute('disabled'));
+    assertEquals('CR-ICON-BUTTON', arrow.parentElement!.tagName);
+    assertTrue(arrow.parentElement!.hidden);
+    assertTrue(arrow.hasAttribute('disabled'));
   });
 
   test('PromoteUpdaterButtonWorksWhenEnabled', async function() {
@@ -483,7 +483,7 @@ suite('OfficialBuild', function() {
     const item = page.shadowRoot!.querySelector<HTMLElement>('#promoteUpdater');
     assertTrue(!!item);
 
-    item!.click();
+    item.click();
 
     await browserProxy.whenCalled('promoteUpdater');
   });

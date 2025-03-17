@@ -18,7 +18,9 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.CLEAR_BROWSER_DATA = r.PRIVACY.createChild('/clearBrowserData');
   r.CLEAR_BROWSER_DATA.isNavigableDialog = true;
 
-  if (loadTimeData.getBoolean('enableSafetyHub')) {
+  const visibility = pageVisibility || {};
+
+  if (visibility.safetyHub !== false) {
     r.SAFETY_HUB = r.PRIVACY.createChild('/safetyCheck');
   }
 
@@ -109,9 +111,8 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_MIXEDSCRIPT = r.SITE_SETTINGS.createChild('insecureContent');
   r.SITE_SETTINGS_JAVASCRIPT = r.SITE_SETTINGS.createChild('javascript');
   r.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER = r.SITE_SETTINGS.createChild('v8');
-  if (loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt')) {
+  if (loadTimeData.getBoolean('enableKeyboardLockPrompt')) {
     r.SITE_SETTINGS_KEYBOARD_LOCK = r.SITE_SETTINGS.createChild('keyboardLock');
-    r.SITE_SETTINGS_POINTER_LOCK = r.SITE_SETTINGS.createChild('pointerLock');
   }
   r.SITE_SETTINGS_SOUND = r.SITE_SETTINGS.createChild('sound');
   r.SITE_SETTINGS_SENSORS = r.SITE_SETTINGS.createChild('sensors');
@@ -165,6 +166,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_WEB_APP_INSTALLATION =
         r.SITE_SETTINGS.createChild('webApplications');
   }
+  if (loadTimeData.getBoolean('enableLocalNetworkAccessSetting')) {
+    r.SITE_SETTINGS_LOCAL_NETWORK_ACCESS =
+        r.SITE_SETTINGS.createChild('localNetworkAccess');
+  }
 }
 
 /**
@@ -217,6 +222,14 @@ function createRoutes(): SettingsRoutes {
       if (loadTimeData.getBoolean('showCompareControl')) {
         r.COMPARE = r.AI.createChild('/ai/compareProducts');
       }
+      // <if expr="enable_glic">
+      if (loadTimeData.getBoolean('showGlicSettings')) {
+        r.GLIC_SECTION = r.AI.createSection(
+            '/ai/glicSection', 'glicSection',
+            loadTimeData.getString('glicPageTitle'));
+        r.GEMINI = r.GLIC_SECTION.createChild('/ai/gemini');
+      }
+      // </if>
     }
   }
 
@@ -240,14 +253,8 @@ function createRoutes(): SettingsRoutes {
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');
     r.ADDRESSES = r.AUTOFILL.createChild('/addresses');
 
-    if (loadTimeData.getBoolean('autofillAiEnabled')) {
+    if (loadTimeData.getBoolean('autofillAiFeatureEnabled')) {
       r.AUTOFILL_AI = r.AUTOFILL.createChild('/autofillAi');
-    }
-
-    if (visibility.glic !== false &&
-        loadTimeData.getBoolean('showGlicSettings')) {
-      r.GLIC = r.BASIC.createSection(
-          '/glic', 'glic', loadTimeData.getString('glicPageTitle'));
     }
 
     // <if expr="is_win or is_macosx">

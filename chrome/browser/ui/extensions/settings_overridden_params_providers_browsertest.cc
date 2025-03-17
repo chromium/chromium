@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -68,7 +69,7 @@ class SettingsOverriddenParamsProvidersBrowserTest
     TemplateURLService* const template_url_service = GetTemplateURLService();
     TemplateURLService::TemplateURLVector template_urls =
         template_url_service->GetTemplateURLs();
-    auto iter = base::ranges::find_if(
+    auto iter = std::ranges::find_if(
         template_urls, [template_url_service, new_search_shows_in_default_list](
                            const TemplateURL* turl) {
           return !turl->HasGoogleBaseURLs(
@@ -415,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   TemplateURLService* const template_url_service = GetTemplateURLService();
   TemplateURLService::TemplateURLVector template_urls =
       template_url_service->GetTemplateURLs();
-  auto iter = base::ranges::find_if_not(
+  auto iter = std::ranges::find_if_not(
       template_urls, [template_url_service](const TemplateURL* turl) {
         // For the test, we can be a bit lazier and just use HasGoogleBaseURLs()
         // instead of getting the full search URL.

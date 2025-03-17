@@ -29,10 +29,6 @@ interface FileSystemFileHandle {
   move(dir: FileSystemDirectoryHandle, name: string): Promise<void>;
 }
 
-interface FileSystemDirectoryHandle {
-  values(): IterableIterator<FileSystemHandle>;
-}
-
 interface StorageManager {
   getDirectory(): Promise<FileSystemDirectoryHandle>;
 }

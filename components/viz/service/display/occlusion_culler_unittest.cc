@@ -10,16 +10,22 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
+#include "components/viz/service/display/test_resource_factory.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -52,8 +58,11 @@ class OcclusionCullerTest : public testing::Test {
 
   void InitOcclusionCuller(RendererSettings::OcclusionCullerSettings settings) {
     CHECK(!occlusion_culler_);
-    occlusion_culler_ =
-        std::make_unique<OcclusionCuller>(overlay_processor_.get(), settings);
+    CHECK(resource_factory_);
+
+    occlusion_culler_ = std::make_unique<OcclusionCuller>(
+        overlay_processor_.get(), resource_factory_->resource_provider(),
+        settings);
     occlusion_culler_->UpdateDeviceScaleFactor(kDefaultDeviceScaleFactor);
   }
 
@@ -62,9 +71,44 @@ class OcclusionCullerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     overlay_processor_ = std::make_unique<OverlayProcessorStub>();
+    resource_factory_ = std::make_unique<TestResourceFactory>();
+  }
+  void TearDown() override {
+    occlusion_culler_.reset();
+    overlay_processor_.reset();
+    resource_factory_.reset();
+  }
+
+  TextureDrawQuad* CreateTextureQuadAt(const SharedQuadState* shared_quad_state,
+                                       AggregatedRenderPass* render_pass,
+                                       const gfx::Rect& rect,
+                                       bool is_overlay_candidate) {
+    bool nearest_neighbor = false;
+    bool needs_blending = false;
+    bool premultiplied_alpha = false;
+    gfx::Size resource_size_in_pixels = rect.size();
+
+    TestResourceFactory::TestResourceContext resource_context;
+    resource_context.is_overlay_candidate = is_overlay_candidate;
+
+    const ResourceId resource_id = resource_factory_->CreateResource(
+        resource_size_in_pixels, resource_context,
+        SinglePlaneFormat::kRGBA_8888, SurfaceId());
+
+    auto* overlay_quad =
+        render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+    overlay_quad->SetNew(
+        shared_quad_state, rect, rect, needs_blending, resource_id,
+        premultiplied_alpha, /*top_left=*/gfx::PointF(),
+        /*bottom_right=*/gfx::PointF(), SkColors::kBlack, nearest_neighbor,
+        /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+    overlay_quad->set_resource_size_in_pixels(resource_size_in_pixels);
+
+    return overlay_quad;
   }
 
   std::unique_ptr<OverlayProcessorInterface> overlay_processor_;
+  std::unique_ptr<TestResourceFactory> resource_factory_;
   std::unique_ptr<OcclusionCuller> occlusion_culler_;
 };
 
@@ -3826,6 +3870,189 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithSmallQuads_HasRoundedCorners) {
   const QuadList& quad_list = frame.render_pass_list.front()->quad_list;
   EXPECT_EQ(rect, quad_list.ElementAt(0)->visible_rect);
   EXPECT_EQ(small_rect, quad_list.ElementAt(1)->visible_rect);
+}
+
+TEST_F(OcclusionCullerTest, RemoveOverlayCandidateIfFullyOccluded) {
+  RendererSettings::OcclusionCullerSettings settings;
+  settings.minimum_fragments_reduced = 0;
+
+  InitOcclusionCuller(settings);
+
+  AggregatedFrame frame = MakeDefaultAggregatedFrame();
+  auto root_render_pass = frame.render_pass_list.back().get();
+  gfx::Rect rect(128, 128);
+  gfx::Rect overlay_rect(64, 64);
+
+  bool are_contents_opaque = true;
+  float opacity = 1.0f;
+
+  SharedQuadState* shared_quad_state2 =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+  shared_quad_state2->SetAll(
+      gfx::Transform(), rect, rect, gfx::MaskFilterInfo(), std::nullopt,
+      are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+  auto* quad2 = frame.render_pass_list.front()
+                    ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  quad2->SetNew(shared_quad_state2, rect, rect, SkColors::kBlack, false);
+
+  SharedQuadState* shared_quad_state =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+  shared_quad_state->SetAll(
+      gfx::Transform(), overlay_rect, overlay_rect, gfx::MaskFilterInfo(),
+      std::nullopt, are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+  CreateTextureQuadAt(shared_quad_state, root_render_pass, overlay_rect,
+                      /*is_overlay_candidate=*/true);
+
+  EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+  occlusion_culler()->RemoveOverdrawQuads(&frame);
+
+  EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+
+  const QuadList& quad_list = frame.render_pass_list.front()->quad_list;
+  EXPECT_EQ(rect, quad_list.ElementAt(0)->visible_rect);
+}
+
+TEST_F(OcclusionCullerTest, DontSplitOverlayTextureQuad) {
+  RendererSettings::OcclusionCullerSettings settings;
+  settings.minimum_fragments_reduced = 0;
+
+  InitOcclusionCuller(settings);
+
+  AggregatedFrame frame = MakeDefaultAggregatedFrame();
+  auto root_render_pass = frame.render_pass_list.back().get();
+  gfx::Rect rect(64, 64);
+  gfx::Rect overlay_rect(128, 128);
+
+  bool are_contents_opaque = true;
+  float opacity = 1.0f;
+
+  SharedQuadState* shared_quad_state2 =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+  shared_quad_state2->SetAll(
+      gfx::Transform(), rect, rect, gfx::MaskFilterInfo(), std::nullopt,
+      are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+  auto* quad2 = frame.render_pass_list.front()
+                    ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  quad2->SetNew(shared_quad_state2, rect, rect, SkColors::kBlack, false);
+
+  SharedQuadState* shared_quad_state =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+  shared_quad_state->SetAll(
+      gfx::Transform(), overlay_rect, overlay_rect, gfx::MaskFilterInfo(),
+      std::nullopt, are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+  CreateTextureQuadAt(shared_quad_state, root_render_pass, overlay_rect,
+                      /*is_overlay_candidate=*/true);
+
+  EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+  occlusion_culler()->RemoveOverdrawQuads(&frame);
+
+  EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+
+  const QuadList& quad_list = frame.render_pass_list.front()->quad_list;
+  EXPECT_EQ(rect, quad_list.ElementAt(0)->visible_rect);
+  EXPECT_EQ(overlay_rect, quad_list.ElementAt(1)->visible_rect);
+}
+
+TEST_F(OcclusionCullerTest, SplitNonOverlayTextureQuad) {
+  if (!features::IsOcclusionCullingForTextureQuadsEnabled()) {
+    GTEST_SKIP();
+  }
+
+  RendererSettings::OcclusionCullerSettings settings;
+  settings.minimum_fragments_reduced = 0;
+
+  InitOcclusionCuller(settings);
+
+  AggregatedFrame frame = MakeDefaultAggregatedFrame();
+  auto root_render_pass = frame.render_pass_list.back().get();
+  gfx::Rect rect(64, 64);
+  gfx::Rect overlay_rect(128, 128);
+
+  bool are_contents_opaque = true;
+  float opacity = 1.0f;
+
+  SharedQuadState* shared_quad_state2 =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+  shared_quad_state2->SetAll(
+      gfx::Transform(), rect, rect, gfx::MaskFilterInfo(), std::nullopt,
+      are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+  auto* quad2 = frame.render_pass_list.front()
+                    ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  quad2->SetNew(shared_quad_state2, rect, rect, SkColors::kBlack, false);
+
+  SharedQuadState* shared_quad_state =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+  shared_quad_state->SetAll(
+      gfx::Transform(), overlay_rect, overlay_rect, gfx::MaskFilterInfo(),
+      std::nullopt, are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+  CreateTextureQuadAt(shared_quad_state, root_render_pass, overlay_rect,
+                      /*is_overlay_candidate=*/false);
+
+  EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+  occlusion_culler()->RemoveOverdrawQuads(&frame);
+
+  EXPECT_EQ(3u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+
+  const QuadList& quad_list = frame.render_pass_list.front()->quad_list;
+  EXPECT_EQ(rect, quad_list.ElementAt(0)->visible_rect);
+  EXPECT_EQ(gfx::Rect(64, 0, 64, 64), quad_list.ElementAt(1)->visible_rect);
+  EXPECT_EQ(gfx::Rect(0, 64, 128, 64), quad_list.ElementAt(2)->visible_rect);
+}
+
+TEST_F(OcclusionCullerTest, NonInvertibleTransformDueToOverflow) {
+  RendererSettings::OcclusionCullerSettings settings;
+  settings.minimum_fragments_reduced = 0;
+
+  InitOcclusionCuller(settings);
+
+  AggregatedFrame frame = MakeDefaultAggregatedFrame();
+  gfx::Rect rect(128, 128);
+  gfx::Rect rect2(256, 256);
+
+  bool are_contents_opaque = true;
+  float opacity = 1.0f;
+
+  gfx::Transform non_invertible_transform;
+  non_invertible_transform.Scale(5.45771e+37, 5.45771e+37);
+
+  SharedQuadState* shared_quad_state1 =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+  shared_quad_state1->SetAll(
+      gfx::Transform(), rect, rect, gfx::MaskFilterInfo(), std::nullopt,
+      are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+  auto* quad1 = frame.render_pass_list.front()
+                    ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  quad1->SetNew(shared_quad_state1, rect, rect, SkColors::kBlack, false);
+
+  SharedQuadState* shared_quad_state2 =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+  shared_quad_state2->SetAll(
+      non_invertible_transform, rect2, rect2, gfx::MaskFilterInfo(),
+      std::nullopt, are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+  auto* quad2 = frame.render_pass_list.front()
+                    ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
+
+  EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+  occlusion_culler()->RemoveOverdrawQuads(&frame);
+
+  EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 }
 
 }  // namespace

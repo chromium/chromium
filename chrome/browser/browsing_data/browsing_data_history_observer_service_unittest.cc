@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,6 +19,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/feature_utils.h"
+#include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #endif
 
@@ -27,6 +31,7 @@ class BrowsingDataHistoryObserverServiceTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -41,12 +46,19 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
               base::BindRepeating([](content::BrowserContext* context) {
                 std::unique_ptr<KeyedService> service =
                     commerce::MockShoppingService::Build();
-                static_cast<commerce::MockShoppingService*>(service.get())
-                    ->SetIsMerchantViewerEnabled(true);
                 return service;
               }))
           .Build();
   BrowsingDataHistoryObserverService service(profile.get());
+
+  // Make sure the feature is enabled.
+  scoped_feature_list_.InitAndEnableFeature(commerce::kCommerceMerchantViewer);
+  commerce::MockAccountChecker account_checker;
+  auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile.get()));
+  mock_shopping_service->SetAccountChecker(&account_checker);
+  ASSERT_TRUE(commerce::IsMerchantViewerEnabled(
+      mock_shopping_service->GetAccountChecker()));
 
   GURL origin_a = GURL("https://a.test");
 
@@ -75,12 +87,19 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
               base::BindRepeating([](content::BrowserContext* context) {
                 std::unique_ptr<KeyedService> service =
                     commerce::MockShoppingService::Build();
-                static_cast<commerce::MockShoppingService*>(service.get())
-                    ->SetIsMerchantViewerEnabled(true);
                 return service;
               }))
           .Build();
   BrowsingDataHistoryObserverService service(profile.get());
+
+  // Make sure the feature is enabled.
+  scoped_feature_list_.InitAndEnableFeature(commerce::kCommerceMerchantViewer);
+  commerce::MockAccountChecker account_checker;
+  auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile.get()));
+  mock_shopping_service->SetAccountChecker(&account_checker);
+  ASSERT_TRUE(commerce::IsMerchantViewerEnabled(
+      mock_shopping_service->GetAccountChecker()));
 
   history::OriginCountAndLastVisitMap origin_map;
   history::DeletionInfo deletion_info = history::DeletionInfo::ForUrls(

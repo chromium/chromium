@@ -101,7 +101,7 @@ TEST_F(CastDetailedViewTest, ViewsCreatedForCastDevices) {
 
   for (views::View* view : GetDeviceViews()) {
     // Device views are children of the rounded container.
-    EXPECT_STREQ(view->parent()->GetClassName(), "RoundedContainer");
+    EXPECT_EQ(view->parent()->GetClassName(), "RoundedContainer");
 
     // Device views don't have a "stop casting" button by default.
     ASSERT_TRUE(views::IsViewClass<HoverHighlightView>(view));
@@ -201,7 +201,7 @@ TEST_F(CastDetailedViewTest, StopCastingButton) {
   views::View* right_view = row->right_view();
   ASSERT_TRUE(right_view);
   EXPECT_TRUE(views::IsViewClass<PillButton>(right_view));
-  EXPECT_EQ(right_view->GetTooltipText(gfx::Point()), u"Stop casting");
+  EXPECT_EQ(right_view->GetRenderedTooltipText(gfx::Point()), u"Stop casting");
 
   // Clicking on the button stops casting.
   LeftClickOn(right_view);
@@ -257,7 +257,8 @@ TEST_F(CastDetailedViewTest, FreezeButton) {
   ASSERT_EQ(views.size(), 2u);
   auto* freeze_button = views[0].get();
   EXPECT_TRUE(views::IsViewClass<PillButton>(freeze_button));
-  EXPECT_EQ(freeze_button->GetTooltipText(gfx::Point()), u"Pause casting");
+  EXPECT_EQ(freeze_button->GetRenderedTooltipText(gfx::Point()),
+            u"Pause casting");
 
   // Clicking on the button pauses casting.
   LeftClickOn(freeze_button);

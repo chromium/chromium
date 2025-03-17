@@ -21,32 +21,33 @@
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
-#include "chrome/browser/webauthn/unexportable_key_utils.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "chrome/browser/webauthn/local_authentication_token.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/global_routing_id.h"
 #include "crypto/user_verifying_key.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/network_context_factory.h"
-#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/common/chrome_version.h"
-#include "crypto/scoped_lacontext.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 class GaiaId;
+
+namespace base {
+class ElapsedTimer;
+}
 
 namespace crypto {
 class RefCountedUserVerifyingSigningKey;
 }  // namespace crypto
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 class WebAuthNDialogController;
-}
+class ActiveSessionAuthController;
+}  // namespace ash
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -122,16 +123,15 @@ class EnclaveManager : public EnclaveManagerInterface {
     // The RenderFrameHost from which the request originates.
     content::GlobalRenderFrameHostId render_frame_host_id;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     std::variant<raw_ptr<ash::WebAuthNDialogController>,
                  raw_ptr<ash::ActiveSessionAuthController>>
         dialog_controller;
 #endif
 
-#if BUILDFLAG(IS_MAC)
-    // An optional LAcontext to pass to apple keychain operations.
-    std::optional<crypto::ScopedLAContext> lacontext;
-#endif  // BUILDFLAG(IS_MAC)
+    // An optional auth context. Currently only used to pass LAcontext to Apple
+    // Keychain operations.
+    std::optional<webauthn::LocalAuthenticationToken> local_auth_token;
   };
 
   EnclaveManager(
@@ -184,6 +184,8 @@ class EnclaveManager : public EnclaveManagerInterface {
   // to call after `StoreKeys` has been called and thus `has_pending_keys`
   // returns true.
   void AddDeviceAndPINToAccount(std::string pin, Callback callback);
+  // Set a PIN on an account that doesn't currently have one.
+  void SetPIN(std::string pin, std::string rapt, Callback callback);
   // Change the GPM PIN on the account. If a RAPT (Reauthentication Proof Token)
   // is given then it will be used, otherwise the UV key will be used, causing
   // system UI to appear to verify the user.
@@ -421,6 +423,10 @@ class EnclaveManager : public EnclaveManagerInterface {
       identity_key_;
 
   unsigned store_keys_count_ = 0;
+
+  // Timer for recording a metric measuring the delay to load the Enclave
+  // state.
+  std::unique_ptr<base::ElapsedTimer> load_duration_timer_;
 
   base::ObserverList<Observer> observer_list_;
 

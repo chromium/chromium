@@ -4,6 +4,8 @@
 
 #include "media/base/encoder_status.h"
 
+#include "base/notreached.h"
+
 namespace media {
 
 const char* EncoderStatusCodeToString(const EncoderStatus& error_status) {

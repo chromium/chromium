@@ -34,6 +34,9 @@ TEST(NavigationMetrics, MainFrameSchemeDifferentDocument) {
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
                           profile_metrics::BrowserProfileType::kRegular, 1);
+  test.ExpectTotalCount(kMainFrameProfileTypeDifferentPage, 1);
+  test.ExpectUniqueSample(kMainFrameProfileTypeDifferentPage,
+                          profile_metrics::BrowserProfileType::kRegular, 1);
 }
 
 TEST(NavigationMetrics, MainFrameSchemeDifferentDocument_NonUniqueHostname) {
@@ -55,6 +58,9 @@ TEST(NavigationMetrics, MainFrameSchemeDifferentDocument_NonUniqueHostname) {
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
                           profile_metrics::BrowserProfileType::kRegular, 1);
+  test.ExpectTotalCount(kMainFrameProfileTypeDifferentPage, 1);
+  test.ExpectUniqueSample(kMainFrameProfileTypeDifferentPage,
+                          profile_metrics::BrowserProfileType::kRegular, 1);
 }
 
 TEST(NavigationMetrics, MainFrameSchemeSameDocument) {
@@ -73,6 +79,7 @@ TEST(NavigationMetrics, MainFrameSchemeSameDocument) {
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
                           profile_metrics::BrowserProfileType::kRegular, 1);
+  test.ExpectTotalCount(kMainFrameProfileTypeDifferentPage, 0);
 }
 
 TEST(NavigationMetrics, MainFrameSchemeDifferentDocumentOTR) {
@@ -94,6 +101,9 @@ TEST(NavigationMetrics, MainFrameSchemeDifferentDocumentOTR) {
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
                           profile_metrics::BrowserProfileType::kIncognito, 1);
+  test.ExpectTotalCount(kMainFrameProfileTypeDifferentPage, 1);
+  test.ExpectUniqueSample(kMainFrameProfileTypeDifferentPage,
+                          profile_metrics::BrowserProfileType::kIncognito, 1);
 }
 
 TEST(NavigationMetrics, MainFrameSchemeSameDocumentOTR) {
@@ -113,6 +123,7 @@ TEST(NavigationMetrics, MainFrameSchemeSameDocumentOTR) {
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
                           profile_metrics::BrowserProfileType::kIncognito, 1);
+  test.ExpectTotalCount(kMainFrameProfileTypeDifferentPage, 0);
 }
 
 TEST(NavigationMetrics, MainFrameDifferentDocumentHasRTLDomainFalse) {

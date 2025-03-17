@@ -61,7 +61,7 @@ export class PrivacySandboxPrivacyPolicyDialogElement extends CrLitElement {
     if (changedProperties.has('shouldShow') && this.shouldShow) {
       // Send focus on the first element (back button) for a11y screen reader.
       const backButton =
-          this.shadowRoot!.querySelector<HTMLElement>('#backButton');
+          this.shadowRoot.querySelector<HTMLElement>('#backButton');
       assert(backButton);
       backButton.focus();
 

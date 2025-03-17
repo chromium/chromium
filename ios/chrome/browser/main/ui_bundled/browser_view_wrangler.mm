@@ -108,7 +108,8 @@
   [self loadSessionForBrowser:inactiveBrowser];
   [self loadSessionForBrowser:_otrBrowser.get()];
 
-  if (IsInactiveTabsEnabled()) {
+  if (!IsInactiveTabsExplicitlyDisabledByUser(
+          _mainBrowser->GetProfile()->GetPrefs())) {
     // Ensure there is no active element in the restored inactive browser. It
     // can be caused by a flag change, for example.
     // TODO(crbug.com/40890696): Remove the following line as soon as inactive

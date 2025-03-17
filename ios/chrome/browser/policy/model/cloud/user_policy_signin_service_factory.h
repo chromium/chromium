@@ -47,7 +47,6 @@ class UserPolicySigninServiceFactory : public ProfileKeyedServiceFactoryIOS {
       user_prefs::PrefRegistrySyncable* registry) override;
 
  private:
-
   friend struct base::DefaultSingletonTraits<UserPolicySigninServiceFactory>;
 
   UserPolicySigninServiceFactory();

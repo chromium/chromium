@@ -40,10 +40,6 @@
 #include "third_party/cros_system_api/constants/crash_reporter.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/build_time.h"
-#endif
-
 namespace crash_reporter {
 
 namespace {
@@ -147,7 +143,7 @@ bool PlatformCrashpadInitialization(
   DCHECK(exe_path.empty());
 
   crashpad::CrashpadClient client;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string crash_loop_before =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kCrashLoopBefore);
@@ -207,14 +203,6 @@ bool PlatformCrashpadInitialization(
     }
 
     annotations["plat"] = std::string("Linux");
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // "build_time_millis" is used on LaCros chrome to determine when to stop
-    // sending crash reports (from outdated versions of the browser).
-    int64_t build_time =
-        (base::GetBuildTime() - base::Time::UnixEpoch()).InMilliseconds();
-    annotations["build_time_millis"] = base::NumberToString(build_time);
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
     // Chromium OS: save board and builder path for 'tast symbolize'.

@@ -158,14 +158,15 @@ void TabModelJniBridge::CloseTabAt(int index) {
   Java_TabModelJniBridge_closeTabAt(env, java_object_.get(env), index);
 }
 
-WebContents* TabModelJniBridge::CreateNewTabForDevTools(const GURL& url) {
+WebContents* TabModelJniBridge::CreateNewTabForDevTools(const GURL& url,
+                                                        bool new_window) {
   // TODO(dfalcantara): Change the Java side so that it creates and returns the
   //                    WebContents, which we can load the URL on and return.
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj =
       Java_TabModelJniBridge_createNewTabForDevTools(
           env, java_object_.get(env),
-          url::GURLAndroid::FromNativeGURL(env, url));
+          url::GURLAndroid::FromNativeGURL(env, url), new_window);
   if (obj.is_null()) {
     VLOG(0) << "Failed to create java tab";
     return NULL;
@@ -252,7 +253,9 @@ jclass TabModelJniBridge::GetClazz(JNIEnv* env) {
 }
 
 TabModelJniBridge::~TabModelJniBridge() {
-  if (!is_archived_tab_model_) {
+  if (is_archived_tab_model_) {
+    TabModelList::SetArchivedTabModel(nullptr);
+  } else {
     TabModelList::RemoveTabModel(this);
   }
 }

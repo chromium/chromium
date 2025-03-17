@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Macro, RunMacroResult} from '/common/action_fulfillment/macros/macro.js';
+import type {RunMacroResult} from '/common/action_fulfillment/macros/macro.js';
+import {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 
 /**

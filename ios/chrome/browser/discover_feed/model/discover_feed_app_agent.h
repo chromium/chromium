@@ -9,9 +9,8 @@
 
 @protocol DiscoverFeedProfileHelper;
 
-// The agent that manages the Feed service creation. This service allows the
-// App and users to perform Feed related operations e.g. Creating a Feed,
-// Following a Website, etc. This also manages feed background refresh.
+// This agent manages refreshing the Discover feed when Chrome enters the
+// background.
 @interface DiscoverFeedAppAgent : SceneObservingAppAgent
 
 // Adds a per-Profile helper.

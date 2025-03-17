@@ -4,6 +4,7 @@
 
 #include "components/origin_trials/browser/leveldb_persistence_provider.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -52,7 +52,7 @@ bool HasFirstPartyPartition(
   return false;
 }
 
-const base::FilePath::StringPieceType kPersistentTrialTokenDbPath =
+const base::FilePath::StringViewType kPersistentTrialTokenDbPath =
     FILE_PATH_LITERAL("PersistentOriginTrials");
 
 std::unique_ptr<LevelDbPersistenceProvider::DbLoadResult> BuildMapFromDb(

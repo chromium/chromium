@@ -12,8 +12,8 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
@@ -33,6 +33,7 @@ using testing::_;
 using testing::ElementsAre;
 using testing::Return;
 using testing::UnorderedElementsAre;
+using testing::ExplainMatchResult;
 
 constexpr char kGUID1[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kGUID2[] = "00000000-0000-0000-0000-000000000002";
@@ -49,6 +50,14 @@ MATCHER_P(ContactInfoSpecificsEqualsProfile, expected_profile, "") {
     return false;
   }
   return true;
+}
+
+MATCHER_P(HiddenContactInfoSpecificsEqualsProfile, expected_profile, "") {
+  if (!arg->specifics.contact_info().invisible_in_autofill()) {
+    return false;
+  }
+  return ExplainMatchResult(ContactInfoSpecificsEqualsProfile(expected_profile),
+                            arg, result_listener);
 }
 
 // Extracts all `ContactInfoSpecifics` from `batch`, converts them into
@@ -208,7 +217,8 @@ TEST_F(ContactInfoSyncBridgeTest, ApplyIncrementalSyncChanges) {
 
   // Delete the existing local profile and add + update `remote`.
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(syncer::EntityChange::CreateDelete(kGUID1));
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateDelete(kGUID1, syncer::EntityData()));
   entity_change_list.push_back(
       syncer::EntityChange::CreateAdd(kGUID2, ProfileToEntity(remote)));
   remote.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
@@ -250,7 +260,8 @@ TEST_F(ContactInfoSyncBridgeTest,
       bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
   std::vector<AutofillProfile> profiles = GetAllDataFromTable();
   ASSERT_EQ(profiles.size(), 1u);
-  EXPECT_EQ(profiles[0].modification_date(), profile.modification_date());
+  EXPECT_EQ(profiles[0].usage_history().modification_date(),
+            profile.usage_history().modification_date());
 }
 
 // Tests that `ApplyIncrementalSyncChanges()` ensures that at most one H/W
@@ -380,6 +391,20 @@ TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Remove) {
                                      TestProfile(kGUID1));
   EXPECT_CALL(mock_processor(), Delete(kGUID1, _, _));
   EXPECT_CALL(backend(), CommitChanges()).Times(0);
+
+  bridge().AutofillProfileChanged(change);
+}
+
+// Tests that the deduplication of account profiles is communicated to Sync.
+TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_HideInAutofill) {
+  const AutofillProfile profile = TestProfile(kGUID1);
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{profile}));
+  ASSERT_THAT(GetAllDataFromTable(), ElementsAre(profile));
+
+  const AutofillProfileChange change(AutofillProfileChange::HIDE_IN_AUTOFILL,
+                                     kGUID1, profile);
+  EXPECT_CALL(mock_processor(),
+              Put(kGUID1, HiddenContactInfoSpecificsEqualsProfile(profile), _));
 
   bridge().AutofillProfileChanged(change);
 }

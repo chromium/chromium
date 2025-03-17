@@ -31,6 +31,8 @@ class DownloadFeedback;
 // Tracks active DownloadFeedback objects, provides interface for storing ping
 // data for malicious downloads.
 // Lives on the UI thread.
+// TODO(crbug.com/397407934): Download feedback is not supported on Android yet,
+// but it will be.
 class DownloadFeedbackService {
  public:
   DownloadFeedbackService(

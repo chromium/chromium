@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/storage/dom_storage/local_storage_impl.h"
 
 #include <inttypes.h>
@@ -105,8 +100,8 @@ DomStorageDatabase::Key CreateAccessMetaDataKey(
                                               storage_key_str.end());
   DomStorageDatabase::Key key;
   key.reserve(std::size(kAccessMetaPrefix) + serialized_storage_key.size());
-  key.insert(key.end(), kAccessMetaPrefix,
-             kAccessMetaPrefix + std::size(kAccessMetaPrefix));
+  key.insert(key.end(), std::begin(kAccessMetaPrefix),
+             std::end(kAccessMetaPrefix));
   key.insert(key.end(), serialized_storage_key.begin(),
              serialized_storage_key.end());
   return key;
@@ -119,8 +114,8 @@ DomStorageDatabase::Key CreateWriteMetaDataKey(
                                               storage_key_str.end());
   DomStorageDatabase::Key key;
   key.reserve(std::size(kWriteMetaPrefix) + serialized_storage_key.size());
-  key.insert(key.end(), kWriteMetaPrefix,
-             kWriteMetaPrefix + std::size(kWriteMetaPrefix));
+  key.insert(key.end(), std::begin(kWriteMetaPrefix),
+             std::end(kWriteMetaPrefix));
   key.insert(key.end(), serialized_storage_key.begin(),
              serialized_storage_key.end());
   return key;
@@ -443,7 +438,7 @@ void LocalStorageImpl::NeedsFlushForTesting(
     return;
   }
 
-  std::move(callback).Run(base::ranges::any_of(areas_, [](const auto& iter) {
+  std::move(callback).Run(std::ranges::any_of(areas_, [](const auto& iter) {
     return iter.second->storage_area()->has_changes_to_commit();
   }));
 }
@@ -662,6 +657,10 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
 }
 
 void LocalStorageImpl::OnDatabaseOpened(leveldb::Status status) {
+  base::UmaHistogramEnumeration("LocalStorage.DatabaseOpen",
+                                leveldb_env::GetLevelDBStatusUMAValue(status),
+                                leveldb_env::LEVELDB_STATUS_MAX);
+
   if (!status.ok()) {
     // If we failed to open the database, try to delete and recreate the
     // database, or ultimately fallback to an in-memory database.
@@ -725,9 +724,8 @@ void LocalStorageImpl::OnConnectionFinished() {
     tried_to_recreate_during_open_ = false;
 
   // Clear stale storage areas after a delay to prevent blocking session
-  // restoration. See crbug.com/40281870 for more info.
-  if (database_ && !in_memory_ &&
-      base::FeatureList::IsEnabled(kDeleteStaleLocalStorageOnStartup)) {
+  // restoration.
+  if (database_ && !in_memory_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&LocalStorageImpl::DeleteStaleStorageAreas,
@@ -901,8 +899,7 @@ void LocalStorageImpl::OnGotStorageUsageForShutdown(
     for (const auto& origin_to_purge : origins_to_purge_on_shutdown_) {
       if (key_origin == origin_to_purge ||
           (storage_key.IsThirdPartyContext() &&
-           net::SchemefulSite(origin_to_purge) ==
-               storage_key.top_level_site())) {
+           storage_key.top_level_site().IsSameSiteWith(origin_to_purge))) {
         storage_keys_to_delete.push_back(storage_key);
         break;
       }
@@ -1042,9 +1039,7 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
       // If the storage area has not been accessed or modified within 400 days
       // it can be cleared.
       stale_storage_keys.push_back(storage_key);
-    } else if (base::FeatureList::IsEnabled(
-                   kDeleteOrphanLocalStorageOnStartup) &&
-               (storage_key.nonce().has_value() ||
+    } else if ((storage_key.nonce().has_value() ||
                 storage_key.top_level_site().opaque()) &&
                (base::Time::Now() - accessed_or_modified_time) >=
                    base::Days(1)) {
@@ -1054,11 +1049,9 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
       orphans_found++;
     }
   }
-  if (base::FeatureList::IsEnabled(kDeleteOrphanLocalStorageOnStartup)) {
-    // These are counted independently to better track errors in rollout.
-    base::UmaHistogramCounts100000(
-        "LocalStorage.OrphanStorageAreasOnStartupCount", orphans_found);
-  }
+  // These are counted independently to better track errors in rollout.
+  base::UmaHistogramCounts100000(
+      "LocalStorage.OrphanStorageAreasOnStartupCount", orphans_found);
 
   // Delete stale storage areas and count results.
   DeleteStorageKeys(

@@ -5,7 +5,10 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
 @implementation ChromeCoordinator {
   base::WeakPtr<Browser> _browser;
@@ -33,6 +36,25 @@
 
 - (Browser*)browser {
   return _browser.get();
+}
+
+- (ProfileIOS*)profile {
+  if (!self.browser) {
+    return nullptr;
+  }
+  return self.browser->GetProfile();
+}
+
+- (BOOL)isOffTheRecord {
+  CHECK(self.profile);
+  return self.profile->IsOffTheRecord();
+}
+
+- (SceneState*)sceneState {
+  if (!self.browser) {
+    return nil;
+  }
+  return self.browser->GetSceneState();
 }
 
 #pragma mark - Public

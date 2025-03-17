@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/numerics/checked_math.h"
-#include "base/values.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
@@ -26,6 +25,7 @@ class FilterData;
 }  // namespace attribution_reporting
 
 namespace base {
+class DictValue;
 class Time;
 }  // namespace base
 
@@ -69,7 +69,7 @@ CreateAggregatableReportRequest(const AttributionReport& report);
 base::CheckedNumeric<int64_t> GetTotalAggregatableValues(
     const std::vector<blink::mojom::AggregatableReportHistogramContribution>&);
 
-void SetAttributionDestination(base::Value::Dict&,
+void SetAttributionDestination(base::DictValue&,
                                const net::SchemefulSite& destination);
 
 CONTENT_EXPORT StoredSource::AggregatableNamedBudgets ConvertNamedBudgetsMap(

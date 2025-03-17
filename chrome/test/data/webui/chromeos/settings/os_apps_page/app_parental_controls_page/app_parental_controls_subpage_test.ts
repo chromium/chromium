@@ -5,7 +5,8 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsAppParentalControlsSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrToggleElement, Router, routes, setAppParentalControlsProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import type {CrToggleElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes, setAppParentalControlsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';

@@ -12,9 +12,10 @@
   <permission android:name="$PACKAGE.permission.CHILD_SERVICE" android:protectionLevel="signature"/>
   <permission android:name="$PACKAGE.permission.DEBUG" android:label="Debug web pages" android:protectionLevel="signature"/>
   <permission android:name="$PACKAGE.permission.READ_WRITE_BOOKMARK_FOLDERS" android:protectionLevel="signatureOrSystem"/>
-  <queries>  # DIFF-ANCHOR: 9588fea7
+  <queries>  # DIFF-ANCHOR: e76c81ac
+    <package android:name="com.google.android.gms.policy_cast_dynamite"/>
     <package android:name="com.google.ar.core"/>
-  </queries>  # DIFF-ANCHOR: 9588fea7
+  </queries>  # DIFF-ANCHOR: e76c81ac
   <uses-feature android:glEsVersion="0x00020000"/>
   <uses-feature android:name="android.hardware.camera" android:required="false"/>
   <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
@@ -74,10 +75,10 @@
   <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_VIDEO"/>
   <uses-permission-sdk-23 android:name="android.permission.REORDER_TASKS"/>
   <uses-permission-sdk-23 android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-  <uses-permission-sdk-23 android:name="android.permission.SCENE_UNDERSTANDING"/>
+  <uses-permission-sdk-23 android:name="android.permission.SCENE_UNDERSTANDING_FINE"/>
   <uses-permission-sdk-23 android:name="android.permission.USE_BIOMETRIC"/>
   <uses-permission-sdk-23 android:name="android.permission.USE_FINGERPRINT"/>
-  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="34"/>
+  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="35"/>
   <application
       android:name="org.chromium.chrome.browser.base.SplitChromeApplication"
       android:allowAudioPlaybackCapture="false"
@@ -116,8 +117,13 @@
     <meta-data android:name="com.google.ar.core.session_settings" android:value="allow_front_facing_motion_tracking_6dof,"/>
     <meta-data android:name="com.samsung.android.sdk.multiwindow.enable" android:value="true"/>
     <meta-data android:name="com.samsung.android.sdk.multiwindow.penwindow.enable" android:value="true"/>
-    <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="5"/>
+    <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="10"/>
     <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
+    <provider  # DIFF-ANCHOR: 3b9c6c31
+        android:name="org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider"
+        android:authorities="$PACKAGE.AutofillThirdPartyModeContentProvider"
+        android:exported="true">
+    </provider>  # DIFF-ANCHOR: 3b9c6c31
     <provider  # DIFF-ANCHOR: b73a881a
         android:name="org.chromium.chrome.browser.download.DownloadFileProvider"
         android:authorities="$PACKAGE.DownloadFileProvider"
@@ -156,6 +162,10 @@
         android:exported="false"
         android:grantUriPermissions="true">
     </provider>  # DIFF-ANCHOR: cb51666f
+    <receiver  # DIFF-ANCHOR: 2ea379de
+        android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 2ea379de
     <receiver  # DIFF-ANCHOR: 0a6f8fa5
         android:name="com.google.android.gms.cast.framework.media.MediaIntentReceiver"
         android:exported="false">
@@ -167,26 +177,36 @@
       <intent-filter>  # DIFF-ANCHOR: aae22013
         <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
       </intent-filter>  # DIFF-ANCHOR: aae22013
+      <meta-data android:name="com.google.android.gms.cloudmessaging.FINISHED_AFTER_HANDLED" android:value="true"/>
     </receiver>  # DIFF-ANCHOR: f1c9c29d
     <receiver  # DIFF-ANCHOR: c787586e
         android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskBroadcastReceiver"
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: c787586e
+    <service  # DIFF-ANCHOR: 181d6deb
+        android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+        android:exported="false">
+      <meta-data android:name="backend:com.google.android.datatransport.cct.CctBackendFactory" android:value="cct"/>
+    </service>  # DIFF-ANCHOR: 181d6deb
+    <service  # DIFF-ANCHOR: 9e5a002f
+        android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+        android:exported="false"
+        android:permission="android.permission.BIND_JOB_SERVICE">
+    </service>  # DIFF-ANCHOR: 9e5a002f
     <service  # DIFF-ANCHOR: 749391ed
         android:name="com.google.android.gms.cast.framework.ReconnectionService"
         android:exported="false">
     </service>  # DIFF-ANCHOR: 749391ed
-    <service  # DIFF-ANCHOR: 48ce9d28
-        android:name="com.google.android.gms.cast.framework.media.MediaNotificationService"
-        android:exported="false">
-    </service>  # DIFF-ANCHOR: 48ce9d28
     <service  # DIFF-ANCHOR: 7e26656b
         android:name="com.google.firebase.components.ComponentDiscoveryService"
         android:directBootAware="true"
         android:exported="false">
-      <meta-data android:name="com.google.firebase.components:com.google.firebase.dynamicloading.DynamicLoadingRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
-      <meta-data android:name="com.google.firebase.components:com.google.firebase.iid.Registrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
       <meta-data android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
       <meta-data android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
     </service>  # DIFF-ANCHOR: 7e26656b
     <service  # DIFF-ANCHOR: 2295960c
@@ -237,6 +257,41 @@
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":privileged_process4">
     </service>  # DIFF-ANCHOR: 52303702
+    <service  # DIFF-ANCHOR: 31202801
+        android:name="org.chromium.content.app.PrivilegedProcessService5"
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":privileged_process5">
+    </service>  # DIFF-ANCHOR: 31202801
+    <service  # DIFF-ANCHOR: f3d04117
+        android:name="org.chromium.content.app.PrivilegedProcessService6"
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":privileged_process6">
+    </service>  # DIFF-ANCHOR: f3d04117
+    <service  # DIFF-ANCHOR: 996f3c1a
+        android:name="org.chromium.content.app.PrivilegedProcessService7"
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":privileged_process7">
+    </service>  # DIFF-ANCHOR: 996f3c1a
+    <service  # DIFF-ANCHOR: 702086b6
+        android:name="org.chromium.content.app.PrivilegedProcessService8"
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":privileged_process8">
+    </service>  # DIFF-ANCHOR: 702086b6
+    <service  # DIFF-ANCHOR: 40feb0a4
+        android:name="org.chromium.content.app.PrivilegedProcessService9"
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":privileged_process9">
+    </service>  # DIFF-ANCHOR: 40feb0a4
     <service  # DIFF-ANCHOR: b1e3e8bd
         android:name="org.chromium.content.app.SandboxedProcessService0"
         android:exported="False"
@@ -518,6 +573,8 @@
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":sandboxed_process9">
     </service>  # DIFF-ANCHOR: e2f3bbbd
+    <uses-library android:name="com.android.extensions.xr" android:required="false"/>
+    <uses-native-library android:name="libopenxr.google.so" android:required="false"/>
     <uses-static-library android:name="org.chromium.trichromelibrary" android:certDigest="32a2fc74d731105859e5a85df16d95f102d85b22099b8064c5d8915c61dad1e0" android:version="OFFSET=30"/>
   </application>
 </manifest>

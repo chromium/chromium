@@ -8,32 +8,34 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /** Class encapsulating the data needed to show in-product help (IPH). */
+@NullMarked
 public class IphCommand {
     private Resources mResources;
     public final String featureName;
     public final int stringId;
-    public Object[] stringArgs;
-    public String contentString;
+    public Object @Nullable [] stringArgs;
+    public @Nullable String contentString;
     public final int accessibilityStringId;
-    public Object[] accessibilityStringArgs;
-    public String accessibilityText;
+    public Object @Nullable [] accessibilityStringArgs;
+    public @Nullable String accessibilityText;
     public final boolean dismissOnTouch;
-    public final View anchorView;
-    @Nullable public final Runnable onDismissCallback;
-    @Nullable public final Runnable onShowCallback;
-    @Nullable public final Runnable onBlockedCallback;
-    public Rect insetRect;
+    public final @Nullable View anchorView;
+    public final Runnable onDismissCallback;
+    public final Runnable onShowCallback;
+    public final Runnable onBlockedCallback;
+    public @Nullable Rect insetRect;
     public final long autoDismissTimeout;
-    public final ViewRectProvider viewRectProvider;
-    @Nullable public final HighlightParams highlightParams;
-    public final Rect anchorRect;
+    public final long dismissOnTouchTimeout;
+    public final @Nullable ViewRectProvider viewRectProvider;
+    public final @Nullable HighlightParams highlightParams;
+    public final @Nullable Rect anchorRect;
     public final boolean removeArrow;
     public final boolean showTextBubble;
     @AnchoredPopupWindow.VerticalOrientation public final int preferredVerticalOrientation;
@@ -69,34 +71,40 @@ public class IphCommand {
             Resources resources,
             String featureName,
             int stringId,
-            Object[] stringArgs,
+            Object @Nullable [] stringArgs,
+            @Nullable String contentString,
             int accessibilityStringId,
-            Object[] accessibilityStringArgs,
+            Object @Nullable [] accessibilityStringArgs,
+            @Nullable String accessibilityText,
             boolean dismissOnTouch,
-            View anchorView,
+            @Nullable View anchorView,
             Runnable onDismissCallback,
             Runnable onShowCallback,
             Runnable onBlockedCallback,
             long autoDismissTimeout,
-            ViewRectProvider viewRectProvider,
-            HighlightParams params,
-            Rect anchorRect,
+            long dismissOnTouchTimeout,
+            @Nullable ViewRectProvider viewRectProvider,
+            @Nullable HighlightParams params,
+            @Nullable Rect anchorRect,
             boolean removeArrow,
             boolean showTextBubble,
             @AnchoredPopupWindow.VerticalOrientation int preferredVerticalOrientation,
-            Rect insetRect) {
+            @Nullable Rect insetRect) {
         this.mResources = resources;
         this.featureName = featureName;
         this.stringId = stringId;
         this.stringArgs = stringArgs;
+        this.contentString = contentString;
         this.accessibilityStringId = accessibilityStringId;
         this.accessibilityStringArgs = accessibilityStringArgs;
+        this.accessibilityText = accessibilityText;
         this.dismissOnTouch = dismissOnTouch;
         this.anchorView = anchorView;
         this.onDismissCallback = onDismissCallback;
         this.onShowCallback = onShowCallback;
         this.onBlockedCallback = onBlockedCallback;
         this.autoDismissTimeout = autoDismissTimeout;
+        this.dismissOnTouchTimeout = dismissOnTouchTimeout;
         this.viewRectProvider = viewRectProvider;
         this.highlightParams = params;
         this.anchorRect = anchorRect;

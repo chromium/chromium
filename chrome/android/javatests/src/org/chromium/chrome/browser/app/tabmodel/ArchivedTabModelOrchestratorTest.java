@@ -19,12 +19,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
-
-import android.util.Pair;
 
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
@@ -33,15 +32,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.task.TaskRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -51,9 +51,12 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
-import org.chromium.chrome.browser.tab.TabArchiver;
+import org.chromium.chrome.browser.tab.TabArchiverImpl;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -78,21 +81,6 @@ public class ArchivedTabModelOrchestratorTest {
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
     private static final String TEST_PATH_2 = "/chrome/test/data/android/google.html";
 
-    private static class FakeTaskRunner implements TaskRunner {
-
-        public final List<Pair<Runnable, Long>> mDelayedTasks = new ArrayList<>();
-
-        @Override
-        public void execute(Runnable task) {
-            assert false;
-        }
-
-        @Override
-        public void postDelayedTask(Runnable task, long delay) {
-            mDelayedTasks.add(new Pair<>(task, delay));
-        }
-    }
-
     private static class FakeDeferredStartupHandler extends DeferredStartupHandler {
         private List<Runnable> mTasks = new ArrayList<>();
 
@@ -115,13 +103,16 @@ public class ArchivedTabModelOrchestratorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock private ArchivedTabModelOrchestrator.Observer mObserver;
-    @Mock private TabArchiver.Clock mClock;
+    @Mock private TabArchiverImpl.Clock mClock;
     @Mock private ObservableSupplierImpl<Boolean> mSkipSaveTabListSupplier;
+    @Mock private TabPersistentStore mArchivedTabPersistentStore;
+    @Mock private TabPersistentStore mNormalTabPersistentStore;
+    @Mock private TabModelSelectorBase mTabModelSelector;
 
     private Profile mProfile;
-    private FakeTaskRunner mTaskRunner;
     private FakeDeferredStartupHandler mDeferredStartupHandler;
     private ArchivedTabModelOrchestrator mOrchestrator;
+    private TabbedModeTabModelOrchestrator mTabbedModeOrchestrator;
     private TabModel mArchivedTabModel;
     private TabModel mRegularTabModel;
     private TabCreator mRegularTabCreator;
@@ -141,9 +132,14 @@ public class ArchivedTabModelOrchestratorTest {
                                     .getProfileProviderSupplier()
                                     .get()
                                     .getOriginalProfile();
+
+                    mTabbedModeOrchestrator =
+                            (TabbedModeTabModelOrchestrator)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabModelOrchestratorSupplier()
+                                            .get();
                     mOrchestrator = ArchivedTabModelOrchestrator.getForProfile(mProfile);
-                    mTaskRunner = new FakeTaskRunner();
-                    mOrchestrator.setTaskRunnerForTesting(mTaskRunner);
                 });
         doReturn(false).when(mSkipSaveTabListSupplier).get();
     }
@@ -158,12 +154,18 @@ public class ArchivedTabModelOrchestratorTest {
                     mRegularTabModel = mActivityTestRule.getActivity().getCurrentTabModel();
                     mRegularTabCreator = mActivityTestRule.getActivity().getTabCreator(false);
                     mTabArchiveSettings = mOrchestrator.getTabArchiveSettings();
-                    mTabArchiveSettings.setArchiveEnabled(true);
+                    // Sets archive to disabled during startup to prevent the initial scheduled
+                    // declutter pass to no-op.
+                    mTabArchiveSettings.setArchiveEnabled(false);
                 });
     }
 
     private void setupDeclutterSettingsForTest() {
-        runOnUiThreadBlocking(() -> mTabArchiveSettings.setArchiveTimeDeltaHours(0));
+        runOnUiThreadBlocking(
+                () -> {
+                    mTabArchiveSettings.setArchiveEnabled(true);
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(0);
+                });
     }
 
     @Test
@@ -178,7 +180,7 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
-    public void testBeginDeclutter_DisablesAndEnablesSaveTabListTask() {
+    public void testBeginDeclutter_DisablesAndEnablesArchivedSaveTabListTask() {
         finishLoading();
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
@@ -186,19 +188,26 @@ public class ArchivedTabModelOrchestratorTest {
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
         setupDeclutterSettingsForTest();
-        runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
         runOnUiThreadBlocking(
                 () -> {
-                    mOrchestrator.setSkipSaveTabListSupplierForTesting(mSkipSaveTabListSupplier);
-                    mOrchestrator.maybeBeginDeclutter();
+                    TabbedModeTabModelOrchestrator normalOrchestrator =
+                            (TabbedModeTabModelOrchestrator)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabModelOrchestratorSupplier()
+                                            .get();
+                    normalOrchestrator.setTabPersistentStoreForTesting(mNormalTabPersistentStore);
+                    mOrchestrator.setTabPersistentStoreForTesting(mArchivedTabPersistentStore);
+                    mOrchestrator.doDeclutterPass(normalOrchestrator);
                 });
 
-        CriteriaHelper.pollUiThread(() -> 2 == mTaskRunner.mDelayedTasks.size());
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
 
-        verify(mSkipSaveTabListSupplier).set(true);
-        verify(mSkipSaveTabListSupplier).set(false);
+        verify(mArchivedTabPersistentStore).pauseSaveTabList();
+        verify(mArchivedTabPersistentStore).resumeSaveTabList();
+        verify(mNormalTabPersistentStore).pauseSaveTabList();
+        verify(mNormalTabPersistentStore).resumeSaveTabList();
     }
 
     @Test
@@ -210,15 +219,22 @@ public class ArchivedTabModelOrchestratorTest {
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
+
+        setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(
                 () -> {
                     doReturn(TimeUnit.HOURS.toMillis(2)).when(mClock).currentTimeMillis();
-                    mOrchestrator.getTabArchiver().setClockForTesting(mClock);
+                    ((TabArchiverImpl) mOrchestrator.getTabArchiver()).setClockForTesting(mClock);
                     mRegularTabModel.getTabAt(0).setTimestampMillis(0L);
                     mRegularTabModel.getTabAt(1).setTimestampMillis(0L);
                     mTabArchiveSettings.setArchiveTimeDeltaHours(1);
-                    mOrchestrator.resetBeginDeclutterForTesting();
-                    mOrchestrator.maybeBeginDeclutter();
+
+                    mOrchestrator.doDeclutterPass(
+                            (TabbedModeTabModelOrchestrator)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabModelOrchestratorSupplier()
+                                            .get());
                 });
 
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
@@ -236,8 +252,12 @@ public class ArchivedTabModelOrchestratorTest {
         // Now the timestamp has been updated, no tabs should get archived.
         runOnUiThreadBlocking(
                 () -> {
-                    mOrchestrator.resetBeginDeclutterForTesting();
-                    mOrchestrator.maybeBeginDeclutter();
+                    mOrchestrator.doDeclutterPass(
+                            (TabbedModeTabModelOrchestrator)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabModelOrchestratorSupplier()
+                                            .get());
                 });
         CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
         CriteriaHelper.pollUiThread(() -> 0 == mArchivedTabModel.getCount());
@@ -253,43 +273,17 @@ public class ArchivedTabModelOrchestratorTest {
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
-        runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
-        runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
-
-        CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
-        assertEquals(1, mArchivedTabModel.getCount());
-    }
-
-    @Test
-    @MediumTest
-    public void testScheduledDeclutter() {
-        finishLoading();
-        runOnUiThreadBlocking(() -> mTabArchiveSettings.setArchiveEnabled(false));
-        mActivityTestRule.loadUrlInNewTab(
-                mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
-
-        assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
-
         setupDeclutterSettingsForTest();
-        mTaskRunner.mDelayedTasks.clear();
-        runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
-        runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
-
-        CriteriaHelper.pollUiThread(() -> 1 == mTaskRunner.mDelayedTasks.size());
-        assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
-
-        runOnUiThreadBlocking(() -> mOrchestrator.getTabArchiveSettings().setArchiveEnabled(true));
-        // A task was scheduled to perform a scheduled declutter, get it and run it.
-        runOnUiThreadBlocking(() -> mTaskRunner.mDelayedTasks.get(0).first.run());
-
+        runOnUiThreadBlocking(
+                () ->
+                        mOrchestrator.doDeclutterPass(
+                                (TabbedModeTabModelOrchestrator)
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getTabModelOrchestratorSupplier()
+                                                .get()));
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
-        // The new tab should be archived now.
         assertEquals(1, mArchivedTabModel.getCount());
-
-        // The schedule call should queue up another runnable.
-        assertEquals(2, mTaskRunner.mDelayedTasks.size());
     }
 
     @Test
@@ -303,16 +297,43 @@ public class ArchivedTabModelOrchestratorTest {
         assertEquals(0, mArchivedTabModel.getCount());
 
         setupDeclutterSettingsForTest();
-        runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
-        runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
-
+        runOnUiThreadBlocking(
+                () ->
+                        mOrchestrator.doDeclutterPass(
+                                (TabbedModeTabModelOrchestrator)
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getTabModelOrchestratorSupplier()
+                                                .get()));
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
 
-        runOnUiThreadBlocking(() -> mOrchestrator.maybeRescueArchivedTabs());
+        runOnUiThreadBlocking(
+                () -> {
+                    TabbedModeTabModelOrchestrator normalOrchestrator =
+                            (TabbedModeTabModelOrchestrator)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabModelOrchestratorSupplier()
+                                            .get();
+                    normalOrchestrator.setTabPersistentStoreForTesting(mNormalTabPersistentStore);
+                    mOrchestrator.setTabPersistentStoreForTesting(mArchivedTabPersistentStore);
+
+                    mOrchestrator.resetRescueArchivedTabsForTesting();
+                    mOrchestrator.rescueArchivedTabs(
+                            (TabbedModeTabModelOrchestrator)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabModelOrchestratorSupplier()
+                                            .get());
+                });
 
         CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
+        verify(mArchivedTabPersistentStore).pauseSaveTabList();
+        verify(mArchivedTabPersistentStore).resumeSaveTabList();
+        verify(mNormalTabPersistentStore).pauseSaveTabList();
+        verify(mNormalTabPersistentStore).resumeSaveTabList();
     }
 
     @Test
@@ -326,14 +347,64 @@ public class ArchivedTabModelOrchestratorTest {
         assertEquals(0, mArchivedTabModel.getCount());
 
         setupDeclutterSettingsForTest();
-        runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
-        runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
-
+        runOnUiThreadBlocking(
+                () ->
+                        mOrchestrator.doDeclutterPass(
+                                (TabbedModeTabModelOrchestrator)
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getTabModelOrchestratorSupplier()
+                                                .get()));
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
 
-        runOnUiThreadBlocking(() -> mTabArchiveSettings.setArchiveEnabled(false));
+        runOnUiThreadBlocking(
+                () -> {
+                    mOrchestrator.resetRescueArchivedTabsForTesting();
+                    mTabArchiveSettings.setArchiveEnabled(false);
+                });
 
+        CriteriaHelper.pollUiThread(() -> mRegularTabModel.getCount() == 2);
+        assertEquals(0, mArchivedTabModel.getCount());
+    }
+
+    @Test
+    @MediumTest
+    public void testRescueTabs_ArchiveDisabledWhileNoOrchestatorsRegistered() {
+        finishLoading();
+        mActivityTestRule.loadUrlInNewTab(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        setupDeclutterSettingsForTest();
+        runOnUiThreadBlocking(
+                () ->
+                        mOrchestrator.doDeclutterPass(
+                                (TabbedModeTabModelOrchestrator)
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getTabModelOrchestratorSupplier()
+                                                .get()));
+        CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+
+        // Unregistering the tab model orchestrator should skip rescue (there's nothing to rescue
+        // to).
+        runOnUiThreadBlocking(
+                () -> {
+                    mOrchestrator.unregisterTabModelOrchestrator(mTabbedModeOrchestrator);
+                    mOrchestrator.resetRescueArchivedTabsForTesting();
+                    mTabArchiveSettings.setArchiveEnabled(false);
+                });
+        CriteriaHelper.pollUiThread(() -> mArchivedTabModel.getCount() == 1);
+
+        // Registering the tab model orchestrator will rescue tabs if the archive is disabled.
+        runOnUiThreadBlocking(
+                () -> {
+                    mOrchestrator.registerTabModelOrchestrator(mTabbedModeOrchestrator);
+                });
         CriteriaHelper.pollUiThread(() -> mRegularTabModel.getCount() == 2);
         assertEquals(0, mArchivedTabModel.getCount());
     }
@@ -362,18 +433,28 @@ public class ArchivedTabModelOrchestratorTest {
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
-        setupDeclutterSettingsForTest();
-        mTaskRunner.mDelayedTasks.clear();
-        runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
-        runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
-
-        CriteriaHelper.pollUiThread(() -> 1 == mTaskRunner.mDelayedTasks.size());
         assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
 
-        runOnUiThreadBlocking(() -> ArchivedTabModelOrchestrator.destroyProfileKeyedMap());
-        runOnUiThreadBlocking(() -> mTaskRunner.mDelayedTasks.get(0).first.run());
-        // Running the archive task should have had no effect after the destroy.
+        setupDeclutterSettingsForTest();
+        runOnUiThreadBlocking(
+                () -> {
+                    when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+                    ArgumentCaptor<TabModelSelectorObserver> observerCaptor =
+                            ArgumentCaptor.forClass(TabModelSelectorObserver.class);
+                    mOrchestrator.setTabModelSelectorForTesting(mTabModelSelector);
+                    mOrchestrator.doDeclutterPass(
+                            (TabbedModeTabModelOrchestrator)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabModelOrchestratorSupplier()
+                                            .get());
+                    // Destroying this after a task has been queued should destroy the callback
+                    // controller and skip the declutter process.
+                    ArchivedTabModelOrchestrator.destroyProfileKeyedMap();
+                    verify(mTabModelSelector).addObserver(observerCaptor.capture());
+                    observerCaptor.getValue().onTabStateInitialized();
+                });
+
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
     }
@@ -381,6 +462,7 @@ public class ArchivedTabModelOrchestratorTest {
     @Test
     @MediumTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    @DisabledTest(message = "crbug.com/397730179")
     public void testOpenArchivedTabFromHubSearch() {
         finishLoading();
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(TEST_PATH));
@@ -389,15 +471,20 @@ public class ArchivedTabModelOrchestratorTest {
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
+        setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(
                 () -> {
                     doReturn(TimeUnit.HOURS.toMillis(2)).when(mClock).currentTimeMillis();
-                    mOrchestrator.getTabArchiver().setClockForTesting(mClock);
+                    ((TabArchiverImpl) mOrchestrator.getTabArchiver()).setClockForTesting(mClock);
                     mRegularTabModel.getTabAt(0).setTimestampMillis(0L);
                     mRegularTabModel.getTabAt(1).setTimestampMillis(0L);
                     mTabArchiveSettings.setArchiveTimeDeltaHours(1);
-                    mOrchestrator.resetBeginDeclutterForTesting();
-                    mOrchestrator.maybeBeginDeclutter();
+                    mOrchestrator.doDeclutterPass(
+                            (TabbedModeTabModelOrchestrator)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabModelOrchestratorSupplier()
+                                            .get());
                 });
 
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
@@ -428,15 +515,20 @@ public class ArchivedTabModelOrchestratorTest {
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
+        setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(
                 () -> {
                     doReturn(TimeUnit.HOURS.toMillis(2)).when(mClock).currentTimeMillis();
-                    mOrchestrator.getTabArchiver().setClockForTesting(mClock);
+                    ((TabArchiverImpl) mOrchestrator.getTabArchiver()).setClockForTesting(mClock);
                     mRegularTabModel.getTabAt(0).setTimestampMillis(0L);
                     mRegularTabModel.getTabAt(1).setTimestampMillis(0L);
                     mTabArchiveSettings.setArchiveTimeDeltaHours(1);
-                    mOrchestrator.resetBeginDeclutterForTesting();
-                    mOrchestrator.maybeBeginDeclutter();
+                    mOrchestrator.doDeclutterPass(
+                            (TabbedModeTabModelOrchestrator)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabModelOrchestratorSupplier()
+                                            .get());
                 });
 
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());

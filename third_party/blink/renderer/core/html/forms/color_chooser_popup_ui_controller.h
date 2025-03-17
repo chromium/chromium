@@ -61,7 +61,7 @@ class CORE_EXPORT ColorChooserPopupUIController final
   // PagePopupClient functions:
   void WriteDocument(SegmentedBuffer&) override;
   Locale& GetLocale() override;
-  void SetValueAndClosePopup(int, const String&) override;
+  void SetValueAndClosePopup(int, const String&, bool) override;
   void SetValue(const String&) override;
   void CancelPopup() override;
   Element& OwnerElement() override;

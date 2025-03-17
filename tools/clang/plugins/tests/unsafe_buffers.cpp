@@ -20,8 +20,10 @@
 #include "unsafe_buffers_not_clean_dir/clean_header.h"
 #include "unsafe_buffers_not_clean_dir/not_checked_header.h"
 #include "unsafe_buffers_not_clean_dir/not_clean_header.h"
-#include "unsafe_buffers_not_clean_dir/opt_in_header.h"
 #include "unsafe_buffers_opt_out.h"
+#include "unsafe_libc_calls_clean.h"
+#include "unsafe_libc_calls_not_clean.h"
+#include "unsafe_libc_calls_opt_out.h"
 
 int main() {
   call_unsafe_stuff();

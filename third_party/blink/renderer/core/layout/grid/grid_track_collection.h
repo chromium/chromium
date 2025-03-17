@@ -12,8 +12,6 @@
 
 namespace blink {
 
-class GridLineResolver;
-
 // |GridTrackCollectionBase| provides an implementation for some shared
 // functionality on grid collections, specifically binary search on the
 // collection to get the range that contains a specific grid line.
@@ -88,8 +86,8 @@ class CORE_EXPORT GridRangeBuilder {
   GridRangeBuilder() = delete;
 
   GridRangeBuilder(const ComputedStyle& grid_style,
-                   const GridLineResolver& line_resolver,
                    GridTrackSizingDirection track_direction,
+                   wtf_size_t auto_repetitions,
                    wtf_size_t start_offset);
 
   // Ensures that after FinalizeRanges is called, a range will start at the
@@ -122,15 +120,15 @@ class CORE_EXPORT GridRangeBuilder {
     wtf_size_t* grid_item_range_index_to_cache;
   };
 
-  // This constructor is used exclusively in testing.
   GridRangeBuilder(const NGGridTrackList& explicit_tracks,
                    const NGGridTrackList& implicit_tracks,
-                   wtf_size_t auto_repetitions);
+                   wtf_size_t auto_repetitions,
+                   wtf_size_t start_offset = 0);
 
   wtf_size_t auto_repetitions_;
   wtf_size_t start_offset_;
 
-  bool must_sort_grid_lines_ : 1;
+  bool must_sort_grid_lines_{false};
 
   // Stores the grid's explicit and implicit tracks.
   const NGGridTrackList& explicit_tracks_;
@@ -195,10 +193,10 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
   void AdjustSetOffsets(wtf_size_t set_index, LayoutUnit delta);
 
   // Returns the total size of all sets in the collection.
-  LayoutUnit ComputeSetSpanSize() const;
+  LayoutUnit CalculateSetSpanSize() const;
   // Returns the total size of all sets with index in the range [begin, end).
-  LayoutUnit ComputeSetSpanSize(wtf_size_t begin_set_index,
-                                wtf_size_t end_set_index) const;
+  LayoutUnit CalculateSetSpanSize(wtf_size_t begin_set_index,
+                                  wtf_size_t end_set_index) const;
 
   // Creates a track collection containing every |Range| with index in the range
   // [begin, end], including their respective |SetGeometry| and baselines.
@@ -425,8 +423,7 @@ class CORE_EXPORT GridSizingTrackCollection final
   LayoutUnit TotalTrackSize() const;
 
   void BuildSets(const ComputedStyle& grid_style,
-                 LayoutUnit grid_available_size,
-                 LayoutUnit gutter_size);
+                 const LogicalSize& grid_available_size);
   void SetIndefiniteGrowthLimitsToBaseSize();
 
   // Caches the geometry of definite sets; this is useful when building the sets

@@ -10,21 +10,24 @@
 
 #include "base/containers/span.h"
 #include "components/base32/base32.h"
+#include "lens_overlay_request_id_generator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace lens {
 
 class LensOverlayRequestIdGeneratorTest : public testing::Test {};
 
-TEST_F(LensOverlayRequestIdGeneratorTest, ResetRequestId_hasSequenceZero) {
+TEST_F(LensOverlayRequestIdGeneratorTest, ResetRequestId_resetsSequence) {
   lens::LensOverlayRequestIdGenerator request_id_generator;
-  ASSERT_EQ(request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone)
+  ASSERT_EQ(request_id_generator
+                .GetNextRequestId(RequestIdUpdateMode::kFullImageRequest)
                 ->sequence_id(),
-            0);
+            1);
   request_id_generator.ResetRequestId();
-  ASSERT_EQ(request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone)
+  ASSERT_EQ(request_id_generator
+                .GetNextRequestId(RequestIdUpdateMode::kFullImageRequest)
                 ->sequence_id(),
-            0);
+            1);
 }
 
 TEST_F(LensOverlayRequestIdGeneratorTest,
@@ -35,17 +38,11 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
           RequestIdUpdateMode::kFullImageRequest);
   ASSERT_EQ(first_id->sequence_id(), 1);
   ASSERT_EQ(first_id->image_sequence_id(), 1);
-  ASSERT_EQ(first_id->sequence_id(),
-            request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone)
-                ->sequence_id());
   std::unique_ptr<lens::LensOverlayRequestId> second_id =
       request_id_generator.GetNextRequestId(
           RequestIdUpdateMode::kFullImageRequest);
   ASSERT_EQ(second_id->sequence_id(), 2);
   ASSERT_EQ(second_id->image_sequence_id(), 2);
-  ASSERT_EQ(second_id->sequence_id(),
-            request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone)
-                ->sequence_id());
   ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());
 }
 
@@ -57,17 +54,11 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
           RequestIdUpdateMode::kInteractionRequest);
   ASSERT_EQ(first_id->sequence_id(), 1);
   ASSERT_EQ(first_id->image_sequence_id(), 0);
-  ASSERT_EQ(first_id->sequence_id(),
-            request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone)
-                ->sequence_id());
   std::unique_ptr<lens::LensOverlayRequestId> second_id =
       request_id_generator.GetNextRequestId(
           RequestIdUpdateMode::kInteractionRequest);
   ASSERT_EQ(second_id->sequence_id(), 2);
   ASSERT_EQ(second_id->image_sequence_id(), 0);
-  ASSERT_EQ(second_id->sequence_id(),
-            request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone)
-                ->sequence_id());
   ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());
 }
 
@@ -78,28 +69,46 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
       request_id_generator.GetNextRequestId(RequestIdUpdateMode::kSearchUrl);
   ASSERT_EQ(first_id->sequence_id(), 1);
   ASSERT_EQ(first_id->image_sequence_id(), 0);
-  ASSERT_EQ(first_id->sequence_id(),
-            request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone)
-                ->sequence_id());
   std::unique_ptr<lens::LensOverlayRequestId> second_id =
       request_id_generator.GetNextRequestId(RequestIdUpdateMode::kSearchUrl);
   ASSERT_EQ(second_id->sequence_id(), 2);
   ASSERT_EQ(second_id->image_sequence_id(), 0);
-  ASSERT_EQ(second_id->sequence_id(),
-            request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone)
-                ->sequence_id());
   ASSERT_EQ(first_id->analytics_id(), second_id->analytics_id());
+}
+
+TEST_F(LensOverlayRequestIdGeneratorTest,
+       GetNextIdForOpenInNewTab_OutputsNewAnalyticsIdButDoesNotStore) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kFullImageRequest);
+  ASSERT_EQ(first_id->sequence_id(), 1);
+  ASSERT_EQ(first_id->image_sequence_id(), 1);
+  std::unique_ptr<lens::LensOverlayRequestId> second_id =
+      request_id_generator.GetNextRequestId(RequestIdUpdateMode::kOpenInNewTab);
+  ASSERT_EQ(second_id->sequence_id(), 1);
+  ASSERT_EQ(second_id->image_sequence_id(), 1);
+  ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());
+  std::unique_ptr<lens::LensOverlayRequestId> third_id =
+      request_id_generator.GetNextRequestId(RequestIdUpdateMode::kSearchUrl);
+  ASSERT_EQ(third_id->sequence_id(), 2);
+  ASSERT_EQ(third_id->image_sequence_id(), 1);
+  ASSERT_EQ(first_id->analytics_id(), third_id->analytics_id());
 }
 
 TEST_F(LensOverlayRequestIdGeneratorTest, ResetRequestId_ChangesAnalyticsId) {
   lens::LensOverlayRequestIdGenerator request_id_generator;
+  // Use kSearchUrl to ensure the analytics id is not changed by the
+  // GetNextRequestId call.
   std::unique_ptr<lens::LensOverlayRequestId> first_id =
-      request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone);
+      request_id_generator.GetNextRequestId(RequestIdUpdateMode::kSearchUrl);
   request_id_generator.ResetRequestId();
+  // Use kSearchUrl to ensure the analytics id is not changed by the
+  // GetNextRequestId call.
   std::unique_ptr<lens::LensOverlayRequestId> second_id =
-      request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone);
-  ASSERT_EQ(first_id->sequence_id(), 0);
-  ASSERT_EQ(second_id->sequence_id(), 0);
+      request_id_generator.GetNextRequestId(RequestIdUpdateMode::kSearchUrl);
+  ASSERT_EQ(first_id->sequence_id(), 1);
+  ASSERT_EQ(second_id->sequence_id(), 1);
   ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());
 }
 
@@ -107,7 +116,8 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
        GetBase32EncodedAnalyticsId_GeneratesCorrectString) {
   lens::LensOverlayRequestIdGenerator request_id_generator;
   std::unique_ptr<lens::LensOverlayRequestId> request_id =
-      request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone);
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kInteractionRequest);
 
   // Decode the encoded analytics ID and ensure it's the correct value.
   std::vector<uint8_t> decoded_analytics_id =
@@ -116,4 +126,36 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
             decoded_analytics_id);
 }
 
+TEST_F(LensOverlayRequestIdGeneratorTest,
+       GetNextIdForPageContentUpdate_IncrementsSequenceAndNewAnalyticsId) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kPageContentRequest);
+  ASSERT_EQ(first_id->sequence_id(), 1);
+  ASSERT_EQ(first_id->image_sequence_id(), 1);
+  std::unique_ptr<lens::LensOverlayRequestId> second_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kPageContentRequest);
+  ASSERT_EQ(second_id->sequence_id(), 2);
+  ASSERT_EQ(second_id->image_sequence_id(), 2);
+  ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());
+}
+
+TEST_F(
+    LensOverlayRequestIdGeneratorTest,
+    GetNextIdForPartialPageContentUpdate_IncrementsSequenceAndSameAnalyticsId) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kPartialPageContentRequest);
+  ASSERT_EQ(first_id->sequence_id(), 1);
+  ASSERT_EQ(first_id->image_sequence_id(), 0);
+  std::unique_ptr<lens::LensOverlayRequestId> second_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kPartialPageContentRequest);
+  ASSERT_EQ(second_id->sequence_id(), 2);
+  ASSERT_EQ(second_id->image_sequence_id(), 0);
+  ASSERT_EQ(first_id->analytics_id(), second_id->analytics_id());
+}
 }  // namespace lens

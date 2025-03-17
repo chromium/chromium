@@ -7,7 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#import "components/autofill/core/browser/data_model/autofill_profile.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
@@ -32,26 +32,24 @@
     AutofillProfileEditMediatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 
-// The view controller attached to this coordinator.
-@property(nonatomic, strong)
-    AutofillSettingsProfileEditTableViewController* viewController;
-
-@property(nonatomic, strong)
-    AutofillProfileEditTableViewController* sharedViewController;
-
-// The mediator for the view controller attatched to this coordinator.
-@property(nonatomic, strong) AutofillProfileEditMediator* mediator;
-
-// Default NO. Yes when the country selection view has been presented.
-@property(nonatomic, assign) BOOL isCountrySelectorPresented;
-
-// If YES, a button is shown asking the user to migrate the account.
-@property(nonatomic, assign) BOOL showMigrateToAccountButton;
-
 @end
 
 @implementation AutofillProfileEditCoordinator {
   std::unique_ptr<autofill::AutofillProfile> _autofillProfile;
+
+  // The mediator for the view controller attatched to this coordinator.
+  AutofillProfileEditMediator* _mediator;
+
+  // The view controller attached to this coordinator.
+  AutofillSettingsProfileEditTableViewController* _viewController;
+
+  AutofillProfileEditTableViewController* _sharedViewController;
+
+  // Default NO. Yes when the country selection view has been presented.
+  BOOL _isCountrySelectorPresented;
+
+  // If YES, a button is shown asking the user to migrate the account.
+  BOOL _showMigrateToAccountButton;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -82,31 +80,31 @@
       autofill::PersonalDataManagerFactory::GetForProfile(
           self.browser->GetProfile()->GetOriginalProfile());
 
-  self.mediator = [[AutofillProfileEditMediator alloc]
+  _mediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
       personalDataManager:personalDataManager
           autofillProfile:_autofillProfile.get()
         isMigrationPrompt:NO];
 
-  self.viewController = [[AutofillSettingsProfileEditTableViewController alloc]
-                      initWithDelegate:self.mediator
-      shouldShowMigrateToAccountButton:self.showMigrateToAccountButton
+  _viewController = [[AutofillSettingsProfileEditTableViewController alloc]
+                      initWithDelegate:_mediator
+      shouldShowMigrateToAccountButton:_showMigrateToAccountButton
                              userEmail:[self userEmail]];
-  self.sharedViewController = [[AutofillProfileEditTableViewController alloc]
-      initWithDelegate:self.mediator
+  _sharedViewController = [[AutofillProfileEditTableViewController alloc]
+      initWithDelegate:_mediator
              userEmail:[self userEmail]
-            controller:self.viewController
+            controller:_viewController
           settingsView:YES];
-  self.mediator.consumer = self.sharedViewController;
-  self.viewController.handler = self.sharedViewController;
-  self.viewController.snackbarCommandsHandler = HandlerForProtocol(
+  _mediator.consumer = _sharedViewController;
+  _viewController.handler = _sharedViewController;
+  _viewController.snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
   if (self.openInEditMode) {
-    [self.viewController editButtonPressed];
+    [_viewController editButtonPressed];
   }
 
   CHECK(self.baseNavigationController);
-  [self.baseNavigationController pushViewController:self.viewController
+  [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
 }
 
@@ -120,7 +118,7 @@
 
 - (void)autofillEditProfileMediatorDidFinish:
     (AutofillProfileEditMediator*)mediator {
-  if (self.isCountrySelectorPresented) {
+  if (_isCountrySelectorPresented) {
     // Early return because the country selection view is presented, the
     // mediator and view controller should still live.
     return;
@@ -144,7 +142,7 @@
   [self.baseNavigationController
       pushViewController:autofillCountrySelectionTableViewController
                 animated:YES];
-  self.isCountrySelectorPresented = YES;
+  _isCountrySelectorPresented = YES;
 }
 
 - (void)didSaveProfile {
@@ -155,8 +153,8 @@
 
 - (void)didSelectCountry:(CountryItem*)selectedCountry {
   [self.baseNavigationController popViewControllerAnimated:YES];
-  self.isCountrySelectorPresented = NO;
-  [self.mediator didSelectCountry:selectedCountry];
+  _isCountrySelectorPresented = NO;
+  [_mediator didSelectCountry:selectedCountry];
 }
 
 - (void)dismissCountryViewController {

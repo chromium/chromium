@@ -6,8 +6,7 @@
 
 #include "base/check.h"
 
-namespace base {
-namespace subtle {
+namespace base::subtle {
 
 // static
 bool ScopedTimeClockOverrides::overrides_active_ = false;
@@ -56,5 +55,4 @@ ScopedTimeClockOverrides::~ScopedTimeClockOverrides() {
   overrides_active_ = false;
 }
 
-}  // namespace subtle
-}  // namespace base
+}  // namespace base::subtle

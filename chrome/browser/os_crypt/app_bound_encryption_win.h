@@ -90,9 +90,6 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
                               DWORD& last_error,
                               elevation_service::EncryptFlags* flags = nullptr);
 
-// Allow non-standard user data dir for testing.
-void SetNonStandardUserDataDirSupportedForTesting(bool supported);
-
 }  // namespace os_crypt
 
 #endif  // CHROME_BROWSER_OS_CRYPT_APP_BOUND_ENCRYPTION_WIN_H_

@@ -189,8 +189,15 @@ EditorMenuPromoCardView::GetTraversableViewsByUpDownKeys() {
   return {this};
 }
 
+void EditorMenuPromoCardView::OnAnchorMenuDismissed() {
+  // Avoid closing the anchor menu again if it has been closed.
+  if (pre_target_handler_) {
+    pre_target_handler_->set_dismiss_anchor_menu_on_view_closed(false);
+  }
+}
+
 void EditorMenuPromoCardView::InitLayout() {
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       ui::kColorPrimaryBackground,
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::ShapeContextTokens::kMenuRadius)));
@@ -225,7 +232,7 @@ void EditorMenuPromoCardView::AddTitle(views::View* main_view) {
       views::style::STYLE_HEADLINE_5));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetMultiLine(true);
-  title_->SetEnabledColorId(ui::kColorSysOnSurface);
+  title_->SetEnabledColor(ui::kColorSysOnSurface);
 }
 
 void EditorMenuPromoCardView::AddDescription(views::View* main_view) {
@@ -234,7 +241,7 @@ void EditorMenuPromoCardView::AddDescription(views::View* main_view) {
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_3));
   description_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   description_->SetMultiLine(true);
-  description_->SetEnabledColorId(ui::kColorSysOnSurfaceSubtle);
+  description_->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
   description_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(views::LayoutProvider::Get()->GetDistanceMetric(

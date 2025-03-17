@@ -120,7 +120,8 @@ void CardUnmaskOtpInputDialogViews::AddedToWidget() {
 
 bool CardUnmaskOtpInputDialogViews::Accept() {
   if (controller_) {
-    controller_->OnOkButtonClicked(otp_input_textfield_->GetText());
+    controller_->OnOkButtonClicked(
+        std::u16string(otp_input_textfield_->GetText()));
   }
   ShowPendingState();
   return false;
@@ -249,7 +250,7 @@ void CardUnmaskOtpInputDialogViews::CreateHiddenProgressView() {
       views::Builder<views::Label>()
           .SetText(controller_ ? controller_->GetProgressLabel() : u"")
           .SetMultiLine(true)
-          .SetEnabledColorId(ui::kColorThrobber)
+          .SetEnabledColor(ui::kColorThrobber)
           .Build());
 }
 

@@ -184,10 +184,10 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchSWA) {
   // settings SWAs.
   auto* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(2u, browser_list->size());
-  EXPECT_TRUE(base::ranges::any_of(*browser_list, [](Browser* browser) {
+  EXPECT_TRUE(std::ranges::any_of(*browser_list, [](Browser* browser) {
     return IsBrowserForSystemWebApp(browser, SystemWebAppType::FILE_MANAGER);
   }));
-  EXPECT_TRUE(base::ranges::any_of(*browser_list, [](Browser* browser) {
+  EXPECT_TRUE(std::ranges::any_of(*browser_list, [](Browser* browser) {
     return IsBrowserForSystemWebApp(browser, SystemWebAppType::SETTINGS);
   }));
 }
@@ -319,27 +319,27 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_WindowStates) {
   EXPECT_EQ(5u, browser_list->size());
 
   // Test that there is a maximized, floated and snapped window.
-  EXPECT_TRUE(base::ranges::any_of(*browser_list, [](Browser* browser) {
+  EXPECT_TRUE(std::ranges::any_of(*browser_list, [](Browser* browser) {
     return WindowState::Get(browser->window()->GetNativeWindow())
         ->IsMaximized();
   }));
-  EXPECT_TRUE(base::ranges::any_of(*browser_list, [](Browser* browser) {
+  EXPECT_TRUE(std::ranges::any_of(*browser_list, [](Browser* browser) {
     return WindowState::Get(browser->window()->GetNativeWindow())->IsFloated();
   }));
-  EXPECT_TRUE(base::ranges::any_of(*browser_list, [](Browser* browser) {
+  EXPECT_TRUE(std::ranges::any_of(*browser_list, [](Browser* browser) {
     return WindowState::Get(browser->window()->GetNativeWindow())->IsSnapped();
   }));
 
   // Test that there is no fullscreen window as full restore does not restore
   // fullscreen state.
-  EXPECT_TRUE(base::ranges::none_of(*browser_list, [](Browser* browser) {
+  EXPECT_TRUE(std::ranges::none_of(*browser_list, [](Browser* browser) {
     return WindowState::Get(browser->window()->GetNativeWindow())
         ->IsFullscreen();
   }));
 
   // Test the pre-minimized state of the minimized browser window. When we
   // unminimize it, it should be maximized state.
-  auto it = base::ranges::find_if(*browser_list, [](Browser* browser) {
+  auto it = std::ranges::find_if(*browser_list, [](Browser* browser) {
     return WindowState::Get(browser->window()->GetNativeWindow())
         ->IsMinimized();
   });

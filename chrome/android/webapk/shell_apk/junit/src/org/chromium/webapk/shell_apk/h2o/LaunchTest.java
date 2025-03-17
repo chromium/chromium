@@ -41,10 +41,10 @@ import org.robolectric.shadows.ShadowPackageManager;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.shell_apk.CustomAndroidOsShadowAsyncTask;
-import org.chromium.webapk.shell_apk.HostBrowserLauncher;
 import org.chromium.webapk.shell_apk.HostBrowserUtils;
 import org.chromium.webapk.shell_apk.TestBrowserInstaller;
 import org.chromium.webapk.shell_apk.WebApkSharedPreferences;
+import org.chromium.webapk.shell_apk.WebApkUtils;
 import org.chromium.webapk.test.WebApkTestHelper;
 
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public final class LaunchTest {
     // the intent and the host browser getting launched.
     @Test
     public void testDeepLink() {
-        registerWebApkWithDefaultHostBrowser(/* isNewStyleWebApk= */ true);
+        registerWebApkWithDefaultHostBrowser(/* isArcChromeOs= */ false);
 
         final String deepLinkUrl = "https://pwa.rocks/deep.html";
 
@@ -107,6 +107,7 @@ public final class LaunchTest {
         Assert.assertEquals(5, launchedIntents.size());
         assertIntentComponentClassNameEquals(H2OMainActivity.class, launchedIntents.get(0));
         Assert.assertEquals(BROWSER_PACKAGE_NAME, launchedIntents.get(1).getPackage());
+        Assert.assertNull(launchedIntents.get(1).getSelector());
         assertIntentComponentClassNameEquals(
                 H2OTransparentLauncherActivity.class, launchedIntents.get(2));
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(3));
@@ -131,7 +132,7 @@ public final class LaunchTest {
     // the intent and the host browser getting launched.
     @Test
     public void testUnboundDeepLink() {
-        registerWebApkWithoutHostBrowser(/* isNewStyleWebApk= */ true);
+        registerWebApkWithoutHostBrowser(/* isArcChromeOs= */ false);
 
         final String deepLinkUrl = "https://pwa.rocks/deep.html";
 
@@ -148,6 +149,7 @@ public final class LaunchTest {
         assertIntentComponentClassNameEquals(H2OMainActivity.class, launchedIntents.get(0));
         Assert.assertEquals(
                 BROWSER_PACKAGE_NAME, launchedIntents.get(1).getComponent().getPackageName());
+        assertIntentHasBrowserSelector(launchedIntents.get(1));
         assertIntentComponentClassNameEquals(
                 H2OTransparentLauncherActivity.class, launchedIntents.get(2));
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(3));
@@ -168,7 +170,7 @@ public final class LaunchTest {
     /** Test that the host browser is launched as a result of a main launch intent. */
     @Test
     public void testMainIntent() {
-        registerWebApkWithDefaultHostBrowser(/* isNewStyleWebApk= */ true);
+        registerWebApkWithDefaultHostBrowser(/* isArcChromeOs */ false);
 
         Intent launchIntent = new Intent(Intent.ACTION_MAIN);
         launchIntent.setPackage(sWebApkPackageName);
@@ -181,6 +183,7 @@ public final class LaunchTest {
                         H2OMainActivity.class);
         Assert.assertEquals(4, launchedIntents.size());
         Assert.assertEquals(BROWSER_PACKAGE_NAME, launchedIntents.get(0).getPackage());
+        Assert.assertNull(launchedIntents.get(0).getSelector());
         assertIntentComponentClassNameEquals(
                 H2OTransparentLauncherActivity.class, launchedIntents.get(1));
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(2));
@@ -204,7 +207,7 @@ public final class LaunchTest {
      */
     @Test
     public void testUnboundMainIntent() {
-        registerWebApkWithoutHostBrowser(/* isNewStyleWebApk= */ true);
+        registerWebApkWithoutHostBrowser(/* isArcChromeOs= */ false);
 
         Intent launchIntent = new Intent(Intent.ACTION_MAIN);
         launchIntent.setPackage(sWebApkPackageName);
@@ -218,6 +221,7 @@ public final class LaunchTest {
         Assert.assertEquals(4, launchedIntents.size());
         Assert.assertEquals(
                 BROWSER_PACKAGE_NAME, launchedIntents.get(0).getComponent().getPackageName());
+        assertIntentHasBrowserSelector(launchedIntents.get(0));
         assertIntentComponentClassNameEquals(
                 H2OTransparentLauncherActivity.class, launchedIntents.get(1));
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(2));
@@ -278,7 +282,7 @@ public final class LaunchTest {
      */
     @Test
     public void testSourcePropagated() {
-        registerWebApkWithDefaultHostBrowser(/* isNewStyleWebApk= */ true);
+        registerWebApkWithDefaultHostBrowser(/* isArcChromeOs= */ false);
 
         final String deepLinkUrl = "https://pwa.rocks/deep_link.html";
         final int source = 2;
@@ -306,7 +310,7 @@ public final class LaunchTest {
      */
     @Test
     public void testDoesNotPropagateRelaunchDirective() {
-        registerWebApkWithDefaultHostBrowser(/* isNewStyleWebApk= */ true);
+        registerWebApkWithDefaultHostBrowser(/* isArcChromeOs= */ false);
 
         final String deepLinkUrl = "https://pwa.rocks/deep_link.html";
 
@@ -331,7 +335,7 @@ public final class LaunchTest {
      */
     @Test
     public void testDoesNotLoopIfEnablingInitialSplashActivityIsSlow() {
-        registerWebApkWithDefaultHostBrowser(/* isNewStyleWebApk= */ true);
+        registerWebApkWithDefaultHostBrowser(/* isArcChromeOs= */ false);
 
         // InitialSplashActivity is disabled. Host browser is compatible with SplashActivity.
         changeWebApkActivityEnabledSetting(
@@ -383,7 +387,7 @@ public final class LaunchTest {
     @Test
     public void testLaunchWithArcIntentHelperHostBrowser() {
         registerWebApkWithCustomHostBrowser(
-                /* isNewStyleWebApk= */ true, HostBrowserUtils.ARC_INTENT_HELPER_BROWSER);
+                /* isArcChromeOs= */ false, HostBrowserUtils.ARC_INTENT_HELPER_BROWSER);
 
         Intent launchIntent = new Intent(Intent.ACTION_MAIN);
         launchIntent.setPackage(sWebApkPackageName);
@@ -420,7 +424,7 @@ public final class LaunchTest {
     // 2) No activities have been enabled/disabled.
     @Test
     public void testDeepLinkOldStyle() {
-        registerWebApkWithDefaultHostBrowser(/* isNewStyleWebApk= */ false);
+        registerWebApkWithDefaultHostBrowser(/* isArcChromeOs= */ true);
 
         final String deepLinkUrl = "https://pwa.rocks/deep.html";
         Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(deepLinkUrl));
@@ -442,7 +446,7 @@ public final class LaunchTest {
     // 2) No activities have been enabled/disabled.
     @Test
     public void testMainIntentOldStyle() {
-        registerWebApkWithDefaultHostBrowser(/* isNewStyleWebApk= */ false);
+        registerWebApkWithDefaultHostBrowser(/* isArcChromeOs= */ true);
 
         Intent launchIntent = new Intent(Intent.ACTION_MAIN);
         launchIntent.setPackage(sWebApkPackageName);
@@ -463,7 +467,7 @@ public final class LaunchTest {
     // 2) No activities have been enabled/disabled.
     @Test
     public void testDeepLinkOldStyleUnbound() {
-        registerWebApkWithoutHostBrowser(/* isNewStyleWebApk= */ false);
+        registerWebApkWithoutHostBrowser(/* isArcChromeOs= */ true);
 
         final String deepLinkUrl = "https://pwa.rocks/deep.html";
         Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(deepLinkUrl));
@@ -485,7 +489,7 @@ public final class LaunchTest {
     // 2) No activities have been enabled/disabled.
     @Test
     public void testMainIntentOldStyleUnbound() {
-        registerWebApkWithoutHostBrowser(/* isNewStyleWebApk= */ false);
+        registerWebApkWithoutHostBrowser(/* isArcChromeOs= */ true);
 
         Intent launchIntent = new Intent(Intent.ACTION_MAIN);
         launchIntent.setPackage(sWebApkPackageName);
@@ -620,7 +624,7 @@ public final class LaunchTest {
     private static void assertIntentIsForCustomBrowserLaunch(
             Intent intent, String browserPackage, String expectedStartUrl) {
         assertIntentIsForCustomBrowserLaunchWithCustomAction(
-                intent, browserPackage, expectedStartUrl, HostBrowserLauncher.ACTION_START_WEBAPK);
+                intent, browserPackage, expectedStartUrl, HostBrowserUtils.ACTION_START_WEBAPK);
     }
 
     private static void assertIntentIsForBrowserLaunchWithViewAction(
@@ -639,18 +643,32 @@ public final class LaunchTest {
                 "", intent.getStringExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME));
     }
 
-    private static void registerWebApkWithDefaultHostBrowser(boolean isNewStyleWebApk) {
-        registerWebApkWithCustomHostBrowser(isNewStyleWebApk, BROWSER_PACKAGE_NAME);
+    /**
+     * Checks that the passed-in intent contains a Selector which will restrict the set of potential
+     * intent receivers down to actual browsers, and not WebAPKs.
+     */
+    private static void assertIntentHasBrowserSelector(Intent intent) {
+        Intent selector = intent.getSelector();
+        Assert.assertNotNull(selector);
+
+        Intent queryBrowsersIntent = WebApkUtils.getQueryInstalledBrowsersIntent();
+        Assert.assertEquals(selector.getAction(), queryBrowsersIntent.getAction());
+        Assert.assertEquals(selector.getCategories(), queryBrowsersIntent.getCategories());
+        Assert.assertEquals(selector.getData(), queryBrowsersIntent.getData());
     }
 
-    private static void registerWebApkWithoutHostBrowser(boolean isNewStyleWebApk) {
-        registerWebApkWithCustomHostBrowser(isNewStyleWebApk, null);
+    private static void registerWebApkWithDefaultHostBrowser(boolean isArcChromeOs) {
+        registerWebApkWithCustomHostBrowser(isArcChromeOs, BROWSER_PACKAGE_NAME);
+    }
+
+    private static void registerWebApkWithoutHostBrowser(boolean isArcChromeOs) {
+        registerWebApkWithCustomHostBrowser(isArcChromeOs, null);
     }
 
     private static void registerWebApkWithCustomHostBrowser(
-            boolean isNewStyleWebApk, String browserPackageName) {
+            boolean isArcChromeOs, String browserPackageName) {
         Bundle metadata = new Bundle();
-        metadata.putBoolean(WebApkMetaDataKeys.IS_NEW_STYLE_WEBAPK, isNewStyleWebApk);
+        metadata.putBoolean(WebApkMetaDataKeys.IS_ARC_CHROMEOS, isArcChromeOs);
         metadata.putString(WebApkMetaDataKeys.START_URL, DEFAULT_START_URL);
         if (browserPackageName != null) {
             metadata.putString(WebApkMetaDataKeys.RUNTIME_HOST, browserPackageName);

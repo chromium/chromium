@@ -13,6 +13,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/origin.h"
 
@@ -41,13 +42,29 @@ namespace net {
 // unused, but will eventually replace the logic in URLRequest/RedirectInfo for
 // tracking and updating that value.
 //
-// In addition to sharding, `IsolationInfo::nonce()` is also used to
-// check if a given network request should be disallowed because the
+// IsolationInfo has a `nonce_` member, which can be used to force a particular
+// "shard" based upon that nonce. An IsolationInfo with an opaque origin will
+// also have its own shard, but the nonce enables this behavior even for non-
+// opaque origins. If multiple documents share the same nonce, they can
+// therefore share the same shard, so it is possible to leak information between
+// them via partitioned cookies, etc. This nonce is provided to many of the
+// constructor/factory methods of this class; if an IsolationInfo is created in
+// the context of a document with a partition nonce, then that partition nonce
+// should be provided, to ensure information is only visible within the same
+// partition. Currently, only fenced frames and credentailless iframes use a
+// partition nonce.
+//
+// Even if full third-party cookie access is enabled, the `nonce` will force a
+// cookie partition keyed using that nonce. Keep this in mind when using a
+// nonced IsolationInfo for credentialed requests.
+//
+// In addition to the sharding described above, `IsolationInfo::nonce()` is also
+// used to check if a given network request should be disallowed because the
 // initiating fenced frame has revoked network access. More context on
 // network revocation is in network_context.mojom in the comment for
 // `NetworkContext::RevokeNetworkForNonces()`. Not providing the correct
 // `nonce` will therefore lead to sending network requests that should
-//  have been blocked. See `RenderFrameHostImpl::ComputeNonce()` which
+// have been blocked. See `RenderFrameHostImpl::ComputeNonce()` which
 // computes the correct nonce for a given frame.
 class NET_EXPORT IsolationInfo {
  public:
@@ -95,16 +112,18 @@ class NET_EXPORT IsolationInfo {
       const url::Origin& top_frame_origin);
 
   // Creates a transient IsolationInfo. A transient IsolationInfo will not save
-  // data to disk and not send SameSite cookies. Equivalent to calling
-  // CreateForInternalRequest with a fresh opaque origin.
-  static IsolationInfo CreateTransient();
+  // data to disk and not send SameSite cookies. When `nonce` is std::nullopt,
+  // this is equivalent to calling CreateForInternalRequest with a fresh opaque
+  // origin.
 
-  // Same as CreateTransient, with a `nonce` used to identify requests tagged
-  // with this IsolationInfo in the network service. The `nonce` provides no
-  // additional resource isolation, because the opaque origin in the resulting
-  // IsolationInfo already represents a unique partition.
-  static IsolationInfo CreateTransientWithNonce(
-      const base::UnguessableToken& nonce);
+  // Because the origin of the returned IsolationInfo is opaque, all network
+  // state partitioning outside of cookies will be unique (see the class
+  // meta-comment for how cookies are affected).
+
+  // Note: error pages resulting from a failed navigation should always use a
+  // transient IsolationInfo with no nonce.
+  static IsolationInfo CreateTransient(
+      const std::optional<base::UnguessableToken>& nonce);
 
   // Creates an IsolationInfo from the serialized contents. Returns a nullopt
   // if deserialization fails or if data is inconsistent.
@@ -132,7 +151,9 @@ class NET_EXPORT IsolationInfo {
       const url::Origin& top_frame_origin,
       const url::Origin& frame_origin,
       const SiteForCookies& site_for_cookies,
-      const std::optional<base::UnguessableToken>& nonce = std::nullopt);
+      const std::optional<base::UnguessableToken>& nonce = std::nullopt,
+      NetworkIsolationPartition network_isolation_partition =
+          NetworkIsolationPartition::kGeneral);
 
   // TODO(crbug.com/344943210): Remove this and create a safer way to ensure
   // NIKs created from NAKs aren't used by accident.
@@ -150,7 +171,9 @@ class NET_EXPORT IsolationInfo {
       const std::optional<url::Origin>& top_frame_origin,
       const std::optional<url::Origin>& frame_origin,
       const SiteForCookies& site_for_cookies,
-      const std::optional<base::UnguessableToken>& nonce = std::nullopt);
+      const std::optional<base::UnguessableToken>& nonce = std::nullopt,
+      NetworkIsolationPartition network_isolation_partition =
+          NetworkIsolationPartition::kGeneral);
 
   // Create a new IsolationInfo for a redirect to the supplied origin. |this| is
   // unmodified.
@@ -160,6 +183,12 @@ class NET_EXPORT IsolationInfo {
 
   bool IsMainFrameRequest() const {
     return RequestType::kMainFrame == request_type_;
+  }
+
+  // If this request is associated with a outer most main frame. See
+  // `RenderFrameHost::GetOutermostMainFrame` for more information.
+  bool IsOutermostMainFrameRequest() const {
+    return IsMainFrameRequest() && !nonce();
   }
 
   bool IsEmpty() const { return !top_frame_origin_; }
@@ -185,6 +214,10 @@ class NET_EXPORT IsolationInfo {
 
   const std::optional<base::UnguessableToken>& nonce() const { return nonce_; }
 
+  NetworkIsolationPartition GetNetworkIsolationPartition() const {
+    return network_isolation_key_.GetNetworkIsolationPartition();
+  }
+
   // The value that should be consulted for the third-party cookie blocking
   // policy, as defined in Section 2.1.1 and 2.1.2 of
   // https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site.
@@ -206,7 +239,8 @@ class NET_EXPORT IsolationInfo {
                 const std::optional<url::Origin>& top_frame_origin,
                 const std::optional<url::Origin>& frame_origin,
                 const SiteForCookies& site_for_cookies,
-                const std::optional<base::UnguessableToken>& nonce);
+                const std::optional<base::UnguessableToken>& nonce,
+                NetworkIsolationPartition network_isolation_partition);
 
   RequestType request_type_;
 

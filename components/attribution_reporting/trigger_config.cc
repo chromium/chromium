@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_tree.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -84,7 +84,7 @@ base::expected<void, SourceRegistrationError> ParseTriggerData(
 bool AreSpecsValid(const TriggerSpecs::TriggerDataIndices& trigger_data_indices,
                    const std::vector<TriggerSpec>& specs) {
   return trigger_data_indices.size() <= kMaxTriggerDataPerSource &&
-         base::ranges::all_of(trigger_data_indices, [&specs](const auto& pair) {
+         std::ranges::all_of(trigger_data_indices, [&specs](const auto& pair) {
            return pair.second < specs.size();
          });
 }

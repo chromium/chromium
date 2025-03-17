@@ -209,7 +209,7 @@ class WorkerThreadSchedulerTest : public testing::Test {
   }
 
   static base::TimeDelta maximum_idle_period_duration() {
-    return IdleHelper::kMaximumIdlePeriod;
+    return IdleHelper::kMaximumIdlePeriodDuration;
   }
 
  protected:

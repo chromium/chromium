@@ -17,6 +17,10 @@ WebGLVertexArrayObjectBase::WebGLVertexArrayObjectBase(
       type_(type),
       has_ever_been_bound_(false),
       is_all_enabled_attrib_buffer_bound_(true) {
+  if (!ctx || ctx->isContextLost()) {
+    return;
+  }
+
   array_buffer_list_.resize(ctx->MaxVertexAttribs());
   attrib_enabled_.resize(ctx->MaxVertexAttribs());
   for (wtf_size_t i = 0; i < attrib_enabled_.size(); ++i) {

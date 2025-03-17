@@ -4,8 +4,15 @@
 
 package org.chromium.chrome.test.transit.hub;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+
 import androidx.annotation.Nullable;
+
 import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupExistsCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
 
@@ -29,6 +36,8 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
      */
     public static final String DEFAULT_N_TABS_TITLE = "_DEFAULT_N_TABS_TITLE";
 
+    public static final ViewSpec ACTION_BUTTON = viewSpec(withId(R.id.action_button));
+
     private final List<Integer> mTabIdsToGroup;
 
     public TabSwitcherGroupCardFacility(@Nullable Integer cardIndex, List<Integer> tabIdsToGroup) {
@@ -38,7 +47,7 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
     public TabSwitcherGroupCardFacility(@Nullable Integer cardIndex, List<Integer> tabIdsToGroup, String title) {
         super(
                 cardIndex,
-                title.equals(DEFAULT_N_TABS_TITLE)
+                title.equals(DEFAULT_N_TABS_TITLE) || title.isEmpty()
                         ? TabGroupUtil.getNumberOfTabsString(tabIdsToGroup.size())
                         : title);
         assert !tabIdsToGroup.isEmpty();
@@ -63,5 +72,12 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
         boolean isIncognito = mHostStation.isIncognito();
         return mHostStation.enterFacilitySync(
                 new TabGroupDialogFacility<>(mTabIdsToGroup, isIncognito), clickTitleTrigger());
+    }
+
+    /** Clicks the ("...") action button on a tab group to open the overflow menu. */
+    public TabSwitcherGroupCardAppMenuFacility openAppMenu() {
+        boolean isIncognito = mHostStation.isIncognito();
+        return mHostStation.enterFacilitySync(
+                new TabSwitcherGroupCardAppMenuFacility(isIncognito, mTitle), ACTION_BUTTON::click);
     }
 }

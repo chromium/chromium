@@ -24,7 +24,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.util.ArrayMap;
 import android.util.TypedValue;
 import android.widget.FrameLayout;
 
@@ -49,9 +48,10 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
@@ -82,15 +82,15 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /** Unit tests for {@link FeedStream}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 // TODO(crbug.com/40182398): Rewrite using paused loop. See crbug for details.
 @LooperMode(LooperMode.Mode.LEGACY)
+@EnableFeatures(ChromeFeatureList.FEED_LOADING_PLACEHOLDER)
+@DisableFeatures(ChromeFeatureList.FEED_CONTAINMENT)
 public class FeedStreamTest {
     private static final int LOAD_MORE_TRIGGER_LOOKAHEAD = 5;
     private static final int LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP = 100;
@@ -142,6 +142,7 @@ public class FeedStreamTest {
     class FeedSurfaceRendererBridgeFactory implements FeedSurfaceRendererBridge.Factory {
         @Override
         public FeedSurfaceRendererBridge create(
+                Profile profile,
                 FeedSurfaceRendererBridge.Renderer renderer,
                 FeedReliabilityLoggingBridge reliabilityLoggingBridge,
                 @StreamKind int streamKind,
@@ -149,13 +150,6 @@ public class FeedStreamTest {
             mBridgeRenderer = renderer;
             return mFeedSurfaceRendererBridgeMock;
         }
-    }
-
-    private void setFeatureOverrides(boolean feedLoadingPlaceholderOn) {
-        Map<String, Boolean> overrides = new ArrayMap<>();
-        overrides.put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, feedLoadingPlaceholderOn);
-        overrides.put(ChromeFeatureList.FEED_CONTAINMENT, false);
-        FeatureList.setTestFeatures(overrides);
     }
 
     private static HistogramWatcher expectFeedRecordForLoadMoreTrigger(
@@ -192,11 +186,11 @@ public class FeedStreamTest {
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
-                        /* isInterestFeed= */ StreamKind.FOR_YOU,
+                        /* streamKind= */ StreamKind.FOR_YOU,
                         mActionDelegate,
                         mFeedContentFirstLoadWatcher,
                         mStreamsMediator,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
@@ -205,8 +199,6 @@ public class FeedStreamTest {
         mRecyclerView.setLayoutManager(mLayoutManager);
         when(mRenderer.getListLayoutHelper()).thenReturn(mLayoutManager);
         when(mRenderer.getAdapter()).thenReturn(mAdapter);
-
-        setFeatureOverrides(/* feedLoadingPlaceholderOn= */ true);
 
         // Print logs to stdout.
         ShadowLog.stream = System.out;
@@ -1151,8 +1143,8 @@ public class FeedStreamTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.FEED_LOADING_PLACEHOLDER)
     public void testShowSpinner_PlaceholderDisabled() {
-        setFeatureOverrides(/* feedLoadingPlaceholderOn= */ false);
         createHeaderContent(1);
         bindToView();
         FeedUiProto.StreamUpdate update =
@@ -1185,21 +1177,19 @@ public class FeedStreamTest {
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
-                        /* isInterestFeed= */ StreamKind.FOR_YOU,
+                        /* streamKind= */ StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertNull(stream.getUnreadContentObserverForTest());
     }
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.WEB_FEED_SORT)
     public void testUnreadContentObserver_notNullWebFeed_sortOff() {
-        Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.WEB_FEED_SORT, false);
-        FeatureList.setTestFeatures(features);
         FeedStream stream =
                 new FeedStream(
                         mActivity,
@@ -1208,22 +1198,19 @@ public class FeedStreamTest {
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
-                        /* isInterestFeed= */ StreamKind.FOLLOWING,
+                        /* streamKind= */ StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertNotNull(stream.getUnreadContentObserverForTest());
-        FeatureList.setTestFeatures(null);
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.WEB_FEED_SORT)
     public void testUnreadContentObserver_notNullWebFeed_sortOn() {
-        Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.WEB_FEED_SORT, true);
-        FeatureList.setTestFeatures(features);
         FeedStream stream =
                 new FeedStream(
                         mActivity,
@@ -1234,20 +1221,17 @@ public class FeedStreamTest {
                         mShareDelegateSupplier,
                         StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertNotNull(stream.getUnreadContentObserverForTest());
-        FeatureList.setTestFeatures(null);
     }
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.WEB_FEED_SORT)
     public void testSupportsOptions_InterestFeed_sortOff() {
-        Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.WEB_FEED_SORT, false);
-        FeatureList.setTestFeatures(features);
         FeedStream stream =
                 new FeedStream(
                         mActivity,
@@ -1258,19 +1242,17 @@ public class FeedStreamTest {
                         mShareDelegateSupplier,
                         StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertFalse(stream.supportsOptions());
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.WEB_FEED_SORT)
     public void testSupportsOptions_InterestFeed_sortOn() {
-        Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.WEB_FEED_SORT, true);
-        FeatureList.setTestFeatures(features);
         FeedStream stream =
                 new FeedStream(
                         mActivity,
@@ -1281,19 +1263,17 @@ public class FeedStreamTest {
                         mShareDelegateSupplier,
                         StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertFalse(stream.supportsOptions());
     }
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.WEB_FEED_SORT)
     public void testSupportsOptions_WebFeed_sortOff() {
-        Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.WEB_FEED_SORT, false);
-        FeatureList.setTestFeatures(features);
         FeedStream stream =
                 new FeedStream(
                         mActivity,
@@ -1304,19 +1284,17 @@ public class FeedStreamTest {
                         mShareDelegateSupplier,
                         StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertFalse(stream.supportsOptions());
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.WEB_FEED_SORT)
     public void testSupportsOptions_WebFeed_sortOn() {
-        Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.WEB_FEED_SORT, true);
-        FeatureList.setTestFeatures(features);
         FeedStream stream =
                 new FeedStream(
                         mActivity,
@@ -1327,9 +1305,9 @@ public class FeedStreamTest {
                         mShareDelegateSupplier,
                         StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
+                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* SingleWebFeedHelper= */ null,
+                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertTrue(stream.supportsOptions());
     }

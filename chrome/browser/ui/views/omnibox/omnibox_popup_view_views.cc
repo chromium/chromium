@@ -7,6 +7,7 @@
 #include <memory>
 #include <numeric>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -436,14 +437,14 @@ void OmniboxPopupViewViews::GetPopupAccessibleNodeData(
   return GetViewAccessibility().GetAccessibleNodeData(node_data);
 }
 
-std::u16string OmniboxPopupViewViews::GetAccessibleButtonTextForResult(
+std::u16string_view OmniboxPopupViewViews::GetAccessibleButtonTextForResult(
     size_t line) const {
   if (const OmniboxResultView* result_view = result_view_at(line)) {
     return static_cast<const views::LabelButton*>(
                result_view->GetActiveAuxiliaryButtonForAccessibility())
         ->GetText();
   }
-  return u"";
+  return std::u16string_view();
 }
 
 bool OmniboxPopupViewViews::OnMouseDragged(const ui::MouseEvent& event) {
@@ -490,7 +491,8 @@ void OmniboxPopupViewViews::OnGestureEvent(ui::GestureEvent* event) {
 void OmniboxPopupViewViews::FireAXEventsForNewActiveDescendant(
     View* descendant_view) {
   // Selected children changed is fired on the popup.
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelectedChildrenChanged,
+                                     true);
 }
 
 void OmniboxPopupViewViews::OnWidgetBoundsChanged(views::Widget* widget,

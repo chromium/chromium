@@ -157,13 +157,12 @@ TerminalSource::TerminalSource(Profile* profile,
   auto* webui_allowlist = WebUIAllowlist::GetOrCreate(profile);
   const url::Origin terminal_origin = url::Origin::Create(GURL(source));
   CHECK(!terminal_origin.opaque());
-  for (auto permission :
-       {ContentSettingsType::CLIPBOARD_READ_WRITE, ContentSettingsType::COOKIES,
-        ContentSettingsType::IMAGES, ContentSettingsType::JAVASCRIPT,
-        ContentSettingsType::NOTIFICATIONS, ContentSettingsType::POPUPS,
-        ContentSettingsType::SOUND}) {
-    webui_allowlist->RegisterAutoGrantedPermission(terminal_origin, permission);
-  }
+  webui_allowlist->RegisterAutoGrantedPermissions(
+      terminal_origin,
+      {ContentSettingsType::CLIPBOARD_READ_WRITE, ContentSettingsType::COOKIES,
+       ContentSettingsType::IMAGES, ContentSettingsType::JAVASCRIPT,
+       ContentSettingsType::NOTIFICATIONS, ContentSettingsType::POPUPS,
+       ContentSettingsType::SOUND});
   webui_allowlist->RegisterAutoGrantedThirdPartyCookies(
       terminal_origin, {ContentSettingsPattern::Wildcard()});
 }

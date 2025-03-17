@@ -4,23 +4,30 @@
 
 #include "components/live_caption/live_caption_controller.h"
 
+#include <memory>
+#include <string>
+
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_forward.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/live_caption/caption_bubble_context.h"
+#include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
+#include "media/mojo/mojom/speech_recognition_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/native_theme/caption_style.h"
 #include "ui/views/layout/layout_provider.h"
 
 namespace captions {
+namespace {
 
 class MockSodaInstaller : public speech::SodaInstaller {
  public:
@@ -51,6 +58,47 @@ class MockSodaInstaller : public speech::SodaInstaller {
   MOCK_METHOD(void, Init, (PrefService*, PrefService*), (override));
 };
 
+class MockCaptionControllerDelgate : public CaptionControllerBase::Delegate {
+ public:
+  MockCaptionControllerDelgate() = default;
+  ~MockCaptionControllerDelgate() override = default;
+
+  MOCK_METHOD(std::unique_ptr<CaptionBubbleController>,
+              CreateCaptionBubbleController,
+              (CaptionBubbleSettings*, const std::string&),
+              (override));
+
+  void AddCaptionStyleObserver(ui::NativeThemeObserver*) override {}
+
+  void RemoveCaptionStyleObserver(ui::NativeThemeObserver*) override {}
+};
+
+void RegisterStylePrefs(TestingPrefServiceSimple* pref_service) {
+  const std::string kCaptionsTextSize = "20%";
+  const std::string kCaptionsTextFont = "aerial";
+  const std::string kCaptionsTextColor = "255,99,71";
+  const std::string kCaptionsBackgroundColor = "90,255,50";
+  const std::string kCaptionsTextShadow = "10px";
+  constexpr int kCaptionsTextOpacity = 50;
+  constexpr int kCaptionsBackgroundOpacity = 30;
+
+  pref_service->registry()->RegisterStringPref(
+      prefs::kAccessibilityCaptionsTextSize, kCaptionsTextSize);
+  pref_service->registry()->RegisterStringPref(
+      prefs::kAccessibilityCaptionsTextFont, kCaptionsTextFont);
+  pref_service->registry()->RegisterStringPref(
+      prefs::kAccessibilityCaptionsTextColor, kCaptionsTextColor);
+  pref_service->registry()->RegisterIntegerPref(
+      prefs::kAccessibilityCaptionsTextOpacity, kCaptionsTextOpacity);
+  pref_service->registry()->RegisterStringPref(
+      prefs::kAccessibilityCaptionsBackgroundColor, kCaptionsBackgroundColor);
+  pref_service->registry()->RegisterStringPref(
+      prefs::kAccessibilityCaptionsTextShadow, kCaptionsTextShadow);
+  pref_service->registry()->RegisterIntegerPref(
+      prefs::kAccessibilityCaptionsBackgroundOpacity,
+      kCaptionsBackgroundOpacity);
+}
+
 class LiveCaptionControllerTest : public testing::Test {
  public:
   LiveCaptionControllerTest() {
@@ -66,6 +114,7 @@ class LiveCaptionControllerTest : public testing::Test {
     LiveCaptionController::RegisterProfilePrefs(
         static_cast<user_prefs::PrefRegistrySyncable*>(
             testing_pref_service_.registry()));
+    RegisterStylePrefs(&testing_pref_service_);
 
     // Set up soda Installer
     soda_installer_.NeverDownloadSodaForTesting();
@@ -108,15 +157,6 @@ TEST_F(LiveCaptionControllerTest, RegisterProfilePrefsCorrect) {
       testing_pref_service_.GetBoolean(prefs::kLiveCaptionMaskOffensiveWords));
   EXPECT_EQ(testing_pref_service_.GetString(prefs::kLiveCaptionLanguageCode),
             speech::kUsEnglishLocale);
-
-  // Babel Orca flags are only registered on ash.
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_FALSE(testing_pref_service_.GetBoolean(
-      prefs::kLiveCaptionUserMicrophoneEnabled));
-  EXPECT_EQ(testing_pref_service_.GetString(
-                prefs::kUserMicrophoneCaptionLanguageCode),
-            speech::kUsEnglishLocale);
-#endif
 }
 
 // Tests that the LiveCaptionController starts live caption
@@ -135,11 +175,13 @@ TEST_F(LiveCaptionControllerTest, StartsLiveCaptionOnCtorIfEnabled) {
 
   EXPECT_CALL(soda_installer_, GetLanguagePath);
 
-  base::RunLoop run_loop;
+  auto mock_delegate = std::make_unique<MockCaptionControllerDelgate>();
+  auto* mock_delegate_ptr = mock_delegate.get();
+
+  EXPECT_CALL(*mock_delegate_ptr, CreateCaptionBubbleController).Times(1);
   LiveCaptionController controller_under_test = LiveCaptionController(
       &testing_pref_service_, &testing_pref_service_, speech::kUsEnglishLocale,
-      /*browser_context=*/nullptr, run_loop.QuitClosure());
-  run_loop.Run();
+      /*browser_context=*/nullptr, std::move(mock_delegate));
 }
 
 // Tests that the LiveCaptionController starts live caption
@@ -154,16 +196,17 @@ TEST_F(LiveCaptionControllerTest,
   EXPECT_CALL(soda_installer_, GetLanguagePath);
   EXPECT_CALL(soda_installer_, Init);
 
-  base::RunLoop run_loop;
+  auto mock_delegate = std::make_unique<MockCaptionControllerDelgate>();
+  auto* mock_delegate_ptr = mock_delegate.get();
   LiveCaptionController controller_under_test = LiveCaptionController(
       &testing_pref_service_, &testing_pref_service_, speech::kUsEnglishLocale,
-      /*browser_context=*/nullptr, run_loop.QuitClosure());
+      /*browser_context=*/nullptr, std::move(mock_delegate));
 
+  EXPECT_CALL(*mock_delegate_ptr, CreateCaptionBubbleController).Times(1);
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
       speech::GetLanguageCode(speech::kUsEnglishLocale));
   NotifySodaBinaryInstalled();
-
-  run_loop.Run();
 }
 
+}  // namespace
 }  // namespace captions

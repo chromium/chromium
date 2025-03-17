@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
+#include "net/base/network_isolation_partition.h"
 #include "services/network/public/cpp/cookie_manager_shared_mojom_traits.h"
 #include "services/network/public/cpp/crash_keys.h"
 
@@ -52,6 +53,7 @@ bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
   std::optional<base::UnguessableToken> nonce;
   net::SiteForCookies site_for_cookies;
   net::IsolationInfo::RequestType request_type;
+  net::NetworkIsolationPartition network_isolation_partition;
 
   if (!data.ReadTopFrameOrigin(&top_frame_origin)) {
     network::debug::SetDeserializationCrashKeyString("isolation_top_origin");
@@ -62,14 +64,15 @@ bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
     return false;
   }
   if (!data.ReadNonce(&nonce) || !data.ReadSiteForCookies(&site_for_cookies) ||
-      !data.ReadRequestType(&request_type)) {
+      !data.ReadRequestType(&request_type) ||
+      !data.ReadNetworkIsolationPartition(&network_isolation_partition)) {
     return false;
   }
 
   std::optional<net::IsolationInfo> isolation_info =
-      net::IsolationInfo::CreateIfConsistent(request_type, top_frame_origin,
-                                             frame_origin, site_for_cookies,
-                                             nonce);
+      net::IsolationInfo::CreateIfConsistent(
+          request_type, top_frame_origin, frame_origin, site_for_cookies, nonce,
+          network_isolation_partition);
   if (!isolation_info) {
     network::debug::SetDeserializationCrashKeyString("isolation_inconsistent");
     return false;

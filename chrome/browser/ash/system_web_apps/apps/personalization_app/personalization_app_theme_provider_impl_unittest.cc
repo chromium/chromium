@@ -24,7 +24,6 @@
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -39,19 +38,9 @@ namespace ash::personalization_app {
 namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 AccountId kAccountId =
-    AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kTestGaiaId));
-
-void AddAndLoginUser() {
-  ash::FakeChromeUserManager* user_manager =
-      static_cast<ash::FakeChromeUserManager*>(
-          user_manager::UserManager::Get());
-
-  user_manager->AddUser(kAccountId);
-  user_manager->LoginUser(kAccountId);
-  user_manager->SwitchActiveUser(kAccountId);
-}
+    AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
 
 class TestThemeObserver
     : public ash::personalization_app::mojom::ThemeObserver {
@@ -357,9 +346,7 @@ TEST_F(PersonalizationAppThemeProviderImplTest,
 class PersonalizationAppThemeProviderImplJellyTest
     : public PersonalizationAppThemeProviderImplTest {
  public:
-  PersonalizationAppThemeProviderImplJellyTest() {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
-  }
+  PersonalizationAppThemeProviderImplJellyTest() { set_start_session(false); }
 
   PersonalizationAppThemeProviderImplJellyTest(
       const PersonalizationAppThemeProviderImplJellyTest&) = delete;
@@ -368,8 +355,14 @@ class PersonalizationAppThemeProviderImplJellyTest
 
   void SetUp() override {
     PersonalizationAppThemeProviderImplTest::SetUp();
-    AddAndLoginUser();
-    GetSessionControllerClient()->AddUserSession(kAccountId, kFakeTestEmail);
+    ash::FakeChromeUserManager* user_manager =
+        static_cast<ash::FakeChromeUserManager*>(
+            user_manager::UserManager::Get());
+
+    user_manager->AddUser(kAccountId);
+    user_manager->LoginUser(kAccountId);
+    SimulateUserLogin({kFakeTestEmail}, kAccountId);
+    user_manager->SwitchActiveUser(kAccountId);
   }
 
  protected:
@@ -377,9 +370,6 @@ class PersonalizationAppThemeProviderImplJellyTest
     return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
         kAccountId);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PersonalizationAppThemeProviderImplJellyTest, SetStaticColor) {

@@ -79,7 +79,8 @@ bool UIResourceLayerImpl::WillDraw(
   return LayerImpl::WillDraw(draw_mode, resource_provider);
 }
 
-void UIResourceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
+void UIResourceLayerImpl::AppendQuads(const AppendQuadsContext& context,
+                                      viz::CompositorRenderPass* render_pass,
                                       AppendQuadsData* append_quads_data) {
   DCHECK(!bounds().IsEmpty());
 

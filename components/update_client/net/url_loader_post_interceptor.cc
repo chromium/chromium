@@ -101,11 +101,10 @@ std::string URLLoaderPostInterceptor::GetRequestBody(size_t n) const {
 
 // Returns the joined bodies of all requests for debugging purposes.
 std::string URLLoaderPostInterceptor::GetRequestsAsString() const {
-  const std::vector<InterceptedRequest> requests = GetRequests();
   std::string s = "Requests are:";
-  int i = 0;
-  for (auto it = requests.cbegin(); it != requests.cend(); ++it) {
-    s.append(base::StringPrintf("\n  [%d]: %s", ++i, std::get<0>(*it).c_str()));
+  for (int i = 0; const InterceptedRequest& request : GetRequests()) {
+    s.append(
+        base::StringPrintf("\n  [%d]: %s", ++i, std::get<0>(request).c_str()));
   }
   return s;
 }
@@ -142,9 +141,8 @@ void URLLoaderPostInterceptor::url_job_request_ready_callback(
 
 int URLLoaderPostInterceptor::GetHitCountForURL(const GURL& url) {
   int hit_count = 0;
-  const std::vector<InterceptedRequest> requests = GetRequests();
-  for (auto it = requests.cbegin(); it != requests.cend(); ++it) {
-    GURL url_no_query = std::get<2>(*it);
+  for (const InterceptedRequest& request : GetRequests()) {
+    GURL url_no_query = std::get<2>(request);
     if (url_no_query.has_query()) {
       GURL::Replacements replacements;
       replacements.ClearQuery();

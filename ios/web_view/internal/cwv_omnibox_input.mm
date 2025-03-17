@@ -9,7 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_scheme_classifier.h"
-#import "ios/web_view/internal/web_view_global_state_util.h"
+#import "ios/web_view/internal/cwv_global_state_internal.h"
 #import "net/base/apple/url_conversions.h"
 
 namespace {
@@ -61,14 +61,11 @@ WebViewSchemeClassifier::supported_schemes() {
 }
 
 + (void)initialize {
-  if (self != [CWVOmniboxInput self]) {
+  if (self != [CWVOmniboxInput class]) {
     return;
   }
 
-  // AutocompleteInput depends on ICU, which is initialized as part of the
-  // global initialization. CWVOmniboxInput can be used independently from
-  // CWVWebView, so it must be initialized here.
-  ios_web_view::InitializeGlobalState();
+  CHECK([[CWVGlobalState sharedInstance] isStarted]);
 }
 
 - (instancetype)initWithText:(NSString*)inputText

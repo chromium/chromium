@@ -4,6 +4,7 @@
 
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -30,7 +31,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -125,8 +125,8 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
     const auto selected_list_type = static_cast<StudentAssignmentsListType>(
         Shell::Get()->session_controller()->GetActivePrefService()->GetInteger(
             kLastSelectedAssignmentsListPref));
-    const auto iter = base::ranges::find(kStudentAssignmentsListTypeOrdered,
-                                         selected_list_type);
+    const auto iter = std::ranges::find(kStudentAssignmentsListTypeOrdered,
+                                        selected_list_type);
     return iter != kStudentAssignmentsListTypeOrdered.end()
                ? iter - kStudentAssignmentsListTypeOrdered.begin()
                : 0;
@@ -163,7 +163,7 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
   empty_list_label_ = content_scroll_view()->contents()->AddChildView(
       views::Builder<views::Label>()
           .SetProperty(views::kMarginsKey, kEmptyListLabelMargins)
-          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+          .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
           .SetFontList(typography_provider->ResolveTypographyToken(
               TypographyToken::kCrosButton2))
           .SetLineHeight(typography_provider->ResolveLineHeight(
@@ -386,7 +386,7 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
   items_container_view()->GetViewAccessibility().SetName(
       l10n_util::GetStringFUTF16(
           IDS_GLANCEABLES_CLASSROOM_SELECTED_LIST_ACCESSIBLE_NAME, list_name));
-  items_container_view()->NotifyAccessibilityEvent(
+  items_container_view()->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kChildrenChanged,
       /*send_native_event=*/true);
 

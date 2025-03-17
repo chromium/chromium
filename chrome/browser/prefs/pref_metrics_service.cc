@@ -31,7 +31,6 @@ PrefMetricsService::~PrefMetricsService() = default;
 void PrefMetricsService::RecordHomePageLaunchMetrics(bool show_home_button,
                                                      bool homepage_is_ntp,
                                                      const GURL& homepage_url) {
-  UMA_HISTOGRAM_BOOLEAN("Settings.ShowHomeButton2", show_home_button);
   if (show_home_button) {
     UMA_HISTOGRAM_BOOLEAN("Settings.GivenShowHomeButton_HomePageIsNewTabPage2",
                           homepage_is_ntp);
@@ -45,9 +44,9 @@ void PrefMetricsService::RecordHomePageLaunchMetrics(bool show_home_button,
   // pages, e.g. plus.google.com).
   if (!homepage_is_ntp) {
     if (homepage_url.is_valid()) {
-      UMA_HISTOGRAM_ENUMERATION("Settings.HomePageEngineType2",
-                                SearchEngineUtils::GetEngineType(homepage_url),
-                                SEARCH_ENGINE_MAX);
+      UMA_HISTOGRAM_ENUMERATION(
+          "Settings.HomePageEngineType2",
+          search_engine_utils::GetEngineType(homepage_url), SEARCH_ENGINE_MAX);
     }
   }
 }
@@ -82,9 +81,9 @@ void PrefMetricsService::RecordLaunchPrefs() {
       if (url_text) {
         GURL start_url(*url_text);
         if (start_url.is_valid()) {
-          UMA_HISTOGRAM_ENUMERATION("Settings.StartupPageEngineTypes2",
-                                    SearchEngineUtils::GetEngineType(start_url),
-                                    SEARCH_ENGINE_MAX);
+          UMA_HISTOGRAM_ENUMERATION(
+              "Settings.StartupPageEngineTypes2",
+              search_engine_utils::GetEngineType(start_url), SEARCH_ENGINE_MAX);
         }
       }
     }

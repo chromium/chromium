@@ -5,14 +5,14 @@
 #include "chrome/browser/printing/web_api/web_printing_permission_context.h"
 
 #include "components/content_settings/browser/page_specific_content_settings.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 WebPrintingPermissionContext::WebPrintingPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::WEB_PRINTING,
-          blink::mojom::PermissionsPolicyFeature::kWebPrinting) {}
+          network::mojom::PermissionsPolicyFeature::kWebPrinting) {}
 
 WebPrintingPermissionContext::~WebPrintingPermissionContext() = default;
 

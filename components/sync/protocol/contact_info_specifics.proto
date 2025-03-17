@@ -112,10 +112,24 @@ message ContactInfoSpecifics {
   // All StringTokens, and the `profile_label` are considered non-metadata.
   optional int32 last_modifier_id = 40;
 
+  // Used to hide account addresses in Chrome.
+  // Chrome will set this value to true if the address should be filtered out
+  // on the server side and not passed to Chrome again.
+  // If Chrome set this value to false or if the value is not set, the address
+  // will be passed to Chrome.
+  optional bool invisible_in_autofill = 62;
+
   // Contact info name fields.
   optional StringToken name_first = 7;
   optional StringToken name_middle = 8;
   optional StringToken name_last = 9;
+
+  // Prefix of the last name, e.g., "von" in "von Neumann".
+  optional StringToken name_last_prefix = 60;
+
+  // Core of the last name, excluding prefixes.
+  optional StringToken name_last_core = 61;
+
   // Sometimes the last name is composed of two names as it is common for
   // Hispanic/Latinx names. In the unstructured representation of the last name,
   // there may be even a conjunction between the first and the second last

@@ -662,7 +662,8 @@ chromium-metrics-reviews@google.com.
       label="The MDL is not populated, so an eligility decision could not be
              made"/>
   <int value="1" label="The request did not match the MDL"/>
-  <int value="2" label="The EnableIpProtectionProxy feature is not enabled"/>
+  <int value="2"
+      label="DEPRECATED: The EnableIpProtectionProxy feature is not enabled"/>
   <int value="3" label="The IP Protection setting is disabled"/>
   <int value="4" label="Proxy List is unavailable"/>
   <int value="5"
@@ -671,16 +672,78 @@ chromium-metrics-reviews@google.com.
       label="Proxy List is available but tokens in the cache have been
              exhausted"/>
   <int value="7" label="The request was resolved to the IP Protection proxies"/>
+  <int value="8"
+      label="A site exception created by User Bypass disables protections"/>
 </enum>
 
 <enum name="IpProtectionTokenBatchRequestError">
   <int value="58877100" label="Failed to read timestamp"/>
+  <int value="98098191" label="AuthAndSign failed with code: ALREADY_EXISTS"/>
+  <int value="159430335"
+      label="GetInitialDataRequest failed with code: CANCELLED"/>
   <int value="354921842" label="At least one extension is required"/>
+  <int value="774920404"
+      label="GetInitialDataRequest failed with code: INTERNAL"/>
+  <int value="788650824"
+      label="GetInitialDataRequest failed with code: ABORTED"/>
+  <int value="882579398"
+      label="AuthAndSign failed with code: DEADLINE_EXCEEDED"/>
   <int value="1218093704" label="Failed to read extensions"/>
+  <int value="1324062375"
+      label="AuthAndSign failed with code: PERMISSION_DENIED"/>
+  <int value="1359797045" label="AuthAndSign failed with code: OUT_OF_RANGE"/>
+  <int value="1392994811"
+      label="GetInitialDataRequest failed with code: FAILED_PRECONDITION"/>
+  <int value="1443500571"
+      label="GetInitialDataRequest failed with code: DATA_LOSS"/>
+  <int value="1531246641" label="AuthAndSign failed with code: DATA_LOSS"/>
+  <int value="1560305329"
+      label="GetInitialDataRequest failed: invalid response"/>
+  <int value="1570178381"
+      label="GetInitialDataRequest failed with code: RESOURCE_EXHAUSTED"/>
+  <int value="1632191523"
+      label="GetInitialDataRequest failed with code: UNKNOWN"/>
+  <int value="1632242186"
+      label="AuthAndSign failed with code: RESOURCE_EXHAUSTED"/>
+  <int value="1637757426"
+      label="GetInitialDataRequest failed with code: UNAUTHENTICATED"/>
+  <int value="1741288262" label="AuthAndSign failed with code: CANCELLED"/>
+  <int value="1782033339" label="AuthAndSign failed: invalid response"/>
+  <int value="1916829389"
+      label="GetInitialDataRequest failed with code: NOT_FOUND"/>
+  <int value="2040698924" label="AuthAndSign failed with code: NOT_FOUND"/>
+  <int value="2073947853"
+      label="AuthAndSign failed with code: UNAUTHENTICATED"/>
+  <int value="2141269466" label="Failed to validate extensions"/>
+  <int value="2339897637"
+      label="GetInitialDataRequest failed with code: UNAVAILABLE"/>
+  <int value="2408268044" label="AuthAndSign failed"/>
   <int value="2528366448" label="Failed to parse GetInitialDataResponse"/>
+  <int value="2528411010"
+      label="GetInitialDataRequest failed with code: OUT_OF_RANGE"/>
+  <int value="2594877687"
+      label="GetInitialDataRequest failed with code: DEADLINE_EXCEEDED"/>
+  <int value="2766613933" label="AuthAndSign failed with code: UNAVAILABLE"/>
   <int value="2867080750" label="Failed to read timestamp_precision"/>
+  <int value="2906092890"
+      label="GetInitialDataRequest failed with code: UNIMPLEMENTED"/>
+  <int value="3024523150" label="AuthAndSign failed with code: INTERNAL"/>
+  <int value="3118017018" label="AuthAndSign failed with code: UNIMPLEMENTED"/>
+  <int value="3172166369" label="AuthAndSign failed with code: UNKNOWN"/>
   <int value="3336018440"
       label="Non-Privacy Pass tokens are no longer supported"/>
+  <int value="3359657202"
+      label="GetInitialDataRequest failed with code: INVALID_ARGUMENT"/>
+  <int value="3506031840"
+      label="AuthAndSign failed with code: INVALID_ARGUMENT"/>
+  <int value="3831429430" label="AuthAndSign failed with code: ABORTED"/>
+  <int value="3988797128"
+      label="GetInitialDataRequest failed with code: ALREADY_EXISTS"/>
+  <int value="4053847635" label="GetInitialDataRequest failed"/>
+  <int value="4107556447"
+      label="AuthAndSign failed with code: FAILED_PRECONDITION"/>
+  <int value="4198175771"
+      label="GetInitialDataRequest failed with code: PERMISSION_DENIED"/>
 </enum>
 
 <enum name="IpProtectionTokenBatchRequestResult">
@@ -1508,9 +1571,33 @@ chromium-metrics-reviews@google.com.
   <int value="62" label="is_ad_tagged"/>
   <int value="63" label="keepalive_token"/>
   <int value="64" label="expected_signatures"/>
+  <int value="65" label="permissions_policy"/>
+  <int value="66" label="client_side_content_decoding_enabled"/>
 </enum>
 
-<!-- LINT.ThenChange() -->
+<!-- LINT.ThenChange(//services/network/prefetch_matches.cc:FieldsForUma) -->
+
+<!-- LINT.IfChange(ProbabilisticRevealTokensResult) -->
+
+<enum name="ProbabilisticRevealTokensResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Net Not Ok"/>
+  <int value="2" label="Net Ok Null Response"/>
+  <int value="3" label="Null Response"/>
+  <int value="4" label="Response Parsing Failed"/>
+  <int value="5" label="Invalid Token Version"/>
+  <int value="6" label="Invalid Token Size"/>
+  <int value="7" label="Too Few Tokens"/>
+  <int value="8" label="Too Many Tokens"/>
+  <int value="9" label="Expiration Too Soon"/>
+  <int value="10" label="Expiration Too Late"/>
+  <int value="11" label="Invalid Public Key"/>
+  <int value="12" label="Invalid Num Tokens With Signal"/>
+  <int value="13" label="Request Backed Off"/>
+  <int value="14" label="No Google Chrome Branding"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/ip_protection/common/ip_protection_data_types.h:TryGetProbabilisticRevealTokensStatus) -->
 
 <enum name="PSimSetupFlowResult">
   <int value="0" label="SUCCESS"/>
@@ -2804,6 +2891,16 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="FullScan didn't connect"/>
   <int value="6" label="FullScan connected"/>
   <int value="7" label="Internal error"/>
+</enum>
+
+<enum name="WiFiSecurityType">
+  <int value="0" label="Unmanaged Open"/>
+  <int value="1" label="Managed Open"/>
+  <int value="2" label="Unmanaged PSK"/>
+  <int value="3" label="Managed PSK"/>
+  <int value="4" label="Unmanaged Certificate"/>
+  <int value="5" label="Managed Certificate"/>
+  <int value="6" label="Unknown"/>
 </enum>
 
 <enum name="WiFiSessionTagState">

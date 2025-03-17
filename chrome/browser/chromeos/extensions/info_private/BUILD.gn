@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
@@ -19,7 +18,29 @@ static_library("info_private") {
   public_deps = [ "//extensions/browser" ]
 
   deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
     "//base",
-    "//build:chromeos_buildflags",
+    "//build/config/chromebox_for_meetings:buildflags",
+    "//build/config/cuttlefish:buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/arc:arc_util",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/constants",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/user_manager",
+    "//extensions/common",
+    "//ui/display",
   ]
 }

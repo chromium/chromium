@@ -4,6 +4,7 @@
 
 package org.chromium.ui.dragdrop;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.CACHE_METHOD_NAME;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.ON_DRAG_END_METHOD_NAME;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.SET_INTERVAL_METHOD_NAME;
@@ -13,7 +14,6 @@ import android.os.Bundle;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
@@ -59,7 +59,6 @@ public class DropDataProviderUtils {
      * Wraps the call to cache in the provider and returns the cached Uri or null if it failed to
      * call the content provider.
      */
-    @NullUnmarked
     static @Nullable Uri cacheImageData(DropDataAndroid dropData) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(DropDataProviderImpl.BYTES_PARAM, dropData.imageContent);
@@ -76,6 +75,7 @@ public class DropDataProviderUtils {
                                     CACHE_METHOD_NAME,
                                     "",
                                     bundle);
+            assumeNonNull(cachedUriBundle);
             return cachedUriBundle.getParcelable("uri");
         } catch (NullPointerException | IllegalArgumentException exception) {
             return null;

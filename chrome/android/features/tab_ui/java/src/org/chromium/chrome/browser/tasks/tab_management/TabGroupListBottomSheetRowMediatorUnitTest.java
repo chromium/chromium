@@ -1,0 +1,115 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+package org.chromium.chrome.browser.tasks.tab_management;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import androidx.core.util.Pair;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
+import org.chromium.components.tab_group_sync.SyncedGroupTestHelper;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** Unit tests for {@link TabGroupListBottomSheetRowMediator}. */
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class TabGroupListBottomSheetRowMediatorUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
+    @Mock private FaviconResolver mFaviconResolver;
+    @Mock private Runnable mOnClickRunnable;
+    @Mock private TabModel mTabModel;
+    @Mock private Tab mTab;
+
+    private List<Tab> mTabs;
+    private SavedTabGroup mSavedTabGroup;
+    private TabGroupListBottomSheetRowMediator mMediator;
+    private static final String TEST_SYNC_ID = "testSyncId";
+    private static final int TEST_COLOR = 0;
+    private static final String TEST_TITLE = "testTitle";
+    private static final long TEST_UPDATE_TIME = 123456789L;
+    private static final int TEST_LOCAL_ID = 1;
+
+    @Before
+    public void setUp() {
+        mTabs = new ArrayList<>();
+        mTabs.add(mTab);
+
+        SavedTabGroupTab savedTabGroupTab = new SavedTabGroupTab();
+        List<SavedTabGroupTab> savedTabs = List.of(savedTabGroupTab);
+        SyncedGroupTestHelper helper = new SyncedGroupTestHelper(mTabGroupSyncService);
+        mSavedTabGroup = helper.newTabGroup(TEST_SYNC_ID);
+        mSavedTabGroup.syncId = TEST_SYNC_ID;
+        mSavedTabGroup.color = TEST_COLOR;
+        mSavedTabGroup.title = TEST_TITLE;
+        mSavedTabGroup.updateTimeMs = TEST_UPDATE_TIME;
+        mSavedTabGroup.savedTabs = savedTabs;
+        savedTabGroupTab.localId = TEST_LOCAL_ID;
+
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.getTabById(TEST_LOCAL_ID)).thenReturn(mTab);
+
+        mMediator =
+                new TabGroupListBottomSheetRowMediator(
+                        mSavedTabGroup,
+                        mTabGroupModelFilter,
+                        mTabGroupSyncService,
+                        mDataSharingService,
+                        mCollaborationService,
+                        mFaviconResolver,
+                        mOnClickRunnable,
+                        mTabs);
+    }
+
+    @Test
+    public void testConstruction() {
+        PropertyModel model = mMediator.getModel();
+
+        assertNotNull(model);
+        assertNotNull(model.get(TabGroupRowProperties.CLUSTER_DATA));
+        assertEquals(TEST_COLOR, model.get(TabGroupRowProperties.COLOR_INDEX));
+        Pair<String, Integer> titleData = model.get(TabGroupRowProperties.TITLE_DATA);
+        assertEquals(TEST_TITLE, titleData.first);
+        assertEquals(1, titleData.second.intValue());
+        assertNotNull(model.get(TabGroupRowProperties.TIMESTAMP_EVENT));
+    }
+
+    @Test
+    public void testClickRow() {
+        PropertyModel model = mMediator.getModel();
+
+        Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
+        clickRunnable.run();
+
+        verify(mTabGroupModelFilter).mergeListOfTabsToGroup(mTabs, mTab, true);
+        verify(mOnClickRunnable).run();
+    }
+}

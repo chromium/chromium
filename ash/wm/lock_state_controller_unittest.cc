@@ -1152,7 +1152,7 @@ TEST_F(LockStateControllerInformedRestoreTest, ShutdownInOverview) {
 }
 
 TEST_F(LockStateControllerInformedRestoreTest, ShutdownInGuest) {
-  SimulateUserLogin("foo@example.com", user_manager::UserType::kGuest);
+  SimulateUserLogin({"foo@example.com", user_manager::UserType::kGuest});
 
   // Create an empty file to simulate an old informed restore image.
   ASSERT_TRUE(base::WriteFile(file_path(), ""));

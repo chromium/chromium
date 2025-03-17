@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_EVENT_DISPATCHER_H_
 #define UI_EVENTS_EVENT_DISPATCHER_H_
 
-#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"

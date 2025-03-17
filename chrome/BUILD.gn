@@ -84,9 +84,12 @@ if (is_win) {
   action("reorder_imports") {
     script = "//build/win/reorder-imports.py"
 
-    # See comment in chrome_dll.gypi in the hardlink_to_output
-    # target for why this cannot be 'initial' like the DLL.
-    inputs = [ "$root_out_dir/initialexe/chrome.exe" ]
+    # initialexe/ is used so that the we can reorder imports and write back to
+    # the final destination at $root_out_dir/.
+    inputs = [
+      "$root_out_dir/initialexe/chrome.exe",
+      "$root_out_dir/initialexe/chrome.exe.pdb",
+    ]
     outputs = [
       "$root_out_dir/chrome.exe",
       "$root_out_dir/chrome.exe.pdb",
@@ -146,260 +149,248 @@ if (!is_android && !is_mac) {
     }
   }
 
-  template("_chrome_exe") {
-    if (invoker.collect_inputs_only) {
-      _type = "shared_library"
-    } else {
-      _type = "executable"
+  if (is_win) {
+    _chrome_output_name = "initialexe/chrome"
+  } else {
+    _chrome_output_name = "chrome"
+  }
+
+  executable("chrome_initial") {
+    configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+    configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+    output_name = _chrome_output_name
+
+    # Because the sources list varies so significantly per-platform, generally
+    # each platform lists its own files rather than relying on filtering or
+    # removing unused files.
+    sources = [ "app/chrome_exe_resource.h" ]
+    defines = []
+    public_deps = []
+    deps = [
+      "//build:chromeos_buildflags",
+      "//printing/buildflags",
+    ]
+    data = [ "$root_out_dir/resources.pak" ]
+    data_deps = []
+
+    if (is_chromeos) {
+      data_deps += [
+        "//components/variations/cros_evaluate_seed:evaluate_seed",
+        "//sandbox/linux:chrome_sandbox",
+      ]
+      if (build_mojo_proxy) {
+        data_deps += [ "//mojo/proxy:mojo_proxy" ]
+      }
+      deps += [
+        "//components/exo/wayland:test_controller_stub",
+        "//components/exo/wayland:ui_controls_protocol_stub",
+      ]
     }
-    target(_type, target_name) {
-      configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
-      configs += [ "//build/config/compiler:thinlto_optimize_max" ]
-      if (is_win) {
-        output_name = "initialexe/chrome"
-      } else {
-        output_name = "chrome"
+
+    if (is_win) {
+      sources += [
+        "app/chrome_exe.rc",
+        "app/chrome_exe_main_win.cc",
+        "app/delay_load_failure_hook_win.cc",
+        "app/delay_load_failure_hook_win.h",
+        "app/main_dll_loader_win.cc",
+        "app/main_dll_loader_win.h",
+        "common/crash_keys.cc",
+        "common/crash_keys.h",
+      ]
+
+      deps += [
+        ":chrome_dll",
+        ":chrome_exe_version",
+        ":copy_first_run",
+        ":packed_resources_integrity_header",
+        ":visual_elements_resources",
+        "//base",
+        "//build:branding_buildflags",
+        "//chrome/app:chrome_exe_main_exports",
+        "//chrome/app:exit_code_watcher",
+        "//chrome/app/version_assembly:chrome_exe_manifest",
+        "//chrome/browser:active_use_util",
+        "//chrome/browser:chrome_process_finder",
+        "//chrome/browser/policy:path_parser",
+        "//chrome/chrome_elf",
+        "//chrome/common:constants",
+        "//chrome/common/win:delay_load_failure_support",
+        "//chrome/install_static:install_static_util",
+        "//chrome/install_static:secondary_module",
+        "//chrome/installer/util:constants",
+        "//chrome/installer/util:did_run_support",
+        "//components/crash/core/app",
+        "//components/crash/core/app:run_as_crashpad_handler",
+        "//components/crash/core/common",
+        "//components/crash/win:chrome_wer",
+        "//components/webui/flags:switches",
+        "//content:sandbox_helper_win",
+        "//content/public/common:static_switches",
+        "//crypto",
+        "//gpu/command_buffer/service",
+        "//sandbox",
+        "//sandbox/policy",
+        "//sandbox/policy/mojom",
+        "//third_party/breakpad:breakpad_handler",
+        "//third_party/breakpad:breakpad_sender",
+        "//third_party/crashpad/crashpad/util",
+        "//ui/gl",
+      ]
+
+      data_deps = [
+        "//chrome/app/version_assembly:version_assembly_manifest",
+        "//chrome/browser/web_applications/chrome_pwa_launcher",
+        "//chrome/chrome_proxy",
+        "//chrome/elevation_service",
+        "//chrome/notification_helper",
+        "//chrome/windows_services/elevated_tracing_service",
+      ]
+
+      if (enable_platform_experience) {
+        data_deps +=
+            [ "//chrome/browser/platform_experience/win:os_update_handler" ]
       }
 
-      # Because the sources list varies so significantly per-platform, generally
-      # each platform lists its own files rather than relying on filtering or
-      # removing unused files.
-      sources = [ "app/chrome_exe_resource.h" ]
-      defines = []
-      public_deps = []
-      deps = [
-        "//build:chromeos_buildflags",
-        "//printing/buildflags",
+      defines += [ "CHROME_EXE_MAIN" ]
+
+      if (win_console_app) {
+        defines += [ "WIN_CONSOLE_APP" ]
+      } else {
+        # Set /SUBSYSTEM:WINDOWS for chrome.exe itself, unless a console build
+        # has been requested.
+        configs -= [ "//build/config/win:console" ]
+        configs += [ "//build/config/win:windowed" ]
+      }
+
+      configs += [
+        "//build/config/win:delayloads",
+        "//build/config/win:delayloads_not_for_child_dll",
       ]
-      data = [ "$root_out_dir/resources.pak" ]
-      data_deps = []
+
+      if (current_cpu == "x86") {
+        # Set the initial stack size to 0.5MiB, instead of the 1.5MiB needed by
+        # Chrome's main thread. This saves significant memory on threads (like
+        # those in the Windows thread pool, and others) whose stack size we can
+        # only control through this setting. Because Chrome's main thread needs
+        # a minimum 1.5 MiB stack, the main thread (in 32-bit builds only) uses
+        # fibers to switch to a 1.5 MiB stack before running any other code.
+        ldflags = [ "/STACK:0x80000" ]
+      } else {
+        # Increase the initial stack size. The default is 1MB, this is 8MB.
+        ldflags = [ "/STACK:0x800000" ]
+      }
+    } else if (use_aura) {
+      # Non-Windows aura entrypoint.
+      sources += [ "app/chrome_exe_main_aura.cc" ]
+    }
+
+    if (is_linux || is_chromeos) {
+      sources += [
+        "app/chrome_dll_resource.h",
+        "app/chrome_main.cc",
+        "app/chrome_main_delegate.cc",
+        "app/chrome_main_delegate.h",
+        "app/startup_timestamps.h",
+      ]
+
+      deps += [
+        # On Linux, link the dependencies (libraries) that make up actual
+        # Chromium functionality directly into the executable.
+        ":dependencies",
+        "//chrome/common:version_header",
+
+        # For the sampling profiler.
+        "//chrome/common/profiler",
+
+        # Needed to use the master_preferences functions
+        "//chrome/installer/util:with_no_strings",
+        "//content/public/app",
+      ]
+
+      public_deps = [
+        ":xdg_mime",  # Needs to be public for installer to consume files.
+        "//chrome/common:buildflags",
+      ]
+
+      data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
+
+      ldflags = []
+
+      # On Chrome OS builds put priority to the library in the installed
+      # directory. This will avoid conflicting of exposed symbols.
+      if (is_chromeos_device) {
+        ldflags += [ "-L" + rebase_path(root_out_dir) ]
+      }
+
+      # On Chrome OS builds (for both ash-chrome and lacros-chrome), put
+      # a metadata.json file in root directory containing Chrome version.
+      if (is_chromeos) {
+        data_deps += [ "//build:version_metadata" ]
+      }
+
+      # Chrome OS debug builds for arm need to pass --long-plt to the linker.
+      # See https://bugs.chromium.org/p/chromium/issues/detail?id=583532
+      if (is_chromeos && is_debug && target_cpu == "arm") {
+        ldflags += [ "-Wl,--long-plt" ]
+      }
+
+      if (is_linux && !is_component_build && !using_sanitizer) {
+        version_script = "//build/linux/chrome.map"
+        inputs = [ version_script ]
+        ldflags += [ "-Wl,--version-script=" +
+                     rebase_path(version_script, root_build_dir) ]
+      }
 
       if (is_chromeos) {
-        data_deps += [
-          "//components/variations/cros_evaluate_seed:evaluate_seed",
-          "//sandbox/linux:chrome_sandbox",
-        ]
-        if (build_mojo_proxy) {
-          data_deps += [ "//mojo/proxy:mojo_proxy" ]
-        }
+        public_deps += [ "//ui/lottie" ]
         deps += [
-          "//components/exo/wayland:test_controller_stub",
-          "//components/exo/wayland:ui_controls_protocol_stub",
+          "//chrome/browser/ash/locale",
+          "//chrome/browser/ash/schedqos",
         ]
       }
 
-      if (is_win) {
-        sources += [
-          "app/chrome_exe.rc",
-          "app/chrome_exe_main_win.cc",
-          "app/delay_load_failure_hook_win.cc",
-          "app/delay_load_failure_hook_win.h",
-          "app/main_dll_loader_win.cc",
-          "app/main_dll_loader_win.h",
-          "common/crash_keys.cc",
-          "common/crash_keys.h",
-        ]
-
-        deps += [
-          ":chrome_dll",
-          ":chrome_exe_version",
-          ":copy_first_run",
-          ":packed_resources_integrity_header",
-          ":visual_elements_resources",
-          "//base",
-          "//build:branding_buildflags",
-          "//chrome/app:chrome_exe_main_exports",
-          "//chrome/app:exit_code_watcher",
-          "//chrome/app/version_assembly:chrome_exe_manifest",
-          "//chrome/browser:active_use_util",
-          "//chrome/browser:chrome_process_finder",
-          "//chrome/browser/policy:path_parser",
-          "//chrome/chrome_elf",
-          "//chrome/common:constants",
-          "//chrome/common/win:delay_load_failure_support",
-          "//chrome/install_static:install_static_util",
-          "//chrome/install_static:secondary_module",
-          "//chrome/installer/util:constants",
-          "//chrome/installer/util:did_run_support",
-          "//components/crash/core/app",
-          "//components/crash/core/app:run_as_crashpad_handler",
-          "//components/crash/core/common",
-          "//components/crash/win:chrome_wer",
-          "//components/flags_ui:switches",
-          "//content:sandbox_helper_win",
-          "//content/public/common:static_switches",
-          "//crypto",
-          "//gpu/command_buffer/service",
-          "//sandbox",
-          "//sandbox/policy",
-          "//sandbox/policy/mojom",
-          "//third_party/breakpad:breakpad_handler",
-          "//third_party/breakpad:breakpad_sender",
-          "//third_party/crashpad/crashpad/util",
-          "//ui/gl",
-        ]
-
-        data_deps = [
-          "//chrome/app/version_assembly:version_assembly_manifest",
-          "//chrome/browser/web_applications/chrome_pwa_launcher",
-          "//chrome/chrome_proxy",
-          "//chrome/elevation_service",
-          "//chrome/notification_helper",
-          "//chrome/windows_services/elevated_tracing_service",
-        ]
-
-        if (enable_platform_experience) {
-          data_deps +=
-              [ "//chrome/browser/platform_experience/win:os_update_handler" ]
-        }
-
-        defines += [ "CHROME_EXE_MAIN" ]
-
-        if (win_console_app) {
-          defines += [ "WIN_CONSOLE_APP" ]
-        } else {
-          # Set /SUBSYSTEM:WINDOWS for chrome.exe itself, unless a console build
-          # has been requested.
-          configs -= [ "//build/config/win:console" ]
-          configs += [ "//build/config/win:windowed" ]
-        }
-
-        configs += [
-          "//build/config/win:delayloads",
-          "//build/config/win:delayloads_not_for_child_dll",
-        ]
-
-        if (current_cpu == "x86") {
-          # Set the initial stack size to 0.5MiB, instead of the 1.5MiB needed by
-          # Chrome's main thread. This saves significant memory on threads (like
-          # those in the Windows thread pool, and others) whose stack size we can
-          # only control through this setting. Because Chrome's main thread needs
-          # a minimum 1.5 MiB stack, the main thread (in 32-bit builds only) uses
-          # fibers to switch to a 1.5 MiB stack before running any other code.
-          ldflags = [ "/STACK:0x80000" ]
-        } else {
-          # Increase the initial stack size. The default is 1MB, this is 8MB.
-          ldflags = [ "/STACK:0x800000" ]
-        }
-      } else if (use_aura) {
-        # Non-Windows aura entrypoint.
-        sources += [ "app/chrome_exe_main_aura.cc" ]
-      }
-
-      if (is_linux || is_chromeos) {
-        sources += [
-          "app/chrome_dll_resource.h",
-          "app/chrome_main.cc",
-          "app/chrome_main_delegate.cc",
-          "app/chrome_main_delegate.h",
-          "app/startup_timestamps.h",
-        ]
-
-        deps += [
-          # On Linux, link the dependencies (libraries) that make up actual
-          # Chromium functionality directly into the executable.
-          ":dependencies",
-          "//chrome/common:version_header",
-
-          # For the sampling profiler.
-          "//chrome/common/profiler",
-
-          # Needed to use the master_preferences functions
-          "//chrome/installer/util:with_no_strings",
-          "//content/public/app",
-        ]
-
-        public_deps = [
-          ":xdg_mime",  # Needs to be public for installer to consume files.
-          "//chrome/common:buildflags",
-        ]
-
-        data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
-
-        ldflags = []
-
-        # On Chrome OS builds put priority to the library in the installed
-        # directory. This will avoid conflicting of exposed symbols.
-        if (is_chromeos_device) {
-          ldflags += [ "-L" + rebase_path(root_out_dir) ]
-        }
-
-        # On Chrome OS builds (for both ash-chrome and lacros-chrome), put
-        # a metadata.json file in root directory containing Chrome version.
-        if (is_chromeos) {
-          data_deps += [ "//build:version_metadata" ]
-        }
-
-        # Chrome OS debug builds for arm need to pass --long-plt to the linker.
-        # See https://bugs.chromium.org/p/chromium/issues/detail?id=583532
-        if (is_chromeos && is_debug && target_cpu == "arm") {
-          ldflags += [ "-Wl,--long-plt" ]
-        }
-
-        if (is_linux && !is_component_build && !using_sanitizer) {
-          version_script = "//build/linux/chrome.map"
-          inputs = [ version_script ]
-          ldflags += [ "-Wl,--version-script=" +
-                       rebase_path(version_script, root_build_dir) ]
-        }
-
-        if (is_chromeos) {
-          public_deps += [ "//ui/lottie" ]
-          deps += [
-            "//chrome/browser/ash/locale",
-            "//chrome/browser/ash/schedqos",
-          ]
-        }
-
-        if (use_ozone) {
-          deps += [ "//ui/ozone" ]
-          if (is_linux) {
-            deps += [ "//ui/linux:display_server_utils" ]
-          }
+      if (use_ozone) {
+        deps += [ "//ui/ozone" ]
+        if (is_linux) {
+          deps += [ "//ui/linux:display_server_utils" ]
         }
       }
+    }
 
-      # These files are used by the installer so we need a public dep.
-      public_deps += [ ":packed_resources" ]
+    # These files are used by the installer so we need a public dep.
+    public_deps += [ ":packed_resources" ]
 
-      # The step's output are needed at runtime, so we also need a data_dep.
-      data_deps += [ ":packed_resources" ]
+    # The step's output are needed at runtime, so we also need a data_dep.
+    data_deps += [ ":packed_resources" ]
 
-      # ChromeOS by design is safe to have rpath=$ORIGIN. This simplifies shared
-      # library usage.
-      if (is_chromeos && !is_component_build) {
-        configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
-      }
+    # ChromeOS by design is safe to have rpath=$ORIGIN. This simplifies shared
+    # library usage.
+    if (is_chromeos && !is_component_build) {
+      configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
+    }
 
-      data_deps += [
-        "//chrome/browser/resources/media/mei_preload:component",
-        "//chrome/browser/web_applications/isolated_web_apps/key_distribution/preload:component",
-        "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
-        "//third_party/widevine/cdm",
+    data_deps += [
+      "//chrome/browser/resources/media/mei_preload:component",
+      "//chrome/browser/web_applications/isolated_web_apps/key_distribution/preload:component",
+      "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
+      "//third_party/widevine/cdm",
+    ]
+
+    if (is_linux) {
+      sources += [
+        "app/chrome_main_linux.cc",
+        "app/chrome_main_linux.h",
       ]
-      if (invoker.collect_inputs_only) {
-        output_name = target_name
-        data_deps = []
-        ldflags += [ "--collect-inputs-only" ]
-      }
+    }
+  }
 
-      if (is_linux) {
-        sources += [
-          "app/chrome_main_linux.cc",
-          "app/chrome_main_linux.h",
-        ]
-      }
-    }
-  }
-  _chrome_exe("chrome_initial") {
-    collect_inputs_only = false
-  }
-  if (current_toolchain == default_toolchain && is_linux) {
-    _chrome_exe("chrome_inputs") {
-      collect_inputs_only = true
-    }
+  # TODO(crbug.com/40204298): Make this work on other platforms.
+  if (is_linux && current_toolchain == default_toolchain &&
+      !is_component_build) {
     private_code_test("chrome_private_code_test") {
-      linker_inputs_dep = ":chrome_inputs"
+      linker_inputs_dep = ":chrome_initial"
+      executable_name = _chrome_output_name
     }
   }
 }  # !is_android && !is_mac
@@ -597,9 +588,7 @@ if (is_win) {
     outputs = []
 
     foreach(locale, platform_pak_locales) {
-      _strings_file = "${branding_path_product}_strings"
-
-      inputs += [ "$root_gen_dir/chrome/${_strings_file}_${locale}.pak" ]
+      inputs += [ "$root_gen_dir/chrome/branded_strings_${locale}.pak" ]
     }
 
     foreach(locale, locales_as_apple_outputs) {
@@ -611,7 +600,7 @@ if (is_win) {
     args =
         [
           "-b",
-          "${branding_path_product}_strings",
+          "branded_strings",
           "-v",
           chrome_version_full,
           "-g",
@@ -710,7 +699,7 @@ if (is_win) {
       "--stamp",
       rebase_path(_stamp_file, root_build_dir),
       "--keep",
-      chrome_version_full,
+      chrome_framework_version,
       "--keep",
       "Current",
     ]
@@ -1239,7 +1228,7 @@ if (is_win) {
     if (!is_component_build) {
       # Specify a sensible install_name for static builds. The library is
       # dlopen()ed so this is not used to resolve the module.
-      ldflags += [ "-Wl,-install_name,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/$chrome_framework_name" ]
+      ldflags += [ "-Wl,-install_name,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_framework_version/$chrome_framework_name" ]
     } else {
       # In the component build, both the :chrome_app and various
       # :chrome_helper* targets directly link to the Framework target. Use
@@ -1420,19 +1409,20 @@ group("dependencies") {
     "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser:buildflags",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/policy:path_parser",
     "//chrome/child",
     "//chrome/common",
     "//chrome/gpu",
     "//chrome/renderer",
     "//chrome/utility",
-    "//components/about_ui",
     "//components/crash/core/app",
     "//components/devtools/devtools_pipe",
     "//components/memory_system",
     "//components/startup_metric_utils",
     "//components/sync",
     "//components/upload_list:upload_list",
+    "//components/webui/about",
     "//content/public/child",
     "//pdf",
     "//services/tracing/public/cpp",
@@ -1462,7 +1452,6 @@ group("dependencies") {
       "//chrome/browser/ash/boot_times_recorder",
       "//chrome/browser/ash/dbus",
       "//chrome/browser/ash/schedqos",
-      "//chromeos",
       "//chromeos/ash/components/memory",
       "//chromeos/dbus/constants",
     ]
@@ -1599,13 +1588,11 @@ if (!is_android) {
   }
 }
 
-if (!is_android) {
-  repack("browser_tests_pak") {
-    testonly = true
-    sources = [ "$root_gen_dir/chrome/webui_test_resources.pak" ]
-    output = "$root_out_dir/browser_tests.pak"
-    deps = [ "//chrome/test/data/webui:resources" ]
-  }
+repack("browser_tests_pak") {
+  testonly = true
+  sources = [ "$root_gen_dir/chrome/webui_test_resources.pak" ]
+  output = "$root_out_dir/browser_tests.pak"
+  deps = [ "//chrome/test/data/webui:resources" ]
 }
 
 group("strings") {
@@ -1652,6 +1639,7 @@ if (is_android) {
 
     deps = [
       ":dependencies",
+      "//chrome/browser/flags:flags_android",
       "//chrome/browser/ui",
       "//chrome/child",
       "//chrome/common",
@@ -1659,28 +1647,23 @@ if (is_android) {
       "//chrome/common/profiler",
       "//chrome/gpu",
       "//chrome/renderer",
+      "//components/crash/android:crash_android",
       "//components/minidump_uploader",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/android:safe_browsing_api_handler",
       "//components/safe_browsing/android:safe_browsing_mobile",
       "//components/stylus_handwriting/android",
+      "//components/variations:variations_associated_data",
       "//content/public/app",
     ]
 
     # Explicit dependency required for JNI registration to be able to
     # find the native side functions.
-    if (is_android && is_component_build) {
+    if (is_component_build) {
       deps += [
         "//components/viz/service",
         "//device/gamepad",
         "//ui/events/devices",
-      ]
-    }
-
-    if (is_android) {
-      deps += [
-        "//chrome/browser/flags:flags_android",
-        "//components/crash/android:crash_android",
       ]
     }
 

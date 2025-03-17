@@ -580,7 +580,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       return;
     }
 
-    const settingsSearchResult = this.searchResult as SettingsSearchResult;
+    const settingsSearchResult = this.searchResult;
     chrome.metricsPrivate.recordEnumerationValue(
         'ChromeOS.Settings.SearchResultTypeSelected', settingsSearchResult.type,
         SearchResultType.MAX_VALUE);
@@ -612,8 +612,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
           }
         };
 
-    const args =
-        metricArgs(settingsSearchResult.type, settingsSearchResult.id)!;
+    const args = metricArgs(settingsSearchResult.type, settingsSearchResult.id);
     if (args.value) {
       chrome.metricsPrivate.recordSparseValue(args.metricName, args.value);
     }
@@ -632,7 +631,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       return;
     }
 
-    const settingsSearchResult = this.searchResult as SettingsSearchResult;
+    const settingsSearchResult = this.searchResult;
     assert(settingsSearchResult.urlPathWithParameters, 'Url path is empty.');
     this.recordSearchResultMetrics_();
 
@@ -669,10 +668,10 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       return 'os-settings:personalization';
     }
 
-    const settingsSearchResult = this.searchResult as SettingsSearchResult;
+    const settingsSearchResult = this.searchResult;
     switch (settingsSearchResult.icon) {
       case SearchResultIcon.kA11y:
-        return 'os-settings:accessibility-revamp';
+        return 'os-settings:accessibility';
       case SearchResultIcon.kAndroid:
         return 'os-settings:android';
       case SearchResultIcon.kAppsParentalControls:
@@ -738,7 +737,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kGoogleDrive:
         return 'os-settings:google-drive';
       case SearchResultIcon.kGooglePlay:
-        return 'os-settings:google-play-revamp';
+        return 'os-settings:google-play';
       case SearchResultIcon.kGraduation:
         return 'os-settings:graduation';
       case SearchResultIcon.kHearing:
@@ -760,7 +759,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kLaptop:
         return 'os-settings:laptop-chromebook';
       case SearchResultIcon.kLock:
-        return 'os-settings:lock-revamp';
+        return 'os-settings:lock';
       case SearchResultIcon.kMagicBoost:
         return 'os-settings:magic-boost';
       case SearchResultIcon.kMicrophone:
@@ -805,7 +804,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kReset:
         return 'os-settings:startup';
       case SearchResultIcon.kRestore:
-        return 'os-settings:restore-revamp';
+        return 'os-settings:restore';
       case SearchResultIcon.kScanner:
         return 'os-settings:device-scan';
       case SearchResultIcon.kSearch:
@@ -821,7 +820,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kStylus:
         return 'os-settings:device-stylus';
       case SearchResultIcon.kSync:
-        return 'os-settings:sync-revamp';
+        return 'os-settings:sync';
       case SearchResultIcon.kSystemPreferences:
         return 'os-settings:system-preferences';
       case SearchResultIcon.kTextToSpeech:

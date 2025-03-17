@@ -182,6 +182,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       const ::network::URLLoaderCompletionStatus& completion_status) override;
   void UpdatePrerenderURL(const ::GURL& matched_url,
                           UpdatePrerenderURLCallback callback) override;
+  void GetScrollPosition(GetScrollPositionCallback callback) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

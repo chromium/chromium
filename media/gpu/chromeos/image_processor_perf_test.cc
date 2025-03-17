@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -253,6 +254,8 @@ class ImageProcessorPerfTest : public ::testing::Test {
         CreateNV12Frame(output_size, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
     ASSERT_TRUE(output_frame_) << "Error creating output frame";
 
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+
     error_cb_ = base::BindRepeating(
         [](scoped_refptr<base::SequencedTaskRunner> client_task_runner_,
            base::RepeatingClosure quit_closure_, bool* image_processor_error_) {
@@ -282,7 +285,7 @@ class ImageProcessorPerfTest : public ::testing::Test {
     ASSERT_TRUE(tmp_video_frame);
 
     input_image_frame_ = test::CloneVideoFrame(
-        tmp_video_frame.get(), *input_layout,
+        tmp_video_frame.get(), *input_layout, test_sii_.get(),
         use_cpu_memory ? VideoFrame::STORAGE_OWNED_MEMORY
                        : VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
@@ -304,6 +307,7 @@ class ImageProcessorPerfTest : public ::testing::Test {
   ImageProcessor::ErrorCB error_cb_;
   ImageProcessorFactory::PickFormatCB pick_format_cb_;
   scoped_refptr<VideoFrame> input_image_frame_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 // Tests GLImageProcessor by feeding in |kNumberOfTestFrames| unique input

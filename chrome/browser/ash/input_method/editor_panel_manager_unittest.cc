@@ -14,12 +14,15 @@
 #include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::input_method {
 namespace {
+
+using ::chromeos::editor_menu::EditorMode;
 
 constexpr std::string_view kAllowedCountryCode = "au";
 
@@ -77,11 +80,11 @@ class FakeEditorClient : public orca::mojom::EditorClient {
 };
 
 class EditorPanelManagerDelegateForTesting
-    : public EditorPanelManager::Delegate {
+    : public EditorPanelManagerImpl::Delegate {
  public:
   EditorPanelManagerDelegateForTesting(
       EditorOpportunityMode opportunity_mode,
-      ConsentStatus consent_status,
+      chromeos::editor_menu::EditorConsentStatus consent_status,
       const std::vector<EditorBlockedReason>& blocked_reasons)
       : opportunity_mode_(opportunity_mode),
         consent_status_(consent_status),
@@ -108,11 +111,18 @@ class EditorPanelManagerDelegateForTesting
 
   EditorMode GetEditorMode() const override { return EditorMode::kSoftBlocked; }
 
-  ConsentStatus GetConsentStatus() const override { return consent_status_; }
+  chromeos::editor_menu::EditorTextSelectionMode GetEditorTextSelectionMode()
+      const override {
+    return chromeos::editor_menu::EditorTextSelectionMode::kNoSelection;
+  }
+
+  chromeos::editor_menu::EditorConsentStatus GetConsentStatus() const override {
+    return consent_status_;
+  }
 
  private:
   EditorOpportunityMode opportunity_mode_;
-  ConsentStatus consent_status_;
+  chromeos::editor_menu::EditorConsentStatus consent_status_;
   std::vector<EditorBlockedReason> blocked_reasons_;
   FakeSystem system_;
   FakeContextObserver context_observer_;
@@ -133,55 +143,56 @@ class EditorPanelManagerTest : public testing::Test {
 TEST_F(EditorPanelManagerTest,
        EditorPanelContextCallbackShouldReturnConsentStatusSettled) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kWrite, ConsentStatus::kApproved, {});
-  EditorPanelManager manager(&editor_panel_manager_delegate);
+      EditorOpportunityMode::kWrite,
+      chromeos::editor_menu::EditorConsentStatus::kApproved, {});
+  EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   FakeEditorClient fake_editor_client;
 
   mojo::Receiver<orca::mojom::EditorClient> receiver{&fake_editor_client};
   manager.SetEditorClientForTesting(receiver.BindNewPipeAndPassRemote());
 
-  base::test::TestFuture<crosapi::mojom::EditorPanelContextPtr> future;
+  base::test::TestFuture<const chromeos::editor_menu::EditorContext&> future;
   manager.GetEditorPanelContext(future.GetCallback());
 
-  crosapi::mojom::EditorPanelContextPtr expected =
-      crosapi::mojom::EditorPanelContext::New();
-  expected->editor_panel_mode = crosapi::mojom::EditorPanelMode::kSoftBlocked;
-  expected->consent_status_settled = true;
-
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), expected);
+  EXPECT_EQ(future.Get(),
+            chromeos::editor_menu::EditorContext(
+                EditorMode::kSoftBlocked,
+                chromeos::editor_menu::EditorTextSelectionMode::kNoSelection,
+                /*consent_status_settled=*/true, /*preset_queries=*/{}));
 }
 
 TEST_F(EditorPanelManagerTest,
        GetEditorPanelContextCallbackShouldNotReturnConsentStatusSettled) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kWrite, ConsentStatus::kUnset, {});
-  EditorPanelManager manager(&editor_panel_manager_delegate);
+      EditorOpportunityMode::kWrite,
+      chromeos::editor_menu::EditorConsentStatus::kUnset, {});
+  EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   FakeEditorClient fake_editor_client;
 
   mojo::Receiver<orca::mojom::EditorClient> receiver{&fake_editor_client};
   manager.SetEditorClientForTesting(receiver.BindNewPipeAndPassRemote());
 
-  base::test::TestFuture<crosapi::mojom::EditorPanelContextPtr> future;
+  base::test::TestFuture<const chromeos::editor_menu::EditorContext&> future;
   manager.GetEditorPanelContext(future.GetCallback());
 
-  crosapi::mojom::EditorPanelContextPtr expected =
-      crosapi::mojom::EditorPanelContext::New();
-  expected->editor_panel_mode = crosapi::mojom::EditorPanelMode::kSoftBlocked;
-  expected->consent_status_settled = false;
-
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), expected);
+  EXPECT_EQ(future.Get(),
+            chromeos::editor_menu::EditorContext(
+                EditorMode::kSoftBlocked,
+                chromeos::editor_menu::EditorTextSelectionMode::kNoSelection,
+                /*consent_status_settled=*/false, /*preset_queries=*/{}));
 }
 
 TEST_F(EditorPanelManagerTest, LogMetricsInWriteMode) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kWrite, ConsentStatus::kApproved, {});
-  EditorPanelManager manager(&editor_panel_manager_delegate);
+      EditorOpportunityMode::kWrite,
+      chromeos::editor_menu::EditorConsentStatus::kApproved, {});
+  EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
 
   base::HistogramTester histogram_tester;
 
-  manager.LogEditorMode(crosapi::mojom::EditorPanelMode::kWrite);
+  manager.LogEditorMode(EditorMode::kWrite);
 
   histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Write",
                                      EditorStates::kNativeUIShowOpportunity, 1);
@@ -192,11 +203,12 @@ TEST_F(EditorPanelManagerTest, LogMetricsInWriteMode) {
 
 TEST_F(EditorPanelManagerTest, LogMetricsInRewriteMode) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kRewrite, ConsentStatus::kApproved, {});
-  EditorPanelManager manager(&editor_panel_manager_delegate);
+      EditorOpportunityMode::kRewrite,
+      chromeos::editor_menu::EditorConsentStatus::kApproved, {});
+  EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   base::HistogramTester histogram_tester;
 
-  manager.LogEditorMode(crosapi::mojom::EditorPanelMode::kRewrite);
+  manager.LogEditorMode(EditorMode::kRewrite);
 
   histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Rewrite",
                                      EditorStates::kNativeUIShowOpportunity, 1);
@@ -207,7 +219,8 @@ TEST_F(EditorPanelManagerTest, LogMetricsInRewriteMode) {
 
 TEST_F(EditorPanelManagerTest, LogMetricsInBlockedWriteMode) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kWrite, ConsentStatus::kDeclined,
+      EditorOpportunityMode::kWrite,
+      chromeos::editor_menu::EditorConsentStatus::kDeclined,
       {
           EditorBlockedReason::kBlockedByConsent,
           EditorBlockedReason::kBlockedByInvalidFormFactor,
@@ -215,10 +228,10 @@ TEST_F(EditorPanelManagerTest, LogMetricsInBlockedWriteMode) {
           EditorBlockedReason::kBlockedByTextLength,
           EditorBlockedReason::kBlockedByUrl,
       });
-  EditorPanelManager manager(&editor_panel_manager_delegate);
+  EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   base::HistogramTester histogram_tester;
 
-  manager.LogEditorMode(crosapi::mojom::EditorPanelMode::kSoftBlocked);
+  manager.LogEditorMode(EditorMode::kSoftBlocked);
 
   histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Write",
                                      EditorStates::kNativeUIShowOpportunity, 1);
@@ -242,16 +255,17 @@ TEST_F(EditorPanelManagerTest, LogMetricsInBlockedWriteMode) {
 
 TEST_F(EditorPanelManagerTest, LogMetricsInBlockedMode) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kRewrite, ConsentStatus::kApproved,
+      EditorOpportunityMode::kRewrite,
+      chromeos::editor_menu::EditorConsentStatus::kApproved,
       {
           EditorBlockedReason::kBlockedByApp,
           EditorBlockedReason::kBlockedByInputMethod,
           EditorBlockedReason::kBlockedBySetting,
       });
-  EditorPanelManager manager(&editor_panel_manager_delegate);
+  EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   base::HistogramTester histogram_tester;
 
-  manager.LogEditorMode(crosapi::mojom::EditorPanelMode::kSoftBlocked);
+  manager.LogEditorMode(EditorMode::kSoftBlocked);
 
   histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Rewrite",
                                      EditorStates::kNativeUIShowOpportunity, 1);
@@ -270,8 +284,9 @@ TEST_F(EditorPanelManagerTest, LogMetricsInBlockedMode) {
 
 TEST_F(EditorPanelManagerTest, LogMetricWhenPromoCardIsExplicitlyDismissed) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kRewrite, ConsentStatus::kUnset, {});
-  EditorPanelManager manager(&editor_panel_manager_delegate);
+      EditorOpportunityMode::kRewrite,
+      chromeos::editor_menu::EditorConsentStatus::kUnset, {});
+  EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   base::HistogramTester histogram_tester;
 
   manager.OnPromoCardDeclined();
@@ -283,11 +298,12 @@ TEST_F(EditorPanelManagerTest, LogMetricWhenPromoCardIsExplicitlyDismissed) {
 
 TEST_F(EditorPanelManagerTest, LogMetricWhenPromoCardIsShown) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kWrite, ConsentStatus::kUnset, {});
-  EditorPanelManager manager(&editor_panel_manager_delegate);
+      EditorOpportunityMode::kWrite,
+      chromeos::editor_menu::EditorConsentStatus::kUnset, {});
+  EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   base::HistogramTester histogram_tester;
 
-  manager.LogEditorMode(crosapi::mojom::EditorPanelMode::kPromoCard);
+  manager.LogEditorMode(EditorMode::kConsentNeeded);
 
   histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Write",
                                      EditorStates::kPromoCardImpression, 1);

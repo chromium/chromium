@@ -11,6 +11,8 @@
 
 #include <stdint.h>
 
+#include <array>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
@@ -234,17 +236,18 @@ void ObtainDefaultObservations(
 // Typical HTTP RTT value corresponding to a given WebEffectiveConnectionType
 // value. Taken from
 // https://cs.chromium.org/chromium/src/net/nqe/network_quality_estimator_params.cc.
-const base::TimeDelta kTypicalHttpRttEffectiveConnectionType
-    [net::EFFECTIVE_CONNECTION_TYPE_LAST] = {
+const std::array<base::TimeDelta, net::EFFECTIVE_CONNECTION_TYPE_LAST>
+    kTypicalHttpRttEffectiveConnectionType = {
         base::Milliseconds(0),    base::Milliseconds(0),
         base::Milliseconds(3600), base::Milliseconds(1800),
-        base::Milliseconds(450),  base::Milliseconds(175)};
+        base::Milliseconds(450),  base::Milliseconds(175),
+};
 
 // Typical downlink throughput (in Mbps) value corresponding to a given
 // WebEffectiveConnectionType value. Taken from
 // https://cs.chromium.org/chromium/src/net/nqe/network_quality_estimator_params.cc.
-const int32_t kTypicalDownlinkKbpsEffectiveConnectionType
-    [net::EFFECTIVE_CONNECTION_TYPE_LAST] = {0, 0, 40, 75, 400, 1600};
+const std::array<int32_t, net::EFFECTIVE_CONNECTION_TYPE_LAST>
+    kTypicalDownlinkKbpsEffectiveConnectionType = {0, 0, 40, 75, 400, 1600};
 
 // Sets |typical_network_quality| to typical network quality for different
 // effective connection types.
@@ -310,8 +313,9 @@ void ObtainConnectionThresholds(
     const std::map<std::string, std::string>& params,
     nqe::internal::NetworkQuality connection_thresholds[]) {
   // First set the default thresholds.
-  nqe::internal::NetworkQuality default_effective_connection_type_thresholds
-      [EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST];
+  std::array<nqe::internal::NetworkQuality,
+             EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST>
+      default_effective_connection_type_thresholds;
 
   DCHECK_LT(base::TimeDelta(), kHttpRttEffectiveConnectionTypeThresholds
                                    [EFFECTIVE_CONNECTION_TYPE_SLOW_2G]);

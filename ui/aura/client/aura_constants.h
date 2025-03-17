@@ -165,11 +165,6 @@ AURA_EXPORT extern const WindowProperty<int64_t>* const
 AURA_EXPORT extern const WindowProperty<ui::mojom::WindowShowState>* const
     kRestoreShowStateKey;
 
-// A property key to store the raster scale. This affects the scale that exo
-// windows are rasterized at.
-// TODO(b/374122147): consider removing this.
-AURA_EXPORT extern const WindowProperty<float>* const kRasterScale;
-
 // A property key to indicate if a window is currently being restored. Normally
 // restoring a window equals to changing window's state to normal window state.
 // This property will be used on Chrome OS to decide if we should use window

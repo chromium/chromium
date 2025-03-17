@@ -16,8 +16,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-
-#include <psapi.h>
 #endif
 
 namespace memory_pressure {
@@ -30,10 +28,8 @@ struct PressureSettings {
   base::MemoryPressureListener::MemoryPressureLevel level;
 };
 
-const char kPerformanceInfoRetrievalSuccessHistogramName[] =
-    "Memory.PerformanceInfoRetrievalSuccess";
 const char kCommitLimitMBHistogramName[] = "Memory.CommitLimitMB";
-const char kCommitRemainingMBHistogramName[] = "Memory.CommitRemainingMB";
+const char kCommitAvailableMBHistogramName[] = "Memory.CommitAvailableMB";
 const char kCommitPercentageUsedHistogramName[] = "Memory.CommitPercentageUsed";
 
 }  // namespace
@@ -108,21 +104,14 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
 
     // These fields are unused.
     mem_status_.dwMemoryLoad = 0;
-    mem_status_.ullTotalPageFile = 0;
-    mem_status_.ullAvailPageFile = 0;
     mem_status_.ullTotalVirtual = 0;
     mem_status_.ullAvailVirtual = 0;
   }
 
-  // Sets up the memory status to reflect the provided performance information.
-  void SetCommitLimit(size_t commit_limit, size_t commit_total) {
-    perf_info_.CommitLimit = commit_limit;
-    perf_info_.CommitTotal = commit_total;
-    perf_info_.PageSize = 4096;
-  }
-
-  void SetPerformanceRetrievalSuccessCall(bool perf_info_success) {
-    perfomance_info_retrieval_ = perf_info_success;
+  // Sets up the memory status to reflect commit limit and available.
+  void SetCommitData(uint64_t commit_limit_mb, uint64_t commit_available_mb) {
+    mem_status_.ullTotalPageFile = commit_limit_mb * kMBBytes;
+    mem_status_.ullAvailPageFile = commit_available_mb * kMBBytes;
   }
 
   void SetNone() { SetMemoryFree(moderate_threshold_mb() + 1); }
@@ -131,6 +120,8 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
 
   void SetCritical() { SetMemoryFree(critical_threshold_mb() - 1); }
 
+  MEMORYSTATUSEX GetSystemMemoryStatusForTesting() { return mem_status_; }
+
  private:
   bool GetSystemMemoryStatus(MEMORYSTATUSEX* mem_status) override {
     // Simply copy the memory status set by the test fixture.
@@ -138,21 +129,7 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
     return true;
   }
 
-  bool GetPerformanceInfoWrapper(PERFORMANCE_INFORMATION* perf_info) override {
-    perf_info_.cb = sizeof(PERFORMANCE_INFORMATION);
-    if (perf_info_.PageSize < 1) {
-      // Hard-coded here just before copying so they're always valid values in
-      // case PageSize is 0 to prevent a crash on division.
-      perf_info_.PageSize = 4096;
-    }
-    // Simply copy the memory status set by the test fixture.
-    *perf_info = perf_info_;
-    return perfomance_info_retrieval_;
-  }
-
   MEMORYSTATUSEX mem_status_;
-  PERFORMANCE_INFORMATION perf_info_{};
-  bool perfomance_info_retrieval_ = false;
 };
 
 class WinSystemMemoryPressureEvaluatorTest : public testing::Test {
@@ -355,59 +332,71 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   testing::Mock::VerifyAndClearExpectations(&evaluator);
 }
 
-// RecordCommitHistograms emits the correct histograms when GetPerformanceInfo
-// succeeds.
-TEST_F(WinSystemMemoryPressureEvaluatorTest, GetPerformanceInfoSucceeds) {
+// RecordCommitHistograms emits the correct histograms when
+// GetSystemMemoryStatus succeeds.
+TEST_F(WinSystemMemoryPressureEvaluatorTest, RecordCommitHistogramsBasic) {
   base::HistogramTester histogram_tester;
   TestSystemMemoryPressureEvaluator evaluator(false, nullptr);
-  evaluator.SetPerformanceRetrievalSuccessCall(true);
-  evaluator.SetCommitLimit(1024, 512);
 
-  evaluator.RecordCommitHistograms();
+  evaluator.SetCommitData(/*commit_limit_mb=*/4096,
+                          /*commit_available_mb=*/2048);
 
-  histogram_tester.ExpectUniqueSample(
-      kPerformanceInfoRetrievalSuccessHistogramName, true, 1);
-  histogram_tester.ExpectUniqueSample(kCommitLimitMBHistogramName, 4, 1);
-  histogram_tester.ExpectUniqueSample(kCommitRemainingMBHistogramName, 2, 1);
+  evaluator.RecordCommitHistograms(evaluator.GetSystemMemoryStatusForTesting());
+
+  histogram_tester.ExpectUniqueSample(kCommitLimitMBHistogramName, 4096, 1);
+  histogram_tester.ExpectUniqueSample(kCommitAvailableMBHistogramName, 2048, 1);
   histogram_tester.ExpectUniqueSample(kCommitPercentageUsedHistogramName, 50,
                                       1);
 }
 
-// RecordCommitHistograms emits only the
-// "Memory.PerformanceInfoRetrievalSuccess" histogram when GetPerformanceInfo
-// fails. Should not emit any other histograms.
-TEST_F(WinSystemMemoryPressureEvaluatorTest, GetPerformanceInfoFails) {
+// Verifies behavior when commit limit is zero (division by zero).
+TEST_F(WinSystemMemoryPressureEvaluatorTest,
+       RecordCommitHistogramsDivisionByZero) {
   base::HistogramTester histogram_tester;
   TestSystemMemoryPressureEvaluator evaluator(false, nullptr);
-  evaluator.SetPerformanceRetrievalSuccessCall(false);
-  evaluator.SetCommitLimit(1000, 500);
 
-  evaluator.RecordCommitHistograms();
+  evaluator.SetCommitData(/*commit_limit_mb=*/0, /*commit_available_mb=*/0);
 
-  histogram_tester.ExpectUniqueSample(
-      kPerformanceInfoRetrievalSuccessHistogramName, false, 1);
-  histogram_tester.ExpectTotalCount(kCommitLimitMBHistogramName, 0);
-  histogram_tester.ExpectTotalCount(kCommitRemainingMBHistogramName, 0);
-  histogram_tester.ExpectTotalCount(kCommitPercentageUsedHistogramName, 0);
+  evaluator.RecordCommitHistograms(evaluator.GetSystemMemoryStatusForTesting());
+
+  histogram_tester.ExpectUniqueSample(kCommitLimitMBHistogramName, 0, 1);
+  histogram_tester.ExpectUniqueSample(kCommitAvailableMBHistogramName, 0, 1);
+  histogram_tester.ExpectUniqueSample(kCommitPercentageUsedHistogramName, 0, 1);
 }
 
 // RecordCommitHistograms should be able to handle commit values greater than
 // 32-bit integers to calculate and correctly output all histograms.
-TEST_F(WinSystemMemoryPressureEvaluatorTest, GetPerformanceInfoOverflows) {
+TEST_F(WinSystemMemoryPressureEvaluatorTest, RecordCommitHistogramsOverflow) {
   base::HistogramTester histogram_tester;
   TestSystemMemoryPressureEvaluator evaluator(false, nullptr);
-  const int max_int_value = std::numeric_limits<int>::max();
-  evaluator.SetPerformanceRetrievalSuccessCall(true);
-  evaluator.SetCommitLimit(max_int_value, max_int_value);
 
-  evaluator.RecordCommitHistograms();
+  constexpr uint64_t kLargerThanMaxInt =
+      static_cast<uint64_t>(std::numeric_limits<int>::max()) + 1U;
+  evaluator.SetCommitData(/*commit_limit_mb=*/kLargerThanMaxInt,
+                          /*commit_available_mb=*/kLargerThanMaxInt);
 
-  histogram_tester.ExpectUniqueSample(
-      kPerformanceInfoRetrievalSuccessHistogramName, true, 1);
-  histogram_tester.ExpectUniqueSample(kCommitLimitMBHistogramName, 8388607, 1);
-  histogram_tester.ExpectUniqueSample(kCommitRemainingMBHistogramName, 0, 1);
-  histogram_tester.ExpectUniqueSample(kCommitPercentageUsedHistogramName, 100,
+  evaluator.RecordCommitHistograms(evaluator.GetSystemMemoryStatusForTesting());
+
+  histogram_tester.ExpectUniqueSample(kCommitLimitMBHistogramName, 10000000, 1);
+  histogram_tester.ExpectUniqueSample(kCommitAvailableMBHistogramName, 10000000,
                                       1);
+}
+
+// Verifies that RecordCommitHistograms correctly handles the calculation of
+// Memory.CommitPercentageUsed, specifically addressing the potential for
+// underflow in that calculation.
+TEST_F(WinSystemMemoryPressureEvaluatorTest, PotentialUnderflow) {
+  base::HistogramTester histogram_tester;
+  TestSystemMemoryPressureEvaluator evaluator(false, nullptr);
+
+  evaluator.SetCommitData(/*commit_limit_mb=*/50,
+                          /*commit_available_mb=*/100);
+
+  evaluator.RecordCommitHistograms(evaluator.GetSystemMemoryStatusForTesting());
+
+  histogram_tester.ExpectUniqueSample(kCommitLimitMBHistogramName, 50, 1);
+  histogram_tester.ExpectUniqueSample(kCommitAvailableMBHistogramName, 100, 1);
+  histogram_tester.ExpectUniqueSample(kCommitPercentageUsedHistogramName, 0, 1);
 }
 
 }  // namespace win

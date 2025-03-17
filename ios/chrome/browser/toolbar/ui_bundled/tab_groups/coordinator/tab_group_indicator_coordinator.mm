@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
-#import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
@@ -58,7 +58,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  CHECK(IsTabGroupIndicatorEnabled());
+  CHECK(IsTabGroupInGridEnabled());
   Browser* browser = self.browser;
   BOOL incognito = browser->GetProfile()->IsOffTheRecord();
   _view = [[TabGroupIndicatorView alloc] init];
@@ -72,11 +72,14 @@
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  data_sharing::DataSharingService* dataSharingService =
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
 
   _mediator = [[TabGroupIndicatorMediator alloc]
       initWithTabGroupSyncService:tabGroupSyncService
                   shareKitService:ShareKitServiceFactory::GetForProfile(profile)
              collaborationService:collaborationService
+               dataSharingService:dataSharingService
                          consumer:_view
                      webStateList:browser->GetWebStateList()
                         URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)
@@ -120,8 +123,13 @@
   [tabGroupsHandler showRecentActivityForGroup:tabGroup];
 }
 
-- (void)showTabGroupIndicatorConfirmationForAction:
-    (TabGroupActionType)actionType {
+- (void)
+    showTabGroupIndicatorConfirmationForAction:(TabGroupActionType)actionType
+                                         group:(base::WeakPtr<const TabGroup>)
+                                                   tabGroup {
+  if (!tabGroup) {
+    return;
+  }
   [self stopTabGroupConfirmationCoordinator];
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
@@ -129,7 +137,7 @@
                       actionType:actionType
                       sourceView:_view];
   __weak TabGroupIndicatorMediator* weakMediator = _mediator;
-  _tabGroupConfirmationCoordinator.action = ^{
+  _tabGroupConfirmationCoordinator.primaryAction = ^{
     switch (actionType) {
       case TabGroupActionType::kUngroupTabGroup:
         [weakMediator unGroupWithConfirmation:NO];
@@ -137,8 +145,18 @@
       case TabGroupActionType::kDeleteTabGroup:
         [weakMediator deleteGroupWithConfirmation:NO];
         break;
+      case TabGroupActionType::kLeaveSharedTabGroup:
+        [weakMediator leaveSharedGroupWithConfirmation:NO];
+        break;
+      case TabGroupActionType::kDeleteSharedTabGroup:
+        [weakMediator deleteSharedGroupWithConfirmation:NO];
+        break;
+      case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+      case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+        NOTREACHED();
     }
   };
+  _tabGroupConfirmationCoordinator.tabGroupName = tabGroup->GetTitle();
 
   [_tabGroupConfirmationCoordinator start];
 }
@@ -152,7 +170,7 @@
       HandlerForProtocol(dispatcher, TabGridCommands);
   void (^openTabGroupPanelAction)() = ^{
     [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
-    [tabGridHandler showTabGroupsPanelAnimated:NO];
+    [tabGridHandler showPage:TabGridPageTabGroups animated:NO];
   };
 
   // Create and config the snackbar.
@@ -189,7 +207,6 @@
       [[BubbleViewControllerPresenter alloc]
                initWithText:IPHTitle
                       title:nil
-                      image:nil
              arrowDirection:BubbleArrowDirectionUp
                   alignment:BubbleAlignmentCenter
                  bubbleType:BubbleViewTypeDefault
@@ -227,10 +244,7 @@
 
   std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          browser, self.baseViewController,
-          std::make_unique<
-              collaboration::CollaborationFlowConfigurationShareOrManage>(
-              tabGroup->GetWeakPtr()));
+          browser, self.baseViewController);
   collaborationService->StartShareOrManageFlow(std::move(delegate),
                                                tabGroup->tab_group_id());
 }

@@ -63,7 +63,7 @@ class AX_BASE_EXPORT AXMode {
   // attributes, table cell information, live region properties, range
   // values, and relationship attributes. Note that the HTML tag, ID, class, and
   // display attributes will also be included.
-  static constexpr uint32_t kScreenReader = 1 << 3;
+  static constexpr uint32_t kExtendedProperties = 1 << 3;
 
   // The accessibility tree will contain all the HTML attributes for all
   // accessibility nodes that come from web content. This effectively dumps all
@@ -98,11 +98,10 @@ class AX_BASE_EXPORT AXMode {
   // related metrics callsites, see: |ModeFlagHistogramValue|).
   static constexpr uint32_t kLastModeFlag = 1 << 9;
 
-  constexpr AXMode() : flags_(kNone), experimental_flags_(kNone) {}
-  constexpr AXMode(uint32_t flags)
-      : flags_(flags), experimental_flags_(kNone) {}
-  constexpr AXMode(uint32_t flags, uint32_t experimental_flags)
-      : flags_(flags), experimental_flags_(experimental_flags) {}
+  constexpr AXMode() : flags_(kNone), filter_flags_(kNone) {}
+  constexpr AXMode(uint32_t flags) : flags_(flags), filter_flags_(kNone) {}
+  constexpr AXMode(uint32_t flags, uint32_t filter_flags)
+      : flags_(flags), filter_flags_(filter_flags) {}
 
   constexpr bool has_mode(uint32_t flag) const {
     return (flags_ & flag) == flag;
@@ -114,26 +113,26 @@ class AX_BASE_EXPORT AXMode {
 
   constexpr uint32_t flags() const { return flags_; }
 
-  constexpr uint32_t experimental_flags() const { return experimental_flags_; }
+  constexpr uint32_t filter_flags() const { return filter_flags_; }
 
-  constexpr bool is_mode_off() const { return !flags_ && !experimental_flags_; }
+  constexpr bool is_mode_off() const { return !flags_ && !filter_flags_; }
 
   constexpr AXMode& operator|=(const AXMode& rhs) {
     flags_ |= rhs.flags_;
-    experimental_flags_ |= rhs.experimental_flags_;
+    filter_flags_ |= rhs.filter_flags_;
     return *this;
   }
 
   constexpr AXMode& operator&=(const AXMode& rhs) {
     flags_ &= rhs.flags_;
-    experimental_flags_ &= rhs.experimental_flags_;
+    filter_flags_ &= rhs.filter_flags_;
     return *this;
   }
 
-  constexpr AXMode operator~() const { return {~flags_, ~experimental_flags_}; }
+  constexpr AXMode operator~() const { return {~flags_, ~filter_flags_}; }
 
-  bool HasExperimentalFlags(uint32_t experimental_flag) const;
-  void SetExperimentalFlags(uint32_t experimental_flag, bool value);
+  bool HasFilterFlags(uint32_t filter_flag) const;
+  void SetFilterFlags(uint32_t filter_flag, bool value);
 
   std::string ToString() const;
 
@@ -179,39 +178,40 @@ class AX_BASE_EXPORT AXMode {
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityModeBundleEnum)
 
-  // Experimental Flags
-  // These are currently defined separately from existing flags to avoid
-  // making temporary changes to the defined enums until they are ready
-  // for production release.
-  static constexpr uint32_t kExperimentalFirstFlag = 1 << 0;
-  static constexpr uint32_t kExperimentalFormControls = 1 << 0;
-  static constexpr uint32_t kExperimentalLastFlag = 1 << 0;
+  // Filter Flags
+  // These are defined separately from the base flags to avoid conflating
+  // flags that are additive from flags that remove information.
+  static constexpr uint32_t kFilterFirstFlag = 1 << 0;
+  // kFormsAndLabelsOnly filters out everything except for forms and labels
+  // necessary for password managers to operate.
+  static constexpr uint32_t kFormsAndLabelsOnly = 1 << 0;
+  static constexpr uint32_t kFilterLastFlag = 1 << 0;
 
  private:
   friend struct mojo::StructTraits<ax::mojom::AXModeDataView, AXMode>;
 
+  // The core flags_ are in a bit field and can be added together to enable more
+  // accessibility properties to be computed and exposed.
   uint32_t flags_ = 0U;
-  uint32_t experimental_flags_ = 0U;
+  // The filter_flags_ are also in a bit field but they are subtractive. They
+  // represent the idea that nodes or properties may be removed for performance.
+  uint32_t filter_flags_ = 0U;
 };
 
 constexpr bool operator==(const AXMode& lhs, const AXMode& rhs) {
-  return lhs.flags() == rhs.flags() &&
-         lhs.experimental_flags() == rhs.experimental_flags();
+  return lhs.flags() == rhs.flags() && lhs.filter_flags() == rhs.filter_flags();
 }
 
 constexpr bool operator!=(const AXMode& lhs, const AXMode& rhs) {
-  return lhs.flags() != rhs.flags() ||
-         lhs.experimental_flags() != rhs.experimental_flags();
+  return lhs.flags() != rhs.flags() || lhs.filter_flags() != rhs.filter_flags();
 }
 
 constexpr AXMode operator|(const AXMode& lhs, const AXMode& rhs) {
-  return {lhs.flags() | rhs.flags(),
-          lhs.experimental_flags() | rhs.experimental_flags()};
+  return {lhs.flags() | rhs.flags(), lhs.filter_flags() | rhs.filter_flags()};
 }
 
 constexpr AXMode operator&(const AXMode& lhs, const AXMode& rhs) {
-  return {lhs.flags() & rhs.flags(),
-          lhs.experimental_flags() & rhs.experimental_flags()};
+  return {lhs.flags() & rhs.flags(), lhs.filter_flags() & rhs.filter_flags()};
 }
 
 // Used when an AT that only require basic accessibility information, such as
@@ -223,19 +223,19 @@ inline constexpr AXMode kAXModeBasic(AXMode::kNativeAPIs |
 // not present.
 inline constexpr AXMode kAXModeWebContentsOnly(AXMode::kWebContents |
                                                AXMode::kInlineTextBoxes |
-                                               AXMode::kScreenReader);
+                                               AXMode::kExtendedProperties);
 
 // Used when an AT that requires full accessibility access, such as a screen
 // reader, is present.
 inline constexpr AXMode kAXModeComplete(AXMode::kNativeAPIs |
                                         AXMode::kWebContents |
                                         AXMode::kInlineTextBoxes |
-                                        AXMode::kScreenReader);
+                                        AXMode::kExtendedProperties);
 
 // Used when tools that only need autofill functionality are present.
 inline constexpr AXMode kAXModeFormControls(AXMode::kNativeAPIs |
                                                 AXMode::kWebContents,
-                                            AXMode::kExperimentalFormControls);
+                                            AXMode::kFormsAndLabelsOnly);
 
 // If adding a new named set of mode flags, please update BundleHistogramValue.
 

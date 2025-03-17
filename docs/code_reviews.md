@@ -40,16 +40,21 @@ these are advisory and not policy.
 
 #### Expectations for all reviewers
 
-  * Aim to provide some kind of actionable response within 24 hours of receipt
-    (not counting weekends and holidays). This doesn't mean you have to do a
-    complete review, but you should be able to give some initial feedback,
-    request more time, or suggest another reviewer.
+*   As a reviewer, aim to provide actionable feedback 3 times per work day. The
+    expectation is that if you're in the same time zone as the CL author, there
+    are 3 review iterations. If there is a time zone divide, aim for 2 review
+    iterations.
 
-  * Use the status field in Gerrit settings to indicate if you're away and when
+*   Use the status field in Gerrit settings to indicate if you're away and when
     you'll be back.
 
-  * Don't generally discourage people from sending you code reviews. This
+*   Don't generally discourage people from sending you code reviews. This
     includes using a blanket "slow" in your status field.
+
+#### Expectations for all authors
+
+*   If a reviewer does not respond within 2 works days, add another
+    reviewer onto the CL. Do not remove the initial reviewer.
 
 ## OWNERS files
 
@@ -85,16 +90,15 @@ committer is sufficient.
 
 The existing owners of a directory approve additions to the list. It is
 preferable to have many directories, each with a smaller number of specific
-owners rather than large directories with many owners. Owners should:
+owners rather than large directories with many owners. Owners must be
+[committers](https://www.chromium.org/getting-involved/become-a-committer/)
+with at least 3 months' tenure, and in addition should:
 
   * Demonstrate excellent judgment, teamwork and ability to uphold
     [Chromium development principles](contributing.md).
 
   * Be already acting as an owner, providing high-quality reviews and design
     feedback.
-
-  * Be a Chromium project member with full commit access of at least three
-    months tenure.
 
   * Have submitted a substantial number of non-trivial changes to the affected
     directory.
@@ -204,6 +208,11 @@ File globbing is supported using the
 [simple path expression](https://github.com/GerritCodeReview/plugins_code-owners/blob/master/resources/Documentation/path-expressions.md#simple-path-expressions)
 format.
 
+Owners annotated with `#{LAST_RESORT_SUGGESTION}` in their comment will be
+omitted when suggesting code owners, except if dropping these code owners would
+make the suggestion result empty or if these code owners are already reviewers
+of the change.
+
 ### Owners-Override
 
 Setting the `Owners-Override +1` label will bypass OWNERS enforcement. Active
@@ -238,16 +247,24 @@ disable a test, your Owners-Override on the CL is not enough. You also need
 either another committer to LGTM the CL or, for clean reverts, a `Bot-Commit:
 +1` from the [rubber-stamper bot](#automated-code_review).
 
+When setting Owners-Override it is your responsibility to confirm that every
+file (and line) in the patch has been appropriately reviewed.
+
 ## Mechanical changes
 
 ### Global Approvals
 For one-off CLs, API owners of `base`, `build`, `content`,
 `third_party/blink/public` and `url` can `Owners-Override +1` a change to their
 APIs to avoid waiting for rubberstamp +1s from affected directories' owners.
-This should only be used for mechanical updates to the affected directories.
+This should only be used for mechanical updates, but global approvers are free
+to use their judgement in determining which mechanical changes they understand
+well enough to approve (rather than limit strictly to calls into code
+they own).
 
-If you are making one-off CLs that touch many directories and cannot be
-handled by the global approvers, you can ask one of Chrome ATLs.
+For a change that impacts many directories but doesn't need area-specific
+expertise to review, please ask any global approver or Chrome ATL to
+approve the change rather than incur unnecessary review cost on a larger number
+of reviewers.
 
 ### Large Scale Changes
 You can use the [Large Scale Changes](process/lsc/large_scale_changes.md)

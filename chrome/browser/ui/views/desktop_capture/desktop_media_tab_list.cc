@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
@@ -69,6 +70,9 @@ class TabListModel : public ui::TableModel,
       DesktopMediaListController* controller,
       base::RepeatingCallback<void(size_t)> preview_updated_callback);
 
+  TabListModel(const TabListModel&) = delete;
+  TabListModel operator=(const TabListModel&) = delete;
+
   // ui::TableModel:
   size_t RowCount() override;
   std::u16string GetText(size_t row, int column) override;
@@ -85,9 +89,6 @@ class TabListModel : public ui::TableModel,
   void OnDelegatedSourceListSelection() override;
 
  private:
-  TabListModel(const TabListModel&) = delete;
-  TabListModel operator=(const TabListModel&) = delete;
-
   raw_ptr<DesktopMediaListController, DanglingUntriaged> controller_;
   raw_ptr<ui::TableModelObserver> observer_ = nullptr;
   base::RepeatingCallback<void(size_t)> preview_updated_callback_;
@@ -166,13 +167,13 @@ class TabListViewObserver : public views::TableViewObserver {
   TabListViewObserver(DesktopMediaListController* controller,
                       base::RepeatingClosure selection_changed_callback);
 
+  TabListViewObserver(const TabListViewObserver&) = delete;
+  TabListViewObserver operator=(const TabListViewObserver&) = delete;
+
   void OnSelectionChanged() override;
   void OnKeyDown(ui::KeyboardCode virtual_keycode) override;
 
  private:
-  TabListViewObserver(const TabListViewObserver&) = delete;
-  TabListViewObserver operator=(const TabListViewObserver&) = delete;
-
   const raw_ptr<DesktopMediaListController, DanglingUntriaged> controller_;
   base::RepeatingClosure selection_changed_callback_;
 };

@@ -1,0 +1,36 @@
+{
+  "android-arm32-orderfile": {
+    "gn_args": {
+      "debuggable_apks": false,
+      "devtools_instrumentation_dumping": true,
+      "enable_chrome_android_internal": false,
+      "enable_proguard_obfuscation": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm",
+      "target_os": "android",
+      "use_order_profiling": true,
+      "use_remoteexec": true
+    }
+  },
+  "android-arm64-orderfile": {
+    "gn_args": {
+      "debuggable_apks": false,
+      "devtools_instrumentation_dumping": true,
+      "enable_chrome_android_internal": false,
+      "enable_proguard_obfuscation": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_order_profiling": true,
+      "use_remoteexec": true
+    }
+  }
+}

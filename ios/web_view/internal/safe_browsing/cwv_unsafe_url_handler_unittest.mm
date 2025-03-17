@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/safe_browsing/cwv_unsafe_url_handler_internal.h"
-
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
@@ -11,6 +9,7 @@
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web_view/internal/safe_browsing/cwv_unsafe_url_handler_internal.h"
 #import "net/base/apple/url_conversions.h"
 #import "services/network/public/mojom/fetch_api.mojom.h"
 #import "testing/gtest/include/gtest/gtest.h"

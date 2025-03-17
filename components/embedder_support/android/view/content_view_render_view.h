@@ -16,19 +16,6 @@ namespace content {
 class Compositor;
 }  // namespace content
    //
-namespace jni_zero {
-template <>
-inline ScopedJavaLocalRef<jobject> ToJniType<int>(JNIEnv* env,
-                                                  const int& input) {
-  ScopedJavaLocalRef<jclass> integer_class =
-      base::android::GetClass(env, "java/lang/Integer");
-  jmethodID constructor =
-      base::android::MethodID::Get<base::android::MethodID::TYPE_INSTANCE>(
-          env, integer_class.obj(), "<init>", "(I)V");
-  return ScopedJavaLocalRef<jobject>(
-      env, env->NewObject(integer_class.obj(), constructor, input));
-}
-}  // namespace jni_zero
 
 namespace embedder_support {
 

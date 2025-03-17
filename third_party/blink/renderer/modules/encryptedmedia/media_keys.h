@@ -27,15 +27,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ENCRYPTEDMEDIA_MEDIA_KEYS_H_
 
 #include <memory>
+#include <vector>
+
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -65,7 +67,7 @@ class MediaKeys : public ScriptWrappable,
  public:
   MediaKeys(
       ExecutionContext*,
-      const WebVector<WebEncryptedMediaSessionType>& supported_session_types,
+      const std::vector<WebEncryptedMediaSessionType>& supported_session_types,
       std::unique_ptr<WebContentDecryptionModule>,
       const MediaKeysConfig&);
   ~MediaKeys() override;
@@ -122,7 +124,8 @@ class MediaKeys : public ScriptWrappable,
   bool SessionTypeSupported(WebEncryptedMediaSessionType);
   void TimerFired(TimerBase*);
 
-  const WebVector<WebEncryptedMediaSessionType> supported_session_types_;
+  const std::vector<WebEncryptedMediaSessionType> supported_session_types_
+      ALLOW_DISCOURAGED_TYPE("Matches WebMediaKeySystemConfiguration");
   std::unique_ptr<WebContentDecryptionModule> cdm_;
   const MediaKeysConfig config_;
 

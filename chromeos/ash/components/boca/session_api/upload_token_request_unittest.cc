@@ -112,7 +112,8 @@ TEST_F(UploadTokenRequestTest, UploadTokenAndSucceed) {
       future;
 
   std::unique_ptr<UploadTokenRequest> request =
-      std::make_unique<UploadTokenRequest>(request_sender(), gaia_id, token,
+      std::make_unique<UploadTokenRequest>(request_sender(), "https://test",
+                                           gaia_id, token,
                                            future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
@@ -143,7 +144,8 @@ TEST_F(UploadTokenRequestTest, UploadTokenAndFail) {
       future;
 
   std::unique_ptr<UploadTokenRequest> request =
-      std::make_unique<UploadTokenRequest>(request_sender(), gaia_id, token,
+      std::make_unique<UploadTokenRequest>(request_sender(), "https://test",
+                                           gaia_id, token,
                                            future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());

@@ -25,6 +25,12 @@ static void JNI_LibraryPrefetcher_ForkAndPrefetchNativeLibrary(JNIEnv* env) {
 #endif
 }
 
+static void JNI_LibraryPrefetcher_PrefetchNativeLibraryForWebView(JNIEnv* env) {
+#if BUILDFLAG(SUPPORTS_CODE_ORDERING)
+  return NativeLibraryPrefetcher::ForkAndPrefetchNativeLibrary(false);
+#endif
+}
+
 static jint JNI_LibraryPrefetcher_PercentageOfResidentNativeLibraryCode(
     JNIEnv* env) {
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)

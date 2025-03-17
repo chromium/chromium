@@ -59,6 +59,8 @@ source_set("container_presenter") {
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/device_orientation",
     "//ui/base",
   ]
@@ -83,6 +85,8 @@ source_set("view_controller") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+    "//ios/chrome/browser/lens_overlay/ui/resources",
     "//ios/chrome/browser/lens_overlay/ui/resources:animation_files",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
@@ -113,6 +117,7 @@ source_set("progress_bar") {
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/common:string_conversions",
     "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
@@ -125,6 +130,7 @@ source_set("entry_point") {
   ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",

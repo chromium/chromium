@@ -28,6 +28,13 @@ namespace url {
 
 namespace {
 
+// Struct to hold test cases for StringToUint64WithBase function.
+struct StringToUint64TestCase {
+  std::string_view input;
+  uint8_t base;
+  uint64_t expected;
+};
+
 struct ComponentCase {
   const char* input;
   const char* expected;
@@ -135,6 +142,48 @@ class URLCanonTest : public ::testing::Test {
   URLCanonTest() {
     scoped_feature_list_.InitAndEnableFeature(
         url::kDisallowSpaceCharacterInURLHostParsing);
+  }
+
+ protected:
+  struct ResolveRelativeURLCase {
+    const std::string_view base;
+    const std::string_view rel;
+    const bool is_base_hier;
+    const bool expected_base_is_valid;
+    const bool expected_is_relative;
+    const bool expected_succeed_resolve;
+    const std::string_view expected_resolved_url;
+  };
+
+  void TestNonSpecialResolveRelativeURL(
+      const ResolveRelativeURLCase& relative_case) {
+    // The following test is similar to URLCanonTest::ResolveRelativeURL, but
+    // simplified.
+    Parsed parsed = ParseNonSpecialURL(relative_case.base);
+
+    // First see if it is relative.
+    bool is_relative;
+    Component relative_component;
+    bool succeed_is_rel = IsRelativeURL(
+        relative_case.base.data(), parsed, relative_case.rel.data(),
+        relative_case.rel.size(), relative_case.is_base_hier, &is_relative,
+        &relative_component);
+
+    EXPECT_EQ(is_relative, relative_case.expected_is_relative);
+    if (succeed_is_rel && is_relative) {
+      std::string resolved_url;
+      StdStringCanonOutput output(&resolved_url);
+      Parsed resolved_parsed;
+
+      bool succeed_resolve = ResolveRelativeURL(
+          relative_case.base.data(), parsed, relative_case.is_base_hier,
+          relative_case.rel.data(), relative_component, nullptr, &output,
+          &resolved_parsed);
+      output.Complete();
+
+      EXPECT_EQ(succeed_resolve, relative_case.expected_succeed_resolve);
+      EXPECT_EQ(resolved_url, relative_case.expected_resolved_url);
+    }
   }
 
  private:
@@ -2605,40 +2654,6 @@ TEST_F(URLCanonTest, _itoa_s) {
   EXPECT_EQ('\xFF', buf[5]);
 }
 
-TEST_F(URLCanonTest, _itow_s) {
-  // We fill the buffer with 0xff to ensure that it's getting properly
-  // null-terminated. We also allocate one byte more than what we tell
-  // _itoa_s about, and ensure that the extra byte is untouched.
-  char16_t buf[6];
-  const char fill_mem = 0xff;
-  const char16_t fill_char = 0xffff;
-  memset(buf, fill_mem, sizeof(buf));
-  EXPECT_EQ(0, _itow_s(12, buf, sizeof(buf) / 2 - 1, 10));
-  EXPECT_EQ(u"12", std::u16string(buf));
-  EXPECT_EQ(fill_char, buf[3]);
-
-  // Test the edge cases - exactly the buffer size and one over
-  EXPECT_EQ(0, _itow_s(1234, buf, sizeof(buf) / 2 - 1, 10));
-  EXPECT_EQ(u"1234", std::u16string(buf));
-  EXPECT_EQ(fill_char, buf[5]);
-
-  memset(buf, fill_mem, sizeof(buf));
-  EXPECT_EQ(EINVAL, _itow_s(12345, buf, sizeof(buf) / 2 - 1, 10));
-  EXPECT_EQ(fill_char, buf[5]);  // should never write to this location
-
-  // Test the template overload (note that this will see the full buffer)
-  memset(buf, fill_mem, sizeof(buf));
-  EXPECT_EQ(0, _itow_s(12, buf, 10));
-  EXPECT_EQ(u"12", std::u16string(buf));
-  EXPECT_EQ(fill_char, buf[3]);
-
-  memset(buf, fill_mem, sizeof(buf));
-  EXPECT_EQ(0, _itow_s(12345, buf, 10));
-  EXPECT_EQ(u"12345", std::u16string(buf));
-
-  EXPECT_EQ(EINVAL, _itow_s(123456, buf, 10));
-}
-
 #endif  // !WIN32
 
 // Returns true if the given two structures are the same.
@@ -2917,96 +2932,14 @@ TEST_F(URLCanonTest, ResolveRelativeURL) {
   }
 }
 
-class URLCanonTypedTest : public ::testing::TestWithParam<bool> {
- public:
-  URLCanonTypedTest()
-      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
-    if (use_standard_compliant_non_special_scheme_url_parsing_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          kStandardCompliantNonSpecialSchemeURLParsing);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kStandardCompliantNonSpecialSchemeURLParsing);
-    }
-  }
-
- protected:
-  struct URLCase {
-    const std::string_view input;
-    const std::string_view expected;
-    bool expected_success;
+TEST_F(URLCanonTest, NonSpecialResolveRelativeURL) {
+  static constexpr ResolveRelativeURLCase cases[] = {
+      {"git://host", "path", true, true, true, true, "git://host/path"},
   };
-
-  struct ResolveRelativeURLCase {
-    const std::string_view base;
-    const std::string_view rel;
-    const bool is_base_hier;
-    const bool expected_base_is_valid;
-    const bool expected_is_relative;
-    const bool expected_succeed_resolve;
-    const std::string_view expected_resolved_url;
-  };
-
-  void TestNonSpecialResolveRelativeURL(
-      const ResolveRelativeURLCase& relative_case) {
-    // The following test is similar to URLCanonTest::ResolveRelativeURL, but
-    // simplified.
-    Parsed parsed = use_standard_compliant_non_special_scheme_url_parsing_
-                        ? ParseNonSpecialURL(relative_case.base)
-                        : ParsePathURL(relative_case.base,
-                                       /*trim_path_end=*/true);
-
-    // First see if it is relative.
-    bool is_relative;
-    Component relative_component;
-    bool succeed_is_rel = IsRelativeURL(
-        relative_case.base.data(), parsed, relative_case.rel.data(),
-        relative_case.rel.size(), relative_case.is_base_hier, &is_relative,
-        &relative_component);
-
-    EXPECT_EQ(is_relative, relative_case.expected_is_relative);
-    if (succeed_is_rel && is_relative) {
-      std::string resolved_url;
-      StdStringCanonOutput output(&resolved_url);
-      Parsed resolved_parsed;
-
-      bool succeed_resolve = ResolveRelativeURL(
-          relative_case.base.data(), parsed, relative_case.is_base_hier,
-          relative_case.rel.data(), relative_component, nullptr, &output,
-          &resolved_parsed);
-      output.Complete();
-
-      EXPECT_EQ(succeed_resolve, relative_case.expected_succeed_resolve);
-      EXPECT_EQ(resolved_url, relative_case.expected_resolved_url);
-    }
-  }
-
-  bool use_standard_compliant_non_special_scheme_url_parsing_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(URLCanonTypedTest, NonSpecialResolveRelativeURL) {
-  // Test flag-dependent behaviors of non-special URLs.
-  if (use_standard_compliant_non_special_scheme_url_parsing_) {
-    ResolveRelativeURLCase cases[] = {
-        {"git://host", "path", true, true, true, true, "git://host/path"},
-    };
-    for (const auto& i : cases) {
-      TestNonSpecialResolveRelativeURL(i);
-    }
-  } else {
-    ResolveRelativeURLCase cases[] = {
-        {"git://host", "path", true, true, true, true, "git://path"},
-    };
-    for (const auto& i : cases) {
-      TestNonSpecialResolveRelativeURL(i);
-    }
+  for (const auto& i : cases) {
+    TestNonSpecialResolveRelativeURL(i);
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All, URLCanonTypedTest, ::testing::Bool());
 
 // It used to be the case that when we did a replacement with a long buffer of
 // UTF-16 characters, we would get invalid data in the URL. This is because the
@@ -3283,6 +3216,54 @@ TEST_F(URLCanonTest, NonSpecialHostIPv6Address) {
         output, host_info);
     output.Complete();
     IPAddressCaseMatches(out_str, host_info, ip_address_case);
+  }
+}
+
+// Compile-time checks for StringToUint64WithBase function
+static_assert(StringToUint64WithBase("123", 10) == 123u);
+static_assert(StringToUint64WithBase("1A", 16) == 26u);
+
+// Test cases for StringToUint64WithBase function with various bases.
+TEST_F(URLCanonTest, StringToUint64WithBase) {
+  StringToUint64TestCase test_cases[] = {
+      {"1", 10, 1u},
+      {"-1", 10, 0u},
+      {"a", 10, 0u},
+      {"a", 16, 10u},
+      {"123", 10, 123u},
+      {"0", 10, 0u},
+      {"18446744073709551615", 10, 18446744073709551615ULL},  // Max uint64_t
+      {"1A", 16, 26u},
+      {"FF", 16, 255u},
+      {"FFFFFFFFFFFFFFFF", 16, 18446744073709551615ULL},  // Max uint64_t
+      {"10", 8, 8u},
+      {"77", 8, 63u},
+      {"1010", 2, 10u},
+      {"1111", 2, 15u},
+      {"1000000000000000000000000000000000000000000000000000000000000000", 2,
+       9223372036854775808ULL},  // 2^63
+      {"123Z", 10, 123u},        // Stops at 'Z'
+      {"1G", 16, 1u},            // Stops at 'G'
+      {"08", 8, 0u},             // Stops at '8'
+      {"", 10, 0u},              // Empty String
+      {" 1", 10, 0u},            // Doesn't ignore leading spaces.
+      {"+2", 10, 0u},            // Doesn't accept leading '+'.
+      {"0644", 10, 644u},        // Doesn't automatically switch to octal.
+      {"0xFF", 10, 0u},          // Doesn't automatically switch to hex.
+      {"0xFF", 16, 0u},          // Doesn't accept 0x prefix.
+      {"1e10", 10, 1u},          // Doesn't parse floating point.
+      {"eF", 16, 239u},          // Supports mixed case.
+      {"1z", 36, 71u},           // Supports base 36.
+      {"1 001", 10, 1u},         // Stops at spaces.
+      {"1,001", 10, 1u},         // Stops at commas.
+      {"1_001", 10, 1u},         // Stops at underlines.
+      {"1'001", 10, 1u},         // Stops at quote marks.
+      {"1.001", 10, 1u},         // Stops at periods.
+      {"1000000000000000F", 16, 15u}};  // Overflow is discarded.
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(StringToUint64WithBase(test_case.input, test_case.base),
+              test_case.expected);
   }
 }
 

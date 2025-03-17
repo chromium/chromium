@@ -13,9 +13,10 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 
 /**
@@ -24,20 +25,22 @@ import org.chromium.components.browser_ui.widget.R;
  * To specify the drawable size, use the {@code drawableWidth} and {@code drawableHeight}
  * attributes. To specify the drawable tint, use the {@code chromeDrawableTint} attribute.
  */
+@NullMarked
 public class TextViewWithCompoundDrawables extends AppCompatTextView {
     private int mDrawableWidth;
     private int mDrawableHeight;
-    private ColorStateList mDrawableTint;
+    private @Nullable ColorStateList mDrawableTint;
 
     public TextViewWithCompoundDrawables(Context context) {
         this(context, null);
     }
 
-    public TextViewWithCompoundDrawables(Context context, AttributeSet attrs) {
+    public TextViewWithCompoundDrawables(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TextViewWithCompoundDrawables(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TextViewWithCompoundDrawables(
+            Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
     }
@@ -95,7 +98,7 @@ public class TextViewWithCompoundDrawables extends AppCompatTextView {
         super.setCompoundDrawablesRelative(drawables[0], drawables[1], drawables[2], drawables[3]);
     }
 
-    private void init(Context context, AttributeSet attrs, int defStyleAttr) {
+    private void init(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         TypedArray array =
                 context.obtainStyledAttributes(
                         attrs, R.styleable.TextViewWithCompoundDrawables, defStyleAttr, 0);

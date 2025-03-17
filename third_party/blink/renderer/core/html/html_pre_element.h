@@ -31,7 +31,6 @@ class HTMLPreElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-
   HTMLPreElement(const QualifiedName&, Document&);
 
  private:
@@ -39,7 +38,7 @@ class HTMLPreElement final : public HTMLElement {
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
 };
 
 }  // namespace blink

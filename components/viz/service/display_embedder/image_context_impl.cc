@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -118,15 +119,25 @@ SkColor4f GetFallbackColorForPlane(viz::SharedImageFormat format,
 namespace viz {
 
 ImageContextImpl::ImageContextImpl(
-    const gpu::MailboxHolder& mailbox_holder,
+    const gpu::Mailbox& mailbox,
+    const gpu::SyncToken& sync_token,
+    uint32_t texture_target,
     const gfx::Size& size,
     SharedImageFormat format,
     bool maybe_concurrent_reads,
     const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space,
+    GrSurfaceOrigin origin,
     bool is_for_render_pass,
     bool raw_draw_if_possible)
-    : ImageContext(mailbox_holder, size, format, ycbcr_info, color_space),
+    : ImageContext(mailbox,
+                   sync_token,
+                   texture_target,
+                   size,
+                   format,
+                   ycbcr_info,
+                   color_space,
+                   origin),
       maybe_concurrent_reads_(maybe_concurrent_reads),
       is_for_render_pass_(is_for_render_pass),
       raw_draw_if_possible_(raw_draw_if_possible) {}
@@ -213,7 +224,7 @@ void ImageContextImpl::CreateFallbackImage(
   if (context_state->graphite_context()) {
     const auto& tex_infos = texture_infos();
     if (tex_infos.size() != static_cast<size_t>(num_planes) ||
-        base::ranges::any_of(tex_infos, [](const auto& tex_info) {
+        std::ranges::any_of(tex_infos, [](const auto& tex_info) {
           return !tex_info.isValid();
         })) {
       DLOG(ERROR) << "Invalid Graphite texture infos for format: "
@@ -318,10 +329,9 @@ bool ImageContextImpl::BeginRasterAccess(
     return true;
   }
 
-  auto raster =
-      raw_draw_if_possible_
-          ? representation_factory->ProduceRaster(mailbox_holder().mailbox)
-          : nullptr;
+  auto raster = raw_draw_if_possible_
+                    ? representation_factory->ProduceRaster(mailbox())
+                    : nullptr;
   if (!raster)
     return false;
 
@@ -365,8 +375,8 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
   }
 
   if (!representation_) {
-    auto representation = representation_factory->ProduceSkia(
-        mailbox_holder().mailbox, context_state);
+    auto representation =
+        representation_factory->ProduceSkia(mailbox(), context_state);
     if (!representation) {
       DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                      "mailbox not found in SharedImageManager.";

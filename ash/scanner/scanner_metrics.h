@@ -60,9 +60,9 @@ enum class ScannerFeatureUserState {
   kConsentDisclaimerAccepted,
   kConsentDisclaimerRejected,
   kSunfishScreenEnteredViaShortcut,
-  kSunfishScreenInitialScreenCaptureSentToScannerServer,
+  kDeprecatedSunfishScreenInitialScreenCaptureSentToScannerServer,
   kScreenCaptureModeScannerButtonShown,
-  kScreenCaptureModeInitialScreenCaptureSentToScannerServer,
+  kDeprecatedScreenCaptureModeInitialScreenCaptureSentToScannerServer,
   kNoActionsDetected,
   kNewCalendarEventActionDetected,
   kNewCalendarEventActionFinishedSuccessfully,
@@ -84,7 +84,45 @@ enum class ScannerFeatureUserState {
   kNewGoogleSheetPopulatedActionExecutionFailed,
   kNewGoogleDocPopulatedActionExecutionFailed,
   kCopyToClipboardPopulatedActionExecutionFailed,
-  kMaxValue = kCopyToClipboardPopulatedActionExecutionFailed,
+
+  kCanShowUiReturnedFalse = 27,
+  kCanShowUiReturnedTrueWithoutConsent = 28,
+  kCanShowUiReturnedTrueWithConsent = 29,
+
+  kCanShowUiReturnedFalseDueToNoShellInstance = 30,
+  kCanShowUiReturnedFalseDueToNoControllerOnShell = 31,
+  kCanShowUiReturnedFalseDueToEnterprisePolicy = 32,
+  kCanShowUiReturnedFalseDueToNoProfileScopedDelegate = 33,
+  kCanShowUiReturnedFalseDueToSettingsToggle = 34,
+  kCanShowUiReturnedFalseDueToFeatureFlag = 35,
+  kCanShowUiReturnedFalseDueToFeatureManagement = 36,
+  kCanShowUiReturnedFalseDueToSecretKey = 37,
+  kCanShowUiReturnedFalseDueToAccountCapabilities = 38,
+  kCanShowUiReturnedFalseDueToCountry = 39,
+  kCanShowUiReturnedFalseDueToKioskMode = 40,
+
+  kLauncherShownWithoutSunfishSessionButton = 41,
+  kLauncherShownWithSunfishSessionButton = 42,
+
+  kSunfishSessionImageCapturedAndActionsNotFetched = 43,
+  kSunfishSessionImageCapturedAndActionsFetchStarted = 44,
+  kSmartActionsButtonImageCapturedAndActionsNotFetched = 45,
+  kSmartActionsButtonImageCapturedAndActionsFetchStarted = 46,
+
+  kSmartActionsButtonNotShownDueToFeatureChecks = 47,
+  kSmartActionsButtonNotShownDueToTextDetectionCancelled = 48,
+  kSmartActionsButtonNotShownDueToNoTextDetected = 49,
+  kSmartActionsButtonNotShownDueToCanShowUiFalse = 50,
+  kSmartActionsButtonNotShownDueToOffline = 51,
+
+  kSunfishSessionStartedFromDebugShortcut = 52,
+  kSunfishSessionStartedFromLauncherButton = 53,
+  kSunfishSessionStartedFromHomeButtonLongPress = 54,
+
+  kFeedbackFormOpened = 55,
+  kFeedbackSent = 56,
+
+  kMaxValue = kFeedbackSent,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:ScannerFeatureUserState)
 
@@ -92,6 +130,9 @@ ASH_EXPORT void RecordScannerFeatureUserState(ScannerFeatureUserState state);
 
 ASH_EXPORT void RecordOnDeviceOcrTimerCompleted(
     base::TimeTicks ocr_attempt_start_time);
+
+ASH_EXPORT void RecordSunfishSessionButtonVisibilityOnLauncherShown(
+    bool is_visible);
 
 }  // namespace ash
 

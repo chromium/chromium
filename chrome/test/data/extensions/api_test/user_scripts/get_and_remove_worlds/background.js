@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_script_test_util.js';
+
 const otherWorldId = 'some other id';
 
 const configForDefaultWorld =
@@ -30,6 +32,8 @@ function sortWorlds(worlds) {
 }
 
 chrome.test.runTests([
+  waitForUserScriptsAPIAllowed,
+
   async function noWorldsReturnedWhenNoneConfigured() {
     const worlds = await chrome.userScripts.getWorldConfigurations();
     chrome.test.assertEq([], worlds);

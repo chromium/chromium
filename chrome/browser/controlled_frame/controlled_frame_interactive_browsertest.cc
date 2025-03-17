@@ -4,7 +4,6 @@
 
 #include <set>
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/controlled_frame/controlled_frame_permission_request_test_base.h"
@@ -15,20 +14,15 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 namespace controlled_frame {
 
 class ControlledFramePermissionRequestInteractiveTest
     : public ControlledFramePermissionRequestTestBase,
-      public testing::WithParamInterface<PermissionRequestTestParam> {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      permissions::features::kKeyboardAndPointerLockPrompt};
-};
+      public testing::WithParamInterface<PermissionRequestTestParam> {};
 
 // Pointer lock & Fullscreen are not available on MacOS bots.
 #if !BUILDFLAG(IS_MAC)
@@ -79,7 +73,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestInteractiveTest,
   )";
   test_case.permission_name = "fullscreen";
   test_case.policy_features.insert(
-      {blink::mojom::PermissionsPolicyFeature::kFullscreen});
+      {network::mojom::PermissionsPolicyFeature::kFullscreen});
 
   PermissionRequestTestParam test_param = GetParam();
   VerifyEnabledPermission(test_case, test_param);
@@ -123,10 +117,6 @@ class ControlledFramePointerLockInteractiveUiTest
       });
     )"));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      permissions::features::kKeyboardAndPointerLockPrompt};
 };
 
 IN_PROC_BROWSER_TEST_F(ControlledFramePointerLockInteractiveUiTest,
@@ -135,6 +125,10 @@ IN_PROC_BROWSER_TEST_F(ControlledFramePointerLockInteractiveUiTest,
       InstallAndOpenIwaThenCreateControlledFrame(
           /*controlled_frame_host_name=*/std::nullopt, "/index.html");
   AllowOnlyPointerLockPermission(app_frame);
+
+  // Make sure the app frame is focused so it receives the escape key below.
+  ASSERT_TRUE(content::ExecJs(
+      app_frame, "document.querySelector('controlledframe').focus()"));
 
   ASSERT_TRUE(content::ExecJs(controlled_frame, R"(
     new Promise((resolve, reject) => {

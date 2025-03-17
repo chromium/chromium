@@ -160,7 +160,7 @@ void DeclareProperty(Document& document,
 
   // inherits:
   builder.Append("inherits:");
-  builder.Append(is_inherited ? "true" : "false");
+  builder.Append(String::Boolean(is_inherited));
   builder.Append(";");
 
   builder.Append(" }");

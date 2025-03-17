@@ -18,6 +18,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/event_router.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -83,7 +84,7 @@ TEST_F(IdentityAPITest, AllAccountsExtensionEnabled) {
 
 TEST_F(IdentityAPITest, GetGaiaIdForExtension) {
   std::string extension_id = prefs()->AddExtensionAndReturnId("extension");
-  std::string gaia_id = identity_env()->MakeAccountAvailable(kTestAccount).gaia;
+  GaiaId gaia_id = identity_env()->MakeAccountAvailable(kTestAccount).gaia;
   api()->SetGaiaIdForExtension(extension_id, gaia_id);
   EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), gaia_id);
 
@@ -95,10 +96,10 @@ TEST_F(IdentityAPITest, GetGaiaIdForExtension) {
 TEST_F(IdentityAPITest, GetGaiaIdForExtensionSurvivesShutdown) {
   EXPECT_CALL(mock_on_signin_changed_callback(), Run(_));
   std::string extension_id = prefs()->AddExtensionAndReturnId("extension");
-  std::string gaia_id = identity_env()
-                            ->MakePrimaryAccountAvailable(
-                                kTestAccount, signin::ConsentLevel::kSignin)
-                            .gaia;
+  GaiaId gaia_id = identity_env()
+                       ->MakePrimaryAccountAvailable(
+                           kTestAccount, signin::ConsentLevel::kSignin)
+                       .gaia;
   api()->SetGaiaIdForExtension(extension_id, gaia_id);
   EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), gaia_id);
 

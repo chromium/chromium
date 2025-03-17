@@ -60,7 +60,7 @@ void SharedImageInterface::CreateSharedMemoryRegionFromSIInfo(
   handle.offset = 0;
   handle.stride = static_cast<int32_t>(
       gfx::RowSizeForBufferFormat(si_info.meta.size.width(), buffer_format, 0));
-  handle.region = std::move(shared_memory_region);
+  handle.set_region(std::move(shared_memory_region));
 }
 
 SharedImageInterface::SwapChainSharedImages::SwapChainSharedImages(
@@ -82,24 +82,6 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
     gfx::BufferUsage buffer_usage,
     std::optional<SharedImagePoolId> pool_id) {
   NOTREACHED();
-}
-
-scoped_refptr<ClientSharedImage>
-SharedImageInterface::AddReferenceToSharedImage(
-    const SyncToken& sync_token,
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    uint32_t texture_target) {
-  return ImportSharedImage(ExportedSharedImage(
-      mailbox,
-      SharedImageMetadata{format, size, color_space, surface_origin, alpha_type,
-                          usage},
-      sync_token, texture_target));
 }
 
 scoped_refptr<ClientSharedImage> SharedImageInterface::NotifyMailboxAdded(
@@ -180,17 +162,16 @@ void SharedImageInterface::UpdateSharedImage(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-SharedImageInterface::SharedImageMapping::SharedImageMapping() = default;
-SharedImageInterface::SharedImageMapping::SharedImageMapping(
-    SharedImageInterface::SharedImageMapping&& mapped) = default;
-SharedImageInterface::SharedImageMapping::SharedImageMapping(
-    scoped_refptr<ClientSharedImage> shared_image,
-    base::WritableSharedMemoryMapping mapping)
-    : shared_image(std::move(shared_image)), mapping(std::move(mapping)) {}
-SharedImageInterface::SharedImageMapping&
-SharedImageInterface::SharedImageMapping::operator=(
-    SharedImageInterface::SharedImageMapping&& mapped) = default;
-SharedImageInterface::SharedImageMapping::~SharedImageMapping() = default;
+void SharedImageInterface::CreateSharedImagePool(
+    const SharedImagePoolId& pool_id,
+    mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote) {
+  NOTREACHED();
+}
+
+void SharedImageInterface::DestroySharedImagePool(
+    const SharedImagePoolId& pool_id) {
+  NOTREACHED();
+}
 
 SharedImageInterfaceHolder::SharedImageInterfaceHolder(
     SharedImageInterface* sii)

@@ -142,8 +142,9 @@ DownloadTaskImpl::DownloadTaskImpl(
 DownloadTaskImpl::~DownloadTaskImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [NSNotificationCenter.defaultCenter removeObserver:observer_];
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDownloadDestroyed(this);
+  }
 
   // Delete the downloaded file if it was a temporary file or if the download
   // failed (it is not an error to delete a non-existent file).
@@ -194,6 +195,14 @@ NSString* DownloadTaskImpl::GetIdentifier() const {
 
 const GURL& DownloadTaskImpl::GetOriginalUrl() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return original_url_;
+}
+
+const GURL& DownloadTaskImpl::GetRedirectedUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (redirected_url_.is_valid()) {
+    return redirected_url_;
+  }
   return original_url_;
 }
 
@@ -340,8 +349,22 @@ void DownloadTaskImpl::OnDownloadFinished(DownloadResult download_result) {
 
 void DownloadTaskImpl::OnDownloadUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDownloadUpdated(this);
+  }
+}
+
+void DownloadTaskImpl::OnRedirected(const GURL& redirected_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (redirected_url == GetRedirectedUrl()) {
+    // If the redirected URL is the original one, or the redirection was already
+    // known, ignore it.
+    return;
+  }
+  redirected_url_ = redirected_url;
+  for (auto& observer : observers_) {
+    observer.OnDownloadUpdated(this);
+  }
 }
 
 }  // namespace web

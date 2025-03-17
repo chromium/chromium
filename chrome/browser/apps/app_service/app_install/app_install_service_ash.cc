@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/app_install/app_install_service_ash.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
@@ -11,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_discovery_metrics.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"

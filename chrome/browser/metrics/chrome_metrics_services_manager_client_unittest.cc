@@ -7,6 +7,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -17,11 +18,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#include "content/public/test/browser_task_environment.h"
-#endif
 
 using ::testing::NotNull;
 
@@ -88,12 +84,6 @@ TEST_F(ChromeMetricsServicesManagerClientTest, ForceTrialsDisablesReporting) {
 }
 
 TEST_F(ChromeMetricsServicesManagerClientTest, PopulateStartupVisibility) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Set up ScopedLacrosServiceTestHelper needed for Lacros.
-  content::BrowserTaskEnvironment task_environment;
-  chromeos::ScopedLacrosServiceTestHelper helper;
-#endif
-
   // Register the kMetricsReportingEnabled pref.
   local_state()->registry()->RegisterBooleanPref(
       metrics::prefs::kMetricsReportingEnabled, false);

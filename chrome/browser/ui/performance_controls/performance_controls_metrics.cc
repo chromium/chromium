@@ -72,6 +72,20 @@ class DailyEventObserver : public metrics::DailyEvent::Observer {
   raw_ptr<PrefService> pref_service_ = nullptr;
 };
 
+CpuInterventionHealthChange GetHealthChange(
+    PerformanceDetectionManager::HealthLevel before_discard,
+    PerformanceDetectionManager::HealthLevel after_discard) {
+  // Add one to the max health level since it uses zero based indexing.
+  const int num_health_levels =
+      static_cast<int>(PerformanceDetectionManager::HealthLevel::kMaxValue) + 1;
+  const int health_change =
+      num_health_levels * static_cast<int>(before_discard) +
+      static_cast<int>(after_discard);
+  CHECK_LE(health_change,
+           static_cast<int>(CpuInterventionHealthChange::kMaxValue));
+  return static_cast<CpuInterventionHealthChange>(health_change);
+}
+
 }  // namespace
 
 PerformanceInterventionMetricsReporter::PerformanceInterventionMetricsReporter(
@@ -213,4 +227,26 @@ void RecordTabRemovedFromTabList(int count_after_removal) {
 void RecordNumberOfDiscardedTabs(int count) {
   base::UmaHistogramCustomCounts(
       "PerformanceControls.Intervention.DiscardedTabCount", count, 0, 10, 10);
+}
+
+void RecordCpuHealthStatusChange(
+    base::TimeDelta time_after_discard,
+    PerformanceDetectionManager::HealthLevel before_discard,
+    PerformanceDetectionManager::HealthLevel after_discard) {
+  std::string time = std::string();
+  if (time_after_discard == base::Minutes(1)) {
+    time = "1Min";
+  } else if (time_after_discard == base::Minutes(2)) {
+    time = "2Min";
+  } else {
+    CHECK_EQ(time_after_discard, base::Minutes(4));
+    time = "4Min";
+  }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PerformanceControls.Intervention.BackgroundTab.",
+                    GetDetectionResourceTypeString(
+                        PerformanceDetectionManager::ResourceType::kCpu),
+                    ".HealthStatusChange.", time}),
+      GetHealthChange(before_discard, after_discard));
 }

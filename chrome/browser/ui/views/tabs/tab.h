@@ -146,7 +146,7 @@ class Tab : public gfx::AnimationDelegate,
   const TabRendererData& data() const { return data_; }
 
   // Redraws the loading animation if one is visible. Otherwise, no-op. The
-  // |elapsed_time| parameter is shared between tabs and used to keep the
+  // `elapsed_time` parameter is shared between tabs and used to keep the
   // throbbers in sync.
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
 
@@ -171,8 +171,8 @@ class Tab : public gfx::AnimationDelegate,
   }
   const TabStyle* tab_style() const { return tab_style_views_->tab_style(); }
 
-  // Returns the text to show in a tab's tooltip: The contents |title|, followed
-  // by a break, followed by a localized string describing the |alert_state|.
+  // Returns the text to show in a tab's tooltip: The contents `title`, followed
+  // by a break, followed by a localized string describing the `alert_state`.
   // Exposed publicly for tests.
   static std::u16string GetTooltipText(
       const std::u16string& title,
@@ -226,7 +226,7 @@ class Tab : public gfx::AnimationDelegate,
   // pinned tab.
   bool ShouldRenderAsNormalTab() const;
 
-  // Updates the blocked attention state of the |icon_|. This only updates
+  // Updates the blocked attention state of the `icon_`. This only updates
   // state; it is the responsibility of the caller to request a paint.
   void UpdateTabIconNeedsAttentionBlocked();
 
@@ -291,6 +291,10 @@ class Tab : public gfx::AnimationDelegate,
   // different from View::IsMouseHovered() which does a naive intersection with
   // the view bounds.
   bool mouse_hovered_ = false;
+
+  // Whether the shift key was pressed at the start of the click. Used on mouse
+  // up.
+  bool shift_pressed_on_mouse_down_ = false;
 
   std::unique_ptr<TabCloseButtonObserver> tab_close_button_observer_;
 

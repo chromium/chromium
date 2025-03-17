@@ -4,7 +4,9 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=./pdf_shared.css.js
  * #import=./shared_vars.css.js
+ * #include=pdf-shared
  * #css_wrapper_metadata_end */
 
 :host {

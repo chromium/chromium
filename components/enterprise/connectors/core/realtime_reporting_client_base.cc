@@ -4,12 +4,17 @@
 
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 
+#include "base/containers/contains.h"
+#include "base/containers/to_value_list.h"
 #include "base/i18n/time_formatting.h"
+#include "base/logging.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace enterprise_connectors {
@@ -57,10 +62,6 @@ void RealtimeReportingClientBase::InitRealtimeReportingClient(
       (!settings.per_profile &&
        IsClientValid(settings.dm_token, browser_client_))) {
     DVLOG(2) << "Safe browsing real-time event reporting already initialized.";
-    return;
-  }
-
-  if (!ShouldInitRealtimeReportingClient()) {
     return;
   }
 
@@ -163,25 +164,65 @@ void RealtimeReportingClientBase::OnCloudPolicyClientAvailable(
   DVLOG(1) << "Ready for safe browsing real-time event reporting.";
 }
 
-void RealtimeReportingClientBase::ReportEventWithTimestamp(
+void RealtimeReportingClientBase::ReportEvent(
+    ::chrome::cros::reporting::proto::Event event,
+    const ReportingSettings& settings) {
+  DCHECK(base::FeatureList::IsEnabled(
+      policy::kUploadRealtimeReportingEventsUsingProto));
+  if (rejected_dm_token_timers_.contains(settings.dm_token)) {
+    return;
+  }
+
+  // Make sure real-time reporting is initialized.
+  InitRealtimeReportingClient(settings);
+  if ((settings.per_profile && !profile_client_) ||
+      (!settings.per_profile && !browser_client_)) {
+    return;
+  }
+
+  policy::CloudPolicyClient* client =
+      settings.per_profile ? profile_client_.get() : browser_client_.get();
+
+  // If the timestamp is not set, it's a realtime event so use current time.
+  if (!event.has_time()) {
+    int64_t timestamp_millis = base::Time::Now().InMillisecondsSinceUnixEpoch();
+    event.mutable_time()->set_seconds(timestamp_millis / 1000);
+    event.mutable_time()->set_nanos((timestamp_millis % 1000) * 1000000);
+  }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  MaybeCollectDeviceSignalsAndReportEvent(std::move(event), client, settings);
+#else
+  // Regardless of collecting device signals or not, upload the security event
+  // report.
+  UploadSecurityEvent(std::move(event), client, settings);
+#endif
+}
+
+void RealtimeReportingClientBase::ReportEventWithTimestampDeprecated(
     const std::string& name,
     const ReportingSettings& settings,
     base::Value::Dict event,
     const base::Time& time,
     bool include_profile_user_name) {
+  // TODO(Bug:394403600) - Replace with a DCHECK once all callers are migrated.
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    DLOG(WARNING) << "ReportEventWithTimestampDeprecated called when proto "
+                     "format enabled for event "
+                  << name;
+    return;
+  }
+
   if (rejected_dm_token_timers_.contains(settings.dm_token)) {
     return;
   }
 
 #ifndef NDEBUG
-  // Make sure the event is included in the kAllReportingEvents array.
-  bool found = false;
-  for (const char* event_name : kAllReportingEvents) {
-    if (event_name == name) {
-      found = true;
-      break;
-    }
-  }
+  // Make sure the event is included in the kAllReportingEnabledEvents or the
+  // kAllReportingOptInEvents array.
+  bool found = base::Contains(kAllReportingEnabledEvents, name) ||
+               base::Contains(kAllReportingOptInEvents, name);
   DCHECK(found);
 #endif
 
@@ -199,16 +240,40 @@ void RealtimeReportingClientBase::ReportEventWithTimestamp(
     event.Set(kKeyProfileUserName, GetProfileUserName());
   }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  MaybeCollectDeviceSignalsAndReportEvent(std::move(event), client, name,
-                                          settings, time);
+  MaybeCollectDeviceSignalsAndReportEventDeprecated(std::move(event), client,
+                                                    name, settings, time);
 #else
   // Regardless of collecting device signals or not, upload the security event
   // report.
-  UploadSecurityEventReport(std::move(event), client, name, settings, time);
+  UploadSecurityEventReportDeprecated(std::move(event), client, name, settings,
+                                      time);
 #endif
 }
 
-void RealtimeReportingClientBase::UploadSecurityEventReport(
+void RealtimeReportingClientBase::UploadSecurityEvent(
+    ::chrome::cros::reporting::proto::Event event,
+    policy::CloudPolicyClient* client,
+    const ReportingSettings& settings) {
+  if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
+    auto local_ips = GetLocalIpAddresses();
+    event.mutable_local_ips()->Add(local_ips.begin(), local_ips.end());
+  }
+
+  auto event_type =
+      enterprise_connectors::GetUmaEnumFromEventCase(event.event_case());
+  ::chrome::cros::reporting::proto::UploadEventsRequest request =
+      CreateUploadEventsRequest();
+  request.add_events()->Swap(&event);
+
+  auto upload_callback =
+      base::BindOnce(&RealtimeReportingClientBase::UploadCallback, AsWeakPtr(),
+                     request, settings.per_profile, client, event_type);
+
+  client->UploadSecurityEvent(ShouldIncludeDeviceInfo(settings.per_profile),
+                              std::move(request), std::move(upload_callback));
+}
+
+void RealtimeReportingClientBase::UploadSecurityEventReportDeprecated(
     base::Value::Dict event,
     policy::CloudPolicyClient* client,
     std::string name,
@@ -219,6 +284,10 @@ void RealtimeReportingClientBase::UploadSecurityEventReport(
           .Set("time", base::TimeFormatAsIso8601(time))
           .Set(name, std::move(event));
 
+  if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
+    event_wrapper.Set("localIps", base::ToValueList(GetLocalIpAddresses()));
+  }
+
   DVLOG(1) << "enterprise.connectors: security event: "
            << event_wrapper.DebugString();
 
@@ -227,8 +296,8 @@ void RealtimeReportingClientBase::UploadSecurityEventReport(
           base::Value::List().Append(std::move(event_wrapper)), GetContext());
 
   auto upload_callback =
-      base::BindOnce(&RealtimeReportingClientBase::UploadCallback, AsWeakPtr(),
-                     report.Clone(), settings.per_profile, client,
+      base::BindOnce(&RealtimeReportingClientBase::UploadCallbackDeprecated,
+                     AsWeakPtr(), report.Clone(), settings.per_profile, client,
                      enterprise_connectors::GetUmaEnumFromEventName(name));
 
   client->UploadSecurityEventReport(
@@ -239,10 +308,6 @@ void RealtimeReportingClientBase::UploadSecurityEventReport(
 const std::string
 RealtimeReportingClientBase::GetProfilePolicyClientDescription() {
   return kProfilePolicyClientDescription;
-}
-
-bool RealtimeReportingClientBase::ShouldInitRealtimeReportingClient() {
-  return true;
 }
 
 }  // namespace enterprise_connectors

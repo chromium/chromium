@@ -4,6 +4,8 @@
 
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 
+#include <algorithm>
+#include <iterator>
 #include <map>
 #include <memory>
 
@@ -68,11 +70,11 @@ namespace pdf {
 namespace {
 
 const chrome_pdf::AccessibilityTextRunInfo kFirstTextRun = {
-    15, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    15, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityTextRunInfo kSecondTextRun = {
-    15, gfx::RectF(28.0f, 117.0f, 152.0f, 19.0f),
+    15, "P", gfx::RectF(28.0f, 117.0f, 152.0f, 19.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityCharInfo kDummyCharsData[] = {
@@ -83,19 +85,19 @@ const chrome_pdf::AccessibilityCharInfo kDummyCharsData[] = {
     {'w', 16}, {'o', 12}, {'r', 8},  {'l', 4},  {'d', 12}, {'!', 2},
 };
 const chrome_pdf::AccessibilityTextRunInfo kFirstRunMultiLine = {
-    7, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    7, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityTextRunInfo kSecondRunMultiLine = {
-    8, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    8, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityTextRunInfo kThirdRunMultiLine = {
-    9, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    9, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityTextRunInfo kFourthRunMultiLine = {
-    6, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    6, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 
@@ -358,10 +360,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     viewport_info_.scale = 1.0;
     viewport_info_.scroll = gfx::Point(0, 0);
     viewport_info_.offset = gfx::Point(0, 0);
-    viewport_info_.selection_start_page_index = 0u;
-    viewport_info_.selection_start_char_index = 0u;
-    viewport_info_.selection_end_page_index = 0u;
-    viewport_info_.selection_end_char_index = 0u;
+    doc_info_.is_tagged = false;
     doc_info_.text_accessible = true;
     doc_info_.text_copyable = true;
     doc_info_.page_count = 1u;
@@ -600,6 +599,108 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeCreation) {
             image_node->data().relative_bounds.bounds);
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION),
             image_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeadingsDetectedByHeuristic) {
+  base::test::ScopedFeatureList pdf_tags;
+  pdf_tags.InitAndDisableFeature(chrome_pdf::features::kPdfTags);
+
+  CreatePdfAccessibilityTree();
+  text_runs_ = {kFirstTextRun, kSecondTextRun, kFirstTextRun, kSecondTextRun};
+  text_runs_[0].style.font_size = 16.0f;
+  text_runs_[1].style.font_size = 8.0f;
+  text_runs_[2].style.font_size = 8.0f;
+  text_runs_[3].style.font_size = 8.0f;
+
+  chars_ = {std::begin(kDummyCharsData), std::end(kDummyCharsData)};
+  std::copy(std::begin(kDummyCharsData), std::end(kDummyCharsData),
+            std::back_inserter(chars_));
+
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  // Wait for `PdfAccessibilityTree::UnserializeNodes()`, a delayed task.
+  WaitForThreadDelayedTasks();
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  CheckRootAndStatusNodes(pdf_root, doc_info_.page_count,
+                          /*is_pdf_ocr_test=*/false, /*is_ocr_completed=*/false,
+                          /*create_empty_ocr_results=*/false);
+
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(4u, page->GetChildCount());
+
+  const ui::AXNode* heuristic_heading = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, heuristic_heading);
+  EXPECT_EQ(ax::mojom::Role::kHeading, heuristic_heading->GetRole());
+  EXPECT_EQ(2, heuristic_heading->GetIntAttribute(
+                   ax::mojom::IntAttribute::kHierarchicalLevel));
+  EXPECT_EQ("h2", heuristic_heading->GetStringAttribute(
+                      ax::mojom::StringAttribute::kHtmlTag));
+
+  const ui::AXNode* paragraph1 = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, paragraph1);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph1->GetRole());
+
+  const ui::AXNode* paragraph2 = page->GetChildAtIndex(2u);
+  ASSERT_NE(nullptr, paragraph2);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph2->GetRole());
+
+  const ui::AXNode* paragraph3 = page->GetChildAtIndex(3u);
+  ASSERT_NE(nullptr, paragraph3);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph3->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeadingsDetectedFromTags) {
+  base::test::ScopedFeatureList pdf_tags;
+  pdf_tags.InitAndEnableFeature(chrome_pdf::features::kPdfTags);
+  doc_info_.is_tagged = true;
+
+  CreatePdfAccessibilityTree();
+  text_runs_ = {kFirstTextRun, kSecondTextRun};
+  text_runs_[0].tag_type = "H1";
+  text_runs_[1].tag_type = "H2";
+
+  chars_ = {std::begin(kDummyCharsData), std::end(kDummyCharsData)};
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  // Wait for `PdfAccessibilityTree::UnserializeNodes()`, a delayed task.
+  WaitForThreadDelayedTasks();
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  CheckRootAndStatusNodes(pdf_root, doc_info_.page_count,
+                          /*is_pdf_ocr_test=*/false, /*is_ocr_completed=*/false,
+                          /*create_empty_ocr_results=*/false);
+
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  const ui::AXNode* heading1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, heading1);
+  EXPECT_EQ(ax::mojom::Role::kHeading, heading1->GetRole());
+  EXPECT_EQ(1, heading1->GetIntAttribute(
+                   ax::mojom::IntAttribute::kHierarchicalLevel));
+
+  const ui::AXNode* heading2 = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, heading2);
+  EXPECT_EQ(ax::mojom::Role::kHeading, heading2->GetRole());
+  EXPECT_EQ(2, heading2->GetIntAttribute(
+                   ax::mojom::IntAttribute::kHierarchicalLevel));
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestOverlappingAnnots) {

@@ -8,13 +8,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 
-using CrExtensionsShortcutInputTest = WebUIMochaFocusTest;
-IN_PROC_BROWSER_TEST_F(CrExtensionsShortcutInputTest, Basic) {
-  set_test_loader_host(chrome::kChromeUIExtensionsHost);
-  RunTest("extensions/shortcut_input_test.js",
-          "runMochaTest('ExtensionShortcutInputTest', 'Basic')");
-}
-
 class CrExtensionsFocusTest : public WebUIMochaFocusTest {
  protected:
   CrExtensionsFocusTest() {
@@ -25,6 +18,11 @@ class CrExtensionsFocusTest : public WebUIMochaFocusTest {
 IN_PROC_BROWSER_TEST_F(CrExtensionsFocusTest, UninstallFocus) {
   RunTest("extensions/manager_unit_test.js",
           "runMochaTest('ExtensionManagerUnitTest', 'UninstallFocus')");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsFocusTest, UpdateShortcut) {
+  RunTest("extensions/keyboard_shortcuts_test.js",
+          "runMochaTest('ExtensionShortcutTest', 'UpdateShortcut')");
 }
 
 class CrExtensionsOptionsPageTest : public ExtensionSettingsTestBase {

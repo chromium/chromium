@@ -201,12 +201,28 @@ bool ShouldLogAutofillSuggestionShown(
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
     case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
       return true;
-    case AutofillSuggestionTriggerSource::kTextFieldDidChange:
+    case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
     case AutofillSuggestionTriggerSource::kAutofillAi:
     case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
       return false;
   }
+}
+
+int GetBucketForAcceptanceMetricsGroupedByFieldType(FieldType field_type,
+                                                    bool suggestion_accepted) {
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE <= (UINT16_MAX >> 4),
+                "Autofill::FieldType value needs more than 12 bits.");
+
+  return (field_type << 2) | suggestion_accepted;
+}
+
+int GetDuplicationRank(
+    base::span<const DifferingProfileWithTypeSet> min_incompatible_sets) {
+  // All elements of `min_incompatible_sets` have the same size.
+  return min_incompatible_sets.empty()
+             ? std::numeric_limits<int>::max()
+             : min_incompatible_sets.back().field_type_set.size();
 }
 
 }  // namespace autofill::autofill_metrics

@@ -4,7 +4,9 @@
 
 #include "content/browser/devtools/protocol/target_handler.h"
 
+#include <algorithm>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/base64.h"
@@ -16,7 +18,6 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -154,13 +155,25 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
 
 class BrowserToPageConnector;
 
+// Contains permissions for the instances of BrowserConnectorHostClient.
+// Currently, only permissions for
+// DevToolsAgentHostClient::AllowUnsafeOperations are implemented.
+struct BrowserConnectorHostClientPermissions {
+  // Defines what DevToolsAgentHostClient::AllowUnsafeOperations
+  // returns for BrowserConnectorHostClient instances. See
+  // DevToolsAgentHostClient::AllowUnsafeOperations for more details.
+  bool allow_unsafe_operations = false;
+};
+
 class BrowserToPageConnector {
  public:
   class BrowserConnectorHostClient : public DevToolsAgentHostClient {
    public:
-    BrowserConnectorHostClient(BrowserToPageConnector* connector,
-                               DevToolsAgentHost* host)
-        : connector_(connector) {
+    BrowserConnectorHostClient(
+        BrowserToPageConnector* connector,
+        DevToolsAgentHost* host,
+        const BrowserConnectorHostClientPermissions& permissions)
+        : connector_(connector), permissions_(permissions) {
       // TODO(dgozman): handle return value of AttachClient.
       host->AttachClient(this);
     }
@@ -177,18 +190,24 @@ class BrowserToPageConnector {
       connector_->AgentHostClosed(agent_host);
     }
 
+    bool AllowUnsafeOperations() override {
+      return permissions_.allow_unsafe_operations;
+    }
+
    private:
     raw_ptr<BrowserToPageConnector> connector_;
+    BrowserConnectorHostClientPermissions permissions_;
   };
 
   BrowserToPageConnector(const std::string& binding_name,
-                         DevToolsAgentHost* page_host)
+                         DevToolsAgentHost* page_host,
+                         BrowserConnectorHostClientPermissions permissions)
       : binding_name_(binding_name), page_host_(page_host) {
     browser_host_ = BrowserDevToolsAgentHost::CreateForDiscovery();
-    browser_host_client_ =
-        std::make_unique<BrowserConnectorHostClient>(this, browser_host_.get());
-    page_host_client_ =
-        std::make_unique<BrowserConnectorHostClient>(this, page_host_.get());
+    browser_host_client_ = std::make_unique<BrowserConnectorHostClient>(
+        this, browser_host_.get(), permissions);
+    page_host_client_ = std::make_unique<BrowserConnectorHostClient>(
+        this, page_host_.get(), BrowserConnectorHostClientPermissions());
 
     SendProtocolMessageToPage("Page.enable", base::Value());
     SendProtocolMessageToPage("Runtime.enable", base::Value());
@@ -242,19 +261,19 @@ class BrowserToPageConnector {
     std::string_view message_sp(reinterpret_cast<const char*>(message.data()),
                                 message.size());
     if (agent_host == page_host_.get()) {
-      std::optional<base::Value> value = base::JSONReader::Read(message_sp);
-      if (!value || !value->is_dict()) {
+      std::optional<base::Value::Dict> value =
+          base::JSONReader::ReadDict(message_sp);
+      if (!value) {
         return;
       }
 
-      const base::Value::Dict& dict = value->GetDict();
       // Make sure this is a binding call.
-      const std::string* method = dict.FindString("method");
+      const std::string* method = value->FindString("method");
       if (!method || *method != "Runtime.bindingCalled") {
         return;
       }
 
-      const base::Value::Dict* params = dict.FindDict("params");
+      const base::Value::Dict* params = value->FindDict("params");
       if (!params) {
         return;
       }
@@ -491,12 +510,11 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     DCHECK(!flatten_protocol_);
 
     if (throttle_ || worker_throttle_) {
-      std::optional<base::Value> value =
-          base::JSONReader::Read(std::string_view(
+      std::optional<base::Value::Dict> value =
+          base::JSONReader::ReadDict(std::string_view(
               reinterpret_cast<const char*>(message.data()), message.size()));
       const std::string* method;
-      if (value.has_value() && value->is_dict() &&
-          (method = value->GetDict().FindString(kMethod)) &&
+      if (value && (method = value->FindString(kMethod)) &&
           *method == kResumeMethod) {
         ResumeIfThrottled();
       }
@@ -1163,7 +1181,8 @@ Response TargetHandler::CloseTarget(const std::string& target_id,
 
 Response TargetHandler::ExposeDevToolsProtocol(
     const std::string& target_id,
-    std::optional<std::string> binding_name) {
+    std::optional<std::string> binding_name,
+    std::optional<bool> inherit_permissions) {
   if (access_mode_ != AccessMode::kBrowser)
     return Response::InvalidParams(kNotAllowedError);
   scoped_refptr<DevToolsAgentHost> agent_host =
@@ -1181,14 +1200,24 @@ Response TargetHandler::ExposeDevToolsProtocol(
         "RemoteDebuggingBinding can be granted only to page targets");
   }
 
-  new BrowserToPageConnector(binding_name.value_or("cdp"), agent_host.get());
+  BrowserConnectorHostClientPermissions permissions;
+  if (inherit_permissions.value_or(false)) {
+    permissions.allow_unsafe_operations =
+        root_session_->GetClient()->AllowUnsafeOperations();
+  }
+
+  new BrowserToPageConnector(binding_name.value_or("cdp"), agent_host.get(),
+                             permissions);
   return Response::Success();
 }
 
 Response TargetHandler::CreateTarget(
     const std::string& url,
+    std::optional<int> left,
+    std::optional<int> top,
     std::optional<int> width,
     std::optional<int> height,
+    std::optional<std::string> window_state,
     std::optional<std::string> context_id,
     std::optional<bool> enable_begin_frame_control,
     std::optional<bool> new_window,
@@ -1211,7 +1240,7 @@ Response TargetHandler::CreateTarget(
           ? content::DevToolsManagerDelegate::kTab
           : content::DevToolsManagerDelegate::kFrame;
   scoped_refptr<content::DevToolsAgentHost> agent_host =
-      delegate->CreateNewTarget(gurl, target_type);
+      delegate->CreateNewTarget(gurl, target_type, new_window.value_or(false));
   if (!agent_host)
     return Response::ServerError("Not supported");
   *out_target_id = agent_host->GetId();
@@ -1405,8 +1434,8 @@ void TargetHandler::DisposeBrowserContext(
   }
   std::vector<content::BrowserContext*> contexts =
       delegate->GetBrowserContexts();
-  auto context_it = base::ranges::find(contexts, context_id,
-                                       &content::BrowserContext::UniqueId);
+  auto context_it = std::ranges::find(contexts, context_id,
+                                      &content::BrowserContext::UniqueId);
   if (context_it == contexts.end()) {
     callback->sendFailure(
         Response::ServerError("Failed to find context with id " + context_id));

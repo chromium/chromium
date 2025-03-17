@@ -4,87 +4,22 @@
 
 package org.chromium.components.data_sharing;
 
-import android.app.Activity;
-import android.content.Context;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.base.Callback;
-import org.chromium.components.data_sharing.configs.AvatarConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingRuntimeDataConfig;
-import org.chromium.components.data_sharing.configs.MemberPickerConfig;
 import org.chromium.url.GURL;
-
-import java.util.List;
 
 /** An interface that shows sharing UI screens. */
 @JNINamespace("data_sharing")
+@NullMarked
 public interface DataSharingUIDelegate {
-
-    /** Interface for callback when members are picked. */
-    public interface MemberPickerListener {
-
-        /** Called when members are selected. */
-        public void onSelectionDone(List<String> selectedMemberIds, List<String> emails);
-
-        /** List of members picked. */
-        public class MemberResult {
-            // TODO (ritikagup) : Unify ids/avatar emails if needed.
-            List<String> mSelectedMemberIds;
-        }
-    }
-
-    /**
-     * Displays UI to pick members for DataSharing UI.
-     *
-     * @param activity Used to associate with the given view group.
-     * @param view The UI will be drawn inside the provided view.
-     * @param memberResult This callback is invoked when members are selected.
-     * @param config Used to set properties for the API.
-     */
-    default void showMemberPicker(
-            @NonNull Activity activity,
-            @NonNull ViewGroup view,
-            MemberPickerListener memberResult,
-            MemberPickerConfig config) {}
-
-    /**
-     * Displays FullPicker UI for DataSharing UI.
-     *
-     * @param activity Used to associate with the given view group.
-     * @param view The UI will be drawn inside the provided view.
-     * @param memberResult This callback is invoked when members are selected.
-     * @param config Used to set properties for the API.
-     */
-    default void showFullPicker(
-            @NonNull Activity activity,
-            @NonNull ViewGroup view,
-            MemberPickerListener memberResult,
-            MemberPickerConfig config) {}
-
-    /**
-     * Method to display avatars in a single tile.
-     *
-     * @param context Used to associate with the given view group.
-     * @param views The UI will be drawn inside the provided views.
-     * @param emails Based on the list of emails, each view will be populated with avatars.
-     * @param success Callback to tell if the avatars are fetched successfully.
-     * @param config Used to set properties for the API.
-     */
-    default void showAvatars(
-            @NonNull Context context,
-            List<ViewGroup> views,
-            List<String> emails,
-            Callback<Boolean> success,
-            AvatarConfig config) {}
 
     /**
      * Handle the intercepted URL to show relevant data sharing group information.
@@ -100,7 +35,7 @@ public interface DataSharingUIDelegate {
      * @param createUiConfig Used to set properties for data sharing create flow.
      * @return A unique identifier for create flow.
      */
-    default String showCreateFlow(DataSharingCreateUiConfig createUiConfig) {
+    default @Nullable String showCreateFlow(DataSharingCreateUiConfig createUiConfig) {
         return null;
     }
 
@@ -110,7 +45,7 @@ public interface DataSharingUIDelegate {
      * @param joinUiConfig Used to set properties for data sharing join flow.
      * @return A unique identifier for join flow.
      */
-    default String showJoinFlow(DataSharingJoinUiConfig joinUiConfig) {
+    default @Nullable String showJoinFlow(DataSharingJoinUiConfig joinUiConfig) {
         return null;
     }
 
@@ -120,7 +55,7 @@ public interface DataSharingUIDelegate {
      * @param manageUiConfig Used to set properties for data sharing manage flow.
      * @return A unique identifier for manage flow.
      */
-    default String showManageFlow(DataSharingManageUiConfig manageUiConfig) {
+    default @Nullable String showManageFlow(DataSharingManageUiConfig manageUiConfig) {
         return null;
     }
 
@@ -133,13 +68,6 @@ public interface DataSharingUIDelegate {
      * @param runtimeData The runtime data to update the flow with.
      */
     default void updateRuntimeData(String sessionId, DataSharingRuntimeDataConfig runtimeData) {}
-
-    /**
-     * Method to display avatars in a single tile.
-     *
-     * @param avatarConfig Used to set properties for the avatars.
-     */
-    default void showAvatarsInTile(AvatarConfig avatarConfig) {}
 
     /**
      * Method to destroy UI flow based on `sessionId`.

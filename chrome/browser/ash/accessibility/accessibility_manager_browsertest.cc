@@ -51,6 +51,8 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
@@ -66,7 +68,6 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/message_center/message_center.h"
-#include "ui/native_theme/native_theme_features.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace ash {
@@ -82,7 +83,7 @@ using ::testing::WithParamInterface;
 
 // Use a real domain to avoid policy loading problems.
 constexpr char kTestUserName[] = "owner@gmail.com";
-constexpr char kTestUserGaiaId[] = "9876543210";
+constexpr GaiaId::Literal kTestUserGaiaId("9876543210");
 constexpr char kSodaUnsupportedLocale[] = "af-ZA";
 
 // Dictation notification titles and descriptions. '*'s are used as placeholders
@@ -222,12 +223,12 @@ bool IsReducedAnimationsEnabled() {
   return AccessibilityManager::Get()->IsReducedAnimationsEnabled();
 }
 
-bool IsOverlayScrollbarEnabled() {
-  return AccessibilityManager::Get()->IsOverlayScrollbarEnabled();
+bool IsAlwaysShowScrollbarsEnabled() {
+  return AccessibilityManager::Get()->IsAlwaysShowScrollbarsEnabled();
 }
 
-void SetOverlayScrollbarEnabled(bool enabled) {
-  AccessibilityManager::Get()->EnableOverlayScrollbar(enabled);
+void SetAlwaysShowScrollbarsEnabled(bool enabled) {
+  AccessibilityManager::Get()->EnableAlwaysShowScrollbars(enabled);
 }
 
 void SetMouseKeysEnabled(bool enabled) {
@@ -338,9 +339,9 @@ void SetReducedAnimationsEnabledPref(bool enabled) {
       prefs::kAccessibilityReducedAnimationsEnabled, enabled);
 }
 
-void SetOverlayScrollbarEnabledPref(bool enabled) {
-  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityOverlayScrollbarEnabled,
-                                   enabled);
+void SetAlwaysShowScrollbarsEnabledPref(bool enabled) {
+  GetActiveUserPrefs()->SetBoolean(
+      prefs::kAccessibilityAlwaysShowScrollbarsEnabled, enabled);
 }
 
 void SetMouseKeysEnabledPref(bool enabled) {
@@ -501,8 +502,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
         {features::kOnDeviceSpeechRecognition,
          ::features::kAccessibilityReducedAnimations,
          ::features::kAccessibilityMouseKeys,
-         ::features::kAccessibilityFaceGaze,
-         ::features::kOverlayScrollbarsOSSetting},
+         ::features::kAccessibilityFaceGaze},
         {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
@@ -535,7 +535,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   int default_autoclick_delay_ = 0;
 
   const AccountId test_account_id_ =
-      AccountId::FromUserEmailGaiaId(kTestUserName, GaiaId(kTestUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
 
   bool ShouldShowNetworkDictationDialog(const std::string& locale) {
     return AccessibilityManager::Get()->ShouldShowNetworkDictationDialog(
@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
   EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
   EXPECT_FALSE(IsReducedAnimationsEnabled());
-  EXPECT_FALSE(IsOverlayScrollbarEnabled());
+  EXPECT_FALSE(IsAlwaysShowScrollbarsEnabled());
   EXPECT_FALSE(IsMouseKeysEnabled());
   EXPECT_EQ(default_autoclick_delay_, GetAutoclickDelay());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
@@ -629,8 +629,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
   SetReducedAnimationsEnabledPref(true);
   EXPECT_TRUE(IsReducedAnimationsEnabled());
 
-  SetOverlayScrollbarEnabledPref(true);
-  EXPECT_TRUE(IsOverlayScrollbarEnabled());
+  SetAlwaysShowScrollbarsEnabledPref(true);
+  EXPECT_TRUE(IsAlwaysShowScrollbarsEnabled());
 
   SetMouseKeysEnabledPref(true);
   EXPECT_TRUE(IsMouseKeysEnabled());
@@ -668,8 +668,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
   SetReducedAnimationsEnabledPref(false);
   EXPECT_FALSE(IsReducedAnimationsEnabled());
 
-  SetOverlayScrollbarEnabledPref(false);
-  EXPECT_FALSE(IsOverlayScrollbarEnabled());
+  SetAlwaysShowScrollbarsEnabledPref(false);
+  EXPECT_FALSE(IsAlwaysShowScrollbarsEnabled());
 
   SetMouseKeysEnabledPref(false);
   EXPECT_FALSE(IsMouseKeysEnabled());
@@ -1795,8 +1795,7 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_feature_list_.InitWithFeatures(
         {::features::kAccessibilityReducedAnimations,
-         ::features::kAccessibilityMouseKeys,
-         ::features::kOverlayScrollbarsOSSetting},
+         ::features::kAccessibilityMouseKeys},
         {});
   }
 
@@ -1820,9 +1819,16 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
   }
 
   void CreateSession(const AccountId& account_id) {
+    ASSERT_TRUE(user_manager::TestHelper(*user_manager::UserManager::Get())
+                    .AddRegularUser(account_id));
+
     auto* session_manager = session_manager::SessionManager::Get();
-    session_manager->CreateSession(account_id, account_id.GetUserEmail(),
-                                   false);
+    session_manager->CreateSession(
+        account_id,
+        // TODO(crbug.com/278643115): Use fake username hash.
+        account_id.GetUserEmail(),
+        /*new_user=*/false,
+        /*has_active_session=*/false);
   }
 
   void StartUserSession(const AccountId& account_id) {
@@ -1849,7 +1855,7 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
   MockBrailleController braille_controller_;
 
   const AccountId test_account_id_ =
-      AccountId::FromUserEmailGaiaId(kTestUserName, GaiaId(kTestUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
 
  private:
   ui::ScopedAnimationDurationScaleMode disable_animations_;
@@ -1867,74 +1873,74 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, BrailleOnLoginScreen) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
   WaitForSigninScreen();
-  EXPECT_FALSE(IsLargeCursorEnabled());
-  EXPECT_FALSE(IsSpokenFeedbackEnabled());
-  EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
-  EXPECT_FALSE(IsReducedAnimationsEnabled());
-  EXPECT_FALSE(IsOverlayScrollbarEnabled());
-  EXPECT_FALSE(IsMouseKeysEnabled());
-  EXPECT_FALSE(IsVirtualKeyboardEnabled());
+  EXPECT_FALSE(IsHighContrastEnabled());
+  EXPECT_FALSE(IsLargeCursorEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
+  EXPECT_FALSE(IsMouseKeysEnabled());
+  EXPECT_FALSE(IsAlwaysShowScrollbarsEnabled());
+  EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsSpokenFeedbackEnabled());
+  EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_EQ(default_autoclick_delay_, GetAutoclickDelay());
 
   CreateSession(test_account_id_);
 
   // Confirms that the features are still disabled just after login.
-  EXPECT_FALSE(IsLargeCursorEnabled());
-  EXPECT_FALSE(IsSpokenFeedbackEnabled());
-  EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
-  EXPECT_FALSE(IsReducedAnimationsEnabled());
-  EXPECT_FALSE(IsOverlayScrollbarEnabled());
-  EXPECT_FALSE(IsMouseKeysEnabled());
-  EXPECT_FALSE(IsVirtualKeyboardEnabled());
+  EXPECT_FALSE(IsHighContrastEnabled());
+  EXPECT_FALSE(IsLargeCursorEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
+  EXPECT_FALSE(IsMouseKeysEnabled());
+  EXPECT_FALSE(IsAlwaysShowScrollbarsEnabled());
+  EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsSpokenFeedbackEnabled());
+  EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_EQ(default_autoclick_delay_, GetAutoclickDelay());
 
   StartUserSession(test_account_id_);
 
   // Confirms that the features are still disabled after session starts.
-  EXPECT_FALSE(IsLargeCursorEnabled());
-  EXPECT_FALSE(IsSpokenFeedbackEnabled());
-  EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
-  EXPECT_FALSE(IsReducedAnimationsEnabled());
-  EXPECT_FALSE(IsOverlayScrollbarEnabled());
-  EXPECT_FALSE(IsMouseKeysEnabled());
-  EXPECT_FALSE(IsVirtualKeyboardEnabled());
+  EXPECT_FALSE(IsHighContrastEnabled());
+  EXPECT_FALSE(IsLargeCursorEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
+  EXPECT_FALSE(IsMouseKeysEnabled());
+  EXPECT_FALSE(IsAlwaysShowScrollbarsEnabled());
+  EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsSpokenFeedbackEnabled());
+  EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_EQ(default_autoclick_delay_, GetAutoclickDelay());
-
-  SetLargeCursorEnabled(true);
-  EXPECT_TRUE(IsLargeCursorEnabled());
-
-  SetSpokenFeedbackEnabled(true);
-  EXPECT_TRUE(IsSpokenFeedbackEnabled());
-
-  SetHighContrastEnabled(true);
-  EXPECT_TRUE(IsHighContrastEnabled());
-
-  SetAutoclickEnabled(true);
-  EXPECT_TRUE(IsAutoclickEnabled());
-
-  SetReducedAnimationsEnabled(true);
-  EXPECT_TRUE(IsReducedAnimationsEnabled());
-
-  SetOverlayScrollbarEnabled(true);
-  EXPECT_TRUE(IsOverlayScrollbarEnabled());
-
-  SetMouseKeysEnabled(true);
-  EXPECT_TRUE(IsMouseKeysEnabled());
 
   SetAutoclickDelay(kTestAutoclickDelayMs);
   EXPECT_EQ(kTestAutoclickDelayMs, GetAutoclickDelay());
 
-  SetVirtualKeyboardEnabled(true);
-  EXPECT_TRUE(IsVirtualKeyboardEnabled());
+  SetAutoclickEnabled(true);
+  EXPECT_TRUE(IsAutoclickEnabled());
+
+  SetHighContrastEnabled(true);
+  EXPECT_TRUE(IsHighContrastEnabled());
+
+  SetLargeCursorEnabled(true);
+  EXPECT_TRUE(IsLargeCursorEnabled());
 
   SetMonoAudioEnabled(true);
   EXPECT_TRUE(IsMonoAudioEnabled());
+
+  SetMouseKeysEnabled(true);
+  EXPECT_TRUE(IsMouseKeysEnabled());
+
+  SetAlwaysShowScrollbarsEnabled(true);
+  EXPECT_TRUE(IsAlwaysShowScrollbarsEnabled());
+
+  SetReducedAnimationsEnabled(true);
+  EXPECT_TRUE(IsReducedAnimationsEnabled());
+
+  SetSpokenFeedbackEnabled(true);
+  EXPECT_TRUE(IsSpokenFeedbackEnabled());
+
+  SetVirtualKeyboardEnabled(true);
+  EXPECT_TRUE(IsVirtualKeyboardEnabled());
 }
 
 // Tests that ash and browser process has the same states after sign-in.

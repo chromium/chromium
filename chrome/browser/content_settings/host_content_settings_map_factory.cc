@@ -33,6 +33,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/content_settings/javascript_optimizer_provider_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
 #include "chrome/browser/webapps/installable/installed_webapp_provider.h"
@@ -103,11 +104,12 @@ scoped_refptr<RefcountedKeyedService>
   if (profile->IsOffTheRecord() && !profile->IsGuestSession())
     GetForProfile(original_profile);
 
+  bool should_record_metrics = profiles::IsRegularUserProfile(profile);
   scoped_refptr<HostContentSettingsMap> settings_map(new HostContentSettingsMap(
       profile->GetPrefs(),
       profile->IsOffTheRecord() || profile->IsGuestSession(),
       /*store_last_modified=*/true, profile->ShouldRestoreOldSessionCookies(),
-      profiles::IsRegularUserProfile(profile)));
+      should_record_metrics));
 
   auto allowlist_provider = std::make_unique<WebUIAllowlistProvider>(
       WebUIAllowlist::GetOrCreate(profile));
@@ -158,6 +160,11 @@ scoped_refptr<RefcountedKeyedService>
     settings_map->RegisterProvider(ProviderType::kInstalledWebappProvider,
                                    std::move(webapp_provider));
   }
+
+  settings_map->RegisterProvider(
+      ProviderType::kJavascriptOptimizerAndroidProvider,
+      std::make_unique<JavascriptOptimizerProviderAndroid>(
+          should_record_metrics));
 #endif  // defined (OS_ANDROID)
   auto one_time_permission_provider =
       std::make_unique<OneTimePermissionProvider>(

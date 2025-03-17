@@ -104,4 +104,4 @@ void AppLaunchConfirmationRequest::CreateAuxiliaryData(
 
 OVERLAY_USER_DATA_SETUP_IMPL(AllowAppLaunchResponse);
 
-}  // app_launcher_overlays
+}  // namespace app_launcher_overlays

@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
+#import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/image_fetcher/ios/ios_image_decoder_impl.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
-#include "components/signin/public/base/account_consistency_method.h"
-#include "components/signin/public/base/signin_client.h"
-#include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_manager_builder.h"
-#include "ios/web_view/internal/app/application_context.h"
+#import "base/no_destructor.h"
+#import "components/image_fetcher/ios/ios_image_decoder_impl.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/account_consistency_method.h"
+#import "components/signin/public/base/signin_client.h"
+#import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/identity_manager_builder.h"
+#import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/signin/account_capabilities_fetcher_factory_ios_web_view.h"
-#include "ios/web_view/internal/signin/ios_web_view_signin_client.h"
-#include "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
-#include "ios/web_view/internal/signin/web_view_signin_client_factory.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
+#import "ios/web_view/internal/signin/ios_web_view_signin_client.h"
+#import "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
+#import "ios/web_view/internal/signin/web_view_signin_client_factory.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
 
 namespace ios_web_view {
 

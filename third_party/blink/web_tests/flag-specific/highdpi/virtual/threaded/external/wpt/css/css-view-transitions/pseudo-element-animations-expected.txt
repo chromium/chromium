@@ -1,0 +1,30 @@
+
+CSS Animations and Web Animations on view transition pseudos
+
+
+
+
+
+
+/* Override UA stylesheet to avoid any impact on our tests */
+:root {
+  view-transition-name: none;
+}
+:root::view-transition,
+:root::view-transition-group(*),
+:root::view-transition-image-pair(*),
+:root::view-transition-old(*),
+:root::view-transition-new(*) {
+  animation: unset;
+}
+
+@keyframes css-anim {
+  from { margin-left: 100px; }
+  to { margin-left: 100px; }
+}
+
+This is a testharness.js-based test.
+[FAIL] The specified CSS Animations are removed if setting display:none.
+  assert_equals: All CSS Animation were removed. expected 0 but got 2
+Harness: the test ran to completion.
+

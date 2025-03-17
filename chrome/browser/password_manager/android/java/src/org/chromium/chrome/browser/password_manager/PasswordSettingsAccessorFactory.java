@@ -6,14 +6,17 @@ package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
 
 /**
  * This factory returns an implementation for the password settings accessor. The factory itself is
  * also implemented downstream.
  */
+@NullMarked
 public abstract class PasswordSettingsAccessorFactory {
-    private static PasswordSettingsAccessorFactory sInstance;
+    private static @Nullable PasswordSettingsAccessorFactory sInstance;
 
     protected PasswordSettingsAccessorFactory() {}
 
@@ -38,7 +41,7 @@ public abstract class PasswordSettingsAccessorFactory {
      *
      * @return An implementation of the {@link PasswordSettingsAccessor} if one exists.
      */
-    public PasswordSettingsAccessor createAccessor() {
+    public @Nullable PasswordSettingsAccessor createAccessor() {
         return null;
     }
 

@@ -97,6 +97,10 @@ class VizProcessTransportFactory : public ui::ContextFactory,
   // Provided as a callback when the GPU process has crashed.
   void OnGpuProcessLost();
 
+  // Esstablish GpuChannel for software compositing. If failed, it will keep
+  // retry for every 150 ms.
+  scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHostForSoftwareCompositing();
+
   // Finishes creation of LayerTreeFrameSink after GPU channel has been
   // established.
   void OnEstablishedGpuChannel(

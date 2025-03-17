@@ -15,6 +15,7 @@
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/security/dip/document_isolation_policy_reporter.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/global_routing_id.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom.h"
+#include "third_party/blink/public/mojom/serial/serial.mojom-forward.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-forward.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-forward.h"
@@ -52,7 +54,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-forward.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
-#include "third_party/blink/public/mojom/serial/serial.mojom-forward.h"
 #endif
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
@@ -172,9 +173,9 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver);
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
-#if !BUILDFLAG(IS_ANDROID)
   void BindSerialService(
       mojo::PendingReceiver<blink::mojom::SerialService> receiver);
+#if !BUILDFLAG(IS_ANDROID)
   void BindHidService(mojo::PendingReceiver<blink::mojom::HidService> receiver);
 #endif
 
@@ -437,6 +438,10 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // TODO(crbug.com/40093136): Remove `ancestor_coep_reporter_` once
   // PlzDedicatedWorker is enabled by default.
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter_;
+
+  // This is valid after DidStartScriptLoad() and remains non-null for the
+  // lifetime of `this`.
+  std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
 
   // Will be set once the worker script started loading.
   std::optional<GURL> final_response_url_;

@@ -144,6 +144,7 @@ action("mini_installer_archive") {
 
   inputs = [
     "$root_out_dir/chrome.dll",
+    "$root_out_dir/chrome_elf.dll",
     "$root_out_dir/chrome.exe",
     "$root_out_dir/locales/en-US.pak",
     "$root_out_dir/setup.exe",
@@ -192,6 +193,7 @@ action("mini_installer_archive") {
     "//chrome",
     "//chrome:chrome_dll",
     "//chrome/browser/extensions/default_extensions",
+    "//chrome/chrome_elf",
     "//chrome/common/win:eventlog_provider",
     "//chrome/installer/setup",
     "//third_party/icu:icudata",
@@ -259,6 +261,11 @@ source_set("mini_installer_sources") {
   configs += [ ":mini_installer_compiler_flags" ]
 }
 
+copy("copy_signing") {
+  sources = [ "//chrome/tools/build/win/resedit.py" ]
+  outputs = [ "$root_out_dir/signing/mini_installer/{{source_file_part}}" ]
+}
+
 # Generates a mini_installer executable containing the resources provided in the
 # caller's `rc_file`.
 template("generate_mini_installer") {
@@ -286,6 +293,7 @@ template("generate_mini_installer") {
     libs = [ "setupapi.lib" ]
 
     deps = [
+      ":copy_signing",
       ":lib",
       ":mini_installer_archive",
       ":mini_installer_sources",

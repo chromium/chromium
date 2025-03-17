@@ -16,6 +16,11 @@ config("viz_service_implementation") {
 
 source_set("viz_service_export") {
   sources = [ "viz_service_export.h" ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
 }
 
 static_library("viz_debugger") {
@@ -24,6 +29,11 @@ static_library("viz_debugger") {
     "debugger/rwlock.h",
     "debugger/viz_debugger.cc",
     "debugger/viz_debugger.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
   ]
 
   defines = [ "VIZ_SERVICE_IMPLEMENTATION" ]
@@ -123,7 +133,6 @@ viz_component("service") {
     "display/resolved_frame_data.h",
     "display/resource_fence.cc",
     "display/resource_fence.h",
-    "display/shared_bitmap_manager.h",
     "display/skia_output_surface.cc",
     "display/skia_output_surface.h",
     "display/skia_renderer.cc",
@@ -148,8 +157,6 @@ viz_component("service") {
     "display_embedder/output_surface_provider.h",
     "display_embedder/output_surface_provider_impl.cc",
     "display_embedder/output_surface_provider_impl.h",
-    "display_embedder/server_shared_bitmap_manager.cc",
-    "display_embedder/server_shared_bitmap_manager.h",
     "display_embedder/skia_output_device.cc",
     "display_embedder/skia_output_device.h",
     "display_embedder/skia_output_device_buffer_queue.cc",
@@ -181,8 +188,6 @@ viz_component("service") {
     "frame_sinks/compositor_frame_sink_impl.h",
     "frame_sinks/compositor_frame_sink_support.cc",
     "frame_sinks/compositor_frame_sink_support.h",
-    "frame_sinks/eviction_handler.cc",
-    "frame_sinks/eviction_handler.h",
     "frame_sinks/external_begin_frame_source_mojo.cc",
     "frame_sinks/external_begin_frame_source_mojo.h",
     "frame_sinks/frame_counter.cc",
@@ -273,6 +278,11 @@ viz_component("service") {
 
   defines = [ "VIZ_SERVICE_IMPLEMENTATION" ]
 
+  configs = [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   deps = [
     "//build:chromecast_buildflags",
     "//cc/animation",
@@ -296,6 +306,7 @@ viz_component("service") {
     "//gpu/skia_bindings:skia_bindings",
     "//gpu/vulkan:buildflags",
     "//media",
+    "//media:media_buildflags",
     "//media/capture:capture_lib",
     "//media/mojo/services",
     "//services/metrics/public/mojom",
@@ -351,7 +362,7 @@ viz_component("service") {
     ]
 
     if (use_v4l2_codec || use_vaapi) {
-      deps += [ "//ash/components/arc/video_accelerator" ]
+      deps += [ "//chromeos/ash/experiences/arc/video_accelerator" ]
     }
   }
 
@@ -367,14 +378,6 @@ viz_component("service") {
 
     deps += [ "//ui/accelerated_widget_mac" ]
     frameworks = [ "IOSurface.framework" ]
-    if (is_ios) {
-      sources += [
-        "frame_sinks/external_begin_frame_source_ios.h",
-        "frame_sinks/external_begin_frame_source_ios.mm",
-      ]
-
-      frameworks += [ "CoreGraphics.framework" ]
-    }
     if (is_mac) {
       sources += [
         "frame_sinks/external_begin_frame_source_mac.cc",
@@ -421,6 +424,8 @@ viz_component("service") {
       "frame_sinks/external_begin_frame_source_android.h",
       "gl/throw_uncaught_exception.cc",
       "gl/throw_uncaught_exception.h",
+      "input/android_state_transfer_handler.cc",
+      "input/android_state_transfer_handler.h",
       "input/fling_scheduler_android.cc",
       "input/fling_scheduler_android.h",
       "input/render_input_router_support_android.cc",
@@ -463,10 +468,26 @@ viz_component("service") {
       "display_embedder/skia_output_device_dcomp.h",
       "display_embedder/software_output_device_win.cc",
       "display_embedder/software_output_device_win.h",
+      "display_embedder/software_output_device_win_base.cc",
+      "display_embedder/software_output_device_win_base.h",
+      "display_embedder/software_output_device_win_swapchain.cc",
+      "display_embedder/software_output_device_win_swapchain.h",
       "frame_sinks/external_begin_frame_source_win.cc",
       "frame_sinks/external_begin_frame_source_win.h",
       "gl/info_collection_gpu_service_impl.cc",
       "gl/info_collection_gpu_service_impl.h",
+    ]
+
+    libs = [
+      "d3d11.lib",
+      "dxgi.lib",
+      "dcomp.lib",
+    ]
+
+    ldflags = [
+      "/DELAYLOAD:d3d11.dll",
+      "/DELAYLOAD:dxgi.dll",
+      "/DELAYLOAD:dcomp.dll",
     ]
 
     # SkiaOutputDeviceBufferQueue doesn't support Windows.
@@ -577,10 +598,11 @@ viz_source_set("unit_tests") {
     "display/software_renderer_unittest.cc",
     "display/surface_aggregator_pixeltest.cc",
     "display/surface_aggregator_unittest.cc",
+    "display/test_resource_factory.cc",
+    "display/test_resource_factory.h",
     "display/viz_pixel_test.cc",
     "display/viz_pixel_test.h",
     "display_embedder/buffer_queue_unittest.cc",
-    "display_embedder/server_shared_bitmap_manager_unittest.cc",
     "display_embedder/skia_output_device_buffer_queue_unittest.cc",
     "display_embedder/skia_output_surface_impl_unittest.cc",
     "display_embedder/software_output_surface_unittest.cc",
@@ -689,7 +711,9 @@ viz_source_set("unit_tests") {
       "display/overlay_unittest.cc",
       "frame_sinks/external_begin_frame_source_android_unittest.cc",
       "frame_sinks/fling_scheduler_android_unittest.cc",
+      "input/android_state_transfer_handler_unittest.cc",
     ]
+    deps += [ "//ui/events:motionevent_jni_headers" ]
   }
 
   if (enable_vulkan) {
@@ -744,6 +768,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
@@ -752,6 +777,7 @@ if (is_android) {
     sources = [
       "java/src/org/chromium/components/viz/service/frame_sinks/ExternalBeginFrameSourceAndroid.java",
       "java/src/org/chromium/components/viz/service/gl/ThrowUncaughtException.java",
+      "java/src/org/chromium/components/viz/service/input/InputTransferHandlerViz.java",
     ]
   }
 
@@ -759,14 +785,12 @@ if (is_android) {
     sources = [
       "java/src/org/chromium/components/viz/service/frame_sinks/ExternalBeginFrameSourceAndroid.java",
       "java/src/org/chromium/components/viz/service/gl/ThrowUncaughtException.java",
+      "java/src/org/chromium/components/viz/service/input/InputTransferHandlerViz.java",
     ]
   }
 }
 
 group("viz_service_fuzzers") {
   testonly = true
-  deps = [
-    ":hit_test_manager_fuzzer",
-    "compositor_frame_fuzzer:compositor_frame_fuzzer",
-  ]
+  deps = [ ":hit_test_manager_fuzzer" ]
 }

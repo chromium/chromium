@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
@@ -121,7 +122,7 @@ void SetPolicyValue(em::ChromeDeviceSettingsProto* proto,
   }
 
   json_entries.push_back(std::string("\"recommended\": ") +
-                         (recommended ? "true" : "false"));
+                         base::ToString(recommended));
   proto->mutable_device_display_resolution()->set_device_display_resolution(
       "{" + base::JoinString(json_entries, ",") + "}");
 }

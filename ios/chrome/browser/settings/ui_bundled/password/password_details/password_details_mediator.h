@@ -12,12 +12,17 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/credential_details.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_controller_delegate.h"
 
-class ProfileIOS;
-
 namespace password_manager {
 struct CredentialUIEntry;
 class SavedPasswordsPresenter;
 }  // namespace password_manager
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
+class IOSChromePasswordCheckManager;
+class PrefService;
 
 @protocol PasswordDetailsConsumer;
 @protocol PasswordDetailsMediatorDelegate;
@@ -40,9 +45,11 @@ class SavedPasswordsPresenter;
                     (const std::vector<password_manager::CredentialUIEntry>&)
                         credentials
                       displayName:(NSString*)displayName
-                          profile:(ProfileIOS*)profile
                           context:(DetailsContext)context
                          delegate:(id<PasswordDetailsMediatorDelegate>)delegate
+             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

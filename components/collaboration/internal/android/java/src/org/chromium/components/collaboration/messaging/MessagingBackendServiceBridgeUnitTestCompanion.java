@@ -19,8 +19,9 @@ import org.mockito.ArgumentCaptor;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.Token;
+import org.chromium.components.signin.base.GaiaId;
+import org.chromium.components.tab_group_sync.EitherId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -38,8 +39,8 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
     private MessagingBackendService.InstantMessageDelegate mInstantMessageDelegate =
             mock(MessagingBackendService.InstantMessageDelegate.class);
 
-    private ArgumentCaptor<InstantMessage> mInstantMessageCaptor =
-            ArgumentCaptor.forClass(InstantMessage.class);
+    private ArgumentCaptor<List<InstantMessage>> mInstantMessageCaptor =
+            ArgumentCaptor.forClass(List.class);
     private ArgumentCaptor<Callback> mInstantMessageCallbackCaptor =
             ArgumentCaptor.forClass(Callback.class);
 
@@ -114,6 +115,12 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
     }
 
     @CalledByNative
+    private void invokeClearDirtyTabMessagesForGroupAndVerify(
+            LocalTabGroupId localGroupId, @Nullable String collaborationId) {
+        mService.clearDirtyTabMessagesForGroup(collaborationId);
+    }
+
+    @CalledByNative
     private void invokeGetMessagesForTabAndVerify(
             int localTabId,
             @Nullable String syncId,
@@ -142,16 +149,19 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         verify(mInstantMessageDelegate)
                 .displayInstantaneousMessage(
                         mInstantMessageCaptor.capture(), mInstantMessageCallbackCaptor.capture());
-        InstantMessage message = mInstantMessageCaptor.getValue();
+        List<InstantMessage> messages = mInstantMessageCaptor.getValue();
+        Assert.assertEquals(1, messages.size());
+        InstantMessage message = messages.get(0);
         Assert.assertEquals(InstantNotificationLevel.SYSTEM, message.level);
         Assert.assertEquals(InstantNotificationType.CONFLICT_TAB_REMOVED, message.type);
         Assert.assertEquals(CollaborationEvent.TAB_REMOVED, message.collaborationEvent);
 
         // MessageAttribution.
         MessageAttribution attribution = message.attribution;
+        Assert.assertEquals("cf07d904-88d4-4bc9-989d-57a9ab9e17a7", attribution.id);
         Assert.assertEquals("my group", attribution.collaborationId);
-        Assert.assertEquals("affected", attribution.affectedUser.gaiaId);
-        Assert.assertEquals("triggering", attribution.triggeringUser.gaiaId);
+        Assert.assertEquals(new GaiaId("affected"), attribution.affectedUser.gaiaId);
+        Assert.assertEquals(new GaiaId("triggering"), attribution.triggeringUser.gaiaId);
 
         // TabGroupMessageMetadata.
         TabGroupMessageMetadata tgmm = attribution.tabGroupMetadata;
@@ -183,22 +193,22 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         Assert.assertEquals(2, logItems.size());
 
         Assert.assertEquals(CollaborationEvent.TAB_UPDATED, logItems.get(0).collaborationEvent);
-        Assert.assertEquals("User 1", logItems.get(0).userDisplayName);
-        Assert.assertTrue(logItems.get(0).userIsSelf);
-        Assert.assertEquals("https://google.com", logItems.get(0).description);
-        Assert.assertEquals(
-                TimeUtils.MILLISECONDS_PER_MINUTE * 60 * 2, logItems.get(0).timeDeltaMs);
+        Assert.assertEquals("User 1", logItems.get(0).titleText);
+        Assert.assertEquals("https://google.com", logItems.get(0).descriptionText);
+        Assert.assertEquals("2 hours ago", logItems.get(0).timeDeltaText);
         Assert.assertTrue(logItems.get(0).showFavicon);
         Assert.assertEquals(RecentActivityAction.REOPEN_TAB, logItems.get(0).action);
+        Assert.assertEquals(
+                "1b687a61-8a17-4f98-bf9d-74d2b50abf3e", logItems.get(0).activityMetadata.id);
 
         Assert.assertEquals(
                 CollaborationEvent.COLLABORATION_MEMBER_ADDED, logItems.get(1).collaborationEvent);
-        Assert.assertEquals("User 2", logItems.get(1).userDisplayName);
-        Assert.assertFalse(logItems.get(1).userIsSelf);
-        Assert.assertEquals("foo@gmail.com", logItems.get(1).description);
-        Assert.assertEquals(TimeUtils.MILLISECONDS_PER_DAY * 3, logItems.get(1).timeDeltaMs);
+        Assert.assertEquals("User 2", logItems.get(1).titleText);
+        Assert.assertEquals("foo@gmail.com", logItems.get(1).descriptionText);
+        Assert.assertEquals("3 days ago", logItems.get(1).timeDeltaText);
         Assert.assertFalse(logItems.get(1).showFavicon);
         Assert.assertEquals(RecentActivityAction.MANAGE_SHARING, logItems.get(1).action);
+        Assert.assertEquals(null, logItems.get(1).activityMetadata.id);
 
         queryParams.collaborationId = "collaboration2";
         logItems = mService.getActivityLog(queryParams);

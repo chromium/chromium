@@ -19,6 +19,10 @@
 - (void)shareSelectedTabs:(id)sender;
 - (void)selectTabsButtonTapped:(id)sender;
 
+@optional
+// TODO(crbug.com/398183785): Remove once we got feedback.
+- (void)sendFeedbackGroupTapped:(id)sender;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TOOLBARS_TAB_GRID_TOOLBARS_GRID_DELEGATE_H_

@@ -13,7 +13,6 @@
 #include "base/hash/hash.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
@@ -77,7 +76,7 @@ PathLengthDepthAndHash GetUrlPathLengthDepthAndHash(const GURL& target_url) {
   // Truncate at 100 characters.
   path_length = std::min(path_length, static_cast<int64_t>(100));
 
-  int num_slashes = base::ranges::count(path, '/');
+  int num_slashes = std::ranges::count(path, '/');
   // Truncate at 5.
   int path_depth = std::min(num_slashes, 5);
 

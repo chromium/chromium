@@ -21,8 +21,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
-namespace {
-
 class RemoveSuggestionBubbleDialogDelegateView
     : public views::BubbleDialogDelegateView {
   METADATA_HEADER(RemoveSuggestionBubbleDialogDelegateView,
@@ -75,13 +73,13 @@ class RemoveSuggestionBubbleDialogDelegateView
     description_label->SetMultiLine(true);
     description_label->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_LEFT);
-    AddChildView(description_label);
+    AddChildViewRaw(description_label);
 
     // TODO(tommycli): Indent and set a smaller font per UX suggestions.
     views::Label* url_label = new views::Label(match.contents);
     url_label->SetMultiLine(true);
     url_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-    AddChildView(url_label);
+    AddChildViewRaw(url_label);
   }
 
   // views::DialogDelegateView:
@@ -111,8 +109,6 @@ class RemoveSuggestionBubbleDialogDelegateView
 
 BEGIN_METADATA(RemoveSuggestionBubbleDialogDelegateView)
 END_METADATA
-
-}  // namespace
 
 void ShowRemoveSuggestion(TemplateURLService* template_url_service,
                           views::View* anchor_view,

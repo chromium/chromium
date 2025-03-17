@@ -177,7 +177,7 @@ using PriceNotificationItems =
 - (void)navigateToBookmarks {
   [self.handler hidePriceNotifications];
   GURL URL = _webState->GetLastCommittedURL();
-  [self.bookmarksHandler openToExternalBookmark:URL];
+  [self.bookmarksHandler showBookmarkInBookmarksUI:URL];
 }
 
 #pragma mark - PriceInsightsMutator

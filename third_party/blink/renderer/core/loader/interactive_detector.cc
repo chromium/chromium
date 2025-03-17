@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 
 #include "base/metrics/histogram_functions.h"
@@ -459,32 +454,38 @@ base::TimeTicks InteractiveDetector::FindInteractiveCandidate(
     base::TimeTicks lower_bound,
     base::TimeTicks current_time) {
   // Network iterator.
-  auto it_net = network_quiet_windows_.begin();
+  auto it_net = network_quiet_windows_.CheckedBegin();
+  auto net_end = network_quiet_windows_.CheckedEnd();
   // Long tasks iterator.
-  auto it_lt = long_tasks_.begin();
+  auto it_lt = long_tasks_.CheckedBegin();
+  auto lt_end = long_tasks_.CheckedEnd();
 
   base::TimeTicks main_quiet_start = page_event_times_.nav_start;
 
-  while (main_quiet_start < current_time &&
-         it_net < network_quiet_windows_.end()) {
+  while (main_quiet_start < current_time && it_net < net_end) {
     base::TimeTicks main_quiet_end =
-        it_lt == long_tasks_.end() ? current_time : it_lt->Low();
+        it_lt == lt_end ? current_time : it_lt->Low();
     base::TimeTicks next_main_quiet_start =
-        it_lt == long_tasks_.end() ? current_time : it_lt->High();
+        it_lt == lt_end ? current_time : it_lt->High();
     if (main_quiet_end - main_quiet_start < kTimeToInteractiveWindow) {
       // The main thread quiet window is too short.
-      ++it_lt;
+      if (it_lt != lt_end) {
+        ++it_lt;
+      }
       main_quiet_start = next_main_quiet_start;
       continue;
     }
     if (main_quiet_end <= lower_bound) {
-      // The main thread quiet window is before |lower_bound|.
+      // The main thread quiet window is before `lower_bound`.
+      // If `it_lt`==`lt_end`, `main_quit_end` will be assigned to
+      // `current_time`, which should be strictly larger than all the other
+      // times, so we can't get here.
       ++it_lt;
       main_quiet_start = next_main_quiet_start;
       continue;
     }
     if (it_net->High() <= lower_bound) {
-      // The network quiet window is before |lower_bound|.
+      // The network quiet window is before `lower_bound`.
       ++it_net;
       continue;
     }
@@ -493,6 +494,8 @@ base::TimeTicks InteractiveDetector::FindInteractiveCandidate(
     // [ main thread interval ]
     //                                     [ network interval ]
     if (main_quiet_end <= it_net->Low()) {
+      // See the comment about `++it_lt` in the "main_quiet_end <= lower_bound"
+      // case above.
       ++it_lt;
       main_quiet_start = next_main_quiet_start;
       continue;
@@ -516,6 +519,8 @@ base::TimeTicks InteractiveDetector::FindInteractiveCandidate(
     // The interval with earlier end time will not produce any more overlap, so
     // we move on from it.
     if (main_quiet_end <= it_net->High()) {
+      // See the comment about `++it_lt` in the "main_quiet_end <= lower_bound"
+      // case above.
       ++it_lt;
       main_quiet_start = next_main_quiet_start;
     } else {

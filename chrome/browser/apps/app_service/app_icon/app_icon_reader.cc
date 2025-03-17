@@ -86,8 +86,8 @@ void AppIconReader::OnUncompressedIconRead(int32_t size_in_dip,
   TRACE_EVENT0("ui", "AppIconReader::OnUncompressedIconRead");
   DCHECK_NE(IconType::kUnknown, icon_type);
 
-  auto it = base::ranges::find(decodes_, decoder,
-                               &std::unique_ptr<AppIconDecoder>::get);
+  auto it = std::ranges::find(decodes_, decoder,
+                              &std::unique_ptr<AppIconDecoder>::get);
   CHECK(it != decodes_.end(), base::NotFatalUntil::M130);
   decodes_.erase(it);
 

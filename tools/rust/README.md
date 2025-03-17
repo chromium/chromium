@@ -89,7 +89,8 @@ from `third_party/rust-src`. Since Chromium uses gn as its build system, we
 need some way to translate build files from Rust's build system, cargo, to gn
 rules. This is the responsibility of `gnrt`, which is a Chromium-specific tool
 that lives in [`tools/crates/gnrt`](https://crsrc.org/c/tools/crates/gnrt/),
-written in Rust. `gnrt gen` takes a cargo workspace, runs `cargo metadata` on
+written in Rust. `gnrt gen` takes a cargo workspace, runs `cargo metadata`
+(or, more accurately `cargo guppy`) on
 it to get information about sources and dependencies, and outputs gn rules
 corresponding to the cargo build rules. Rust has a
 [`sysroot`](https://github.com/rust-lang/rust/tree/master/library/sysroot)

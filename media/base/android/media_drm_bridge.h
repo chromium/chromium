@@ -17,6 +17,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "base/version.h"
 #include "media/base/android/android_util.h"
 #include "media/base/android/media_crypto_context.h"
@@ -102,6 +104,7 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   using MediaCryptoReadyCB = MediaCryptoContext::MediaCryptoReadyCB;
   using CdmCreationResult =
       CreateCdmTypedStatus::Or<scoped_refptr<MediaDrmBridge>>;
+  using GetVersionResult = base::expected<base::Version, CreateCdmStatus>;
 
   // Checks whether |key_system| is supported.
   static bool IsKeySystemSupported(const std::string& key_system);
@@ -125,8 +128,14 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // Returns the scheme UUID for |key_system|.
   static std::vector<uint8_t> GetUUID(const std::string& key_system);
 
-  // Gets the current version for |key_system|.
-  static base::Version GetVersion(const std::string& key_system);
+  // Gets the current version for `key_system`. Returns an error if unable
+  // to create a MediaDrm object, signifying that the device does not support
+  // `security_level`. May return an invalid base::Version if the string
+  // returned does not appear to be a version. For key systems other than
+  // Widevine, base::Version() is returned.
+  static GetVersionResult GetVersion(
+      const std::string& key_system,
+      MediaDrmBridge::SecurityLevel security_level);
 
   // Same as Create() except that no session callbacks are provided. This is
   // used when we need to use MediaDrmBridge without creating any sessions.
@@ -140,6 +149,34 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
       const std::string& message,
       CreateFetcherCB create_fetcher_cb);
 
+  // Constructs a MediaDrmBridge for |scheme_uuid| and |security_level|. The
+  // default security level will be used if |security_level| is
+  // SECURITY_LEVEL_DEFAULT.
+  //
+  // |origin_id| is a random string that can identify an origin.
+  //
+  // If |requires_media_crypto| is true, MediaCrypto is expected to be created
+  // and notified via MediaCryptoReadyCB set in SetMediaCryptoReadyCB(). This
+  // may trigger the provisioning process. Before MediaCrypto is notified, no
+  // other methods should be called.
+  // TODO(xhwang): It's odd to rely on MediaCryptoReadyCB. Maybe we should add a
+  // dedicated Initialize() method.
+  //
+  // If |requires_media_crypto| is false, MediaCrypto will not be created. This
+  // object cannot be used for playback, but can be used to unprovision the
+  // device/origin via Unprovision(). Sessions are not created in this mode.
+  MediaDrmBridge(base::PassKey<MediaDrmBridge>,
+                 const std::vector<uint8_t>& scheme_uuid,
+                 const std::string& origin_id,
+                 SecurityLevel security_level,
+                 const std::string& message,
+                 bool requires_media_crypto,
+                 std::unique_ptr<MediaDrmStorageBridge> storage,
+                 const CreateFetcherCB& create_fetcher_cb,
+                 const SessionMessageCB& session_message_cb,
+                 const SessionClosedCB& session_closed_cb,
+                 const SessionKeysChangeCB& session_keys_change_cb,
+                 const SessionExpirationUpdateCB& session_expiration_update_cb);
   MediaDrmBridge(const MediaDrmBridge&) = delete;
   MediaDrmBridge& operator=(const MediaDrmBridge&) = delete;
 
@@ -311,34 +348,6 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
       const SessionClosedCB& session_closed_cb,
       const SessionKeysChangeCB& session_keys_change_cb,
       const SessionExpirationUpdateCB& session_expiration_update_cb);
-
-  // Constructs a MediaDrmBridge for |scheme_uuid| and |security_level|. The
-  // default security level will be used if |security_level| is
-  // SECURITY_LEVEL_DEFAULT.
-  //
-  // |origin_id| is a random string that can identify an origin.
-  //
-  // If |requires_media_crypto| is true, MediaCrypto is expected to be created
-  // and notified via MediaCryptoReadyCB set in SetMediaCryptoReadyCB(). This
-  // may trigger the provisioning process. Before MediaCrypto is notified, no
-  // other methods should be called.
-  // TODO(xhwang): It's odd to rely on MediaCryptoReadyCB. Maybe we should add a
-  // dedicated Initialize() method.
-  //
-  // If |requires_media_crypto| is false, MediaCrypto will not be created. This
-  // object cannot be used for playback, but can be used to unprovision the
-  // device/origin via Unprovision(). Sessions are not created in this mode.
-  MediaDrmBridge(const std::vector<uint8_t>& scheme_uuid,
-                 const std::string& origin_id,
-                 SecurityLevel security_level,
-                 const std::string& message,
-                 bool requires_media_crypto,
-                 std::unique_ptr<MediaDrmStorageBridge> storage,
-                 const CreateFetcherCB& create_fetcher_cb,
-                 const SessionMessageCB& session_message_cb,
-                 const SessionClosedCB& session_closed_cb,
-                 const SessionKeysChangeCB& session_keys_change_cb,
-                 const SessionExpirationUpdateCB& session_expiration_update_cb);
 
   ~MediaDrmBridge() override;
 

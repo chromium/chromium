@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
@@ -101,7 +100,7 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
       break;
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   if (SyscallSets::IsSystemVSharedMemory(sysno))
     return Allow();
 #endif

@@ -115,16 +115,36 @@ void TabAppSelectionHost::ProcessKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
-  event->SetHandled();
-  event->StopPropagation();
+  auto* selector = views::AsViewClass<TabAppSelectionView>(GetContentsView());
 
-  if (event->key_code() == ui::VKEY_ESCAPE) {
-    Hide();
-    return;
+  switch (event->key_code()) {
+    case ui::VKEY_ESCAPE:
+      Hide();
+      break;
+    case ui::VKEY_TAB:
+      AdvanceFocusForTabKey(/*reverse=*/event->IsShiftDown());
+      break;
+    case ui::VKEY_RETURN:
+    case ui::VKEY_SPACE:
+      // Make the selector to activate the focus view if exists. Otherwise,
+      // propagate the event to `owner_`.
+      if (selector->focus_view()) {
+        selector->MaybePressOnFocusView();
+      } else {
+        return;
+      }
+      break;
+    case ui::VKEY_UP:
+    case ui::VKEY_DOWN:
+      scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(GetNativeWindow());
+      selector->AdvanceFocusForArrowKey(event->key_code() == ui::VKEY_UP);
+      break;
+    default:
+      break;
   }
 
-  views::AsViewClass<TabAppSelectionView>(GetContentsView())
-      ->ProcessKeyEvent(event);
+  event->SetHandled();
+  event->StopPropagation();
 }
 
 void TabAppSelectionHost::OnItemRemoved() {
@@ -187,8 +207,9 @@ void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
 
   if (visible) {
     base::UmaHistogramBoolean("Ash.Birch.Coral.ClusterExpanded", true);
+    owner_->GetFocusManager()->ClearFocus();
     GetContentsView()->GetViewAccessibility().NotifyEvent(
-        ax::mojom::Event::kMenuStart);
+        ax::mojom::Event::kMenuStart, /*send_native_event=*/true);
 
     auto on_animation_end = base::BindRepeating(
         [](base::WeakPtr<views::Widget> self) {
@@ -202,6 +223,13 @@ void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
 
     // Update the bounds before showing up.
     SetBounds(GetDesiredBoundsInScreen());
+
+    // Re-stack the widget below the coral chip and guarantee it above the
+    // overview items.
+    aura::Window* selector_window = GetNativeWindow();
+    aura::Window* parent = selector_window->parent();
+    parent->StackChildBelow(selector_window,
+                            owner_->GetWidget()->GetNativeWindow());
 
     // Slide the widget out of the coral chip. We apply a clip as well since the
     // contents view is almost always taller than the coral chip.
@@ -242,6 +270,40 @@ gfx::Rect TabAppSelectionHost::GetDesiredBoundsInScreen() {
   selector_bounds.set_y(selector_bounds.y() - preferred_height);
   selector_bounds.set_height(preferred_height);
   return selector_bounds;
+}
+
+void TabAppSelectionHost::AdvanceFocusForTabKey(bool reverse) {
+  auto* selector = views::AsViewClass<TabAppSelectionView>(GetContentsView());
+
+  // If the selector is focused, move the focus within the selector.
+  if (selector->focus_view()) {
+    // When the focus is moved out of the selector, focus on the coral chip or
+    // chevron button according to the moving direction.
+    if (!selector->AdvanceFocusForTabKey(reverse)) {
+      scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(nullptr);
+      if (reverse) {
+        owner_->addon_view()->RequestFocus();
+      } else {
+        owner_->RequestFocus();
+      }
+    }
+    return;
+  }
+
+  // Moving the focus within the chip if the chip is focused.
+  if (owner_->HasFocus() && !reverse) {
+    owner_->addon_view()->RequestFocus();
+    return;
+  }
+
+  if (owner_->addon_view()->HasFocus() && reverse) {
+    owner_->RequestFocus();
+    return;
+  }
+
+  // If there is no focused view, focus on the selector.
+  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(GetNativeWindow());
+  selector->AdvanceFocusForTabKey(reverse);
 }
 
 }  // namespace ash

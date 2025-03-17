@@ -167,10 +167,7 @@ class DarkModeManagerLinuxTest : public testing::Test {
               NativeTheme::PreferredColorScheme::kLight);
   }
 
-  void TearDown() override {
-    EXPECT_CALL(*mock_bus_, GetDBusTaskRunner()).WillOnce(Return(nullptr));
-    manager_.reset();
-  }
+  void TearDown() override { manager_.reset(); }
 
   std::unique_ptr<MockLinuxUi> mock_linux_ui_;
   std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>> linux_ui_themes_;

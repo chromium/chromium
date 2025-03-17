@@ -14,10 +14,6 @@
 
 namespace performance_manager::features {
 
-BASE_FEATURE(kRunOnMainThreadSync,
-             "RunPerformanceManagerOnMainThreadSync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kBackgroundTabLoadingFromPerformanceManager,
              "BackgroundTabLoadingFromPerformanceManager",
@@ -58,59 +54,9 @@ const base::FeatureParam<base::TimeDelta>
         &kPerformanceControlsBatteryPerformanceSurvey, "battery_lookback",
         base::Days(8)};
 
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kPrefetchVirtualMemoryPolicy,
-             "PrefetchVirtualMemoryPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-BASE_FEATURE(kPerformanceInterventionUI,
-             "PerformanceInterventionUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPerformanceInterventionDemoMode,
              "PerformanceInterventionDemoMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool ShouldUsePerformanceInterventionBackend() {
-  return base::FeatureList::IsEnabled(kPerformanceInterventionUI);
-}
-
-const base::FeatureParam<int> kInterventionDialogStringVersion{
-    &kPerformanceInterventionUI, "intervention_dialog_version", 1};
-
-const base::FeatureParam<bool> kInterventionShowMixedProfileSuggestions{
-    &kPerformanceInterventionUI, "intervention_show_mixed_profile", false};
-
-const base::FeatureParam<base::TimeDelta> kInterventionButtonTimeout{
-    &kPerformanceInterventionUI, "intervention_button_timeout",
-    base::Seconds(10)};
-
-const base::FeatureParam<base::TimeDelta> kCPUTimeOverThreshold{
-    &kPerformanceInterventionUI, "cpu_time_over_threshold", base::Seconds(60)};
-const base::FeatureParam<base::TimeDelta> kCPUSampleFrequency{
-    &kPerformanceInterventionUI, "cpu_sample_frequency", base::Seconds(15)};
-
-const base::FeatureParam<int> kCPUDegradedHealthPercentageThreshold{
-    &kPerformanceInterventionUI, "cpu_degraded_percent_threshold", 50};
-const base::FeatureParam<int> kCPUUnhealthyPercentageThreshold{
-    &kPerformanceInterventionUI, "cpu_unhealthy_percent_threshold", 75};
-
-const base::FeatureParam<int> kCPUMaxActionableTabs{
-    &kPerformanceInterventionUI, "cpu_max_actionable_tabs", 4};
-
-const base::FeatureParam<int> kMinimumActionableTabCPUPercentage{
-    &kPerformanceInterventionUI, "minimum_actionable_tab_cpu", 10};
-
-const base::FeatureParam<base::TimeDelta> kMemoryTimeOverThreshold{
-    &kPerformanceInterventionUI, "memory_time_over_threshold",
-    base::Seconds(60)};
-
-const base::FeatureParam<int> kMemoryFreePercentThreshold{
-    &kPerformanceInterventionUI, "memory_free_percent_threshold", 10};
-const base::FeatureParam<int> kMemoryFreeBytesThreshold{
-    &kPerformanceInterventionUI, "memory_free_bytes_threshold",
-    1024 * 1024 * 1024};
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kUnthrottledTabProcessReporting,
@@ -127,8 +73,12 @@ BASE_FEATURE(kPMProcessPriorityPolicy,
 const base::FeatureParam<bool> kInheritParentPriority{
     &kPMProcessPriorityPolicy, "inherit_parent_priority", true};
 
-const base::FeatureParam<bool> kDownvoteAdFrames{&kPMProcessPriorityPolicy,
-                                                 "downvote_ad_frames", false};
+const base::FeatureParam<bool> kRenderedOutOfViewIsNotVisible{
+    &kPMProcessPriorityPolicy, "rendered_out_of_view_is_not_visible", false};
+
+const base::FeatureParam<bool> kNonSpareRendererHighInitialPriority{
+    &kPMProcessPriorityPolicy, "non_spare_renderer_high_initial_priority",
+    false};
 
 BASE_FEATURE(kPMLoadingPageVoter,
              "PMLoadingPageVoter",
@@ -192,13 +142,17 @@ BASE_FEATURE(kFreezingFollowsDiscardOptOut,
              "FreezingFollowsDiscardOptOut",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRecordFreezingEligibilityUKM,
+             "RecordFreezingEligibilityUKM",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kResourceAttributionIncludeOrigins,
              "ResourceAttributionIncludeOrigins",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSeamlessRenderFrameSwap,
              "SeamlessRenderFrameSwap",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUnimportantFramesPriority,
              "UnimportantFramesPriority",
@@ -206,6 +160,10 @@ BASE_FEATURE(kUnimportantFramesPriority,
 
 BASE_FEATURE(kThrottleUnimportantFrameRate,
              "ThrottleUnimportantFrameRate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kKeepDefaultSearchEngineRendererAlive,
+             "KeepDefaultSearchEngineRendererAlive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace performance_manager::features

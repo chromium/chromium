@@ -11,12 +11,19 @@
 namespace blink {
 
 CrossOriginResourcePolicyChecker::CrossOriginResourcePolicyChecker(
-    network::CrossOriginEmbedderPolicy policy,
+    network::CrossOriginEmbedderPolicy coep,
     mojo::PendingRemote<
-        network::mojom::blink::CrossOriginEmbedderPolicyReporter> reporter)
-    : policy_(std::move(policy)) {
-  if (reporter) {
-    reporter_.Bind(ToCrossVariantMojoType(std::move(reporter)));
+        network::mojom::blink::CrossOriginEmbedderPolicyReporter> coep_reporter,
+    network::DocumentIsolationPolicy document_isolation_policy,
+    mojo::PendingRemote<network::mojom::blink::DocumentIsolationPolicyReporter>
+        dip_reporter)
+    : coep_(std::move(coep)),
+      document_isolation_policy_(std::move(document_isolation_policy)) {
+  if (coep_reporter) {
+    coep_reporter_.Bind(ToCrossVariantMojoType(std::move(coep_reporter)));
+  }
+  if (dip_reporter) {
+    dip_reporter_.Bind(ToCrossVariantMojoType(std::move(dip_reporter)));
   }
 }
 
@@ -42,9 +49,10 @@ bool CrossOriginResourcePolicyChecker::IsBlocked(
              GURL(response.InternalURLList().back()),
              GURL(response.InternalURLList().front()), initiator_origin,
              corp_header_value, request_mode, request_destination,
-             response.GetResponse()->RequestIncludeCredentials(), policy_,
-             reporter_ ? reporter_.get() : nullptr,
-             network::DocumentIsolationPolicy())
+             response.GetResponse()->RequestIncludeCredentials(), coep_,
+             coep_reporter_ ? coep_reporter_.get() : nullptr,
+             document_isolation_policy_,
+             dip_reporter_ ? dip_reporter_.get() : nullptr)
       .has_value();
 }
 

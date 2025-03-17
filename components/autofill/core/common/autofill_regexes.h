@@ -52,6 +52,13 @@ bool MatchesRegex(std::u16string_view input,
   return MatchesRegex(input, **regex_pattern, groups);
 }
 
+// Splits `input` into up to `max_groups` segments. Returns a vector of segments
+// in case of success or `std::nullopt` otherwise.
+std::optional<std::vector<std::u16string>> SplitByRegex(
+    std::u16string_view input,
+    const icu::RegexPattern& regex_pattern,
+    size_t max_groups);
+
 // A cache of compiled regex patterns. It can be configured to be thread-safe
 // (using a mutex) or not (in which case it uses a sequence checker).
 class AutofillRegexCache {

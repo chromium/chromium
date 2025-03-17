@@ -18,11 +18,15 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/reminder_notifications/model/reminder_notification_client.h"
 #import "ios/chrome/browser/safety_check_notifications/model/safety_check_notification_client.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_push_notification_client.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_client.h"
+
+using send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders;
 
 PushNotificationClientManager::PushNotificationClientManager(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
@@ -53,6 +57,12 @@ PushNotificationClientManager::PushNotificationClientManager(
           send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
     AddPushNotificationClient(
         std::make_unique<SendTabPushNotificationClient>());
+    if (IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
+      ProfileManagerIOS* profile_manager =
+          GetApplicationContext()->GetProfileManager();
+      AddPushNotificationClient(
+          std::make_unique<ReminderNotificationClient>(profile_manager));
+    }
   }
 }
 PushNotificationClientManager::~PushNotificationClientManager() = default;
@@ -169,23 +179,19 @@ void PushNotificationClientManager::OnSceneActiveForegroundBrowserReady() {
 std::string PushNotificationClientManager::PushNotificationClientIdToString(
     PushNotificationClientId client_id) {
   switch (client_id) {
-    case PushNotificationClientId::kCommerce: {
+    case PushNotificationClientId::kCommerce:
       return kCommerceNotificationKey;
-    }
-    case PushNotificationClientId::kContent: {
+    case PushNotificationClientId::kContent:
       return kContentNotificationKey;
-    }
-    case PushNotificationClientId::kTips: {
+    case PushNotificationClientId::kTips:
       return kTipsNotificationKey;
-    }
-    case PushNotificationClientId::kSports: {
+    case PushNotificationClientId::kSports:
       return kSportsNotificationKey;
-    }
-    case PushNotificationClientId::kSafetyCheck: {
+    case PushNotificationClientId::kSafetyCheck:
       return kSafetyCheckNotificationKey;
-    }
-    case PushNotificationClientId::kSendTab: {
+    case PushNotificationClientId::kSendTab:
       return kSendTabNotificationKey;
-    }
+    case PushNotificationClientId::kReminders:
+      return kReminderNotificationKey;
   }
 }

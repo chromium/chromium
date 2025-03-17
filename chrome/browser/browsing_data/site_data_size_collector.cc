@@ -97,8 +97,9 @@ void SiteDataSizeCollector::OnQuotaModelInfoLoaded(
     const QuotaStorageUsageInfoList& quota_storage_info_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   int64_t total_size = 0;
-  for (const auto& quota_info : quota_storage_info_list)
-    total_size += quota_info.temporary_usage + quota_info.syncable_usage;
+  for (const auto& quota_info : quota_storage_info_list) {
+    total_size += quota_info.usage;
+  }
   OnStorageSizeFetched(total_size);
 }
 

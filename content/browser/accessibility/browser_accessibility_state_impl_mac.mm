@@ -12,12 +12,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
 #include "ui/gfx/animation/animation.h"
 
 namespace content {
 
 namespace {
+
 void SetUpAccessibilityNotifications() {
   // We need to call into gfx::Animation and WebContentsImpl on the UI thread,
   // so ensure that we setup the notification on the correct thread.
@@ -39,21 +39,17 @@ void SetUpAccessibilityNotifications() {
                     ->NotifyWebContentsPreferencesChanged();
               }];
 
-  if (base::mac::MacOSVersion() >= 14'00'00 &&
-      base::FeatureList::IsEnabled(
-          features::kSonomaAccessibilityActivationRefinements)) {
-    // Set up KVO monitoring of VoiceOver state changes. KVO best practices
-    // recommend setting the context to the "address of a uniquely named
-    // static variable within the class". This allows observers to disambiguate
-    // notifications (where a class and its superclass, say, are observing the
-    // same property). We'll use the global accessibility object.
-    [[NSWorkspace sharedWorkspace]
-        addObserver:NSApp
-         forKeyPath:@"voiceOverEnabled"
-            options:(NSKeyValueObservingOptionInitial |
-                     NSKeyValueObservingOptionNew)
-            context:BrowserAccessibilityStateImpl::GetInstance()];
-  }
+  // Set up KVO monitoring of VoiceOver state changes. KVO best practices
+  // recommend setting the context to the "address of a uniquely named
+  // static variable within the class". This allows observers to disambiguate
+  // notifications (where a class and its superclass, say, are observing the
+  // same property). We'll use the global accessibility object.
+  [[NSWorkspace sharedWorkspace]
+      addObserver:NSApp
+       forKeyPath:@"voiceOverEnabled"
+          options:(NSKeyValueObservingOptionInitial |
+                   NSKeyValueObservingOptionNew)
+          context:BrowserAccessibilityStateImpl::GetInstance()];
 }
 }  // namespace
 
@@ -66,6 +62,11 @@ class BrowserAccessibilityStateImplMac : public BrowserAccessibilityStateImpl {
   void InitBackgroundTasks() override;
   void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
+  void SetKnownScreenReaderAppActive(bool is_active) override;
+  AssistiveTech ActiveKnownAssistiveTech() override;
+
+ private:
+  bool is_voiceover_active_ = false;
 };
 
 void BrowserAccessibilityStateImplMac::InitBackgroundTasks() {
@@ -82,15 +83,45 @@ void BrowserAccessibilityStateImplMac::UpdateHistogramsOnOtherThread() {
   ui::AXMode mode =
       BrowserAccessibilityStateImpl::GetInstance()->GetAccessibilityMode();
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.ScreenReader",
-                        mode.has_mode(ui::AXMode::kScreenReader));
+                        mode.has_mode(ui::AXMode::kExtendedProperties));
+}
+
+void BrowserAccessibilityStateImplMac::SetKnownScreenReaderAppActive(
+    bool is_active) {
+  static auto* ax_voiceover_crash_key = base::debug::AllocateCrashKeyString(
+      "ax_voiceover", base::debug::CrashKeySize::Size32);
+  if (is_active) {
+    base::debug::SetCrashKeyString(ax_voiceover_crash_key, "true");
+  } else if (is_voiceover_active_) {
+    base::debug::ClearCrashKeyString(ax_voiceover_crash_key);
+  }
+  is_voiceover_active_ = is_active;
+  awaiting_known_assistive_tech_computation_ = false;
+
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver", is_voiceover_active_);
+}
+
+BrowserAccessibilityState::AssistiveTech
+BrowserAccessibilityStateImplMac::ActiveKnownAssistiveTech() {
+  if (awaiting_known_assistive_tech_computation_) {
+    return kUnknown;
+  }
+  return is_voiceover_active_ ? kVoiceOver : kNone;
 }
 
 void BrowserAccessibilityStateImplMac::UpdateUniqueUserHistograms() {
   BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
 
   ui::AXMode mode = GetAccessibilityMode();
+  // Old screen reader metric: does not indicate the use of a screen reader,
+  // just kExtendedProperties mode, which is used by many clients.
+  // Instead of this, use the specific VoiceOver metric.
+  // TODO(accessibility) Remove this, which is redundant with
+  // PerformanceManager.Experimental.HasAccessibilityModeFlag.
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.ScreenReader.EveryReport",
-                        mode.has_mode(ui::AXMode::kScreenReader));
+                        mode.has_mode(ui::AXMode::kExtendedProperties));
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver.EveryReport",
+                        is_voiceover_active_);
 }
 
 // static

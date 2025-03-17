@@ -22,8 +22,16 @@ TEST_F(MetricsClusteringTest, InitAndFetch) {
 
 TEST_F(MetricsClusteringTest, ExecuteModelWithInput) {
   ExpectInitAndFetchModel();
-  ExpectExecutionWithInput(/*inputs=*/{}, /*expected_error=*/false,
-                           /*expected_result=*/{-1, -1, -1});
+  std::vector<float> inputs(14, 1.0);
+  ExpectExecutionWithInput(inputs, /*expected_error=*/false,
+                           /*expected_result=*/{14});
+}
+
+TEST_F(MetricsClusteringTest, ExecuteModelWithInputInactive) {
+  ExpectInitAndFetchModel();
+  std::vector<float> inputs(14, 0.0);
+  ExpectExecutionWithInput(inputs, /*expected_error=*/true,
+                           /*expected_result=*/{});
 }
 
 }  // namespace segmentation_platform

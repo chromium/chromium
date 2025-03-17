@@ -22,7 +22,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.tab_ui.R;
 
 /** Unit tests for {@link TabGroupVisualDataTextInputLayout}. */
 @Batch(Batch.UNIT_TESTS)

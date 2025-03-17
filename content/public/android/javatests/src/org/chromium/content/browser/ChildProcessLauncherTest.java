@@ -116,7 +116,9 @@ public class ChildProcessLauncherTest {
                                         SERVICE_COUNT_META_DATA_KEY,
                                         /* bindToCaller= */ false,
                                         /* bindAsExternalService= */ false,
-                                        /* useStrongBinding= */ false);
+                                        /* useStrongBinding= */ false,
+                                        /* fallbackToNextSlot= */ false,
+                                        /* isSandboxedForHistograms= */ false);
                             }
                         });
     }
@@ -276,10 +278,10 @@ public class ChildProcessLauncherTest {
 
         boolean allocatedConnection = boundConnectionToUse == null;
         if (allocatedConnection) {
-            onBeforeConnectionAllocatedHelper.waitForCallback(/* currentCallback= */ 0);
+            onBeforeConnectionAllocatedHelper.waitForCallback(/* currentCallCount= */ 0);
         }
 
-        onBeforeConnectionSetupHelper.waitForCallback(/* currentCallback= */ 0);
+        onBeforeConnectionSetupHelper.waitForCallback(/* currentCallCount= */ 0);
 
         // Wait for the service to notify its onConnectionSetup was called.
         childProcessBinder.waitForOnConnectionSetupCalled();
@@ -296,7 +298,7 @@ public class ChildProcessLauncherTest {
                 childProcessBinder.mConnectionBundle.getString(EXTRA_CONNECTION_PARAM));
 
         // Wait for the client onConnectionEstablished call.
-        onConnectionEstablishedHelper.waitForCallback(/* currentCallback= */ 0);
+        onConnectionEstablishedHelper.waitForCallback(/* currentCallCount= */ 0);
 
         // Wait for the service to notify its library got loaded.
         childProcessBinder.waitForOnNativeLibraryCalled();
@@ -322,7 +324,7 @@ public class ChildProcessLauncherTest {
         // always be called.
 
         // The client should also get a notification that the connection was lost.
-        onConnectionLostHelper.waitForCallback(/* currentCallback= */ 0);
+        onConnectionLostHelper.waitForCallback(/* currentCallCount= */ 0);
     }
 
     @Test
@@ -376,7 +378,9 @@ public class ChildProcessLauncherTest {
                                         /* serviceCount= */ 2,
                                         /* bindToCaller= */ false,
                                         /* bindAsExternalService= */ false,
-                                        /* useStrongBinding= */ false);
+                                        /* useStrongBinding= */ false,
+                                        /* fallbackToNextSlot= */ false,
+                                        /* isSandboxedForHistograms= */ false);
                             }
                         });
         Assert.assertFalse(badConnectionAllocator.anyConnectionAllocated());
@@ -517,7 +521,7 @@ public class ChildProcessLauncherTest {
                                         new String[0],
                                         new FileDescriptorInfo[0],
                                         connectionAllocator,
-                                        /* binderCallback= */ null,
+                                        /* clientInterfaces= */ null,
                                         /* binderBox= */ null);
                         if (!processLauncher.start(setupConnection, queueIfNoFreeConnection)) {
                             return null;

@@ -64,7 +64,7 @@ TEST_F(PassKitTabHelperTest, EmptyBundledFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadBundledPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kParsingFailure),
       1);
 }
@@ -100,10 +100,11 @@ TEST_F(PassKitTabHelperTest, ValidBundledPassKitFile) {
   EXPECT_NSEQ(@"pass.google.chrome.test", second_pass.passTypeIdentifier);
   EXPECT_NSEQ(@"Paw Planet", second_pass.organizationName);
 
-  histogram_tester_.ExpectUniqueSample(kUmaDownloadBundledPassKitResult,
-                                       static_cast<base::HistogramBase::Sample>(
-                                           DownloadPassKitResult::kSuccessful),
-                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaDownloadBundledPassKitResult,
+      static_cast<base::HistogramBase::Sample32>(
+          DownloadPassKitResult::kSuccessful),
+      1);
 }
 
 // Tests downloading a bundle pkpass file containing one valid pass and an
@@ -134,7 +135,7 @@ TEST_F(PassKitTabHelperTest, SemiValidBundledPassKitFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadBundledPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kPartialFailure),
       1);
 }
@@ -163,7 +164,7 @@ TEST_F(PassKitTabHelperTest, InvalidBundledPassKitFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadBundledPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kParsingFailure),
       1);
 }
@@ -180,7 +181,7 @@ TEST_F(PassKitTabHelperTest, EmptyFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kParsingFailure),
       1);
 }
@@ -207,7 +208,7 @@ TEST_F(PassKitTabHelperTest, MultipleEmptyFiles) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kParsingFailure),
       2);
 }
@@ -233,10 +234,11 @@ TEST_F(PassKitTabHelperTest, ValidPassKitFile) {
   EXPECT_NSEQ(@"pass.com.apple.devpubs.example", pass.passTypeIdentifier);
   EXPECT_NSEQ(@"Toy Town", pass.organizationName);
 
-  histogram_tester_.ExpectUniqueSample(kUmaDownloadPassKitResult,
-                                       static_cast<base::HistogramBase::Sample>(
-                                           DownloadPassKitResult::kSuccessful),
-                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaDownloadPassKitResult,
+      static_cast<base::HistogramBase::Sample32>(
+          DownloadPassKitResult::kSuccessful),
+      1);
 }
 
 // Tests the change of MIME type during the download. Can happen if the second
@@ -251,7 +253,7 @@ TEST_F(PassKitTabHelperTest, MimeTypeChange) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kWrongMimeTypeFailure),
       1);
 }
@@ -268,7 +270,7 @@ TEST_F(PassKitTabHelperTest, DownloadError) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kOtherFailure),
       1);
 }
@@ -285,7 +287,7 @@ TEST_F(PassKitTabHelperTest, UnauthorizedHttpResponse) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kUnauthorizedFailure),
       1);
 }
@@ -302,7 +304,7 @@ TEST_F(PassKitTabHelperTest, ForbiddenHttpResponse) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadPassKitResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kUnauthorizedFailure),
       1);
 }

@@ -215,7 +215,7 @@ class CORE_EXPORT DocumentMarkerController final
   // We have a hash map per marker type, mapping from nodes to a list of markers
   // for that node.
   using MarkerList = Member<DocumentMarkerList>;
-  using MarkerMap = HeapHashMap<WeakMember<const Text>, MarkerList>;
+  using MarkerMap = GCedHeapHashMap<WeakMember<const Text>, MarkerList>;
   using MarkerMaps = HeapVector<Member<MarkerMap>>;
 
   bool PossiblyHasMarkers(DocumentMarker::MarkerTypes) const;

@@ -4,12 +4,21 @@
 
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 
+#include <memory>
+
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/callback_android.h"
+#include "components/signin/public/android/jni_headers/AccountManagedStatusFinder_jni.h"
+#endif
 
 namespace signin {
 
@@ -495,6 +504,11 @@ AccountManagedStatusFinder::AccountManagedStatusFinder(
     base::OnceClosure async_callback,
     base::TimeDelta timeout)
     : identity_manager_(identity_manager), account_(account) {
+  // If a timeout is provided - treat persistent auth errors as timeouts.
+  // The assumption being that time-sensitive code paths (which are mostly in
+  // the UI) shouldn't wait for user to resolve the persistent auth error.
+  ignore_persistent_auth_errors_ = timeout.is_max();
+
   if (!identity_manager_->AreRefreshTokensLoaded()) {
     // We want to make sure that `account` exists in the IdentityManager but
     // we can only that after tokens are loaded. Wait for the
@@ -530,7 +544,7 @@ void AccountManagedStatusFinder::OnExtendedAccountInfoUpdated(
   }
 
   // Keep waiting if `info` isn't complete yet.
-  if (!info.IsValid()) {
+  if (info.hosted_domain.empty()) {
     return;
   }
 
@@ -550,6 +564,32 @@ void AccountManagedStatusFinder::OnRefreshTokenRemovedForAccount(
 
   // The interesting account was removed, we're done here.
   OutcomeDeterminedAsync(Outcome::kError);
+}
+
+void AccountManagedStatusFinder::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  DCHECK_EQ(outcome_, Outcome::kPending);
+
+  if (!identity_manager_->AreRefreshTokensLoaded()) {
+    // `OnRefreshTokensLoaded` will update the outcome.
+    return;
+  }
+
+  // Don't care about other accounts.
+  if (account_info.account_id != account_.account_id) {
+    return;
+  }
+
+  Outcome outcome = DetermineOutcome();
+  if (outcome == Outcome::kPending) {
+    // There is still not enough information to determine the account managed
+    // status. Keep waiting for notifications from IdentityManager.
+    return;
+  }
+
+  OutcomeDeterminedAsync(outcome);
 }
 
 void AccountManagedStatusFinder::OnRefreshTokensLoaded() {
@@ -608,13 +648,20 @@ AccountManagedStatusFinder::DetermineOutcome() const {
   // The easy cases didn't apply, so actually get the canonical info from
   // IdentityManager. This may or may not be available immediately.
   AccountInfo info = identity_manager_->FindExtendedAccountInfo(account_);
-  if (info.IsValid()) {
+  if (!info.hosted_domain.empty()) {
     return info.IsManaged() ? Outcome::kEnterprise
                             : Outcome::kConsumerNotWellKnown;
   }
 
-  // Extended account info isn't (fully) available yet. Observe the
-  // IdentityManager to get notified once it is.
+  GoogleServiceAuthError authError =
+      identity_manager_->GetErrorStateOfRefreshTokenForAccount(
+          account_.account_id);
+  if (!ignore_persistent_auth_errors_ && authError.IsPersistentError()) {
+    return Outcome::kTimeout;
+  }
+
+  // Hosted domain info isn't available yet. Observe the IdentityManager to
+  // get notified once it is.
   return Outcome::kPending;
 }
 
@@ -633,5 +680,29 @@ void AccountManagedStatusFinder::OutcomeDeterminedAsync(Outcome type) {
   // Let the client know the type was determined.
   std::move(callback_).Run();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+static jlong JNI_AccountManagedStatusFinder_CreateNativeObject(
+    JNIEnv* env,
+    IdentityManager* identity_manager,
+    CoreAccountInfo& account,
+    base::RepeatingClosure& callback,
+    jlong timeout_in_millis) {
+  base::TimeDelta timeout = timeout_in_millis < 0
+                                ? base::TimeDelta::Max()
+                                : base::Milliseconds(timeout_in_millis);
+  auto result = std::make_unique<AccountManagedStatusFinder>(
+      identity_manager, account, std::move(callback), timeout);
+  return reinterpret_cast<intptr_t>(result.release());
+}
+
+void AccountManagedStatusFinder::DestroyNativeObject(JNIEnv* env) {
+  delete this;
+}
+
+jint AccountManagedStatusFinder::GetOutcomeFromNativeObject(JNIEnv* env) const {
+  return static_cast<jint>(GetOutcome());
+}
+#endif
 
 }  // namespace signin

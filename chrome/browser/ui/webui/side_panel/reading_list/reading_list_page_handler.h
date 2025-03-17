@@ -57,6 +57,7 @@ class ReadingListPageHandler : public reading_list::mojom::PageHandler,
   void UpdateCurrentPageActionButtonState() override;
   void ShowUI() override;
   void CloseUI() override;
+  void GetWindowData(GetWindowDataCallback callback) override;
 
   // ReadingListModelObserver:
   void ReadingListModelLoaded(const ReadingListModel* model) override {}

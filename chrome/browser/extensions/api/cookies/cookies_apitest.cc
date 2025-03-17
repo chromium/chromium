@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/storage_partition.h"
@@ -22,9 +23,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_apitest.h"
 #else
-#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
@@ -50,23 +49,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ReadFromDocument) {
 }
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-using CookiesApiTestBase = ExtensionPlatformApiTest;
-#else
-using CookiesApiTestBase = ExtensionApiTest;
-#endif
-
-class CookiesApiTest : public CookiesApiTestBase,
+class CookiesApiTest : public ExtensionApiTest,
                        public testing::WithParamInterface<
                            std::tuple<ContextType, SameSiteCookieSemantics>> {
  public:
-  CookiesApiTest() : CookiesApiTestBase(std::get<0>(GetParam())) {}
+  CookiesApiTest() : ExtensionApiTest(std::get<0>(GetParam())) {}
   ~CookiesApiTest() override = default;
   CookiesApiTest(const CookiesApiTest&) = delete;
   CookiesApiTest& operator=(const CookiesApiTest&) = delete;
 
   void SetUpOnMainThread() override {
-    CookiesApiTestBase::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
 
     // If SameSite access semantics is "legacy", add content settings to allow
     // legacy access for all sites.

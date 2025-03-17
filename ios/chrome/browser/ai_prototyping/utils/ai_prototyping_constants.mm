@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 
-const CGFloat kBorderWidth = 2;
-const CGFloat kCornerRadius = 8;
-const CGFloat kHorizontalInset = 12;
-const CGFloat kMainStackTopInset = 20;
-const CGFloat kMainStackViewSpacing = 20;
-const CGFloat kResponseContainerHeightMultiplier = 0.4;
+constexpr CGFloat kBorderWidth = 2;
+constexpr CGFloat kCornerRadius = 8;
+constexpr CGFloat kHorizontalInset = 12;
+constexpr CGFloat kMainStackTopInset = 20;
+constexpr CGFloat kMainStackViewSpacing = 15;
+constexpr CGFloat kResponseContainerHeightMultiplier = 0.4;
+constexpr CGFloat kVerticalInset = 12;
+constexpr CGFloat kButtonStackViewSpacing = 10;
+constexpr CGFloat kDefaultTemperature = 0.7;
+constexpr CGFloat kTemperatureSliderSteps = 0.1;

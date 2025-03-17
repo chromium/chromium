@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Actions} from '../personalization_actions.js';
-import {ReducerFunction} from '../personalization_reducers.js';
-import {PersonalizationState} from '../personalization_state.js';
+import type {Actions} from '../personalization_actions.js';
+import type {ReducerFunction} from '../personalization_reducers.js';
+import type {PersonalizationState} from '../personalization_state.js';
 
 import {ThemeActionName} from './theme_actions.js';
-import {ThemeState} from './theme_state.js';
+import type {ThemeState} from './theme_state.js';
 
 export function darkModeEnabledReducer(
     state: ThemeState['darkModeEnabled'], action: Actions,

@@ -23,7 +23,10 @@ component("features") {
     "fingerprinting_protection_filter_features.h",
   ]
   public_deps = [ "//base" ]
-  deps = [ "//components/subresource_filter/core/mojom" ]
+  deps = [
+    "//components/privacy_sandbox:features",
+    "//components/subresource_filter/core/mojom",
+  ]
 }
 
 source_set("prefs") {
@@ -53,11 +56,16 @@ source_set("exceptions") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "fingerprinting_protection_breakage_exception_unittest.cc" ]
+  sources = [
+    "fingerprinting_protection_breakage_exception_unittest.cc",
+    "fingerprinting_protection_filter_features_unittest.cc",
+  ]
   deps = [
     ":exceptions",
+    ":features",
     ":prefs",
     "//base",
+    "//base/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//testing/gtest",

@@ -39,8 +39,7 @@ BirchWeatherProvider* GetWeatherProvider() {
 class BirchWeatherProviderTest : public AshTestBase {
  public:
   BirchWeatherProviderTest() : clock_override_(&GetTestTime, nullptr, nullptr) {
-    feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kBirchWeather}, {});
+    feature_list_.InitAndEnableFeature(features::kForestFeature);
     // Ensure the time is morning (7 AM) so weather will be fetched.
     SetTestTime(base::Time::Now().LocalMidnight() + base::Hours(7));
   }
@@ -515,6 +514,23 @@ TEST_F(BirchWeatherProviderTest, DisabledByPolicy) {
   pref_service->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
                         std::move(enabled_integrations));
 
+  provider.RequestBirchDataFetch();
+  EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
+}
+
+TEST_F(BirchWeatherProviderTest, WeatherManagedUser) {
+  auto* birch_model = Shell::Get()->birch_model();
+  BirchWeatherProvider provider(birch_model);
+
+  provider.RequestBirchDataFetch();
+  EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
+
+  // Add and switch to a managed user account.
+  SimulateUserLogin({.display_email = "primary@test",
+                     .is_new_profile = true,
+                     .is_account_managed = true});
+
+  // Weather should not be fetched when the active account is managed.
   provider.RequestBirchDataFetch();
   EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
 }

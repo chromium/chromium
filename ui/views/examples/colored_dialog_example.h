@@ -5,6 +5,8 @@
 #ifndef UI_VIEWS_EXAMPLES_COLORED_DIALOG_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_COLORED_DIALOG_EXAMPLE_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -24,7 +26,7 @@ class ColoredDialog : public views::DialogDelegateView,
   METADATA_HEADER(ColoredDialog, views::DialogDelegateView)
 
  public:
-  using AcceptCallback = base::OnceCallback<void(std::u16string)>;
+  using AcceptCallback = base::OnceCallback<void(std::u16string_view)>;
 
   explicit ColoredDialog(AcceptCallback accept_callback);
   ColoredDialog(const ColoredDialog&) = delete;
@@ -55,7 +57,7 @@ class ColoredDialogChooser : public views::View {
   void ButtonPressed();
 
  private:
-  void OnFeedbackSubmit(std::u16string text);
+  void OnFeedbackSubmit(std::u16string_view text);
 
   raw_ptr<views::Label> confirmation_label_;
   base::OneShotTimer confirmation_timer_;

@@ -4,90 +4,32 @@
 
 #include "chrome/browser/ai/ai_summarizer.h"
 
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "base/test/run_until.h"
-#include "chrome/browser/ai/ai_manager.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
-#include "components/optimization_guide/proto/string_value.pb.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-shared.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 using ::testing::_;
-using ::testing::AtMost;
-using ::testing::NiceMock;
 
 namespace {
 
-using optimization_guide::MockSession;
-using optimization_guide::proto::SummarizeRequest;
-using optimization_guide::proto::SummarizerOutputFormat;
-using optimization_guide::proto::SummarizerOutputLength;
-using optimization_guide::proto::SummarizerOutputType;
+constexpr char kSharedContextString[] = "test shared context";
+constexpr char kContextString[] = "test context";
+constexpr char kInputString[] = "input string";
 
-class MockStreamingResponder : public blink::mojom::ModelStreamingResponder {
- public:
-  MockStreamingResponder() = default;
-  ~MockStreamingResponder() override = default;
-  MockStreamingResponder(const MockStreamingResponder&) = delete;
-  MockStreamingResponder& operator=(const MockStreamingResponder&) = delete;
-
-  void OnStreaming(const std::string& text) override {
-    status_ = blink::mojom::ModelStreamingResponseStatus::kOngoing;
-    result_ += text;
-  }
-
-  void OnError(blink::mojom::ModelStreamingResponseStatus status) override {
-    status_ = status;
-    run_loop_.Quit();
-  }
-  void OnCompletion(
-      blink::mojom::ModelExecutionContextInfoPtr context_info) override {
-    status_ = blink::mojom::ModelStreamingResponseStatus::kComplete;
-    run_loop_.Quit();
-  }
-
-  mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
-  BindNewPipeAndPassRemote() {
-    return responder_.BindNewPipeAndPassRemote();
-  }
-
-  blink::mojom::ModelStreamingResponseStatus status() { return status_; }
-
-  std::string result() { return result_; }
-
-  void WaitForResponseComplete() { run_loop_.Run(); }
-
- private:
-  mojo::Receiver<blink::mojom::ModelStreamingResponder> responder_{this};
-
-  blink::mojom::ModelStreamingResponseStatus status_;
-  std::string result_;
-  base::RunLoop run_loop_;
-};
-
-class AISummarizerUnitTest : public AITestUtils::AITestBase {
- public:
-  AISummarizerUnitTest() = default;
-
-  void SetupMockOptimizationGuideKeyedService() {
-    AITestUtils::AITestBase::SetupMockOptimizationGuideKeyedService();
-
-    ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
-        .WillByDefault(
-            [&] { return std::make_unique<NiceMock<MockSession>>(&session_); });
-  }
-
-  ~AISummarizerUnitTest() override = default;
-
- protected:
-  testing::NiceMock<MockSession> session_;
-};
+using blink::mojom::AILanguageCode;
+using blink::mojom::AILanguageCodePtr;
 
 class MockCreateSummarizerClient
     : public blink::mojom::AIManagerCreateSummarizerClient {
@@ -100,215 +42,722 @@ class MockCreateSummarizerClient
 
   mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient>
   BindNewPipeAndPassRemote() {
-    return responder_.BindNewPipeAndPassRemote();
+    return receiver_.BindNewPipeAndPassRemote();
   }
 
-  void OnResult(
-      mojo::PendingRemote<blink::mojom::AISummarizer> pending_remote) override {
-    if (pending_remote) {
-      summarizer_.Bind(std::move(pending_remote));
-    }
-    run_loop_.Quit();
-  }
-
-  mojo::Remote<blink::mojom::AISummarizer> summarizer() {
-    return std::move(summarizer_);
-  }
-
-  void WaitForResult() { run_loop_.Run(); }
+  MOCK_METHOD(void,
+              OnResult,
+              (mojo::PendingRemote<::blink::mojom::AISummarizer> Summarizer),
+              (override));
+  MOCK_METHOD(void,
+              OnError,
+              (blink::mojom::AIManagerCreateClientError error),
+              (override));
 
  private:
-  mojo::Receiver<blink::mojom::AIManagerCreateSummarizerClient> responder_{
-      this};
-  mojo::Remote<blink::mojom::AISummarizer> summarizer_;
-
-  base::RunLoop run_loop_;
+  mojo::Receiver<blink::mojom::AIManagerCreateSummarizerClient> receiver_{this};
 };
+
+optimization_guide::OptimizationGuideModelStreamingExecutionResult
+CreateExecutionResult(std::string_view output, bool is_complete) {
+  optimization_guide::proto::StringValue response;
+  *response.mutable_value() = output;
+  return optimization_guide::OptimizationGuideModelStreamingExecutionResult(
+      optimization_guide::StreamingResponse{
+          .response = optimization_guide::AnyWrapProto(response),
+          .is_complete = is_complete,
+      },
+      /*provided_by_on_device=*/true);
+}
+
+optimization_guide::OptimizationGuideModelStreamingExecutionResult
+CreateExecutionErrorResult(
+    optimization_guide::OptimizationGuideModelExecutionError error) {
+  return optimization_guide::OptimizationGuideModelStreamingExecutionResult(
+      base::unexpected(error),
+      /*provided_by_on_device=*/true);
+}
+
+blink::mojom::AISummarizerCreateOptionsPtr GetDefaultOptions() {
+  return blink::mojom::AISummarizerCreateOptions::New(
+      kSharedContextString, blink::mojom::AISummarizerType::kTLDR,
+      blink::mojom::AISummarizerFormat::kPlainText,
+      blink::mojom::AISummarizerLength::kMedium,
+      /*expected_input_languages=*/std::vector<AILanguageCodePtr>(),
+      /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
+      /*output_language=*/AILanguageCode::New(""));
+}
+
+std::unique_ptr<optimization_guide::proto::SummarizeOptions>
+GetDefaultExpectedOptions() {
+  return AISummarizer::ToProtoOptions(GetDefaultOptions());
+}
 
 }  // namespace
 
-TEST_F(AISummarizerUnitTest, CreateSummarizerWithoutService) {
-  base::RunLoop run_loop;
+class AISummarizerTest : public AITestUtils::AITestBase {
+ protected:
+  mojo::Remote<blink::mojom::AISummarizer> GetAISummarizerRemote() {
+    mojo::Remote<blink::mojom::AISummarizer> summarizer_remote;
 
+    MockCreateSummarizerClient mock_create_summarizer_client;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_create_summarizer_client, OnResult(_))
+        .WillOnce(testing::Invoke(
+            [&](mojo::PendingRemote<::blink::mojom::AISummarizer> summarizer) {
+              EXPECT_TRUE(summarizer);
+              summarizer_remote = mojo::Remote<blink::mojom::AISummarizer>(
+                  std::move(summarizer));
+              run_loop.Quit();
+            }));
+
+    mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+    ai_manager->CreateSummarizer(
+        mock_create_summarizer_client.BindNewPipeAndPassRemote(),
+        GetDefaultOptions());
+    run_loop.Run();
+
+    return summarizer_remote;
+  }
+
+  void RunSimpleSummarizeTest(blink::mojom::AISummarizerType type,
+                              blink::mojom::AISummarizerFormat format,
+                              blink::mojom::AISummarizerLength length) {
+    const auto options = blink::mojom::AISummarizerCreateOptions::New(
+        kSharedContextString, type, format, length,
+        /*expected_input_languages=*/std::vector<AILanguageCodePtr>(),
+        /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
+        /*output_language=*/AILanguageCode::New(""));
+
+    EXPECT_CALL(session_, ExecuteModel(_, _))
+        .WillOnce(testing::Invoke(
+            [&](const google::protobuf::MessageLite& request_metadata,
+                optimization_guide::
+                    OptimizationGuideModelExecutionResultStreamingCallback
+                        callback) {
+              AITestUtils::CheckSummarizeRequest(
+                  request_metadata, kSharedContextString, kContextString,
+                  *AISummarizer::ToProtoOptions(options), kInputString);
+              callback.Run(CreateExecutionResult("Result text",
+                                                 /*is_complete=*/true));
+            }));
+
+    mojo::Remote<blink::mojom::AISummarizer> summarizer_remote;
+    {
+      MockCreateSummarizerClient mock_create_summarizer_client;
+      base::RunLoop run_loop;
+      EXPECT_CALL(mock_create_summarizer_client, OnResult(_))
+          .WillOnce(testing::Invoke(
+              [&](mojo::PendingRemote<::blink::mojom::AISummarizer>
+                      Summarizer) {
+                EXPECT_TRUE(Summarizer);
+                summarizer_remote = mojo::Remote<blink::mojom::AISummarizer>(
+                    std::move(Summarizer));
+                run_loop.Quit();
+              }));
+
+      mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+      ai_manager->CreateSummarizer(
+          mock_create_summarizer_client.BindNewPipeAndPassRemote(),
+          options.Clone());
+      run_loop.Run();
+    }
+    AITestUtils::MockModelStreamingResponder mock_responder;
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_responder, OnStreaming(_, _))
+        .WillOnce(testing::Invoke(
+            [&](const std::string& text,
+                blink::mojom::ModelStreamingResponderAction action) {
+              EXPECT_THAT(text, "Result text");
+              EXPECT_EQ(action,
+                        blink::mojom::ModelStreamingResponderAction::kReplace);
+            }));
+
+    EXPECT_CALL(mock_responder, OnCompletion(_))
+        .WillOnce(testing::Invoke(
+            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+              run_loop.Quit();
+            }));
+
+    summarizer_remote->Summarize(kInputString, kContextString,
+                                 mock_responder.BindNewPipeAndPassRemote());
+    run_loop.Run();
+  }
+};
+
+TEST_F(AISummarizerTest, CanCreateDefaultOptions) {
+  SetupMockOptimizationGuideKeyedService();
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(_))
+      .WillOnce(testing::Return(
+          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
+  GetAIManagerInterface()->CanCreateSummarizer(GetDefaultOptions(),
+                                               callback.Get());
+}
+
+TEST_F(AISummarizerTest, CanCreateIsLanguagesSupported) {
+  SetupMockOptimizationGuideKeyedService();
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(_))
+      .WillRepeatedly(testing::Return(
+          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  auto options = GetDefaultOptions();
+  options->output_language = AILanguageCode::New("en");
+  options->expected_input_languages =
+      AITestUtils::ToMojoLanguageCodes({"en-US", ""});
+  options->expected_context_languages =
+      AITestUtils::ToMojoLanguageCodes({"en-GB", ""});
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
+  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
+                                               callback.Get());
+}
+
+TEST_F(AISummarizerTest, CanCreateUnIsLanguagesSupported) {
+  SetupMockOptimizationGuideKeyedService();
+  auto options = GetDefaultOptions();
+  options->output_language = AILanguageCode::New("es-ES");
+  options->expected_input_languages =
+      AITestUtils::ToMojoLanguageCodes({"en", "fr", "ja"});
+  options->expected_context_languages =
+      AITestUtils::ToMojoLanguageCodes({"ar", "zh", "hi"});
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage));
+  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
+                                               callback.Get());
+}
+
+TEST_F(AISummarizerTest, CreateSummarizerNoService) {
   SetupNullOptimizationGuideKeyedService();
-  AIManager ai_manager = AIManager(main_rfh()->GetBrowserContext());
-  base::MockCallback<blink::mojom::AIManager::CanCreateSummarizerCallback>
-      callback;
-  EXPECT_CALL(callback, Run(testing::_))
-      .Times(AtMost(1))
-      .WillOnce(testing::Invoke([&](blink::mojom::ModelAvailabilityCheckResult
-                                        result) {
-        EXPECT_EQ(
-            result,
-            blink::mojom::ModelAvailabilityCheckResult::kNoServiceNotRunning);
+  MockCreateSummarizerClient mock_create_summarizer_client;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_create_summarizer_client, OnError(_))
+      .WillOnce(testing::Invoke([&](blink::mojom::AIManagerCreateClientError
+                                        error) {
+        ASSERT_EQ(
+            error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
         run_loop.Quit();
       }));
-  ai_manager.CanCreateSummarizer(callback.Get());
-  run_loop.Run();
 
-  // The callback may still be pending, delete the WebContents and destroy the
-  // associated RFH, which should not result in a UAF.
-  DeleteContents();
+  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+  ai_manager->CreateSummarizer(
+      mock_create_summarizer_client.BindNewPipeAndPassRemote(),
+      GetDefaultOptions());
+  run_loop.Run();
+}
+
+TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
+  SetupMockOptimizationGuideKeyedService();
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; }));
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(_))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature) {
+            return optimization_guide::OnDeviceModelEligibilityReason::
+                kModelNotEligible;
+          }));
+
+  MockCreateSummarizerClient mock_create_summarizer_client;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_create_summarizer_client, OnError(_))
+      .WillOnce(testing::Invoke([&](blink::mojom::AIManagerCreateClientError
+                                        error) {
+        ASSERT_EQ(
+            error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+        run_loop.Quit();
+      }));
+
+  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+  ai_manager->CreateSummarizer(
+      mock_create_summarizer_client.BindNewPipeAndPassRemote(),
+      GetDefaultOptions());
+  run_loop.Run();
+}
+
+TEST_F(AISummarizerTest,
+       CreateSummarizerRetryAfterConfigNotAvailableForFeature) {
+  SetupMockOptimizationGuideKeyedService();
+
+  // StartSession must be called twice.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            // Returns a nullptr for the first call.
+            return nullptr;
+          }))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            // Returns a MockSession for the second call.
+            return std::make_unique<optimization_guide::MockSession>();
+          }));
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(_))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature) {
+            // Returning kConfigNotAvailableForFeature should trigger retry.
+            return optimization_guide::OnDeviceModelEligibilityReason::
+                kConfigNotAvailableForFeature;
+          }));
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  mojo::Remote<blink::mojom::AISummarizer> summarizer_remote;
+  MockCreateSummarizerClient mock_create_summarizer_client;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_create_summarizer_client, OnResult(_))
+      .WillOnce(testing::Invoke(
+          [&](mojo::PendingRemote<::blink::mojom::AISummarizer> summarizer) {
+            // Create Summarizer should succeed.
+            EXPECT_TRUE(summarizer);
+            run_loop.Quit();
+          }));
+
+  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+  ai_manager->CreateSummarizer(
+      mock_create_summarizer_client.BindNewPipeAndPassRemote(),
+      GetDefaultOptions());
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+  // Send `kConfigNotAvailableForFeature` first to the observer.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kSummarize,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kConfigNotAvailableForFeature);
+
+  // And then send `kConfigNotAvailableForFeature` to the observer.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kSummarize,
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  // OnResult() should be called.
+  run_loop.Run();
+}
+
+TEST_F(AISummarizerTest,
+       CreateSummarizerAbortAfterConfigNotAvailableForFeature) {
+  SetupMockOptimizationGuideKeyedService();
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; }));
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(_))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature) {
+            // Returning kConfigNotAvailableForFeature should trigger retry.
+            return optimization_guide::OnDeviceModelEligibilityReason::
+                kConfigNotAvailableForFeature;
+          }));
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  base::RunLoop run_loop_for_remove_observer;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              RemoveOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            EXPECT_EQ(availability_observer, observer);
+            run_loop_for_remove_observer.Quit();
+          }));
+
+  auto mock_create_summarizer_client =
+      std::make_unique<MockCreateSummarizerClient>();
+  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+  ai_manager->CreateSummarizer(
+      mock_create_summarizer_client->BindNewPipeAndPassRemote(),
+      GetDefaultOptions());
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+
+  // Reset `mock_create_summarizer_client` to abort the task of
+  // CreateSummarizer().
+  mock_create_summarizer_client.reset();
+
+  // RemoveOnDeviceModelAvailabilityChangeObserver should be called.
+  run_loop_for_remove_observer.Run();
+}
+
+TEST_F(AISummarizerTest, SummarizeDefault) {
+  SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+  RunSimpleSummarizeTest(blink::mojom::AISummarizerType::kTLDR,
+                         blink::mojom::AISummarizerFormat::kPlainText,
+                         blink::mojom::AISummarizerLength::kMedium);
+}
+
+TEST_F(AISummarizerTest, SummarizeWithOptions) {
+  SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+  blink::mojom::AISummarizerType types[]{
+      blink::mojom::AISummarizerType::kTLDR,
+      blink::mojom::AISummarizerType::kKeyPoints,
+      blink::mojom::AISummarizerType::kTeaser,
+      blink::mojom::AISummarizerType::kHeadline,
+  };
+  blink::mojom::AISummarizerFormat formats[]{
+      blink::mojom::AISummarizerFormat::kPlainText,
+      blink::mojom::AISummarizerFormat::kMarkDown,
+  };
+  blink::mojom::AISummarizerLength lengths[]{
+      blink::mojom::AISummarizerLength::kShort,
+      blink::mojom::AISummarizerLength::kMedium,
+      blink::mojom::AISummarizerLength::kLong,
+  };
+  for (const auto& type : types) {
+    for (const auto& format : formats) {
+      for (const auto& length : lengths) {
+        SCOPED_TRACE(testing::Message()
+                     << type << " " << format << " " << length);
+        RunSimpleSummarizeTest(type, format, length);
+      }
+    }
+  }
+}
+
+TEST_F(AISummarizerTest, InputLimitExceededError) {
+  SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+  EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
+      .WillOnce(testing::Invoke(
+          [](optimization_guide::MultimodalMessageReadView request_metadata,
+             optimization_guide::OptimizationGuideModelSizeInTokenCallback
+                 callback) {
+            std::move(callback).Run(
+                blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
+          }));
+
+  auto summarizer_remote = GetAISummarizerRemote();
+  AITestUtils::MockModelStreamingResponder mock_responder;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_responder, OnError(_))
+      .WillOnce(testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus
+                                        status) {
+        EXPECT_EQ(
+            status,
+            blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+        run_loop.Quit();
+      }));
+
+  summarizer_remote->Summarize(kInputString, kContextString,
+                               mock_responder.BindNewPipeAndPassRemote());
+  run_loop.Run();
+}
+
+TEST_F(AISummarizerTest, ModelExecutionError) {
+  SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::Invoke(
+          [](const google::protobuf::MessageLite& request_metadata,
+             optimization_guide::
+                 OptimizationGuideModelExecutionResultStreamingCallback
+                     callback) {
+            AITestUtils::CheckSummarizeRequest(
+                request_metadata, kSharedContextString, kContextString,
+                *GetDefaultExpectedOptions(), kInputString);
+            callback.Run(CreateExecutionErrorResult(
+                optimization_guide::OptimizationGuideModelExecutionError::
+                    FromModelExecutionError(
+                        optimization_guide::
+                            OptimizationGuideModelExecutionError::
+                                ModelExecutionError::kPermissionDenied)));
+          }));
+
+  auto summarizer_remote = GetAISummarizerRemote();
+  AITestUtils::MockModelStreamingResponder mock_responder;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_responder, OnError(_))
+      .WillOnce(testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus
+                                        status) {
+        EXPECT_EQ(
+            status,
+            blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied);
+        run_loop.Quit();
+      }));
+
+  summarizer_remote->Summarize(kInputString, kContextString,
+                               mock_responder.BindNewPipeAndPassRemote());
+  run_loop.Run();
+}
+
+TEST_F(AISummarizerTest, SummarizeMultipleResponse) {
+  SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::Invoke(
+          [](const google::protobuf::MessageLite& request_metadata,
+             optimization_guide::
+                 OptimizationGuideModelExecutionResultStreamingCallback
+                     callback) {
+            AITestUtils::CheckSummarizeRequest(
+                request_metadata, kSharedContextString, kContextString,
+                *GetDefaultExpectedOptions(), kInputString);
+
+            callback.Run(
+                CreateExecutionResult("Result ", /*is_complete=*/false));
+            callback.Run(CreateExecutionResult("Result text",
+                                               /*is_complete=*/true));
+          }));
+
+  auto summarizer_remote = GetAISummarizerRemote();
+  AITestUtils::MockModelStreamingResponder mock_responder;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_responder, OnStreaming(_, _))
+      .WillOnce(testing::Invoke(
+          [&](const std::string& text,
+              blink::mojom::ModelStreamingResponderAction action) {
+            EXPECT_THAT(text, "Result ");
+            EXPECT_EQ(action,
+                      blink::mojom::ModelStreamingResponderAction::kReplace);
+          }))
+      .WillOnce(testing::Invoke(
+          [&](const std::string& text,
+              blink::mojom::ModelStreamingResponderAction action) {
+            EXPECT_THAT(text, "Result text");
+            EXPECT_EQ(action,
+                      blink::mojom::ModelStreamingResponderAction::kReplace);
+          }));
+
+  EXPECT_CALL(mock_responder, OnCompletion(_))
+      .WillOnce(testing::Invoke(
+          [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+            run_loop.Quit();
+          }));
+
+  summarizer_remote->Summarize(kInputString, kContextString,
+                               mock_responder.BindNewPipeAndPassRemote());
+  run_loop.Run();
+}
+
+TEST_F(AISummarizerTest, MultipleSummarize) {
+  SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::Invoke(
+          [](const google::protobuf::MessageLite& request_metadata,
+             optimization_guide::
+                 OptimizationGuideModelExecutionResultStreamingCallback
+                     callback) {
+            AITestUtils::CheckSummarizeRequest(
+                request_metadata, kSharedContextString, kContextString,
+                *GetDefaultExpectedOptions(), kInputString);
+            callback.Run(CreateExecutionResult("Result text",
+                                               /*is_complete=*/true));
+          }))
+      .WillOnce(testing::Invoke(
+          [](const google::protobuf::MessageLite& request_metadata,
+             optimization_guide::
+                 OptimizationGuideModelExecutionResultStreamingCallback
+                     callback) {
+            AITestUtils::CheckSummarizeRequest(
+                request_metadata, kSharedContextString, "test context 2",
+                *GetDefaultExpectedOptions(), "input string 2");
+            callback.Run(CreateExecutionResult("Result text 2",
+                                               /*is_complete=*/true));
+          }));
+
+  auto summarizer_remote = GetAISummarizerRemote();
+  {
+    AITestUtils::MockModelStreamingResponder mock_responder;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_responder, OnStreaming(_, _))
+        .WillOnce(testing::Invoke(
+            [&](const std::string& text,
+                blink::mojom::ModelStreamingResponderAction action) {
+              EXPECT_THAT(text, "Result text");
+              EXPECT_EQ(action,
+                        blink::mojom::ModelStreamingResponderAction::kReplace);
+            }));
+
+    EXPECT_CALL(mock_responder, OnCompletion(_))
+        .WillOnce(testing::Invoke(
+            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+              run_loop.Quit();
+            }));
+
+    summarizer_remote->Summarize(kInputString, kContextString,
+                                 mock_responder.BindNewPipeAndPassRemote());
+    run_loop.Run();
+  }
+  {
+    AITestUtils::MockModelStreamingResponder mock_responder;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_responder, OnStreaming(_, _))
+        .WillOnce(testing::Invoke(
+            [&](const std::string& text,
+                blink::mojom::ModelStreamingResponderAction action) {
+              EXPECT_THAT(text, "Result text 2");
+              EXPECT_EQ(action,
+                        blink::mojom::ModelStreamingResponderAction::kReplace);
+            }));
+
+    EXPECT_CALL(mock_responder, OnCompletion(_))
+        .WillOnce(testing::Invoke(
+            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+              run_loop.Quit();
+            }));
+
+    summarizer_remote->Summarize("input string 2", "test context 2",
+                                 mock_responder.BindNewPipeAndPassRemote());
+    run_loop.Run();
+  }
+}
+
+TEST_F(AISummarizerTest, ResponderDisconnected) {
+  SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+  base::RunLoop run_loop_for_callback;
+  optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
+      streaming_callback;
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::Invoke(
+          [&](const google::protobuf::MessageLite& request_metadata,
+              optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            AITestUtils::CheckSummarizeRequest(
+                request_metadata, kSharedContextString, kContextString,
+                *GetDefaultExpectedOptions(), kInputString);
+            streaming_callback = std::move(callback);
+            run_loop_for_callback.Quit();
+          }));
+
+  auto summarizer_remote = GetAISummarizerRemote();
+  std::unique_ptr<AITestUtils::MockModelStreamingResponder> mock_responder =
+      std::make_unique<AITestUtils::MockModelStreamingResponder>();
+  summarizer_remote->Summarize(kInputString, kContextString,
+                               mock_responder->BindNewPipeAndPassRemote());
+  mock_responder.reset();
+  // Call RunUntilIdle() to disconnect the ModelStreamingResponder mojo remote
+  // interface in AISummarizer.
+  task_environment()->RunUntilIdle();
+
+  run_loop_for_callback.Run();
+  ASSERT_TRUE(streaming_callback);
+  streaming_callback.Run(CreateExecutionResult("Result text",
+                                               /*is_complete=*/true));
   task_environment()->RunUntilIdle();
 }
 
-testing::Action<void(
-    const google::protobuf::MessageLite&,
-    optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback)>
-CreateModelExecutionMock(const std::string& expected_input,
-                         const std::string& expected_context,
-                         SummarizerOutputType expected_output_type,
-                         SummarizerOutputFormat expected_output_format,
-                         SummarizerOutputLength expected_output_length,
-                         const std::string& output) {
-  return
-      [=](const google::protobuf::MessageLite& request_metadata,
-          optimization_guide::
-              OptimizationGuideModelExecutionResultStreamingCallback callback) {
-        optimization_guide::proto::SummarizeRequest request;
-        EXPECT_EQ(request.GetTypeName(), request_metadata.GetTypeName());
-        request =
-            static_cast<const optimization_guide::proto::SummarizeRequest&>(
-                request_metadata);
-        EXPECT_EQ(request.article(), expected_input);
-        EXPECT_EQ(request.context(), expected_context);
-        EXPECT_EQ(request.options().output_type(), expected_output_type);
-        EXPECT_EQ(request.options().output_format(), expected_output_format);
-        EXPECT_EQ(request.options().output_length(), expected_output_length);
-        optimization_guide::proto::StringValue summary_str;
-        summary_str.set_value(output);
-        callback.Run(
-            optimization_guide::OptimizationGuideModelStreamingExecutionResult(
-                optimization_guide::StreamingResponse{
-                    .response = optimization_guide::AnyWrapProto(summary_str),
-                    .is_complete = true,
-                },
-                /*provided_by_on_device=*/true));
-      };
+TEST_F(AISummarizerTest, SummarizerDisconnected) {
+  SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+  base::RunLoop run_loop_for_callback;
+  optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
+      streaming_callback;
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::Invoke(
+          [&](const google::protobuf::MessageLite& request_metadata,
+              optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            AITestUtils::CheckSummarizeRequest(
+                request_metadata, kSharedContextString, kContextString,
+                *GetDefaultExpectedOptions(), kInputString);
+            streaming_callback = std::move(callback);
+            run_loop_for_callback.Quit();
+          }));
+
+  auto summarizer_remote = GetAISummarizerRemote();
+  AITestUtils::MockModelStreamingResponder mock_responder;
+  base::RunLoop run_loop_for_response;
+  EXPECT_CALL(mock_responder, OnError(_))
+      .WillOnce(testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus
+                                        status) {
+        EXPECT_EQ(
+            status,
+            blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
+        run_loop_for_response.Quit();
+      }));
+
+  summarizer_remote->Summarize(kInputString, kContextString,
+                               mock_responder.BindNewPipeAndPassRemote());
+
+  run_loop_for_callback.Run();
+
+  // Disconnect the Summarizer handle.
+  summarizer_remote.reset();
+
+  // Call RunUntilIdle() to destroy AISummarizer.
+  task_environment()->RunUntilIdle();
+
+  ASSERT_TRUE(streaming_callback);
+  streaming_callback.Run(CreateExecutionResult("Result text",
+                                               /*is_complete=*/true));
+  run_loop_for_response.Run();
 }
 
-TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
+TEST_F(AISummarizerTest, MeasureUsage) {
+  uint64_t expected_usage = 100;
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(session_, ExecuteModel(testing::_, testing::_))
-      .WillOnce(CreateModelExecutionMock(
-          "Test input", "", SummarizerOutputType::SUMMARIZER_OUTPUT_TYPE_TL_DR,
-          SummarizerOutputFormat::SUMMARIZER_OUTPUT_FORMAT_PLAIN_TEXT,
-          SummarizerOutputLength::SUMMARIZER_OUTPUT_LENGTH_MEDIUM,
-          "Test output"));
+  SetupMockSession();
+  EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::MultimodalMessageReadView request_metadata,
+              optimization_guide::OptimizationGuideModelSizeInTokenCallback
+                  callback) { std::move(callback).Run(expected_usage); }));
 
-  ASSERT_EQ(0u, GetAIManagerContextBoundObjectSetSize());
-
-  mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
-  MockCreateSummarizerClient create_client;
-  mock_remote->CreateSummarizer(
-      create_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AISummarizerCreateOptions::New(
-          /*shared_context=*/"", blink::mojom::AISummarizerType::kTLDR,
-          blink::mojom::AISummarizerFormat::kPlainText,
-          blink::mojom::AISummarizerLength::kMedium));
-  create_client.WaitForResult();
-  mojo::Remote<blink::mojom::AISummarizer> summarizer =
-      create_client.summarizer();
-  EXPECT_TRUE(summarizer);
-  ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
-
-  MockStreamingResponder responder;
-  summarizer->Summarize("Test input", "", responder.BindNewPipeAndPassRemote());
-  responder.WaitForResponseComplete();
-  EXPECT_EQ(responder.status(),
-            blink::mojom::ModelStreamingResponseStatus::kComplete);
-  EXPECT_EQ(responder.result(), "Test output");
-
-  summarizer.reset();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&] { return GetAIManagerContextBoundObjectSetSize() == 0u; }));
+  auto summarizer_remote = GetAISummarizerRemote();
+  base::test::TestFuture<std::optional<uint64_t>> future;
+  summarizer_remote->MeasureUsage(kInputString, kContextString,
+                                  future.GetCallback());
+  ASSERT_EQ(future.Get<0>(), expected_usage);
 }
 
-TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
-  // The ExecuteModel behavior is not overridden so the responder will
-  // not receive anything. The test will detach the session while waiting
-  // for the response.
+TEST_F(AISummarizerTest, MeasureUsageFails) {
   SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+  EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::MultimodalMessageReadView request_metadata,
+              optimization_guide::OptimizationGuideModelSizeInTokenCallback
+                  callback) { std::move(callback).Run(std::nullopt); }));
 
-  ASSERT_EQ(0u, GetAIManagerContextBoundObjectSetSize());
-
-  mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
-  MockCreateSummarizerClient create_client;
-  mock_remote->CreateSummarizer(
-      create_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AISummarizerCreateOptions::New(
-          /*shared_context=*/"", blink::mojom::AISummarizerType::kTLDR,
-          blink::mojom::AISummarizerFormat::kPlainText,
-          blink::mojom::AISummarizerLength::kMedium));
-  create_client.WaitForResult();
-  mojo::Remote<blink::mojom::AISummarizer> summarizer =
-      create_client.summarizer();
-  EXPECT_TRUE(summarizer);
-  ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
-
-  MockStreamingResponder responder;
-  summarizer->Summarize("Test input", /*context=*/"",
-                        responder.BindNewPipeAndPassRemote());
-
-  summarizer.reset();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&] { return GetAIManagerContextBoundObjectSetSize() == 0u; }));
-}
-
-TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
-  SetupMockOptimizationGuideKeyedService();
-
-  ASSERT_EQ(0u, GetAIManagerContextBoundObjectSetSize());
-
-  mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
-  EXPECT_CALL(session_, ExecuteModel(testing::_, testing::_))
-      .WillOnce(CreateModelExecutionMock(
-          "Test input1", "Shared context.\n",
-          SummarizerOutputType::SUMMARIZER_OUTPUT_TYPE_TEASER,
-          SummarizerOutputFormat::SUMMARIZER_OUTPUT_FORMAT_MARKDOWN,
-          SummarizerOutputLength::SUMMARIZER_OUTPUT_LENGTH_LONG,
-          "Test output1"));
-  MockCreateSummarizerClient create_client;
-  mock_remote->CreateSummarizer(
-      create_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AISummarizerCreateOptions::New(
-          "Shared context.", blink::mojom::AISummarizerType::kTeaser,
-          blink::mojom::AISummarizerFormat::kMarkDown,
-          blink::mojom::AISummarizerLength::kLong));
-  create_client.WaitForResult();
-  mojo::Remote<blink::mojom::AISummarizer> summarizer =
-      create_client.summarizer();
-  EXPECT_TRUE(summarizer);
-  ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
-
-  {
-    MockStreamingResponder responder;
-    summarizer->Summarize("Test input1", /*context=*/"",
-                          responder.BindNewPipeAndPassRemote());
-    responder.WaitForResponseComplete();
-    EXPECT_EQ(responder.status(),
-              blink::mojom::ModelStreamingResponseStatus::kComplete);
-    EXPECT_EQ(responder.result(), "Test output1");
-  }
-
-  EXPECT_CALL(session_, ExecuteModel(testing::_, testing::_))
-      .WillOnce(CreateModelExecutionMock(
-          "Test input2", "Shared context. New context.\n",
-          SummarizerOutputType::SUMMARIZER_OUTPUT_TYPE_TEASER,
-          SummarizerOutputFormat::SUMMARIZER_OUTPUT_FORMAT_MARKDOWN,
-          SummarizerOutputLength::SUMMARIZER_OUTPUT_LENGTH_LONG,
-          "Test output2"));
-  {
-    MockStreamingResponder responder;
-    summarizer->Summarize("Test input2", "New context.",
-                          responder.BindNewPipeAndPassRemote());
-    responder.WaitForResponseComplete();
-    EXPECT_EQ(responder.status(),
-              blink::mojom::ModelStreamingResponseStatus::kComplete);
-    EXPECT_EQ(responder.result(), "Test output2");
-  }
-
-  summarizer.reset();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&] { return GetAIManagerContextBoundObjectSetSize() == 0u; }));
+  auto summarizer_remote = GetAISummarizerRemote();
+  base::test::TestFuture<std::optional<uint64_t>> future;
+  summarizer_remote->MeasureUsage(kInputString, kContextString,
+                                  future.GetCallback());
+  ASSERT_EQ(future.Get<0>(), std::nullopt);
 }

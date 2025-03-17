@@ -49,9 +49,6 @@ const char DefaultSearchManager::kSuggestionsURLPostParams[] =
     "suggestions_url_post_params";
 const char DefaultSearchManager::kImageURLPostParams[] =
     "image_url_post_params";
-const char DefaultSearchManager::kSideSearchParam[] = "side_search_param";
-const char DefaultSearchManager::kSideImageSearchParam[] =
-    "side_image_search_param";
 const char DefaultSearchManager::kImageSearchBrandingLabel[] =
     "image_search_branding_label";
 const char DefaultSearchManager::kSearchIntentParams[] = "search_intent_params";
@@ -74,6 +71,7 @@ const char DefaultSearchManager::kDisabledByPolicy[] = "disabled_by_policy";
 const char DefaultSearchManager::kCreatedFromPlayAPI[] =
     "created_from_play_api";
 const char DefaultSearchManager::kFeaturedByPolicy[] = "featured_by_policy";
+const char DefaultSearchManager::kRequireShortcut[] = "require_shortcut";
 const char DefaultSearchManager::kPreconnectToSearchUrl[] =
     "preconnect_to_search_url";
 const char DefaultSearchManager::kPrefetchLikelyNavigations[] =
@@ -88,12 +86,14 @@ const char DefaultSearchManager::kDefaultSearchEngineMirroredMetric[] =
 DefaultSearchManager::DefaultSearchManager(
     PrefService* pref_service,
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
     const ObserverCallback& change_observer)
     : pref_service_(pref_service),
       search_engine_choice_service_(search_engine_choice_service),
       change_observer_(change_observer),
       search_engine_choice_service_observation_(this),
-      prefs_default_search_(pref_service, search_engine_choice_service) {
+      prepopulate_data_resolver_(prepopulate_data_resolver),
+      prefs_default_search_(prepopulate_data_resolver) {
   if (pref_service_) {
     pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
@@ -331,8 +331,7 @@ void DefaultSearchManager::LoadSavedGuestSearch() {
       search_engine_choice_service_->GetSavedSearchEngineBetweenGuestSessions();
   if (prepopulate_id.has_value()) {
     saved_guest_search_ =
-        TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
-            &*pref_service_, &*search_engine_choice_service_, *prepopulate_id);
+        prepopulate_data_resolver_->GetEngineFromFullList(*prepopulate_id);
   } else {
     saved_guest_search_.reset();
   }
@@ -340,8 +339,7 @@ void DefaultSearchManager::LoadSavedGuestSearch() {
 
 void DefaultSearchManager::LoadPrepopulatedFallbackSearch() {
   std::unique_ptr<TemplateURLData> data =
-      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          pref_service_, search_engine_choice_service_);
+      prepopulate_data_resolver_->GetFallbackSearch();
   fallback_default_search_ = std::move(data);
 }
 

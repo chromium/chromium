@@ -49,7 +49,7 @@ interface BluetoothInternalsHandler {
   // Restarts Bluetooth system.
   // If Bluetooth system is already off turns it back on.
   // If Bluetooth is unavailable this is no-op.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   RestartSystemBluetooth() => ();
 
   // On ChromeOS, starts a btsnoop process that writes to daemon-store.

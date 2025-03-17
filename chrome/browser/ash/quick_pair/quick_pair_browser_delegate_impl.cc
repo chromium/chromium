@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/quick_pair/quick_pair_browser_delegate_impl.h"
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/quick_pair_service.mojom.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/image_fetcher/core/image_fetcher.h"

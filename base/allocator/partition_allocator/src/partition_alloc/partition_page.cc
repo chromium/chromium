@@ -248,7 +248,7 @@ void SlotSpanMetadata<MetadataKind::kWritable>::Decommit(PartitionRoot* root) {
   size_t dirty_size =
       base::bits::AlignUp(GetProvisionedSize(), SystemPageSize());
   size_t size_to_decommit =
-      kUseLazyCommit ? dirty_size : bucket->get_bytes_per_span();
+      kUseLazyCommit ? dirty_size : bucket->SlotSpanCommittedSize(root);
 
   PA_DCHECK(root->empty_slot_spans_dirty_bytes >= dirty_size);
   root->empty_slot_spans_dirty_bytes -= dirty_size;

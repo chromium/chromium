@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
 // The unconsented primary account isn't supported on ChromeOS.
 // TODO(crbug.com/358053884): enable on Android once transport mode for
 // Passwords is supported.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
                        ShouldCommitSentPasswordInTransportMode) {
   // First, setup sync (in transport mode) to initialize Nigori node with a
@@ -215,10 +215,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-
-  // On Desktop, passwords currently require an opt-in for transport mode.
-  password_manager::features_util::OptInToAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  ASSERT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
+      GetProfile(0)->GetPrefs(), GetSyncService(0)));
 
   PasswordRecipient recipient = {
       .user_id = kRecipientUserId,
@@ -228,6 +226,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
 
   EXPECT_TRUE(InvitationCommittedChecker(/*expected_entities_count=*/1).Wait());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

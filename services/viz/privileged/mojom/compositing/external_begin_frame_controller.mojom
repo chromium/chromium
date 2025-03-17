@@ -4,6 +4,7 @@
 
 module viz.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
 
 // Exposes a way to manually issue BeginFrames to a Display.
@@ -15,4 +16,13 @@ interface ExternalBeginFrameController {
   // it's interested in a frame.
   IssueExternalBeginFrame(BeginFrameArgs args, bool force)
       => (BeginFrameAck ack);
+};
+
+// Exposes a way to control when external BeginFrames are issued.
+interface ExternalBeginFrameControllerClient {
+  // Indicate we need begin frames or not.
+  SetNeedsBeginFrame(bool needs_begin_frames);
+
+  // Update the preferred interval.
+  SetPreferredInterval(mojo_base.mojom.TimeDelta interval);
 };

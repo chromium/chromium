@@ -124,6 +124,7 @@
       <div class="card">
         <cr-link-row id="viewOsImportedClientCerts"
             label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"
+            sub-label="[[numPlatformClientCertsString_]]"
             on-click="onClientPlatformCertsLinkRowClick_">
         </cr-link-row>
         <if expr="is_win or is_macosx">
@@ -134,6 +135,11 @@
           </cr-link-row>
         </if>
       </div>
+
+      <if expr="is_chromeos">
+        <certificate-provisioning-list remove-header-padding>
+        </certificate-provisioning-list>
+      </if>
     </div>
 
     <local-certs-section-v2 id="localCertSection"

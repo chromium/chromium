@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/v8_memory/web_memory_aggregator.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/containers/stack.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
@@ -323,13 +323,13 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
   // point.
 #if DCHECK_IS_ON()
   auto client_frames = worker_node->GetClientFrames();
-  DCHECK(base::ranges::all_of(
+  DCHECK(std::ranges::all_of(
       client_frames, [worker_node](const FrameNode* client) {
         return client->GetOrigin().has_value() &&
                client->GetOrigin()->IsSameOriginWith(worker_node->GetOrigin());
       }));
   auto client_workers = worker_node->GetClientWorkers();
-  DCHECK(base::ranges::all_of(
+  DCHECK(std::ranges::all_of(
       client_workers, [worker_node](const WorkerNode* client) {
         return client->GetOrigin().IsSameOriginWith(worker_node->GetOrigin());
       }));
@@ -443,10 +443,9 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
 
   CHECK(!top_frames.empty());
   const url::Origin main_origin = top_frames.front()->GetOrigin().value();
-  DCHECK(
-      base::ranges::all_of(top_frames, [&main_origin](const FrameNode* node) {
-        return node->GetOrigin()->IsSameOriginWith(main_origin);
-      }));
+  DCHECK(std::ranges::all_of(top_frames, [&main_origin](const FrameNode* node) {
+    return node->GetOrigin()->IsSameOriginWith(main_origin);
+  }));
 
   AggregationPointVisitor ap_visitor(requesting_origin_,
                                      requesting_process_node_, main_origin);

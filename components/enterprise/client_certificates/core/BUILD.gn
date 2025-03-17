@@ -6,14 +6,61 @@ import("//components/enterprise/buildflags/buildflags.gni")
 
 assert(enterprise_client_certificates)
 
-source_set("core") {
+source_set("dm_server_client") {
+  public = [ "dm_server_client.h" ]
+
+  sources = [ "dm_server_client.cc" ]
+
+  public_deps = [
+    "//base",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+  ]
+
+  deps = [ "//services/network/public/cpp:cpp_base" ]
+}
+
+source_set("cloud_management_delegate") {
+  public = [ "cloud_management_delegate.h" ]
+
+  public_deps = [ "//components/policy/core/common" ]
+}
+
+source_set("management_delegate") {
   public = [
     "browser_cloud_management_delegate.h",
+    "profile_cloud_management_delegate.h",
+  ]
+
+  sources = [
+    "browser_cloud_management_delegate.cc",
+    "profile_cloud_management_delegate.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/enterprise/core",
+    "//components/policy/core/common",
+    "//net",
+  ]
+
+  deps = [
+    ":cloud_management_delegate",
+    ":dm_server_client",
+    "//components/enterprise",
+    "//components/enterprise/browser/identifiers",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//third_party/boringssl",
+  ]
+}
+
+source_set("core") {
+  public = [
     "certificate_provisioning_service.h",
     "certificate_store.h",
     "client_certificates_service.h",
     "client_identity.h",
-    "cloud_management_delegate.h",
     "constants.h",
     "context_delegate.h",
     "dm_server_client.h",
@@ -21,12 +68,13 @@ source_set("core") {
     "ec_private_key_factory.h",
     "features.h",
     "key_upload_client.h",
+    "leveldb_certificate_store.h",
     "metrics_util.h",
     "prefs.h",
+    "prefs_certificate_store.h",
     "private_key.h",
     "private_key_factory.h",
     "private_key_types.h",
-    "profile_cloud_management_delegate.h",
     "store_error.h",
     "unexportable_private_key.h",
     "unexportable_private_key_factory.h",
@@ -34,23 +82,22 @@ source_set("core") {
   ]
 
   sources = [
-    "browser_cloud_management_delegate.cc",
     "certificate_provisioning_service.cc",
     "certificate_store.cc",
     "client_certificates_service.cc",
     "client_identity.cc",
     "constants.cc",
-    "dm_server_client.cc",
     "ec_private_key.cc",
     "ec_private_key_factory.cc",
     "features.cc",
     "key_upload_client.cc",
+    "leveldb_certificate_store.cc",
     "metrics_util.cc",
     "prefs.cc",
+    "prefs_certificate_store.cc",
     "private_key.cc",
     "private_key_factory.cc",
     "private_key_types.cc",
-    "profile_cloud_management_delegate.cc",
     "ssl_client_cert_identity_wrapper.cc",
     "ssl_client_cert_identity_wrapper.h",
     "ssl_key_converter.cc",
@@ -71,7 +118,8 @@ source_set("core") {
   ]
 
   deps = [
-    "//components/enterprise",
+    ":cloud_management_delegate",
+    ":dm_server_client",
     "//components/enterprise/browser/identifiers",
     "//components/policy/core/common",
     "//components/policy/proto",
@@ -95,6 +143,8 @@ source_set("test_support") {
     "mock_certificate_store.h",
     "mock_cloud_management_delegate.cc",
     "mock_cloud_management_delegate.h",
+    "mock_context_delegate.cc",
+    "mock_context_delegate.h",
     "mock_dm_server_client.cc",
     "mock_dm_server_client.h",
     "mock_key_upload_client.cc",
@@ -108,7 +158,9 @@ source_set("test_support") {
   ]
 
   deps = [
+    ":cloud_management_delegate",
     ":core",
+    ":dm_server_client",
     "//components/leveldb_proto",
     "//components/policy/proto",
     "//crypto",
@@ -125,12 +177,13 @@ source_set("unit_tests") {
 
   sources = [
     "certificate_provisioning_service_unittest.cc",
-    "certificate_store_unittest.cc",
     "client_certificates_service_unittest.cc",
     "dm_server_client_unittest.cc",
     "ec_private_key_factory_unittest.cc",
     "ec_private_key_unittest.cc",
     "key_upload_client_unittest.cc",
+    "leveldb_certificate_store_unittest.cc",
+    "prefs_certificate_store_unittest.cc",
     "private_key_factory_unittest.cc",
     "ssl_client_cert_identity_wrapper_unittest.cc",
     "unexportable_private_key_factory_unittest.cc",
@@ -138,7 +191,10 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":cloud_management_delegate",
     ":core",
+    ":dm_server_client",
+    ":management_delegate",
     ":test_support",
     "//base",
     "//base/test:test_support",

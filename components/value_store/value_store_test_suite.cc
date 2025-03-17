@@ -142,6 +142,17 @@ TEST_P(ValueStoreTestSuite, GetAllDoesGetAll) {
   ExpectSettingsEq(settings, storage_->Get());
 }
 
+// Check that we can list keys after storing data.
+TEST_P(ValueStoreTestSuite, GetKeysDoesGetKeys) {
+  base::Value::Dict settings = MakeTestMap({{"foo", "baz"}});
+  storage_->Set(DEFAULTS, settings);
+
+  base::Value::Dict expected;
+  expected.Set("foo", base::Value());
+
+  ExpectSettingsEq(expected, storage_->GetKeys());
+}
+
 TEST_P(ValueStoreTestSuite, RemovedSingleValueIsGone) {
   base::Value::Dict settings =
       MakeTestMap({{"foo", "baz"}, {"bar", "qux"}, {"abc", "def"}});

@@ -62,10 +62,11 @@ message SharedTab {
   optional string url = 1;
   // The title of the page.
   optional string title = 2;
-  // The URL to the favicon of the page.
-  optional string favicon_url = 3;
   // The GUID of the SharedTabGroup this is a member of.
   optional string shared_tab_group_guid = 4;
   // The UniquePosition within a SharedTabGroup.
   optional UniquePosition unique_position = 5;
+
+  reserved 3;
+  reserved "favicon_url";
 }

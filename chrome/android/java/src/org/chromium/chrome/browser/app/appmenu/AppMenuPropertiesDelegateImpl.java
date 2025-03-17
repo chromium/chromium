@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
+import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -121,7 +122,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private boolean mUpdateMenuItemVisible;
-    private ShareUtils mShareUtils;
     private final Supplier<ReadAloudController> mReadAloudControllerSupplier;
     private @Nullable ModelList mModelList;
     private int mReadAloudPos;
@@ -232,7 +232,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         }
 
         mBookmarkModelSupplier = bookmarkModelSupplier;
-        mShareUtils = new ShareUtils();
     }
 
     @Override
@@ -410,6 +409,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             }
             modelList.add(new MVCListAdapter.ListItem(menutype, propertyModel));
         }
+        int lastIndex = modelList.size() - 1;
+        int itemId = modelList.get(lastIndex).model.get(AppMenuItemProperties.MENU_ITEM_ID);
+        if (DividerLineMenuItemViewBinder.isDividerLineItemId(itemId)) {
+            modelList.removeAt(lastIndex);
+        }
         mModelList = modelList;
         return modelList;
     }
@@ -498,9 +502,18 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 menu.findItem(R.id.disable_price_tracking_menu_id),
                 currentTab);
 
+        updateAiMenuItemRow(
+                menu.findItem(R.id.ai_web_menu_id), menu.findItem(R.id.ai_pdf_menu_id), currentTab);
+
+        boolean showOpenWith =
+                currentTab != null
+                        && currentTab.isNativePage()
+                        && currentTab.getNativePage().isPdf();
+        menu.findItem(R.id.open_with_id).setVisible(showOpenWith);
+
         // Don't allow either "chrome://" pages or interstitial pages to be shared, or when the
         // current tab is null.
-        boolean showShare = isCurrentTabNotNull && mShareUtils.shouldEnableShare(currentTab);
+        boolean showShare = isCurrentTabNotNull && ShareUtils.shouldEnableShare(currentTab);
         menu.findItem(R.id.share_row_menu_id).setVisible(showShare);
 
         if (isCurrentTabNotNull) {
@@ -579,6 +592,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         // Only display quick delete divider line on the regular mode page menu.
         menu.findItem(R.id.quick_delete_divider_line_id).setVisible(!isIncognito);
+
+        menu.findItem(R.id.download_page_id).setVisible(shouldShowDownloadPageMenuItem(currentTab));
+
+        menu.findItem(R.id.ntp_customization_id)
+                .setVisible(ChromeFeatureList.sNewTabPageCustomization.isEnabled());
     }
 
     /**
@@ -869,6 +887,16 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     protected boolean shouldShowManagedByMenuItem(Tab currentTab) {
         return false;
+    }
+
+    /**
+     * @param currentTab Current tab being displayed.
+     * Returns whether the "Download page" menu item should be displayed.
+     */
+    protected boolean shouldShowDownloadPageMenuItem(Tab currentTab) {
+        return ChromeFeatureList.sHideTabletToolbarDownloadButton.isEnabled()
+                && isTabletSizeScreen()
+                && shouldEnableDownloadPage(currentTab);
     }
 
     /** Sets the visibility and labels of the "Add to Home screen" and "Open WebAPK" menu items. */
@@ -1233,6 +1261,31 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         } else {
             startPriceTrackingMenuItem.setVisible(true);
             stopPriceTrackingMenuItem.setVisible(false);
+        }
+    }
+
+    private void updateAiMenuItemRow(
+            @NonNull MenuItem aiWebMenuItem,
+            @NonNull MenuItem aiPdfMenuItem,
+            @Nullable Tab currentTab) {
+        if (currentTab == null
+                || currentTab.getWebContents() == null
+                || !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)) {
+            aiWebMenuItem.setVisible(false);
+            aiPdfMenuItem.setVisible(false);
+            return;
+        }
+
+        if (currentTab.isNativePage() && currentTab.getNativePage() instanceof PdfPage) {
+            aiWebMenuItem.setVisible(false);
+            aiPdfMenuItem.setVisible(true);
+        } else if (currentTab.getUrl() != null && UrlUtilities.isHttpOrHttps(currentTab.getUrl())) {
+            aiWebMenuItem.setVisible(true);
+            aiPdfMenuItem.setVisible(false);
+        } else {
+            aiWebMenuItem.setVisible(false);
+            aiPdfMenuItem.setVisible(false);
         }
     }
 

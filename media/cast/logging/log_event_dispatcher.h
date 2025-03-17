@@ -8,27 +8,29 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/cast/logging/raw_event_subscriber.h"
 
-namespace media {
-namespace cast {
-
-class CastEnvironment;
+namespace media::cast {
 
 // A thread-safe receiver of logging events that manages an active list of
-// EventSubscribers and dispatches the logging events to them on the MAIN
-// thread.  All methods, constructor, and destructor can be invoked on any
-// thread.
+// EventSubscribers and dispatches the logging events to them on `task_runner`.
+// All methods, constructor, and destructor can be invoked on any thread.
 class LogEventDispatcher {
  public:
-  // |env| outlives this instance (and generally owns this instance).
-  explicit LogEventDispatcher(CastEnvironment* env);
+  explicit LogEventDispatcher(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      base::OnceClosure deletion_cb);
 
   LogEventDispatcher(const LogEventDispatcher&) = delete;
+  LogEventDispatcher(LogEventDispatcher&&) = delete;
   LogEventDispatcher& operator=(const LogEventDispatcher&) = delete;
+  LogEventDispatcher& operator=(LogEventDispatcher&&) = delete;
 
   ~LogEventDispatcher();
 
@@ -40,22 +42,25 @@ class LogEventDispatcher {
       std::unique_ptr<std::vector<FrameEvent>> frame_events,
       std::unique_ptr<std::vector<PacketEvent>> packet_events) const;
 
-  // Adds |subscriber| to the active list to begin receiving events on MAIN
-  // thread.  Unsubscribe() must be called before |subscriber| is destroyed.
+  // Adds `subscriber` to the active list to begin receiving events on MAIN
+  // thread.  Unsubscribe() must be called before `subscriber` is destroyed.
   void Subscribe(RawEventSubscriber* subscriber);
 
-  // Removes |subscriber| from the active list.  Once this method returns, the
-  // |subscriber| is guaranteed not to receive any more events.
+  // Removes `subscriber` from the active list.  Once this method returns, the
+  // `subscriber` is guaranteed not to receive any more events.
   void Unsubscribe(RawEventSubscriber* subscriber);
 
  private:
   // The part of the implementation that runs exclusively on the MAIN thread.
-  class Impl : public base::RefCountedThreadSafe<Impl> {
+  class Impl {
    public:
-    Impl();
+    explicit Impl(base::OnceClosure deletion_cb);
 
     Impl(const Impl&) = delete;
+    Impl(Impl&&) = delete;
     Impl& operator=(const Impl&) = delete;
+    Impl& operator=(Impl&&) = delete;
+    ~Impl();
 
     void DispatchFrameEvent(std::unique_ptr<FrameEvent> event) const;
     void DispatchPacketEvent(std::unique_ptr<PacketEvent> event) const;
@@ -66,18 +71,14 @@ class LogEventDispatcher {
     void Unsubscribe(RawEventSubscriber* subscriber);
 
    private:
-    friend class base::RefCountedThreadSafe<Impl>;
-
-    ~Impl();
-
+    base::OnceClosure deletion_cb_;
     std::vector<raw_ptr<RawEventSubscriber, VectorExperimental>> subscribers_;
   };
 
-  const raw_ptr<CastEnvironment> env_;  // Owner of this instance.
-  const scoped_refptr<Impl> impl_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  std::unique_ptr<Impl> impl_;
 };
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast
 
 #endif  // MEDIA_CAST_LOGGING_LOG_EVENT_DISPATCHER_H_

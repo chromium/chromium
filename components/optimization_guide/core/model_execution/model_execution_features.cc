@@ -29,6 +29,9 @@ BASE_FEATURE(kWallpaperSearchSettingsVisibility,
 BASE_FEATURE(kHistorySearchSettingsVisibility,
              "HistorySearchSettingsVisibility",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPasswordChangeSubmission,
+             "PasswordChangeSubmissionSettingsVisibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kPerformanceClassListForHistorySearch(
     &kHistorySearchSettingsVisibility,
@@ -78,6 +81,8 @@ bool IsGraduatedFeature(UserVisibleFeatureKey feature) {
       // History search is currently planned to always be opt-in.
       is_graduated = false;
       break;
+    case UserVisibleFeatureKey::kPasswordChangeSubmission:
+      break;
   }
   DCHECK(!is_graduated ||
          !base::FeatureList::IsEnabled(
@@ -98,6 +103,8 @@ const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
       return &kWallpaperSearchSettingsVisibility;
     case UserVisibleFeatureKey::kHistorySearch:
       return &kHistorySearchSettingsVisibility;
+    case UserVisibleFeatureKey::kPasswordChangeSubmission:
+      return &kPasswordChangeSubmission;
   }
 }
 
@@ -153,14 +160,21 @@ std::optional<proto::OptimizationTarget> GetOptimizationTargetForCapability(
           OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT;
     case ModelBasedCapabilityKey::kScamDetection:
       return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SCAM_DETECTION;
+    case ModelBasedCapabilityKey::kPermissionsAi:
+      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PERMISSIONS_AI;
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
+      return proto::
+          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API;
     // The below capabilities never support on-device execution.
     case ModelBasedCapabilityKey::kFormsAnnotations:
+    case ModelBasedCapabilityKey::kFormsClassifications:
     case ModelBasedCapabilityKey::kFormsPredictions:
     case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTextSafety:
     case ModelBasedCapabilityKey::kBlingPrototyping:
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+    case ModelBasedCapabilityKey::kEnhancedCalendar:
       return std::nullopt;
   }
 }

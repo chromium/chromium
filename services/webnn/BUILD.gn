@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
+import("//services/on_device_model/on_device_model.gni")
 import("//services/webnn/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
@@ -12,6 +13,7 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "WEBNN_USE_TFLITE=$webnn_use_tflite",
+    "WEBNN_USE_CHROME_ML_API=$webnn_use_chrome_ml_api",
     "WEBNN_ENABLE_TFLITE_PROFILER=$webnn_enable_tflite_profiler",
   ]
 }
@@ -22,8 +24,12 @@ source_set("webnn_switches") {
 }
 
 component("webnn_service") {
+  defines = [ "IS_WEBNN_SERVICE_IMPL" ]
+
   sources = [
     "error.h",
+    "webnn_constant_operand.cc",
+    "webnn_constant_operand.h",
     "webnn_context_impl.cc",
     "webnn_context_impl.h",
     "webnn_context_provider_impl.cc",
@@ -32,14 +38,18 @@ component("webnn_service") {
     "webnn_graph_builder_impl.h",
     "webnn_graph_impl.cc",
     "webnn_graph_impl.h",
+    "webnn_object_impl.h",
+    "webnn_pending_constant_operand.cc",
+    "webnn_pending_constant_operand.h",
     "webnn_tensor_impl.cc",
     "webnn_tensor_impl.h",
+    "webnn_utils.cc",
+    "webnn_utils.h",
   ]
 
   deps = [
     ":buildflags",
     ":webnn_switches",
-    ":webnn_utils",
     "//base",
     "//gpu/command_buffer/service:gles2",
     "//gpu/config",
@@ -83,8 +93,8 @@ component("webnn_service") {
 
   if (is_mac) {
     sources += [
-      "coreml/buffer_content.h",
-      "coreml/buffer_content.mm",
+      "coreml/buffer_content_coreml.h",
+      "coreml/buffer_content_coreml.mm",
       "coreml/context_impl_coreml.h",
       "coreml/context_impl_coreml.mm",
       "coreml/graph_builder_coreml.cc",
@@ -109,8 +119,8 @@ component("webnn_service") {
 
   if (webnn_use_tflite) {
     sources += [
-      "tflite/buffer_content.cc",
-      "tflite/buffer_content.h",
+      "tflite/buffer_content_tflite.cc",
+      "tflite/buffer_content_tflite.h",
       "tflite/context_impl_tflite.cc",
       "tflite/context_impl_tflite.h",
       "tflite/graph_builder_tflite.cc",
@@ -134,9 +144,15 @@ component("webnn_service") {
     if (build_tflite_with_xnnpack) {
       deps += [ "//third_party/xnnpack" ]
     }
+
+    if (enable_ml_internal) {
+      deps += [ "//services/on_device_model/ml" ]
+
+      defines += [ "ENABLE_ML_INTERNAL" ]
+    }
   }
 
-  if (webnn_use_tflite || is_mac) {
+  if (is_mac || webnn_use_tflite) {
     sources += [
       "queueable_resource_state.h",
       "queueable_resource_state_base.cc",
@@ -145,27 +161,6 @@ component("webnn_service") {
       "resource_task.h",
     ]
   }
-
-  defines = [ "IS_WEBNN_SERVICE_IMPL" ]
-}
-
-component("webnn_utils") {
-  sources = [
-    "webnn_constant_operand.cc",
-    "webnn_constant_operand.h",
-    "webnn_object_impl.h",
-    "webnn_pending_constant_operand.cc",
-    "webnn_pending_constant_operand.h",
-    "webnn_utils.cc",
-    "webnn_utils.h",
-  ]
-
-  deps = [
-    "//base",
-    "//services/webnn/public/mojom",
-  ]
-
-  defines = [ "IS_WEBNN_UTILS_IMPL" ]
 }
 
 source_set("tests") {
@@ -203,7 +198,6 @@ source_set("tests") {
   deps = [
     ":buildflags",
     ":webnn_service",
-    ":webnn_utils",
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",

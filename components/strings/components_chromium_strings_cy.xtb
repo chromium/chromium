@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">Mae'r dudalen hon wedi'i rhwystro gan Chromium</translation>
 <translation id="48558539577516920">Caniatewch i Chromium gael mynediad at y rhwydwaith yn eich gosodiadau wal dân neu 
          wrthfeirysau.</translation>
+<translation id="4949828774841497663">Ewch i Apiau &gt; Gosodiadau System &gt; Rhwydwaith, dewiswch y
+          rhwydwaith gweithredol, cliciwch ar y botwm Manylion... a dad-ddewiswch unrhyw ddirprwyon gweinydd
+          a allai fod wedi cael eu dewis.</translation>
 <translation id="580822234363523061">Ewch i
           ddewislen Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +32,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           a gwnewch yn siŵr bod eich ffurfweddiad wedi'i osod i "dim dirprwy weinydd" neu i "uniongyrchol."</translation>
+<translation id="648062525172759633">Mae'r tudalennau hyn wedi'u bwriadu i'w defnyddio gan ddatblygwyr Chromium, ac mae'n bosib na fyddant yn cael eu cynnal na'u profi'n weithredol. Er mwyn eu galluogi, llywiwch i <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliciwch ar y botwm i alluogi tudalennau dadfygio, ac yna llywiwch i'r dudalen hon eto.</translation>
 <translation id="6549378540556750549">Mae Chromium hefyd yn bosib oherwydd <ph name="BEGIN_LINK_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_OSS" /> eraill.</translation>
 <translation id="6613594504749178791">Bydd eich newidiadau yn dod i rym y tro nesaf y byddwch yn ail-lansio Chromium.</translation>
 <translation id="691026815377248078">Mae angen mynediad Bluetooth ar Chromium i barhau i 
@@ -42,9 +46,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
           a dad-ddewiswch "<ph name="NO_PREFETCH_DESCRIPTION" />."
           Os na fydd hyn yn datrys y broblem, rydym yn argymell dewis yr opsiwn hwn
           eto ar gyfer perfformiad gwell.</translation>
-<translation id="8187289872471304532">Ewch i
-          Rhaglenni &gt; Dewisiadau System &gt; Rhwydwaith &gt; Uwch &gt; Dirprwy Weinyddion
-          a dad-diciwch unrhyw ddirprwy weinyddion sydd wedi'u ticio.</translation>
 <translation id="8597726643333341451">Rydych yn edrych ar dudalen Chrome for Testing ddiogel</translation>
 <translation id="8684913864886094367">Ni wnaeth Chromium gau'n gywir.</translation>
 </translationbundle>

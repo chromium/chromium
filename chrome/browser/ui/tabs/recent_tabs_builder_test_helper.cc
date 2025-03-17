@@ -249,8 +249,8 @@ RecentTabsBuilderTestHelper::GetTabTitlesSortedByRecency() {
   sort(tabs.begin(), tabs.end(), SortTabTimesByRecency);
 
   std::vector<std::u16string> titles;
-  for (size_t i = 0; i < tabs.size(); ++i) {
-    titles.push_back(tabs[i].title);
+  for (auto& tab : tabs) {
+    titles.push_back(tab.title);
   }
   return titles;
 }

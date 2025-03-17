@@ -405,7 +405,7 @@ public class AccountPickerBottomSheetRenderTest {
                                     /* isWebSignin= */ mSigninAccessPoint
                                             == SigninAccessPoint.WEB_SIGNIN,
                                     mSigninAccessPoint,
-                                    /* selectedCoreAccountId= */ null);
+                                    /* selectedAccountId= */ null);
                 });
         ViewUtils.onViewWaiting(allOf(withId(R.id.account_picker_selected_account), isDisplayed()));
     }

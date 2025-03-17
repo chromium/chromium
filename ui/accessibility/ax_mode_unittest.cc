@@ -46,7 +46,7 @@ TEST(AXModeTest, OrEquals) {
   mode |= kAXModeWebContentsOnly;
   EXPECT_TRUE(mode.has_mode(kAXModeWebContentsOnly.flags()));
   mode |= kAXModeFormControls;
-  EXPECT_TRUE(mode.experimental_flags() & AXMode::kExperimentalFormControls);
+  EXPECT_TRUE(mode.filter_flags() & AXMode::kFormsAndLabelsOnly);
 }
 
 TEST(AXModeTest, AndEquals) {
@@ -68,7 +68,7 @@ TEST(AXModeTest, Invert) {
   AXMode mode = ~AXMode();
 
   EXPECT_EQ(mode.flags(), ~uint32_t(0));
-  EXPECT_EQ(mode.experimental_flags(), ~uint32_t(0));
+  EXPECT_EQ(mode.filter_flags(), ~uint32_t(0));
 
   mode = ~kAXModeBasic;
   EXPECT_FALSE(mode.has_mode(AXMode::kNativeAPIs));
@@ -79,19 +79,19 @@ TEST(AXModeTest, Invert) {
 TEST(AXModeTest, Equality) {
   EXPECT_TRUE(kAXModeBasic == kAXModeBasic);
   EXPECT_FALSE(kAXModeBasic == kAXModeComplete);
-  EXPECT_TRUE(AXMode(AXMode::kNone, AXMode::kExperimentalFormControls) ==
-              AXMode(AXMode::kNone, AXMode::kExperimentalFormControls));
-  EXPECT_FALSE(AXMode(AXMode::kNativeAPIs, AXMode::kExperimentalFormControls) ==
-               AXMode(AXMode::kNone, AXMode::kExperimentalFormControls));
+  EXPECT_TRUE(AXMode(AXMode::kNone, AXMode::kFormsAndLabelsOnly) ==
+              AXMode(AXMode::kNone, AXMode::kFormsAndLabelsOnly));
+  EXPECT_FALSE(AXMode(AXMode::kNativeAPIs, AXMode::kFormsAndLabelsOnly) ==
+               AXMode(AXMode::kNone, AXMode::kFormsAndLabelsOnly));
 }
 
 TEST(AXModeTest, Inequality) {
   EXPECT_FALSE(kAXModeBasic != kAXModeBasic);
   EXPECT_TRUE(kAXModeBasic != kAXModeComplete);
-  EXPECT_FALSE(AXMode(AXMode::kNone, AXMode::kExperimentalFormControls) !=
-               AXMode(AXMode::kNone, AXMode::kExperimentalFormControls));
-  EXPECT_TRUE(AXMode(AXMode::kNativeAPIs, AXMode::kExperimentalFormControls) !=
-              AXMode(AXMode::kNone, AXMode::kExperimentalFormControls));
+  EXPECT_FALSE(AXMode(AXMode::kNone, AXMode::kFormsAndLabelsOnly) !=
+               AXMode(AXMode::kNone, AXMode::kFormsAndLabelsOnly));
+  EXPECT_TRUE(AXMode(AXMode::kNativeAPIs, AXMode::kFormsAndLabelsOnly) !=
+              AXMode(AXMode::kNone, AXMode::kFormsAndLabelsOnly));
 }
 
 TEST(AXModeTest, Or) {

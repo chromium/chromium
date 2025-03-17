@@ -54,6 +54,19 @@ ModelAssetPaths::ModelAssetPaths(const ModelAssetPaths&) = default;
 ModelAssetPaths::~ModelAssetPaths() = default;
 
 ModelAssets::ModelAssets() = default;
+
+ModelAssets::ModelAssets(const ModelAssets& other)
+    : weights(other.weights.Duplicate()),
+      weights_path(other.weights_path),
+      sp_model_path(other.sp_model_path) {}
+
+ModelAssets& ModelAssets::operator=(const ModelAssets& other) {
+  weights = other.weights.Duplicate();
+  weights_path = other.weights_path;
+  sp_model_path = other.sp_model_path;
+  return *this;
+}
+
 ModelAssets::ModelAssets(ModelAssets&&) = default;
 ModelAssets& ModelAssets::operator=(ModelAssets&&) = default;
 ModelAssets::~ModelAssets() = default;
@@ -76,6 +89,16 @@ AdaptationAssetPaths::AdaptationAssetPaths(const AdaptationAssetPaths&) =
 AdaptationAssetPaths::~AdaptationAssetPaths() = default;
 
 AdaptationAssets::AdaptationAssets() = default;
+
+AdaptationAssets::AdaptationAssets(const AdaptationAssets& other)
+    : weights(other.weights.Duplicate()), weights_path(other.weights_path) {}
+
+AdaptationAssets& AdaptationAssets::operator=(const AdaptationAssets& other) {
+  weights = other.weights.Duplicate();
+  weights_path = other.weights_path;
+  return *this;
+}
+
 AdaptationAssets::AdaptationAssets(AdaptationAssets&&) = default;
 AdaptationAssets& AdaptationAssets::operator=(AdaptationAssets&&) = default;
 AdaptationAssets::~AdaptationAssets() = default;

@@ -152,7 +152,7 @@ void CriticalNotificationBubbleView::Init() {
 void CriticalNotificationBubbleView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
   if (details.is_add && details.child == this) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
   }
 }
 

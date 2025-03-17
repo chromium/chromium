@@ -95,7 +95,12 @@ struct AX_BASE_EXPORT AXTreeUpdate {
   std::optional<AXTreeChecks> tree_checks;
 
   // Return a multi-line indented string representation, for logging.
-  std::string ToString(bool verbose = true) const;
+  // This method is used to help diagnose inconsistent tree states. Limiting the
+  // max number of items avoids out of memory errors and excessive logging.
+  // To stringify the entire update, pass in max_items = -1.
+  static constexpr int kMaxItemsToStringify = 200;
+  std::string ToString(bool verbose = true,
+                       int max_items = kMaxItemsToStringify) const;
 
   // Returns the approximate size in bytes.
   size_t ByteSize() const;

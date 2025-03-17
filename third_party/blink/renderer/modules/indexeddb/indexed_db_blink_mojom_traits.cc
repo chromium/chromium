@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_blink_mojom_traits.h"
 
 #include <utility>
@@ -131,8 +126,7 @@ bool UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
       data.GetBinaryDataView(&bytes);
       *out = blink::IDBKey::CreateBinary(
           base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
-              Vector<char>(base::span(
-                  reinterpret_cast<const char*>(bytes.data()), bytes.size()))));
+              Vector<char>(base::as_chars(base::span(bytes)))));
       return true;
     }
     case blink::mojom::IDBKeyDataView::Tag::kString: {

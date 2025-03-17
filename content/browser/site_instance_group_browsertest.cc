@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -262,6 +264,64 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
   EXPECT_NE(data_instance->group(), child1_instance->group());
 }
 
+// When an unsandboxed main frame A opens a data: subframe in a sandboxed
+// iframe, e.g. A(data_sandboxed), the data subframe is currently in a sandboxed
+// version of A's SiteInstance and SiteInstanceGroup because sandboxed data:
+// URL subframes are not supported in SiteInstanceGroup.
+// TODO(crbug.com/390452841): Add SiteInstanceGroup support for sandboxed data:
+// subframes.
+IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
+                       MainFrameWithSandboxedSubframe) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  {
+    // Create a sandboxed data: subframe.
+    GURL data_url("data:text/html,test");
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.id = 'test_frame_sandboxed'; "
+        "frame.sandbox = ''; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        data_url.spec().c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  }
+
+  SiteInstanceImpl* main_instance = main_frame_host()->GetSiteInstance();
+  FrameTreeNode* data = main_frame()->child_at(0);
+  SiteInstanceImpl* data_instance =
+      data->current_frame_host()->GetSiteInstance();
+  EXPECT_NE(main_instance, data_instance);
+
+  // Sandboxed data: subframes are not currently supported. This means the data:
+  // subframe will be in an A_sandbox SiteInstance.
+  // TODO(crbug.com/390452841): When sandboxed data: subframes are supported,
+  // `data_instance` should be in a SiteInstance with a data:nonce site URL, in
+  // a SiteInstanceGroup with nothing else in it.
+  EXPECT_TRUE(data->current_frame_host()->GetLastCommittedURL().SchemeIs(
+      url::kDataScheme));
+  EXPECT_FALSE(data_instance->GetSiteURL().SchemeIs(url::kDataScheme));
+  EXPECT_TRUE(data_instance->IsSandboxed());
+
+  RenderProcessHost* main_process = main_instance->GetProcess();
+  RenderProcessHost* data_process = data_instance->GetProcess();
+  EXPECT_NE(main_process, data_process);
+
+  // The data: subframe's process lock should be a sandboxed version of main
+  // frame A's process lock.
+  ProcessLock main_process_lock = main_process->GetProcessLock();
+  ProcessLock data_process_lock = data_process->GetProcessLock();
+  EXPECT_NE(main_process_lock, data_process_lock);
+  EXPECT_FALSE(main_process_lock.is_sandboxed());
+  EXPECT_TRUE(data_process_lock.is_sandboxed());
+
+  // Compare hosts here, because `main_process_lock` is for the site "a.com" and
+  // `data_process_lock` is for the origin "a.com:port", since it's sandboxed.
+  EXPECT_EQ(main_process_lock.lock_url().host(),
+            data_process_lock.lock_url().host());
+}
+
 // Test where a main frame has multiple data: URL subframes. This tests that
 // the data: URL subframes each have their own SiteInstance, that the
 // SiteInstances are in the same SiteInstanceGroup, and that a SiteInstanceGroup
@@ -373,6 +433,52 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTestWithoutSiteIsolation,
   EXPECT_NE(data_instance, b_instance);
   EXPECT_NE(data_instance->group(), b_instance->group());
   EXPECT_NE(data_instance->GetProcess(), b_instance->GetProcess());
+}
+
+// Ensure that when default SiteInstances and SiteInstanceGroups for data: URLs
+// are enabled, data: URL subframes are in a separate SiteInstance, but share a
+// process with the default SiteInstance.
+IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTestWithoutSiteIsolation,
+                       DataSubframeInDefaultSiteInstance) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // Add a data: URL subframe.
+  {
+    TestNavigationObserver observer(web_contents());
+    GURL data_url("data:text/html,test");
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.id = 'data_frame'; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        data_url.spec().c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    observer.Wait();
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+    ASSERT_TRUE(WaitForLoadStop(web_contents()));
+    EXPECT_EQ(data_url, observer.last_navigation_url());
+  }
+
+  SiteInstanceImpl* a_instance = main_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(a_instance->IsDefaultSiteInstance());
+
+  FrameTreeNode* data_frame = main_frame()->child_at(0);
+  SiteInstanceImpl* data_instance =
+      data_frame->current_frame_host()->GetSiteInstance();
+
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_NE(a_instance, data_instance);
+    EXPECT_FALSE(data_instance->IsDefaultSiteInstance());
+  } else {
+    EXPECT_EQ(a_instance, data_instance);
+  }
+
+  // In both cases, A and data: should share a group. If the feature is enabled,
+  // data: should have its own SiteInstance, but should still be in the default
+  // group as it does not need further isolating. If the feature is disabled,
+  // both should be in the default SiteInstance.
+  EXPECT_EQ(a_instance->group(), data_instance->group());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

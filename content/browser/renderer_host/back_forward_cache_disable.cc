@@ -28,7 +28,7 @@ std::string ReasonIdToString(
       return "WebUSB";
     case BackForwardCacheDisable::DisabledReasonId::kMediaSessionService:
       return "MediaSessionService";
-    case BackForwardCacheDisable::DisabledReasonId::kScreenReader:
+    case BackForwardCacheDisable::DisabledReasonId::kExtendedProperties:
       return "ScreenReader";
     case BackForwardCacheDisable::DisabledReasonId::kDiscarded:
       return "Discarded";

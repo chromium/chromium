@@ -15,6 +15,7 @@ export interface ProfileInfo {
   backgroundColor: string;
   pictureUrl: string;
   isManaged: boolean;
+  hasEnterpriseLabel: boolean;
   welcomeTitle: string;
 }
 

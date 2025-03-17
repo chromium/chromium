@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_animatee.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/toolbar_animatee.h"
@@ -301,16 +302,17 @@
     // Use UIView animateWithDuration instead of UIViewPropertyAnimator to
     // avoid UIKit bug. See https://crbug.com/856155.
     self.inProgressAnimationCount += 1;
-    if (IsIOSLargeFakeboxEnabled()) {
+    if (ShouldEnlargeLogoAndFakebox()) {
       // Set the location bar height to the default.
       [self.toolbarAnimatee setLocationBarHeightExpanded];
     }
     [self.toolbarAnimatee setToolbarFaded:NO];
     switch (_trigger) {
-      case OmniboxFocusTrigger::kPinnedLargeFakebox:
-        [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
+      case OmniboxFocusTrigger::kPinnedFakebox:
+        if (ShouldEnlargeLogoAndFakebox()) {
+          [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
+        }
         break;
-      case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
       case OmniboxFocusTrigger::kUnpinnedFakebox:
         [self.toolbarAnimatee setToolbarFaded:YES];
         break;
@@ -366,17 +368,27 @@
         delay:0
         options:UIViewAnimationCurveEaseInOut
         animations:^{
-          [UIView addKeyframeWithRelativeStartTime:0
-                                  relativeDuration:relativeDurationAnimation1
-                                        animations:^{
-                                          [self contraction];
-                                        }];
-          [UIView
-              addKeyframeWithRelativeStartTime:relativeDurationAnimation1
-                              relativeDuration:1 - relativeDurationAnimation1
-                                    animations:^{
-                                      [self.toolbarAnimatee showControlButtons];
-                                    }];
+          BOOL isLowerThan17 = !base::ios::IsRunningOnOrLater(17, 0, 0);
+          BOOL isHigherThan17_2 = base::ios::IsRunningOnOrLater(17, 2, 0);
+          if (isLowerThan17 || isHigherThan17_2) {
+            [UIView addKeyframeWithRelativeStartTime:0
+                                    relativeDuration:relativeDurationAnimation1
+                                          animations:^{
+                                            [self contraction];
+                                          }];
+            [UIView
+                addKeyframeWithRelativeStartTime:relativeDurationAnimation1
+                                relativeDuration:1 - relativeDurationAnimation1
+                                      animations:^{
+                                        [self.toolbarAnimatee
+                                                showControlButtons];
+                                      }];
+          } else {
+            // This is a workaround for a crash that is mostly happening on
+            // iOS 17.0-17.1. See crbug.com/369988988.
+            [self contraction];
+            [self.toolbarAnimatee showControlButtons];
+          }
         }
         completion:^(BOOL finished) {
           [self.toolbarAnimatee hideCancelButton];
@@ -412,12 +424,10 @@
                                   trigger:_trigger
                                  animated:NO
                                completion:_completion];
-  } else {
-    if (_completion) {
-      _completion();
-      _completion = nil;
-    }
-    if (IsIOSLargeFakeboxEnabled()) {
+  } else if (_completion) {
+    _completion();
+    _completion = nil;
+    if (ShouldEnlargeLogoAndFakebox()) {
       // Reset the location bar height back to the default.
       [self.toolbarAnimatee setLocationBarHeightExpanded];
     }
@@ -433,10 +443,11 @@
   [self.toolbarAnimatee expandLocationBar];
   [self.toolbarAnimatee showCancelButton];
   switch (_trigger) {
-    case OmniboxFocusTrigger::kPinnedLargeFakebox:
-      [self.toolbarAnimatee setLocationBarHeightExpanded];
+    case OmniboxFocusTrigger::kPinnedFakebox:
+      if (ShouldEnlargeLogoAndFakebox()) {
+        [self.toolbarAnimatee setLocationBarHeightExpanded];
+      }
       break;
-    case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
     case OmniboxFocusTrigger::kUnpinnedFakebox:
       [self.toolbarAnimatee setToolbarFaded:NO];
       break;
@@ -448,7 +459,8 @@
 // Visually contracts the location bar for defocus.
 - (void)contraction {
   [self.toolbarAnimatee contractLocationBar];
-  if (_trigger == OmniboxFocusTrigger::kPinnedLargeFakebox) {
+  if (_trigger == OmniboxFocusTrigger::kPinnedFakebox &&
+      ShouldEnlargeLogoAndFakebox()) {
     [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
   }
 }
@@ -457,12 +469,10 @@
 // unpinned state.
 - (BOOL)isTriggerUnpinnedFakebox {
   switch (_trigger) {
-    case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
     case OmniboxFocusTrigger::kUnpinnedFakebox:
       return YES;
     case OmniboxFocusTrigger::kOther:
     case OmniboxFocusTrigger::kPinnedFakebox:
-    case OmniboxFocusTrigger::kPinnedLargeFakebox:
       return NO;
   }
 }
@@ -472,10 +482,8 @@
 - (BOOL)isTriggerPinnedFakebox {
   switch (_trigger) {
     case OmniboxFocusTrigger::kPinnedFakebox:
-    case OmniboxFocusTrigger::kPinnedLargeFakebox:
       return YES;
     case OmniboxFocusTrigger::kOther:
-    case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
     case OmniboxFocusTrigger::kUnpinnedFakebox:
       return NO;
   }

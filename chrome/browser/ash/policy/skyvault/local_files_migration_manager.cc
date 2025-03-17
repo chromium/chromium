@@ -48,10 +48,10 @@ namespace policy::local_user_files {
 
 namespace {
 
-// Returns true if `cloud_provider` is set to Google Drive or OneDrive.
-bool IsMigrationEnabled(CloudProvider cloud_provider) {
-  return cloud_provider == CloudProvider::kGoogleDrive ||
-         cloud_provider == CloudProvider::kOneDrive;
+// Returns true if `destination` is set to Google Drive or OneDrive, or to
+// delete local files.
+bool IsMigrationEnabled(MigrationDestination destination) {
+  return destination != MigrationDestination::kNotSpecified;
 }
 
 // Returns a list of files under MyFiles.
@@ -165,16 +165,19 @@ bool ShouldFail(const std::map<base::FilePath, MigrationUploadError> errors,
 }
 
 // Checks if the destination cloud provider is enabled.
-bool IsMigrationMisconfigured(Profile* profile, CloudProvider provider) {
+bool IsMigrationMisconfigured(Profile* profile, MigrationDestination provider) {
   switch (provider) {
-    case CloudProvider::kNotSpecified:
+    case MigrationDestination::kNotSpecified:
       NOTREACHED();
-    case CloudProvider::kGoogleDrive:
+    case MigrationDestination::kGoogleDrive:
       return !drive::DriveIntegrationServiceFactory::FindForProfile(profile)
                   ->is_enabled();
-    case CloudProvider::kOneDrive:
+    case MigrationDestination::kOneDrive:
       return !chromeos::cloud_upload::
           IsMicrosoftOfficeOneDriveIntegrationAllowed(profile);
+    case MigrationDestination::kDelete:
+      // Cannot be misconfigured.
+      return false;
   }
 }
 
@@ -215,11 +218,12 @@ void LocalFilesMigrationManager::Initialize() {
   }
 
   local_user_files_allowed_ = LocalUserFilesAllowed();
-  cloud_provider_ = GetMigrationDestination();
+  migration_destination_ = GetMigrationDestination();
 
   LocalStorageHistograms(profile, local_user_files_allowed_);
 
-  if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+  if (local_user_files_allowed_ ||
+      !IsMigrationEnabled(migration_destination_)) {
     // Migration is now disabled, reset the state and failure count.
     if (state_ != State::kUninitialized) {
       LOG(WARNING) << "Migration disabled: resetting the state and retry count";
@@ -233,7 +237,7 @@ void LocalFilesMigrationManager::Initialize() {
     // If migration is not configured, check whether there are already no files
     // to migrate.
     if (!local_user_files_allowed_) {
-      DCHECK(!IsMigrationEnabled(cloud_provider_));
+      DCHECK(!IsMigrationEnabled(migration_destination_));
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::MayBlock()},
           base::BindOnce(&IsMyFilesEmpty, profile),
@@ -243,21 +247,24 @@ void LocalFilesMigrationManager::Initialize() {
     return;
   }
   // Migration is enabled.
-  SkyVaultMigrationEnabledHistogram(cloud_provider_, true);
+  SkyVaultMigrationEnabledHistogram(migration_destination_, true);
 
-  if (IsMigrationMisconfigured(profile, cloud_provider_)) {
+  if (IsMigrationMisconfigured(profile, migration_destination_)) {
+    DCHECK(IsCloudDestination(migration_destination_));
     LOG(WARNING) << "Local files migration policy is set to use "
-                 << (cloud_provider_ == CloudProvider::kGoogleDrive
+                 << (migration_destination_ ==
+                             MigrationDestination::kGoogleDrive
                          ? "Google Drive"
                          : "OneDrive")
                  << ", but it is not enabled for this user.";
-    SkyVaultMigrationMisconfiguredHistogram(cloud_provider_, true);
+    SkyVaultMigrationMisconfiguredHistogram(migration_destination_, true);
     if (!notification_manager_) {
       // Can be null in unittests.
       CHECK_IS_TEST();
       return;
     }
-    notification_manager_->ShowConfigurationErrorNotification(cloud_provider_);
+    notification_manager_->ShowConfigurationErrorNotification(
+        migration_destination_);
     return;
   }
 
@@ -300,11 +307,11 @@ void LocalFilesMigrationManager::SetCoordinatorForTesting(
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   bool local_user_files_allowed_old = local_user_files_allowed_;
   local_user_files_allowed_ = LocalUserFilesAllowed();
-  CloudProvider cloud_provider_old = cloud_provider_;
-  cloud_provider_ = GetMigrationDestination();
+  MigrationDestination migration_destination_old = migration_destination_;
+  migration_destination_ = GetMigrationDestination();
 
   if (local_user_files_allowed_ == local_user_files_allowed_old &&
-      cloud_provider_ == cloud_provider_old) {
+      migration_destination_ == migration_destination_old) {
     // No change.
     return;
   }
@@ -313,8 +320,9 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
 
   LocalStorageHistograms(profile, local_user_files_allowed_);
 
-  if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
-    MaybeStopMigration(cloud_provider_old);
+  if (local_user_files_allowed_ ||
+      !IsMigrationEnabled(migration_destination_)) {
+    MaybeStopMigration(migration_destination_old);
     SkyVaultMigrationResetHistogram(true);
     if (local_user_files_allowed_) {
       SetLocalUserFilesWriteEnabled(/*enabled=*/true);
@@ -322,7 +330,7 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
       CHECK(state_ == State::kUninitialized);
       // If migration is not configured, check whether there are already no
       // files to migrate.
-      DCHECK(!IsMigrationEnabled(cloud_provider_));
+      DCHECK(!IsMigrationEnabled(migration_destination_));
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::MayBlock()},
           base::BindOnce(&IsMyFilesEmpty, profile),
@@ -331,14 +339,14 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
     }
     return;
   }
-  SkyVaultMigrationEnabledHistogram(cloud_provider_, true);
+  SkyVaultMigrationEnabledHistogram(migration_destination_, true);
 
   // If the destination changed, stop ongoing migration or timers if any.
-  if (cloud_provider_ != cloud_provider_old &&
-      IsMigrationEnabled(cloud_provider_old)) {
+  if (migration_destination_ != migration_destination_old &&
+      IsMigrationEnabled(migration_destination_old)) {
     // Don't close the dialog as it'll be reshown.
     MaybeStopMigration(
-        cloud_provider_old, /*close_dialog=*/false,
+        migration_destination_old, /*close_dialog=*/false,
         base::BindOnce(&LocalFilesMigrationManager::OnMigrationStopped,
                        weak_factory_.GetWeakPtr()));
     return;
@@ -349,19 +357,22 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
 void LocalFilesMigrationManager::OnMigrationStopped(bool log_file_deleted) {
   LOG_IF(ERROR, !log_file_deleted) << "Log file couldn't be deleted";
 
-  if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+  if (local_user_files_allowed_ ||
+      !IsMigrationEnabled(migration_destination_)) {
     return;
   }
 
   Profile* profile = Profile::FromBrowserContext(context_);
-  if (IsMigrationMisconfigured(profile, cloud_provider_)) {
+  if (IsMigrationMisconfigured(profile, migration_destination_)) {
     LOG(WARNING) << "Local files migration policy is set to use "
-                 << (cloud_provider_ == CloudProvider::kGoogleDrive
+                 << (migration_destination_ ==
+                             MigrationDestination::kGoogleDrive
                          ? "Google Drive"
                          : "OneDrive")
                  << ", but it is not enabled for this user.";
-    notification_manager_->ShowConfigurationErrorNotification(cloud_provider_);
-    SkyVaultMigrationMisconfiguredHistogram(cloud_provider_, true);
+    notification_manager_->ShowConfigurationErrorNotification(
+        migration_destination_);
+    SkyVaultMigrationMisconfiguredHistogram(migration_destination_, true);
     return;
   }
 
@@ -378,7 +389,7 @@ void LocalFilesMigrationManager::OnMyFilesChecked(bool is_empty) {
   if (local_user_files_allowed_) {
     return;
   }
-  if (!IsMigrationEnabled(cloud_provider_)) {
+  if (!IsMigrationEnabled(migration_destination_)) {
     // If migration is not configured, but no files - proceed to clean up.
     if (is_empty) {
       // Notify to unmount local folder in volume manager.
@@ -423,16 +434,17 @@ void LocalFilesMigrationManager::InformUser() {
   if (state_ != State::kPending) {
     LOG(ERROR) << "Wrong state when informing the user first time";
     SkyVaultMigrationWrongStateHistogram(
-        cloud_provider_, StateErrorContext::kShowDialog, state_);
+        migration_destination_, StateErrorContext::kShowDialog, state_);
     return;
   }
   CHECK(!local_user_files_allowed_);
-  CHECK(IsMigrationEnabled(cloud_provider_));
+  CHECK(IsMigrationEnabled(migration_destination_));
 
+  // TODO(401176561): Keep migration start time over sessions.
   migration_start_time_ = base::Time::Now() + kTotalMigrationTimeout;
 
   notification_manager_->ShowMigrationInfoDialog(
-      cloud_provider_, migration_start_time_,
+      migration_destination_, migration_start_time_,
       base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
                      weak_factory_.GetWeakPtr()));
   // Schedule another dialog closer to the migration.
@@ -444,19 +456,20 @@ void LocalFilesMigrationManager::InformUser() {
 }
 
 void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
-  if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+  if (local_user_files_allowed_ ||
+      !IsMigrationEnabled(migration_destination_)) {
     return;
   }
 
   if (state_ != State::kPending) {
     LOG(ERROR) << "Wrong state when informing the user second time";
     SkyVaultMigrationWrongStateHistogram(
-        cloud_provider_, StateErrorContext::kShowDialog, state_);
+        migration_destination_, StateErrorContext::kShowDialog, state_);
     return;
   }
 
   notification_manager_->ShowMigrationInfoDialog(
-      cloud_provider_, migration_start_time_,
+      migration_destination_, migration_start_time_,
       base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
                      weak_factory_.GetWeakPtr()));
   // Also schedule migration to automatically start after the timeout.
@@ -470,7 +483,11 @@ void LocalFilesMigrationManager::SkipMigrationDelay() {
   if (state_ != State::kPending) {
     LOG(ERROR) << "Wrong state in SkipMigrationDelay";
     SkyVaultMigrationWrongStateHistogram(
-        cloud_provider_, StateErrorContext::kSkipTimeout, state_);
+        migration_destination_, StateErrorContext::kSkipTimeout, state_);
+    return;
+  }
+  if (migration_destination_ == MigrationDestination::kDelete) {
+    // TODO(399394365): Implementation.
     return;
   }
   SetState(State::kInProgress);
@@ -481,8 +498,12 @@ void LocalFilesMigrationManager::SkipMigrationDelay() {
 void LocalFilesMigrationManager::OnTimeoutExpired() {
   if (state_ != State::kPending) {
     LOG(ERROR) << "Wrong state in OnTimeoutExpired";
-    SkyVaultMigrationWrongStateHistogram(cloud_provider_,
+    SkyVaultMigrationWrongStateHistogram(migration_destination_,
                                          StateErrorContext::kTimeout, state_);
+    return;
+  }
+  if (migration_destination_ == MigrationDestination::kDelete) {
+    // TODO(399394365): Implementation.
     return;
   }
   SetState(State::kInProgress);
@@ -493,18 +514,20 @@ void LocalFilesMigrationManager::OnTimeoutExpired() {
 void LocalFilesMigrationManager::GetPathsToUpload() {
   if (state_ != State::kInProgress) {
     LOG(ERROR) << "Wrong state when getting paths to upload";
-    SkyVaultMigrationWrongStateHistogram(cloud_provider_,
+    SkyVaultMigrationWrongStateHistogram(migration_destination_,
                                          StateErrorContext::kListFiles, state_);
     return;
   }
 
   CHECK(!coordinator_->IsRunning());
   // Check policies again.
-  if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+  if (local_user_files_allowed_ ||
+      !IsMigrationEnabled(migration_destination_)) {
     LOG(ERROR) << "Local files allowed or migration disabled while in "
                   "progress, aborting";
     return;
   }
+  DCHECK(IsCloudDestination(migration_destination_));
 
   Profile* profile = Profile::FromBrowserContext(context_);
   CHECK(profile);
@@ -514,7 +537,8 @@ void LocalFilesMigrationManager::GetPathsToUpload() {
       base::BindOnce(&GetMyFilesContents, profile),
       base::BindOnce(&LocalFilesMigrationManager::StartMigration,
                      weak_factory_.GetWeakPtr()));
-  notification_manager_->ShowMigrationProgressNotification(cloud_provider_);
+  notification_manager_->ShowMigrationProgressNotification(
+      migration_destination_);
 }
 
 void LocalFilesMigrationManager::StartMigration(
@@ -522,17 +546,19 @@ void LocalFilesMigrationManager::StartMigration(
   if (state_ != State::kInProgress) {
     LOG(ERROR) << "Wrong state in migration start";
     SkyVaultMigrationWrongStateHistogram(
-        cloud_provider_, StateErrorContext::kMigrationStart, state_);
+        migration_destination_, StateErrorContext::kMigrationStart, state_);
     return;
   }
 
   CHECK(!coordinator_->IsRunning());
   // Check policies again.
-  if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+  if (local_user_files_allowed_ ||
+      !IsMigrationEnabled(migration_destination_)) {
     LOG(ERROR) << "Local files allowed or migration disabled while in "
                   "progress, aborting";
     return;
   }
+  DCHECK(IsCloudDestination(migration_destination_));
 
   PrefService* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
   const base::Time start_time =
@@ -543,7 +569,7 @@ void LocalFilesMigrationManager::StartMigration(
   }
 
   upload_root_ = GenerateUploadRootName();
-  coordinator_->Run(cloud_provider_, std::move(files), upload_root_,
+  coordinator_->Run(migration_destination_, std::move(files), upload_root_,
                     base::BindOnce(&LocalFilesMigrationManager::OnMigrationDone,
                                    weak_factory_.GetWeakPtr()));
 }
@@ -555,9 +581,10 @@ void LocalFilesMigrationManager::OnMigrationDone(
   if (state_ != State::kInProgress) {
     LOG(ERROR) << "Wrong state in migration done";
     SkyVaultMigrationWrongStateHistogram(
-        cloud_provider_, StateErrorContext::kMigrationDone, state_);
+        migration_destination_, StateErrorContext::kMigrationDone, state_);
     return;
   }
+  DCHECK(IsCloudDestination(migration_destination_));
 
   const base::Time start_time =
       Profile::FromBrowserContext(context_)->GetPrefs()->GetTime(
@@ -566,10 +593,10 @@ void LocalFilesMigrationManager::OnMigrationDone(
 
   if (errors.empty()) {
     NotifySuccess();
-    notification_manager_->ShowMigrationCompletedNotification(cloud_provider_,
-                                                              upload_root_path);
+    notification_manager_->ShowMigrationCompletedNotification(
+        migration_destination_, upload_root_path);
     VLOG(1) << "Local files migration done";
-    SkyVaultMigrationDoneHistograms(cloud_provider_, true, duration);
+    SkyVaultMigrationDoneHistograms(migration_destination_, true, duration);
     SetState(State::kCleanup);
     CleanupLocalFiles();
     return;
@@ -580,7 +607,7 @@ void LocalFilesMigrationManager::OnMigrationDone(
       prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
 
   if (failed) {
-    SkyVaultMigrationDoneHistograms(cloud_provider_, false, duration);
+    SkyVaultMigrationDoneHistograms(migration_destination_, false, duration);
     SetState(State::kFailure);
     LOG(ERROR) << "Local files migration failed.";
     ProcessErrors(std::move(errors), error_log_path);
@@ -597,15 +624,16 @@ void LocalFilesMigrationManager::ProcessErrors(
     base::FilePath error_log_path) {
   CHECK(state_ == State::kFailure);
   CHECK(!errors.empty());
+  DCHECK(IsCloudDestination(migration_destination_));
   notification_manager_->ShowMigrationErrorNotification(
-      cloud_provider_, upload_root_, error_log_path);
+      migration_destination_, upload_root_, error_log_path);
 }
 
 void LocalFilesMigrationManager::CleanupLocalFiles() {
   if (state_ != State::kCleanup) {
     LOG(ERROR) << "Wrong state in cleanup start";
     SkyVaultMigrationWrongStateHistogram(
-        cloud_provider_, StateErrorContext::kCleanupStart, state_);
+        migration_destination_, StateErrorContext::kCleanupStart, state_);
     return;
   }
 
@@ -628,7 +656,7 @@ void LocalFilesMigrationManager::OnCleanupDone(
   if (state_ != State::kCleanup) {
     LOG(ERROR) << "Wrong state in cleanup done";
     SkyVaultMigrationWrongStateHistogram(
-        cloud_provider_, StateErrorContext::kCleanupDone, state_);
+        migration_destination_, StateErrorContext::kCleanupDone, state_);
     return;
   }
 
@@ -666,7 +694,7 @@ void LocalFilesMigrationManager::OnFilesWriteRestricted(
 }
 
 void LocalFilesMigrationManager::MaybeStopMigration(
-    CloudProvider previous_provider,
+    MigrationDestination previous_provider,
     bool close_dialog,
     MigrationStoppedCallback on_stopped_cb) {
   // Stop the timer. No-op if not running.

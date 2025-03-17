@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
@@ -36,7 +37,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
@@ -49,6 +50,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
@@ -56,13 +58,12 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
-#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
-#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_coordinator.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
@@ -71,7 +72,6 @@
 #import "ios/chrome/browser/tabs/ui_bundled/foreground_tab_animation_view.h"
 #import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_coordinator.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
@@ -158,51 +158,46 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
 
-    id mockActivityServiceCommandHandler =
+    id mock_activity_service_handler =
         OCMProtocolMock(@protocol(ActivityServiceCommands));
-    [dispatcher startDispatchingToTarget:mockActivityServiceCommandHandler
+    [dispatcher startDispatchingToTarget:mock_activity_service_handler
                              forProtocol:@protocol(ActivityServiceCommands)];
-    id mockFindInPageCommandHandler =
+    id mock_find_in_page_handler =
         OCMProtocolMock(@protocol(FindInPageCommands));
-    [dispatcher startDispatchingToTarget:mockFindInPageCommandHandler
+    [dispatcher startDispatchingToTarget:mock_find_in_page_handler
                              forProtocol:@protocol(FindInPageCommands)];
-    id mockLensCommandHandler = OCMProtocolMock(@protocol(LensCommands));
-    [dispatcher startDispatchingToTarget:mockLensCommandHandler
+    id mock_lens_handler = OCMProtocolMock(@protocol(LensCommands));
+    [dispatcher startDispatchingToTarget:mock_lens_handler
                              forProtocol:@protocol(LensCommands)];
-    id mockTextZoomCommandHandler =
-        OCMProtocolMock(@protocol(TextZoomCommands));
-    [dispatcher startDispatchingToTarget:mockTextZoomCommandHandler
+    id mock_text_zoom_handler = OCMProtocolMock(@protocol(TextZoomCommands));
+    [dispatcher startDispatchingToTarget:mock_text_zoom_handler
                              forProtocol:@protocol(TextZoomCommands)];
-    id mockPageInfoCommandHandler =
-        OCMProtocolMock(@protocol(PageInfoCommands));
-    [dispatcher startDispatchingToTarget:mockPageInfoCommandHandler
+    id mock_page_info_handler = OCMProtocolMock(@protocol(PageInfoCommands));
+    [dispatcher startDispatchingToTarget:mock_page_info_handler
                              forProtocol:@protocol(PageInfoCommands)];
-    id mockQrScannerCommandHandler =
-        OCMProtocolMock(@protocol(QRScannerCommands));
-    [dispatcher startDispatchingToTarget:mockQrScannerCommandHandler
+    id mock_qr_scanner_handler = OCMProtocolMock(@protocol(QRScannerCommands));
+    [dispatcher startDispatchingToTarget:mock_qr_scanner_handler
                              forProtocol:@protocol(QRScannerCommands)];
-    id mockSnackbarCommandHandler =
-        OCMProtocolMock(@protocol(SnackbarCommands));
-    [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
+    id mock_snackbar_handler = OCMProtocolMock(@protocol(SnackbarCommands));
+    [dispatcher startDispatchingToTarget:mock_snackbar_handler
                              forProtocol:@protocol(SnackbarCommands)];
-    id mockParcelTrackingCommandHandler =
-        OCMProtocolMock(@protocol(ParcelTrackingOptInCommands));
-    [dispatcher
-        startDispatchingToTarget:mockParcelTrackingCommandHandler
-                     forProtocol:@protocol(ParcelTrackingOptInCommands)];
-    id mockContextualSheetCommandHandler =
+    id mock_contextual_sheet_handler =
         OCMProtocolMock(@protocol(ContextualSheetCommands));
-    [dispatcher startDispatchingToTarget:mockContextualSheetCommandHandler
+    [dispatcher startDispatchingToTarget:mock_contextual_sheet_handler
                              forProtocol:@protocol(ContextualSheetCommands)];
-    id mockContextualPanelEntrypointIPHCommandHandler =
+    id mock_contextual_panel_entrypoint_iph_handler =
         OCMProtocolMock(@protocol(ContextualPanelEntrypointIPHCommands));
     [dispatcher
-        startDispatchingToTarget:mockContextualPanelEntrypointIPHCommandHandler
+        startDispatchingToTarget:mock_contextual_panel_entrypoint_iph_handler
                      forProtocol:@protocol(
                                      ContextualPanelEntrypointIPHCommands)];
+    id mock_browser_coordinator_handler =
+        OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [dispatcher startDispatchingToTarget:mock_browser_coordinator_handler
+                             forProtocol:@protocol(BrowserCoordinatorCommands)];
 
-    id mockHelpHandler = OCMProtocolMock(@protocol(HelpCommands));
-    [dispatcher startDispatchingToTarget:mockHelpHandler
+    id mock_help_handler = OCMProtocolMock(@protocol(HelpCommands));
+    [dispatcher startDispatchingToTarget:mock_help_handler
                              forProtocol:@protocol(HelpCommands)];
 
     // Set up Applicationhander and SettingsHandler mocks.
@@ -260,9 +255,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         [[TabStripLegacyCoordinator alloc] initWithBrowser:browser_.get()];
 
     fullscreen_controller_ = FullscreenController::FromBrowser(browser_.get());
-    side_swipe_mediator_ = [[SideSwipeMediator alloc]
-        initWithFullscreenController:fullscreen_controller_
-                        webStateList:browser_->GetWebStateList()];
+    side_swipe_coordinator_ = [[SideSwipeCoordinator alloc]
+        initWithBaseViewController:nil
+                           browser:browser_.get()];
 
     bookmarks_coordinator_ =
         [[BookmarksCoordinator alloc] initWithBrowser:browser_.get()];
@@ -282,7 +277,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.toolbarCoordinator = toolbar_coordinator_;
     dependencies.tabStripCoordinator = tab_strip_coordinator_;
     dependencies.legacyTabStripCoordinator = legacy_tab_strip_coordinator_;
-    dependencies.sideSwipeMediator = side_swipe_mediator_;
+    dependencies.sideSwipeCoordinator = side_swipe_coordinator_;
     dependencies.bookmarksCoordinator = bookmarks_coordinator_;
     dependencies.fullscreenController = fullscreen_controller_;
     dependencies.tabUsageRecorderBrowserAgent =
@@ -318,6 +313,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     window.rootViewController = bvc_;
     [window makeKeyAndVisible];
     window_ = window;
+
+    UIView.animationsEnabled = YES;
   }
 
   void TearDown() override {
@@ -330,7 +327,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [toolbar_coordinator_ stop];
     [popup_menu_coordinator_ stop];
     [NTPCoordinator_ stop];
-    [side_swipe_mediator_ disconnect];
+    [side_swipe_coordinator_ stop];
     ClipboardRecentContent::SetInstance(nullptr);
 
     BlockCleanupTest::TearDown();
@@ -388,7 +385,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     block();
 
-    [mock_animation_view_class verify];
+    EXPECT_OCMOCK_VERIFY(mock_animation_view_class);
+    [mock_animation_view_class stopMocking];
   }
 
   // Used as an OCMArg to check that the argument's `contentView` matches the
@@ -418,7 +416,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   ToolbarCoordinator* toolbar_coordinator_;
   TabStripCoordinator* tab_strip_coordinator_;
   TabStripLegacyCoordinator* legacy_tab_strip_coordinator_;
-  SideSwipeMediator* side_swipe_mediator_;
+  SideSwipeCoordinator* side_swipe_coordinator_;
   BookmarksCoordinator* bookmarks_coordinator_;
   raw_ptr<FullscreenController> fullscreen_controller_;
   TabEventsMediator* tab_events_mediator_;
@@ -524,8 +522,6 @@ TEST_F(BrowserViewControllerTest, didInsertOffTheRecordWebState) {
 
 // Tests that when a webstate is inserted, the correct view is used during
 // the animation.
-// TODO(crbug.com/344849341): This test fails when run as part of the entire
-// test suite. Retries seem to pass.
 TEST_F(BrowserViewControllerTest, ViewOnInsert) {
   // The animation being tested only runs on the phone form factor.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {

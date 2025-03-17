@@ -1273,18 +1273,23 @@ TEST(Int128, BitwiseShiftTest) {
     }
   }
 
+  // Signed integer overflow is undefined behavior, so in these cases enough
+  // high bits must be zero to avoid over-shifting.
+  EXPECT_EQ(MAKE_INT128(0x0, 0x123456789abcdef0) << 63,
+            MAKE_INT128(0x91a2b3c4d5e6f78, 0x0));
+  EXPECT_EQ(MAKE_INT128(0x0, 0x123456789abcdef0) << 64,
+            MAKE_INT128(0x123456789abcdef0, 0x0));
+  EXPECT_EQ(MAKE_INT128(0x1, 0xfedcba0987654321) << 63,
+            MAKE_INT128(0xff6e5d04c3b2a190, 0x8000000000000000));
+  EXPECT_EQ(MAKE_INT128(0x0, 0xfedcba0987654321) << 64,
+            MAKE_INT128(0xfedcba0987654321, 0x0));
+  EXPECT_EQ(MAKE_INT128(0x0, 0x0) << 126, MAKE_INT128(0x0, 0x0));
+  EXPECT_EQ(MAKE_INT128(0x0, 0x1) << 126, MAKE_INT128(0x4000000000000000, 0x0));
+
   // Manually calculated cases with shift count for positive (val1) and negative
   // (val2) values
   absl::int128 val1 = MAKE_INT128(0x123456789abcdef0, 0x123456789abcdef0);
   absl::int128 val2 = MAKE_INT128(0xfedcba0987654321, 0xfedcba0987654321);
-
-  EXPECT_EQ(val1 << 63, MAKE_INT128(0x91a2b3c4d5e6f78, 0x0));
-  EXPECT_EQ(val1 << 64, MAKE_INT128(0x123456789abcdef0, 0x0));
-  EXPECT_EQ(val2 << 63, MAKE_INT128(0xff6e5d04c3b2a190, 0x8000000000000000));
-  EXPECT_EQ(val2 << 64, MAKE_INT128(0xfedcba0987654321, 0x0));
-
-  EXPECT_EQ(val1 << 126, MAKE_INT128(0x0, 0x0));
-  EXPECT_EQ(val2 << 126, MAKE_INT128(0x4000000000000000, 0x0));
 
   EXPECT_EQ(val1 >> 63, MAKE_INT128(0x0, 0x2468acf13579bde0));
   EXPECT_EQ(val1 >> 64, MAKE_INT128(0x0, 0x123456789abcdef0));

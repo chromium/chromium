@@ -33,7 +33,7 @@ const CGFloat kTableViewTopSpace = 8;
 UIColor* BackgroundColor() {
   return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
-}
+}  // namespace
 
 // This cell just adds a simple hover pointer interaction to the TableViewCell.
 @interface CredentialListCell : FaviconTableViewCell
@@ -195,40 +195,39 @@ UIColor* BackgroundColor() {
   UITableViewCell* cell =
       [tableView dequeueReusableCellWithIdentifier:kCredentialCellIdentifier];
 
-    if (!cell) {
-      cell =
-          [[CredentialListCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                    reuseIdentifier:kCredentialCellIdentifier];
-      cell.accessoryView = [self infoIconButton];
-    }
+  if (!cell) {
+    cell = [[CredentialListCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                     reuseIdentifier:kCredentialCellIdentifier];
+    cell.accessoryView = [self infoIconButton];
+  }
 
-    CredentialListCell* credentialCell =
-        base::apple::ObjCCastStrict<CredentialListCell>(cell);
+  CredentialListCell* credentialCell =
+      base::apple::ObjCCastStrict<CredentialListCell>(cell);
 
-    credentialCell.textLabel.text = credential.serviceName;
-    credentialCell.detailTextLabel.text = credential.username;
-    credentialCell.uniqueIdentifier = credential.serviceIdentifier;
-    credentialCell.selectionStyle = UITableViewCellSelectionStyleDefault;
-    credentialCell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-    credentialCell.accessibilityTraits |= UIAccessibilityTraitButton;
+  credentialCell.textLabel.text = credential.serviceName;
+  credentialCell.detailTextLabel.text = credential.username;
+  credentialCell.uniqueIdentifier = credential.serviceIdentifier;
+  credentialCell.selectionStyle = UITableViewCellSelectionStyleDefault;
+  credentialCell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  credentialCell.accessibilityTraits |= UIAccessibilityTraitButton;
 
-    // Load favicon.
-    if (credential.favicon) {
-      // Load the favicon from disk.
-      [self loadFaviconAtIndexPath:indexPath forCell:cell];
-    }
+  // Load favicon.
+  if (credential.favicon) {
+    // Load the favicon from disk.
+    [self loadFaviconAtIndexPath:indexPath forCell:cell];
+  }
 
-    // Use the default world icon as fallback.
-    if (!self.defaultWorldIconAttributes) {
-      self.defaultWorldIconAttributes = [FaviconAttributes
-          attributesWithImage:
-              [[UIImage imageNamed:@"default_world_favicon"]
-                  imageWithTintColor:[UIColor colorNamed:kTextQuaternaryColor]
-                       renderingMode:UIImageRenderingModeAlwaysOriginal]];
-    }
-    [credentialCell.faviconView
-        configureWithAttributes:self.defaultWorldIconAttributes];
-    return credentialCell;
+  // Use the default world icon as fallback.
+  if (!self.defaultWorldIconAttributes) {
+    self.defaultWorldIconAttributes = [FaviconAttributes
+        attributesWithImage:
+            [[UIImage imageNamed:@"default_world_favicon"]
+                imageWithTintColor:[UIColor colorNamed:kTextQuaternaryColor]
+                     renderingMode:UIImageRenderingModeAlwaysOriginal]];
+  }
+  [credentialCell.faviconView
+      configureWithAttributes:self.defaultWorldIconAttributes];
+  return credentialCell;
 }
 
 // Asynchronously loads favicon for given index path. The loads are cancelled

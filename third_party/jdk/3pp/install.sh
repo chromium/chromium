@@ -10,6 +10,10 @@ set -x
 # The commands below should output the built product to this directory.
 PREFIX="$1"
 
+# The directory structure will be like "jdk-23.0.2+7/{bin,conf,...}".
+# We rename the root dir "jdk-23.0.2+7" to "current"
+mv jdk-* current
+
 mv current/bin/java current/bin/java.chromium
 echo '#!/bin/sh
 

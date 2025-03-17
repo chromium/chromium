@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 
 #include <algorithm>
 #include <memory>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
@@ -58,6 +54,158 @@
 namespace blink {
 
 namespace {
+
+struct WindowProxyAccessCounters {
+  // `property_access` is optional as most methods are measured through
+  // the idl itself, and only anonymous getters cannot use that attribute.
+  std::optional<WebFeature> property_access;
+  WebFeature cross_origin_property_access;
+  WebFeature cross_origin_property_access_from_other_page;
+};
+
+inline constexpr auto kWindowProxyAccessTypeToCounters = base::MakeFixedFlatMap<
+    mojom::blink::WindowProxyAccessType,
+    WindowProxyAccessCounters>({
+    {
+        mojom::blink::WindowProxyAccessType::kLocation,
+        {
+            std::nullopt,
+            WebFeature::kWindowProxyCrossOriginAccessLocation,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageLocation,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kClosed,
+        {
+            std::nullopt,
+            WebFeature::kWindowProxyCrossOriginAccessClosed,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageClosed,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kLength,
+        {
+            std::nullopt,
+            WebFeature::kWindowProxyCrossOriginAccessLength,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageLength,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kSelf,
+        {
+            std::nullopt,
+            WebFeature::kWindowProxyCrossOriginAccessSelf,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageSelf,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kWindow,
+        {
+            std::nullopt,
+            WebFeature::kWindowProxyCrossOriginAccessWindow,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageWindow,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kFrames,
+        {
+            std::nullopt,
+            WebFeature::kWindowProxyCrossOriginAccessFrames,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageFrames,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kOpener,
+        {
+            std::nullopt,
+            WebFeature::kWindowProxyCrossOriginAccessOpener,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageOpener,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kParent,
+        {
+            std::nullopt,
+            WebFeature::kWindowProxyCrossOriginAccessParent,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageParent,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kTop,
+        {
+            std::nullopt,
+            WebFeature::kWindowProxyCrossOriginAccessTop,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageTop,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kPostMessage,
+        {
+            std::nullopt,
+            WebFeature::kWindowProxyCrossOriginAccessPostMessage,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPagePostMessage,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kAnonymousIndexedGetter,
+        {
+            WebFeature::kWindowProxyIndexedGetter,
+            WebFeature::kWindowProxyCrossOriginAccessIndexedGetter,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageIndexedGetter,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kClose,
+        {
+            std::nullopt,
+            WebFeature::kWindowProxyCrossOriginAccessClose,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageClose,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kFocus,
+        {
+            std::nullopt,
+            WebFeature::kWindowProxyCrossOriginAccessFocus,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageFocus,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kBlur,
+        {
+            std::nullopt,
+            WebFeature::kWindowProxyCrossOriginAccessBlur,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageBlur,
+        },
+    },
+    {
+
+        mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter,
+        {
+            WebFeature::kWindowProxyNamedGetter,
+            WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
+            WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter,
+        },
+    },
+});
+
+// Any new WindowProxy method UMA should garner UKM and vice-versa.
+static_assert(
+    kWindowProxyAccessTypeToCounters.size() ==
+    static_cast<int64_t>(mojom::blink::WindowProxyAccessType::kMaxValue) + 1u);
 
 String CoopReportOnlyErrorMessage(const String& property_name) {
   String call;
@@ -134,8 +282,6 @@ bool DOMWindow::IsWindowOrWorkerGlobalScope() const {
 
 Location* DOMWindow::location() const {
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessLocation,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageLocation,
       mojom::blink::WindowProxyAccessType::kLocation);
   if (!location_)
     location_ = MakeGarbageCollected<Location>(const_cast<DOMWindow*>(this));
@@ -144,16 +290,12 @@ Location* DOMWindow::location() const {
 
 bool DOMWindow::closed() const {
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessClosed,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageClosed,
       mojom::blink::WindowProxyAccessType::kClosed);
   return window_is_closing_ || !GetFrame() || !GetFrame()->GetPage();
 }
 
 unsigned DOMWindow::length() const {
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessLength,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageLength,
       mojom::blink::WindowProxyAccessType::kLength);
   return GetFrame() ? GetFrame()->Tree().ScopedChildCount() : 0;
 }
@@ -163,8 +305,6 @@ DOMWindow* DOMWindow::self() const {
     return nullptr;
 
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessSelf,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageSelf,
       mojom::blink::WindowProxyAccessType::kSelf);
 
   return GetFrame()->DomWindow();
@@ -175,8 +315,6 @@ DOMWindow* DOMWindow::window() const {
     return nullptr;
 
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessWindow,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageWindow,
       mojom::blink::WindowProxyAccessType::kWindow);
 
   return GetFrame()->DomWindow();
@@ -187,8 +325,6 @@ DOMWindow* DOMWindow::frames() const {
     return nullptr;
 
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessFrames,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageFrames,
       mojom::blink::WindowProxyAccessType::kFrames);
 
   return GetFrame()->DomWindow();
@@ -196,8 +332,6 @@ DOMWindow* DOMWindow::frames() const {
 
 ScriptValue DOMWindow::openerForBindings(v8::Isolate* isolate) const {
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessOpener,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageOpener,
       mojom::blink::WindowProxyAccessType::kOpener);
   ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
   return ScriptValue(isolate, ToV8Traits<IDLNullable<DOMWindow>>::ToV8(
@@ -262,8 +396,6 @@ DOMWindow* DOMWindow::parent() const {
     return nullptr;
 
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessParent,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageParent,
       mojom::blink::WindowProxyAccessType::kParent);
 
   Frame* parent = GetFrame()->Tree().Parent();
@@ -275,8 +407,6 @@ DOMWindow* DOMWindow::top() const {
     return nullptr;
 
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessTop,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageTop,
       mojom::blink::WindowProxyAccessType::kTop);
 
   return GetFrame()->Tree().Top().DomWindow();
@@ -299,8 +429,6 @@ void DOMWindow::postMessage(v8::Isolate* isolate,
                             const WindowPostMessageOptions* options,
                             ExceptionState& exception_state) {
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessPostMessage,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPagePostMessage,
       mojom::blink::WindowProxyAccessType::kPostMessage);
   LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate);
   UseCounter::Count(incumbent_window->document(),
@@ -319,8 +447,6 @@ void DOMWindow::postMessage(v8::Isolate* isolate,
 
 DOMWindow* DOMWindow::AnonymousIndexedGetter(uint32_t index) {
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessIndexedGetter,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageIndexedGetter,
       mojom::blink::WindowProxyAccessType::kAnonymousIndexedGetter);
   ReportCoopAccess("indexed");
 
@@ -489,8 +615,6 @@ void DOMWindow::Close(LocalDOMWindow* incumbent_window) {
   }
 
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessClose,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageClose,
       mojom::blink::WindowProxyAccessType::kClose);
 
   Settings* settings = GetFrame()->GetSettings();
@@ -538,6 +662,7 @@ void DOMWindow::focus(v8::Isolate* isolate) {
     return;
 
   Page* page = frame->GetPage();
+  // TODO(dcheng): This null check is probably not needed.
   if (!page)
     return;
 
@@ -553,8 +678,6 @@ void DOMWindow::focus(v8::Isolate* isolate) {
   }
 
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessFocus,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageFocus,
       mojom::blink::WindowProxyAccessType::kFocus);
 
   // HTML standard doesn't require to check the incumbent realm, but Blink
@@ -609,8 +732,7 @@ void DOMWindow::focus(v8::Isolate* isolate) {
     // We are depending on user activation twice since IsFocusAllowed() will
     // check for activation. This should be addressed in
     // https://crbug.com/959815.
-    if (local_frame->GetDocument() &&
-        !local_frame->GetDocument()->IsFocusAllowed()) {
+    if (!local_frame->GetDocument()->IsFocusAllowed(FocusTrigger::kScript)) {
       return;
     }
   }
@@ -635,8 +757,6 @@ void DOMWindow::focus(v8::Isolate* isolate) {
 
 void DOMWindow::blur() {
   RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessBlur,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageBlur,
       mojom::blink::WindowProxyAccessType::kBlur);
 }
 
@@ -758,67 +878,63 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
   const LocalFrameToken accessing_main_frame_token =
       accessing_main_frame.GetLocalFrameToken();
 
-  auto it = coop_access_monitor_.begin();
-  while (it != coop_access_monitor_.end()) {
-    if ((*it)->accessing_main_frame != accessing_main_frame_token) {
-      ++it;
-      continue;
-    }
+  WTF::EraseIf(
+      coop_access_monitor_, [&](const Member<CoopAccessMonitor>& monitor) {
+        if (monitor->accessing_main_frame != accessing_main_frame_token) {
+          return false;
+        }
 
-    String property_name_as_string = property_name;
-    if ((*it)->is_in_same_virtual_coop_related_group &&
-        (property_name_as_string == "postMessage" ||
-         property_name_as_string == "closed")) {
-      ++it;
-      continue;
-    }
+        String property_name_as_string = property_name;
+        if (monitor->is_in_same_virtual_coop_related_group &&
+            (property_name_as_string == "postMessage" ||
+             property_name_as_string == "closed")) {
+          return false;
+        }
 
-    // TODO(arthursonzogni): Send the blocked-window-url.
+        // TODO(arthursonzogni): Send the blocked-window-url.
 
-    auto location = CaptureSourceLocation(
-        ExecutionContext::From(isolate->GetCurrentContext()));
-    // TODO(crbug.com/349583610): Update to use SourceLocation typemap.
-    auto source_location = network::mojom::blink::SourceLocation::New(
-        location->Url() ? location->Url() : "", location->LineNumber(),
-        location->ColumnNumber());
+        auto location = CaptureSourceLocation(
+            ExecutionContext::From(isolate->GetCurrentContext()));
+        // TODO(crbug.com/349583610): Update to use SourceLocation typemap.
+        auto source_location = network::mojom::blink::SourceLocation::New(
+            location->Url() ? location->Url() : "", location->LineNumber(),
+            location->ColumnNumber());
 
-    accessing_window->GetFrameConsole()->AddMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kJavaScript,
-            mojom::blink::ConsoleMessageLevel::kError,
-            CoopReportOnlyErrorMessage(property_name), location->Clone()));
+        accessing_window->GetFrameConsole()->AddMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kJavaScript,
+                mojom::blink::ConsoleMessageLevel::kError,
+                CoopReportOnlyErrorMessage(property_name), location->Clone()));
 
-    CoopAccessMonitor* monitor = *it;
+        // If the reporting document hasn't specified any network report
+        // endpoint(s), then it is likely not interested in receiving
+        // ReportingObserver's reports.
+        //
+        // TODO(arthursonzogni): Reconsider this decision later, developers
+        // might be interested.
+        if (monitor->endpoint_defined) {
+          if (monitor->reporter.is_bound()) {
+            monitor->reporter->QueueAccessReport(
+                monitor->report_type, property_name, std::move(source_location),
+                std::move(monitor->reported_window_url));
+          }
+          // Send a coop-access-violation report.
+          if (network::IsAccessFromCoopPage(monitor->report_type)) {
+            ReportingContext::From(accessing_main_frame.DomWindow())
+                ->QueueReport(MakeGarbageCollected<Report>(
+                    ReportType::kCoopAccessViolation,
+                    accessing_main_frame.GetDocument()->Url().GetString(),
+                    MakeGarbageCollected<CoopAccessViolationReportBody>(
+                        std::move(location), monitor->report_type,
+                        String(property_name), monitor->reported_window_url)));
+          }
+        }
 
-    // If the reporting document hasn't specified any network report
-    // endpoint(s), then it is likely not interested in receiving
-    // ReportingObserver's reports.
-    //
-    // TODO(arthursonzogni): Reconsider this decision later, developers might be
-    // interested.
-    if (monitor->endpoint_defined) {
-      if (monitor->reporter.is_bound()) {
-        monitor->reporter->QueueAccessReport(
-            monitor->report_type, property_name, std::move(source_location),
-            std::move(monitor->reported_window_url));
-      }
-      // Send a coop-access-violation report.
-      if (network::IsAccessFromCoopPage(monitor->report_type)) {
-        ReportingContext::From(accessing_main_frame.DomWindow())
-            ->QueueReport(MakeGarbageCollected<Report>(
-                ReportType::kCoopAccessViolation,
-                accessing_main_frame.GetDocument()->Url().GetString(),
-                MakeGarbageCollected<CoopAccessViolationReportBody>(
-                    std::move(location), monitor->report_type,
-                    String(property_name), monitor->reported_window_url)));
-      }
-    }
-
-    // CoopAccessMonitor are used once and destroyed. This avoids sending
-    // multiple reports for the same access.
-    (*it)->reporter.reset();
-    it = coop_access_monitor_.erase(it);
-  }
+        // CoopAccessMonitor are used once and destroyed. This avoids sending
+        // multiple reports for the same access.
+        monitor->reporter.reset();
+        return true;
+      });
 }
 
 void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
@@ -978,9 +1094,10 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
 }
 
 void DOMWindow::RecordWindowProxyAccessMetrics(
-    WebFeature property_access,
-    WebFeature property_access_from_other_page,
     mojom::blink::WindowProxyAccessType access_type) const {
+  const auto& counter_it = kWindowProxyAccessTypeToCounters.find(access_type);
+  CHECK(counter_it != kWindowProxyAccessTypeToCounters.end());
+
   if (!GetFrame())
     return;
 
@@ -1012,6 +1129,10 @@ void DOMWindow::RecordWindowProxyAccessMetrics(
     }
   }
 
+  if (counter_it->second.property_access) {
+    UseCounter::Count(accessing_window, *counter_it->second.property_access);
+  }
+
   // Note that SecurityOrigin can be null in unit tests.
   if (!GetFrame()->GetSecurityContext()->GetSecurityOrigin() ||
       !accessing_frame->GetSecurityContext()->GetSecurityOrigin() ||
@@ -1021,10 +1142,13 @@ void DOMWindow::RecordWindowProxyAccessMetrics(
               GetFrame()->GetSecurityContext()->GetSecurityOrigin())) {
     return;
   }
-  UseCounter::Count(accessing_window->document(), property_access);
+  UseCounter::Count(accessing_window->document(),
+                    counter_it->second.cross_origin_property_access);
 
   if (accessing_frame->GetPage() != GetFrame()->GetPage()) {
-    UseCounter::Count(accessing_window, property_access_from_other_page);
+    UseCounter::Count(
+        accessing_window,
+        counter_it->second.cross_origin_property_access_from_other_page);
   }
 }
 
@@ -1120,14 +1244,11 @@ void DOMWindow::Trace(Visitor* visitor) const {
 
 void DOMWindow::DisconnectCoopAccessMonitor(
     const LocalFrameToken& accessing_main_frame) {
-  auto it = coop_access_monitor_.begin();
-  while (it != coop_access_monitor_.end()) {
-    if ((*it)->accessing_main_frame == accessing_main_frame) {
-      it = coop_access_monitor_.erase(it);
-    } else {
-      ++it;
-    }
-  }
+  WTF::EraseIf(
+      coop_access_monitor_,
+      [&accessing_main_frame](const Member<CoopAccessMonitor>& monitor) {
+        return monitor->accessing_main_frame == accessing_main_frame;
+      });
 }
 
 }  // namespace blink

@@ -4,6 +4,12 @@
 
 #include "net/base/base64.h"
 
+#include <algorithm>
+#include <string>
+#include <string_view>
+#include <utility>
+
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "net/base/features.h"
 #include "third_party/simdutf/simdutf.h"
@@ -13,19 +19,20 @@ namespace net {
 bool SimdutfBase64Decode(std::string_view input,
                          std::string* output,
                          base::Base64DecodePolicy policy) {
-  std::string decode_buf;
+  CHECK(IsSimdutfBase64SupportEnabled());
   if (policy == base::Base64DecodePolicy::kStrict) {
     if (input.size() % 4 != 0) {
       // The input is not properly padded.
       return false;
     }
-    std::string_view bad_chars(base::kInfraAsciiWhitespace);
-    for (char c : bad_chars) {
-      if (input.find(c) != std::string_view::npos) {
-        return false;
-      }
+    if (std::ranges::any_of(input, [](char c) {
+          return base::Contains(base::kInfraAsciiWhitespace, c);
+        })) {
+      return false;
     }
   }
+
+  std::string decode_buf;
   decode_buf.resize(
       simdutf::maximal_binary_length_from_base64(input.data(), input.size()));
   simdutf::result r =

@@ -33,8 +33,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/ash/components/chaps_util/chaps_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"

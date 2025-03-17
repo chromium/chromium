@@ -6,11 +6,11 @@ import 'chrome://diagnostics/ip_config_info_drawer.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
-import {CellularNetwork, EthernetNetwork, WiFiNetwork} from 'chrome://diagnostics/diagnostics_types.js';
+import type {CellularNetwork, EthernetNetwork, WiFiNetwork} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeEthernetNetwork, fakeWifiNetwork, fakeWifiNetworkEmptyNameServers, fakeWifiNetworkMultipleNameServers, fakeWifiNetworkNoNameServers} from 'chrome://diagnostics/fake_data.js';
-import {IpConfigInfoDrawerElement} from 'chrome://diagnostics/ip_config_info_drawer.js';
-import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
-import {CrExpandButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
+import type {IpConfigInfoDrawerElement} from 'chrome://diagnostics/ip_config_info_drawer.js';
+import type {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
+import type {CrExpandButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -50,9 +50,9 @@ suite('ipConfigInfoDrawerTestSuite', function() {
   /**
    * Selects the drawer's hideable content area if the drawer is expanded.
    */
-  function getDrawerContentContainer(): HTMLDivElement|null {
+  function getDrawerContentContainer(): HTMLElement|null {
     assert(ipConfigInfoDrawerElement);
-    return ipConfigInfoDrawerElement.shadowRoot!.querySelector<HTMLDivElement>(
+    return ipConfigInfoDrawerElement.shadowRoot!.querySelector<HTMLElement>(
         '#ipConfigInfoElement');
   }
 
@@ -118,7 +118,7 @@ suite('ipConfigInfoDrawerTestSuite', function() {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#gateway',
               ipConfigInfoDrawerElement!.i18n('ipConfigInfoDrawerGateway'),
-              `${fakeWifiNetwork!.ipConfig!.gateway}`);
+              `${fakeWifiNetwork.ipConfig!.gateway}`);
         });
   });
 
@@ -165,7 +165,7 @@ suite('ipConfigInfoDrawerTestSuite', function() {
         .then(() => {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#nameServers', 'Name Server',
-              `${fakeEthernetNetwork!.ipConfig!.nameServers!.join(', ')}`);
+              `${fakeEthernetNetwork.ipConfig!.nameServers!.join(', ')}`);
         });
   });
 

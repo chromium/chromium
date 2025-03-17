@@ -15,6 +15,7 @@
 #include "chrome/browser/predictors/prefetch_manager.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -32,22 +33,65 @@ const char kCreateProtoTableStatementTemplate[] =
     "key TEXT, "
     "proto BLOB, "
     "PRIMARY KEY(key))";
+const char kPrefetchSubresourceDBBroken[] =
+    "Blink.LCPP.PrefetchSubresource.DBBroken";
 
-// Convert `LcppStringFrequencyStatData` a vector of frequency and std::string.
-// The result is sorted with frequency (from high to low).
+// Convert `LcppStringFrequencyStatData` to a vector of frequency and
+// std::string. The result is sorted with frequency (from high to low).
 std::vector<std::pair<double, std::string>> ConvertToFrequencyStringPair(
     const LcppStringFrequencyStatData& data) {
   const auto& buckets = data.main_buckets();
   std::vector<std::pair<double, std::string>> frequency_and_string;
   frequency_and_string.reserve(buckets.size());
-  for (const auto& [script_url, frequency] : buckets) {
-    frequency_and_string.emplace_back(frequency, script_url);
+  for (const auto& [element, frequency] : buckets) {
+    frequency_and_string.emplace_back(frequency, element);
   }
 
   // Reverse sort `frequency_and_string`. i.e. higher frequency goes first.
   // That is why `rbegin` and `rend` instead of `begin` and `end`.
   std::sort(frequency_and_string.rbegin(), frequency_and_string.rend());
   return frequency_and_string;
+}
+
+// Convert `LcpElementLocatorStat` to a vector of frequency and std::string.
+// The result is sorted with frequency (from high to low).
+std::vector<std::pair<double, std::string>> ConvertToFrequencyStringPair(
+    const predictors::LcpElementLocatorStat& stat) {
+  const auto& buckets = stat.lcp_element_locator_buckets();
+  std::vector<std::pair<double, std::string>> frequency_and_string;
+  frequency_and_string.reserve(buckets.size());
+  for (const auto& bucket : buckets) {
+    frequency_and_string.emplace_back(bucket.frequency(),
+                                      bucket.lcp_element_locator());
+  }
+
+  // Reverse sort `frequency_and_string`. i.e. higher frequency goes first.
+  // That is why `rbegin` and `rend` instead of `begin` and `end`.
+  std::sort(frequency_and_string.rbegin(), frequency_and_string.rend());
+  return frequency_and_string;
+}
+
+// Convert `frequency_element_pairs` to a vector of confidence and std::string.
+// The result is sorted with confidence (from high to low).
+// `frequency_element_pairs` must be sorted by frequency (from high to low).
+std::vector<std::pair<double, std::string>> ConvertToConfidenceStringPairs(
+    const std::vector<std::pair<double, std::string>>& frequency_element_pairs,
+    double other_bucket_frequency) {
+  double sum_of_frequency = 0.0;
+  for (const auto& [frequency, element] : frequency_element_pairs) {
+    sum_of_frequency += frequency;
+  }
+  sum_of_frequency += other_bucket_frequency;
+  std::vector<std::pair<double, std::string>> confidence_element_pairs;
+  confidence_element_pairs.reserve(frequency_element_pairs.size());
+  for (const auto& [frequency, element] : frequency_element_pairs) {
+    confidence_element_pairs.emplace_back(
+        /*confidence=*/frequency / sum_of_frequency, element);
+  }
+  // The following result is sorted by confidence. Higher confidence element
+  // comes first since frequency_element_pairs is ordered by frequency (see:
+  // `ConvertToFrequencyStringPair`).
+  return confidence_element_pairs;
 }
 
 // Returns true if the given `url` is a valid URL to be used as a key
@@ -68,37 +112,6 @@ bool IsValidUrlInLcppStringFrequencyStatData(const std::string& url) {
   return true;
 }
 
-// Returns LCP element locators in the past loads for a given `stat`.  The
-// returned LCP element locators are ordered by descending frequency (the
-// most frequent one comes first). If there is no data, it returns an empty
-// vector.
-std::vector<std::string> PredictLcpElementLocators(const LcppStat& stat) {
-  // We do not use `ConvertToFrequencyStringPair` for the following code
-  // because the core part of the code is converting `std::map` to
-  // `std::vector<std::pair<double, std::string>>`, which we need the different
-  // logic due to the `bytes` protobuf type.
-  const auto& buckets =
-      stat.lcp_element_locator_stat().lcp_element_locator_buckets();
-  std::vector<std::pair<double, std::string>>
-      lcp_element_locators_with_frequency;
-  lcp_element_locators_with_frequency.reserve(buckets.size());
-  for (const auto& bucket : buckets) {
-    lcp_element_locators_with_frequency.emplace_back(
-        bucket.frequency(), bucket.lcp_element_locator());
-  }
-
-  // Makes higher frequency goes first by `rbegin` and `rend`.
-  std::sort(lcp_element_locators_with_frequency.rbegin(),
-            lcp_element_locators_with_frequency.rend());
-
-  std::vector<std::string> lcp_element_locators;
-  lcp_element_locators.reserve(lcp_element_locators_with_frequency.size());
-  for (auto& bucket : lcp_element_locators_with_frequency) {
-    lcp_element_locators.push_back(std::move(bucket.second));
-  }
-  return lcp_element_locators;
-}
-
 // Returns LCP influencer scripts from past loads for a given `stat`.
 // The returned script urls are ordered by descending frequency (the most
 // frequent one comes first). If there is no data, it returns an empty
@@ -117,6 +130,25 @@ std::vector<GURL> PredictLcpInfluencerScripts(const LcppStat& stat) {
     lcp_script_urls.push_back(std::move(parsed_url));
   }
   return lcp_script_urls;
+}
+
+double SumOfFrequency(const predictors::LcpElementLocatorStat& stat) {
+  double sum = stat.other_bucket_frequency();
+  for (const auto& bucket : stat.lcp_element_locator_buckets()) {
+    sum += bucket.frequency();
+  }
+  return sum;
+}
+
+double SumOfFrequency(
+    const std::vector<std::pair<double, std::string>>& frequency_string_pairs,
+    double other_bucket_frequency) {
+  double sum = 0.0;
+  for (const auto& [frequency, element] : frequency_string_pairs) {
+    sum += frequency;
+  }
+  sum += other_bucket_frequency;
+  return sum;
 }
 
 double SumOfFrequency(const std::map<std::string, double>& histogram,
@@ -704,13 +736,54 @@ void DeleteTables(std::unique_ptr<LcppDataMap::DataTable> data_table,
   data_table.reset();
 }
 
+std::vector<GURL> PredictFetchedSubresourceUrlsInternal(
+    const LcppStat& stat,
+    const double confidence_threshold,
+    const double total_frequency_threshold) {
+  const std::vector<std::pair<double, std::string>>& frequency_string_pairs =
+      ConvertToFrequencyStringPair(stat.fetched_subresource_url_stat());
+  if (SumOfFrequency(
+          frequency_string_pairs,
+          stat.fetched_subresource_url_stat().other_bucket_frequency()) <
+      total_frequency_threshold) {
+    return {};
+  }
+  std::vector<std::pair<double, std::string>> confidence_string_pairs =
+      ConvertToConfidenceStringPairs(
+          frequency_string_pairs,
+          stat.fetched_subresource_url_stat().other_bucket_frequency());
+  std::vector<GURL> subresource_urls;
+  for (const auto& [confidence, subresource_url] : confidence_string_pairs) {
+    GURL parsed_url(subresource_url);
+    if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+    if (confidence < confidence_threshold) {
+      // Since `confidence_string_pairs` are sorted by confidence (from high to
+      // low), we can break here.
+      break;
+    }
+    subresource_urls.push_back(std::move(parsed_url));
+  }
+  return subresource_urls;
+}
+
 }  // namespace
 
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
 ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
     const LcppStat& lcpp_stat) {
+  static const double kConfidenceThreshold =
+      blink::features::kLcppAdjustImageLoadPriorityConfidenceThreshold.Get();
+  // The value must be greater or equal to 0. The prediction that is below
+  // this threshold will be ignored.
+  static const double kTotalFrequencyThreshold =
+      base::GetFieldTrialParamByFeatureAsDouble(
+          blink::features::kLCPCriticalPathPredictor,
+          "lcpp_adjust_image_load_priority_total_frequency_threshold", 0.0);
   std::vector<std::string> lcp_element_locators =
-      PredictLcpElementLocators(lcpp_stat);
+      PredictLcpElementLocators(lcpp_stat.lcp_element_locator_stat(),
+                                kConfidenceThreshold, kTotalFrequencyThreshold);
   std::vector<GURL> lcp_influencer_scripts =
       PredictLcpInfluencerScripts(lcpp_stat);
   std::vector<GURL> fetched_fonts = PredictFetchedFontUrls(lcpp_stat);
@@ -727,6 +800,42 @@ ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
         std::move(unused_preloads));
   }
   return std::nullopt;
+}
+
+std::vector<std::pair<double, std::string>>
+ConvertLcpElementLocatorStatToConfidenceStringPairs(
+    const predictors::LcpElementLocatorStat& stat) {
+  return ConvertToConfidenceStringPairs(ConvertToFrequencyStringPair(stat),
+                                        stat.other_bucket_frequency());
+}
+
+std::vector<std::pair<double, std::string>>
+ConvertLcppStringFrequencyStatDataToConfidenceStringPairs(
+    const LcppStringFrequencyStatData& data) {
+  return ConvertToConfidenceStringPairs(ConvertToFrequencyStringPair(data),
+                                        data.other_bucket_frequency());
+}
+
+std::vector<std::string> PredictLcpElementLocators(
+    const predictors::LcpElementLocatorStat& stat,
+    const double confidence_threshold,
+    const double total_frequency_threshold) {
+  if (SumOfFrequency(stat) < total_frequency_threshold) {
+    return {};
+  }
+  std::vector<std::pair<double, std::string>>
+      lcp_element_locators_with_confidence =
+          ConvertLcpElementLocatorStatToConfidenceStringPairs(stat);
+  std::vector<std::string> lcp_element_locators;
+  lcp_element_locators.reserve(lcp_element_locators_with_confidence.size());
+  for (auto& [confidence, lcp_element_locator] :
+       lcp_element_locators_with_confidence) {
+    if (confidence < confidence_threshold) {
+      break;
+    }
+    lcp_element_locators.push_back(std::move(lcp_element_locator));
+  }
+  return lcp_element_locators;
 }
 
 std::vector<GURL> PredictFetchedFontUrls(const LcppStat& stat) {
@@ -825,16 +934,28 @@ std::vector<GURL> PredictPreconnectableOrigins(const LcppStat& stat) {
 }
 
 std::vector<GURL> PredictFetchedSubresourceUrls(const LcppStat& stat) {
-  std::vector<GURL> subresource_urls;
-  for (const auto& [frequency, subresource_url] :
-       ConvertToFrequencyStringPair(stat.fetched_subresource_url_stat())) {
-    GURL parsed_url(subresource_url);
-    if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
-      continue;
-    }
-    subresource_urls.push_back(std::move(parsed_url));
-  }
-  return subresource_urls;
+  // The value must be between 0 and 1 inclusive. The prediction that is below
+  // this threshold will be ignored.
+  static const double kConfidenceThreshold =
+      base::GetFieldTrialParamByFeatureAsDouble(
+          blink::features::kHttpDiskCachePrewarming,
+          "http_disk_cache_prewarming_confidence_threshold", 0.0);
+  // The value must be greater or equal to 0. The prediction that is below
+  // this threshold will be ignored.
+  static const double kTotalFrequencyThreshold =
+      base::GetFieldTrialParamByFeatureAsDouble(
+          blink::features::kHttpDiskCachePrewarming,
+          "http_disk_cache_prewarming_total_frequency_threshold", 0.0);
+  return PredictFetchedSubresourceUrlsInternal(stat, kConfidenceThreshold,
+                                               kTotalFrequencyThreshold);
+}
+
+std::vector<GURL> PredictFetchedSubresourceUrlsForTesting(  // IN-TEST
+    const LcppStat& stat,
+    const double confidence_threshold,
+    const double total_frequency_threshold) {
+  return PredictFetchedSubresourceUrlsInternal(stat, confidence_threshold,
+                                               total_frequency_threshold);
 }
 
 std::vector<GURL> PredictUnusedPreloads(const LcppStat& stat) {
@@ -1368,14 +1489,10 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
       features::kLoadingPredictorPrefetchSubresourceType.Get() ==
           features::PrefetchSubresourceType::kAll;
   if (kLCPPFontURLPredictorEnabled && kLoadingPredictorPrefetchEnabled) {
-    auto network_anonymization_key =
-        net::NetworkAnonymizationKey::CreateSameSite(
-            net::SchemefulSite(url::Origin::Create(url)));
     size_t count = 0;
     for (const GURL& font_url : PredictFetchedFontUrls(*lcpp_stat)) {
       prediction.prefetch_requests.emplace_back(
-          font_url, network_anonymization_key,
-          network::mojom::RequestDestination::kFont);
+          font_url, network::mojom::RequestDestination::kFont);
       ++count;
     }
     base::UmaHistogramCounts1000("Blink.LCPP.PrefetchFontCount", count);
@@ -1391,14 +1508,13 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
 
       size_t subresource_urls_same_site = 0;
       size_t subresource_urls_cross_site = 0;
+      bool is_database_broken = false;
       for (const GURL& subresource_url : subresource_urls) {
         const auto destination_it =
             lcpp_stat->fetched_subresource_url_destination().find(
                 subresource_url.spec());
-        // Database is broken.
-        // TODO(crbug.com/365423066): ReportUMA and only delete LCPP
-        // database.
-        const bool is_database_broken =
+        // Check if the database is broken.
+        is_database_broken |=
             (destination_it ==
              lcpp_stat->fetched_subresource_url_destination().end()) ||
             destination_it->second < 0 ||
@@ -1407,9 +1523,8 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
                     network::mojom::RequestDestination::kMaxValue);
         if (is_database_broken) {
           LOG(ERROR) << "fetched_subresource_url_destination is broken.";
-          base::debug::DumpWithoutCrashing();
           DeleteAllData();
-          return;
+          break;
         }
         const network::mojom::RequestDestination destination =
             static_cast<network::mojom::RequestDestination>(
@@ -1430,8 +1545,12 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
           // Once we support cross-site cases, remove the following continue;
           continue;
         }
-        prediction.prefetch_requests.emplace_back(
-            subresource_url, network_anonymization_key, destination);
+        prediction.prefetch_requests.emplace_back(subresource_url, destination);
+      }
+      base::UmaHistogramBoolean(kPrefetchSubresourceDBBroken,
+                                is_database_broken);
+      if (is_database_broken) {
+        return;
       }
       base::UmaHistogramCounts10000(
           "Blink.LCPP.PrefetchSubresource.Count.SameSite",

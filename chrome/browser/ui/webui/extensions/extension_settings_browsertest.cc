@@ -234,18 +234,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
       )"));
 }
 
-class SafetyHubExtensionSettingsUIBrowserTest
-    : public ExtensionSettingsTestBase {
- public:
-  SafetyHubExtensionSettingsUIBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSafetyHub);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SafetyHubExtensionSettingsUIBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
                        TestSafetyHubMenuNotificationDismissed) {
   Profile* profile = browser()->profile();
   extensions::ExtensionPrefs* extension_prefs =

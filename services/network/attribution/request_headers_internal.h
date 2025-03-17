@@ -14,7 +14,7 @@
 namespace network {
 
 // Options controlling greasing during serialization of the
-// Attribution-Reporting-Eligible and Attribution-Reportnig-Support headers,
+// Attribution-Reporting-Eligible and Attribution-Reporting-Support headers,
 // which contain structured dictionaries.
 struct AttributionReportingHeaderGreaseOptions {
   // Where to apply a grease.
@@ -57,6 +57,11 @@ std::string SerializeAttributionReportingEligibleHeader(
 // header.
 std::string GetAttributionSupportHeader(
     mojom::AttributionSupport,
+    const AttributionReportingHeaderGreaseOptions&);
+
+// Must not be called with `mojom::AttributionReportingEligibility::kUnset`.
+std::string SerializeAdAuctionRegistrationEligibleHeader(
+    mojom::AttributionReportingEligibility,
     const AttributionReportingHeaderGreaseOptions&);
 
 }  // namespace network

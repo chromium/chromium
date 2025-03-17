@@ -244,7 +244,7 @@ public class PartnerHomepageIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     preference.performClick();
-                    Assert.assertEquals(preference.isChecked(), expected);
+                    Assert.assertEquals(expected, preference.isChecked());
                 });
 
         mHomepageSettingsTestRule.finishActivity();

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/login/login_handler.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -107,8 +108,8 @@ std::vector<LoginHandler*> LoginHandler::GetAllLoginHandlersForTest() {
   return output;
 }
 
-void LoginHandler::SetAuth(const std::u16string& username,
-                           const std::u16string& password) {
+void LoginHandler::SetAuth(std::u16string_view username,
+                           std::u16string_view password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::unique_ptr<password_manager::BrowserSavePasswordProgressLogger> logger;
@@ -134,13 +135,13 @@ void LoginHandler::SetAuth(const std::u16string& username,
     return;
   }
 
-  password_manager::HttpAuthManager* httpauth_manager =
-      GetHttpAuthManagerForLogin();
-
   // Tell the http-auth manager the credentials were submitted / accepted.
-  if (httpauth_manager) {
-    password_form_.username_value = username;
-    password_form_.password_value = password;
+  net::AuthCredentials credentials{std::u16string(username),
+                                   std::u16string(password)};
+  if (password_manager::HttpAuthManager* httpauth_manager =
+          GetHttpAuthManagerForLogin()) {
+    password_form_.username_value = credentials.username();
+    password_form_.password_value = credentials.password();
     httpauth_manager->OnPasswordFormSubmitted(password_form_);
     if (logger) {
       logger->LogPasswordForm(
@@ -149,7 +150,8 @@ void LoginHandler::SetAuth(const std::u16string& username,
     }
   }
 
-  LoginAuthRequiredCallback callback = std::move(auth_required_callback_);
+  content::LoginDelegate::LoginAuthRequiredCallback callback =
+      std::move(auth_required_callback_);
 
   // Calling NotifyAuthSupplied() first allows other LoginHandler instances to
   // call CloseContents() before us. Closing dialogs in the opposite order as
@@ -159,7 +161,7 @@ void LoginHandler::SetAuth(const std::u16string& username,
     NotifyAuthSupplied(username, password);
   }
   CloseContents();
-  std::move(callback).Run(net::AuthCredentials(username, password));
+  std::move(callback).Run(std::move(credentials));
 }
 
 void LoginHandler::CancelAuth(bool notify_others) {
@@ -167,7 +169,8 @@ void LoginHandler::CancelAuth(bool notify_others) {
     return;
   }
 
-  LoginAuthRequiredCallback callback = std::move(auth_required_callback_);
+  content::LoginDelegate::LoginAuthRequiredCallback callback =
+      std::move(auth_required_callback_);
 
   if (notify_others) {
     NotifyAuthCancelled();
@@ -177,9 +180,10 @@ void LoginHandler::CancelAuth(bool notify_others) {
   std::move(callback).Run(std::nullopt);
 }
 
-LoginHandler::LoginHandler(const net::AuthChallengeInfo& auth_info,
-                           content::WebContents* web_contents,
-                           LoginAuthRequiredCallback auth_required_callback)
+LoginHandler::LoginHandler(
+    const net::AuthChallengeInfo& auth_info,
+    content::WebContents* web_contents,
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
     : web_contents_(web_contents->GetWeakPtr()),
       auth_info_(auth_info),
       auth_required_callback_(std::move(auth_required_callback)) {
@@ -190,8 +194,8 @@ void LoginHandler::NotifyAuthNeeded() {
   // Only used by tests. This is being refactored. https://crbug.com/1371177.
 }
 
-void LoginHandler::NotifyAuthSupplied(const std::u16string& username,
-                                      const std::u16string& password) {
+void LoginHandler::NotifyAuthSupplied(std::u16string_view username,
+                                      std::u16string_view password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(WasAuthHandled());
 
@@ -214,16 +218,16 @@ void LoginHandler::NotifyAuthCancelled() {
   for (auto& weak_login_handler : vec) {
     if (weak_login_handler && weak_login_handler.get() != this) {
       weak_login_handler->OtherHandlerFinished(/*supplied=*/false, this,
-                                               /*username=*/std::u16string(),
-                                               /*password=*/std::u16string());
+                                               /*username=*/{},
+                                               /*password=*/{});
     }
   }
 }
 
 void LoginHandler::OtherHandlerFinished(bool supplied,
                                         LoginHandler* other_handler,
-                                        const std::u16string& username,
-                                        const std::u16string& password) {
+                                        std::u16string_view username,
+                                        std::u16string_view password) {
   // Break out early if we aren't interested in the notification.
   if (!web_contents_ || WasAuthHandled()) {
     return;

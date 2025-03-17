@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/public/browser/host_zoom_map.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -16,7 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/value_iterators.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -37,7 +39,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_event_manager.h"
-#include "content/public/browser/host_zoom_map.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -135,9 +136,11 @@ class HostZoomMapBrowserTest : public InProcessBrowserTest {
     return results;
   }
 
-  GURL ConstructTestServerURL(const char* url_template) {
-    return GURL(base::StringPrintfNonConstexpr(url_template,
-                                               embedded_test_server()->port()));
+  GURL SubstituteTestServerPort(GURL url) {
+    GURL::Replacements replacements;
+    std::string port = base::NumberToString(embedded_test_server()->port());
+    replacements.SetPortStr(port);
+    return url.ReplaceComponents(replacements);
   }
 
  private:
@@ -256,9 +259,9 @@ IN_PROC_BROWSER_TEST_F(
     HostZoomMapBrowserTest,
     WebviewBasedSigninUsesDefaultStoragePartitionForEmbedder) {
   GURL signin_url = signin::GetEmbeddedPromoURL(
-      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE,
+      signin_metrics::AccessPoint::kStartPage,
       signin_metrics::Reason::kForcedSigninPrimaryAccount, false);
-  GURL test_url = ConstructTestServerURL(signin_url.spec().c_str());
+  GURL test_url = SubstituteTestServerPort(signin_url);
   std::string test_host(test_url.host());
   std::string test_scheme(test_url.scheme());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
@@ -280,12 +283,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest, ToggleDefaultZoomLevel) {
   const double default_zoom_level = blink::ZoomFactorToZoomLevel(1.5);
 
-  const char kTestURLTemplate1[] = "http://host1:%u/";
-  const char kTestURLTemplate2[] = "http://host2:%u/";
-
   ZoomLevelChangeObserver observer(browser()->profile());
 
-  GURL test_url1 = ConstructTestServerURL(kTestURLTemplate1);
+  GURL test_url1 = SubstituteTestServerPort(GURL("http://host1/"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url1));
 
   SetDefaultZoomLevel(default_zoom_level);
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest, ToggleDefaultZoomLevel) {
   EXPECT_TRUE(
       blink::ZoomValuesEqual(default_zoom_level, GetZoomLevel(test_url1)));
 
-  GURL test_url2 = ConstructTestServerURL(kTestURLTemplate2);
+  GURL test_url2 = SubstituteTestServerPort(GURL("http://host2/"));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), test_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);

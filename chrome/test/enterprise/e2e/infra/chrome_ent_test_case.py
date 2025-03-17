@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import contextlib
 import logging
 import os
 from posixpath import join
@@ -9,6 +10,7 @@ import random
 import string
 import subprocess
 import time
+from typing import Sequence
 
 from absl import flags
 from chrome_ent_test.infra.core import EnterpriseTestCase
@@ -75,8 +77,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
       logging.debug('--omaha_installer flag is empty.'
                     'Skip installing google updater.')
       return
-    cmd = r'New-Item -ItemType Directory -Force -Path c:\temp'
-    self.clients[instance_name].RunPowershell(cmd)
+    self.EnsureDirectory(instance_name, r'c:\temp')
     installer = self.UploadFile(instance_name, FLAGS.omaha_installer,
                                 r'c:\temp')
     cmd = installer + r' --install --system'
@@ -143,8 +144,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
       system_level: whether the chrome install with --system-level
         or not. By default, the value is False.
     """
-    cmd = r'New-Item -ItemType Directory -Force -Path c:\temp'
-    self.clients[instance_name].RunPowershell(cmd)
+    self.EnsureDirectory(instance_name, r'c:\temp')
     file_name = self.UploadFile(instance_name, FLAGS.chrome_installer,
                                 r'c:\temp')
 
@@ -244,7 +244,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     return self.RunCommand(self.win_config['client'], cmd).rstrip().decode()
 
   def InstallWebDriver(self, instance_name):
-    self.RunCommand(instance_name, r'md -Force c:\temp')
+    self.EnsureDirectory(instance_name, r'c:\temp')
     self.EnsurePythonInstalled(instance_name)
     self.InstallPipPackagesLatest(instance_name,
                                   ['selenium', 'absl-py', 'pywin32', 'attrs'])
@@ -295,8 +295,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
       base_path: the base path of the test in the chromium_src.
     """
     dest_path = join('c:', 'temp', 'histogram')
-    cmd = r'New-Item -ItemType Directory -Force -Path ' + dest_path
-    self.clients[instance_name].RunPowershell(cmd)
+    self.EnsureDirectory(instance_name, dest_path)
 
     self.UploadFile(
         self.win_config['client'],
@@ -314,8 +313,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
 
     # create dest path
     dest_path = join('c:', 'temp', 'demo_agent')
-    cmd = r'New-Item -ItemType Directory -Force -Path ' + dest_path
-    self.clients[instance_name].RunPowershell(cmd)
+    self.EnsureDirectory(instance_name, dest_path)
 
     # Install Visual C++ Redistributable package as demo agent's dependency
     gspath = "gs://%s/%s" % (self.gsbucket, 'secrets/VC_redist.x64.exe')
@@ -401,3 +399,31 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
            '-username %s') % ui_test_user
     self.RunCommand(instance_name, cmd)
     self._rebootInstance(instance_name)
+
+  def EnsureDirectory(self, instance_name: str, path: str):
+    cmd = f'New-Item -ItemType Directory -Force -Path {path}'
+    self.clients[instance_name].RunPowershell(cmd)
+
+  @contextlib.contextmanager
+  def RunScriptInBackground(self,
+                            instance_name: str,
+                            local_script_path: str,
+                            args: Sequence[str] | None = None):
+    remote_script_path = self.UploadFile(instance_name, local_script_path,
+                                         r'c:\temp')
+    python_exec = self._pythonExecutablePath[instance_name]
+    python_args = ' '.join([
+        '-u',
+        remote_script_path,
+        *(args or []),
+    ])
+    cmd = (f'(Start-Process -PassThru -FilePath {python_exec} '
+           f'-ArgumentList "{python_args}").ID')
+    client = self.clients[instance_name]
+    pid = client.RunPowershell(cmd).decode().strip()
+    try:
+      yield
+    finally:
+      # Use `taskkill /t` instead of `Stop-Process` to kill all subprocesses as
+      # well.
+      client.RunPowershell(f'taskkill /pid {pid} /f /t')

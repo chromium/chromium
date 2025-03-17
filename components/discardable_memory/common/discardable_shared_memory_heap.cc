@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-#pragma check_unsafe_buffers
-#endif
-
 #include "components/discardable_memory/common/discardable_shared_memory_heap.h"
 
+#include <algorithm>
 #include <bit>
 #include <memory>
 #include <string>
@@ -20,7 +17,6 @@
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 
@@ -332,7 +328,7 @@ bool DiscardableSharedMemoryHeap::OnMemoryDump(
     // This iterates over all the memory allocated by the heap, and calls
     // |OnMemoryDump| for each. It does not contain any information about the
     // DiscardableSharedMemoryHeap itself.
-    base::ranges::for_each(
+    std::ranges::for_each(
         memory_segments_,
         [pmd](const std::unique_ptr<ScopedMemorySegment>& segment) {
           segment->OnMemoryDump(pmd);
@@ -504,7 +500,7 @@ DiscardableSharedMemoryHeap::CreateMemoryAllocatorDump(
     return dump;
   }
 
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       memory_segments_,
       [span](const std::unique_ptr<ScopedMemorySegment>& segment) {
         return segment->ContainsSpan(span);

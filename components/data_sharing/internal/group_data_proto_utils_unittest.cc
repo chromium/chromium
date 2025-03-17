@@ -20,12 +20,12 @@ constexpr char kGroupId[] = "group-id";
 constexpr char kGroupDisplayName[] = "group-display-name";
 constexpr char kGroupAccessToken[] = "group-access-token";
 
-constexpr char kGaiaId1[] = "gaia-id1";
+constexpr GaiaId::Literal kGaiaId1("gaia-id1");
 constexpr char kUser1DisplayName[] = "user1-display-name";
 constexpr char kEmail1[] = "user1@gmail.com";
 constexpr char kAvatarUrl1[] = "https://google.com/avatar.png";
 
-constexpr char kGaiaId2[] = "gaia-id2";
+constexpr GaiaId::Literal kGaiaId2("gaia-id2");
 constexpr char kUser2DisplayName[] = "user1-display-name";
 constexpr char kEmail2[] = "user2@gmail.com";
 constexpr char kAvatarUrl2[] = "https://google.com/avatar2.png";
@@ -63,9 +63,11 @@ TEST(GroupDataProtoUtilsTest, ShouldConvertGroupDataToProto) {
   GroupData group_data;
   group_data.group_token.group_id = GroupId(kGroupId);
   group_data.display_name = kGroupDisplayName;
-  group_data.members.push_back(
-      MakeGroupMember(GaiaId(kGaiaId1), kUser1DisplayName, kEmail1,
-                      MemberRole::kOwner, kAvatarUrl1));
+  group_data.members.push_back(MakeGroupMember(
+      kGaiaId1, kUser1DisplayName, kEmail1, MemberRole::kOwner, kAvatarUrl1));
+  group_data.former_members.push_back(
+      MakeGroupMember(kGaiaId2, kUser2DisplayName, kEmail2,
+                      MemberRole::kFormerMember, kAvatarUrl2));
   group_data.group_token.access_token = kGroupAccessToken;
 
   data_sharing_pb::GroupData group_data_proto = GroupDataToProto(group_data);
@@ -78,11 +80,20 @@ TEST(GroupDataProtoUtilsTest, ShouldConvertGroupDataToProto) {
 
   const data_sharing_pb::GroupMember& member_proto =
       group_data_proto.members(0);
-  EXPECT_EQ(member_proto.gaia_id(), kGaiaId1);
+  EXPECT_EQ(member_proto.gaia_id(), kGaiaId1.ToString());
   EXPECT_EQ(member_proto.display_name(), kUser1DisplayName);
   EXPECT_EQ(member_proto.email(), kEmail1);
   EXPECT_EQ(member_proto.role(), data_sharing_pb::MEMBER_ROLE_OWNER);
   EXPECT_EQ(member_proto.avatar_url(), kAvatarUrl1);
+
+  const data_sharing_pb::GroupMember& former_member_proto =
+      group_data_proto.former_members(0);
+  EXPECT_EQ(former_member_proto.gaia_id(), kGaiaId2.ToString());
+  EXPECT_EQ(former_member_proto.display_name(), kUser2DisplayName);
+  EXPECT_EQ(former_member_proto.email(), kEmail2);
+  EXPECT_EQ(former_member_proto.role(),
+            data_sharing_pb::MEMBER_ROLE_FORMER_MEMBER);
+  EXPECT_EQ(former_member_proto.avatar_url(), kAvatarUrl2);
 }
 
 TEST(GroupDataProtoUtilsTest, ShouldMakeGroupDataFromProto) {
@@ -90,8 +101,11 @@ TEST(GroupDataProtoUtilsTest, ShouldMakeGroupDataFromProto) {
   group_data_proto.set_group_id(kGroupId);
   group_data_proto.set_display_name(kGroupDisplayName);
   *group_data_proto.add_members() = MakeGroupMemberProto(
-      kGaiaId1, kUser1DisplayName, kEmail1,
+      kGaiaId1.ToString(), kUser1DisplayName, kEmail1,
       data_sharing_pb::MemberRole::MEMBER_ROLE_OWNER, kAvatarUrl1);
+  *group_data_proto.add_former_members() = MakeGroupMemberProto(
+      kGaiaId2.ToString(), kUser2DisplayName, kEmail2,
+      data_sharing_pb::MemberRole::MEMBER_ROLE_FORMER_MEMBER, kAvatarUrl2);
   group_data_proto.set_access_token(kGroupAccessToken);
 
   GroupData group_data = GroupDataFromProto(group_data_proto);
@@ -102,11 +116,19 @@ TEST(GroupDataProtoUtilsTest, ShouldMakeGroupDataFromProto) {
 
   ASSERT_THAT(group_data.members, SizeIs(1));
   const GroupMember& member = group_data.members[0];
-  EXPECT_EQ(member.gaia_id.ToString(), kGaiaId1);
+  EXPECT_EQ(member.gaia_id, kGaiaId1);
   EXPECT_EQ(member.display_name, kUser1DisplayName);
   EXPECT_EQ(member.email, kEmail1);
   EXPECT_EQ(member.role, MemberRole::kOwner);
   EXPECT_EQ(member.avatar_url.spec(), kAvatarUrl1);
+
+  ASSERT_THAT(group_data.former_members, SizeIs(1));
+  const GroupMember& forme_member = group_data.former_members[0];
+  EXPECT_EQ(forme_member.gaia_id, kGaiaId2);
+  EXPECT_EQ(forme_member.display_name, kUser2DisplayName);
+  EXPECT_EQ(forme_member.email, kEmail2);
+  EXPECT_EQ(forme_member.role, MemberRole::kFormerMember);
+  EXPECT_EQ(forme_member.avatar_url.spec(), kAvatarUrl2);
 }
 
 TEST(GroupDataProtoUtilsTest,
@@ -114,12 +136,10 @@ TEST(GroupDataProtoUtilsTest,
   GroupData original_group_data;
   original_group_data.group_token.group_id = GroupId(kGroupId);
   original_group_data.display_name = kGroupDisplayName;
-  original_group_data.members.push_back(
-      MakeGroupMember(GaiaId(kGaiaId1), kUser1DisplayName, kEmail1,
-                      MemberRole::kOwner, kAvatarUrl1));
-  original_group_data.members.push_back(
-      MakeGroupMember(GaiaId(kGaiaId2), kUser2DisplayName, kEmail2,
-                      MemberRole::kMember, kAvatarUrl2));
+  original_group_data.members.push_back(MakeGroupMember(
+      kGaiaId1, kUser1DisplayName, kEmail1, MemberRole::kOwner, kAvatarUrl1));
+  original_group_data.members.push_back(MakeGroupMember(
+      kGaiaId2, kUser2DisplayName, kEmail2, MemberRole::kMember, kAvatarUrl2));
   original_group_data.group_token.access_token = kGroupAccessToken;
 
   GroupData group_data_from_proto =
@@ -133,14 +153,14 @@ TEST(GroupDataProtoUtilsTest,
   ASSERT_THAT(group_data_from_proto.members, SizeIs(2));
 
   const GroupMember& member1 = group_data_from_proto.members[0];
-  EXPECT_EQ(member1.gaia_id.ToString(), kGaiaId1);
+  EXPECT_EQ(member1.gaia_id, kGaiaId1);
   EXPECT_EQ(member1.display_name, kUser1DisplayName);
   EXPECT_EQ(member1.email, kEmail1);
   EXPECT_EQ(member1.role, MemberRole::kOwner);
   EXPECT_EQ(member1.avatar_url.spec(), kAvatarUrl1);
 
   const GroupMember& member2 = group_data_from_proto.members[1];
-  EXPECT_EQ(member2.gaia_id.ToString(), kGaiaId2);
+  EXPECT_EQ(member2.gaia_id.ToString(), kGaiaId2.ToString());
   EXPECT_EQ(member2.display_name, kUser2DisplayName);
   EXPECT_EQ(member2.email, kEmail2);
   EXPECT_EQ(member2.role, MemberRole::kMember);

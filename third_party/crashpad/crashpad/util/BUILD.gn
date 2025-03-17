@@ -409,8 +409,6 @@ crashpad_static_library("util") {
     ]
   }
 
-  deps = [ "//build:chromeos_buildflags" ]
-
   if (crashpad_is_android) {
     sources += [
       "linux/initial_signal_dispositions.cc",
@@ -535,13 +533,12 @@ crashpad_static_library("util") {
         "win/safe_terminate_process.asm",
       ]
     } else {
-      # Most Crashpad builds use Microsoft's armasm64.exe macro assembler for
-      # .asm source files. When building in Chromium, clang-cl is used as the
-      # assembler instead. Since the two assemblers recognize different
-      # assembly dialects, the same .asm file can't be used for each. As a
-      # workaround, use a prebuilt .obj file when the Microsoft-dialect
-      # assembler isn't available.
-      if (crashpad_is_in_chromium) {
+      # When building with clang, clang-cl is used as the assembler. Since
+      # clang-cl recognizes a different assembly dialect than Microsoft’s
+      # armasm64 macro assembler, the same .asm file can’t be used for each. As
+      # a workaround, use a prebuilt .obj file when the Microsoft-dialect
+      # assembler isn’t available.
+      if (crashpad_is_clang) {
         sources += [ "misc/capture_context_win_arm64.obj" ]
       } else {
         sources += [ "misc/capture_context_win_arm64.asm" ]
@@ -580,10 +577,7 @@ crashpad_static_library("util") {
     "../third_party/zlib",
   ]
 
-  deps += [
-    "$mini_chromium_source_parent:base",
-    "$mini_chromium_source_parent:chromeos_buildflags",
-  ]
+  deps = [ "$mini_chromium_source_parent:base" ]
 
   configs = [ "../build:flock_always_supported_defines" ]
 

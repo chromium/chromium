@@ -4,6 +4,7 @@
 
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <list>
 #include <memory>
@@ -17,8 +18,9 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
@@ -68,6 +70,10 @@ int64_t PartitionedLockManager::RequestsWaitingForTesting() const {
   return request_queue_.size();
 }
 
+int64_t PartitionedLockManager::RequestsWaitingForMetrics() const {
+  return request_queue_.size();
+}
+
 void PartitionedLockManager::AcquireLocks(
     base::flat_set<PartitionedLockRequest> lock_requests,
     PartitionedLockHolder& locks_holder,
@@ -102,9 +108,9 @@ void PartitionedLockManager::AcquireLocks(
 bool PartitionedLockManager::RequestsAreOverlapping(
     const base::flat_set<PartitionedLockRequest>& requests_a,
     const base::flat_set<PartitionedLockRequest>& requests_b) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       requests_a, [&requests_b](const PartitionedLockRequest& lock_request_a) {
-        return base::ranges::any_of(
+        return std::ranges::any_of(
             requests_b,
             [&lock_request_a](const PartitionedLockRequest& lock_request_b) {
               return (lock_request_a.type == LockType::kExclusive ||
@@ -121,15 +127,15 @@ PartitionedLockManager::MaybeGrantLocksAndIterate(
   // Do nothing if we can't grant *every* lock. Note that it's important this is
   // `any_of` and not `all_of` (with an inverted predicate) in order to support
   // empty lock requests.
-  if (base::ranges::any_of(requests_iter->lock_requests,
-                           [this](PartitionedLockRequest& request) {
-                             auto it = locks_.find(request.lock_id);
-                             if (it == locks_.end()) {
-                               return false;
-                             }
+  if (std::ranges::any_of(requests_iter->lock_requests,
+                          [this](PartitionedLockRequest& request) {
+                            auto it = locks_.find(request.lock_id);
+                            if (it == locks_.end()) {
+                              return false;
+                            }
 
-                             return !it->second.CanBeAcquired(request.type);
-                           })) {
+                            return !it->second.CanBeAcquired(request.type);
+                          })) {
     return ++requests_iter;
   }
 
@@ -190,11 +196,20 @@ PartitionedLockManager::TestLockResult PartitionedLockManager::TestLock(
 
 std::vector<PartitionedLockId> PartitionedLockManager::GetUnacquirableLocks(
     std::vector<PartitionedLockRequest>& lock_requests) {
+  base::TimeTicks start = base::TimeTicks::Now();
   std::vector<PartitionedLockId> lock_ids;
   for (PartitionedLockRequest& request : lock_requests) {
     if (TestLock(request) == TestLockResult::kLocked) {
       lock_ids.push_back(request.lock_id);
     }
+  }
+  base::TimeDelta duration = base::TimeTicks::Now() - start;
+  if (duration > base::Milliseconds(2)) {
+    base::UmaHistogramTimes("IndexedDB.GetUnacquirableLocksLongTimes",
+                            duration);
+    base::UmaHistogramCounts100000(
+        "IndexedDB.GetUnacquirableLocksRequestQueueSize",
+        request_queue_.size());
   }
   return lock_ids;
 }
@@ -231,7 +246,7 @@ void PartitionedLockManager::LockReleased(PartitionedLockId released_lock_id) {
 
   for (auto iter = request_queue_.begin(); iter != request_queue_.end();) {
     bool exclusive = false;
-    if (!base::ranges::any_of(
+    if (!std::ranges::any_of(
             iter->lock_requests, [&released_lock_id, &exclusive](
                                      PartitionedLockRequest& lock_request) {
               // We found an interesting lock in the given request. Is the
@@ -257,21 +272,31 @@ void PartitionedLockManager::LockReleased(PartitionedLockId released_lock_id) {
 }
 
 void PartitionedLockManager::LockRequestCancelled() {
-  auto remove_iter = base::ranges::remove_if(
+  base::TimeTicks start = base::TimeTicks::Now();
+  auto to_remove = std::ranges::remove_if(
       request_queue_,
       [](AcquisitionRequest& request) { return !request.locks_holder; });
-  if (remove_iter == request_queue_.end()) {
+  if (to_remove.empty()) {
     return;
   }
+  const size_t request_queue_size = request_queue_.size();
   // Iterate through the entire queue starting from the erased element, as any
   // subsequent queued request could now be free to start.
-  for (auto iter = request_queue_.erase(remove_iter, request_queue_.end());
+  for (auto iter = request_queue_.erase(to_remove.begin(), to_remove.end());
        iter != request_queue_.end(); MaybeGrantLocksAndIterate(iter)) {
+  }
+  base::TimeDelta duration = base::TimeTicks::Now() - start;
+  if (duration > base::Milliseconds(2)) {
+    base::UmaHistogramTimes("IndexedDB.LockRequestCancelledLongTimes",
+                            duration);
+    base::UmaHistogramCounts100000(
+        "IndexedDB.LockRequestCancelledRequestQueueSize", request_queue_size);
   }
 }
 
-std::set<PartitionedLockHolder*> PartitionedLockManager::GetBlockedRequests(
-    const base::flat_set<PartitionedLockId>& held_locks) const {
+bool PartitionedLockManager::IsBlockingAnyRequest(
+    const base::flat_set<PartitionedLockId>& held_locks,
+    base::RepeatingCallback<bool(PartitionedLockHolder*)> filter) const {
   std::set<PartitionedLockHolder*> blocked_requests;
 
   // Rebuild the set of lock requests so we can apply
@@ -284,11 +309,12 @@ std::set<PartitionedLockHolder*> PartitionedLockManager::GetBlockedRequests(
   }
 
   for (const AcquisitionRequest& request : request_queue_) {
-    if (RequestsAreOverlapping(request.lock_requests, reconstructed_requests)) {
-      blocked_requests.insert(request.locks_holder.get());
+    if (request.locks_holder.get() && filter.Run(request.locks_holder.get()) &&
+        RequestsAreOverlapping(request.lock_requests, reconstructed_requests)) {
+      return true;
     }
   }
-  return blocked_requests;
+  return false;
 }
 
 bool operator<(const PartitionedLockManager::PartitionedLockRequest& x,

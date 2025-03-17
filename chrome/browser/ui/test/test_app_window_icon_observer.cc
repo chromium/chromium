@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/test/test_app_window_icon_observer.h"
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
 #include "base/hash/md5.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "ui/aura/client/aura_constants.h"
@@ -63,7 +63,7 @@ void TestAppWindowIconObserver::OnAppWindowRemoved(
     extensions::AppWindow* app_window) {
   aura::Window* window = app_window->GetNativeWindow();
   if (window) {
-    windows_.erase(base::ranges::find(windows_, window));
+    windows_.erase(std::ranges::find(windows_, window));
     window->RemoveObserver(this);
   }
 }

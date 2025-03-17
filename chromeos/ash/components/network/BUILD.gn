@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 config("network_config") {
   defines = [ "IS_CHROMEOS_NETWORK_IMPL" ]
@@ -13,7 +11,6 @@ config("network_config") {
 component("network") {
   configs += [ ":network_config" ]
   deps = [
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//base",
     "//chromeos/ash/components/cryptohome",
@@ -25,6 +22,7 @@ component("network") {
     "//chromeos/ash/components/network/metrics",
     "//chromeos/ash/components/network/onc",
     "//chromeos/ash/components/network/proxy",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/services/cellular_setup/public/mojom",
     "//chromeos/ash/services/hotspot_config/public/cpp",
     "//chromeos/ash/services/hotspot_config/public/mojom",
@@ -39,6 +37,7 @@ component("network") {
     "//components/onc",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/server_certificate_database",
     "//components/url_formatter",
     "//components/user_manager",
     "//crypto",
@@ -171,6 +170,8 @@ component("network") {
     "network_handler_callbacks.h",
     "network_ip_config.cc",
     "network_ip_config.h",
+    "network_login_screen_protocol_handler_observer.cc",
+    "network_login_screen_protocol_handler_observer.h",
     "network_metadata_observer.cc",
     "network_metadata_observer.h",
     "network_metadata_store.cc",
@@ -236,7 +237,7 @@ source_set("test_support") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chromeos:test_utils",
+    "//chromeos:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/components/onc:test_support",
@@ -290,7 +291,6 @@ source_set("unit_tests") {
   deps = [
     ":network",
     ":test_support",
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//base",
     "//base:i18n",
@@ -305,6 +305,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network/metrics:unit_tests",
     "//chromeos/ash/components/network/onc:unit_tests",
     "//chromeos/ash/components/network/proxy:unit_tests",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/services/cellular_setup/public/mojom",
     "//chromeos/ash/services/hotspot_config/public/cpp",
     "//chromeos/ash/services/hotspot_config/public/cpp:test_support",
@@ -320,6 +321,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/proxy_config",
+    "//components/server_certificate_database:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager:test_support",
     "//crypto",

@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -579,12 +580,11 @@ class FileTransferConnectorFilesAppBrowserTestBase {
       return true;
     }
     if (name == "isReportOnlyFileTransferConnector") {
-      *output = options.file_transfer_connector_report_only ? "true" : "false";
+      *output = base::ToString(options.file_transfer_connector_report_only);
       return true;
     }
     if (name == "usesNewFileTransferConnectorUI") {
-      *output =
-          options.enable_file_transfer_connector_new_ux ? "true" : "false";
+      *output = base::ToString(options.enable_file_transfer_connector_new_ux);
       return true;
     }
     if (name == "getExpectedNumberOfBlockedFilesByConnectors") {
@@ -596,7 +596,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
       return true;
     }
     if (name == "doesBypassRequireJustification") {
-      *output = options.bypass_requires_justification ? "true" : "false";
+      *output = base::ToString(options.bypass_requires_justification);
       return true;
     }
     if (name == "setupScanningRunLoop") {
@@ -680,13 +680,14 @@ class FileTransferConnectorFilesAppBrowserTestBase {
 
         // For report-only mode, the transfer is always allowed. It's blocked,
         // otherwise.
-        expected_results.push_back(safe_browsing::EventResultToString(
+        expected_results.push_back(enterprise_connectors::EventResultToString(
             options.file_transfer_connector_report_only
-                ? safe_browsing::EventResult::ALLOWED
-                : (should_warn ? (expect_proceed_warning_reports
-                                      ? safe_browsing::EventResult::BYPASSED
-                                      : safe_browsing::EventResult::WARNED)
-                               : safe_browsing::EventResult::BLOCKED)));
+                ? enterprise_connectors::EventResult::ALLOWED
+                : (should_warn
+                       ? (expect_proceed_warning_reports
+                              ? enterprise_connectors::EventResult::BYPASSED
+                              : enterprise_connectors::EventResult::WARNED)
+                       : enterprise_connectors::EventResult::BLOCKED)));
         expected_scan_ids.push_back(GetScanIDForFileName(file_name));
       }
 
@@ -952,8 +953,8 @@ class FileTransferConnectorFilesAppBrowserTest
     CHECK_NE(web_contents, nullptr);
     gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
 
-    std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets;
-    views::Widget::GetAllOwnedWidgets(native_window, &owned_widgets);
+    views::Widget::Widgets owned_widgets =
+        views::Widget::GetAllOwnedWidgets(native_window);
 
     // Verify that the FilesPolicyErrorDialog widget is displayed.
     ASSERT_EQ(owned_widgets.size(), 1ul);
@@ -994,8 +995,8 @@ class FileTransferConnectorFilesAppBrowserTest
     CHECK_NE(web_contents, nullptr);
     gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
 
-    std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets;
-    views::Widget::GetAllOwnedWidgets(native_window, &owned_widgets);
+    views::Widget::Widgets owned_widgets =
+        views::Widget::GetAllOwnedWidgets(native_window);
 
     // Verify that the FilesPolicyWarnDialog widget is displayed.
     ASSERT_EQ(owned_widgets.size(), 1ul);

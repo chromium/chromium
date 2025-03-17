@@ -16,7 +16,7 @@ telemetry_android_browser_target_suffixes = [
   "_android_trichrome_chrome_bundle",
 ]
 
-if (android_64bit_target_cpu) {
+if (defined(android_app_secondary_abi)) {
   telemetry_android_browser_target_suffixes +=
       [ "_android_trichrome_chrome_64_32_bundle" ]
 }

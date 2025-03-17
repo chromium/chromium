@@ -4,8 +4,9 @@ Version: N/A
 Revision: DEPS
 Security Critical: yes
 Shipped: yes
-License: BSD 2-Clause, Apache 2.0, MIT
+License: BSD-2-Clause, Apache-2.0, MIT
 License File: sdk/LICENSE
+License Android Compatible: yes
 
 Description:
 This directory contains the current Fuchsia SDK. The SDK contains headers,

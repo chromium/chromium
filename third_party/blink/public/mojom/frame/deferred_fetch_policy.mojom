@@ -1,0 +1,29 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// `DeferredFetchPolicy` tells whether the "Deferred fetching" feature is
+// enabled for an owner frame, and how deferred-fetch quota should
+// distributed among itself and its subframes.. Every variant of this enum can
+// be [directly mapped to a fixed quota][1]. The enum format is chosen over
+// actual values to avoid accidental changes and for maintaining future
+// compatibility.
+//
+// During [beginning navigation][2], the algorithm ["reserve deferred fetch
+// quota"][3] is called, using the combination of the frame's inherited
+// Permissions Policies of "deferred-fetch" and "deferred-fetch-minimal", to
+// decide a enum variant for the FrameOwner.
+//
+// [1]: https://whatpr.org/fetch/1647.html#reserved-deferred-fetch-quota
+// [2]: https://whatpr.org/html/10903/browsing-the-web.html#beginning-navigation
+// [3]: https://whatpr.org/fetch/1647.html#reserve-deferred-fetch-quota
+enum DeferredFetchPolicy {
+  // Mapped to no quota.
+  kDisabled,
+  // Mapped to "normal quota".
+  kDeferredFetch,
+  // Mapped to "minimal quota".
+  kDeferredFetchMinimal,
+};

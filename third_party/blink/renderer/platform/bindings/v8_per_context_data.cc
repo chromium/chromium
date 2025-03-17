@@ -118,7 +118,7 @@ v8::Local<v8::Function> V8PerContextData::ConstructorForTypeSlowCase(
 
   v8::Local<v8::Function> parent_interface_object;
   if (auto* parent = type->parent_class) {
-    if (parent->is_skipped_in_interface_object_prototype_chain) {
+    if (parent->is_skipped_in_interface_object_prototype_chain) [[unlikely]] {
       // This is a special case for WindowProperties.
       // We need to set up the inheritance of Window as the following:
       //   Window.__proto__ === EventTarget

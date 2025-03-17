@@ -121,7 +121,7 @@ class DictionaryBuilder : public WebCryptoKeyAlgorithmDictionary {
   }
 
   void SetUint8Array(const char* property_name,
-                     const WebVector<unsigned char>& vector) override {
+                     const std::vector<unsigned char>& vector) override {
     builder_.Add(property_name, DOMUint8Array::Create(vector));
   }
 

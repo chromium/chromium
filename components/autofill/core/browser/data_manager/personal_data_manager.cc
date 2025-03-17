@@ -32,24 +32,22 @@ PersonalDataManager::PersonalDataManager(
     std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
     std::string app_locale,
     std::string variations_country_code)
-    : pref_service_(pref_service),
-      app_locale_(std::move(app_locale)),
-      history_service_(history_service) {
+    : pref_service_(pref_service) {
   address_data_manager_ = std::make_unique<AddressDataManager>(
       profile_database, pref_service, local_state, sync_service,
       identity_manager, strike_database,
-      GeoIpCountryCode(variations_country_code), app_locale_);
+      GeoIpCountryCode(variations_country_code), app_locale);
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       profile_database, account_database, image_fetcher,
       std::move(shared_storage_handler), pref_service, sync_service,
       identity_manager, GeoIpCountryCode(std::move(variations_country_code)),
-      app_locale_);
+      std::move(app_locale));
   address_data_manager_observation_.Observe(address_data_manager_.get());
   payments_data_manager_observation_.Observe(payments_data_manager_.get());
 
   // Listen for URL deletions from browsing history.
-  if (history_service_) {
-    history_service_observation_.Observe(history_service_.get());
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
   }
 
   // WebDataService may not be available in tests.
@@ -69,10 +67,7 @@ PersonalDataManager::PersonalDataManager(
 PersonalDataManager::~PersonalDataManager() = default;
 
 void PersonalDataManager::Shutdown() {
-  if (history_service_) {
-    history_service_observation_.Reset();
-  }
-  history_service_ = nullptr;
+  history_service_observation_.Reset();
   address_data_manager_->Shutdown();
   payments_data_manager_->Shutdown();
 }
@@ -107,12 +102,6 @@ void PersonalDataManager::SetSyncServiceForTest(
     syncer::SyncService* sync_service) {
   address_data_manager_->SetSyncServiceForTest(sync_service);   // IN-TEST
   payments_data_manager_->SetSyncServiceForTest(sync_service);  // IN-TEST
-}
-
-void PersonalDataManager::RemoveByGUID(const std::string& guid) {
-  if (!payments_data_manager_->RemoveByGUID(guid)) {
-    address_data_manager_->RemoveProfile(guid);
-  }
 }
 
 bool PersonalDataManager::IsDataLoaded() const {

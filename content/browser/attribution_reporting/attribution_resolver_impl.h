@@ -85,6 +85,7 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
       AggregatableDebugReport,
       std::optional<int> remaining_budget,
       std::optional<StoredSource::Id>) override;
+  void StoreOsRegistrations(const base::flat_set<url::Origin>&) override;
   void SetDelegate(std::unique_ptr<AttributionResolverDelegate>) override;
 
   CreateReportResult::EventLevel MaybeCreateEventLevelReport(

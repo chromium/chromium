@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.educational_tip.cards;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -62,21 +64,23 @@ public class DefaultBrowserPromoBottomSheetContent implements BottomSheetContent
 
     @Override
     public @NonNull String getSheetContentDescription(Context context) {
-        return context.getString(R.string.educational_tip_default_browser_title);
+        return context.getString(
+                R.string.educational_tip_default_browser_bottom_sheet_content_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.educational_tip_default_browser_title;
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
+        assert false : "This method will not be called.";
+        return Resources.ID_NULL;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
-        return R.string.educational_tip_default_browser_title;
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
+        return R.string.educational_tip_default_browser_bottom_sheet_accessibility_opened_full;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
-        return R.string.educational_tip_default_browser_title;
+    public @StringRes int getSheetClosedAccessibilityStringId() {
+        return R.string.educational_tip_default_browser_bottom_sheet_accessibility_closed;
     }
 }

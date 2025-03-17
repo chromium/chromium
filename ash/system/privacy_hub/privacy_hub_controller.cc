@@ -104,6 +104,10 @@ void PrivacyHubController::SetFrontend(PrivacyHubDelegate* ptr) {
   if (camera_controller()) {
     camera_controller()->SetFrontend(frontend_);
   }
+
+  if (geolocation_controller()) {
+    geolocation_controller()->SetFrontend(frontend_);
+  }
 }
 
 CameraPrivacySwitchController* PrivacyHubController::camera_controller() {

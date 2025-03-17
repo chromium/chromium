@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Helper Java class to query battery status.
@@ -19,6 +20,7 @@ import org.chromium.base.ContextUtils;
  * The class is created and owned by native side.
  */
 @JNINamespace("download")
+@NullMarked
 public final class BatteryStatusListenerAndroid {
     @CalledByNative
     public static int getBatteryPercentage() {

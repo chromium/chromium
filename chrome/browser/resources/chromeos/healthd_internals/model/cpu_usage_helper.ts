@@ -33,7 +33,7 @@ export class CpuUsageHelper {
    *
    *            Return null if the last execution time is not found.
    */
-  getCpuUsage(cpu: HealthdApiCpuResult): (CpuUsage|null)[][]|null {
+  getCpuUsage(cpu: HealthdApiCpuResult): Array<Array<CpuUsage|null>>|null {
     if (this.lastExecutionTime.length === 0) {
       for (const [physicalCpuId, physicalCpu] of cpu.physicalCpus.entries()) {
         this.lastExecutionTime[physicalCpuId] = [];
@@ -44,7 +44,7 @@ export class CpuUsageHelper {
       return null;
     }
 
-    const output: (CpuUsage|null)[][] = [];
+    const output: Array<Array<CpuUsage|null>> = [];
     for (const [physicalCpuId, physicalCpu] of cpu.physicalCpus.entries()) {
       output[physicalCpuId] = [];
       for (const [logicalCpuId, logicalCpu] of physicalCpu.logicalCpus
@@ -54,7 +54,7 @@ export class CpuUsageHelper {
         assert(lastExecTime !== undefined);
 
         output[physicalCpuId].push(
-            this.getLogicalCpuUsage(logicalCpu.executionTime, lastExecTime!));
+            this.getLogicalCpuUsage(logicalCpu.executionTime, lastExecTime));
         this.lastExecutionTime[physicalCpuId][logicalCpuId] =
             logicalCpu.executionTime;
       }
@@ -77,7 +77,7 @@ export class CpuUsageHelper {
     }
     const total: number = user + system + idle;
     if (total === 0) {
-      return null
+      return null;
     }
     return {
       userPercentage: user / total * 100,

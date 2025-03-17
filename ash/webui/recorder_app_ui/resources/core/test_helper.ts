@@ -145,36 +145,19 @@ export class TestHelper {
   }
 
   /**
-   * Installs the model used for summarize recordings.
+   * Installs GenAi model used for summary and title suggestion.
    */
-  static installSummaryModel(): void {
-    usePlatformHandler().summaryModelLoader.download();
+  static installGenAiModel(): void {
+    usePlatformHandler().downloadGenAiModel();
   }
 
   /**
-   * Returns whether the summary model is installed.
+   * Returns whether GenAi model is installed.
    *
-   * @return Boolean indicating if the summary model is installed.
+   * @return Boolean indicating if GenAi model is installed.
    */
-  static isSummaryModelInstalled(): boolean {
-    const state = usePlatformHandler().summaryModelLoader.state.value;
-    return state.kind === 'installed';
-  }
-
-  /**
-   * Installs the model used for suggest recording titles.
-   */
-  static installTitleSuggestionModel(): void {
-    usePlatformHandler().titleSuggestionModelLoader.download();
-  }
-
-  /**
-   * Returns whether the title suggestion model is installed.
-   *
-   * @return Boolean indicating if the title suggestion model is installed.
-   */
-  static isTitleSuggestionModelInstalled(): boolean {
-    const state = usePlatformHandler().titleSuggestionModelLoader.state.value;
+  static isGenAiModelInstalled(): boolean {
+    const state = usePlatformHandler().getGenAiModelState();
     return state.kind === 'installed';
   }
 

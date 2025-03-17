@@ -15,6 +15,8 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 
+class PrefService;
+
 namespace tab_groups {
 
 class TabGroupSyncDelegate;
@@ -23,7 +25,8 @@ class TabGroupSyncDelegate;
 class TabGroupSyncCoordinatorImpl : public TabGroupSyncCoordinator {
  public:
   TabGroupSyncCoordinatorImpl(std::unique_ptr<TabGroupSyncDelegate> delegate,
-                              TabGroupSyncService* service);
+                              TabGroupSyncService* service,
+                              PrefService* pref_service);
   ~TabGroupSyncCoordinatorImpl() override;
 
   // Disallow copy/assign.
@@ -40,6 +43,8 @@ class TabGroupSyncCoordinatorImpl : public TabGroupSyncCoordinator {
   void DisconnectLocalTabGroup(const LocalTabGroupID& local_id) override;
   std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() override;
+  std::set<LocalTabID> GetSelectedTabs() override;
+  std::u16string GetTabTitle(const LocalTabID& local_tab_id) override;
 
   // TabGroupSyncService::Observer methods.
   void OnInitialized() override;

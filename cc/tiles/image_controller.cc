@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -159,7 +160,7 @@ void ImageController::StopWorkerTasks() {
 
 bool ImageController::HasReadyToRunTask() const {
   worker_state_->lock.AssertAcquired();
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       worker_state_->image_decode_queue.begin(),
       worker_state_->image_decode_queue.end(),
       [](const ImageDecodeRequest& request) -> bool {
@@ -362,13 +363,13 @@ void ImageController::ExternalDependencyCompletedForTask(
       request.has_external_dependency = false;
     }
   };
-  base::ranges::for_each(
+  std::ranges::for_each(
       worker_state_->image_decode_queue.begin(),
       worker_state_->image_decode_queue.end(), external_dependency_completed,
       &std::pair<const ImageDecodeRequestId, ImageDecodeRequest>::second);
-  base::ranges::for_each(orphaned_decode_requests_.begin(),
-                         orphaned_decode_requests_.end(),
-                         external_dependency_completed);
+  std::ranges::for_each(orphaned_decode_requests_.begin(),
+                        orphaned_decode_requests_.end(),
+                        external_dependency_completed);
   ScheduleImageDecodeOnWorkerIfNeeded();
 }
 

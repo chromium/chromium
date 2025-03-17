@@ -30,14 +30,29 @@ struct SenderEncodedFrame;
 // SizeAdaptableVideoEncoderBase acts as a proxy to automatically detect when
 // the owned instance should be replaced with one that can handle the new frame
 // size.
+//
+// The status returned to `status_change_cb` is expected to work like this:
+//
+// Step 1: In the SizeAdaptableVideoEncoderBase ctor, we post a task to the
+//         main thread that updates the status to STATUS_INITIALIZED. This is
+//         how the consumer knows that it can post its first frame.
+// Step 2: The consumer posts the first video frame.
+// Step 3: Since the first video frame has a valid size, we now can spin up a
+//         backing encoder instance in TrySpawningReplacementEncoder(). This is
+//         "replacing" the nullptr encoder that was set on initialization.
+// Step 4: Status changes to STATUS_CODEC_REINIT_PENDING while we are spawning
+//         the replacement. Frames should not be sent for encoding during this
+//         time.
+// Step 5: Once the replacement `encoder_` has been initialized, it calls
+//        OnEncoderStatusChange() with STATUS_INITIALIZED, which is passed to
+//        `status_change_cb_`.
 class SizeAdaptableVideoEncoderBase : public VideoEncoder {
  public:
   SizeAdaptableVideoEncoderBase(
       const scoped_refptr<CastEnvironment>& cast_environment,
       const FrameSenderConfig& video_config,
       std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
-      StatusChangeCallback status_change_cb,
-      FrameEncodedCallback output_cb);
+      StatusChangeCallback status_change_cb);
 
   SizeAdaptableVideoEncoderBase(const SizeAdaptableVideoEncoderBase&) = delete;
   SizeAdaptableVideoEncoderBase& operator=(
@@ -47,7 +62,8 @@ class SizeAdaptableVideoEncoderBase : public VideoEncoder {
 
   // VideoEncoder implementation.
   bool EncodeVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
-                        base::TimeTicks reference_time) final;
+                        base::TimeTicks reference_time,
+                        FrameEncodedCallback frame_encoded_callback) final;
   void SetBitRate(int new_bit_rate) final;
   void GenerateKeyFrame() final;
 
@@ -66,9 +82,6 @@ class SizeAdaptableVideoEncoderBase : public VideoEncoder {
   // encoder is instantiated.  In this scheme, OnEncoderStatusChange() can only
   // be called by the most-recent encoder.
   StatusChangeCallback CreateEncoderStatusChangeCallback();
-
-  // Returns a callback that calls OnEncodedVideoFrame().
-  FrameEncodedCallback CreateFrameEncodedCallback();
 
   // Overridden by subclasses to create a new encoder instance that handles
   // frames of the size specified by |frame_size()|.
@@ -92,7 +105,8 @@ class SizeAdaptableVideoEncoderBase : public VideoEncoder {
   void OnEncoderStatusChange(OperationalStatus status);
 
   // Called by the |encoder_| with the next EncodedFrame.
-  void OnEncodedVideoFrame(std::unique_ptr<SenderEncodedFrame> encoded_frame);
+  void OnEncodedVideoFrame(FrameEncodedCallback frame_encoded_callback,
+                           std::unique_ptr<SenderEncodedFrame> encoded_frame);
 
   const scoped_refptr<CastEnvironment> cast_environment_;
 
@@ -104,9 +118,6 @@ class SizeAdaptableVideoEncoderBase : public VideoEncoder {
 
   // Run whenever the underlying encoder reports a status change.
   const StatusChangeCallback status_change_cb_;
-
-  // Run whenever a frame is encoded.
-  const FrameEncodedCallback output_cb_;
 
   // The underlying platform video encoder and the frame size it expects.
   std::unique_ptr<VideoEncoder> encoder_;

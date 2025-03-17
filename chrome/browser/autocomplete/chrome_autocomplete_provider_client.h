@@ -123,6 +123,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   void CloseIncognitoWindows() override;
   void PromptPageTranslation() override;
   bool OpenJourneys(const std::string& query) override;
+  void OpenLensOverlay() override;
 
   // For testing.
   void set_storage_partition(content::StoragePartition* storage_partition) {

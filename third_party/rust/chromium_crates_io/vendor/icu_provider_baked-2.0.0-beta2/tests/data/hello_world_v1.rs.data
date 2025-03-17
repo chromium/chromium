@@ -1,0 +1,69 @@
+// @generated
+/// Implement `DataProvider<HelloWorldV1>` on the given struct using the data
+/// hardcoded in this file. This allows the struct to be used with
+/// `icu`'s `_unstable` constructors.
+///
+/// Using this implementation will embed the following data in the binary's data segment:
+/// * 176B for the lookup data structure (27 data identifiers)
+/// * 1100B[^1] for the actual data (27 unique structs)
+///
+/// [^1]: these numbers can be smaller in practice due to linker deduplication
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_hello_world_v1 {
+    ($ provider : ty) => {
+        #[clippy::msrv = "1.81"]
+        const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
+        #[clippy::msrv = "1.81"]
+        impl $provider {
+            const DATA_HELLO_WORLD_V1: icu_provider_baked::zerotrie::DataForVarULEs<icu_provider::hello_world::HelloWorldV1> = {
+                const TRIE: icu_provider_baked::zerotrie::ZeroTrieSimpleAscii<&'static [u8]> = icu_provider_baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xCDbcdefijlprsvz\x02\x04\nCIKX[^fpsn\x80s\x81e\x82-AT\x83\xC3lno\x012\x84\x85\xC2\x1E-\treverse\x90\t\xC301G\x0C\x0F\xC201\x06\xC212\x01\x86\x879\x8842\x89B\x8A-u-sd-gbeng\x8B\x8C\xC2ai\x01\x8D\x8Es\x8Fa\x90\0\x1Ereverse\x90\na\x90\x01t\x90\x02\xC2ou\x02\x90\x03\x90\x04r\x90\x05-Latn\x90\x06i\x90\x07h\x90\x08" };
+                const VALUES: &'static zerovec::VarZeroSlice<<<icu_provider::hello_world::HelloWorldV1 as icu_provider_baked::zerotrie::DynamicDataMarker>::DataStruct as icu_provider::ule::MaybeAsVarULE>::EncodedStruct> = unsafe { zerovec::vecs::VarZeroSlice16::from_bytes_unchecked(b"\x1B\0\x19\0$\0.\09\0T\0_\0q\0\x80\0\x8F\0\x9E\0\xB1\0\xD8\0\xE6\0\xFA\0\x05\x01\x13\x01(\x012\x01=\x01H\x01\\\x01u\x01\x82\x01\x98\x01\xA4\x01\xAF\x01\xE0\xA6\x93\xE0\xA6\xB9\xE0\xA7\x87 \xE0\xA6\xAC\xE0\xA6\xBF\xE0\xA6\xB6\xE0\xA7\x8D\xE0\xA6\xACAhoj sv\xC4\x9BteHallo WeltServus Welt\xCE\x9A\xCE\xB1\xCE\xBB\xCE\xB7\xCE\xBC\xCE\xAD\xCF\x81\xCE\xB1 \xCE\xBA\xCF\x8C\xCF\x83\xCE\xBC\xCE\xB5Hello WorldHello from \xF0\x9F\x97\xBA\xEF\xB8\x8FHello from \xF0\x9F\x8C\x8DHello from \xF0\x9F\x8C\x8EHello from \xF0\x9F\x8C\x8FHello from \xF0\x9F\x87\xAC\xF0\x9F\x87\xA7Hello from \xF0\x9F\x8F\xB4\xF3\xA0\x81\xA7\xF3\xA0\x81\xA2\xF3\xA0\x81\xA5\xF3\xA0\x81\xAE\xF3\xA0\x81\xA7\xF3\xA0\x81\xBFSaluton, Mondo\xD8\xB3\xD9\x84\xD8\xA7\xD9\x85 \xD8\xAF\xD9\x86\xDB\x8C\xD8\xA7\xE2\x80\x8Ehei maailmaHall\xC3\xB3, heimur\xE3\x81\x93\xE3\x82\x93\xE3\x81\xAB\xE3\x81\xA1\xE3\x81\xAF\xE4\xB8\x96\xE7\x95\x8CAve, mundeOl\xC3\xA1, mundoSalut, lume\xD0\x9F\xD1\x80\xD0\xB8\xD0\xB2\xD0\xB5\xD1\x82, \xD0\xBC\xD0\xB8\xD1\x80\xD0\x9F\xD0\xBE\xD0\xB7\xD0\xB4\xD1\x80\xD0\xB0\xD0\xB2 \xD1\x81\xD0\xB2\xD0\xB5\xD1\x82\xD0\xB5Pozdrav sveteXin ch\xC3\xA0o th\xE1\xBA\xBF gi\xE1\xBB\x9Bi\xE4\xBD\xA0\xE5\xA5\xBD\xE4\xB8\x96\xE7\x95\x8COlleh Dlrow\xE7\x95\x8C\xE4\xB8\x96\xE3\x81\xAF\xE3\x81\xA1\xE3\x81\xAB\xE3\x82\x93\xE3\x81\x93") };
+                unsafe { icu_provider_baked::zerotrie::DataForVarULEs::from_trie_and_values_unchecked(TRIE, VALUES) }
+            };
+        }
+        #[clippy::msrv = "1.81"]
+        impl icu_provider::DataProvider<icu_provider::hello_world::HelloWorldV1> for $provider {
+            fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu_provider::hello_world::HelloWorldV1>, icu_provider::DataError> {
+                let metadata = icu_provider::DataResponseMetadata::default().with_checksum(1234u64);
+                let Some(payload) = icu_provider_baked::DataStore::get(&Self::DATA_HELLO_WORLD_V1, req.id, req.metadata.attributes_prefix_match) else { return Err(icu_provider::DataErrorKind::IdentifierNotFound.with_req(<icu_provider::hello_world::HelloWorldV1 as icu_provider::DataMarker>::INFO, req)) };
+                Ok(icu_provider::DataResponse { payload, metadata })
+            }
+        }
+    };
+    ($ provider : ty , ITER) => {
+        __impl_hello_world_v1!($provider);
+        #[clippy::msrv = "1.81"]
+        impl icu_provider::IterableDataProvider<icu_provider::hello_world::HelloWorldV1> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BTreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok(icu_provider_baked::DataStore::iter(&Self::DATA_HELLO_WORLD_V1).collect())
+            }
+        }
+    };
+    ($ provider : ty , DRY) => {
+        __impl_hello_world_v1!($provider);
+        #[clippy::msrv = "1.81"]
+        impl icu_provider::DryDataProvider<icu_provider::hello_world::HelloWorldV1> for $provider {
+            fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
+                icu_provider::DataProvider::<icu_provider::hello_world::HelloWorldV1>::load(self, req).map(|r| r.metadata)
+            }
+        }
+    };
+    ($ provider : ty , DRY , ITER) => {
+        __impl_hello_world_v1!($provider);
+        #[clippy::msrv = "1.81"]
+        impl icu_provider::DryDataProvider<icu_provider::hello_world::HelloWorldV1> for $provider {
+            fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
+                icu_provider::DataProvider::<icu_provider::hello_world::HelloWorldV1>::load(self, req).map(|r| r.metadata)
+            }
+        }
+        #[clippy::msrv = "1.81"]
+        impl icu_provider::IterableDataProvider<icu_provider::hello_world::HelloWorldV1> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BTreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok(icu_provider_baked::DataStore::iter(&Self::DATA_HELLO_WORLD_V1).collect())
+            }
+        }
+    };
+}
+#[doc(inline)]
+pub use __impl_hello_world_v1 as impl_hello_world_v1;

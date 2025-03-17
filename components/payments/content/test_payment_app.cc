@@ -30,7 +30,6 @@ std::u16string TestPaymentApp::GetMissingInfoLabel() const {
 bool TestPaymentApp::HasEnrolledInstrument() const {
   return true;
 }
-void TestPaymentApp::RecordUse() {}
 bool TestPaymentApp::NeedsInstallation() const {
   return false;
 }

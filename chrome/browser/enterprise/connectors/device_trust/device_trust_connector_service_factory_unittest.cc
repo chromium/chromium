@@ -18,10 +18,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using ::testing::_;
 
@@ -59,20 +59,20 @@ class DeviceTrustConnectorServiceFactoryTest
     : public DeviceTrustConnectorServiceFactoryBaseTest,
       public ::testing::Test {};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DeviceTrustConnectorServiceFactoryTest, CreateForRegularProfile) {
   EXPECT_FALSE(profile()->IsOffTheRecord());
   EXPECT_TRUE(DeviceTrustConnectorServiceFactory::GetForProfile(profile()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(DeviceTrustConnectorServiceFactoryTest, NullForIncognitoProfile) {
   Profile* incognito_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(ash::ProfileHelper::IsSigninProfile(incognito_profile));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   ASSERT_TRUE(incognito_profile);
 
@@ -83,7 +83,7 @@ TEST_F(DeviceTrustConnectorServiceFactoryTest, NullForIncognitoProfile) {
   EXPECT_FALSE(device_trust_connector_service);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(DeviceTrustConnectorServiceFactoryTest,
        CreatedForSigninProfileChromeOS) {
@@ -106,6 +106,6 @@ TEST_F(DeviceTrustConnectorServiceFactoryTest,
   EXPECT_TRUE(device_trust_connector_service);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_connectors

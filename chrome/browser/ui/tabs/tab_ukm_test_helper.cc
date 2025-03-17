@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/tabs/tab_ukm_test_helper.h"
 
+#include <algorithm>
 #include <sstream>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,7 +61,7 @@ FindMatchingEntry(
     const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
         entries,
     const UkmMetricMap& expected_metrics) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       entries, [&expected_metrics](const ukm::mojom::UkmEntry* entry) {
         return EntryContainsMetrics(entry, expected_metrics);
       });

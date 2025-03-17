@@ -10,6 +10,7 @@ mojom("mojo_bindings") {
   sources = [
     "drive_suggestion.mojom",
     "file_suggestion.mojom",
+    "microsoft_files.mojom",
   ]
   webui_module_path = "/"
   public_deps = [ "//url/mojom:url_mojom_gurl" ]

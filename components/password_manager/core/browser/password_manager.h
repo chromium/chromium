@@ -62,6 +62,24 @@ class PasswordManagerMetricsRecorder;
 struct PasswordForm;
 struct PossibleUsernameData;
 
+// This needs to be in sync with the histogram enumeration
+// PasswordVsOtpFormType, because the values are reported in the
+// "PasswordManager.ParsedFormIsOtpForm" histogram. Don't remove or shift
+// existing values in the enum, only append and mark as obsolete as needed.
+enum class PasswordVsOtpFormType {
+  kNone = 0,
+  kPassword = 1 << 1,
+  kOtp = 1 << 2,
+  kPasswordAndOtp = kPassword | kOtp,
+  kMaxValue = kPasswordAndOtp,
+};
+
+constexpr void operator|=(PasswordVsOtpFormType& lhs,
+                          PasswordVsOtpFormType rhs) {
+  lhs = static_cast<PasswordVsOtpFormType>(static_cast<int>(lhs) |
+                                           static_cast<int>(rhs));
+}
+
 // Per-tab password manager. Handles creation and management of UI elements,
 // receiving password form data from the renderer and managing the password
 // database through the PasswordStore.
@@ -140,6 +158,7 @@ class PasswordManager : public PasswordManagerInterface {
       const autofill::FieldDataManager& field_data_manager,
       const PasswordManagerDriver* driver) override;
 #endif
+  bool IsFormManagerPendingPasswordUpdate() const override;
 
   // Notifies the renderer to start the generation flow or pops up additional UI
   // in case there is a danger to overwrite an existing password.
@@ -235,8 +254,9 @@ class PasswordManager : public PasswordManagerInterface {
     return server_predictions_;
   }
 
-  const std::map<std::pair<PasswordManagerDriver*, autofill::FormRendererId>,
-                 base::flat_map<autofill::FieldGlobalId, autofill::FieldType>>&
+  const std::map<
+      std::pair<PasswordManagerDriver*, autofill::FormRendererId>,
+      base::flat_map<autofill::FieldRendererId, autofill::FieldType>>&
   GetClassifierModelPredictionsForTesting() const {
     return classifier_model_predictions_;
   }
@@ -252,9 +272,6 @@ class PasswordManager : public PasswordManagerInterface {
         possible_usernames_.begin(), possible_usernames_.end());
   }
 #endif  // defined(UNIT_TEST)
-
-  // Returns true if a form manager is processing a password update.
-  bool IsFormManagerPendingPasswordUpdate() const;
 
   // Returns the submitted PasswordForm if there exists one.
   std::optional<PasswordForm> GetSubmittedCredentials() const override;
@@ -456,7 +473,7 @@ class PasswordManager : public PasswordManagerInterface {
   // the combination of the driver and the renderer id of the form, that allow
   // to uniquely identify forms on the page.
   std::map<std::pair<PasswordManagerDriver*, autofill::FormRendererId>,
-           base::flat_map<autofill::FieldGlobalId, autofill::FieldType>>
+           base::flat_map<autofill::FieldRendererId, autofill::FieldType>>
       classifier_model_predictions_;
 
   // The URL of the last submitted form.

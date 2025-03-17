@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/api_event_handler.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/supports_user_data.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -230,7 +230,13 @@ void APIEventHandler::InvalidateCustomEvent(v8::Local<v8::Context> context,
   }
 
   emitter->Invalidate(context);
-  auto emitter_entry = base::ranges::find(data->anonymous_emitters, event);
+  // Can't just use `find(listeners_, listener)` here because `v8::Global<T>`
+  // and `v8::Local<T>` do not have a common reference type and thus do not
+  // satisfy `std::equality_comparable_with<>`. We could project using
+  // `v8::Global<T>::Get()`, but that's less efficient.
+  auto emitter_entry = std::ranges::find_if(
+      data->anonymous_emitters,
+      [&event](const auto& emitter) { return emitter == event; });
   if (emitter_entry == data->anonymous_emitters.end()) {
     NOTREACHED();
   }
@@ -340,8 +346,7 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
             .ToLocalChecked();
 
     v8::Local<v8::Value> massager_args[] = {args_array, dispatch_event};
-    JSRunner::Get(context)->RunJSFunction(
-        massager, context, std::size(massager_args), massager_args);
+    JSRunner::Get(context)->RunJSFunction(massager, context, massager_args);
   }
 }
 

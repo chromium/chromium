@@ -20,8 +20,8 @@ namespace metrics {
 
 namespace {
 
-const base::HistogramBase::Sample kMin = 1;
-const base::HistogramBase::Sample kMax = 10;
+const base::HistogramBase::Sample32 kMin = 1;
+const base::HistogramBase::Sample32 kMax = 10;
 const uint32_t kBucketCount = 10;
 const char kMetricName[] = "Single.Sample.Metric";
 
@@ -121,7 +121,7 @@ TEST_F(SingleSampleMetricsFactoryImplTest, DefaultSingleSampleMetricWithValue) {
   std::unique_ptr<base::SingleSampleMetric> metric =
       factory_->CreateCustomCountsMetric(kMetricName, kMin, kMax, kBucketCount);
 
-  const base::HistogramBase::Sample kLastSample = 9;
+  const base::HistogramBase::Sample32 kLastSample = 9;
   metric->SetSample(1);
   metric->SetSample(3);
   metric->SetSample(5);
@@ -168,7 +168,7 @@ TEST_F(SingleSampleMetricsFactoryImplTest, MultithreadedMetrics) {
   EXPECT_DCHECK_DEATH(threaded_metric.reset());
 
   // Test that samples are set on each thread correctly.
-  const base::HistogramBase::Sample kSample = 7;
+  const base::HistogramBase::Sample32 kSample = 7;
 
   {
     metric->SetSample(kSample);

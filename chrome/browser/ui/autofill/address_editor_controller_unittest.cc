@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/mock_callback.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
@@ -126,8 +126,8 @@ TEST_F(AddressEditorControllerTest, GetCountryComboboxModel) {
   // `country` is null when it represents a separator. There must be exactly 1
   // separator in the country list.
   EXPECT_EQ(
-      base::ranges::count_if(controller_->GetCountryComboboxModel().countries(),
-                             [](const auto& country) { return !country; }),
+      std::ranges::count_if(controller_->GetCountryComboboxModel().countries(),
+                            [](const auto& country) { return !country; }),
       1l);
 }
 
@@ -171,7 +171,7 @@ TEST_F(AddressEditorControllerTest, StaticEditorFields) {
   // to the set of editor fields.
   for (auto type : std::vector<FieldType>{
            ADDRESS_HOME_COUNTRY, PHONE_HOME_WHOLE_NUMBER, EMAIL_ADDRESS}) {
-    EXPECT_EQ(base::ranges::count_if(
+    EXPECT_EQ(std::ranges::count_if(
                   controller_->editor_fields(),
                   [type](auto field) { return field.type == type; }),
               1);

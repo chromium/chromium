@@ -26,7 +26,14 @@ constexpr gfx::Size kMinimumEcheSize(240, 240);
 
 }  // namespace
 
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForEcheApp() {
+EcheSystemAppDelegate::EcheSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::ECHE,
+                                "Eche",
+                                GURL("chrome://eche-app"),
+                                profile) {}
+
+std::unique_ptr<web_app::WebAppInstallInfo>
+EcheSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url = GURL(ash::eche_app::kChromeUIEcheAppURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -39,26 +46,17 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForEcheApp() {
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-
   return info;
 }
 
-EcheSystemAppDelegate::EcheSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::ECHE,
-                                "Eche",
-                                GURL("chrome://eche-app"),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-EcheSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForEcheApp();
-}
 bool EcheSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
+
 bool EcheSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
+
 bool EcheSystemAppDelegate::ShouldShowInSearchAndShelf() const {
   return false;
 }
@@ -85,16 +83,7 @@ bool EcheSystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
   return !base::FeatureList::IsEnabled(ash::features::kEcheSWADebugMode);
 }
 
-gfx::Rect EcheSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
-  return GetDefaultBoundsForEche();
-}
-
-bool EcheSystemAppDelegate::IsAppEnabled() const {
-  return base::FeatureList::IsEnabled(ash::features::kEcheSWA);
-}
-
-// TODO(nayebi): Remove this after migrating completely from SWA to bubble.
-gfx::Rect EcheSystemAppDelegate::GetDefaultBoundsForEche() const {
+gfx::Rect EcheSystemAppDelegate::GetDefaultBounds(Browser*) const {
   // Ensures the Eche bounds is always 16:9 portrait aspect ratio and not more
   // than half of the windows.
   gfx::Rect bounds =
@@ -109,4 +98,8 @@ gfx::Rect EcheSystemAppDelegate::GetDefaultBoundsForEche() const {
   bounds.ClampToCenteredSize(
       gfx::Size(new_width, new_width * kDefaultAspectRatio));
   return bounds;
+}
+
+bool EcheSystemAppDelegate::IsAppEnabled() const {
+  return base::FeatureList::IsEnabled(ash::features::kEcheSWA);
 }

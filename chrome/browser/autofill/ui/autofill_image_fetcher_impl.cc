@@ -37,6 +37,24 @@ constexpr int kCardArtBorderStrokeWidth = 2;
 constexpr int kCardArtImageWidth = 40;
 constexpr int kCardArtImageHeight = 24;
 
+// The width and length the new FOP display card art is resized to.
+constexpr int kNewFopCardArtImageWidth = 48;
+constexpr int kNewFopCardArtImageHeight = 30;
+
+int CardArtImageWidth() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableNewFopDisplayDesktop)
+             ? kNewFopCardArtImageWidth
+             : kCardArtImageWidth;
+}
+
+int CardArtImageHeight() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableNewFopDisplayDesktop)
+             ? kNewFopCardArtImageHeight
+             : kCardArtImageHeight;
+}
+
 }  // namespace
 
 AutofillImageFetcherImpl::AutofillImageFetcherImpl(ProfileKey* key)
@@ -54,11 +72,6 @@ base::WeakPtr<AutofillImageFetcher> AutofillImageFetcherImpl::GetWeakPtr() {
 }
 
 GURL AutofillImageFetcherImpl::ResolveCardArtURL(const GURL& card_art_url) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewCardArtAndNetworkImages)) {
-    return AutofillImageFetcher::ResolveCardArtURL(card_art_url);
-  }
-
   // TODO(crbug.com/40221039): There is only one gstatic card art image we are
   // using currently, that returns as metadata when it isn't. Remove this logic
   // when the static image is deprecated, and we send rich card art instead.
@@ -78,11 +91,6 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
     return card_art_image;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewCardArtAndNetworkImages)) {
-    return AutofillImageFetcherImpl::ApplyGreyOverlay(card_art_image);
-  }
-
   if (card_art_url == kCapitalOneLargeCardArtUrl) {
     // Render Capital One asset directly. No need to calculate and add grey
     // border to image.
@@ -91,17 +99,17 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
 
   // Create the outer rectangle. The outer rectangle is for the
   // entire image which includes the card art and additional border.
-  gfx::RectF outer_rect = gfx::RectF(kCardArtImageWidth, kCardArtImageHeight);
+  gfx::RectF outer_rect = gfx::RectF(CardArtImageWidth(), CardArtImageHeight());
 
   // The inner rectangle only includes the card art. To calculate the
   // inner rectangle, we need to factor the space that the border stroke
   // will take up.
   gfx::RectF inner_rect = gfx::RectF(
       /*x=*/kCardArtBorderStrokeWidth, /*y=*/kCardArtBorderStrokeWidth,
-      /*width=*/kCardArtImageWidth - (kCardArtBorderStrokeWidth * 2),
-      /*height=*/kCardArtImageHeight - (kCardArtBorderStrokeWidth * 2));
+      /*width=*/CardArtImageWidth() - (kCardArtBorderStrokeWidth * 2),
+      /*height=*/CardArtImageHeight() - (kCardArtBorderStrokeWidth * 2));
   gfx::Canvas canvas =
-      gfx::Canvas(gfx::Size(kCardArtImageWidth, kCardArtImageHeight),
+      gfx::Canvas(gfx::Size(CardArtImageWidth(), CardArtImageHeight()),
                   /*image_scale=*/1.0f, /*is_opaque=*/false);
   cc::PaintFlags card_art_paint;
   card_art_paint.setAntiAlias(true);
@@ -111,7 +119,7 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
   canvas.DrawImageInt(
       gfx::ImageSkiaOperations::CreateResizedImage(
           card_art_image.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
-          gfx::Size(kCardArtImageWidth, kCardArtImageHeight)),
+          gfx::Size(CardArtImageWidth(), CardArtImageHeight())),
       outer_rect.x(), outer_rect.y(), card_art_paint);
 
   // Draw border around card art using outer rectangle.
@@ -152,9 +160,8 @@ void AutofillImageFetcherImpl::InitializeImageFetcher() {
     return;
   }
 
-  // TODO(crbug.com/40245547): Fix and change the config back to kDiskCacheOnly.
   image_fetcher_ = image_fetcher_service->GetImageFetcher(
-      image_fetcher::ImageFetcherConfig::kNetworkOnly);
+      image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
 }
 
 }  // namespace autofill

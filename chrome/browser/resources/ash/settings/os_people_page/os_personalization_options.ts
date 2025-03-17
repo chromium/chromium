@@ -7,7 +7,6 @@
  * 'personalization-options' contains several toggles related to
  * personalizations.
  */
-import '/shared/settings/prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 

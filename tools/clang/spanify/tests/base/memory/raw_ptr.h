@@ -41,6 +41,8 @@ class raw_ptr {
 
   T* get() { return data_; }
 
+  constexpr explicit operator bool() const { return !!data_; }
+
  private:
   T* data_;
 };

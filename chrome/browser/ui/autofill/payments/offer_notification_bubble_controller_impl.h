@@ -10,8 +10,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -49,8 +49,6 @@ class OfferNotificationBubbleControllerImpl
   const CreditCard* GetLinkedCard() const override;
   const AutofillOfferData* GetOffer() const override;
   bool IsIconVisible() const override;
-  bool ShouldIconExpand() const override;
-  void OnIconExpanded() override;
   void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
 
   // Displays an offer notification for the given `offer` on the current page.
@@ -120,9 +118,6 @@ class OfferNotificationBubbleControllerImpl
   BubbleState bubble_state_ = BubbleState::kHidden;
 
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
-
-  // Denotes whether the icon should expand in the omnibox.
-  bool icon_should_expand_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

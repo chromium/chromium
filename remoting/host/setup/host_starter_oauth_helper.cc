@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "remoting/host/setup/host_starter.h"

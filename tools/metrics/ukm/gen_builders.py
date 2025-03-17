@@ -44,7 +44,7 @@ def ReadFilteredData(path):
   Returns:
     A dict of the data not including any obsolete events or metrics.
   """
-  with open(path) as ukm_file:
+  with open(path, encoding='utf-8') as ukm_file:
     data = ukm_model.UKM_XML_TYPE.Parse(ukm_file.read())
     event_tag = ukm_model._EVENT_TYPE.tag
     metric_tag = ukm_model._METRIC_TYPE.tag

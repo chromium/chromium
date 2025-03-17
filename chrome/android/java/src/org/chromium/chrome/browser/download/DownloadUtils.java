@@ -22,6 +22,7 @@ import android.text.style.StyleSpan;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -38,6 +39,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.download.home.DownloadActivityLauncher;
+import org.chromium.chrome.browser.download.DownloadMetrics.OpenWithExternalAppsSource;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -116,7 +118,6 @@ public class DownloadUtils {
      *     expanded.
      * @return Whether the UI was shown.
      */
-    @CalledByNative
     public static boolean showDownloadManager(
             @Nullable Activity activity,
             @Nullable Tab tab,
@@ -222,8 +223,7 @@ public class DownloadUtils {
      * @return True for using Jobs. False for using Foreground service.
      */
     public static boolean shouldUseUserInitiatedJobs() {
-        return ChromeFeatureList.sDownloadsMigrateToJobsAPI.isEnabled()
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     }
 
     /**
@@ -383,7 +383,8 @@ public class DownloadUtils {
                     offlineItem.mimeType,
                     offlineItem.originalUrl.getSpec(),
                     offlineItem.referrerUrl.getSpec(),
-                    context == null ? ContextUtils.getApplicationContext() : context)) {
+                    context == null ? ContextUtils.getApplicationContext() : context,
+                    OpenWithExternalAppsSource.DOWNLOAD_PROGRESS_MESSAGE)) {
                 DownloadUtils.showDownloadManager(null, null, otrProfileId, source);
             }
         } else {
@@ -433,21 +434,28 @@ public class DownloadUtils {
             boolean isAutomotive = BuildInfo.getInstance().isAutomotive;
             Intent intent =
                     MediaViewerUtils.getMediaViewerIntent(
-                            fileUri
-                            /* displayUri= */ ,
-                            contentUri
-                            /* contentUri= */ ,
+                            /* displayUri= */ fileUri,
+                            /* contentUri= */ contentUri,
                             normalizedMimeType,
                             !isAutomotive,
                             !isAutomotive,
                             context);
+            intent.putExtra(
+                    CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING,
+                    ChromeFeatureList.sCCTEphemeralMediaViewerExperiment.isEnabled());
             IntentHandler.startActivityForTrustedIntent(context, intent);
             service.updateLastAccessTime(downloadGuid, otrProfileId);
             return true;
         }
 
         // Check if any apps can open the file.
-        if (openFileWithExternalApps(filePath, mimeType, originalUrl, referrer, context)) {
+        if (openFileWithExternalApps(
+                filePath,
+                mimeType,
+                originalUrl,
+                referrer,
+                context,
+                OpenWithExternalAppsSource.OPEN_FILE)) {
             service.updateLastAccessTime(downloadGuid, otrProfileId);
             return true;
         }
@@ -521,11 +529,10 @@ public class DownloadUtils {
         }
         boolean isIncognito = OtrProfileId.isOffTheRecord(otrProfileId);
         // TODO(https://crbug.com/327680567): Ensure the pdf page is opened in the intended window.
-        // TODO(https://crbug.com/378149358): Support filepath which is not content uri.
         if (PdfUtils.shouldOpenPdfInline(isIncognito)
-                && newMimeType.equals(MimeTypeUtils.PDF_MIME_TYPE)
-                && ContentUriUtils.isContentUri(filePath)) {
-            LoadUrlParams params = new LoadUrlParams(PdfUtils.encodePdfPageUrl(filePath));
+                && newMimeType.equals(MimeTypeUtils.PDF_MIME_TYPE)) {
+            String fileUri = getUriForItem(filePath).toString();
+            LoadUrlParams params = new LoadUrlParams(PdfUtils.encodePdfPageUrl(fileUri));
             ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(isIncognito);
             delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);
             return;
@@ -761,12 +768,13 @@ public class DownloadUtils {
         }
     }
 
-    private static boolean openFileWithExternalApps(
+    public static boolean openFileWithExternalApps(
             String filePath,
             String mimeType,
             String originalUrl,
             String referrer,
-            Context context) {
+            Context context,
+            @OpenWithExternalAppsSource int source) {
         try {
             // TODO(qinmin): Move this to an AsyncTask so we don't need to temper with strict mode.
             Uri uri =
@@ -776,6 +784,7 @@ public class DownloadUtils {
             Intent viewIntent =
                     MediaViewerUtils.createViewIntentForUri(uri, mimeType, originalUrl, referrer);
             context.startActivity(viewIntent);
+            DownloadMetrics.recordOpenDownloadWithExternalAppsSource(source);
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Cannot start activity to open file", e);

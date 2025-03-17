@@ -62,3 +62,14 @@ source_set("model") {
     "//url",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "remote_suggestions_service_factory_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//testing/gtest",
+  ]
+}

@@ -29,7 +29,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -581,7 +580,7 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
     return;
   }
   std::vector<base::FilePath> warning_files_paths;
-  base::ranges::for_each(warned_files, [&](auto& warned_file) {
+  std::ranges::for_each(warned_files, [&](auto& warned_file) {
     warning_files_paths.push_back(warned_file.path);
   });
   fpnm->ShowDlpWarning(
@@ -609,13 +608,13 @@ DlpFilesControllerAsh::GetDlpRestrictionDetails(const std::string& source_url) {
   for (const auto& [level, urls] : aggregated_destinations) {
     DlpFileRestrictionDetails details;
     details.level = level;
-    base::ranges::move(urls.begin(), urls.end(),
-                       std::back_inserter(details.urls));
+    std::ranges::move(urls.begin(), urls.end(),
+                      std::back_inserter(details.urls));
     // Add the components for this level, if any.
     const auto it = aggregated_components.find(level);
     if (it != aggregated_components.end()) {
-      base::ranges::move(it->second.begin(), it->second.end(),
-                         std::back_inserter(details.components));
+      std::ranges::move(it->second.begin(), it->second.end(),
+                        std::back_inserter(details.components));
     }
     result.emplace_back(std::move(details));
   }
@@ -629,8 +628,8 @@ DlpFilesControllerAsh::GetDlpRestrictionDetails(const std::string& source_url) {
     }
     DlpFileRestrictionDetails details;
     details.level = level;
-    base::ranges::move(components.begin(), components.end(),
-                       std::back_inserter(details.components));
+    std::ranges::move(components.begin(), components.end(),
+                      std::back_inserter(details.components));
     result.emplace_back(std::move(details));
   }
 
@@ -647,8 +646,8 @@ DlpFilesControllerAsh::GetBlockedComponents(const std::string& source_url) {
   std::vector<data_controls::Component> result;
   const auto it = aggregated_components.find(DlpRulesManager::Level::kBlock);
   if (it != aggregated_components.end()) {
-    base::ranges::move(it->second.begin(), it->second.end(),
-                       std::back_inserter(result));
+    std::ranges::move(it->second.begin(), it->second.end(),
+                      std::back_inserter(result));
   }
   return result;
 }
@@ -838,7 +837,7 @@ void DlpFilesControllerAsh::ReturnAllowedUploads(
     std::erase_if(
         selected_files,
         [&restricted_files](const ui::SelectedFileInfo& selected_file) -> bool {
-          return base::ranges::any_of(
+          return std::ranges::any_of(
               restricted_files, [&](const base::FilePath& restricted_file) {
                 return selected_file.file_path == restricted_file ||
                        selected_file.file_path.IsParent(restricted_file);

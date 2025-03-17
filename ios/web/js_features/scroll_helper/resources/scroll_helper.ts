@@ -16,7 +16,7 @@ let webViewScrollViewIsDragging = false;
  */
 gCrWeb.setWebViewScrollViewIsDragging = function(state: boolean) {
   webViewScrollViewIsDragging = state;
-}
+};
 
 const originalWindowScrollTo_: Function = window.scrollTo;
 

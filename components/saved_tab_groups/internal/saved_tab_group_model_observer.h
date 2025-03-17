@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/uuid.h"
+#include "components/saved_tab_groups/public/types.h"
 
 namespace tab_groups {
 
@@ -75,6 +76,12 @@ class SavedTabGroupModelObserver {
   // tabs restore through session restore to the corresponding SavedTabGroup
   // metadata in the SavedTabGroupModel.
   virtual void SavedTabGroupModelLoaded() {}
+
+  // Called to notify of the sync bridge state changes, e.g. whether initial
+  // merge or disable sync are in progress. Invoked only for shared tab group
+  // bridge.
+  virtual void OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType sync_bridge_update_type) {}
 
  protected:
   SavedTabGroupModelObserver() = default;

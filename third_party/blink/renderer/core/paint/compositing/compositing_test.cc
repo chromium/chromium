@@ -654,6 +654,8 @@ TEST_P(CompositingTest,
 }
 
 TEST_P(CompositingTest, HitTestOpaqueness) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <div id="transparent1" style="pointer-events: none; will-change: transform;
                                   width: 100px; height: 50px">
@@ -708,14 +710,10 @@ TEST_P(CompositingTest, HitTestOpaqueness) {
     </svg>
   )HTML");
 
-  const auto hit_test_transparent =
-      RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-          ? cc::HitTestOpaqueness::kTransparent
-          : cc::HitTestOpaqueness::kMixed;
-  EXPECT_EQ(hit_test_transparent,
+  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
             CcLayersByDOMElementId(RootCcLayer(), "transparent1")[0]
                 ->hit_test_opaqueness());
-  EXPECT_EQ(hit_test_transparent,
+  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
             CcLayersByDOMElementId(RootCcLayer(), "transparent2")[0]
                 ->hit_test_opaqueness());
   EXPECT_EQ(cc::HitTestOpaqueness::kMixed,
@@ -727,22 +725,24 @@ TEST_P(CompositingTest, HitTestOpaqueness) {
   EXPECT_EQ(cc::HitTestOpaqueness::kMixed,
             CcLayersByDOMElementId(RootCcLayer(), "mixed3")[0]
                 ->hit_test_opaqueness());
-  const auto hit_test_opaque =
-      RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-          ? cc::HitTestOpaqueness::kOpaque
-          : cc::HitTestOpaqueness::kMixed;
-  EXPECT_EQ(hit_test_opaque, CcLayersByDOMElementId(RootCcLayer(), "opaque1")[0]
-                                 ->hit_test_opaqueness());
-  EXPECT_EQ(hit_test_opaque, CcLayersByDOMElementId(RootCcLayer(), "opaque2")[0]
-                                 ->hit_test_opaqueness());
-  EXPECT_EQ(hit_test_opaque, CcLayersByDOMElementId(RootCcLayer(), "opaque3")[0]
-                                 ->hit_test_opaqueness());
-  EXPECT_EQ(hit_test_opaque, CcLayersByDOMElementId(RootCcLayer(), "opaque4")[0]
-                                 ->hit_test_opaqueness());
-  EXPECT_EQ(hit_test_opaque, CcLayersByDOMElementId(RootCcLayer(), "opaque5")[0]
-                                 ->hit_test_opaqueness());
-  EXPECT_EQ(hit_test_opaque, CcLayersByDOMElementId(RootCcLayer(), "opaque6")[0]
-                                 ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            CcLayersByDOMElementId(RootCcLayer(), "opaque1")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            CcLayersByDOMElementId(RootCcLayer(), "opaque2")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            CcLayersByDOMElementId(RootCcLayer(), "opaque3")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            CcLayersByDOMElementId(RootCcLayer(), "opaque4")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            CcLayersByDOMElementId(RootCcLayer(), "opaque5")[0]
+                ->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            CcLayersByDOMElementId(RootCcLayer(), "opaque6")[0]
+                ->hit_test_opaqueness());
 }
 
 TEST_P(CompositingTest, HitTestOpaquenessOfSolidColorLayer) {
@@ -754,11 +754,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOfSolidColorLayer) {
 
   auto* layer = CcLayersByDOMElementId(RootCcLayer(), "target")[0];
   EXPECT_TRUE(layer->IsSolidColorLayerForTesting());
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_EQ(cc::HitTestOpaqueness::kOpaque, layer->hit_test_opaqueness());
-  } else {
-    EXPECT_EQ(cc::HitTestOpaqueness::kMixed, layer->hit_test_opaqueness());
-  }
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque, layer->hit_test_opaqueness());
 }
 
 TEST_P(CompositingTest, HitTestOpaquenessOfEmptyInline) {
@@ -810,15 +806,6 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
     </div>
   )HTML");
 
-  const auto hit_test_transparent =
-      RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-          ? cc::HitTestOpaqueness::kTransparent
-          : cc::HitTestOpaqueness::kMixed;
-  const auto hit_test_opaque =
-      RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-          ? cc::HitTestOpaqueness::kOpaque
-          : cc::HitTestOpaqueness::kMixed;
-
   Element* parent = GetElementById("parent");
   Element* target = GetElementById("target");
   const LayoutBox* target_box = target->GetLayoutBox();
@@ -828,51 +815,48 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   ASSERT_TRUE(display_item_client->IsValid());
   const cc::Layer* target_layer =
       CcLayersByDOMElementId(RootCcLayer(), "target")[0];
-  EXPECT_EQ(hit_test_opaque, target_layer->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            target_layer->hit_test_opaqueness());
 
   target->SetInlineStyleProperty(CSSPropertyID::kPointerEvents, "none");
   UpdateAllLifecyclePhasesExceptPaint();
   // Change of PointerEvents should not invalidate the painting layer, but not
   // the display item client.
   EXPECT_EQ(EPointerEvents::kNone, target_box->StyleRef().UsedPointerEvents());
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
-  }
+  EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
   EXPECT_TRUE(display_item_client->IsValid());
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(hit_test_transparent, target_layer->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
+            target_layer->hit_test_opaqueness());
 
   target->RemoveInlineStyleProperty(CSSPropertyID::kPointerEvents);
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
-  }
+  EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
   EXPECT_TRUE(display_item_client->IsValid());
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(hit_test_opaque, target_layer->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            target_layer->hit_test_opaqueness());
 
   parent->setAttribute(html_names::kInertAttr, AtomicString(""));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(EPointerEvents::kNone, target_box->StyleRef().UsedPointerEvents());
   // Change of parent inert attribute (affecting target's used pointer events)
   // should invalidate the painting layer but not the display item client.
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
-  }
+  EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
   EXPECT_TRUE(display_item_client->IsValid());
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(hit_test_transparent, target_layer->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
+            target_layer->hit_test_opaqueness());
 
   parent->removeAttribute(html_names::kInertAttr);
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
-  }
+  EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
   EXPECT_TRUE(display_item_client->IsValid());
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(hit_test_opaque, target_layer->hit_test_opaqueness());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            target_layer->hit_test_opaqueness());
 }
 
 // Based on the minimized test case of https://crbug.com/343198769.
@@ -900,14 +884,9 @@ TEST_P(CompositingTest,
 
   EXPECT_TRUE(CcLayerByDOMElementId("fixed"));     // Directly composited.
   EXPECT_TRUE(CcLayerByDOMElementId("absolute"));  // Overlaps with #fixed.
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    // Not merged because that would miss #relative's scroll state without a
-    // MainThreadScrollHitTestRegion.
-    EXPECT_TRUE(CcLayerByDOMElementId("relative"));
-  } else {
-    // Merged into #absolute.
-    EXPECT_FALSE(CcLayerByDOMElementId("relative"));
-  }
+  // Not merged because that would miss #relative's scroll state without a
+  // MainThreadScrollHitTestRegion.
+  EXPECT_TRUE(CcLayerByDOMElementId("relative"));
 
   GetElementById("fixed")->SetInlineStyleProperty(CSSPropertyID::kPosition,
                                                   "absolute");
@@ -989,8 +968,8 @@ TEST_P(ScrollingContentsCullRectTest, Basics) {
     <!doctype html>
     <style>
       .scroller {
-         width: 200px;
-         height: 200px;
+         width: 400px;
+         height: 400px;
          overflow: scroll;
          font-size: 20px;
          border: 20px solid black;
@@ -1008,6 +987,17 @@ TEST_P(ScrollingContentsCullRectTest, Basics) {
     <div id="wide-non-composited-scroller" class="scroller">
       <div style="width: 10000px; height: 200px">Content</div>
     </div>
+    <div style="width: 100px; height: 100px; overflow: hidden">
+      <div id="composited-under-clip" class="scroller"
+           style="will-change: scroll-position">
+        <div style="width: 10000px; height: 100px"></div>
+      </div>
+    </div>
+    <div style="width: 100px; height: 100px; overflow: hidden">
+      <div id="non-composited-under-clip" class="scroller">
+        <div style="width: 10000px; height: 100px"></div>
+      </div>
+    </div>
   )HTML");
 
   UpdateAllLifecyclePhases();
@@ -1017,16 +1007,27 @@ TEST_P(ScrollingContentsCullRectTest, Basics) {
   EXPECT_TRUE(CcLayerByDOMElementId("long-composited-scroller"));
   EXPECT_FALSE(CcLayerByDOMElementId("narrow-non-composited-scroller"));
   EXPECT_FALSE(CcLayerByDOMElementId("wide-non-composited-scroller"));
+  EXPECT_TRUE(CcLayerByDOMElementId("composited-under-clip"));
+  EXPECT_FALSE(CcLayerByDOMElementId("non-composited-under-clip"));
 
   CheckCullRect("short-composited-scroller", std::nullopt);
-  CheckCullRect("long-composited-scroller", gfx::Rect(20, 20, 200, 4200));
+  CheckCullRect("long-composited-scroller", gfx::Rect(20, 20, 400, 4400));
   CheckCullRect("narrow-non-composited-scroller", std::nullopt);
-  CheckCullRect("wide-non-composited-scroller", gfx::Rect(20, 20, 4200, 200));
+  CheckCullRect("wide-non-composited-scroller", gfx::Rect(20, 20, 4400, 400));
+  if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
+    CheckCullRect("composited-under-clip", gfx::Rect(20, 20, 4400, 400));
+    CheckCullRect("non-composited-under-clip", gfx::Rect(20, 20, 4400, 400));
+  } else {
+    CheckCullRect("composited-under-clip", std::nullopt);
+    CheckCullRect("non-composited-under-clip", std::nullopt);
+  }
 
   GetElementById("short-composited-scroller")->scrollTo(5000, 5000);
   GetElementById("long-composited-scroller")->scrollTo(5000, 5000);
   GetElementById("narrow-non-composited-scroller")->scrollTo(5000, 5000);
   GetElementById("wide-non-composited-scroller")->scrollTo(5000, 5000);
+  GetElementById("composited-under-clip")->scrollTo(5000, 5000);
+  GetElementById("non-composited-under-clip")->scrollTo(5000, 5000);
 
   UpdateAllLifecyclePhasesExceptPaint();
   if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
@@ -1047,17 +1048,27 @@ TEST_P(ScrollingContentsCullRectTest, Basics) {
   EXPECT_TRUE(CcLayerByDOMElementId("long-composited-scroller"));
   EXPECT_FALSE(CcLayerByDOMElementId("narrow-non-composited-scroller"));
   EXPECT_FALSE(CcLayerByDOMElementId("wide-non-composited-scroller"));
+  EXPECT_TRUE(CcLayerByDOMElementId("composited-under-clip"));
+  EXPECT_FALSE(CcLayerByDOMElementId("non-composited-under-clip"));
 
   CheckCullRect("short-composited-scroller", std::nullopt);
-  CheckCullRect("long-composited-scroller", gfx::Rect(20, 1020, 200, 8200));
+  CheckCullRect("long-composited-scroller", gfx::Rect(20, 1020, 400, 8400));
   CheckCullRect("narrow-non-composited-scroller", std::nullopt);
-  CheckCullRect("wide-non-composited-scroller", gfx::Rect(1020, 20, 8200, 200));
+  CheckCullRect("wide-non-composited-scroller", gfx::Rect(1020, 20, 8400, 400));
+  CheckCullRect("wide-non-composited-scroller", gfx::Rect(1020, 20, 8400, 400));
+  if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
+    CheckCullRect("composited-under-clip", gfx::Rect(1020, 20, 8400, 400));
+    CheckCullRect("non-composited-under-clip", gfx::Rect(1020, 20, 8400, 400));
+  } else {
+    CheckCullRect("composited-under-clip", std::nullopt);
+    CheckCullRect("non-composited-under-clip", std::nullopt);
+  }
 }
 
 TEST_P(ScrollingContentsCullRectTest, RepaintOnlyScroll) {
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <!doctype html>
-    <div id="scroller" style="width: 200px; height: 200px; overflow: scroll">
+    <div id="scroller" style="width: 400px; height: 400px; overflow: scroll">
       <div id="content" style="background: yellow">
         <div style="height: 100px; background: blue"></div>
       </div>
@@ -1073,7 +1084,7 @@ TEST_P(ScrollingContentsCullRectTest, RepaintOnlyScroll) {
   auto sequence_number = GetPropertyTrees()->sequence_number();
 
   EXPECT_TRUE(CcLayerByDOMElementId("scroller"));
-  CheckCullRect("scroller", gfx::Rect(0, 0, 200, 4200));
+  CheckCullRect("scroller", gfx::Rect(0, 0, 400, 4400));
 
   GetElementById("scroller")->scrollTo(0, 3000);
   UpdateAllLifecyclePhasesExceptPaint();
@@ -1097,7 +1108,7 @@ TEST_P(ScrollingContentsCullRectTest, RepaintOnlyScroll) {
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::UpdateType::kRepaint);
   EXPECT_EQ(sequence_number, GetPropertyTrees()->sequence_number());
-  CheckCullRect("scroller", gfx::Rect(0, 1000, 200, 5100));
+  CheckCullRect("scroller", gfx::Rect(0, 1000, 400, 5100));
 }
 
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {
@@ -1124,10 +1135,7 @@ class CompositingSimTest : public PaintTestConfigurations, public SimTest {
   }
 
   const cc::Layer* CcLayerForIFrameContent(Document* iframe_doc) {
-    if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-      return CcLayerByOwnerNode(iframe_doc);
-    }
-    return CcLayerByOwnerNode(iframe_doc->documentElement());
+    return CcLayerByOwnerNode(iframe_doc);
   }
 
   Element* GetElementById(const char* id) {
@@ -3179,6 +3187,8 @@ TEST_P(CompositingSimTest, ChangingDrawsContentRequiresFullUpdate) {
 }
 
 TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeSimpleBg) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <div id="target" style="will-change: transform; background: white;
@@ -3196,6 +3206,8 @@ TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeSimpleBg) {
 }
 
 TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeComplexBg) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <div id="target" style="will-change: transform; background: white;
@@ -3212,6 +3224,8 @@ TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeComplexBg) {
 }
 
 TEST_P(CompositingSimTest, ContentsOpaqueForTextWithPartialBackground) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <div id="target" style="will-change: transform; padding: 10px">
@@ -3738,7 +3752,7 @@ TEST_P(CompositingSimTest, ScrollingContentsLayerRecordedBounds) {
       }
     </style>
     <div id="scroller" style="overflow: scroll; will-change: scroll-position;
-                              width: 200px; height: 200px">
+                              width: 400px; height: 400px">
       <div>1</div>
       <div>2</div>
       <div>3</div>
@@ -3754,15 +3768,9 @@ TEST_P(CompositingSimTest, ScrollingContentsLayerRecordedBounds) {
                                                     ->GetScrollableArea()
                                                     ->GetScrollElementId()));
   ASSERT_TRUE(layer);
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_EQ(gfx::Size(2000, 16000), layer->bounds());
-    EXPECT_EQ(gfx::Rect(0, 0, 2000, 16000),
-              layer->GetRecordingSourceForTesting().recorded_bounds());
-  } else {
-    EXPECT_EQ(gfx::Size(2000, 2000), layer->bounds());
-    EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000),
-              layer->GetRecordingSourceForTesting().recorded_bounds());
-  }
+  EXPECT_EQ(gfx::Size(2000, 16000), layer->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 2000, 16000),
+            layer->GetRecordingSourceForTesting().recorded_bounds());
 }
 
 TEST_P(CompositingSimTest, NestedBoxReflectCrash) {

@@ -3,7 +3,7 @@
   const bp = testRunner.browserP();
   const {page, session, dp} = await testRunner.startBlank(
       'Tracing of FLEDGE worklets in subframes.',
-      {url: base + 'fledge_join.html?40'});
+      {url: base + 'fledge_join.html?count=40'});
 
   const TracingHelper =
       await testRunner.loadScript('../resources/tracing-test.js');

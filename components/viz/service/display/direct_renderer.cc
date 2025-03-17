@@ -437,7 +437,7 @@ void DirectRenderer::DrawFrame(
                               kMaxPixelCount, kNumBucketsPixelCount);
 
   // Data focused on pixel counts closer to screen resolution sizes.
-  constexpr base::Histogram::Sample kHistogramScale = 100 * 1024;
+  constexpr base::Histogram::Sample32 kHistogramScale = 100 * 1024;
   constexpr uint64_t kNumberOfBucketsLinear = 100;
   UMA_HISTOGRAM_SCALED_EXACT_LINEAR(
       "Compositing.DirectRenderer.TotalPixelsRenderedNarrow",
@@ -528,7 +528,8 @@ bool DirectRenderer::ShouldSkipQuad(const DrawQuad& quad,
     // visible bounds.
     auto filter_it = render_pass_filters_.find(rpdq->render_pass_id);
     if (filter_it != render_pass_filters_.end()) {
-      target_rect = filter_it->second->ExpandRectForPixelMovement(target_rect);
+      target_rect =
+          GetExpandedRectForPixelMovingFilters(*rpdq, *filter_it->second);
     }
   }
 
@@ -1042,7 +1043,7 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
             if (foreground_filters &&
                 foreground_filters->HasFilterThatMovesPixels()) {
               gfx::Rect expanded_rect =
-                  GetExpandedRectWithPixelMovingForegroundFilter(
+                  GetTargetExpandedRectForPixelMovingFilters(
                       *rpdq, *foreground_filters);
 
               // Expanding damage outside of the 'clip_rect' can cause parts of

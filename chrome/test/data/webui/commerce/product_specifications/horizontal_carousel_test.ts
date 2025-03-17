@@ -5,8 +5,8 @@
 import 'chrome://compare/horizontal_carousel.js';
 import 'chrome://compare/table.js';
 
-import type {TableColumn} from 'chrome://compare/app.js';
 import type {HorizontalCarouselElement} from 'chrome://compare/horizontal_carousel.js';
+import type {TableColumn} from 'chrome://compare/table.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, eventToPromise, isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
@@ -148,7 +148,7 @@ suite('HorizontalCarouselTest', () => {
     // Columns themselves aren't focusable, but the nested
     // `#currentProductContainer` in their `product-selector`s are.
     const productSelectors =
-        tableElement.shadowRoot!.querySelectorAll<HTMLElement>(
+        tableElement.shadowRoot.querySelectorAll<HTMLElement>(
             '.col product-selector');
     assertEquals(6, productSelectors.length);
     let numScrollEnd = 0;

@@ -4,9 +4,13 @@
 
 package org.chromium.components.autofill.payments;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
@@ -18,19 +22,20 @@ import java.util.Objects;
  * be created from the C++ side via JNI.
  */
 @JNINamespace("autofill")
+@NullMarked
 public class BankAccount extends PaymentInstrument {
-    private final String mBankName;
-    private final String mAccountNumberSuffix;
+    private final @Nullable String mBankName;
+    private final @Nullable String mAccountNumberSuffix;
     private final @AccountType int mAccountType;
 
     private BankAccount(
             long instrumentId,
-            String nickname,
-            GURL displayIconUrl,
+            @Nullable String nickname,
+            @Nullable GURL displayIconUrl,
             @PaymentRail int[] supportedPaymentRails,
             boolean isFidoEnrolled,
-            String bankName,
-            String accountNumberSuffix,
+            @Nullable String bankName,
+            @Nullable String accountNumberSuffix,
             @AccountType int accountType) {
         super(instrumentId, nickname, displayIconUrl, supportedPaymentRails, isFidoEnrolled);
         mBankName = bankName;
@@ -65,13 +70,13 @@ public class BankAccount extends PaymentInstrument {
 
     /** Returns the bank name for the bank account. */
     @CalledByNative
-    public String getBankName() {
+    public @Nullable String getBankName() {
         return mBankName;
     }
 
     /** Returns the account number suffix that can be used to identify the bank account. */
     @CalledByNative
-    public String getAccountNumberSuffix() {
+    public @Nullable String getAccountNumberSuffix() {
         return mAccountNumberSuffix;
     }
 
@@ -100,9 +105,9 @@ public class BankAccount extends PaymentInstrument {
 
     /** Builder for {@link BankAccount}. */
     public static final class Builder {
-        private String mBankName;
-        private String mAccountNumberSuffix;
-        private PaymentInstrument mPaymentInstrument;
+        private @Nullable String mBankName;
+        private @Nullable String mAccountNumberSuffix;
+        private @Nullable PaymentInstrument mPaymentInstrument;
         private @AccountType int mAccountType;
 
         /** Set the bank name on the BankAccount. */
@@ -131,13 +136,13 @@ public class BankAccount extends PaymentInstrument {
 
         public BankAccount build() {
             return new BankAccount(
-                    mPaymentInstrument.getInstrumentId(),
+                    assumeNonNull(mPaymentInstrument).getInstrumentId(),
                     mPaymentInstrument.getNickname(),
                     mPaymentInstrument.getDisplayIconUrl(),
                     mPaymentInstrument.getSupportedPaymentRails(),
                     mPaymentInstrument.getIsFidoEnrolled(),
-                    mBankName,
-                    mAccountNumberSuffix,
+                    assumeNonNull(mBankName),
+                    assumeNonNull(mAccountNumberSuffix),
                     mAccountType);
         }
     }

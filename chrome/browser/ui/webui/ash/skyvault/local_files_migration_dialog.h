@@ -29,7 +29,7 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
   //
   // If a dialog is already open, brings it to the front and returns false.
   // Otherwise, shows the dialog and returns true.
-  static bool Show(CloudProvider cloud_provider,
+  static bool Show(MigrationDestination destination,
                    base::Time migration_start_time,
                    StartMigrationCallback migration_callback);
 
@@ -48,7 +48,7 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
   void OnDialogShown(content::WebUI* webui) override;
 
  private:
-  LocalFilesMigrationDialog(CloudProvider cloud_provider,
+  LocalFilesMigrationDialog(MigrationDestination destination,
                             base::Time migration_start_time,
                             StartMigrationCallback migration_callback);
   ~LocalFilesMigrationDialog() override;
@@ -61,8 +61,9 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
   // the user clicked "Upload now" and uploads should start.
   void ProcessDialogClosing(const std::string& ret_value);
 
-  // Cloud provider to which files are uploaded.
-  CloudProvider cloud_provider_;
+  // Cloud provider to which files are uploaded, or delete if they should be
+  // removed.
+  MigrationDestination destination_;
 
   // The time at which migration automatically starts.
   base::Time migration_start_time_;

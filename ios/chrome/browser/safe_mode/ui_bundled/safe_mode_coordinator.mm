@@ -37,8 +37,9 @@ const int kStartupCrashLoopThreshold = 3;
 + (BOOL)shouldStart {
   // Check whether there appears to be a startup crash loop. If not, don't look
   // at anything else.
-  if (crash_util::GetFailedStartupAttemptCount() < kStartupCrashLoopThreshold)
+  if (crash_util::GetFailedStartupAttemptCount() < kStartupCrashLoopThreshold) {
     return NO;
+  }
 
   return [SafeModeViewController hasSuggestions];
 }

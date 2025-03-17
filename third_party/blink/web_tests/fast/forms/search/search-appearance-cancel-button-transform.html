@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<link rel="help" href="https://issues.chromium.org/issues/391402368">
+<meta name=fuzzy content="maxDifference=0-3; totalPixels=0-100">
+<html>
+ <!-- Expect no crash. -->
+ <!-- A red round cancel button should be showing, translated to the left. -->
+<style>
+input[type="search"]::-webkit-search-cancel-button {
+ -webkit-appearance: none;
+ opacity: 1;
+ background-color: red;
+ border-radius: 50%;
+ padding: 10px;
+ border: 2px solid black;
+}
+
+input#input1::-webkit-search-cancel-button {
+ transform: translate(-40px);
+ padding: 5px;
+ border: 1px solid black;
+}
+</style>
+<body>
+<input id="input1" type=search value="foo">
+<br><br>
+<input id="input2" type=search value="foo">
+</body>
+</html>
+

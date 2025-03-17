@@ -87,7 +87,7 @@ export class PrivacyGuideAdTopicsFragmentElement extends
           PrivacyGuideSettingsStates.AD_TOPICS_OFF_TO_ON :
           PrivacyGuideSettingsStates.AD_TOPICS_OFF_TO_OFF;
     }
-    this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state!);
+    this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state);
   }
 
   private onToggleChange_(e: Event) {
@@ -97,6 +97,14 @@ export class PrivacyGuideAdTopicsFragmentElement extends
     this.metricsBrowserProxy_.recordAction(
         target.checked ? 'Settings.PrivacyGuide.ChangeAdTopicsOn' :
                          'Settings.PrivacyGuide.ChangeAdTopicsOff');
+  }
+
+  // Opens up a new tab when clicked. The on-click function and href for the
+  // link is all handled in
+  // settings_localized_strings_privacy_sandbox_provider.cc
+  private onPrivacyPolicyLinkClicked_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacyGuide.AdTopicsPrivacyPolicyLinkClicked');
   }
 }
 

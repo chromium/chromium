@@ -11,6 +11,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/rust/rust_static_library.gni")
 import("//gpu/vulkan/features.gni")
 import("//skia/skia.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/skia/gn/shared_sources.gni")
 import("//third_party/skia/modules/skcms/skcms.gni")
@@ -47,9 +48,9 @@ rust_static_library("bridge_rust_side") {
   cxx_bindings = skia_fontations_bridge_sources
   deps = [
     ":path_bridge",
-    "//third_party/rust/font_types/v0_7:lib",
-    "//third_party/rust/read_fonts/v0_23:lib",
-    "//third_party/rust/skrifa/v0_24:lib",
+    "//third_party/rust/font_types/v0_8:lib",
+    "//third_party/rust/read_fonts/v0_27:lib",
+    "//third_party/rust/skrifa/v0_28:lib",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
@@ -66,12 +67,6 @@ config("skia_config") {
     "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
     "SK_WIN_FONTMGR_NO_SIMULATIONS",
     "SK_DISABLE_LEGACY_INIT_DECODERS",
-    "SK_DISABLE_LEGACY_BACKEND_TEXTURE_FUNCS",
-    "SK_DISABLE_LEGACY_TEXTURE_INFO_FUNCS",
-    "SK_DISABLE_LEGACY_BACKEND_SEMAPHORE_FUNCS",
-    "SK_DISABLE_LEGACY_GRAPHITE_IMAGES",
-    "SK_DISABLE_LEGACY_DAWN_TEXTURE_INFO_FUNCS",
-    "SK_DISABLE_LEGACY_DAWN_BACKEND_TEXTURE_FUNCS",
   ]
 
   include_dirs = [
@@ -83,9 +78,7 @@ config("skia_config") {
     # TODO(kjlubick) make these not necessary
     defines += [
       "SK_CODEC_DECODES_JPEG",
-      "SK_ENCODE_JPEG",
-      "SK_ENCODE_PNG",
-      "SK_ENCODE_WEBP",
+      "SK_CODEC_ENCODES_JPEG",
     ]
     include_dirs += [ "//third_party/wuffs/src/release/c" ]
   }
@@ -99,25 +92,38 @@ config("skia_config") {
     }
   }
 
-  if (is_android) {
+  # `SK_GAMMA_EXPONENT` and `SK_GAMMA_CONTRAST` are settings for text
+  # blitting, chosen to approximate the system browser.
+  if (is_linux || is_chromeos) {
+    defines += [
+      "SK_GAMMA_EXPONENT=1.2",
+      "SK_GAMMA_CONTRAST=0.2",
+    ]
+  } else if (is_android) {
     defines += [
       "SK_BUILD_FOR_ANDROID",
       "USE_CHROMIUM_SKIA",
+      "SK_GAMMA_APPLY_TO_A8",
+      "SK_GAMMA_EXPONENT=1.4",
+      "SK_GAMMA_CONTRAST=0.0",
     ]
-  }
-
-  if (is_mac) {
-    defines += [ "SK_BUILD_FOR_MAC" ]
-  }
-  if (is_ios) {
+  } else if (is_mac) {
+    defines += [
+      "SK_BUILD_FOR_MAC",
+      "SK_GAMMA_SRGB",
+      "SK_GAMMA_CONTRAST=0.0",
+    ]
+  } else if (is_ios) {
     defines += [ "SK_BUILD_FOR_IOS" ]
     if (ios_is_app_extension) {
       defines += [ "SK_BUILD_FOR_IOS_APP_EXTENSION" ]
     }
-  }
-
-  if (is_win) {
-    defines += [ "GR_GL_FUNCTION_TYPE=__stdcall" ]
+  } else if (is_win) {
+    defines += [
+      "GR_GL_FUNCTION_TYPE=__stdcall",
+      "SK_GAMMA_SRGB",
+      "SK_GAMMA_CONTRAST=1.0",
+    ]
   }
 
   if (skia_support_gpu) {
@@ -187,30 +193,6 @@ config("skia_library_config") {
     }
   }
 
-  # Settings for text blitting, chosen to approximate the system browser.
-  if (is_linux || is_chromeos) {
-    defines += [
-      "SK_GAMMA_EXPONENT=1.2",
-      "SK_GAMMA_CONTRAST=0.2",
-    ]
-  } else if (is_android) {
-    defines += [
-      "SK_GAMMA_APPLY_TO_A8",
-      "SK_GAMMA_EXPONENT=1.4",
-      "SK_GAMMA_CONTRAST=0.0",
-    ]
-  } else if (is_win) {
-    defines += [
-      "SK_GAMMA_SRGB",
-      "SK_GAMMA_CONTRAST=0.5",
-    ]
-  } else if (is_mac) {
-    defines += [
-      "SK_GAMMA_SRGB",
-      "SK_GAMMA_CONTRAST=0.0",
-    ]
-  }
-
   if (is_android) {
     defines += [
       # Android devices are typically more memory constrained, so default to a
@@ -253,6 +235,7 @@ component("skia") {
     "ext/image_operations.h",
     "ext/legacy_display_globals.h",
     "ext/opacity_filter_canvas.h",
+    "ext/pmcolor_utils.h",
     "ext/recursive_gaussian_convolution.h",
     "ext/rgba_to_yuva.h",
     "ext/skcolorspace_primaries.h",
@@ -260,6 +243,7 @@ component("skia") {
     "ext/skia_memory_dump_provider.h",
     "ext/skia_trace_memory_dump_impl.h",
     "ext/skia_utils_base.h",
+    "fontations_feature.h",
     "rusty_png_feature.h",
   ]
   sources = [
@@ -291,6 +275,7 @@ component("skia") {
     "ext/skia_memory_dump_provider.cc",
     "ext/skia_trace_memory_dump_impl.cc",
     "ext/skia_utils_base.cc",
+    "fontations_feature.cc",
     "rusty_png_feature.cc",
   ]
   if (is_ios) {
@@ -396,12 +381,16 @@ component("skia") {
     sources += skia_xml_sources
     sources += skia_codec_xmp
     sources += skia_codec_jpeg_xmp
+    sources += [
+      "//third_party/skia/src/svg/SkSVGCanvas.cpp",
+      "//third_party/skia/src/svg/SkSVGDevice.cpp",
+    ]
     deps += [ "//third_party/expat" ]
     defines += [ "SK_CODEC_DECODES_JPEG_GAINMAPS" ]
+  } else {
+    # Remove unused util sources.
+    sources -= [ "//third_party/skia/src/utils/SkParsePath.cpp" ]
   }
-
-  # Remove unused util sources.
-  sources -= [ "//third_party/skia/src/utils/SkParsePath.cpp" ]
 
   if (is_win) {
     libs = [ "fontsub.lib" ]
@@ -424,6 +413,7 @@ component("skia") {
     }
     sources += skia_ports_typeface_proxy_sources
     sources += skia_ports_typeface_fontations_sources
+    sources += skia_ports_fontmgr_fontations_sources
 
     # Fontations Rust/C++ bridge interfaces.
     deps += [
@@ -640,7 +630,7 @@ if (enable_rust_png) {
     sources = skia_codec_rust_png_ffi_rs_srcs
     cxx_bindings = skia_codec_rust_png_ffi_cxx_bridge_srcs
     public_deps = [ ":rust_png_ffi_cpp" ]
-    deps = [ "//third_party/rust/png/v0_17:lib" ]
+    deps = [ "//third_party/rust/png/v0_18:lib" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       ":skia_config",
@@ -1105,6 +1095,17 @@ if (!is_ios) {
       "//build/win:default_exe_manifest",
     ]
   }
+}
+
+fuzzer_test("image_operations_resize_fuzzer") {
+  sources = [ "ext/image_operations_resize_fuzzer.cc" ]
+
+  deps = [
+    ":skia",
+    "//base",
+  ]
+
+  libfuzzer_options = [ "max_len=48" ]
 }
 
 group("fuzzers") {

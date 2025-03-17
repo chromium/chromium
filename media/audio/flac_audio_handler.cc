@@ -84,7 +84,7 @@ bool FlacAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
   DCHECK(is_initialized());
 
   if (AtEnd()) {
-    DCHECK_EQ(fifo_->frames(), 0);
+    DCHECK_EQ(fifo_->frames(), 0u);
     bus->Zero();
     return true;
   }
@@ -93,7 +93,8 @@ bool FlacAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
   DCHECK_EQ(bus->channels(), num_channels_);
 
   // Records the number of frames copied into `bus`.
-  int frames_copied = 0;
+  size_t frames_copied = 0;
+  size_t bus_size = static_cast<size_t>(bus->frames());
 
   do {
     if (fifo_->frames() == 0 && !AtEnd()) {
@@ -103,13 +104,12 @@ bool FlacAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
       }
     }
 
-    if (fifo_->frames() > 0) {
-      const int frames =
-          std::min(bus->frames() - frames_copied, fifo_->frames());
+    if (fifo_->frames() > 0u) {
+      const size_t frames = std::min(bus_size - frames_copied, fifo_->frames());
       fifo_->Consume(bus, frames_copied, frames);
       frames_copied += frames;
     }
-  } while (!AtEnd() && frames_copied < bus->frames());
+  } while (!AtEnd() && frames_copied < bus_size);
 
   *frames_written = frames_copied;
   return true;
@@ -194,25 +194,25 @@ FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallbackInternal(
   }
 
   // Get the number of channels and the number of samples per channel.
-  const int num_channels = frame->header.channels;
-  const int num_samples = frame->header.blocksize;
+  const size_t num_channels = frame->header.channels;
+  const size_t num_samples = frame->header.blocksize;
 
   // Avoid the crash happened in `fifo_`.
-  if (num_channels != num_channels_) {
+  if (num_channels != static_cast<size_t>(num_channels_)) {
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
   }
 
   // Discard the packet if there are more than the number of `max_blocksize`
   // frames.
-  if (num_samples > bus_->frames()) {
+  if (num_samples > static_cast<size_t>(bus_->frames())) {
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
   }
 
-  for (int ch = 0; ch < num_channels; ++ch) {
-    float* channel_data = bus_->channel(ch);
+  for (size_t ch = 0; ch < num_channels; ++ch) {
+    auto channel_data = bus_->channel_span(ch);
     const FLAC__int32* source_data = buffer[ch];
-    for (int s = 0; s < num_samples; ++s, ++channel_data, ++source_data) {
-      *channel_data = SignedInt16SampleTypeTraits::ToFloat(*source_data);
+    for (size_t s = 0; s < num_samples; ++s, ++source_data) {
+      channel_data[s] = SignedInt16SampleTypeTraits::ToFloat(*source_data);
     }
   }
 

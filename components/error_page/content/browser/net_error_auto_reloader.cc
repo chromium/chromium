@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 
 #include <algorithm>
+#include <array>
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -67,9 +63,15 @@ bool ShouldAutoReload(content::NavigationHandle* handle) {
 }
 
 base::TimeDelta GetNextReloadDelay(size_t reload_count) {
-  static constexpr base::TimeDelta kDelays[] = {
-      base::Seconds(1), base::Seconds(5),  base::Seconds(30), base::Minutes(1),
-      base::Minutes(5), base::Minutes(10), base::Minutes(30)};
+  constexpr static const auto kDelays = std::to_array<base::TimeDelta>({
+      base::Seconds(1),
+      base::Seconds(5),
+      base::Seconds(30),
+      base::Minutes(1),
+      base::Minutes(5),
+      base::Minutes(10),
+      base::Minutes(30),
+  });
   return kDelays[std::min(reload_count, std::size(kDelays) - 1)];
 }
 

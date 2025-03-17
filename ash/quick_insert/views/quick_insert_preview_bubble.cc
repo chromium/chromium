@@ -47,7 +47,7 @@ class RoundedPreviewImageView : public views::ImageView {
  public:
   explicit RoundedPreviewImageView(const gfx::Size image_size, int radius) {
     SetImageSize(image_size);
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSeparator, radius));
     SkPath mask;
     mask.addRoundRect(gfx::RectToSkRect(gfx::Rect(image_size)), radius, radius);
@@ -76,6 +76,8 @@ QuickInsertPreviewBubbleView::QuickInsertPreviewBubbleView(
                                views::BubbleBorder::LEFT_CENTER,
                                views::BubbleBorder::STANDARD_SHADOW,
                                /*autosize=*/true) {
+  set_background_color(kBackgroundColor);
+
   // Configuration for this view.
   SetLayoutManager(
       std::make_unique<views::BoxLayout>(views::LayoutOrientation::kVertical))
@@ -140,11 +142,6 @@ void QuickInsertPreviewBubbleView::SetText(const std::u16string& main_text) {
 void QuickInsertPreviewBubbleView::ClearText() {
   main_label_->SetText(u"");
   box_layout_view_->SetVisible(false);
-}
-
-void QuickInsertPreviewBubbleView::OnThemeChanged() {
-  BubbleDialogDelegateView::OnThemeChanged();
-  set_color(GetColorProvider()->GetColor(kBackgroundColor));
 }
 
 gfx::Rect QuickInsertPreviewBubbleView::GetAnchorRect() const {

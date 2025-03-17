@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 
+#include <algorithm>
 #include <array>
 #include <iterator>
 #include <map>
@@ -31,7 +32,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -51,6 +51,7 @@
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -68,9 +69,9 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -80,8 +81,8 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_data.h"
 #endif
 
 namespace web_app {
@@ -173,7 +174,7 @@ void PopulateWebAppShortcutsMenuItemInfos(
 
         // Filter out non-square or too large icons.
         auto valid_size_it =
-            base::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
+            std::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
               return size.width() == size.height() &&
                      size.width() <= kMaxIconSize;
             });
@@ -337,10 +338,8 @@ ScopeExtensions ToWebAppScopeExtensions(
   ScopeExtensions apps_scope_extensions;
   for (const auto& scope_extension : scope_extensions) {
     DCHECK(scope_extension);
-    ScopeExtensionInfo new_scope_extension;
-    new_scope_extension.origin = scope_extension->origin;
-    new_scope_extension.has_origin_wildcard =
-        scope_extension->has_origin_wildcard;
+    auto new_scope_extension = ScopeExtensionInfo::CreateForOrigin(
+        scope_extension->origin, scope_extension->has_origin_wildcard);
     apps_scope_extensions.insert(std::move(new_scope_extension));
   }
   return apps_scope_extensions;
@@ -610,7 +609,7 @@ void UpdateWebAppInstallInfoIconsFromManifestIfNeeded(
 
         // Filter out non-square or too large icons.
         auto valid_size =
-            base::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
+            std::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
               return size.width() == size.height() &&
                      size.width() <= kMaxIconSize;
             });
@@ -685,7 +684,7 @@ void PopulateHomeTabIconsFromHomeTabManifestParams(
       }
       // Filter out non-square or too large icons.
       auto valid_size =
-          base::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
+          std::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
             return size.width() == size.height() &&
                    size.width() <= kMaxIconSize;
           });
@@ -802,7 +801,7 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 
   web_app_info->permissions_policy.clear();
   for (const auto& decl : manifest.permissions_policy) {
-    blink::ParsedPermissionsPolicyDeclaration copy;
+    network::ParsedPermissionsPolicyDeclaration copy;
     copy.feature = decl.feature;
     copy.self_if_matches = decl.self_if_matches;
     for (const auto& origin : decl.allowed_origins)
@@ -817,6 +816,8 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   if (HomeTabIconsExistInTabStrip(*web_app_info)) {
     PopulateHomeTabIconsFromHomeTabManifestParams(web_app_info);
   }
+
+  web_app_info->related_applications = manifest.related_applications;
 }
 
 WebAppInstallInfo CreateWebAppInfoFromManifest(
@@ -1185,6 +1186,8 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   }
 
   web_app.SetIsDiyApp(web_app_info.is_diy_app);
+
+  web_app.SetRelatedApplications(web_app_info.related_applications);
 }
 
 void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
@@ -1258,7 +1261,7 @@ void ApplyParamsToFinalizeOptions(
   options.add_to_quick_launch_bar = install_params.add_to_quick_launch_bar;
   options.skip_origin_association_validation =
       install_params.skip_origin_association_validation;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (install_params.system_app_type.has_value()) {
     options.system_web_app_data.emplace();
     options.system_web_app_data->system_app_type =
@@ -1293,7 +1296,7 @@ bool IsSyncEnabledForApps(Profile* profile) {
   }
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return sync_service->GetUserSettings()->GetSelectedOsTypes().Has(
       syncer::UserSelectableOsType::kOsApps);
 #else

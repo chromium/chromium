@@ -68,6 +68,13 @@ class ActiveTabObserver : public TabStripModelObserver,
         PageLiveStateDecorator::SetIsPinnedTab(
             tab.contents, tab_strip_model->IsTabPinned(tab.index));
       }
+    } else if (change.type() == TabStripModelChange::kReplaced) {
+      auto* replace = change.GetReplace();
+      if (replace->new_contents) {
+        PageLiveStateDecorator::SetIsPinnedTab(
+            replace->new_contents,
+            tab_strip_model->IsTabPinned(replace->index));
+      }
     }
   }
 
@@ -122,7 +129,7 @@ class PageLiveStateDecoratorHelper::WebContentsObserver
 
   // content::WebContentsObserver:
   void OnCapabilityTypesChanged(
-      content::WebContents::CapabilityType capability_type,
+      content::WebContentsCapabilityType capability_type,
       bool used) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     PageLiveStateDecorator::OnCapabilityTypesChanged(web_contents(),

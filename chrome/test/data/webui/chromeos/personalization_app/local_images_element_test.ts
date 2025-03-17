@@ -9,8 +9,8 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('LocalImagesElementTest', function() {
   let localImagesElement: LocalImagesElement|null;
@@ -138,7 +138,7 @@ suite('LocalImagesElementTest', function() {
             `${WallpaperGridItemElement.is}:not([placeholder]):not([hidden])`);
         assertEquals(1, gridItems.length);
         assertDeepEquals(
-            {url: 'data:image/png;base64,localimage0data'}, gridItems![0]!.src);
+            {url: 'data:image/png;base64,localimage0data'}, gridItems[0]!.src);
 
         // Set loading failed for second thumbnail.
         personalizationStore.data.wallpaper.loading.local.data = {
@@ -161,7 +161,7 @@ suite('LocalImagesElementTest', function() {
         assertEquals(
             1, gridItems.length, 'still only first thumbnail displayed');
         assertDeepEquals(
-            {url: 'data:image/png;base64,localimage0data'}, gridItems![0]!.src);
+            {url: 'data:image/png;base64,localimage0data'}, gridItems[0]!.src);
       });
 
   test('sets selected if image name matches currently selected', async () => {

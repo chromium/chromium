@@ -129,9 +129,8 @@ export function quoteString(str: string): string {
 export function listenOnce(
     target: EventTarget, eventNames: string[]|string,
     callback: (e: Event) => any) {
-  const eventNamesArray: string[] = Array.isArray(eventNames) ?
-      eventNames as string[] :
-      (eventNames as string).split(/ +/);
+  const eventNamesArray: string[] =
+      Array.isArray(eventNames) ? eventNames : eventNames.split(/ +/);
 
   const removeAllAndCallCallback = function(event: Event) {
     eventNamesArray.forEach(function(eventName: string) {

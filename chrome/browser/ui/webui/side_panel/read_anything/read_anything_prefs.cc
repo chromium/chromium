@@ -6,7 +6,7 @@
 
 #include "base/values.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
-#include "chrome/common/read_anything/read_anything_constants.h"
+#include "chrome/common/read_anything/read_anything_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -14,12 +14,11 @@
 
 void RegisterReadAnythingProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(
-      prefs::kAccessibilityReadAnythingFontName,
-      string_constants::kReadAnythingPlaceholderFontName,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterDoublePref(prefs::kAccessibilityReadAnythingFontScale,
-                               kReadAnythingDefaultFontScale,
+  registry->RegisterStringPref(prefs::kAccessibilityReadAnythingFontName,
+                               // All languages use the same default font.
+                               GetSupportedFonts("en").front(),
+                               user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterDoublePref(prefs::kAccessibilityReadAnythingFontScale, 1.0f,
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       prefs::kAccessibilityReadAnythingColorInfo,
@@ -41,8 +40,7 @@ void RegisterReadAnythingProfilePrefs(
         prefs::kAccessibilityReadAnythingVoiceName, base::Value::Dict(),
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
     registry->RegisterDoublePref(
-        prefs::kAccessibilityReadAnythingSpeechRate,
-        kReadAnythingDefaultSpeechRate,
+        prefs::kAccessibilityReadAnythingSpeechRate, 1.0,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
     registry->RegisterIntegerPref(
         prefs::kAccessibilityReadAnythingHighlightGranularity,

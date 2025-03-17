@@ -13,6 +13,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonor.SetDocumentClassVisibilityForPackageCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -21,6 +23,9 @@ public class AuxiliarySearchControllerFactory {
     @Nullable private final AuxiliarySearchHooks mHooks;
 
     @Nullable private AuxiliarySearchHooks mHooksForTesting;
+
+    /** It tracks whether the current device is a tablet. */
+    @Nullable private Boolean mIsTablet;
 
     /** Static class that implements the initialization-on-demand holder idiom. */
     private static class LazyHolder {
@@ -45,6 +50,21 @@ public class AuxiliarySearchControllerFactory {
         return mHooks != null && mHooks.isEnabled();
     }
 
+    /**
+     * Returns whether Tab Sharing is enabled and the device is ready to use it. This check is used
+     * to control the visibility of UI like the toggle in Tabs Settings and opt in card on the magic
+     * stack. This function should NOT be used to determine whether to create a Tab Sharing
+     * controller.
+     */
+    public boolean isEnabledAndDeviceCompatible() {
+        boolean consumerSchemaFound =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, false);
+
+        return consumerSchemaFound && isEnabled();
+    }
+
     /** Returns whether the sharing Tabs with the system is enabled by default on the device. */
     public boolean isSettingDefaultEnabledByOs() {
         if (mHooksForTesting != null) {
@@ -63,16 +83,8 @@ public class AuxiliarySearchControllerFactory {
             return null;
         }
 
-        if (ChromeFeatureList.sAndroidAppIntegrationV2.isEnabled()
-                && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            return new AuxiliarySearchControllerImpl(context, profile, tabModelSelector);
-        }
-
-        return createAuxiliarySearchControllerImp(
-                context,
-                profile,
-                tabModelSelector,
-                mHooksForTesting == null ? mHooks : mHooksForTesting);
+        assert ChromeFeatureList.sAndroidAppIntegrationV2.isEnabled();
+        return new AuxiliarySearchControllerImpl(context, profile, tabModelSelector);
     }
 
     public void setSchemaTypeVisibilityForPackage(
@@ -88,23 +100,34 @@ public class AuxiliarySearchControllerFactory {
      * Sets whether the device is a tablet. Note: this must be called before checking isEnabled().
      */
     public void setIsTablet(boolean isTablet) {
-        if (mHooksForTesting != null) {
-            mHooksForTesting.setIsTablet(isTablet);
-        } else if (mHooks != null) {
-            mHooks.setIsTablet(isTablet);
-        }
+        mIsTablet = isTablet || (mIsTablet != null && mIsTablet);
     }
 
-    private @Nullable AuxiliarySearchController createAuxiliarySearchControllerImp(
-            @NonNull Context context,
-            @NonNull Profile profile,
-            @Nullable TabModelSelector tabModelSelector,
-            @NonNull AuxiliarySearchHooks hooks) {
-        return hooks.createAuxiliarySearchController(context, profile, tabModelSelector);
+    /** Gets whether the device is a tablet. */
+    public boolean isTablet() {
+        assert mIsTablet != null;
+        return mIsTablet;
+    }
+
+    @Nullable
+    public String getSupportedPackageName() {
+        if (mHooksForTesting != null) {
+            return mHooksForTesting.getSupportedPackageName();
+        }
+
+        if (mHooks != null) {
+            return mHooks.getSupportedPackageName();
+        }
+
+        return null;
     }
 
     public void setHooksForTesting(AuxiliarySearchHooks instanceForTesting) {
         mHooksForTesting = instanceForTesting;
         ResettersForTesting.register(() -> mHooksForTesting = null);
+    }
+
+    public void resetIsTabletForTesting() {
+        mIsTablet = null;
     }
 }

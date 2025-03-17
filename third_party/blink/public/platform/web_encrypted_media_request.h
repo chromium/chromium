@@ -5,20 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_ENCRYPTED_MEDIA_REQUEST_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_ENCRYPTED_MEDIA_REQUEST_H_
 
+#include <memory>
+#include <vector>
+
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_access.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
-
-#include <memory>
 
 namespace blink {
 
 class EncryptedMediaRequest;
 struct WebMediaKeySystemConfiguration;
 class WebSecurityOrigin;
-template <typename T>
-class WebVector;
 
 class BLINK_PLATFORM_EXPORT WebEncryptedMediaRequest {
  public:
@@ -26,7 +25,7 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaRequest {
   ~WebEncryptedMediaRequest();
 
   WebString KeySystem() const;
-  const WebVector<WebMediaKeySystemConfiguration>& SupportedConfigurations()
+  const std::vector<WebMediaKeySystemConfiguration>& SupportedConfigurations()
       const;
 
   WebSecurityOrigin GetSecurityOrigin() const;

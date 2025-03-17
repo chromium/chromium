@@ -38,9 +38,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/components/arc/arc_prefs.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -457,8 +457,8 @@ TEST_F(ForceInstalledMetricsTest,
   registry()->AddDisabled(ext1.get());
   ExtensionPrefs::Get(profile())->AddDisableReasons(
       kExtensionId1,
-      disable_reason::DisableReason::DISABLE_NOT_VERIFIED |
-          disable_reason::DisableReason::DISABLE_UNSUPPORTED_REQUIREMENT);
+      {disable_reason::DisableReason::DISABLE_NOT_VERIFIED,
+       disable_reason::DisableReason::DISABLE_UNSUPPORTED_REQUIREMENT});
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
       kExtensionName2, kExtensionId2, ExtensionStatus::kLoaded);
   // ForceInstalledMetrics should still keep running as kExtensionId1 is

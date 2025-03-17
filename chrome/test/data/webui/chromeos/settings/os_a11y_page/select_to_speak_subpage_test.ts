@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {HandlerVoice, SettingsSelectToSpeakSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, SelectToSpeakSubpageBrowserProxyImpl, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {HandlerVoice, SettingsSelectToSpeakSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, SelectToSpeakSubpageBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

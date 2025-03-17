@@ -14,13 +14,16 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 
+class Profile;
+
 // This service kicks off a download of the user's name and profile picture.
 // The results are saved in the profile info cache.
 // It also manages the lifecycle of the signin accounts prefs.
 class GAIAInfoUpdateService : public KeyedService,
                               public signin::IdentityManager::Observer {
  public:
-  GAIAInfoUpdateService(signin::IdentityManager* identity_manager,
+  GAIAInfoUpdateService(Profile* profile,
+                        signin::IdentityManager* identity_manager,
                         ProfileAttributesStorage* profile_attributes_storage,
                         PrefService& pref_service,
                         const base::FilePath& profile_path);
@@ -51,6 +54,7 @@ class GAIAInfoUpdateService : public KeyedService,
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
 
+  const raw_ptr<Profile> profile_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
   raw_ref<PrefService> pref_service_;

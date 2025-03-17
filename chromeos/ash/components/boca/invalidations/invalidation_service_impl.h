@@ -35,7 +35,8 @@ class InvalidationServiceImpl : public InvalidationsListener,
                           instance_id::InstanceIDDriver* instance_id_driver,
                           AccountId account_id,
                           BocaSessionManager* boca_session_manager_,
-                          SessionClientImpl* session_client_impl_);
+                          SessionClientImpl* session_client_impl_,
+                          std::string base_url);
   ~InvalidationServiceImpl() override;
 
   // InvalidationsListener implementation.
@@ -54,6 +55,7 @@ class InvalidationServiceImpl : public InvalidationsListener,
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
+  const std::string school_tools_base_url_;
   net::BackoffEntry upload_retry_backoff_;
   base::OneShotTimer token_refresh_timer_;
   std::unique_ptr<FCMHandler> fcm_handler_;

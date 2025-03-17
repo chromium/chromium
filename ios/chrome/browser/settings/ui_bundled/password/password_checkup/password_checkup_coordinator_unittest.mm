@@ -139,8 +139,8 @@ class PasswordCheckupCoordinatorTest
 
   web::WebTaskEnvironment task_environment_;
   SceneState* scene_state_;
-  std::unique_ptr<PushNotificationService> push_notification_service_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<PushNotificationService> push_notification_service_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;

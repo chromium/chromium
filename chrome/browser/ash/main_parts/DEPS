@@ -1,6 +1,9 @@
 include_rules = [
   "-chrome",
 
+  "+chromeos/ash/components/mojo_service_manager",
+  "+chromeos/ash/components/scheduler_config",
+
   "+chrome/browser/ash/main_parts",
 
   "+chrome/browser/ash/accessibility",
@@ -31,8 +34,8 @@ include_rules = [
   "+chrome/browser/ash/lock_screen_apps",
   "+chrome/browser/ash/logging",
   "+chrome/browser/ash/login",
+  "+chrome/browser/ash/magic_boost",
   "+chrome/browser/ash/mahi/web_contents",
-  "+chrome/browser/ash/mojo_service_manager",
   "+chrome/browser/ash/net",
   "+chrome/browser/ash/network_change_manager",
   "+chrome/browser/ash/note_taking",
@@ -48,7 +51,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/quick_pair",
   "+chrome/browser/ash/report_controller_initializer",
-  "+chrome/browser/ash/scheduler_config",
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/smb_client",
   "+chrome/browser/ash/system",

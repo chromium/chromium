@@ -12,50 +12,9 @@
 
 namespace media {
 
-// Setting some default usage in order to get a mappable shared image.
-constexpr auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
-                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-
 CameraBufferFactory::CameraBufferFactory() = default;
 
 CameraBufferFactory::~CameraBufferFactory() = default;
-
-std::unique_ptr<gfx::GpuMemoryBuffer>
-CameraBufferFactory::CreateGpuMemoryBuffer(const gfx::Size& size,
-                                           gfx::BufferFormat format,
-                                           gfx::BufferUsage usage) {
-  // TODO(b/363936240): Check if we can set and use GpuChannelHost in the
-  // browser process to create buffers.
-  // GpuChannelHost is able to be reset with new channel host to establish the
-  // new connection to GPU process via viz::Gpu APIs when GPU process crashes.
-  // Therefore, we use GpuChannelHost to create buffers in the utility process.
-  // |gpu_channel_host| is a nullptr in the browser process.
-  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =
-      VideoCaptureDeviceFactoryChromeOS::GetGpuChannelHost();
-  if (gpu_channel_host) {
-    gfx::GpuMemoryBufferHandle gmb_handle;
-    gpu_channel_host->CreateGpuMemoryBuffer(
-        size, viz::GetSharedImageFormat(format), usage, &gmb_handle);
-    if (gmb_handle.is_null()) {
-      LOG(ERROR)
-          << "GpuChannelHost doesn't work. Probably the gpu channel lost.";
-      return nullptr;
-    }
-    return gpu_memory_buffer_support_.CreateGpuMemoryBufferImplFromHandle(
-        std::move(gmb_handle), size, format, usage, base::NullCallback());
-  }
-  // GpuMemoryBufferManagerSingleton is only available in the browser process.
-  // |buf_manager| is a nullptr in the utility process.
-  gpu::GpuMemoryBufferManager* buf_manager =
-      VideoCaptureDeviceFactoryChromeOS::GetBufferManager();
-  if (buf_manager) {
-    return buf_manager->CreateGpuMemoryBuffer(size, format, usage,
-                                              gpu::kNullSurfaceHandle, nullptr);
-  }
-  LOG(ERROR)
-      << "Both of GpuChannelHost and GpuMemoryBufferManager are not set.";
-  return nullptr;
-}
 
 scoped_refptr<gpu::ClientSharedImage> CameraBufferFactory::CreateSharedImage(
     const gfx::Size& size,
@@ -68,9 +27,24 @@ scoped_refptr<gpu::ClientSharedImage> CameraBufferFactory::CreateSharedImage(
     return nullptr;
   }
 
+  // In the media capture process, the underlying GMB handle created via the
+  // below shared image is only used for CPU read/write. It is then later sent
+  // to the renderer which uses the handle to create a new shared image for
+  // drawing. Hence there is no need to create and hold a service side GMB
+  // handle/NativePixmap as a part of OzoneImageBacking created via below
+  // CreateSharedImage call. Creating and holding a NativePixmap via below
+  // CreateSharedImage call also fails for R8 format since it's not a
+  // texturable format for some devices.
+  // Hence we use the special usage flag SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE
+  // which instructs the service side code that a NativePixmap inside the
+  // SharedImage is not necessary for this use case.
+  // Note that we'll need to refine this if/when we want to send these
+  // SharedImages over to the renderer process when feasible (i.e., for non-R8
+  // and/or for R8 on devices where it's texturable).
   auto shared_image = sii->CreateSharedImage(
       {viz::GetSharedImageFormat(format), size, color_space,
-       gpu::SharedImageUsageSet(si_usage), "CameraBufferFactory"},
+       gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE),
+       "CameraBufferFactory"},
       gpu::kNullSurfaceHandle, usage);
   if (!shared_image) {
     LOG(ERROR) << "Failed to create a shared image.";
@@ -91,9 +65,24 @@ CameraBufferFactory::CreateSharedImageFromGmbHandle(
     return nullptr;
   }
 
+  // In the media capture process, the underlying GMB handle created via the
+  // below shared image is only used for CPU read/write. It is then later sent
+  // to the renderer which uses the handle to create a new shared image for
+  // drawing. Hence there is no need to create and hold a service side GMB
+  // handle/NativePixmap as a part of OzoneImageBacking created via below
+  // CreateSharedImage call. Creating and holding a NativePixmap via below
+  // CreateSharedImage call also fails for R8 format since it's not a
+  // texturable format for some devices.
+  // Hence we use the special usage flag SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE
+  // which instructs the service side code that a NativePixmap inside the
+  // SharedImage is not necessary for this use case.
+  // Note that we'll need to refine this if/when we want to send these
+  // SharedImages over to the renderer process when feasible (i.e., for non-R8
+  // and/or for R8 on devices where it's texturable).
   auto shared_image = sii->CreateSharedImage(
       {viz::GetSharedImageFormat(format), size, color_space,
-       gpu::SharedImageUsageSet(si_usage), "CameraBufferFactory"},
+       gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE),
+       "CameraBufferFactory"},
       gpu::kNullSurfaceHandle, usage, std::move(buffer_handle));
   if (!shared_image) {
     LOG(ERROR) << "Failed to create a shared image.";
@@ -121,9 +110,9 @@ ChromiumPixelFormat CameraBufferFactory::ResolveStreamBufferFormat(
     return kUnsupportedFormat;
   }
   for (const auto& f : cr_formats) {
-    auto buffer = CreateGpuMemoryBuffer(
+    auto shared_image = CreateSharedImage(
         gfx::Size(kDummyBufferWidth, kDummyBufferHeight), f.gfx_format, usage);
-    if (buffer) {
+    if (shared_image) {
       resolved_format_usages_[key] = f;
       return f;
     }

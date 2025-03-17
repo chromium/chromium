@@ -238,9 +238,6 @@ declare_args() {
   # Enable TRACE_EVENT instrumentation for Blink bindings.
   # Disabled by default as it increases binary size.
   enable_blink_bindings_tracing = extended_tracing_enabled
-
-  # Enable cooperating scheduling hooks in auto-generated Blink bindings code.
-  enable_blink_bindings_cooperating_scheduling = false
 }
 
 # ZSTD compression support has a binary size cost, don't include it on
@@ -259,7 +256,6 @@ buildflag_header("bindings_buildflags") {
   flags = [
     "RCS_COUNT_EVERYTHING=$runtime_call_stats_count_everything",
     "BLINK_BINDINGS_TRACE_ENABLED=$enable_blink_bindings_tracing",
-    "BLINK_BINDINGS_COOPERATIVE_SCHEDULING_ENABLED=$enable_blink_bindings_cooperating_scheduling",
     "HAS_ZSTD_COMPRESSION=$has_zstd_compression",
   ]
 }
@@ -463,7 +459,6 @@ component("platform") {
     "bindings/callback_interface_base.h",
     "bindings/callback_method_retriever.cc",
     "bindings/callback_method_retriever.h",
-    "bindings/cooperative_scheduling_helpers.h",
     "bindings/cross_thread_copier.h",
     "bindings/dictionary_base.cc",
     "bindings/dictionary_base.h",
@@ -484,8 +479,6 @@ component("platform") {
     "bindings/frozen_array_base.h",
     "bindings/idl_member_installer.cc",
     "bindings/idl_member_installer.h",
-    "bindings/multi_worlds_v8_reference.cc",
-    "bindings/multi_worlds_v8_reference.h",
     "bindings/name_client.h",
     "bindings/observable_array.cc",
     "bindings/observable_array.h",
@@ -537,8 +530,6 @@ component("platform") {
     "bindings/v8_interface_bridge_base.h",
     "bindings/v8_object_constructor.cc",
     "bindings/v8_object_constructor.h",
-    "bindings/v8_object_data_store.cc",
-    "bindings/v8_object_data_store.h",
     "bindings/v8_per_context_data.cc",
     "bindings/v8_per_context_data.h",
     "bindings/v8_per_isolate_data.cc",
@@ -739,6 +730,10 @@ component("platform") {
     "fonts/orientation_iterator.h",
     "fonts/palette_interpolation.cc",
     "fonts/palette_interpolation.h",
+    "fonts/plain_text_node.cc",
+    "fonts/plain_text_node.h",
+    "fonts/plain_text_painter.cc",
+    "fonts/plain_text_painter.h",
     "fonts/resolved_font_features.h",
     "fonts/script_run_iterator.cc",
     "fonts/script_run_iterator.h",
@@ -752,6 +747,8 @@ component("platform") {
     "fonts/shaping/case_mapping_harfbuzz_buffer_filler.h",
     "fonts/shaping/font_features.cc",
     "fonts/shaping/font_features.h",
+    "fonts/shaping/frame_shape_cache.cc",
+    "fonts/shaping/frame_shape_cache.h",
     "fonts/shaping/glyph_bounds_accumulator.h",
     "fonts/shaping/glyph_data.h",
     "fonts/shaping/han_kerning.cc",
@@ -830,6 +827,9 @@ component("platform") {
     "geometry/calculation_value.cc",
     "geometry/calculation_value.h",
     "geometry/color_channel_keyword.h",
+    "geometry/contoured_rect.cc",
+    "geometry/contoured_rect.h",
+    "geometry/dash_array.h",
     "geometry/evaluation_input.h",
     "geometry/float_polygon.cc",
     "geometry/float_polygon.h",
@@ -849,8 +849,15 @@ component("platform") {
     "geometry/length_functions.h",
     "geometry/length_point.h",
     "geometry/length_size.h",
+    "geometry/logical_direction.h",
     "geometry/math_functions.h",
+    "geometry/path.cc",
+    "geometry/path.h",
+    "geometry/path_types.h",
     "geometry/physical_direction.h",
+    "geometry/skia_geometry_utils.h",
+    "geometry/stroke_data.cc",
+    "geometry/stroke_data.h",
     "graphics/accelerated_static_bitmap_image.cc",
     "graphics/accelerated_static_bitmap_image.h",
     "graphics/animation_worklet_mutator.h",
@@ -866,6 +873,8 @@ component("platform") {
     "graphics/bitmap_image.h",
     "graphics/bitmap_image_metrics.cc",
     "graphics/bitmap_image_metrics.h",
+    "graphics/blend_mode.cc",
+    "graphics/blend_mode.h",
     "graphics/box_reflection.cc",
     "graphics/box_reflection.h",
     "graphics/canvas_2d_layer_bridge.cc",
@@ -935,7 +944,6 @@ component("platform") {
     "graphics/dark_mode_types.h",
     "graphics/darkmode/darkmode_classifier.cc",
     "graphics/darkmode/darkmode_classifier.h",
-    "graphics/dash_array.h",
     "graphics/decoding_image_generator.cc",
     "graphics/decoding_image_generator.h",
     "graphics/deferred_image_decoder.cc",
@@ -999,6 +1007,7 @@ component("platform") {
     "graphics/filters/source_graphic.h",
     "graphics/filters/spot_light_source.cc",
     "graphics/filters/spot_light_source.h",
+    "graphics/flush_reason.h",
     "graphics/generated_image.cc",
     "graphics/generated_image.h",
     "graphics/gpu/dawn_control_client_holder.cc",
@@ -1044,8 +1053,8 @@ component("platform") {
     "graphics/graphics_context_state.cc",
     "graphics/graphics_context_state.h",
     "graphics/graphics_context_state_saver.h",
-    "graphics/graphics_types.cc",
-    "graphics/graphics_types.h",
+    "graphics/graphics_context_types.cc",
+    "graphics/graphics_context_types.h",
     "graphics/graphics_types_3d.h",
     "graphics/image.cc",
     "graphics/image.h",
@@ -1086,6 +1095,7 @@ component("platform") {
     "graphics/mutator_client.h",
     "graphics/offscreen_canvas_placeholder.cc",
     "graphics/offscreen_canvas_placeholder.h",
+    "graphics/opacity_mode.h",
     "graphics/overlay_scrollbar_clip_behavior.h",
     "graphics/paint/clip_paint_property_node.cc",
     "graphics/paint/clip_paint_property_node.h",
@@ -1096,6 +1106,7 @@ component("platform") {
     "graphics/paint/display_item_cache_skipper.h",
     "graphics/paint/display_item_client.cc",
     "graphics/paint/display_item_client.h",
+    "graphics/paint/display_item_client_types.h",
     "graphics/paint/display_item_list.cc",
     "graphics/paint/display_item_list.h",
     "graphics/paint/display_item_raster_invalidator.cc",
@@ -1174,16 +1185,18 @@ component("platform") {
     "graphics/parkable_image.h",
     "graphics/parkable_image_manager.cc",
     "graphics/parkable_image_manager.h",
-    "graphics/path.cc",
-    "graphics/path.h",
     "graphics/path_traversal_state.cc",
     "graphics/path_traversal_state.h",
     "graphics/pattern.cc",
     "graphics/pattern.h",
     "graphics/picture_snapshot.cc",
     "graphics/picture_snapshot.h",
+    "graphics/platform_focus_ring.cc",
+    "graphics/platform_focus_ring.h",
     "graphics/platform_paint_worklet_layer_painter.cc",
     "graphics/platform_paint_worklet_layer_painter.h",
+    "graphics/predefined_color_space.cc",
+    "graphics/predefined_color_space.h",
     "graphics/profiling_canvas.cc",
     "graphics/profiling_canvas.h",
     "graphics/raster_dark_mode_filter_impl.cc",
@@ -1206,8 +1219,6 @@ component("platform") {
     "graphics/static_bitmap_image_to_video_frame_copier.h",
     "graphics/static_bitmap_image_transform.cc",
     "graphics/static_bitmap_image_transform.h",
-    "graphics/stroke_data.cc",
-    "graphics/stroke_data.h",
     "graphics/styled_stroke_data.cc",
     "graphics/styled_stroke_data.h",
     "graphics/subtree_paint_property_update_reason.cc",
@@ -1324,6 +1335,7 @@ component("platform") {
     "mojo/heap_mojo_unique_receiver_set.h",
     "mojo/heap_mojo_wrapper_mode.h",
     "mojo/kurl_mojom_traits.h",
+    "mojo/mojo_binding_context.cc",
     "mojo/mojo_binding_context.h",
     "mojo/security_origin_mojom_traits.h",
     "mojo/string16_mojom_traits.cc",
@@ -1754,13 +1766,12 @@ component("platform") {
     "//ui/base/cursor",
     "//ui/base/mojom:ui_base_types_blink",
     "//ui/gfx",
-    "//ui/native_theme:features",
+    "//ui/native_theme/features",
   ]
   deps = [
     "//base:base_static",
     "//base/allocator:buildflags",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//cc",
     "//cc/ipc",
     "//cc/mojo_embedder",
@@ -1952,8 +1963,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "graphics/color_correction_test_utils.cc",
-    "graphics/color_correction_test_utils.h",
     "graphics/gpu/drawing_buffer_test_helpers.h",
     "graphics/paint/paint_controller_test.h",
     "graphics/test/fake_canvas_resource_host.h",
@@ -2031,6 +2040,7 @@ static_library("test_support") {
     "testing/video_frame_utils.cc",
     "testing/video_frame_utils.h",
     "webrtc/testing/mock_webrtc_video_frame_adapter_shared_resources.h",
+    "widget/compositing/test/stub_widget_base_client.h",
   ]
 
   # fuzzed_data_provider may not work with a custom toolchain.
@@ -2108,9 +2118,6 @@ test("blink_platform_unittests") {
       # Required because of an indirect dependency on //media/base/android via
       # platform/media:unit_tests.
       "//media/base/android:media_java",
-
-      # Required to disable broken tests.
-      "//testing/buildbot/filters:blink_platform_unittests",
     ]
   }
   if (is_ios) {
@@ -2125,6 +2132,7 @@ test("blink_platform_unittests") {
 if (enable_nocompile_tests) {
   nocompile_source_set("blink_platform_nocompile_tests") {
     sources = [
+      "heap/test/heap_bind_nocompile.nc",
       "wtf/functional_nocompile.nc",
       "wtf/text/string_view_nocompile.nc",
     ]
@@ -2148,6 +2156,7 @@ source_set("blink_platform_unittests_sources") {
     "audio/audio_destination_test.cc",
     "audio/audio_destination_uma_reporter_test.cc",
     "audio/audio_frame_stats_accumulator_test.cc",
+    "audio/denormal_disabler_test.cc",
     "audio/push_pull_fifo_multithread_test.cc",
     "audio/push_pull_fifo_test.cc",
     "audio/vector_math_test.cc",
@@ -2163,7 +2172,6 @@ source_set("blink_platform_unittests_sources") {
     "exported/web_screen_info_test.cc",
     "exported/web_string_test.cc",
     "exported/web_thread_safe_data_test.cc",
-    "exported/web_vector_test.cc",
     "fonts/bitmap_glyphs_block_list_test.cc",
     "fonts/cursor_position_test.cc",
     "fonts/fallback_list_composite_key_test.cc",
@@ -2189,6 +2197,7 @@ source_set("blink_platform_unittests_sources") {
     "fonts/opentype/variable_axes_names_test.cc",
     "fonts/orientation_iterator_test.cc",
     "fonts/palette_interpolation_test.cc",
+    "fonts/plain_text_node_test.cc",
     "fonts/script_run_iterator_test.cc",
     "fonts/shaping/caching_word_shaper_test.cc",
     "fonts/shaping/font_features_test.cc",
@@ -2212,12 +2221,14 @@ source_set("blink_platform_unittests_sources") {
     "fonts/utf16_ragel_iterator_test.cc",
     "fonts/web_font_typeface_factory_test.cc",
     "geometry/calculation_expression_node_test.cc",
+    "geometry/contoured_rect_test.cc",
     "geometry/float_polygon_test.cc",
     "geometry/float_rounded_rect_test.cc",
     "geometry/layout_unit_test.cc",
     "geometry/length_functions_test.cc",
     "geometry/length_test.cc",
     "geometry/math_functions_test.cc",
+    "geometry/path_test.cc",
     "graphics/accelerated_static_bitmap_image_test.cc",
     "graphics/bitmap_image_test.cc",
     "graphics/color_test.cc",
@@ -2262,7 +2273,6 @@ source_set("blink_platform_unittests_sources") {
     "graphics/paint_invalidation_reason_test.cc",
     "graphics/parkable_image_segment_reader_test.cc",
     "graphics/parkable_image_test.cc",
-    "graphics/path_test.cc",
     "graphics/raster_dark_mode_filter_impl_test.cc",
     "graphics/video_frame_image_util_test.cc",
     "graphics/video_frame_sink_bundle_test.cc",
@@ -2274,7 +2284,6 @@ source_set("blink_platform_unittests_sources") {
     "mediastream/audio_service_audio_processor_proxy_test.cc",
     "mediastream/media_stream_audio_processor_options_test.cc",
     "mediastream/media_stream_audio_test.cc",
-    "mediastream/media_stream_source_test.cc",
     "mediastream/transferred_media_stream_component_test.cc",
     "mediastream/webrtc_uma_histograms_test.cc",
     "mhtml/mhtml_parser_test.cc",
@@ -2369,8 +2378,11 @@ source_set("blink_platform_unittests_sources") {
     "widget/input/input_event_prediction_unittest.cc",
     "widget/input/input_handler_proxy_unittest.cc",
     "widget/input/main_thread_event_queue_unittest.cc",
+    "widget/input/mock_input_handler_proxy.h",
+    "widget/input/mock_input_handler_proxy_client.h",
     "widget/input/prediction/filter_factory_unittests.cc",
     "widget/input/scroll_predictor_unittest.cc",
+    "widget/input/widget_input_handler_manager_unittest.cc",
   ]
 
   if (rtc_use_h265) {
@@ -2407,7 +2419,6 @@ source_set("blink_platform_unittests_sources") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc",
     "//cc:test_support",
     "//gin:gin",
@@ -2582,7 +2593,10 @@ group("blink_platform_unittests_data") {
     "//third_party/blink/web_tests/third_party/",
   ]
 
-  data_deps = [ "//third_party/hyphenation-patterns:test_data" ]
+  data_deps = [
+    "//testing/buildbot/filters:blink_platform_unittests",
+    "//third_party/hyphenation-patterns:test_data",
+  ]
 }
 
 if (current_cpu == "x86" || current_cpu == "x64") {
@@ -2765,19 +2779,6 @@ fuzzer_test("web_icon_sizes_fuzzer") {
     ":platform",
   ]
   dict = "//testing/libfuzzer/fuzzers/dicts/web_icon_sizes.dict"
-  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
-}
-
-# Fuzzer for blink::AVIFImageDecoder
-fuzzer_test("blink_avif_decoder_fuzzer") {
-  sources = [ "image-decoders/avif/avif_image_decoder_fuzzer.cc" ]
-  deps = [
-    ":blink_fuzzer_test_support",
-    ":blink_image_decoder_fuzzer_test_support",
-    ":platform",
-  ]
-  seed_corpuses = [ "//third_party/blink/web_tests/images/resources/avif" ]
-  libfuzzer_options = [ "rss_limit_mb=8192" ]
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 

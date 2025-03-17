@@ -7,13 +7,13 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "cc/cc_export.h"
 #include "cc/raster/task_graph_runner.h"
 
@@ -124,15 +124,15 @@ class CC_EXPORT TaskGraphWorkQueue {
 
   static bool HasReadyToRunTasksInNamespace(
       const TaskNamespace* task_namespace) {
-    return !base::ranges::all_of(
-        task_namespace->ready_to_run_tasks, &PrioritizedTask::Vector::empty,
-        &TaskNamespace::ReadyTasks::value_type::second);
+    return !std::ranges::all_of(task_namespace->ready_to_run_tasks,
+                                &PrioritizedTask::Vector::empty,
+                                &TaskNamespace::ReadyTasks::value_type::second);
   }
 
   static bool HasTasksBlockedOnExternalDependencyInNamespace(
       const TaskNamespace* task_namespace) {
-    return base::ranges::any_of(task_namespace->graph.nodes,
-                                &TaskGraph::Node::has_external_dependency);
+    return std::ranges::any_of(task_namespace->graph.nodes,
+                               &TaskGraph::Node::has_external_dependency);
   }
 
   static bool HasFinishedRunningTasksInNamespace(
@@ -143,9 +143,9 @@ class CC_EXPORT TaskGraphWorkQueue {
   }
 
   bool HasReadyToRunTasks() const {
-    return !base::ranges::all_of(ready_to_run_namespaces_,
-                                 &TaskNamespace::Vector::empty,
-                                 &ReadyNamespaces::value_type::second);
+    return !std::ranges::all_of(ready_to_run_namespaces_,
+                                &TaskNamespace::Vector::empty,
+                                &ReadyNamespaces::value_type::second);
   }
 
   bool HasReadyToRunTasksForCategory(uint16_t category) const {
@@ -156,7 +156,7 @@ class CC_EXPORT TaskGraphWorkQueue {
   bool HasAnyNamespaces() const { return !namespaces_.empty(); }
 
   bool HasFinishedRunningTasksInAllNamespaces() {
-    return base::ranges::all_of(
+    return std::ranges::all_of(
         namespaces_, [](const TaskNamespaceMap::value_type& entry) {
           return HasFinishedRunningTasksInNamespace(&entry.second);
         });

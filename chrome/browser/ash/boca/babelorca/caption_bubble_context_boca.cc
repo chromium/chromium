@@ -9,9 +9,13 @@
 
 #include "ash/accessibility/caption_bubble_context_ash.h"
 #include "base/functional/callback.h"
-#include "components/live_caption/views/caption_bubble_model.h"
 
 namespace ash::babelorca {
+namespace {
+
+constexpr char kBocaSessionId[] = "BocaSessionId";
+}  // namespace
+
 CaptionBubbleContextBoca::CaptionBubbleContextBoca(
     ::captions::OpenCaptionSettingsCallback callback)
     : CaptionBubbleContextAsh(std::move(callback)) {}
@@ -19,7 +23,7 @@ CaptionBubbleContextBoca::CaptionBubbleContextBoca(
 CaptionBubbleContextBoca::~CaptionBubbleContextBoca() = default;
 
 const std::string CaptionBubbleContextBoca::GetSessionId() const {
-  return ::captions::CaptionBubbleModel::kBocaWithTranslationSessionId;
+  return kBocaSessionId;
 }
 
 }  // namespace ash::babelorca

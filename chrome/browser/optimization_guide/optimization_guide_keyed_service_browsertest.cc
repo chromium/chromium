@@ -18,7 +18,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -241,6 +240,14 @@ class OptimizationGuideKeyedServiceBrowserTest
     InProcessBrowserTest::SetUp();
   }
 
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    OptimizationGuideKeyedServiceDisabledBrowserTest::
+        SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
   void SetUpOnMainThread() override {
     OptimizationGuideKeyedServiceDisabledBrowserTest::SetUpOnMainThread();
 
@@ -265,22 +272,6 @@ class OptimizationGuideKeyedServiceBrowserTest
             browser()->profile());
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&OptimizationGuideKeyedServiceBrowserTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
-  virtual void OnWillCreateBrowserContextServices(
-      content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-  }
-
-  base::CallbackListSubscription create_services_subscription_;
   void TearDownOnMainThread() override {
     EXPECT_TRUE(https_server_->ShutdownAndWaitUntilComplete());
 
@@ -492,10 +483,10 @@ class DogfoodOptimizationGuideKeyedServiceBrowserTest
 
   ~DogfoodOptimizationGuideKeyedServiceBrowserTest() override = default;
 
-  void OnWillCreateBrowserContextServices(
+  void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
-    OptimizationGuideKeyedServiceBrowserTest::
-        OnWillCreateBrowserContextServices(context);
+    OptimizationGuideKeyedServiceBrowserTest::SetUpBrowserContextKeyedServices(
+        context);
     SetIsDogfoodClient(true);
   }
 };
@@ -504,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        RemoteFetchingDisabled) {
   // ChromeOS has multiple profiles and optimization guide currently does not
   // run on non-Android.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.RemoteFetchingEnabled", false, 1);
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
@@ -1086,8 +1077,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
 }
 
-// Creating multiple profiles isn't supported easily on ash and android.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+// Creating multiple profiles isn't supported easily on ChromeOS and android.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        LogOnDeviceMetricsSingleTimeForMultipleProfiles) {
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
@@ -1118,7 +1109,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 // CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        GuestProfileUniqueKeyedService) {
@@ -1240,7 +1231,7 @@ IN_PROC_BROWSER_TEST_F(
     RemoteFetchingAllowed) {
   // ChromeOS has multiple profiles and optimization guide currently does not
   // run on non-Android.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.RemoteFetchingEnabled", true, 1);
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup(

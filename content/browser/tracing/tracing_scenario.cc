@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
+#include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
 
 namespace content {
@@ -242,10 +243,10 @@ TracingScenario::TracingScenario(
     bool is_local_scenario,
     bool request_startup_tracing)
     : TracingScenarioBase(config.scenario_name()),
-      config_hash_(base::MD5String(config.SerializeAsString())),
       privacy_filtering_enabled_(enable_privacy_filter),
       is_local_scenario_(is_local_scenario),
       request_startup_tracing_(request_startup_tracing),
+      use_system_backend_(config.use_system_backend()),
       trace_config_(config.trace_config()),
       scenario_delegate_(scenario_delegate) {}
 
@@ -254,10 +255,13 @@ TracingScenario::~TracingScenario() = default;
 bool TracingScenario::Initialize(
     const perfetto::protos::gen::ScenarioConfig& config,
     bool enable_package_name_filter) {
+  bool enable_system_backend =
+      use_system_backend_ && tracing::SystemBackgroundTracingEnabled();
   if (!tracing::AdaptPerfettoConfigForChrome(
           &trace_config_, privacy_filtering_enabled_,
           enable_package_name_filter,
-          perfetto::protos::gen::ChromeConfig::BACKGROUND)) {
+          perfetto::protos::gen::ChromeConfig::BACKGROUND,
+          enable_system_backend)) {
     return false;
   }
   for (const auto& nested_config : config.nested_scenarios()) {
@@ -319,7 +323,15 @@ void TracingScenario::GenerateMetadataProto(
 
 std::unique_ptr<perfetto::TracingSession>
 TracingScenario::CreateTracingSession() {
-  return perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
+  // If the scenario is configured to use the system backend, the platform
+  // should support it (see OnSetupTrigger()). Otherwise this is a configuration
+  // error.
+  DCHECK(!use_system_backend_ || tracing::SystemBackgroundTracingEnabled());
+  auto backend_type =
+      (use_system_backend_ && tracing::SystemBackgroundTracingEnabled())
+          ? perfetto::BackendType::kSystemBackend
+          : perfetto::BackendType::kCustomBackend;
+  return perfetto::Tracing::NewTrace(backend_type);
 }
 
 void TracingScenario::SetupTracingSession() {
@@ -397,14 +409,18 @@ void TracingScenario::OnNestedScenarioUpload(
   DCHECK_EQ(active_scenario_, nested_scenario);
   CHECK_EQ(nested_scenario->current_state(),
            NestedTracingScenario::State::kDisabled);
-  CHECK_EQ(current_state_, State::kRecording);
+  CHECK(current_state_ == State::kStarting ||
+        current_state_ == State::kRecording)
+      << static_cast<int>(current_state_);
   TriggersDataSource::EmitTrigger(triggered_rule);
   base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Upload",
                            TriggerNameHash(triggered_rule));
 
   active_scenario_ = nullptr;
   SetState(State::kCloning);
-  if (!scenario_delegate_->OnScenarioCloned(this)) {
+  // Skip cloning if the trace isn't allowed to save or is still starting.
+  if (!scenario_delegate_->OnScenarioCloned(this) ||
+      current_state_ == State::kStarting) {
     OnTracingCloned();
     return;
   }
@@ -431,6 +447,12 @@ void TracingScenario::OnNestedScenarioUpload(
 bool TracingScenario::OnSetupTrigger(
     const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Skip this scenario if it requires the system backend, but the system
+  // backend is unavailable (a configuration error).
+  if (use_system_backend_ && !tracing::SystemBackgroundTracingEnabled()) {
+    return false;
+  }
 
   if (!scenario_delegate_->OnScenarioActive(this)) {
     return false;
@@ -472,7 +494,7 @@ bool TracingScenario::OnStartTrigger(
     rule->Uninstall();
   }
 
-  SetState(State::kRecording);
+  SetState(State::kStarting);
 
   if (request_startup_tracing_) {
     perfetto::Tracing::SetupStartupTracingOpts opts;
@@ -527,6 +549,10 @@ bool TracingScenario::OnStopTrigger(
     SetState(State::kDisabled);
     scenario_delegate_->OnScenarioIdle(this);
     return true;
+  } else if (current_state_ == State::kStarting) {
+    for (auto& rule : upload_rules_) {
+      rule->Uninstall();
+    }
   }
   tracing_session_->Stop();
   SetState(State::kStopping);
@@ -555,6 +581,10 @@ bool TracingScenario::OnUploadTrigger(
     tracing_session_.reset();
     SetState(State::kDisabled);
     scenario_delegate_->OnScenarioIdle(this);
+    return true;
+  } else if (current_state_ == State::kStarting) {
+    SetState(State::kStopping);
+    tracing_session_->Stop();
     return true;
   }
   CHECK(current_state_ == State::kRecording ||
@@ -588,11 +618,12 @@ void TracingScenario::OnTracingError(perfetto::TracingError error) {
   DisableNestedScenarios();
   SetState(State::kStopping);
   tracing_session_->Stop();
-  // TODO(crbug.com/40257548): Consider reporting |error|.
+  scenario_delegate_->OnScenarioError(this, error);
 }
 
 void TracingScenario::OnTracingStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetState(State::kRecording);
   scenario_delegate_->OnScenarioRecording(this);
 }
 
@@ -603,6 +634,7 @@ void TracingScenario::OnTracingStop() {
       current_state_ != State::kFinalizing) {
     // Tracing was stopped internally.
     CHECK(current_state_ == State::kSetup ||
+          current_state_ == State::kStarting ||
           current_state_ == State::kRecording ||
           current_state_ == State::kCloning)
         << static_cast<int>(current_state_);
@@ -666,13 +698,15 @@ void TracingScenario::OnFinalizingDone(
 void TracingScenario::DisableNestedScenarios() {
   if (active_scenario_) {
     CHECK(current_state_ == State::kRecording ||
+          current_state_ == State::kStarting ||
           current_state_ == State::kStopping)
         << static_cast<int>(current_state_);
     on_nested_stopped_.Cancel();
     active_scenario_->Disable();
     active_scenario_ = nullptr;
   } else if (current_state_ == State::kRecording ||
-             current_state_ == State::kSetup) {
+             current_state_ == State::kSetup ||
+             current_state_ == State::kStarting) {
     for (auto& nested_scenario : nested_scenarios_) {
       nested_scenario->Disable();
     }

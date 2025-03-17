@@ -81,6 +81,12 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       // label button because it behaves like a menu control.
       return gfx::Insets::VH(insets.height(), horizontal_padding);
     }
+    case INSETS_RECENT_ACTIVITY_IMAGE_MARGIN:
+      return gfx::Insets::TLBR(0, 12, 0, 16);
+    case INSETS_TASK_MANAGER:
+      return gfx::Insets::TLBR(4, 20, 20, 20);
+    case INSETS_PAGE_INFO_FOOTER_BUTTON:
+      return gfx::Insets::VH(12, 20);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }
@@ -115,6 +121,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
              2;
     case DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN:
       return GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
+    case DISTANCE_EXTENSIONS_MENU_LABEL_ICON_SPACING:
+      return 4;
     case DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL:
       return 16;
     case DISTANCE_RELATED_CONTROL_VERTICAL_SMALL:
@@ -163,14 +171,16 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 8;
     case DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL:
       return 8;
-    case DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING:
+    case DISTANCE_TASK_MANAGER_SEARCH_BAR_ICON_AND_BUTTON_HORIZONTAL_SPACING:
       return 12;
-    case DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING:
-      return 4;
     case DISTANCE_TASK_MANAGER_SEARCH_ICON_SIZE:
       return 20;
-    case DISTANCE_TASK_MANAGER_TAB_SPACING:
-      return 16;
+    case DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_WIDTH:
+      return 160;
+    case DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_HEIGHT:
+      return 36;
+    case DISTANCE_TASK_MANAGER_TAB_HEIGHT:
+      return 54;
     case DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING:
     case DISTANCE_TOAST_BUBBLE_BROWSER_WINDOW_MARGIN:
       return 4;
@@ -197,6 +207,34 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 10;
     case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_LABEL:
       return 16;
+    case DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE:
+      return 32;
+    case DISTANCE_RECENT_ACTIVITY_AVATAR_FALLBACK_SIZE:
+      return 24;
+    case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_RADIUS:
+      return 9;
+    case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_BORDER_WIDTH:
+      return 2;
+    case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_PADDING:
+      return 4;
+    case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_OFFSET_FROM_AVATAR:
+      return 2;
+    case DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS:
+      return 8;
+    case DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_MARGIN:
+      return 10;
+    case DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_PADDING:
+      return 6;
+    case DISTANCE_RECENT_ACTIVITY_ROW_VERTICAL_PADDING:
+      return 6;
+    case DISTANCE_ACCOUNT_INFO_ROW_AVATAR_EMAIL:
+      return 8;
+    case DISTANCE_COLLABORATION_MESSAGING_AVATAR_FALLBACK_ICON_PADDING:
+      return 2;
+    case DISTANCE_COLLABORATION_MESSAGING_AVATAR_FALLBACK_ICON_BORDER_SIZE:
+      return 1;
+    case DISTANCE_TEXTFIELD_ACCOUNT_CARD_VERTICAL:
+      return 4;
   }
   NOTREACHED();
 }

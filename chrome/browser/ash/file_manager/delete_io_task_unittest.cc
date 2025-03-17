@@ -142,16 +142,17 @@ TEST_F(DeleteIOTaskTest, NoSuchFile) {
   base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
   EXPECT_CALL(progress_callback, Run(_)).Times(0);
-  // Note that deleting a file that does not exist is expected to succeed.
-  // Whether the file is deleted or never created has the same end result.
+  // Deleting a file that does not exist is expected to fail with a
+  // FILE_ERROR_NOT_FOUND.
   EXPECT_CALL(
       complete_callback,
       Run(AllOf(Field(&ProgressStatus::type, OperationType::kDelete),
-                Field(&ProgressStatus::state, State::kSuccess),
+                Field(&ProgressStatus::state, State::kError),
                 Field(&ProgressStatus::bytes_transferred, 1),
                 Field(&ProgressStatus::sources, EntryStatusUrls(file_urls)),
                 Field(&ProgressStatus::sources,
-                      EntryStatusErrors(ElementsAre(base::File::FILE_OK))))))
+                      EntryStatusErrors(
+                          ElementsAre(base::File::FILE_ERROR_NOT_FOUND))))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   DeleteIOTask task(file_urls, file_system_context_);

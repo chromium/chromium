@@ -7,6 +7,9 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_mediator.h"
 
+namespace feature_engagement {
+class Tracker;
+}
 @protocol IncognitoGridMediatorDelegate;
 @class IncognitoReauthSceneAgent;
 @protocol TabGroupsCommands;
@@ -22,6 +25,8 @@ class IdentityManager;
 @property(nonatomic, weak) id<IncognitoGridMediatorDelegate> incognitoDelegate;
 // The reauth scene agent to handle the button enabled state.
 @property(nonatomic, weak) IncognitoReauthSceneAgent* reauthSceneAgent;
+// The feature engagement tracker to alert of promo events.
+@property(nonatomic, assign) feature_engagement::Tracker* tracker;
 
 // Initializes the capabilities observer to track changes to Family Link state.
 - (void)initializeFamilyLinkUserCapabilitiesObserver:

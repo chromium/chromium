@@ -1,0 +1,39 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!DOCTYPE html>
+
+<html>
+
+<body>
+  Autofill Test<br>
+
+  <br>
+  <button id="create-form-btn" onclick="createNewForm()">Create Form</button>
+  <br>
+  <div id="dynamic-form-slot"></div>
+
+  <script>
+
+    function createNewForm() {
+      const formHtml = `
+    <h3>Credit Card Info - Dynamic</h3>
+    <form name="cc2" id="cc2" method=POST action="destination.html">
+    Name on card: <input type="text" name="CCName2" id="CCName2" autofocus><br>
+    Credit card number: <input type="text" name="CCNo2" id="CCNo2"><br>
+    Expiry Date: <input type="text" name="CCExpiresMonth2" id="CCExpiresMonth2"> / <input type="text" name="CCExpiresYear2" id="CCExpiresYear2"><br>
+    CVC: <input type="text" name="cvc2" id="cvc2"><br><br>
+    <input type="reset" value="Reset" id="Reset2">
+    <input type="submit" value="Submit" id="Submit2">
+    </form>`;
+      document.getElementById('dynamic-form-slot').innerHTML = formHtml;
+      document.getElementById('CCName2').focus();
+    }
+
+  </script>
+
+</body>
+
+</html>

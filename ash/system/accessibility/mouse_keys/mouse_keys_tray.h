@@ -48,6 +48,8 @@ class ASH_EXPORT MouseKeysTray : public TrayBackgroundView,
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
   base::WeakPtr<MouseKeysTray> GetWeakPtr();
+  void SetMouseKeysStatusText(bool is_active);
+  void UpdateStatus();
 
  private:
   friend class MouseKeysTrayTest;

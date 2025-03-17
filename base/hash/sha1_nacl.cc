@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/hash/sha1.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
 #include <string_view>
 
-#include "base/hash/sha1.h"
 #include "base/numerics/byte_conversions.h"
 
 namespace base {
@@ -30,12 +31,15 @@ namespace base {
 // to reuse the instance of sha, call sha.Init();
 
 static inline uint32_t f(uint32_t t, uint32_t B, uint32_t C, uint32_t D) {
-  if (t < 20)
+  if (t < 20) {
     return (B & C) | ((~B) & D);
-  if (t < 40)
+  }
+  if (t < 40) {
     return B ^ C ^ D;
-  if (t < 60)
+  }
+  if (t < 60) {
     return (B & C) | (B & D) | (C & D);
+  }
   return B ^ C ^ D;
 }
 
@@ -44,12 +48,15 @@ static inline uint32_t S(uint32_t n, uint32_t X) {
 }
 
 static inline uint32_t K(uint32_t t) {
-  if (t < 20)
+  if (t < 20) {
     return 0x5a827999;
-  if (t < 40)
+  }
+  if (t < 40) {
     return 0x6ed9eba1;
-  if (t < 60)
+  }
+  if (t < 60) {
     return 0x8f1bbcdc;
+  }
   return 0xca62c1d6;
 }
 

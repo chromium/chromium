@@ -20,7 +20,6 @@ class ContentPasswordManagerDriver;
 
 namespace autofill {
 
-class AutofillAiDelegate;
 class AutofillDriver;
 class AutofillManager;
 class ContentAutofillDriver;
@@ -66,9 +65,6 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // available for the field.
   void MaybeAddAutofillFeedbackItem();
 
-  // Conditionally adds the item to trigger filling with Autofill AI.
-  void MaybeAddAutofillAiItem();
-
   // Conditionally adds the address, payments and / or passwords Autofill manual
   // fallbacks to the context menu model depending on whether there's data to
   // suggest.
@@ -78,9 +74,6 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // currently focused field.
   bool ShouldAddPlusAddressManualFallbackItem(
       ContentAutofillDriver& autofill_driver);
-
-  // Returns if the item to trigger Autofill AI should be added.
-  bool ShouldAddAutofillAiItem(AutofillAiDelegate* delegate, const GURL& url);
 
   // Checks if the currently focused field is a password field and whether
   // password filling is enabled.
@@ -110,10 +103,6 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
       password_manager::ContentPasswordManagerDriver& password_manager_drivern);
 
   void LogSelectPasswordManualFallbackContextMenuEntryAccepted();
-
-  // Triggers the filling with Autofill AI data.
-  void ExecuteAutofillAiCommand(const LocalFrameToken& frame_token,
-                                ContentAutofillDriver& autofill_driver);
 
   // Triggers the feedback flow for Autofill command.
   void ExecuteAutofillFeedbackCommand(const LocalFrameToken& frame_token,

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/policy/core/common/config_dir_policy_loader.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <set>
 #include <string>
 
@@ -75,9 +71,11 @@ PolicyBundle ConfigDirPolicyLoader::Load() {
 }
 
 base::Time ConfigDirPolicyLoader::LastModificationTime() {
-  static constexpr const base::FilePath::CharType* kConfigDirSuffixes[] = {
-      kMandatoryConfigDir, kRecommendedConfigDir,
-  };
+  constexpr static const auto kConfigDirSuffixes =
+      std::to_array<const base::FilePath::CharType*>({
+          kMandatoryConfigDir,
+          kRecommendedConfigDir,
+      });
 
   base::Time last_modification = base::Time();
   base::File::Info info;

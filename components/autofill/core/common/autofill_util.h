@@ -36,8 +36,15 @@ bool IsPrefixOfEmailEndingWithAtSign(std::u16string_view full_string,
 bool IsCheckable(const FormFieldData::CheckStatus& check_status);
 bool IsChecked(const FormFieldData::CheckStatus& check_status);
 void SetCheckStatus(FormFieldData* form_field_data,
-                    bool isCheckable,
-                    bool isChecked);
+                    bool is_checkable,
+                    bool is_checked);
+
+// Returns the index of the shortest entry in the given select field of which
+// |value| is a substring. Returns -1 if no such entry exists.
+std::optional<size_t> FindShortestSubstringMatchInSelect(
+    const std::u16string& value,
+    bool ignore_whitespace,
+    base::span<const SelectOption> field_options);
 
 // Lowercases and tokenizes a given `attribute` string.
 // Considers any ASCII whitespace character as a possible separator.
@@ -88,6 +95,11 @@ bool IsPlusAddressesManuallyTriggered(
 // not.
 // TODO(crbug.com/339543182): Cleanup after launching on iOS.
 bool IsAddressFieldSwappingEnabled();
+
+// Returns whether the feature `kAutofillPaymentsFieldSwapping` is enabled
+// or not.
+// TODO(crbug.com/354175563): Remove when launched on all platforms.
+bool IsPaymentsFieldSwappingEnabled();
 
 // Extracts comma-separated strings from a ButtonTitleList.
 std::u16string GetButtonTitlesString(const ButtonTitleList& titles_list);

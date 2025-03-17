@@ -14,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.PromoDialog.DialogParams;
@@ -36,6 +39,7 @@ import org.chromium.components.browser_ui.widget.PromoDialog.DialogParams;
  * + If there is no promo illustration, the header text becomes locked to the top of the dialog and
  *   doesn't scroll away.
  */
+@NullMarked
 public final class PromoDialogLayout extends BoundedLinearLayout {
     /** Content in the dialog that will flip orientation when the screen is wide. */
     private LinearLayout mFlippableContent;
@@ -53,13 +57,13 @@ public final class PromoDialogLayout extends BoundedLinearLayout {
     private TextView mHeaderView;
 
     /** View containing the header of the promo. */
-    private TextView mFooterView;
+    private @Nullable TextView mFooterView;
 
     /** View containing text explaining the promo. */
     private TextView mSubheaderView;
 
     /** Paramters used to build the promo. */
-    private DialogParams mParams;
+    private @Nullable DialogParams mParams;
 
     public PromoDialogLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -153,6 +157,7 @@ public final class PromoDialogLayout extends BoundedLinearLayout {
      *
      * @return Whether the layout needed to be adjusted.
      */
+    @NullUnmarked
     private boolean fixupHeader() {
         if (mParams.drawableResource != 0
                 || mParams.vectorDrawableResource != 0

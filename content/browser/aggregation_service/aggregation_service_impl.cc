@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -22,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
@@ -409,6 +411,28 @@ void AggregationServiceImpl::NotifyReportHandled(
         "NumRetriesBeforeSuccess",
         request.failed_send_attempts(),
         /*exclusive_max=*/AggregatableReportScheduler::kMaxRetries + 1);
+  }
+
+  if (request.delay_type().has_value()) {
+    const std::string_view delay_type_string =
+        AggregatableReportRequest::DelayTypeToString(*request.delay_type());
+
+    base::UmaHistogramEnumeration(
+        base::JoinString({"PrivacySandbox.AggregationService",
+                          delay_type_string, "FinalRequestStatus"},
+                         "."),
+        status);
+
+    if (request.delay_type() !=
+            AggregatableReportRequest::DelayType::Unscheduled &&
+        did_request_succeed) {
+      base::UmaHistogramExactLinear(
+          base::JoinString({"PrivacySandbox.AggregationService",
+                            delay_type_string, "NumRetriesBeforeSuccess"},
+                           "."),
+          request.failed_send_attempts(),
+          /*exclusive_max=*/AggregatableReportScheduler::kMaxRetries + 1);
+    }
   }
 
   base::Time now = base::Time::Now();

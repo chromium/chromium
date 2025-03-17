@@ -66,7 +66,7 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate, public AXTreeObserver {
 
   ~TestAXNodeWrapper() override;
 
-  AXPlatformNode* ax_platform_node() const { return platform_node_; }
+  AXPlatformNode* ax_platform_node() const { return platform_node_.get(); }
   void set_minimized(bool minimized) { minimized_ = minimized; }
 
   // Test helpers.
@@ -77,6 +77,7 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate, public AXTreeObserver {
   const AXNodeData& GetData() const override;
   const AXTreeData& GetTreeData() const override;
   const AXSelection GetUnignoredSelection() const override;
+  const AXSelection GetHypertextSelection() const override;
   AXNodePosition::AXPositionInstance CreatePositionAt(
       int offset,
       ax::mojom::TextAffinity affinity =
@@ -207,7 +208,7 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate, public AXTreeObserver {
   raw_ptr<AXTree> tree_;
   raw_ptr<AXNode> node_;
   AXUniqueId unique_id_;
-  raw_ptr<AXPlatformNode> platform_node_;
+  AXPlatformNode::Pointer platform_node_;
   gfx::AcceleratedWidget native_event_target_;
   bool minimized_ = false;
   base::ScopedObservation<AXTree, AXTreeObserver> observation_{this};

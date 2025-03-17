@@ -17,7 +17,6 @@
 
 // To not pull in windows.h.
 typedef struct _MEMORYSTATUSEX MEMORYSTATUSEX;
-typedef struct _PERFORMANCE_INFORMATION PERFORMANCE_INFORMATION;
 
 namespace memory_pressure {
 namespace win {
@@ -106,14 +105,8 @@ class SystemMemoryPressureEvaluator
   // thread.
   virtual bool GetSystemMemoryStatus(MEMORYSTATUSEX* mem_status);
 
-  // Gets system performance information. This is virtual as a unittesting hook.
-  // Returns true if the system call succeeds, false otherwise. Can be called on
-  // any thread.
-  virtual bool GetPerformanceInfoWrapper(PERFORMANCE_INFORMATION* perf_info);
-
-  // Gets the commit information, calculate commit usage, and record a
-  // histogram.
-  void RecordCommitHistograms();
+  // Records histograms about committed memory based on `mem_status`.
+  static void RecordCommitHistograms(const MEMORYSTATUSEX& mem_status);
 
  private:
   // Threshold amounts of available memory that trigger pressure levels. See

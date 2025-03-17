@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/android/build_info.h"
-#include "base/android/jni_android.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -54,24 +53,6 @@ const int kMessageDismissDurationMs = 20000;
 constexpr base::TimeDelta kUpdateGMSCoreMessageDisplayDelay =
     base::Milliseconds(500);
 
-void TryToShowPasswordMigrationWarning(
-    base::RepeatingCallback<
-        void(gfx::NativeWindow,
-             Profile*,
-             password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-        callback,
-    raw_ptr<content::WebContents> web_contents) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
-    callback.Run(
-        web_contents->GetTopLevelNativeWindow(),
-        Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-        password_manager::metrics_util::PasswordMigrationWarningTriggers::
-            kPasswordSaveUpdateMessage);
-  }
-}
-
 void TryToShowAccessLossWarning(content::WebContents* web_contents,
                                 PasswordAccessLossWarningBridge* bridge) {
   if (base::FeatureList::IsEnabled(
@@ -95,19 +76,11 @@ void TryToShowAccessLossWarning(content::WebContents* web_contents,
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate()
     : SaveUpdatePasswordMessageDelegate(
-          base::BindRepeating(PasswordEditDialogBridge::Create),
-          base::BindRepeating(&local_password_migration::ShowWarning)) {}
+          base::BindRepeating(PasswordEditDialogBridge::Create)) {}
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
-    PasswordEditDialogFactory password_edit_dialog_factory,
-    base::RepeatingCallback<
-        void(gfx::NativeWindow,
-             Profile*,
-             password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-        create_migration_warning_callback)
+    PasswordEditDialogFactory password_edit_dialog_factory)
     : password_edit_dialog_factory_(std::move(password_edit_dialog_factory)),
-      create_migration_warning_callback_(
-          std::move(create_migration_warning_callback)),
       device_lock_bridge_(std::make_unique<DeviceLockBridge>()),
       access_loss_bridge_(
           std::make_unique<PasswordAccessLossWarningBridgeImpl>()) {}
@@ -115,15 +88,9 @@ SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
     base::PassKey<class SaveUpdatePasswordMessageDelegateTest>,
     PasswordEditDialogFactory password_edit_dialog_factory,
-    base::RepeatingCallback<
-        void(gfx::NativeWindow,
-             Profile*,
-             password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-        create_migration_warning_callback,
     std::unique_ptr<DeviceLockBridge> device_lock_bridge,
     std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_bridge)
-    : SaveUpdatePasswordMessageDelegate(password_edit_dialog_factory,
-                                        create_migration_warning_callback) {
+    : SaveUpdatePasswordMessageDelegate(password_edit_dialog_factory) {
   device_lock_bridge_ = std::move(device_lock_bridge);
   access_loss_bridge_ = std::move(access_loss_bridge);
 }
@@ -384,8 +351,6 @@ void SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi(
             &SaveUpdatePasswordMessageDelegate::MaybeNudgeToUpdateGmsCore,
             weak_ptr_factory_.GetWeakPtr()),
         kUpdateGMSCoreMessageDisplayDelay);
-    TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
-                                      web_contents_);
     TryToShowAccessLossWarning(web_contents_, access_loss_bridge_.get());
   }
   ClearState();
@@ -446,8 +411,6 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
   if (!(device_lock_bridge_->ShouldShowDeviceLockUi() &&
         web_contents_->GetNativeView()->GetWindowAndroid())) {
     if (dismiss_reason == messages::DismissReason::PRIMARY_ACTION) {
-      TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
-                                        web_contents_);
       TryToShowAccessLossWarning(web_contents_, access_loss_bridge_.get());
     }
     ClearState();
@@ -478,8 +441,6 @@ void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
   // callback.
   if (!(device_lock_bridge_->ShouldShowDeviceLockUi() &&
         web_contents_->GetNativeView()->GetWindowAndroid())) {
-    TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
-                                      web_contents_);
     TryToShowAccessLossWarning(web_contents_, access_loss_bridge_.get());
     ClearState();
   }

@@ -46,11 +46,11 @@
 
 #include "test_service_idl.h"
 
-#define TYPE_FORMAT_STRING_SIZE   7                                 
-#define PROC_FORMAT_STRING_SIZE   39                                
+#define TYPE_FORMAT_STRING_SIZE   51                                
+#define PROC_FORMAT_STRING_SIZE   179                               
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
-#define WIRE_MARSHAL_TABLE_SIZE   0            
+#define WIRE_MARSHAL_TABLE_SIZE   1            
 
 typedef struct _test_service_idl_MIDL_TYPE_FORMAT_STRING
     {
@@ -147,6 +147,7 @@ extern const MIDL_SERVER_INFO ITestService_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO ITestService_ProxyInfo;
 
 
+extern const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TABLE_SIZE ];
 
 #if !defined(__RPC_WIN64__)
 #error  Invalid build platform for this stub.
@@ -189,6 +190,119 @@ static const test_service_idl_MIDL_PROC_FORMAT_STRING test_service_idl__MIDL_Pro
 /* 36 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
+	/* Procedure IsRunningUnattended */
+
+/* 38 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 40 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 44 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 46 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
+/* 48 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 50 */	NdrFcShort( 0x22 ),	/* 34 */
+/* 52 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+			0x2,		/* 2 */
+/* 54 */	0xa,		/* 10 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 56 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 58 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 60 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 62 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter is_running_unattended */
+
+/* 64 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
+/* 66 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
+/* 68 */	0x6,		/* FC_SHORT */
+			0x0,		/* 0 */
+
+	/* Return value */
+
+/* 70 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 72 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
+/* 74 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure GetCrashpadDatabasePath */
+
+/* 76 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 78 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 82 */	NdrFcShort( 0x5 ),	/* 5 */
+/* 84 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
+/* 86 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 88 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 90 */	0x45,		/* Oi2 Flags:  srv must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 92 */	0xa,		/* 10 */
+			0x3,		/* Ext Flags:  new corr desc, clt corr check, */
+/* 94 */	NdrFcShort( 0x1 ),	/* 1 */
+/* 96 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 98 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 100 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter database_path */
+
+/* 102 */	NdrFcShort( 0x2113 ),	/* Flags:  must size, must free, out, simple ref, srv alloc size=8 */
+/* 104 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
+/* 106 */	NdrFcShort( 0x28 ),	/* Type Offset=40 */
+
+	/* Return value */
+
+/* 108 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 110 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
+/* 112 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure InduceCrash */
+
+/* 114 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 116 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 120 */	NdrFcShort( 0x6 ),	/* 6 */
+/* 122 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
+/* 124 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 126 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 128 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+			0x1,		/* 1 */
+/* 130 */	0xa,		/* 10 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 132 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 134 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 136 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 138 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Return value */
+
+/* 140 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 142 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
+/* 144 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure InduceCrashSoon */
+
+/* 146 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 148 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 152 */	NdrFcShort( 0x7 ),	/* 7 */
+/* 154 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
+/* 156 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 158 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 160 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+			0x1,		/* 1 */
+/* 162 */	0xa,		/* 10 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 164 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 166 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 168 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 170 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Return value */
+
+/* 172 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 174 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
+/* 176 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
 			0x0
         }
     };
@@ -202,10 +316,62 @@ static const test_service_idl_MIDL_TYPE_FORMAT_STRING test_service_idl__MIDL_Typ
 			0x11, 0xc,	/* FC_RP [alloced_on_stack] [simple_pointer] */
 /*  4 */	0x8,		/* FC_LONG */
 			0x5c,		/* FC_PAD */
+/*  6 */	
+			0x11, 0xc,	/* FC_RP [alloced_on_stack] [simple_pointer] */
+/*  8 */	0x6,		/* FC_SHORT */
+			0x5c,		/* FC_PAD */
+/* 10 */	
+			0x11, 0x4,	/* FC_RP [alloced_on_stack] */
+/* 12 */	NdrFcShort( 0x1c ),	/* Offset= 28 (40) */
+/* 14 */	
+			0x13, 0x0,	/* FC_OP */
+/* 16 */	NdrFcShort( 0xe ),	/* Offset= 14 (30) */
+/* 18 */	
+			0x1b,		/* FC_CARRAY */
+			0x1,		/* 1 */
+/* 20 */	NdrFcShort( 0x2 ),	/* 2 */
+/* 22 */	0x9,		/* Corr desc: FC_ULONG */
+			0x0,		/*  */
+/* 24 */	NdrFcShort( 0xfffc ),	/* -4 */
+/* 26 */	NdrFcShort( 0x1 ),	/* Corr flags:  early, */
+/* 28 */	0x6,		/* FC_SHORT */
+			0x5b,		/* FC_END */
+/* 30 */	
+			0x17,		/* FC_CSTRUCT */
+			0x3,		/* 3 */
+/* 32 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 34 */	NdrFcShort( 0xfff0 ),	/* Offset= -16 (18) */
+/* 36 */	0x8,		/* FC_LONG */
+			0x8,		/* FC_LONG */
+/* 38 */	0x5c,		/* FC_PAD */
+			0x5b,		/* FC_END */
+/* 40 */	0xb4,		/* FC_USER_MARSHAL */
+			0x83,		/* 131 */
+/* 42 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 44 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 46 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 48 */	NdrFcShort( 0xffde ),	/* Offset= -34 (14) */
 
 			0x0
         }
     };
+
+XFG_TRAMPOLINES(BSTR)
+
+static const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TABLE_SIZE ] = 
+        {
+            
+            {
+            (USER_MARSHAL_SIZING_ROUTINE)XFG_TRAMPOLINE_FPTR(BSTR_UserSize)
+            ,(USER_MARSHAL_MARSHALLING_ROUTINE)XFG_TRAMPOLINE_FPTR(BSTR_UserMarshal)
+            ,(USER_MARSHAL_UNMARSHALLING_ROUTINE)XFG_TRAMPOLINE_FPTR(BSTR_UserUnmarshal)
+            ,(USER_MARSHAL_FREEING_ROUTINE)XFG_TRAMPOLINE_FPTR(BSTR_UserFree)
+            
+            }
+            
+
+        };
+
 
 
 /* Object interface: IUnknown, ver. 0.0,
@@ -218,7 +384,11 @@ static const test_service_idl_MIDL_TYPE_FORMAT_STRING test_service_idl__MIDL_Typ
 #pragma code_seg(".orpc")
 static const unsigned short ITestService_FormatStringOffsetTable[] =
     {
-    0
+    0,
+    38,
+    76,
+    114,
+    146
     };
 
 static const MIDL_STUBLESS_PROXY_INFO ITestService_ProxyInfo =
@@ -242,21 +412,25 @@ static const MIDL_SERVER_INFO ITestService_ServerInfo =
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(4) _ITestServiceProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(8) _ITestServiceProxyVtbl = 
 {
     &ITestService_ProxyInfo,
     &IID_ITestService,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    (void *) (INT_PTR) -1 /* ITestService::GetProcessHandle */
+    (void *) (INT_PTR) -1 /* ITestService::GetProcessHandle */ ,
+    (void *) (INT_PTR) -1 /* ITestService::IsRunningUnattended */ ,
+    (void *) (INT_PTR) -1 /* ITestService::GetCrashpadDatabasePath */ ,
+    (void *) (INT_PTR) -1 /* ITestService::InduceCrash */ ,
+    (void *) (INT_PTR) -1 /* ITestService::InduceCrashSoon */
 };
 
 const CInterfaceStubVtbl _ITestServiceStubVtbl =
 {
     &IID_ITestService,
     &ITestService_ServerInfo,
-    4,
+    8,
     0, /* pure interpreted */
     CStdStubBuffer_METHODS
 };
@@ -280,7 +454,7 @@ static const MIDL_STUB_DESC Object_StubDesc =
     0,
     0x8010274, /* MIDL Version 8.1.628 */
     0,
-    0,
+    UserMarshalRoutines,
     0,  /* notify & notify_flag routine table */
     0x1, /* MIDL flag */
     0, /* cs routines */

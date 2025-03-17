@@ -4,9 +4,10 @@
 
 -- Finds all slices with a direct parent with the given parent_id.
 CREATE PERFETTO FUNCTION _direct_children_slice(
-  -- Id of the parent slice.
-  parent_id LONG)
-RETURNS TABLE(
+    -- Id of the parent slice.
+    parent_id LONG
+)
+RETURNS TABLE (
   -- Alias for `slice.id`.
   id LONG,
   -- Alias for `slice.ts`.
@@ -43,7 +44,8 @@ SELECT
   slice.thread_ts,
   slice.thread_dur
 FROM slice
-WHERE parent_id = $parent_id;
+WHERE
+  parent_id = $parent_id;
 
 -- Given two slice Ids A and B, find the maximum difference
 -- between the durations of it's direct children with matching names
@@ -52,11 +54,11 @@ WHERE parent_id = $parent_id;
 -- the slice id of the slice named Z that is A's child, as no matching slice named Z was found
 -- under B, making 5 - 0 = 5 the maximum delta between both slice's direct children
 CREATE PERFETTO FUNCTION chrome_get_v3_jank_cause_id(
-  -- The slice id of the parent slice that we want to cause among it's children.
-  janky_slice_id LONG,
-  -- The slice id of the parent slice that's the reference in comparison to
-  -- |janky_slice_id|.
-  prev_slice_id LONG
+    -- The slice id of the parent slice that we want to cause among it's children.
+    janky_slice_id LONG,
+    -- The slice id of the parent slice that's the reference in comparison to
+    -- |janky_slice_id|.
+    prev_slice_id LONG
 )
 -- The slice id of the breakdown that has the maximum duration delta.
 RETURNS LONG AS
@@ -74,17 +76,19 @@ WITH
   joint_breakdowns AS (
     SELECT
       cur.id AS breakdown_id,
-      (cur.dur - COALESCE(prev.dur, 0)) AS breakdown_delta
-    FROM current_breakdowns cur
-    LEFT JOIN prev_breakdowns prev ON
-      cur.name = prev.name
+      (
+        cur.dur - coalesce(prev.dur, 0)
+      ) AS breakdown_delta
+    FROM current_breakdowns AS cur
+    LEFT JOIN prev_breakdowns AS prev
+      ON cur.name = prev.name
   ),
   max_breakdown AS (
     SELECT
-      MAX(breakdown_delta) AS breakdown_delta,
+      max(breakdown_delta) AS breakdown_delta,
       breakdown_id
     FROM joint_breakdowns
   )
-  SELECT
-    breakdown_id
-  FROM max_breakdown;
+SELECT
+  breakdown_id
+FROM max_breakdown;

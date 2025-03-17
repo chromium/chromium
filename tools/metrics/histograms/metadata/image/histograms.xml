@@ -415,7 +415,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageDecoder.Png.UiGfxIntoSkBitmap" units="microseconds"
-    expires_after="M137">
+    expires_after="2025-07-13">
   <owner>lukasza@chromium.org</owner>
   <owner>chrome-rust-experiments@google.com</owner>
   <summary>
@@ -433,7 +433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageDecoder.Png.UiGfxIntoVector" units="microseconds"
-    expires_after="M137">
+    expires_after="2025-07-13">
   <owner>lukasza@chromium.org</owner>
   <owner>chrome-rust-experiments@google.com</owner>
   <summary>
@@ -454,7 +454,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ImageFetcher.CacheMetadataCount{ImageFetcherCacheStrategy}"
     units="records" expires_after="2025-01-20">
   <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <summary>
     The total number of metadata entries in the image fetcher cache metadata
     database for a given cache strategy. Recorded during cache eviction process.
@@ -466,7 +466,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ImageFetcher.CacheSize{ImageFetcherCacheStrategy}" units="KB"
     expires_after="2025-01-20">
   <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <summary>
     The total size of the cache for a given cache strategy. Recorded during
     cache eviction process. {ImageFetcherCacheStrategy}
@@ -475,9 +475,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.Events{ImageFetcherClients}"
-    enum="ImageFetcherEvent" expires_after="2025-06-08">
+    enum="ImageFetcherEvent" expires_after="2025-08-10">
   <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <summary>
     Events that track the lifecycle and performance of the cached_image_fetcher.
     The events reported include: success/failure conditions, various recoverable
@@ -491,7 +491,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ImageFetcher.ImageLoadFromCacheTimeJava{ImageFetcherClients}"
     units="ms" expires_after="2025-01-20">
   <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <summary>
     The time it takes for cached_image_fetcher to load an image from the cache
     in Java. {ImageFetcherClients}
@@ -502,9 +502,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.ImageLoadFromCacheTime{ImageFetcherClients}"
-    units="ms" expires_after="2025-06-08">
+    units="ms" expires_after="2025-08-10">
   <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <summary>
     The time it takes for cached_image_fetcher to load an image from the cache
     in native. {ImageFetcherClients}
@@ -517,7 +517,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ImageFetcher.ImageLoadFromNativeTimeJava{ImageFetcherClients}"
     units="ms" expires_after="2025-01-20">
   <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <summary>
     The time it takes for cached_image_fetcher to load an image from native
     code. Only recorded on successful loads. {ImageFetcherClients}
@@ -529,9 +529,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageFetcher.ImageLoadFromNetworkAfterCacheHit{ImageFetcherClients}"
-    units="ms" expires_after="2025-04-20">
+    units="ms" expires_after="2025-08-03">
   <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <summary>
     The time it takes for cached_image_fetcher to load an image from the network
     after a cache hit. {ImageFetcherClients}
@@ -544,7 +544,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ImageFetcher.ImageLoadFromNetworkTime{ImageFetcherClients}"
     units="ms" expires_after="2025-03-23">
   <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <summary>
     The time it takes for cached_image_fetcher to load an image from the
     network. {ImageFetcherClients}
@@ -557,7 +557,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ImageFetcher.LoadImageMetadata" units="ms"
     expires_after="2025-01-20">
   <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <summary>
     The time it takes to load an image's metadata from the metadata store.
   </summary>
@@ -566,7 +566,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ImageFetcher.RequestStatusCode{ImageFetcherClients}"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-01-20">
   <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <summary>
     Android: The integer status code of network requests made by the image data
     fetcher. This code includes both protocol(1xx-5xx) and non-protocol(-xxx)
@@ -580,7 +580,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ImageFetcher.TimeSinceLastCacheLRUEviction" units="ms"
     expires_after="2025-01-20">
   <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <summary>
     The time since the last LRU eviction from the image cache. Recorded when two
     LRU evictions occur within closure proximity to one another. Will be used to

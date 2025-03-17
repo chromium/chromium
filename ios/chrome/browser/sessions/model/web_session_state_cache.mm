@@ -79,15 +79,17 @@ void WriteSessionData(NSData* session_data, base::FilePath file_path) {
 void PurgeCacheOnBackgroundSequenceExcept(
     base::FilePath cache_directory,
     std::set<base::FilePath> files_to_keep) {
-  if (!base::DirectoryExists(cache_directory))
+  if (!base::DirectoryExists(cache_directory)) {
     return;
+  }
 
   base::FileEnumerator enumerator(cache_directory, false,
                                   base::FileEnumerator::FILES);
   for (base::FilePath current_file = enumerator.Next(); !current_file.empty();
        current_file = enumerator.Next()) {
-    if (base::Contains(files_to_keep, current_file))
+    if (base::Contains(files_to_keep, current_file)) {
       continue;
+    }
     base::DeleteFile(current_file);
   }
 }
@@ -162,8 +164,9 @@ void PurgeCacheOnBackgroundSequenceExcept(
 - (void)removeSessionStateDataForWebStateID:(web::WebStateID)webStateID
                                   incognito:(BOOL)incognito {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (!_taskRunner)
+  if (!_taskRunner) {
     return;
+  }
 
   if (_delayRemove && !incognito) {
     [NSObject cancelPreviousPerformRequestsWithTarget:self];

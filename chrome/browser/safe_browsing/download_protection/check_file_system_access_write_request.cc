@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
@@ -22,6 +21,10 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/navigation_entry.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
+#endif
 
 namespace safe_browsing {
 
@@ -42,13 +45,12 @@ CheckFileSystemAccessWriteRequest::CheckFileSystemAccessWriteRequest(
           std::move(database_manager),
           DownloadRequestMaker::CreateFromFileSystemAccess(
               binary_feature_extractor,
-              service,
               *item)),
-      item_(std::move(item)),
-      referrer_chain_data_(
-          IdentifyReferrerChain(*item_,
-                                DownloadProtectionService::
-                                    GetDownloadAttributionUserGestureLimit())) {
+      referrer_chain_data_(IdentifyReferrerChain(
+          *item,
+          DownloadProtectionService::GetDownloadAttributionUserGestureLimit())),
+      metadata_(std::make_unique<FileSystemAccessMetadata>(std::move(item))),
+      weak_metadata_(metadata_->GetWeakPtr()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -61,8 +63,12 @@ download::DownloadItem* CheckFileSystemAccessWriteRequest::item() const {
 
 bool CheckFileSystemAccessWriteRequest::IsSupportedDownload(
     DownloadCheckResultReason* reason) {
+  if (!weak_metadata_) {
+    return false;
+  }
+
   if (!FileTypePolicies::GetInstance()->IsCheckedBinaryFile(
-          item_->target_file_path)) {
+          weak_metadata_->GetTargetFilePath())) {
     *reason = REASON_NOT_BINARY_FILE;
     return false;
   }
@@ -71,7 +77,11 @@ bool CheckFileSystemAccessWriteRequest::IsSupportedDownload(
 
 content::BrowserContext* CheckFileSystemAccessWriteRequest::GetBrowserContext()
     const {
-  return item_->browser_context;
+  if (!weak_metadata_) {
+    return nullptr;
+  }
+
+  return weak_metadata_->GetBrowserContext();
 }
 
 bool CheckFileSystemAccessWriteRequest::IsCancelled() {
@@ -99,6 +109,7 @@ void CheckFileSystemAccessWriteRequest::SetDownloadProtectionData(
   // IncidentReportingService usage.
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void CheckFileSystemAccessWriteRequest::MaybeBeginFeedbackForDownload(
     DownloadCheckResult result,
     bool upload_requested,
@@ -106,21 +117,70 @@ void CheckFileSystemAccessWriteRequest::MaybeBeginFeedbackForDownload(
     const std::string& response_body) {
   // TODO(crbug.com/41477698): Integrate with DownloadFeedbackService.
 }
+#endif
 
 std::optional<enterprise_connectors::AnalysisSettings>
 CheckFileSystemAccessWriteRequest::ShouldUploadBinary(
     DownloadCheckResultReason reason) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(kEnterpriseFileSystemAccessDeepScan)) {
+    return std::nullopt;
+  }
+
+  // If the download is already considered dangerous, don't upload the binary.
+  if (reason == REASON_DOWNLOAD_DANGEROUS ||
+      reason == REASON_DOWNLOAD_DANGEROUS_HOST ||
+      reason == REASON_DOWNLOAD_DANGEROUS_ACCOUNT_COMPROMISE) {
+    return std::nullopt;
+  }
+
+  if (!weak_metadata_) {
+    return std::nullopt;
+  }
+
+  auto settings = DeepScanningRequest::ShouldUploadBinary(*weak_metadata_);
+
+  // Malware scanning is redundant if the URL is allowlisted, but DLP scanning
+  // might still need to happen.
+  if (settings && reason == REASON_ALLOWLISTED_URL) {
+    settings->tags.erase("malware");
+    if (settings->tags.empty()) {
+      return std::nullopt;
+    }
+  }
+  return settings;
+#else
   return std::nullopt;
+#endif
 }
 
 void CheckFileSystemAccessWriteRequest::UploadBinary(
     DownloadCheckResult result,
     DownloadCheckResultReason reason,
-    enterprise_connectors::AnalysisSettings settings) {}
+    enterprise_connectors::AnalysisSettings settings) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(kEnterpriseFileSystemAccessDeepScan)) {
+    return;
+  }
+
+  // Stores callback in metadata as it's not repeating, and we ensure this
+  // callback is only run once.
+  metadata_->SetCallback(TakeCallback());
+
+  // Ownership of metadata moved as `CheckFileSystemAccessWriteRequest` will be
+  // destroyed before the deep scan finishes.
+  service()->UploadForDeepScanning(
+      std::move(metadata_),
+      base::BindRepeating(&FileSystemAccessMetadata::ProcessScanResult,
+                          weak_metadata_, reason),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY, result,
+      std::move(settings),
+      /*password=*/std::nullopt);
+#endif
+}
 
 bool CheckFileSystemAccessWriteRequest::ShouldImmediatelyDeepScan(
-    bool server_requests_prompt,
-    bool log_metrics) const {
+    bool server_requests_prompt) const {
   return false;
 }
 
@@ -151,10 +211,17 @@ void CheckFileSystemAccessWriteRequest::NotifyRequestFinished(
 }
 
 bool CheckFileSystemAccessWriteRequest::IsAllowlistedByPolicy() const {
-  Profile* profile = Profile::FromBrowserContext(item_->browser_context);
-  if (!profile)
+  if (!weak_metadata_) {
     return false;
-  return IsURLAllowlistedByPolicy(item_->frame_url, *profile->GetPrefs());
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(weak_metadata_->GetBrowserContext());
+  if (!profile) {
+    return false;
+  }
+  return IsURLAllowlistedByPolicy(weak_metadata_->GetURL(),
+                                  *profile->GetPrefs());
 }
 
 void CheckFileSystemAccessWriteRequest::LogDeepScanningPrompt(

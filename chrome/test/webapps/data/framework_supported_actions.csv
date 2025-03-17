@@ -44,7 +44,7 @@ disable_window_controls_overlay,                       🌕, 🌕,  🌕,   🌕
 enable_window_controls_overlay,                        🌕, 🌕,  🌕,   🌕,
 enter_full_screen_app,                                 🌕, 🌕,  🌕,   🌕,
 exit_full_screen_app,                                  🌕, 🌕,  🌕,   🌕,
-create_shortcut,                                       🌕, 🌕,  🌕,   🌕,
+create_shortcut,                                       🌑, 🌑,  🌑,   🌕,
 install_locally,                                       🌓, 🌓,  🌓,   🌓,
 install_menu_option,                                   🌕, 🌕,  🌕,   🌕,
 install_omnibox_icon,                                  🌕, 🌕,  🌕,   🌕,

@@ -12,7 +12,7 @@
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
-#include "third_party/boringssl/src/pki/ocsp_verify_result.h"
+#include "third_party/boringssl/src/include/openssl/pki/ocsp.h"
 
 namespace net {
 

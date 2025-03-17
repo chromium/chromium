@@ -69,8 +69,7 @@ class SoftwareRendererTest : public testing::Test {
     child_context_provider_ = std::move(context_provider);
 
     resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
-        /*shared_bitmap_manager=*/nullptr, gpu_service->shared_image_manager(),
-        gpu_service->gpu_scheduler());
+        gpu_service->shared_image_manager(), gpu_service->gpu_scheduler());
 
     renderer_ = std::make_unique<SoftwareRenderer>(
         &settings_, &debug_settings_, output_surface_.get(),
@@ -99,22 +98,23 @@ class SoftwareRendererTest : public testing::Test {
 
   ResourceId AllocateAndFillSoftwareResource(const gfx::Size& size,
                                              const SkBitmap& source) {
-    auto shared_image_mapping = shared_image_interface()->CreateSharedImage(
-        {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-         "SoftwareRendererTestSharedBitmap"});
+    auto shared_image =
+        shared_image_interface()->CreateSharedImageForSoftwareCompositor(
+            {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+             gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+             "SoftwareRendererTestSharedBitmap"});
+    auto mapping = shared_image->Map();
 
     SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
-    source.readPixels(info, shared_image_mapping.mapping.memory(),
+    source.readPixels(info, mapping->GetMemoryForPlane(0).data(),
                       info.minRowBytes(), 0, 0);
 
     auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
-        shared_image_mapping.shared_image,
-        shared_image_interface()->GenVerifiedSyncToken(), size,
+        shared_image, shared_image_interface()->GenVerifiedSyncToken(), size,
         SinglePlaneFormat::kBGRA_8888,
         TransferableResource::ResourceSource::kTileRasterTask);
-    auto release_callback = base::BindOnce(
-        &DeleteSharedImage, std::move(shared_image_mapping.shared_image));
+    auto release_callback =
+        base::BindOnce(&DeleteSharedImage, std::move(shared_image));
 
     return child_resource_provider_->ImportResource(
         std::move(transferable_resource), std::move(release_callback));

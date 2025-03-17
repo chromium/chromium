@@ -37,6 +37,8 @@ std::vector<std::string> GetUserAddedRoots();
 void VerifyX509CertChain(const std::vector<std::string>& cert_chain,
                          std::string_view auth_type,
                          std::string_view host,
+                         std::string_view ocsp_response,
+                         std::string_view sct_list,
                          CertVerifyStatusAndroid* status,
                          bool* is_issued_by_known_root,
                          std::vector<std::string>* verified_chain);

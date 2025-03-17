@@ -67,8 +67,8 @@ PrefService* GetPrefService() {
 bool HasSuggestionTypes(
     const std::vector<BirchItemType>& types,
     const std::vector<raw_ptr<BirchChipButtonBase>>& chips) {
-  return base::ranges::all_of(types, [&](BirchItemType type) {
-    return base::ranges::any_of(chips, [&](raw_ptr<BirchChipButtonBase> chip) {
+  return std::ranges::all_of(types, [&](BirchItemType type) {
+    return std::ranges::any_of(chips, [&](raw_ptr<BirchChipButtonBase> chip) {
       return chip->GetItem()->GetType() == type;
     });
   });
@@ -119,9 +119,7 @@ class BirchBarTestBase : public AshTestBase {
  public:
   BirchBarTestBase() {
     feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kBirchWeather,
-         features::kCoralFeature},
-        {});
+        {features::kForestFeature, features::kCoralFeature}, {});
   }
 
   BirchBarTestBase(const BirchBarTestBase&) = delete;
@@ -387,7 +385,7 @@ TEST_F(BirchBarTest, ShowBirchBar) {
 
 TEST_F(BirchBarTest, DoNotShowBirchBarForSecondaryUser) {
   // Sign in a secondary user.
-  SimulateUserLogin("user2@test.com");
+  SimulateUserLogin({"user2@test.com"});
   ASSERT_FALSE(Shell::Get()->session_controller()->IsUserPrimary());
 
   EnterOverview();
@@ -1092,11 +1090,10 @@ TEST_F(BirchBarMenuTest, ResetSuggestions) {
   auto has_suggestion_types =
       [](const std::vector<BirchItemType>& types,
          const std::vector<raw_ptr<BirchChipButtonBase>>& chips) -> bool {
-    return base::ranges::all_of(types, [&](BirchItemType type) {
-      return base::ranges::any_of(chips,
-                                  [&](raw_ptr<BirchChipButtonBase> chip) {
-                                    return chip->GetItem()->GetType() == type;
-                                  });
+    return std::ranges::all_of(types, [&](BirchItemType type) {
+      return std::ranges::any_of(chips, [&](raw_ptr<BirchChipButtonBase> chip) {
+        return chip->GetItem()->GetType() == type;
+      });
     });
   };
 

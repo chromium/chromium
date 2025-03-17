@@ -52,8 +52,8 @@ class WPTExpectationsUpdater:
         self.git = self.host.git(self.finder.chromium_base())
         self.patchset = None
         self.wpt_manifests = (
-            wpt_manifests or
-            [self.port.wpt_manifest(d) for d in self.port.WPT_DIRS])
+            wpt_manifests
+            or [self.port.wpt_manifest(d) for d in self.port.wpt_dirs()])
 
         # Get options from command line arguments.
         parser = argparse.ArgumentParser(description=__doc__)

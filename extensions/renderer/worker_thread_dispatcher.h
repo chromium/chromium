@@ -103,7 +103,7 @@ class WorkerThreadDispatcher :
   // Returns true if the task to each worker thread posts correctly.
   bool UpdateBindingsHelper(const std::optional<ExtensionId>& extension_id);
 
-  using IDToTaskRunnerMap = std::map<base::PlatformThreadId, base::TaskRunner*>;
+  using IDToTaskRunnerMap = std::map<int, base::TaskRunner*>;
   IDToTaskRunnerMap task_runner_map_;
   base::Lock task_runner_map_lock_;
 };

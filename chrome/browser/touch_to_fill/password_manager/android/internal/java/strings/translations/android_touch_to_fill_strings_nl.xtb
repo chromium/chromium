@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">De lijst met gegevens die moeten worden ingevuld als je tikt, is op volledige hoogte geopend.</translation>
 <translation id="5591247451101092906">Opgeslagen wachtwoord of toegangssleutel gebruiken?</translation>
 <translation id="5624120631404540903">Wachtwoorden beheren</translation>
+<translation id="592182999816790476">Wachtwoord voor <ph name="USERNAME" /> opgeslagen voor <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Toegangssleutel voor <ph name="USERNAME" />, gebruik je schermvergrendeling</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nieuw wachtwoord voor deze site}other{Nieuwe wachtwoorden voor deze site}}</translation>
 <translation id="7286867818472074330">Toegangssleutel selecteren</translation>

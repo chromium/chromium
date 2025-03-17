@@ -11,7 +11,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/active_install_data.h"
-#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -19,12 +18,17 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace content {
 class BrowserContext;
 }
 
 namespace extensions {
 
+class Extension;
 class ExtensionPrefs;
 
 class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
@@ -63,10 +67,10 @@ class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
   void OnBeginExtensionDownload(const std::string& extension_id);
   void OnDownloadProgress(const std::string& extension_id,
                           int percent_downloaded);
-  void OnBeginCrxInstall(const CrxInstaller& installer,
-                         const std::string& extension_id);
-  void OnFinishCrxInstall(const CrxInstaller& installer,
+  void OnBeginCrxInstall(const std::string& extension_id);
+  void OnFinishCrxInstall(const base::FilePath& source_file,
                           const std::string& extension_id,
+                          const Extension* extension,
                           bool success);
   void OnInstallFailure(const std::string& extension_id);
 

@@ -332,14 +332,16 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
   SimulateRoutedMouseEvent(blink::WebInputEvent::Type::kMouseMove, 10, 100, 0,
                            true);
   dispatched_events = observer.GetAndResetDispatchedEventTypes();
-  ASSERT_EQ(4u, dispatched_events.size());
+  ASSERT_EQ(5u, dispatched_events.size());
   EXPECT_EQ(blink::WebInputEvent::Type::kTouchMove, dispatched_events[0]);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureTapCancel,
             dispatched_events[1]);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollBegin,
             dispatched_events[2]);
-  EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollUpdate,
+  EXPECT_EQ(blink::WebInputEvent::Type::kTouchScrollStarted,
             dispatched_events[3]);
+  EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollUpdate,
+            dispatched_events[4]);
   EXPECT_EQ(blink::WebInputEvent::Type::kTouchMove,
             observer.acked_touch_event_type());
   EXPECT_EQ(0u, observer.GetAndResetDispatchedEventTypes().size());
@@ -422,14 +424,16 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
   EXPECT_EQ(blink::WebInputEvent::Type::kTouchMove,
             observer.acked_touch_event_type());
   dispatched_events = observer.GetAndResetDispatchedEventTypes();
-  ASSERT_EQ(4u, dispatched_events.size());
+  ASSERT_EQ(5u, dispatched_events.size());
   EXPECT_EQ(blink::WebInputEvent::Type::kTouchMove, dispatched_events[0]);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureTapCancel,
             dispatched_events[1]);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollBegin,
             dispatched_events[2]);
-  EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollUpdate,
+  EXPECT_EQ(blink::WebInputEvent::Type::kTouchScrollStarted,
             dispatched_events[3]);
+  EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollUpdate,
+            dispatched_events[4]);
   EXPECT_EQ(0u, observer.GetAndResetDispatchedEventTypes().size());
 
   // Another pinch.
@@ -493,14 +497,16 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
   EXPECT_EQ(blink::WebInputEvent::Type::kTouchMove,
             observer.acked_touch_event_type());
   dispatched_events = observer.GetAndResetDispatchedEventTypes();
-  ASSERT_EQ(4u, dispatched_events.size());
+  ASSERT_EQ(5u, dispatched_events.size());
   EXPECT_EQ(blink::WebInputEvent::Type::kTouchMove, dispatched_events[0]);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureTapCancel,
             dispatched_events[1]);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollBegin,
             dispatched_events[2]);
-  EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollUpdate,
+  EXPECT_EQ(blink::WebInputEvent::Type::kTouchScrollStarted,
             dispatched_events[3]);
+  EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollUpdate,
+            dispatched_events[4]);
   EXPECT_EQ(0u, observer.GetAndResetDispatchedEventTypes().size());
 
   // Turn off emulation during a scroll.
@@ -749,7 +755,6 @@ class ShowPopupMenuInterceptor
   void ShowPopupMenu(
       mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
       const gfx::Rect& bounds,
-      int32_t item_height,
       double font_size,
       int32_t selected_item,
       std::vector<blink::mojom::MenuItemPtr> menu_items,
@@ -757,8 +762,8 @@ class ShowPopupMenuInterceptor
       bool allow_multiple_selection) override {
     CHECK(GetForwardingInterface());
     GetForwardingInterface()->ShowPopupMenu(
-        receiver_.BindNewPipeAndPassRemote(), overriden_bounds_, item_height,
-        font_size, selected_item, std::move(menu_items), right_aligned,
+        receiver_.BindNewPipeAndPassRemote(), overriden_bounds_, font_size,
+        selected_item, std::move(menu_items), right_aligned,
         allow_multiple_selection);
   }
 
@@ -912,9 +917,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   WaitForVisualPropertiesAck();
   EXPECT_EQ(base::NumberToString(offset) + "px",
             EvalJs(shell(), "getComputedStyle(video).width").ExtractString());
-  EXPECT_EQ(
+  // Rounding of GetVisibleViewportSize in the presence of a non-integer
+  // devicePixelRatio device can make this off by one vs the video height.
+  EXPECT_NEAR(
       root_view_size.height(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt());
+      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt(),
+      1);
 
   emulated_display_feature.orientation =
       DisplayFeature::Orientation::kHorizontal;
@@ -925,21 +933,26 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   WaitForVisualPropertiesAck();
   EXPECT_EQ(base::NumberToString(offset) + "px",
             EvalJs(shell(), "getComputedStyle(video).height").ExtractString());
-  EXPECT_EQ(
+  EXPECT_NEAR(
       root_view_size.width(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt());
+      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt(),
+      1);
 
   // No display feature/viewport segments are set, the video should go
   // fullscreen.
   view()->SetDisplayFeatureForTesting(nullptr);
   host()->SynchronizeVisualProperties();
   WaitForVisualPropertiesAck();
-  EXPECT_EQ(
+  // Rounding of GetVisibleViewportSize in the presence of a non-integer
+  // devicePixelRatio device can make this off by one vs the video height.
+  EXPECT_NEAR(
       root_view_size.height(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt());
-  EXPECT_EQ(
+      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt(),
+      1);
+  EXPECT_NEAR(
       root_view_size.width(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt());
+      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt(),
+      1);
 
   constexpr char kExitFullscreenScript[] = R"JS(
     document.exitFullscreen().then(() => {
@@ -956,9 +969,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   WaitForVisualPropertiesAck();
   EXPECT_EQ(base::NumberToString(offset) + "px",
             EvalJs(shell(), "getComputedStyle(video).height").ExtractString());
-  EXPECT_EQ(
+  EXPECT_NEAR(
       root_view_size.width(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt());
+      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt(),
+      1);
 }
 
 // Tests that the renderer receives the root widget's viewport segments and

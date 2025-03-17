@@ -86,7 +86,6 @@ ci/GPU FYI Win x64 Builder (dbg)
 ci/GPU FYI Win x64 DX12 Vulkan Builder
 ci/GPU FYI Win x64 DX12 Vulkan Builder (dbg)
 ci/GPU FYI XR Win x64 Builder
-ci/GPU Flake Finder
 ci/GPU Linux Builder
 ci/GPU Linux Builder (dbg)
 ci/GPU Mac Builder
@@ -99,6 +98,7 @@ ci/Linux FYI Experimental Release (Intel UHD 630)
 ci/Linux FYI Experimental Release (NVIDIA)
 ci/Linux FYI GPU TSAN Release
 ci/Linux FYI Release (AMD RX 5500 XT)
+ci/Linux FYI Release (AMD RX 7600)
 ci/Linux FYI Release (Intel UHD 630)
 ci/Linux FYI Release (Intel UHD 770)
 ci/Linux FYI Release (NVIDIA)
@@ -132,13 +132,14 @@ ci/Win10 FYI x64 Experimental Release (Intel)
 ci/Win10 FYI x64 Release (AMD RX 5500 XT)
 ci/Win10 FYI x64 Release (Intel UHD 770)
 ci/Win10 FYI x64 Release (Intel)
-ci/Win10 FYI x64 Release (NVIDIA RTX 4070 Super)
 ci/Win10 FYI x64 Release (NVIDIA)
 ci/Win10 FYI x64 Release XR Perf (NVIDIA)
 ci/Win10 FYI x86 Release (NVIDIA)
 ci/Win10 x64 Debug (NVIDIA)
 ci/Win10 x64 Release (NVIDIA)
 ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)
+ci/Win11 FYI x64 Release (AMD RX 7600)
+ci/Win11 FYI x64 Release (NVIDIA RTX 4070 Super)
 ci/linux-swangle-chromium-x64
 ci/linux-swangle-chromium-x64-exp
 ci/linux-swangle-tot-swiftshader-x64
@@ -154,6 +155,7 @@ try/android-dawn-arm-rel
 try/android-dawn-arm64-exp-rel
 try/android-dawn-arm64-rel
 try/android-dawn-arm64-s24-rel
+try/android_optional_gpu_tests_rel
 try/dawn-android-arm-deps-rel
 try/dawn-android-arm64-deps-rel
 try/dawn-chromium-presubmit
@@ -179,7 +181,9 @@ try/dawn-try-win10-x86-rel
 try/dawn-win10-x64-deps-rel
 try/dawn-win10-x86-deps-rel
 try/dawn-win11-arm64-deps-rel
+try/gpu-fyi-cq-android-arm64
 try/gpu-fyi-try-android-a13-32
+try/gpu-fyi-try-android-a23-32
 try/gpu-fyi-try-android-m-nexus-5x-64
 try/gpu-fyi-try-android-nvidia-shield-tv
 try/gpu-fyi-try-android-p-pixel-2-32
@@ -190,6 +194,7 @@ try/gpu-fyi-try-android-s23-64
 try/gpu-fyi-try-chromeos-amd64-generic
 try/gpu-fyi-try-chromeos-skylab-volteer
 try/gpu-fyi-try-linux-amd-rel
+try/gpu-fyi-try-linux-amd-rx-7600-rel
 try/gpu-fyi-try-linux-intel-exp
 try/gpu-fyi-try-linux-intel-rel
 try/gpu-fyi-try-linux-intel-uhd770-rel
@@ -218,13 +223,14 @@ try/gpu-fyi-try-win10-amd-rel-64
 try/gpu-fyi-try-win10-intel-exp-64
 try/gpu-fyi-try-win10-intel-rel-64
 try/gpu-fyi-try-win10-intel-uhd770-rel
-try/gpu-fyi-try-win10-nvidia-4070-rel-64
 try/gpu-fyi-try-win10-nvidia-dbg-64
 try/gpu-fyi-try-win10-nvidia-dx12vk-dbg-64
 try/gpu-fyi-try-win10-nvidia-dx12vk-rel-64
 try/gpu-fyi-try-win10-nvidia-exp-64
 try/gpu-fyi-try-win10-nvidia-rel-32
 try/gpu-fyi-try-win10-nvidia-rel-64
+try/gpu-fyi-try-win11-amd-rel-64
+try/gpu-fyi-try-win11-nvidia-4070-rel-64
 try/gpu-fyi-try-win11-qualcomm-rel-64
 try/gpu-try-android-m-nexus-5x-64
 try/gpu-try-android-pixel-2-64
@@ -236,7 +242,10 @@ try/gpu-try-win-nvidia-dbg
 try/linux-dawn-intel-exp-rel
 try/linux-dawn-nvidia-1660-exp-rel
 try/linux-dawn-rel
+try/linux_optional_gpu_tests_rel
 try/mac-arm64-dawn-rel
 try/mac-dawn-rel
+try/mac_optional_gpu_tests_rel
 try/win-dawn-rel
 try/win11-arm64-dawn-rel
+try/win_optional_gpu_tests_rel

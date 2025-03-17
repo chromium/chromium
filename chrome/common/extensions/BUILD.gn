@@ -55,7 +55,6 @@ source_set("extensions") {
 
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/common:buildflags",
     "//chrome/common/extensions/api",
     "//components/services/app_service/public/cpp:app_types",
@@ -101,7 +100,6 @@ source_set("extensions") {
       "api/side_panel/side_panel_info.h",
       "api/speech/tts_engine_manifest_handler.h",
       "api/storage/storage_schema_manifest_handler.h",
-      "api/system_indicator/system_indicator_handler.h",
       "api/url_handlers/url_handlers_parser.h",
     ]
 
@@ -111,7 +109,6 @@ source_set("extensions") {
       "api/side_panel/side_panel_info.cc",
       "api/speech/tts_engine_manifest_handler.cc",
       "api/storage/storage_schema_manifest_handler.cc",
-      "api/system_indicator/system_indicator_handler.cc",
       "api/url_handlers/url_handlers_parser.cc",
     ]
   }

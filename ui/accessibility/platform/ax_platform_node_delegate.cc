@@ -288,8 +288,15 @@ bool AXPlatformNodeDelegate::IsIgnored() const {
          HasState(ax::mojom::State::kIgnored);
 }
 
-bool AXPlatformNodeDelegate::IsToplevelBrowserWindow() {
-  return false;
+bool AXPlatformNodeDelegate::IsToplevelBrowserWindow() const {
+  if (GetRole() != ax::mojom::Role::kWindow) {
+    return false;
+  }
+
+  // On Desktop Linux there's an application node. For the rest, there's no
+  // parent delegate.
+  AXPlatformNodeDelegate* parent = GetParentDelegate();
+  return !parent || parent->GetRole() == ax::mojom::Role::kApplication;
 }
 
 gfx::NativeViewAccessible AXPlatformNodeDelegate::GetLowestPlatformAncestor()
@@ -943,7 +950,16 @@ ax::mojom::DescriptionFrom AXPlatformNodeDelegate::GetDescriptionFrom() const {
 
 const AXSelection AXPlatformNodeDelegate::GetUnignoredSelection() const {
   if (node_)
-    return node_->GetUnignoredSelection();
+    return node_->GetUnignoredSelection(/*non_text_endpoints*/ false);
+
+  NOTIMPLEMENTED();
+  return AXSelection();
+}
+
+const AXSelection AXPlatformNodeDelegate::GetHypertextSelection() const {
+  if (node_) {
+    return node_->GetUnignoredSelection(/*non_text_endpoints*/ true);
+  }
 
   NOTIMPLEMENTED();
   return AXSelection();
@@ -1288,6 +1304,18 @@ AXPlatformNodeDelegate::GetUIADirectChildrenInRange(
 std::string AXPlatformNodeDelegate::GetLanguage() const {
   if (node_)
     return node_->GetLanguage();
+  return std::string();
+}
+
+std::string AXPlatformNodeDelegate::GetRootURL() const {
+  if (IsToplevelBrowserWindow()) {
+    return GetStringAttribute(ax::mojom::StringAttribute::kUrl);
+  }
+
+  if (AXPlatformNodeDelegate* parent = GetParentDelegate()) {
+    return parent->GetRootURL();
+  }
+
   return std::string();
 }
 

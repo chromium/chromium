@@ -8,7 +8,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -74,6 +75,16 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
     SyncTest::SetUpOnMainThread();
     ASSERT_TRUE(SetupSync());
     ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
+    override_registration_ =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
+  }
+
+  void TearDownOnMainThread() override {
+    for (Profile* profile : GetAllProfiles()) {
+      test::UninstallAllWebApps(profile);
+    }
+    override_registration_.reset();
+    SyncTest::TearDownOnMainThread();
   }
 
   const WebAppRegistrar& GetRegistrar(Profile* profile) {
@@ -97,7 +108,10 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
   }
 
  private:
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+  // OS integration is needed to be able to launch web applications. This
+  // override ensures OS integration doesn't leave any traces.
+  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {
@@ -184,7 +198,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
+// TODO(crbug.com/399407539): Gardening. This test has been very flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AppFieldsChangeDoesNotSync DISABLED_AppFieldsChangeDoesNotSync
+#else
+#define MAYBE_AppFieldsChangeDoesNotSync AppFieldsChangeDoesNotSync
+#endif
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest,
+                       MAYBE_AppFieldsChangeDoesNotSync) {
   const WebAppRegistrar& registrar0 = GetRegistrar(GetProfile(0));
   const WebAppRegistrar& registrar1 = GetRegistrar(GetProfile(1));
 
@@ -428,6 +449,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
             SK_ColorBLUE);
 }
 
+// TODO(crbug.com/352333561): Fix test once user display mode stops syncing.
+// On non ChromeOS platforms, synced apps will always return kBrowser if install
+// state is anything except `INSTALLED_WITH_OS_INTEGRATION`.
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
   WebAppTestInstallObserver install_observer(GetProfile(1));
   install_observer.BeginListening();
@@ -447,16 +471,26 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
   auto* provider0 = WebAppProvider::GetForTest(GetProfile(0));
   auto* provider1 = WebAppProvider::GetForTest(GetProfile(1));
   WebAppRegistrar& registrar1 = provider1->registrar_unsafe();
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kStandalone);
+#else
+  EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id),
+            mojom::UserDisplayMode::kBrowser);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   DisplayModeChangeWaiter display_mode_change_waiter(registrar1);
   provider0->sync_bridge_unsafe().SetAppUserDisplayModeForTesting(
       app_id, mojom::UserDisplayMode::kTabbed);
   display_mode_change_waiter.Wait();
 
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kTabbed);
+#else
+  EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id),
+            mojom::UserDisplayMode::kBrowser);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace web_app

@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
 TabOrganizationServiceFactory::TabOrganizationServiceFactory()

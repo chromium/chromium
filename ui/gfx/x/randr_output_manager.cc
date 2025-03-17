@@ -216,7 +216,7 @@ DisplayLayoutDiff CalculateDisplayLayoutDiff(
       diff.new_displays.configs.push_back(new_config);
       continue;
     }
-    auto current_display_it = base::ranges::find(
+    auto current_display_it = std::ranges::find(
         current_displays, new_config.id(),
         [](const auto& display) { return display.config.id(); });
     if (current_display_it == current_displays.end()) {

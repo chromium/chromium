@@ -9,11 +9,11 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -204,8 +204,7 @@ SharedImageFactory::SharedImageFactory(
   if (!feature_info) {
     // For some unit tests like SharedImageFactoryTest, |shared_context_state_|
     // could be nullptr.
-    bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
-                           gles2::PassthroughCommandDecoderSupported();
+    bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder;
     feature_info = new gles2::FeatureInfo(workarounds_, gpu_feature_info);
     feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
                              use_passthrough, gles2::DisallowedFeatures());
@@ -241,7 +240,7 @@ SharedImageFactory::SharedImageFactory(
     factories_.push_back(
         std::make_unique<DCompImageBackingFactory>(context_state_));
   }
-  if (D3DImageBackingFactory::IsD3DSharedImageSupported(gpu_preferences_)) {
+  if (IsD3DSharedImageSupported()) {
     auto d3d_factory = std::make_unique<D3DImageBackingFactory>(
         context_state_->GetD3D11Device(),
         shared_image_manager_->dxgi_shared_handle_manager(),
@@ -493,7 +492,6 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                  << "] size=" << size.ToString()
                  << " usage=" << CreateLabelForSharedImageUsage(usage)
                  << " format=" << format.ToString();
-        backing->OnWriteSucceeded();
       }
     }
   }
@@ -531,8 +529,6 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
              << "] with pixels size=" << size.ToString()
              << " usage=" << CreateLabelForSharedImageUsage(usage)
              << " format=" << format.ToString();
-
-    backing->OnWriteSucceeded();
   }
   return RegisterBacking(std::move(backing));
 }
@@ -559,6 +555,10 @@ bool SharedImageFactory::CreateSharedImage(
     // Check if CompoundImageBacking can hold shared memory buffer plus
     // another GPU backing type to satisfy requirements.
     if (CompoundImageBacking::IsValidSharedMemoryBufferFormat(size, format)) {
+      // Set debug_label crash key for the CompoundSharedImage with NV12 format
+      // which can have large sizes.
+      SCOPED_CRASH_KEY_STRING32("shared image factory", "debug label",
+                                debug_label);
       factory =
           GetFactoryByUsage(CompoundImageBacking::GetGpuSharedImageUsage(
                                 SharedImageUsageSet(usage)),
@@ -589,8 +589,6 @@ bool SharedImageFactory::CreateSharedImage(
              << " usage=" << CreateLabelForSharedImageUsage(usage)
              << " format=" << format.ToString()
              << " gmb_type=" << GmbTypeToString(gmb_type);
-
-    backing->OnWriteSucceeded();
   }
   return RegisterBacking(std::move(backing), std::move(pool_id));
 }
@@ -643,6 +641,15 @@ void SharedImageFactory::DestroyAllSharedImages(bool have_context) {
 }
 
 #if BUILDFLAG(IS_WIN)
+bool SharedImageFactory::IsD3DSharedImageSupported() const {
+  if (!context_state_) {
+    return false;
+  }
+
+  return D3DImageBackingFactory::IsD3DSharedImageSupported(
+      context_state_->GetD3D11Device().Get(), gpu_preferences_);
+}
+
 bool SharedImageFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                                          const Mailbox& back_buffer_mailbox,
                                          viz::SharedImageFormat format,
@@ -735,6 +742,26 @@ bool SharedImageFactory::GetGpuMemoryBufferHandleInfo(
   return true;
 }
 
+bool SharedImageFactory::CreateSharedImagePool(
+    const SharedImagePoolId& pool_id,
+    mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote) {
+  auto it = shared_image_pool_map_.find(pool_id);
+  // Ensure that there is no pool already corresponding to the |pool_id|.
+  if (it != shared_image_pool_map_.end()) {
+    return false;
+  }
+  auto pool = std::make_unique<SharedImagePoolService>(
+      pool_id, std::move(client_remote), this);
+  shared_image_pool_map_.emplace(pool_id, std::move(pool));
+  return true;
+}
+
+bool SharedImageFactory::DestroySharedImagePool(
+    const SharedImagePoolId& pool_id) {
+  // Ensure that there is a pool corresponding to the |pool_id|.
+  return shared_image_pool_map_.erase(pool_id);
+}
+
 void SharedImageFactory::RegisterSharedImageBackingFactoryForTesting(
     SharedImageBackingFactory* factory) {
   backing_factory_for_testing_ = factory;
@@ -788,8 +815,7 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  shared_image_caps.shared_image_d3d =
-      D3DImageBackingFactory::IsD3DSharedImageSupported(gpu_preferences_);
+  shared_image_caps.shared_image_d3d = IsD3DSharedImageSupported();
   shared_image_caps.shared_image_swap_chain =
       shared_image_caps.shared_image_d3d &&
       D3DImageBackingFactory::IsSwapChainSupported(gpu_preferences_);

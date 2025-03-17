@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/chrome_elf/hook_util/hook_util.h"
+#include "sandbox/policy/win/hook_util/hook_util.h"
 
 #include <windows.h>
 
@@ -45,7 +45,7 @@ TEST_F(HookTest, IATHook) {
   ASSERT_EQ(2, ExportedApiCallCount());
 
   // Apply IAT hook.
-  elf_hook::IATHook iat_hook;
+  sandbox::policy::IATHook iat_hook;
   if (iat_hook.Hook(
           ::GetModuleHandle(nullptr), kIATTestDllName, kIATExportedApiFunction,
           reinterpret_cast<void*>(IATHookedExportedApi)) != NO_ERROR) {
@@ -91,7 +91,7 @@ TEST_F(HookTest, IATHook) {
     ADD_FAILURE();
     return;
   }
-  elf_hook::IATHook shady_third_party_iat_hook;
+  sandbox::policy::IATHook shady_third_party_iat_hook;
   if (shady_third_party_iat_hook.Hook(
           ::GetModuleHandle(nullptr), kIATTestDllName, kIATExportedApiFunction,
           reinterpret_cast<void*>(IATHookedExportedApiTwo)) != NO_ERROR)

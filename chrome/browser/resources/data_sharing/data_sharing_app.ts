@@ -13,14 +13,15 @@ import '/strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {AbslStatusCode} from '//resources/mojo/mojo/public/mojom/base/absl_status.mojom-webui.js';
+import {assert} from 'chrome-untrusted://resources/js/assert.js';
 import {CustomElement} from 'chrome-untrusted://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './data_sharing_app.html.js';
-import type {DataSharingSdk, DataSharingSdkGetLinkParams, DataSharingSdkSitePreview, DynamicMessageParams, TranslationMap} from './data_sharing_sdk_types.js';
-import {Code, DataSharingMemberRoleEnum, DynamicMessageKey, LearnMoreUrlType, StaticMessageKey} from './data_sharing_sdk_types.js';
+import type {DataSharingSdk, DataSharingSdkGetLinkParams, DataSharingSdkSitePreview, DynamicMessageParams, Logger, LoggingEvent, TranslationMap} from './data_sharing_sdk_types.js';
+import {Code, DataSharingMemberRoleEnum, DynamicMessageKey, LearnMoreUrlType, LoggingIntent, Progress, StaticMessageKey} from './data_sharing_sdk_types.js';
 
 // Param names in loaded URL. Should match those in
 // chrome/browser/ui/views/data_sharing/data_sharing_utils.cc.
@@ -36,6 +37,40 @@ enum FlowValues {
   SHARE = 'share',
   JOIN = 'join',
   MANAGE = 'manage',
+  DELETE = 'delete',
+  LEAVE = 'leave',
+  CLOSE = 'close',
+}
+
+// Events that can be triggered within the DataSharing UI.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(DataSharingIntentType)
+enum DataSharingIntentType {
+  UNKNOWN = 0,
+  STOP_SHARING = 1,
+  LEAVE_GROUP = 2,
+  REMOVE_ACCESS = 3,
+  UPDATE_ACCESS = 4,
+  BLOCK_USER = 5,
+  REMOVE_USER = 6,
+  REMOVE_ACCESS_TOKEN = 7,
+  ADD_ACCESS_TOKEN = 8,
+  COPY_LINK = 9,
+  BLOCK_AND_LEAVE = 10,
+  OPEN_GROUP_DETAILS = 11,
+  OPEN_LEARN_MORE_URL = 12,
+  ACCEPT_JOIN_AND_OPEN = 13,
+  ABANDON_JOIN = 14,
+}
+// LINT.ThenChange(tools/metrics/histograms/metadata/data_sharing/enums.xml:DataSharingIntentType)
+
+enum ProgressType {
+  UNKNOWN = 'Unknown',
+  STARTED = 'Started',
+  FAILED = 'Failed',
+  SUCCEEDED = 'Succeeded',
 }
 
 function getGroupOwnerName(params: DynamicMessageParams): string {
@@ -73,6 +108,8 @@ export function createTranslationMap(): TranslationMap {
       [StaticMessageKey.LOADING]: loadTimeData.getString('loading'),
       [StaticMessageKey.SOMETHING_WENT_WRONG]:
           loadTimeData.getString('somethingWrong'),
+      [StaticMessageKey.FAIL_TO_UPDATE_ACCESS]:
+          loadTimeData.getString('somethingWrongBody'),
       [StaticMessageKey.THERE_WAS_AN_ERROR]:
           loadTimeData.getString('somethingWrongBody'),
       [StaticMessageKey.THERE_WAS_AN_ISSUE]:
@@ -136,7 +173,17 @@ export function createTranslationMap(): TranslationMap {
           loadTimeData.getString('errorDialogContent'),
       [StaticMessageKey.GROUP_FULL_TITLE]: loadTimeData.getString('groupFull'),
       [StaticMessageKey.GROUP_FULL_CONTENT]:
+          loadTimeData.getString('groupFullBody'),
+      [StaticMessageKey.ACTIVITY_LOGS]: loadTimeData.getString('activityLog'),
+      [StaticMessageKey.YOUR_GROUP_IS_FULL_DESCRIPTION]:
           loadTimeData.getString('ownerCannotShare'),
+      [StaticMessageKey.CLOSE_FLOW_HEADER]:
+          loadTimeData.getString('deleteLastDialogHeader'),
+      [StaticMessageKey.KEEP_GROUP]: loadTimeData.getString('keepGroup'),
+      [StaticMessageKey.DELETE_GROUP]: loadTimeData.getString('deleteGroup'),
+      [StaticMessageKey.DELETE_FLOW_HEADER]:
+          loadTimeData.getString('deleteFlowHeader'),
+      [StaticMessageKey.DELETE]: loadTimeData.getString('delete'),
     },
     dynamic: {
       /** Invite flow */
@@ -164,6 +211,11 @@ export function createTranslationMap(): TranslationMap {
               params.payload.mediaCount <= 1 ? 'tabCountSingular' :
                                                'tabCountPlural',
               params.payload.mediaCount),
+      [DynamicMessageKey.GET_GROUP_PREVIEW_ARIA_LABEL]: (
+          params: DynamicMessageParams,
+          ) =>
+          loadTimeData.getStringF(
+              'getGroupPreviewAriaLabel', params.group.name),
       /** Manage flow */
       [DynamicMessageKey.GET_STOP_SHARING_DIALOG_CONTENT]: () =>
           loadTimeData.getStringF(
@@ -178,7 +230,7 @@ export function createTranslationMap(): TranslationMap {
           ) =>
           loadTimeData.getStringF(
               'ownerRemoveMemberDialogBody', params.displayedUser!.name!,
-              params.displayedUser!.email!),
+              params.displayedUser!.email!, getTabGroupName()),
       [DynamicMessageKey.GET_LEAVE_GROUP_DIALOG_CONTENT]: () =>
           loadTimeData.getStringF('leaveDialogBody', getTabGroupName()),
       [DynamicMessageKey.GET_BLOCK_DIALOG_TITLE]: (
@@ -190,10 +242,12 @@ export function createTranslationMap(): TranslationMap {
           params: DynamicMessageParams,
           ) =>
           loadTimeData.getStringF(
-              'ownerRemoveMemberDialogBody', params.displayedUser!.name!,
+              'blockDialogBody', params.displayedUser!.name!,
               params.displayedUser!.email!, getTabGroupName()),
-      [DynamicMessageKey.GET_BLOCK_AND_LEAVE_DIALOG_CONTENT]: () =>
-          loadTimeData.getStringF('leaveDialogBody', getTabGroupName()),
+      [DynamicMessageKey.GET_BLOCK_AND_LEAVE_DIALOG_CONTENT]:
+          (params: DynamicMessageParams) => loadTimeData.getStringF(
+              'blockLeaveDialogBody', getTabGroupName(),
+              params.displayedUser!.name!, params.displayedUser!.email!),
       /** Chrome Specific Content */
       [DynamicMessageKey.GET_INVITE_FLOW_HEADER]: () =>
           loadTimeData.getStringF('shareGroupTitle', getTabGroupName()),
@@ -213,26 +267,52 @@ export function createTranslationMap(): TranslationMap {
               getGroupOwnerEmail(params)),
       [DynamicMessageKey.GET_MANAGE_FLOW_HEADER]: () =>
           loadTimeData.getStringF('manageGroupTitle', getTabGroupName()),
+      [DynamicMessageKey.GET_CLOSE_FLOW_DESCRIPTION_FIRST_PARAGRAPH]:
+          (params: DynamicMessageParams) => {
+            if (params.displayedUser!.name! === getGroupOwnerName(params)) {
+              return loadTimeData.getStringF('ownerDeleteLastTimeBody');
+            } else {
+              return loadTimeData.getStringF('memberDeleteLastTimeBody');
+            }
+          },
+      [DynamicMessageKey.GET_CLOSE_FLOW_DESCRIPTION_SECOND_PARAGRAPH]:
+          (params: DynamicMessageParams) => {
+            if (params.displayedUser!.name! === getGroupOwnerName(params)) {
+              return loadTimeData.getStringF(
+                  'ownerDeleteLastTimeBody2', getTabGroupName());
+            } else {
+              return '';
+            }
+          },
+      [DynamicMessageKey.GET_DELETE_FLOW_DESCRIPTION_CONTENT]: () =>
+          loadTimeData.getStringF(
+              'deleteFlowDescriptionContent', getTabGroupName()),
     },
   };
 }
 
-// TODO(crbug.com/376347328): Replace with real learn more urls.
 const learnMoreUrlMap = {
   [LearnMoreUrlType.LEARN_MORE_URL_TYPE_UNSPECIFIED]: () =>
-      'about:blank',
-  [LearnMoreUrlType.PEOPLE_WITH_ACCESS_SUBTITLE]: () => 'about:blank',
-  [LearnMoreUrlType.DESCRIPTION_INVITE]: () => 'about:blank',
-  [LearnMoreUrlType.DESCRIPTION_JOIN]: () => 'about:blank',
-  [LearnMoreUrlType.BLOCK]: () => 'about:blank',
+      loadTimeData.getStringF('dataSharingUrl'),
+  [LearnMoreUrlType.PEOPLE_WITH_ACCESS_SUBTITLE]: () =>
+      loadTimeData.getStringF('learnMoreSharedTabGroupPageUrl'),
+  [LearnMoreUrlType.DESCRIPTION_INVITE]: () =>
+      loadTimeData.getStringF('learnMoreSharedTabGroupPageUrl'),
+  [LearnMoreUrlType.DESCRIPTION_JOIN]: () =>
+      loadTimeData.getStringF('learnMoreSharedTabGroupPageUrl'),
+  [LearnMoreUrlType.BLOCK]: () =>
+      loadTimeData.getStringF('learnAboutBlockedAccountsUrl'),
 };
 
-export class DataSharingApp extends CustomElement {
+export class DataSharingApp extends CustomElement implements Logger {
   private initialized_: boolean = false;
   private dataSharingSdk_: DataSharingSdk =
       window.data_sharing_sdk.buildDataSharingSdk();
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private translationMap_: TranslationMap = createTranslationMap();
+  private abandonJoin_: boolean = false;
+  private successfullyJoined_: boolean = false;
+  private tabGroupId_: string|null = null;
 
   static get is() {
     return 'data-sharing-app';
@@ -244,6 +324,8 @@ export class DataSharingApp extends CustomElement {
 
   constructor() {
     super();
+    this.dataSharingSdk_.updateClearcut(
+        {enabled: loadTimeData.getBoolean('metricsReportingEnabled')});
     this.browserProxy_.callbackRouter.onAccessTokenFetched.addListener(
         (accessToken: string) => {
           this.dataSharingSdk_.setOauthAccessToken({accessToken});
@@ -260,10 +342,93 @@ export class DataSharingApp extends CustomElement {
     ColorChangeUpdater.forDocument().start();
   }
 
+  // Logger implementation.
+  onEvent(event: LoggingEvent) {
+    const intentMetricName =
+        'DataSharing.Intent.' + this.getProgressType(event.progress);
+    chrome.metricsPrivate.recordEnumerationValue(
+        intentMetricName, this.getDataSharingIntentType(event.intentType),
+        Object.keys(DataSharingIntentType).length);
+
+    if (event.intentType === LoggingIntent.ABANDON_JOIN) {
+      this.abandonJoin_ = true;
+    }
+
+    if (event.intentType === LoggingIntent.STOP_SHARING) {
+      assert(this.tabGroupId_);
+      if (event.progress === Progress.STARTED) {
+        this.aboutToUnShareTabGroup(this.tabGroupId_);
+      } else if (event.progress === Progress.SUCCEEDED) {
+        this.onTabGroupUnShareComplete(this.tabGroupId_);
+      }
+    }
+  }
+
+  setSuccessfullyJoinedForTesting() {
+    this.successfullyJoined_ = true;
+  }
+
+  private getProgressType(progress: Progress): ProgressType {
+    switch (progress) {
+      case (Progress.STARTED):
+        return ProgressType.STARTED;
+      case (Progress.FAILED):
+        return ProgressType.FAILED;
+      case (Progress.SUCCEEDED):
+        return ProgressType.SUCCEEDED;
+    }
+
+    return ProgressType.UNKNOWN;
+  }
+
+  private getDataSharingIntentType(intent: LoggingIntent):
+      DataSharingIntentType {
+    switch (intent) {
+      case (LoggingIntent.STOP_SHARING):
+        return DataSharingIntentType.STOP_SHARING;
+      case (LoggingIntent.LEAVE_GROUP):
+        return DataSharingIntentType.LEAVE_GROUP;
+      case (LoggingIntent.REMOVE_ACCESS):
+        return DataSharingIntentType.REMOVE_ACCESS;
+      case (LoggingIntent.UPDATE_ACCESS):
+        return DataSharingIntentType.UPDATE_ACCESS;
+      case (LoggingIntent.BLOCK_USER):
+        return DataSharingIntentType.BLOCK_USER;
+      case (LoggingIntent.REMOVE_USER):
+        return DataSharingIntentType.REMOVE_USER;
+      case (LoggingIntent.REMOVE_ACCESS_TOKEN):
+        return DataSharingIntentType.REMOVE_ACCESS_TOKEN;
+      case (LoggingIntent.ADD_ACCESS_TOKEN):
+        return DataSharingIntentType.ADD_ACCESS_TOKEN;
+      case (LoggingIntent.COPY_LINK):
+        return DataSharingIntentType.COPY_LINK;
+      case (LoggingIntent.BLOCK_AND_LEAVE):
+        return DataSharingIntentType.BLOCK_AND_LEAVE;
+      case (LoggingIntent.OPEN_GROUP_DETAILS):
+        return DataSharingIntentType.OPEN_GROUP_DETAILS;
+      case (LoggingIntent.OPEN_LEARN_MORE_URL):
+        return DataSharingIntentType.OPEN_LEARN_MORE_URL;
+      case (LoggingIntent.ACCEPT_JOIN_AND_OPEN):
+        return DataSharingIntentType.ACCEPT_JOIN_AND_OPEN;
+      case (LoggingIntent.ABANDON_JOIN):
+        return DataSharingIntentType.ABANDON_JOIN;
+    }
+
+    return DataSharingIntentType.UNKNOWN;
+  }
+
   // Called with when the owner presses copy link in share dialog.
   private makeTabGroupShared(tabGroupId: string, groupId: string) {
     this.browserProxy_.handler!.associateTabGroupWithGroupId(
         tabGroupId, groupId);
+  }
+
+  private aboutToUnShareTabGroup(tabGroupId: string) {
+    this.browserProxy_.handler!.aboutToUnShareTabGroup(tabGroupId);
+  }
+
+  private onTabGroupUnShareComplete(tabGroupId: string) {
+    this.browserProxy_.handler!.onTabGroupUnShareComplete(tabGroupId);
   }
 
   private getShareLink(params: DataSharingSdkGetLinkParams): Promise<string> {
@@ -287,12 +452,23 @@ export class DataSharingApp extends CustomElement {
             res.groupPreview.sharedTabs.map((sharedTab) => {
               previews.push({
                 url: sharedTab.displayUrl,
-                faviconUrl: sharedTab.faviconUrl.url,
+                faviconUrl: this.getFaviconServiceUrl(sharedTab.faviconUrl.url)
+                                .toString(),
               });
             });
             resolve(previews);
           });
     });
+  }
+
+  // TODO(crbug.com/392965221): Use function from icon.ts instead.
+  private getFaviconServiceUrl(pageUrl: string): URL {
+    const url: URL = new URL('chrome-untrusted://favicon2');
+    url.searchParams.set('size', '16');
+    url.searchParams.set('scaleFactor', '1x');
+    url.searchParams.set('allowGoogleServerFallback', '1');
+    url.searchParams.set('pageUrl', pageUrl);
+    return url;
   }
 
   private processUrl() {
@@ -303,6 +479,8 @@ export class DataSharingApp extends CustomElement {
     const tokenSecret = params.get(UrlQueryParams.TOKEN_SECRET);
     const tabGroupId = params.get(UrlQueryParams.TAB_GROUP_ID);
     const parent = this.getRequiredElement('#dialog-container');
+
+    this.tabGroupId_ = tabGroupId;
 
     if (flow === FlowValues.SHARE) {
       parent.classList.add('invite');
@@ -324,6 +502,7 @@ export class DataSharingApp extends CustomElement {
               // TODO(crbug.com/376348102): Provide group name to share flow.
               groupName: '',
               learnMoreUrlMap,
+              logger: this,
             })
             .then((res) => {
               this.browserProxy_.closeUi(res.status);
@@ -339,17 +518,27 @@ export class DataSharingApp extends CustomElement {
               tokenSecret: tokenSecret!,
               learnMoreUrlMap: learnMoreUrlMap,
               onJoinSuccessful: () => {
+                this.successfullyJoined_ = true;
                 this.browserProxy_.handler!.openTabGroup(groupId!);
               },
               fetchPreviewData: () => {
                 return this.getTabGroupPreview(groupId!, tokenSecret!);
               },
+              logger: this,
             })
             .then((res) => {
-              this.browserProxy_.closeUi(res.status);
+              let code: Code = res.status;
+              if (!this.successfullyJoined_ && !this.abandonJoin_) {
+                // If user neither succesfully joined nor abandon join, there
+                // must be an error.
+                code = Code.UNKNOWN;
+              }
+
+              this.browserProxy_.closeUi(code);
             });
         break;
       case FlowValues.MANAGE:
+      case FlowValues.LEAVE:
         // group_id cannot be null for manage flow.
         this.dataSharingSdk_
             .runManageFlow({
@@ -361,6 +550,38 @@ export class DataSharingApp extends CustomElement {
                     return this.getShareLink(params);
                   },
               learnMoreUrlMap,
+              activityLogCallback: () => {
+                window.open(
+                    loadTimeData.getStringF('activityLogsUrl'), '_blank');
+              },
+              logger: this,
+              showLeaveDialogAtStartup: flow === FlowValues.LEAVE,
+            })
+            .then((res) => {
+              this.browserProxy_.closeUi(res.status);
+            });
+        break;
+      case FlowValues.DELETE:
+        // group_id cannot be null for delete flow.
+        this.dataSharingSdk_
+            .runDeleteFlow({
+              parent,
+              groupId: groupId!,
+              translatedMessages: this.translationMap_,
+              logger: this,
+            })
+            .then((res) => {
+              this.browserProxy_.closeUi(res.status);
+            });
+        break;
+      case FlowValues.CLOSE:
+        // group_id cannot be null for close flow.
+        this.dataSharingSdk_
+            .runCloseFlow({
+              parent,
+              groupId: groupId!,
+              translatedMessages: this.translationMap_,
+              logger: this,
             })
             .then((res) => {
               this.browserProxy_.closeUi(res.status);

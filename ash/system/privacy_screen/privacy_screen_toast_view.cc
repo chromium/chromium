@@ -66,10 +66,11 @@ class PrivacyScreenToastManagedView : public views::View {
 
     const SkColor icon_color = color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorSecondary);
-    icon->SetImage(gfx::CreateVectorIcon(kSystemTrayManagedIcon, icon_color));
+    icon->SetImage(
+        ui::ImageModel::FromVectorIcon(kSystemTrayManagedIcon, icon_color));
 
-    AddChildView(label);
-    AddChildView(icon);
+    AddChildViewRaw(label);
+    AddChildViewRaw(icon);
   }
 
   ~PrivacyScreenToastManagedView() override = default;
@@ -91,8 +92,8 @@ class PrivacyScreenToastLabelView : public views::View {
 
     label_ = new views::Label();
     managed_view_ = new PrivacyScreenToastManagedView();
-    AddChildView(label_.get());
-    AddChildView(managed_view_.get());
+    AddChildViewRaw(label_.get());
+    AddChildViewRaw(managed_view_.get());
 
     const AshColorProvider* color_provider = AshColorProvider::Get();
     const SkColor primary_text_color = color_provider->GetContentLayerColor(
@@ -139,10 +140,10 @@ PrivacyScreenToastView::PrivacyScreenToastView(
   button_->SetVectorIcon(kPrivacyScreenIcon);
   button_->SetToggled(false);
   button_->AddObserver(this);
-  AddChildView(button_.get());
+  AddChildViewRaw(button_.get());
 
   label_ = new PrivacyScreenToastLabelView();
-  AddChildView(label_.get());
+  AddChildViewRaw(label_.get());
 }
 
 PrivacyScreenToastView::~PrivacyScreenToastView() {
@@ -159,16 +160,8 @@ void PrivacyScreenToastView::SetPrivacyScreenEnabled(bool enabled,
   std::u16string enabled_state = l10n_util::GetStringUTF16(
       is_enabled_ ? IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_ON_STATE
                   : IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_OFF_STATE);
-  std::u16string managed_state =
-      is_managed_ ? l10n_util::GetStringUTF16(
-                        IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_ENTERPRISE_MANAGED)
-                  : std::u16string();
   button_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_TOOLTIP, enabled_state));
-
-  accessible_name_ = l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_TOAST_ACCESSIBILITY_TEXT,
-      enabled_state, managed_state);
 
   DeprecatedLayoutImmediately();
 }

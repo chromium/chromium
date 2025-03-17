@@ -42,8 +42,7 @@ class OAuthTokenGetterImpl : public OAuthTokenGetter,
   // OAuthTokenGetter interface.
   void CallWithToken(OAuthTokenGetter::TokenCallback on_access_token) override;
   void InvalidateCache() override;
-
-  base::WeakPtr<OAuthTokenGetterImpl> GetWeakPtr();
+  base::WeakPtr<OAuthTokenGetter> GetWeakPtr() override;
 
  private:
   // gaia::GaiaOAuthClient::Delegate interface.

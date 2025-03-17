@@ -17,7 +17,6 @@
 #include "ash/test/test_widget_builder.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -254,16 +253,9 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
     InteractiveAshTest::TearDownOnMainThread();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&CampaignsManagerInteractiveUiTest::
-                                        OnWillCreateBrowserContextServices,
-                                    weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InteractiveAshTest::SetUpBrowserContextKeyedServices(context);
     feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(CreateMockTracker));
   }
@@ -326,7 +318,6 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
   bool InTabletMode() { return display::Screen::GetScreen()->InTabletMode(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::CallbackListSubscription create_services_subscription_;
   base::HistogramTester histogram_tester_;
   ui::ScopedAnimationDurationScaleMode animation_duration_;
   std::unique_ptr<TestCampaignsManagerObserver> observer_;
@@ -463,8 +454,7 @@ class CampaignsManagerInteractiveUiNudgeTest
         Do([=, this]() {
           ash::LaunchSystemWebAppAsync(GetActiveUserProfile(), type);
         }),
-        std::move(
-            WaitForShow(kBrowserViewElementId).SetTransitionOnlyOnEvent(true)));
+        WaitForShow(kBrowserViewElementId).SetTransitionOnlyOnEvent(true));
   }
 
   bool ShouldUseTabletMode() { return std::get<0>(GetParam()); }
@@ -503,14 +493,17 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
       LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION),
       WaitForWindowWithTitle(env, u"Wallpaper & style"),
       WaitForShow(ash::SystemNudgeView::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 100,
+              1),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 100, 0),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100, 0),
-          ToggleTabletMode())));
+          ToggleTabletMode()));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
@@ -523,10 +516,13 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
       LaunchSystemWebApp(ash::SystemWebAppType::SETTINGS),
       WaitForWindowWithTitle(env, u"Settings"),
       EnsureNotPresent(ash::SystemNudgeView::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 100,
+              0),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100, 0),
-          ToggleTabletMode())));
+          ToggleTabletMode()));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
@@ -541,14 +537,17 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
       PressButton(ash::SystemNudgeView::kPrimaryButtonIdForTesting),
       WaitForHide(ash::SystemNudgeView::kBubbleIdForTesting),
       WaitForWindowWithTitle(env, u"www.google.com"),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 100,
+              1),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 100, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100,
-                               1))));
+                               1)));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
@@ -556,20 +555,23 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
   aura::Env* env = aura::Env::GetInstance();
   ASSERT_TRUE(env);
 
-  RunTestSequence(Steps(
+  RunTestSequence(
       SetTabletMode(ShouldUseTabletMode()),
       LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION),
       WaitForShow(ash::SystemNudgeView::kBubbleIdForTesting),
       PressButton(ash::SystemNudgeView::kSecondaryButtonIdForTesting),
       WaitForHide(ash::SystemNudgeView::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 100,
+              1),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 100, 0),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 1),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100,
-                               1)))));
+                               1)));
 }
 
 // CampaignsManagerInteractiveUiNotificationTest
@@ -597,6 +599,16 @@ class CampaignsManagerInteractiveUiNotificationTest
     });
   }
 
+  // Reload campaigns, which can simulate a situation that locks and unlocks
+  // device.
+  auto ReloadCampaigns() {
+    return Do([]() {
+      auto* campaigns_manager = growth::CampaignsManager::Get();
+      auto empty_campaigns = base::Value::Dict();
+      campaigns_manager->SetCampaignsForTesting(&empty_campaigns);
+    });
+  }
+
   bool ShouldUseTabletMode() { return GetParam(); }
 };
 
@@ -609,14 +621,17 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
   RunTestSequence(
       SetTabletMode(ShouldUseTabletMode()),
       WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 101,
+              1),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 101, 0),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 101, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 101, 0),
-          ToggleTabletMode())));
+          ToggleTabletMode()));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
@@ -630,14 +645,17 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
       Click(/*button_index=*/0),
       WaitForHide(ShowNotificationActionPerformer::kBubbleIdForTesting),
       WaitForWindowWithTitle(env, u"www.google.com"),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 101,
+              1),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 101, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 101, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 101,
-                               0))));
+                               0)));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
@@ -650,12 +668,28 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
       WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
       Click(/*button_index=*/1),
       WaitForHide(ShowNotificationActionPerformer::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 101,
+              1),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 101, 0),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 101, 1),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 101,
-                               0))));
+                               0)));
+}
+
+IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
+                       ClickPrimaryButtonOnNotificationAfterCampaignsReload) {
+  aura::Env* env = aura::Env::GetInstance();
+  ASSERT_TRUE(env);
+
+  RunTestSequence(
+      SetTabletMode(ShouldUseTabletMode()),
+      WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
+      ReloadCampaigns(), Click(/*button_index=*/0),
+      WaitForHide(ShowNotificationActionPerformer::kBubbleIdForTesting),
+      WaitForWindowWithTitle(env, u"www.google.com"));
 }

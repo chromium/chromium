@@ -4,6 +4,7 @@
 
 #include "ash/system/notification_center/views/ash_notification_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -40,7 +41,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -377,9 +377,9 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
 
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
                                              *title_view_);
-  title_view_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title_view_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
 
-  timestamp_in_collapsed_view_->SetEnabledColorId(
+  timestamp_in_collapsed_view_->SetEnabledColor(
       cros_tokens::kCrosSysOnSurfaceVariant);
   ash::TypographyProvider::Get()->StyleLabel(
       ash::TypographyToken::kCrosAnnotation1, *timestamp_in_collapsed_view_);
@@ -440,9 +440,9 @@ gfx::Size AshNotificationView::NotificationTitleRow::CalculatePreferredSize(
 void AshNotificationView::NotificationTitleRow::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  title_view_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-  title_row_divider_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
-  timestamp_in_collapsed_view_->SetEnabledColorId(
+  title_view_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
+  title_row_divider_->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
+  timestamp_in_collapsed_view_->SetEnabledColor(
       cros_tokens::kCrosSysOnSurfaceVariant);
 }
 
@@ -453,10 +453,8 @@ AshNotificationView::AshNotificationView(
       is_grouped_parent_view_(notification.group_parent()),
       is_grouped_child_view_(notification.group_child()),
       shown_in_popup_(shown_in_popup) {
-  if (features::IsNotificationImageDragEnabled()) {
-    set_drag_controller(
-        Shell::Get()->message_center_controller()->drag_controller());
-  }
+  set_drag_controller(
+      Shell::Get()->message_center_controller()->drag_controller());
 
   message_center_observer_.Observe(message_center::MessageCenter::Get());
   // TODO(crbug.com/40780100): fix views and layout to match spec.
@@ -573,7 +571,7 @@ AshNotificationView::AshNotificationView(
       message_label_in_expanded_state_, kNotificationMessageLabelSize,
       /*is_color_primary=*/false);
 
-  message_label_in_expanded_state_->SetEnabledColorId(
+  message_label_in_expanded_state_->SetEnabledColor(
       cros_tokens::kCrosSysOnSurfaceVariant);
   ash::TypographyProvider::Get()->StyleLabel(
       ash::TypographyToken::kCrosAnnotation1,
@@ -681,7 +679,6 @@ void AshNotificationView::GroupedNotificationsPreferredSizeChanged() {
 }
 
 std::optional<gfx::Rect> AshNotificationView::GetDragAreaBounds() const {
-  DCHECK(features::IsNotificationImageDragEnabled());
   if (!IsDraggable()) {
     return std::nullopt;
   }
@@ -695,7 +692,6 @@ std::optional<gfx::Rect> AshNotificationView::GetDragAreaBounds() const {
 }
 
 std::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
-  DCHECK(features::IsNotificationImageDragEnabled());
   if (!IsDraggable()) {
     return std::nullopt;
   }
@@ -740,7 +736,6 @@ void AshNotificationView::AttachDropData(ui::OSExchangeData* data) {
 
 bool AshNotificationView::IsDraggable() const {
   // A notification view is draggable only when it contains a large image.
-  DCHECK(features::IsNotificationImageDragEnabled());
   return GetViewByID(message_center::NotificationViewBase::kLargeImageView);
 }
 
@@ -1165,7 +1160,7 @@ void AshNotificationView::UpdateWithNotification(
     notification_style_utils::ConfigureLabelStyle(message_label(),
                                                   kNotificationMessageLabelSize,
                                                   /*is_color_primary=*/false);
-    message_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    message_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
     ash::TypographyProvider::Get()->StyleLabel(
         ash::TypographyToken::kCrosAnnotation1, *message_label());
   }
@@ -1331,7 +1326,7 @@ void AshNotificationView::CreateOrUpdateProgressViews(
   if (status_view()) {
     status_view()->SetMultiLine(true);
     status_view()->SetMaxLines(message_center::kMaxLinesForStatusView);
-    status_view()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    status_view()->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                           *status_view());
   }
@@ -1379,7 +1374,7 @@ void AshNotificationView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   if (message_label()) {
-    message_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    message_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
   }
 
   if (control_buttons_view_) {
@@ -1389,7 +1384,7 @@ void AshNotificationView::OnThemeChanged() {
   }
 
   if (message_label_in_expanded_state_) {
-    message_label_in_expanded_state_->SetEnabledColorId(
+    message_label_in_expanded_state_->SetEnabledColor(
         cros_tokens::kCrosSysOnSurfaceVariant);
   }
 
@@ -1411,7 +1406,7 @@ void AshNotificationView::OnThemeChanged() {
        right_content()->height() - icon_view()->GetImageDrawingSize().height() >
            kSmallImageBackgroundThreshold)) {
     icon_view()->set_apply_rounded_corners(false);
-    right_content()->SetBackground(views::CreateThemedRoundedRectBackground(
+    right_content()->SetBackground(views::CreateRoundedRectBackground(
         kColorAshControlBackgroundColorInactive,
         message_center::kImageCornerRadius));
   }
@@ -1514,7 +1509,7 @@ void AshNotificationView::OnInlineReplyUpdated() {
 
 views::View* AshNotificationView::FindGroupNotificationView(
     const std::string& notification_id) {
-  auto notification = base::ranges::find(
+  auto notification = std::ranges::find(
       grouped_notifications_container_->children(), notification_id,
       [](views::View* notification_view) {
         return static_cast<message_center::MessageView*>(notification_view)

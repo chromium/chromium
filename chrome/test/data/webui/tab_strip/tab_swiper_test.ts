@@ -145,7 +145,7 @@ suite('TabSwiper', () => {
     assertEquals(tabElStyle.opacity, '0');
   });
 
-  test('PointerDownResetsAnimationTime', async () => {
+  test('PointerDownResetsAnimationTime', () => {
     tabElement.style.setProperty('--tabstrip-tab-width', '100px');
     const tabElStyle = window.getComputedStyle(tabElement);
     const pointerState:

@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] notificationclose: Setup
+  assert_equals: The list should include one notification expected 1 but got 0
+[FAIL] notificationclose: Attribute exists with expected value: title
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'title')"
+[FAIL] notificationclose: Attribute exists with expected value: dir
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'dir')"
+[FAIL] notificationclose: Attribute exists with expected value: lang
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'lang')"
+[FAIL] notificationclose: Attribute exists with expected value: body
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'body')"
+[FAIL] notificationclose: Attribute exists with expected value: tag
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'tag')"
+[FAIL] notificationclose: Attribute exists with expected value: icon
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'icon')"
+[FAIL] notificationclose: Attribute exists with expected value: data
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'data')"
+Harness: the test ran to completion.
+

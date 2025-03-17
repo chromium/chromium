@@ -78,7 +78,7 @@ std::vector<std::string> CollectAppIDsFromWindows(
 // Returns the native window associated with `swa_type`, if it exists.
 aura::Window* GetNativeWindowForSwa(SystemWebAppType swa_type) {
   BrowserList* browsers = BrowserList::GetInstance();
-  auto it = base::ranges::find_if(*browsers, [swa_type](Browser* browser) {
+  auto it = std::ranges::find_if(*browsers, [swa_type](Browser* browser) {
     return IsBrowserForSystemWebApp(browser, swa_type);
   });
   return it == browsers->end() ? nullptr : (*it)->window()->GetNativeWindow();
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
   BrowserList* browsers = BrowserList::GetInstance();
   ASSERT_EQ(browsers->size(), 4u);
   // Verify the chrome browser.
-  EXPECT_TRUE(base::ranges::any_of(*browsers, [](Browser* browser) {
+  EXPECT_TRUE(std::ranges::any_of(*browsers, [](Browser* browser) {
     TabStripModel* tab_strip_model = browser->tab_strip_model();
     return tab_strip_model->count() == 3 &&
            tab_strip_model->GetWebContentsAt(0)->GetVisibleURL() ==
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
   }));
 
   // Verify the PWA.
-  EXPECT_TRUE(base::ranges::any_of(*browsers, [](Browser* browser) {
+  EXPECT_TRUE(std::ranges::any_of(*browsers, [](Browser* browser) {
     if (browser->type() != Browser::TYPE_APP) {
       return false;
     }
@@ -407,9 +407,9 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, GroupTitleLoadingFail) {
   // updated title.
   BirchCoralProvider::Get()->TitleUpdated(base::Token(), "");
   ASSERT_TRUE(coral_chip->title()->GetVisible());
-  EXPECT_EQ(coral_chip->title()->GetText(), u"Suggested Group");
+  EXPECT_EQ(coral_chip->title()->GetText(), u"Suggested group");
   EXPECT_EQ(coral_chip->GetAccessibleName(),
-            u"Suggested Group Organize in a new desk");
+            u"Suggested group Organize in a new desk");
 }
 
 // Tests that the coral chip gets updated while corresponding tab/app items are

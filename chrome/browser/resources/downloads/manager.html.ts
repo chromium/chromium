@@ -57,21 +57,12 @@ export function getHtml(this: DownloadsManagerElement) {
     $i18n{undo}
   </cr-button>
 </cr-toast-manager>
-${this.shouldShowBypassWarningPrompt_() ? html`
-  ${this.dangerousDownloadInterstitial_ ?
-    html`<downloads-dangerous-download-interstitial
-        .bypassPromptItemId="${this.bypassPromptItemId_}"
-        .trustSiteLine="${this.computeDangerousInterstitialTrustSiteLine_()}"
-        .trustSiteLineAccessibleText=
-        "${this.computeDangerInterstitialTrustSiteAccessible_()}"
-        @cancel="${this.onDangerousDownloadInterstitialCancel_}"
-        @close="${this.onDangerousDownloadInterstitialClose_}">
-    </downloads-dangerous-download-interstitial>` :
+${this.shouldShowBypassWarningPrompt_() ?
     html`<downloads-bypass-warning-confirmation-dialog
         .fileName="${this.computeBypassWarningDialogFileName_()}"
         @close="${this.onBypassWarningConfirmationDialogClose_}">
     </downloads-bypass-warning-confirmation-dialog>`
-  }` : ''}
+  : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

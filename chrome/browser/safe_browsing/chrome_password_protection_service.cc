@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -15,7 +16,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -426,8 +426,6 @@ bool ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
 safe_browsing::LoginReputationClientRequest::UrlDisplayExperiment
 ChromePasswordProtectionService::GetUrlDisplayExperiment() const {
   safe_browsing::LoginReputationClientRequest::UrlDisplayExperiment experiment;
-  experiment.set_simplified_url_display_enabled(
-      base::FeatureList::IsEnabled(safe_browsing::kSimplifiedUrlDisplay));
   // Delayed warnings parameters:
   experiment.set_delayed_warnings_enabled(
       base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings));
@@ -462,7 +460,7 @@ void ChromePasswordProtectionService::ShowModalWarning(
 
 #if BUILDFLAG(IS_ANDROID)
   (new PasswordReuseControllerAndroid(
-       web_contents, this, password_type,
+       web_contents, this, profile_->GetPrefs(), password_type,
        base::BindOnce(&ChromePasswordProtectionService::OnUserAction,
                       base::Unretained(this), web_contents, password_type,
                       outcome, verdict_type, verdict_token,
@@ -1662,8 +1660,8 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
 
   std::vector<CoreAccountInfo> signed_in_accounts =
       identity_manager->GetAccountsWithRefreshTokens();
-  auto account_iterator = base::ranges::find_if(
-      signed_in_accounts, [username](const auto& account) {
+  auto account_iterator =
+      std::ranges::find_if(signed_in_accounts, [username](const auto& account) {
         return password_manager::AreUsernamesSame(
             account.email,
             /*is_username1_gaia_account=*/true, username,
@@ -1682,20 +1680,6 @@ bool ChromePasswordProtectionService::IsInExcludedCountry() {
     return false;
   return base::Contains(GetExcludedCountries(),
                         variations_service->GetLatestCountry());
-}
-
-PasswordReuseEvent::SyncAccountType
-ChromePasswordProtectionService::GetSyncAccountType() const {
-  const AccountInfo account_info = GetAccountInfo();
-  if (!IsPrimaryAccountSignedIn()) {
-    return PasswordReuseEvent::NOT_SIGNED_IN;
-  }
-
-  // For gmail or googlemail account, the hosted_domain will always be
-  // kNoHostedDomainFound.
-  return account_info.hosted_domain == kNoHostedDomainFound
-             ? PasswordReuseEvent::GMAIL
-             : PasswordReuseEvent::GSUITE;
 }
 
 void ChromePasswordProtectionService::
@@ -1898,8 +1882,10 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
 #if BUILDFLAG(IS_ANDROID)
 ReferringAppInfo ChromePasswordProtectionService::GetReferringAppInfo(
     content::WebContents* web_contents) {
-  internal::ReferringAppInfo info_struct =
-      safe_browsing::GetReferringAppInfo(web_contents);
+  // Do not get WebAPK info for PhishGuard. We don't consume referring WebAPK
+  // data for password reuse events.
+  internal::ReferringAppInfo info_struct = safe_browsing::GetReferringAppInfo(
+      web_contents, /*get_webapk_info=*/false);
   ReferringAppInfo info_proto;
   info_proto.set_referring_app_source(info_struct.referring_app_source);
   info_proto.set_referring_app_name(info_struct.referring_app_name);

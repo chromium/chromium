@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
+#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,6 +41,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -524,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
   EXPECT_TRUE(registry->disabled_extensions().empty());
 
   extensions::PendingExtensionManager* pending_extension_manager =
-      service->pending_extension_manager();
+      extensions::PendingExtensionManager::Get(profile());
 
   // The code that reads external_extensions.json uses this method to inform
   // the extensions::ExtensionService of an extension to download.  Using the
@@ -811,9 +813,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
 // installed.
 IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
                        MAYBE_PolicyOverridesUserInstall) {
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
+  auto* registrar = extensions::ExtensionRegistrar::Get(browser()->profile());
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
   const char kExtensionId[] = "ogjcoiohnmldgjemafoockdghcjciccf";
   const size_t size_before = registry->enabled_extensions().size();
@@ -846,7 +846,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
       registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
   EXPECT_EQ(ManifestLocation::kInternal, extension->location());
-  EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));
+  EXPECT_TRUE(registrar->IsExtensionEnabled(kExtensionId));
 
   // Setup the force install policy. It should override the location.
   base::Value::List forcelist;
@@ -864,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   extension = registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
   EXPECT_EQ(ManifestLocation::kExternalPolicyDownload, extension->location());
-  EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));
+  EXPECT_TRUE(registrar->IsExtensionEnabled(kExtensionId));
 
   // Remove the policy, and verify that the extension was uninstalled.
   // TODO(joaodasilva): it would be nicer if the extension was kept instead,
@@ -883,14 +883,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   extension = registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
   EXPECT_EQ(ManifestLocation::kInternal, extension->location());
-  EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));
+  EXPECT_TRUE(registrar->IsExtensionEnabled(kExtensionId));
   EXPECT_TRUE(registry->disabled_extensions().empty());
 
   DisableExtension(kExtensionId);
   EXPECT_EQ(1u, registry->disabled_extensions().size());
   extension = registry->disabled_extensions().GetByID(kExtensionId);
   EXPECT_TRUE(extension);
-  EXPECT_FALSE(service->IsExtensionEnabled(kExtensionId));
+  EXPECT_FALSE(registrar->IsExtensionEnabled(kExtensionId));
 
   // Install the policy again. It should overwrite the extension's location,
   // and force enable it too.
@@ -906,6 +906,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   extension = registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
   EXPECT_EQ(ManifestLocation::kExternalPolicyDownload, extension->location());
-  EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));
+  EXPECT_TRUE(registrar->IsExtensionEnabled(kExtensionId));
   EXPECT_TRUE(registry->disabled_extensions().empty());
 }

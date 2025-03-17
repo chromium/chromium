@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/status_icons/desktop_notification_balloon.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_tray.h"
@@ -18,7 +19,7 @@
 @class NSStatusItem;
 @class StatusItemController;
 
-class StatusIconMac : public StatusIcon {
+class StatusIconMac : public StatusIcon, public StatusIconMenuModel::Observer {
  public:
   StatusIconMac();
 
@@ -36,6 +37,10 @@ class StatusIconMac : public StatusIcon {
                       const message_center::NotifierId& notifier_id) override;
   void SetOpenMenuWithSecondaryClick(
       bool open_menu_with_secondary_click) override;
+  void SetImageTemplate(bool is_template) override;
+
+  // StatusIconMenuModel::Observer overrides:
+  void OnMenuStateChanged() override;
 
   bool HasStatusIconMenu();
 
@@ -58,19 +63,14 @@ class StatusIconMac : public StatusIcon {
   FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, MenuToolTip);
   FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, SecondaryClickMenuNoToolTip);
 
-  void SetToolTip(NSString* tool_tip);
-  void CreateMenu(ui::MenuModel* model, NSString* tool_tip);
+  void CreateMenu(ui::MenuModel* model);
 
   // Getter for item_ that allows lazy initialization.
   NSStatusItem* item();
   NSStatusItem* __strong item_;
 
-  StatusItemController* __strong controller_;
-
   // Notification balloon.
   DesktopNotificationBalloon notification_;
-
-  NSString* __strong tool_tip_;
 
   // Status menu shown when right-clicking the system icon, if it has been
   // created by |UpdatePlatformContextMenu|.
@@ -84,9 +84,11 @@ class StatusIconMac : public StatusIcon {
   bool open_menu_with_secondary_click_ = false;
 
   // Stores the menu model so that it can be created later in
-  // CreateAndOpenMenu(). Only used when open_menu_with_secondary_click_ is
-  // true.
-  raw_ptr<ui::MenuModel> menu_model_ = nullptr;
+  // CreateAndOpenMenu() or so its observers can be cleaned up.
+  raw_ptr<StatusIconMenuModel> menu_model_ = nullptr;
+
+  base::ScopedObservation<StatusIconMenuModel, StatusIconMenuModel::Observer>
+      observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_STATUS_ICONS_STATUS_ICON_MAC_H_

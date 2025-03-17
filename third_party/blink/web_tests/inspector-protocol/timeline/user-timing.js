@@ -75,9 +75,20 @@
     if (e.args.startTime) {
       e.args.startTime = roundForFlakes(e.args.startTime - zeroHighRes);
     }
+    if (e.args.sampleTraceId) {
+      e.args.sampleTraceId = 0;
+    }
 
     if (e.args.data?.callTime) {
       e.args.data.callTime = 0;
+    }
+
+    if (e.args.data?.sampleTraceId) {
+      e.args.data.sampleTraceId = 0;
+    }
+
+    if (e.args?.traceId) {
+      e.args.traceId = 0;
     }
 
     if (e.args.callTime) {

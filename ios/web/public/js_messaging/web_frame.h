@@ -34,7 +34,6 @@ class WebFrame : public base::SupportsUserData {
   // application's lifetime.
   virtual std::string GetFrameId() const = 0;
   // Whether or not the receiver represents the main frame of the webpage.
-  // TODO(crbug.com/40216361): Rename IsMainFrame to IsAnyMainFrame
   virtual bool IsMainFrame() const = 0;
   // The security origin associated with this frame.
   virtual url::Origin GetSecurityOrigin() const = 0;

@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/site_isolation/site_details.h"
 #include "components/nacl/common/nacl_process_type.h"
 #include "content/public/browser/browser_thread.h"
@@ -76,7 +75,7 @@ void MetricsMemoryDetails::UpdateHistograms() {
       }
     }
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS exposes system-wide graphics driver memory which has historically
   // been a source of leak/bloat.
   base::GraphicsMemoryInfoKB meminfo;
@@ -91,13 +90,13 @@ void MetricsMemoryDetails::UpdateHistograms() {
   CountRenderProcessHosts(&initialized_and_not_dead_rphs, &all_rphs);
   UpdateSiteIsolationMetrics(initialized_and_not_dead_rphs);
 
-  UMA_HISTOGRAM_COUNTS_100("Memory.ProcessCount",
-                           static_cast<int>(browser.processes.size()));
-  UMA_HISTOGRAM_COUNTS_100("Memory.RendererProcessCount", renderer_count);
+  UMA_HISTOGRAM_COUNTS_1000("Memory.ProcessCount2",
+                            static_cast<int>(browser.processes.size()));
+  UMA_HISTOGRAM_COUNTS_1000("Memory.RendererProcessCount2", renderer_count);
 
-  UMA_HISTOGRAM_COUNTS_100("Memory.RenderProcessHost.Count.All", all_rphs);
-  UMA_HISTOGRAM_COUNTS_100(
-      "Memory.RenderProcessHost.Count.InitializedAndNotDead",
+  UMA_HISTOGRAM_COUNTS_1000("Memory.RenderProcessHost.Count2.All", all_rphs);
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Memory.RenderProcessHost.Count2.InitializedAndNotDead",
       initialized_and_not_dead_rphs);
 }
 

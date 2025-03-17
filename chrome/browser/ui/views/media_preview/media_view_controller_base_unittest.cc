@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -123,11 +124,11 @@ class MediaViewControllerBaseTestParameterized
         .GetCachedName();
   }
 
-  const std::u16string& GetDeviceNameLabel() const {
+  std::u16string_view GetDeviceNameLabel() const {
     return controller_->GetDeviceNameLabelViewForTesting()->GetText();
   }
 
-  const std::u16string& GetNoDeviceLabel() const {
+  std::u16string_view GetNoDeviceLabel() const {
     return controller_->GetNoDeviceLabelViewForTesting()->GetText();
   }
 

@@ -6,7 +6,7 @@ dbname = "transaction-crash-on-abort.html"
 indexedDB.deleteDatabase(dbname)
 indexedDB.open(dbname)
 db.createObjectStore('foo')
-db.transaction('foo', 'readonly', {durability: 'relaxed'})
+db.transaction('foo', 'readonly')
 self.gc()
 PASS successfullyParsed is true
 

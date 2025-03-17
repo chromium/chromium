@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.browserservices;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -14,7 +15,6 @@ import android.app.PendingIntent;
 import android.content.Intent;
 
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity;
@@ -42,26 +43,26 @@ public class SessionDataHolderTest {
 
     private Intent mIntent1;
     private Intent mIntent2;
-    private CustomTabsSessionToken mSession1;
-    private CustomTabsSessionToken mSession2;
+    private SessionHolder<?> mSession1;
+    private SessionHolder<?> mSession2;
 
     @Mock CustomTabsConnection mConnection;
     @Mock SessionHandler mHandler1;
     @Mock SessionHandler mHandler2;
     @Mock Activity mActivityInTask1;
     @Mock Activity mActivityInTask2;
-    @Captor ArgumentCaptor<Callback<CustomTabsSessionToken>> mDisconnectCallbackCaptor;
+    @Captor ArgumentCaptor<Callback<SessionHolder<?>>> mDisconnectCallbackCaptor;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         CustomTabsConnection.setInstanceForTesting(mConnection);
         mIntent1 = createIntentWithSessionId(1);
-        mSession1 = CustomTabsSessionToken.getSessionTokenFromIntent(mIntent1);
+        mSession1 = SessionHolder.getSessionHolderFromIntent(mIntent1);
         mIntent2 = createIntentWithSessionId(2);
-        mSession2 = CustomTabsSessionToken.getSessionTokenFromIntent(mIntent2);
-        when(mHandler1.getSession()).thenReturn(mSession1);
-        when(mHandler2.getSession()).thenReturn(mSession2);
+        mSession2 = SessionHolder.getSessionHolderFromIntent(mIntent2);
+        doReturn(mSession1).when(mHandler1).getSession();
+        doReturn(mSession2).when(mHandler2).getSession();
         when(mHandler1.getActivityClass()).thenReturn((Class) CustomTabActivity.class);
         when(mHandler2.getActivityClass()).thenReturn((Class) TranslucentCustomTabActivity.class);
         when(mActivityInTask1.getTaskId()).thenReturn(TASK_ID_1);
@@ -179,8 +180,8 @@ public class SessionDataHolderTest {
         assertNull(activity);
     }
 
-    private void disconnect(CustomTabsSessionToken session) {
-        Callback<CustomTabsSessionToken> callback = mDisconnectCallbackCaptor.getValue();
+    private void disconnect(SessionHolder<?> session) {
+        Callback<SessionHolder<?>> callback = mDisconnectCallbackCaptor.getValue();
         if (callback != null) {
             callback.onResult(session);
         }

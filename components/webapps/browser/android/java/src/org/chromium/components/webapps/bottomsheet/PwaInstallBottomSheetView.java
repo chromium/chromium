@@ -4,6 +4,8 @@
 
 package org.chromium.components.webapps.bottomsheet;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -14,10 +16,12 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.WebappsIconUtils;
 
 /** The view portion of the PWA Install bottom sheet. */
+@NullMarked
 public class PwaInstallBottomSheetView {
     /** The context to use. */
     private final Context mContext;
@@ -43,6 +47,7 @@ public class PwaInstallBottomSheetView {
 
                         // Add a fixed margin between images.
                         RecyclerView.Adapter adapter = parent.getAdapter();
+                        assumeNonNull(adapter);
                         int margin =
                                 mContext.getResources()
                                         .getDimensionPixelSize(R.dimen.webapk_screenshot_margin);

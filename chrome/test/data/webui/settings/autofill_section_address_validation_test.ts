@@ -6,34 +6,79 @@
 import 'chrome://settings/lazy_load.js';
 
 import type {CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
-import {CountryDetailManagerImpl} from 'chrome://settings/lazy_load.js';
+import {CountryDetailManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createAddressEntry, createEmptyAddressEntry, makeGuid, STUB_USER_ACCOUNT_INFO} from './autofill_fake_data.js';
-import {CountryDetailManagerTestImpl, createAddressDialog, expectEvent} from './autofill_section_test_utils.js';
+import {createAddressDialog, expectEvent} from './autofill_section_test_utils.js';
+import {TestCountryDetailManagerProxy} from './test_country_detail_manager_proxy.js';
 // clang-format on
 
 const FieldType = chrome.autofillPrivate.FieldType;
 
 suite('AutofillSectionAddressValidationTests', () => {
+  let countryDetailManager: TestCountryDetailManagerProxy;
+
   setup(() => {
-    CountryDetailManagerImpl.setInstance(new CountryDetailManagerTestImpl());
+    countryDetailManager = new TestCountryDetailManagerProxy();
+    CountryDetailManagerProxyImpl.setInstance(countryDetailManager);
+
+    countryDetailManager.setGetCountryListRepsonse([
+      {name: 'United States', countryCode: 'US'},  // Default country.
+      {name: 'Israel', countryCode: 'IL'},
+      {name: 'United Kingdom', countryCode: 'GB'},
+    ]);
+    countryDetailManager.setGetAddressFormatRepsonse({
+      components: [
+        {
+          row: [
+            {
+              field: FieldType.NAME_FULL,
+              fieldName: 'Name',
+              isLongField: true,
+              isRequired: false,
+            },
+          ],
+        },
+        {
+          row: [{
+            field: FieldType.COMPANY_NAME,
+            fieldName: 'Organization',
+            isLongField: true,
+            isRequired: false,
+          }],
+        },
+        {
+          row: [
+            {
+              field: FieldType.ADDRESS_HOME_CITY,
+              fieldName: 'City',
+              isLongField: false,
+              isRequired: true,
+            },
+            {
+              field: FieldType.ADDRESS_HOME_STATE,
+              fieldName: 'State',
+              isLongField: false,
+              isRequired: true,
+            },
+            {
+              field: FieldType.ADDRESS_HOME_ZIP,
+              fieldName: 'ZIP code',
+              isLongField: false,
+              isRequired: true,
+            },
+          ],
+        },
+      ],
+      languageCode: 'en',
+    });
   });
 
   test('verifyRequiredFields', async () => {
     const address = createEmptyAddressEntry();
     address.fields.push({type: FieldType.ADDRESS_HOME_COUNTRY, value: 'US'});
-
-    const components =
-        await CountryDetailManagerImpl.getInstance().getAddressFormat('US');
-
-    const nRequired = components.components.reduce(
-        (n, row) =>
-            n + row.row.filter(component => component.isRequired).length,
-        0);
-
-    assertGT(nRequired, 0, 'US addresses should have required components');
 
     const dialog = await createAddressDialog(address, {
       ...STUB_USER_ACCOUNT_INFO,
@@ -43,7 +88,7 @@ suite('AutofillSectionAddressValidationTests', () => {
     const save = dialog.$.saveButton;
 
     assertEquals(
-        nRequired, content.querySelectorAll('[required]').length,
+        3, content.querySelectorAll('[required]').length,
         'number of required elements should match required components');
     assertEquals(
         0, content.querySelectorAll('[invalid]').length,
@@ -55,7 +100,7 @@ suite('AutofillSectionAddressValidationTests', () => {
 
     // Attempt to save reveals invalid fields, the address is not saveable.
     assertEquals(
-        nRequired, content.querySelectorAll('[invalid]').length,
+        3, content.querySelectorAll('[invalid]').length,
         'all required components should be indicated after an attempt to save');
     assertTrue(
         save.disabled, 'the save button is disable with revealed errors');

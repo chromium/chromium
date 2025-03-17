@@ -285,7 +285,6 @@ class Unpack:PackDef
     int64 DestUnpSize;
 
     bool Suspended;
-    bool UnpAllBuf;
     bool UnpSomeRead;
     int64 WrittenFileSize;
     bool FileExtracted;

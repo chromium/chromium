@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_ACCOUNT_STORAGE_MOVE_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_ACCOUNT_STORAGE_MOVE_DIALOG_H_
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/base/interaction/element_identifier.h"
 
 class Browser;
@@ -32,6 +32,6 @@ void ShowBookmarkAccountStorageMoveDialog(
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* target_folder,
     size_t index,
-    base::OnceClosure closed_callback);
+    base::OnceClosure closed_callback = base::DoNothing());
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_ACCOUNT_STORAGE_MOVE_DIALOG_H_

@@ -53,6 +53,27 @@ CollectionSize(JNIEnv* env, const JavaRef<jobject>& collection);
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT jint MapSize(JNIEnv* env,
                                              const JavaRef<jobject>& map);
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool FromJavaBoolean(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_bool);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ToJavaBoolean(
+    JNIEnv* env,
+    bool val);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT int32_t
+FromJavaInteger(JNIEnv* env, const JavaRef<jobject>& j_int);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ToJavaInteger(
+    JNIEnv* env,
+    int32_t val);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT int64_t
+FromJavaLong(JNIEnv* env, const JavaRef<jobject>& j_long);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ToJavaLong(
+    JNIEnv* env,
+    int64_t val);
 }  // namespace jni_zero
 
 #endif  // JNI_ZERO_COMMON_APIS_H_

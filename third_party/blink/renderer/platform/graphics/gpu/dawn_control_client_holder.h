@@ -81,7 +81,8 @@ class PLATFORM_EXPORT DawnControlClientHolder
 // TODO(crbug.com/1246805): Remove this hack when the DawnControlClient can be
 // initialized synchronously on workers and query from its wgpu::Instance
 // instead.
-PLATFORM_EXPORT std::vector<wgpu::WGSLFeatureName> GatherWGSLFeatures();
+PLATFORM_EXPORT std::vector<wgpu::WGSLLanguageFeatureName>
+GatherWGSLLanguageFeatures();
 
 }  // namespace blink
 

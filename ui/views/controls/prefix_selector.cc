@@ -104,7 +104,7 @@ std::optional<gfx::Rect> PrefixSelector::GetProximateCharacterBounds(
 }
 
 std::optional<size_t> PrefixSelector::GetProximateCharacterIndexFromPoint(
-    const gfx::Point& point,
+    const gfx::Point& screen_point_in_dips,
     ui::IndexFromPointFlags flags) const {
   NOTIMPLEMENTED_LOG_ONCE();
   return std::nullopt;

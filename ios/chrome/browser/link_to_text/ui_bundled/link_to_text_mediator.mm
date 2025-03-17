@@ -95,7 +95,7 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
                                     selectedText:payload.selectedText
                                       sourceView:payload.sourceView
                                       sourceRect:payload.sourceRect];
-  [self.activityServiceHandler shareHighlight:command];
+  [self.activityServiceHandler showShareSheetForHighlight:command];
 }
 
 - (void)linkGenerationFailedWithError:(LinkGenerationError)error {
@@ -122,7 +122,7 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
                  action:^{
                    base::RecordAction(base::UserMetricsAction(
                        "SharedHighlights.LinkGenerated.Error.SharePage"));
-                   [weakSelf.activityServiceHandler sharePage];
+                   [weakSelf.activityServiceHandler showShareSheet];
                  }
                   style:UIAlertActionStyleDefault
               preferred:NO];

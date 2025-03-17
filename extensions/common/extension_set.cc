@@ -112,7 +112,7 @@ const Extension* ExtensionSet::GetAppByURL(const GURL& url) const {
 
 const Extension* ExtensionSet::GetHostedAppByURL(const GURL& url) const {
   auto hosted_app_itr =
-      base::ranges::find_if(extensions_, [&](const auto& extension_info) {
+      std::ranges::find_if(extensions_, [&](const auto& extension_info) {
         return extension_info.second->web_extent().MatchesURL(url);
       });
   return hosted_app_itr != extensions_.end() ? hosted_app_itr->second.get()
@@ -122,7 +122,7 @@ const Extension* ExtensionSet::GetHostedAppByURL(const GURL& url) const {
 const Extension* ExtensionSet::GetHostedAppByOverlappingWebExtent(
     const URLPatternSet& extent) const {
   auto hosted_app_itr =
-      base::ranges::find_if(extensions_, [&](const auto& extension_info) {
+      std::ranges::find_if(extensions_, [&](const auto& extension_info) {
         return extension_info.second->web_extent().OverlapsWith(extent);
       });
   return hosted_app_itr != extensions_.end() ? hosted_app_itr->second.get()
@@ -140,7 +140,7 @@ const Extension* ExtensionSet::GetByID(const ExtensionId& id) const {
 }
 
 const Extension* ExtensionSet::GetByGUID(const std::string& guid) const {
-  auto extension_itr = base::ranges::find(
+  auto extension_itr = std::ranges::find(
       extensions_, guid,
       [](const auto& extension_info) { return extension_info.second->guid(); });
   return extension_itr != extensions_.end() ? extension_itr->second.get()
@@ -166,7 +166,7 @@ bool ExtensionSet::ExtensionBindingsAllowed(const GURL& url) const {
   if (url.SchemeIs(kExtensionScheme))
     return true;
 
-  return base::ranges::any_of(extensions_, [&url](const auto& extension_info) {
+  return std::ranges::any_of(extensions_, [&url](const auto& extension_info) {
     const Extension* extension = extension_info.second.get();
     return extension->location() == mojom::ManifestLocation::kComponent &&
            extension->web_extent().MatchesURL(url);

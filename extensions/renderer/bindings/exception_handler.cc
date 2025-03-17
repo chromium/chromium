@@ -102,8 +102,7 @@ void ExceptionHandler::HandleException(v8::Local<v8::Context> context,
     // possible. Handle this gracefully, and log errors normally.
     v8::TryCatch handler_try_catch(isolate);
     handler_try_catch.SetVerbose(true);
-    JSRunner::Get(context)->RunJSFunction(handler, context,
-                                          std::size(arguments), arguments);
+    JSRunner::Get(context)->RunJSFunction(handler, context, arguments);
   } else {
     add_console_error_.Run(context, full_message);
   }
@@ -129,8 +128,7 @@ void ExceptionHandler::RunExtensionCallback(
   // synchronously, so if JS is suspended at this moment, the `try_catch` here
   // is insufficient.
   JSRunner::Get(context)->RunJSFunction(extension_callback, context,
-                                        callback_arguments.size(),
-                                        callback_arguments.data());
+                                        callback_arguments);
 
   // Since arbitrary JS has ran, the context may have been invalidated. If it
   // was, bail.

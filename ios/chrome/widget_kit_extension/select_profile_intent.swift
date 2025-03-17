@@ -17,12 +17,28 @@ struct ProfileQuery: EntityQuery {
   }
 
   func defaultResult() async -> ProfileDetail? {
-    try? await suggestedEntities().first
+    let noAccount = ProfileDetail(id: "No account", gaia: "Default")
+
+    guard let accounts = try? await suggestedEntities()
+    else { return noAccount }
+
+    // If available, return the primary account as default result.
+    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
+    else { return noAccount }
+    guard let primaryAccount = sharedDefaults.object(forKey: "ios.primary_account") as? String
+    else { return noAccount }
+    for account in accounts {
+      if account.gaia == primaryAccount {
+        return ProfileDetail(id: account.id, gaia: account.gaia)
+      }
+    }
+    return noAccount
   }
 }
 
 struct ProfileDetail: AppEntity {
   let id: String
+  let gaia: String
 
   static var typeDisplayRepresentation: TypeDisplayRepresentation = "Profile"
   static var defaultQuery = ProfileQuery()
@@ -36,14 +52,16 @@ struct ProfileDetail: AppEntity {
     else { return [] }
     guard
       let profiles = sharedDefaults.object(forKey: "ios.registered_accounts_on_device")
-        as? [String: [String: String]]
+        as? [String: [String: Any]]
     else { return [] }
 
     var profilesDetail: [ProfileDetail] = []
 
-    for innerDict in profiles.values {
-      if let value = innerDict["email"] {
-        profilesDetail.append(ProfileDetail(id: value))
+    profilesDetail.append(ProfileDetail(id: "No account", gaia: "Default"))
+
+    for (key, value) in profiles {
+      if let email = value["email"] as? String {
+        profilesDetail.append(ProfileDetail(id: email, gaia: key))
       }
     }
     return profilesDetail
@@ -58,10 +76,25 @@ struct SelectProfileIntent: WidgetConfigurationIntent {
   @Parameter(title: "Profile")
   var profile: ProfileDetail?
 
-  init(profile: ProfileDetail) {
-    self.profile = profile
+  // Returns the avatar linked to the account.
+  func avatar() -> Image? {
+    guard let gaia = profile?.gaia
+    else { return nil }
+
+    let avatarFilePath =
+      AppGroupHelper.widgetsAvatarFolder().appendingPathComponent("\(gaia).png")
+
+    guard let uiImage = UIImage(contentsOfFile: avatarFilePath.path) else {
+      return nil
+    }
+    return Image(uiImage: uiImage)
   }
 
-  init() {
+  // Returns the gaiaID linked to the account.
+  func gaia() -> String? {
+    guard let gaia = profile?.gaia
+    else { return nil }
+
+    return gaia
   }
 }

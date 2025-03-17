@@ -4,6 +4,7 @@
 
 #include "media/gpu/test/video_encoder/bitstream_validator.h"
 
+#include <algorithm>
 #include <numeric>
 #include <optional>
 
@@ -11,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
@@ -167,8 +167,8 @@ void BitstreamValidator::ConstructSpatialIndices(
   CHECK_LE(spatial_layer_resolutions.size(), spatial_layer_resolutions_.size());
 
   original_spatial_indices_.resize(spatial_layer_resolutions.size());
-  auto begin = base::ranges::find(spatial_layer_resolutions_,
-                                  spatial_layer_resolutions.front());
+  auto begin = std::ranges::find(spatial_layer_resolutions_,
+                                 spatial_layer_resolutions.front());
   CHECK(begin != spatial_layer_resolutions_.end());
   uint8_t sid_offset = begin - spatial_layer_resolutions_.begin();
   for (size_t i = 0; i < spatial_layer_resolutions.size(); ++i) {

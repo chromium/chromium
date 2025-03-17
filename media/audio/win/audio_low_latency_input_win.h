@@ -56,12 +56,12 @@
 #ifndef MEDIA_AUDIO_WIN_AUDIO_LOW_LATENCY_INPUT_WIN_H_
 #define MEDIA_AUDIO_WIN_AUDIO_LOW_LATENCY_INPUT_WIN_H_
 
-#include <Audioclient.h>
 #include <MMDeviceAPI.h>
+
+#include <Audioclient.h>
 #include <endpointvolume.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.media.effects.h>
 #include <wrl/client.h>
 
 #include <memory>
@@ -149,8 +149,11 @@ class MEDIA_EXPORT WASAPIAudioInputStream
 
   bool started() const { return started_; }
 
+  void SendLogMessage(std::string message);
+
  private:
   class DataDiscontinuityReporter;
+  class EchoCancellationConfig;
 
   PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
 
@@ -168,18 +171,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // Returns whether raw audio processing is supported or not for the selected
   // capture device.
   bool RawProcessingSupported();
-  // The Windows.Media.Effects.AudioEffectsManager UWP API contains a method
-  // called CreateAudioCaptureEffectsManagerWithMode() which is needed to
-  // enumerate active audio effects on the capture stream. This UWP method
-  // needs a device ID which differs from what can be derived from the default
-  // Win32 API in CoreAudio. The GetUWPDeviceId() method builds up the required
-  // device ID that the audio effects manager needs. Note that it is also
-  // possible to get the ID directly from the Windows.Devices.Enumeration UWP
-  // API but that is rather complex and requires use of asynchronous methods.
-  std::string GetUWPDeviceId();
-  // For the selected |uwp_device_id|, generate two lists of enabled audio
-  // effects and store them in |default_effect_types_| and |raw_effect_types_|.
-  HRESULT GetAudioCaptureEffects(const std::string& uwp_device_id);
   // Returns the native number of channels that the audio engine uses for its
   // internal processing of shared-mode streams.
   HRESULT GetAudioEngineNumChannels(WORD* channels);
@@ -195,6 +186,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   bool DesiredFormatIsSupported(HRESULT* hr);
   void SetupConverterAndStoreFormatInfo();
   HRESULT InitializeAudioEngine();
+
   void ReportOpenResult(HRESULT hr);
   // Reports stats for format related audio client initialization
   // (IAudioClient::Initialize) errors, that is if |hr| is an error related to
@@ -346,22 +338,18 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   base::TimeDelta min_timestamp_diff_;
 
   // Set to true if the selected audio device supports raw audio capture.
-  // Also added to a UMS histogram.
+  // Also added to a UMA histogram.
   bool raw_processing_supported_ = false;
-
-  // List of supported and active capture effects for the selected device in
-  // default (normal) audio processing mode.
-  std::vector<ABI::Windows::Media::Effects::AudioEffectType>
-      default_effect_types_;
-  // List of supported and active capture effects for the selected device in
-  // raw (minimal) audio processing mode. Will be empty in most cases.
-  std::vector<ABI::Windows::Media::Effects::AudioEffectType> raw_effect_types_;
 
   // Set to true if the absolute difference between a QPC timestamp converted
   // into a TimeTick value and a default base::TimeTicks::Now() is larger than
   // 500 msec. A true return value should trigger usage of "fake" audio
   // timestamps instead of default which are QPC based.
   std::optional<bool> use_fake_audio_capture_timestamps_;
+
+  // Utility class which wraps support of system AEC functionality.
+  // Will be set to nullptr during construction if AEC is not supported.
+  std::unique_ptr<EchoCancellationConfig> aec_config_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -10,6 +10,7 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
+import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 
@@ -30,6 +32,8 @@ public class ManagementView extends ScrollView {
     private boolean mIsBrowserReportingEnabled;
     private boolean mIsProfileReportingEnabled;
     private boolean mIsLegacyTechReportingEnabled;
+    private boolean mIsSecurityEventReportingEnabled;
+    private boolean mIsUrlFilteringEnabled;
 
     private LinearLayout mManagementContainer;
 
@@ -43,6 +47,14 @@ public class ManagementView extends ScrollView {
     @VisibleForTesting TextView mReportVersion;
     @VisibleForTesting TextView mProfileReportDetails;
     @VisibleForTesting TextView mReportLegacyTech;
+
+    @VisibleForTesting TextView mThreatProtectionTitle;
+    @VisibleForTesting TextView mThreatProtectionDescription;
+    @VisibleForTesting CheckedTextView mThreatProtectionMore;
+    @VisibleForTesting TextView mThreatProtectionSecurityEvent;
+    @VisibleForTesting TextView mThreatProtectionSecurityEventDescription;
+    @VisibleForTesting TextView mThreatProtectionPageVisited;
+    @VisibleForTesting TextView mThreatProtectionPageVisitedDescription;
 
     @Nullable private UiConfig mUiConfig;
 
@@ -67,12 +79,38 @@ public class ManagementView extends ScrollView {
         mProfileReportDetails = (TextView) findViewById(R.id.profile_report_details);
         mReportLegacyTech = (TextView) findViewById(R.id.report_legacy_tech);
 
+        mThreatProtectionTitle = (TextView) findViewById(R.id.threat_protection_title);
+        mThreatProtectionDescription = (TextView) findViewById(R.id.threat_protection_description);
+
+        mThreatProtectionMore = (CheckedTextView) findViewById(R.id.threat_protection_more);
+        mThreatProtectionMore.setCompoundDrawablesWithIntrinsicBounds(
+                /* left= */ null,
+                /* top= */ null,
+                /* right= */ SettingsUtils.createExpandArrow(getContext()),
+                /* bottom= */ null);
+        mThreatProtectionMore.setChecked(false);
+        mThreatProtectionMore.setOnClickListener(
+                view -> {
+                    mThreatProtectionMore.toggle();
+                    adjustView();
+                });
+
+        mThreatProtectionSecurityEvent =
+                (TextView) findViewById(R.id.threat_protection_security_event);
+        mThreatProtectionSecurityEventDescription =
+                (TextView) findViewById(R.id.threat_protection_security_event_description);
+        mThreatProtectionPageVisited = (TextView) findViewById(R.id.threat_protection_page_visited);
+        mThreatProtectionPageVisitedDescription =
+                (TextView) findViewById(R.id.threat_protection_page_visited_description);
+
         // Set default management status
         mIsBrowserManaged = false;
         mIsProfileManaged = false;
         mIsBrowserReportingEnabled = false;
         mIsProfileReportingEnabled = false;
         mIsLegacyTechReportingEnabled = false;
+        mIsSecurityEventReportingEnabled = false;
+        mIsUrlFilteringEnabled = false;
 
         adjustView();
 
@@ -153,6 +191,32 @@ public class ManagementView extends ScrollView {
         }
     }
 
+    public boolean isThreatProtectionEnabled() {
+        return mIsSecurityEventReportingEnabled || mIsUrlFilteringEnabled;
+    }
+
+    public boolean shouldShowSecurityEventInfo() {
+        return mIsSecurityEventReportingEnabled && mThreatProtectionMore.isChecked();
+    }
+
+    public boolean shouldShowUrlFilteringInfo() {
+        return mIsUrlFilteringEnabled && mThreatProtectionMore.isChecked();
+    }
+
+    public void setSecurityEventReportingEnabled(boolean isEnabled) {
+        if (mIsSecurityEventReportingEnabled != isEnabled) {
+            mIsSecurityEventReportingEnabled = isEnabled;
+            adjustView();
+        }
+    }
+
+    public void setUrlFilteringEnabled(boolean isEnabled) {
+        if (mIsUrlFilteringEnabled != isEnabled) {
+            mIsUrlFilteringEnabled = isEnabled;
+            adjustView();
+        }
+    }
+
     /** Gets whether legacy tech reporting is enabled. */
     public boolean isLegacyTechReportingEnabled() {
         return mIsLegacyTechReportingEnabled;
@@ -174,6 +238,22 @@ public class ManagementView extends ScrollView {
 
     public void setDescriptionText(String description) {
         mDescription.setText(description);
+    }
+
+    public void setSecurityEventReportingText(SpannableStringBuilder text) {
+        mThreatProtectionSecurityEvent.setText(text);
+    }
+
+    public void setSecurityEventReportingDescriptionText(SpannableStringBuilder text) {
+        mThreatProtectionSecurityEventDescription.setText(text);
+    }
+
+    public void setUrlFilteringText(SpannableStringBuilder text) {
+        mThreatProtectionPageVisited.setText(text);
+    }
+
+    public void setUrlFilteringDescriptionText(SpannableStringBuilder text) {
+        mThreatProtectionPageVisitedDescription.setText(text);
     }
 
     /** Adjusts Title, Description, and Learn More link based on management status. */
@@ -213,6 +293,19 @@ public class ManagementView extends ScrollView {
             mBrowserReportingExplanation.setVisibility(VISIBLE);
         }
         mReportLegacyTech.setVisibility(mIsLegacyTechReportingEnabled ? VISIBLE : GONE);
+
+        mThreatProtectionTitle.setVisibility(isThreatProtectionEnabled() ? VISIBLE : GONE);
+        mThreatProtectionDescription.setVisibility(isThreatProtectionEnabled() ? VISIBLE : GONE);
+        mThreatProtectionMore.setVisibility(isThreatProtectionEnabled() ? VISIBLE : GONE);
+
+        mThreatProtectionSecurityEvent.setVisibility(
+                shouldShowSecurityEventInfo() ? VISIBLE : GONE);
+        mThreatProtectionSecurityEventDescription.setVisibility(
+                shouldShowSecurityEventInfo() ? VISIBLE : GONE);
+
+        mThreatProtectionPageVisited.setVisibility(shouldShowUrlFilteringInfo() ? VISIBLE : GONE);
+        mThreatProtectionPageVisitedDescription.setVisibility(
+                shouldShowUrlFilteringInfo() ? VISIBLE : GONE);
     }
 
     /**

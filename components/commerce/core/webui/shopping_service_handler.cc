@@ -28,7 +28,6 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/webui/webui_utils.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/features/product_specifications.pb.h"
 #include "components/payments/core/currency_formatter.h"
@@ -42,16 +41,21 @@
 namespace commerce {
 namespace {
 
-std::vector<shopping_service::mojom::UrlInfoPtr> UrlInfoToMojo(
+shopping_service::mojom::UrlInfoPtr UrlInfoToMojo(const UrlInfo& url_info) {
+  auto url_info_ptr = shopping_service::mojom::UrlInfo::New();
+  url_info_ptr->url = url_info.url;
+  url_info_ptr->title = base::UTF16ToUTF8(url_info.title);
+  url_info_ptr->previewText = url_info.previewText.value_or("");
+  url_info_ptr->favicon_url = url_info.favicon_url.value_or(GURL());
+  return url_info_ptr;
+}
+
+std::vector<shopping_service::mojom::UrlInfoPtr> UrlInfoListToMojo(
     const std::vector<UrlInfo>& url_infos) {
   std::vector<shopping_service::mojom::UrlInfoPtr> url_info_ptr_list;
 
   for (const UrlInfo& url_info : url_infos) {
-    auto url_info_ptr = shopping_service::mojom::UrlInfo::New();
-    url_info_ptr->url = url_info.url;
-    url_info_ptr->title = base::UTF16ToUTF8(url_info.title);
-    url_info_ptr->previewText = url_info.previewText.value_or("");
-    url_info_ptr_list.push_back(std::move(url_info_ptr));
+    url_info_ptr_list.push_back(UrlInfoToMojo(url_info));
   }
   return url_info_ptr_list;
 }
@@ -145,12 +149,7 @@ DescriptionTextToMojo(const ProductSpecifications::DescriptionText& desc_text) {
     if (!url_info.url.SchemeIsHTTPOrHTTPS()) {
       continue;
     }
-    auto url_info_ptr = shopping_service::mojom::UrlInfo::New();
-    url_info_ptr->url = url_info.url;
-    url_info_ptr->title = base::UTF16ToUTF8(url_info.title);
-    url_info_ptr->favicon_url = url_info.favicon_url.value_or(GURL());
-    url_info_ptr->thumbnail_url = url_info.thumbnail_url.value_or(GURL());
-    desc_text_ptr->urls.push_back(std::move(url_info_ptr));
+    desc_text_ptr->urls.push_back(UrlInfoToMojo(url_info));
   }
   return desc_text_ptr;
 }
@@ -365,8 +364,9 @@ ShoppingServiceHandler::~ShoppingServiceHandler() = default;
 
 void ShoppingServiceHandler::GetProductInfoForCurrentUrl(
     GetProductInfoForCurrentUrlCallback callback) {
-  if (!shopping_service_->IsPriceInsightsEligible() || !delegate_ ||
-      !delegate_->GetCurrentTabUrl().has_value()) {
+  if (!commerce::IsPriceInsightsEligible(
+          shopping_service_->GetAccountChecker()) ||
+      !delegate_ || !delegate_->GetCurrentTabUrl().has_value()) {
     std::move(callback).Run(shared::mojom::ProductInfo::New());
     return;
   }
@@ -406,6 +406,26 @@ void ShoppingServiceHandler::GetProductInfoForUrl(
                                                   url, info, handler->locale_));
                },
                weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ShoppingServiceHandler::GetProductInfoForUrls(
+    const std::vector<GURL>& urls,
+    GetProductInfoForUrlsCallback callback) {
+  shopping_service_->GetProductInfoForUrls(
+      urls,
+      base::BindOnce(
+          [](base::WeakPtr<ShoppingServiceHandler> handler,
+             std::vector<GURL> urls, GetProductInfoForUrlsCallback callback,
+             const std::map<GURL, std::optional<ProductInfo>> info_map) {
+            std::vector<shared::mojom::ProductInfoPtr> info_list;
+            // Provide the URLs/info in the same order they were requested.
+            for (GURL& url : urls) {
+              info_list.push_back(ProductInfoToMojoProduct(
+                  url, info_map.at(url), handler->locale_));
+            }
+            std::move(callback).Run(std::move(info_list));
+          },
+          weak_ptr_factory_.GetWeakPtr(), urls, std::move(callback)));
 }
 
 void ShoppingServiceHandler::IsShoppingListEligible(
@@ -449,8 +469,9 @@ void ShoppingServiceHandler::GetPriceTrackingStatusForCurrentUrl(
 
 void ShoppingServiceHandler::GetPriceInsightsInfoForCurrentUrl(
     GetPriceInsightsInfoForCurrentUrlCallback callback) {
-  if (!shopping_service_->IsPriceInsightsEligible() || !delegate_ ||
-      !delegate_->GetCurrentTabUrl().has_value()) {
+  if (!commerce::IsPriceInsightsEligible(
+          shopping_service_->GetAccountChecker()) ||
+      !delegate_ || !delegate_->GetCurrentTabUrl().has_value()) {
     std::move(callback).Run(shopping_service::mojom::PriceInsightsInfo::New());
     return;
   }
@@ -465,7 +486,8 @@ void ShoppingServiceHandler::GetPriceInsightsInfoForCurrentUrl(
 void ShoppingServiceHandler::GetPriceInsightsInfoForUrl(
     const GURL& url,
     GetPriceInsightsInfoForUrlCallback callback) {
-  if (!shopping_service_->IsPriceInsightsEligible()) {
+  if (!commerce::IsPriceInsightsEligible(
+          shopping_service_->GetAccountChecker())) {
     std::move(callback).Run(url,
                             shopping_service::mojom::PriceInsightsInfo::New());
     return;
@@ -520,7 +542,7 @@ void ShoppingServiceHandler::GetUrlInfosForProductTabs(
   shopping_service_->GetUrlInfosForWebWrappersWithProducts(base::BindOnce(
       [](GetUrlInfosForProductTabsCallback callback,
          const std::vector<UrlInfo> infos) {
-        std::move(callback).Run(UrlInfoToMojo(infos));
+        std::move(callback).Run(UrlInfoListToMojo(infos));
       },
       std::move(callback)));
 }
@@ -532,7 +554,7 @@ void ShoppingServiceHandler::GetUrlInfosForRecentlyViewedTabs(
     return;
   }
 
-  std::move(callback).Run(UrlInfoToMojo(
+  std::move(callback).Run(UrlInfoListToMojo(
       shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers()));
 }
 
@@ -714,8 +736,7 @@ void ShoppingServiceHandler::SetProductSpecificationsUserFeedback(
     return;
   }
   optimization_guide::proto::ProductSpecificationsQuality* quality_proto =
-      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
-          *request)
+          request->mutable_product_specifications()
           ->mutable_quality();
   quality_proto->set_user_feedback(user_feedback);
 }
@@ -769,8 +790,7 @@ void ShoppingServiceHandler::OnGetProductSpecificationsForUrls(
       return;
     }
     RecordQualityEntry(
-        optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
-            *request)
+            request->mutable_product_specifications()
             ->mutable_quality(),
         std::move(input_urls), std::move(specs.value()));
   }

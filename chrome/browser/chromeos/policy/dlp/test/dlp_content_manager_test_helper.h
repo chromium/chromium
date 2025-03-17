@@ -9,15 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
-#endif
 
 namespace content {
 class WebContents;
@@ -59,14 +55,10 @@ class DlpContentManagerTestHelper {
   const std::vector<std::unique_ptr<DlpContentManager::ScreenShareInfo>>&
   GetRunningScreenShares() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::optional<DlpContentManagerAsh::VideoCaptureInfo>
   GetRunningVideoCaptureInfo() const;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::TimeDelta GetPrivacyScreenOffDelay() const;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetScreenShareResumeDelay(base::TimeDelta delay) const;
 

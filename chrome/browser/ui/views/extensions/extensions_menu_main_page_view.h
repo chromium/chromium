@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_MAIN_PAGE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_MAIN_PAGE_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -96,7 +98,7 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Accessors used by tests:
   // Returns the currently-showing menu items.
-  const std::u16string& GetSiteSettingLabelForTesting() const;
+  std::u16string_view GetSiteSettingLabelForTesting() const;
   const views::View* site_settings_tooltip() const;
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;
@@ -125,6 +127,14 @@ class ExtensionsMenuMainPageView : public views::View {
   [[nodiscard]] views::Builder<views::FlexLayoutView> CreateSiteSettingsBuilder(
       gfx::Insets margins,
       views::FlexSpecification);
+
+  // Returns the contents builder, which contains the reload section, the access
+  // requests section and the menu items section on a scrollable view.
+  [[nodiscard]] views::Builder<views::ScrollView> CreateContentsBuilder(
+      gfx::Insets scroll_margins,
+      gfx::Insets contents_margins,
+      gfx::Insets reload_button_margins,
+      gfx::Insets menu_items_margins);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Returns the webstore button builder.

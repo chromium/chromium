@@ -69,7 +69,7 @@ std::unique_ptr<views::View> CreateButtonContainer(
   views::Label* label = container->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(label_message_id)));
   label->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
-  label->SetEnabledColorId(ui::kColorSysOnSurface);
+  label->SetEnabledColor(ui::kColorSysOnSurface);
   label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                    kLabelFontSize, gfx::Font::Weight::NORMAL));
   label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -193,7 +193,7 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
   DCHECK(window);
   DCHECK(close_callback_);
   DCHECK(dismiss_callback_);
-  SetBackground(views::CreateThemedSolidBackground(ui::kColorSysSurface3));
+  SetBackground(views::CreateSolidBackground(ui::kColorSysSurface3));
   SetUseDefaultFillLayout(true);
 
   window_observation_.Observe(window);
@@ -267,6 +267,7 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
         MultitaskButton::Type::kFloat, is_portrait_mode,
         /*paint_as_active=*/floated, l10n_util::GetStringUTF16(message_id));
     float_button->SetPreferredSize(preferred_size);
+    float_button->SetMirrored(is_reversed_);
     float_button_ = float_button.get();
     AddChildView(CreateButtonContainer(std::move(float_button), message_id,
                                        label_max_length));

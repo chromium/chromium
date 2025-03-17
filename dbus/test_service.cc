@@ -29,8 +29,8 @@
 namespace dbus {
 
 // Echo, SlowEcho, AsyncEcho, BrokenMethod, GetAll, Get, Set, PerformAction,
-// GetManagedObjects
-const int TestService::kNumMethodsToExport = 9;
+// GetManagedObjects, NotSendingResponseCrash.
+constexpr int TestService::kNumMethodsToExport = 10;
 
 TestService::Options::Options()
     : request_ownership_options(Bus::REQUIRE_PRIMARY) {
@@ -255,6 +255,13 @@ void TestService::Run(base::RunLoop* run_loop) {
   exported_object_manager_->ExportMethod(
       kObjectManagerInterface, kObjectManagerGetManagedObjects,
       base::BindRepeating(&TestService::GetManagedObjects,
+                          base::Unretained(this)),
+      base::BindOnce(&TestService::OnExported, base::Unretained(this)));
+  ++num_methods;
+
+  exported_object_->ExportMethod(
+      "org.chromium.TestInterface", "NotSendingResponseCrash",
+      base::BindRepeating(&TestService::NotSendingResponseCrash,
                           base::Unretained(this)),
       base::BindOnce(&TestService::OnExported, base::Unretained(this)));
   ++num_methods;
@@ -490,7 +497,6 @@ void TestService::OwnershipReleased(
                                   std::move(response_sender)));
 }
 
-
 void TestService::OwnershipRegained(
     MethodCall* method_call,
     ExportedObject::ResponseSender response_sender,
@@ -498,6 +504,11 @@ void TestService::OwnershipRegained(
   PerformActionResponse(method_call, std::move(response_sender));
 }
 
+void TestService::NotSendingResponseCrash(
+    MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  // Not invoking `response_sender` and CHECK crash.
+}
 
 void TestService::GetManagedObjects(
     MethodCall* method_call,

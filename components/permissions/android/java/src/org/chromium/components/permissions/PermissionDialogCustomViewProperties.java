@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.core.util.Pair;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -18,6 +19,7 @@ import java.util.List;
  * The class is responsible for specifying the various properties of the Permission Dialog's custom
  * view.
  */
+@NullMarked
 public class PermissionDialogCustomViewProperties {
     public static final PropertyModel.WritableObjectPropertyKey<Drawable> ICON =
             new PropertyModel.WritableObjectPropertyKey();

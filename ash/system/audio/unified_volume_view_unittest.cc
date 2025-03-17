@@ -40,14 +40,14 @@ class UnifiedVolumeViewTest : public AshTestBase {
 
   // Checks `level` corresponds to the expected icon.
   void CheckSliderIcon(float level) {
-    const gfx::VectorIcon& icon = GetIcon(level);
+    const gfx::VectorIcon* icon = &GetIcon(level);
 
     if (level <= 0.0) {
-      EXPECT_STREQ(icon.name, UnifiedVolumeView::kQsVolumeLevelIcons[0]->name);
+      EXPECT_EQ(icon, UnifiedVolumeView::kQsVolumeLevelIcons[0]);
     } else if (level <= 0.5) {
-      EXPECT_STREQ(icon.name, UnifiedVolumeView::kQsVolumeLevelIcons[1]->name);
+      EXPECT_EQ(icon, UnifiedVolumeView::kQsVolumeLevelIcons[1]);
     } else {
-      EXPECT_STREQ(icon.name, UnifiedVolumeView::kQsVolumeLevelIcons[2]->name);
+      EXPECT_EQ(icon, UnifiedVolumeView::kQsVolumeLevelIcons[2]);
     }
   }
 
@@ -80,13 +80,13 @@ class UnifiedVolumeViewTest : public AshTestBase {
 // `LiveCaption` button, and a drill-in button that leads to
 // `AudioDetailedView`.
 TEST_F(UnifiedVolumeViewTest, SliderButtonComponents) {
-  EXPECT_STREQ(unified_volume_view()->children()[0]->GetClassName(),
-               "QuickSettingsSlider");
+  EXPECT_EQ(unified_volume_view()->children()[0]->GetClassName(),
+            "QuickSettingsSlider");
 
   // TODO(b/257151067): Updates the a11y name id and tooltip text.
   auto* live_caption_button =
       static_cast<IconButton*>(unified_volume_view()->children()[1]);
-  EXPECT_STREQ(live_caption_button->GetClassName(), "IconButton");
+  EXPECT_EQ(live_caption_button->GetClassName(), "IconButton");
   EXPECT_EQ(live_caption_button->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_LIVE_CAPTION_TOGGLE_TOOLTIP,
@@ -97,7 +97,7 @@ TEST_F(UnifiedVolumeViewTest, SliderButtonComponents) {
 
   auto* audio_subpage_drill_in_button =
       static_cast<IconButton*>(unified_volume_view()->children()[2]);
-  EXPECT_STREQ(audio_subpage_drill_in_button->GetClassName(), "IconButton");
+  EXPECT_EQ(audio_subpage_drill_in_button->GetClassName(), "IconButton");
   EXPECT_EQ(
       audio_subpage_drill_in_button->GetViewAccessibility().GetCachedName(),
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO));
@@ -234,11 +234,11 @@ TEST_F(UnifiedVolumeViewTest, SliderFocusToggleMute) {
   // Presses the tab key to activate the focus on the bubble.
   generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
   slider()->RequestFocus();
-  EXPECT_STREQ(unified_volume_view()
-                   ->GetFocusManager()
-                   ->GetFocusedView()
-                   ->GetClassName(),
-               "QuickSettingsSlider");
+  EXPECT_EQ(unified_volume_view()
+                ->GetFocusManager()
+                ->GetFocusedView()
+                ->GetClassName(),
+            "QuickSettingsSlider");
 
   const bool is_muted = CrasAudioHandler::Get()->IsOutputMuted();
   // Presses the enter key when focused on the slider will toggle mute state.

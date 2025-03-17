@@ -134,11 +134,13 @@ TEST_F(BackgroundTracingManagerTest, GetTraceToUpload) {
 
   std::string compressed_trace;
   base::RunLoop run_loop;
-  background_tracing_manager_->GetTraceToUpload(base::BindLambdaForTesting(
-      [&](std::optional<std::string> trace_content,
-          std::optional<std::string> system_profile) {
+  background_tracing_manager_->GetTraceToUpload(
+      base::BindLambdaForTesting([&](std::optional<std::string> trace_content,
+                                     std::optional<std::string> system_profile,
+                                     base::OnceClosure upload_complete) {
         ASSERT_TRUE(trace_content);
         compressed_trace = std::move(*trace_content);
+        std::move(upload_complete).Run();
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -230,8 +232,12 @@ TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaExceeded) {
 
   base::RunLoop run_loop;
   background_tracing_manager_->GetTraceToUpload(
-      base::IgnoreArgs<std::optional<std::string>, std::optional<std::string>>(
-          run_loop.QuitClosure()));
+      base::BindLambdaForTesting([&](std::optional<std::string> trace_content,
+                                     std::optional<std::string> system_profile,
+                                     base::OnceClosure upload_complete) {
+        std::move(upload_complete).Run();
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
   {
@@ -254,8 +260,8 @@ TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaReset) {
 
   base::RunLoop run_loop;
   background_tracing_manager_->GetTraceToUpload(
-      base::IgnoreArgs<std::optional<std::string>, std::optional<std::string>>(
-          run_loop.QuitClosure()));
+      base::IgnoreArgs<std::optional<std::string>, std::optional<std::string>,
+                       base::OnceClosure>(run_loop.QuitClosure()));
   run_loop.Run();
 
   task_environment_.FastForwardBy(base::Days(8));

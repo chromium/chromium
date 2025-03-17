@@ -114,6 +114,10 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="vi"/>
   <int value="33" label="zh"/>
   <int value="34" label="zh-Hant"/>
+  <int value="35" label="kn"/>
+  <int value="36" label="ta"/>
+  <int value="37" label="te"/>
+  <int value="38" label="mr"/>
 </enum>
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/translate/histograms.xml:SupportedLanguage) -->
@@ -178,12 +182,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Unexpected script error"/>
   <int value="9" label="Bad origin"/>
   <int value="10" label="Script load error"/>
-</enum>
-
-<enum name="TranslateLanguageDetectionTiming">
-  <int value="0" label="On time"/>
-  <int value="1" label="Deferred"/>
-  <int value="2" label="Resumed"/>
 </enum>
 
 <enum name="TranslateLanguageVerification">

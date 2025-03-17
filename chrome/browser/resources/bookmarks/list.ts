@@ -2,39 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import './shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import '/strings.m.js';
 import './item.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
+import type {CrLazyListElement} from 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {deselectItems, selectAll, selectItem, updateAnchor} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {MenuSource} from './constants.js';
 import type {BookmarksItemElement} from './item.js';
-import {getTemplate} from './list.html.js';
-import {StoreClientMixin} from './store_client_mixin.js';
-import type {OpenCommandMenuDetail} from './types.js';
+import {getCss} from './list.css.js';
+import {getHtml} from './list.html.js';
+import {StoreClientMixinLit} from './store_client_mixin_lit.js';
+import type {BookmarksPageState, OpenCommandMenuDetail} from './types.js';
 import {canReorderChildren, getDisplayedList} from './util.js';
 
-const BookmarksListElementBase =
-    StoreClientMixin(ListPropertyUpdateMixin(PolymerElement));
+const BookmarksListElementBase = StoreClientMixinLit(CrLitElement);
 
 export interface BookmarksListElement {
   $: {
-    list: IronListElement,
-    message: HTMLDivElement,
+    list: CrLazyListElement,
+    message: HTMLElement,
   };
 }
 
@@ -43,79 +40,85 @@ export class BookmarksListElement extends BookmarksListElementBase {
     return 'bookmarks-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      /**
-       * A list of item ids wrapped in an Object. This is necessary because
-       * iron-list is unable to distinguish focusing index 6 from focusing id
-       * '6' so the item we supply to iron-list needs to be non-index-like.
-       */
-      displayedList_: {
-        type: Array,
-        value() {
-          // Use an empty list during initialization so that the databinding to
-          // hide #list takes effect.
-          return [];
-        },
-      },
-
-      displayedIds_: {
-        type: Array,
-        observer: 'onDisplayedIdsChanged_',
-      },
-
-      searchTerm_: {
-        type: String,
-        observer: 'onDisplayedListSourceChange_',
-      },
-
-      selectedFolder_: {
-        type: String,
-        observer: 'onDisplayedListSourceChange_',
-      },
-
-      selectedItems_: Object,
+      displayedIds_: {type: Array},
+      searchTerm_: {type: String},
+      selectedFolder_: {type: String},
+      selectedItems_: {type: Object},
+      focusedIndex_: {type: Number},
     };
   }
 
-  private displayedList_: Array<{id: string}>;
-  private displayedIds_: string[];
+  protected displayedIds_: string[] = [];
+  private focusedIndex_: number = 0;
   private eventTracker_: EventTracker = new EventTracker();
-  private searchTerm_: string;
-  private selectedFolder_: string;
-  private selectedItems_: Set<string>;
-  private boundOnHighlightItems_: (p1: CustomEvent) => void;
+  private searchTerm_: string = '';
+  protected selectedFolder_: string = '';
+  private selectedItems_: Set<string> = new Set();
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.addEventListener('click', () => this.deselectItems_());
-    this.addEventListener('contextmenu',
-                          e => this.onContextMenu_(e as MouseEvent));
+    this.addEventListener('contextmenu', e => this.onContextMenu_(e));
     this.addEventListener(
         'open-command-menu',
         e => this.onOpenCommandMenu_(e as CustomEvent<OpenCommandMenuDetail>));
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('displayedIds_')) {
+      // Reset the focused index if it's out of bounds for the new array value.
+      if (this.focusedIndex_ > this.displayedIds_.length - 1) {
+        this.focusedIndex_ = 0;
+      }
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('searchTerm_') ||
+        changedPrivateProperties.has('selectedFolder_')) {
+      this.scrollTop = 0;
+    }
+
+    if (changedPrivateProperties.has('displayedIds_')) {
+      // Get the last selection from the previous value of selectedItems_ if
+      // selectedItems_ also changed, and was not previously undefined (as
+      // is the case at initialization). Otherwise, get the last selection from
+      // the current value of selectedItems_, since it is the same as the prior
+      // value.
+      let lastSelectedItems: Set<string> = this.selectedItems_;
+      if (changedPrivateProperties.has('selectedItems_') &&
+          changedPrivateProperties.get('selectedItems_') !== undefined) {
+        lastSelectedItems =
+            changedPrivateProperties.get('selectedItems_') as Set<string>;
+      }
+      const lastSelection =
+          lastSelectedItems.size > 0 ? Array.from(lastSelectedItems)[0]! : null;
+      this.onDisplayedIdsChanged_(
+          changedPrivateProperties.get('displayedIds_') as string[],
+          lastSelection);
+    }
+  }
+
   override connectedCallback() {
     super.connectedCallback();
-
-    const list = this.$.list;
-    list.scrollTarget = this;
-
-    this.watch('displayedIds_', function(state) {
-      return getDisplayedList(state);
-    });
-    this.watch('searchTerm_', state => state.search.term);
-    this.watch('selectedFolder_', state => state.selectedFolder);
-    this.watch('selectedItems_', state => state.selection.items);
     this.updateFromStore();
-
-    this.$.list.addEventListener(
-        'keydown', this.onItemKeydown_.bind(this), true);
 
     this.eventTracker_.add(
         document, 'highlight-items',
@@ -132,57 +135,63 @@ export class BookmarksListElement extends BookmarksListElementBase {
     this.eventTracker_.remove(document, 'highlight-items');
   }
 
+  override onStateChanged(state: BookmarksPageState) {
+    this.displayedIds_ = getDisplayedList(state);
+    this.searchTerm_ = state.search.term;
+    this.selectedFolder_ = state.selectedFolder;
+    this.selectedItems_ = state.selection.items;
+  }
+
   getDropTarget(): HTMLElement {
     return this.$.message;
   }
 
-  /**
-   * Updates `displayedList_` using splices to be equivalent to `newValue`. This
-   * allows the iron-list to delete sublists of items which preserves scroll and
-   * focus on incremental update.
-   */
-  private async onDisplayedIdsChanged_(
-      newValue: string[], _oldValue: string[]) {
-    const updatedList = newValue.map(id => ({id: id}));
-    let skipFocus = false;
+  private onDisplayedIdsChanged_(
+      previous: string[], lastSelected: string|null) {
+    // Clear any previous 'items-rendered' listener when the list changes, as
+    // the |selectIndex| from last time may no longer be valid.
+    this.eventTracker_.remove(this.$.list, 'items-rendered');
+
     let selectIndex = -1;
+    let skipFocus = false;
     if (this.matches(':focus-within')) {
-      if (this.selectedItems_.size > 0) {
-        const selectedId = Array.from(this.selectedItems_)[0];
-        skipFocus = newValue.some(id => id === selectedId);
+      if (lastSelected !== null) {
+        skipFocus = this.displayedIds_.some(id => lastSelected === id);
         selectIndex =
-            this.displayedList_.findIndex(({id}) => selectedId === id);
+            previous ? previous.findIndex(id => lastSelected === id) : -1;
       }
-      if (selectIndex === -1 && updatedList.length > 0) {
+      if (selectIndex === -1 && this.displayedIds_.length > 0) {
         selectIndex = 0;
       } else {
-        selectIndex = Math.min(selectIndex, updatedList.length - 1);
+        selectIndex = Math.min(selectIndex, this.displayedIds_.length - 1);
       }
     }
-    this.updateList(
-        'displayedList_', item => (item as {id: string}).id, updatedList);
-    // Trigger a layout of the iron list. Otherwise some elements may render
-    // as blank entries. See https://crbug.com/848683
-    this.$.list.dispatchEvent(
-        new CustomEvent('iron-resize', {bubbles: true, composed: true}));
-    const label = await PluralStringProxyImpl.getInstance().getPluralString(
-        'listChanged', this.displayedList_.length);
-    getAnnouncerInstance().announce(label);
 
-    if (!skipFocus && selectIndex > -1) {
-      setTimeout(() => {
-        this.$.list.focusItem(selectIndex);
-        // Focus menu button so 'Undo' is only one tab stop away on delete.
-        const item = getDeepActiveElement();
-        if (item) {
-          (item as BookmarksItemElement).focusMenuButton();
+    if (selectIndex > -1) {
+      if (skipFocus) {
+        // Mimic iron-list by blurring the item in this case.
+        const active = this.shadowRoot.activeElement;
+        if (active) {
+          (active as HTMLElement).blur();
         }
-      });
+      } else {
+        this.eventTracker_.add(
+            this.$.list, 'items-rendered',
+            () => this.focusMenuButton_(selectIndex));
+      }
     }
+
+    PluralStringProxyImpl.getInstance()
+        .getPluralString('listChanged', this.displayedIds_.length)
+        .then(label => {
+          getAnnouncerInstance().announce(label);
+        });
   }
 
-  private onDisplayedListSourceChange_() {
-    this.scrollTop = 0;
+  private async focusMenuButton_(index: number) {
+    const element =
+        await this.$.list.ensureItemRendered(index) as BookmarksItemElement;
+    element.focusMenuButton();
   }
 
   /**
@@ -191,13 +200,12 @@ export class BookmarksListElement extends BookmarksListElementBase {
   private scrollToId_(itemId: string) {
     const index = this.displayedIds_.indexOf(itemId);
     const list = this.$.list;
-    if (index >= 0 && index < list.firstVisibleIndex ||
-        index > list.lastVisibleIndex) {
-      list.scrollToIndex(index);
+    if (index >= 0 && index < list.domItems().length) {
+      (list.domItems()[index] as HTMLElement).scrollIntoViewIfNeeded();
     }
   }
 
-  private emptyListMessage_(): string {
+  protected emptyListMessage_(): string {
     let emptyListMessage = 'noSearchResults';
     if (!this.searchTerm_) {
       emptyListMessage =
@@ -208,17 +216,12 @@ export class BookmarksListElement extends BookmarksListElementBase {
     return loadTimeData.getString(emptyListMessage);
   }
 
-  private isEmptyList_(): boolean {
-    return this.displayedList_.length === 0;
+  protected isEmptyList_(): boolean {
+    return this.displayedIds_.length === 0;
   }
 
   private deselectItems_() {
     this.dispatch(deselectItems());
-  }
-
-  private getIndexForItemElement_(el: HTMLElement): number {
-    return (this.$.list.modelForElement(el) as unknown as {index: number})
-        .index;
   }
 
   private onOpenCommandMenu_(e: CustomEvent<{source: MenuSource}>) {
@@ -232,7 +235,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
    * Highlight a list of items by selecting them, scrolling them into view and
    * focusing the first item.
    */
-  private onHighlightItems_(e: CustomEvent<string[]>) {
+  private async onHighlightItems_(e: CustomEvent<string[]>) {
     // Ensure that we only select items which are actually being displayed.
     // This should only matter if an unrelated update to the bookmark model
     // happens with the perfect timing to end up in a tracked batch update.
@@ -246,13 +249,14 @@ export class BookmarksListElement extends BookmarksListElementBase {
     const leadId = toHighlight[0]!;
     this.dispatch(selectAll(toHighlight, this.getState(), leadId));
 
-    // Allow iron-list time to render additions to the list.
-    microTask.run(() => {
-      this.scrollToId_(leadId);
-      const leadIndex = this.displayedIds_.indexOf(leadId);
-      assert(leadIndex !== -1);
-      this.$.list.focusItem(leadIndex);
-    });
+    // Wait for the change to selectedItems_ to reflect in the DOM.
+    await this.updateComplete;
+    const leadIndex = this.displayedIds_.indexOf(leadId);
+    assert(leadIndex !== -1);
+    // Ensure the new list addition has been rendered by cr-lazy-list.
+    const element = await this.$.list.ensureItemRendered(leadIndex);
+    element.scrollIntoViewIfNeeded();
+    element.focus();
   }
 
   private onImportBegan_() {
@@ -263,11 +267,11 @@ export class BookmarksListElement extends BookmarksListElementBase {
     getAnnouncerInstance().announce(loadTimeData.getString('importEnded'));
   }
 
-  private onItemKeydown_(e: KeyboardEvent) {
+  protected async onItemKeydown_(e: KeyboardEvent) {
     let handled = true;
     const list = this.$.list;
     let focusMoved = false;
-    let focusedIndex = this.getIndexForItemElement_(e.target as HTMLElement);
+    let focusedIndex = Number((e.target as HTMLElement).dataset['index']);
     const oldFocusedIndex = focusedIndex;
     const cursorModifier = isMac ? e.metaKey : e.ctrlKey;
     if (e.key === 'ArrowUp') {
@@ -281,7 +285,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
       focusedIndex = 0;
       focusMoved = true;
     } else if (e.key === 'End') {
-      focusedIndex = list.items!.length - 1;
+      focusedIndex = this.displayedIds_.length - 1;
       focusMoved = true;
     } else if (e.key === ' ' && cursorModifier) {
       this.dispatch(
@@ -296,8 +300,10 @@ export class BookmarksListElement extends BookmarksListElementBase {
 
     if (focusMoved) {
       focusedIndex =
-          Math.min(list.items!.length - 1, Math.max(0, focusedIndex));
-      list.focusItem(focusedIndex);
+          Math.min(this.displayedIds_.length - 1, Math.max(0, focusedIndex));
+      this.focusedIndex_ = focusedIndex;
+      const element = await list.ensureItemRendered(focusedIndex);
+      element.focus();
 
       if (cursorModifier && !e.shiftKey) {
         this.dispatch(updateAnchor(this.displayedIds_[focusedIndex]!));
@@ -355,11 +361,26 @@ export class BookmarksListElement extends BookmarksListElementBase {
     }));
   }
 
-  private getAriaRowindex_(index: number): number {
+  protected onItemFocus_(e: Event) {
+    const renderedItems = this.$.list.domItems();
+    const focusedIdx = Array.from(renderedItems).findIndex(item => {
+      return item === e.target || item.shadowRoot?.activeElement === e.target;
+    });
+
+    if (focusedIdx !== -1) {
+      this.focusedIndex_ = focusedIdx;
+    }
+  }
+
+  protected getAriaRowindex_(index: number): number {
     return index + 1;
   }
 
-  private getAriaSelected_(id: string): boolean {
+  protected getTabindex_(index: number): number {
+    return index === this.focusedIndex_ ? 0 : -1;
+  }
+
+  protected getAriaSelected_(id: string): boolean {
     return this.selectedItems_.has(id);
   }
 

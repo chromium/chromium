@@ -4,10 +4,10 @@
 
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/gmock_expected_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -78,12 +78,12 @@ TEST(Ed25519SignatureTest, ValidSignatureFromVector) {
   bytes[3] = 123;
 
   ASSERT_OK_AND_ASSIGN(auto signature, Ed25519Signature::Create(bytes));
-  EXPECT_TRUE(base::ranges::equal(bytes, signature.bytes()));
+  EXPECT_TRUE(std::ranges::equal(bytes, signature.bytes()));
 }
 
 TEST(Ed25519SignatureTest, ValidSignatureFromArray) {
   auto signature = Ed25519Signature::Create(base::span(kSignature));
-  EXPECT_TRUE(base::ranges::equal(base::span(kSignature), signature.bytes()));
+  EXPECT_TRUE(std::ranges::equal(base::span(kSignature), signature.bytes()));
 }
 
 TEST(Ed25519SignatureTest, Equality) {

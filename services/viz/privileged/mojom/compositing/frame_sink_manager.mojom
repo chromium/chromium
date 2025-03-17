@@ -55,6 +55,12 @@ struct RootCompositorFrameSinkParams {
 
   pending_associated_receiver<ExternalBeginFrameController>?
       external_begin_frame_controller;
+
+  // If this value is set, `external_begin_frame_controller` must be set as
+  // well. This field is not required to be set if
+  // `external_begin_frame_controller` is set.
+  pending_associated_remote<ExternalBeginFrameControllerClient>?
+      external_begin_frame_controller_client;
 };
 
 // The FrameSinkManager interface is a privileged interface that allows the
@@ -224,6 +230,17 @@ interface FrameSinkManager {
       rir_delegate_client_remote,
     pending_receiver<input.mojom.RenderInputRouterDelegate>
       rir_delegate_receiver);
+
+  // Notifies list of RenderInputRouters of their block state changes for input
+  // event handling on the VizCompositorThread.
+  NotifyRendererBlockStateChanged(
+    bool blocked,
+    array<FrameSinkId> render_input_routers);
+
+  // Requests input handling to be transferred back to the CrBrowserMain thread
+  // from the VizCompositorThread. Safe to call even if the VizCompositorThread
+  // is not currently handling input, the request is a no-op in that case.
+  RequestInputBack();
 };
 
 // The FrameSinkManagerClient interface is implemented by the Display

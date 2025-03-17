@@ -33,7 +33,7 @@ namespace {
 constexpr int kNumHops = 13;
 constexpr int kNumTasks = 8;
 
-const char kDeathMatcher[] = "Check failed:.*\n*.*BrowserTaskEnvironment";
+const char kDeathMatcher[] = "DCHECK failed:.*\n*.*BrowserTaskEnvironment";
 
 void PostTaskToUIThread(int iteration, base::subtle::Atomic32* tasks_run);
 

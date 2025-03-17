@@ -26,8 +26,8 @@
 #include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/scheme_registry.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -67,6 +67,9 @@ mojom::blink::UseCounterFeatureType ToFeatureType(
     case UseCounterImpl::PermissionsPolicyUsageType::kIframeAttribute:
       return mojom::blink::UseCounterFeatureType::
           kPermissionsPolicyIframeAttribute;
+    case UseCounterImpl::PermissionsPolicyUsageType::kEnabledPrivacySensitive:
+      return mojom::blink::UseCounterFeatureType::
+          kPermissionsPolicyEnabledPrivacySensitive;
   }
 }
 }  // namespace
@@ -242,10 +245,10 @@ void UseCounterImpl::CountWebDXFeature(WebDXFeature web_feature,
 }
 
 void UseCounterImpl::CountPermissionsPolicyUsage(
-    mojom::blink::PermissionsPolicyFeature feature,
+    network::mojom::PermissionsPolicyFeature feature,
     PermissionsPolicyUsageType usage_type,
     const LocalFrame& source_frame) {
-  DCHECK_NE(mojom::blink::PermissionsPolicyFeature::kNotFound, feature);
+  DCHECK_NE(network::mojom::PermissionsPolicyFeature::kNotFound, feature);
 
   Count({ToFeatureType(usage_type), static_cast<uint32_t>(feature)},
         &source_frame);
@@ -331,6 +334,8 @@ void UseCounterImpl::TraceMeasurement(const UseCounterFeature& feature) {
         kPermissionsPolicyViolationEnforce:
     case mojom::blink::UseCounterFeatureType::kPermissionsPolicyHeader:
     case mojom::blink::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
+    case mojom::blink::UseCounterFeatureType::
+        kPermissionsPolicyEnabledPrivacySensitive:
       // TODO(crbug.com/1206004): Add trace event for permissions policy metrics
       // gathering.
       return;

@@ -26,8 +26,7 @@ PopupSeparatorView::PopupSeparatorView(int vertical_padding) {
                        gfx::Insets::VH(vertical_padding, 0)))
                    .SetColorId(ui::kColorSeparator)
                    .Build());
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDropdownBackground));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kSplitter);
 }

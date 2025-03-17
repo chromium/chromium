@@ -9,6 +9,7 @@
 // See go/coral-odml-dd.
 module coral.mojom;
 
+import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/token.mojom";
 
@@ -51,7 +52,13 @@ union Entity {
 
 // Configurable options of the embedding engine.
 [Stable]
-struct EmbeddingOptions {};
+struct EmbeddingOptions {
+  // When set to true, the embedding engine will validate whether the entity is
+  // considered "safe" by querying the SafetyService, and "unsafe" entities
+  // won't get clustered.
+  [MinVersion=1]
+  bool? check_safety_filter@0;
+};
 
 // Configurable options of the clustering engine.
 // TODO(b/358531135): Decide the cluster algorithm we want to use and add
@@ -117,6 +124,31 @@ struct GroupRequest {
   EmbeddingOptions embedding_options@1;
   ClusteringOptions clustering_options@2;
   TitleGenerationOptions title_generation_options@3;
+
+  // suppression_context is used as a context for filtering groups that the
+  // client wants to omit from the response.
+  // Generally, the logic is that we'll run clustering with both entities and
+  // suppression_context together, then, if a generated group contains a high
+  // proportion of entities in the suppression_context, the generated
+  // group will be skipped. Finally, the suppression_context items are removed
+  // from the result clusters before returning it to the caller.
+  // Common usage scenario:
+  // 1. User triggers Group() on a desk (say, "desk 1"), then moves a
+  //    particular topic, say, "Tokyo Travel" to another desk, let's call it
+  //    "desk 2".
+  // 2. User opens more tabs and apps on desk 2.
+  // 3. User triggers Group() on desk 2, but we don't want "Tokyo Travel"
+  //    related tabs to be grouped, because in that case the user may
+  //    constantly create desk with "Tokyo Travel" related tabs and that's not
+  //    a very good UX.
+  // 4. To prevent what's stated above, we put all "Tokyo Travel" related tabs
+  //    (even those that have been closed) into suppression_context.
+  // Note: suppression_context may contain entities not found in the
+  // entities.
+  // Note: The entities related to those in suppression_context but not in
+  // suppression_context will also not show up in the output.
+  [MinVersion=1]
+  array<Entity>? suppression_context@4;
 };
 
 [Stable]
@@ -166,11 +198,10 @@ interface TitleObserver {
   TitleUpdated@0(mojo_base.mojom.Token group_id, string title);
 };
 
-// The ChromeOS odml daemon implements this service interface, utilizing the on
-// device models for backend logic. Ash Chrome is the client, implementing
-// UI features using this coral service.
+// The actual processor that handles the grouping requests from the client.
+// This will be initialized and returned by CoralService.
 [Stable]
-interface CoralService {
+interface CoralProcessor {
   // Group the request entities into suitable groups with titles. When the
   // observer is passed, the service could return groups with null title
   // before the title is generated, then trigger title updates on the observer
@@ -181,14 +212,33 @@ interface CoralService {
   // Generate and cache the embeddings for the request entities.
   CacheEmbeddings@1(CacheEmbeddingsRequest request)
       => (CacheEmbeddingsResult result);
+};
 
-  // Claim necessary resources (dlc download / model loading) for processing
-  // `Group` and `CacheEmbeddings` requests. It is not necessary to call
-  // `PrepareResource` before calling other methods, but in that case the first
-  // method request might take longer to run. Note that some resources might
-  // be released after the service is idle for a while, so if the caller
-  // expects that `Group` could be called soon after, the caller can call this
-  // method again. This method should have little/no overhead when all
-  // resources are already claimed.
+// The ChromeOS odml daemon implements this service interface, utilizing the on
+// device models for backend logic. Ash Chrome is the client, implementing
+// UI features using this coral service.
+[Stable]
+interface CoralService {
+  // This method is deprecated. Calling it before full deprecation will still
+  // work as
+  // CoralProcessor::Group.
+  GroupDeprecated@0(
+      GroupRequest request, pending_remote<TitleObserver>? observer)
+      => (GroupResult result);
+
+  // This method is deprecated. Calling it before full deprecation will still
+  // work as
+  // CoralProcessor::CacheEmbeddings.
+  CacheEmbeddingsDeprecated@1(CacheEmbeddingsRequest request)
+      => (CacheEmbeddingsResult result);
+
+  // This method is deprecated, and no-op now.
   PrepareResource@2();
+
+  // Initializes the processor with ML Service and prepare necessary resources.
+  [MinVersion=1]
+  Initialize@3(
+      pending_remote<chromeos.machine_learning.mojom.MachineLearningService>?
+          ml_service,
+      pending_receiver<CoralProcessor> processor);
 };

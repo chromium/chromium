@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/overview_controller.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -32,7 +33,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -330,12 +330,7 @@ base::AutoReset<bool> OverviewController::SetDisableAppIdCheckForTests() {
 }
 
 void OverviewController::ToggleOverview(OverviewEnterExitType type) {
-  // Pause raster scale updates while the overview is being toggled. This is to
-  // handle the case where a mirror view is deleted then recreated when
-  // cancelling an overview exit animation, for example.
   aura::WindowOcclusionTracker::ScopedPause scoped_pause_occlusion;
-  auto scoped_pause_raster =
-      std::make_optional<ScopedPauseRasterScaleUpdates>();
 
   // Hide the virtual keyboard as it obstructs the overview mode.
   // Don't need to hide if it's the a11y keyboard, as overview mode
@@ -362,8 +357,9 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
   };
   std::vector<raw_ptr<aura::Window, VectorExperimental>> hide_windows(
       windows.size());
-  auto end = base::ranges::copy_if(windows, hide_windows.begin(),
-                                   should_hide_for_overview);
+  auto end = std::ranges::copy_if(windows, hide_windows.begin(),
+                                  should_hide_for_overview)
+                 .out;
   hide_windows.resize(end - hide_windows.begin());
   std::erase_if(windows, window_util::ShouldExcludeForOverview);
   // Overview windows will handle showing their transient related windows, so if
@@ -408,10 +404,12 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       // place, and those widgets will fade out of overview.
       std::vector<raw_ptr<aura::Window, VectorExperimental>>
           windows_to_minimize(windows.size());
-      auto it = base::ranges::copy_if(
-          windows, windows_to_minimize.begin(), [](aura::Window* window) {
-            return !WindowState::Get(window)->IsMinimized();
-          });
+      auto it = std::ranges::copy_if(
+                    windows, windows_to_minimize.begin(),
+                    [](aura::Window* window) {
+                      return !WindowState::Get(window)->IsMinimized();
+                    })
+                    .out;
       windows_to_minimize.resize(
           std::distance(windows_to_minimize.begin(), it));
       window_util::MinimizeAndHideWithoutAnimation(windows_to_minimize);
@@ -543,15 +541,6 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
                                base::Time::Now() - last_overview_session_time_);
     }
   }
-
-  // Let immediate raster scale updates take effect. If we are pausing the
-  // occlusion tracker, defer any additional raster scale updates until after
-  // occlusion pausing is done to ensure raster scale updates come after
-  // occlusion updates on exit.
-  scoped_pause_raster.reset();
-  if (occlusion_tracker_pauser_) {
-    raster_scale_pauser_.emplace();
-  }
 }
 
 bool OverviewController::CanEndOverview(OverviewEnterExitType type) const {
@@ -627,14 +616,12 @@ void OverviewController::ResetPauser() {
   CHECK_EQ(pause_count_, 0);
   if (!overview_session_) {
     occlusion_tracker_pauser_.reset();
-    raster_scale_pauser_.reset();
     return;
   }
 
   const bool ignore_activations = overview_session_->ignore_activations();
   overview_session_->set_ignore_activations(true);
   occlusion_tracker_pauser_.reset();
-  raster_scale_pauser_.reset();
 
   // Unpausing the occlusion tracker may trigger window activations. Even though
   // window activations are paused, overview might still exit. See

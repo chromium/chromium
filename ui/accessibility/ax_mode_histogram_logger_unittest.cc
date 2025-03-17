@@ -92,7 +92,7 @@ TEST_F(AXHistogramLoggerTest, FormsTest) {
   SetAXMode(kAXModeFormControls);
   histogram_tester.ExpectBucketCount(histogram_name, true, 1);
 
-  SetAXMode(AXMode(AXMode::kHTML, AXMode::kExperimentalFormControls));
+  SetAXMode(AXMode(AXMode::kHTML, AXMode::kFormsAndLabelsOnly));
   histogram_tester.ExpectBucketCount(histogram_name, true, 1);
 
   SetAXMode(kAXModeBasic);

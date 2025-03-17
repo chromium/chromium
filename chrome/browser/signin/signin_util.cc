@@ -16,7 +16,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -33,7 +32,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "content/public/browser/storage_partition.h"
@@ -67,7 +65,7 @@ ScopedForceSigninSetterForTesting::~ScopedForceSigninSetterForTesting() {
   ResetForceSigninForTesting();  // IN-TEST
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 CookiesMover::CookiesMover(base::WeakPtr<Profile> source_profile,
                            base::WeakPtr<Profile> destination_profile,
                            base::OnceCallback<void()> callback)
@@ -134,7 +132,7 @@ void CookiesMover::OnCookiesReceived(
 void CookiesMover::OnCookiesMoved() {
   std::move(callback_).Run();
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 bool IsForceSigninEnabled() {
   if (g_is_force_signin_enabled_cache == NOT_CACHED) {
@@ -156,13 +154,11 @@ void ResetForceSigninForTesting() {
 }
 
 bool IsProfileDeletionAllowed(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return !profile->IsMainProfile();
-#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   return true;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -328,19 +324,10 @@ SignedInState GetSignedInState(
     return SignedInState::kSyncing;
   }
 
-  // If explicit browser signin is not enabled, this returns `kSignedIn`
-  // regardless of the error state of the refresh token. There might for example
-  // be an error in the following two cases: (a) The account is managed. (b) The
-  // account is not managed, but the `SigninManager` has not been notified yet,
-  // which would sign the user out.
-  //
-  // If the error state of the primary account is relevant, then it needs to be
-  // checked in addition to this state.
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
                identity_manager->GetPrimaryAccountId(
-                   signin::ConsentLevel::kSignin)) &&
-                   switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+                   signin::ConsentLevel::kSignin))
                ? SignedInState::kSignInPending
                : SignedInState::kSignedIn;
   }

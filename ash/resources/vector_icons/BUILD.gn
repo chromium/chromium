@@ -3,10 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/vector_icons/vector_icons.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 aggregate_vector_icons("ash_vector_icons") {
   icon_directory = "."
@@ -65,6 +64,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "cancel_circle_outline.icon",
     "capture_gif.icon",
     "capture_mode.icon",
+    "capture_mode_action_error.icon",
     "capture_mode_camera.icon",
     "capture_mode_camera_preview_collapse.icon",
     "capture_mode_camera_preview_expand.icon",
@@ -193,6 +193,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "ks_assistant.icon",
     "ks_browser_search.icon",
     "ks_calculator.icon",
+    "ks_camera_access_toggle.icon",
     "ks_context_menu.icon",
     "ks_dictation.icon",
     "ks_do_not_disturb.icon",
@@ -273,6 +274,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "modifier_split_lock_screen_caps_lock.icon",
     "modifier_split_notification_capslock.icon",
     "more_than_nine_files.icon",
+    "mouse_keys_drag.icon",
     "music_note.icon",
     "muted_microphone.icon",
     "network_badge_off.icon",
@@ -417,6 +419,11 @@ aggregate_vector_icons("ash_vector_icons") {
     "save_desk_as_template.icon",
     "save_desk_for_later.icon",
     "scanner.icon",
+    "scanner_calendar.icon",
+    "scanner_clipboard.icon",
+    "scanner_doc.icon",
+    "scanner_new_contact.icon",
+    "scanner_sheet.icon",
     "security.icon",
     "select_to_speak_next_paragraph.icon",
     "select_to_speak_next_sentence.icon",
@@ -708,8 +715,10 @@ aggregate_vector_icons("ash_vector_icons") {
   }
 }
 
-source_set("vector_icons") {
+component("vector_icons") {
   sources = get_target_outputs(":ash_vector_icons")
+
+  defines = [ "ASH_IMPLEMENTATION" ]
 
   deps = [
     ":ash_vector_icons",

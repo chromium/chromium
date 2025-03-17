@@ -20,8 +20,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
-  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
-      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava);
   return kFeatureMap.get();
 }
 
@@ -36,7 +36,7 @@ static jlong JNI_StylusHandwritingFeatureMap_GetNativeMap(JNIEnv* env) {
 // Cache Stylus related settings
 BASE_FEATURE(kCacheStylusSettings,
              "CacheStylusSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Initiate handwriting based on the distance between touch events compared to
 // the current handwriting touch slop rather than relying on scroll events for

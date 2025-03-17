@@ -42,8 +42,7 @@ class TestInProcessContextProvider;
 // is always RGBA and there is no difference between RGBA/BGRA. Also, these
 // formats should not be used for software SkImages/SkSurfaces.
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
-SkColorType ToClosestSkColorType(bool gpu_compositing,
-                                 SharedImageFormat format);
+SkColorType ToClosestSkColorType(SharedImageFormat format);
 
 // Returns the closest SkColorType for a given `format` that does not prefer
 // external sampler and `plane_index`. For single planar formats (eg. RGBA) the

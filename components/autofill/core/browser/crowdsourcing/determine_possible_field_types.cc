@@ -10,12 +10,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
-#include "components/autofill/core/browser/data_model/address.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/addresses/address.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -145,12 +146,10 @@ void FindAndSetPossibleFieldTypesForField(
   FieldTypeSet matching_types;
 
   for (const AutofillProfile& profile : profiles) {
-    profile.GetMatchingTypesWithProfileSources(value, app_locale,
-                                               &matching_types, nullptr);
+    profile.GetMatchingTypes(value, app_locale, &matching_types);
   }
   for (const CreditCard& card : credit_cards) {
-    card.GetMatchingTypesWithProfileSources(value, app_locale, &matching_types,
-                                            nullptr);
+    card.GetMatchingTypes(value, app_locale, &matching_types);
   }
 
   if (field.state_is_a_matching_type()) {

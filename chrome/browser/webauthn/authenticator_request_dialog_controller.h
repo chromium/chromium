@@ -16,14 +16,21 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h"
+#include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
+#include "chrome/browser/webauthn/observable_authenticator_list.h"
+#include "chrome/browser/webauthn/password_credential_controller.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
+#include "url/gurl.h"
 
+class ChallengeUrlFetcher;
+class PasskeyUpgradeRequestController;
 class Profile;
 
 namespace content {
@@ -35,11 +42,14 @@ class RenderFrameHost;
 // the `Step` enumeration.
 class AuthenticatorRequestDialogController
     : public AuthenticatorRequestDialogModel::Observer,
-      public webauthn::PasskeyModel::Observer {
+      public webauthn::PasskeyModel::Observer,
+      public PasskeyUpgradeRequestController::Delegate {
  public:
   using RequestCallback = device::FidoRequestHandlerBase::RequestCallback;
   using BlePermissionCallback = base::RepeatingCallback<void(
       device::FidoRequestHandlerBase::BlePermissionCallback)>;
+  using EnclaveRequestCallback = base::RepeatingCallback<void(
+      std::unique_ptr<device::enclave::CredentialRequest>)>;
 
   AuthenticatorRequestDialogController(
       AuthenticatorRequestDialogModel* model,
@@ -80,6 +90,10 @@ class AuthenticatorRequestDialogController
   void OnPasskeyModelShuttingDown() override;
   void OnPasskeyModelIsReady(bool is_ready) override;
 
+  // PasskeyUpgradeRequestController::Delegate:
+  void PasskeyUpgradeSucceeded() override;
+  void PasskeyUpgradeFailed() override;
+
   // Hides the dialog. A subsequent call to SetCurrentStep() will unhide it.
   void HideDialog();
 
@@ -88,15 +102,13 @@ class AuthenticatorRequestDialogController
   // is only resolved after the UI is dismissed.
   bool is_request_complete() const;
 
-  // Starts the UX flow, by either showing the transport selection screen or
-  // the guided flow for them most likely transport.
-  //
-  // If |is_conditional_mediation| is true, credentials will be shown on the
-  // password autofill instead of the full-blown page-modal UI.
+  // Starts the UX flow, by either showing the transport or password selection
+  // screen or the guided flow for the most likely transport.
   //
   // Valid action when at step: kNotStarted.
   void StartFlow(device::FidoRequestHandlerBase::TransportAvailabilityInfo
-                     transport_availability);
+                     transport_availability,
+                 PasswordCredentialController::PasswordCredentials passwords);
 
   // Starts a modal WebAuthn flow (i.e. what you normally get if you call
   // WebAuthn with no mediation parameter) from a conditional request.
@@ -226,6 +238,9 @@ class AuthenticatorRequestDialogController
   // request should never have been sent to iCloud Keychain in the first place.
   bool OnNoPasskeys();
 
+  // To be called when fetching a challenge from a provided URL failed.
+  void OnChallengeUrlFailure();
+
   // To be called when the Bluetooth adapter status changes.
   void BluetoothAdapterStatusChanged(
       device::FidoRequestHandlerBase::BleStatus ble_status);
@@ -334,8 +349,6 @@ class AuthenticatorRequestDialogController
   void set_allow_icloud_keychain(bool);
   void set_should_create_in_icloud_keychain(bool);
 
-  void set_enclave_can_be_default(bool can_be_default);
-
 #if BUILDFLAG(IS_MAC)
   void RecordMacOsStartedHistogram();
   void RecordMacOsSuccessHistogram(device::FidoRequestType,
@@ -344,12 +357,20 @@ class AuthenticatorRequestDialogController
   void set_has_icloud_drive_enabled(bool);
 #endif
 
-  void set_ambient_credential_types(int types);
+  void SetCredentialTypes(int types);
 
   content::AuthenticatorRequestClientDelegate::UIPresentation ui_presentation()
       const;
-  void set_ui_presentation(
+  void SetUIPresentation(
       content::AuthenticatorRequestClientDelegate::UIPresentation modality);
+
+  void ProvideChallengeUrl(
+      const GURL& url,
+      base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
+          callback);
+
+  void InitializeEnclaveRequestCallback(
+      device::FidoDiscoveryFactory* discovery_factory);
 
   base::WeakPtr<AuthenticatorRequestDialogController> GetWeakPtr();
 
@@ -461,6 +482,14 @@ class AuthenticatorRequestDialogController
   // frame host indirectly owns the controller, and so it should outlive it.
   content::RenderFrameHost* GetRenderFrameHost() const;
 
+  // Lazy creation accessor.
+  ChallengeUrlFetcher* GetChallengeUrlFetcher();
+
+  void MaybeStartChallengeFetch();
+  void OnChallengeFetched();
+
+  void PopulatePasswords();
+
   raw_ptr<AuthenticatorRequestDialogModel> model_;
 
   // Identifier for the RenderFrameHost of the frame that initiated the current
@@ -492,6 +521,8 @@ class AuthenticatorRequestDialogController
   device::FidoRequestHandlerBase::TransportAvailabilityInfo
       transport_availability_;
 
+  PasswordCredentialController::PasswordCredentials passwords_;
+
   content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
       account_preselected_callback_;
   RequestCallback request_callback_;
@@ -507,9 +538,6 @@ class AuthenticatorRequestDialogController
 
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
-
-  content::AuthenticatorRequestClientDelegate::UIPresentation ui_presentation_ =
-      content::AuthenticatorRequestClientDelegate::UIPresentation::kModal;
 
   // cable_extension_provided_ indicates whether the request included a caBLE
   // extension.
@@ -587,18 +615,27 @@ class AuthenticatorRequestDialogController
   bool has_icloud_drive_enabled_ = false;
 #endif
 
-  bool enclave_can_be_default_ = true;
-
-  // The credential types that are being asked for in an ambient UI
-  // request.
-  int ambient_credential_types_ =
+  // The credential types that are being asked for.
+  int credential_types_ =
       static_cast<int>(blink::mojom::CredentialTypeFlags::kNone);
+
+  // ChallengeUrl support. The URL is the destination to fetch the challenge
+  // and the callback is invoked when the challenge is received.
+  GURL challenge_url_;
+  base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
+      challenge_callback_;
+
+  std::unique_ptr<ChallengeUrlFetcher> challenge_url_fetcher_;
 
   const content::GlobalRenderFrameHostId frame_host_id_;
 
   base::ScopedObservation<webauthn::PasskeyModel,
                           webauthn::PasskeyModel::Observer>
       passkey_model_observation_{this};
+
+  EnclaveRequestCallback enclave_request_callback_;
+  std::unique_ptr<PasskeyUpgradeRequestController>
+      passkey_upgrade_request_controller_;
 
   base::WeakPtrFactory<AuthenticatorRequestDialogController> weak_factory_{
       this};

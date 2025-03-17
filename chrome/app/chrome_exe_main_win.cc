@@ -77,7 +77,7 @@ void SetCwdForBrowserProcess() {
     return;
 
   base::SetCurrentDirectory(
-      base::FilePath(base::FilePath::StringPieceType(&buffer[0], length))
+      base::FilePath(base::FilePath::StringViewType(&buffer[0], length))
           .DirName());
 }
 

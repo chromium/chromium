@@ -71,10 +71,13 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
       override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   InMemoryURLIndex* GetInMemoryURLIndex() override;
+  DocumentSuggestionsService* GetDocumentSuggestionsService() const override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackend() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
   const TabMatcher& GetTabMatcher() const override;
   scoped_refptr<history::TopSites> GetTopSites() override;
+  std::string ProfileUserName() const override;
+
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   OnDeviceTailModelService* GetOnDeviceTailModelService() const override;
@@ -118,6 +121,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
  private:
   search_engines::SearchEnginesTestEnvironment search_engines_test_enviroment_;
+  std::unique_ptr<DocumentSuggestionsService> document_suggestions_service_;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   TestSchemeClassifier scheme_classifier_;

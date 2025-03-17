@@ -389,9 +389,7 @@ TEST_F(AutocompleteHistoryManagerTest, Init_TriggersCleanup) {
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      CHROME_VERSION_MAJOR - 1);
 
-  EXPECT_CALL(*web_data_service_,
-              RemoveExpiredAutocompleteEntries(autocomplete_manager_.get()))
-      .Times(1);
+  EXPECT_CALL(*web_data_service_, RemoveExpiredAutocompleteEntries).Times(1);
   autocomplete_manager_->Init(web_data_service_, prefs_.get(),
                               /*is_off_the_record=*/false);
 }
@@ -403,9 +401,7 @@ TEST_F(AutocompleteHistoryManagerTest, Init_OTR_Not_TriggersCleanup) {
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      CHROME_VERSION_MAJOR - 1);
 
-  EXPECT_CALL(*web_data_service_,
-              RemoveExpiredAutocompleteEntries(autocomplete_manager_.get()))
-      .Times(0);
+  EXPECT_CALL(*web_data_service_, RemoveExpiredAutocompleteEntries).Times(0);
   autocomplete_manager_->Init(web_data_service_, prefs_.get(),
                               /*is_off_the_record=*/true);
 }
@@ -416,9 +412,7 @@ TEST_F(AutocompleteHistoryManagerTest, Init_NullDB_NoCrash) {
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      CHROME_VERSION_MAJOR - 1);
 
-  EXPECT_CALL(*web_data_service_,
-              RemoveExpiredAutocompleteEntries(autocomplete_manager_.get()))
-      .Times(0);
+  EXPECT_CALL(*web_data_service_, RemoveExpiredAutocompleteEntries).Times(0);
   autocomplete_manager_->Init(nullptr, prefs_.get(),
                               /*is_off_the_record=*/false);
 }
@@ -431,9 +425,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      CHROME_VERSION_MAJOR);
 
-  EXPECT_CALL(*web_data_service_,
-              RemoveExpiredAutocompleteEntries(autocomplete_manager_.get()))
-      .Times(0);
+  EXPECT_CALL(*web_data_service_, RemoveExpiredAutocompleteEntries).Times(0);
   autocomplete_manager_->Init(web_data_service_, prefs_.get(),
                               /*is_off_the_record=*/false);
 }
@@ -465,9 +457,9 @@ TEST_F(AutocompleteHistoryManagerTest,
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
 
-  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName(
-                                      test_field_.name(), test_field_.value(),
-                                      _, autocomplete_manager_.get()))
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name(),
+                                          test_field_.value(), _, _))
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
@@ -493,9 +485,9 @@ TEST_F(AutocompleteHistoryManagerTest,
                                     /*value=*/"", FormControlType::kInputText);
 
   // Only expect a call when the name is not filtered out.
-  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName(
-                                      test_field_.name(), test_field_.value(),
-                                      _, autocomplete_manager_.get()))
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name(),
+                                          test_field_.value(), _, _))
       .Times(0);
 
   // Simulate request for suggestions.
@@ -516,9 +508,9 @@ TEST_F(AutocompleteHistoryManagerTest,
                                     FormControlType::kInputText);
 
   // Only expect a call when the name is not filtered out.
-  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName(
-                                      test_field_.name(), test_field_.value(),
-                                      _, autocomplete_manager_.get()))
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name(),
+                                          test_field_.value(), _, _))
       .Times(0);
 
   // Simulate request for suggestions.
@@ -545,9 +537,9 @@ TEST_F(AutocompleteHistoryManagerTest,
       GetMockedDbResults(expected_values);
 
   // Expect a call because the name is not filtered.
-  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName(
-                                      test_field_.name(), test_field_.value(),
-                                      _, autocomplete_manager_.get()))
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name(),
+                                          test_field_.value(), _, _))
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
@@ -575,9 +567,9 @@ TEST_F(AutocompleteHistoryManagerTest,
       GetMockedDbResults(expected_values);
 
   // Expect a call because the name is not filtered.
-  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName(
-                                      test_field_.name(), test_field_.value(),
-                                      _, autocomplete_manager_.get()))
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name(),
+                                          test_field_.value(), _, _))
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
@@ -603,9 +595,9 @@ TEST_F(AutocompleteHistoryManagerTest,
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
 
-  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName(
-                                      test_field_.name(), test_field_.value(),
-                                      _, autocomplete_manager_.get()))
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name(),
+                                          test_field_.value(), _, _))
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
@@ -638,9 +630,9 @@ TEST_F(AutocompleteHistoryManagerTest,
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
 
-  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName(
-                                      test_field_.name(), test_field_.value(),
-                                      _, autocomplete_manager_.get()))
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name(),
+                                          test_field_.value(), _, _))
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
@@ -669,9 +661,9 @@ TEST_F(AutocompleteHistoryManagerTest,
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
 
-  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName(
-                                      test_field_.name(), test_field_.value(),
-                                      _, autocomplete_manager_.get()))
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name(),
+                                          test_field_.value(), _, _))
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
@@ -717,9 +709,9 @@ TEST_F(AutocompleteHistoryManagerTest,
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
 
-  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName(
-                                      test_field_.name(), test_field_.value(),
-                                      _, autocomplete_manager_.get()))
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name(),
+                                          test_field_.value(), _, _))
       .WillOnce(Return(mocked_db_query_id));
 
   MockSuggestionsReturnedCallback mock_callback;
@@ -767,9 +759,9 @@ TEST_F(AutocompleteHistoryManagerTest,
   std::unique_ptr<WDTypedResult> mocked_results_second =
       GetMockedDbResults(expected_values_second);
 
-  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName(
-                                      test_field_.name(), test_field_.value(),
-                                      _, autocomplete_manager_.get()))
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name(),
+                                          test_field_.value(), _, _))
       .WillOnce(Return(mocked_db_query_id_first))
       .WillOnce(Return(mocked_db_query_id_second));
 
@@ -815,9 +807,9 @@ TEST_F(AutocompleteHistoryManagerTest,
       GetMockedDbResults(expected_values_one);
 
   // Simulate a request for autocomplete suggestions.
-  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName(
-                                      test_field_.name(), test_field_.value(),
-                                      _, autocomplete_manager_.get()))
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name(),
+                                          test_field_.value(), _, _))
       .WillOnce(Return(mocked_db_query_id));
 
   MockSuggestionsReturnedCallback mock_callback;
@@ -855,9 +847,9 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
 TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
   int mocked_db_query_id = 100;
 
-  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName(
-                                      test_field_.name(), test_field_.value(),
-                                      _, autocomplete_manager_.get()))
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name(),
+                                          test_field_.value(), _, _))
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.

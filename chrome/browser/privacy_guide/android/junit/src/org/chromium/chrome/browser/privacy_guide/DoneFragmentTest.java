@@ -41,7 +41,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /** Tests for {@link DoneFragment} */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS})
+@EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY})
 public class DoneFragmentTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -170,7 +170,7 @@ public class DoneFragmentTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS})
+    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY})
     public void testPrivacySandboxDescriptionIsDisplayedWhenAdTopicsIsDisabled() {
         setPrivacySandboxState(false, false);
         initFragment();

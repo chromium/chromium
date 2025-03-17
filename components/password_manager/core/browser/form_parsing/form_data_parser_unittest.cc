@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <optional>
 #include <set>
 #include <string>
@@ -13,11 +14,11 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
@@ -27,6 +28,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -48,6 +50,8 @@ using testing::NotNull;
 // generated in GetFormDataAndExpectation().
 constexpr char16_t kNonimportantValue[] = u"non-important unique";
 
+constexpr ukm::SourceId kTestUkmSourceId = 0x1234;
+
 // Use this in FieldDataDescription below to mark the expected username and
 // password fields.
 enum class ElementRole {
@@ -58,9 +62,6 @@ enum class ElementRole {
   CONFIRMATION_PASSWORD,
   // Used for fields tagged only for webauthn autocomplete.
   WEBAUTHN,
-  // Fields that are are eligible for manual password generation due to having
-  // weak signals of being a password field.
-  MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
 };
 
 // Expected FormFieldData are constructed based on these descriptions.
@@ -85,12 +86,16 @@ struct FieldDataDescription {
   const std::u16string_view name = kNonimportantValue;
   FormControlType form_control_type = FormControlType::kInputText;
   autofill::FieldType server_predicted_type = autofill::MAX_VALID_FIELD_TYPE;
+  bool is_server_override = false;
   autofill::FieldType model_predicted_type = autofill::MAX_VALID_FIELD_TYPE;
   bool may_use_prefilled_placeholder = false;
   // If not -1, indicates on which rank among predicted usernames this should
   // be. Unused ranks will be padded with unique IDs (not found in any fields).
   int predicted_username = -1;
   uint64_t max_length_attr = FormFieldData::kDefaultMaxLength;
+  // Manual generation depends by default on the HTML field type.
+  bool manual_generation_enabled =
+      (form_control_type == FormControlType::kInputPassword);
 };
 
 // Describes a test case for the parser.
@@ -163,9 +168,6 @@ void UpdateResultWithIdByRole(ParseResultIds* result,
       DCHECK(result->confirmation_password_id.is_null());
       result->confirmation_password_id = id;
       break;
-    case ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD:
-      result->manual_generation_enabled_ids.push_back(id);
-      break;
   }
 }
 
@@ -193,7 +195,7 @@ void CheckField(const std::vector<FormFieldData>& fields,
   }
 
   auto field_it =
-      base::ranges::find(fields, renderer_id, &FormFieldData::renderer_id);
+      std::ranges::find(fields, renderer_id, &FormFieldData::renderer_id);
   ASSERT_TRUE(field_it != fields.end())
       << "Could not find a field with renderer ID " << renderer_id;
 
@@ -278,6 +280,7 @@ FormFieldData CreateField(FormControlType type, std::u16string value) {
 class FormParserTest : public testing::Test {
  protected:
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::u16string GetFieldNameByIndex(size_t index) {
     return u"field" + base::NumberToString16(index);
@@ -304,7 +307,7 @@ class FormParserTest : public testing::Test {
   FormData GetFormDataAndExpectation(
       const FormParsingTestCase& test_case,
       FormPredictions* server_predictions,
-      base::flat_map<autofill::FieldGlobalId, autofill::FieldType>*
+      base::flat_map<autofill::FieldRendererId, autofill::FieldType>*
           model_predictions,
       ParseResultIds* fill_result,
       ParseResultIds* save_result) {
@@ -360,6 +363,17 @@ class FormParserTest : public testing::Test {
                                    field_description.role);
         }
       }
+
+      if (field_description.manual_generation_enabled) {
+        if (fill_result) {
+          fill_result->manual_generation_enabled_ids.push_back(renderer_id);
+        }
+        // Only non-empty fields are considered in the saving mode.
+        if (save_result && !field_description.value.empty()) {
+          save_result->manual_generation_enabled_ids.push_back(renderer_id);
+        }
+      }
+
       if (server_predictions && (field_description.server_predicted_type !=
                                  autofill::MAX_VALID_FIELD_TYPE)) {
         server_predictions->fields.emplace_back(
@@ -367,11 +381,11 @@ class FormParserTest : public testing::Test {
             field_description.server_predicted_type,
             /*may_use_prefilled_placeholder=*/
             field_description.may_use_prefilled_placeholder,
-            /*is_override=*/false);
+            field_description.is_server_override);
       }
       if (model_predictions && (field_description.model_predicted_type !=
                                 autofill::MAX_VALID_FIELD_TYPE)) {
-        (*model_predictions)[field.global_id()] =
+        (*model_predictions)[field.renderer_id()] =
             field_description.model_predicted_type;
       }
       if (field_description.predicted_username >= 0) {
@@ -401,7 +415,7 @@ class FormParserTest : public testing::Test {
   void CheckTestData(const std::vector<FormParsingTestCase>& test_cases) {
     for (const FormParsingTestCase& test_case : test_cases) {
       FormPredictions server_predictions;
-      base::flat_map<autofill::FieldGlobalId, autofill::FieldType>
+      base::flat_map<autofill::FieldRendererId, autofill::FieldType>
           model_predictions;
       ParseResultIds fill_result;
       ParseResultIds save_result;
@@ -419,7 +433,7 @@ class FormParserTest : public testing::Test {
             << (mode == FormDataParser::Mode::kFilling ? "Filling" : "Saving"));
 
         FormParsingResult parsing_result = parser.ParseAndReturnParsingResult(
-            form_data, mode, /*stored_usernames=*/{});
+            form_data, mode, /*stored_usernames=*/{}, kTestUkmSourceId);
         const ParseResultIds& expected_ids =
             mode == FormDataParser::Mode::kFilling ? fill_result : save_result;
 
@@ -1286,10 +1300,9 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
                   {.form_control_type = FormControlType::kInputText,
                    .server_predicted_type =
                        autofill::USERNAME_AND_EMAIL_ADDRESS},
-                  {.role =
-                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
-                   .form_control_type = FormControlType::kInputText,
-                   .server_predicted_type = autofill::NEW_PASSWORD},
+                  {.form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::NEW_PASSWORD,
+                   .manual_generation_enabled = true},
               },
       },
       {
@@ -1298,10 +1311,9 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
           .fields =
               {
                   {.form_control_type = FormControlType::kInputText},
-                  {.role =
-                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
-                   .form_control_type = FormControlType::kInputText,
-                   .server_predicted_type = autofill::NEW_PASSWORD},
+                  {.form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::NEW_PASSWORD,
+                   .manual_generation_enabled = true},
               },
       },
       {
@@ -1334,11 +1346,9 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
                   {.form_control_type = FormControlType::kInputText,
                    .server_predicted_type =
                        autofill::USERNAME_AND_EMAIL_ADDRESS},
-                  {.role =
-                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
-                   .form_control_type = FormControlType::kInputText,
-                   .server_predicted_type =
-                       autofill::ACCOUNT_CREATION_PASSWORD},
+                  {.form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD,
+                   .manual_generation_enabled = true},
               },
       },
       {
@@ -1347,11 +1357,9 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
           .fields =
               {
                   {.form_control_type = FormControlType::kInputText},
-                  {.role =
-                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
-                   .form_control_type = FormControlType::kInputText,
-                   .server_predicted_type =
-                       autofill::ACCOUNT_CREATION_PASSWORD},
+                  {.form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD,
+                   .manual_generation_enabled = true},
               },
       },
   });
@@ -1953,7 +1961,8 @@ TEST_F(FormParserTest, IgnoreCvcFields) {
                    .form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
                    .server_predicted_type =
-                       autofill::CREDIT_CARD_VERIFICATION_CODE},
+                       autofill::CREDIT_CARD_VERIFICATION_CODE,
+                   .manual_generation_enabled = false},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -1969,7 +1978,8 @@ TEST_F(FormParserTest, IgnoreCvcFields) {
                   {.form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
                    .server_predicted_type =
-                       autofill::CREDIT_CARD_VERIFICATION_CODE},
+                       autofill::CREDIT_CARD_VERIFICATION_CODE,
+                   .manual_generation_enabled = false},
               },
       },
       {
@@ -2015,11 +2025,13 @@ TEST_F(FormParserTest, ServerHintsForCvcFieldsOverrideAutocomplete) {
                    .form_control_type = FormControlType::kInputText},
                   {.autocomplete_attribute = "current-password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::CREDIT_CARD_NUMBER},
+                   .server_predicted_type = autofill::CREDIT_CARD_NUMBER,
+                   .manual_generation_enabled = false},
                   {.autocomplete_attribute = "new-password",
                    .form_control_type = FormControlType::kInputPassword,
                    .server_predicted_type =
-                       autofill::CREDIT_CARD_VERIFICATION_CODE},
+                       autofill::CREDIT_CARD_VERIFICATION_CODE,
+                   .manual_generation_enabled = false},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -2055,7 +2067,8 @@ TEST_F(FormParserTest, CCNumber) {
               {
                   {.form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::CREDIT_CARD_NUMBER},
+                   .server_predicted_type = autofill::CREDIT_CARD_NUMBER,
+                   .manual_generation_enabled = false},
               },
       },
       {
@@ -2084,7 +2097,8 @@ TEST_F(FormParserTest, CCNumber) {
                    .server_predicted_type = autofill::CREDIT_CARD_NAME_FULL},
                   {.name = u"ccnumber",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::CREDIT_CARD_NUMBER},
+                   .server_predicted_type = autofill::CREDIT_CARD_NUMBER,
+                   .manual_generation_enabled = false},
                   {.name = u"expiration",
                    .form_control_type = FormControlType::kInputText,
                    .server_predicted_type =
@@ -2092,7 +2106,8 @@ TEST_F(FormParserTest, CCNumber) {
                   {.name = u"cvc",
                    .form_control_type = FormControlType::kInputPassword,
                    .server_predicted_type =
-                       autofill::CREDIT_CARD_VERIFICATION_CODE},
+                       autofill::CREDIT_CARD_VERIFICATION_CODE,
+                   .manual_generation_enabled = false},
               },
       },
   });
@@ -2167,7 +2182,8 @@ TEST_F(FormParserTest, NotPasswordField) {
                   {.role = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::NOT_PASSWORD},
+                   .server_predicted_type = autofill::NOT_PASSWORD,
+                   .manual_generation_enabled = false},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -2180,7 +2196,8 @@ TEST_F(FormParserTest, NotPasswordField) {
               {
                   {.form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::NOT_PASSWORD},
+                   .server_predicted_type = autofill::NOT_PASSWORD,
+                   .manual_generation_enabled = false},
               },
       },
   });
@@ -2196,7 +2213,8 @@ TEST_F(FormParserTest, OneTimeCodeField) {
                   {.role = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::ONE_TIME_CODE},
+                   .server_predicted_type = autofill::ONE_TIME_CODE,
+                   .manual_generation_enabled = false},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -2209,7 +2227,8 @@ TEST_F(FormParserTest, OneTimeCodeField) {
               {
                   {.form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::ONE_TIME_CODE},
+                   .server_predicted_type = autofill::ONE_TIME_CODE,
+                   .manual_generation_enabled = false},
               },
       },
   });
@@ -2330,13 +2349,16 @@ TEST_F(FormParserTest, NotPasswordFieldDespiteAutocompleteAttribute) {
                    .form_control_type = FormControlType::kInputText},
                   {.autocomplete_attribute = "current-password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::NOT_PASSWORD},
+                   .server_predicted_type = autofill::NOT_PASSWORD,
+                   .manual_generation_enabled = false},
                   {.autocomplete_attribute = "new-password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::NOT_PASSWORD},
+                   .server_predicted_type = autofill::NOT_PASSWORD,
+                   .manual_generation_enabled = false},
                   {.autocomplete_attribute = "password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::NOT_PASSWORD},
+                   .server_predicted_type = autofill::NOT_PASSWORD,
+                   .manual_generation_enabled = false},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -2350,7 +2372,8 @@ TEST_F(FormParserTest, NotPasswordFieldDespiteAutocompleteAttribute) {
                   {.form_control_type = FormControlType::kInputText},
                   {.autocomplete_attribute = "current-password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::NOT_PASSWORD},
+                   .server_predicted_type = autofill::NOT_PASSWORD,
+                   .manual_generation_enabled = false},
               },
       },
   });
@@ -2367,7 +2390,8 @@ TEST_F(FormParserTest, OneTimeCodeFieldDespiteAutocompleteAttribute) {
                    .form_control_type = FormControlType::kInputText},
                   {.autocomplete_attribute = "current-password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::ONE_TIME_CODE},
+                   .server_predicted_type = autofill::ONE_TIME_CODE,
+                   .manual_generation_enabled = false},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -2381,7 +2405,8 @@ TEST_F(FormParserTest, OneTimeCodeFieldDespiteAutocompleteAttribute) {
                   {.form_control_type = FormControlType::kInputText},
                   {.autocomplete_attribute = "current-password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::ONE_TIME_CODE},
+                   .server_predicted_type = autofill::ONE_TIME_CODE,
+                   .manual_generation_enabled = false},
               },
       },
   });
@@ -3070,9 +3095,11 @@ TEST_F(FormParserTest, InvalidURL) {
   form_data.set_url(GURL("FilEsysteM:htTp:E=/."));
   FormDataParser parser;
   EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
-                            /*stored_usernames=*/{}));
+                            /*stored_usernames=*/{},
+                            /*ukm_source_id=*/std::nullopt));
   EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kSaving,
-                            /*stored_usernames=*/{}));
+                            /*stored_usernames=*/{},
+                            /*ukm_source_id=*/std::nullopt));
 }
 
 TEST_F(FormParserTest, FindUsernameInHtmlParserResult_SkipPrediction) {
@@ -3169,9 +3196,11 @@ TEST_F(FormParserTest, SkipHiddenValueField) {
         /*save_result=*/nullptr);
     FormDataParser parser;
     EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
-                             /*stored_usernames=*/{}));
+                             /*stored_usernames=*/{},
+                             /*ukm_source_id=*/std::nullopt));
     EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kSaving,
-                              /*stored_usernames=*/{}));
+                              /*stored_usernames=*/{},
+                              /*ukm_source_id=*/std::nullopt));
   }
 }
 
@@ -3220,9 +3249,11 @@ TEST_F(FormParserTest, DontSkipNotHiddenValues) {
         /*save_result=*/nullptr);
     FormDataParser parser;
     EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
-                             /*stored_usernames=*/{}));
+                             /*stored_usernames=*/{},
+                             /*ukm_source_id=*/std::nullopt));
     EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kSaving,
-                             /*stored_usernames=*/{}));
+                             /*stored_usernames=*/{},
+                             /*ukm_source_id=*/std::nullopt));
   }
 }
 
@@ -3418,7 +3449,8 @@ TEST_F(FormParserTest, UsernameFoundByServerPredictions) {
   auto [result, username_detection_method, is_new_password_reliable,
         suggestion_banned_fields, manual_generation_enabled_field] =
       parser.ParseAndReturnParsingResult(
-          form_data, FormDataParser::Mode::kSaving, /*stored_usernames=*/{});
+          form_data, FormDataParser::Mode::kSaving, /*stored_usernames=*/{},
+          kTestUkmSourceId);
   EXPECT_EQ(username_detection_method,
             UsernameDetectionMethod::kServerSidePrediction);
 }
@@ -3434,8 +3466,9 @@ TEST_F(FormParserTest, BaseHeuristicsFindUsernameFieldWithStoredUsername) {
   FormDataParser parser;
   auto [password_form, username_detection_method, is_new_password_reliable,
         suggestion_banned_fields, manual_generation_enabled_field] =
-      parser.ParseAndReturnParsingResult(
-          form_data, FormDataParser::Mode::kFilling, {kUsername});
+      parser.ParseAndReturnParsingResult(form_data,
+                                         FormDataParser::Mode::kFilling,
+                                         {kUsername}, kTestUkmSourceId);
   ASSERT_TRUE(password_form);
 
   EXPECT_EQ(username_detection_method, UsernameDetectionMethod::kBaseHeuristic);
@@ -3480,9 +3513,9 @@ TEST_F(FormParserTest, ManualGenerationEnabledFields) {
            "Fields with variations of the word password are eligible for "
            "manual password generation.",
        .fields = {{
-           .role = ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
            .name = u"password",
            .form_control_type = FormControlType::kInputText,
+           .manual_generation_enabled = true,
        }}},
   });
   CheckTestData({
@@ -3498,16 +3531,14 @@ TEST_F(FormParserTest, ManualGenerationEnabledFields) {
                    .form_control_type = FormControlType::kInputPassword,
                },
                {
-                   .role =
-                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
                    .name = u"password2",
                    .form_control_type = FormControlType::kInputPassword,
+                   .manual_generation_enabled = true,
                },
                {
-                   .role =
-                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
                    .name = u"password3",
                    .form_control_type = FormControlType::kInputPassword,
+                   .manual_generation_enabled = true,
                },
            }},
   });
@@ -3726,6 +3757,171 @@ TEST_F(FormParserTest, ModelPredictions_ClearTextPasswordFields) {
                   {.value = u"old_password",
                    .form_control_type = FormControlType::kInputText,
                    .model_predicted_type = autofill::PASSWORD},
+              },
+      },
+  });
+}
+
+TEST_F(FormParserTest, PasswordFieldIsMaskedMetric_Recorded) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  CheckTestData({{
+      .fields =
+          {
+              {.role = ElementRole::CURRENT_PASSWORD,
+               .value = u"password",
+               .form_control_type = FormControlType::kInputPassword,
+               .model_predicted_type = autofill::PASSWORD},
+          },
+  }});
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.Parsing.PasswordField.IsMasked", true, 1);
+
+  auto ukm_entries =
+      test_ukm_recorder.GetEntriesByName("PasswordManager.Parsing");
+  ASSERT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "PasswordField.IsMasked",
+                                      true);
+}
+
+TEST_F(FormParserTest, PasswordFieldIsMaskedMetric_NotRecorded) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  CheckTestData({{
+      .fields =
+          {
+              {.value = u"maybe_password_idk",
+               .form_control_type = FormControlType::kInputPassword,
+               .model_predicted_type = autofill::UNKNOWN_TYPE},
+          },
+  }});
+  // No password field prediction, no metric.
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.Parsing.PasswordField.IsMasked", 0);
+
+  auto ukm_entries =
+      test_ukm_recorder.GetEntriesByName("PasswordManager.Parsing");
+  ASSERT_EQ(1u, ukm_entries.size());
+  EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(ukm_entries[0],
+                                                "PasswordField.IsMasked"));
+}
+
+TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_Recorded) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  CheckTestData({{
+      .fields =
+          {
+              {.value = u"whatever1",
+               .form_control_type = FormControlType::kInputText,
+               .model_predicted_type = autofill::UNKNOWN_TYPE},
+              {.value = u"whatever2",
+               .form_control_type = FormControlType::kInputPassword,
+               .model_predicted_type = autofill::UNKNOWN_TYPE},
+              {.value = u"whatever3",
+               .form_control_type = FormControlType::kInputText,
+               .model_predicted_type = autofill::UNKNOWN_TYPE},
+          },
+  }});
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.Parsing.UnrelatedFields.AnyFieldIsMasked", true, 1);
+
+  auto ukm_entries =
+      test_ukm_recorder.GetEntriesByName("PasswordManager.Parsing");
+  ASSERT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0],
+                                      "UnrelatedFields.AnyFieldIsMasked", true);
+}
+
+TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_NotRecorded) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  CheckTestData({{
+      .fields =
+          {
+              {.role = ElementRole::USERNAME,
+               .value = u"username",
+               .form_control_type = FormControlType::kInputText,
+               .model_predicted_type = autofill::USERNAME},
+              {.role = ElementRole::CURRENT_PASSWORD,
+               .value = u"password",
+               .form_control_type = FormControlType::kInputPassword,
+               .model_predicted_type = autofill::PASSWORD},
+          },
+  }});
+  // No unrelated fields - no metric.
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.Parsing.UnrelatedFields.AnyFieldIsMasked", 0);
+
+  auto ukm_entries =
+      test_ukm_recorder.GetEntriesByName("PasswordManager.Parsing");
+  ASSERT_EQ(1u, ukm_entries.size());
+  EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
+      ukm_entries[0], "UnrelatedFields.AnyFieldIsMasked"));
+}
+
+TEST_F(FormParserTest, ModelPredictionsAndManualOverrides) {
+  CheckTestData({
+      {
+          .description_for_logging =
+              "Server overrides have priority over model predictions.",
+          .fields =
+              {
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .server_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD,
+                   .is_server_override = true,
+                   .model_predicted_type = autofill::PASSWORD},
+              },
+      },
+      {
+          .description_for_logging =
+              "Server override is respected when it says the field is not "
+              "related to passwords.",
+          .fields =
+              {
+                  {.value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .server_predicted_type =
+                       autofill::CREDIT_CARD_VERIFICATION_CODE,
+                   .is_server_override = true,
+                   .model_predicted_type = autofill::PASSWORD,
+                   .manual_generation_enabled = false},
+              },
+      },
+      {
+          .description_for_logging =
+              "Nothing happens when the model prediction matches the override.",
+          .fields =
+              {
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .server_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD,
+                   .is_server_override = true,
+                   .model_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
+              },
+      },
+      {
+          .description_for_logging =
+              "Manual generation enabled fields are handled correctly when "
+              "model predictions are overridden.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::NO_SERVER_DATA,
+                   .model_predicted_type = autofill::USERNAME},
+                  {.form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::NO_SERVER_DATA,
+                   .model_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD,
+                   .is_server_override = true,
+                   .model_predicted_type = autofill::UNKNOWN_TYPE,
+                   .manual_generation_enabled = true},
               },
       },
   });

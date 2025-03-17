@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_expanded_state_tracker_factory.h"
@@ -112,10 +112,25 @@ BookmarkEditorView::~BookmarkEditorView() {
   bb_model_->RemoveObserver(this);
 }
 
+bool BookmarkEditorView::IsBookmarkFolderSelected() const {
+  // This question doesn't make sense for configurations where there's no folder
+  // picker. Instead of responding no and having unintended side effects, make
+  // sure we're never called.
+  CHECK(show_tree_);
+  CHECK(tree_model_);
+  return tree_model_->AsNode(tree_view_->GetSelectedNode())->value.type ==
+         EditorNodeData::Type::kFolder;
+}
+
 bool BookmarkEditorView::IsDialogButtonEnabled(
     ui::mojom::DialogButton button) const {
   if (button == ui::mojom::DialogButton::kOk) {
     if (!bb_model_->loaded()) {
+      return false;
+    }
+
+    // Can't move bookmark to non-bookmark node.
+    if (show_tree_ && !IsBookmarkFolderSelected()) {
       return false;
     }
 
@@ -138,13 +153,29 @@ gfx::Size BookmarkEditorView::CalculatePreferredSize(
 }
 
 void BookmarkEditorView::OnTreeViewSelectionChanged(
-    views::TreeView* tree_view) {}
+    views::TreeView* tree_view) {
+  // Make sure the dialog can only be accepted (edits applied) if we've selected
+  // a bookmark node (polled in ::IsDialogButtonEnabled()).
+  //
+  // The save button is updated through
+  // DialogModelChanged()->IsDialogButtonEnabled().
+  DialogModelChanged();
+  if (new_folder_button_) {
+    new_folder_button_->SetEnabled(IsBookmarkFolderSelected());
+  }
+}
 
 bool BookmarkEditorView::CanEdit(views::TreeView* tree_view,
                                  ui::TreeModelNode* node) {
-  // Only allow editting of children of the bookmark bar node and other node.
+  return CanEdit(node);
+}
+
+bool BookmarkEditorView::CanEdit(ui::TreeModelNode* node) const {
+  // Only allow editing of children of the bookmark bar node and other node.
   EditorNode* bb_node = tree_model_->AsNode(node);
-  return (bb_node->parent() && bb_node->parent()->parent());
+  return (bb_node->value.type == EditorNodeData::Type::kFolder &&
+          bb_node->parent() &&
+          bb_node->parent()->value.type == EditorNodeData::Type::kFolder);
 }
 
 void BookmarkEditorView::ContentsChanged(views::Textfield* sender,
@@ -162,12 +193,14 @@ bool BookmarkEditorView::IsCommandIdChecked(int command_id) const {
 }
 
 bool BookmarkEditorView::IsCommandIdEnabled(int command_id) const {
+  ui::TreeModelNode* const node = tree_view_->GetActiveNode();
   switch (command_id) {
     case kContextMenuItemEdit:
     case kContextMenuItemDelete:
-      return !running_menu_for_root_;
+      return CanEdit(node);
     case kContextMenuItemNewFolder:
-      return true;
+      return tree_model_->AsNode(node)->value.type ==
+             EditorNodeData::Type::kFolder;
     default:
       NOTREACHED();
   }
@@ -213,9 +246,6 @@ void BookmarkEditorView::ShowContextMenuForViewImpl(
   if (!tree_view_->GetActiveNode()) {
     return;
   }
-  running_menu_for_root_ =
-      (tree_model_->GetParent(tree_view_->GetActiveNode()) ==
-       tree_model_->GetRoot());
 
   context_menu_runner_ = std::make_unique<views::MenuRunner>(
       GetMenuModel(),
@@ -351,10 +381,6 @@ void BookmarkEditorView::Reset() {
     return;
   }
 
-  if (new_folder_button_) {
-    new_folder_button_->SetEnabled(true);
-  }
-
   // Do this first, otherwise when we invoke SetModel with the real one
   // tree_view will try to invoke something on the model we just deleted.
   tree_view_->SetModel(nullptr);
@@ -363,6 +389,10 @@ void BookmarkEditorView::Reset() {
 
   tree_view_->SetModel(tree_model_.get());
   tree_view_->SetController(this);
+
+  if (new_folder_button_) {
+    new_folder_button_->SetEnabled(IsBookmarkFolderSelected());
+  }
 
   context_menu_runner_.reset();
 
@@ -400,8 +430,10 @@ void BookmarkEditorView::NewFolder(EditorNode* parent) {
 
 BookmarkEditorView::EditorNode* BookmarkEditorView::AddNewFolder(
     EditorNode* parent) {
+  // bookmark_node_id will get populated when applying changes.
   auto new_folder_node = std::make_unique<EditorNode>(
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME), 0);
+      l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME),
+      EditorNodeData{EditorNodeData::Type::kFolder});
   new_folder_node->SetPlaceholderAccessibleTitle(
       l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER));
   return tree_model_->Add(parent, std::move(new_folder_node));
@@ -434,17 +466,37 @@ void BookmarkEditorView::ExpandAndSelect() {
 
 std::unique_ptr<BookmarkEditorView::EditorNode>
 BookmarkEditorView::CreateRootNode() {
-  std::unique_ptr<EditorNode> root_node =
-      std::make_unique<EditorNode>(std::u16string(), 0);
-  const BookmarkNode* bb_root_node = bb_model_->root_node();
-  if (bb_model_->account_bookmark_bar_node()) {
-    // TODO(crbug.com/370844777): Create fake-node parents for account vs.
-    // local. This is checked in in an intermittent state because the DCHECKs
-    // below don't apply when there are "account" bookmarks. Creating fake-node
-    // parents requires handling non-folder entries in the tree view which needs
-    // to be supported first.
-    CreateNodes(bb_root_node, root_node.get());
+  std::unique_ptr<EditorNode> root_node = std::make_unique<EditorNode>(
+      std::u16string(), EditorNodeData{EditorNodeData::Type::kRoot});
+  const bookmarks::BookmarkNodesSplitByAccountAndLocal permanent_nodes =
+      bookmarks::GetPermanentNodesForDisplay(bb_model_);
+  if (!permanent_nodes.account_nodes.empty()) {
+    auto add_nodes = [this](EditorNode* parent,
+                            std::vector<const BookmarkNode*> nodes) {
+      for (const BookmarkNode* node : nodes) {
+        EditorNode* const new_b_node = parent->Add(std::make_unique<EditorNode>(
+            node->GetTitle(),
+            EditorNodeData{EditorNodeData::Type::kFolder, node->id()}));
+        CreateNodes(node, new_b_node);
+      }
+    };
+
+    if (permanent_nodes.local_nodes.empty()) {
+      add_nodes(root_node.get(), permanent_nodes.account_nodes);
+    } else {
+      EditorNode* const account_nodes =
+          root_node->Add(std::make_unique<EditorNode>(
+              l10n_util::GetStringUTF16(IDS_BOOKMARKS_ACCOUNT_BOOKMARKS),
+              EditorNodeData{EditorNodeData::Type::kTitle}));
+      add_nodes(account_nodes, permanent_nodes.account_nodes);
+      EditorNode* const local_nodes =
+          root_node->Add(std::make_unique<EditorNode>(
+              l10n_util::GetStringUTF16(IDS_BOOKMARKS_DEVICE_BOOKMARKS),
+              EditorNodeData{EditorNodeData::Type::kTitle}));
+      add_nodes(local_nodes, permanent_nodes.local_nodes);
+    }
   } else {
+    const BookmarkNode* bb_root_node = bb_model_->root_node();
     CreateNodes(bb_root_node, root_node.get());
     DCHECK_GE(root_node->children().size(), 2u);
     DCHECK_LE(root_node->children().size(), 4u);
@@ -460,25 +512,26 @@ BookmarkEditorView::CreateRootNode() {
 void BookmarkEditorView::CreateNodes(const BookmarkNode* bb_node,
                                      BookmarkEditorView::EditorNode* b_node) {
   for (const auto& child_bb_node : bb_node->children()) {
-    if (child_bb_node->IsVisible() && child_bb_node->is_folder() &&
-        !bb_model_->client()->IsNodeManaged(child_bb_node.get())) {
-      EditorNode* new_b_node = b_node->Add(std::make_unique<EditorNode>(
-          child_bb_node->GetTitle(), child_bb_node->id()));
-      new_b_node->SetPlaceholderAccessibleTitle(
-          l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER));
-      CreateNodes(child_bb_node.get(), new_b_node);
+    if (bookmarks::PruneFoldersForDisplay(bb_model_, child_bb_node.get())) {
+      continue;
     }
+    EditorNode* const new_b_node = b_node->Add(std::make_unique<EditorNode>(
+        child_bb_node->GetTitle(),
+        EditorNodeData{EditorNodeData::Type::kFolder, child_bb_node->id()}));
+    new_b_node->SetPlaceholderAccessibleTitle(
+        l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER));
+    CreateNodes(child_bb_node.get(), new_b_node);
   }
 }
 
 BookmarkEditorView::EditorNode* BookmarkEditorView::FindNodeWithID(
     BookmarkEditorView::EditorNode* node,
     int64_t id) {
-  if (node->value == id) {
+  if (node->value.bookmark_node_id == id) {
     return node;
   }
   for (const auto& child : node->children()) {
-    EditorNode* result = FindNodeWithID(child.get(), id);
+    EditorNode* const result = FindNodeWithID(child.get(), id);
     if (result) {
       return result;
     }
@@ -499,7 +552,6 @@ void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
       DCHECK(parent);
     }
   }
-
   // We're going to apply edits to the bookmark bar model, which will call us
   // back. Normally when a structural edit occurs we reset the tree model.
   // We don't want to do that here, so we remove ourselves as an observer.
@@ -514,6 +566,11 @@ void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
   } else {
     // Create the new folders and update the titles.
     const BookmarkNode* new_parent = nullptr;
+
+    // Applying edits only works if we've selected a bookmark node. Accepting
+    // the dialog should not be possible when a non-bookmark node is selected.
+    CHECK(parent->value.type == EditorNodeData::Type::kFolder);
+
     ApplyNameChangesAndCreateNewFolders(
         bb_model_->root_node(), tree_model_->GetRoot(), parent, &new_parent);
 
@@ -544,22 +601,21 @@ void BookmarkEditorView::ApplyNameChangesAndCreateNewFolders(
   }
   for (const auto& child_b_node : b_node->children()) {
     const BookmarkNode* child_bb_node = nullptr;
-    if (child_b_node->value == 0) {
-      // New folder.
-      child_bb_node = bb_model_->AddFolder(bb_node, bb_node->children().size(),
-                                           child_b_node->GetTitle());
-      child_b_node->value = child_bb_node->id();
-    } else {
-      // Existing node, reset the title (BookmarkModel ignores changes if the
-      // title is the same).
-      const auto i = base::ranges::find_if(
-          bb_node->children(), [&child_b_node](const auto& node) {
-            return node->is_folder() && node->id() == child_b_node->value;
-          });
-      DCHECK(i != bb_node->children().cend());
-      child_bb_node = i->get();
-      bb_model_->SetTitle(child_bb_node, child_b_node->GetTitle(),
-                          bookmarks::metrics::BookmarkEditSource::kUser);
+    if (child_b_node->value.type == EditorNodeData::Type::kFolder) {
+      if (child_b_node->value.bookmark_node_id == 0) {
+        // New folder.
+        child_bb_node = bb_model_->AddFolder(
+            bb_node, bb_node->children().size(), child_b_node->GetTitle());
+        child_b_node->value.bookmark_node_id = child_bb_node->id();
+      } else {
+        // Existing node, reset the title (BookmarkModel ignores changes if the
+        // title is the same).
+        child_bb_node = bookmarks::GetBookmarkNodeByID(
+            bb_model_, child_b_node->value.bookmark_node_id);
+        CHECK(child_bb_node);
+        bb_model_->SetTitle(child_bb_node, child_b_node->GetTitle(),
+                            bookmarks::metrics::BookmarkEditSource::kUser);
+      }
     }
     ApplyNameChangesAndCreateNewFolders(child_bb_node, child_b_node.get(),
                                         parent_b_node, parent_bb_node);
@@ -573,10 +629,11 @@ void BookmarkEditorView::UpdateExpandedNodes(
     return;
   }
 
-  // The root is 0.
-  if (editor_node->value != 0) {
-    expanded_nodes->insert(
-        bookmarks::GetBookmarkNodeByID(bb_model_, editor_node->value));
+  // Only insert tree nodes that correspond to a bookmark node. This excludes
+  // new folders that have not yet been added to the bookmark model.
+  if (editor_node->value.bookmark_node_id != 0) {
+    expanded_nodes->insert(bookmarks::GetBookmarkNodeByID(
+        bb_model_, editor_node->value.bookmark_node_id));
   }
 
   for (const auto& child : editor_node->children()) {
@@ -603,7 +660,10 @@ void BookmarkEditorView::ExecuteCommandDelete(
   if (!node) {
     return;
   }
-  const int64_t bookmark_node_id = node->value;
+  // This should only be reachable for editable bookmark folders. See
+  // IsCommandIdEnabled().
+  CHECK(CanEdit(node));
+  const int64_t bookmark_node_id = node->value.bookmark_node_id;
   if (bookmark_node_id != 0) {
     const BookmarkNode* b_node =
         bookmarks::GetBookmarkNodeByID(bb_model_, bookmark_node_id);
@@ -615,7 +675,7 @@ void BookmarkEditorView::ExecuteCommandDelete(
       // The function above runs a nested loop so it's necessary to guard
       // against |node| having been deleted meanwhile (e.g. via extensions).
       node = tree_model_->AsNode(tree_view_->GetActiveNode());
-      if (!node || node->value != bookmark_node_id) {
+      if (!node || node->value.bookmark_node_id != bookmark_node_id) {
         // The active node has been deleted or has changed. In theory
         // FindNodeWithID() could be used to look up by |bookmark_node_id|,
         // but it's hard to reason about the desired behavior in this case, so

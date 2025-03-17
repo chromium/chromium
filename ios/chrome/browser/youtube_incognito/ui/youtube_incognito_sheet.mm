@@ -12,6 +12,8 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -39,15 +41,17 @@ CGFloat const kAnimationScalFactor = 0.5;
 }
 
 - (void)viewDidLoad {
+  self.actionHandler = self;
   self.showDismissBarButton = NO;
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   self.aboveTitleView = [self animatedTitleView];
 
-  // TODO(crbug.com/374935670): Add a11y strings.
-  self.titleString = @"TODO You're In Chrome Incognito";
+  self.titleString =
+      l10n_util::GetNSString(IDS_IOS_YOUTUBE_INCOGNITO_SHEET_TITLE);
   self.subtitleString =
-      @"TODO Chrome automatically opens Youtube incognito links in Incognito";
-  self.primaryActionString = @"TODO Got It";
+      l10n_util::GetNSString(IDS_IOS_YOUTUBE_INCOGNITO_SHEET_SUBTITLE);
+  self.primaryActionString = l10n_util::GetNSString(
+      IDS_IOS_YOUTUBE_INCOGNITO_SHEET_PRIMARY_BUTTON_TITLE);
 
   self.titleTextStyle = UIFontTextStyleTitle3;
   self.scrollEnabled = YES;
@@ -63,6 +67,7 @@ CGFloat const kAnimationScalFactor = 0.5;
                  stackViewHorizontalMargin:0
                          stackViewMaxWidth:CGFLOAT_MAX];
   incognitoView.bounces = NO;
+  incognitoView.URLLoaderDelegate = self.URLLoaderDelegate;
   incognitoView.showsHorizontalScrollIndicator = NO;
   incognitoView.translatesAutoresizingMaskIntoConstraints = NO;
   [underTitleView addSubview:incognitoView];

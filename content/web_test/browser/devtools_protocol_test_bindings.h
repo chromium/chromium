@@ -45,7 +45,7 @@ class DevToolsProtocolTestBindings : public WebContentsObserver,
   void HandleMessageFromTest(base::Value::Dict message);
 
   scoped_refptr<DevToolsAgentHost> agent_host_;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
   // DevToolsFrontendHost does not exist on Android and iOS, but we also don't
   // run web tests natively on Android.
   std::unique_ptr<DevToolsFrontendHost> frontend_host_;
@@ -57,6 +57,8 @@ class DevToolsProtocolTestBindings : public WebContentsObserver,
   // If true, the binding is using the log instead of sending real messages.
   // The log is enabled if a non-empty log is provided via the constructor.
   bool log_enabled_ = false;
+  // Whether CDP has access to unsafe operations.
+  bool allow_unsafe_operations_ = true;
 };
 
 }  // namespace content

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DeviceNameBrowserProxy, DeviceNameMetadata, DeviceNameState, SetDeviceNameResult} from 'chrome://os-settings/os_settings.js';
+import type {DeviceNameBrowserProxy, DeviceNameMetadata} from 'chrome://os-settings/os_settings.js';
+import {DeviceNameState, SetDeviceNameResult} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestDeviceNameBrowserProxy extends TestBrowserProxy implements

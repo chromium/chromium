@@ -161,8 +161,7 @@ scoped_refptr<FrameResource> PlatformVideoFramePool::GetFrame() {
   scoped_refptr<FrameResource> wrapped_frame =
       origin_frame->CreateWrappingFrame(visible_rect_, natural_size_);
   DCHECK(wrapped_frame);
-  frames_in_use_.emplace(wrapped_frame->GetSharedMemoryId(),
-                         origin_frame.get());
+  frames_in_use_.emplace(wrapped_frame->tracking_token(), origin_frame.get());
   wrapped_frame->AddDestructionObserver(
       base::BindOnce(&PlatformVideoFramePool::OnFrameReleasedThunk, weak_this_,
                      parent_task_runner_, std::move(origin_frame)));
@@ -291,11 +290,11 @@ bool PlatformVideoFramePool::IsExhausted_Locked() {
 }
 
 FrameResource* PlatformVideoFramePool::GetOriginalFrame(
-    gfx::GenericSharedMemoryId frame_id) {
+    const base::UnguessableToken& tracking_token) {
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
 
-  auto it = frames_in_use_.find(frame_id);
+  auto it = frames_in_use_.find(tracking_token);
   return (it == frames_in_use_.end()) ? nullptr : it->second;
 }
 
@@ -353,8 +352,7 @@ void PlatformVideoFramePool::OnFrameReleased(
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
 
-  gfx::GenericSharedMemoryId frame_id = origin_frame->GetSharedMemoryId();
-  auto it = frames_in_use_.find(frame_id);
+  auto it = frames_in_use_.find(origin_frame->tracking_token());
   CHECK(it != frames_in_use_.end(), base::NotFatalUntil::M130);
   frames_in_use_.erase(it);
 

@@ -31,7 +31,7 @@
 #include <memory>
 #include <optional>
 
-#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 
 namespace blink {
 

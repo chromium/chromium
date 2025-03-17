@@ -5,6 +5,7 @@
 #include "media/base/audio_decoder_config.h"
 
 #include "base/logging.h"
+#include "base/strings/to_string.h"
 #include "media/base/limits.h"
 #include "media/base/media_util.h"
 
@@ -104,16 +105,15 @@ std::string AudioDecoderConfig::AsHumanReadableString() const {
     << ", bytes_per_frame: " << bytes_per_frame()
     << ", seek_preroll: " << seek_preroll().InMicroseconds() << "us"
     << ", codec_delay: " << codec_delay()
-    << ", has extra data: " << (extra_data().empty() ? "false" : "true")
+    << ", has extra data: " << base::ToString(!extra_data().empty())
     << ", encryption scheme: " << encryption_scheme()
     << ", discard decoder delay: "
-    << (should_discard_decoder_delay() ? "true" : "false")
+    << base::ToString(should_discard_decoder_delay())
     << ", target_output_channel_layout: "
     << ChannelLayoutToString(target_output_channel_layout())
     << ", target_output_sample_format: "
     << SampleFormatToString(target_output_sample_format())
-    << ", has aac extra data: "
-    << (aac_extra_data().empty() ? "false" : "true");
+    << ", has aac extra data: " << base::ToString(!aac_extra_data().empty());
   return s.str();
 }
 

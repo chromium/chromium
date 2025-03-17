@@ -172,6 +172,13 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
         constraintEqualToAnchor:self.primaryActionButton.widthAnchor],
     _tableViewHeightConstraint
   ]];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateBottomSheetHeight)];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -187,8 +194,12 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self updateBottomSheetHeight];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
   // Update the bottomsheet height when trait collection changed (for example
   // when the user uses large font).
   if (self.traitCollection.preferredContentSizeCategory !=
@@ -196,6 +207,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
     [self updateBottomSheetHeight];
   }
 }
+#endif
 
 #pragma mark - ConfirmationAlertActionHandler
 

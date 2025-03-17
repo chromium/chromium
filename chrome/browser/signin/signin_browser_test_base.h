@@ -36,8 +36,7 @@ template <typename T>
 class SigninBrowserTestBaseT : public T {
  public:
   // `use_main_profile` controls whether the main profile is used (the default
-  // `Profile` created by `InProcessBrowserTest`). On Lacros the main profile
-  // behaves differently, and signout is not allowed.
+  // `Profile` created by `InProcessBrowserTest`).
   explicit SigninBrowserTestBaseT(bool use_main_profile = true)
       : use_main_profile_(use_main_profile) {}
 
@@ -92,9 +91,6 @@ class SigninBrowserTestBaseT : public T {
                                        profile_manager, profile_path);
 
     DCHECK(GetProfile());
-#if (IS_CHROMEOS_LACROS)
-    DCHECK_EQ(GetProfile()->IsMainProfile(), use_main_profile_);
-#endif
 
     if (GetProfile()->IsOffTheRecord()) {
       return;

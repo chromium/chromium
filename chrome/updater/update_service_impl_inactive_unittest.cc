@@ -13,6 +13,7 @@
 #include "base/version.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -32,6 +33,7 @@ TEST(UpdateServiceImplInactiveTest, All) {
   {
     base::RunLoop run_loop;
     update_service->FetchPolicies(
+        policy::PolicyFetchReason::kTest,
         base::BindLambdaForTesting([&run_loop](int result) {
           EXPECT_EQ(result, -1);
           run_loop.Quit();

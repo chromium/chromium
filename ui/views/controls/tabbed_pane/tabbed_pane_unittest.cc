@@ -383,7 +383,7 @@ TEST_F(TabbedPaneWithWidgetTest, AccessiblePaneContentsRoleIsTabPanel) {
 TEST_F(TabbedPaneWithWidgetTest, AccessibleEvents) {
   tabbed_pane_->AddTab(u"Tab1", std::make_unique<View>());
   tabbed_pane_->AddTab(u"Tab2", std::make_unique<View>());
-  test::AXEventCounter counter(views::AXEventManager::Get());
+  test::AXEventCounter counter(views::AXUpdateNotifier::Get());
 
   // This is needed for FocusManager::SetFocusedViewWithReason to notify
   // observers observers of focus changes.

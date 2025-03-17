@@ -206,7 +206,9 @@ class FakeControllerServiceWorker
   void Clone(
       mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
       const network::CrossOriginEmbedderPolicy&,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>)
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>,
+      const network::DocumentIsolationPolicy&,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>)
       override {
     receivers_.Add(this, std::move(receiver));
   }
@@ -478,6 +480,7 @@ TEST_F(ServiceWorkerProviderContextTest, SetControllerServiceWorker) {
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller1;
   fake_controller1.Clone(remote_controller1.BindNewPipeAndPassReceiver(),
                          network::CrossOriginEmbedderPolicy(),
+                         mojo::NullRemote(), network::DocumentIsolationPolicy(),
                          mojo::NullRemote());
   controller_info1->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;
@@ -525,6 +528,7 @@ TEST_F(ServiceWorkerProviderContextTest, SetControllerServiceWorker) {
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller2;
   fake_controller2.Clone(remote_controller2.BindNewPipeAndPassReceiver(),
                          network::CrossOriginEmbedderPolicy(),
+                         mojo::NullRemote(), network::DocumentIsolationPolicy(),
                          mojo::NullRemote());
   controller_info2->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;
@@ -618,6 +622,7 @@ TEST_F(ServiceWorkerProviderContextTest, SetControllerServiceWorker) {
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller4;
   fake_controller4.Clone(remote_controller4.BindNewPipeAndPassReceiver(),
                          network::CrossOriginEmbedderPolicy(),
+                         mojo::NullRemote(), network::DocumentIsolationPolicy(),
                          mojo::NullRemote());
   controller_info4->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;
@@ -777,6 +782,7 @@ TEST_F(ServiceWorkerProviderContextTest, OnNetworkProviderDestroyed) {
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller;
   fake_controller.Clone(remote_controller.BindNewPipeAndPassReceiver(),
                         network::CrossOriginEmbedderPolicy(),
+                        mojo::NullRemote(), network::DocumentIsolationPolicy(),
                         mojo::NullRemote());
   controller_info->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;
@@ -827,6 +833,7 @@ TEST_F(ServiceWorkerProviderContextTest,
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller;
   fake_controller.Clone(remote_controller.BindNewPipeAndPassReceiver(),
                         network::CrossOriginEmbedderPolicy(),
+                        mojo::NullRemote(), network::DocumentIsolationPolicy(),
                         mojo::NullRemote());
   controller_info->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;

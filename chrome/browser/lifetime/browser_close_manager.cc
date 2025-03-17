@@ -4,14 +4,15 @@
 
 #include "chrome/browser/lifetime/browser_close_manager.h"
 
+#include <algorithm>
 #include <iterator>
+#include <ranges>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
-#include "chrome/browser/background/background_mode_manager.h"
+#include "chrome/browser/background/extensions/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -31,7 +32,50 @@
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/background/glic/glic_background_mode_manager.h"
+#endif
+
 namespace {
+
+// Make a copy of the BrowserList and watch for any calls to AddBrowser or
+// RemoveBrowser. This class allows a safe iteration over the list assuming
+// that removing some Browser instance may remove another pending Browser
+// instance.
+class BrowserListIterator : public BrowserListObserver {
+ public:
+  BrowserListIterator()
+      : browsers_(BrowserList::GetInstance()->begin(),
+                  BrowserList::GetInstance()->end()) {
+    BrowserList::GetInstance()->AddObserver(this);
+  }
+  BrowserListIterator(const BrowserListIterator&) = delete;
+  BrowserListIterator(BrowserListIterator&&) = delete;
+  ~BrowserListIterator() override {
+    BrowserList::GetInstance()->RemoveObserver(this);
+  }
+
+  void OnBrowserAdded(Browser* browser) override {
+    browsers_.push_back(browser);
+  }
+  void OnBrowserRemoved(Browser* browser) override {
+    auto it = std::ranges::find(browsers_.begin(), browsers_.end(), browser);
+    if (it != browsers_.end()) {
+      browsers_.erase(it);
+    }
+  }
+  bool IsEmpty() const { return browsers_.empty(); }
+
+  Browser* Pop() {
+    Browser* browser = browsers_.front();
+    browsers_.erase(browsers_.begin());
+    DCHECK(base::Contains(*BrowserList::GetInstance(), browser));
+    return browser;
+  }
+
+ private:
+  BrowserList::BrowserVector browsers_;
+};
 
 // Navigates a browser window for |profile|, creating one if necessary, to the
 // downloads page if there are downloads in progress for |profile|.
@@ -168,15 +212,23 @@ void BrowserCloseManager::CloseBrowsers() {
   }
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+  auto* glic_background_mode_manager =
+      glic::GlicBackgroundModeManager::GetInstance();
+  if (glic_background_mode_manager) {
+    glic_background_mode_manager->ExitBackgroundMode();
+  }
+#endif
+
   // Make a copy of the BrowserList to simplify the case where we need to
   // destroy a Browser during the loop.
-  std::vector<Browser*> browser_list_copy;
-  base::ranges::copy(*BrowserList::GetInstance(),
-                     std::back_inserter(browser_list_copy));
+  BrowserListIterator browser_list_copy;
 
   bool ignore_unload_handlers = browser_shutdown::ShouldIgnoreUnloadHandlers();
 
-  for (auto* browser : browser_list_copy) {
+  while (!browser_list_copy.IsEmpty()) {
+    Browser* browser = browser_list_copy.Pop();
+    browser->set_force_skip_warning_user_on_close(ignore_unload_handlers);
     browser->window()->Close();
     if (ignore_unload_handlers) {
       // This path is hit during logoff/power-down. It could be the case that
@@ -185,7 +237,6 @@ void BrowserCloseManager::CloseBrowsers() {
       // current site). Since we are attempting to end the session, we will
       // force skip these warnings and manually close all the tabs to make sure
       // the browser is destroyed and cleanup can happen.
-      browser->set_force_skip_warning_user_on_close(true);
       browser->tab_strip_model()->CloseAllTabs();
       browser->window()->DestroyBrowser();
       // Destroying the browser should have removed it from the browser list.

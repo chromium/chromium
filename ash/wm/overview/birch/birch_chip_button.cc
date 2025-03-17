@@ -136,7 +136,7 @@ std::unique_ptr<views::ImageView> CreatePrimaryImageView(
       .SetBorder(views::CreateEmptyBorder(
           gfx::Insets((kPrimaryIconViewSize - icon_size) / 2)))
       .SetBackground(rounded_corners
-                         ? views::CreateThemedRoundedRectBackground(
+                         ? views::CreateRoundedRectBackground(
                                kIconBackgroundColorId, rounded_corners.value())
                          : nullptr)
       .Build();
@@ -188,9 +188,9 @@ std::unique_ptr<views::ImageView> CreateSecondaryImageView(
       .SetImageSize(gfx::Size(kSecondaryIconImageSize, kSecondaryIconImageSize))
       .SetPosition(kSecondaryIconOffset)
       .SetSize(gfx::Size(kSecondaryIconViewSize, kSecondaryIconViewSize))
-      .SetBackground(views::CreateThemedRoundedRectBackground(
+      .SetBackground(views::CreateRoundedRectBackground(
           kSecondaryIconBackgroundColorId, kSecondaryIconViewSize / 2))
-      .SetBorder(views::CreateThemedRoundedRectBorder(
+      .SetBorder(views::CreateRoundedRectBorder(
           1, kSecondaryIconViewSize / 2,
           cros_tokens::kCrosSysSystemOnBaseOpaque))
       .Build();
@@ -256,12 +256,12 @@ BirchChipButton::BirchChipButton()
               .AddChildren(views::Builder<views::Label>()
                                .CopyAddressTo(&title_)
                                .SetAutoColorReadabilityEnabled(false)
-                               .SetEnabledColorId(kTitleColorId)
+                               .SetEnabledColor(kTitleColorId)
                                .SetHorizontalAlignment(gfx::ALIGN_LEFT),
                            views::Builder<views::Label>()
                                .CopyAddressTo(&subtitle_)
                                .SetAutoColorReadabilityEnabled(false)
-                               .SetEnabledColorId(kSubtitleColorId)
+                               .SetEnabledColor(kSubtitleColorId)
                                .SetHorizontalAlignment(gfx::ALIGN_LEFT)))
       .BuildChildren();
 

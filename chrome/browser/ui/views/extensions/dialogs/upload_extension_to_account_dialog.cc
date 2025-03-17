@@ -14,9 +14,9 @@
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/layout_provider.h"
@@ -28,7 +28,7 @@ void ShowUploadExtensionToAccountDialog(Browser* browser,
                                         base::OnceClosure accept_callback,
                                         base::OnceClosure cancel_callback) {
   CHECK(base::FeatureList::IsEnabled(
-      syncer::kSyncEnableExtensionsInTransportMode));
+      switches::kEnableExtensionsExplicitBrowserSignin));
   CHECK(AccountExtensionTracker::Get(browser->profile())
             ->CanUploadAsAccountExtension(extension));
 
@@ -66,7 +66,7 @@ void ShowUploadExtensionToAccountDialog(Browser* browser,
   avatar_and_email_view->AddChildView(
       std::make_unique<views::Label>(base::UTF8ToUTF16(account_info.email)));
   int horizontal_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+      DISTANCE_ACCOUNT_INFO_ROW_AVATAR_EMAIL);
   avatar_and_email_view->SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->set_between_child_spacing(horizontal_spacing);
   builder.AddCustomField(

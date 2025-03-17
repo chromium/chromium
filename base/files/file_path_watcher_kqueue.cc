@@ -13,6 +13,7 @@
 #include <stddef.h>
 #include <sys/param.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -63,7 +63,7 @@ size_t FilePathWatcherKQueue::EventsForPath(FilePath path,
   FilePath built_path;
   bool path_still_exists = true;
   for (std::vector<FilePath::StringType>::iterator i = components.begin();
-      i != components.end(); ++i) {
+       i != components.end(); ++i) {
     if (i == components.begin()) {
       built_path = FilePath(*i);
     } else {
@@ -82,8 +82,9 @@ size_t FilePathWatcherKQueue::EventsForPath(FilePath path,
     EventData* data = new EventData(built_path, subdir);
     struct kevent event;
     EV_SET(&event, fd, EVFILT_VNODE, (EV_ADD | EV_CLEAR | EV_RECEIPT),
-           (NOTE_DELETE | NOTE_WRITE | NOTE_ATTRIB |
-            NOTE_RENAME | NOTE_REVOKE | NOTE_EXTEND), 0, data);
+           (NOTE_DELETE | NOTE_WRITE | NOTE_ATTRIB | NOTE_RENAME | NOTE_REVOKE |
+            NOTE_EXTEND),
+           0, data);
     events->push_back(event);
   }
   return last_existing_entry;
@@ -109,8 +110,9 @@ size_t FilePathWatcherKQueue::EventForItem(const FilePath& path,
 uintptr_t FilePathWatcherKQueue::FileDescriptorForPath(const FilePath& path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   int fd = HANDLE_EINTR(open(path.value().c_str(), O_EVTONLY));
-  if (fd < 0)
+  if (fd < 0) {
     return kNoFileDescriptor;
+  }
   return static_cast<uintptr_t>(fd);
 }
 
@@ -330,7 +332,7 @@ void FilePathWatcherKQueue::Cancel() {
       DPLOG(ERROR) << "close kqueue";
     }
     kqueue_ = -1;
-    base::ranges::for_each(events_, ReleaseEvent);
+    std::ranges::for_each(events_, ReleaseEvent);
     events_.clear();
     callback_.Reset();
   }

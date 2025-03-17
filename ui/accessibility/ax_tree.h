@@ -17,7 +17,6 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -62,10 +61,6 @@ enum class AXTreeUnserializeError {
   kMaxValue = kPendingChanges
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityTreeUnserializeError)
-
-#define ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(enum_value) \
-  base::UmaHistogramEnumeration(                                   \
-      "Accessibility.Reliability.Tree.UnserializeError", enum_value)
 
 // AXTree is a live, managed tree of AXNode objects that can receive
 // updates from another AXTreeSource via AXTreeUpdates, and it can be
@@ -237,7 +232,10 @@ class AX_EXPORT AXTree {
   // accessibility tree, if any, adjusting its endpoints to be within unignored
   // nodes. (An "ignored" node is a node that is not exposed to platform APIs:
   // See `AXNode::IsIgnored`.)
-  AXSelection GetUnignoredSelection() const;
+  // If non_text_endpoints is true, returns an unignored selection but the
+  // endpoints are adjusted so that they never fall on text objects, but are
+  // moved to the text nodes' parents instead.
+  AXSelection GetUnignoredSelection(bool for_hypertext = false) const;
 
   bool GetTreeUpdateInProgressState() const;
 

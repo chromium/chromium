@@ -119,16 +119,20 @@ static bool ExtractUnixLink50(CommandData *Cmd,const wchar *Name,FileHeader *hd)
   WideToChar(hd->RedirName,Target);
   if (hd->RedirType==FSREDIR_WINSYMLINK || hd->RedirType==FSREDIR_JUNCTION)
   {
-    // Cannot create Windows absolute path symlinks in Unix. Only relative path
-    // Windows symlinks can be created here. RAR 5.0 used \??\ prefix
+    // Windows absolute path symlinks in Unix. RAR 5.0 used \??\ prefix
     // for Windows absolute symlinks, since RAR 5.1 /??/ is used.
     // We escape ? as \? to avoid "trigraph" warning
     if (Target.rfind("\\??\\",0)!=std::string::npos || 
         Target.rfind("/\?\?/",0)!=std::string::npos)
     {
+#if 0 // 2024.12.26: Not used anymore. We unpack absolute Windows symlinks even in Unix.
       uiMsg(UIERROR_SLINKCREATE,nullptr,L"\"" + hd->FileName + L"\" -> \"" + hd->RedirName + L"\"");
       ErrHandler.SetErrorCode(RARX_WARNING);
       return false;
+#endif
+
+      // 2024.12.26: User asked to unpack absolute Windows symlinks even in Unix.
+      Target=Target.substr(4); // Remove \??\ prefix.
     }
     DosSlashToUnix(Target,Target);
   }

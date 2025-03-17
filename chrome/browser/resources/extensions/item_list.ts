@@ -160,20 +160,17 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   }
 
   getDetailsButton(id: string): HTMLElement|null {
-    const item =
-        this.shadowRoot!.querySelector<ExtensionsItemElement>(`#${id}`);
+    const item = this.shadowRoot.querySelector<ExtensionsItemElement>(`#${id}`);
     return item && item.getDetailsButton();
   }
 
   getRemoveButton(id: string): HTMLElement|null {
-    const item =
-        this.shadowRoot!.querySelector<ExtensionsItemElement>(`#${id}`);
+    const item = this.shadowRoot.querySelector<ExtensionsItemElement>(`#${id}`);
     return item && item.getRemoveButton();
   }
 
   getErrorsButton(id: string): HTMLElement|null {
-    const item =
-        this.shadowRoot!.querySelector<ExtensionsItemElement>(`#${id}`);
+    const item = this.shadowRoot.querySelector<ExtensionsItemElement>(`#${id}`);
     return item && item.getErrorsButton();
   }
 
@@ -183,8 +180,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
    * return: If an item's button has been focused, see comment below.
    */
   focusItemButton(id: string): boolean {
-    const item =
-        this.shadowRoot!.querySelector<ExtensionsItemElement>(`#${id}`);
+    const item = this.shadowRoot.querySelector<ExtensionsItemElement>(`#${id}`);
     // This function is called from a setTimeout() inside manager.ts. Rarely,
     // the list of extensions rendered in this element may not match the list of
     // extensions stored in manager.ts for a brief moment (not visible to the
@@ -196,7 +192,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
     }
 
     const buttonToFocus = item.getRemoveButton() || item.getDetailsButton();
-    buttonToFocus!.focus();
+    buttonToFocus.focus();
     return true;
   }
 

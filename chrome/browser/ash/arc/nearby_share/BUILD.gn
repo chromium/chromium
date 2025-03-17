@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("nearby_share") {
   sources = [
@@ -23,9 +23,6 @@ static_library("nearby_share") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc/intent_helper",
-    "//ash/components/arc/mojom",
     "//ash/public/cpp",
     "//ash/webui/settings/public/constants",
     "//base",
@@ -38,6 +35,9 @@ static_library("nearby_share") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/webshare:storage",
     "//chrome/common",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/components/sharesheet:constants",
     "//components/keyed_service/core",
     "//content/public/browser",
@@ -57,15 +57,15 @@ source_set("unit_tests") {
 
   deps = [
     ":nearby_share",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/mojom",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ui/base",
     "//components/exo",
     "//content/test:test_support",

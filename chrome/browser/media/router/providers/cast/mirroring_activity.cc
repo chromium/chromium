@@ -98,16 +98,6 @@ constexpr char kHistogramStartSuccessAccessCodeRememberedDevice[] =
 
 const char kHistogramTypeAudio[] = "Audio";
 const char kHistogramTypeVideo[] = "Video";
-constexpr char kHistogramTransmissionKbps[] =
-    "CastStreaming.Sender.%s.TransmissionRate";
-constexpr char kHistogramAverageEncodeTime[] =
-    "CastStreaming.Sender.%s.AverageEncodeTime";
-constexpr char kHistogramAverageCaptureLatency[] =
-    "CastStreaming.Sender.%s.AverageCaptureLatency";
-constexpr char kHistogramAverageEndToEndLatency[] =
-    "CastStreaming.Sender.%s.AverageEndToEndLatency";
-constexpr char kHistogramAverageNetworkLatency[] =
-    "CastStreaming.Sender.%s.AverageNetworkLatency";
 constexpr char kHistogramRetransmittedPacketsPercentage[] =
     "CastStreaming.Sender.%s.RetransmittedPacketsPercentage";
 constexpr char kHistogramExceededPlayoutDelayPacketsPercentage[] =
@@ -230,23 +220,23 @@ std::optional<double> LookupStat(
   return mirroring_stats.FindDouble(key);
 }
 
-void MaybeRecordLatencyHistogram(const char* fmt,
-                                 const char* streaming_type,
+void MaybeRecordLatencyHistogram(std::string_view streaming_type,
+                                 std::string_view name,
                                  std::optional<double> value) {
   if (value) {
-    const std::string name =
-        base::StringPrintfNonConstexpr(fmt, streaming_type);
-    base::UmaHistogramTimes(name, base::Milliseconds(*value));
+    const std::string full_name =
+        base::StrCat({"CastStreaming.Sender.", streaming_type, ".", name});
+    base::UmaHistogramTimes(full_name, base::Milliseconds(*value));
   }
 }
 
-void MaybeRecordMemoryHistogram(const char* fmt,
-                                const char* streaming_type,
+void MaybeRecordMemoryHistogram(std::string_view streaming_type,
+                                std::string_view name,
                                 std::optional<double> value) {
   if (value) {
-    const std::string name =
-        base::StringPrintfNonConstexpr(fmt, streaming_type);
-    base::UmaHistogramMemoryKB(name, *value);
+    const std::string full_name =
+        base::StrCat({"CastStreaming.Sender.", streaming_type, ".", name});
+    base::UmaHistogramMemoryKB(full_name, *value);
   }
 }
 
@@ -265,29 +255,29 @@ void RecordCastStreamingSenderUma(const base::Value::Dict& all_mirroring_stats,
 
   const std::optional<double> transmission_kbps = LookupStat(
       *mirroring_stats, media::cast::StatsEventSubscriber::TRANSMISSION_KBPS);
-  MaybeRecordMemoryHistogram(kHistogramTransmissionKbps, streaming_type,
+  MaybeRecordMemoryHistogram(streaming_type, "TransmissionRate",
                              transmission_kbps);
 
   const std::optional<double> avg_encode_time_ms = LookupStat(
       *mirroring_stats, media::cast::StatsEventSubscriber::AVG_ENCODE_TIME_MS);
-  MaybeRecordLatencyHistogram(kHistogramAverageEncodeTime, streaming_type,
+  MaybeRecordLatencyHistogram(streaming_type, "AverageEncodeTime",
                               avg_encode_time_ms);
 
   const std::optional<double> avg_capture_latency_ms =
       LookupStat(*mirroring_stats,
                  media::cast::StatsEventSubscriber::AVG_CAPTURE_LATENCY_MS);
-  MaybeRecordLatencyHistogram(kHistogramAverageCaptureLatency, streaming_type,
+  MaybeRecordLatencyHistogram(streaming_type, "AverageCaptureLatency",
                               avg_capture_latency_ms);
 
   const std::optional<double> avg_end_to_end_latency_ms = LookupStat(
       *mirroring_stats, media::cast::StatsEventSubscriber::AVG_E2E_LATENCY_MS);
-  MaybeRecordLatencyHistogram(kHistogramAverageEndToEndLatency, streaming_type,
+  MaybeRecordLatencyHistogram(streaming_type, "AverageEndToEndLatency",
                               avg_end_to_end_latency_ms);
 
   const std::optional<double> avg_network_latency_ms =
       LookupStat(*mirroring_stats,
                  media::cast::StatsEventSubscriber::AVG_NETWORK_LATENCY_MS);
-  MaybeRecordLatencyHistogram(kHistogramAverageNetworkLatency, streaming_type,
+  MaybeRecordLatencyHistogram(streaming_type, "AverageNetworkLatency",
                               avg_network_latency_ms);
 
   const std::string num_packets_sent_key =
@@ -827,7 +817,7 @@ void MirroringActivity::StartSession(const std::string& destination_id,
           &MirroringActivity::StartOnUiThread, weak_ptr_factory_.GetWeakPtr(),
           SessionParameters::New(
               session_type, cast_data_.ip_endpoint.address(),
-              cast_data_.model_name, sink_.sink().name(), destination_id,
+              sink_.sink().name(), destination_id,
               message_handler_->source_id(), target_playout_delay_,
               route().media_source().IsRemotePlaybackSource(),
               ShouldForceLetterboxing(cast_data_.model_name),

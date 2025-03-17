@@ -4,11 +4,12 @@
 
 #include "components/global_media_controls/public/media_session_notification_item.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/media_message_center/media_notification_util.h"
@@ -572,8 +573,8 @@ void MediaSessionNotificationItem::UpdateViewCommon() {
 
 bool MediaSessionNotificationItem::FrozenWithChapterArtwork() {
   auto it =
-      base::ranges::find_if(frozen_with_chapter_artwork_,
-                            [](const auto& it) { return it.second == true; });
+      std::ranges::find_if(frozen_with_chapter_artwork_,
+                           [](const auto& it) { return it.second == true; });
   return it != frozen_with_chapter_artwork_.end();
 }
 }  // namespace global_media_controls

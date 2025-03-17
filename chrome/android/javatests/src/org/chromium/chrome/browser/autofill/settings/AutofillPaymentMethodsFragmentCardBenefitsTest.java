@@ -6,18 +6,20 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -57,13 +59,16 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
                 Arrays.asList(
                         new ParameterSet()
                                 .value(true, true)
-                                .name("AmexFlagIsEnabledAndCapitalOneFlagIsEnabled"),
+                                .name("AmexFlagIsEnabledAndBmoFlagIsEnabled"),
                         new ParameterSet()
                                 .value(true, false)
-                                .name("AmexFlagIsEnabledAndCapitalOneFlagIsDisabled"),
+                                .name("AmexFlagIsEnabledAndBmoFlagIsDisabled"),
                         new ParameterSet()
                                 .value(false, true)
-                                .name("AmexFlagIsDisabledAndCapitalOneFlagIsEnabled"));
+                                .name("AmexFlagIsDisabledAndBmoFlagIsEnabled"),
+                        new ParameterSet()
+                                .value(false, false)
+                                .name("AmexFlagIsDisabledAndBmoFlagIsDisabled"));
 
         @Override
         public List<ParameterSet> getParameters() {
@@ -85,7 +90,7 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
     @MediumTest
     @DisableFeatures({
         ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
-        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE
+        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO
     })
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "true")})
     public void testCardBenefitsPref_whenFlagsAreOffAndAutofillIsEnabled_notShown()
@@ -101,15 +106,15 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
     // Test to verify that the card benefit preference is not displayed when autofill credit
     // card is disabled, across various combinations of the flags
     // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS and
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE.
-    // i.e. (True, True), (True, False), (False, True)
+    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO.
+    // i.e. (True, True), (True, False), (False, True), (False, False)
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(CardBenefitsPreferenceTestParams.class)
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "false")})
     public void testCardBenefitsPref_whenAutofillIsDisabled_notShown(
-            boolean isAmexFlagEnabled, boolean isCaptialOneFlagEnabled) throws Exception {
-        setCardBenefitsFlags(isAmexFlagEnabled, isCaptialOneFlagEnabled);
+            boolean isAmexFlagEnabled, boolean isBmoFlagEnabled) throws Exception {
+        setCardBenefitsFlags(isAmexFlagEnabled, isBmoFlagEnabled);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         Preference cardBenefitsPref =
@@ -121,40 +126,49 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
     // Test to verify that the card benefit preference is displayed when autofill credit
     // card is enabled, across various combinations of the flags
     // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS and
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE.
-    // i.e. (True, True), (True, False), (False, True)
+    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO.
+    // i.e. (True, True), (True, False), (False, True), (False, False)
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(CardBenefitsPreferenceTestParams.class)
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "true")})
     public void testCardBenefitsPref_whenAutofillIsEnabled_shown(
-            boolean isAmexFlagEnabled, boolean isCaptialOneFlagEnabled) throws Exception {
-        setCardBenefitsFlags(isAmexFlagEnabled, isCaptialOneFlagEnabled);
+            boolean isAmexFlagEnabled, boolean isBmoFlagEnabled) throws Exception {
+        setCardBenefitsFlags(isAmexFlagEnabled, isBmoFlagEnabled);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         Preference cardBenefitsPref =
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.PREF_CARD_BENEFITS);
-        Assert.assertEquals(
-                cardBenefitsPref.getTitle(),
-                activity.getString(R.string.autofill_settings_page_card_benefits_label));
-        Assert.assertEquals(
-                cardBenefitsPref.getSummary(),
-                activity.getString(
-                        R.string.autofill_settings_page_card_benefits_preference_summary));
+        if (!isAmexFlagEnabled && !isBmoFlagEnabled) {
+            assertThat(cardBenefitsPref).isNull();
+        } else {
+            assertEquals(
+                    cardBenefitsPref.getTitle(),
+                    activity.getString(R.string.autofill_settings_page_card_benefits_label));
+            assertEquals(
+                    cardBenefitsPref.getSummary(),
+                    activity.getString(
+                            R.string.autofill_settings_page_card_benefits_preference_summary));
+        }
     }
 
     // Test to verify that clicking the card benefit preference opens the credit card benefits
     // fragment, across various combinations of the flags
     // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS and
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE.
-    // i.e. (True, True), (True, False), (False, True)
+    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO.
+    // i.e. (True, True), (True, False), (False, True), (False, False)
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(CardBenefitsPreferenceTestParams.class)
     public void testCardBenefitsPref_whenClicked_opensAutofillCardBenefitsFragment(
-            boolean isAmexFlagEnabled, boolean isCaptialOneFlagEnabled) throws Exception {
-        setCardBenefitsFlags(isAmexFlagEnabled, isCaptialOneFlagEnabled);
+            boolean isAmexFlagEnabled, boolean isBmoFlagEnabled) throws Exception {
+        // If both flags are disabled then card benefits preference will be null. In this case we
+        // can't test if the credit card benefits fragment opens.
+        if (!isAmexFlagEnabled && !isBmoFlagEnabled) {
+            return;
+        }
+        setCardBenefitsFlags(isAmexFlagEnabled, isBmoFlagEnabled);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         Preference cardBenefitsPref =
                 getPreferenceScreen(activity)
@@ -163,19 +177,16 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
         ThreadUtils.runOnUiThreadBlocking(cardBenefitsPref::performClick);
         mRule.waitForFragmentToBeShown();
 
-        Assert.assertTrue(mRule.getLastestShownFragment() instanceof AutofillCardBenefitsFragment);
+        assertTrue(mRule.getLastestShownFragment() instanceof AutofillCardBenefitsFragment);
     }
 
-    private static void setCardBenefitsFlags(
-            boolean isAmexFlagEnabled, boolean isCapOneFlagEnabled) {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
-                isAmexFlagEnabled);
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE,
-                isCapOneFlagEnabled);
-        FeatureList.setTestValues(testValues);
+    private static void setCardBenefitsFlags(boolean isAmexFlagEnabled, boolean isBmoFlagEnabled) {
+        FeatureOverrides.newBuilder()
+                .flag(
+                        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
+                        isAmexFlagEnabled)
+                .flag(ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO, isBmoFlagEnabled)
+                .apply();
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {

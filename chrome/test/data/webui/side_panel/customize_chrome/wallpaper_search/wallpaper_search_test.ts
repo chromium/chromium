@@ -38,20 +38,18 @@ suite('WallpaperSearchTest', () => {
   let wallpaperSearchElement: WallpaperSearchElement;
   let windowProxy: TestMock<WindowProxy>;
 
-  async function createWallpaperSearchElement(
+  function createWallpaperSearchElement(
       descriptors: Descriptors|null = null,
-      inspirationGroups: InspirationGroup[]|null =
-          null): Promise<WallpaperSearchElement> {
+      inspirationGroups: InspirationGroup[]|null = null) {
     handler.setResultFor('getDescriptors', Promise.resolve({descriptors}));
     handler.setResultFor(
         'getInspirations', Promise.resolve({inspirationGroups}));
     wallpaperSearchElement =
         document.createElement('customize-chrome-wallpaper-search');
     document.body.appendChild(wallpaperSearchElement);
-    return wallpaperSearchElement;
   }
 
-  async function createWallpaperSearchElementWithDescriptors(
+  function createWallpaperSearchElementWithDescriptors(
       inspirationGroups: InspirationGroup[]|null = null) {
     createWallpaperSearchElement(
         {
@@ -82,7 +80,7 @@ suite('WallpaperSearchTest', () => {
         }));
   }
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('onLine', true);
@@ -116,11 +114,12 @@ suite('WallpaperSearchTest', () => {
     test('clicking learn more calls handler', async () => {
       createWallpaperSearchElement();
       const learnMoreLink =
-          wallpaperSearchElement.shadowRoot!.querySelector<HTMLAnchorElement>(
+          wallpaperSearchElement.shadowRoot.querySelector<HTMLAnchorElement>(
               '#disclaimer a')!;
-      const clickEvent = new Event('click', {cancelable: true});
-      learnMoreLink.dispatchEvent(clickEvent);
+      const whenClick = eventToPromise('click', learnMoreLink);
+      learnMoreLink.click();
       await handler.whenCalled('openHelpArticle');
+      const clickEvent = await whenClick;
       assertTrue(clickEvent.defaultPrevented);
     });
 
@@ -134,7 +133,7 @@ suite('WallpaperSearchTest', () => {
           await microtasksFinished();
 
           assertEquals(0, handler.getCallCount('getInspirations'));
-          assertFalse(!!wallpaperSearchElement.shadowRoot!.querySelector(
+          assertFalse(!!wallpaperSearchElement.shadowRoot.querySelector(
               '#inspirationCard'));
         });
   });
@@ -190,7 +189,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals('C foo', descriptorComboboxC.items[2]!.label);
       assertEquals(
           6,
-          wallpaperSearchElement.shadowRoot!
+          wallpaperSearchElement.shadowRoot
               .querySelectorAll('#descriptorMenuD button')
               .length);
     });
@@ -206,7 +205,7 @@ suite('WallpaperSearchTest', () => {
       await microtasksFinished();
 
       let checkedMarkedColors =
-          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+          wallpaperSearchElement.shadowRoot.querySelectorAll(
               '#descriptorMenuD button [checked]');
       assertEquals(1, checkedMarkedColors.length);
       assertEquals(
@@ -221,7 +220,7 @@ suite('WallpaperSearchTest', () => {
           new Event('selected-hue-changed'));
       await microtasksFinished();
 
-      checkedMarkedColors = wallpaperSearchElement.shadowRoot!.querySelectorAll(
+      checkedMarkedColors = wallpaperSearchElement.shadowRoot.querySelectorAll(
           '#descriptorMenuD button [checked]');
       assertEquals(1, checkedMarkedColors.length);
       assertEquals(
@@ -244,14 +243,14 @@ suite('WallpaperSearchTest', () => {
       $$<HTMLElement>(wallpaperSearchElement, '.default-color')!.click();
       await microtasksFinished();
       let checkedMarkedColors =
-          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+          wallpaperSearchElement.shadowRoot.querySelectorAll(
               '#descriptorMenuD button [checked]');
       assertEquals(1, checkedMarkedColors.length);
 
       // Clicking again should deselect it.
       $$<HTMLElement>(wallpaperSearchElement, '.default-color')!.click();
       await microtasksFinished();
-      checkedMarkedColors = wallpaperSearchElement.shadowRoot!.querySelectorAll(
+      checkedMarkedColors = wallpaperSearchElement.shadowRoot.querySelectorAll(
           '#descriptorMenuD button [checked]');
       assertEquals(0, checkedMarkedColors.length);
 
@@ -284,7 +283,7 @@ suite('WallpaperSearchTest', () => {
       // Verify there are no checked colors.
       assertEquals(
           0,
-          wallpaperSearchElement.shadowRoot!
+          wallpaperSearchElement.shadowRoot
               .querySelectorAll('#descriptorMenuD button [checked]')
               .length);
 
@@ -425,7 +424,7 @@ suite('WallpaperSearchTest', () => {
       wallpaperSearchElement.$.submitButton.click();
       await microtasksFinished();
 
-      assertTrue(!wallpaperSearchElement.shadowRoot!.querySelector('.tile'));
+      assertTrue(!wallpaperSearchElement.shadowRoot.querySelector('.tile'));
     });
 
     test('shows results', async () => {
@@ -557,7 +556,7 @@ suite('WallpaperSearchTest', () => {
 
       // Assert that loading tiles are sized the same as result tiles.
       const resultTile =
-          wallpaperSearchElement.shadowRoot!.querySelector<HTMLElement>(
+          wallpaperSearchElement.shadowRoot.querySelector<HTMLElement>(
               '.tile.result')!;
       const rects = wallpaperSearchElement.$.loading.querySelectorAll('rect');
       rects.forEach((rect) => {
@@ -619,8 +618,7 @@ suite('WallpaperSearchTest', () => {
       // The first result should be checked and be the only one checked.
       const firstResult = $$(wallpaperSearchElement, '.tile .image-check-mark');
       const checkedResults =
-          wallpaperSearchElement.shadowRoot!.querySelectorAll(
-              '.tile [checked]');
+          wallpaperSearchElement.shadowRoot.querySelectorAll('.tile [checked]');
       assertEquals(checkedResults.length, 1);
       assertEquals(checkedResults[0], firstResult);
       assertEquals(
@@ -662,7 +660,7 @@ suite('WallpaperSearchTest', () => {
       await microtasksFinished();
 
       function getAriaLabelOfTile(index: number): string|null {
-        return wallpaperSearchElement.shadowRoot!
+        return wallpaperSearchElement.shadowRoot
             .querySelectorAll('.tile')[index]!.ariaLabel;
       }
 
@@ -776,7 +774,7 @@ suite('WallpaperSearchTest', () => {
       await microtasksFinished();
 
       assertTrue(isVisible(wallpaperSearchElement.$.loading));
-      assertFalse(isVisible($$(wallpaperSearchElement, '#error')!));
+      assertFalse(isVisible($$(wallpaperSearchElement, '#error')));
 
       resultsPromise2.resolve({
         status: WallpaperSearchStatus.kOk,
@@ -817,7 +815,7 @@ suite('WallpaperSearchTest', () => {
       await microtasksFinished();
 
       assertTrue(isVisible(wallpaperSearchElement.$.loading));
-      assertFalse(isVisible($$(wallpaperSearchElement, '#error')!));
+      assertFalse(isVisible($$(wallpaperSearchElement, '#error')));
 
       resultsPromise2.resolve({
         status: WallpaperSearchStatus.kOk,
@@ -968,8 +966,7 @@ suite('WallpaperSearchTest', () => {
       // The first result should be checked and be the only one checked.
       const firstResult = $$(wallpaperSearchElement, '.tile .image-check-mark');
       const checkedResults =
-          wallpaperSearchElement.shadowRoot!.querySelectorAll(
-              '.tile [checked]');
+          wallpaperSearchElement.shadowRoot.querySelectorAll('.tile [checked]');
       assertEquals(checkedResults.length, 1);
       assertEquals(checkedResults[0], firstResult);
       assertEquals(
@@ -1514,20 +1511,20 @@ suite('WallpaperSearchTest', () => {
 
       assertEquals(
           wallpaperSearchElement.$.wallpaperSearch,
-          wallpaperSearchElement.shadowRoot!.activeElement);
+          wallpaperSearchElement.shadowRoot.activeElement);
 
       wallpaperSearchElement.$.submitButton.click();
       await microtasksFinished();
 
       assertEquals(
           $$<HTMLElement>(wallpaperSearchElement, '#error'),
-          wallpaperSearchElement.shadowRoot!.activeElement);
+          wallpaperSearchElement.shadowRoot.activeElement);
       $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
       await microtasksFinished();
 
       assertEquals(
           wallpaperSearchElement.$.wallpaperSearch,
-          wallpaperSearchElement.shadowRoot!.activeElement);
+          wallpaperSearchElement.shadowRoot.activeElement);
 
       handler.setResultFor(
           'getWallpaperSearchResults',
@@ -1537,7 +1534,7 @@ suite('WallpaperSearchTest', () => {
 
       assertEquals(
           wallpaperSearchElement.$.wallpaperSearch,
-          wallpaperSearchElement.shadowRoot!.activeElement);
+          wallpaperSearchElement.shadowRoot.activeElement);
     });
   });
 
@@ -1879,7 +1876,7 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElement();
       await microtasksFinished();
 
-      assertTrue(!!wallpaperSearchElement.shadowRoot!.querySelector(
+      assertTrue(!!wallpaperSearchElement.shadowRoot.querySelector(
           '#inspirationCard'));
     });
 
@@ -1935,7 +1932,7 @@ suite('WallpaperSearchTest', () => {
 
       // Ensure inspiration titles are correct.
       const inspirationTitles =
-          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+          wallpaperSearchElement.shadowRoot.querySelectorAll(
               '#inspirationCard .inspiration-title');
       assertTrue(!!inspirationTitles);
       assertEquals(2, inspirationTitles.length);
@@ -1943,12 +1940,12 @@ suite('WallpaperSearchTest', () => {
       assertEquals('baz', inspirationTitles[1]!.textContent!.trim());
       // Ensure the correct amount of groups show.
       const inspirationsGroups =
-          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+          wallpaperSearchElement.shadowRoot.querySelectorAll(
               '#inspirationCard cr-grid');
       assertTrue(!!inspirationsGroups);
       assertEquals(2, inspirationsGroups.length);
       // Ensure the correct amount of inspirations show.
-      const inspirations = wallpaperSearchElement.shadowRoot!.querySelectorAll(
+      const inspirations = wallpaperSearchElement.shadowRoot.querySelectorAll(
           '#inspirationCard .tile.result');
       assertTrue(!!inspirations);
       assertEquals(3, inspirations.length);
@@ -2014,7 +2011,7 @@ suite('WallpaperSearchTest', () => {
       await microtasksFinished();
 
       const inspirationTitles =
-          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+          wallpaperSearchElement.shadowRoot.querySelectorAll(
               '#inspirationCard .inspiration-title');
       assertTrue(!!inspirationTitles);
       assertEquals(2, inspirationTitles.length);
@@ -2122,7 +2119,7 @@ suite('WallpaperSearchTest', () => {
           ]);
       await microtasksFinished();
 
-      const groupTitles = wallpaperSearchElement.shadowRoot!.querySelectorAll(
+      const groupTitles = wallpaperSearchElement.shadowRoot.querySelectorAll(
           '.inspiration-title');
       const firstGroupTitle = groupTitles[0];
       const secondGroupTitle = groupTitles[1];
@@ -2143,7 +2140,7 @@ suite('WallpaperSearchTest', () => {
       const checkedColor =
           $$(wallpaperSearchElement, '#descriptorMenuD button [checked]');
       assertTrue(!!checkedColor);
-      assertEquals('Yellow', checkedColor!.parentElement!.title);
+      assertEquals('Yellow', checkedColor.parentElement!.title);
       assertEquals(firstGroupTitle.getAttribute('aria-current'), 'true');
       assertEquals(secondGroupTitle.getAttribute('aria-current'), 'false');
       let loadingEvent = await loadingEventPromise;
@@ -2235,7 +2232,7 @@ suite('WallpaperSearchTest', () => {
       let loadingEventPromise =
           eventToPromise('cr-a11y-announcer-messages-sent', document.body);
       const inspirationGroupGrids =
-          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+          wallpaperSearchElement.shadowRoot.querySelectorAll(
               '#inspirationCard cr-grid');
       assertEquals(2, inspirationGroupGrids.length);
       let inspirationTile = inspirationGroupGrids[0]!.querySelector('.tile');
@@ -2252,7 +2249,7 @@ suite('WallpaperSearchTest', () => {
       const checkedColor =
           $$(wallpaperSearchElement, '#descriptorMenuD button [checked]');
       assertTrue(!!checkedColor);
-      assertEquals('Yellow', checkedColor!.parentElement!.title);
+      assertEquals('Yellow', checkedColor.parentElement!.title);
       let loadingEvent = await loadingEventPromise;
       assertTrue(loadingEvent.detail.messages.includes('Descriptors updated'));
 
@@ -2282,7 +2279,7 @@ suite('WallpaperSearchTest', () => {
       assertFalse(crCollapse.opened);
       assertEquals(
           'cr-icon expand-carets',
-          wallpaperSearchElement.shadowRoot!
+          wallpaperSearchElement.shadowRoot
               .querySelector('#inspirationToggle div')!.className);
       assertEquals(
           'false',
@@ -2296,7 +2293,7 @@ suite('WallpaperSearchTest', () => {
       assertTrue(crCollapse.opened);
       assertEquals(
           'cr-icon collapse-carets',
-          wallpaperSearchElement.shadowRoot!
+          wallpaperSearchElement.shadowRoot
               .querySelector('#inspirationToggle div')!.className);
       assertEquals(
           'true',
@@ -2310,7 +2307,7 @@ suite('WallpaperSearchTest', () => {
       assertFalse(crCollapse.opened);
       assertEquals(
           'cr-icon expand-carets',
-          wallpaperSearchElement.shadowRoot!
+          wallpaperSearchElement.shadowRoot
               .querySelector('#inspirationToggle div')!.className);
       assertEquals(
           'false',
@@ -2456,8 +2453,7 @@ suite('WallpaperSearchTest', () => {
       const firstResult = $$(
           wallpaperSearchElement, '#inspirationCard .tile .image-check-mark');
       const checkedResults =
-          wallpaperSearchElement.shadowRoot!.querySelectorAll(
-              '.tile [checked]');
+          wallpaperSearchElement.shadowRoot.querySelectorAll('.tile [checked]');
       assertEquals(1, checkedResults.length);
       assertEquals(firstResult, checkedResults[0]);
       assertEquals(

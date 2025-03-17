@@ -4,6 +4,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -64,7 +65,7 @@ void WaitForExtensionsDevModeControlsVisibility(
           "  }"
           "});",
           dev_controls_accessor_js, dev_controls_visibility_check_js,
-          (expected_visible ? "true" : "false"))));
+          base::ToString(expected_visible))));
 }
 
 // Utility to get a PolicyMap for setting the DeveloperToolsAvailability policy

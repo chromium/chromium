@@ -38,7 +38,7 @@ std::optional<std::string> DoSerialize(std::string seed_data) {
 // Returns the file path used to store a seed. If `seed_file_dir` is empty, an
 // empty file path is returned.
 base::FilePath GetFilePath(const base::FilePath& seed_file_dir,
-                           base::FilePath::StringPieceType filename) {
+                           base::FilePath::StringViewType filename) {
   return seed_file_dir.empty() ? base::FilePath()
                                : seed_file_dir.Append(filename);
 }
@@ -54,13 +54,15 @@ bool IsEligibleForSeedFileTrial(version_info::Channel channel,
   }
   return channel == version_info::Channel::CANARY ||
          channel == version_info::Channel::DEV ||
-         channel == version_info::Channel::BETA;
+         channel == version_info::Channel::BETA ||
+         channel == version_info::Channel::STABLE;
 }
 
 // Sets up the seed file experiment which only some clients are eligible for
 // (see IsEligibleForSeedFileTrial()).
 void SetUpSeedFileTrial(
-    const base::FieldTrial::EntropyProvider& entropy_provider) {
+    const base::FieldTrial::EntropyProvider& entropy_provider,
+    version_info::Channel channel) {
   // Verify that the field trial has not already been set up. This may be the
   // case if a SeedReaderWriter associated with a safe seed calls this function
   // before one associated with a latest seed or vice versa.
@@ -68,13 +70,17 @@ void SetUpSeedFileTrial(
     return;
   }
 
+  // Only 1% of clients on stable should participate in the experiment.
+  base::FieldTrial::Probability group_probability =
+      channel == version_info::Channel::STABLE ? 1 : 50;
+
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
           kSeedFileTrial, /*total_probability=*/100, kDefaultGroup,
           entropy_provider));
 
-  trial->AppendGroup(kControlGroup, /*group_probability=*/50);
-  trial->AppendGroup(kSeedFilesGroup, /*group_probability=*/50);
+  trial->AppendGroup(kControlGroup, group_probability);
+  trial->AppendGroup(kSeedFilesGroup, group_probability);
 }
 
 }  // namespace
@@ -82,7 +88,7 @@ void SetUpSeedFileTrial(
 SeedReaderWriter::SeedReaderWriter(
     PrefService* local_state,
     const base::FilePath& seed_file_dir,
-    base::FilePath::StringPieceType seed_filename,
+    base::FilePath::StringViewType seed_filename,
     std::string_view seed_pref,
     version_info::Channel channel,
     const EntropyProviders* entropy_providers,
@@ -97,7 +103,7 @@ SeedReaderWriter::SeedReaderWriter(
         kSeedWriterHistogramSuffix);
   }
   if (IsEligibleForSeedFileTrial(channel, seed_file_dir, entropy_providers)) {
-    SetUpSeedFileTrial(entropy_providers->default_entropy());
+    SetUpSeedFileTrial(entropy_providers->default_entropy(), channel);
     if (ShouldUseSeedFile()) {
       ReadSeedFile();
     }

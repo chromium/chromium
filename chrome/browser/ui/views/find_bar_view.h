@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
@@ -65,14 +66,14 @@ class FindBarView : public views::BoxLayoutView,
   // Accessors for the text and selection displayed in the text box.
   void SetFindTextAndSelectedRange(const std::u16string& find_text,
                                    const gfx::Range& selected_range);
-  std::u16string GetFindText() const;
+  std::u16string_view GetFindText() const;
   gfx::Range GetSelectedRange() const;
 
   // Gets the selected text in the text box.
-  std::u16string GetFindSelectedText() const;
+  std::u16string_view GetFindSelectedText() const;
 
   // Gets the match count text displayed in the text box.
-  std::u16string GetMatchCountText() const;
+  std::u16string_view GetMatchCountText() const;
 
   // Updates the label inside the Find text box that shows the ordinal of the
   // active item and how many matches were found.
@@ -84,6 +85,12 @@ class FindBarView : public views::BoxLayoutView,
 
   // Claims focus for the text field and selects its contents.
   void FocusAndSelectAll();
+
+  // Check whether the find bar currently contains focus. This function is used
+  // to determine if the find bar is actively holding focus, which is necessary
+  // to ensure that focus is restored to the last focused element when find bar
+  // don't have focus.
+  bool ContainsFocus() const;
 
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -102,7 +109,7 @@ class FindBarView : public views::BoxLayoutView,
   GetFindBarMatchCountLabelViewAccessibilityForTesting();
 
   // Starts finding |search_text|.  If the text is empty, stops finding.
-  void Find(const std::u16string& search_text);
+  void Find(std::u16string_view search_text);
 
   // Find the next/previous occurrence of search text when clicking the
   // next/previous button.

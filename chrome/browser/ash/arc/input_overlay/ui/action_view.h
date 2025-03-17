@@ -43,9 +43,6 @@ class ActionView : public views::View {
 
   // Each type of the actions sets view content differently.
   virtual void SetViewContent(BindingOption binding_option) = 0;
-  // Each type of the actions acts differently on key binding change.
-  virtual void OnKeyBindingChange(ActionLabel* action_label,
-                                  ui::DomCode code) = 0;
   virtual void OnBindingToKeyboard() = 0;
   virtual void OnBindingToMouse(std::string mouse_action) = 0;
   // Each type of the actions shows different edit menu.
@@ -73,10 +70,6 @@ class ActionView : public views::View {
   void ChangeInputBinding(Action* action,
                           ActionLabel* action_label,
                           std::unique_ptr<InputElement> input_element);
-  // Reset binding to its previous binding before entering to the edit mode.
-  void OnResetBinding();
-  // Reacts to child label focus change.
-  void OnChildLabelUpdateFocus(ActionLabel* child, bool focus);
 
   // Set the action view to be not new, for the action label.
   void RemoveNewState();

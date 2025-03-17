@@ -4,27 +4,26 @@
 
 package org.chromium.chrome.browser.tab;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * TabObserver that keeps switching to always observe the "current" tab. The current tab is decided
  * by the provided ObservableSupplier<Tab>.
  */
+@NullMarked
 public class CurrentTabObserver {
     private final ObservableSupplier<Tab> mTabSupplier;
     private final TabObserver mTabObserver;
     private final Callback<Tab> mTabSupplierCallback;
     private CallbackController mCallbackController;
-    private Tab mTab;
+    private @Nullable Tab mTab;
 
     /** @see #CurrentTabObserver(ObservableSupplier, TabObserver, Callback) */
-    public CurrentTabObserver(
-            @NonNull ObservableSupplier<Tab> tabSupplier, @NonNull TabObserver tabObserver) {
+    public CurrentTabObserver(ObservableSupplier<Tab> tabSupplier, TabObserver tabObserver) {
         this(tabSupplier, tabObserver, null);
     }
 
@@ -36,8 +35,8 @@ public class CurrentTabObserver {
      * @param swapCallback Callback to invoke when the current tab is swapped.
      */
     public CurrentTabObserver(
-            @NonNull ObservableSupplier<Tab> tabSupplier,
-            @NonNull TabObserver tabObserver,
+            ObservableSupplier<Tab> tabSupplier,
+            TabObserver tabObserver,
             @Nullable Callback<Tab> swapCallback) {
         mTabSupplier = tabSupplier;
         mTabObserver = tabObserver;
@@ -60,6 +59,7 @@ public class CurrentTabObserver {
     }
 
     /** Destroy the current tab observer. This should be called after use. */
+    @SuppressWarnings("NullAway")
     public void destroy() {
         if (mTab != null) mTab.removeObserver(mTabObserver);
         mTabSupplier.removeObserver(mTabSupplierCallback);

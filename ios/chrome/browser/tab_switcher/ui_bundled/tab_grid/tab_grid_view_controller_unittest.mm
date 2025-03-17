@@ -213,11 +213,11 @@ TEST_P(TabGridViewControllerTest, ImplementsActions) {
   EXPECT_OCMOCK_VERIFY(mock_mutator_);
   EXPECT_EQ(TabGridPageRegularTabs, view_controller_.currentPage);
 
-  OCMStub([mock_mutator_ pageChanged:TabGridPageRemoteTabs
+  OCMStub([mock_mutator_ pageChanged:ThirdPanelPage()
                          interaction:TabSwitcherPageChangeInteraction::kNone]);
   [view_controller_ keyCommand_select3];
   EXPECT_OCMOCK_VERIFY(mock_mutator_);
-  EXPECT_EQ(TabGridPageRemoteTabs, view_controller_.currentPage);
+  EXPECT_EQ(ThirdPanelPage(), view_controller_.currentPage);
 }
 
 // Checks that metrics are correctly reported.

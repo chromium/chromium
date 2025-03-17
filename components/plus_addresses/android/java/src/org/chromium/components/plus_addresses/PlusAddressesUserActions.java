@@ -5,11 +5,13 @@
 package org.chromium.components.plus_addresses;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Defines Plus Address' UMA user actions. The resulting string returned by `getAction()` needs to
  * be documented at tools/metrics/actions/actions.xml.
  */
+@NullMarked
 public enum PlusAddressesUserActions {
     MANAGE_OPTION_ON_SETTINGS_SELECTED("ManageOptionOnSettingsSelected");
 

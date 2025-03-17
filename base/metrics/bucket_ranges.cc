@@ -12,8 +12,7 @@
 namespace base {
 
 BucketRanges::BucketRanges(size_t num_ranges)
-    : ranges_(num_ranges, 0),
-      checksum_(0) {}
+    : ranges_(num_ranges, 0), checksum_(0) {}
 
 BucketRanges::~BucketRanges() = default;
 
@@ -22,8 +21,9 @@ uint32_t BucketRanges::CalculateChecksum() const {
   // take the address of ranges_[0] which will fail for an empty vector even
   // if that address is never used.
   const size_t ranges_size = ranges_.size();
-  if (ranges_size == 0)
+  if (ranges_size == 0) {
     return 0;
+  }
 
   // Checksum is seeded with the ranges "size".
   return Crc32(static_cast<uint32_t>(ranges_size), base::as_byte_span(ranges_));
@@ -38,13 +38,16 @@ void BucketRanges::ResetChecksum() {
 }
 
 bool BucketRanges::Equals(const BucketRanges* other) const {
-  if (checksum_ != other->checksum_)
+  if (checksum_ != other->checksum_) {
     return false;
-  if (ranges_.size() != other->ranges_.size())
+  }
+  if (ranges_.size() != other->ranges_.size()) {
     return false;
+  }
   for (size_t index = 0; index < ranges_.size(); ++index) {
-    if (ranges_[index] != other->ranges_[index])
+    if (ranges_[index] != other->ranges_[index]) {
       return false;
+    }
   }
   return true;
 }

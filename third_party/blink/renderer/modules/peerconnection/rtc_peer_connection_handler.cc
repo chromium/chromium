@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 
 #include <string.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -2023,22 +2019,22 @@ void RTCPeerConnectionHandler::ReportFirstSessionDescriptions(
 
 Vector<std::unique_ptr<blink::RTCRtpSenderImpl>>::iterator
 RTCPeerConnectionHandler::FindSender(uintptr_t id) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       rtp_senders_, [id](const auto& sender) { return sender->Id() == id; });
 }
 
 Vector<std::unique_ptr<blink::RTCRtpReceiverImpl>>::iterator
 RTCPeerConnectionHandler::FindReceiver(uintptr_t id) {
-  return base::ranges::find_if(rtp_receivers_, [id](const auto& receiver) {
+  return std::ranges::find_if(rtp_receivers_, [id](const auto& receiver) {
     return receiver->Id() == id;
   });
 }
 
 Vector<std::unique_ptr<blink::RTCRtpTransceiverImpl>>::iterator
 RTCPeerConnectionHandler::FindTransceiver(uintptr_t id) {
-  return base::ranges::find_if(
-      rtp_transceivers_,
-      [id](const auto& transceiver) { return transceiver->Id() == id; });
+  return std::ranges::find_if(rtp_transceivers_, [id](const auto& transceiver) {
+    return transceiver->Id() == id;
+  });
 }
 
 wtf_size_t RTCPeerConnectionHandler::GetTransceiverIndex(
@@ -2101,9 +2097,12 @@ RTCPeerConnectionHandler::signaling_thread() const {
 void RTCPeerConnectionHandler::ReportICEState(
     webrtc::PeerConnectionInterface::IceConnectionState new_state) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (ice_state_seen_[new_state])
-    return;
-  ice_state_seen_[new_state] = true;
+  UNSAFE_TODO({
+    if (ice_state_seen_[new_state]) {
+      return;
+    }
+    ice_state_seen_[new_state] = true;
+  });
   UMA_HISTOGRAM_ENUMERATION("WebRTC.PeerConnection.ConnectionState", new_state,
                             webrtc::PeerConnectionInterface::kIceConnectionMax);
 }

@@ -4,6 +4,7 @@
 
 #include "ui/message_center/message_center_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <set>
@@ -11,12 +12,10 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -121,7 +120,7 @@ void MessageCenterImpl::AddNotificationBlocker(NotificationBlocker* blocker) {
 void MessageCenterImpl::RemoveNotificationBlocker(
     NotificationBlocker* blocker) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto iter = base::ranges::find(blockers_, blocker);
+  auto iter = std::ranges::find(blockers_, blocker);
   if (iter == blockers_.end()) {
     return;
   }
@@ -284,7 +283,7 @@ Notification* MessageCenterImpl::FindParentNotification(
     }
   }
 
-  auto parent_notification_it = base::ranges::find_if(
+  auto parent_notification_it = std::ranges::find_if(
       notifications,
       [](Notification* notification) { return notification->group_parent(); });
 
@@ -303,7 +302,7 @@ Notification* MessageCenterImpl::FindParentNotification(
 Notification* MessageCenterImpl::FindPopupNotificationById(
     const std::string& id) {
   auto notifications = GetPopupNotifications();
-  auto notification = base::ranges::find(notifications, id, &Notification::id);
+  auto notification = std::ranges::find(notifications, id, &Notification::id);
 
   return notification == notifications.end() ? nullptr : *notification;
 }
@@ -575,7 +574,7 @@ void MessageCenterImpl::ClickOnNotificationButton(const std::string& id,
 void MessageCenterImpl::ClickOnNotificationButtonWithReply(
     const std::string& id,
     int button_index,
-    const std::u16string& reply) {
+    std::u16string_view reply) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!FindVisibleNotificationById(id)) {
     return;
@@ -583,7 +582,8 @@ void MessageCenterImpl::ClickOnNotificationButtonWithReply(
 
   lock_screen_controller_->DismissLockScreenThenExecute(
       base::BindOnce(&MessageCenterImpl::ClickOnNotificationUnlocked,
-                     base::Unretained(this), id, button_index, reply),
+                     base::Unretained(this), id, button_index,
+                     std::u16string(reply)),
       base::OnceClosure());
 }
 

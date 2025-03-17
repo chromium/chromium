@@ -12,9 +12,7 @@
 #include "content/public/common/content_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "content/browser/media/capture/aura_window_to_mojo_device_adapter.h"
 #include "content/browser/media/capture/desktop_capturer_ash.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #endif
 
 #if defined(WEBRTC_USE_PIPEWIRE)
@@ -29,15 +27,11 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 
-BASE_FEATURE(kUseCGDisplayStreamCreateSonoma,
-             "UseCGDisplayStreamCreateSonoma",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // CGDisplayStreamCreate() is marked as deprecated from macOS 14 (Sonoma), so
 // don't use unless the feature flag is set.
 bool CGDisplayStreamCreateIsAvailable() {
   if (base::mac::MacOSMajorVersion() >= 14) {
-    return base::FeatureList::IsEnabled(kUseCGDisplayStreamCreateSonoma);
+    return false;
   }
   return true;
 }
@@ -98,15 +92,6 @@ std::unique_ptr<webrtc::DesktopCapturer> CreateWindowCapturer() {
 #endif
   return webrtc::DesktopCapturer::CreateWindowCapturer(options);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void BindAuraWindowCapturer(
-    mojo::PendingReceiver<video_capture::mojom::Device> receiver,
-    const content::DesktopMediaID& id) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<AuraWindowToMojoDeviceAdapter>(id), std::move(receiver));
-}
-#endif
 
 bool CanUsePipeWire() {
 #if defined(WEBRTC_USE_PIPEWIRE)

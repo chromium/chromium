@@ -30,7 +30,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -49,8 +48,6 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -74,9 +71,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/browser/download/download_stats.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -144,19 +139,30 @@
 #include "components/offline_pages/core/client_namespace_constants.h"
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/skyvault/skyvault_rename_handler.h"
 #endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "components/safe_browsing/content/browser/download/download_stats.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
 using content::BrowserThread;
 using content::DownloadManager;
@@ -166,7 +172,7 @@ using download::PathValidationResult;
 using safe_browsing::DownloadFileType;
 using ConnectionType = net::NetworkChangeNotifier::ConnectionType;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 using safe_browsing::DownloadProtectionService;
 #endif
 
@@ -209,7 +215,7 @@ base::FilePath GetPlatformDownloadPath(const DownloadItem* download,
   return download->GetFullPath();
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 // Callback invoked by DownloadProtectionService::CheckClientDownload.
 // |is_content_check_supported| is true if the SB service supports scanning the
 // download for malicious content.
@@ -248,8 +254,7 @@ void CheckDownloadUrlDone(
   }
   std::move(callback).Run(danger_type);
 }
-
-#endif  // FULL_SAFE_BROWSING
+#endif  // SAFE_BROWSING_DOWNLOAD_PROTECTION
 
 // Called asynchronously to determine the MIME type for |path|.
 std::string GetMimeType(const base::FilePath& path) {
@@ -399,7 +404,7 @@ void MaybeReportDangerousDownloadBlocked(
     std::string danger_type,
     std::string download_path,
     download::DownloadItem* download) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   if (download_restriction !=
           policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES &&
       download_restriction != policy::DownloadRestriction::DANGEROUS_FILES &&
@@ -428,6 +433,7 @@ void MaybeReportDangerousDownloadBlocked(
     }
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
   if (router) {
@@ -439,12 +445,13 @@ void MaybeReportDangerousDownloadBlocked(
         download->GetURL(), download->GetTabUrl(), download_path,
         base::HexEncode(raw_digest_sha256), danger_type,
         download->GetMimeType(), /*scan_id*/ "", download->GetTotalBytes(),
-        safe_browsing::EventResult::BLOCKED);
+        enterprise_connectors::EventResult::BLOCKED);
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 download::DownloadDangerType SavePackageDangerType(
     safe_browsing::DownloadCheckResult result) {
   switch (result) {
@@ -471,7 +478,7 @@ download::DownloadDangerType SavePackageDangerType(
       NOTREACHED();
   }
 }
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
 #if !BUILDFLAG(IS_ANDROID)
 // Events related to ephemeral warning cancellation.
@@ -530,12 +537,16 @@ void ChromeDownloadManagerDelegate::SetDownloadManager(DownloadManager* dm) {
 
   download_manager_ = dm;
 
+  // This is only for Incident Reporting, which does not report on downloads on
+  // Android.
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   safe_browsing::SafeBrowsingService* sb_service =
       g_browser_process->safe_browsing_service();
   if (sb_service && !profile_->IsOffTheRecord()) {
     // Include this download manager in the set monitored by safe browsing.
     sb_service->AddDownloadManager(dm);
   }
+#endif
 
   if (download_manager_) {
     download_manager_->AddObserver(this);
@@ -701,6 +712,7 @@ bool ChromeDownloadManagerDelegate::ShouldAutomaticallyOpenFile(
 #endif
 
   bool should_open = download_prefs_->IsAutoOpenEnabled(url, path);
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   int64_t file_type_uma_value =
       safe_browsing::FileTypePolicies::GetInstance()->UmaValueForFile(path);
   if (should_open) {
@@ -710,6 +722,7 @@ bool ChromeDownloadManagerDelegate::ShouldAutomaticallyOpenFile(
     base::UmaHistogramSparse("SBClientDownload.AutoOpenDisabledFileType",
                              file_type_uma_value);
   }
+#endif
 
   return should_open;
 }
@@ -733,7 +746,7 @@ bool ChromeDownloadManagerDelegate::ShouldAutomaticallyOpenFileByPolicy(
 // static
 void ChromeDownloadManagerDelegate::DisableSafeBrowsing(DownloadItem* item) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   SafeBrowsingState* state = static_cast<SafeBrowsingState*>(
       item->GetUserData(&SafeBrowsingState::kSafeBrowsingUserDataKey));
   if (!state) {
@@ -788,7 +801,7 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
   }
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   // If this is a chrome triggered download, return true;
   if (!item->RequireSafetyChecks()) {
     return true;
@@ -796,8 +809,7 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
 
   if (!download_prefs_->safebrowsing_for_trusted_sources_enabled() &&
       download_prefs_->IsFromTrustedSource(*item) &&
-      !safe_browsing::DeepScanningRequest::ShouldUploadBinary(item)
-           .has_value()) {
+      !safe_browsing::ShouldUploadBinaryForDeepScanning(item).has_value()) {
     return true;
   }
 
@@ -858,7 +870,7 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
     return false;
   }
 
-#endif
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   return true;
 }
 
@@ -943,7 +955,7 @@ bool ChromeDownloadManagerDelegate::ShouldOpenDownload(
 
 bool ChromeDownloadManagerDelegate::ShouldObfuscateDownload(
     download::DownloadItem* item) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   if (!base::FeatureList::IsEnabled(
           enterprise_obfuscation::kEnterpriseFileObfuscation)) {
     return false;
@@ -966,8 +978,7 @@ bool ChromeDownloadManagerDelegate::ShouldObfuscateDownload(
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item));
   if (profile) {
-    auto settings =
-        safe_browsing::DeepScanningRequest::ShouldUploadBinary(item);
+    auto settings = safe_browsing::ShouldUploadBinaryForDeepScanning(item);
     if (settings.has_value() &&
         settings.value().block_until_verdict ==
             enterprise_connectors::BlockUntilVerdict::kBlock) {
@@ -1013,7 +1024,8 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    if (!blink::IsSupportedMimeType(mime_type)) {
+    if (!blink::IsSupportedMimeType(mime_type) &&
+        !IsPdfAndSupported(mime_type, web_contents)) {
       download_message_bridge_->ShowUnsupportedDownloadMessage(web_contents);
       base::UmaHistogramEnumeration(
           "Download.Blocked.ContentType.Automotive",
@@ -1033,6 +1045,21 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
 
   return false;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool ChromeDownloadManagerDelegate::IsPdfAndSupported(
+    const std::string& mime_type,
+    content::WebContents* web_contents) {
+  if (mime_type != pdf::kPDFMimeType) {
+    return false;
+  }
+  if (web_contents == nullptr || web_contents->GetBrowserContext() == nullptr) {
+    return false;
+  }
+  return ShouldOpenPdfInlineInternal(
+      web_contents->GetBrowserContext()->IsOffTheRecord());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ChromeDownloadManagerDelegate::GetSaveDir(
     content::BrowserContext* browser_context,
@@ -1058,6 +1085,7 @@ void ChromeDownloadManagerDelegate::ChooseSavePath(
 void ChromeDownloadManagerDelegate::SanitizeSavePackageResourceName(
     base::FilePath* filename,
     const GURL& source_url) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::FileTypePolicies* file_type_policies =
       safe_browsing::FileTypePolicies::GetInstance();
 
@@ -1069,6 +1097,7 @@ void ChromeDownloadManagerDelegate::SanitizeSavePackageResourceName(
   base::FilePath default_filename = base::FilePath::FromUTF8Unsafe(
       l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME));
   *filename = filename->AddExtension(default_filename.BaseName().value());
+#endif
 }
 
 void ChromeDownloadManagerDelegate::SanitizeDownloadParameters(
@@ -1113,17 +1142,8 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
     return;
   }
 
-  content::WebContents* web_contents =
-      content::DownloadItemUtils::GetWebContents(download);
-  Browser* browser =
-      web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
-  std::unique_ptr<chrome::ScopedTabbedBrowserDisplayer> browser_displayer;
-  if (!browser ||
-      !browser->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP)) {
-    browser_displayer =
-        std::make_unique<chrome::ScopedTabbedBrowserDisplayer>(profile_);
-    browser = browser_displayer->browser();
-  }
+  Browser* browser = chrome::ScopedTabbedBrowserDisplayer(profile_).browser();
+  CHECK(browser && browser->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP));
   content::OpenURLParams params(
       net::FilePathToFileURL(download->GetTargetFilePath()),
       content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -1186,7 +1206,7 @@ ChromeDownloadManagerDelegate::ApplicationClientIdForFileScanning() {
   return std::string(chrome::kApplicationClientIDStringForAVScanning);
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 DownloadProtectionService*
 ChromeDownloadManagerDelegate::GetDownloadProtectionService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1487,7 +1507,7 @@ void ChromeDownloadManagerDelegate::CheckDownloadUrl(
     CheckDownloadUrlCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   safe_browsing::DownloadProtectionService* service =
       GetDownloadProtectionService();
   if (service) {
@@ -1516,7 +1536,7 @@ void ChromeDownloadManagerDelegate::GetFileMimeType(
       std::move(callback));
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
     uint32_t download_id,
     safe_browsing::DownloadCheckResult result) {
@@ -1623,11 +1643,13 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
         danger_type = download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED;
         break;
       case safe_browsing::DownloadCheckResult::IMMEDIATE_DEEP_SCAN:
+#if !BUILDFLAG(IS_ANDROID)
         safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
             item,
             DownloadItemWarningData::DeepScanTrigger::
                 TRIGGER_IMMEDIATE_DEEP_SCAN,
             /*password=*/std::nullopt);
+#endif
         // We return early because starting deep scanning immediately triggers
         // this function with a `DownloadCheckResult` of `ASYNC_SCANNING`. Doing
         // two updates would lead to two announced accessible alerts. See
@@ -1762,7 +1784,7 @@ void ChromeDownloadManagerDelegate::CheckSavePackageScanningDone(
   }
 
 }
-#endif  // FULL_SAFE_BROWSING
+#endif  // SAFE_BROWSING_DOWNLOAD_PROTECTION
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void ChromeDownloadManagerDelegate::OnInstallerDone(
@@ -1850,7 +1872,7 @@ bool ChromeDownloadManagerDelegate::IsOpenInBrowserPreferredForFile(
 
   // On Android, always prefer opening with an external app. On ChromeOS, there
   // are no external apps so just allow all opens to be handled by the "System."
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(ENABLE_PLUGINS)
   // TODO(asanka): Consider other file types and MIME types.
   // http://crbug.com/323561
@@ -1928,7 +1950,7 @@ bool ChromeDownloadManagerDelegate::ShouldBlockFile(
 void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadOpenedReport(
     DownloadItem* download,
     bool show_download_in_folder) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   safe_browsing::DownloadProtectionService* service =
       GetDownloadProtectionService();
   if (service) {
@@ -1936,19 +1958,12 @@ void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadOpenedReport(
                                                     show_download_in_folder);
   }
 #endif
-  if (!download->GetAutoOpened()) {
-    download::DownloadContent download_content =
-        download::DownloadContentFromMimeType(download->GetMimeType(), false);
-    safe_browsing::RecordDownloadOpenedLatency(
-        download->GetDangerType(), download_content, base::Time::Now(),
-        download->GetEndTime(), show_download_in_folder);
-  }
 }
 
 void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadCanceledReport(
     DownloadItem* download,
     bool is_shutdown) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   safe_browsing::SafeBrowsingService* sb_service =
       g_browser_process->safe_browsing_service();
   if (!sb_service) {
@@ -2052,11 +2067,11 @@ ChromeDownloadManagerDelegate::GetQuarantineConnectionCallback() {
 std::unique_ptr<download::DownloadItemRenameHandler>
 ChromeDownloadManagerDelegate::GetRenameHandlerForDownload(
     download::DownloadItem* download_item) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return policy::SkyvaultRenameHandler::CreateIfNeeded(download_item);
 #else
   return nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ChromeDownloadManagerDelegate::CheckSavePackageAllowed(
@@ -2066,10 +2081,11 @@ void ChromeDownloadManagerDelegate::CheckSavePackageAllowed(
   DCHECK(download_item);
   DCHECK(download_item->IsSavePackageDownload());
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC)
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+     BUILDFLAG(IS_MAC)) &&                                                 \
+    BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   std::optional<enterprise_connectors::AnalysisSettings> settings =
-      safe_browsing::DeepScanningRequest::ShouldUploadBinary(download_item);
+      safe_browsing::ShouldUploadBinaryForDeepScanning(download_item);
 
   if (settings.has_value()) {
     DownloadProtectionService* service = GetDownloadProtectionService();
@@ -2155,13 +2171,13 @@ bool ChromeDownloadManagerDelegate::IsDownloadRestrictedByPolicy() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 ChromeDownloadManagerDelegate::SafeBrowsingState::~SafeBrowsingState() =
     default;
 
 const char ChromeDownloadManagerDelegate::SafeBrowsingState::
     kSafeBrowsingUserDataKey[] = "Safe Browsing ID";
-#endif  // FULL_SAFE_BROWSING
+#endif  // SAFE_BROWSING_DOWNLOAD_PROTECTION
 
 base::WeakPtr<ChromeDownloadManagerDelegate>
 ChromeDownloadManagerDelegate::GetWeakPtr() {

@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/feed_header_view_controller.h"
 
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/ui_bundled/discover_feed_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
@@ -15,6 +11,10 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -35,14 +35,8 @@ const CGFloat kCustomSearchEngineLabelFontSize = 13;
 const CGFloat kHiddenFeedLabelFontSize = 16;
 // The width of the label for when the feed is hidden.
 const CGFloat kHiddenFeedLabelWidth = 250;
-// Insets for header menu button.
-const CGFloat kHeaderManagementButtonInset = 2;
-// The height of the header container without the Following feed. The content is
-// unaffected.
-const CGFloat kDiscoverFeedHeaderHeightWithoutFollowing = 40;
-// The height of the header container with the Following feed. The content is
-// unaffected.
-const CGFloat kDiscoverFeedHeaderHeightWithFollowing = 30;
+// The height of the header container.
+const CGFloat kDiscoverFeedHeaderHeight = 30;
 
 const CGFloat kCustomSearchEngineLabelHeight = 18;
 // * Values below are exclusive to Web Channels.
@@ -52,11 +46,14 @@ const CGFloat kButtonSize = 28;
 // Duration of the fade animation for elements that toggle when switching feeds.
 const CGFloat kSegmentAnimationDuration = 0.3;
 // Padding on top of the header.
-const CGFloat kTopVerticalPaddingFollowing = 15;
-const CGFloat kTopVerticalPadding = 5;
+const CGFloat kTopVerticalPadding = 15;
 
 // The size of feed symbol images.
 NSInteger kFeedSymbolPointSize = 17;
+
+// The distance between the custom search engine label and the management
+// button, if both are present.
+const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
 
 }  // namespace
 
@@ -138,7 +135,7 @@ NSInteger kFeedSymbolPointSize = 17;
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
 
-  if ([self isFollowingEntryPointInFeedHeader]) {
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
     [self updateSegmentedControlFont:self.segmentedControl];
   } else {
     UIFont* font = [self fontForTitleLabel];
@@ -165,29 +162,29 @@ NSInteger kFeedSymbolPointSize = 17;
 #pragma mark - Public
 
 - (CGFloat)feedHeaderHeight {
-  return [self isFollowingEntryPointInFeedHeader]
-             ? kDiscoverFeedHeaderHeightWithFollowing
-             : kDiscoverFeedHeaderHeightWithoutFollowing;
-}
-
-- (CGFloat)customSearchEngineViewHeight {
-  return [self.NTPDelegate isGoogleDefaultSearchEngine] ||
-                 ![self isFollowingEntryPointInFeedHeader]
-             ? 0
-             : kCustomSearchEngineLabelHeight;
+  if ([self.feedControlDelegate isFollowingFeedAvailable] ||
+      !ShouldRemoveDiscoverLabel(
+          [self.NTPDelegate isGoogleDefaultSearchEngine])) {
+    return kDiscoverFeedHeaderHeight;
+  }
+  return 0;
 }
 
 - (void)updateForDefaultSearchEngineChanged {
   if (!self.viewLoaded) {
     return;
   }
-  if (![self isFollowingEntryPointInFeedHeader]) {
-    [self.titleLabel setText:[self feedHeaderTitleText]];
-    [self.titleLabel setNeedsDisplay];
-    return;
+  BOOL isGoogleDefaultSearchEngine =
+      [self.NTPDelegate isGoogleDefaultSearchEngine];
+  if (![self.feedControlDelegate isFollowingFeedAvailable]) {
+    [self.titleLabel removeFromSuperview];
+    self.titleLabel = nil;
+    if (!ShouldRemoveDiscoverLabel(isGoogleDefaultSearchEngine)) {
+      self.titleLabel = [self createTitleLabel];
+      [self.container addSubview:self.titleLabel];
+    }
   }
-
-  if ([self.NTPDelegate isGoogleDefaultSearchEngine]) {
+  if (isGoogleDefaultSearchEngine) {
     [self removeCustomSearchEngineView];
   } else {
     [self addCustomSearchEngineView];
@@ -199,7 +196,7 @@ NSInteger kFeedSymbolPointSize = 17;
   // When feed visibility changes, the menu content is recreated.
   [self.feedMenuHandler configureManagementMenu:self.managementButton];
 
-  if (![self isFollowingEntryPointInFeedHeader]) {
+  if (![self.feedControlDelegate isFollowingFeedAvailable]) {
     [self.titleLabel setText:[self feedHeaderTitleText]];
     [self.titleLabel setNeedsDisplay];
     return;
@@ -259,30 +256,23 @@ NSInteger kFeedSymbolPointSize = 17;
 
 #pragma mark - Private
 
-// If `YES`, the following fead will be displayed within the feed wrapper view
-// controller when the user requests it using `self.segmentedControl`.
-- (BOOL)isFollowingEntryPointInFeedHeader {
-  return [self.feedControlDelegate isFollowingFeedAvailable] &&
-         !IsNewFollowingFeedEntryPointsEnabled();
-}
-
 - (void)configureHeaderViews {
-  if ([self isFollowingEntryPointInFeedHeader]) {
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
     if ([self.feedControlDelegate shouldFeedBeVisible]) {
       [self addViewsForVisibleFeed];
     } else {
       [self addViewsForHiddenFeed];
     }
-
-    if (![self.NTPDelegate isGoogleDefaultSearchEngine]) {
-      [self addCustomSearchEngineView];
-    }
-  } else {
+  } else if (!ShouldRemoveDiscoverLabel(
+                 [self.NTPDelegate isGoogleDefaultSearchEngine])) {
     self.titleLabel = [self createTitleLabel];
     [self.container addSubview:self.titleLabel];
   }
   if (!IsHomeCustomizationEnabled()) {
     [self.feedMenuHandler configureManagementMenu:self.managementButton];
+  }
+  if (![self.NTPDelegate isGoogleDefaultSearchEngine]) {
+    [self addCustomSearchEngineView];
   }
 }
 
@@ -327,6 +317,12 @@ NSInteger kFeedSymbolPointSize = 17;
 - (void)configureManagementButton:(UIButton*)managementButton {
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.image =
+      DefaultSymbolTemplateWithPointSize(kMenuSymbol, kFeedSymbolPointSize);
+  if (![self.feedControlDelegate isFollowingFeedAvailable]) {
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kGrey600Color];
+  }
 
   managementButton.translatesAutoresizingMaskIntoConstraints = NO;
   managementButton.showsMenuAsPrimaryAction = YES;
@@ -338,19 +334,7 @@ NSInteger kFeedSymbolPointSize = 17;
       kNTPFeedHeaderManagementButtonIdentifier;
   managementButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_MENU_ACCESSIBILITY_LABEL);
-
-  if ([self isFollowingEntryPointInFeedHeader]) {
-    buttonConfiguration.image =
-        DefaultSymbolTemplateWithPointSize(kMenuSymbol, kFeedSymbolPointSize);
-    managementButton.clipsToBounds = YES;
-  } else {
-    UIImage* menuIcon = DefaultSymbolTemplateWithPointSize(
-        kSettingsFilledSymbol, kFeedSymbolPointSize);
-    buttonConfiguration.image = menuIcon;
-    buttonConfiguration.baseForegroundColor =
-        [UIColor colorNamed:kGrey600Color];
-    buttonConfiguration.imagePadding = kHeaderManagementButtonInset;
-  }
+  managementButton.clipsToBounds = YES;
 
   [self.container addSubview:managementButton];
   managementButton.configuration = buttonConfiguration;
@@ -358,7 +342,7 @@ NSInteger kFeedSymbolPointSize = 17;
 
 // Configures and returns the feed header's sorting button.
 - (UIButton*)createSortButton {
-  DCHECK([self isFollowingEntryPointInFeedHeader]);
+  CHECK([self.feedControlDelegate isFollowingFeedAvailable]);
 
   UIButton* sortButton = [[UIButton alloc] init];
 
@@ -494,14 +478,32 @@ NSInteger kFeedSymbolPointSize = 17;
     [NSLayoutConstraint deactivateConstraints:self.feedHeaderConstraints];
     self.feedHeaderConstraints = nil;
   }
-
   self.feedHeaderConstraints = [[NSMutableArray alloc] init];
 
-  CGFloat totalHeaderHeight =
-      [self feedHeaderHeight] + [self customSearchEngineViewHeight];
-  totalHeaderHeight += [self isFollowingEntryPointInFeedHeader]
-                           ? kTopVerticalPaddingFollowing
-                           : kTopVerticalPadding;
+  [self anchorContainer];
+  if (!IsHomeCustomizationEnabled()) {
+    [self anchorManagementButton];
+  }
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
+    [self anchorSegmentedControlAndSortButton];
+  } else {
+    [self anchorTitleLabel];
+  }
+  if (![self.NTPDelegate isGoogleDefaultSearchEngine]) {
+    [self anchorCustomSearchEngineView];
+  }
+  [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
+}
+
+// Anchors feed header container.
+- (void)anchorContainer {
+  CGFloat totalHeaderHeight = [self feedHeaderHeight];
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
+    totalHeaderHeight += kTopVerticalPadding;
+    if (![self.NTPDelegate isGoogleDefaultSearchEngine]) {
+      totalHeaderHeight += kCustomSearchEngineLabelHeight;
+    }
+  }
   // Anchor container.
   [self.feedHeaderConstraints addObjectsFromArray:@[
     // Anchor container and menu button.
@@ -514,79 +516,28 @@ NSInteger kFeedSymbolPointSize = 17;
         constraintEqualToAnchor:self.view.centerXAnchor],
     [self.container.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
   ]];
+}
 
-  if (!IsHomeCustomizationEnabled()) {
-    // Anchor management button.
-    [self.feedHeaderConstraints addObjectsFromArray:@[
-      [self.managementButton.trailingAnchor
-          constraintEqualToAnchor:self.container.trailingAnchor
-                         constant:-kButtonHorizontalMargin],
-      [self.managementButton.centerYAnchor
-          constraintEqualToAnchor:self.container.centerYAnchor],
-      // Set menu button size.
-      [self.managementButton.heightAnchor
-          constraintEqualToConstant:kButtonSize],
-      [self.managementButton.widthAnchor constraintEqualToConstant:kButtonSize],
-    ]];
-  }
-
-  if ([self isFollowingEntryPointInFeedHeader]) {
-    // Anchor views based on the feed being visible or hidden.
-    if ([self.feedControlDelegate shouldFeedBeVisible]) {
-      [self anchorSegmentedControl];
-
-      // Anchor sort button.
-      [self.feedHeaderConstraints addObjectsFromArray:@[
-        [self.sortButton.heightAnchor constraintEqualToConstant:kButtonSize],
-        [self.sortButton.widthAnchor constraintEqualToConstant:kButtonSize],
-        [self.sortButton.leadingAnchor
-            constraintEqualToAnchor:self.container.leadingAnchor
-                           constant:kButtonHorizontalMargin],
-        [self.sortButton.centerYAnchor
-            constraintEqualToAnchor:self.container.centerYAnchor],
-      ]];
-    } else {
-      [self.feedHeaderConstraints addObjectsFromArray:@[
-        [self.hiddenFeedLabel.centerXAnchor
-            constraintEqualToAnchor:self.container.centerXAnchor],
-        [self.hiddenFeedLabel.centerYAnchor
-            constraintEqualToAnchor:self.container.centerYAnchor],
-        [self.hiddenFeedLabel.widthAnchor
-            constraintEqualToConstant:kHiddenFeedLabelWidth],
-      ]];
-    }
-
-    // If Google is not the default search engine, anchor the custom search
-    // engine view.
-    if (![self.NTPDelegate isGoogleDefaultSearchEngine] &&
-        [self.feedControlDelegate shouldFeedBeVisible]) {
-      [self.feedHeaderConstraints addObjectsFromArray:@[
-        // Anchors custom search engine view.
-        [self.customSearchEngineView.widthAnchor
-            constraintEqualToAnchor:self.view.widthAnchor],
-        [self.customSearchEngineView.heightAnchor
-            constraintEqualToConstant:kCustomSearchEngineLabelHeight],
-        [self.customSearchEngineView.bottomAnchor
-            constraintEqualToAnchor:self.container.topAnchor],
-      ]];
-    }
-
+// Anchor management button.
+- (void)anchorManagementButton {
+  CHECK(!IsHomeCustomizationEnabled());
+  NSLayoutConstraint* verticalConstraint;
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
+    verticalConstraint = [self.managementButton.centerYAnchor
+        constraintEqualToAnchor:self.container.centerYAnchor];
   } else {
-    [self.feedHeaderConstraints addObjectsFromArray:@[
-      // Anchors title label.
-      [self.titleLabel.leadingAnchor
-          constraintEqualToAnchor:self.container.leadingAnchor
-                         constant:kTitleHorizontalMargin],
-      [self.titleLabel.trailingAnchor
-          constraintLessThanOrEqualToAnchor:IsHomeCustomizationEnabled()
-                                                ? self.container.trailingAnchor
-                                                : self.managementButton
-                                                      .leadingAnchor],
-      [self.titleLabel.centerYAnchor
-          constraintEqualToAnchor:self.container.centerYAnchor],
-    ]];
+    verticalConstraint = [self.managementButton.bottomAnchor
+        constraintEqualToAnchor:self.container.bottomAnchor];
   }
-  [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
+  [self.feedHeaderConstraints addObjectsFromArray:@[
+    verticalConstraint,
+    [self.managementButton.trailingAnchor
+        constraintEqualToAnchor:self.container.trailingAnchor
+                       constant:-kButtonHorizontalMargin],
+    // Set menu button size.
+    [self.managementButton.heightAnchor constraintEqualToConstant:kButtonSize],
+    [self.managementButton.widthAnchor constraintEqualToConstant:kButtonSize],
+  ]];
 }
 
 // Anchors the segmented control.
@@ -607,6 +558,94 @@ NSInteger kFeedSymbolPointSize = 17;
       [self.segmentedControl.trailingAnchor
           constraintLessThanOrEqualToAnchor:self.managementButton.leadingAnchor
                                    constant:-kButtonHorizontalMargin],
+    ]];
+  }
+}
+
+// Anchors feed header elements that should be shown when following feed is
+// available.
+- (void)anchorSegmentedControlAndSortButton {
+  CHECK([self.feedControlDelegate isFollowingFeedAvailable]);
+  // Anchor views based on the feed being visible or hidden.
+  if ([self.feedControlDelegate shouldFeedBeVisible]) {
+    [self anchorSegmentedControl];
+
+    // Anchor sort button.
+    [self.feedHeaderConstraints addObjectsFromArray:@[
+      [self.sortButton.heightAnchor constraintEqualToConstant:kButtonSize],
+      [self.sortButton.widthAnchor constraintEqualToConstant:kButtonSize],
+      [self.sortButton.leadingAnchor
+          constraintEqualToAnchor:self.container.leadingAnchor
+                         constant:kButtonHorizontalMargin],
+      [self.sortButton.centerYAnchor
+          constraintEqualToAnchor:self.container.centerYAnchor],
+    ]];
+  } else {
+    [self.feedHeaderConstraints addObjectsFromArray:@[
+      [self.hiddenFeedLabel.centerXAnchor
+          constraintEqualToAnchor:self.container.centerXAnchor],
+      [self.hiddenFeedLabel.centerYAnchor
+          constraintEqualToAnchor:self.container.centerYAnchor],
+      [self.hiddenFeedLabel.widthAnchor
+          constraintEqualToConstant:kHiddenFeedLabelWidth],
+    ]];
+  }
+}
+
+// Anchors the title label that should be shown when the following feed is not
+// available.
+- (void)anchorTitleLabel {
+  CHECK(![self.feedControlDelegate isFollowingFeedAvailable]);
+  if (ShouldRemoveDiscoverLabel(
+          [self.NTPDelegate isGoogleDefaultSearchEngine])) {
+    return;
+  }
+  NSLayoutAnchor* trailingAnchor = IsHomeCustomizationEnabled()
+                                       ? self.container.trailingAnchor
+                                       : self.managementButton.leadingAnchor;
+  [self.feedHeaderConstraints addObjectsFromArray:@[
+    [self.titleLabel.leadingAnchor
+        constraintEqualToAnchor:self.container.leadingAnchor
+                       constant:kTitleHorizontalMargin],
+    [self.titleLabel.trailingAnchor
+        constraintLessThanOrEqualToAnchor:trailingAnchor],
+    [self.titleLabel.bottomAnchor
+        constraintEqualToAnchor:self.container.bottomAnchor]
+  ]];
+}
+
+// Anchors the cusstom search engine view if default search engine is NOT
+// google.
+- (void)anchorCustomSearchEngineView {
+  CHECK(![self.NTPDelegate isGoogleDefaultSearchEngine]);
+  if (![self.feedControlDelegate shouldFeedBeVisible]) {
+    return;
+  }
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
+    [self.feedHeaderConstraints addObjectsFromArray:@[
+      // Anchors custom search engine view.
+      [self.customSearchEngineView.widthAnchor
+          constraintEqualToAnchor:self.view.widthAnchor],
+      [self.customSearchEngineView.heightAnchor
+          constraintEqualToConstant:kCustomSearchEngineLabelHeight],
+      [self.customSearchEngineView.bottomAnchor
+          constraintEqualToAnchor:self.container.topAnchor],
+    ]];
+  } else {
+    NSLayoutAnchor* trailingAnchor = IsHomeCustomizationEnabled()
+                                         ? self.container.trailingAnchor
+                                         : self.managementButton.leadingAnchor;
+    CGFloat trailingConstant = IsHomeCustomizationEnabled()
+                                   ? kButtonHorizontalMargin
+                                   : kCustomSearchEngineLabelTrailingMargin;
+    [self.feedHeaderConstraints addObjectsFromArray:@[
+      [self.customSearchEngineView.heightAnchor
+          constraintEqualToConstant:kCustomSearchEngineLabelHeight],
+      [self.customSearchEngineView.trailingAnchor
+          constraintEqualToAnchor:trailingAnchor
+                         constant:-trailingConstant],
+      [self.customSearchEngineView.bottomAnchor
+          constraintEqualToAnchor:self.container.bottomAnchor]
     ]];
   }
 }
@@ -693,23 +732,16 @@ NSInteger kFeedSymbolPointSize = 17;
 
 // The title text for the Discover feed header based on user prefs.
 - (NSString*)feedHeaderTitleText {
-  DCHECK(![self isFollowingEntryPointInFeedHeader]);
+  DCHECK(![self.feedControlDelegate isFollowingFeedAvailable]);
 
-  // Set the title based on the default search engine.
-  NSString* feedHeaderTitleText =
-      [self.NTPDelegate isGoogleDefaultSearchEngine]
-          ? l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)
-          : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE_NON_DSE);
-
-  // Append the title text if the feed is turned off.
-  if (![self.feedControlDelegate shouldFeedBeVisible]) {
-    feedHeaderTitleText =
-        [NSString stringWithFormat:@"%@ – %@", feedHeaderTitleText,
-                                   l10n_util::GetNSString(
-                                       IDS_IOS_DISCOVER_FEED_TITLE_OFF_LABEL)];
+  NSString* discoverFeedTitle =
+      l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
+  if ([self.feedControlDelegate shouldFeedBeVisible]) {
+    return discoverFeedTitle;
   }
-
-  return feedHeaderTitleText;
+  return [NSString stringWithFormat:@"%@ – %@", discoverFeedTitle,
+                                    l10n_util::GetNSString(
+                                        IDS_IOS_DISCOVER_FEED_TITLE_OFF_LABEL)];
 }
 
 @end

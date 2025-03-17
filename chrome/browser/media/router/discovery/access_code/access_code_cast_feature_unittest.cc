@@ -68,8 +68,6 @@ TEST_F(AccessCodeCastFeatureTest,
 }
 
 TEST_F(AccessCodeCastFeatureTest, GetAccessCodeDeviceDurationPref) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAccessCodeCastRememberDevices}, {});
   const int non_default = 10;
 
   TestingProfile profile;

@@ -80,8 +80,10 @@ BA 48 53 4A E2 1C 42 24 EB E5 CD 46 E0 4E 9B 2B
   01 00 01)";
 
 // Test values for creating CertProfile for MockCertProvisioningWorker.
+constexpr char kDeviceProcessId[] = "00000";
 constexpr char kDeviceCertProfileId[] = "device_cert_profile_1";
 constexpr char kDeviceCertProfileName[] = "Device Certificate Profile 1";
+constexpr char kUserProcessId[] = "11111";
 constexpr char kUserCertProfileId[] = "user_cert_profile_1";
 constexpr char kUserCertProfileName[] = "User Certificate Profile 1";
 
@@ -244,6 +246,7 @@ TEST_F(CertificateProvisioningUiHandlerTest, NoProcesses) {
 
 TEST_F(CertificateProvisioningUiHandlerTest, HasOneProcess) {
   auto process_0 = crosapi::mojom::CertProvisioningProcessStatus::New();
+  process_0->process_id = kUserProcessId;
   process_0->cert_profile_id = kUserCertProfileId;
   process_0->cert_profile_name = kUserCertProfileName;
   process_0->public_key = base::Base64Decode(kDerEncodedSpkiBase64).value();
@@ -264,16 +267,18 @@ TEST_F(CertificateProvisioningUiHandlerTest, HasOneProcess) {
       GetByProfileId(all_processes, kUserCertProfileId),
       FormatJsonDict(
           R"({
-               "certProfileId": "$0",
-               "certProfileName": "$1",
+               "processId": "$0",
+               "certProfileId": "$1",
+               "certProfileName": "$2",
                "isDeviceWide": false,
-               "publicKey": "$2",
+               "publicKey": "$3",
                "stateId": 1,
-               "status": "$3",
+               "status": "$4",
                "timeSinceLastUpdate": "",
                "lastUnsuccessfulMessage": ""
              })",
-          {kUserCertProfileId, kUserCertProfileName, kFormattedPublicKey,
+          {kUserProcessId, kUserCertProfileId, kUserCertProfileName,
+           kFormattedPublicKey,
            l10n_util::GetStringUTF8(
                IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PREPARING_CSR_WAITING)}));
 }
@@ -281,6 +286,7 @@ TEST_F(CertificateProvisioningUiHandlerTest, HasOneProcess) {
 TEST_F(CertificateProvisioningUiHandlerTest, HasTwoProcesses) {
   {
     auto process_0 = crosapi::mojom::CertProvisioningProcessStatus::New();
+    process_0->process_id = kUserProcessId;
     process_0->cert_profile_id = kUserCertProfileId;
     process_0->cert_profile_name = kUserCertProfileName;
     process_0->public_key = base::Base64Decode(kDerEncodedSpkiBase64).value();
@@ -295,6 +301,7 @@ TEST_F(CertificateProvisioningUiHandlerTest, HasTwoProcesses) {
 
   {
     auto process_1 = crosapi::mojom::CertProvisioningProcessStatus::New();
+    process_1->process_id = kDeviceProcessId;
     process_1->cert_profile_id = kDeviceCertProfileId;
     process_1->cert_profile_name = kDeviceCertProfileName;
     process_1->public_key = base::Base64Decode(kDerEncodedSpkiBase64).value();
@@ -322,16 +329,18 @@ TEST_F(CertificateProvisioningUiHandlerTest, HasTwoProcesses) {
       GetByProfileId(all_processes, kUserCertProfileId),
       FormatJsonDict(
           R"({
-               "certProfileId": "$0",
-               "certProfileName": "$1",
+               "processId": "$0",
+               "certProfileId": "$1",
+               "certProfileName": "$2",
                "isDeviceWide": false,
-               "publicKey": "$2",
+               "publicKey": "$3",
                "stateId": 1,
-               "status": "$3",
+               "status": "$4",
                "timeSinceLastUpdate": "",
                "lastUnsuccessfulMessage": ""
              })",
-          {kUserCertProfileId, kUserCertProfileName, kFormattedPublicKey,
+          {kUserProcessId, kUserCertProfileId, kUserCertProfileName,
+           kFormattedPublicKey,
            l10n_util::GetStringUTF8(
                IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PREPARING_CSR_WAITING)}));
 
@@ -348,16 +357,18 @@ TEST_F(CertificateProvisioningUiHandlerTest, HasTwoProcesses) {
       GetByProfileId(all_processes, kDeviceCertProfileId),
       FormatJsonDict(
           R"({
-               "certProfileId": "$0",
-               "certProfileName": "$1",
+               "processId": "$0",
+               "certProfileId": "$1",
+               "certProfileName": "$2",
                "isDeviceWide": true,
-               "publicKey": "$2",
+               "publicKey": "$3",
                "stateId": 4,
-               "status": "$3",
+               "status": "$4",
                "timeSinceLastUpdate": "",
-               "lastUnsuccessfulMessage": "$4"
+               "lastUnsuccessfulMessage": "$5"
              })",
-          {kDeviceCertProfileId, kDeviceCertProfileName, kFormattedPublicKey,
+          {kDeviceProcessId, kDeviceCertProfileId, kDeviceCertProfileName,
+           kFormattedPublicKey,
            l10n_util::GetStringUTF8(
                IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_FAILURE),
            last_unsuccessful_message}));
@@ -376,6 +387,7 @@ TEST_F(CertificateProvisioningUiHandlerTest, Updates) {
 
   {
     auto process_0 = crosapi::mojom::CertProvisioningProcessStatus::New();
+    process_0->process_id = kUserProcessId;
     process_0->cert_profile_id = kUserCertProfileId;
     process_0->cert_profile_name = kUserCertProfileName;
     process_0->public_key = base::Base64Decode(kDerEncodedSpkiBase64).value();
@@ -404,16 +416,18 @@ TEST_F(CertificateProvisioningUiHandlerTest, Updates) {
       GetByProfileId(all_processes, kUserCertProfileId),
       FormatJsonDict(
           R"({
-               "certProfileId": "$0",
-               "certProfileName": "$1",
+               "processId": "$0",
+               "certProfileId": "$1",
+               "certProfileName": "$2",
                "isDeviceWide": false,
-               "publicKey": "$2",
+               "publicKey": "$3",
                "stateId": 1,
-               "status": "$3",
+               "status": "$4",
                "timeSinceLastUpdate": "",
                "lastUnsuccessfulMessage": ""
              })",
-          {kUserCertProfileId, kUserCertProfileName, kFormattedPublicKey,
+          {kUserProcessId, kUserCertProfileId, kUserCertProfileName,
+           kFormattedPublicKey,
            l10n_util::GetStringUTF8(
                IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PREPARING_CSR_WAITING)}));
 

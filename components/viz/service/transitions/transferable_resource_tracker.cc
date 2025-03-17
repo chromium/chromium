@@ -4,8 +4,6 @@
 
 #include "components/viz/service/transitions/transferable_resource_tracker.h"
 
-#include <GLES2/gl2.h>
-
 #include <limits>
 #include <memory>
 #include <utility>
@@ -13,18 +11,17 @@
 #include "base/containers/contains.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_id.h"
-#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/gl_bindings.h"
 
 namespace viz {
 
 TransferableResourceTracker::TransferableResourceTracker(
-    SharedBitmapManager* shared_bitmap_manager,
     ReservedResourceIdTracker* id_tracker)
-    : shared_bitmap_manager_(shared_bitmap_manager), id_tracker_(id_tracker) {
+    : id_tracker_(id_tracker) {
   CHECK(id_tracker_);
 }
 
@@ -64,55 +61,23 @@ TransferableResourceTracker::ImportResource(
     SurfaceSavedFrame::OutputCopyResult output_copy) {
   TransferableResource resource;
 
-  TransferableResourceHolder::ResourceReleaseCallback release_callback;
+  DCHECK(output_copy.shared_image);
   if (output_copy.is_software) {
-    // TODO(vmpstr): Clean this up after verifying that non-shared_image path
-    // can't be reached.
-    if (output_copy.shared_image) {
       resource = TransferableResource::MakeSoftwareSharedImage(
           output_copy.shared_image, gpu::SyncToken(),
           output_copy.draw_data.size, output_copy.shared_image->format());
       resource.color_space = output_copy.shared_image->color_space();
-    } else {
-      SharedBitmapId id = SharedBitmap::GenerateId();
-      shared_bitmap_manager_->LocalAllocatedSharedBitmap(
-          std::move(output_copy.bitmap), id);
-      resource = TransferableResource::MakeSoftwareSharedBitmap(
-          id, gpu::SyncToken(), output_copy.draw_data.size,
-          SinglePlaneFormat::kRGBA_8888,
-          TransferableResource::ResourceSource::kViewTransition);
-      // Remove the bitmap from shared bitmap manager when no longer in use.
-      DCHECK(!output_copy.release_callback);
-      release_callback = base::BindOnce(
-          [](SharedBitmapManager* manager, const TransferableResource& resource,
-             const gpu::SyncToken& sync_token) {
-            const SharedBitmapId& id = resource.shared_bitmap_id();
-            manager->ChildDeletedSharedBitmap(id);
-          },
-          shared_bitmap_manager_);
-    }
   } else {
-    DCHECK(output_copy.bitmap.drawsNothing());
-
-    if (output_copy.shared_image) {
       resource = TransferableResource::MakeGpu(
           output_copy.shared_image, GL_TEXTURE_2D, output_copy.sync_token,
           output_copy.draw_data.size, output_copy.shared_image->format(),
           /*is_overlay_candidate=*/false,
           TransferableResource::ResourceSource::kViewTransition);
       resource.color_space = output_copy.shared_image->color_space();
-    } else {
-      resource = TransferableResource::MakeGpu(
-          output_copy.mailbox, GL_TEXTURE_2D, output_copy.sync_token,
-          output_copy.draw_data.size, SinglePlaneFormat::kRGBA_8888,
-          /*is_overlay_candidate=*/false,
-          TransferableResource::ResourceSource::kViewTransition);
-      resource.color_space = output_copy.color_space;
-    }
   }
 
+  TransferableResourceHolder::ResourceReleaseCallback release_callback;
   if (output_copy.release_callback) {
-    DCHECK(!release_callback);
     release_callback = base::BindOnce(
         [](ReleaseCallback callback, const TransferableResource& resource,
            const gpu::SyncToken& sync_token) {

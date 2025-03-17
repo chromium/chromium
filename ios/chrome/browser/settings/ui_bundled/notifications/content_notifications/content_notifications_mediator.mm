@@ -63,7 +63,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @implementation ContentNotificationsMediator {
   // Identity object that contains the user's account details.
-  std::string _gaiaID;
+  GaiaId _gaiaID;
 }
 
 @synthesize contentNotificationsItem = _contentNotificationsItem;
@@ -71,7 +71,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @synthesize sportsNotificationsItem = _sportsNotificationsItem;
 
 - (instancetype)initWithPrefService:(PrefService*)prefs
-                             gaiaID:(const std::string&)gaiaID {
+                             gaiaID:(const GaiaId&)gaiaID {
   self = [super init];
   if (self) {
     DCHECK(prefs);
@@ -230,7 +230,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)disablePreferenceFor:(PushNotificationClientId)clientID {
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
-  service->SetPreference(base::SysUTF8ToNSString(_gaiaID), clientID, false);
+  service->SetPreference(_gaiaID.ToNSString(), clientID, false);
 }
 
 // Sends an NAU when any of the settings preferences have been updated.
@@ -247,13 +247,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case PushNotificationClientId::kSports:
       settingsAction.toggleChanged = SettingsToggleTypeSports;
       break;
-    case PushNotificationClientId::kCommerce:
-    case PushNotificationClientId::kTips:
-    case PushNotificationClientId::kSafetyCheck:
-    case PushNotificationClientId::kSendTab:
-      // This should never be reached.
-      DCHECK(FALSE);
-      break;
+    default:
+      NOTREACHED();
   }
   [PushNotificationUtil
       getPermissionSettings:^(UNNotificationSettings* settings) {
@@ -274,10 +269,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       return _contentNotificationsItem;
     case PushNotificationClientId::kSports:
       return _sportsNotificationsItem;
-    case PushNotificationClientId::kTips:
-    case PushNotificationClientId::kSendTab:
-    case PushNotificationClientId::kSafetyCheck:
-    case PushNotificationClientId::kCommerce:
+    default:
       // Not a switch.
       NOTREACHED();
   }

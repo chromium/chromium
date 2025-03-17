@@ -1584,7 +1584,7 @@ TEST_F(NavigationPredictorNewViewportFeaturesTest, RecordPositionMetrics) {
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(2u, entries.size());
   std::vector<std::tuple<int, int, int>> recorded_metrics(entries.size());
-  base::ranges::transform(
+  std::ranges::transform(
       entries, recorded_metrics.begin(), [&ukm_recorder](const auto& entry) {
         auto anchor_id = static_cast<int>(
             *ukm_recorder.GetEntryMetric(entry, UkmEntry::kAnchorIndexName));

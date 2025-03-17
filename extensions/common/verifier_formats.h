@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_COMMON_VERIFIER_FORMATS_H_
 #define EXTENSIONS_COMMON_VERIFIER_FORMATS_H_
 
+#include "base/auto_reset.h"
+
 namespace crx_file {
 enum class VerifierFormat;
 }
@@ -27,6 +29,10 @@ crx_file::VerifierFormat GetExternalVerifierFormat();
 // Returns the default format requirement for installing an extension that
 // is installed in a unit or browser test context.
 crx_file::VerifierFormat GetTestVerifierFormat();
+
+// Configures `GetWebstoreVerifierFormat` to return `VerifierFormat::CRX3`,
+// disabling publisher key verification when installing the CRX during tests.
+[[nodiscard]] base::AutoReset<bool> DisablePublisherKeyVerificationForTests();
 
 }  // namespace extensions
 

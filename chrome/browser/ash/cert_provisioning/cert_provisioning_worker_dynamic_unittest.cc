@@ -1232,6 +1232,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaitingRsaKeys) {
       "ChromeOS.CertProvisioning.VaTime.Dynamic.User", 1);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.CertProvisioning.CsrSignTime.Dynamic.User", 1);
+  histogram_tester.ExpectUniqueSample(kDmStatusHistogramName,
+                                      policy::DM_STATUS_SUCCESS, 6);
 }
 
 // Checks that the worker makes all necessary requests to other modules during
@@ -3349,6 +3351,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitForInvalidationEcKeys) {
 // This test covers the case when RSA keys are used.
 TEST_F(CertProvisioningWorkerDynamicTest, StatusErrorHandlingRsaKeys) {
   const CertScope kCertScope = CertScope::kUser;
+  base::HistogramTester histogram_tester;
   const CertProfile cert_profile(
       kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
@@ -3391,6 +3394,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, StatusErrorHandlingRsaKeys) {
   EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
   EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
             CertProvisioningWorkerState::kFailed);
+
+  histogram_tester.ExpectUniqueSample(kDmStatusHistogramName,
+                                      policy::DM_STATUS_REQUEST_INVALID, 1);
 }
 
 // Checks that when the server returns an error in the "DM Status", the worker
@@ -3398,6 +3404,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, StatusErrorHandlingRsaKeys) {
 // This test covers the case when EC keys are used.
 TEST_F(CertProvisioningWorkerDynamicTest, StatusErrorHandlingEcKeys) {
   const CertScope kCertScope = CertScope::kUser;
+  base::HistogramTester histogram_tester;
   const CertProfile cert_profile(
       kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kEc,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
@@ -3427,9 +3434,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, StatusErrorHandlingEcKeys) {
                                               /*callback=*/_, /*signals=*/_),
                           KeyType::kEc);
 
-    EXPECT_START(
-        Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        base::unexpected(DmStatusError(policy::DM_STATUS_REQUEST_INVALID)));
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 base::unexpected(
+                     DmStatusError(policy::DM_STATUS_RESPONSE_DECODING_ERROR)));
   }
 
   worker.DoStep();
@@ -3440,6 +3447,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, StatusErrorHandlingEcKeys) {
   EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
   EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
             CertProvisioningWorkerState::kFailed);
+
+  histogram_tester.ExpectUniqueSample(
+      kDmStatusHistogramName, policy::DM_STATUS_RESPONSE_DECODING_ERROR, 1);
 }
 
 // Checks that when the server returns an error encoded in the proto response ,
@@ -3501,6 +3511,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, ResponseErrorHandlingRsaKeys) {
       CertProvisioningWorkerState::kKeypairGenerated, 1);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.CertProvisioning.Result.Dynamic.User", 2);
+  histogram_tester.ExpectUniqueSample(kCertProvBackendErrorHistogramName,
+                                      em::CertProvBackendError::CA_FAILURE, 1);
 }
 
 // Checks that when the server returns an error encoded in the proto response ,
@@ -3540,9 +3552,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, ResponseErrorHandlingEcKeys) {
                                               /*callback=*/_, /*signals=*/_),
                           KeyType::kEc);
 
-    EXPECT_START(
-        Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        base::unexpected(BackendError(em::CertProvBackendError::CA_FAILURE)));
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 base::unexpected(BackendError(
+                     em::CertProvBackendError::PUBSUB_TOPIC_NOT_FOUND)));
   }
 
   worker->DoStep();
@@ -3562,6 +3574,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, ResponseErrorHandlingEcKeys) {
       CertProvisioningWorkerState::kKeypairGenerated, 1);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.CertProvisioning.Result.Dynamic.User", 2);
+  histogram_tester.ExpectUniqueSample(
+      kCertProvBackendErrorHistogramName,
+      em::CertProvBackendError::PUBSUB_TOPIC_NOT_FOUND, 1);
 }
 
 TEST_F(CertProvisioningWorkerDynamicTest,
@@ -3755,6 +3770,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, ProfileNotFoundErrorHandlingEcKeys) {
 // worker will automatically retry a request using exponential backoff strategy.
 // This test covers the case when RSA keys are used.
 TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategyRsaKeys) {
+  base::HistogramTester histogram_tester;
   const CertProfile cert_profile(
       kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
@@ -3822,12 +3838,16 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategyRsaKeys) {
     FastForwardBy(next_delay + small_delay);
     next_delay *= 2;
   }
+
+  histogram_tester.ExpectUniqueSample(
+      kDmStatusHistogramName, policy::DM_STATUS_TEMPORARY_UNAVAILABLE, 4);
 }
 
 // Checks that when the server returns TEMPORARY_UNAVAILABLE status code, the
 // worker will automatically retry a request using exponential backoff strategy.
 // This test covers the case when EC keys are used.
 TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategyEcKeys) {
+  base::HistogramTester histogram_tester;
   const CertProfile cert_profile(
       kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kEc,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
@@ -3895,6 +3915,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategyEcKeys) {
     FastForwardBy(next_delay + small_delay);
     next_delay *= 2;
   }
+
+  histogram_tester.ExpectUniqueSample(
+      kDmStatusHistogramName, policy::DM_STATUS_TEMPORARY_UNAVAILABLE, 4);
 }
 
 // Checks that the worker retries Authorize if it failed with a server-side

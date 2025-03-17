@@ -78,8 +78,8 @@ bool StructTraits<webnn::mojom::OperandDescriptorDataView,
   data.GetShapeDataView(&shape);
 
   base::expected<webnn::OperandDescriptor, std::string> descriptor =
-      webnn::OperandDescriptor::Create(FromMojoDataType(data.data_type()),
-                                       base::span(shape));
+      webnn::OperandDescriptor::CreateForDeserialization(
+          FromMojoDataType(data.data_type()), base::span(shape));
 
   if (!descriptor.has_value()) {
     return false;

@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <algorithm>
 #import <optional>
 #import <utility>
 #import <vector>
@@ -14,12 +15,10 @@
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
-#import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -52,6 +51,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -86,7 +86,6 @@
 #import "url/gurl.h"
 
 using base::UmaHistogramEnumeration;
-using password_manager::metrics_util::PasswordCheckInteraction;
 
 namespace {
 
@@ -142,14 +141,14 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
 // TODO(crbug.com/40261300): Remove when CredentialUIEntry operator== is fixed.
 template <typename T>
 bool AreNotesEqual(const T& lhs, const T& rhs) {
-  return base::ranges::equal(lhs, rhs, {},
-                             &password_manager::CredentialUIEntry::note,
-                             &password_manager::CredentialUIEntry::note);
+  return std::ranges::equal(lhs, rhs, {},
+                            &password_manager::CredentialUIEntry::note,
+                            &password_manager::CredentialUIEntry::note);
 }
 
 bool AreNotesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                    const std::vector<password_manager::AffiliatedGroup>& rhs) {
-  return base::ranges::equal(
+  return std::ranges::equal(
       lhs, rhs,
       AreNotesEqual<base::span<const password_manager::CredentialUIEntry>>,
       &password_manager::AffiliatedGroup::GetCredentials,
@@ -158,14 +157,14 @@ bool AreNotesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 template <typename T>
 bool AreStoresEqual(const T& lhs, const T& rhs) {
-  return base::ranges::equal(lhs, rhs, {},
-                             &password_manager::CredentialUIEntry::stored_in,
-                             &password_manager::CredentialUIEntry::stored_in);
+  return std::ranges::equal(lhs, rhs, {},
+                            &password_manager::CredentialUIEntry::stored_in,
+                            &password_manager::CredentialUIEntry::stored_in);
 }
 
 bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                     const std::vector<password_manager::AffiliatedGroup>& rhs) {
-  return base::ranges::equal(
+  return std::ranges::equal(
       lhs, rhs,
       AreStoresEqual<base::span<const password_manager::CredentialUIEntry>>,
       &password_manager::AffiliatedGroup::GetCredentials,
@@ -174,14 +173,14 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 template <typename T>
 bool AreIssuesEqual(const T& lhs, const T& rhs) {
-  return base::ranges::equal(
+  return std::ranges::equal(
       lhs, rhs, {}, &password_manager::CredentialUIEntry::password_issues,
       &password_manager::CredentialUIEntry::password_issues);
 }
 
 bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                     const std::vector<password_manager::AffiliatedGroup>& rhs) {
-  return base::ranges::equal(
+  return std::ranges::equal(
       lhs, rhs,
       AreIssuesEqual<base::span<const password_manager::CredentialUIEntry>>,
       &password_manager::AffiliatedGroup::GetCredentials,
@@ -537,8 +536,10 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     [model addSectionWithIdentifier:SectionIdentifierSavedPasswords];
     TableViewTextHeaderFooterItem* headerItem =
         [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
-    headerItem.text =
-        l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_SAVED_HEADING);
+    headerItem.text = l10n_util::GetNSString(
+        IOSPasskeysM2Enabled()
+            ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_SAVED_HEADING
+            : IDS_IOS_SETTINGS_PASSWORDS_SAVED_HEADING);
     [model setHeader:headerItem
         forSectionWithIdentifier:SectionIdentifierSavedPasswords];
   }
@@ -667,8 +668,10 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeLinkHeader];
 
   if (_savingPasswordsToAccount) {
-    _manageAccountLinkItem.text =
-        l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
+    _manageAccountLinkItem.text = l10n_util::GetNSString(
+        IOSPasskeysM2Enabled()
+            ? IDS_IOS_SAVE_PASSWORDS_PASSKEYS_MANAGE_ACCOUNT_HEADER
+            : IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
 
     _manageAccountLinkItem.urls = @[ [[CrURL alloc]
         initWithGURL:
@@ -1489,7 +1492,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
               .affiliatedGroup;
 
       // Remove from local cache.
-      auto iterator = base::ranges::find(_affiliatedGroups, affiliatedGroup);
+      auto iterator = std::ranges::find(_affiliatedGroups, affiliatedGroup);
       if (iterator != _affiliatedGroups.end()) {
         _affiliatedGroups.erase(iterator);
       }
@@ -1506,7 +1509,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       auto removeCredential =
           [](std::vector<password_manager::CredentialUIEntry>& credentials,
              const password_manager::CredentialUIEntry& credential) {
-            auto iterator = base::ranges::find(credentials, credential);
+            auto iterator = std::ranges::find(credentials, credential);
             if (iterator != credentials.end()) {
               credentials.erase(iterator);
             }

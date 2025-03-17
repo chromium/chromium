@@ -29,6 +29,7 @@ class FingerprintingProtectionChildNavigationThrottle
   FingerprintingProtectionChildNavigationThrottle(
       content::NavigationHandle* handle,
       subresource_filter::AsyncDocumentSubresourceFilter* parent_frame_filter,
+      bool is_incognito,
       base::RepeatingCallback<std::string(const GURL& url)>
           disallow_message_callback);
 
@@ -45,6 +46,9 @@ class FingerprintingProtectionChildNavigationThrottle
   bool ShouldDeferNavigation() const override;
   void OnReadyToResumeNavigationWithLoadPolicy() override;
   void NotifyLoadPolicy() const override;
+
+  // Whether the current navigation is in an incognito window.
+  bool is_incognito_;
 
   base::WeakPtrFactory<FingerprintingProtectionChildNavigationThrottle>
       weak_ptr_factory_{this};

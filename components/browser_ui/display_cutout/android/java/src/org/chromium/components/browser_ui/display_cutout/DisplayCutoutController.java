@@ -4,14 +4,14 @@
 
 package org.chromium.components.browser_ui.display_cutout;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -21,6 +21,8 @@ import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.blink.mojom.ViewportFit;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -35,6 +37,7 @@ import org.chromium.ui.base.WindowAndroid;
  * Delegate#getAttachedActivity()} returns a non-null value. The cutout mode is set on the
  * Activity's window only in P+, and only when the associated WebContents is fullscreen.
  */
+@NullMarked
 public class DisplayCutoutController implements InsetObserver.WindowInsetObserver, UserData {
     private static final String TAG = "E2E_DCController";
 
@@ -42,7 +45,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
             DisplayCutoutController.class;
 
     /** {@link Window} of the current {@link Activity}. */
-    private Window mWindow;
+    private @Nullable Window mWindow;
 
     /** The current viewport fit value. */
     private @WebContentsObserver.ViewportFitType int mViewportFit = ViewportFit.AUTO;
@@ -76,8 +79,13 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      */
     public interface SafeAreaInsetsTracker {
 
-        /** @return whether this Tracker was created for a web page set to Cover. */
+        /**
+         * @return whether this Tracker was created for a web page set to Cover.
+         */
         boolean isViewportFitCover();
+
+        /** Return whether the safe area is constrained on the current web page. */
+        boolean hasSafeAreaConstraint();
     }
 
     /**
@@ -86,6 +94,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      */
     private static class SafeAreaInsetsTrackerImpl implements SafeAreaInsetsTracker {
         private boolean mIsViewportFitCover;
+        private boolean mHasSafeAreaConstraint;
 
         /** Sets whether this Tracker was created for a web page set to Cover. */
         public void setIsViewportFitCover(boolean isViewportFitCover) {
@@ -96,27 +105,34 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         public boolean isViewportFitCover() {
             return mIsViewportFitCover;
         }
+
+        /** Sets whether there are safe area constraint for the web page. */
+        public void setSafeAreaConstraint(boolean hasConstraint) {
+            mHasSafeAreaConstraint = hasConstraint;
+        }
+
+        @Override
+        public boolean hasSafeAreaConstraint() {
+            return mHasSafeAreaConstraint;
+        }
     }
 
     /** An interface for providing embedder-specific behavior to the controller. */
     public interface Delegate {
 
         /** Returns the activity this controller is associated with, if there is one. */
-        @Nullable
-        Activity getAttachedActivity();
+        @Nullable Activity getAttachedActivity();
 
         /**
          * Returns the {@link WebContents} this controller should update the safe area for, if there
          * is one.
          */
-        @Nullable
-        WebContents getWebContents();
+        @Nullable WebContents getWebContents();
 
         /**
          * Returns the InsetObserver this controller uses for safe area updates, if there is one.
          */
-        @Nullable
-        InsetObserver getInsetObserver();
+        @Nullable InsetObserver getInsetObserver();
 
         /** Returns whether the user can interact with the associated WebContents/UI element. */
         boolean isInteractable();
@@ -136,27 +152,14 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
 
     // Helper implementation to observe fullscreen changes and trigger re-layout.
     private class FullscreenWebContentsObserver extends WebContentsObserver {
-        private boolean mIsDestroyed;
-
         FullscreenWebContentsObserver(WebContents webContents) {
             super(webContents);
-        }
-
-        @Nullable
-        WebContents getWebContents() {
-            return mIsDestroyed ? null : mWebContents.get();
         }
 
         @Override
         public void didToggleFullscreenModeForTab(
                 boolean enteredFullscreen, boolean willCauseResize) {
             maybeUpdateLayout();
-        }
-
-        @Override
-        public void destroy() {
-            mIsDestroyed = true;
-            super.destroy();
         }
     }
 
@@ -177,7 +180,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      * @param tab The Tab to get the controller from.
      * @param delegate A delegate to embedder-specific behavior to the controller.
      */
-    public static @NonNull DisplayCutoutController createForTab(Tab tab, Delegate delegate) {
+    public static DisplayCutoutController createForTab(Tab tab, Delegate delegate) {
         UserDataHost host = tab.getUserDataHost();
         DisplayCutoutController controller = host.getUserData(USER_DATA_KEY);
         return controller != null
@@ -220,13 +223,13 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         updateInsetObserver(null);
         updateBrowserCutoutObserver(null);
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
         }
         mWindow = null;
     }
 
-    private void updateInsetObserver(InsetObserver observer) {
+    private void updateInsetObserver(@Nullable InsetObserver observer) {
         if (mInsetObserver == observer) return;
 
         if (mInsetObserver != null) {
@@ -243,10 +246,10 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         }
     }
 
-    private void updateBrowserCutoutObserver(ObservableSupplier<Integer> supplier) {
+    private void updateBrowserCutoutObserver(@Nullable ObservableSupplier<Integer> supplier) {
         if (mBrowserCutoutModeSupplier == supplier) return;
 
-        if (mBrowserCutoutModeObserver != null) {
+        if (mBrowserCutoutModeObserver != null && mBrowserCutoutModeSupplier != null) {
             mBrowserCutoutModeSupplier.removeObserver(mBrowserCutoutModeObserver);
         }
         mBrowserCutoutModeSupplier = supplier;
@@ -261,21 +264,19 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     }
 
     private void updateWebContentObserver(@Nullable WebContents webContents) {
-        if (webContents == null) {
-            if (mWebContentsObserver != null) {
-                mWebContentsObserver.destroy();
-                mWebContentsObserver = null;
-            }
+        if (mWebContentsObserver != null
+                && webContents != null
+                && mWebContentsObserver.getWebContents() == webContents) {
             return;
         }
 
-        if (mWebContentsObserver != null && mWebContentsObserver.mIsDestroyed) {
-            if (webContents.equals(mWebContentsObserver.getWebContents())) {
-                return;
-            } else {
-                mWebContentsObserver.destroy();
-            }
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.observe(null);
+            mWebContentsObserver = null;
         }
+
+        if (webContents == null) return;
+
         mWebContentsObserver = new FullscreenWebContentsObserver(webContents);
     }
 
@@ -296,7 +297,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         // TODO(crbug.com/40281421): Investigate whether if() can be turned into assert.
         // Most likely we will need to just remove this section when E2E is launched.
         if (!mDelegate.isDrawEdgeToEdgeEnabled()
-                && !mDelegate.getWebContents().isFullscreenForCurrentTab()
+                && !assumeNonNull(mDelegate.getWebContents()).isFullscreenForCurrentTab()
                 && !mDelegate.isInBrowserFullscreen()) {
             value = ViewportFit.AUTO;
         }
@@ -310,6 +311,16 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
             // from recent tabs) the insets may be incorrect and outdated.
             maybePushSafeAreaInsets(mCachedSafeAreaInsets);
         }
+    }
+
+    /**
+     * Set whether there are safe area constraint on the current web page.
+     *
+     * @param hasConstraint whether the safe area is constrained on the current web page.
+     */
+    public void setSafeAreaConstraint(boolean hasConstraint) {
+        Log.i(TAG, "setSafeAreaConstraint: %b", hasConstraint);
+        mSafeAreaInsetsTracker.setSafeAreaConstraint(hasConstraint);
     }
 
     /**
@@ -361,7 +372,9 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
 
     @VisibleForTesting
     protected float getDipScale() {
-        return mDelegate.getWebContents().getTopLevelNativeWindow().getDisplay().getDipScale();
+        return assumeNonNull(assumeNonNull(mDelegate.getWebContents()).getTopLevelNativeWindow())
+                .getDisplay()
+                .getDipScale();
     }
 
     /**
@@ -385,7 +398,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         }
 
         // Never draw under notch if it is not in fullscreen mode.
-        if (!mDelegate.getWebContents().isFullscreenForCurrentTab()) {
+        if (!assumeNonNull(mDelegate.getWebContents()).isFullscreenForCurrentTab()) {
             return LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
         }
 
@@ -398,12 +411,13 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     }
 
     @VisibleForTesting
-    protected LayoutParams getWindowAttributes() {
+    protected @Nullable LayoutParams getWindowAttributes() {
         return mWindow == null ? null : mWindow.getAttributes();
     }
 
     @VisibleForTesting
     protected void setWindowAttributes(LayoutParams attributes) {
+        assumeNonNull(mWindow);
         mWindow.setAttributes(attributes);
     }
 
@@ -435,7 +449,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         updateWebContentObserver(mDelegate.getWebContents());
     }
 
-    public WebContentsObserver getWebContentObserverForTesting() {
+    public @Nullable WebContentsObserver getWebContentObserverForTesting() {
         return mWebContentsObserver;
     }
 }

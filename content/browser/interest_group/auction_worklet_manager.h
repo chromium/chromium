@@ -116,7 +116,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
     // Returns the cookie deprecation label for facilitated testing.
     virtual std::optional<std::string> GetCookieDeprecationLabel() = 0;
 
-    virtual void GetBiddingAndAuctionServerKey(
+    virtual void GetTrustedKeyValueServerKey(
+        const url::Origin& scope_origin,
         const std::optional<url::Origin>& coordinator,
         base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
                                                std::string>)> callback) = 0;
@@ -137,6 +138,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
                const std::optional<GURL>& wasm_url,
                const std::optional<GURL>& signals_url,
                bool needs_cors_for_additional_bid,
+               std::optional<bool> send_creative_scanning_metadata,
                std::optional<uint16_t> experiment_group_id,
                const std::string& trusted_bidding_signals_slot_size_param,
                const std::optional<url::Origin>& trusted_signals_coordinator);
@@ -157,6 +159,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
     // `needs_cors_for_additional_bid` is set for buyer reporting for additional
     // bids; those need to perform a CORS check others don't.
     bool needs_cors_for_additional_bid;
+
+    std::optional<bool> send_creative_scanning_metadata;
 
     std::optional<uint16_t> experiment_group_id;
     std::string trusted_bidding_signals_slot_size_param;
@@ -205,6 +209,11 @@ class CONTENT_EXPORT AuctionWorkletManager {
     // when this is a seller worklet with a KVv2 trusted scoring signals URL,
     // and KVv2 signals and the KVv2 cache are enabled.
     bool TrustedScoringSignalsUrlAllowed() const;
+
+    // Returns KVv2 trusted scoring signals public key if one is in used.
+    // Must only be called after the worklet available callback has been called.
+    const auction_worklet::mojom::TrustedSignalsPublicKey*
+    GetTrustedSignalsPublicKey() const;
 
     const SubresourceUrlAuthorizations&
     GetSubresourceUrlAuthorizationsForTesting();
@@ -329,6 +338,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
       const std::optional<GURL>& trusted_scoring_signals_url,
       std::optional<uint16_t> experiment_group_id,
       const std::optional<url::Origin>& trusted_scoring_signals_coordinator,
+      std::optional<bool> send_creative_scanning_metadata,
       base::OnceClosure process_assigned_callback,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,

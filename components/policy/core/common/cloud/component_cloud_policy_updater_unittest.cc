@@ -199,7 +199,7 @@ TEST_F(ComponentCloudPolicyUpdaterTest, PolicyFetchResponseInvalid) {
 
   // Submit two valid policy fetch responses.
   builder_.policy_data().set_username(PolicyBuilder::kFakeUsername);
-  builder_.policy_data().set_gaia_id(PolicyBuilder::kFakeGaiaId);
+  builder_.policy_data().set_gaia_id(PolicyBuilder::kFakeGaiaId.ToString());
   builder_.policy_data().set_settings_entity_id(kTestExtension2);
   builder_.payload().set_download_url(kTestDownload2);
   updater_->UpdateExternalPolicy(

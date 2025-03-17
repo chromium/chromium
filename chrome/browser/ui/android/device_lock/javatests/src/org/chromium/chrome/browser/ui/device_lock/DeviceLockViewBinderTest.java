@@ -38,9 +38,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.SigninFeatures;
@@ -118,7 +116,6 @@ public class DeviceLockViewBinderTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     @DisabledTest(message = "crbug.com/347214230")
     public void testDeviceLockView_preExistingLock_showsAppropriateTexts() {
         mViewModel.set(PREEXISTING_DEVICE_LOCK, true);
@@ -215,7 +212,6 @@ public class DeviceLockViewBinderTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void
             testDeviceLockView_inSignInFlowWithPreExistingLock_dismissButtonHasDismissedSignInText() {
         mViewModel.set(SOURCE, DeviceLockActivityLauncher.Source.SYNC_CONSENT);
@@ -284,7 +280,6 @@ public class DeviceLockViewBinderTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testDeviceLockView_userUnderstandsButtonClicked_triggersOnClick() {
         mViewModel.set(PREEXISTING_DEVICE_LOCK, true);
         mUserUnderstandsButtonClicked.set(false);

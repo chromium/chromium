@@ -24,14 +24,10 @@ PrinterBasicInfo::PrinterBasicInfo() = default;
 PrinterBasicInfo::PrinterBasicInfo(const std::string& printer_name,
                                    const std::string& display_name,
                                    const std::string& printer_description,
-                                   int printer_status,
-                                   bool is_default,
                                    const PrinterBasicInfoOptions& options)
     : printer_name(printer_name),
       display_name(display_name),
       printer_description(printer_description),
-      printer_status(printer_status),
-      is_default(is_default),
       options(options) {}
 
 PrinterBasicInfo::PrinterBasicInfo(const PrinterBasicInfo& other) = default;
@@ -42,8 +38,7 @@ bool PrinterBasicInfo::operator==(const PrinterBasicInfo& other) const {
   return printer_name == other.printer_name &&
          display_name == other.display_name &&
          printer_description == other.printer_description &&
-         printer_status == other.printer_status &&
-         is_default == other.is_default && options == other.options;
+         options == other.options;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

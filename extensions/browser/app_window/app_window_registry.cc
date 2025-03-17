@@ -4,12 +4,12 @@
 
 #include "extensions/browser/app_window/app_window_registry.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -80,7 +80,7 @@ void AppWindowRegistry::AppWindowShown(AppWindow* app_window, bool was_hidden) {
 
 void AppWindowRegistry::RemoveAppWindow(AppWindow* app_window) {
   const AppWindowList::iterator it =
-      base::ranges::find(app_windows_, app_window);
+      std::ranges::find(app_windows_, app_window);
   if (it != app_windows_.end())
     app_windows_.erase(it);
   for (auto& observer : observers_)
@@ -184,7 +184,7 @@ void AppWindowRegistry::AddAppWindowToList(AppWindow* app_window) {
 
 void AppWindowRegistry::BringToFront(AppWindow* app_window) {
   const AppWindowList::iterator it =
-      base::ranges::find(app_windows_, app_window);
+      std::ranges::find(app_windows_, app_window);
   if (it != app_windows_.end())
     app_windows_.erase(it);
   app_windows_.push_front(app_window);

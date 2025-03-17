@@ -4,6 +4,7 @@
 
 #include "services/device/hid/hid_connection_win.h"
 
+#include <algorithm>
 #include <cstring>
 #include <utility>
 
@@ -14,7 +15,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/win/object_watcher.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/public/cpp/device_features.h"
@@ -327,8 +327,8 @@ void HidConnectionWin::OnWriteComplete(HANDLE file_handle,
 
 std::unique_ptr<PendingHidTransfer> HidConnectionWin::UnlinkTransfer(
     PendingHidTransfer* transfer) {
-  auto it = base::ranges::find(transfers_, transfer,
-                               &std::unique_ptr<PendingHidTransfer>::get);
+  auto it = std::ranges::find(transfers_, transfer,
+                              &std::unique_ptr<PendingHidTransfer>::get);
   CHECK(it != transfers_.end(), base::NotFatalUntil::M130);
   std::unique_ptr<PendingHidTransfer> saved_transfer = std::move(*it);
   transfers_.erase(it);

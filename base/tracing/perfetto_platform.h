@@ -34,8 +34,7 @@ class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
   // thread IDs.
   perfetto::base::PlatformThreadId GetCurrentThreadId() override;
 
-  void ResetTaskRunnerForTesting(
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  void ResetTaskRunner(scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
   WeakPtr<PerfettoTaskRunner> perfetto_task_runner_;

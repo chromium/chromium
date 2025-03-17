@@ -44,6 +44,9 @@ class ThreadSnapshotLinux final : public ThreadSnapshot {
   //!     the thread.
   //! \param[in] thread The thread within the ProcessReaderLinux for
   //!     which the snapshot should be created.
+  //! \param[inout] gather_indirectly_referenced_memory_bytes_remaining The
+  //!     remaining budget for indirectly referenced memory, honored on entry
+  //!     and updated on return.
   //!
   //! \return `true` if the snapshot could be created, `false` otherwise with
   //!     a message logged.

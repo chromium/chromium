@@ -30,7 +30,7 @@ export class GrowthInternalsAppElement extends PolymerElement {
         type: String,
         value: 0,
         notify: true,
-      }
+      },
     };
   }
 
@@ -48,7 +48,7 @@ export class GrowthInternalsAppElement extends PolymerElement {
     return await this.browserProxy_!.handler!.getCampaignsLogs();
   }
 
-  private async onClickClearAllEventsButton_(event: Event) {
+  private onClickClearAllEventsButton_(event: Event) {
     event.stopPropagation();
     this.browserProxy_!.handler!.clearAllEvents();
   }
@@ -73,7 +73,7 @@ export class GrowthInternalsAppElement extends PolymerElement {
     }
 
     this.filteredLogs_ = [];
-    var startsMatchingCampaignWithId = false;
+    let startsMatchingCampaignWithId = false;
     const startIndicator = `Evaluating campaign: ${this.campaignId_}.`;
     const endIndicator = `Campaign: ${this.campaignId_} is matched:`;
 

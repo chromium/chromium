@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSSFontFaceDescriptors interface: existence and properties of interface object
   assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
 [FAIL] CSSFontFaceDescriptors interface object length
@@ -33,6 +33,14 @@ Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSSFontFaceDescriptors interface: attribute fontWidth
   assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
 [FAIL] CSSFontFaceDescriptors interface: attribute font-width
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute fontSize
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute font-size
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute sizeAdjust
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute size-adjust
   assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
 [FAIL] CSSFontFaceDescriptors interface: attribute unicodeRange
   assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
@@ -70,36 +78,26 @@ Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
 [FAIL] CSSFontFaceDescriptors interface: attribute line-gap-override
   assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute superscriptPositionOverride
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute superscript-position-override
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute subscriptPositionOverride
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute subscript-position-override
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute superscriptSizeOverride
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute superscript-size-override
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute subscriptSizeOverride
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute subscript-size-override
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
 [FAIL] CSSFontFaceRule interface: attribute style
   assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
-[FAIL] CSSFontFeatureValuesRule interface: existence and properties of interface object
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
-[FAIL] CSSFontFeatureValuesRule interface object length
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
-[FAIL] CSSFontFeatureValuesRule interface object name
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
-[FAIL] CSSFontFeatureValuesRule interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
-[FAIL] CSSFontFeatureValuesRule interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
-[FAIL] CSSFontFeatureValuesRule interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
-[FAIL] CSSFontFeatureValuesRule interface: attribute fontFamily
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
-[FAIL] CSSFontFeatureValuesRule interface: attribute annotation
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
-[FAIL] CSSFontFeatureValuesRule interface: attribute ornaments
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
-[FAIL] CSSFontFeatureValuesRule interface: attribute stylistic
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
-[FAIL] CSSFontFeatureValuesRule interface: attribute swash
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
-[FAIL] CSSFontFeatureValuesRule interface: attribute characterVariant
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
-[FAIL] CSSFontFeatureValuesRule interface: attribute styleset
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
 [FAIL] CSSFontFeatureValuesRule interface: attribute historicalForms
-  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
+  assert_true: The prototype object must have a property "historicalForms" expected true got false
 [FAIL] CSSFontFeatureValuesMap interface: existence and properties of interface object
   assert_own_property: self does not have own property "CSSFontFeatureValuesMap" expected property "CSSFontFeatureValuesMap" missing
 [FAIL] CSSFontFeatureValuesMap interface object length

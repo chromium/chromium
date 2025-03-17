@@ -5,6 +5,7 @@
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import type {AutofillFormData} from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {isTextField, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * @fileoverview Installs Passwords management functions on the gCrWeb object.
@@ -87,7 +88,7 @@ function onSubmitButtonTouchEnd(evt: Event) {
   if (!formData) {
     return;
   }
-  gCrWeb.common.sendWebKitMessage('PasswordFormSubmitButtonClick', formData);
+  sendWebKitMessage('PasswordFormSubmitButtonClick', formData);
 }
 
 /**
@@ -251,7 +252,7 @@ function getUsernameInputElementForFill(
   if (!usernameInput) {
     return null;
   }
-  if (!gCrWeb.common.isTextField(usernameInput)) {
+  if (!isTextField(usernameInput)) {
     return null;
   }
   return usernameInput;
@@ -376,13 +377,13 @@ function getPasswordFormDataList(formDataList: AutofillFormData[]) {
  * JS object containing the form data.
  * @return Object of data from formElement.
  */
-function getPasswordFormDataFromUnownedElements(): object|void {
+function getPasswordFormDataFromUnownedElements(): object|null {
   const fieldsets: fillConstants.FormControlElement[] = [];
   const unownedControlElements =
       gCrWeb.fill.getUnownedAutofillableFormFieldElements(
           document.all, fieldsets);
   if (unownedControlElements.length === 0) {
-    return;
+    return null;
   }
   const unownedForm = new gCrWeb['common'].JSONSafeObject();
   const hasUnownedForm = gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(

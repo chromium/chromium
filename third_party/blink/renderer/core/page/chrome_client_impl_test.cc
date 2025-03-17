@@ -40,7 +40,6 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-blink.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -504,29 +503,21 @@ TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesDuringFill) {
   // JavaScript edits the value later. A common usecase is that we fill a
   // credit card as a sequence of digits and the website inserts spaces to
   // group the digits into blocks of four.
-  // When the feature AllowJavaScriptToResetAutofillState is enabled, we expect
-  // the opposite since this feature experiments with changing the product
-  // decision.
-  EXPECT_EQ(
-      text_element->GetAutofillState() == WebAutofillState::kAutofilled,
-      !RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled());
+  EXPECT_EQ(text_element->GetAutofillState(), WebAutofillState::kAutofilled);
   EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
               ::testing::ElementsAre("text", "autofilled_text"));
 
   textarea_element->SetAutofillValue("autofilled_textarea");
   EXPECT_THAT(textarea_element->Value(), Eq("overridden"));
-  EXPECT_EQ(
-      textarea_element->GetAutofillState() == WebAutofillState::kAutofilled,
-      !RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled());
+  EXPECT_EQ(textarea_element->GetAutofillState(),
+            WebAutofillState::kAutofilled);
   EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
               ::testing::ElementsAre("textarea", "autofilled_textarea"));
 
   select_element->SetAutofillValue("autofilled_select",
                                    WebAutofillState::kAutofilled);
   EXPECT_THAT(select_element->Value(), Eq("overridden"));
-  EXPECT_EQ(
-      select_element->GetAutofillState() == WebAutofillState::kAutofilled,
-      !RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled());
+  EXPECT_EQ(select_element->GetAutofillState(), WebAutofillState::kAutofilled);
   EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
               ::testing::ElementsAre("select", "autofilled_select"));
 }

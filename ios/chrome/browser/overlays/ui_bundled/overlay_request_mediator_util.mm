@@ -23,8 +23,9 @@ OverlayRequestMediator* GetMediatorForRequest(NSArray<Class>* mediator_classes,
                                               OverlayRequest* request) {
   for (Class mediator_class in mediator_classes) {
     DCHECK([mediator_class isSubclassOfClass:[OverlayRequestMediator class]]);
-    if ([mediator_class requestSupport]->IsRequestSupported(request))
+    if ([mediator_class requestSupport]->IsRequestSupported(request)) {
       return [[mediator_class alloc] initWithRequest:request];
+    }
   }
   return nil;
 }

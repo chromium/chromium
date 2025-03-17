@@ -8,15 +8,17 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
+#include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
@@ -34,7 +36,6 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
@@ -55,26 +56,25 @@
 
 namespace {
 
-class DiscardObserver : public resource_coordinator::TabLifecycleObserver,
+class DiscardObserver : public resource_coordinator::LifecycleUnitObserver,
                         public ui::test::StateObserver<bool> {
  public:
   explicit DiscardObserver(int expected_tab_discarded_count)
       : expected_tab_discarded_count_(expected_tab_discarded_count) {
-    resource_coordinator::TabLifecycleUnitExternal::AddTabLifecycleObserver(
+    resource_coordinator::GetTabLifecycleUnitSource()->AddLifecycleObserver(
         this);
   }
 
   ~DiscardObserver() override {
-    resource_coordinator::TabLifecycleUnitExternal::RemoveTabLifecycleObserver(
+    resource_coordinator::GetTabLifecycleUnitSource()->RemoveLifecycleObserver(
         this);
   }
 
-  void OnTabLifecycleStateChange(
-      content::WebContents* contents,
-      mojom::LifecycleUnitState previous_state,
-      mojom::LifecycleUnitState new_state,
-      std::optional<LifecycleUnitDiscardReason> discard_reason) override {
-    if (new_state == mojom::LifecycleUnitState::DISCARDED) {
+  void OnLifecycleUnitStateChanged(
+      resource_coordinator::LifecycleUnit* lifecycle_unit,
+      ::mojom::LifecycleUnitState last_state,
+      ::mojom::LifecycleUnitStateChangeReason reason) override {
+    if (lifecycle_unit->GetState() == ::mojom::LifecycleUnitState::DISCARDED) {
       expected_tab_discarded_count_--;
     }
 
@@ -108,10 +108,6 @@ class PerformanceInterventionInteractiveTest
 
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
-    feature_list_.InitAndEnableFeatureWithParameters(
-        performance_manager::features::kPerformanceInterventionUI,
-        {{"intervention_show_mixed_profile", "false"},
-         {"intervention_dialog_version", "2"}});
     InteractiveFeaturePromoTest::SetUp();
   }
 
@@ -205,9 +201,6 @@ class PerformanceInterventionInteractiveTest
                                enabled);
     });
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
@@ -227,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
-                       BodyTextControlledByFeatureParamSingluarTab) {
+                       BodyTextSingularTab) {
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GetURL()),
       TriggerOnActionableTabListChange({0}),
@@ -237,11 +230,11 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody,
           &views::Label::GetText,
           l10n_util::GetStringUTF16(
-              IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V2)));
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V1)));
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
-                       BodyTextControlledByFeatureParamPluralTabs) {
+                       BodyTextPluralTabs) {
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GetURL()),
       AddInstrumentedTab(kThirdTab, GetURL()),
@@ -252,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody,
           &views::Label::GetText,
           l10n_util::GetStringUTF16(
-              IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V2)));
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V1)));
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
@@ -720,75 +713,3 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
             InterventionMessageTriggerResult::kRateLimited, 1);
       }));
 }
-
-class PerformanceInterventionMixedProfileTest
-    : public PerformanceInterventionInteractiveTest {
- public:
-  void SetUp() override {
-    set_open_about_blank_on_browser_launch(true);
-
-    feature_list_.InitAndEnableFeatureWithParameters(
-        performance_manager::features::kPerformanceInterventionUI,
-        {{"intervention_show_mixed_profile", "true"}});
-    InteractiveFeaturePromoTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// We can only have one non-off record profile open at a time on ChromeOS so
-// users will not encounter this case.
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PerformanceInterventionMixedProfileTest,
-                       SuggestTabsForMultipleProfiles) {
-  // Create two browser windows with tabs and ensure the second browser window
-  // is active
-  Browser* const first_browser = browser();
-  ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 0, GetURL("a.com"),
-                                     ui::PageTransition::PAGE_TRANSITION_LINK));
-  ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 1, GetURL("b.com"),
-                                     ui::PageTransition::PAGE_TRANSITION_LINK));
-
-  Browser* const second_browser = CreateBrowser(CreateTestProfile());
-  ASSERT_TRUE(AddTabAtIndexToBrowser(second_browser, 0, GetURL("c.com"),
-                                     ui::PageTransition::PAGE_TRANSITION_LINK));
-  BrowserWindow* const first_browser_window = first_browser->window();
-  BrowserWindow* const second_browser_window = second_browser->window();
-  second_browser_window->Activate();
-  ASSERT_TRUE(second_browser_window->IsActive());
-  ASSERT_FALSE(first_browser_window->IsActive());
-
-  ToolbarButton* const first_button =
-      BrowserView::GetBrowserViewForBrowser(first_browser)
-          ->toolbar()
-          ->performance_intervention_button();
-  ToolbarButton* const second_button =
-      BrowserView::GetBrowserViewForBrowser(second_browser)
-          ->toolbar()
-          ->performance_intervention_button();
-  ASSERT_FALSE(first_button->GetVisible());
-  ASSERT_FALSE(second_button->GetVisible());
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kMessageTriggerResultHistogram,
-      InterventionMessageTriggerResult::kMixedProfile, 0);
-  histogram_tester.ExpectBucketCount(kMessageTriggerResultHistogram,
-                                     InterventionMessageTriggerResult::kShown,
-                                     0);
-
-  // We should show the toolbar button on the second browser because it is the
-  // last active browser even though all actionable tabs belong to the first
-  // browser.
-  NotifyActionableTabListChange({0, 1}, first_browser);
-  EXPECT_FALSE(first_button->GetVisible());
-  EXPECT_TRUE(second_button->GetVisible());
-  histogram_tester.ExpectBucketCount(
-      kMessageTriggerResultHistogram,
-      InterventionMessageTriggerResult::kMixedProfile, 0);
-  histogram_tester.ExpectBucketCount(kMessageTriggerResultHistogram,
-                                     InterventionMessageTriggerResult::kShown,
-                                     1);
-}
-#endif

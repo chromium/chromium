@@ -4,7 +4,10 @@
 
 package org.chromium.components.strictmode;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Placeholder exception thrown for the custom death penalty. */
+@NullMarked
 public final class StrictModePolicyViolation extends Error {
     public StrictModePolicyViolation(Violation v) {
         super(v.violationString());

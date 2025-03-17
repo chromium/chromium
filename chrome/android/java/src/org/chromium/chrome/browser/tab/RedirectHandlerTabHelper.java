@@ -56,9 +56,10 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
 
     /**
      * Replace {@link RedirectHandler} instance for the Tab with the new one.
+     *
      * @return Old {@link RedirectHandler} associated with the Tab. Could be {@code null}.
      */
-    public static RedirectHandler swapHandlerFor(Tab tab, RedirectHandler newHandler) {
+    public static RedirectHandler swapHandlerForTesting(Tab tab, RedirectHandler newHandler) {
         assert newHandler != null;
         RedirectHandlerTabHelper helper = tab.getUserDataHost().getUserData(USER_DATA_KEY);
         if (helper == null) {

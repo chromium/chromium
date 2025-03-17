@@ -139,14 +139,14 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                         AccountPickerLaunchMode.DEFAULT,
                         /* isWebSignin= */ false,
                         mSigninAccessPoint,
-                        /* selectedCoreAccountId= */ null);
+                        /* selectedAccountId= */ null);
     }
 
     private void makeSigninNotAllowedToast() {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.SigninDisabledNotificationShown",
                 mSigninAccessPoint,
-                SigninAccessPoint.MAX);
+                SigninAccessPoint.MAX_VALUE);
         if (mSetTestToast) return;
         Toast.makeText(
                         mWindowAndroid.getActivity().get(),

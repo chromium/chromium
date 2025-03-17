@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.selection;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Build;
 import android.provider.Settings;
@@ -11,7 +13,6 @@ import android.text.TextUtils;
 import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -19,6 +20,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
@@ -37,6 +41,7 @@ import java.lang.annotation.RetentionPolicy;
  * SmartSelectionProvider which does the classification itself.
  */
 @JNINamespace("content")
+@NullMarked
 public class SmartSelectionClient implements SelectionClient, UserData {
     @IntDef({RequestType.CLASSIFY, RequestType.SUGGEST_AND_CLASSIFY})
     @Retention(RetentionPolicy.SOURCE)
@@ -55,9 +60,12 @@ public class SmartSelectionClient implements SelectionClient, UserData {
     private static final int NUM_EXTRA_CHARS = 240;
 
     private long mNativeSmartSelectionClient;
+
     private SmartSelectionProvider mProvider;
+
     private ResultCallback mCallback;
-    private SmartSelectionEventProcessor mSmartSelectionEventProcessor;
+
+    private @Nullable SmartSelectionEventProcessor mSmartSelectionEventProcessor;
 
     /** Observer list for surrounding text received. */
     private final ObserverList<SurroundingTextCallback> mSurroundingTextReceivedListeners =
@@ -67,7 +75,7 @@ public class SmartSelectionClient implements SelectionClient, UserData {
      * Creates the SmartSelectionClient if not present. Returns null in case SmartSelectionProvider
      * does not exist in the system.
      */
-    public static SmartSelectionClient fromWebContents(
+    public static @Nullable SmartSelectionClient fromWebContents(
             ResultCallback callback, WebContents webContents) {
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return null;
@@ -78,8 +86,10 @@ public class SmartSelectionClient implements SelectionClient, UserData {
         }
 
         SmartSelectionClient client =
-                ((WebContentsImpl) webContents)
-                        .getOrSetUserData(SmartSelectionClient.class, SmartSelectionClient::new);
+                assumeNonNull(
+                        ((WebContentsImpl) webContents)
+                                .getOrSetUserData(
+                                        SmartSelectionClient.class, SmartSelectionClient::new));
         client.setCallback(callback, webContents);
         return client;
     }
@@ -92,6 +102,7 @@ public class SmartSelectionClient implements SelectionClient, UserData {
                 SmartSelectionClientJni.get().init(SmartSelectionClient.this, webContents);
     }
 
+    @Initializer
     private void setCallback(ResultCallback callback, WebContents webContents) {
         mCallback = callback;
         mProvider =
@@ -133,7 +144,7 @@ public class SmartSelectionClient implements SelectionClient, UserData {
     }
 
     @Override
-    public SelectionEventProcessor getSelectionEventProcessor() {
+    public @Nullable SelectionEventProcessor getSelectionEventProcessor() {
         return mSmartSelectionEventProcessor;
     }
 
@@ -143,12 +154,12 @@ public class SmartSelectionClient implements SelectionClient, UserData {
     }
 
     @Override
-    public TextClassifier getTextClassifier() {
+    public @Nullable TextClassifier getTextClassifier() {
         return mProvider.getTextClassifier();
     }
 
     @Override
-    public TextClassifier getCustomTextClassifier() {
+    public @Nullable TextClassifier getCustomTextClassifier() {
         return mProvider.getCustomTextClassifier();
     }
 
@@ -203,7 +214,7 @@ public class SmartSelectionClient implements SelectionClient, UserData {
         }
     }
 
-    private static boolean isDeviceProvisioned(Context context) {
+    private static boolean isDeviceProvisioned(@Nullable Context context) {
         if (context == null || context.getContentResolver() == null) return true;
         // Returns false when device is not provisioned, i.e. before a new device went through
         // signup process.

@@ -14,9 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.TimeUtils;
 import org.chromium.base.Token;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -34,7 +32,6 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /** Utility methods for tab group sync. */
 public final class TabGroupSyncUtils {
@@ -43,16 +40,6 @@ public final class TabGroupSyncUtils {
     public static final String UNSAVEABLE_TAB_TITLE = "Unsavable tab";
     public static final GURL NTP_URL = new GURL(UrlConstants.NTP_NON_NATIVE_URL);
     public static final String NEW_TAB_TITLE = "New tab";
-
-    // On startup, we look for any unsynced local tab groups and add them to sync. But if the group
-    // was too old in past, we don't consider them relevant and exclude them from sync in order to
-    // avoid noise in the tab group list surface.
-    public static final int
-            DEFAULT_MAX_DAYS_OF_STALENESS_ACCEPTED_FOR_ADDING_TAB_GROUP_TO_SYNC_ON_STARTUP =
-                    Integer.MAX_VALUE;
-    public static final String
-            PARAM_MAX_DAYS_OF_STALENESS_ACCEPTED_FOR_ADDING_TAB_GROUP_TO_SYNC_ON_STARTUP =
-                    "max_days_of_staleness_accepted_for_adding_tab_group_to_sync_on_startup";
 
     /**
      * Whether the given {@param localId} corresponds to a tab group in the current window
@@ -63,20 +50,20 @@ public final class TabGroupSyncUtils {
      */
     public static boolean isInCurrentWindow(
             TabGroupModelFilter tabGroupModelFilter, LocalTabGroupId localId) {
-        int rootId = tabGroupModelFilter.getRootIdFromStableId(localId.tabGroupId);
+        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(localId.tabGroupId);
         return rootId != Tab.INVALID_TAB_ID;
     }
 
     /** Conversion method to get a {@link LocalTabGroupId} from a root ID. */
     public static LocalTabGroupId getLocalTabGroupId(TabGroupModelFilter filter, int rootId) {
-        Token tabGroupId = filter.getStableIdFromRootId(rootId);
+        Token tabGroupId = filter.getTabGroupIdFromRootId(rootId);
         return tabGroupId == null ? null : new LocalTabGroupId(tabGroupId);
     }
 
     /** Conversion method to get a root ID from a {@link LocalTabGroupId}. */
     public static int getRootId(TabGroupModelFilter filter, LocalTabGroupId localTabGroupId) {
         assert localTabGroupId != null;
-        return filter.getRootIdFromStableId(localTabGroupId.tabGroupId);
+        return filter.getRootIdFromTabGroupId(localTabGroupId.tabGroupId);
     }
 
     /** Util method to get a {@link LocalTabGroupId} from a tab. */
@@ -169,25 +156,6 @@ public final class TabGroupSyncUtils {
     }
 
     /**
-     * @return Whether a tab group is ineligible for syncing, e.g. too old to sync. An ineligible
-     *     group will be skipped from adding to sync during initial sync on startup.
-     */
-    public static boolean isTabGroupEligibleForSyncing(
-            LocalTabGroupId localTabGroupId, TabGroupModelFilter tabGroupModelFilter) {
-        long lastAccessTime =
-                getTabGroupLastAccessTime(localTabGroupId.tabGroupId, tabGroupModelFilter);
-        long currentTime = TimeUtils.currentTimeMillis();
-        int maxDaysOfStalenessAccepted =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-                        PARAM_MAX_DAYS_OF_STALENESS_ACCEPTED_FOR_ADDING_TAB_GROUP_TO_SYNC_ON_STARTUP,
-                        DEFAULT_MAX_DAYS_OF_STALENESS_ACCEPTED_FOR_ADDING_TAB_GROUP_TO_SYNC_ON_STARTUP);
-        long maxStalenessAcceptedInMillis =
-                TimeUnit.MILLISECONDS.convert(maxDaysOfStalenessAccepted, TimeUnit.DAYS);
-        return currentTime - lastAccessTime < maxStalenessAcceptedInMillis;
-    }
-
-    /**
      * Returns the last access time of a tab group which is determined by most recent access time
      * across all of its tabs.
      *
@@ -197,7 +165,7 @@ public final class TabGroupSyncUtils {
      */
     public static long getTabGroupLastAccessTime(
             Token tabGroupId, TabGroupModelFilter tabGroupModelFilter) {
-        int rootId = tabGroupModelFilter.getRootIdFromStableId(tabGroupId);
+        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
         List<Tab> tabs = tabGroupModelFilter.getRelatedTabListForRootId(rootId);
         long mostRecentAccessTime = 0;
         for (Tab tab : tabs) {
@@ -224,6 +192,22 @@ public final class TabGroupSyncUtils {
     }
 
     /**
+     * Called to update the tab redirect chain.
+     *
+     * @param tab Tab that triggers the navigation.
+     * @param navigationHandle Navigation handle to retrieve the redirect chain from.
+     */
+    public static void updateTabRedirectChain(Tab tab, NavigationHandle navigationHandle) {
+        if (tab.getTabGroupId() == null) return;
+        TabGroupSyncUtilsJni.get()
+                .updateTabRedirectChain(
+                        tab.getProfile(),
+                        getLocalTabGroupId(tab),
+                        tab.getId(),
+                        navigationHandle.nativeNavigationHandlePtr());
+    }
+
+    /**
      * Called to check if a URL is part of the redirect chain of the current tab URL.
      *
      * @param tab Tab whose URL redirect chain needs to be checked.
@@ -240,6 +224,12 @@ public final class TabGroupSyncUtils {
     @NativeMethods
     interface Natives {
         void onDidFinishNavigation(
+                @JniType("Profile*") Profile profile,
+                LocalTabGroupId groupId,
+                int tabId,
+                long navigationHandlePtr);
+
+        void updateTabRedirectChain(
                 @JniType("Profile*") Profile profile,
                 LocalTabGroupId groupId,
                 int tabId,

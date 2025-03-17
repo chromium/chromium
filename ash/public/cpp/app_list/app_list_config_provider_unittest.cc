@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -231,8 +231,8 @@ TEST_F(AppListConfigProviderTest, CreateConfigByDisplayWorkArea) {
     // observed created types are not cleared for |registry_observer_| between
     // test cases, the "observed" count for |test_case.config_type| should
     // always be 1.
-    EXPECT_EQ(1, base::ranges::count(registry_observer_.created_types(),
-                                     test_case.config_type));
+    EXPECT_EQ(1, std::ranges::count(registry_observer_.created_types(),
+                                    test_case.config_type));
 
     // Verify CreateForAppListWidget returns nullptr if the created config would
     // be the same as |config|.

@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 
-#include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner_util.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom-forward.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"

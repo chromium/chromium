@@ -26,6 +26,11 @@ class SurfaceLayer;
 class UIResourceLayer;
 }
 
+namespace ui {
+class InputFilter;
+class InputPredictor;
+}  // namespace ui
+
 namespace content {
 
 class NavigationControllerImpl;
@@ -274,7 +279,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   BackForwardTransitionAnimator(
       WebContentsViewAndroid* web_contents_view_android,
       NavigationControllerImpl* controller,
-      const ui::BackGestureEvent& gesture,
+      const ui::BackGestureEvent& first_gesture,
       BackForwardTransitionAnimationManager::NavigationDirection nav_direction,
       ui::BackGestureEventSwipeEdge initiating_edge,
       NavigationEntryImpl* destination_entry,
@@ -352,14 +357,19 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void InitializeEffectForGestureProgressAnimation();
   void InitializeEffectForCrossfadeAnimation();
 
+  // Animates a frame while the user is swiping across the screen.
+  void OnAnimateGestureProgressed(const ui::BackGestureEvent& gesture);
+
   // Advance current `state_` to `state`.
   void AdvanceAndProcessState(State state);
 
   // Let this manager respond to the current `state_`.
   void ProcessState();
 
-  // Initializes the `ui_resource_layer_` and sets up the layer tree.
-  void SetupForScreenshotPreview(SkBitmap embedder_content);
+  // Initializes the `ui_resource_layer_` and sets up the layer tree and the
+  // easing input curve.
+  void SetupForScreenshotPreview(SkBitmap embedder_content,
+                                 const ui::BackGestureEvent& first_gesture);
 
   // Sets the progress bar shown during the invoke phase of the animation.
   void SetupProgressBar();
@@ -558,8 +568,15 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // screenshot.
   PhysicsModel physics_model_;
 
-  // Set by the latest `OnGestureProgressed()`.
-  ui::BackGestureEvent latest_progress_gesture_;
+  // Used to resample the input at the time of vsync.
+  std::unique_ptr<ui::InputPredictor> input_predictor_;
+
+  // Used to smoothen out deltas curve.
+  std::unique_ptr<ui::InputFilter> input_filter_;
+
+  // Set by the latest `OnAnimateGestureProgressed()`, after resampling and
+  // filtering.
+  float latest_progress_ = 0.f;
 
   // The indeterminate progress bar shown during the invoke animation.
   std::unique_ptr<ProgressBar> progress_bar_;

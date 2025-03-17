@@ -7,12 +7,13 @@ package org.chromium.components.cached_flags;
 import android.content.SharedPreferences;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.FeatureMap;
 import org.chromium.base.FeatureParam;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -24,6 +25,7 @@ import java.util.Set;
  *
  * @param <T> the type of the parameter
  */
+@NullMarked
 public abstract class CachedFeatureParam<T> extends FeatureParam<T> {
     /** Data types of feature parameters. */
     @IntDef({
@@ -43,7 +45,7 @@ public abstract class CachedFeatureParam<T> extends FeatureParam<T> {
     }
 
     @CheckDiscard("crbug.com/1067145")
-    private static Set<CachedFeatureParam<?>> sAllInstances;
+    private static @Nullable Set<CachedFeatureParam<?>> sAllInstances;
 
     private final @FeatureParamType int mType;
 
@@ -52,7 +54,7 @@ public abstract class CachedFeatureParam<T> extends FeatureParam<T> {
             String featureName,
             String parameterName,
             @FeatureParamType int type,
-            @NonNull T defaultValue) {
+            T defaultValue) {
         super(featureMap, featureName, parameterName, defaultValue);
 
         // parameterName does not apply to ALL (because it includes all parameters).
@@ -72,7 +74,7 @@ public abstract class CachedFeatureParam<T> extends FeatureParam<T> {
     }
 
     @CheckDiscard("crbug.com/1067145")
-    public static Set<CachedFeatureParam<?>> getAllInstances() {
+    public static @Nullable Set<CachedFeatureParam<?>> getAllInstances() {
         return sAllInstances;
     }
 
@@ -98,4 +100,12 @@ public abstract class CachedFeatureParam<T> extends FeatureParam<T> {
      * loaded yet.
      */
     abstract void writeCacheValueToEditor(SharedPreferences.Editor editor);
+
+    /**
+     * Assumes the parameter value is the current value of the parameter and writes it to the
+     * provided SharedPreferences editor. Does not apply or commit the change, that is left up to
+     * the caller to perform. Calls to getValue() in a future run will return the value cached in
+     * this method, if native is not loaded yet.
+     */
+    abstract void writeCacheValueToEditor(SharedPreferences.Editor editor, String value);
 }

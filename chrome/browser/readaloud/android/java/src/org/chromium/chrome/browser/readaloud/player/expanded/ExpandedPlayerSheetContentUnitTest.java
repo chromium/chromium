@@ -213,12 +213,12 @@ public class ExpandedPlayerSheetContentUnitTest {
         mContent.onPlaybackStateChanged(PlaybackListener.State.PLAYING);
         assertTrue(mErrorLayout.getVisibility() == View.GONE);
         assertTrue(mNormalLayout.getVisibility() == View.VISIBLE);
-        assertEquals(mPlayPauseButton.getContentDescription(), "Pause");
+        assertEquals("Pause", mPlayPauseButton.getContentDescription());
 
         mContent.onPlaybackStateChanged(PlaybackListener.State.PAUSED);
         assertTrue(mErrorLayout.getVisibility() == View.GONE);
         assertTrue(mNormalLayout.getVisibility() == View.VISIBLE);
-        assertEquals(mPlayPauseButton.getContentDescription(), "Play");
+        assertEquals("Play", mPlayPauseButton.getContentDescription());
     }
 
     @Test

@@ -651,8 +651,8 @@ void ShellSurfaceBase::SetApplicationId(const char* application_id) {
   } else {
     GetViewAccessibility().RemoveChildTreeNodeAppId();
   }
-  this->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                 /* send_native_event */ false);
+  this->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                           /* send_native_event */ false);
 }
 
 void ShellSurfaceBase::SetStartupId(const char* startup_id) {
@@ -828,7 +828,8 @@ void ShellSurfaceBase::UpdateTopInset() {
 
 void ShellSurfaceBase::SetChildAxTreeId(ui::AXTreeID child_ax_tree_id) {
   GetViewAccessibility().SetChildTreeID(child_ax_tree_id);
-  this->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
+  this->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                           false);
 }
 
 void ShellSurfaceBase::SetGeometry(const gfx::Rect& geometry) {
@@ -1651,7 +1652,7 @@ void ShellSurfaceBase::OnWindowActivated(ActivationReason reason,
 // wm::TooltipObserver overrides:
 
 void ShellSurfaceBase::OnTooltipShown(aura::Window* target,
-                                      const std::u16string& text,
+                                      std::u16string_view text,
                                       const gfx::Rect& bounds) {
   if (root_surface()) {
     root_surface()->OnTooltipShown(text, bounds);

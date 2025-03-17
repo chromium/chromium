@@ -13,6 +13,13 @@ namespace autofill {
 // The common interface for platform-dependent AutofillDriver factories:
 // - ContentAutofillDriverFactory
 // - AutofillDriverIOSFactory
+//
+// AutofillDriverFactory must create at most one AutofillDriver per frame-like
+// object (e.g., content::RenderFrameHost) and manage their lifecycle
+// corresponding to the frame-like object's lifecycle.
+//
+// AutofillDriverFactory must be owned by AutofillClient, so there is at most
+// one instance per tab-like object (e.g., content::WebContents).
 class AutofillDriverFactory {
  public:
   using LifecycleState = AutofillDriver::LifecycleState;

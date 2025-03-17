@@ -5,7 +5,7 @@ each locale. Specifically, these are AX strings that are used by app/ that
 need to be translated for each locale.-->
 
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en">
+      source_lang_id="en">
   <outputs>
     <output filename="grit/ax_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -737,9 +737,6 @@ need to be translated for each locale.-->
           <message name="IDS_AX_RADIO_BUTTON_STATE_DESCRIPTION_CHECKED" desc="Accessibility state description for a radio button inside a group that is checked.">
             Checked. In group, option <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>3</ex></ph>
           </message>
-          <message name="IDS_AX_ARIA_REQUIRED_STATE_DESCRIPTION" desc="Accessibility state description for an element that is labeled as required.">
-            Required
-          </message>
           <message name="IDS_AX_STATE_LINK_VISITED" desc="Accessibility role description suffix for links that have been visited.">
             visited
           </message>
@@ -898,6 +895,14 @@ need to be translated for each locale.-->
         show playback speed menu
       </message>
 
+      <message name="IDS_AX_MEDIA_SHOW_VIDEO_TRACK_SELECTION_MENU_BUTTON" desc="Accessibility label for show playback speed menu button">
+        show video track selection menu
+      </message>
+
+      <message name="IDS_AX_MEDIA_SHOW_AUDIO_TRACK_SELECTION_MENU_BUTTON" desc="Accessibility label for show playback speed menu button">
+        show audio track selection menu
+      </message>
+
       <message name="IDS_AX_MEDIA_BACK_TO_OPTIONS_BUTTON" desc="Accessibility label for back to options button">
         back to options
       </message>
@@ -989,6 +994,19 @@ need to be translated for each locale.-->
       </message>
       <message name="CONTENT_INVALID_GRAMMAR" desc="Error message for aria-invalid = grammar">
         Invalid grammar
+      </message>
+
+      <message name="IDS_AX_CAROUSEL_SCROLL_LEFT" desc="This is a label used by accessibility to indicate that the button, when pressed, is going to cause the carousel to scroll left.">
+        Scroll left
+      </message>
+      <message name="IDS_AX_CAROUSEL_SCROLL_RIGHT" desc="This is a label used by accessibility to indicate that the button, when pressed, is going to cause the carousel to scroll right.">
+        Scroll right
+      </message>
+      <message name="IDS_AX_CAROUSEL_SCROLL_UP" desc="This is a label used by accessibility to indicate that the button, when pressed, is going to cause the carousel to scroll up.">
+        Scroll up
+      </message>
+      <message name="IDS_AX_CAROUSEL_SCROLL_DOWN" desc="This is a label used by accessibility to indicate that the button, when pressed, is going to cause the carousel to scroll down.">
+        Scroll down
       </message>
    </messages>
   </release>

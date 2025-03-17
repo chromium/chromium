@@ -8,11 +8,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class InstanceSwitcherItemViewBinder {
 
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
@@ -48,7 +50,7 @@ class InstanceSwitcherItemViewBinder {
             view.setOnClickListener(model.get(InstanceSwitcherItemProperties.CLICK_LISTENER));
 
         } else if (InstanceSwitcherItemProperties.MORE_MENU == propertyKey) {
-            ListMenuButtonDelegate delegate = model.get(InstanceSwitcherItemProperties.MORE_MENU);
+            ListMenuDelegate delegate = model.get(InstanceSwitcherItemProperties.MORE_MENU);
             ((ListMenuButton) view.findViewById(R.id.more)).setDelegate(delegate);
 
         } else if (InstanceSwitcherItemProperties.ENABLE_COMMAND == propertyKey) {

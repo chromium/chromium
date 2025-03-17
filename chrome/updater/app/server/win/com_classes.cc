@@ -32,8 +32,10 @@
 #include "chrome/updater/app/server/win/com_classes_util.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/win_util.h"
+#include "components/policy/core/common/policy_types.h"
 
 namespace updater {
 namespace {
@@ -53,10 +55,10 @@ class UpdaterAppStateImpl : public IDispatchImpl<IUpdaterAppState> {
   UpdaterAppStateImpl& operator=(const UpdaterAppStateImpl&) = delete;
 
   HRESULT RuntimeClassInitialize(const UpdateService::AppState& app_state) {
-    app_id_ = base::ASCIIToWide(app_state.app_id);
-    version_ = base::ASCIIToWide(app_state.version.GetString());
-    ap_ = base::ASCIIToWide(app_state.ap);
-    brand_code_ = base::ASCIIToWide(app_state.brand_code);
+    app_id_ = base::UTF8ToWide(app_state.app_id);
+    version_ = base::UTF8ToWide(app_state.version.GetString());
+    ap_ = base::UTF8ToWide(app_state.ap);
+    brand_code_ = base::UTF8ToWide(app_state.brand_code);
     brand_path_ = app_state.brand_path.value();
     ecp_ = app_state.ecp.value();
 
@@ -209,6 +211,7 @@ STDMETHODIMP CompleteStatusImpl::get_statusMessage(BSTR* message) {
 
 UpdaterImpl::UpdaterImpl()
     : DynamicIIDsMultImpl<IUpdater, IUpdater2>(
+          GetUpdaterScope(),
           {IID_MAP_ENTRY_USER(IUpdater), IID_MAP_ENTRY_USER(IUpdater2)},
           {IID_MAP_ENTRY_SYSTEM(IUpdater), IID_MAP_ENTRY_SYSTEM(IUpdater2)}) {}
 
@@ -253,7 +256,8 @@ HRESULT UpdaterImpl::FetchPolicies(IUpdaterCallback* callback) {
           std::move(updater_callback).Run(-1);
           return;
         }
-        update_service->FetchPolicies(std::move(updater_callback));
+        update_service->FetchPolicies(policy::PolicyFetchReason::kUserRequest,
+                                      std::move(updater_callback));
       },
       std::move(updater_callback)));
   return S_OK;

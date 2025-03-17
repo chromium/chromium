@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/events/ash/top_row_action_keys.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -14,6 +13,7 @@
 #include <linux/input-event-codes.h>
 #include <linux/input.h>
 
+#include <algorithm>
 #include <cstring>
 #include <functional>
 #include <memory>
@@ -32,7 +32,6 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -44,6 +43,7 @@
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/ash/mojom/meta_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/ash/top_row_action_keys.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"
@@ -406,7 +406,7 @@ IdentifyKeyboardInfo(const KeyboardDevice& keyboard) {
   // not considered a custom top row keyboard.
   if (!top_row_scan_codes.empty()) {
     null_top_row =
-        base::ranges::all_of(top_row_scan_codes, [](const uint32_t scancode) {
+        std::ranges::all_of(top_row_scan_codes, [](const uint32_t scancode) {
           return scancode == kCustomNullScanCode;
         });
     if (base::FeatureList::IsEnabled(ash::features::kNullTopRowFix) &&
@@ -533,6 +533,16 @@ KeyboardCapability::~KeyboardCapability() {
 }
 
 KeyboardCapability::KeyboardInfo::KeyboardInfo() = default;
+KeyboardCapability::KeyboardInfo::KeyboardInfo(
+    DeviceType device_type,
+    KeyboardTopRowLayout top_row_layout,
+    std::vector<uint32_t> top_row_scan_codes,
+    std::vector<TopRowActionKey> top_row_action_keys)
+    : device_type(device_type),
+      top_row_layout(top_row_layout),
+      top_row_scan_codes(std::move(top_row_scan_codes)),
+      top_row_action_keys(std::move(top_row_action_keys)) {}
+
 KeyboardCapability::KeyboardInfo::KeyboardInfo(KeyboardInfo&&) = default;
 KeyboardCapability::KeyboardInfo& KeyboardCapability::KeyboardInfo::operator=(
     KeyboardInfo&&) = default;
@@ -628,8 +638,7 @@ std::optional<KeyboardCode> KeyboardCapability::GetCorrespondingFunctionKey(
     return std::nullopt;
   }
 
-  auto iter =
-      base::ranges::find(keyboard_info->top_row_action_keys, action_key);
+  auto iter = std::ranges::find(keyboard_info->top_row_action_keys, action_key);
   if (iter == keyboard_info->top_row_action_keys.end()) {
     return std::nullopt;
   }
@@ -955,6 +964,19 @@ bool KeyboardCapability::HasMediaKeysOnAnyKeyboard() const {
   return HasExternalKeyboardConnected();
 }
 
+bool KeyboardCapability::HasCameraAccessKey(
+    const KeyboardDevice& keyboard) const {
+  // TODO(dpad): Many external keyboards do not have these keys, but currently
+  // we do not have a good way to detect these situations.
+  return !IsInternalKeyboard(keyboard);
+}
+
+bool KeyboardCapability::HasCameraAccessKeyOnAnyKeyboard() const {
+  // TODO(dpad): Many external keyboards do not have these keys, but currently
+  // we do not have a good way to detect these situations.
+  return HasExternalKeyboardConnected();
+}
+
 const std::vector<TopRowActionKey>* KeyboardCapability::GetTopRowActionKeys(
     const KeyboardDevice& keyboard) const {
   const auto* keyboard_info = GetKeyboardInfo(keyboard);
@@ -1232,32 +1254,30 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
 
   auto sorted_keyboards =
       DeviceDataManager::GetInstance()->GetKeyboardDevices();
-  base::ranges::sort(sorted_keyboards, [](const ui::KeyboardDevice& device1,
-                                          const ui::KeyboardDevice& device2) {
-    return device1.id < device2.id;
-  });
+  std::vector<int> sorted_keyboard_ids;
+  sorted_keyboard_ids.reserve(sorted_keyboards.size());
+  std::ranges::transform(sorted_keyboards,
+                         std::back_inserter(sorted_keyboard_ids),
+                         &KeyboardDevice::id);
+  std::ranges::sort(sorted_keyboard_ids);
 
   // Generate a vector with only the device ids from the
   // `keyboard_info_map_` map. Guaranteed to be sorted as flat_map is always
   // in sorted order by key.
   std::vector<int> cached_keyboard_info_ids;
   cached_keyboard_info_ids.reserve(keyboard_info_map_.size());
-  base::ranges::transform(keyboard_info_map_,
-                          std::back_inserter(cached_keyboard_info_ids),
-                          [](const auto& pair) { return pair.first; });
-  DCHECK(base::ranges::is_sorted(cached_keyboard_info_ids));
+  std::ranges::transform(keyboard_info_map_,
+                         std::back_inserter(cached_keyboard_info_ids),
+                         [](const auto& pair) { return pair.first; });
+  DCHECK(std::ranges::is_sorted(cached_keyboard_info_ids));
 
-  // Compares the `cached_keyboard_info_ids` to the id field of
-  // `sorted_keyboards`. Ids that are in `cached_keyboard_info_ids` but not
-  // in `sorted_keyboards` are inserted into `keyboard_ids_to_remove`.
-  // `sorted_keyboards` and `cached_keyboard_info_ids` must be sorted.
+  // Compares the `cached_keyboard_info_ids` to `sorted_keyboard_ids`. Ids that
+  // are in `cached_keyboard_info_ids` but not in `sorted_keyboard_ids` are
+  // inserted into `keyboard_ids_to_remove`. `sorted_keyboard_ids` and
+  // `cached_keyboard_info_ids` must be sorted.
   std::vector<int> keyboard_ids_to_remove;
-  base::ranges::set_difference(
-      cached_keyboard_info_ids, sorted_keyboards,
-      std::back_inserter(keyboard_ids_to_remove),
-      /*Comp=*/base::ranges::less(),
-      /*Proj1=*/std::identity(),
-      /*Proj2=*/[](const KeyboardDevice& device) { return device.id; });
+  std::ranges::set_difference(cached_keyboard_info_ids, sorted_keyboard_ids,
+                              std::back_inserter(keyboard_ids_to_remove));
 
   for (const auto& id : keyboard_ids_to_remove) {
     keyboard_info_map_.erase(id);
@@ -1306,6 +1326,16 @@ bool KeyboardCapability::HasTopRowActionKey(const KeyboardDevice& keyboard,
   }
 
   return base::Contains(keyboard_info->top_row_action_keys, action_key);
+}
+
+bool KeyboardCapability::HasTopRowActionKey(int device_id,
+                                            TopRowActionKey action_key) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return false;
+  }
+
+  return HasTopRowActionKey(*keyboard, action_key);
 }
 
 bool KeyboardCapability::HasTopRowActionKeyOnAnyKeyboard(

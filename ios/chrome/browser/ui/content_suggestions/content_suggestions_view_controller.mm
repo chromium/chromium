@@ -75,10 +75,8 @@
         constraintEqualToAnchor:self.view.trailingAnchor],
     [self.verticalStackView.topAnchor
         constraintEqualToAnchor:self.view.topAnchor
-                       constant:
-                           (IsHomeCustomizationEnabled()
-                                ? 0
-                                : content_suggestions::HeaderBottomPadding())],
+                       constant:content_suggestions::HeaderBottomPadding(
+                                    self.traitCollection)],
     [self.verticalStackView.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor
                        constant:(IsHomeCustomizationEnabled()
@@ -86,7 +84,7 @@
                                      : -kBottomMagicStackPadding)]
   ]];
 
-  if (_mostVisitedTileConfig) {
+  if (_mostVisitedTileConfig.mostVisitedItems.count > 0) {
     CHECK(!_mostVisitedTileConfig.inMagicStack);
     [self createAndInsertMostVisitedModule];
   }
@@ -125,25 +123,24 @@
   if (self.mostVisitedModuleContainer) {
     [self.mostVisitedModuleContainer removeFromSuperview];
   }
-    self.mostVisitedModuleContainer =
-        [[MagicStackModuleContainer alloc] initWithFrame:CGRectZero];
-    [self.mostVisitedModuleContainer
-        configureWithConfig:_mostVisitedTileConfig];
-    // If viewDidLoad has been called before the first valid Most Visited Tiles
-    // are available, construct `mostVisitedStackView`.
-    if (self.verticalStackView &&
-        _mostVisitedTileConfig.mostVisitedItems.count > 0) {
-      [self createAndInsertMostVisitedModule];
-    }
+  self.mostVisitedModuleContainer =
+      [[MagicStackModuleContainer alloc] initWithFrame:CGRectZero];
+  [self.mostVisitedModuleContainer configureWithConfig:_mostVisitedTileConfig];
+  // If viewDidLoad has been called before the first valid Most Visited Tiles
+  // are available, construct `mostVisitedStackView`.
+  if (self.verticalStackView &&
+      _mostVisitedTileConfig.mostVisitedItems.count > 0) {
+    [self createAndInsertMostVisitedModule];
+  }
 
-    for (ContentSuggestionsMostVisitedItem* item in _mostVisitedTileConfig
-             .mostVisitedItems) {
-      [self.contentSuggestionsMetricsRecorder
-          recordMostVisitedTileShown:item
-                             atIndex:item.index];
-    }
+  for (ContentSuggestionsMostVisitedItem* item in _mostVisitedTileConfig
+           .mostVisitedItems) {
+    [self.contentSuggestionsMetricsRecorder
+        recordMostVisitedTileShown:item
+                           atIndex:item.index];
+  }
 
-    [self.contentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
+  [self.contentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
 }
 
 #pragma mark - Private

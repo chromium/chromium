@@ -9,9 +9,9 @@
 
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
-#include "base/functional/function_ref.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/abort_signal_composition_manager.h"
 #include "third_party/blink/renderer/core/dom/abort_signal_composition_type.h"
@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -51,14 +52,14 @@ class OnceCallbackAlgorithm final : public AbortSignal::Algorithm {
 }  // namespace
 
 AbortSignal::AbortSignal(ExecutionContext* execution_context)
-    : execution_context_(execution_context),
+    : ExecutionContextLifecycleObserver(execution_context),
       signal_type_(SignalType::kComposite) {
   InitializeCompositeSignal(HeapVector<Member<AbortSignal>>());
 }
 
 AbortSignal::AbortSignal(ExecutionContext* execution_context,
                          SignalType signal_type)
-    : execution_context_(execution_context),
+    : ExecutionContextLifecycleObserver(execution_context),
       signal_type_(signal_type),
       composition_manager_(MakeGarbageCollected<SourceSignalCompositionManager>(
           *this,
@@ -68,7 +69,7 @@ AbortSignal::AbortSignal(ExecutionContext* execution_context,
 
 AbortSignal::AbortSignal(ScriptState* script_state,
                          const HeapVector<Member<AbortSignal>>& source_signals)
-    : execution_context_(ExecutionContext::From(script_state)),
+    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       signal_type_(SignalType::kComposite) {
   // If any of the signals are aborted, skip the linking and just abort this
   // signal.
@@ -91,7 +92,7 @@ void AbortSignal::InitializeCompositeSignal(
           *this, AbortSignalCompositionType::kAbort, source_signals);
   // Ensure the registry isn't created during GC, e.g. during an abort
   // controller's prefinalizer.
-  AbortSignalRegistry::From(CHECK_DEREF(execution_context_.Get()));
+  AbortSignalRegistry::From(CHECK_DEREF(GetExecutionContext()));
 }
 
 AbortSignal::~AbortSignal() = default;
@@ -128,6 +129,16 @@ AbortSignal* AbortSignal::timeout(ScriptState* script_state,
   ExecutionContext* context = ExecutionContext::From(script_state);
   AbortSignal* signal =
       MakeGarbageCollected<AbortSignal>(context, SignalType::kTimeout);
+  // The timeout task shouldn't run for non-fully active documents, so we can
+  // bypass posting the task if the context is destroyed.
+  //
+  // TODO(crbug.com/40279747): `signal->GetExecutionContext()` only returns null
+  // if the context is detached after creation, so we explicitly check
+  // IsContextDestroyed here.
+  if (context->IsContextDestroyed()) {
+    return signal;
+  }
+
   // The spec requires us to use the timer task source, but there are a few
   // timer task sources due to our throttling implementation. We match
   // setTimeout for immediate timeouts, but use the high-nesting task type for
@@ -136,10 +147,16 @@ AbortSignal* AbortSignal::timeout(ScriptState* script_state,
   TaskType task_type = milliseconds == 0
                            ? TaskType::kJavascriptTimerImmediate
                            : TaskType::kJavascriptTimerDelayedHighNesting;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      context->GetTaskRunner(task_type);
   // `signal` needs to be held with a strong reference to keep it alive in case
   // there are or will be event handlers attached.
-  context->GetTaskRunner(task_type)->PostDelayedTask(
-      FROM_HERE,
+  //
+  // TODO(crbug.com/388206177): Consider using a weak reference and using the
+  // `AbortSignalRegistry` and `AlgorithmHandle`s to manage lifetime, like we do
+  // for composite signals
+  signal->timout_task_handle_ = PostDelayedCancellableTask(
+      *task_runner.get(), FROM_HERE,
       WTF::BindOnce(&AbortSignal::AbortTimeoutFired, WrapPersistent(signal),
                     WrapPersistent(script_state)),
       base::Milliseconds(milliseconds));
@@ -147,10 +164,8 @@ AbortSignal* AbortSignal::timeout(ScriptState* script_state,
 }
 
 void AbortSignal::AbortTimeoutFired(ScriptState* script_state) {
-  if (GetExecutionContext()->IsContextDestroyed() ||
-      !script_state->ContextIsValid()) {
-    return;
-  }
+  // This task shouldn't run if the context is detached.
+  CHECK(script_state->ContextIsValid());
   ScriptState::Scope scope(script_state);
   auto* isolate = script_state->GetIsolate();
   v8::Local<v8::Value> reason = V8ThrowDOMException::CreateOrEmpty(
@@ -167,11 +182,11 @@ ScriptValue AbortSignal::reason(ScriptState* script_state) const {
   return abort_reason_;
 }
 
-void AbortSignal::throwIfAborted() const {
+void AbortSignal::throwIfAborted(v8::Isolate* isolate) const {
   if (!aborted())
     return;
-  V8ThrowException::ThrowException(execution_context_->GetIsolate(),
-                                   abort_reason_.V8Value());
+  OmitExceptionContextInformation omit(isolate);
+  V8ThrowException::ThrowException(isolate, abort_reason_.V8Value());
 }
 
 const AtomicString& AbortSignal::InterfaceName() const {
@@ -179,7 +194,7 @@ const AtomicString& AbortSignal::InterfaceName() const {
 }
 
 ExecutionContext* AbortSignal::GetExecutionContext() const {
-  return execution_context_.Get();
+  return ExecutionContextLifecycleObserver::GetExecutionContext();
 }
 
 AbortSignal::AlgorithmHandle* AbortSignal::AddAlgorithm(Algorithm* algorithm) {
@@ -281,10 +296,10 @@ void AbortSignal::RunAbortSteps() {
 
 void AbortSignal::Trace(Visitor* visitor) const {
   visitor->Trace(abort_reason_);
-  visitor->Trace(execution_context_);
   visitor->Trace(abort_algorithms_);
   visitor->Trace(composition_manager_);
   EventTarget::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 AbortSignalCompositionManager* AbortSignal::GetCompositionManager(
@@ -306,10 +321,9 @@ void AbortSignal::OnSignalSettled(AbortSignalCompositionType type) {
   if (type == AbortSignalCompositionType::kAbort) {
     abort_algorithms_.clear();
   }
-  if (signal_type_ == SignalType::kComposite) {
-    InvokeRegistryCallback([&](AbortSignalRegistry& registry) {
-      registry.UnregisterSignal(*this, type);
-    });
+  if (signal_type_ == SignalType::kComposite && GetExecutionContext()) {
+    AbortSignalRegistry::From(*GetExecutionContext())
+        ->UnregisterSignal(*this, type);
   }
 }
 
@@ -332,12 +346,6 @@ void AbortSignal::RemovedEventListener(
     const RegisteredEventListener& registered_listener) {
   EventTarget::RemovedEventListener(event_type, registered_listener);
   OnEventListenerAddedOrRemoved(event_type, AddRemoveType::kRemoved);
-}
-
-void AbortSignal::InvokeRegistryCallback(
-    base::FunctionRef<void(AbortSignalRegistry&)> callback) {
-  CHECK_EQ(signal_type_, SignalType::kComposite);
-  callback(*AbortSignalRegistry::From(*GetExecutionContext()));
 }
 
 void AbortSignal::OnEventListenerAddedOrRemoved(const AtomicString& event_type,
@@ -370,16 +378,19 @@ void AbortSignal::OnEventListenerAddedOrRemoved(const AtomicString& event_type,
   // `manager` will be null if this signal doesn't handle composition for
   // `composition_type`.
   if (GetCompositionManager(*composition_type)) {
-    InvokeRegistryCallback([&](AbortSignalRegistry& registry) {
-      switch (add_or_remove) {
-        case AddRemoveType::kAdded:
-          registry.RegisterSignal(*this, *composition_type);
-          break;
-        case AddRemoveType::kRemoved:
-          registry.UnregisterSignal(*this, *composition_type);
-          break;
-      }
-    });
+    // `EventTarget` ignores adding event listeners to detached contexts, and
+    // all listeners are cleared on detach, so the context should always exist
+    // here.
+    auto* registry =
+        AbortSignalRegistry::From(CHECK_DEREF(GetExecutionContext()));
+    switch (add_or_remove) {
+      case AddRemoveType::kAdded:
+        registry->RegisterSignal(*this, *composition_type);
+        break;
+      case AddRemoveType::kRemoved:
+        registry->UnregisterSignal(*this, *composition_type);
+        break;
+    }
   }
 }
 
@@ -387,6 +398,11 @@ bool AbortSignal::IsSettledFor(
     AbortSignalCompositionType composition_type) const {
   return composition_type == AbortSignalCompositionType::kAbort &&
          composition_manager_->IsSettled();
+}
+
+void AbortSignal::ContextDestroyed() {
+  EventTarget::RemoveAllEventListeners();
+  timout_task_handle_.Cancel();
 }
 
 AbortSignal::AlgorithmHandle::AlgorithmHandle(AbortSignal::Algorithm* algorithm,

@@ -30,6 +30,8 @@ void AutofillImageFetcherImpl::FetchImagesForURLs(
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
+
+  // TODO(crbug.com/388217006): Move all image fetch calls to the new API.
   std::vector<int> image_sizes_vector;
   std::transform(image_sizes.begin(), image_sizes.end(),
                  std::back_inserter(image_sizes_vector),
@@ -37,6 +39,16 @@ void AutofillImageFetcherImpl::FetchImagesForURLs(
   Java_AutofillImageFetcher_prefetchImages(
       env, GetOrCreateJavaImageFetcher(), image_urls,
       base::android::ToJavaIntArray(env, image_sizes_vector));
+}
+
+void AutofillImageFetcherImpl::FetchPixAccountImages(
+    base::span<const GURL> image_urls) {
+  if (image_urls.empty()) {
+    return;
+  }
+  Java_AutofillImageFetcher_prefetchPixAccountImages(
+      base::android::AttachCurrentThread(), GetOrCreateJavaImageFetcher(),
+      image_urls);
 }
 
 base::android::ScopedJavaLocalRef<jobject>

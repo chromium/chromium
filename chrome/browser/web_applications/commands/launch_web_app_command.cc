@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -51,19 +52,21 @@ LaunchWebAppCommand::~LaunchWebAppCommand() = default;
 
 void LaunchWebAppCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
-  if (lock_->registrar().IsNotInRegistrar(params_.app_id)) {
+  if (!lock_->registrar().IsInRegistrar(params_.app_id)) {
     GetMutableDebugValue().Set("error", "not_installed");
     CompleteAndSelfDestruct(CommandResult::kFailure, nullptr, nullptr,
                             apps::LaunchContainer::kLaunchContainerNone);
     return;
   }
 
+  const WebApp* current_app = lock_->registrar().GetAppById(params_.app_id);
+  CHECK(current_app);
+
   bool is_standalone_launch =
       params_.container == apps::LaunchContainer::kLaunchContainerWindow ||
       (launch_setting_ ==
            LaunchWebAppWindowSetting::kOverrideWithWebAppConfig &&
-       lock_->registrar().GetAppUserDisplayMode(params_.app_id) !=
-           mojom::UserDisplayMode::kBrowser);
+       current_app->user_display_mode() != mojom::UserDisplayMode::kBrowser);
 
   GetMutableDebugValue().Set("is_standalone_launch", is_standalone_launch);
   if (is_standalone_launch) {
@@ -85,7 +88,7 @@ void LaunchWebAppCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
     needs_os_integration_sync = true;
   }
 
-  std::optional<proto::WebAppOsIntegrationState> os_integration =
+  std::optional<proto::os_state::WebAppOsIntegration> os_integration =
       lock_->registrar().GetAppCurrentOsIntegrationState(params_.app_id);
   CHECK(os_integration);
   GetMutableDebugValue().Set("needs_os_integration_sync",

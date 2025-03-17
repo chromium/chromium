@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,6 +31,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
+#include "components/permissions/notifications_engagement_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
 
@@ -307,9 +309,10 @@ class AbusiveNotificationPermissionsRevocationBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/400648091): Re-enable the test when it's fixed.
 // Test that revocation is happen correctly when auto-revoke is on.
 IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
-                       TestRevokeAbusiveNotificationPermissions) {
+                       DISABLED_TestRevokeAbusiveNotificationPermissions) {
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
@@ -343,10 +346,11 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
       1);
 }
 
+// TODO(crbug.com/400645286): Re-enable the test when it's fixed.
 // Test that revocation is happen correctly when auto-revoke is on for a site
 // that is unused then abusive.
 IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
-                       TestSiteWithFirstUnusedThenAbusivePermissions) {
+                       DISABLED_TestSiteWithFirstUnusedThenAbusivePermissions) {
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
@@ -415,10 +419,11 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
   }
 }
 
+// TODO(crbug.com/400648762): Re-enable the test when it's fixed.
 // Test that revocation is happen correctly when auto-revoke is on for a site
 // that is abusive then unused.
 IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
-                       TestSiteWithFirstAbusiveThenUnusedPermissions) {
+                       DISABLED_TestSiteWithFirstAbusiveThenUnusedPermissions) {
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
@@ -549,4 +554,47 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(
       CONTENT_SETTING_ALLOW,
       map->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+}
+
+class DisruptiveNotificationPermissionsRevocationBrowserTest
+    : public UnusedSitePermissionsServiceBrowserTest {
+ public:
+  DisruptiveNotificationPermissionsRevocationBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {safe_browsing::kSafetyHubDisruptiveNotificationRevocation},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that revocation is happening correctly when auto-revoke is on.
+IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
+                       TestRevokeDisruptiveNotificationPermissions) {
+  auto* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  auto* service =
+      UnusedSitePermissionsServiceFactory::GetForProfile(browser()->profile());
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  // Set up a disruptive notification permission.
+  hcsm->SetContentSettingDefaultScope(
+      url, GURL(), ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
+  auto* notifications_engagement_service =
+      NotificationsEngagementServiceFactory::GetForProfile(
+          browser()->profile());
+  notifications_engagement_service->RecordNotificationDisplayed(url, 50);
+
+  safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+
+  // The url was stored in the disruptive notification content setting.
+  base::Value stored_value = hcsm->GetWebsiteSetting(
+      url, url,
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
+  EXPECT_FALSE(stored_value.is_none());
+
+  // TODO(crbug.com/397363276): Check |GetRevokedUnusedPermissions| and whether
+  // the notification permission was revoked.
 }

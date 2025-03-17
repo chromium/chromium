@@ -29,6 +29,7 @@ from gpu_tests import gpu_integration_test
 from gpu_tests import trace_integration_test as trace_it
 from gpu_tests import webgl1_conformance_integration_test as webgl1_cit
 from gpu_tests import webgl2_conformance_integration_test as webgl2_cit
+from gpu_tests import webgpu_compat_cts_integration_test as webgpu_compat_cit
 
 import gpu_path_util
 
@@ -335,7 +336,6 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'angle-d3d9',
             'no-passthrough',
             'renderer-skia-gl',
-            'no-oop-c',
             'no-asan',
             'target-cpu-64',
             'no-clang-coverage',
@@ -364,7 +364,6 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'angle-opengles',
             'passthrough',
             'renderer-skia-gl',
-            'no-oop-c',
             'no-clang-coverage',
             'graphite-disabled',
         ]))
@@ -389,7 +388,6 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'angle-disabled',
             'no-passthrough',
             'renderer-skia-gl',
-            'no-oop-c',
             'no-clang-coverage',
             'graphite-disabled',
         ]))
@@ -639,9 +637,12 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       self.assertEqual(set(actual_skips), set(test_args.skips))
 
 
-def RunFakeBrowserStartWithArgsAndGpuInfo(additional_args: List[str],
-                                          gpu_info: Any) -> None:
-  cls = gpu_integration_test.GpuIntegrationTest
+def RunFakeBrowserStartWithArgsAndGpuInfo(
+    additional_args: List[str],
+    gpu_info: Any,
+    gpu_test_class: GpuTestClassType = gpu_integration_test.GpuIntegrationTest
+) -> None:
+  cls = gpu_test_class
 
   def FakeStartBrowser():
     cls.browser = mock.Mock()
@@ -820,6 +821,38 @@ class FeatureVerificationUnittest(unittest.TestCase):
 
   # pylint: enable=no-self-use
 
+
+class FeatureVerificationWebGPUCompatUnittest(unittest.TestCase):
+
+  # pylint: disable=no-self-use
+  def testVerifyCompatContextSuccessUnspecified(self):
+    """Tests WebGPU compat verification that passes w/o the es31 flag."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'gl_renderer': 'ANGLE OpenGL ES 3.1',
+    })
+    RunFakeBrowserStartWithArgsAndGpuInfo(
+        [], gpu_info, webgpu_compat_cit.WebGpuCompatCtsIntegrationTest)
+
+  def testVerifyCompatContextSuccessSpecified(self):
+    """Tests WebGPU compat verification that passes w/ the es31 flag."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'gl_renderer': 'ANGLE OpenGL ES 3.1',
+    })
+    RunFakeBrowserStartWithArgsAndGpuInfo(
+        ['--use-dawn-features=gl_force_es_31_and_no_extensions'], gpu_info,
+        webgpu_compat_cit.WebGpuCompatCtsIntegrationTest)
+
+  # TODO(crbug.com/388318201): Uncomment the following test
+  # def testVerifyCompatContextFailure(self):
+  #   """Tests WebGPU compat verification that fails."""
+  #   gpu_info = CreateGpuInfo(aux_attributes={
+  #       'gl_renderer': 'ANGLE OpenGL ES 3.2',
+  #   })
+  #   with self.assertRaisesRegex(RuntimeError,
+  #                             'Requested WebGPU compat context min ES31 .*'):
+  #     RunFakeBrowserStartWithArgsAndGpuInfo(
+  #         ['--use-dawn-features=gl_force_es_31_and_no_extensions'], gpu_info,
+  #         webgpu_compat_cit.WebGpuCompatCtsIntegrationTest)
 
 class PreemptArgsUnittest(unittest.TestCase):
 

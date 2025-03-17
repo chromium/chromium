@@ -10,6 +10,7 @@ import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/renderer_preference_watcher.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
+import "third_party/blink/public/mojom/frame/reporting_observer.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
@@ -107,5 +108,13 @@ interface SharedWorkerFactory {
       // SameSite=None cookies can be attached to the request.
       // For context on usage see:
       // https://privacycg.github.io/saa-non-cookie-storage/shared-workers.html
-      bool require_cross_site_request_for_cookies);
+      bool require_cross_site_request_for_cookies,
+
+      // Used by a CrossOriginEmbedderPolicyReporter to send reports to the
+      // ReportingObservers.
+      pending_receiver<ReportingObserver>? coep_reporting_observer_receiver,
+
+      // Used by a DocumentIsolationPolicyReporter to send reports to the
+      // ReportingObservers.
+      pending_receiver<ReportingObserver>? dip_reporting_observer_receiver);
 };

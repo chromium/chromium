@@ -133,8 +133,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inflatedId="@+id/bookmark_bar"
-            android:layout="@layout/bookmark_bar"
-            android:minHeight="@dimen/bookmark_bar_min_height" />
+            android:layout="@layout/bookmark_bar" />
 
         <ViewStub
             android:inflatedId="@+id/toolbar_progress_bar_container"
@@ -159,6 +158,13 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:inflatedId="@+id/tab_hover_card_holder"
             android:layout="@layout/tab_hover_card_holder" />
+
+        <ViewStub
+            android:id="@+id/tab_strip_tooltip_holder_stub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inflatedId="@+id/tab_strip_tooltip_holder"
+            android:layout="@layout/tab_strip_tooltip_holder" />
 
         <org.chromium.components.messages.MessageContainer
             android:id="@+id/message_container"
@@ -211,6 +217,11 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipChildren="false" />
+
+        <ViewStub
+            android:id="@+id/loading_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 

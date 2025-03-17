@@ -35,6 +35,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -87,6 +88,7 @@ public class DiscountsBottomSheetContentMediatorTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/393301380")
     public void testRequestShowContent_contentReady() {
         List<DiscountInfo> infoList = createDiscountInfoList();
         setShoppingServiceGetDiscountInfoForUrl(infoList);
@@ -100,8 +102,8 @@ public class DiscountsBottomSheetContentMediatorTest {
             assertEquals(
                     mModelList.get(i).model.get(DESCRIPTION_DETAIL),
                     infoList.get(i).descriptionDetail);
-            assertEquals(mModelList.get(i).model.get(EXPIRY_TIME), "Valid until 09/20/2024");
-            assertEquals(mModelList.get(i).model.get(COPY_BUTTON_TEXT), "Copy");
+            assertEquals("Valid until 09/20/2024", mModelList.get(i).model.get(EXPIRY_TIME));
+            assertEquals("Copy", mModelList.get(i).model.get(COPY_BUTTON_TEXT));
         }
     }
 
@@ -109,9 +111,9 @@ public class DiscountsBottomSheetContentMediatorTest {
     public void testCloseContent() {
         setShoppingServiceGetDiscountInfoForUrl(createDiscountInfoList());
         mMediator.requestShowContent(mMockCallback);
-        assertEquals(mModelList.size(), 3);
+        assertEquals(3, mModelList.size());
         mMediator.closeContent();
-        assertEquals(mModelList.size(), 0);
+        assertEquals(0, mModelList.size());
     }
 
     @Test
@@ -126,10 +128,10 @@ public class DiscountsBottomSheetContentMediatorTest {
             assertNotNull(copyButtonOnClickListener);
             copyButtonOnClickListener.onClick(null);
             assertEquals(mClipboardManager.getText(), model.get(DISCOUNT_CODE));
-            assertEquals(model.get(COPY_BUTTON_TEXT), "Copied");
+            assertEquals("Copied", model.get(COPY_BUTTON_TEXT));
             for (int j = 0; j < mModelList.size(); j++) {
                 if (j != i) {
-                    assertEquals(mModelList.get(j).model.get(COPY_BUTTON_TEXT), "Copy");
+                    assertEquals("Copy", mModelList.get(j).model.get(COPY_BUTTON_TEXT));
                 }
             }
         }

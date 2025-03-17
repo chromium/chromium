@@ -13,20 +13,18 @@
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/input_event_activation_protector.h"
 
-using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
-using IdentityRequestAccountPtr =
-    scoped_refptr<content::IdentityRequestAccount>;
-using TokenError = content::IdentityCredentialTokenError;
-
-class AccountSelectionViewBase;
-
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
+
+namespace webid {
+
+class AccountSelectionViewBase;
 
 // Provides an implementation of the AccountSelectionView interface on desktop,
 // which creates the AccountSelectionBubbleView dialog to display the FedCM
@@ -60,7 +58,7 @@ class TabInterface;
 // widget is destroyed, then the UI flow is finished.
 class FedCmAccountSelectionView : public AccountSelectionView,
                                   public FedCmModalDialogView::Observer,
-                                  content::WebContentsObserver,
+                                  public content::WebContentsObserver,
                                   public PictureInPictureOcclusionObserver {
  public:
   // safe_zone_diameter/icon_size as defined in
@@ -80,7 +78,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   };
 
   FedCmAccountSelectionView(AccountSelectionView::Delegate* delegate,
-                            tabs::TabInterface* tab);
+                            tabs::TabInterface* tab,
+                            segmentation_platform::SegmentationPlatformService*
+                                segmentation_platform_service = nullptr);
   ~FedCmAccountSelectionView() override;
 
   // AccountSelectionView:
@@ -198,9 +198,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Virtual for testing.
   virtual void UpdateDialogPosition();
 
-  // Same as above, but does nothing if a bubble dialog is showing.
-  void UpdateDialogPositionIfModal();
-
   // Gets the dialog widget from the account selection view, if available.
   // Otherwise, return a nullptr.
   views::Widget* GetDialogWidget();
@@ -275,6 +272,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                            DisclosureDialogResultMetric);
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
                            RequestPermissionFalseAndNewIdpDataDisclosureText);
+  FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
+                           SegmentationPlatformUserActionMetric);
 
   enum class State {
     // User is shown message that they are not currently signed-in to IdP.
@@ -325,9 +324,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // values at the end. This enum should be kept in sync with
   // FedCmMismatchDialogResult in tools/metrics/histograms/enums.xml.
   enum class MismatchDialogResult {
-    kContinued,
-    kDismissedByCloseIcon,
-    kDismissedForOtherReasons,
+    kContinued = 0,
+    kDismissedByCloseIcon = 1,
+    kDismissedForOtherReasons = 2,
 
     kMaxValue = kDismissedForOtherReasons
   };
@@ -338,10 +337,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // FedCmPopupWindowResult in
   // tools/metrics/histograms/metadata/blink/enums.xml.
   enum class PopupWindowResult {
-    kAccountsReceivedAndPopupClosedByIdp,
-    kAccountsReceivedAndPopupNotClosedByIdp,
-    kAccountsNotReceivedAndPopupClosedByIdp,
-    kAccountsNotReceivedAndPopupNotClosedByIdp,
+    kAccountsReceivedAndPopupClosedByIdp = 0,
+    kAccountsReceivedAndPopupNotClosedByIdp = 1,
+    kAccountsNotReceivedAndPopupClosedByIdp = 2,
+    kAccountsNotReceivedAndPopupNotClosedByIdp = 3,
 
     kMaxValue = kAccountsNotReceivedAndPopupNotClosedByIdp
   };
@@ -353,16 +352,16 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
   // FedCmAccountChooserResult in tools/metrics/histograms/enums.xml.
   enum class AccountChooserResult {
-    kAccountRow,
-    kCancelButton,
-    kUseOtherAccountButton,
-    kTabClosed,
+    kAccountRow = 0,
+    kCancelButton = 1,
+    kUseOtherAccountButton = 2,
+    kTabClosed = 3,
     // Android-specific
-    kSwipe,
+    kSwipe = 4,
     // Android-specific
-    kBackPress,
+    kBackPress = 5,
     // Android-specific
-    kTapScrim,
+    kTapScrim = 6,
 
     kMaxValue = kTapScrim
   };
@@ -374,16 +373,16 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
   // FedCmLoadingDialogResult in tools/metrics/histograms/enums.xml.
   enum class LoadingDialogResult {
-    kProceed,
-    kCancel,
-    kProceedThroughPopup,
-    kDestroy,
+    kProceed = 0,
+    kCancel = 1,
+    kProceedThroughPopup = 2,
+    kDestroy = 3,
     // Android-specific
-    kSwipe,
+    kSwipe = 4,
     // Android-specific
-    kBackPress,
+    kBackPress = 5,
     // Android-specific
-    kTapScrim,
+    kTapScrim = 6,
 
     kMaxValue = kTapScrim
   };
@@ -395,18 +394,31 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
   // FedCmDisclosureDialogResult in tools/metrics/histograms/enums.xml.
   enum class DisclosureDialogResult {
-    kContinue,
-    kCancel,
-    kBack,
-    kDestroy,
+    kContinue = 0,
+    kCancel = 1,
+    kBack = 2,
+    kDestroy = 3,
     // Android-specific
-    kSwipe,
+    kSwipe = 4,
     // Android-specific
-    kBackPress,
+    kBackPress = 5,
     // Android-specific
-    kTapScrim,
+    kTapScrim = 6,
 
     kMaxValue = kTapScrim
+  };
+
+  // This enum describes the user action taken when the UI shown uses
+  // segmentation platform's UI volume recommendation and is used for
+  // histograms. Do not remove or modify existing values, but you may add new
+  // values at the end. This enum should be kept in sync with FedCmUserAction in
+  // tools/metrics/histograms/enums.xml.
+  enum class UserAction {
+    kSuccess = 0,
+    kIgnored = 1,
+    kClosed = 2,
+
+    kMaxValue = kClosed
   };
 
   // Called when the tab's WebContents is discarded.
@@ -480,6 +492,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Called when any of the Show*() methods is called.
   void ResetDialogWidgetStateOnAnyShow();
+
+  // Called when the segmentation platform which recommends UI volume returns a
+  // result.
+  void OnClassificationResultReturned(
+      const segmentation_platform::ClassificationResult& result);
 
   std::vector<IdentityProviderDataPtr> idp_list_;
 
@@ -583,9 +600,28 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // showing.
   std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;
+  // Allows the tab to receive mouse events even when the window is inactive
+  // (because the bubble window is active). This is if and only if the bubble
+  // widget is showing.
+  std::unique_ptr<tabs::ScopedAcceptMouseEventsWhileWindowInactive>
+      tab_accept_mouse_events_;
 
   // Widget that owns the view.
   std::unique_ptr<views::Widget> dialog_widget_;
+
+  // The current action that the user has taken. This is nullopt when
+  // segmentation platform is not used. Initially, this is set to kIgnored until
+  // the user closes the UI or proceeds with signing in.
+  std::optional<UserAction> user_action_state_;
+
+  // Request ID associated with a |GetClassificationResult| call to
+  // |segmentation_platform_service_|. This is nullopt when the
+  // |GetClassificationResult| call has not returned a result yet.
+  std::optional<segmentation_platform::TrainingRequestId> training_request_id_;
+
+  // Service which returns a recommendation for UI volume.
+  raw_ptr<segmentation_platform::SegmentationPlatformService>
+      segmentation_platform_service_;
 
   // This view controls the contents of the dialog_widget_. Conceptually there
   // is a view if and only if there is a widget. The two are constructed
@@ -595,5 +631,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };
+
+}  // namespace webid
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_DESKTOP_H_

@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Helper class to check PasswordManager backend availability. */
+@NullMarked
 public abstract class PasswordManagerBackendSupportHelper {
-    private static PasswordManagerBackendSupportHelper sInstance;
+    private static @Nullable PasswordManagerBackendSupportHelper sInstance;
 
     /**
      * Return an instance of PasswordManagerBackendSupportHelper. If no helper was used yet, it is

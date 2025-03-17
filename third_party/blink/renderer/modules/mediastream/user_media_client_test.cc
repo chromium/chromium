@@ -26,6 +26,7 @@
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_device_id.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
@@ -35,7 +36,6 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -178,8 +178,12 @@ class MockMediaStreamVideoCapturerSource
     SetStopCallback(std::move(stop_callback));
   }
 
-  MOCK_METHOD1(ChangeSourceImpl,
-               void(const blink::MediaStreamDevice& new_device));
+  MOCK_METHOD0(EnsureSourceIsStopped, void());
+
+  void ChangeSourceImpl(const blink::MediaStreamDevice& new_device) override {
+    SetDevice(new_device);
+    EnsureSourceIsStopped();
+  }
 };
 
 String MakeValidDeviceId(std::string_view id) {
@@ -730,7 +734,7 @@ class UserMediaClientTest : public ::testing::Test {
     return desc;
   }
 
-  MediaStreamTrack* RequestLocalVideoTrack() {
+  MediaStreamTrackImpl* RequestLocalVideoTrack() {
     UserMediaRequest* user_media_request = UserMediaRequest::CreateForTesting(
         MediaConstraints(), CreateDefaultConstraints());
     user_media_client_impl_->RequestUserMediaForTest(user_media_request);
@@ -830,6 +834,10 @@ class UserMediaClientTest : public ::testing::Test {
 
   UserMediaProcessorUnderTest* UserMediaProcessorForDisplayCapture() {
     return display_user_media_processor_;
+  }
+
+  UserMediaProcessorUnderTest* UserMediaProcessorForDeviceCapture() {
+    return user_media_processor_;
   }
 
   const MockMojoMediaStreamDispatcherHost&
@@ -1697,7 +1705,7 @@ TEST_F(UserMediaClientTest, DesktopCaptureChangeSource) {
   blink::MediaStreamDevice fake_video_device(
       blink::mojom::blink::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
       fake_ids_->video_input_1.Ascii(), "Fake Video Device");
-  EXPECT_CALL(*video_source, ChangeSourceImpl(_));
+  EXPECT_CALL(*video_source, EnsureSourceIsStopped());
   UserMediaProcessorForDisplayCapture()->OnDeviceChanged(video_source->device(),
                                                          fake_video_device);
 
@@ -1715,6 +1723,28 @@ TEST_F(UserMediaClientTest, DesktopCaptureChangeSource) {
   user_media_client_impl_->CancelUserMediaRequest(request);
   base::RunLoop().RunUntilIdle();
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(UserMediaClientTest, DesktopCaptureChangeSourceTriggersZoomChange) {
+  MediaStreamTrackImpl* track = RequestLocalVideoTrack();
+  // Initial zoom level is not set.
+  EXPECT_EQ(track->GetZoomLevelForTesting(), std::nullopt);
+
+  blink::MediaStreamDevice fake_video_device(
+      blink::mojom::blink::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+      fake_ids_->video_input_1.Ascii(), "Fake Video Device");
+  fake_video_device.display_media_info =
+      media::mojom::DisplayMediaInformation::New();
+  fake_video_device.display_media_info->initial_zoom_level = 125;
+
+  MockMediaStreamVideoCapturerSource* video_source =
+      UserMediaProcessorForDeviceCapture()->last_created_video_source();
+  EXPECT_CALL(*video_source, EnsureSourceIsStopped());
+  UserMediaProcessorForDeviceCapture()->OnDeviceChanged(*track->device(),
+                                                        fake_video_device);
+  EXPECT_EQ(track->GetZoomLevelForTesting(), 125);
+}
+#endif
 
 TEST_F(UserMediaClientTest, DesktopCaptureChangeSourceWithoutAudio) {
   blink::MockConstraintFactory factory;

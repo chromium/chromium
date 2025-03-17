@@ -87,11 +87,12 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // The RenderWidgetHost is going to be deleted.
   virtual void RenderWidgetDeleted(RenderWidgetHostImpl* render_widget_host) {}
 
-  // If a main frame navigation is in progress, this will return the zoom level
-  // for the pending page. Otherwise, this returns the zoom level for the
-  // current page. Note that subframe navigations do not affect the zoom level,
-  // which is tracked at the level of the page.
-  virtual double GetPendingPageZoomLevel();
+  // If a frame navigation is in progress for the frame that owns `rwh`, this
+  // will return the pending zoom level for that frame. Otherwise, this returns
+  // the zoom level for the current frame. Note that subframe navigations only
+  // affect the zoom level if the frame has requested independent zoom via
+  // HostZoomMap.
+  virtual double GetPendingZoomLevel(RenderWidgetHostImpl* rwh);
 
   // The RenderWidget was resized.
   virtual void RenderWidgetWasResized(RenderWidgetHostImpl* render_widget_host,
@@ -100,6 +101,12 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // The contents auto-resized and the container should match it.
   virtual void ResizeDueToAutoResize(RenderWidgetHostImpl* render_widget_host,
                                      const gfx::Size& new_size) {}
+
+  // Callback to give the browser a chance to handle the specified mouse
+  // event before sending it to the renderer. Returns true if the event was
+  // handled, false otherwise. A true value means no more processing should
+  // happen on the event. The default return value is false.
+  virtual bool PreHandleMouseEvent(const blink::WebMouseEvent& event);
 
   // Callback to give the browser a chance to handle the specified keyboard
   // event before sending it to the renderer. See enum for details on return

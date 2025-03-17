@@ -92,6 +92,9 @@ QuickSettingsSlider::QuickSettingsSlider(views::SliderListener* listener,
 
 QuickSettingsSlider::~QuickSettingsSlider() = default;
 
+// By not calling the superclass's AddedToWidget, the QuickSettingsSlider
+// ensures that only its own custom behavior is executed, avoiding any
+// redundant accessibility events getting triggered.
 void QuickSettingsSlider::AddedToWidget() {
   UpdateAccessibleValue();
 }
@@ -105,8 +108,8 @@ void QuickSettingsSlider::SetSliderStyle(Style style) {
   if (slider_style_ == Style::kRadioInactive)
     SetFocusBehavior(FocusBehavior::NEVER);
 
-  SchedulePaint();
   UpdateAccessibleValue();
+  SchedulePaint();
 }
 
 gfx::Rect QuickSettingsSlider::GetInactiveRadioSliderRect() {
@@ -120,6 +123,30 @@ gfx::Rect QuickSettingsSlider::GetInactiveRadioSliderRect() {
 
 int QuickSettingsSlider::GetInactiveRadioSliderRoundedCornerRadius() {
   return kInactiveRadioSliderRoundedRadius + kFocusOffset;
+}
+
+void QuickSettingsSlider::UpdateAccessibleValue() {
+  std::u16string volume_level = base::UTF8ToUTF16(
+      base::StringPrintf("%d%%", static_cast<int>(GetValue() * 100 + 0.5)));
+  views::ScopedAccessibilityEventBlocker scoped_event_blocker(
+      GetViewAccessibility());
+  if (is_toggleable_volume_slider_) {
+    std::u16string message = l10n_util::GetStringFUTF16(
+        slider_style_ == Style::kDefaultMuted
+            ? IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_MUTED_ACCESSIBILITY_ANNOUNCEMENT
+            : IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_ACCESSIBILITY_ANNOUNCEMENT,
+        volume_level);
+
+    GetViewAccessibility().SetValue(message);
+  } else {
+    GetViewAccessibility().SetValue(volume_level);
+  }
+}
+
+void QuickSettingsSlider::SetIsToggleableVolumeSlider(
+    bool is_toggleable_volume_slider) {
+  is_toggleable_volume_slider_ = is_toggleable_volume_slider;
+  UpdateAccessibleValue();
 }
 
 SkColor QuickSettingsSlider::GetThumbColor() const {
@@ -226,29 +253,6 @@ void QuickSettingsSlider::OnThemeChanged() {
   // Signals that this view needs to be repainted since `GetColorProvider()` is
   // called in `OnPaint()` and the views system won't know about it.
   SchedulePaint();
-}
-
-void QuickSettingsSlider::UpdateAccessibleValue() {
-  std::u16string volume_level = base::UTF8ToUTF16(
-      base::StringPrintf("%d%%", static_cast<int>(GetValue() * 100 + 0.5)));
-
-  if (is_toggleable_volume_slider_) {
-    std::u16string message = l10n_util::GetStringFUTF16(
-        slider_style_ == Style::kDefaultMuted
-            ? IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_MUTED_ACCESSIBILITY_ANNOUNCEMENT
-            : IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_ACCESSIBILITY_ANNOUNCEMENT,
-        volume_level);
-
-    GetViewAccessibility().SetValue(message);
-  } else {
-    GetViewAccessibility().SetValue(volume_level);
-  }
-}
-
-void QuickSettingsSlider::SetIsToggleableVolumeSlider(
-    bool is_toggleable_volume_slider) {
-  is_toggleable_volume_slider_ = is_toggleable_volume_slider;
-  UpdateAccessibleValue();
 }
 
 ReadOnlySlider::ReadOnlySlider(Style slider_style)

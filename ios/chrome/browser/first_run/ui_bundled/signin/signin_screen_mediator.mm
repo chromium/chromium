@@ -14,6 +14,12 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
+#import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/logging/first_run_signin_logger.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/logging/user_signin_logger.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_consumer.h"
@@ -23,19 +29,21 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
-#import "ios/chrome/browser/ui/authentication/signin/logging/first_run_signin_logger.h"
-#import "ios/chrome/browser/ui/authentication/signin/logging/user_signin_logger.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
+
+namespace {
+// Represents the state of the screen relevant to the First Run.
+enum class SigninScreenState {
+  // The screen is the first screen in the FRE sequence.
+  kFirstRunAsFirstScreen,
+  // The screen is in the FRE sequence, but is not the first screen.
+  kFirstRunAsOtherScreen,
+  // The screen is not in the FRE.
+  kNotFirstRun,
+};
+}  // namespace
 
 @interface SigninScreenMediator () <ChromeAccountManagerServiceObserver,
                                     IdentityManagerObserverBridgeDelegate> {
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
-  std::unique_ptr<signin::IdentityManagerObserverBridge>
-      _identityManagerObserver;
-  // YES if this is part of a first run signin.
-  BOOL _firstRun;
 }
 
 // Application local pref.
@@ -62,6 +70,12 @@
   raw_ptr<AuthenticationService> _authenticationService;
   // Identity manager to retrieve Chrome identities.
   raw_ptr<signin::IdentityManager> _identityManager;
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
+  // State of the sign-in screen.
+  SigninScreenState _screenState;
 }
 
 - (instancetype)
@@ -97,30 +111,39 @@
     _prefService = prefService;
     _syncService = syncService;
 
-    if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    if (IsUseAccountListFromIdentityManagerEnabled()) {
       _hadIdentitiesAtStartup =
           !_identityManager->GetAccountsOnDevice().empty();
     } else {
       _hadIdentitiesAtStartup = _accountManagerService->HasIdentities();
     }
-    _firstRun =
-        accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
-    if (_firstRun) {
-      _logger = [[FirstRunSigninLogger alloc]
-            initWithAccessPoint:accessPoint
-                    promoAction:promoAction
-                identityManager:identityManager
-          accountManagerService:accountManagerService];
+
+    if (accessPoint == signin_metrics::AccessPoint::kStartPage) {
+      if (!_localPrefService->GetBoolean(prefs::kEulaAccepted)) {
+        _screenState = SigninScreenState::kFirstRunAsFirstScreen;
+      } else {
+        _screenState = SigninScreenState::kFirstRunAsOtherScreen;
+      }
     } else {
-      _logger =
-          [[UserSigninLogger alloc] initWithAccessPoint:accessPoint
-                                            promoAction:promoAction
-                                        identityManager:identityManager
-                                  accountManagerService:accountManagerService];
+      _screenState = SigninScreenState::kNotFirstRun;
     }
+
+    switch (_screenState) {
+      case SigninScreenState::kNotFirstRun:
+        _logger = [[UserSigninLogger alloc] initWithAccessPoint:accessPoint
+                                                    promoAction:promoAction];
+        break;
+      case SigninScreenState::kFirstRunAsFirstScreen:
+      case SigninScreenState::kFirstRunAsOtherScreen:
+        _logger =
+            [[FirstRunSigninLogger alloc] initWithAccessPoint:accessPoint
+                                                  promoAction:promoAction];
+        break;
+    }
+
     _ignoreDismissGesture =
-        accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE ||
-        accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN;
+        accessPoint == signin_metrics::AccessPoint::kStartPage ||
+        accessPoint == signin_metrics::AccessPoint::kForcedSignin;
 
     [_logger logSigninStarted];
   }
@@ -137,7 +160,6 @@
 }
 
 - (void)disconnect {
-  [self.logger disconnect];
   _accountManagerService = nullptr;
   _authenticationService = nullptr;
   _identityManager = nullptr;
@@ -153,60 +175,37 @@
                                completion:(ProceduralBlock)completion {
   [self userAttemptedToSignin];
   RecordMetricsReportingDefaultState();
+
+  // The sign-in screen should not be displayed if the user is already
+  // signed-in.
+  CHECK(!_authenticationService->HasPrimaryIdentity(
+            signin::ConsentLevel::kSignin),
+        base::NotFatalUntil::M140);
   [self.consumer setUIEnabled:NO];
   __weak __typeof(self) weakSelf = self;
-  ProceduralBlock startSignInCompletion = ^() {
-    [authenticationFlow startSignInWithCompletion:^(
-                            SigninCoordinatorResult result) {
-      [weakSelf.consumer setUIEnabled:YES];
-      if (result != SigninCoordinatorResultSuccess) {
-        return;
-      }
-      [weakSelf.logger
-          logSigninCompletedWithResult:SigninCoordinatorResultSuccess
-                          addedAccount:weakSelf.addedAccount];
-      if (completion)
-        completion();
-    }];
-  };
-  id<SystemIdentity> primaryIdentity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (primaryIdentity && ![primaryIdentity isEqual:self.selectedIdentity]) {
-    // This case is possible if the user signs in with the FRE, and quits Chrome
-    // without completed the FRE. And the user starts Chrome again.
-    // See crbug.com/1312449.
-    // TODO(crbug.com/40832610): Need test for this case.
-    _authenticationService->SignOut(
-        signin_metrics::ProfileSignout::kAbortSignin,
-        /*force_clear_browsing_data=*/false, startSignInCompletion);
-    return;
-  }
-  startSignInCompletion();
+  [authenticationFlow startSignInWithCompletion:^(
+                          SigninCoordinatorResult result) {
+    [weakSelf.consumer setUIEnabled:YES];
+    if (result != SigninCoordinatorResultSuccess) {
+      return;
+    }
+    [weakSelf.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
+                                     addedAccount:weakSelf.addedAccount];
+    if (completion) {
+      completion();
+    }
+  }];
 }
 
 - (void)cancelSignInScreenWithCompletion:(ProceduralBlock)completion {
-  if (!_authenticationService->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
-    if (completion) {
-      completion();
-    }
-    return;
+  // The sign-in screen should not be displayed if the user is already
+  // signed-in.
+  CHECK(!_authenticationService->HasPrimaryIdentity(
+            signin::ConsentLevel::kSignin),
+        base::NotFatalUntil::M140);
+  if (completion) {
+    completion();
   }
-  [self.consumer setUIEnabled:NO];
-  // This case is possible if the user signs in with the FRE, and quits Chrome
-  // without completed the FRE. And the user starts Chrome again.
-  // See crbug.com/1312449.
-  // TODO(crbug.com/40832610): Need test for this case.
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock signOutCompletion = ^() {
-    [weakSelf.consumer setUIEnabled:YES];
-    if (completion) {
-      completion();
-    }
-  };
-  _authenticationService->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
-                                  /*force_clear_browsing_data=*/false,
-                                  signOutCompletion);
 }
 
 - (void)userAttemptedToSignin {
@@ -223,18 +222,20 @@
   if (self.UMALinkWasTapped) {
     base::RecordAction(base::UserMetricsAction("MobileFreUMALinkTapped"));
   }
-  if (_firstRun) {
+  if (_screenState != SigninScreenState::kNotFirstRun) {
     first_run::FirstRunStage firstRunStage =
         signIn ? first_run::kWelcomeAndSigninScreenCompletionWithSignIn
                : first_run::kWelcomeAndSigninScreenCompletionWithoutSignIn;
-    self.localPrefService->SetBoolean(prefs::kEulaAccepted, true);
-    self.localPrefService->SetBoolean(metrics::prefs::kMetricsReportingEnabled,
-                                      self.UMAReportingUserChoice);
-    self.localPrefService->CommitPendingWrite();
     base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   firstRunStage);
     RecordFirstRunSignInMetrics(_identityManager, self.attemptStatus,
                                 self.hadIdentitiesAtStartup);
+  }
+  if (_screenState == SigninScreenState::kFirstRunAsFirstScreen) {
+    self.localPrefService->SetBoolean(prefs::kEulaAccepted, true);
+    self.localPrefService->SetBoolean(metrics::prefs::kMetricsReportingEnabled,
+                                      self.UMAReportingUserChoice);
+    self.localPrefService->CommitPendingWrite();
   }
 }
 
@@ -276,19 +277,25 @@
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) &&
       !HasManagedSyncDataType(_syncService);
   self.consumer.hasPlatformPolicies = HasPlatformPolicies();
-  if (!_firstRun) {
-    self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;
-  } else {
-    BOOL metricReportingDisabled =
-        self.localPrefService->IsManagedPreference(
-            metrics::prefs::kMetricsReportingEnabled) &&
-        !self.localPrefService->GetBoolean(
-            metrics::prefs::kMetricsReportingEnabled);
-    self.consumer.screenIntent =
-        metricReportingDisabled
-            ? SigninScreenConsumerScreenIntentWelcomeWithoutUMAAndSignin
-            : SigninScreenConsumerScreenIntentWelcomeAndSignin;
+
+  switch (_screenState) {
+    case SigninScreenState::kNotFirstRun:
+    case SigninScreenState::kFirstRunAsOtherScreen:
+      self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;
+      break;
+    case SigninScreenState::kFirstRunAsFirstScreen:
+      BOOL metricReportingDisabled =
+          self.localPrefService->IsManagedPreference(
+              metrics::prefs::kMetricsReportingEnabled) &&
+          !self.localPrefService->GetBoolean(
+              metrics::prefs::kMetricsReportingEnabled);
+      self.consumer.screenIntent =
+          metricReportingDisabled
+              ? SigninScreenConsumerScreenIntentWelcomeWithoutUMAAndSignin
+              : SigninScreenConsumerScreenIntentWelcomeAndSignin;
+      break;
   }
+
   if (signinForcedOrAvailable) {
     self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
         _identityManager, _accountManagerService);
@@ -300,7 +307,7 @@
     return;
   }
   // nil is allowed only if there is no other identity.
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     DCHECK(selectedIdentity || _identityManager->GetAccountsOnDevice().empty());
   } else {
     DCHECK(selectedIdentity || !_accountManagerService->HasIdentities());
@@ -313,9 +320,9 @@
 #pragma mark - Private
 
 - (bool)selectedIdentityIsValid {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     if (self.selectedIdentity) {
-      std::string gaia = base::SysNSStringToUTF8(self.selectedIdentity.gaiaID);
+      GaiaId gaia(self.selectedIdentity.gaiaID);
       return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
                             [](const AccountInfo& info) { return info.gaia; });
     }
@@ -341,10 +348,13 @@
   } else {
     UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
         selectedIdentity, IdentityAvatarSize::Regular);
+
     [self.consumer setSelectedIdentityUserName:selectedIdentity.userFullName
                                          email:selectedIdentity.userEmail
                                      givenName:selectedIdentity.userGivenName
-                                        avatar:avatar];
+                                        avatar:avatar
+                                       managed:[self isIdentityKnownToBeManaged:
+                                                         selectedIdentity]];
   }
 }
 
@@ -361,10 +371,31 @@
   }
 }
 
+// Returns true if `identity` is known to be managed.
+// Returns false if the identity is known not to be managed or if the management
+// status is unknown. If the management status is unknown, it is fetched by
+// calling `FetchManagedStatusForIdentity`. `identityUpdated:` will be called
+// asynchronously when the management status if retrieved and the identity is
+// managed.
+- (BOOL)isIdentityKnownToBeManaged:(id<SystemIdentity>)identity {
+  if (std::optional<BOOL> managed = IsIdentityManaged(identity);
+      managed.has_value()) {
+    return managed.value();
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  FetchManagedStatusForIdentity(identity, base::BindOnce(^(bool managed) {
+                                  if (managed) {
+                                    [weakSelf identityUpdated:identity];
+                                  }
+                                }));
+  return NO;
+}
+
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `onAccountsOnDeviceChanged` instead.
     return;
   }
@@ -372,7 +403,7 @@
 }
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `onExtendedAccountInfoUpdated` instead.
     return;
   }
@@ -388,7 +419,7 @@
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (!IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `identityListChanged` instead.
     return;
   }
@@ -396,7 +427,7 @@
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (!IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `identityUpdated` instead.
     return;
   }
@@ -404,5 +435,4 @@
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   [self handleIdentityUpdated:identity];
 }
-
 @end

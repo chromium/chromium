@@ -39,8 +39,8 @@ class TabStripControlButtonTest : public ChromeViewsTestBase {
   }
 
  protected:
-  std::unique_ptr<TabStripControlButton> button_;
   std::unique_ptr<FrameCondensedController> tab_strip_controller_;
+  std::unique_ptr<TabStripControlButton> button_;
 };
 
 TEST_F(TabStripControlButtonTest, UncondensedFrameHitTestMask) {

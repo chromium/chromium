@@ -4,6 +4,7 @@
 
 #include "chrome/browser/google/google_brand.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -11,14 +12,12 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/installer/util/google_update_settings.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/google/google_brand_chromeos.h"
 #endif
 
@@ -71,7 +70,7 @@ bool GetBrand(std::string* brand) {
     return true;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   brand->assign(google_brand::chromeos::GetBrand());
 #else
   brand->clear();
@@ -87,7 +86,7 @@ bool GetReactivationBrand(std::string* brand) {
 #endif
 
 bool GetRlzBrand(std::string* brand) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   brand->assign(google_brand::chromeos::GetRlzBrand());
   return true;
 #else
@@ -156,7 +155,7 @@ bool IsEnterprise(const std::string& brand) {
       "GCT", "GCU", "GCV", "GCW",
   };
   return brand == "GGRV" ||
-         base::ranges::any_of(kEnterpriseBrands, [&brand](const char* br) {
+         std::ranges::any_of(kEnterpriseBrands, [&brand](const char* br) {
            return base::StartsWith(brand, br, base::CompareCase::SENSITIVE);
          });
 }

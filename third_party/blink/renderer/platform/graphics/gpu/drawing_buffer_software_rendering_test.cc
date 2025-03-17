@@ -29,14 +29,14 @@ class DrawingBufferSoftwareCompositingTest : public testing::Test {
         std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
     GLES2InterfaceForTests* gl_ =
         static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
-    auto sii_provider_for_bitmap =
+    auto sii_provider_for_sw =
         TestWebGraphicsSharedImageInterfaceProvider::Create();
     Platform::GraphicsInfo graphics_info;
     graphics_info.using_gpu_compositing = false;
 
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), std::move(sii_provider_for_bitmap), graphics_info,
-        gl_, initial_size, DrawingBuffer::kPreserve, kDisableMultisampling);
+        std::move(provider), std::move(sii_provider_for_sw), graphics_info, gl_,
+        initial_size, DrawingBuffer::kPreserve, kDisableMultisampling);
     CHECK(drawing_buffer_);
   }
 
@@ -44,7 +44,7 @@ class DrawingBufferSoftwareCompositingTest : public testing::Test {
   scoped_refptr<DrawingBufferForTests> drawing_buffer_;
 };
 
-TEST_F(DrawingBufferSoftwareCompositingTest, BitmapRecycling) {
+TEST_F(DrawingBufferSoftwareCompositingTest, ResourceRecycling) {
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback1;
   viz::ReleaseCallback release_callback2;
@@ -56,30 +56,32 @@ TEST_F(DrawingBufferSoftwareCompositingTest, BitmapRecycling) {
   drawing_buffer_->MarkContentsChanged();
   drawing_buffer_->PrepareTransferableResource(
       &resource,
-      &release_callback1);  // create a bitmap.
-  EXPECT_EQ(0, drawing_buffer_->RecycledBitmapCount());
+      &release_callback1);  // create a resource.
+  EXPECT_EQ(0, drawing_buffer_->RecycledSoftwareResourceCount());
   std::move(release_callback1)
-      .Run(gpu::SyncToken(),
-           false /* lostResource */);  // release bitmap to the recycling queue
-  EXPECT_EQ(1, drawing_buffer_->RecycledBitmapCount());
+      .Run(
+          gpu::SyncToken(),
+          false /* lostResource */);  // release resource to the recycling queue
+  EXPECT_EQ(1, drawing_buffer_->RecycledSoftwareResourceCount());
   drawing_buffer_->MarkContentsChanged();
   drawing_buffer_->PrepareTransferableResource(
       &resource,
-      &release_callback2);  // recycle a bitmap.
-  EXPECT_EQ(0, drawing_buffer_->RecycledBitmapCount());
+      &release_callback2);  // recycle a resource.
+  EXPECT_EQ(0, drawing_buffer_->RecycledSoftwareResourceCount());
   std::move(release_callback2)
-      .Run(gpu::SyncToken(),
-           false /* lostResource */);  // release bitmap to the recycling queue
-  EXPECT_EQ(1, drawing_buffer_->RecycledBitmapCount());
+      .Run(
+          gpu::SyncToken(),
+          false /* lostResource */);  // release resource to the recycling queue
+  EXPECT_EQ(1, drawing_buffer_->RecycledSoftwareResourceCount());
   drawing_buffer_->Resize(alternate_size);
   drawing_buffer_->MarkContentsChanged();
   // Regression test for crbug.com/647896 - Next line must not crash
   drawing_buffer_->PrepareTransferableResource(
       &resource,
       &release_callback3);  // cause recycling queue to be purged due to resize
-  EXPECT_EQ(0, drawing_buffer_->RecycledBitmapCount());
+  EXPECT_EQ(0, drawing_buffer_->RecycledSoftwareResourceCount());
   std::move(release_callback3).Run(gpu::SyncToken(), false /* lostResource */);
-  EXPECT_EQ(1, drawing_buffer_->RecycledBitmapCount());
+  EXPECT_EQ(1, drawing_buffer_->RecycledSoftwareResourceCount());
 
   drawing_buffer_->BeginDestruction();
 }

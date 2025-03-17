@@ -14,9 +14,9 @@
 
 #include <fstream>
 
+#include "absl/status/statusor.h"
 #include "mediapipe/framework/deps/file_path.h"
 #include "mediapipe/framework/port/file_helpers.h"
-#include "mediapipe/framework/port/statusor.h"
 
 namespace mediapipe {
 
@@ -32,7 +32,8 @@ absl::Status DefaultGetResourceContents(const std::string& path,
 }
 }  // namespace internal
 
-absl::StatusOr<std::string> PathToResourceAsFile(const std::string& path) {
+absl::StatusOr<std::string> PathToResourceAsFile(const std::string& path,
+                                                 bool /*shadow_copy*/) {
   if (absl::StartsWith(path, "/")) {
     return path;
   }

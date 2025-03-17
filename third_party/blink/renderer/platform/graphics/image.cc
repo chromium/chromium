@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -172,7 +173,7 @@ PaintImage Image::ResizeAndOrientImage(
     sampling = SkSamplingOptions(SkCubicResampler::CatmullRom());
 
   SkCanvas* canvas = surface->getCanvas();
-  canvas->concat(AffineTransformToSkMatrix(transform));
+  canvas->concat(transform.ToSkMatrix());
   canvas->drawImage(image.GetSwSkImage(), 0, 0, sampling, &paint);
 
   return PaintImageBuilder::WithProperties(std::move(image))
@@ -236,7 +237,6 @@ sk_sp<PaintShader> CreatePatternShader(const PaintImage& image,
 }
 
 SkTileMode ComputeTileMode(float left, float right, float min, float max) {
-  DCHECK(left < right);
   return left >= min && right <= max ? SkTileMode::kClamp : SkTileMode::kRepeat;
 }
 

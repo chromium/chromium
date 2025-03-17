@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/bind_post_task.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "content/public/common/gpu_stream_constants.h"
@@ -22,10 +24,14 @@
 #include "services/video_effects/video_effects_service_impl.h"
 #include "services/viz/public/cpp/gpu/command_buffer_metrics.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
-#include "services/viz/public/cpp/gpu/gpu.h"
 #include "url/gurl.h"
 
 namespace {
+
+// Maximum number of context losses that will be tolerated before entering a
+// permanent error state; maybe we are the source of GPU instability and don't
+// want to impact the rest of the browser.
+constexpr int kMaxNumOfContextLosses = 5;
 
 scoped_refptr<viz::ContextProviderCommandBuffer> CreateAndBindContextProvider(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
@@ -68,6 +74,13 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateAndBindContextProvider(
   return context_provider;
 }
 
+void GpuChannelHostAddObserver(scoped_refptr<gpu::GpuChannelHost> host,
+                               gpu::GpuChannelLostObserver* observer) {
+  if (host) {
+    host->AddObserver(observer);
+  }
+}
+
 }  // namespace
 
 namespace video_effects {
@@ -76,49 +89,129 @@ VizGpuChannelHostProvider::VizGpuChannelHostProvider(
     std::unique_ptr<viz::Gpu> viz_gpu)
     : viz_gpu_(std::move(viz_gpu)) {
   CHECK(viz_gpu_);
+
+  task_gpu_channel_lost_on_provider_thread_ =
+      base::BindPostTaskToCurrentDefault(
+          base::BindRepeating(&VizGpuChannelHostProvider::HandleContextLost,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 scoped_refptr<viz::ContextProviderCommandBuffer>
 VizGpuChannelHostProvider::GetWebGpuContextProvider() {
-  if (webgpu_context_provider_) {
-    return webgpu_context_provider_;
+  if (HasPermanentError()) {
+    CHECK(!webgpu_context_provider_);
+    return nullptr;
   }
-  webgpu_context_provider_ = CreateAndBindContextProvider(
-      GetGpuChannelHost(), gpu::CONTEXT_TYPE_WEBGPU);
+
+  if (!webgpu_context_provider_) {
+    webgpu_context_provider_ = CreateAndBindContextProvider(
+        GetGpuChannelHost(), gpu::CONTEXT_TYPE_WEBGPU);
+    webgpu_context_provider_->AddObserver(this);
+  }
+
   return webgpu_context_provider_;
 }
 
 scoped_refptr<viz::RasterContextProvider>
 VizGpuChannelHostProvider::GetRasterInterfaceContextProvider() {
-  if (raster_interface_context_provider_) {
-    return raster_interface_context_provider_;
+  if (HasPermanentError()) {
+    CHECK(!raster_interface_context_provider_);
+    return nullptr;
   }
-  raster_interface_context_provider_ = CreateAndBindContextProvider(
-      GetGpuChannelHost(), gpu::CONTEXT_TYPE_OPENGLES2);
+
+  if (!raster_interface_context_provider_) {
+    raster_interface_context_provider_ = CreateAndBindContextProvider(
+        GetGpuChannelHost(), gpu::CONTEXT_TYPE_OPENGLES2);
+    raster_interface_context_provider_->AddObserver(this);
+  }
+
   return raster_interface_context_provider_;
 }
 
 scoped_refptr<gpu::ClientSharedImageInterface>
 VizGpuChannelHostProvider::GetSharedImageInterface() {
-  if (shared_image_interface_) {
-    return shared_image_interface_;
+  if (HasPermanentError()) {
+    CHECK(!shared_image_interface_);
+    return nullptr;
   }
-  shared_image_interface_ =
-      GetGpuChannelHost()->CreateClientSharedImageInterface();
-  return shared_image_interface_;
+  return shared_image_interface_
+             ? shared_image_interface_
+             : shared_image_interface_ =
+                   GetGpuChannelHost()->CreateClientSharedImageInterface();
 }
 
-VizGpuChannelHostProvider::~VizGpuChannelHostProvider() = default;
+void VizGpuChannelHostProvider::Reset() {
+  shared_image_interface_ = nullptr;
+  if (raster_interface_context_provider_) {
+    raster_interface_context_provider_->RemoveObserver(this);
+    raster_interface_context_provider_ = nullptr;
+  }
+  if (webgpu_context_provider_) {
+    webgpu_context_provider_->RemoveObserver(this);
+    webgpu_context_provider_ = nullptr;
+  }
+  if (gpu_channel_host_) {
+    gpu_channel_host_->RemoveObserver(this);
+    gpu_channel_host_ = nullptr;
+  }
+}
+
+void VizGpuChannelHostProvider::AddObserver(Observer& observer) {
+  observers_.AddObserver(&observer);
+}
+
+void VizGpuChannelHostProvider::RemoveObserver(Observer& observer) {
+  observers_.RemoveObserver(&observer);
+}
+
+VizGpuChannelHostProvider::~VizGpuChannelHostProvider() {
+  Reset();
+}
 
 scoped_refptr<gpu::GpuChannelHost>
 VizGpuChannelHostProvider::GetGpuChannelHost() {
+  if (HasPermanentError()) {
+    return nullptr;
+  }
   if (!gpu_channel_host_) {
     gpu_channel_host_ = viz_gpu_->GetGpuChannel();
+    GpuChannelHostAddObserver(gpu_channel_host_, this);
   }
   if (!gpu_channel_host_ || gpu_channel_host_->IsLost()) {
     gpu_channel_host_ = viz_gpu_->EstablishGpuChannelSync();
+    GpuChannelHostAddObserver(gpu_channel_host_, this);
   }
   return gpu_channel_host_;
+}
+
+void VizGpuChannelHostProvider::OnGpuChannelLost() {
+  // OnGpuChannelLost() is called on the IOThread. so it has to be
+  // forwarded to the thread where the provider is created.
+  CHECK(task_gpu_channel_lost_on_provider_thread_);
+  task_gpu_channel_lost_on_provider_thread_.Run();
+}
+
+void VizGpuChannelHostProvider::OnContextLost() {
+  HandleContextLost();
+}
+
+void VizGpuChannelHostProvider::HandleContextLost() {
+  // If we don't have an active connection to the GPU, ignore it.
+  if (!gpu_channel_host_) {
+    return;
+  }
+
+  num_context_lost_++;
+  Reset();
+  if (HasPermanentError()) {
+    observers_.Notify(&Observer::OnPermanentError, this);
+  } else {
+    observers_.Notify(&Observer::OnContextLost, this);
+  }
+}
+
+bool VizGpuChannelHostProvider::HasPermanentError() {
+  return num_context_lost_ >= kMaxNumOfContextLosses;
 }
 
 }  // namespace video_effects

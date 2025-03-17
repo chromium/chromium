@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">Увядзіце дапушчальнае значэнне. Два найбліжэйшыя дапушчальныя значэнні: <ph name="VALID_VALUE_LOW" /> і <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Падрабязнасці</translation>
 <translation id="4664250907885839816">У частцы пасля "<ph name="ATSIGN" />" не павінна быць сімвала "<ph name="INVALIDCHARACTER" />".</translation>
+<translation id="4703271465972936359">Гукавыя дарожкі</translation>
 <translation id="4718048029184481307">Прайграецца ў рэжыме "Відарыс у відарысе"</translation>
 <translation id="4812940957355064477">Увядзіце лік.</translation>
 <translation id="4975562563186953947">Выбрана: <ph name="SELECTED_COUNT" /></translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">Трансліраваць</translation>
 <translation id="5630795885300617244">Каб пераскочыць на 10 с, двойчы націсніце справа або злева</translation>
 <translation id="57838592816432529">Выключыць</translation>
+<translation id="5868587040512539609">Відэадарожкі</translation>
 <translation id="588258955323874662">Поўнаэкранны рэжым</translation>
 <translation id="5888666972993069672">Ідзе трансляцыя на прыладу <ph name="DEVICE_FRIENDLY_NAME" /></translation>
 <translation id="5939518447894949180">Скінуць</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">Вывесці ў зручным фармаце</translation>
 <translation id="6550675742724504774">Параметры</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
+<translation id="6661136971638885481">Трэк #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Іншы...</translation>
 <translation id="6709093583001123835">Значэнне павінна быць <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Кепская якасць прайгравання</translation>

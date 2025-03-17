@@ -14,7 +14,7 @@
   content: '';
   position: relative;
   height: 1px;
-  background-color: #DADCE0;
+  background-color: var(--color-searchbox-dropdown-divider);
   top: 0;
   width: calc(var(--cr-searchbox-min-width) - 24px);
   display: block;
@@ -26,18 +26,26 @@
   align-items: center;
   color: var(--color-searchbox-placeholder);
   height: 48px;
-  padding-inline-start: 12px;
+  padding-inline-start: 14px;
   padding-inline-end: 14px;
   padding-top: 4px;
 }
 
+#loadingState.status-container {
+  padding-inline-start: 16px;
+}
+
 .loader-text {
   position: absolute;
-  padding-inline-start: 40px;
+  padding-inline-start: 38px;
   padding-inline-end: 14px;
   font-weight: var(--cr-searchbox-match-font-weight);
   font-size: 14px;
   width: 234px;
+}
+
+#loadingState .loader-text {
+  padding-inline-start: 36px;
 }
 
 #hint-text1 {
@@ -81,7 +89,7 @@
 }
 
 #errorState {
-  height: 72px;
+  height: 48px;
 }
 
 #errorIconContainer {
@@ -116,12 +124,13 @@
   }
 }
 </style>
+<!-- LINT.IfChange(GhostLoaderText) -->
 <div id="content">
   <template is="dom-if" if="[[showContextualSearchboxLoadingState]]">
     <div id="loadingState" class="status-container">
       <div class="spinner"></div>
       <span id="hint-text1" class="loader-text">
-        $i18n{searchboxGhostLoaderHintTextPrimary}
+        [[ghostLoaderPrimaryMessage]]
       </span>
       <span id="hint-text2" class="loader-text">
         $i18n{searchboxGhostLoaderHintTextSecondary}
@@ -143,3 +152,4 @@
     </div>
   </template>
 </div>
+<!-- LINT.ThenChange(//chrome/browser/resources/lens/shared/searchbox_ghost_loader.ts:GhostLoaderText) -->

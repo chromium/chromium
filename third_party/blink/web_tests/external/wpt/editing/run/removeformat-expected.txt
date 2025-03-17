@@ -59,7 +59,7 @@ Found 45 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["removeformat",""]] "[foo<span>bar</span>baz]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobarbaz" but got "foo<span>bar</span>baz"
 [FAIL] [["removeformat",""]] "foo<span>b[a]r</span>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span>b</span>a<span>r</span>baz" but got "foobarbaz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span>b</span>a<span>r</span>baz" but got "foo<span>bar</span>baz"
 [FAIL] [["removeformat",""]] "[foo<span id=foo>bar</span>baz]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobarbaz" but got "foo<span id=\\"foo\\">bar</span>baz"
 [FAIL] [["removeformat",""]] "foo<span id=foo>b[a]r</span>baz" compare innerHTML

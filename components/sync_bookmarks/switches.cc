@@ -20,6 +20,10 @@ BASE_FEATURE(kSyncMigrateBookmarksWithoutClientTagHash,
 
 BASE_FEATURE(kSyncMinimizeDeletionsDuringBookmarkBatchUpload,
              "SyncMinimizeDeletionsDuringBookmarkBatchUpload",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncFastDeletionsDuringBookmarkBatchUpload,
+             "SyncFastDeletionsDuringBookmarkBatchUpload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enabled by default, intended as a kill switch.

@@ -392,6 +392,25 @@ class InstallTest(XcodeUtilTest):
         self.xcode_build_version, ios_version)
     self.assertFalse(mock_install.called)
 
+  @mock.patch('xcode_util.is_local_run', return_value=True)
+  @mock.patch('xcode_util.version', return_value=('', 'TestXcodeVersion'))
+  @mock.patch(
+      'iossim_util.get_simulator_runtime_info_by_build', return_value=object())
+  @mock.patch('xcode_util.get_latest_runtime_build_cipd', return_value=None)
+  @mock.patch('xcode_util.install')
+  def test_local_run_no_cipd_runtime(self, mock_install,
+                                     mock_get_latest_runtime_build_cipd, _1, _2,
+                                     _3):
+    ios_version = '14.4'
+    install_success, is_legacy_xcode = xcode_util.install_xcode(
+        self.mac_toolchain, self.xcode_build_version, self.xcode_app_path, '',
+        ios_version)
+    self.assertTrue(install_success)
+    self.assertFalse(is_legacy_xcode)
+    mock_get_latest_runtime_build_cipd.assert_called_once_with(
+        self.xcode_build_version, ios_version)
+    self.assertFalse(mock_install.called)
+
 
 class HelperFunctionTests(XcodeUtilTest):
   """Test class for xcode_util misc util functions."""

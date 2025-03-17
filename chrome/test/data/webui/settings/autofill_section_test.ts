@@ -8,7 +8,7 @@ import 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
-import {AutofillManagerImpl, CountryDetailManagerImpl} from 'chrome://settings/lazy_load.js';
+import {AutofillManagerImpl, CountryDetailManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -19,10 +19,127 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {AutofillManagerExpectations, createAddressEntry, createEmptyAddressEntry, STUB_USER_ACCOUNT_INFO, TestAutofillManager} from './autofill_fake_data.js';
-import {createAutofillSection, initiateRemoving, initiateEditing, CountryDetailManagerTestImpl, createAddressDialog, createRemoveAddressDialog, expectEvent, openAddressDialog, getAddressFieldValue} from './autofill_section_test_utils.js';
+import {createAutofillSection, initiateRemoving, initiateEditing, createAddressDialog, createRemoveAddressDialog, expectEvent, openAddressDialog, getAddressFieldValue} from './autofill_section_test_utils.js';
+import {TestCountryDetailManagerProxy} from './test_country_detail_manager_proxy.js';
 // clang-format on
 
 const FieldType = chrome.autofillPrivate.FieldType;
+
+const ADDRESS_COMPONENTS_US = {
+  components: [
+    {
+      row: [
+        {
+          field: FieldType.NAME_FULL,
+          fieldName: 'Name',
+          isLongField: true,
+          isRequired: false,
+        },
+      ],
+    },
+    {
+      row: [
+        {
+          field: FieldType.ADDRESS_HOME_CITY,
+          fieldName: 'City',
+          isLongField: false,
+          isRequired: true,
+        },
+        {
+          field: FieldType.ADDRESS_HOME_STATE,
+          fieldName: 'State',
+          isLongField: false,
+          isRequired: true,
+        },
+        {
+          field: FieldType.ADDRESS_HOME_ZIP,
+          fieldName: 'ZIP code',
+          isLongField: false,
+          isRequired: true,
+        },
+      ],
+    },
+  ],
+  languageCode: 'en',
+};
+
+const ADDRESS_COMPONENTS_GB = {
+  components: [
+    {
+      row: [
+        {
+          field: FieldType.NAME_FULL,
+          fieldName: 'Name',
+          isLongField: true,
+          isRequired: false,
+        },
+      ],
+    },
+    {
+      row: [
+        {
+          field: FieldType.ADDRESS_HOME_CITY,
+          fieldName: 'Post town',
+          isLongField: false,
+          isRequired: true,
+        },
+      ],
+    },
+    {
+      row: [
+        {
+          field: FieldType.ADDRESS_HOME_ZIP,
+          fieldName: 'Postal code',
+          isLongField: false,
+          isRequired: true,
+        },
+      ],
+    },
+    {
+      row: [
+        {
+          field: FieldType.ADDRESS_HOME_STATE,
+          fieldName: 'County',
+          isLongField: false,
+          isRequired: true,
+        },
+      ],
+    },
+  ],
+  languageCode: 'en',
+};
+
+const ADDRESS_COMPONENTS_IL = {
+  components: [
+    {
+      row: [
+        {
+          field: FieldType.NAME_FULL,
+          fieldName: 'Name',
+          isLongField: true,
+          isRequired: false,
+        },
+      ],
+    },
+    {
+      row: [
+        {
+          field: FieldType.ADDRESS_HOME_CITY,
+          fieldName: 'City',
+          isLongField: false,
+          isRequired: true,
+        },
+        {
+          field: FieldType.ADDRESS_HOME_ZIP,
+          fieldName: 'Postal code',
+          isLongField: false,
+          isRequired: true,
+        },
+      ],
+    },
+  ],
+  languageCode: 'iw',
+};
 
 suite('AutofillSectionUiTest', function() {
   test('testAutofillExtensionIndicator', function() {
@@ -87,7 +204,7 @@ suite('AutofillSectionUiTest', function() {
         'PersonalDataChangedListener should be set in the section element');
 
     // Imitate disabling sync.
-    changeListener(autofillManager.data.addresses, [], [], {
+    changeListener(autofillManager.data.addresses, [], [], [], {
       ...STUB_USER_ACCOUNT_INFO,
     });
 
@@ -110,7 +227,7 @@ suite('AutofillSectionUiTest', function() {
     await flushTasks();
 
     // Imitate disabling sync.
-    changeListener(autofillManager.data.addresses, [], [], undefined);
+    changeListener(autofillManager.data.addresses, [], [], [], undefined);
 
     {
       const dialog = await initiateRemoving(section, 0);
@@ -130,7 +247,7 @@ suite('AutofillSectionUiTest', function() {
 
     await flushTasks();
 
-    changeListener(autofillManager.data.addresses, [], [], {
+    changeListener(autofillManager.data.addresses, [], [], [], {
       ...STUB_USER_ACCOUNT_INFO,
       isSyncEnabledForAutofillProfiles: true,
     });
@@ -198,15 +315,22 @@ suite('AutofillSectionUiTest', function() {
 });
 
 suite('AutofillSectionAddressTests', function() {
+  let countryDetailManager: TestCountryDetailManagerProxy;
   let metricsTracker: MetricsTracker;
-
-  suiteSetup(function() {
-    CountryDetailManagerImpl.setInstance(new CountryDetailManagerTestImpl());
-  });
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     metricsTracker = fakeMetricsPrivate();
+
+    countryDetailManager = new TestCountryDetailManagerProxy();
+    CountryDetailManagerProxyImpl.setInstance(countryDetailManager);
+
+    countryDetailManager.setGetCountryListRepsonse([
+      {name: 'United States', countryCode: 'US'},  // Default country.
+      {name: 'Israel', countryCode: 'IL'},
+      {name: 'United Kingdom', countryCode: 'GB'},
+    ]);
+    countryDetailManager.setGetAddressFormatRepsonse(ADDRESS_COMPONENTS_US);
   });
 
   test('verifyNoAddresses', async function() {
@@ -266,7 +390,7 @@ suite('AutofillSectionAddressTests', function() {
     let actualSummary = '';
 
     // Eliminate white space between nodes!
-    const addressPieces = row!.querySelector('#addressSummary')!.children;
+    const addressPieces = row.querySelector('#addressSummary')!.children;
     for (const addressPiece of addressPieces) {
       actualSummary += addressPiece.textContent!.trim();
     }
@@ -275,10 +399,6 @@ suite('AutofillSectionAddressTests', function() {
   });
 
   test('verifyAddressLocalIndication', async () => {
-    loadTimeData.overrideValues({
-      syncEnableContactInfoDataTypeInTransportMode: false,
-    });
-
     const autofillManager = new TestAutofillManager();
     autofillManager.data.addresses = [createAddressEntry()];
     autofillManager.data.accountInfo = {
@@ -302,23 +422,14 @@ suite('AutofillSectionAddressTests', function() {
     const changeListener =
         autofillManager.lastCallback.setPersonalDataManagerListener!;
 
-    changeListener(autofillManager.data.addresses, [], [], STUB_USER_ACCOUNT_INFO);
-    assertFalse(
-        isVisible(addressList.children[0]!.querySelector('[icon*=cloud-off]')),
-        'Sync is disabled but the feature is off, the icon should be hidden.');
-
-    changeListener(autofillManager.data.addresses, [], [], undefined);
+    changeListener(autofillManager.data.addresses, [], [], [], undefined);
     assertFalse(
         isVisible(section.$.addressList.children[0]!.querySelector(
             '[icon*=cloud-off]')),
         'The local indicator should not be shown to logged-out users');
 
-
-    loadTimeData.overrideValues({
-      syncEnableContactInfoDataTypeInTransportMode: true,
-    });
     changeListener(
-        autofillManager.data.addresses, [], [], STUB_USER_ACCOUNT_INFO);
+        autofillManager.data.addresses, [], [], [], STUB_USER_ACCOUNT_INFO);
     assertTrue(
         isVisible(addressList.children[0]!.querySelector('[icon*=cloud-off]')),
         'Sync is disabled but the feature is on, the icon should be visible.');
@@ -333,9 +444,9 @@ suite('AutofillSectionAddressTests', function() {
     const addressList = section.$.addressList;
     const row = addressList.children[0];
     assertTrue(!!row);
-    const menuButton = row!.querySelector<HTMLElement>('.address-menu');
+    const menuButton = row.querySelector<HTMLElement>('.address-menu');
     assertTrue(!!menuButton);
-    menuButton!.click();
+    menuButton.click();
     flush();
 
     assertTrue(!!section.shadowRoot!.querySelector('#menuEditAddress'));
@@ -445,6 +556,9 @@ suite('AutofillSectionAddressTests', function() {
 
   test('verifyLanguageCodeIsSaved', function() {
     const address = createEmptyAddressEntry();
+    // TODO(crbug.com/403312087): Don't nest promise callbacks (here and
+    // everywhere else in this file). Use async/await instead. Check this
+    // comment for more info: crrev.com/c/6348920/comment/25b26a8a_d69cf940/
     return createAddressDialog(address).then(function(dialog) {
       const countrySelect = dialog.$.country;
       assertTrue(!!countrySelect);
@@ -452,6 +566,7 @@ suite('AutofillSectionAddressTests', function() {
       assertEquals('US', countrySelect.value);
       assertEquals('en', address.languageCode);
       countrySelect.value = 'IL';
+      countryDetailManager.setGetAddressFormatRepsonse(ADDRESS_COMPONENTS_IL);
       countrySelect.dispatchEvent(new CustomEvent('change'));
       flush();
       return eventToPromise('on-update-address-wrapper', dialog)
@@ -573,11 +688,11 @@ suite('AutofillSectionAddressTests', function() {
       countrySelect.value = '';
       countrySelect.dispatchEvent(new CustomEvent('change'));
     });
-
-    // Default country is 'US' expecting: Name, Organization,
-    // Street address, City, State, ZIP code, Phone, and Email.
-    // Unless Company name is disabled.
-    assertEquals(8, testElements.length);
+    assertEquals(
+        6, testElements.length,
+        'There should be 6 elements: The 4 fields from ' +
+            '`ADDRESS_COMPONENTS_US` + phone + email that are added ' +
+            'separately.');
 
     assertTrue(saveButton.disabled);
     for (const element of testElements) {
@@ -746,7 +861,7 @@ suite('AutofillSectionAddressTests', function() {
         'PersonalDataChangedListener should be set in the section element');
 
     // Imitate native code `PersonalDataChangedListener` triggering.
-    changeListener([], [], [], {
+    changeListener([], [], [], [], {
       ...STUB_USER_ACCOUNT_INFO,
       isAutofillSyncToggleAvailable: true,
       isAutofillSyncToggleEnabled: false,
@@ -763,7 +878,7 @@ suite('AutofillSectionAddressTests', function() {
             'accountInfo.isAutofillSyncToggleEnabled == false');
 
     // Imitate native code `PersonalDataChangedListener` triggering.
-    changeListener([], [], [], {
+    changeListener([], [], [], [], {
       ...STUB_USER_ACCOUNT_INFO,
       isAutofillSyncToggleAvailable: true,
       isAutofillSyncToggleEnabled: true,
@@ -828,7 +943,7 @@ suite('AutofillSectionAddressTests', function() {
     // that it was unchecked after the second click, but the listener was
     // given `true`, the following assert checks it an covers the case when
     // the toggle was not updated in the native code for some reason.
-    changeListener([], [], [], {
+    changeListener([], [], [], [], {
       ...STUB_USER_ACCOUNT_INFO,
       isAutofillSyncToggleAvailable: true,
       isAutofillSyncToggleEnabled: true,
@@ -843,12 +958,20 @@ suite('AutofillSectionAddressTests', function() {
 });
 
 suite('AutofillSectionAddressLocaleTests', function() {
-  suiteSetup(function() {
-    CountryDetailManagerImpl.setInstance(new CountryDetailManagerTestImpl());
-  });
+  let countryDetailManager: TestCountryDetailManagerProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    countryDetailManager = new TestCountryDetailManagerProxy();
+    CountryDetailManagerProxyImpl.setInstance(countryDetailManager);
+
+    countryDetailManager.setGetCountryListRepsonse([
+      {name: 'United States', countryCode: 'US'},  // Default country.
+      {name: 'Israel', countryCode: 'IL'},
+      {name: 'United Kingdom', countryCode: 'GB'},
+    ]);
+    countryDetailManager.setGetAddressFormatRepsonse(ADDRESS_COMPONENTS_US);
   });
 
   // US address has 3 fields on the same line.
@@ -856,24 +979,21 @@ suite('AutofillSectionAddressLocaleTests', function() {
     const address = createEmptyAddressEntry();
 
     address.fields = [
-      {type: FieldType.NAME_FULL, value: 'Name'},
-      {type: FieldType.COMPANY_NAME, value: 'Organization'},
-      {
-        type: FieldType.ADDRESS_HOME_STREET_ADDRESS,
-        value: 'Street address',
-      },
-      {type: FieldType.ADDRESS_HOME_STATE, value: 'State'},
-      {type: FieldType.ADDRESS_HOME_CITY, value: 'City'},
-      {type: FieldType.ADDRESS_HOME_ZIP, value: 'ZIP code'},
       {type: FieldType.ADDRESS_HOME_COUNTRY, value: 'US'},
+      {type: FieldType.NAME_FULL, value: 'Name'},
+      {type: FieldType.ADDRESS_HOME_CITY, value: 'City'},
+      {type: FieldType.ADDRESS_HOME_STATE, value: 'State'},
+      {type: FieldType.ADDRESS_HOME_ZIP, value: 'ZIP code'},
       {type: FieldType.PHONE_HOME_WHOLE_NUMBER, value: 'Phone'},
       {type: FieldType.EMAIL_ADDRESS, value: 'Email'},
     ];
 
-
     return createAddressDialog(address).then(function(dialog) {
       const rows = dialog.$.dialog.querySelectorAll('.address-row');
-      assertEquals(6, rows.length);
+      assertEquals(
+          4, rows.length,
+          'There should be 4 rows: Country, Name, City + State + Zip, ' +
+              'Phone + Email');
 
       let index = 0;
       // Country
@@ -882,7 +1002,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertTrue(!!countrySelect);
       assertEquals(
           'United States',
-          countrySelect!.selectedOptions[0]!.textContent!.trim());
+          countrySelect.selectedOptions[0]!.textContent!.trim());
       index++;
       // Name
       row = rows[index]!;
@@ -891,24 +1011,6 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertEquals(1, cols.length);
       assertEquals(
           getAddressFieldValue(address, FieldType.NAME_FULL), cols[0]!.value);
-      index++;
-      // Organization
-      row = rows[index]!;
-      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
-          '.address-column');
-      assertEquals(1, cols.length);
-      assertEquals(
-          getAddressFieldValue(address, FieldType.COMPANY_NAME),
-          cols[0]!.value);
-      index++;
-      // Street address
-      row = rows[index]!;
-      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
-          '.address-column');
-      assertEquals(1, cols.length);
-      assertEquals(
-          getAddressFieldValue(address, FieldType.ADDRESS_HOME_STREET_ADDRESS),
-          cols[0]!.value);
       index++;
       // City, State, ZIP code
       row = rows[index]!;
@@ -944,23 +1046,22 @@ suite('AutofillSectionAddressLocaleTests', function() {
     const address = createEmptyAddressEntry();
 
     address.fields = [
+      {type: FieldType.ADDRESS_HOME_COUNTRY, value: 'GB'},
       {type: FieldType.NAME_FULL, value: 'Name'},
-      {type: FieldType.COMPANY_NAME, value: 'Organization'},
-      {
-        type: FieldType.ADDRESS_HOME_STREET_ADDRESS,
-        value: 'Street address',
-      },
-      {type: FieldType.ADDRESS_HOME_STATE, value: 'County'},
       {type: FieldType.ADDRESS_HOME_CITY, value: 'Post town'},
       {type: FieldType.ADDRESS_HOME_ZIP, value: 'Postal code'},
-      {type: FieldType.ADDRESS_HOME_COUNTRY, value: 'GB'},
+      {type: FieldType.ADDRESS_HOME_STATE, value: 'County'},
       {type: FieldType.PHONE_HOME_WHOLE_NUMBER, value: 'Phone'},
       {type: FieldType.EMAIL_ADDRESS, value: 'Email'},
     ];
 
+    countryDetailManager.setGetAddressFormatRepsonse(ADDRESS_COMPONENTS_GB);
     return createAddressDialog(address).then(function(dialog) {
       const rows = dialog.$.dialog.querySelectorAll('.address-row');
-      assertEquals(8, rows.length);
+      assertEquals(
+          6, rows.length,
+          'There should be 6 rows: Country, Name, City, Zip, State, ' +
+              'Phone + Email');
 
       let index = 0;
       // Country
@@ -969,7 +1070,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertTrue(!!countrySelect);
       assertEquals(
           'United Kingdom',
-          countrySelect!.selectedOptions[0]!.textContent!.trim());
+          countrySelect.selectedOptions[0]!.textContent!.trim());
       index++;
       // Name
       row = rows[index]!;
@@ -978,24 +1079,6 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertEquals(1, cols.length);
       assertEquals(
           getAddressFieldValue(address, FieldType.NAME_FULL), cols[0]!.value);
-      index++;
-      // Organization
-      row = rows[index]!;
-      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
-          '.address-column');
-      assertEquals(1, cols.length);
-      assertEquals(
-          getAddressFieldValue(address, FieldType.COMPANY_NAME),
-          cols[0]!.value);
-      index++;
-      // Street address
-      row = rows[index]!;
-      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
-          '.address-column');
-      assertEquals(1, cols.length);
-      assertEquals(
-          getAddressFieldValue(address, FieldType.ADDRESS_HOME_STREET_ADDRESS),
-          cols[0]!.value);
       index++;
       // Post Town
       row = rows[index]!;
@@ -1043,23 +1126,20 @@ suite('AutofillSectionAddressLocaleTests', function() {
   test('verifyEditingILAddress', function() {
     const address = createEmptyAddressEntry();
     address.fields = [
+      {type: FieldType.ADDRESS_HOME_COUNTRY, value: 'IL'},
       {type: FieldType.NAME_FULL, value: 'Name'},
-      {type: FieldType.COMPANY_NAME, value: 'Organization'},
-      {
-        type: FieldType.ADDRESS_HOME_STREET_ADDRESS,
-        value: 'Street address',
-      },
-      {type: FieldType.ADDRESS_HOME_STATE, value: 'State'},
       {type: FieldType.ADDRESS_HOME_CITY, value: 'City'},
       {type: FieldType.ADDRESS_HOME_ZIP, value: 'Postal code'},
-      {type: FieldType.ADDRESS_HOME_COUNTRY, value: 'IL'},
       {type: FieldType.PHONE_HOME_WHOLE_NUMBER, value: 'Phone'},
       {type: FieldType.EMAIL_ADDRESS, value: 'Email'},
     ];
 
+    countryDetailManager.setGetAddressFormatRepsonse(ADDRESS_COMPONENTS_IL);
     return createAddressDialog(address).then(function(dialog) {
       const rows = dialog.$.dialog.querySelectorAll('.address-row');
-      assertEquals(6, rows.length);
+      assertEquals(
+          4, rows.length,
+          'There should be 4 rows: Country, Name, City + Zip, Phone + Email');
 
       let index = 0;
       // Country
@@ -1067,7 +1147,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       const countrySelect = row.querySelector('select');
       assertTrue(!!countrySelect);
       assertEquals(
-          'Israel', countrySelect!.selectedOptions[0]!.textContent!.trim());
+          'Israel', countrySelect.selectedOptions[0]!.textContent!.trim());
       index++;
       // Name
       row = rows[index]!;
@@ -1076,24 +1156,6 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertEquals(1, cols.length);
       assertEquals(
           getAddressFieldValue(address, FieldType.NAME_FULL)!, cols[0]!.value);
-      index++;
-      // Organization
-      row = rows[index]!;
-      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
-          '.address-column');
-      assertEquals(1, cols.length);
-      assertEquals(
-          getAddressFieldValue(address, FieldType.COMPANY_NAME),
-          cols[0]!.value);
-      index++;
-      // Street address
-      row = rows[index]!;
-      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
-          '.address-column');
-      assertEquals(1, cols.length);
-      assertEquals(
-          getAddressFieldValue(address, FieldType.ADDRESS_HOME_STREET_ADDRESS),
-          cols[0]!.value);
       index++;
       // City, Postal code
       row = rows[index]!;
@@ -1125,7 +1187,6 @@ suite('AutofillSectionAddressLocaleTests', function() {
   // persisted when switching to IL then back to US.
   test('verifyAddressPersistanceWhenSwitchingCountries', function() {
     const address = createEmptyAddressEntry();
-    const experimental_fields_count = 1;
     address.fields.push({type: FieldType.ADDRESS_HOME_COUNTRY, value: 'US'});
 
     return createAddressDialog(address).then(function(dialog) {
@@ -1141,10 +1202,13 @@ suite('AutofillSectionAddressLocaleTests', function() {
                    // US:
                    const rows =
                        dialog.$.dialog.querySelectorAll('.address-row');
-                   assertEquals(5 + experimental_fields_count, rows.length);
+                   assertEquals(
+                       4, rows.length,
+                       'There should be 4 rows: Country, Name, City + State ' +
+                           '+ Zip, Phone + Email');
 
                    // City, State, ZIP code
-                   const row = rows[3 + experimental_fields_count]!;
+                   const row = rows[2]!;
                    const cols =
                        row.querySelectorAll<CrTextareaElement|CrInputElement>(
                            '.address-column');
@@ -1153,6 +1217,8 @@ suite('AutofillSectionAddressLocaleTests', function() {
                    cols[1]!.value = state;
                    cols[2]!.value = zip;
 
+                   countryDetailManager.setGetAddressFormatRepsonse(
+                       ADDRESS_COMPONENTS_IL);
                    countrySelect.value = 'IL';
                    countrySelect.dispatchEvent(new CustomEvent('change'));
                  })
@@ -1160,10 +1226,13 @@ suite('AutofillSectionAddressLocaleTests', function() {
             return expectEvent(dialog, 'on-update-address-wrapper', function() {
               // IL:
               const rows = dialog.$.dialog.querySelectorAll('.address-row');
-              assertEquals(5 + experimental_fields_count, rows.length);
+              assertEquals(
+                  4, rows.length,
+                  'There should be 4 rows: Country, Name, City + Zip, ' +
+                      'Phone + Email');
 
               // City, Postal code
-              const row = rows[3 + experimental_fields_count]!;
+              const row = rows[2]!;
               const cols =
                   row.querySelectorAll<CrTextareaElement|CrInputElement>(
                       '.address-column');
@@ -1171,6 +1240,8 @@ suite('AutofillSectionAddressLocaleTests', function() {
               assertEquals(city, cols[0]!.value);
               assertEquals(zip, cols[1]!.value);
 
+              countryDetailManager.setGetAddressFormatRepsonse(
+                  ADDRESS_COMPONENTS_US);
               countrySelect.value = 'US';
               countrySelect.dispatchEvent(new CustomEvent('change'));
             });
@@ -1178,10 +1249,13 @@ suite('AutofillSectionAddressLocaleTests', function() {
           .then(function() {
             // US:
             const rows = dialog.$.dialog.querySelectorAll('.address-row');
-            assertEquals(5 + experimental_fields_count, rows.length);
+            assertEquals(
+                4, rows.length,
+                'There should be 4 rows: Country, Name, City + State + Zip, ' +
+                    'Phone + Email');
 
             // City, State, ZIP code
-            const row = rows[3 + experimental_fields_count]!;
+            const row = rows[2]!;
             const cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
                 '.address-column');
             assertEquals(3, cols.length);

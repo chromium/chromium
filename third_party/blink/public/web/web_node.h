@@ -32,14 +32,13 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NODE_H_
 
 #include <iosfwd>
+#include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/functional/function_ref.h"
 #include "cc/paint/element_id.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_dom_event.h"
 #include "v8/include/v8-forward.h"
 
@@ -117,16 +116,7 @@ class BLINK_EXPORT WebNode {
   // If the JS API would have thrown this returns null instead.
   WebElement QuerySelector(const WebString& selector) const;
 
-  WebVector<WebElement> QuerySelectorAll(const WebString& selector) const;
-
-
-  // Returns the contents of the first descendant that is either (1) an element
-  // containing only text or (2) a readonly text input, whose text contains the
-  // given substring, if the validity checker returns true for it. The substring
-  // search is ASCII case insensitive.
-  WebString FindTextInElementWith(
-      const WebString& substring,
-      base::FunctionRef<bool(const WebString&)> validity_checker) const;
+  std::vector<WebElement> QuerySelectorAll(const WebString& selector) const;
 
   // Returns all Text nodes where `regex` would match for the text inside of
   // the node, case-insensitive. This function does not normalize adjacent Text
@@ -135,7 +125,7 @@ class BLINK_EXPORT WebNode {
   // a single run of text, but will not match the regex, because the nodes
   // aren't normalized. This function searches within both the DOM and Shadow
   // DOM.
-  WebVector<WebNode> FindAllTextNodesMatchingRegex(
+  std::vector<WebNode> FindAllTextNodesMatchingRegex(
       const WebString& regex) const;
 
   bool Focused() const;

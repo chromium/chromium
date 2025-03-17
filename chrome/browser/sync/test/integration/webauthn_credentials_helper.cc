@@ -145,7 +145,7 @@ bool PasskeyChangeObservationChecker::IsExitConditionSatisfied(
     return false;
   }
   for (const auto& change : changes_observed_) {
-    if (base::ranges::none_of(
+    if (std::ranges::none_of(
             expected_changes_, [&change](const auto& expected_change) {
               return expected_change.first == change.type() &&
                      expected_change.second == change.passkey().sync_id();

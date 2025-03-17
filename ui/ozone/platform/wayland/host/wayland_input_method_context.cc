@@ -35,6 +35,7 @@
 #include "ui/events/ozone/events_ozone.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/range/range.h"
+#include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -53,11 +54,7 @@ namespace {
 // Only enable the preedit string for sequence mode (i.e. when using dead keys
 // or the Compose key) on Linux ozone/wayland (see b/220370007).
 constexpr CharacterComposer::PreeditStringMode kPreeditStringMode =
-#if BUILDFLAG(IS_LINUX)
     CharacterComposer::PreeditStringMode::kAlwaysEnabled;
-#else
-    CharacterComposer::PreeditStringMode::kHexModeOnly;
-#endif  // BUILDFLAG(IS_LINUX)
 
 std::optional<size_t> OffsetFromUTF8Offset(std::string_view text,
                                            uint32_t offset) {
@@ -187,7 +184,7 @@ std::optional<OffsetText> TrimSurroundingTextForExtension(
   // offsets.
   // Note: exo's implementation does not have 4000 bytes limit of the message.
   static constexpr size_t kMaxSurroundingTextBytes = 500;
-  const auto& [min_offset, max_offset] = base::ranges::minmax(offsets);
+  const auto& [min_offset, max_offset] = std::ranges::minmax(offsets);
 
   size_t start_index =
       min_offset - std::min(min_offset, kMaxSurroundingTextBytes);

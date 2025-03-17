@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Legacy sinks for TrustedScript accept arbitrary strings.
+  Failed to execute 'prepend' on 'Element': This document requires 'TrustedScript' assignment.
+Harness: the test ran to completion.

@@ -1,0 +1,5 @@
+CONSOLE WARNING: Listener added for a 'DOMSubtreeModified' mutation event. This event type is no longer supported, and will be removed from this browser VERY soon. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+Tests for a crash when creating a link inside a region with a subtree modified event listener.
+
+This should be a link.
+PASS

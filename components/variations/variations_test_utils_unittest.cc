@@ -4,8 +4,9 @@
 
 #include "components/variations/variations_test_utils.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
-#include "base/ranges/algorithm.h"
 #include "components/variations/metrics.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/variations_seed_store.h"
@@ -60,8 +61,8 @@ TEST_P(SignedSeedDataTest, HasStudyNames) {
   VariationsSeed seed;
   ASSERT_TRUE(seed.ParseFromString(decoded_uncompressed_data));
   std::vector<std::string> parsed_study_names;
-  base::ranges::transform(seed.study(), std::back_inserter(parsed_study_names),
-                          [](const Study& s) { return s.name(); });
+  std::ranges::transform(seed.study(), std::back_inserter(parsed_study_names),
+                         [](const Study& s) { return s.name(); });
   EXPECT_THAT(parsed_study_names, ::testing::UnorderedElementsAreArray(
                                       signed_seed_data.study_names));
 }

@@ -96,8 +96,8 @@ void SetGalleryUpdateURL(const GURL& new_url) {
 }
 
 // Note: This list should be kept in sync with the set of all features which
-// have delegated availability checks. This includes controlled_frame and
-// webstore_overide.
+// have delegated availability checks. This includes controlled_frame,
+// webstore_override, and user_scripts_availability.
 std::vector<const char*> GetExpectedDelegatedFeaturesForTest() {
   return {
       // Controlled frame:
@@ -110,6 +110,12 @@ std::vector<const char*> GetExpectedDelegatedFeaturesForTest() {
       // Webstore override:
       "management",
       "webstorePrivate",
+
+      // userScripts availability:
+      "userScripts",
+      "userScripts.execute",
+      "userScripts.getWorldConfigurations",
+      "userScripts.resetWorldConfiguration",
   };
 }
 

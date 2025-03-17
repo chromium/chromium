@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
@@ -25,11 +24,11 @@
 #include "extensions/common/extension.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/app/arc_app_constants.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -37,7 +36,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/sessions/core/session_id.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -49,7 +48,7 @@ void OnLaunchCompleteReportRestoreMetrics(
     base::WeakPtr<Browser> browser,
     base::WeakPtr<content::WebContents> web_contents,
     apps::LaunchContainer launch_container) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!SessionID::IsValidValue(restore_id)) {
     RecordAppLaunchMetrics(
         profile, apps::AppType::kWeb, params_for_restore.app_id,
@@ -78,7 +77,7 @@ void OnLaunchCompleteReportRestoreMetrics(
       std::move(params_for_restore.intent));
   full_restore::SaveAppLaunchInfo(profile->GetPath(), std::move(launch_info));
 
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   std::move(callback).Run(web_contents.get());
 }
 
@@ -99,11 +98,11 @@ void LaunchAppWithParamsImpl(
   if (!extension) {
     web_app::WebAppProvider* provider =
         web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Create the FullRestoreSaveHandler instance before launching the app to
     // observe the browser window.
     full_restore::FullRestoreSaveHandler::GetInstance();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
     provider->scheduler().LaunchAppWithCustomParams(
         std::move(params),
         base::BindOnce(OnLaunchCompleteReportRestoreMetrics,
@@ -112,7 +111,7 @@ void LaunchAppWithParamsImpl(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // If the restore id is available, save the launch parameters to the full
   // restore file.
   if (SessionID::IsValidValue(restore_id)) {
@@ -130,7 +129,7 @@ void LaunchAppWithParamsImpl(
     RecordAppLaunchMetrics(profile, apps::AppType::kChromeApp, params.app_id,
                            params.launch_source, params.container);
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   std::move(on_complete).Run(::OpenApplication(profile, std::move(params)));
 }
 }  // namespace
@@ -171,7 +170,7 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParamsForTesting(
   return web_contents_holder;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void BrowserAppLauncher::LaunchPlayStoreWithExtensions() {
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
@@ -184,6 +183,6 @@ void BrowserAppLauncher::LaunchPlayStoreWithExtensions() {
           apps::LaunchSource::kFromChromeInternal),
       profile_, base::DoNothing());
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

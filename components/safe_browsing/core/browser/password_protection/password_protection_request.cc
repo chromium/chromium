@@ -252,16 +252,9 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
       main_frame->set_has_password_field(password_field_exists_);
       LoginReputationClientRequest::PasswordReuseEvent* reuse_event =
           request_proto_->mutable_password_reuse_event();
-      bool matches_signin_password =
-          password_type_ == PasswordType::PRIMARY_ACCOUNT_PASSWORD;
       reuse_event->set_reused_password_type(
           password_protection_service_->GetPasswordProtectionReusedPasswordType(
               password_type_));
-      if (matches_signin_password) {
-        reuse_event->set_sync_account_type(
-            password_protection_service_->GetSyncAccountType());
-        LogSyncAccountType(reuse_event->sync_account_type());
-      }
 
       if (password_protection_service_->IsExtendedReporting() &&
           !password_protection_service_->IsIncognito()) {
@@ -278,6 +271,7 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
                                                                username_);
       *reuse_event->mutable_reused_password_account_type() =
           password_account_type_to_add;
+      LogReusedPasswordAccountType(password_account_type_to_add);
       break;
     }
     default:

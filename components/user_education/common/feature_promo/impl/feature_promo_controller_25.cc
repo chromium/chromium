@@ -58,8 +58,10 @@ std::string GetFeatureEngagementDemoFeatureName() {
 struct FeaturePromoController25::PrivateData {
   PrivateData(const FeaturePromoPriorityProvider& priority_provider,
               const UserEducationTimeProvider& time_provider,
-              ProductMessagingController& messaging_controller)
-      : demo_queue(demo_required, demo_wait_for, time_provider, kDemoTimeout),
+              ProductMessagingController& messaging_controller,
+              feature_engagement::Tracker* tracker)
+      : tracker_(tracker),
+        demo_queue(demo_required, demo_wait_for, time_provider, kDemoTimeout),
         queues(priority_provider, time_provider),
         messaging_coordinator(messaging_controller) {
     queues.AddQueue(Priority::kHigh, high_priority_required,
@@ -75,6 +77,19 @@ struct FeaturePromoController25::PrivateData {
   void operator=(const PrivateData&) = delete;
   ~PrivateData() = default;
 
+  const FeatureEngagementTrackerInitializedPrecondition&
+  get_tracker_precondition() {
+    if (!tracker_initialized_precondition_) {
+      tracker_initialized_precondition_ =
+          std::make_unique<FeatureEngagementTrackerInitializedPrecondition>(
+              tracker_.get());
+    }
+    return *tracker_initialized_precondition_;
+  }
+
+  const raw_ptr<feature_engagement::Tracker> tracker_;
+  std::unique_ptr<FeatureEngagementTrackerInitializedPrecondition>
+      tracker_initialized_precondition_;
   ComposingPreconditionListProvider demo_required;
   ComposingPreconditionListProvider high_priority_required;
   ComposingPreconditionListProvider medium_priority_required;
@@ -141,7 +156,8 @@ FeaturePromoController25::FeaturePromoController25(
 
 void FeaturePromoController25::Init() {
   private_ = std::make_unique<PrivateData>(
-      *session_policy(), *storage_service(), *product_messaging_controller_);
+      *session_policy(), *storage_service(), *product_messaging_controller_,
+      feature_engagement_tracker());
   AddDemoPreconditionProviders(private_->demo_required, true);
   AddDemoPreconditionProviders(private_->demo_wait_for, false);
   AddPreconditionProviders(private_->high_priority_required, Priority::kHigh,
@@ -167,14 +183,23 @@ void FeaturePromoController25::Init() {
 }
 
 FeaturePromoController25::~FeaturePromoController25() {
-  private_->queues.FailAll(FeaturePromoResult::kCanceled);
+  // Ensure that `OnDestroying()` was properly called.
+  CHECK(!private_);
 }
 
 FeaturePromoResult FeaturePromoController25::CanShowPromo(
     const FeaturePromoParams& params) const {
   auto* const spec = registry()->GetParamsForFeature(*params.feature);
-  return spec ? private_->queues.CanShow(*spec, params)
-              : FeaturePromoResult::kError;
+  if (!spec) {
+    return FeaturePromoResult::kError;
+  }
+  auto result = private_->queues.CanShow(*spec, params);
+  if (result && !private_->tracker_->WouldTriggerHelpUI(*params.feature)) {
+    // This can happen if a non-IPH promo is showing.
+    // These are strongly advised against but they can happen.
+    result = FeaturePromoResult::kBlockedByConfig;
+  }
+  return result;
 }
 
 void FeaturePromoController25::MaybeShowStartupPromo(
@@ -190,12 +215,25 @@ void FeaturePromoController25::MaybeShowPromo(FeaturePromoParams params) {
     return;
   }
 
+  if (current_promo() &&
+      current_promo()->iph_feature() == &params.feature.get()) {
+    PostShowPromoResult(std::move(params.show_promo_result_callback),
+                        FeaturePromoResult::kAlreadyQueued);
+  }
+
   params.show_promo_result_callback = base::BindOnce(
       [](base::WeakPtr<FeaturePromoController25> controller,
          std::string feature_name,
          FeaturePromoController::ShowPromoResultCallback callback,
          FeaturePromoResult result) {
         if (controller && !result) {
+          if (result == FeaturePromoResult::kTimedOut &&
+              (controller->current_promo() ||
+               controller->bubble_factory_registry()->is_any_bubble_showing() ||
+               controller->private_->messaging_coordinator
+                   .IsBlockedByExternalPromo())) {
+            result = FeaturePromoResult::kBlockedByPromo;
+          }
           controller->RecordPromoNotShown(feature_name.c_str(),
                                           *result.failure());
         }
@@ -315,20 +353,24 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
   const base::Feature& feature = promo_data.GetFeature();
   const bool in_demo_mode =
       (GetFeatureEngagementDemoFeatureName() == feature.name);
-  auto* const display_spec =
-      spec->promo_type() == FeaturePromoSpecification::PromoType::kRotating
-          ? &*spec->rotating_promos().at(lifecycle->GetPromoIndex())
-          : spec;
+  auto* const index = internal::PreconditionData::Get(
+      promo_data.eligible_promo->cached_data,
+      AnchorElementPrecondition::kRotatingPromoIndex);
+  auto* display_spec = spec;
+  if (index && index->has_value()) {
+    lifecycle->SetPromoIndex(index->value());
+    display_spec = &*spec->rotating_promos().at(index->value());
+  }
 
   // Construct the parameters for the promotion.
-  ShowPromoBubbleParams show_params;
-  show_params.spec = display_spec;
-  show_params.anchor_element = anchor_element;
-  show_params.body_format = std::move(promo_data.params().body_params);
-  show_params.screen_reader_format =
+  FeaturePromoSpecification::BuildHelpBubbleParams build_params;
+  build_params.spec = display_spec;
+  build_params.anchor_element = anchor_element;
+  build_params.body_format = std::move(promo_data.params().body_params);
+  build_params.screen_reader_format =
       std::move(promo_data.params().screen_reader_params);
-  show_params.title_format = std::move(promo_data.params().title_params);
-  show_params.can_snooze = promo_data.GetLifecycle()->CanSnooze();
+  build_params.title_format = std::move(promo_data.params().title_params);
+  build_params.can_snooze = promo_data.GetLifecycle()->CanSnooze();
 
   // If the session policy allows overriding the current promo, abort it.
   if (current_promo()) {
@@ -345,8 +387,12 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
 
   // TODO(crbug.com/40200981): Currently this must be called before
   // ShouldTriggerHelpUI() below. See bug for details.
-  show_params.screen_reader_prompt_available =
-      CheckScreenReaderPromptAvailable(promo_data.for_demo || in_demo_mode);
+  if (build_params.spec->promo_type() !=
+      FeaturePromoSpecification::PromoType::kCustomUi) {
+    build_params.screen_reader_prompt_available =
+        CheckExtendedPropertiesPromptAvailable(promo_data.for_demo ||
+                                               in_demo_mode);
+  }
 
   // When not explicitly for a demo, notify the tracker that the promo is
   // starting. Since this is also one of the preconditions for the promo,
@@ -360,7 +406,7 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
   set_current_promo(std::move(lifecycle));
 
   // Try to show the bubble and bail out if we cannot.
-  auto bubble = ShowPromoBubbleImpl(std::move(show_params));
+  auto bubble = ShowPromoBubbleImpl(std::move(build_params));
   if (!bubble) {
     set_current_promo(nullptr);
     if (!promo_data.for_demo) {
@@ -432,16 +478,20 @@ void FeaturePromoController25::UpdateQueuesAndMaybeShowPromo() {
   // It's okay to transition to a pending state, because if either high or low
   // priority were allowed and there were eligible promos, one would have been
   // shown above.
-  PromoState new_state;
+  std::optional<PromoState> new_state;
   if (IsDemoPending() || private_->queues.IsEmpty() ||
       !promo_data.pending_priority) {
-    new_state = PromoState::kNone;
+    if (!current_promo()) {
+      new_state = PromoState::kNone;
+    }
   } else if (*promo_data.pending_priority == Priority::kHigh) {
     new_state = PromoState::kHighPriorityPending;
   } else {
     new_state = PromoState::kLowPriorityPending;
   }
-  private_->messaging_coordinator.TransitionToState(new_state);
+  if (new_state) {
+    private_->messaging_coordinator.TransitionToState(*new_state);
+  }
   UpdatePollingState();
 }
 
@@ -477,6 +527,11 @@ void FeaturePromoController25::OnPromoPreempted() {
   MaybePostUpdate();
 }
 
+void FeaturePromoController25::OnDestroying() {
+  poller_.Stop();
+  private_.reset();
+}
+
 // Default precondition providers are all created down here.
 
 void FeaturePromoController25::AddDemoPreconditionProviders(
@@ -501,8 +556,16 @@ void FeaturePromoController25::AddDemoPreconditionProviders(
            const FeaturePromoSpecification& spec, const FeaturePromoParams&) {
           FeaturePromoPreconditionList list;
           if (auto* const ptr = controller.get()) {
+            // In demos, when repeating the same repeating promo to test it, the
+            // index should cycle. However, the updated index is not written
+            // until the previous promo is ended, which happens later. In order
+            // to simulate this, base the starting index off the one being used
+            // by the previous promo.
+            const bool pre_increment =
+                ptr->current_promo() &&
+                ptr->current_promo()->iph_feature() == spec.feature();
             list.AddPrecondition(std::make_unique<AnchorElementPrecondition>(
-                spec, ptr->GetAnchorContext()));
+                spec, ptr->GetAnchorContext(), pre_increment));
           }
           return list;
         },
@@ -548,8 +611,11 @@ void FeaturePromoController25::AddPreconditionProviders(
            const FeaturePromoSpecification& spec, const FeaturePromoParams&) {
           FeaturePromoPreconditionList list;
           if (auto* const ptr = controller.get()) {
+            list.AddPrecondition(
+                std::make_unique<ForwardingFeaturePromoPrecondition>(
+                    ptr->private_->get_tracker_precondition()));
             list.AddPrecondition(std::make_unique<AnchorElementPrecondition>(
-                spec, controller->GetAnchorContext()));
+                spec, controller->GetAnchorContext(), false));
             // Wait-for state *does* take the current promo into account, since
             // a higher-weight promo might block a lower-weight promo.
             list.AddPrecondition(std::make_unique<SessionPolicyPrecondition>(

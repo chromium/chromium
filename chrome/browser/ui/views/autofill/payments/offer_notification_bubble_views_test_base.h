@@ -18,7 +18,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
@@ -30,10 +30,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 
 namespace autofill {
-
-namespace {
-constexpr int64_t kCreditCardInstrumentId = 0x4444;
-}  // namespace
 
 // Test base class for the OfferNotificationBubbleViews related tests. Provides
 // helper function and common setups.

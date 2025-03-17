@@ -5,6 +5,7 @@
 package org.chromium.components.segmentation_platform;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import java.util.Set;
  * SegmentationPlatformService is the core class for segmentation platform. It represents a native
  * SegmentationPlatformService object in Java.
  */
+@NullMarked
 public interface SegmentationPlatformService {
     /**
      * Called to get the segment selection result asynchronously from the backend.

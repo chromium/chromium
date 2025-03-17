@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -480,6 +485,7 @@ TEST(CSSSelectorParserTest, ScrollControlPseudos) {
       {"li::scroll-marker", CSSSelector::kPseudoScrollMarker},
       {"div::scroll-button(up)", CSSSelector::kPseudoScrollButton},
       {"div::scroll-button(left)", CSSSelector::kPseudoScrollButton},
+      {"div::scroll-button(*)", CSSSelector::kPseudoScrollButton},
   };
 
   HeapVector<CSSSelector> arena;
@@ -1055,9 +1061,11 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
     const CSSSelector* selector = list->First();
     for (auto sub_expectation : test_case.expectation) {
       ASSERT_TRUE(selector);
-      AtomicString selector_value = selector->Match() == CSSSelector::kTag
-                                        ? selector->TagQName().LocalName()
-                                        : selector->Value();
+      AtomicString selector_value =
+          (selector->Match() == CSSSelector::kTag ||
+           selector->Match() == CSSSelector::kUniversalTag)
+              ? selector->TagQName().LocalName()
+              : selector->Value();
       EXPECT_EQ(sub_expectation.first, selector_value);
       EXPECT_EQ(sub_expectation.second, selector->Relation());
       selector = selector->NextSimpleSelector();

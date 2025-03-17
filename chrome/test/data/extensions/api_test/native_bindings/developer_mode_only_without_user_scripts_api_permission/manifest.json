@@ -1,0 +1,7 @@
+{
+  "name": "Test developer_mode_only feature without API access permission",
+  "description": "Test developer_mode_only with native bindings",
+  "version": "0.1",
+  "manifest_version": 3,
+  "background": {"service_worker": "service_worker_background.js"}
+}

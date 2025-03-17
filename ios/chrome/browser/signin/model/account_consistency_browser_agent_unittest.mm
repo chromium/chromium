@@ -162,9 +162,8 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnAddAccountWithoutPresentedView) {
   EXPECT_NE(received_command, nil);
   EXPECT_EQ(received_command.operation, AuthenticationOperation::kAddAccount);
   EXPECT_EQ(received_command.identity, nil);
-  EXPECT_EQ(
-      received_command.accessPoint,
-      signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE);
+  EXPECT_EQ(received_command.accessPoint,
+            signin_metrics::AccessPoint::kAccountConsistencyService);
   EXPECT_EQ(received_command.promoAction,
             signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
 }

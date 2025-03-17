@@ -254,7 +254,6 @@ source_set("blink_headers") {
     "platform/web_url_request_util.h",
     "platform/web_url_response.h",
     "platform/web_v8_value_converter.h",
-    "platform/web_vector.h",
     "platform/web_video_frame_submitter.h",
     "platform/web_worker_fetch_context.h",
     "platform/websocket_handshake_throttle.h",
@@ -288,6 +287,7 @@ source_set("blink_headers") {
     "web/web_ax_enums.h",
     "web/web_ax_object.h",
     "web/web_blob.h",
+    "web/web_bundled_code_cache_generator.h",
     "web/web_console_message.h",
     "web/web_content_capture_client.h",
     "web/web_content_holder.h",
@@ -411,6 +411,7 @@ source_set("blink_headers") {
     sources += [
       "platform/web_font_prewarmer.h",
       "platform/web_font_rendering_client.h",
+      "platform/win/web_sandbox_support.h",
       "web/win/web_font_family_names.h",
       "web/win/web_font_rendering.h",
     ]

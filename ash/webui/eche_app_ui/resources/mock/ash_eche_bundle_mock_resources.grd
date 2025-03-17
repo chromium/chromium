@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+<grit current_release="1" latest_public_release="0">
   <outputs>
     <output filename="grit/ash_eche_bundle_resources.h" type="rc_header">
       <emit emit_type="prepend"/>

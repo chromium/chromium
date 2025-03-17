@@ -44,8 +44,9 @@ public interface TabGroupModelFilterObserver {
      * @param movedTab The {@link Tab} which will be moved. If a group will be merged to a tab or
      *     another group, this is the last tab of the merged group.
      * @param newRootId The new root id of the group after merge.
+     * @param tabGroupId The tab group id of the group merged to.
      */
-    default void willMergeTabToGroup(Tab movedTab, int newRootId) {}
+    default void willMergeTabToGroup(Tab movedTab, int newRootId, Token tabGroupId) {}
 
     /**
      * This method is called before a group is moved.
@@ -59,18 +60,18 @@ public interface TabGroupModelFilterObserver {
      * This method is called before a tab within a group is moved out of the group.
      *
      * @param movedTab The tab which will be moved.
-     * @param newRootId The new root id of the group from which {@code movedTab} is moved out.
+     * @param tabGroupId The tabGroupId the tab will have after the move, may be null if not in a
+     *     group.
      */
-    default void willMoveTabOutOfGroup(Tab movedTab, int newRootId) {}
+    default void willMoveTabOutOfGroup(Tab movedTab, @Nullable Token destinationTabGroupId) {}
 
     /**
      * This method is called after a tab is moved to form a group or moved into an existed group.
      *
      * @param movedTab The {@link Tab} which has been moved. If a group is merged to a tab or
      *     another group, this is the last tab of the merged group.
-     * @param selectedTabIdInGroup The id of the selected {@link Tab} in group.
      */
-    default void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup) {}
+    default void didMergeTabToGroup(Tab movedTab) {}
 
     /**
      * This method is called after a group is moved.
@@ -95,7 +96,7 @@ public interface TabGroupModelFilterObserver {
      *
      * @param movedTab The tab which has been moved.
      * @param prevFilterIndex The index in {@link TabGroupModelFilter} of the group where {@code
-     *     moveTab} is in before ungrouping.
+     *     moveTab} was before ungrouping.
      */
     default void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {}
 
@@ -177,6 +178,14 @@ public interface TabGroupModelFilterObserver {
             int oldRootId,
             @Nullable Token oldTabGroupId,
             @DidRemoveTabGroupReason int removalReason) {}
+
+    /**
+     * Called when a tab group closure starts.
+     *
+     * @param tabGroupId The tab group id.
+     * @param isHiding Whether the tab group is set to hide.
+     */
+    default void willCloseTabGroup(Token tabGroupId, boolean isHiding) {}
 
     /**
      * Called when a tab group closure is fully committed.

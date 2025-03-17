@@ -96,6 +96,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="COPY_IMAGE_WITH_LINK"/>
   <int value="10" label="PAGE_INFO"/>
   <int value="11" label="REMOVE_PAGE_INFO"/>
+  <int value="12" label="SHARE_AS_TAB_GROUP"/>
 </enum>
 
 </enums>

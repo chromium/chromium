@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/browsing_topics/common/semantic_tree.h"
 
+#include <array>
 #include <map>
 #include <set>
 #include <variant>
@@ -37,7 +33,7 @@ constexpr Topic kNullTopic = Topic(0);
 // kChildToParent stores the first parent for each topic. This data structure
 // was chosen to reduce the binary size, since most topics have at most one
 // parent. Additional parents are added in GetParentTopics.
-const uint16_t kChildToFirstParent[] = {
+constexpr auto kChildToFirstParent = std::to_array<uint16_t>({
     0,   1,   1,   352, 1,   1,   1,   7,   352, 1,   1,   1,   12,  12,  12,
     12,  12,  12,  12,  12,  12,  12,  1,   23,  23,  23,  23,  23,  23,  23,
     23,  23,  23,  33,  33,  33,  23,  23,  23,  23,  40,  1,   1,   1,   363,
@@ -79,7 +75,8 @@ const uint16_t kChildToFirstParent[] = {
     570, 289, 572, 572, 572, 575, 572, 577, 578, 577, 577, 577, 572, 583, 572,
     585, 585, 585, 572, 572, 572, 572, 572, 572, 572, 572, 572, 572, 298, 298,
     289, 289, 289, 289, 604, 604, 289, 289, 299, 299, 299, 611, 611, 611, 611,
-    611, 611, 611, 611, 299, 299, 340, 343, 332, 332, 332, 626, 626, 626};
+    611, 611, 611, 611, 299, 299, 340, 343, 332, 332, 332, 626, 626, 626,
+});
 
 static_assert(SemanticTree::kNumTopics == std::size(kChildToFirstParent));
 
@@ -873,7 +870,7 @@ const RepresentativenessMap& GetRepresentativenessMapForCurrentTaxonomy() {
       static const base::NoDestructor<RepresentativenessMap>
           kRepresentativenessMapV2([]() -> RepresentativenessMap {
             RepresentativenessMap map;
-            base::ranges::copy_if(
+            std::ranges::copy_if(
                 GetInternalRepresentativenessMap(),
                 std::inserter(map, map.end()), [](const auto& topic_kv) {
                   return topic_kv.first != 275 && topic_kv.first != 279;

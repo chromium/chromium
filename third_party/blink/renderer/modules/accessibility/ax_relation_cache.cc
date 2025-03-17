@@ -331,7 +331,7 @@ void AXRelationCache::GetExplicitlySetElementsForAttr(
     const QualifiedName& attr_name,
     HeapVector<Member<Element>>& target_elements) {
   if (source.HasExplicitlySetAttrAssociatedElements(attr_name)) {
-    HeapLinkedHashSet<WeakMember<Element>>* explicitly_set_elements =
+    GCedHeapLinkedHashSet<WeakMember<Element>>* explicitly_set_elements =
         source.GetExplicitlySetElementsForAttr(attr_name);
     for (const WeakMember<Element>& element : *explicitly_set_elements) {
       target_elements.push_back(element);
@@ -383,6 +383,49 @@ void AXRelationCache::UpdateReverseRelations(
   for (const Member<Element>& element : target_elements) {
     target_nodes.push_back(element->GetDomNodeId());
   }
+  UpdateReverseElementAttributeRelations(node_map, &source, target_nodes);
+}
+
+void AXRelationCache::GetSingleRelationTarget(const Element& source,
+                                              const QualifiedName& attr_name,
+                                              AtomicString& target_id,
+                                              Element** element) {
+  const AtomicString& id = AXObject::AriaAttribute(source, attr_name);
+  if (!id.empty()) {
+    target_id = id;
+    return;
+  }
+
+  HeapVector<Member<Element>> target_elements;
+  GetExplicitlySetElementsForAttr(source, attr_name, target_elements);
+  if (target_elements.empty()) {
+    return;
+  }
+
+  DCHECK_EQ(target_elements.size(), 1u);
+  *element = target_elements.at(0).Get();
+}
+
+void AXRelationCache::UpdateReverseSingleRelation(
+    Element& source,
+    const QualifiedName& attr_name,
+    TargetIdToSourceNodeMap& id_map,
+    TargetNodeToSourceNodeMap& node_map) {
+  AtomicString target_id;
+  Element* target_element = nullptr;
+  GetSingleRelationTarget(source, attr_name, target_id, &target_element);
+
+  if (!target_id.empty()) {
+    UpdateReverseIdAttributeRelations(id_map, &source, {target_id});
+    return;
+  }
+
+  if (!target_element) {
+    return;
+  }
+
+  Vector<DOMNodeId> target_nodes;
+  target_nodes.push_back(target_element->GetDomNodeId());
   UpdateReverseElementAttributeRelations(node_map, &source, target_nodes);
 }
 
@@ -492,9 +535,9 @@ void AXRelationCache::UpdateReverseElementAttributeTextRelations(
 }
 
 void AXRelationCache::UpdateReverseActiveDescendantRelations(Element& source) {
-  UpdateReverseRelations(source, html_names::kAriaActivedescendantAttr,
-                         aria_activedescendant_id_map_,
-                         aria_activedescendant_node_map_);
+  UpdateReverseSingleRelation(source, html_names::kAriaActivedescendantAttr,
+                              aria_activedescendant_id_map_,
+                              aria_activedescendant_node_map_);
 }
 
 void AXRelationCache::UpdateReverseOwnsRelations(Element& source) {
@@ -527,7 +570,8 @@ void AXRelationCache::MarkNewRelationTargetDirty(Node* target) {
     // processing deferred events, and must manually invalidate the
     // cached values (is_used_for_label_or_description may have changed).
     if (AXObject* ax_target = Get(target)) {
-      ax_target->InvalidateCachedValues();
+      ax_target->InvalidateCachedValues(
+          TreeUpdateReason::kNewRelationTargetDirty);
     }
     // Must use clean layout method.
     object_cache_->MarkElementDirtyWithCleanLayout(target);
@@ -718,7 +762,7 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
     // Invalidating ensures that cached "included in tree" state is recomputed
     // on objects with changed ownership -- owned children must always be
     // included in the tree.
-    added_child->InvalidateCachedValues();
+    added_child->InvalidateCachedValues(TreeUpdateReason::kUpdateAriaOwns);
 
     // Add this child to the mapping from child to owner.
     aria_owned_child_to_owner_mapping_.Set(added_child_id, owner->AXObjectID());
@@ -829,8 +873,13 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
   // that |owner| is replacing may have previously been a valid owner. In this
   // case, the old owned child mappings will need to be removed.
   bool is_valid_owner = IsValidOwner(owner);
-  if (!force && !is_valid_owner)
+  if (!force && !is_valid_owner) {
+    // Make sure that the owner's children are updated even in the case where
+    // aria-owns is empty, or the object is not a valid owner. This protects
+    // from ending up with a previous owner containing invalid children.
+    ChildrenChangedWithCleanLayout(owner);
     return;
+  }
 
   HeapVector<Member<AXObject>> owned_children;
 
@@ -930,6 +979,7 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
   // there is nothing to refresh even for a new AXObject replacing an old owner.
   if (previously_owned_child_ids == validated_owned_child_axids &&
       (!force || previously_owned_child_ids.empty())) {
+    ChildrenChangedWithCleanLayout(owner);
     return;
   }
 
@@ -971,7 +1021,7 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
       // Invalidating ensures that cached "included in tree" state is recomputed
       // on objects with changed ownership -- owned children must always be
       // included in the tree.
-      ax_unparented->InvalidateCachedValues();
+      ax_unparented->InvalidateCachedValues(TreeUpdateReason::kUpdateAriaOwns);
 
       // Find the unparented child's new parent, and reparent it to that
       // back to its real parent in the tree by finding  its current parent,

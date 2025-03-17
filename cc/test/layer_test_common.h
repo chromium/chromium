@@ -24,7 +24,6 @@ class LayerTreeSettings;
 // LayerTreeSettings with different combinations of
 // commit_to_active_tree and use_layer_lists.
 LayerTreeSettings CommitToActiveTreeLayerListSettings();
-LayerTreeSettings CommitToActiveTreeLayerTreeSettings();
 LayerTreeSettings CommitToPendingTreeLayerListSettings();
 LayerTreeSettings CommitToPendingTreeLayerTreeSettings();
 

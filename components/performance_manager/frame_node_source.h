@@ -16,6 +16,8 @@ class FrameNodeImpl;
 // Represents a source of existing frame nodes that lives on the main thread.
 // In practice, this is used by the worker watchers as an abstraction over the
 // PerformanceManagerTabHelper to make testing easier.
+// TODO(pmonette): Get rid of this class now that a test implementation is no
+// longer needed.
 class FrameNodeSource {
  public:
   virtual ~FrameNodeSource() = default;

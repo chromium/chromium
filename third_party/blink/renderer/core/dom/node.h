@@ -371,11 +371,11 @@ class CORE_EXPORT Node : public EventTarget {
   DISABLE_CFI_PERF bool IsScrollButtonInlineStartPseudoElement() const {
     return GetPseudoId() == kPseudoIdScrollButtonInlineStart;
   }
-  DISABLE_CFI_PERF bool IsScrollButtonBlockEndPseudoElement() const {
-    return GetPseudoId() == kPseudoIdScrollButtonBlockEnd;
-  }
   DISABLE_CFI_PERF bool IsScrollButtonInlineEndPseudoElement() const {
     return GetPseudoId() == kPseudoIdScrollButtonInlineEnd;
+  }
+  DISABLE_CFI_PERF bool IsScrollButtonBlockEndPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollButtonBlockEnd;
   }
   DISABLE_CFI_PERF bool IsMarkerPseudoElement() const {
     return GetPseudoId() == kPseudoIdMarker;
@@ -388,6 +388,9 @@ class CORE_EXPORT Node : public EventTarget {
   }
   DISABLE_CFI_PERF bool IsViewTransitionPseudoElement() const {
     return IsTransitionPseudoElement(GetPseudoId());
+  }
+  DISABLE_CFI_PERF bool IsViewTransitionGroupPseudoElement() const {
+    return GetPseudoId() == kPseudoIdViewTransitionGroup;
   }
   virtual PseudoId GetPseudoId() const { return kPseudoIdNone; }
   virtual PseudoId GetPseudoIdForStyling() const { return kPseudoIdNone; }
@@ -460,8 +463,10 @@ class CORE_EXPORT Node : public EventTarget {
   // isInShadowTree() returns true.
   // This can happen when handling queued events (e.g. during execCommand())
   ShadowRoot* ContainingShadowRoot() const;
-  ShadowRoot* GetShadowRoot() const;
-  bool IsInUserAgentShadowRoot() const;
+
+  // Inline-defined in shadow_root.h
+  inline ShadowRoot* GetShadowRoot() const;
+  inline bool IsInUserAgentShadowRoot() const;
 
   // Returns nullptr, a child of ShadowRoot, or a legacy shadow root.
   Node* NonBoundaryShadowTreeRootNode();
@@ -886,6 +891,7 @@ class CORE_EXPORT Node : public EventTarget {
 #endif
 
   NodeListsNodeData* NodeLists();
+  const NodeListsNodeData* NodeLists() const;
   void ClearNodeLists();
 
   FlatTreeNodeData* GetFlatTreeNodeData() const;
@@ -1017,17 +1023,6 @@ class CORE_EXPORT Node : public EventTarget {
   void SetHasDisplayLockContext() { SetFlag(kHasDisplayLockContext); }
   bool HasDisplayLockContext() const { return GetFlag(kHasDisplayLockContext); }
 
-  // Creates a DocumentFragment, converts |node_unions| from bindings into
-  // actual Nodes by converting strings and script into text nodes via
-  // NodeOrStringToNode.  If there is more than one node, appends all
-  // resulting Nodes to the DocumentFragment, and returns it. Returns nullptr
-  // if exceptions are thrown.
-  static Node* ConvertNodeUnionsIntoNode(
-      const ContainerNode* parent,
-      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
-      Document& document,
-      const char* property_name,
-      ExceptionState& exception_state);
   // Converts |node_unions| from bindings into actual Nodes by converting
   // strings and script into text nodes, and if more than one node resulted,
   // removes them from their old parent (as though they had been inserted into
@@ -1053,6 +1048,17 @@ class CORE_EXPORT Node : public EventTarget {
                                                       : TextDirection::kLtr;
   }
   void SetCachedDirectionality(TextDirection direction);
+
+  bool SelfOrAncestorHasContainerTiming() const {
+    return GetFlag(kSelfOrAncestorHasContainerTiming);
+  }
+  void SetSelfOrAncestorHasContainerTiming() {
+    SetFlag(kSelfOrAncestorHasContainerTiming);
+  }
+  void ClearSelfOrAncestorHasContainerTiming() {
+    ClearFlag(kSelfOrAncestorHasContainerTiming);
+  }
+  bool HasContainerTiming() const;
 
   void Trace(Visitor*) const override;
 
@@ -1129,6 +1135,10 @@ class CORE_EXPORT Node : public EventTarget {
 
     // Bits indicating this Node is a NodePart or a ChildNodePart endpoint.
     kHasNodePart = 1u << 30,
+
+    // Indicate the node is in a hierarchy that needs to be considered for
+    // ContainerTiming events.
+    kSelfOrAncestorHasContainerTiming = 1u << 31,
 
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 

@@ -12,5 +12,5 @@ module ax.mojom;
 // See ui::AXMode for additional documentation about individual flags and modes.
 struct AXMode {
   uint32 flags;
-  uint32 experimental_flags;
+  uint32 filter_flags;
 };

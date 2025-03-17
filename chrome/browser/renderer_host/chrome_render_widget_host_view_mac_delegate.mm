@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_url_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -30,6 +31,12 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#endif
 
 @interface ChromeRenderWidgetHostViewMacDelegate () <HistorySwiperDelegate>
 
@@ -416,6 +423,14 @@
     return kAcceptMouseEventsInActiveWindow;
   }
 
+  // If this web contents is in a tab, and the tab wants to accept mouse events
+  // while the window is inactive.
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(self.webContents);
+  if (tab && tab->ShouldAcceptMouseEventsWhileWindowInactive()) {
+    return kAcceptMouseEventsInActiveApp;
+  }
+
   // For Top Chrome WebUIs, allows inactive windows to accept
   // mouse events as long as the application is active. This
   // mimics the behavior of views UI.
@@ -423,6 +438,22 @@
       IsTopChromeUntrustedWebUIURL(webContents->GetVisibleURL())) {
     return kAcceptMouseEventsInActiveApp;
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // WebContents managed by glic should be allowed to accept mouse events while
+  // inactive, aligning with the expected behavior of native chrome dialogs.
+  // TODO(crbug.com/399119513): Consider making this a single WebContents
+  // scoped setting, allowing this behavior to be configured by feature code.
+  if (Profile* profile =
+          Profile::FromBrowserContext(webContents->GetBrowserContext());
+      glic::GlicEnabling::IsProfileEligible(profile)) {
+    glic::GlicKeyedService* glic_service =
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+    if (glic_service && glic_service->IsActiveWebContents(webContents)) {
+      return kAcceptMouseEventsInActiveApp;
+    }
+  }
+#endif
 
   return kAcceptMouseEventsInActiveWindow;
 }

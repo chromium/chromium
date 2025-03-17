@@ -22,7 +22,7 @@ class ProtectedAudience : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  using FeatureVal = absl::variant<bool, size_t>;
+  using FeatureVal = absl::variant<bool, size_t, double>;
 
   // `execution_context` is only used by the constructor.
   explicit ProtectedAudience(ExecutionContext* execution_context);

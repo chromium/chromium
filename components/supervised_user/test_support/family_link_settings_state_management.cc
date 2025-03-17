@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/version_info/channel.h"
@@ -358,7 +359,7 @@ bool FamilyLinkSettingsState::ResetIntent::Check(
     const FamilyLinkSettingsState::Services& services) const {
   bool result = UrlFiltersAreEmpty(services);
   LOG(WARNING) << "FamilyLinkSettingsState::ResetIntent = "
-               << (result ? "true" : "false");
+               << base::ToString(result);
   return result;
 }
 
@@ -410,7 +411,7 @@ bool FamilyLinkSettingsState::DefineManualSiteListIntent::Check(
     const FamilyLinkSettingsState::Services& services) const {
   bool result = UrlFiltersAreConfigured(services, allowed_url_, blocked_url_);
   LOG(WARNING) << "FamilyLinkSettingsState::DefineManualSiteListIntent = "
-               << (result ? "true" : "false");
+               << base::ToString(result);
   return result;
 }
 
@@ -424,23 +425,13 @@ std::string FamilyLinkSettingsState::ToggleIntent::GetRequest() const {
   kidsmanagement::DefineChromeTestStateRequest request;
   for (const auto& toggle : toggle_list_) {
     if (toggle.type == FamilyLinkToggleType::kExtensionsToggle) {
-      // TODO: b/380423710 - Remove duplicated code after migration.
-      request.mutable_url_filtering_settings()->set_can_add_extensions(
-          static_cast<bool>(toggle.state));
       request.set_can_add_extensions(static_cast<bool>(toggle.state));
     }
     if (toggle.type == FamilyLinkToggleType::kPermissionsToggle) {
-      // TODO: b/380423710 - Remove duplicated code after migration.
-      request.mutable_url_filtering_settings()
-          ->set_websites_can_request_permissions(
-              static_cast<bool>(toggle.state));
       request.set_websites_can_request_permissions(
           static_cast<bool>(toggle.state));
     }
     if (toggle.type == FamilyLinkToggleType::kCookiesToggle) {
-      // TODO: b/380423710 - Remove duplicated code after migration.
-      request.mutable_url_filtering_settings()->set_can_block_cookies(
-          static_cast<bool>(toggle.state));
       request.set_can_block_cookies(static_cast<bool>(toggle.state));
     }
   }
@@ -456,7 +447,7 @@ std::string FamilyLinkSettingsState::ToggleIntent::ToString() const {
   bits.push_back("Define[");
   for (const auto& toggle : toggle_list_) {
     bits.push_back(GetToggleAbbrev(toggle.type) + " = ");
-    bits.push_back((static_cast<bool>(toggle.state) ? "true" : "false") +
+    bits.push_back(base::ToString(static_cast<bool>(toggle.state)) +
                    std::string(" "));
   }
   bits.push_back("]");
@@ -473,7 +464,7 @@ bool FamilyLinkSettingsState::ToggleIntent::Check(
     if (!toggle_has_expected_value) {
       LOG(WARNING) << "FamilyLinkSettingsState::ToggleIntent[" +
                           GetToggleAbbrev(toggle.type) + "] = "
-                   << (toggle_has_expected_value ? "true" : "false");
+                   << base::ToString(toggle_has_expected_value);
     }
     result = result && toggle_has_expected_value;
   }

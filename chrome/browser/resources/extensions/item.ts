@@ -30,8 +30,9 @@ export interface ItemDelegate {
   deleteItem(id: string): void;
   deleteItems(ids: string[]): Promise<void>;
   uninstallItem(id: string): Promise<void>;
-  setItemEnabled(id: string, isEnabled: boolean): void;
+  setItemEnabled(id: string, isEnabled: boolean): Promise<void>;
   setItemAllowedIncognito(id: string, isAllowedIncognito: boolean): void;
+  setItemAllowedUserScripts(id: string, isAllowedUserScripts: boolean): void;
   setItemAllowedOnFileUrls(id: string, isAllowedOnFileUrls: boolean): void;
   setItemHostAccess(id: string, hostAccess: chrome.developerPrivate.HostAccess):
       void;
@@ -74,8 +75,11 @@ export class DummyItemDelegate {
   uninstallItem(_id: string) {
     return Promise.resolve();
   }
-  setItemEnabled(_id: string, _isEnabled: boolean) {}
+  setItemEnabled(_id: string, _isEnabled: boolean) {
+    return Promise.resolve();
+  }
   setItemAllowedIncognito(_id: string, _isAllowedIncognito: boolean) {}
+  setItemAllowedUserScripts(_id: string, _isAllowedUserScripts: boolean) {}
   setItemAllowedOnFileUrls(_id: string, _isAllowedOnFileUrls: boolean) {}
   setItemHostAccess(
       _id: string, _hostAccess: chrome.developerPrivate.HostAccess) {}
@@ -182,7 +186,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
 
   /** @return The "Errors" button, if it exists. */
   getErrorsButton(): HTMLElement|null {
-    return this.shadowRoot!.querySelector('#errors-button');
+    return this.shadowRoot.querySelector('#errors-button');
   }
 
   protected getEnableToggleAriaLabel_(): string {

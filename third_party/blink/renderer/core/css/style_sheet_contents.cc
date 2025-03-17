@@ -623,6 +623,17 @@ Document* StyleSheetContents::SingleOwnerDocument() const {
   return root->ClientSingleOwnerDocument();
 }
 
+CSSStyleSheet* StyleSheetContents::AnyClient() const {
+  StyleSheetContents* root = RootStyleSheet();
+  if (root->ClientSize() <= 0) {
+    return nullptr;
+  }
+  if (root->loading_clients_.size()) {
+    return (*root->loading_clients_.begin());
+  }
+  return (*root->completed_clients_.begin());
+}
+
 Document* StyleSheetContents::AnyOwnerDocument() const {
   return RootStyleSheet()->ClientAnyOwnerDocument();
 }
@@ -660,6 +671,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kMixin:
         NOTREACHED();
       case StyleRuleBase::kNestedDeclarations:
+      case StyleRuleBase::kFunctionDeclarations:
       case StyleRuleBase::kPage:
       case StyleRuleBase::kPageMargin:
       case StyleRuleBase::kProperty:
@@ -796,6 +808,7 @@ RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium) {
     if (rule_set_diff_) {
       rule_set_diff_->NewRuleSetCreated(rule_set_);
     }
+    rule_set_->CompactRulesIfNeeded();
   }
   return *rule_set_.Get();
 }

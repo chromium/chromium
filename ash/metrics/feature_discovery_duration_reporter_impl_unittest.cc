@@ -67,27 +67,11 @@ class FeatureDiscoveryDurationReporterImplTest : public AshTestBase {
 
     // Set up the primary account and the secondary account.
     GetSessionController()->ClearUserSessionsForTest();
-    TestSessionControllerClient* session_client = GetSessionControllerClient();
-    session_client->AddUserSession(kPrimaryUserEmail,
-                                   user_manager::UserType::kRegular,
-                                   /*provide_pref_service=*/false);
-    session_client->AddUserSession(kSecondaryUserEmail,
-                                   user_manager::UserType::kRegular,
-                                   /*provide_pref_service=*/false);
-
-    auto user_1_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_1_prefs->registry(), /*country=*/"",
-                             /*for_test=*/true);
-    auto user_2_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_2_prefs->registry(), /*country=*/"",
-                             /*for_test=*/true);
-    session_client->SetUserPrefService(primary_account_id_,
-                                       std::move(user_1_prefs));
-    session_client->SetUserPrefService(secondary_account_id_,
-                                       std::move(user_2_prefs));
+    SimulateUserLogin({kPrimaryUserEmail});
+    SimulateUserLogin({kSecondaryUserEmail});
 
     // Switch to the primary account and lock the screen.
-    session_client->SwitchActiveUser(primary_account_id_);
+    SwitchActiveUser(primary_account_id_);
     GetSessionControllerClient()->SetSessionState(
         session_manager::SessionState::LOCKED);
   }
@@ -106,9 +90,7 @@ TEST_F(FeatureDiscoveryDurationReporterImplTest, OnlyRecordForNewPrimaryUser) {
   EXPECT_TRUE(IsReporterActive());
 
   // Switch to the secondary account. The session should still be active.
-  TestSessionControllerClient* session_controller =
-      GetSessionControllerClient();
-  session_controller->SwitchActiveUser(secondary_account_id_);
+  SwitchActiveUser(secondary_account_id_);
   EXPECT_EQ(session_manager::SessionState::ACTIVE,
             GetSessionController()->GetSessionState());
 

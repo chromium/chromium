@@ -139,8 +139,8 @@ if (is_win || is_mac || is_linux) {
       "device_management/dm_message.h",
       "device_management/dm_response_validator.cc",
       "device_management/dm_response_validator.h",
-      "find_unregistered_apps_task.cc",
-      "find_unregistered_apps_task.h",
+      "handle_inconsistent_apps_task.cc",
+      "handle_inconsistent_apps_task.h",
       "installer.cc",
       "installer.h",
       "ipc/update_service_internal_proxy.cc",
@@ -160,6 +160,8 @@ if (is_win || is_mac || is_linux) {
       "policy/dm_policy_manager.h",
       "policy/manager.cc",
       "policy/manager.h",
+      "policy/platform_policy_manager.cc",
+      "policy/platform_policy_manager.h",
       "policy/policy_fetcher.cc",
       "policy/policy_fetcher.h",
       "policy/policy_manager.cc",
@@ -248,6 +250,7 @@ if (is_win || is_mac || is_linux) {
         "app/app_net_worker.cc",
         "app/app_net_worker.h",
         "app/app_server_posix_mac.cc",
+        "cleanup_task_mac.mm",
         "installer_mac.cc",
         "ipc/ipc_security_mac.cc",
         "mac/install_from_archive.h",
@@ -259,7 +262,6 @@ if (is_win || is_mac || is_linux) {
         "net/fetcher_callback_adapter.h",
         "net/network_fetcher_mac.mm",
         "net/network_file_fetcher.h",
-        "policy/mac/managed_preference_policy_manager.h",
         "policy/mac/managed_preference_policy_manager.mm",
         "policy/mac/managed_preference_policy_manager_impl.h",
         "policy/mac/managed_preference_policy_manager_impl.mm",
@@ -337,8 +339,6 @@ if (is_win || is_mac || is_linux) {
         "win/setup/uninstall.h",
         "win/setup/win_setup.cc",
         "win/setup/win_setup.h",
-        "win/task_scheduler.cc",
-        "win/task_scheduler.h",
         "win/ui/complete_wnd.cc",
         "win/ui/complete_wnd.h",
         "win/ui/l10n_util.cc",
@@ -383,12 +383,8 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/win:wrl_strict",
       ]
 
-      defines += [ "SECURITY_WIN32" ]
-
       libs = [
         "msxml2.lib",
-        "secur32.lib",
-        "taskschd.lib",
         "wtsapi32.lib",
       ]
     }
@@ -411,7 +407,7 @@ if (is_win || is_mac || is_linux) {
       ]
 
       deps += [
-        "//chrome/updater/app/server/posix/mojom",
+        "//chrome/updater/mojom",
         "//components/named_mojo_ipc_server",
       ]
     }
@@ -590,6 +586,7 @@ if (is_win || is_mac || is_linux) {
       ":version_header",
       "//base",
       "//chrome/enterprise_companion:installer_paths",
+      "//components/policy/core/common:common_constants",
       "//components/update_client",
       "//mojo/core/embedder",
       "//url",
@@ -603,6 +600,8 @@ if (is_win || is_mac || is_linux) {
         "util/win_util.cc",
         "util/win_util.h",
         "win/scoped_handle.h",
+        "win/task_scheduler.cc",
+        "win/task_scheduler.h",
         "win/user_info.cc",
         "win/user_info.h",
         "win/win_constants.cc",
@@ -620,7 +619,13 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/win:wrl_strict",
       ]
 
-      libs = [ "wtsapi32.lib" ]
+      defines = [ "SECURITY_WIN32" ]
+
+      libs = [
+        "secur32.lib",
+        "taskschd.lib",
+        "wtsapi32.lib",
+      ]
     }
 
     if (is_linux) {
@@ -662,7 +667,7 @@ if (is_win || is_mac || is_linux) {
       ]
 
       deps += [
-        "//chrome/updater/app/server/posix/mojom",
+        "//chrome/updater/mojom",
         "//components/named_mojo_ipc_server",
       ]
     }
@@ -912,9 +917,11 @@ if (is_win || is_mac || is_linux) {
       "//chrome/common:constants",
       "//chrome/enterprise_companion:constants_test",
       "//chrome/enterprise_companion:installer_paths",
+      "//chrome/enterprise_companion:version_header",
       "//chrome/enterprise_companion/device_management_storage",
       "//chrome/updater/protos:omaha_proto",
       "//components/crx_file",
+      "//components/policy/core/common:common_constants",
       "//components/policy/proto",
       "//components/prefs:test_support",
       "//components/update_client",
@@ -1059,6 +1066,7 @@ if (is_win || is_mac || is_linux) {
     if (is_mac) {
       sources += [
         "app/app_net_worker_unittest.cc",
+        "cleanup_task_mac_unittest.mm",
         "mac/keystone/ksadmin_unittest.cc",
         "mac/privileged_helper/privileged_helper_unittests.mm",
         "mac/setup/keystone_unittest.mm",
@@ -1077,7 +1085,7 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/mac:ksadmin_lib",
         "//chrome/updater/mac:privileged_helper_sources",
         "//chrome/updater/mac/client_lib:public_sources",
-        "//chrome/updater/mac/client_lib:test_sources",
+        "//chrome/updater/mac/client_lib:unit_test_sources",
         "//chrome/updater/net/mac/mojom",
         "//third_party/ocmock",
       ]
@@ -1183,7 +1191,7 @@ if (is_win || is_mac || is_linux) {
         "util/posix_util_unittest.cc",
       ]
 
-      deps += [ "//chrome/updater/app/server/posix/mojom" ]
+      deps += [ "//chrome/updater/mojom" ]
     }
   }
 

@@ -59,19 +59,16 @@ class LinkCapturingNavigationThrottleBrowserTest
             features::kPwaNavigationCapturing,
             {{"link_capturing_state",
               IsV1() ? "on_by_default" : "reimpl_default_on"}})},
-        /*disabled_features=*/{
-            blink::features::kDropInputEventsBeforeFirstPaint});
+        /*disabled_features=*/{});
   }
 
   bool IsV1() { return GetParam() == NavCaptureVersion::kV1; }
 
   void SetUpOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)) || BUILDFLAG(IS_MAC) ||\
+#if (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
     // TODO(https://issues.chromium.org/329174385): Deflake tests in
-    // lacros_chrome_browser_tests / Linux MSan Tests / Mac Tests / Win ASan
-    // Tests.
+    // Linux MSan Tests / Mac Tests / Win ASan Tests.
     GTEST_SKIP();
 #else
     InProcessBrowserTest::SetUpOnMainThread();

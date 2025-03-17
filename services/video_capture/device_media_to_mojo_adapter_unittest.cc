@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "media/capture/video/mock_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
@@ -32,7 +31,7 @@ class DeviceMediaToMojoAdapterTest : public ::testing::Test {
         video_frame_handler_.InitWithNewPipeAndPassReceiver());
     auto mock_device = std::make_unique<media::MockDevice>();
     mock_device_ptr_ = mock_device.get();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     adapter_ = std::make_unique<DeviceMediaToMojoAdapter>(
         std::move(mock_device), base::DoNothing(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -42,7 +41,7 @@ class DeviceMediaToMojoAdapterTest : public ::testing::Test {
 #else
     adapter_ =
         std::make_unique<DeviceMediaToMojoAdapter>(std::move(mock_device));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDown() override {

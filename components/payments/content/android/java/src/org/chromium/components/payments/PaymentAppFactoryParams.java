@@ -4,13 +4,14 @@
 
 package org.chromium.components.payments;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.Origin;
 
 /** Interface for providing information to a payment app factory. */
+@NullMarked
 public interface PaymentAppFactoryParams extends PaymentRequestParams {
     /** @return The web contents where the payment is being requested. */
     WebContents getWebContents();
@@ -19,7 +20,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
     RenderFrameHost getRenderFrameHost();
 
     /** @return The PaymentRequest object identifier. */
-    default String getId() {
+    default @Nullable String getId() {
         return null;
     }
 
@@ -28,7 +29,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
      * formatted by UrlFormatter.formatUrlForSecurityDisplay().
      */
     default String getTopLevelOrigin() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -36,7 +37,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
      * PaymentRequest API as formatted by UrlFormatter.formatUrlForSecurityDisplay().
      */
     default String getPaymentRequestOrigin() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -45,7 +46,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
      * null.
      */
     default Origin getPaymentRequestSecurityOrigin() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -54,8 +55,7 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
      * ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or for localhost or local file,
      * which are secure contexts without SSL. Each byte array cannot be null.
      */
-    @Nullable
-    default byte[][] getCertificateChain() {
+    default byte @Nullable [][] getCertificateChain() {
         return null;
     }
 
@@ -64,22 +64,25 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
         return false;
     }
 
-    /** @return The listener for payment method, shipping address, and shipping option change events. */
-    default PaymentRequestUpdateEventListener getPaymentRequestUpdateEventListener() {
+    /**
+     * @return The listener for payment method, shipping address, and shipping option change events.
+     */
+    default @Nullable PaymentRequestUpdateEventListener getPaymentRequestUpdateEventListener() {
         return null;
     }
 
-    /** @return The Payment Request information received from the merchant. */
+    /**
+     * @return The Payment Request information received from the merchant.
+     */
     default PaymentRequestSpec getSpec() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
      * @return The Android package name of the Trusted Web Activity that invoked Chrome, if running
      * in TWA mode. Otherwise null or empty string.
      */
-    @Nullable
-    default String getTwaPackageName() {
+    default @Nullable String getTwaPackageName() {
         return null;
     }
 

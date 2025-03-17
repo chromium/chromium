@@ -89,7 +89,7 @@
 }
 
 // Verifies that Tools Menu > Share Chrome brings up the "share sheet".
-- (void)testShareChromeApp {
+- (void)testShowShareSheetForChromeApp {
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
       tapToolsMenuAction:grey_accessibilityID(kToolsMenuShareChromeId)];

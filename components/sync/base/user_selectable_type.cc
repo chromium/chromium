@@ -8,7 +8,6 @@
 #include <ostream>
 
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/data_type.h"
 
 namespace syncer {
@@ -41,8 +40,11 @@ constexpr char kProductComparisonTypeName[] = "productComparison";
 constexpr char kCookiesTypeName[] = "cookies";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
-  static_assert(53 == syncer::GetNumDataTypes(),
-                "Almost always when adding a new DataType, you must tie it to "
+  // TODO(crbug.com/397767033): In CL #3, map SHARED_TAB_GROUP_ACCOUNT_DATA to
+  // an existing selectable type or to a new one. The first option should be
+  // trivial, the second requires touching UI code across platforms.
+  static_assert(55 == syncer::GetNumDataTypes(),
+                "Almost always when adding a new Data, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
                 "UI code yourself; crbug.com/1067282 and related bugs will "
@@ -115,7 +117,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
               AUTOFILL_WALLET_DATA,
               {AUTOFILL_WALLET_CREDENTIAL, AUTOFILL_WALLET_DATA,
                AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
-               AUTOFILL_WALLET_USAGE}};
+               AUTOFILL_WALLET_USAGE, AUTOFILL_LOYALTY_CARD}};
     case UserSelectableType::kProductComparison:
       return {
           kProductComparisonTypeName, PRODUCT_COMPARISON, {PRODUCT_COMPARISON}};
@@ -222,6 +224,22 @@ DataTypeSet UserSelectableTypeToAllDataTypes(UserSelectableType type) {
 
 DataType UserSelectableTypeToCanonicalDataType(UserSelectableType type) {
   return GetUserSelectableTypeInfo(type).canonical_data_type;
+}
+
+std::optional<UserSelectableType> GetUserSelectableTypeFromDataType(
+    DataType data_type) {
+  std::optional<UserSelectableType> selectable_type;
+
+  for (const auto type : UserSelectableTypeSet::All()) {
+    if (GetUserSelectableTypeInfo(type).data_type_group.Has(data_type)) {
+      CHECK(!selectable_type.has_value())
+          << "Data type " << DataTypeToDebugString(data_type)
+          << " corresponds to multiple user selectable types.";
+      selectable_type = type;
+    }
+  }
+
+  return selectable_type;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

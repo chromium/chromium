@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 
 namespace media {
@@ -15,10 +16,9 @@ scoped_refptr<VideoFrameResource> VideoFrameResource::Create(
   if (!frame) {
     return nullptr;
   }
-  // Uses WrapRefCounted since MakeRefCounted cannot access a private
-  // constructor.
-  return base::WrapRefCounted<VideoFrameResource>(
-      new VideoFrameResource(std::move(frame)));
+
+  return base::MakeRefCounted<VideoFrameResource>(
+      base::PassKey<VideoFrameResource>(), std::move(frame));
 }
 
 scoped_refptr<const VideoFrameResource> VideoFrameResource::CreateConst(
@@ -28,12 +28,13 @@ scoped_refptr<const VideoFrameResource> VideoFrameResource::CreateConst(
   }
   // Uses WrapRefCounted since MakeRefCounted cannot access a private
   // constructor.
-  return base::WrapRefCounted<const VideoFrameResource>(
-      new VideoFrameResource(std::move(frame)));
+  return base::MakeRefCounted<const VideoFrameResource>(
+      base::PassKey<VideoFrameResource>(), std::move(frame));
 }
 
-VideoFrameResource::VideoFrameResource(scoped_refptr<const VideoFrame> frame)
-    : FrameResource(), frame_(std::move(frame)) {
+VideoFrameResource::VideoFrameResource(base::PassKey<VideoFrameResource>,
+                                       scoped_refptr<const VideoFrame> frame)
+    : frame_(std::move(frame)) {
   CHECK(frame_);
 }
 
@@ -84,10 +85,6 @@ gfx::GpuMemoryBufferHandle VideoFrameResource::CreateGpuMemoryBufferHandle()
 std::unique_ptr<VideoFrame::ScopedMapping>
 VideoFrameResource::MapGMBOrSharedImage() const {
   return frame_->MapGMBOrSharedImage();
-}
-
-gfx::GenericSharedMemoryId VideoFrameResource::GetSharedMemoryId() const {
-  return media::GetSharedMemoryId(*frame_);
 }
 
 const VideoFrameLayout& VideoFrameResource::layout() const {
@@ -150,6 +147,12 @@ VideoFrameMetadata& VideoFrameResource::metadata() {
 
 void VideoFrameResource::set_metadata(const VideoFrameMetadata& metadata) {
   GetMutableVideoFrame()->set_metadata(metadata);
+}
+
+const base::UnguessableToken& VideoFrameResource::tracking_token() const {
+  CHECK(metadata().tracking_token.has_value());
+  CHECK(!metadata().tracking_token->is_empty());
+  return *metadata().tracking_token;
 }
 
 base::TimeDelta VideoFrameResource::timestamp() const {

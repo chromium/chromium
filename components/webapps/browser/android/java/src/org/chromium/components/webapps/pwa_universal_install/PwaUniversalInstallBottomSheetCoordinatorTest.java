@@ -73,7 +73,7 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
                         this::onInstallCalled,
                         this::onAddShortcutCalled,
                         this::onOpenAppCalled,
-                        /* appInstalled= */ false,
+                        /* webAppAlreadyInstalled= */ false,
                         mBottomSheetControllerMock,
                         /* arrowId= */ 0,
                         /* installOverlayId= */ 0,

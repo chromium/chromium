@@ -122,6 +122,7 @@ void TtsHandler::OnVoicesChanged() {
     response.Set("fullLanguageCode", voice.lang);
     response.Set("languageScore", language_score);
     response.Set("extensionId", voice.engine_id);
+    response.Set("displayName", voice.name);
     responses.Append(std::move(response));
   }
   AllowJavascript();

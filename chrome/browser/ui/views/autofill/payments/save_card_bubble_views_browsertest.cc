@@ -16,7 +16,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -29,10 +28,12 @@
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
+#include "chrome/browser/ui/views/autofill/payments/save_card_manage_cards_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -84,6 +85,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -93,6 +95,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/throbber.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/ax_event_counter.h"
@@ -104,7 +107,7 @@
 #include "ui/views/window/non_client_view.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #endif
@@ -677,7 +680,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
     EXPECT_FALSE(GetSaveCardBubbleViews());
   }
 
-  void ClickOnDialogViewWithId(DialogViewId view_id) {
+  template <typename IdType>
+  void ClickOnDialogViewWithId(IdType view_id) {
     ClickOnDialogView(FindViewInBubbleById(view_id));
   }
 
@@ -712,6 +716,15 @@ class SaveCardBubbleViewsFullFormBrowserTest
     }
 
     return specified_view;
+  }
+
+  views::View* FindViewInBubbleById(ui::ElementIdentifier element_identifier) {
+    SaveCardBubbleViews* save_card_bubble_views = GetSaveCardBubbleViews();
+    CHECK(save_card_bubble_views);
+
+    return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+        element_identifier, views::ElementTrackerViews::GetContextForWidget(
+                                save_card_bubble_views->GetWidget()));
   }
 
   void ClickOnCancelButton() {
@@ -899,7 +912,7 @@ class SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream
 
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
                        AlertAccessibleEvent) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
 
   FillForm();
@@ -915,7 +928,7 @@ class SaveCardBubbleViewsFullFormBrowserTestSettings
 
   void SetUpOnMainThread() override {
     SaveCardBubbleViewsFullFormBrowserTest::SetUpOnMainThread();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // OpenSettingsFromManageCardsPrompt() tries to retrieve the PhoneHubManager
     // keyed service, whose factory implementation relies on ChromeOS having a
     // single profile, and consequently a single service instance. Creating a
@@ -930,7 +943,7 @@ class SaveCardBubbleViewsFullFormBrowserTestSettings
     FillForm();
     SubmitFormAndWaitForCardLocalSaveBubble();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 #endif
 
@@ -944,7 +957,8 @@ class SaveCardBubbleViewsFullFormBrowserTestSettings
     ASSERT_TRUE(WaitForObservedEvent());
 
     // Click on the redirect button.
-    ClickOnDialogViewWithId(DialogViewId::MANAGE_CARDS_BUTTON);
+    ClickOnDialogViewWithId(
+        SaveCardManageCardsBubbleViews::kSaveCardBubbleManageCardsButtonId);
   }
 
  private:
@@ -1023,7 +1037,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // On Chrome OS, the test profile starts with a primary account already set, so
 // sync-the-transport tests don't apply.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // Sets up Chrome with Sync-the-transport mode enabled, with the Wallet datatype
 // as enabled type.
@@ -1031,16 +1045,9 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
     : public SaveCardBubbleViewsFullFormBrowserTest {
  protected:
   SaveCardBubbleViewsSyncTransportFullFormBrowserTest() {
-    // Add wallet data type to the list of enabled types.
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAutofillUpstream};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-    // Since server card saves upload address information, they are only offered
-    // when addresses are being synced. Enable CONTACT_INFO in transport mode.
-    enabled_features.push_back(switches::kExplicitBrowserSigninUIOnDesktop);
-    enabled_features.push_back(
-        syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillUpstream},
+        /*disabled_features=*/{});
   }
 
  public:
@@ -1167,7 +1174,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
       autofill_metrics::SaveCardPromptResult::kAccepted, 1);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests the fully-syncing state. Ensures that the Butter (i) info icon does not
 // appear for fully-syncing users.
@@ -1851,7 +1858,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   // Ensure that a strike was added.
   histogram_tester.ExpectUniqueSample(
       "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-      /*sample=*/(1), /*count=*/1);
+      /*sample=*/(1), /*expected_bucket_count=*/1);
 }
 
 // Tests the local save bubble. Ensures that clicking the [X] button
@@ -1893,7 +1900,7 @@ IN_PROC_BROWSER_TEST_F(
   // Ensure that a strike was added.
   histogram_tester.ExpectUniqueSample(
       "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-      /*sample=*/(1), /*count=*/1);
+      /*sample=*/(1), /*expected_bucket_count=*/1);
 }
 
 // Tests the upload save bubble. Ensures that clicking the [X] button
@@ -1942,7 +1949,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
     // The sample logged is the Nth strike added, or (i+1).
     histogram_tester.ExpectUniqueSample(
         "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-        /*sample=*/(i + 1), /*count=*/1);
+        /*sample=*/(i + 1), /*expected_bucket_count=*/1);
   }
 
   base::HistogramTester histogram_tester;
@@ -2009,7 +2016,7 @@ IN_PROC_BROWSER_TEST_F(
     // The sample logged is the Nth strike added, or (i+1).
     histogram_tester.ExpectUniqueSample(
         "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-        /*sample=*/(i + 1), /*count=*/1);
+        /*sample=*/(i + 1), /*expected_bucket_count=*/1);
   }
 
   base::HistogramTester histogram_tester;
@@ -2222,7 +2229,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 #endif
 
@@ -2238,7 +2245,9 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
   // Bubble should be showing.
   EXPECT_TRUE(
-      FindViewInBubbleById(DialogViewId::MANAGE_CARDS_VIEW)->GetVisible());
+      FindViewInBubbleById(
+          SaveCardManageCardsBubbleViews::kSaveCardBubbleManageCardsViewId)
+          ->GetVisible());
   histogram_tester.ExpectUniqueSample(
       "Autofill.ManageCardsPrompt", ManageCardsPromptMetric::kManageCardsShown,
       1);
@@ -2251,7 +2260,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 #endif
 

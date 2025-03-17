@@ -11,6 +11,7 @@
 #include <shellapi.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -23,7 +24,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util_win.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
@@ -467,7 +467,9 @@ void HWNDMessageHandler::Init(HWND parent, const gfx::Rect& bounds) {
 }
 
 void HWNDMessageHandler::InitModalType(ui::mojom::ModalType modal_type) {
-  if (modal_type == ui::mojom::ModalType::kNone) {
+  // Windows only knows about window-level modality. Ignore other modalities:
+  // Child-modal is handled by the client. System-modal is not supported on Win.
+  if (modal_type != ui::mojom::ModalType::kWindow) {
     return;
   }
   // We implement modality by crawling up the hierarchy of windows starting
@@ -605,12 +607,8 @@ void HWNDMessageHandler::SetBounds(const gfx::Rect& bounds_in_pixels,
 }
 
 void HWNDMessageHandler::SetParentOrOwner(HWND new_parent) {
-  HWND parent = GetParent(hwnd());
-  HWND owner = GetWindow(hwnd(), GW_OWNER);
-  // A hwnd cannot be a child window and an owned window at the same time.
-  DCHECK(!(parent && owner));
-
-  if (parent) {
+  LONG style = GetWindowLong(hwnd(), GWL_STYLE);
+  if (style & WS_CHILD) {
     // This is a child window.
     // TODO(crbug.com/40284685): allows setting NULL parent since WinAPI permits
     // it. It will require updating window styles. See
@@ -618,7 +616,6 @@ void HWNDMessageHandler::SetParentOrOwner(HWND new_parent) {
     DCHECK(new_parent);
     SetParent(hwnd(), new_parent);
   } else {
-    // This is either an owned window or an un-owned window.
     SetWindowLongPtr(hwnd(), GWLP_HWNDPARENT,
                      reinterpret_cast<LONG_PTR>(new_parent));
   }
@@ -655,14 +652,21 @@ void HWNDMessageHandler::SetRegion(HRGN region) {
 void HWNDMessageHandler::StackAbove(HWND other_hwnd) {
   // Windows API allows to stack behind another windows only.
   DCHECK(other_hwnd);
-  HWND next_window = GetNextWindow(other_hwnd, GW_HWNDPREV);
-  SetWindowPos(hwnd(), next_window ? next_window : HWND_TOP, 0, 0, 0, 0,
-               SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
+  HWND next_window = ::GetNextWindow(other_hwnd, GW_HWNDPREV);
+
+  // ::SetWindowPos can trigger a nested message loop with WindowPosChanged
+  // which can cause an unneeded resize.
+  base::AutoReset<bool> auto_reset(&ignore_window_pos_changes_, true);
+  ::SetWindowPos(hwnd(), next_window ? next_window : HWND_TOP, 0, 0, 0, 0,
+                 SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 }
 
 void HWNDMessageHandler::StackAtTop() {
-  SetWindowPos(hwnd(), HWND_TOP, 0, 0, 0, 0,
-               SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
+  // ::SetWindowPos can trigger a nested message loop with WindowPosChanged
+  // which can cause an unneeded resize.
+  base::AutoReset<bool> auto_reset(&ignore_window_pos_changes_, true);
+  ::SetWindowPos(hwnd(), HWND_TOP, 0, 0, 0, 0,
+                 SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 }
 
 void HWNDMessageHandler::Show(ui::mojom::WindowShowState show_state,
@@ -679,7 +683,8 @@ void HWNDMessageHandler::Show(ui::mojom::WindowShowState show_state,
     SetWindowPlacement(hwnd(), &placement);
     native_show_state = SW_SHOWMAXIMIZED;
   } else {
-    const bool is_maximized = IsMaximized();
+    const bool is_maximized_or_arranged =
+        IsMaximized() || IsWindowArranged(hwnd());
 
     // Use SW_SHOW/SW_SHOWNA instead of SW_SHOWNORMAL/SW_SHOWNOACTIVATE so that
     // the window is not restored to its original position if it is maximized.
@@ -689,7 +694,8 @@ void HWNDMessageHandler::Show(ui::mojom::WindowShowState show_state,
     // position, some do not. See crbug.com/1296710
     switch (show_state) {
       case ui::mojom::WindowShowState::kInactive:
-        native_show_state = is_maximized ? SW_SHOWNA : SW_SHOWNOACTIVATE;
+        native_show_state =
+            is_maximized_or_arranged ? SW_SHOWNA : SW_SHOWNOACTIVATE;
         break;
       case ui::mojom::WindowShowState::kMaximized:
         native_show_state = SW_SHOWMAXIMIZED;
@@ -700,9 +706,11 @@ void HWNDMessageHandler::Show(ui::mojom::WindowShowState show_state,
       case ui::mojom::WindowShowState::kNormal:
         if ((GetWindowLong(hwnd(), GWL_EXSTYLE) & WS_EX_TRANSPARENT) ||
             (GetWindowLong(hwnd(), GWL_EXSTYLE) & WS_EX_NOACTIVATE)) {
-          native_show_state = is_maximized ? SW_SHOWNA : SW_SHOWNOACTIVATE;
+          native_show_state =
+              is_maximized_or_arranged ? SW_SHOWNA : SW_SHOWNOACTIVATE;
         } else {
-          native_show_state = is_maximized ? SW_SHOW : SW_SHOWNORMAL;
+          native_show_state =
+              is_maximized_or_arranged ? SW_SHOW : SW_SHOWNORMAL;
         }
         break;
       case ui::mojom::WindowShowState::kFullscreen:
@@ -949,13 +957,13 @@ void HWNDMessageHandler::PaintAsActiveChanged() {
 void HWNDMessageHandler::SetWindowIcons(const gfx::ImageSkia& window_icon,
                                         const gfx::ImageSkia& app_icon) {
   if (!window_icon.isNull()) {
-    base::win::ScopedHICON previous_icon = std::move(window_icon_);
+    base::win::ScopedGDIObject<HICON> previous_icon = std::move(window_icon_);
     window_icon_ = IconUtil::CreateHICONFromSkBitmap(*window_icon.bitmap());
     SendMessage(hwnd(), WM_SETICON, ICON_SMALL,
                 reinterpret_cast<LPARAM>(window_icon_.get()));
   }
   if (!app_icon.isNull()) {
-    base::win::ScopedHICON previous_icon = std::move(app_icon_);
+    base::win::ScopedGDIObject<HICON> previous_icon = std::move(app_icon_);
     app_icon_ = IconUtil::CreateHICONFromSkBitmap(*app_icon.bitmap());
     SendMessage(hwnd(), WM_SETICON, ICON_BIG,
                 reinterpret_cast<LPARAM>(app_icon_.get()));
@@ -1628,12 +1636,12 @@ void HWNDMessageHandler::ResetWindowRegion(bool force, bool redraw) {
 
   // Changing the window region is going to force a paint. Only change the
   // window region if the region really differs.
-  base::win::ScopedRegion current_rgn(CreateRectRgn(0, 0, 0, 0));
+  base::win::ScopedGDIObject<HRGN> current_rgn(CreateRectRgn(0, 0, 0, 0));
   GetWindowRgn(hwnd(), current_rgn.get());
 
   RECT window_rect;
   GetWindowRect(hwnd(), &window_rect);
-  base::win::ScopedRegion new_region;
+  base::win::ScopedGDIObject<HRGN> new_region;
   if (custom_window_region_.is_valid()) {
     new_region.reset(CreateRectRgn(0, 0, 0, 0));
     CombineRgn(new_region.get(), custom_window_region_.get(), nullptr,
@@ -1644,7 +1652,8 @@ void HWNDMessageHandler::ResetWindowRegion(bool force, bool redraw) {
     mi.cbSize = sizeof mi;
     GetMonitorInfo(monitor, &mi);
     RECT work_rect = mi.rcWork;
-    OffsetRect(&work_rect, -window_rect.left, -window_rect.top);
+    OffsetRect(&work_rect, static_cast<int>(-window_rect.left),
+               static_cast<int>(-window_rect.top));
     new_region.reset(CreateRectRgnIndirect(&work_rect));
   } else {
     SkPath window_mask;
@@ -1826,7 +1835,7 @@ void HWNDMessageHandler::OnDestroy() {
   // If the window going away is a fullscreen window then remove its references
   // from the full screen window map.
   auto& map = fullscreen_monitor_map_.Get();
-  const auto i = base::ranges::find(
+  const auto i = std::ranges::find(
       map, this, &FullscreenWindowMonitorMap::value_type::second);
   if (i != map.end()) {
     map.erase(i);
@@ -2507,7 +2516,8 @@ void HWNDMessageHandler::OnNCPaint(HRGN rgn) {
     }
 
     // rgn_bounding_box is in screen coordinates. Map it to window coordinates.
-    OffsetRect(&dirty_region, -window_rect.left, -window_rect.top);
+    OffsetRect(&dirty_region, static_cast<int>(-window_rect.left),
+               static_cast<int>(-window_rect.top));
   }
 
   // We only do non-client painting if we're not using the system frame.
@@ -2523,12 +2533,15 @@ void HWNDMessageHandler::OnNCPaint(HRGN rgn) {
     ::GetClientRect(hwnd(), &client_rect);
     ::MapWindowPoints(hwnd(), nullptr, reinterpret_cast<POINT*>(&client_rect),
                       2);
-    ::OffsetRect(&client_rect, -window_rect.left, -window_rect.top);
+    ::OffsetRect(&client_rect, static_cast<int>(-window_rect.left),
+                 static_cast<int>(-window_rect.top));
     // client_rect now is in window space.
 
-    base::win::ScopedRegion base(::CreateRectRgnIndirect(&dirty_region));
-    base::win::ScopedRegion client(::CreateRectRgnIndirect(&client_rect));
-    base::win::ScopedRegion nonclient(::CreateRectRgn(0, 0, 0, 0));
+    base::win::ScopedGDIObject<HRGN> base(
+        ::CreateRectRgnIndirect(&dirty_region));
+    base::win::ScopedGDIObject<HRGN> client(
+        ::CreateRectRgnIndirect(&client_rect));
+    base::win::ScopedGDIObject<HRGN> nonclient(::CreateRectRgn(0, 0, 0, 0));
     ::CombineRgn(nonclient.get(), base.get(), client.get(), RGN_DIFF);
 
     ::SelectClipRgn(dc, nonclient.get());
@@ -3347,6 +3360,25 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypeTouchOrNonClient(
     return -1;
   }
 
+  TRACE_EVENT1(
+      "ui", "HWNDMessageHandler::HandlePointerEventTypeTouchOrNonClient",
+      "POINTER_TOUCH_INFO",
+      base::StringPrintf(
+          "pointerId: %" PRIu32 "\npointerFlags: %" PRIu32
+          "\nptPixelLocationRaw: (%" PRIi64 ", %" PRIi64 ")\npressure: %" PRIu32
+          "\norientation: %" PRIu32 "\nradiusX: %" PRIi64 "\nradiusY: %" PRIi64,
+          pointer_touch_info.pointerInfo.pointerId,
+          pointer_touch_info.pointerInfo.pointerFlags,
+          pointer_touch_info.pointerInfo.ptPixelLocationRaw.x,
+          pointer_touch_info.pointerInfo.ptPixelLocationRaw.y,
+          pointer_touch_info.pressure, pointer_touch_info.orientation,
+          abs(pointer_touch_info.rcContactRaw.right -
+              pointer_touch_info.rcContactRaw.left) /
+              2,
+          abs(pointer_touch_info.rcContactRaw.bottom -
+              pointer_touch_info.rcContactRaw.top) /
+              2));
+
   last_touch_or_pen_message_time_ = ::GetMessageTime();
   // Ignore enter/leave events, otherwise they will be converted in
   // |GetTouchEventType| to EventType::kTouchPressed/EventType::kTouchReleased
@@ -3496,6 +3528,20 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypePenClient(UINT message,
     SetMsgHandled(FALSE);
     return -1;
   }
+
+  TRACE_EVENT1(
+      "ui", "HWNDMessageHandler::HandlePointerEventTypePenClient",
+      "POINTER_PEN_INFO",
+      base::StringPrintf("pointerId: %" PRIu32 "\npointerFlags: %" PRIu32
+                         "\nptPixelLocationRaw: (%" PRIi64 ", %" PRIi64
+                         ")\npressure: %" PRIu32 "\nrotation: %" PRIu32
+                         "\ntiltX: %" PRIi64 "\ntiltY: %" PRIi64,
+                         pointer_pen_info.pointerInfo.pointerId,
+                         pointer_pen_info.pointerInfo.pointerFlags,
+                         pointer_pen_info.pointerInfo.ptPixelLocationRaw.x,
+                         pointer_pen_info.pointerInfo.ptPixelLocationRaw.y,
+                         pointer_pen_info.pressure, pointer_pen_info.rotation,
+                         pointer_pen_info.tiltX, pointer_pen_info.tiltY));
 
   return HandlePointerEventTypePen(message, pointer_id, pointer_pen_info);
 }

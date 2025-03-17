@@ -171,10 +171,6 @@ class CONTENT_EXPORT KeepAliveURLLoader
     virtual void OnCompleteProcessed(
         KeepAliveURLLoader* loader,
         const network::URLLoaderCompletionStatus& completion_status) = 0;
-    virtual void PauseReadingBodyFromNetProcessed(
-        KeepAliveURLLoader* loader) = 0;
-    virtual void ResumeReadingBodyFromNetProcessed(
-        KeepAliveURLLoader* loader) = 0;
 
    protected:
     virtual ~TestObserver() = default;
@@ -200,8 +196,6 @@ class CONTENT_EXPORT KeepAliveURLLoader
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   // Receives actions from network service, loaded by `url_loader_`.
   // `blink::ThrottlingURLLoader::ClientReceiverDelegate` overrides:

@@ -32,6 +32,15 @@ void TabGroupsEventRouter::OnTabGroupChanged(const TabGroupChange& change) {
   switch (change.type) {
     case TabGroupChange::kCreated: {
       DispatchGroupCreated(change.group);
+      // Synthesize the initial kVisualsChanged notification while detaching and
+      // reattaching groups.
+      // TODO(crbug.com/398256328): Remove after fixing initial kVisualsChanged
+      // case.
+      if (change.GetCreateChange()->reason() ==
+          TabGroupChange::TabGroupCreationReason::
+              kInsertedFromAnotherTabstrip) {
+        DispatchGroupUpdated(change.group);
+      }
       break;
     }
     case TabGroupChange::kClosed: {
@@ -46,7 +55,6 @@ void TabGroupsEventRouter::OnTabGroupChanged(const TabGroupChange& change) {
       DispatchGroupUpdated(change.group);
       break;
     }
-    case TabGroupChange::kContentsChanged:
     case TabGroupChange::kEditorOpened:
       break;
   }

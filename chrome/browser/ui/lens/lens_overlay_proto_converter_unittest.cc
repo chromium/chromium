@@ -399,15 +399,19 @@ class LensOverlayProtoConverterTest : public testing::Test {
   }
 
   void VerifyGeometriesAreEqual(lens::Geometry server_geometry,
-                                lens::mojom::GeometryPtr mojo_geometry) {
-    EXPECT_EQ(gfx::PointF(server_geometry.bounding_box().center_x(),
-                          server_geometry.bounding_box().center_y()),
-              mojo_geometry->bounding_box->box.origin());
+                                lens::mojom::GeometryPtr mojo_geometry,
+                                const float height_scale = 1,
+                                const float width_scale = 1) {
+    EXPECT_EQ(
+        gfx::PointF(server_geometry.bounding_box().center_x() * width_scale,
+                    server_geometry.bounding_box().center_y() * height_scale),
+        mojo_geometry->bounding_box->box.origin());
     EXPECT_EQ(server_geometry.bounding_box().rotation_z(),
               mojo_geometry->bounding_box->rotation);
-    EXPECT_EQ(gfx::SizeF(server_geometry.bounding_box().width(),
-                         server_geometry.bounding_box().height()),
-              mojo_geometry->bounding_box->box.size());
+    EXPECT_EQ(
+        gfx::SizeF(server_geometry.bounding_box().width() * width_scale,
+                   server_geometry.bounding_box().height() * height_scale),
+        mojo_geometry->bounding_box->box.size());
     EXPECT_EQ(
         static_cast<int>(server_geometry.bounding_box().coordinate_type()),
         static_cast<int>(mojo_geometry->bounding_box->coordinate_type));
@@ -820,6 +824,70 @@ TEST_F(LensOverlayProtoConverterTest,
   lens::mojom::TextPtr mojo_text = lens::CreateTextMojomFromServerResponse(
       server_response, /*resized_bitmap_size=*/gfx::Size());
   EXPECT_FALSE(mojo_text);
+}
+
+TEST_F(LensOverlayProtoConverterTest, CreateTextMojomFromInteractionResponse) {
+  lens::LensOverlayServerResponse server_response =
+      CreateLensServerOverlayResponse({});
+  server_response.clear_objects_response();
+  CreateServerText(
+      kTestText,
+      server_response.mutable_interaction_response()->mutable_text());
+
+  // Create a fake region crop box.
+  const float height_scale = 0.5;
+  const float width_scale = 0.5;
+  lens::CenterRotatedBox box;
+  box.set_height(height_scale);
+  box.set_width(width_scale);
+
+  lens::mojom::TextPtr mojo_text = lens::CreateTextMojomFromInteractionResponse(
+      server_response.interaction_response(), box,
+      /*resized_bitmap_size=*/gfx::Size());
+  ASSERT_TRUE(mojo_text);
+
+  // Compare top level text object.
+  EXPECT_EQ(mojo_text->content_language, kTestText.content_language);
+
+  // Compare paragraphs.
+  EXPECT_EQ(mojo_text->text_layout->paragraphs.size(),
+            static_cast<unsigned long>(1));
+  lens::TextLayout_Paragraph server_paragraph =
+      server_response.interaction_response()
+          .text()
+          .text_layout()
+          .paragraphs()[0];
+  const lens::mojom::ParagraphPtr& mojo_paragraph =
+      mojo_text->text_layout->paragraphs[0];
+  EXPECT_EQ(mojo_paragraph->content_language, kTestText.content_language);
+  EXPECT_TRUE(mojo_paragraph->writing_direction.has_value());
+  EXPECT_EQ(static_cast<int>(mojo_paragraph->writing_direction.value()),
+            static_cast<int>(kTestText.writing_direction));
+  VerifyGeometriesAreEqual(server_paragraph.geometry(),
+                           mojo_paragraph->geometry->Clone(), height_scale,
+                           width_scale);
+
+  // Compare line for a paragraph.
+  EXPECT_EQ(mojo_paragraph->lines.size(), static_cast<unsigned long>(1));
+  lens::TextLayout_Line server_line = server_paragraph.lines()[0];
+  lens::mojom::LinePtr mojo_line = mojo_paragraph->lines[0]->Clone();
+  VerifyGeometriesAreEqual(server_line.geometry(), mojo_line->geometry->Clone(),
+                           height_scale, width_scale);
+
+  // Compare words in line.
+  EXPECT_EQ(mojo_line->words.size(), static_cast<unsigned long>(1));
+  lens::mojom::WordPtr mojo_word = mojo_line->words[0]->Clone();
+  const auto& test_word_struct = kTestText.lines[0].words[0];
+  EXPECT_EQ(mojo_word->plain_text, test_word_struct.plain_text);
+  EXPECT_EQ(mojo_word->text_separator, test_word_struct.text_separator);
+  lens::TextLayout_Word server_word = server_line.words()[0];
+  VerifyGeometriesAreEqual(server_word.geometry(), mojo_word->geometry->Clone(),
+                           height_scale, width_scale);
+  EXPECT_TRUE(mojo_word->writing_direction.has_value());
+  EXPECT_EQ(static_cast<int>(mojo_word->writing_direction.value()),
+            static_cast<int>(kTestText.writing_direction));
+  EXPECT_EQ(mojo_word->formula_metadata->latex,
+            test_word_struct.formula_metadata_latex);
 }
 
 }  // namespace lens

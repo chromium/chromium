@@ -4,18 +4,18 @@
 
 package org.chromium.content_public.browser;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.MediaSessionImpl;
 
 /** The MediaSession Java wrapper to allow communicating with the native MediaSession object. */
+@NullMarked
 public abstract class MediaSession {
     /**
      * @return The MediaSession associated with |contents|.
      */
-    @Nullable
-    public static MediaSession fromWebContents(WebContents contents) {
+    public static @Nullable MediaSession fromWebContents(WebContents contents) {
         // TODO(zqzhang): directly call WebContentsImpl.getMediaSession() when WebContentsImpl
         // package restriction is removed.
         return MediaSessionImpl.fromWebContents(contents);

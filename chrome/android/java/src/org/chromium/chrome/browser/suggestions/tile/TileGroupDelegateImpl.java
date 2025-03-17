@@ -78,7 +78,6 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
 
         GURL url = item.getUrl();
 
-        // TODO(treib): Should we call recordOpenedMostVisitedItem here?
         if (windowDisposition != WindowOpenDisposition.NEW_WINDOW) {
             recordOpenedTile(item);
         }

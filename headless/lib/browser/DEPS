@@ -15,6 +15,7 @@ include_rules = [
   "+third_party/skia/include",
   "+third_party/blink/public/mojom/quota",
   "+third_party/blink/public/mojom/badging",
+  "+third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h",
   "+third_party/blink/public/common/client_hints/enabled_client_hints.h",
   "+third_party/blink/public/common/renderer_preferences/renderer_preferences.h",
   "+third_party/blink/public/common/user_agent/user_agent_metadata.h",
@@ -26,6 +27,10 @@ include_rules = [
   "+ui/events/keycodes/dom",
 ]
 specific_include_rules = {
+  "headless_bluetooth_delegate_unittest.cc": [
+    "+device/bluetooth/public/cpp/bluetooth_uuid.h",
+    "+third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h",
+  ],
   "headless_browser_main_parts.*": [
     "+components/origin_trials/browser",
   ],
@@ -70,8 +75,5 @@ specific_include_rules = {
     "+components/prefs",
     "+components/metrics",
     "+components/variations",
-  ],
-  "headless_screen_info.cc": [
-    "+third_party/re2/src/re2/re2.h",
   ]
 }

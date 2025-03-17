@@ -3,7 +3,7 @@ URL: http://www.mozilla.org/projects/security/pki/nss/
 Version: 3.23 RTM
 Security Critical: Yes
 Shipped: yes
-License: MPL 2
+License: MPL-2.0
 License File: LICENSE
 
 This directory includes a single function that was historically derived from

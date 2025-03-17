@@ -31,23 +31,7 @@
 
 namespace updater {
 
-class PrefsTest : public ::testing::Test {
-#if BUILDFLAG(IS_WIN)
- protected:
-  void SetUp() override { DeleteBrandCodeValueInRegistry(); }
-  void TearDown() override { DeleteBrandCodeValueInRegistry(); }
-
- private:
-  void DeleteBrandCodeValueInRegistry() {
-    base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
-                      GetAppClientStateKey(L"someappid").c_str(),
-                      Wow6432(KEY_SET_VALUE))
-        .DeleteValue(kRegValueBrandCode);
-  }
-#endif
-};
-
-TEST_F(PrefsTest, PrefsCommitPendingWrites) {
+TEST(PrefsTest, PrefsCommitPendingWrites) {
   base::test::TaskEnvironment task_environment;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
@@ -56,7 +40,20 @@ TEST_F(PrefsTest, PrefsCommitPendingWrites) {
 
   // Writes something to prefs.
   metadata->SetBrandCode("someappid", "brand");
-  EXPECT_STREQ(metadata->GetBrandCode("someappid").c_str(), "brand");
+  EXPECT_EQ(metadata->GetBrandCode("someappid"), "brand");
+
+  metadata->SetLang("someappid", "somelang");
+#if BUILDFLAG(IS_WIN)
+  std::wstring registry_lang_w;
+  EXPECT_EQ(
+      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                        GetAppClientStateKey(L"someappid").c_str(),
+                        Wow6432(KEY_QUERY_VALUE))
+          .ReadValue(kRegValueLang, &registry_lang_w),
+      ERROR_SUCCESS);
+  EXPECT_EQ(registry_lang_w, L"somelang");
+#endif
+  EXPECT_EQ(metadata->GetLang("someappid"), "somelang");
 
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(
@@ -65,11 +62,42 @@ TEST_F(PrefsTest, PrefsCommitPendingWrites) {
                         Wow6432(KEY_SET_VALUE))
           .WriteValue(kRegValueBrandCode, L"nbrnd"),
       ERROR_SUCCESS);
-  EXPECT_STREQ(metadata->GetBrandCode("someappid").c_str(), "nbrnd");
+  EXPECT_EQ(metadata->GetBrandCode("someappid"), "nbrnd");
+
+  EXPECT_EQ(
+      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                        GetAppClientStateKey(L"someappid").c_str(),
+                        Wow6432(KEY_SET_VALUE))
+          .WriteValue(kRegValueLang, L"newlang"),
+      ERROR_SUCCESS);
+  EXPECT_EQ(metadata->GetLang("someappid"), "newlang");
 #endif
 
   // Tests writing to storage completes.
   PrefsCommitPendingWrites(pref.get());
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(base::win::RegKey(
+                  UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                  GetAppClientStateKey("someappid").c_str(), Wow6432(KEY_READ))
+                  .Valid());
+#endif
+  metadata->RemoveApp("someappid");
+#if BUILDFLAG(IS_WIN)
+  for (const auto& subkey : [&] {
+         std::vector<std::wstring> subkeys = {
+             GetAppClientStateKey("someappid")};
+         if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+           subkeys.push_back(GetAppClientStateMediumKey("someappid"));
+         }
+         return subkeys;
+       }()) {
+    EXPECT_FALSE(
+        base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                          subkey.c_str(), Wow6432(KEY_READ))
+            .Valid());
+  }
+#endif
 }
 
 }  // namespace updater

@@ -14,7 +14,7 @@ namespace {
 // The switch used when running with custom WebKit frameworks.
 const char kRunWithCustomWebKit[] = "run-with-custom-webkit";
 
-}
+}  // namespace
 
 bool IsCustomWebKitLoadedIfRequested() {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(

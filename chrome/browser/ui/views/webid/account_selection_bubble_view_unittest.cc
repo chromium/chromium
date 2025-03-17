@@ -34,6 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
@@ -44,6 +45,8 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+
+namespace webid {
 
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 using IdentityRequestAccountPtr =
@@ -58,7 +61,7 @@ constexpr char kTopFrameEtldPlusOne[] = "rp-example.com";
 
 class FakeTabInterface : public tabs::MockTabInterface {
  public:
-  virtual ~FakeTabInterface() = default;
+  ~FakeTabInterface() override = default;
   explicit FakeTabInterface(content::WebContents* contents)
       : contents_(contents) {}
   content::WebContents* GetContents() const override { return contents_; }
@@ -98,7 +101,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
  public:
   AccountSelectionBubbleViewTest() {
     content::IdentityProviderMetadata idp_metadata;
+    // Set the brand icon so it is laid out in the tests.
     idp_metadata.brand_icon_url = GURL(kIdpBrandIconUrl);
+    idp_metadata.brand_decoded_icon =
+        gfx::Image::CreateFrom1xBitmap(gfx::test::CreateBitmap(1));
     idp_data_ = base::MakeRefCounted<content::IdentityProviderData>(
         kIdpForDisplay, idp_metadata, CreateTestClientMetadata(),
         blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
@@ -113,7 +119,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
       LoginState browser_trusted_login_state = LoginState::kSignUp,
       std::string account_id = kAccountId1) {
     IdentityRequestAccountPtr account = base::MakeRefCounted<Account>(
-        account_id, "", "", "", GURL(),
+        account_id, "", "", "", "", "", GURL(),
         /*login_hints=*/std::vector<std::string>(),
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>(),
@@ -443,7 +449,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
   void CheckMismatchIdp(views::View* idp_row,
                         const std::u16string& expected_idp) {
-    ASSERT_STREQ("HoverButton", idp_row->GetClassName());
+    ASSERT_EQ("HoverButton", idp_row->GetClassName());
     HoverButton* idp_button = static_cast<HoverButton*>(idp_row);
     ASSERT_TRUE(idp_button);
     EXPECT_EQ(GetHoverButtonTitle(idp_button), u"Sign in to " + expected_idp);
@@ -451,7 +457,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     ASSERT_TRUE(GetHoverButtonIconView(idp_button));
     // Using GetPreferredSize() since BrandIconImageView uses a fetched image.
     EXPECT_EQ(GetHoverButtonIconView(idp_button)->GetPreferredSize(),
-              gfx::Size(fedcm::kMultiIdpIconSize, fedcm::kMultiIdpIconSize));
+              gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
   }
 
   void CheckUseOtherAccount(
@@ -485,7 +491,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
               expected_subtitle);
     ASSERT_TRUE(GetHoverButtonIconView(choose_account_button));
     EXPECT_EQ(GetHoverButtonIconView(choose_account_button)->size(),
-              gfx::Size(fedcm::kMultiIdpIconSize, fedcm::kMultiIdpIconSize));
+              gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
   }
 
   void SetUp() override {
@@ -695,7 +701,7 @@ TEST_F(AccountSelectionBubbleViewTest,
   CreateAccountSelectionBubble();
 
   // Set the dialog background color to white.
-  dialog()->set_color(SK_ColorWHITE);
+  dialog()->set_background_color(SK_ColorWHITE);
 
   const std::string kDarkBlue = "#1a73e8";
   SkColor bg_color;
@@ -728,7 +734,7 @@ TEST_F(AccountSelectionBubbleViewTest,
   CreateAccountSelectionBubble();
 
   // Set the dialog background color to white.
-  dialog()->set_color(SK_ColorWHITE);
+  dialog()->set_background_color(SK_ColorWHITE);
 
   const std::string kWhite = "#fff";
   SkColor bg_color;
@@ -1175,63 +1181,6 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
                             /*expect_idp=*/true);
 }
 
-// Tests that in the multi IDP account button, hovering over the button modifies
-// the background circle containing the IDP icon.
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest, HoverChangesIdpCircle) {
-  // Need two IDPs to show the multi IDP UI.
-  constexpr char kAccountSuffix1[] = "1";
-  constexpr char kAccountSuffix2[] = "2";
-  std::vector<IdentityProviderDataPtr> idp_list = {
-      base::MakeRefCounted<content::IdentityProviderData>(
-          kIdpForDisplay, content::IdentityProviderMetadata(),
-          CreateTestClientMetadata(kTermsOfServiceUrl),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
-          /*has_login_status_mismatch=*/false),
-      base::MakeRefCounted<content::IdentityProviderData>(
-          kSecondIdpForDisplay, content::IdentityProviderMetadata(),
-          CreateTestClientMetadata("https://tos-2.com"),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
-          /*has_login_status_mismatch=*/false)};
-  std::vector<IdentityRequestAccountPtr> accounts_list = {
-      CreateTestIdentityRequestAccount(kAccountSuffix1, idp_list[0]),
-      CreateTestIdentityRequestAccount(kAccountSuffix2, idp_list[1])};
-
-  CreateAndShowMultiIdpAccountPicker(accounts_list, idp_list);
-
-  std::vector<raw_ptr<views::View, VectorExperimental>> children =
-      dialog()->children();
-  ASSERT_EQ(children.size(), 2u);
-  PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
-                      /*expect_idp_brand_icon_in_header=*/false);
-
-  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/2,
-                            /*expected_mismatch_rows=*/0);
-
-  std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
-      GetAccounts(children[1]);
-
-  HoverButton* account_row = static_cast<HoverButton*>(accounts[1]);
-  views::View* icon_view = GetHoverButtonIconView(account_row);
-  ASSERT_TRUE(icon_view);
-  std::vector<raw_ptr<views::View, VectorExperimental>> icon_children =
-      icon_view->children();
-  ASSERT_EQ(icon_children.size(), 2u);
-  EXPECT_STREQ(icon_children[1]->GetClassName(), "BoxLayoutView");
-  ASSERT_EQ(icon_children[1]->children().size(), 1u);
-  EXPECT_STREQ(icon_children[1]->children()[0]->GetClassName(),
-               "BrandIconImageView");
-  auto* brand_icon_image_view =
-      static_cast<BrandIconImageView*>(icon_children[1]->children()[0]);
-  auto* color_provider = account_row->GetColorProvider();
-  ASSERT_TRUE(color_provider);
-  EXPECT_EQ(brand_icon_image_view->background_color_for_testing(),
-            color_provider->GetColor(ui::kColorDialogBackground));
-
-  account_row->SetState(HoverButton::ButtonState::STATE_HOVERED);
-  EXPECT_EQ(brand_icon_image_view->background_color_for_testing(),
-            color_provider->GetColor(ui::kColorMenuButtonBackgroundSelected));
-}
-
 TEST_F(AccountSelectionBubbleViewTest, GenericError) {
   TestErrorDialog(kTitleSignIn, u"Can't continue with idp-example.com",
                   u"Something went wrong",
@@ -1351,9 +1300,10 @@ TEST_F(AccountSelectionBubbleViewTest, ErrorWithDifferentErrorCodes) {
                   GURL(u"https://idp-example.com/more-details"));
 }
 
-// Tests that the brand icon view is hidden if the brand icon URL is invalid.
-TEST_F(AccountSelectionBubbleViewTest, InvalidBrandIconUrlHidesBrandIcon) {
+// Tests that the brand icon view is hidden if the brand icon is empty.
+TEST_F(AccountSelectionBubbleViewTest, EmptyBrandIconHidesImageView) {
   idp_data_->idp_metadata.brand_icon_url = GURL("invalid url");
+  idp_data_->idp_metadata.brand_decoded_icon = gfx::Image();
   CreateAndShowSingleAccountPicker();
 
   views::View* brand_icon_image_view = static_cast<views::View*>(
@@ -1476,3 +1426,5 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccountAndOneEnabledAccount) {
   EXPECT_TRUE(IsViewClass<views::Separator>(accounts[index++]));
   CheckUseOtherAccount(accounts, index);
 }
+
+}  //  namespace webid

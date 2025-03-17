@@ -18,20 +18,15 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "kiosk_troubleshooting_controller_ash.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "kiosk_troubleshooting_controller_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
 
@@ -45,14 +40,6 @@ void MakeWindowResizable(BrowserWindow* window) {
   if (widget) {
     widget->widget_delegate()->SetCanResize(true);
   }
-}
-
-bool IsAshWithLacrosEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return crosapi::browser_util::IsLacrosEnabled();
-#else
-  return false;
-#endif
 }
 
 std::string GetUrlOfActiveTab(const Browser* browser) {
@@ -89,20 +76,11 @@ KioskBrowserWindowHandler::KioskBrowserWindowHandler(
       shutdown_kiosk_browser_session_callback_(
           std::move(shutdown_kiosk_browser_session_callback)),
       kiosk_policies_(profile_->GetPrefs()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   kiosk_troubleshooting_controller_ =
       std::make_unique<ash::KioskTroubleshootingControllerAsh>(
           profile_->GetPrefs(),
           base::BindOnce(&KioskBrowserWindowHandler::Shutdown,
                          weak_ptr_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  kiosk_troubleshooting_controller_ =
-      std::make_unique<KioskTroubleshootingController>(
-          profile_->GetPrefs(),
-          base::BindOnce(&KioskBrowserWindowHandler::Shutdown,
-                         weak_ptr_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   CloseAllUnexpectedBrowserWindows();
 
@@ -121,27 +99,6 @@ void KioskBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
                                   KioskBrowserWindowType::kSettingsPage);
     HandleNewSettingsWindow(browser, url_string);
     on_browser_window_added_callback_.Run(/*is_closing=*/false);
-    return;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::IsSystemWebApp(browser) &&
-      base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps)) {
-    base::UmaHistogramEnumeration(kKioskNewBrowserWindowHistogram,
-                                  KioskBrowserWindowType::kOpenedSystemWebApp);
-    on_browser_window_added_callback_.Run(/*is_closing=*/false);
-    return;
-  }
-#endif
-
-  if (IsAshWithLacrosEnabled()) {
-    base::UmaHistogramEnumeration(
-        kKioskNewBrowserWindowHistogram,
-        KioskBrowserWindowType::kClosedAshBrowserWithLacrosEnabled);
-    LOG(WARNING) << "Tried to open ash browser-window during lacros-kiosk"
-                 << ", url=" << url_string;
-    CloseBrowserAndSetTimer(browser);
-    on_browser_window_added_callback_.Run(/*is_closing=*/true);
     return;
   }
 
@@ -284,7 +241,7 @@ bool KioskBrowserWindowHandler::IsNormalTroubleshootingBrowserAllowed(
 }
 
 bool KioskBrowserWindowHandler::ShouldExitKioskWhenLastBrowserRemoved() const {
-  return !IsAshWithLacrosEnabled() && web_app_name_.has_value();
+  return web_app_name_.has_value();
 }
 
 bool KioskBrowserWindowHandler::IsOnlySettingsBrowserRemainOpen() const {

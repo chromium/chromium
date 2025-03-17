@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 #include "content/public/renderer/render_thread.h"
@@ -35,10 +36,11 @@
 
 namespace {
 
-base::TimeDelta kTimeElapsedSincePageLoadForDataCollectionSeconds =
+// TODO(crbug.com/355925253): Consider removing one constant when a working
+// combination is found.
+base::TimeDelta kTimeElapsedSincePageLoadForDataCollection = base::Seconds(30);
+base::TimeDelta kTimeElapsedSinceTreeChangedForDataCollection =
     base::Seconds(30);
-base::TimeDelta kTimeElapsedSinceTreeChangedForDataCollectionSeconds =
-    base::Seconds(10);
 
 bool GetIsGoogleDocs(const GURL& url) {
   // A Google Docs URL is in the form of "https://docs.google.com/document*" or
@@ -61,11 +63,7 @@ bool GetIsGoogleDocs(const GURL& url) {
 }  // namespace
 
 ReadAnythingAppModel::ReadAnythingAppModel() {
-  // We default to true since base_language_code_ is en by default and that
-  // supports all these fonts.
-  for (const auto* font : fonts::kReadAnythingFonts) {
-    supported_fonts_[font] = true;
-  }
+  ResetTextSize();
 }
 
 ReadAnythingAppModel::~ReadAnythingAppModel() = default;
@@ -76,6 +74,45 @@ ReadAnythingAppModel::AXTreeInfo::AXTreeInfo(
 }
 
 ReadAnythingAppModel::AXTreeInfo::~AXTreeInfo() = default;
+
+void ReadAnythingAppModel::InsertIdIfNotIgnored(
+    ui::AXNodeID id,
+    std::set<ui::AXNodeID>& non_ignored_ids) {
+  // If the node is not in the active tree (this could happen when RM is still
+  // loading), ignore it.
+  const ui::AXNode* const ax_node = GetAXNode(id);
+  if (!ax_node) {
+    return;
+  }
+
+  // PDFs processed with OCR have additional nodes that mark the start and end
+  // of a page. The start of a page is indicated with a `kBanner` node that has
+  // a child static text node. Ignore both. The end of a page is indicated with
+  // a `kContentInfo` node that has a child static text node. Ignore the static
+  // text node but keep the `kContentInfo` so a line break can be inserted in
+  // between pages during `a11y::GetHtmlTagForPDF()`.
+  const ax::mojom::Role role = ax_node->GetRole();
+  if (is_pdf_) {
+    // The text content of the aforementioned `kBanner` or `kContentInfo` node
+    // is the same as the text content of its child static text node.
+    const ui::AXNode* const parent = ax_node->GetParent();
+    if (const std::string_view text = ax_node->GetTextContentUTF8();
+        text == l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN)) {
+      if (role == ax::mojom::Role::kBanner ||
+          (parent && parent->GetRole() == ax::mojom::Role::kBanner)) {
+        return;
+      }
+    } else if (text == l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END) &&
+               parent && parent->GetRole() == ax::mojom::Role::kContentInfo) {
+      return;
+    }
+  }
+
+  // Ignore interactive elements, except for text fields.
+  if ((!ui::IsControl(role) || ui::IsTextField(role)) && !ui::IsSelect(role)) {
+    non_ignored_ids.insert(id);
+  }
+}
 
 void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     read_anything::mojom::LineSpacing line_spacing,
@@ -88,18 +125,10 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   line_spacing_ = static_cast<size_t>(line_spacing);
   letter_spacing_ = static_cast<size_t>(letter_spacing);
   font_name_ = font;
-  font_size_ = font_size;
+  SetFontSize(font_size);
   links_enabled_ = links_enabled;
   images_enabled_ = images_enabled;
   color_theme_ = static_cast<size_t>(color);
-}
-
-void ReadAnythingAppModel::InsertDisplayNode(const ui::AXNodeID& node) {
-  display_node_ids_.insert(node);
-}
-
-void ReadAnythingAppModel::InsertSelectionNode(const ui::AXNodeID& node) {
-  selection_node_ids_.insert(node);
 }
 
 void ReadAnythingAppModel::Reset(
@@ -144,9 +173,8 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   UpdateSelection();
 
   if (has_selection_ && was_empty) {
-    base::UmaHistogramEnumeration(
-        string_constants::kEmptyStateHistogramName,
-        ReadAnythingEmptyState::kSelectionAfterEmptyStateShown);
+    base::UmaHistogramEnumeration(kEmptyStateHistogramName,
+                                  EmptyState::kShownWithSelectionAfter);
     tree_infos_.at(active_tree_id_)->num_selections++;
   }
 
@@ -219,9 +247,7 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   while (!ancestors.empty()) {
     ui::AXNodeID ancestor_id = ancestors.front()->id();
     ancestors.pop();
-    if (!a11y::IsNodeIgnoredForReadAnything(GetAXNode(ancestor_id), is_pdf_)) {
-      InsertSelectionNode(ancestor_id);
-    }
+    InsertIdIfNotIgnored(ancestor_id, selection_node_ids_);
   }
 
   // Find the parent of the start and end nodes so we can look at nearby sibling
@@ -258,11 +284,7 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   while (first_sibling_node &&
          first_sibling_node->CompareTo(*deepest_last_descendant).value_or(1) <=
              0) {
-    if (!a11y::IsNodeIgnoredForReadAnything(GetAXNode(first_sibling_node->id()),
-                                            is_pdf_)) {
-      InsertSelectionNode(first_sibling_node->id());
-    }
-
+    InsertIdIfNotIgnored(first_sibling_node->id(), selection_node_ids_);
     first_sibling_node = first_sibling_node->GetNextUnignoredInTreeOrder();
   }
 }
@@ -301,8 +323,7 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
   // use RM" empty state screen to show.
   // TODO(crbug.com/40802192): Remove when Screen2x doesn't return just
   // headings.
-  if (features::IsReadAnythingWithAlgorithmEnabled() &&
-      ContentNodesOnlyContainHeadings()) {
+  if (ContentNodesOnlyContainHeadings()) {
     return;
   }
 
@@ -353,11 +374,7 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
       ancestors.pop();
       // For certain PDFs, the ancestor may not be in the same tree. Ignore if
       // so.
-      ui::AXNode* ancestor_node = GetAXNode(ancestor_id);
-      if (ancestor_node &&
-          !a11y::IsNodeIgnoredForReadAnything(ancestor_node, is_pdf_)) {
-        InsertDisplayNode(ancestor_id);
-      }
+      InsertIdIfNotIgnored(ancestor_id, display_node_ids_);
     }
 
     // Add all descendant ids to the set.
@@ -369,10 +386,7 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     }
     while (next_node != deepest_last_descendant) {
       next_node = next_node->GetNextUnignoredInTreeOrder();
-      if (!a11y::IsNodeIgnoredForReadAnything(GetAXNode(next_node->id()),
-                                              is_pdf_)) {
-        InsertDisplayNode(next_node->id());
-      }
+      InsertIdIfNotIgnored(next_node->id(), display_node_ids_);
     }
   }
 }
@@ -573,6 +587,14 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
   } else {
     UnserializeUpdates(updates, tree_id);
   }
+
+  if (features::IsDataCollectionModeForScreen2xEnabled() && updates.size()) {
+    waiting_for_tree_change_timer_trigger_ = true;
+    timer_since_tree_changed_for_data_collection_.Start(
+        FROM_HERE, kTimeElapsedSinceTreeChangedForDataCollection,
+        base::BindRepeating(&ReadAnythingAppModel::OnTreeChangeTimerTriggered,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
@@ -683,6 +705,14 @@ double ReadAnythingAppModel::GetLineSpacingValue(
   }
 }
 
+void ReadAnythingAppModel::AdjustTextSize(int increment) {
+  SetFontSize(font_size_, increment);
+}
+
+void ReadAnythingAppModel::ResetTextSize() {
+  SetFontSize(1.0f);
+}
+
 std::map<ui::AXTreeID, std::vector<ui::AXTreeUpdate>>&
 ReadAnythingAppModel::GetPendingUpdatesForTesting() {
   return pending_updates_map_;
@@ -699,20 +729,32 @@ void ReadAnythingAppModel::EraseTreeForTesting(const ui::AXTreeID& tree_id) {
 
 void ReadAnythingAppModel::OnScroll(bool on_selection,
                                     bool from_reading_mode) const {
+  // Enum for logging how a scroll occurs.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ReadAnythingScrollEvent)
+  enum class ReadAnythingScrollEvent {
+    kSelectedSidePanel = 0,
+    kSelectedMainPanel = 1,
+    kScrolledSidePanel = 2,
+    kScrolledMainPanel = 3,
+    kMaxValue = kScrolledMainPanel,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingScrollEvent)
+  using enum ReadAnythingScrollEvent;
+
+  ReadAnythingScrollEvent event;
   if (on_selection) {
     // If the scroll event came from the side panel because of a selection, then
     // this means the main panel was selected, causing the side panel to scroll
     // & vice versa.
-    base::UmaHistogramEnumeration(
-        string_constants::kScrollEventHistogramName,
-        from_reading_mode ? ReadAnythingScrollEvent::kSelectedMainPanel
-                          : ReadAnythingScrollEvent::kSelectedSidePanel);
+    event = from_reading_mode ? kSelectedMainPanel : kSelectedSidePanel;
   } else {
-    base::UmaHistogramEnumeration(
-        string_constants::kScrollEventHistogramName,
-        from_reading_mode ? ReadAnythingScrollEvent::kScrolledSidePanel
-                          : ReadAnythingScrollEvent::kScrolledMainPanel);
+    event = from_reading_mode ? kScrolledSidePanel : kScrolledMainPanel;
   }
+  base::UmaHistogramEnumeration("Accessibility.ReadAnything.ScrollEvent",
+                                event);
 }
 
 void ReadAnythingAppModel::OnSelection(ax::mojom::EventFrom event_from) {
@@ -763,15 +805,26 @@ void ReadAnythingAppModel::SetActiveTreeId(const ui::AXTreeID& active_tree_id) {
   // data collection flow.
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
     timer_since_page_load_for_data_collection_.Start(
-        FROM_HERE, kTimeElapsedSincePageLoadForDataCollectionSeconds,
-        base::BindOnce(
-            &ReadAnythingAppModel::SetPageFinishedLoadingForDataCollection,
-            weak_ptr_factory_.GetWeakPtr(), true));
+        FROM_HERE, kTimeElapsedSincePageLoadForDataCollection,
+        base::BindOnce(&ReadAnythingAppModel::OnPageLoadTimerTriggered,
+                       weak_ptr_factory_.GetWeakPtr()));
+
+    // If tree does not change until the page load timer triggers, assume that
+    // the page is not changing. `waiting_for_tree_change_timer_trigger_` is set
+    // again when tree changes.
+    if (timer_since_tree_changed_for_data_collection_.IsRunning()) {
+      timer_since_tree_changed_for_data_collection_.Stop();
+    }
+    waiting_for_tree_change_timer_trigger_ = false;
   }
 }
 
 void ReadAnythingAppModel::ProcessNonGeneratedEvents(
     const std::vector<ui::AXEvent>& events) {
+  // Marks if an event has happened that can affect collection of training data
+  // for Screen2x.
+  bool delay_screen2x_training_data_collection_ = false;
+
   // Note that this list of events may overlap with generated events in the
   // model. It's up to the consumer to pick but its generally good to prefer
   // generated. The consumer should not process the same event here and for
@@ -781,27 +834,16 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kLoadComplete:
         requires_distillation_ = true;
         page_finished_loading_ = true;
-        // If data collection mode for screen2x is enabled, begin
-        // `timer_since_tree_changed_for_data_collection_` from here. This is a
-        // repeating one-shot timer which times 10 seconds from page load and
-        // resets every time the accessibility tree changes. This is one of two
-        // timers associated with the data collection flow. When either of these
-        // timers expires, this triggers the screen2x distillation data
-        // collection flow.
-        if (features::IsDataCollectionModeForScreen2xEnabled()) {
-          timer_since_tree_changed_for_data_collection_.Start(
-              FROM_HERE, kTimeElapsedSinceTreeChangedForDataCollectionSeconds,
-              base::BindRepeating(&ReadAnythingAppModel::
-                                      SetPageFinishedLoadingForDataCollection,
-                                  weak_ptr_factory_.GetWeakPtr(), true));
-        }
-
+        delay_screen2x_training_data_collection_ = true;
         // TODO(accessibility): Some pages may never completely load; use a
         // timer with a reasonable delay to force distillation -> drawing.
         // Investigate if this is needed.
         break;
 
-        // Audit these events e.g. to require distillation.
+      case ax::mojom::Event::kLocationChanged:
+        delay_screen2x_training_data_collection_ = true;
+        break;
+      // Audit these events e.g. to require distillation.
       case ax::mojom::Event::kActiveDescendantChanged:
       case ax::mojom::Event::kCheckedStateChanged:
       case ax::mojom::Event::kChildrenChanged:
@@ -830,7 +872,6 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kLiveRegionCreated:
       case ax::mojom::Event::kLiveRegionChanged:
       case ax::mojom::Event::kLoadStart:
-      case ax::mojom::Event::kLocationChanged:
       case ax::mojom::Event::kMediaStartedPlaying:
       case ax::mojom::Event::kMediaStoppedPlaying:
       case ax::mojom::Event::kMenuEnd:
@@ -865,6 +906,22 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kMenuListValueChangedDeprecated:
         NOTREACHED();
     }
+  }
+
+  // If data collection mode for screen2x is enabled, begin
+  // `timer_since_tree_changed_for_data_collection_` from here. This is a
+  // repeating one-shot timer which times 10 seconds from page load and
+  // resets every time the accessibility tree changes in a way that affects data
+  // collection. This is one of two timers associated with the data collection
+  // flow. When both of these timers expire, the screen2x distillation data
+  // collection flow is triggered.
+  if (features::IsDataCollectionModeForScreen2xEnabled() &&
+      delay_screen2x_training_data_collection_) {
+    waiting_for_tree_change_timer_trigger_ = true;
+    timer_since_tree_changed_for_data_collection_.Start(
+        FROM_HERE, kTimeElapsedSinceTreeChangedForDataCollection,
+        base::BindRepeating(&ReadAnythingAppModel::OnTreeChangeTimerTriggered,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -989,61 +1046,51 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
   }
 }
 
-bool ReadAnythingAppModel::ScreenAIServiceReadyForDataColletion() const {
+bool ReadAnythingAppModel::ScreenAIServiceReadyForDataCollection() const {
   CHECK(features::IsDataCollectionModeForScreen2xEnabled());
-  return ScreenAIServiceReadyForDataColletion_;
+  return screen_ai_service_ready_for_data_collection_;
 }
 
-void ReadAnythingAppModel::SetScreenAIServiceReadyForDataColletion(bool value) {
-  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
-  ScreenAIServiceReadyForDataColletion_ = value;
+void ReadAnythingAppModel::SetScreenAIServiceReadyForDataCollection() {
+  screen_ai_service_ready_for_data_collection_ = true;
   MaybeRunDataCollectionForScreen2xCallback();
 }
 
 bool ReadAnythingAppModel::PageFinishedLoadingForDataCollection() const {
   CHECK(features::IsDataCollectionModeForScreen2xEnabled());
-  return PageFinishedLoadingForDataCollection_;
+  return !waiting_for_page_load_completion_timer_trigger_ &&
+         !waiting_for_tree_change_timer_trigger_;
 }
 
-void ReadAnythingAppModel::SetPageFinishedLoadingForDataCollection(bool value) {
-  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
-  PageFinishedLoadingForDataCollection_ = value;
-  timer_since_page_load_for_data_collection_.Stop();
-  timer_since_tree_changed_for_data_collection_.Stop();
+void ReadAnythingAppModel::OnPageLoadTimerTriggered() {
+  CHECK(waiting_for_page_load_completion_timer_trigger_);
+  waiting_for_page_load_completion_timer_trigger_ = false;
+  MaybeRunDataCollectionForScreen2xCallback();
+}
+
+void ReadAnythingAppModel::OnTreeChangeTimerTriggered() {
+  CHECK(waiting_for_tree_change_timer_trigger_);
+  waiting_for_tree_change_timer_trigger_ = false;
   MaybeRunDataCollectionForScreen2xCallback();
 }
 
 void ReadAnythingAppModel::SetDataCollectionForScreen2xCallback(
-    base::RepeatingCallback<void()> callback) {
+    base::OnceCallback<void()> callback) {
   CHECK(features::IsDataCollectionModeForScreen2xEnabled());
   data_collection_for_screen2x_callback_ = std::move(callback);
 }
 
 void ReadAnythingAppModel::MaybeRunDataCollectionForScreen2xCallback() {
   CHECK(features::IsDataCollectionModeForScreen2xEnabled());
-  if (PageFinishedLoadingForDataCollection_ &&
-      ScreenAIServiceReadyForDataColletion_) {
-    CHECK(data_collection_for_screen2x_callback_);
-    data_collection_for_screen2x_callback_.Run();
+  if (!PageFinishedLoadingForDataCollection() ||
+      !ScreenAIServiceReadyForDataCollection()) {
+    return;
   }
-}
-
-void ReadAnythingAppModel::IncreaseTextSize() {
-  font_size_ += kReadAnythingFontScaleIncrement;
-  if (font_size_ > kReadAnythingMaximumFontScale) {
-    font_size_ = kReadAnythingMaximumFontScale;
+  if (data_collection_for_screen2x_callback_.is_null()) {
+    LOG(ERROR) << "Callback not set or triggered more than once.";
+    return;
   }
-}
-
-void ReadAnythingAppModel::DecreaseTextSize() {
-  font_size_ -= kReadAnythingFontScaleIncrement;
-  if (font_size_ < kReadAnythingMinimumFontScale) {
-    font_size_ = kReadAnythingMinimumFontScale;
-  }
-}
-
-void ReadAnythingAppModel::ResetTextSize() {
-  font_size_ = kReadAnythingDefaultFontScale;
+  std::move(data_collection_for_screen2x_callback_).Run();
 }
 
 void ReadAnythingAppModel::ToggleLinksEnabled() {
@@ -1057,26 +1104,7 @@ void ReadAnythingAppModel::ToggleImagesEnabled() {
 void ReadAnythingAppModel::SetBaseLanguageCode(const std::string& code) {
   DCHECK(!code.empty());
   base_language_code_ = code;
-  // Update whether each font is supported by the new language code.
-  for (const auto& [font, font_info] : fonts::kFontInfos) {
-    if (font_info.num_langs_supported > 0) {
-      supported_fonts_[font] =
-          (std::find(font_info.langs_supported,
-                     font_info.langs_supported + font_info.num_langs_supported,
-                     code) !=
-           font_info.langs_supported + font_info.num_langs_supported);
-    }
-  }
-}
-
-std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() {
-  std::vector<std::string> font_choices_;
-  for (const auto* font : fonts::kReadAnythingFonts) {
-    if (supported_fonts_[font]) {
-      font_choices_.emplace_back(font);
-    }
-  }
-  return font_choices_;
+  supported_fonts_ = GetSupportedFonts(base_language_code_);
 }
 
 void ReadAnythingAppModel::AddObserver(ModelObserver* observer) {
@@ -1085,4 +1113,8 @@ void ReadAnythingAppModel::AddObserver(ModelObserver* observer) {
 
 void ReadAnythingAppModel::RemoveObserver(ModelObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void ReadAnythingAppModel::SetFontSize(double font_size, int increment) {
+  font_size_ = AdjustFontScale(font_size, increment);
 }

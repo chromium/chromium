@@ -9,6 +9,8 @@ assert(enable_extensions,
 
 source_set("autofill_private") {
   sources = [
+    "autofill_ai_util.cc",
+    "autofill_ai_util.h",
     "autofill_private_api.cc",
     "autofill_private_api.h",
     "autofill_private_event_router.cc",
@@ -31,9 +33,9 @@ source_set("autofill_private") {
     "//chrome/browser/search_engines:search_engines",
     "//chrome/browser/sync:sync",
     "//chrome/browser/ui/user_education",
-    "//chrome/browser/user_annotations",
     "//chrome/common/extensions/api:api",
     "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
     "//components/autofill/core/common:credit_card_number_validation",
     "//components/device_reauth:device_reauth",
     "//components/feature_engagement/public",
@@ -41,7 +43,7 @@ source_set("autofill_private") {
     "//components/strings:components_branded_strings_grit",
     "//components/strings:components_strings_grit",
     "//components/sync/service:service",
-    "//components/user_annotations",
+    "//components/variations/service:service",
     "//extensions/browser:browser",
     "//skia",
     "//third_party/libaddressinput:util",

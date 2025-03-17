@@ -95,19 +95,24 @@ void URLVisitResumptionRanker::ExecuteModelWithInput(
     return;
   }
 
-  float time_since_modified_sec =
+  float time_sec =
       inputs[visited_url_ranking::URLVisitAggregateRankingModelInputSignals::
-                 kTimeSinceLastModifiedSec];
+                 kTimeSinceLastActiveSec];
+  if (time_sec < 0) {
+    time_sec =
+        inputs[visited_url_ranking::URLVisitAggregateRankingModelInputSignals::
+                   kTimeSinceLastModifiedSec];
+  }
   float resumption_score = 0;
   if (use_random_score_) {
     resumption_score = base::RandFloat();
   } else {
-    if (time_since_modified_sec < 0) {
+    if (time_sec < 0) {
       resumption_score = 0;
-    } else if (time_since_modified_sec == 0) {
+    } else if (time_sec == 0) {
       resumption_score = 1;
     } else {
-      resumption_score = 1.0f / time_since_modified_sec;
+      resumption_score = 1.0f / time_sec;
     }
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

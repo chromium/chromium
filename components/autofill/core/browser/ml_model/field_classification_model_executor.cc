@@ -9,9 +9,9 @@
 
 #include "components/autofill/core/browser/ml_model/field_classification_model_executor.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
 
@@ -42,7 +42,7 @@ bool FieldClassificationModelExecutor::Preprocess(
                                                   empty_field);
 
     for (size_t i = 0; i < fields_count; ++i) {
-      base::ranges::transform(
+      std::ranges::transform(
           input[i], encoded_input[i].begin(),
           [](FieldClassificationModelEncoder::TokenId token_id) {
             return token_id.value();
@@ -50,9 +50,9 @@ bool FieldClassificationModelExecutor::Preprocess(
     }
     // Populate tensors with the vectorized field labels.
     for (size_t i = 0; i < maximum_number_of_fields; ++i) {
-      base::ranges::copy(encoded_input[i],
-                         tflite::GetTensorData<float>(input_tensors[0]) +
-                             i * output_sequence_length);
+      std::ranges::copy(encoded_input[i],
+                        tflite::GetTensorData<float>(input_tensors[0]) +
+                            i * output_sequence_length);
     }
   }
   // `input_tensors[1]` is a boolean mask of shape
@@ -87,8 +87,8 @@ FieldClassificationModelExecutor::Postprocess(
     model_predictions[i].resize(num_outputs);
     const float* data_bgn =
         tflite::GetTensorData<float>(output_tensors[0]) + i * num_outputs;
-    base::ranges::copy(data_bgn, data_bgn + num_outputs,
-                       model_predictions[i].begin());
+    std::ranges::copy(data_bgn, data_bgn + num_outputs,
+                      model_predictions[i].begin());
   }
   return model_predictions;
 }

@@ -45,6 +45,8 @@ enum TabLaunchTypeAtCreation:int {
     FROM_SYNC_BACKGROUND = 23,
     FROM_RECENT_TABS_FOREGROUND = 24,
     FROM_COLLABORATION_BACKGROUND_IN_GROUP = 25,
+    FROM_BOOKMARK_BAR_BACKGROUND = 26,
+    FROM_REPARENTING_BACKGROUND = 27,
     // Add new values here and don't change existing values
     // as they are persisted across restarts. Changing existing
     // values will lead to backwards compatibility issues crbug.com/1286984.

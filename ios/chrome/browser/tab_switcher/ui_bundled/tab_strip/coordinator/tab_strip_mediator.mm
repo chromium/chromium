@@ -10,11 +10,17 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "components/collaboration/public/collaboration_service.h"
+#import "components/collaboration/public/messaging/message.h"
+#import "components/collaboration/public/messaging/messaging_backend_service.h"
+#import "components/data_sharing/public/group_data.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -53,6 +59,52 @@
 
 namespace {
 
+// Returns a local tab ID in `message`. Returns nullopt if the ID doesn't exist.
+std::optional<tab_groups::LocalTabID> LocalTabID(
+    collaboration::messaging::PersistentMessage message) {
+  if (!message.attribution.tab_metadata.has_value()) {
+    return std::nullopt;
+  }
+  collaboration::messaging::TabMessageMetadata tab_data =
+      message.attribution.tab_metadata.value();
+  return tab_data.local_tab_id;
+}
+
+// Returns a local tab group ID in `message`. Returns nullopt if the ID doesn't
+// exist.
+std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
+    collaboration::messaging::PersistentMessage message) {
+  if (!message.attribution.tab_group_metadata.has_value()) {
+    return std::nullopt;
+  }
+  collaboration::messaging::TabGroupMessageMetadata group_data =
+      message.attribution.tab_group_metadata.value();
+  return group_data.local_tab_group_id;
+}
+
+// Finds a WebState in `web_state_list` by `local_tab_id`.
+web::WebState* FindWebStateByID(tab_groups::LocalTabID local_tab_id,
+                                WebStateList* web_state_list) {
+  for (int i = 0; i < web_state_list->count(); i++) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(i);
+    if (local_tab_id == web_state->GetUniqueIdentifier().identifier()) {
+      return web_state;
+    }
+  }
+  return nullptr;
+}
+
+// Finds a TabGroup in `web_state_list` by `local_tab_group_id`.
+const TabGroup* FindTabGroupByID(tab_groups::LocalTabGroupID local_tab_group_id,
+                                 WebStateList* web_state_list) {
+  for (const TabGroup* group : web_state_list->GetGroups()) {
+    if (group->tab_group_id() == local_tab_group_id) {
+      return group;
+    }
+  }
+  return nullptr;
+}
+
 // Finds any TabGroup in `web_state_list` whose range starts at `index`.
 // Returns `nullptr` if no such TabGroup exists.
 const TabGroup* FindTabGroupStartingAtIndex(int index,
@@ -67,10 +119,14 @@ const TabGroup* FindTabGroupStartingAtIndex(int index,
 }
 
 // Returns the `TabStripItemData` for a tab item at `index` in `web_state_list`.
-TabStripItemData* CreateTabItemData(int index, WebStateList* web_state_list) {
+TabStripItemData* CreateTabItemData(
+    int index,
+    WebStateList* web_state_list,
+    std::set<tab_groups::LocalTabID> dirty_tabs) {
   CHECK(web_state_list);
   CHECK(web_state_list->ContainsIndex(index), base::NotFatalUntil::M128);
   const TabGroup* group = web_state_list->GetGroupOfWebStateAt(index);
+  const web::WebState* web_state = web_state_list->GetWebStateAt(index);
   TabStripItemData* data = [[TabStripItemData alloc] init];
   if (group) {
     const TabGroupRange range = group->range();
@@ -78,13 +134,18 @@ TabStripItemData* CreateTabItemData(int index, WebStateList* web_state_list) {
     data.isLastTabInGroup = range.range_end() == index + 1;
     data.groupStrokeColor = group->GetColor();
   }
+  data.hasNotificationDot =
+      dirty_tabs.contains(web_state->GetUniqueIdentifier().identifier());
   return data;
 }
 
 // Returns the `TabStripItemData` for `group`.
-TabStripItemData* CreateGroupItemData(const TabGroup* group) {
+TabStripItemData* CreateGroupItemData(
+    const TabGroup* group,
+    std::set<tab_groups::LocalTabGroupID> dirty_groups) {
   TabStripItemData* data = [[TabStripItemData alloc] init];
   data.groupStrokeColor = group->GetColor();
+  data.hasNotificationDot = dirty_groups.contains(group->tab_group_id());
   return data;
 }
 
@@ -93,6 +154,8 @@ TabStripItemData* CreateGroupItemData(const TabGroup* group) {
 // TabGroups are not included in the result.
 NSMutableArray<TabStripItemData*>* CreateItemData(
     WebStateList* web_state_list,
+    std::set<tab_groups::LocalTabID> dirty_tabs,
+    std::set<tab_groups::LocalTabGroupID> dirty_groups,
     bool including_hidden_tab_items = true,
     bool including_group_items = true,
     TabGroupRange range = TabGroupRange::InvalidRange()) {
@@ -112,7 +175,8 @@ NSMutableArray<TabStripItemData*>* CreateItemData(
         const TabGroup* group_starting_at_index =
             FindTabGroupStartingAtIndex(index, web_state_list);
         if (group_starting_at_index) {
-          [data addObject:CreateGroupItemData(group_starting_at_index)];
+          [data addObject:CreateGroupItemData(group_starting_at_index,
+                                              dirty_groups)];
         }
       }
     }
@@ -124,7 +188,7 @@ NSMutableArray<TabStripItemData*>* CreateItemData(
         !group_of_web_state->visual_data().is_collapsed() ||
         including_hidden_tab_items;
     if (should_include_tab_item) {
-      [data addObject:CreateTabItemData(index, web_state_list)];
+      [data addObject:CreateTabItemData(index, web_state_list, dirty_tabs)];
     }
   }
   return data;
@@ -179,6 +243,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }  // namespace
 
 @interface TabStripMediator () <CRWWebStateObserver,
+                                MessagingBackendServiceObserving,
                                 WebStateFaviconDriverObserver,
                                 WebStateListObserving>
 // The consumer for this object.
@@ -204,21 +269,49 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
   // List of items in the tab strip when a drag operation starts.
   // Should be set back to `nil` when the drag operation ends.
-  NSMutableArray<TabStripItemIdentifier*>* _dragItems;
+  NSMutableArray<TabStripItemIdentifier*>* _visibleItemsDuringDrag;
 
   // Used to get info about saved groups and to mutate them.
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
+
+  // A service to get activity messages for a shared tab group.
+  raw_ptr<collaboration::messaging::MessagingBackendService> _messagingService;
+  // The bridge between the C++ MessagingBackendService observer and this
+  // Objective-C class.
+  std::unique_ptr<MessagingBackendServiceBridge> _messagingBackendServiceBridge;
+  // The collaboration service for shared tab group.
+  raw_ptr<collaboration::CollaborationService> _collaborationService;
+  // A set of a tab ID that has changed and a user has not seen it yet.
+  std::set<tab_groups::LocalTabID> _dirtyTabs;
+  // A set of a shared group ID that has changed and a user has not seen it yet.
+  std::set<tab_groups::LocalTabGroupID> _dirtyGroups;
+  // `YES` if a local drag operation is in progress.
+  BOOL _localDragInProgress;
+  // Tab to close when user confirm closing action.
+  TabSwitcherItem* _tabToClose;
 }
 
-- (instancetype)initWithConsumer:(id<TabStripConsumer>)consumer
-             tabGroupSyncService:
-                 (tab_groups::TabGroupSyncService*)tabGroupSyncService
-                     browserList:(BrowserList*)browserList {
+- (instancetype)
+        initWithConsumer:(id<TabStripConsumer>)consumer
+     tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
+             browserList:(BrowserList*)browserList
+        messagingService:
+            (collaboration::messaging::MessagingBackendService*)messagingService
+    collaborationService:
+        (collaboration::CollaborationService*)collaborationService {
   if ((self = [super init])) {
     CHECK(browserList);
     _browserList = browserList;
+    _collaborationService = collaborationService;
     _tabGroupSyncService = tabGroupSyncService;
     _consumer = consumer;
+    _messagingService = messagingService;
+    if (_messagingService) {
+      _messagingBackendServiceBridge =
+          std::make_unique<MessagingBackendServiceBridge>(self);
+      _messagingService->AddPersistentMessageObserver(
+          _messagingBackendServiceBridge.get());
+    }
   }
   return self;
 }
@@ -233,6 +326,13 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     _webStateListObserver = nullptr;
     _webStateList = nullptr;
   }
+  if (_messagingService) {
+    _messagingService->RemovePersistentMessageObserver(
+        _messagingBackendServiceBridge.get());
+    _messagingBackendServiceBridge.reset();
+    _messagingService = nullptr;
+  }
+  _tabGroupSyncService = nullptr;
   _tabStripHandler = nil;
   _browserList = nullptr;
 }
@@ -317,6 +417,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     return;
   }
   base::RecordAction(base::UserMetricsAction("MobileTabStripUngroupTabs"));
+
+  const WebStateList::ScopedBatchOperation batch =
+      self.webStateList->StartBatchOperation();
   self.webStateList->DeleteGroup(tabGroupItem.tabGroup);
 }
 
@@ -327,6 +430,41 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   base::RecordAction(base::UserMetricsAction("MobileTabStripDeleteGroup"));
   CloseAllWebStatesInGroup(*_webStateList, tabGroupItem.tabGroup,
                            WebStateList::CLOSE_USER_ACTION);
+}
+
+- (void)leaveSharedGroup:(TabGroupItem*)tabGroupItem {
+  if (!_collaborationService || !tabGroupItem.tabGroup) {
+    return;
+  }
+  [self takeActionForActionType:TabGroupActionType::kLeaveSharedTabGroup
+                 sharedTabGroup:tabGroupItem.tabGroup];
+}
+
+- (void)deleteSharedGroup:(TabGroupItem*)tabGroupItem {
+  if (!_collaborationService || !tabGroupItem.tabGroup) {
+    return;
+  }
+  [self takeActionForActionType:TabGroupActionType::kDeleteSharedTabGroup
+                 sharedTabGroup:tabGroupItem.tabGroup];
+}
+
+- (void)closeSavedTabFromGroup:(TabGroupItem*)tabGroupItem {
+  if (!self.webStateList) {
+    return;
+  }
+  int index = GetWebStateIndex(
+      self.webStateList,
+      WebStateSearchCriteria{
+          .identifier = _tabToClose.identifier,
+          .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned,
+      });
+  if (index == WebStateList::kInvalidIndex) {
+    return;
+  }
+  CHECK_EQ(tabGroupItem.tabGroup,
+           self.webStateList->GetGroupOfWebStateAt(index));
+  self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+  _tabToClose = nil;
 }
 
 #pragma mark - Public properties
@@ -351,6 +489,10 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     [self addWebStateObservations];
+
+    // `fetchMessages` depends on the web state list to obtain a group that is
+    // corresponded to a message.
+    [self fetchMessages];
   }
 
   [self populateConsumerItems];
@@ -408,7 +550,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       web::WebState* insertedWebState = insertChange.inserted_web_state();
       TabStripItemIdentifier* itemIdentifier =
           CreateTabItemIdentifier(insertedWebState);
-      TabStripItemData* itemData = CreateTabItemData(index, webStateList);
+      TabStripItemData* itemData =
+          CreateTabItemData(index, webStateList, _dirtyTabs);
       [self.consumer updateItemData:@{itemIdentifier : itemData}
                    reconfigureItems:NO];
       const TabGroup* group = insertChange.group();
@@ -488,7 +631,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
           [[WebStateTabSwitcherItem alloc] initWithWebState:newWebState];
       TabStripItemIdentifier* newItemIdentifier =
           [TabStripItemIdentifier tabIdentifier:newItem];
-      TabStripItemData* newItemData = CreateTabItemData(index, webStateList);
+      TabStripItemData* newItemData =
+          CreateTabItemData(index, webStateList, _dirtyTabs);
       [self.consumer updateItemData:@{newItemIdentifier : newItemData}
                    reconfigureItems:NO];
       [self.consumer replaceItem:oldItem withItem:newItem];
@@ -500,7 +644,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       const TabGroup* group = groupCreateChange.created_group();
       TabStripItemIdentifier* groupItemIdentifier =
           CreateGroupItemIdentifier(group, webStateList);
-      TabStripItemData* groupItemData = CreateGroupItemData(group);
+      TabStripItemData* groupItemData =
+          CreateGroupItemData(group, _dirtyGroups);
       [self.consumer updateItemData:@{groupItemIdentifier : groupItemData}
                    reconfigureItems:NO];
       // Determine the destination item for the new group item.
@@ -628,6 +773,12 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                     groupOfActiveWebState, newVisualData));
     }
   }
+
+  if (_localDragInProgress) {
+    _visibleItemsDuringDrag =
+        CreateItemIdentifiers(_webStateList,
+                              /*including_hidden_tab_items=*/false);
+  }
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
@@ -641,6 +792,12 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
   [self addWebStateObservations];
   [self populateConsumerItems];
+
+  if (_localDragInProgress) {
+    _visibleItemsDuringDrag =
+        CreateItemIdentifiers(_webStateList,
+                              /*including_hidden_tab_items=*/false);
+  }
 }
 
 #pragma mark - TabStripMutator
@@ -649,8 +806,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if (!self.webStateList || !self.profile) {
     return;
   }
-  const auto insertionParams = WebStateList::InsertionParams::Automatic();
-  [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
+  [self insertAndActivateNewWebStateInGroup:nullptr];
 }
 
 - (void)activateItem:(TabSwitcherItem*)item {
@@ -704,8 +860,49 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
           .identifier = item.identifier,
           .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned,
       });
-  if (index >= 0) {
+  if (index == WebStateList::kInvalidIndex) {
+    return;
+  }
+
+  // A confirmation prompt is shown to the user upon the manual closure of the
+  // final tab in a shared group.
+  BOOL displayAlert = NO;
+  const TabGroup* group = self.webStateList->GetGroupOfWebStateAt(index);
+  if (group) {
+    BOOL isSharedGroup =
+        tab_groups::utils::IsTabGroupShared(group, _tabGroupSyncService);
+    displayAlert = group->range().count() == 1 && isSharedGroup;
+  }
+
+  if (!displayAlert) {
     self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+    return;
+  }
+
+  data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(
+      group, _tabGroupSyncService, _collaborationService);
+
+  TabGroupItem* groupItem =
+      [[TabGroupItem alloc] initWithTabGroup:group
+                                webStateList:self.webStateList];
+  _tabToClose = item;
+  switch (userRole) {
+    case data_sharing::MemberRole::kOwner:
+      [_tabStripHandler showTabGroupConfirmationForAction:
+                            TabGroupActionType::kDeleteOrKeepSharedTabGroup
+                                                groupItem:groupItem
+                                               sourceView:nil];
+      break;
+    case data_sharing::MemberRole::kMember:
+      [_tabStripHandler showTabGroupConfirmationForAction:
+                            TabGroupActionType::kLeaveOrKeepSharedTabGroup
+                                                groupItem:groupItem
+                                               sourceView:nil];
+      break;
+    case data_sharing::MemberRole::kInvitee:
+    case data_sharing::MemberRole::kFormerMember:
+    case data_sharing::MemberRole::kUnknown:
+      NOTREACHED(base::NotFatalUntil::M140);
   }
 }
 
@@ -799,9 +996,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     return;
   }
   base::RecordAction(base::UserMetricsAction("MobileTabStripNewTabInGroup"));
-  const auto insertionParams =
-      WebStateList::InsertionParams::Automatic().InGroup(tabGroupItem.tabGroup);
-  [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
+  [self insertAndActivateNewWebStateInGroup:tabGroupItem.tabGroup];
 }
 
 - (void)ungroupGroup:(TabGroupItem*)tabGroupItem
@@ -848,6 +1043,26 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
 }
 
+- (void)leaveSharedGroup:(TabGroupItem*)tabGroupItem
+              sourceView:(UIView*)sourceView {
+  CHECK(IsTabGroupSyncEnabled());
+
+  [_tabStripHandler
+      showTabGroupConfirmationForAction:TabGroupActionType::kLeaveSharedTabGroup
+                              groupItem:tabGroupItem
+                             sourceView:sourceView];
+}
+
+- (void)deleteSharedGroup:(TabGroupItem*)tabGroupItem
+               sourceView:(UIView*)sourceView {
+  CHECK(IsTabGroupSyncEnabled());
+
+  [_tabStripHandler showTabGroupConfirmationForAction:TabGroupActionType::
+                                                          kDeleteSharedTabGroup
+                                            groupItem:tabGroupItem
+                                           sourceView:sourceView];
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateDidStartLoading:(web::WebState*)webState {
@@ -887,28 +1102,35 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)item {
-  _dragItems = CreateItemIdentifiers(_webStateList,
-                                     /*including_hidden_tab_items=*/false);
+  _localDragInProgress = YES;
+  _visibleItemsDuringDrag =
+      CreateItemIdentifiers(_webStateList,
+                            /*including_hidden_tab_items=*/false);
   // When a tab is dragged, it is visually removed from the collection view.
-  [_dragItems removeObject:[TabStripItemIdentifier tabIdentifier:item]];
+  [_visibleItemsDuringDrag
+      removeObject:[TabStripItemIdentifier tabIdentifier:item]];
 }
 
 - (void)dragWillBeginForTabGroupItem:(TabGroupItem*)item {
-  _dragItems = CreateItemIdentifiers(_webStateList,
-                                     /*including_hidden_tab_items=*/false);
+  _localDragInProgress = YES;
+  _visibleItemsDuringDrag =
+      CreateItemIdentifiers(_webStateList,
+                            /*including_hidden_tab_items=*/false);
   // When a group is dragged, it is visually removed from the collection view,
   // along with all the tabs within that group.
-  [_dragItems removeObject:[TabStripItemIdentifier groupIdentifier:item]];
+  [_visibleItemsDuringDrag
+      removeObject:[TabStripItemIdentifier groupIdentifier:item]];
   CHECK(item.tabGroup);
   for (int childWebStateIndex : item.tabGroup->range()) {
     TabStripItemIdentifier* childItemIdentifier = CreateTabItemIdentifier(
         _webStateList->GetWebStateAt(childWebStateIndex));
-    [_dragItems removeObject:childItemIdentifier];
+    [_visibleItemsDuringDrag removeObject:childItemIdentifier];
   }
 }
 
 - (void)dragSessionDidEnd {
-  _dragItems = nil;
+  _localDragInProgress = NO;
+  _visibleItemsDuringDrag = nil;
 }
 
 - (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session
@@ -923,6 +1145,11 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
     if (tabInfo.profile != self.profile) {
       // Tabs from different profiles cannot be dropped.
+      return UIDropOperationForbidden;
+    }
+
+    if (_localDragInProgress &&
+        _visibleItemsDuringDrag.count < destinationItemIndex) {
       return UIDropOperationForbidden;
     }
 
@@ -944,8 +1171,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       // Tabs from different profiles cannot be dropped.
       return UIDropOperationForbidden;
     }
-    if (_dragItems && destinationItemIndex < _dragItems.count &&
-        _dragItems[destinationItemIndex].tabSwitcherItem) {
+    if (_visibleItemsDuringDrag &&
+        destinationItemIndex < _visibleItemsDuringDrag.count &&
+        _visibleItemsDuringDrag[destinationItemIndex].tabSwitcherItem) {
       // If the drop originates from the same collection, then it is forbidden
       // to drop a group before an already grouped tab. If the drop originates
       // from a different collection view, a group can be dropped anywhere, but
@@ -953,12 +1181,20 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       int webStateIndex = GetWebStateIndex(
           _webStateList,
           WebStateSearchCriteria{
-              .identifier =
-                  _dragItems[destinationItemIndex].tabSwitcherItem.identifier});
+              .identifier = _visibleItemsDuringDrag[destinationItemIndex]
+                                .tabSwitcherItem.identifier});
       if (_webStateList->ContainsIndex(webStateIndex) &&
           _webStateList->GetGroupOfWebStateAt(webStateIndex)) {
         return UIDropOperationForbidden;
       }
+    }
+
+    // The count of `_visibleItemsDuringDrag` could be less than
+    // `destinationItemIndex` if the local dragged group is not yet collapsed.
+    // In that case, prevent drop operations.
+    if (_localDragInProgress &&
+        _visibleItemsDuringDrag.count < destinationItemIndex) {
+      return UIDropOperationForbidden;
     }
 
     if (self.profile->IsOffTheRecord() == tabGroupInfo.incognito) {
@@ -1030,7 +1266,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       // Reorder tabs.
       const WebStateList::InsertionParams insertionParams =
           [self insertionParamsForDestinationItemIndex:destinationIndex
-                                                 items:_dragItems];
+                                                 items:_visibleItemsDuringDrag];
       MoveWebStateWithIdentifierToInsertionParams(
           tabInfo.tabID, insertionParams, _webStateList, fromSameCollection);
     } else {
@@ -1062,7 +1298,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                     DragItemOrigin::kOtherBrowser);
     }
     // Determine the tab strip item before which the group should be moved.
-    NSArray<TabStripItemIdentifier*>* items = _dragItems;
+    NSArray<TabStripItemIdentifier*>* items = _visibleItemsDuringDrag;
     if (!items) {
       items = CreateItemIdentifiers(self.webStateList,
                                     /*including_hidden_tab_items=*/false);
@@ -1111,6 +1347,70 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   [itemProvider loadObjectOfClass:[NSURL class] completionHandler:loadHandler];
 }
 
+#pragma mark - MessagingBackendServiceObserving
+
+- (void)onMessagingBackendServiceInitialized {
+  [self fetchMessages];
+}
+
+- (void)displayPersistentMessage:
+    (collaboration::messaging::PersistentMessage)message {
+  CHECK(_messagingService);
+  CHECK(_messagingService->IsInitialized());
+
+  switch (message.type) {
+    case collaboration::messaging::PersistentNotificationType::DIRTY_TAB: {
+      if (std::optional<tab_groups::LocalTabID> localTabID =
+              LocalTabID(message)) {
+        _dirtyTabs.insert(*localTabID);
+        [self updateItemDataForTabCell:*localTabID];
+      }
+      break;
+    }
+    case collaboration::messaging::PersistentNotificationType::
+        DIRTY_TAB_GROUP: {
+      if (std::optional<tab_groups::LocalTabGroupID> localTabGroupID =
+              LocalTabGroupID(message)) {
+        _dirtyGroups.insert(*localTabGroupID);
+        [self updateItemDataForGroupCell:*localTabGroupID];
+      }
+      break;
+    }
+    default:
+      // Do nothing for other message types.
+      return;
+  }
+}
+
+- (void)hidePersistentMessage:
+    (collaboration::messaging::PersistentMessage)message {
+  CHECK(_messagingService);
+  CHECK(_messagingService->IsInitialized());
+
+  switch (message.type) {
+    case collaboration::messaging::PersistentNotificationType::DIRTY_TAB: {
+      if (std::optional<tab_groups::LocalTabID> localTabID =
+              LocalTabID(message)) {
+        _dirtyTabs.erase(*localTabID);
+        [self updateItemDataForTabCell:*localTabID];
+      }
+      break;
+    }
+    case collaboration::messaging::PersistentNotificationType::
+        DIRTY_TAB_GROUP: {
+      if (std::optional<tab_groups::LocalTabGroupID> localTabGroupID =
+              LocalTabGroupID(message)) {
+        _dirtyGroups.erase(*localTabGroupID);
+        [self updateItemDataForGroupCell:*localTabGroupID];
+      }
+      break;
+    }
+    default:
+      // Do nothing for other message types.
+      return;
+  }
+}
+
 #pragma mark - Private
 
 // Adds an observation to every WebState of the current WebSateList.
@@ -1136,8 +1436,10 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       CreateItemIdentifiers(_webStateList);
   // Prepare tab strip item data (group stroke color, etc).
   NSDictionary<TabStripItemIdentifier*, TabStripItemData*>* itemData =
-      [NSDictionary dictionaryWithObjects:CreateItemData(_webStateList)
-                                  forKeys:itemIdentifiers];
+      [NSDictionary
+          dictionaryWithObjects:CreateItemData(_webStateList, _dirtyTabs,
+                                               _dirtyGroups)
+                        forKeys:itemIdentifiers];
   // Prepare item parents.
   NSMutableDictionary<TabStripItemIdentifier*, TabGroupItem*>* itemParents =
       [NSMutableDictionary dictionary];
@@ -1188,7 +1490,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
   DCHECK(_profile);
 
-
   // Simulating the insertion.
   NSMutableArray<TabStripItemIdentifier*>* items = CreateItemIdentifiers(
       _webStateList, /*including_hidden_tab_items=*/false);
@@ -1236,33 +1537,18 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                    items:
                                        (NSArray<TabStripItemIdentifier*>*)items
                                      URL:(const GURL&)newTabURL {
-  TabStripItemIdentifier* previousItem =
-      destinationItemIndex > 0 ? items[destinationItemIndex - 1] : nil;
-  TabStripItemIdentifier* nextItem =
-      destinationItemIndex < items.count ? items[destinationItemIndex] : nil;
-  const TabGroup* destinationGroup =
-      [self groupForInsertionBetweenPreviousItem:previousItem
-                                        nextItem:nextItem];
-  int webStateListInsertionIndex = 0;
-  for (NSUInteger itemIndex = 0; itemIndex < destinationItemIndex;
-       itemIndex++) {
-    if (items[itemIndex].itemType == TabStripItemTypeTab) {
-      webStateListInsertionIndex++;
-      continue;
-    }
-    const TabGroup* group = items[itemIndex].tabGroupItem.tabGroup;
-    if (group->visual_data().is_collapsed()) {
-      webStateListInsertionIndex += group->range().count();
-    }
-  }
+  // The two params are the same, but in a different format. Reuse the code.
+  WebStateList::InsertionParams insertionParams =
+      [self insertionParamsForDestinationItemIndex:destinationItemIndex
+                                             items:items];
 
   UrlLoadParams params = UrlLoadParams::InNewTab(newTabURL);
   params.in_incognito = self.profile->IsOffTheRecord();
   params.append_to = OpenPosition::kSpecifiedIndex;
-  params.insertion_index = webStateListInsertionIndex;
-  if (destinationGroup) {
+  params.insertion_index = insertionParams.desired_index;
+  if (insertionParams.in_group) {
     params.load_in_group = true;
-    params.tab_group = destinationGroup->GetWeakPtr();
+    params.tab_group = insertionParams.in_group->GetWeakPtr();
   }
   return params;
 }
@@ -1326,7 +1612,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       CreateItemIdentifiers(_webStateList, /*including_hidden_tab_items=*/false,
                             /*including_group_items=*/true, range);
   NSArray<TabStripItemData*>* tabItemData =
-      CreateItemData(_webStateList, /*including_hidden_tab_items=*/false,
+      CreateItemData(_webStateList, _dirtyTabs, _dirtyGroups,
+                     /*including_hidden_tab_items=*/false,
                      /*including_group_items=*/true, range);
   NSDictionary<TabStripItemIdentifier*, TabStripItemData*>* tabItemDataDict =
       [NSDictionary dictionaryWithObjects:tabItemData
@@ -1401,7 +1688,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // Update item data.
   bool itemIsVisible = !newGroup || !newGroup->visual_data().is_collapsed();
   if (itemIsVisible) {
-    TabStripItemData* itemData = CreateTabItemData(toIndex, _webStateList);
+    TabStripItemData* itemData =
+        CreateTabItemData(toIndex, _webStateList, _dirtyTabs);
     [self.consumer updateItemData:@{itemIdentifier : itemData}
                  reconfigureItems:YES];
   }
@@ -1434,14 +1722,12 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
 }
 
-// Inserts and activate a new WebState opened at `kChromeUINewTabURL` using
-// `insertionParams`.
-- (void)insertAndActivateNewWebStateWithInsertionParams:
-    (WebStateList::InsertionParams)insertionParams {
+// Inserts and activate a new WebState opened at `kChromeUINewTabURL` in `group`
+// (if there is one).
+- (void)insertAndActivateNewWebStateInGroup:(const TabGroup*)group {
   UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
   params.in_incognito = self.profile->IsOffTheRecord();
-  const TabGroup* group = [self currentTabGroup];
-  if (group && !group->visual_data().is_collapsed()) {
+  if (group) {
     params.load_in_group = true;
     params.tab_group = group->GetWeakPtr();
   }
@@ -1482,8 +1768,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
   // If there is no WebState to activate on the right or on the left, insert
   // and activate a new WebState at the end of the WebStateList instead.
-  const auto insertionParams = WebStateList::InsertionParams::Automatic();
-  [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
+  [self insertAndActivateNewWebStateInGroup:nullptr];
 }
 
 // Returns the index of a non-collapsed WebState close to `index`. If all
@@ -1519,13 +1804,104 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   return WebStateList::kInvalidIndex;
 }
 
-// Returns the current tab group.
-- (const TabGroup*)currentTabGroup {
-  if (!_webStateList ||
-      _webStateList->active_index() == WebStateList::kInvalidIndex) {
-    return nullptr;
+// Gets messages to indicate that a shared tab group and a tab in any shared tab
+// groups have been updated.
+- (void)fetchMessages {
+  if (!_messagingService || !_messagingService->IsInitialized() ||
+      !_webStateList) {
+    return;
   }
-  return _webStateList->GetGroupOfWebStateAt(_webStateList->active_index());
+
+  for (auto& message : _messagingService->GetMessages(
+           collaboration::messaging::PersistentNotificationType::DIRTY_TAB)) {
+    if (std::optional<tab_groups::LocalTabID> localTabID =
+            LocalTabID(message)) {
+      _dirtyTabs.insert(*localTabID);
+      [self updateItemDataForTabCell:*localTabID];
+    }
+  }
+
+  for (auto& message : _messagingService->GetMessages(
+           collaboration::messaging::PersistentNotificationType::
+               DIRTY_TAB_GROUP)) {
+    if (std::optional<tab_groups::LocalTabGroupID> localTabGroupID =
+            LocalTabGroupID(message)) {
+      _dirtyGroups.insert(*localTabGroupID);
+      [self updateItemDataForGroupCell:*localTabGroupID];
+    }
+  }
+}
+
+// Updates the item data for the tab cell specified by `localTabID`.
+- (void)updateItemDataForTabCell:(tab_groups::LocalTabID)localTabID {
+  web::WebState* webState = FindWebStateByID(localTabID, self.webStateList);
+  if (!webState) {
+    return;
+  }
+
+  TabStripItemIdentifier* itemIdentifier = CreateTabItemIdentifier(webState);
+  TabStripItemData* itemData =
+      CreateTabItemData(self.webStateList->GetIndexOfWebState(webState),
+                        self.webStateList, _dirtyTabs);
+  [self.consumer updateItemData:@{itemIdentifier : itemData}
+               reconfigureItems:YES];
+}
+
+// Updates the item data for the tab group cell specified by `localTabGroupID`.
+- (void)updateItemDataForGroupCell:
+    (tab_groups::LocalTabGroupID)localTabGroupID {
+  const TabGroup* group = FindTabGroupByID(localTabGroupID, self.webStateList);
+  if (!group) {
+    return;
+  }
+
+  TabStripItemIdentifier* itemIdentifier =
+      CreateGroupItemIdentifier(group, self.webStateList);
+  TabStripItemData* itemData = CreateGroupItemData(group, _dirtyGroups);
+  [self.consumer updateItemData:@{itemIdentifier : itemData}
+               reconfigureItems:YES];
+}
+
+// Takes the corresponding action to `actionType` for the shared `group`.
+// TabGroupActionType must be kLeaveSharedTabGroup or kDeleteSharedTabGroup.
+- (void)takeActionForActionType:(TabGroupActionType)actionType
+                 sharedTabGroup:(const TabGroup*)group {
+  CHECK(_collaborationService);
+
+  const tab_groups::CollaborationId collabId =
+      tab_groups::utils::GetTabGroupCollabID(group, _tabGroupSyncService);
+  CHECK(!collabId->empty());
+  const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
+
+  __weak TabStripMediator* weakSelf = self;
+  auto callback = base::BindOnce(^(bool success) {
+    [weakSelf handleTakeActionForActionTypeOutcome:success];
+  });
+
+  // TODO(crbug.com/393073658): Block the screen.
+
+  // Asynchronously call on the server.
+  switch (actionType) {
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      _collaborationService->LeaveGroup(groupId, std::move(callback));
+      break;
+    case TabGroupActionType::kDeleteSharedTabGroup:
+      _collaborationService->DeleteGroup(groupId, std::move(callback));
+      break;
+    case TabGroupActionType::kUngroupTabGroup:
+    case TabGroupActionType::kDeleteTabGroup:
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+      NOTREACHED();
+  }
+}
+
+// Called when `takeActionForActionType:forSharedTabGroup:` server's call
+// returned.
+- (void)handleTakeActionForActionTypeOutcome:(BOOL)success {
+  // TODO(crbug.com/393073658):
+  // - Unblock the screen.
+  // - Show an error if needed.
 }
 
 @end

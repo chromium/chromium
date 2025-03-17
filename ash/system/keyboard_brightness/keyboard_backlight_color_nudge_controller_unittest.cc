@@ -20,7 +20,7 @@ namespace {
 
 constexpr char kUser1[] = "user1@test.com";
 const AccountId account_id_1 =
-    AccountId::FromUserEmailGaiaId(kUser1, GaiaId(kUser1));
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId("1111"));
 
 }  // namespace
 

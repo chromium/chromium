@@ -331,7 +331,7 @@ void LayoutResult::MutableForOutOfFlow::SetAccessibilityAnchor(
 }
 
 void LayoutResult::MutableForOutOfFlow::SetDisplayLocksAffectedByAnchors(
-    HeapHashSet<Member<Element>>* display_locks) {
+    GCedHeapHashSet<Member<Element>>* display_locks) {
   if (layout_result_->rare_data_ || display_locks) {
     layout_result_->EnsureRareData()->display_locks_affected_by_anchors =
         display_locks;
@@ -393,6 +393,7 @@ void LayoutResult::AssertSoleBoxFragment() const {
 #endif
 
 void LayoutResult::Trace(Visitor* visitor) const {
+  visitor->Trace(space_);
   visitor->Trace(physical_fragment_);
   visitor->Trace(rare_data_);
 }

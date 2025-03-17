@@ -3,9 +3,11 @@
       'Tests that repeated Bluetooth.simulateCentral calls are avoided');
   const bp = testRunner.browserP();
 
-  const first = await bp.BluetoothEmulation.enable({state: 'powered-on'});
+  const first = await bp.BluetoothEmulation.enable(
+      {state: 'powered-on', leSupported: true});
   testRunner.log(first);
-  const second = await bp.BluetoothEmulation.enable({state: 'powered-on'});
+  const second = await bp.BluetoothEmulation.enable(
+      {state: 'powered-on', leSupported: true});
   testRunner.log(second);
 
   testRunner.completeTest();

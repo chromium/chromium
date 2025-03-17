@@ -94,8 +94,7 @@ covered by the smoke tests.
 ***
 
 *** promo
-Similar to Fuchsia's case, the tests listed in [Mac.txt]
-(../../third_party/blink/web_tests/TestLists/Mac.txt)
+Similar to Fuchsia's case, the tests listed in [MacOld.txt](../../third_party/blink/web_tests/TestLists/MacOld.txt)
 are run on older mac version bots. By doing this we reduced the resources needed to run
 the tests. This relies on the fact that the majority of web tests will behavior similarly on
 different mac versions.

@@ -45,6 +45,8 @@ class AutofillProgressDialogViewsBrowserTest
     } else if (GetParam() == "CardInfoRetrievalEnrolledUnmask") {
       return AutofillProgressDialogType::
           kCardInfoRetrievalEnrolledUnmaskProgressDialog;
+    } else if (GetParam() == "BnplFetchVirtualCard") {
+      return AutofillProgressDialogType::kBnplFetchVcnProgressDialog;
     }
     NOTREACHED();
   }
@@ -58,16 +60,16 @@ class AutofillProgressDialogViewsBrowserTest
     client()->ShowAutofillProgressDialog(GetDialogType(), base::DoNothing());
   }
 
-  AutofillProgressDialogViews* GetDialogViews() {
+  AutofillProgressDialogViewDesktop* GetDialogView() {
     DCHECK(controller());
 
-    base::WeakPtr<AutofillProgressDialogView> dialog_view =
+    AutofillProgressDialogView* dialog_view =
         controller()->autofill_progress_dialog_view();
     if (!dialog_view) {
       return nullptr;
     }
 
-    return static_cast<AutofillProgressDialogViews*>(dialog_view.get());
+    return static_cast<AutofillProgressDialogViewDesktop*>(dialog_view);
   }
 
   AutofillProgressDialogControllerImpl* controller() const {
@@ -142,13 +144,13 @@ IN_PROC_BROWSER_TEST_P(AutofillProgressDialogViewsBrowserTest,
   base::HistogramTester histogram_tester;
   ShowUi(GetDialogTypeStringForLogging());
   VerifyUi();
-  auto* dialog_views = GetDialogViews();
-  ASSERT_TRUE(dialog_views);
+  auto* dialog_view = GetDialogView();
+  ASSERT_TRUE(dialog_view);
   views::test::WidgetDestroyedWaiter destroyed_waiter(
-      dialog_views->GetWidget());
-  GetDialogViews()->CancelDialog();
+      dialog_view->GetWidgetForTesting());
+  GetDialogView()->CancelDialogForTesting();
   destroyed_waiter.Wait();
-  EXPECT_FALSE(GetDialogViews());
+  EXPECT_FALSE(GetDialogView());
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"Autofill.ProgressDialog.", GetDialogTypeStringForLogging(),
                     ".Shown"}),
@@ -165,10 +167,10 @@ IN_PROC_BROWSER_TEST_P(AutofillProgressDialogViewsBrowserTest,
   base::HistogramTester histogram_tester;
   ShowUi(GetDialogTypeStringForLogging());
   VerifyUi();
-  auto* dialog_views = GetDialogViews();
-  ASSERT_TRUE(dialog_views);
+  auto* dialog_view = GetDialogView();
+  ASSERT_TRUE(dialog_view);
   views::test::WidgetDestroyedWaiter destroyed_waiter(
-      dialog_views->GetWidget());
+      dialog_view->GetWidgetForTesting());
   base::MockOnceClosure no_interactive_authentication_callback;
   EXPECT_CALL(no_interactive_authentication_callback, Run).Times(1);
   controller()->DismissDialog(
@@ -176,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(AutofillProgressDialogViewsBrowserTest,
       /*no_interactive_authentication_callback=*/
       no_interactive_authentication_callback.Get());
   destroyed_waiter.Wait();
-  EXPECT_FALSE(GetDialogViews());
+  EXPECT_FALSE(GetDialogView());
   testing::Mock::VerifyAndClearExpectations(
       &no_interactive_authentication_callback);
   histogram_tester.ExpectUniqueSample(
@@ -194,6 +196,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::Values("VirtualCardUnmask",
                                          "ServerCardUnmask",
                                          "3dsFetchVirtualCard",
-                                         "CardInfoRetrievalEnrolledUnmask"));
+                                         "CardInfoRetrievalEnrolledUnmask",
+                                         "BnplFetchVirtualCard"));
 
 }  // namespace autofill

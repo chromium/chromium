@@ -79,7 +79,7 @@ class AutocompleteTest : public InProcessBrowserTest {
    private:
     TestAutofillManagerWaiter text_field_change_waiter_{
         *this,
-        {AutofillManagerEvent::kTextFieldDidChange}};
+        {AutofillManagerEvent::kTextFieldValueChanged}};
     TestAutofillManagerWaiter forms_seen_waiter_{
         *this,
         {AutofillManagerEvent::kFormsSeen}};
@@ -124,8 +124,8 @@ class AutocompleteTest : public InProcessBrowserTest {
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
-  // Uses the browser to open the file named |filename| based on the given
-  // |disposition|.
+  // Uses the browser to open the file named `filename` based on the given
+  // `disposition`.
   void NavigateToFile(const char* filename,
                       const WindowOpenDisposition& disposition =
                           WindowOpenDisposition::NEW_FOREGROUND_TAB) {

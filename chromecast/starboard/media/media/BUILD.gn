@@ -34,6 +34,7 @@ source_set("starboard") {
     ":mime_utils",
     ":starboard_api_wrapper",
     "//base",
+    "//chromecast/base",
     "//chromecast/public",
     "//chromecast/public/media",
     "//chromecast/starboard/chromecast/starboard_adapter",
@@ -59,6 +60,7 @@ source_set("mock_starboard_api_wrapper") {
 cast_source_set("starboard_api_wrapper") {
   sources = []
   deps = []
+  public_deps = [ "//base" ]
 
   # TODO(b/333131992): remove this case.
   if (remove_starboard_headers) {
@@ -82,7 +84,6 @@ cast_source_set("starboard_api_wrapper") {
       sources += [ "starboard_api_wrapper_14.cc" ]
     }
     deps += [
-      "//base",
       "//chromecast/starboard/chromecast/starboard_adapter",
       "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
     ]

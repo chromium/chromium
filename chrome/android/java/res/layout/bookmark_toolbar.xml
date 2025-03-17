@@ -15,5 +15,4 @@ found in the LICENSE file.
     app:popupTheme="@style/ModernToolbarPopupTheme"
     android:clickable="true"
     android:focusable="true"
-    android:focusableInTouchMode="true"
-    android:importantForAccessibility="no" />
+    android:focusableInTouchMode="true" />

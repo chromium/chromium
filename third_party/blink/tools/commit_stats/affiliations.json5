@@ -30,6 +30,11 @@
       { start: "2019-05-01", domain: "microsoft.com" },
     ]
   },
+  "estade@chromium.org": {
+    affiliations: [
+      { start: "2025-03-10", domain: "microsoft.com" },
+    ]
+  },
   "joone@chromium.org": {
     affiliations: [
       { start: "2024-04-29", domain: "microsoft.com" },
@@ -73,6 +78,12 @@
       { start: "2018-10-01", domain: "google.com"},
       { start: "2015-01-05", domain: "akamai.com"},
       { start: "2012-09-01", domain: "yoav.ws"},
+    ]
+  },
+  "wanderview@chromium.org": {
+    affiliations: [
+      { start: "2025-03-17", domain: "meta.com" },
+      { start: "2018-07-23", domain: "google.com" },
     ]
   },
   "weidongliu@chromium.org": {

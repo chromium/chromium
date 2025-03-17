@@ -10,6 +10,7 @@
 #import "base/debug/dump_without_crashing.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/not_fatal_until.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_constants.h"
@@ -41,6 +42,20 @@ bool IsPasscodeSettingsAvailable() {
          ios::provider::SupportsPasscodeSettings();
 }
 
+// Enum describing the state of the authentication flow.
+enum class ReauthenticationState {
+  // Authentication required next time the App comes back to the foreground or
+  // when `ReauthenticationCoordinator` starts.
+  kReauthenticationRequired,
+  // The reauth view controller was presented and reauthentication was
+  // requested. Waiting for the reauthentication result.
+  kReauthenticationRequested,
+  // No authentication required until the app goes back to the background. This
+  // is the state after a successful authentication or when the coordinator is
+  // started without authentication required.
+  kReauthenticationIdle,
+};
+
 }  // namespace
 
 @interface ReauthenticationCoordinator () <
@@ -61,16 +76,18 @@ bool IsPasscodeSettingsAvailable() {
 // passcode.
 @property(nonatomic, strong) AlertCoordinator* passcodeRequestAlertCoordinator;
 
-// Whether authentication should be required when the coordinator is started.
-@property(nonatomic) BOOL authOnStart;
-
 // Whether authentication should be required when the scene goes back to the
 // foreground active state.
 @property(nonatomic) BOOL authOnForegroundActive;
 
 @end
 
-@implementation ReauthenticationCoordinator
+@implementation ReauthenticationCoordinator {
+  // Status of the reauthentication flow. Indicates if we need to request
+  // authentication, are waiting for an authentication result or the user is
+  // already authenticated.
+  ReauthenticationState _reauthenticationState;
+}
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -92,7 +109,9 @@ bool IsPasscodeSettingsAvailable() {
     _baseNavigationController = navigationController;
     _dispatcher =
         static_cast<id<ApplicationCommands>>(browser->GetCommandDispatcher());
-    _authOnStart = authOnStart;
+    _reauthenticationState =
+        authOnStart ? ReauthenticationState::kReauthenticationRequired
+                    : ReauthenticationState::kReauthenticationIdle;
   }
 
   return self;
@@ -103,8 +122,9 @@ bool IsPasscodeSettingsAvailable() {
 - (void)start {
   [self.browser->GetSceneState() addObserver:self];
 
-  if (_authOnStart) {
-    [self pushReauthenticationViewControllerWithRequestAuth:YES];
+  if (_reauthenticationState ==
+      ReauthenticationState::kReauthenticationRequired) {
+    [self requestAuthentication];
   }
 }
 
@@ -125,9 +145,6 @@ bool IsPasscodeSettingsAvailable() {
 
 // Creates and displays an alert requesting the user to set a passcode.
 - (void)showSetUpPasscodeDialog {
-  // TODO(crbug.com/40274927): Open iOS Passcode Settings for phase 2 launch in
-  // M118. See i/p/p/c/b/password_auto_fill/password_auto_fill_api.h for
-  // reference.
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE);
   NSString* message =
@@ -181,7 +198,7 @@ bool IsPasscodeSettingsAvailable() {
     [_delegate successfulReauthenticationWithCoordinator:self];
     // The user has been authenticated. No need to reauth until the scene goes
     // back go the background.
-    _authOnForegroundActive = NO;
+    _reauthenticationState = ReauthenticationState::kReauthenticationIdle;
   } else {
     [self closeUI];
   }
@@ -211,36 +228,44 @@ bool IsPasscodeSettingsAvailable() {
   // 2 - Foreground inactive: Nothing to do. At this point the reauth view
   // controller should be blocking the surface below.
   // 3 - Foreground active: Request auth if the app was fully
-  // backgrounded. Otherwise just pop the reauth view controller and unblock the
-  // surface below.
+  // backgrounded. Otherwise just pop the reauth view controller if no
+  // authentication request is pending.
   switch (level) {
     case SceneActivationLevelBackground:
-      // Require auth next time the scene is foregrounded.
-      _authOnForegroundActive = YES;
+      switch (_reauthenticationState) {
+        case ReauthenticationState::kReauthenticationIdle:
+          // Require auth next time the scene is foregrounded.
+          _reauthenticationState =
+              ReauthenticationState::kReauthenticationRequired;
+          break;
+        case ReauthenticationState::kReauthenticationRequired:
+          // Wait until back in the foreground to request auth.
+          break;
+        case ReauthenticationState::kReauthenticationRequested:
+          // Wait for reauthentication result;
+          break;
+      }
       [[fallthrough]];
     case SceneActivationLevelForegroundInactive:
       // Present reauth vc if not presented already.
-      // Ideally do it while the scene is still in the foreground to prevent the
-      // top surface in the navigation stack from being visible in the app
-      // switcher. This is not always possible as the app some times goes
-      // straight to `SceneActivationLevelBackground`. See crbug.com/40074678.
       if (!_reauthViewController) {
         [self pushReauthenticationViewControllerWithRequestAuth:NO];
       }
       break;
 
     case SceneActivationLevelForegroundActive:
-      // Either ask for reauth if the scene was fully backgrounded or just
-      // remove the blocking view controller.
-      if (_authOnForegroundActive) {
-        _authOnForegroundActive = NO;
-        if (!_reauthViewController) {
-          base::debug::DumpWithoutCrashing();
-        }
-        [_reauthViewController requestAuthentication];
-      } else {
-        [self popReauthenticationViewController];
+      switch (_reauthenticationState) {
+        case ReauthenticationState::kReauthenticationRequired:
+          [self requestAuthentication];
+          break;
+        case ReauthenticationState::kReauthenticationIdle:
+          [self popReauthenticationViewController];
+          break;
+        case ReauthenticationState::kReauthenticationRequested:
+          // Keep waiting until reauthentication result is delivered.
+          break;
       }
+
       break;
     case SceneActivationLevelUnattached:
     case SceneActivationLevelDisconnected:
@@ -250,8 +275,10 @@ bool IsPasscodeSettingsAvailable() {
 
 #pragma mark - Private
 
-// Pushes the ReauthenticationViewController in the navigation stack.
-- (void)pushReauthenticationViewControllerWithRequestAuth:(BOOL)requestAuth {
+// Pushes the ReauthenticationViewController in the navigation stack and stores
+// it in `_reauthViewController`. Returns YES if the controller was successfully
+// pushed in the stack.
+- (BOOL)pushReauthenticationViewControllerWithRequestAuth:(BOOL)requestAuth {
   [_delegate willPushReauthenticationViewController];
 
   // Dismiss any presented state.
@@ -259,6 +286,18 @@ bool IsPasscodeSettingsAvailable() {
       _baseNavigationController.topViewController;
   UIViewController* presentedViewController =
       topViewController.presentedViewController;
+
+  // Add some crash keys with usefull information for debugging failures when
+  // pushing the reauth controller.
+  SCOPED_CRASH_KEY_STRING64(
+      "ReauthCoordinator", "topVC",
+      base::SysNSStringToUTF8(NSStringFromClass(topViewController.class)));
+  SCOPED_CRASH_KEY_STRING64("ReauthCoordinator", "presentedVC",
+                            presentedViewController
+                                ? base::SysNSStringToUTF8(NSStringFromClass(
+                                      presentedViewController.class))
+                                : "none");
+
   // Do not dismiss the Search Controller, otherwise pushViewController does not
   // add the new view controller to the top of the navigation stack.
   if (![presentedViewController isKindOfClass:[UISearchController class]] &&
@@ -276,6 +315,20 @@ bool IsPasscodeSettingsAvailable() {
   // Don't animate presentation to block top view controller right away.
   [_baseNavigationController pushViewController:_reauthViewController
                                        animated:NO];
+
+  if (![_baseNavigationController.topViewController
+          isEqual:_reauthViewController]) {
+    SCOPED_CRASH_KEY_NUMBER("ReauthCoordinator", "sceneActivation",
+                            self.browser->GetSceneState().activationLevel);
+    SCOPED_CRASH_KEY_BOOL("ReauthCoordinator", "hasWindow",
+                          _baseNavigationController.view.window != nil);
+    base::debug::DumpWithoutCrashing();
+    _reauthViewController.delegate = nil;
+    _reauthViewController = nil;
+    return NO;
+  }
+
+  return YES;
 }
 
 // Pops the ReauthenticationViewController from the navigation stack.
@@ -286,16 +339,31 @@ bool IsPasscodeSettingsAvailable() {
   if (!_reauthViewController || !_baseNavigationController) {
     return;
   }
-  CHECK_EQ(_baseNavigationController.topViewController, _reauthViewController,
-           base::NotFatalUntil::M135);
 
-  [_baseNavigationController popViewControllerAnimated:NO];
+  if (_baseNavigationController.topViewController == _reauthViewController) {
+    [_baseNavigationController popViewControllerAnimated:NO];
+  } else {
+    SCOPED_CRASH_KEY_STRING64(
+        "ReauthCoordinator", "topVC",
+        base::SysNSStringToUTF8(NSStringFromClass(
+            _baseNavigationController.topViewController.class)));
+    SCOPED_CRASH_KEY_BOOL("ReauthCoordinator", "reauthIsInStack",
+                          [_baseNavigationController.viewControllers
+                              containsObject:_reauthViewController]);
+    SCOPED_CRASH_KEY_NUMBER("ReauthCoordinator", "sceneActivation",
+                            self.browser->GetSceneState().activationLevel);
+    SCOPED_CRASH_KEY_BOOL("ReauthCoordinator", "hasWindow",
+                          _baseNavigationController.view.window != nil);
+    base::debug::DumpWithoutCrashing();
+  }
+
   _reauthViewController.delegate = nil;
   _reauthViewController = nil;
 }
 
 // Dismisses the UI protected with Local Authentication.
 - (void)closeUI {
+  [self.browser->GetSceneState() removeObserver:self];
   [_delegate dismissUIAfterFailedReauthenticationWithCoordinator:self];
 }
 
@@ -315,6 +383,25 @@ bool IsPasscodeSettingsAvailable() {
       /*sample=*/ReauthenticationEvent::kOpenPasscodeSettings);
 
   ios::provider::OpenPasscodeSettings();
+}
+
+// Requests Local Authentication, presenting `_reauthViewController` if needed.
+- (void)requestAuthentication {
+  CHECK_EQ(_reauthenticationState,
+           ReauthenticationState::kReauthenticationRequired);
+
+  // Request authentication on the already presented controller or present a new
+  // one.
+  if (_reauthViewController) {
+    [_reauthViewController requestAuthentication];
+  } else {
+    // Only update the reauth state if the reauth controller was successfully
+    // pushed.
+    if (![self pushReauthenticationViewControllerWithRequestAuth:YES]) {
+      return;
+    }
+  }
+  _reauthenticationState = ReauthenticationState::kReauthenticationRequested;
 }
 
 @end

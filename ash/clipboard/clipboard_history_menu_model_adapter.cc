@@ -4,6 +4,7 @@
 
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -24,7 +25,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/vector_icons/vector_icons.h"
@@ -195,7 +195,7 @@ void InsertFooterContentV2(
 
   container->AddChildView(
       views::Builder<views::BoxLayoutView>()
-          .SetBackground(views::CreateThemedRoundedRectBackground(
+          .SetBackground(views::CreateRoundedRectBackground(
               cros_tokens::kCrosSysSystemOnBase1,
               ClipboardHistoryViews::kFooterContentV2BackgroundCornerRadius))
           .SetBetweenChildSpacing(
@@ -378,9 +378,10 @@ std::optional<int> ClipboardHistoryMenuModelAdapter::GetFirstMenuItemCommand() {
     return std::nullopt;
   }
 
-  return base::ranges::min(item_views_by_command_id_, /*comp=*/{},
-                           /*proj=*/[](const auto& kv) { return kv.first; })
-      .first;
+  return std::ranges::min_element(
+             item_views_by_command_id_, /*comp=*/{},
+             /*proj=*/[](const auto& kv) { return kv.first; })
+      ->first;
 }
 
 std::optional<int>
@@ -418,9 +419,9 @@ void ClipboardHistoryMenuModelAdapter::SelectMenuItemWithCommandId(
 
 void ClipboardHistoryMenuModelAdapter::SelectMenuItemHoveredByMouse() {
   // Find the menu item hovered by mouse.
-  auto iter = base::ranges::find_if(item_views_by_command_id_,
-                                    &views::View::IsMouseHovered,
-                                    &ItemViewsByCommandId::value_type::second);
+  auto iter = std::ranges::find_if(item_views_by_command_id_,
+                                   &views::View::IsMouseHovered,
+                                   &ItemViewsByCommandId::value_type::second);
 
   if (iter == item_views_by_command_id_.cend()) {
     // If no item is hovered by mouse, cancel the selection on the child menu
@@ -717,8 +718,9 @@ void ClipboardHistoryMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
   views::View* focused_view =
       active_widget->GetFocusManager()->GetFocusedView();
   if (focused_view) {
-    focused_view->NotifyAccessibilityEvent(ax::mojom::Event::kMenuEnd,
-                                           /*send_native_event=*/true);
+    focused_view->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kMenuEnd,
+        /*send_native_event=*/true);
   }
 }
 

@@ -14,8 +14,7 @@ namespace history_state_util {
 
 // Checks if toUrl is a valid argument to history.pushState() or
 // history.replaceState() given the current URL.
-bool IsHistoryStateChangeValid(const GURL& currentUrl,
-                               const GURL& toUrl);
+bool IsHistoryStateChangeValid(const GURL& currentUrl, const GURL& toUrl);
 
 // Generates the appropriate full URL for a history.pushState() or
 // history.replaceState() transition from currentURL to destination, resolved

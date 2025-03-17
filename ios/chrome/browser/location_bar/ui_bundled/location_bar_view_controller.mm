@@ -7,14 +7,18 @@
 #import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/lens/lens_overlay_metrics.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
@@ -31,15 +35,16 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_type.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -156,7 +161,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 }
 
 - (void)setPlaceholderType:(LocationBarPlaceholderType)placeholderType {
-  CHECK(IsLensOverlayAvailable());
+  CHECK(IsLensOverlayAvailable(_profilePrefs));
   if (placeholderType == _placeholderType) {
     return;
   }
@@ -199,15 +204,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
           UIUserInterfaceSizeClassRegular ||
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
 
-  if (shouldShowVoiceSearch) {
-    if (self.voiceSearchEnabled) {
-      self.trailingButtonState = kVoiceSearchButton;
-    } else {
-      self.trailingButtonState = kNoButton;
-    }
-  } else {
-    self.trailingButtonState = kShareButton;
-  }
+  self.trailingButtonState =
+      shouldShowVoiceSearch ? kVoiceSearchButton : kShareButton;
 }
 
 - (id<ContextualPanelEntrypointVisibilityDelegate>)
@@ -240,13 +238,23 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   DCHECK(self.badgeView) << "The badge view must be set at this point";
   [self.locationBarSteadyView setBadgeView:self.badgeView];
 
-  if (IsLensOverlayAvailable()) {
-    _lensOverlayPlaceholderView = [[LensOverlayEntrypointButton alloc] init];
+  if (IsLensOverlayAvailable(_profilePrefs)) {
+    _lensOverlayPlaceholderView = [[LensOverlayEntrypointButton alloc]
+        initWithProfilePrefs:_profilePrefs];
     [self.layoutGuideCenter referenceView:_lensOverlayPlaceholderView
                                 underName:kLensOverlayEntrypointGuide];
-    [_lensOverlayPlaceholderView addTarget:self
-                                    action:@selector(openLensOverlay)
-                          forControlEvents:UIControlEventTouchUpInside];
+
+    BOOL showSpeedbumpMenu = GetLensOverlayOnboardingTreatment() ==
+                             LensOverlayOnboardingTreatment::kSpeedbumpMenu;
+    if (showSpeedbumpMenu) {
+      _lensOverlayPlaceholderView.menu = [self createSpeedbumpMenu];
+      _lensOverlayPlaceholderView.showsMenuAsPrimaryAction = YES;
+    } else {
+      [_lensOverlayPlaceholderView
+                 addTarget:self
+                    action:@selector(handleLensEntrypointPressed)
+          forControlEvents:UIControlEventTouchUpInside];
+    }
   }
 
   [_locationBarSteadyView.locationButton
@@ -323,8 +331,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 }
 
 - (void)updateForFullscreenEnabled:(BOOL)enabled {
-  if (!enabled)
+  if (!enabled) {
     [self updateForFullscreenProgress:1.0];
+  }
 }
 
 - (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
@@ -395,7 +404,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 }
 
 - (void)attemptShowingLensOverlayIPH {
-  if (IsLensOverlayAvailable() &&
+  if (IsLensOverlayAvailable(_profilePrefs) &&
       !self.locationBarSteadyView.badgesContainerView.placeholderView.hidden) {
     [self.helpCommandsHandler
         presentInProductHelpWithType:InProductHelpType::kLensOverlayEntrypoint];
@@ -601,7 +610,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     case kShareButton: {
       [self.locationBarSteadyView.trailingButton
                  addTarget:self.dispatcher
-                    action:@selector(sharePage)
+                    action:@selector(showShareSheet)
           forControlEvents:UIControlEventTouchUpInside];
 
       // Add self as a target to collect the metrics.
@@ -660,7 +669,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
           self.locationBarSteadyView.trailingButton.frame.size.width / 2;
       self.locationBarSteadyView.trailingButton.clipsToBounds = YES;
 
-      [self.locationBarSteadyView enableTrailingButton:YES];
+      [self.locationBarSteadyView enableTrailingButton:self.voiceSearchEnabled];
     }
   }
 }
@@ -694,6 +703,37 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   return ios::provider::IsLensSupported() &&
          base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage) &&
          self.lensImageEnabled;
+}
+
+// Creates a new menu to use as the "speedbump" menu for the lens overlay
+// entrypoint. Only used in LensOverlayOnboardingTreatment::kSpeedbumpMenu.
+- (UIMenu*)createSpeedbumpMenu {
+  DCHECK(GetLensOverlayOnboardingTreatment() ==
+         LensOverlayOnboardingTreatment::kSpeedbumpMenu);
+
+  NSString* lensOverlayTitle =
+      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_SCREEN);
+  __weak __typeof__(self) weakSelf = self;
+  UIAction* lensOverlayAction =
+      [UIAction actionWithTitle:lensOverlayTitle
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* /* action */) {
+                          [weakSelf handleLensSpeedbumpMenuOpenLensOverlay];
+                        }];
+
+  NSString* cameraTitle =
+      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_CAMERA);
+  UIAction* viewfinderAction =
+      [UIAction actionWithTitle:cameraTitle
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* /* action */) {
+                          [weakSelf handleLensSpeedbumpMenuOpenLensViewFinder];
+                        }];
+  NSString* menuTitle = l10n_util::GetNSString(IDS_IOS_LENS_PRODUCT_NAME);
+  return [UIMenu menuWithTitle:menuTitle
+                      children:@[ lensOverlayAction, viewfinderAction ]];
 }
 
 #pragma mark - UIContextMenuInteractionDelegate
@@ -933,13 +973,46 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   }
 }
 
+- (void)handleLensSpeedbumpMenuOpenLensViewFinder {
+  RecordAction(UserMetricsAction("MobileToolbarLensOverlayTap"));
+
+  base::UmaHistogramEnumeration(
+      "Lens.Overlay.SpeedbumpMenu",
+      lens::LensOverlaySpeedbumpMenuSelection::kSearchWithCamera);
+  [self openLensViewFinder];
+}
+
+- (void)handleLensSpeedbumpMenuOpenLensOverlay {
+  RecordAction(UserMetricsAction("MobileToolbarLensOverlayTap"));
+
+  base::UmaHistogramEnumeration(
+      "Lens.Overlay.SpeedbumpMenu",
+      lens::LensOverlaySpeedbumpMenuSelection::kSearchYourScreen);
+  [self openLensOverlay];
+}
+
+- (void)handleLensEntrypointPressed {
+  RecordAction(UserMetricsAction("MobileToolbarLensOverlayTap"));
+  [self openLensOverlay];
+}
+
+// Creates and shows the LVF input selection UI.
+- (void)openLensViewFinder {
+  TriggerHapticFeedbackForSelectionChange();
+  OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
+      alloc]
+          initWithEntryPoint:LensEntrypoint::LensOverlayLocationBar
+           presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
+      presentationCompletion:nil];
+  [self.dispatcher openLensInputSelection:command];
+}
+
 // Creates and shows the lens overlay UI.
 - (void)openLensOverlay {
   if (self.tracker) {
     self.tracker->NotifyEvent(
         feature_engagement::events::kLensOverlayEntrypointUsed);
   }
-  RecordAction(UserMetricsAction("MobileToolbarLensOverlayTap"));
   TriggerHapticFeedbackForSelectionChange();
   [self.dispatcher createAndShowLensUI:YES
                             entrypoint:LensOverlayEntrypoint::kLocationBar

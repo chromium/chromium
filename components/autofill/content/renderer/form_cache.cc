@@ -36,9 +36,12 @@ namespace {
 // TODO(crbug.com/40283901): Should an element that IsCheckableElement() also be
 // IsAutofillableInputElement()?
 bool IsFormInteresting(const FormData& form) {
+  auto is_checkable = [](FormControlType type) {
+    return type == FormControlType::kInputCheckbox ||
+           type == FormControlType::kInputRadio;
+  };
   return !form.child_frames().empty() ||
-         std::ranges::any_of(form.fields(),
-                             std::not_fn(&form_util::IsCheckable),
+         std::ranges::any_of(form.fields(), std::not_fn(is_checkable),
                              &FormFieldData::form_control_type) ||
          std::ranges::any_of(form.fields(), std::not_fn(&std::string::empty),
                              &FormFieldData::autocomplete_attribute);
@@ -67,14 +70,20 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   ScopedCallTimer timer("UpdateFormCache", timer_state);
 
   // |extracted_forms_| is re-populated below in ProcessForm().
-  std::map<FormRendererId, FormData> old_extracted_forms =
+  std::map<FormRendererId, std::unique_ptr<FormData>> old_extracted_forms =
       std::move(extracted_forms_);
   extracted_forms_.clear();
 
   UpdateFormCacheResult r;
   r.removed_forms = base::MakeFlatSet<FormRendererId>(
       old_extracted_forms, {},
-      &std::pair<const FormRendererId, FormData>::first);
+      &std::pair<const FormRendererId, std::unique_ptr<FormData>>::first);
+
+  for (const auto& [id, form] : old_extracted_forms) {
+    if (!form) {
+      r.removed_forms.erase(id);
+    }
+  }
 
   size_t num_fields_seen = 0;
   size_t num_frames_seen = 0;
@@ -102,14 +111,13 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     // Store only forms that contain iframes or fields.
     if (IsFormInteresting(form)) {
       FormRendererId form_id = form.renderer_id();
-      DCHECK(extracted_forms_.find(form_id) == extracted_forms_.end());
       auto it = old_extracted_forms.find(form_id);
-      if (it == old_extracted_forms.end() ||
-          !FormData::DeepEqual(std::move(it->second), form)) {
+      if (it == old_extracted_forms.end() || !it->second ||
+          !FormData::DeepEqual(std::move(*it->second), form)) {
         r.updated_forms.push_back(form);
       }
       r.removed_forms.erase(form_id);
-      extracted_forms_[form_id] = std::move(form);
+      extracted_forms_[form_id] = std::make_unique<FormData>(std::move(form));
     }
     return true;
   };
@@ -118,24 +126,24 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   if (!document) {
     return r;
   }
-  for (const blink::WebFormElement& form_element :
-       document.GetTopLevelForms()) {
+  std::vector<blink::WebFormElement> form_elements =
+      document.GetTopLevelForms();
+  // Add a null WebFormElement to account for the form of unowned elements.
+  form_elements.emplace_back();
+
+  bool stop_extracting_forms = false;
+  for (const blink::WebFormElement& form_element : form_elements) {
+    extracted_forms_[form_util::GetFormRendererId(form_element)] = nullptr;
+    if (stop_extracting_forms) {
+      continue;
+    }
     if (std::optional<FormData> form = form_util::ExtractFormData(
             document, form_element, field_data_manager,
             agent_->GetCallTimerState(kUpdateFormCache))) {
       if (!ProcessForm(std::move(*form))) {
-        return r;
+        stop_extracting_forms = true;
       }
     }
-  }
-
-  // Look for more extractable fields outside of forms. Create a synthetic form
-  // from them.
-  std::optional<FormData> synthetic_form = form_util::ExtractFormData(
-      document, blink::WebFormElement(), field_data_manager,
-      agent_->GetCallTimerState(kUpdateFormCache));
-  if (synthetic_form) {
-    ProcessForm(std::move(*synthetic_form));
   }
   return r;
 }

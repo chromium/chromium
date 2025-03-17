@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/media/media_internals.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <list>
 #include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -69,14 +66,18 @@ std::string EffectsToString(int effects) {
   if (effects == media::AudioParameters::NO_EFFECTS)
     return "NO_EFFECTS";
 
-  struct {
+  struct Flags {
     int flag;
     const char* name;
-  } flags[] = {
+  };
+  auto flags = std::to_array<Flags>({
       {media::AudioParameters::ECHO_CANCELLER, "ECHO_CANCELLER"},
       {media::AudioParameters::DUCKING, "DUCKING"},
       {media::AudioParameters::HOTWORD, "HOTWORD"},
-  };
+      {media::AudioParameters::NOISE_SUPPRESSION, "NOISE_SUPPRESSION"},
+      {media::AudioParameters::AUTOMATIC_GAIN_CONTROL,
+       "AUTOMATIC_GAIN_CONTROL"},
+  });
 
   std::string ret;
   for (size_t i = 0; i < std::size(flags); ++i) {
@@ -512,6 +513,12 @@ void MediaInternals::SendGeneralAudioInformation() {
   audio_info_data.Set(media::kChromeWideEchoCancellation.name,
                       base::Value(chrome_wide_echo_cancellation_value_string));
 #endif
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
+  std::string system_echo_cancellation_value_string =
+      media::IsSystemEchoCancellationEnforced() ? "Enabled" : "Disabled";
+  audio_info_data.Set(media::kEnforceSystemEchoCancellation.name,
+                      base::Value(system_echo_cancellation_value_string));
+#endif
   std::u16string audio_info_update =
       SerializeUpdate("media.updateGeneralAudioInformation", audio_info_data);
   SendUpdate(audio_info_update);
@@ -632,8 +639,8 @@ MediaInternals::CreateAudioLogImpl(
     int render_frame_id) {
   base::AutoLock auto_lock(lock_);
   return std::make_unique<AudioLogImpl>(
-      owner_ids_[base::to_underlying(component)]++, component, this,
-      component_id, render_process_id, render_frame_id);
+      UNSAFE_TODO(owner_ids_[base::to_underlying(component)]++), component,
+      this, component_id, render_process_id, render_frame_id);
 }
 
 void MediaInternals::SendUpdate(const std::u16string& update) {
@@ -666,6 +673,12 @@ void MediaInternals::SaveEvent(int process_id,
 
 void MediaInternals::EraseSavedEvents(RenderProcessHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Orderly cleanup can be expensive if there are a lot of active players, so
+  // just skip it during shutdown -- it'll be cleared up by the process kill.
+  if (GetContentClient()->browser()->IsShuttingDown()) {
+    return;
+  }
+
   // TODO(sandersd): Send a termination event before clearing the log.
   saved_events_by_process_.erase(host->GetDeprecatedID());
 }

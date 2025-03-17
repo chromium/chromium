@@ -4,7 +4,6 @@
 
 #include "ash/wm/desks/desk_animation_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
@@ -20,7 +19,6 @@
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/barrier_closure.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -211,8 +209,7 @@ TEST_F(DeskActivationAnimationTest, StartAndEndSwipeBeforeScreenshotsTaken) {
 
 class OverviewDeskNavigationTest : public AshTestBase {
  public:
-  OverviewDeskNavigationTest()
-      : scoped_feature_list_(features::kOverviewDeskNavigation) {}
+  OverviewDeskNavigationTest() {}
   OverviewDeskNavigationTest(const OverviewDeskNavigationTest&) = delete;
   OverviewDeskNavigationTest& operator=(const OverviewDeskNavigationTest&) =
       delete;
@@ -228,9 +225,6 @@ class OverviewDeskNavigationTest : public AshTestBase {
     ASSERT_EQ(2u, desks_controller->desks().size());
     EXPECT_TRUE(desks_controller->GetDeskAtIndex(0)->is_active());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests when we switch between desks in overview that the desk switch animation

@@ -174,28 +174,13 @@ public abstract class Layout {
 
     /**
      * Creates a {@link LayoutTab}.
-     * @param id              The id of the reference {@link Tab} in the {@link TabModel}.
-     * @param isIncognito     Whether the new tab is incognito.
-     * @return                The newly created {@link LayoutTab}.
+     *
+     * @param id The id of the reference {@link Tab} in the {@link TabModel}.
+     * @param isIncognito Whether the new tab is incognito.
+     * @return The newly created {@link LayoutTab}.
      */
     public LayoutTab createLayoutTab(int id, boolean isIncognito) {
-        return createLayoutTab(id, isIncognito, -1.f, -1.f);
-    }
-
-    /**
-     * Creates a {@link LayoutTab}.
-     * @param id               The id of the reference {@link Tab} in the {@link TabModel}.
-     * @param isIncognito      Whether the new tab is incognito.
-     * @param maxContentWidth  The max content width of the tab.  Negative numbers will use the
-     *                         original content width.
-     * @param maxContentHeight The max content height of the tab.  Negative numbers will use the
-     *                         original content height.
-     * @return                 The newly created {@link LayoutTab}.
-     */
-    public LayoutTab createLayoutTab(
-            int id, boolean isIncognito, float maxContentWidth, float maxContentHeight) {
-        LayoutTab layoutTab =
-                mUpdateHost.createLayoutTab(id, isIncognito, maxContentWidth, maxContentHeight);
+        LayoutTab layoutTab = mUpdateHost.createLayoutTab(id, isIncognito);
         initLayoutTabFromHost(layoutTab);
         return layoutTab;
     }

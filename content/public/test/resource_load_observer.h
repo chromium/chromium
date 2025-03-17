@@ -58,7 +58,7 @@ class ResourceLoadObserver : public WebContentsObserver {
       const GURL& referrer,
       const std::string& load_method,
       network::mojom::RequestDestination request_destination,
-      const base::FilePath::StringPieceType& served_file_name,
+      const base::FilePath::StringViewType& served_file_name,
       const std::string& mime_type,
       const std::string& ip_address,
       bool was_cached,

@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Pieskaroties aizpildāmo akreditācijas datu saraksts ir atvērts pilna ekrāna augstumā.</translation>
 <translation id="5591247451101092906">Vai izmantot saglabāto paroli vai piekļuves atslēgu?</translation>
 <translation id="5624120631404540903">Pārvaldīt paroles</translation>
+<translation id="592182999816790476">Konta <ph name="USERNAME" /> parole vietnei <ph name="WEBSITE" /> ir saglabāta.</translation>
 <translation id="6560306912274274630">Lietotāja <ph name="USERNAME" /> piekļuves atslēga. Izmantojiet ekrāna bloķēšanu.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Jauna parole šai vietnei}zero{Jaunas paroles šai vietnei}one{Jaunas paroles šai vietnei}other{Jaunas paroles šai vietnei}}</translation>
 <translation id="7286867818472074330">Atlasīt piekļuves atslēgu</translation>

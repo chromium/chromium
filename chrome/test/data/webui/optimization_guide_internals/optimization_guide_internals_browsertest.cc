@@ -26,6 +26,8 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/prediction_model_override.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
+#include "components/prefs/pref_service.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/test/browser_test.h"
 
 class OptimizationGuideInternalsBrowserTest : public WebUIMochaBrowserTest {
@@ -39,6 +41,8 @@ class OptimizationGuideInternalsBrowserTest : public WebUIMochaBrowserTest {
   }
 
   void RunTestCase(const std::string& testCase) {
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
     RunTestWithoutTestLoader(
         "optimization_guide_internals/optimization_guide_internals_test.js",
         base::StringPrintf(

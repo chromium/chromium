@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/urls.sub.js"></script>
+<body>
+<script>
+async_test(function (t) {
+    window.addEventListener("message", t.step_func(function (e) {
+        if (e.data.hasOwnProperty("useCounted")) {
+            assert_false(e.data.useCounted);
+            t.done();
+        }
+    }));
+    var url = HTTPS_ORIGIN + "/wpt_internal/security/mixed_content/resources/blank.js";
+    window.open(LOCALHOST_HTTP_ORIGIN + "/wpt_internal/security/mixed_content/resources/blockable_mixed_content.html?url=" + encodeURIComponent(url), "_blank");
+}, "A UseCounter should not be recorded if a localhost page loads non-mixed content");
+</script>
+</body>
+</html>

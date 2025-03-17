@@ -139,8 +139,7 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
       (base::Environment::Create()->GetVar(kUsageStatsEnabled,
                                            &env_usage_stats) &&
        env_usage_stats == kUsageStatsEnabledValueEnabled) ||
-      (OtherAppUsageStatsAllowed({UPDATER_APPID, LEGACY_GOOGLE_UPDATE_APPID},
-                                 updater_scope))) {
+      UsageStatsProvider::Create()->AnyAppEnablesUsageStats(updater_scope)) {
     crashpad::Settings* crashpad_settings = database_->GetSettings();
     CHECK(crashpad_settings);
     crashpad_settings->SetUploadsEnabled(true);

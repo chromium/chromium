@@ -34,7 +34,9 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/owned_window_anchor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -88,7 +90,7 @@ namespace views {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(DesktopNativeWidgetAura*,
                              kDesktopNativeWidgetAuraKey,
-                             NULL)
+                             nullptr)
 
 namespace {
 
@@ -422,7 +424,8 @@ void DesktopNativeWidgetAura::NotifyAccessibilityEvent(
   if (!GetWidget() || !GetWidget()->GetRootView()) {
     return;
   }
-  GetWidget()->GetRootView()->NotifyAccessibilityEvent(event_type, true);
+  GetWidget()->GetRootView()->NotifyAccessibilityEventDeprecated(event_type,
+                                                                 true);
 }
 
 void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
@@ -534,7 +537,9 @@ void DesktopNativeWidgetAura::UpdateWindowTransparency() {
 
   auto* window_tree_host = desktop_window_tree_host_->AsWindowTreeHost();
   window_tree_host->compositor()->SetBackgroundColor(
-      transparent ? SK_ColorTRANSPARENT : SK_ColorWHITE);
+      transparent
+          ? SK_ColorTRANSPARENT
+          : GetWidget()->GetColorProvider()->GetColor(ui::kColorFrameActive));
   window_tree_host->window()->SetTransparent(transparent);
 
   content_window_->SetTransparent(transparent);
@@ -617,9 +622,9 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
       cursor_manager_->SetDisplay(
           display::Screen::GetScreen()->GetDisplayNearestWindow(
               host_->window()));
-#if BUILDFLAG(IS_WIN)
-      native_cursor_manager_->InitSystemCursorObservers(cursor_manager_);
-#endif
+      if (features::IsSystemCursorSizeSupported()) {
+        native_cursor_manager_->InitCursorSizeObserver(cursor_manager_);
+      }
     }
     aura::client::SetCursorClient(host_->window(), cursor_manager_);
   }
@@ -1051,6 +1056,12 @@ void DesktopNativeWidgetAura::Restore() {
   }
 }
 
+void DesktopNativeWidgetAura::ShowWindowControlsMenu(const gfx::Point& point) {
+  if (desktop_window_tree_host_) {
+    desktop_window_tree_host_->ShowWindowControlsMenu(point);
+  }
+}
+
 void DesktopNativeWidgetAura::SetFullscreen(bool fullscreen,
                                             int64_t target_display_id) {
   if (desktop_window_tree_host_) {
@@ -1262,8 +1273,11 @@ gfx::Size DesktopNativeWidgetAura::GetMinimumSize() const {
 }
 
 std::optional<gfx::Size> DesktopNativeWidgetAura::GetMaximumSize() const {
-  return native_widget_delegate_ ? native_widget_delegate_->GetMaximumSize()
+  const gfx::Size max_size = native_widget_delegate_
+                                 ? native_widget_delegate_->GetMaximumSize()
                                  : gfx::Size();
+  return !max_size.IsZero() ? std::make_optional<gfx::Size>(max_size)
+                            : std::nullopt;
 }
 
 gfx::NativeCursor DesktopNativeWidgetAura::GetCursor(const gfx::Point& point) {

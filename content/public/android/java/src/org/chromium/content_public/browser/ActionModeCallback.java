@@ -8,12 +8,14 @@ import android.content.Intent;
 import android.view.ActionMode;
 import android.view.View;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * An {@link ActionMode.Callback2} adapter that adds APIs that are not dependent on
  * {@link ActionMode}, {@link android.view.Menu} or {@link android.view.MenuItem}.
  */
+@NullMarked
 public abstract class ActionModeCallback extends ActionMode.Callback2 {
     /**
      * Callback for handling drop-down menu item clicks.
@@ -28,5 +30,5 @@ public abstract class ActionModeCallback extends ActionMode.Callback2 {
             int groupId,
             int id,
             @Nullable Intent intent,
-            @Nullable View.OnClickListener clickListener);
+            View.@Nullable OnClickListener clickListener);
 }

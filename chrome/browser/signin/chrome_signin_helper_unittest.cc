@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
@@ -229,7 +230,7 @@ TEST_F(ChromeSigninHelperTest, FixAccountConsistencyRequestHeader) {
     signin::FixAccountConsistencyRequestHeader(
         &request, GURL(), /*is_off_the_record=*/false,
         /*incognito_availability=*/0, signin::AccountConsistencyMethod::kDice,
-        "gaia_id", /*is_child_account=*/signin::Tribool::kFalse,
+        GaiaId("gaia_id"), /*is_child_account=*/signin::Tribool::kFalse,
         /*is_sync_enabled=*/true, "device_id", cookie_settings.get());
     EXPECT_EQ(
         request.modified_headers().GetHeader(signin::kChromeConnectedHeader),
@@ -242,7 +243,7 @@ TEST_F(ChromeSigninHelperTest, FixAccountConsistencyRequestHeader) {
     signin::FixAccountConsistencyRequestHeader(
         &request, GURL(), /*is_off_the_record=*/false,
         /*incognito_availability=*/0, signin::AccountConsistencyMethod::kDice,
-        "gaia_id", /*is_child_account=*/signin::Tribool::kFalse,
+        GaiaId("gaia_id"), /*is_child_account=*/signin::Tribool::kFalse,
         /*is_sync_enabled=*/true, "device_id", cookie_settings.get());
     std::string expected_header =
         "source=Chrome,id=gaia_id,mode=0,enable_account_consistency=false,"
@@ -390,8 +391,8 @@ TEST_F(ChromeSigninHelperTest, NonEligibleURL) {
   signin::FixAccountConsistencyRequestHeader(
       &request, GURL(), /*is_off_the_record=*/false,
       /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
-      "gaia_id", /*is_child_account=*/signin::Tribool::kFalse,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+      GaiaId("gaia_id"), /*is_child_account=*/signin::Tribool::kFalse,
+#if BUILDFLAG(IS_CHROMEOS)
       /*is_secondary_account_addition_allowed=*/true,
 #endif
       CookieSettingsFactory::GetForProfile(profile()).get());
@@ -406,8 +407,8 @@ TEST_F(ChromeSigninHelperTest, EligibleURL) {
   signin::FixAccountConsistencyRequestHeader(
       &request, GURL(), /*is_off_the_record=*/false,
       /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
-      "gaia_id", /*is_child_account=*/signin::Tribool::kFalse,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+      GaiaId("gaia_id"), /*is_child_account=*/signin::Tribool::kFalse,
+#if BUILDFLAG(IS_CHROMEOS)
       /*is_secondary_account_addition_allowed=*/true,
 #endif
       CookieSettingsFactory::GetForProfile(profile()).get());
@@ -429,8 +430,8 @@ TEST_F(ChromeSigninHelperTest, NonDefaultGaiaOrigin) {
   signin::FixAccountConsistencyRequestHeader(
       &request, GURL(), /*is_off_the_record=*/false,
       /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
-      "gaia_id", /*is_child_account=*/signin::Tribool::kFalse,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+      GaiaId("gaia_id"), /*is_child_account=*/signin::Tribool::kFalse,
+#if BUILDFLAG(IS_CHROMEOS)
       /*is_secondary_account_addition_allowed=*/true,
 #endif
       CookieSettingsFactory::GetForProfile(profile()).get());
@@ -449,20 +450,20 @@ TEST_F(ChromeSigninHelperTest, NonDefaultGaiaOrigin) {
 
 TEST_F(ChromeSigninHelperTest,
        ParseGaiaIdFromRemoveLocalAccountResponseHeader) {
-  EXPECT_EQ("123456",
+  EXPECT_EQ(GaiaId("123456"),
             signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
                 TestResponseAdapter("Google-Accounts-RemoveLocalAccount",
                                     "obfuscatedid=\"123456\"",
                                     /*is_outermost_main_frame=*/false)
                     .GetHeaders()));
-  EXPECT_EQ("123456",
+  EXPECT_EQ(GaiaId("123456"),
             signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
                 TestResponseAdapter("Google-Accounts-RemoveLocalAccount",
                                     "obfuscatedid=\"123456\",foo=\"bar\"",
                                     /*is_outermost_main_frame=*/false)
                     .GetHeaders()));
   EXPECT_EQ(
-      "",
+      GaiaId(),
       signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
           TestResponseAdapter("Google-Accounts-RemoveLocalAccount", "malformed",
                               /*is_outermost_main_frame=*/false)

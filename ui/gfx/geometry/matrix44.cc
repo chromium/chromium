@@ -266,7 +266,7 @@ void Matrix44::Skew(double tan_skew_x, double tan_skew_y) {
   SetCol(1, c1 + c0 * tan_skew_x);
 }
 
-void Matrix44::ApplyDecomposedSkews(const double skews[3]) {
+void Matrix44::ApplyDecomposedSkews(base::span<const double, 3> skews) {
   Double4 c0 = Col(0);
   Double4 c1 = Col(1);
   Double4 c2 = Col(2);

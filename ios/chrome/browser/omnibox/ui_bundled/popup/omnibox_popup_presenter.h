@@ -41,9 +41,10 @@
 
 @end
 
-/// The UI Refresh implementation of the popup presenter.
-/// TODO(crbug.com/40616000): This class should be refactored to handle a nil
-/// delegate.
+/// The  presenter for the omnibox popup (UI with autocomplete suggestions).
+/// Positions the `popupViewController` on the screen using the
+/// `presenterDelegate`. Displays the necessary chrome (backgrounds, rounded
+/// corners, ...) The presentation differs between phones and tablets.
 @interface OmniboxPopupPresenter : NSObject <ToolbarOmniboxConsumer>
 
 /// Whether the popup is open

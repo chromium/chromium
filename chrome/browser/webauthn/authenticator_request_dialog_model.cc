@@ -17,7 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
+#include "chrome/browser/ui/webauthn/authenticator_request_dialog_view_controller.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -29,7 +29,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "device/fido/features.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -91,36 +91,41 @@ AUTHENTICATOR_EVENTS
 
 // static
 std::u16string AuthenticatorRequestDialogModel::GetMechanismDescription(
-    device::AuthenticatorType type,
-    const std::optional<std::string>& phone_name) {
-  if (type == device::AuthenticatorType::kPhone) {
+    const device::DiscoverableCredentialMetadata& cred,
+    const std::optional<std::string>& phone_name,
+    UIPresentation ui_presentation) {
+  if (cred.source == device::AuthenticatorType::kPhone) {
     return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
                                       base::UTF8ToUTF16(*phone_name));
   }
+  if (cred.provider_name) {
+    return base::UTF8ToUTF16(*cred.provider_name);
+  }
   int message;
-  const bool gpm_enabled =
-      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
-  switch (type) {
+  bool immediate_mode = UIPresentation::kModalImmediate == ui_presentation;
+  switch (cred.source) {
     case device::AuthenticatorType::kWinNative:
-      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO_NEW
-                            : IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
+      message = immediate_mode ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO
+                               : IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
       break;
     case device::AuthenticatorType::kTouchID:
-      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_CHROME_PROFILE_NEW
-                            : IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
+      message = immediate_mode
+                    ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE
+                    : IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
       break;
     case device::AuthenticatorType::kICloudKeychain:
-      // TODO(crbug.com/40265798): Use IDS_WEBAUTHN_SOURCE_CUSTOM_VENDOR for
-      // third party providers.
-      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN_NEW
-                            : IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
+      message = immediate_mode
+                    ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN
+                    : IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
       break;
     case device::AuthenticatorType::kEnclave:
-      CHECK(gpm_enabled);
-      message = IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER;
+      message = immediate_mode
+                    ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER
+                    : IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER;
       break;
     case device::AuthenticatorType::kOther:
       // "Other" is USB security keys and the virtual authenticator.
+      CHECK(!immediate_mode);
       message = IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY;
       break;
     default:
@@ -158,21 +163,15 @@ void AuthenticatorRequestDialogModel::SetStep(Step step) {
 
   const StepUIType ui_type = step_ui_type(step_);
   auto* web_contents = GetWebContentsFromFrameHostId(frame_host_id);
-  if (previous_ui_type != ui_type && web_contents) {
-    // The UI observes `OnStepTransition` and updates automatically.
-    switch (ui_type) {
-      case StepUIType::NONE:
-        // Any UI will close itself.
-        break;
-
-      case StepUIType::DIALOG:
-        ShowAuthenticatorRequestDialog(web_contents, this);
-        break;
-
-      case StepUIType::WINDOW:
-        ShowAuthenticatorRequestWindow(web_contents, this);
-        break;
+  if (ui_type != StepUIType::DIALOG) {
+    view_controller_.reset();
+    if (ui_type == StepUIType::WINDOW &&
+        previous_ui_type != StepUIType::WINDOW && web_contents) {
+      ShowAuthenticatorRequestWindow(web_contents, this);
     }
+  } else if (previous_ui_type != StepUIType::DIALOG && web_contents) {
+    view_controller_ =
+        AuthenticatorRequestDialogViewController::Create(web_contents, this);
   }
 
   for (auto& observer : observers) {
@@ -184,7 +183,8 @@ void AuthenticatorRequestDialogModel::DisableUiOrShowLoadingDialog() {
   // If the current step is showing a dialog, disable it. Else, show the GPM
   // Connecting dialog. The native Touch ID control cannot be effectively
   // disabled so that sheet is an exception.
-  if (should_dialog_be_closed() || step() == Step::kGPMTouchID) {
+  if (step() != Step::kPasskeyAutofill &&
+      (should_dialog_be_closed() || step() == Step::kGPMTouchID)) {
     SetStep(Step::kGPMConnecting);
   } else {
     ui_disabled_ = true;
@@ -315,8 +315,9 @@ std::ostream& operator<<(std::ostream& os,
       {Step::kTrustThisComputerCreation, "kTrustThisComputerCreation"},
       {Step::kGPMReauthForPinReset, "kGPMReauthForPinReset"},
       {Step::kGPMLockedPin, "kGPMLockedPin"},
+      {Step::kErrorFetchingChallenge, "kErrorFetchingChallenge"},
   });
-  static_assert(Step::kMaxValue == Step::kGPMLockedPin &&
+  static_assert(Step::kMaxValue == Step::kErrorFetchingChallenge &&
                     kStepNames.size() - 1 == static_cast<int>(Step::kMaxValue),
                 "implement operator<< overload when adding new Step values");
   return os << kStepNames.at(step);

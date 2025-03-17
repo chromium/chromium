@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_SYNC_BOOKMARKS_LOCAL_BOOKMARK_TO_ACCOUNT_MERGER_H_
 #define COMPONENTS_SYNC_BOOKMARKS_LOCAL_BOOKMARK_TO_ACCOUNT_MERGER_H_
 
-#include <unordered_map>
+#include <optional>
+#include <set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/uuid.h"
 
 namespace base {
 class Location;
@@ -23,7 +24,8 @@ class BookmarkNode;
 namespace sync_bookmarks {
 
 // Class responsible for implementing the merge algorithm that allows moving all
-// local bookmarks to become account bookmarks, with the ability to dedup data.
+// or some local bookmarks to become account bookmarks, with the ability to
+// dedup data.
 class LocalBookmarkToAccountMerger {
  public:
   // `model` must not be null and must outlive this object. It must also be
@@ -36,37 +38,56 @@ class LocalBookmarkToAccountMerger {
 
   ~LocalBookmarkToAccountMerger();
 
-  // Merges local bookmarks into account bookmarks.
-  void MoveAndMerge();
+  // Merges all local bookmarks into account bookmarks.
+  void MoveAndMergeAllNodes();
+
+  // Merges a specified subset of local bookmarks into account bookmarks.
+  //
+  // `child_ids_to_merge` contains a list of `BookmarkNode::id()` values. Only
+  // the immediate children of the permanent local folders with these IDs (and
+  // their descendents) will be merged.
+  //
+  // Any IDs that aren't immediate children of the permanent local folders will
+  // simply be ignored (i.e. the caller does not need to prune them).
+  void MoveAndMergeSpecificSubtrees(
+      std::set<int64_t> permanent_folder_child_ids_to_merge);
+
+  // Exposed publicly for testing only.
+  void RemoveChildrenAtForTesting(const bookmarks::BookmarkNode* parent,
+                                  const std::vector<size_t>& indices_to_remove,
+                                  const base::Location& location);
 
  private:
-  // Represents a pair of bookmarks, one in local storage one in account
-  // storage, that have been matched by UUID. They are guaranteed to have the
-  // same type and URL (if applicable).
-  struct GuidMatch {
-    raw_ptr<const bookmarks::BookmarkNode> local_node = nullptr;
-    raw_ptr<const bookmarks::BookmarkNode> account_node = nullptr;
-  };
-
-  // Computes bookmark pairs that should be matched by UUID. Note that matches
-  // may be incompatible, that is, if only one of the two is a folder.
-  static std::unordered_map<base::Uuid, GuidMatch, base::UuidHash>
-  FindGuidMatches(const bookmarks::BookmarkModel* model);
-
   // Removes an arbitrary set of nodes among siblings under `parent`, as
-  // selected by `indices_to_remove`, which must be sorted in ascending order.
-  // `location` is used for logging purposes and investigations.
+  // selected by `indices_to_remove`. `location` is used for logging purposes
+  // and investigations.
   void RemoveChildrenAt(const bookmarks::BookmarkNode* parent,
-                        const std::vector<size_t>& indices_to_remove,
+                        const base::flat_set<size_t>& indices_to_remove,
                         const base::Location& location);
+
+  // Internal implementation containing shared logic for `MoveAndMergeAllNodes`
+  // and `MoveAndMergeSpecificSubtrees`. `child_ids_to_merge` is nullopt for
+  // `MoveAndMergeAllNodes` and contains the list of IDs for
+  // `MoveAndMergeSpecificSubtrees`.
+  void MoveAndMergeInternal(
+      std::optional<std::set<int64_t>> child_ids_to_merge);
 
   // Moves descendants under `local_subtree_root`, excluding the root itself, to
   // append them under `account_subtree_root`. This method tries to remove
   // duplicates by UUID or similarity, which results in merging nodes. Both
   // `local_subtree_root` and `account_subtree_root` must not be null.
+  //
+  // An optional `local_child_ids_to_merge` can be provided, containing a list
+  // of `BookmarkNode::id()` values. If provided, only the immediate children of
+  // `local_subtree_root` with these IDs (and their descendents) will be merged.
+  // If not provided, all descendants of `local_subtree_root` will be merged.
+  //
+  // If this is a recursive call (i.e. the parent of `local_subtree_root` is
+  // being moved), `local_child_ids_to_merge` must be nullopt.
   void MoveOrMergeDescendants(
       const bookmarks::BookmarkNode* local_subtree_root,
-      const bookmarks::BookmarkNode* account_subtree_root);
+      const bookmarks::BookmarkNode* account_subtree_root,
+      std::optional<std::set<int64_t>> local_child_ids_to_merge);
 
   // Moves descendants under `local_subtree_root` if they match an account node
   // by UUID. The remaining local nodes are left unmodified, i.e. those that
@@ -97,7 +118,6 @@ class LocalBookmarkToAccountMerger {
       const bookmarks::BookmarkNode* local_node) const;
 
   const raw_ptr<bookmarks::BookmarkModel> model_;
-  std::unordered_map<base::Uuid, GuidMatch, base::UuidHash> uuid_to_match_map_;
 };
 
 }  // namespace sync_bookmarks

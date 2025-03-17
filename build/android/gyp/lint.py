@@ -42,7 +42,6 @@ _DISABLED_ALWAYS = [
     "VisibleForTests",  # Does not recognize "ForTesting" methods.
     "UniqueConstants",  # Chromium enums allow aliases.
     "UnusedAttribute",  # Chromium apks have various minSdkVersion values.
-    "NullSafeMutableLiveData",  # Broken. See b/370586513.
 ]
 
 _RES_ZIP_DIR = 'RESZIPS'
@@ -346,7 +345,7 @@ def _RunLint(custom_lint_jar_path,
         r'\[UnknownIssueId\]',
         # If all the warnings are filtered, we should not fail on the final
         # summary line.
-        r'\d+ errors, \d+ warnings',
+        r'\d+ errors?, \d+ warnings?',
     ]
     return build_utils.FilterLines(output, '|'.join(filter_patterns))
 
@@ -546,7 +545,7 @@ def main():
            args.create_cache,
            warnings_as_errors=args.warnings_as_errors)
   logging.info('Creating stamp file')
-  build_utils.Touch(args.stamp)
+  server_utils.MaybeTouch(args.stamp)
 
 
 if __name__ == '__main__':

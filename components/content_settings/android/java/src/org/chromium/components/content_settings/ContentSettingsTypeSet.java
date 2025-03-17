@@ -4,7 +4,10 @@
 
 package org.chromium.components.content_settings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Java counter part of content_settings::ContentSettingsTypeSet. */
+@NullMarked
 public final class ContentSettingsTypeSet {
     private final @ContentSettingsType.EnumType int mType;
 

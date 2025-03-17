@@ -133,7 +133,7 @@ void RemoveAppIDsAndSendUninstallPings(
       update_client->SendPing(
           crx_component,
           {.event_type = update_client::protocol_request::kEventUninstall,
-           .result = 1,
+           .result = update_client::protocol_request::kEventResultSuccess,
            .error_code = 0,
            .extra_code1 = ping_reason},
           base::BindOnce(&UninstallPingSent, barrier_closure));

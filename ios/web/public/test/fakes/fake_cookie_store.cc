@@ -34,6 +34,12 @@ void FakeCookieStore::SetCanonicalCookieAsync(
   NOTIMPLEMENTED() << "Implement this if necessary.";
 }
 
+void FakeCookieStore::SetUnsafeCanonicalCookieForTestAsync(
+    std::unique_ptr<net::CanonicalCookie> cookie,
+    SetCookiesCallback callback) {
+  NOTIMPLEMENTED() << "Implement this if necessary.";
+}
+
 void FakeCookieStore::GetCookieListWithOptionsAsync(
     const GURL& url,
     const net::CookieOptions& options,

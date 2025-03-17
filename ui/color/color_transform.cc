@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider_utils.h"
@@ -258,7 +259,7 @@ ColorTransform SelectBasedOnDarkInput(
     DVLOG(2) << "ColorTransform SelectBasedOnDarkInput:" << " Input Color: "
              << SkColorName(input_color)
              << " Input Transform: " << SkColorName(color)
-             << " IsDark: " << (color_utils::IsDark(color) ? "true" : "false")
+             << " IsDark: " << base::ToString(color_utils::IsDark(color))
              << " Result Color: " << SkColorName(result_color);
     return result_color;
   };

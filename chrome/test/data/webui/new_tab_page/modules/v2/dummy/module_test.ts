@@ -51,7 +51,7 @@ suite('NewTabPageModulesDummyModuleTest', () => {
 
     // Assert.
     assertTrue(isVisible(module.$.tiles));
-    const tiles = module.shadowRoot!.querySelectorAll('#tiles .tile-item');
+    const tiles = module.shadowRoot.querySelectorAll('#tiles .tile-item');
     assertEquals(3, tiles.length);
     assertEquals('item3', tiles[2]!.getAttribute('title'));
     assertEquals('baz', tiles[2]!.querySelector('span')!.textContent);
@@ -70,7 +70,7 @@ suite('NewTabPageModulesDummyModuleTest', () => {
 
     // Assert.
     assertFalse(isVisible(module.$.tiles));
-    const tiles = module.shadowRoot!.querySelectorAll('#tiles .tile-item');
+    const tiles = module.shadowRoot.querySelectorAll('#tiles .tile-item');
     assertEquals(0, tiles.length);
   });
 });

@@ -10,5 +10,6 @@
     Exposed=SharedStorageWorklet,
     ImplementedAs=LockManager
 ] partial interface SharedStorageWorkletNavigator {
+    [RaisesException]
     readonly attribute LockManager locks;
 };

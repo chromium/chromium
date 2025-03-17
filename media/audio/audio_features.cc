@@ -12,17 +12,22 @@
 #include "base/mac/mac_util.h"
 #endif
 
-namespace features {
-
-// If enabled, base::DumpWithoutCrashing is called whenever an audio service
-// hang is detected.
-BASE_FEATURE(kDumpOnAudioServiceHang,
-             "DumpOnAudioServiceHang",
+namespace {
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kMacSystemAudioLoopbackOverride,
+             "MacSystemAudioLoopbackOverride",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+}  // namespace
+
+namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables loading and using AAudio instead of OpenSLES on compatible devices,
-// for audio output streams.
+// for audio output streams. This feature is disabled on ATV HDMI dongle devices
+// as OpenSLES provides more accurate output latency on those devices.
+//
+// TODO(crbug.com/401365323): Remove this feature in the future.
 BASE_FEATURE(kUseAAudioDriver,
              "UseAAudioDriver",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -34,11 +39,6 @@ BASE_FEATURE(kUseAAudioInput,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kAllowIAudioClient3,
-             "AllowIAudioClient3",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 }  // namespace features
 
 namespace media {
@@ -49,10 +49,12 @@ bool IsSystemLoopbackCaptureSupported() {
 #elif BUILDFLAG(IS_MAC)
   // Only supported on macOS 13.0+.
   // Not supported on macOS 15.0+ yet.
+  // The override feature is useful for testing on unsupported versions.
   // TODO(crbug.com/365602111): Implement SCContentPicker compatible capture
   // for MacOS 15.
-  return base::mac::MacOSVersion() >= 13'00'00 &&
-         base::mac::MacOSVersion() < 15'00'00;
+  return (base::mac::MacOSVersion() >= 13'00'00 &&
+          base::mac::MacOSVersion() < 15'00'00) ||
+         base::FeatureList::IsEnabled(kMacSystemAudioLoopbackOverride);
 #elif BUILDFLAG(IS_LINUX) && defined(USE_PULSEAUDIO)
   return true;
 #else

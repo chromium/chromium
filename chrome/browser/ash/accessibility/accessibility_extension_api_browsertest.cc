@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -33,6 +36,13 @@
 #include "ui/events/base_event_utils.h"
 
 namespace ash {
+namespace {
+// Written to match function in components/live_caption/caption_util.h
+bool IsLiveCaptionFeatureSupported() {
+  return base::FeatureList::IsEnabled(
+      ash::features::kOnDeviceSpeechRecognition);
+}
+}  // namespace
 
 using ContextType = extensions::browser_test_util::ContextType;
 
@@ -49,9 +59,13 @@ class AccessibilityPrivateApiTest
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
-    // Required for the installFaceGazeAssets API to work.
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityFaceGaze);
+    scoped_feature_list_.InitWithFeatures(
+        {// Required for the installFaceGazeAssets API to work.
+         ::features::kAccessibilityFaceGaze,
+         // Live Caption only works if on-device speech recognition is
+         // available.
+         ash::features::kOnDeviceSpeechRecognition},
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -75,7 +89,7 @@ class AccessibilityPrivateApiTest
     return dictation_bubble_test_helper_.get();
   }
 
-  const std::u16string& GetFaceGazeBubbleText() {
+  std::u16string_view GetFaceGazeBubbleText() {
     FaceGazeBubbleController* controller =
         Shell::Get()
             ->accessibility_controller()
@@ -95,6 +109,17 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, SendSyntheticKeyEvent) {
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
                        GetDisplayNameForLocaleTest) {
   ASSERT_TRUE(RunSubtest("testGetDisplayNameForLocale")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, EnableLiveCaption) {
+  ASSERT_TRUE(IsLiveCaptionFeatureSupported());
+
+  PrefService* prefs = AccessibilityManager::Get()->profile()->GetPrefs();
+
+  ASSERT_FALSE(
+      prefs->GetBoolean("accessibility.captions.live_caption_enabled"));
+  ASSERT_TRUE(RunSubtest("testEnableLiveCaption")) << message_;
+  ASSERT_TRUE(prefs->GetBoolean("accessibility.captions.live_caption_enabled"));
 }
 
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, OpenSettingsSubpage) {

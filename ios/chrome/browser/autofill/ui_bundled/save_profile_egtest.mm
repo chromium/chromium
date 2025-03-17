@@ -11,6 +11,8 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
@@ -19,8 +21,6 @@
 #import "ios/chrome/browser/infobars/ui_bundled/infobar_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_address_profile_modal_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -138,13 +138,22 @@ id<GREYMatcher> EditProfileBottomSheet() {
   [super tearDownHelper];
 }
 
+// TODO(crbug.com/391826905): Re-enable this test on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testEditBottomSheetAlertBySwipingDown \
+  FLAKY_testEditBottomSheetAlertBySwipingDown
+#else
+#define MAYBE_testEditBottomSheetAlertBySwipingDown \
+  testEditBottomSheetAlertBySwipingDown
+#endif
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
   if ([self isRunningTest:@selector(testUserData_LocalEditViaBottomSheet)] ||
       [self
           isRunningTest:@selector(testUserData_LocalHideBottomSheetOnCancel)] ||
-      [self isRunningTest:@selector(testEditBottomSheetAlertBySwipingDown)]) {
+      [self isRunningTest:@selector
+            (MAYBE_testEditBottomSheetAlertBySwipingDown)]) {
     config.features_enabled.push_back(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
   }
@@ -211,6 +220,11 @@ id<GREYMatcher> EditProfileBottomSheet() {
 
   // Wait for the keyboard to appear.
   [ChromeEarlGrey waitForKeyboardToAppear];
+
+  // Wait for suggestions as it may take some time because of form fetch
+  // throttling or other delays.
+  [ChromeEarlGrey
+      waitForMatcher:chrome_test_util::AutofillSuggestionViewMatcher()];
 
   // Tap on the suggestion.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -544,7 +558,8 @@ id<GREYMatcher> EditProfileBottomSheet() {
 
 // Tests that there is an alert shown if the user tries to dismiss an alert
 // after they edited a field in the edit prompt without saving.
-- (void)testEditBottomSheetAlertBySwipingDown {
+// Note that this test is defined above.
+- (void)MAYBE_testEditBottomSheetAlertBySwipingDown {
   // TODO(crbug.com/377270834): Fix implementation on iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");

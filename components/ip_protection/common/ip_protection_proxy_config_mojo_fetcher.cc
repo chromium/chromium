@@ -5,12 +5,16 @@
 #include "components/ip_protection/common/ip_protection_proxy_config_mojo_fetcher.h"
 
 #include <optional>
+#include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/ip_protection/common/ip_protection_core_host_remote.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/mojom/core.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "net/base/proxy_chain.h"
 
 namespace ip_protection {
 

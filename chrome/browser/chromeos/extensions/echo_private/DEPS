@@ -15,7 +15,6 @@ include_rules = [
   "+chrome/browser/ash/notifications",
   "+chrome/browser/ash/settings",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/chromeos/echo",
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/extensions/extension_tab_util.h",
   "+chrome/browser/extensions/window_controller.h",

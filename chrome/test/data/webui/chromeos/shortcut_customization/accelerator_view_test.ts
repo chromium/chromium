@@ -5,10 +5,10 @@
 import 'chrome://shortcut-customization/js/accelerator_view.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
 import {FakeShortcutInputProvider} from 'chrome://resources/ash/common/shortcut_input_ui/fake_shortcut_input_provider.js';
-import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
+import type {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
 import {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 import {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import {KeyInputState, Modifier as ModifierEnum} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
@@ -16,13 +16,14 @@ import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
-import {AcceleratorViewElement, ViewState} from 'chrome://shortcut-customization/js/accelerator_view.js';
+import type {AcceleratorViewElement} from 'chrome://shortcut-customization/js/accelerator_view.js';
+import {ViewState} from 'chrome://shortcut-customization/js/accelerator_view.js';
 import {fakeAcceleratorConfig, fakeDefaultAccelerators, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {setShortcutInputProviderForTesting} from 'chrome://shortcut-customization/js/shortcut_input_mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorSource, LayoutStyle, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/shortcut_customization.mojom-webui.js';
+import type {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -75,41 +76,40 @@ suite('acceleratorViewTest', function() {
   function getPendingKeyElement(shortcutInputElement: ShortcutInputElement):
       ShortcutInputKeyElement {
     return strictQuery(
-        '#pendingKey', shortcutInputElement!.shadowRoot,
+        '#pendingKey', shortcutInputElement.shadowRoot,
         ShortcutInputKeyElement);
   }
 
   function getCtrlElement(shortcutInputElement: ShortcutInputElement):
       ShortcutInputKeyElement {
     return strictQuery(
-        '#ctrlKey', shortcutInputElement!.shadowRoot, ShortcutInputKeyElement);
+        '#ctrlKey', shortcutInputElement.shadowRoot, ShortcutInputKeyElement);
   }
 
   function getShiftElement(shortcutInputElement: ShortcutInputElement):
       ShortcutInputKeyElement {
     return strictQuery(
-        '#shiftKey', shortcutInputElement!.shadowRoot, ShortcutInputKeyElement);
+        '#shiftKey', shortcutInputElement.shadowRoot, ShortcutInputKeyElement);
   }
 
   function getAltElement(shortcutInputElement: ShortcutInputElement):
       ShortcutInputKeyElement {
     return strictQuery(
-        '#altKey', shortcutInputElement!.shadowRoot, ShortcutInputKeyElement);
+        '#altKey', shortcutInputElement.shadowRoot, ShortcutInputKeyElement);
   }
 
   function getSearchElement(shortcutInputElement: ShortcutInputElement):
       ShortcutInputKeyElement {
     return strictQuery(
-        '#searchKey', shortcutInputElement!.shadowRoot,
-        ShortcutInputKeyElement);
+        '#searchKey', shortcutInputElement.shadowRoot, ShortcutInputKeyElement);
   }
 
-  function getLockIcon(): HTMLDivElement {
+  function getLockIcon(): HTMLElement {
     return strictQuery(
         '.lock-icon-container', viewElement!.shadowRoot, HTMLDivElement);
   }
 
-  function getEditIcon(): HTMLDivElement {
+  function getEditIcon(): HTMLElement {
     return strictQuery(
         '.edit-icon-container', viewElement!.shadowRoot, HTMLDivElement);
   }
@@ -145,7 +145,7 @@ suite('acceleratorViewTest', function() {
     await flush();
 
     const shortcutInput = strictQuery(
-        'shortcut-input', viewElement!.shadowRoot, ShortcutInputElement);
+        'shortcut-input', viewElement.shadowRoot, ShortcutInputElement);
 
     let ctrlKey = getCtrlElement(shortcutInput);
     let altKey = getAltElement(shortcutInput);
@@ -264,7 +264,7 @@ suite('acceleratorViewTest', function() {
     await flushTasks();
 
     const shortcutInput = strictQuery(
-        'shortcut-input', viewElement!.shadowRoot, ShortcutInputElement);
+        'shortcut-input', viewElement.shadowRoot, ShortcutInputElement);
 
     const ctrlKey = getCtrlElement(shortcutInput);
     const altKey = getAltElement(shortcutInput);
@@ -465,7 +465,7 @@ suite('acceleratorViewTest', function() {
     await flush();
 
     const shortcutInput = strictQuery(
-        'shortcut-input', viewElement!.shadowRoot, ShortcutInputElement);
+        'shortcut-input', viewElement.shadowRoot, ShortcutInputElement);
     const pendingKey = getPendingKeyElement(shortcutInput);
 
     const fakeResult: AcceleratorResultData = {
@@ -502,7 +502,8 @@ suite('acceleratorViewTest', function() {
 
     assertEquals('LaunchApplication1', pendingKey.key);
     const keyIconElement =
-        pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
+        pendingKey.shadowRoot!.querySelector<IronIconElement>('#key-icon');
+    assertTrue(!!keyIconElement);
     assertEquals('shortcut-input-keys:overview', keyIconElement.icon);
 
     // Simulate SHIFT + BRIGHTNESS_UP, expect the key display to be
@@ -520,7 +521,8 @@ suite('acceleratorViewTest', function() {
 
     assertEquals('BrightnessUp', pendingKey.key);
     const keyIconElement2 =
-        pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
+        pendingKey.shadowRoot!.querySelector<IronIconElement>('#key-icon');
+    assertTrue(!!keyIconElement2);
     assertEquals(
         'shortcut-input-keys:display-brightness-up', keyIconElement2.icon);
 
@@ -538,7 +540,8 @@ suite('acceleratorViewTest', function() {
 
     assertEquals('MicrophoneMuteToggle', pendingKey.key);
     const keyIconElement3 =
-        pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
+        pendingKey.shadowRoot!.querySelector<IronIconElement>('#key-icon');
+    assertTrue(!!keyIconElement3);
     assertEquals('shortcut-input-keys:microphone-mute', keyIconElement3.icon);
 
     // Simulate CONTROL + BACKQUOTE.
@@ -596,7 +599,8 @@ suite('acceleratorViewTest', function() {
     await flush();
 
     const viewContainer =
-        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+        viewElement.shadowRoot!.querySelector<HTMLElement>('#container');
+    assertTrue(!!viewContainer);
     // The icon label is 'show windows'.
     const regex = /^(search|launcher) alt shift show windows$/;
     assertTrue(!!viewContainer.ariaLabel);
@@ -617,7 +621,8 @@ suite('acceleratorViewTest', function() {
     await flush();
 
     const viewContainer =
-        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+        viewElement.shadowRoot!.querySelector<HTMLElement>('#container');
+    assertTrue(!!viewContainer);
     const regex = /^(search|launcher)$/;
     assertTrue(!!viewContainer.ariaLabel);
     assertTrue(regex.test(viewContainer.ariaLabel));
@@ -638,7 +643,7 @@ suite('acceleratorViewTest', function() {
     assertEquals(ViewState.EDIT, viewElement.viewState);
 
     const shortcutInput = strictQuery(
-        'shortcut-input', viewElement!.shadowRoot, ShortcutInputElement);
+        'shortcut-input', viewElement.shadowRoot, ShortcutInputElement);
 
     let ctrlKey = getCtrlElement(shortcutInput);
     let altKey = getAltElement(shortcutInput);

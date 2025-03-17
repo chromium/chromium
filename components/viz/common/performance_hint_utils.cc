@@ -28,8 +28,9 @@ bool CheckThreadIdsDoNotBelongToCurrentProcess(
   if (!base::GetThreadsForCurrentProcess(&privileged_thread_ids)) {
     return false;
   }
+  static_assert(std::is_same_v<pid_t, base::PlatformThreadId::UnderlyingType>);
   for (const auto& tid : thread_ids_from_sandboxed_process) {
-    if (base::Contains(privileged_thread_ids, tid)) {
+    if (base::Contains(privileged_thread_ids, tid.raw())) {
       return false;
     }
   }

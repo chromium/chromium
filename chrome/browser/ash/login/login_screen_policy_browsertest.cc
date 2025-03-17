@@ -233,7 +233,8 @@ class LoginScreenButtonsLocalePolicy : public LoginScreenLocalePolicyTestBase {
 IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy,
                        LoginShelfButtonsTextAndAlignment) {
   // Actual text on the button.
-  std::u16string actual_text = LoginScreenTestApi::GetShutDownButtonLabel();
+  std::u16string_view actual_text =
+      LoginScreenTestApi::GetShutDownButtonLabel();
 
   // Shut down text in the current locale.
   std::u16string expected_text =

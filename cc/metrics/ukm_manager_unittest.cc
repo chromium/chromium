@@ -4,10 +4,10 @@
 
 #include "cc/metrics/ukm_manager.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
@@ -185,7 +185,7 @@ class UkmManagerTest : public testing::Test {
       const EventMetrics::List& events_metrics) {
     std::vector<DispatchTimestamps> event_times;
     event_times.reserve(events_metrics.size());
-    base::ranges::transform(
+    std::ranges::transform(
         events_metrics, std::back_inserter(event_times),
         [](const auto& event_metrics) {
           return DispatchTimestamps{

@@ -5,6 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_TABS_CLOSURE_UTIL_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_TABS_CLOSURE_UTIL_H_
 
+#include <map>
+#include <set>
+
 #import "base/time/time.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/web/public/session/proto/proto_util.h"

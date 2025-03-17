@@ -30,6 +30,13 @@ google::protobuf::RepeatedPtrField<::boca::UserIdentity> GetStudentGroupsSafe(
   return session->roster().student_groups()[0].students();
 }
 
+std::string GetStudentGroupIdSafe(::boca::Session* session) {
+  if (!session || session->roster().student_groups().empty()) {
+    return "";
+  }
+  return session->roster().student_groups()[0].student_group_id();
+}
+
 ::boca::Roster GetRosterSafe(::boca::Session* session) {
   return session ? session->roster() : ::boca::Roster();
 }

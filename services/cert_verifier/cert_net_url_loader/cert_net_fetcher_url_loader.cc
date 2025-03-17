@@ -58,6 +58,7 @@
 
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -72,7 +73,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -469,7 +469,7 @@ void Job::AttachRequest(
 void Job::DetachRequest(CertNetFetcherURLLoader::RequestCore* request) {
   std::unique_ptr<Job> delete_this;
 
-  auto it = base::ranges::find(requests_, request);
+  auto it = std::ranges::find(requests_, request);
   CHECK(it != requests_.end(), base::NotFatalUntil::M130);
   requests_.erase(it);
 

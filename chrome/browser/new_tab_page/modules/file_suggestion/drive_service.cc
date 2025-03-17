@@ -226,6 +226,9 @@ constexpr char kFakeDataWithSixFiles[] = R"({
     }
   ]
 })";
+
+const char kBaseFileIconUrl[] =
+    "https://drive-thirdparty.googleusercontent.com/32/type/";
 }  // namespace
 
 // static
@@ -233,7 +236,7 @@ const char DriveService::kLastDismissedTimePrefName[] =
     "NewTabPage.Drive.LastDimissedTime";
 
 // static
-const base::TimeDelta DriveService::kDismissDuration = base::Days(14);
+const base::TimeDelta DriveService::kDismissDuration = base::Hours(12);
 
 DriveService::~DriveService() = default;
 
@@ -489,7 +492,7 @@ void DriveService::OnJsonParsed(
     }
     auto mojo_drive_doc = file_suggestion::mojom::File::New();
     mojo_drive_doc->title = *title;
-    mojo_drive_doc->mime_type = *mime_type;
+    mojo_drive_doc->icon_url = GURL(kBaseFileIconUrl + *mime_type);
     mojo_drive_doc->justification_text = justification_text;
     mojo_drive_doc->id = *id;
     mojo_drive_doc->item_url = GURL(*item_url);

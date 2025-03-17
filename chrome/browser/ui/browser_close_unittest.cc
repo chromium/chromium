@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -28,7 +27,7 @@
 
 class TestingDownloadCoreService : public DownloadCoreService {
  public:
-  TestingDownloadCoreService() : download_count_(0) {}
+  TestingDownloadCoreService() = default;
 
   TestingDownloadCoreService(const TestingDownloadCoreService&) = delete;
   TestingDownloadCoreService& operator=(const TestingDownloadCoreService&) =
@@ -86,7 +85,7 @@ class TestingDownloadCoreService : public DownloadCoreService {
   void Shutdown() override {}
 
  private:
-  int download_count_;
+  int download_count_ = 0;
 };
 
 static std::unique_ptr<KeyedService> CreateTestingDownloadCoreService(
@@ -96,8 +95,7 @@ static std::unique_ptr<KeyedService> CreateTestingDownloadCoreService(
 
 class BrowserCloseTest : public testing::Test {
  public:
-  BrowserCloseTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()), name_index_(0) {
+  BrowserCloseTest() : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
   }
 
@@ -202,7 +200,7 @@ class BrowserCloseTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  int name_index_;
+  int name_index_ = 0;
 };
 
 // Last window close (incognito window) will trigger warning.
@@ -287,7 +285,7 @@ TEST_F(BrowserCloseTest, LastRegular) {
   EXPECT_EQ(Browser::DownloadCloseType::kBrowserShutdown,
             browser->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
   EXPECT_EQ(num_downloads_blocking, 1);
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(true, browser->CanCloseWithInProgressDownloads());
 #else
   EXPECT_EQ(false, browser->CanCloseWithInProgressDownloads());

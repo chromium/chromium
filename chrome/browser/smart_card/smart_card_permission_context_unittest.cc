@@ -4,20 +4,25 @@
 
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 
+#include "base/check_deref.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker_factory.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/smart_card_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "url/origin.h"
 
 using testing::InSequence;
 using testing::StrictMock;
@@ -31,6 +36,20 @@ class FakeOneTimePermissionsTracker : public OneTimePermissionsTracker {
  public:
   using OneTimePermissionsTracker::NotifyBackgroundTimerExpired;
   using OneTimePermissionsTracker::NotifyLastPageFromOriginClosed;
+};
+
+class TestPermissionsObserver
+    : public content::SmartCardDelegate::PermissionObserver {
+ public:
+  void OnPermissionRevoked(const url::Origin& origin) override {
+    revoked_origins_sequence_.push_back(origin);
+  }
+  const std::vector<url::Origin>& GetRevokedOriginsSequence() const {
+    return revoked_origins_sequence_;
+  }
+
+ private:
+  std::vector<url::Origin> revoked_origins_sequence_;
 };
 
 class FakeSmartCardReaderTracker : public SmartCardReaderTracker {
@@ -202,6 +221,8 @@ TEST_F(SmartCardPermissionContextTest,
            "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
 
   SmartCardPermissionContext permission_context(&profile_);
+  TestPermissionsObserver observer;
+  permission_context.AddObserver(&observer);
 
   GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
 
@@ -213,6 +234,8 @@ TEST_F(SmartCardPermissionContextTest,
   // The ephemeral permission should have been revoked.
   EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
   EXPECT_FALSE(reader_tracker.HasObservers());
+  EXPECT_THAT(observer.GetRevokedOriginsSequence(),
+              testing::ElementsAre(origin_1));
 }
 
 TEST_F(SmartCardPermissionContextTest,
@@ -226,6 +249,8 @@ TEST_F(SmartCardPermissionContextTest,
            "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
 
   SmartCardPermissionContext permission_context(&profile_);
+  TestPermissionsObserver observer;
+  permission_context.AddObserver(&observer);
 
   GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
 
@@ -248,6 +273,8 @@ TEST_F(SmartCardPermissionContextTest, RevokeEphemeralPermissionWhenAppClosed) {
            "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
 
   SmartCardPermissionContext permission_context(&profile_);
+  TestPermissionsObserver observer;
+  permission_context.AddObserver(&observer);
 
   GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
 
@@ -269,6 +296,8 @@ TEST_F(SmartCardPermissionContextTest,
            "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
 
   SmartCardPermissionContext permission_context(&profile_);
+  TestPermissionsObserver observer;
+  permission_context.AddObserver(&observer);
 
   GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
 
@@ -280,6 +309,8 @@ TEST_F(SmartCardPermissionContextTest,
 
   // The ephemeral permission should have been revoked.
   EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  EXPECT_THAT(observer.GetRevokedOriginsSequence(),
+              testing::ElementsAre(origin_1));
 }
 
 // Covers callers of this method such as the PowerSuspendObserver.
@@ -287,16 +318,26 @@ TEST_F(SmartCardPermissionContextTest, RevokeEphemeralPermissions) {
   auto origin_1 = url::Origin::Create(
       GURL("isolated-app://"
            "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
+  auto origin_2 = url::Origin::Create(
+      GURL("isolated-app://"
+           "w2gqjem6b4m7vhiqpjr3btcpp7dxfyjt6h4uuyuxklcsmygtgncaaaac"));
 
   SmartCardPermissionContext permission_context(&profile_);
+  TestPermissionsObserver observer;
+  permission_context.AddObserver(&observer);
 
   GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, origin_2, kDummyReader);
 
   ASSERT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  ASSERT_TRUE(HasReaderPermission(permission_context, origin_2, kDummyReader));
 
   permission_context.RevokeEphemeralPermissions();
 
   EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_2, kDummyReader));
+  EXPECT_THAT(observer.GetRevokedOriginsSequence(),
+              testing::ElementsAre(origin_1, origin_2));
 }
 
 TEST_F(SmartCardPermissionContextTest, Blocked) {
@@ -338,6 +379,13 @@ TEST_F(SmartCardPermissionContextTest, AllowedByPolicy) {
   SetAllowlistedByPolicy(origin_1);
 
   EXPECT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+
+  auto grants = permission_context.GetGrantedObjects(origin_1);
+  ASSERT_EQ(1u, grants.size());
+  EXPECT_EQ(content_settings::SettingSource::kPolicy, grants[0]->source);
+  EXPECT_EQ(l10n_util::GetStringUTF8(
+                IDS_SMART_CARD_POLICY_DESCRIPTION_FOR_ANY_DEVICE),
+            CHECK_DEREF(grants[0]->value.FindString("reader-name")));
 }
 
 TEST_F(SmartCardPermissionContextTest, BlockedByPolicy) {
@@ -395,6 +443,8 @@ TEST_F(SmartCardPermissionContextTest, RevokePersistentPermission) {
   auto origin_3 = url::Origin::Create(GURL("https://cthulhu.rlyeh/"));
 
   SmartCardPermissionContext permission_context(&profile_);
+  TestPermissionsObserver observer;
+  permission_context.AddObserver(&observer);
 
   GrantPersistentReaderPermission(permission_context, origin_1, kDummyReader);
   GrantEphemeralReaderPermission(permission_context, origin_2, kDummyReader);
@@ -413,6 +463,9 @@ TEST_F(SmartCardPermissionContextTest, RevokePersistentPermission) {
   EXPECT_TRUE(HasReaderPermission(permission_context, origin_2, kDummyReader));
   EXPECT_FALSE(
       HasReaderPermission(permission_context, origin_3, kDummyReader2));
+
+  EXPECT_THAT(observer.GetRevokedOriginsSequence(),
+              testing::ElementsAre(origin_1, origin_3));
 
   permission_context.RevokeAllPermissions();
 }

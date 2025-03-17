@@ -233,7 +233,7 @@ class MockWebContentsObserver : public WebContentsObserver {
               (override));
   MOCK_METHOD(void,
               OnCapabilityTypesChanged,
-              (WebContents::CapabilityType capability_type, bool used),
+              (WebContentsCapabilityType capability_type, bool used),
               (override));
   MOCK_METHOD(void, DidUpdateAudioMutingState, (bool muted), (override));
   MOCK_METHOD(void,

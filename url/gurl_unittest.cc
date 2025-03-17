@@ -15,25 +15,97 @@
 #include "url/gurl_abstract_tests.h"
 #include "url/origin.h"
 #include "url/url_canon.h"
-#include "url/url_features.h"
 #include "url/url_test_utils.h"
 
 namespace url {
 
-namespace {
+class GURLTest : public testing::Test {
+ public:
+  GURLTest() = default;
 
-// Returns the canonicalized string for the given URL string for the
-// GURLTest.Types test.
-std::string TypesTestCase(const char* src) {
-  GURL gurl(src);
-  return gurl.possibly_invalid_spec();
-}
+ protected:
+  struct ResolveCase {
+    std::string_view base;
+    std::string_view relative;
+    bool expected_valid;
+    std::optional<std::string_view> expected;
+  };
 
-}  // namespace
+  using ApplyReplacementsFunc = GURL(const GURL&);
+
+  struct ReplaceCase {
+    std::string_view base;
+    ApplyReplacementsFunc* apply_replacements;
+    std::string_view expected;
+  };
+
+  struct ReplaceHostCase {
+    std::string_view base;
+    std::string_view replacement_host;
+    std::string_view expected;
+  };
+
+  struct ReplacePathCase {
+    std::string_view base;
+    std::string_view replacement_path;
+    std::string_view expected;
+  };
+
+  // Returns the canonicalized string for the given URL string for the
+  // GURLTest.Types test.
+  std::string TypesTestCase(const char* src) {
+    GURL gurl(src);
+    return gurl.possibly_invalid_spec();
+  }
+
+  void TestResolve(const ResolveCase& resolve_case) {
+    // 8-bit code path.
+    GURL input(resolve_case.base);
+    GURL output = input.Resolve(resolve_case.relative);
+    EXPECT_EQ(resolve_case.expected_valid, output.is_valid());
+    EXPECT_EQ(resolve_case.expected, output.spec());
+    EXPECT_EQ(output.SchemeIsFileSystem(), output.inner_url() != nullptr);
+
+    // Wide code path.
+    GURL inputw(base::UTF8ToUTF16(resolve_case.base));
+    GURL outputw = input.Resolve(base::UTF8ToUTF16(resolve_case.relative));
+    EXPECT_EQ(resolve_case.expected_valid, outputw.is_valid());
+    EXPECT_EQ(resolve_case.expected, outputw.spec());
+    EXPECT_EQ(outputw.SchemeIsFileSystem(), outputw.inner_url() != nullptr);
+  }
+
+  void TestReplace(const ReplaceCase& replace) {
+    GURL output = replace.apply_replacements(GURL(replace.base));
+    EXPECT_EQ(output.spec(), replace.expected);
+    EXPECT_EQ(output.SchemeIsFileSystem(), output.inner_url() != nullptr);
+    if (output.SchemeIsFileSystem()) {
+      // TODO(mmenke): inner_url()->spec() is currently the same as the spec()
+      // for the GURL itself.  This should be fixed.
+      // See https://crbug.com/619596
+      EXPECT_EQ(output.inner_url()->spec(), replace.expected);
+    }
+  }
+
+  void TestReplaceHost(const ReplaceHostCase& replace) {
+    GURL url(replace.base);
+    GURL::Replacements replacements;
+    replacements.SetHostStr(replace.replacement_host);
+    GURL output = url.ReplaceComponents(replacements);
+    EXPECT_EQ(output.spec(), replace.expected);
+  }
+
+  void TestReplacePath(const ReplacePathCase& replace) {
+    GURL url(replace.base);
+    GURL::Replacements replacements;
+    replacements.SetPathStr(replace.replacement_path);
+    GURL output = url.ReplaceComponents(replacements);
+    EXPECT_EQ(output.spec(), replace.expected);
+  }
+};
 
 // Different types of URLs should be handled differently, and handed off to
 // different canonicalizers.
-TEST(GURLTest, Types) {
+TEST_F(GURLTest, Types) {
   // URLs with unknown schemes should be treated as path URLs, even when they
   // have things like "://".
   EXPECT_EQ("something:///HOSTNAME.com/",
@@ -58,7 +130,7 @@ TEST(GURLTest, Types) {
 // Test the basic creation and querying of components in a GURL. We assume that
 // the parser is already tested and works, so we are mostly interested if the
 // object does the right thing with the results.
-TEST(GURLTest, Components) {
+TEST_F(GURLTest, Components) {
   GURL empty_url(u"");
   EXPECT_TRUE(empty_url.is_empty());
   EXPECT_FALSE(empty_url.is_valid());
@@ -109,7 +181,7 @@ TEST(GURLTest, Components) {
   EXPECT_EQ("q=r%2Es", url_percent_escaped.query());
 }
 
-TEST(GURLTest, Empty) {
+TEST_F(GURLTest, Empty) {
   GURL url;
   EXPECT_FALSE(url.is_valid());
   EXPECT_EQ("", url.spec());
@@ -125,7 +197,7 @@ TEST(GURLTest, Empty) {
   EXPECT_EQ("", url.ref());
 }
 
-TEST(GURLTest, Copy) {
+TEST_F(GURLTest, Copy) {
   GURL url(u"http://user:pass@google.com:99/foo;bar?q=a#ref");
 
   GURL url2(url);
@@ -158,7 +230,7 @@ TEST(GURLTest, Copy) {
   EXPECT_EQ("", invalid2.ref());
 }
 
-TEST(GURLTest, Assign) {
+TEST_F(GURLTest, Assign) {
   GURL url(u"http://user:pass@google.com:99/foo;bar?q=a#ref");
 
   GURL url2;
@@ -194,13 +266,13 @@ TEST(GURLTest, Assign) {
 }
 
 // This is a regression test for http://crbug.com/309975.
-TEST(GURLTest, SelfAssign) {
+TEST_F(GURLTest, SelfAssign) {
   GURL a("filesystem:http://example.com/temporary/");
   // This should not crash.
   a = *&a;  // The *& defeats Clang's -Wself-assign warning.
 }
 
-TEST(GURLTest, CopyFileSystem) {
+TEST_F(GURLTest, CopyFileSystem) {
   GURL url(u"filesystem:https://user:pass@google.com:99/t/foo;bar?q=a#ref");
 
   GURL url2(url);
@@ -230,8 +302,8 @@ TEST(GURLTest, CopyFileSystem) {
   EXPECT_EQ("", inner->ref());
 }
 
-TEST(GURLTest, IsValid) {
-  auto valid_cases = std::to_array<const char*>({
+TEST_F(GURLTest, IsValid) {
+  static constexpr auto valid_cases = std::to_array<const char*>({
       "http://google.com",
       "unknown://google.com",
       "http://user:pass@google.com",
@@ -244,12 +316,11 @@ TEST(GURLTest, IsValid) {
       "http:/path",
       "http:path",
   });
-  for (size_t i = 0; i < std::size(valid_cases); i++) {
-    EXPECT_TRUE(GURL(valid_cases[i]).is_valid())
-        << "Case: " << valid_cases[i];
+  for (const char* valid_case : valid_cases) {
+    EXPECT_TRUE(GURL(valid_case).is_valid()) << "Case: " << valid_case;
   }
 
-  auto invalid_cases = std::to_array<const char*>({
+  static constexpr auto invalid_cases = std::to_array<const char*>({
       "http://?k=v",
       "http:://google.com",
       "http//google.com",
@@ -259,13 +330,12 @@ TEST(GURLTest, IsValid) {
       "://google.com",
       "path",
   });
-  for (size_t i = 0; i < std::size(invalid_cases); i++) {
-    EXPECT_FALSE(GURL(invalid_cases[i]).is_valid())
-        << "Case: " << invalid_cases[i];
+  for (const char* invalid_case : invalid_cases) {
+    EXPECT_FALSE(GURL(invalid_case).is_valid()) << "Case: " << invalid_case;
   }
 }
 
-TEST(GURLTest, ExtraSlashesBeforeAuthority) {
+TEST_F(GURLTest, ExtraSlashesBeforeAuthority) {
   // According to RFC3986, the hierarchical part for URI with an authority
   // must use only two slashes; GURL intentionally just ignores extra slashes
   // if there are more than 2, and parses the following part as an authority.
@@ -275,7 +345,7 @@ TEST(GURLTest, ExtraSlashesBeforeAuthority) {
 }
 
 // Given invalid URLs, we should still get most of the components.
-TEST(GURLTest, ComponentGettersWorkEvenForInvalidURL) {
+TEST_F(GURLTest, ComponentGettersWorkEvenForInvalidURL) {
   constexpr struct InvalidURLTestExpectations {
     const char* url;
     const char* spec;
@@ -319,17 +389,11 @@ TEST(GURLTest, ComponentGettersWorkEvenForInvalidURL) {
   }
 }
 
-TEST(GURLTest, Resolve) {
+TEST_F(GURLTest, Resolve) {
   // The tricky cases for relative URL resolving are tested in the
   // canonicalizer unit test. Here, we just test that the GURL integration
   // works properly.
-  struct ResolveCase {
-    const char* base;
-    const char* relative;
-    bool expected_valid;
-    const char* expected;
-  };
-  auto resolve_cases = std::to_array<ResolveCase>({
+  static constexpr ResolveCase resolve_cases[] = {
       {"http://www.google.com/", "foo.html", true,
        "http://www.google.com/foo.html"},
       {"http://www.google.com/foo/", "bar", true,
@@ -373,204 +437,82 @@ TEST(GURLTest, Resolve) {
       {"file:///some/dir/", "x-://host", true, "x-://host"},
       {"file:///some/dir/", "x!://host", true, "file:///some/dir/x!://host"},
       {"file:///some/dir/", "://host", true, "file:///some/dir/://host"},
-  });
 
-  for (size_t i = 0; i < std::size(resolve_cases); i++) {
-    // 8-bit code path.
-    GURL input(resolve_cases[i].base);
-    GURL output = input.Resolve(resolve_cases[i].relative);
-    EXPECT_EQ(resolve_cases[i].expected_valid, output.is_valid()) << i;
-    EXPECT_EQ(resolve_cases[i].expected, output.spec()) << i;
-    EXPECT_EQ(output.SchemeIsFileSystem(), output.inner_url() != NULL);
+      // Non-special base URLs whose paths are empty.
+      {"git://host", "", true, "git://host"},
+      {"git://host", ".", true, "git://host/"},
+      {"git://host", "..", true, "git://host/"},
+      {"git://host", "a", true, "git://host/a"},
+      {"git://host", "/a", true, "git://host/a"},
 
-    // Wide code path.
-    GURL inputw(base::UTF8ToUTF16(resolve_cases[i].base));
-    GURL outputw =
-        input.Resolve(base::UTF8ToUTF16(resolve_cases[i].relative));
-    EXPECT_EQ(resolve_cases[i].expected_valid, outputw.is_valid()) << i;
-    EXPECT_EQ(resolve_cases[i].expected, outputw.spec()) << i;
-    EXPECT_EQ(outputw.SchemeIsFileSystem(), outputw.inner_url() != NULL);
+      // Non-special base URLs whose paths are "/".
+      {"git://host/", "", true, "git://host/"},
+      {"git://host/", ".", true, "git://host/"},
+      {"git://host/", "..", true, "git://host/"},
+      {"git://host/", "a", true, "git://host/a"},
+      {"git://host/", "/a", true, "git://host/a"},
+
+      // Non-special base URLs whose hosts and paths are non-empty.
+      {"git://host/b", "a", true, "git://host/a"},
+      {"git://host/b/c", "a", true, "git://host/b/a"},
+      {"git://host/b/c", "../a", true, "git://host/a"},
+
+      // An opaque path can be specified.
+      {"git://host", "git:opaque", true, "git:opaque"},
+      {"git://host/path#ref", "git:opaque", true, "git:opaque"},
+      {"git:/path", "git:opaque", true, "git:opaque"},
+      {"https://host/path", "git:opaque", true, "git:opaque"},
+
+      // Path-only base URLs should remain path-only URLs unless a host is
+      // specified.
+      {"git:/", "", true, "git:/"},
+      {"git:/", ".", true, "git:/"},
+      {"git:/", "..", true, "git:/"},
+      {"git:/", "a", true, "git:/a"},
+      {"git:/", "/a", true, "git:/a"},
+      {"git:/#ref", "", true, "git:/"},
+      {"git:/#ref", "a", true, "git:/a"},
+
+      // Non-special base URLs whose hosts and path are both empty. The
+      // result's host should remain empty unless a relative URL specify a
+      // host.
+      {"git://", "", true, "git://"},
+      {"git://", ".", true, "git:///"},
+      {"git://", "..", true, "git:///"},
+      {"git://", "a", true, "git:///a"},
+      {"git://", "/a", true, "git:///a"},
+
+      // Non-special base URLs whose hosts are empty, but with non-empty path.
+      {"git:///", "", true, "git:///"},
+      {"git:///", ".", true, "git:///"},
+      {"git:///", "..", true, "git:///"},
+      {"git:///", "a", true, "git:///a"},
+      {"git:///", "/a", true, "git:///a"},
+      {"git:///#ref", "", true, "git:///"},
+      {"git:///#ref", "a", true, "git:///a"},
+
+      // Relative URLs can specify empty hosts for non-special base URLs.
+      // e.g. "///path"
+      {"git://host/", "//", true, "git://"},
+      {"git://host/", "//a", true, "git://a"},
+      {"git://host/", "///", true, "git:///"},
+      {"git://host/", "////", true, "git:////"},
+      {"git://host/", "////..", true, "git:///"},
+      {"git://host/", "////../..", true, "git:///"},
+      {"git://host/", "////../../..", true, "git:///"},
+  };
+
+  for (const ResolveCase& c : resolve_cases) {
+    TestResolve(c);
   }
 }
 
-class GURLTypedTest : public ::testing::TestWithParam<bool> {
- public:
-  GURLTypedTest()
-      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
-    if (use_standard_compliant_non_special_scheme_url_parsing_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          kStandardCompliantNonSpecialSchemeURLParsing);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kStandardCompliantNonSpecialSchemeURLParsing);
-    }
-  }
-
- protected:
-  struct ResolveCase {
-    std::string_view base;
-    std::string_view relative;
-    std::optional<std::string_view> expected;
-  };
-
-  using ApplyReplacementsFunc = GURL(const GURL&);
-
-  struct ReplaceCase {
-    std::string_view base;
-    ApplyReplacementsFunc* apply_replacements;
-    std::string_view expected;
-  };
-
-  struct ReplaceHostCase {
-    std::string_view base;
-    std::string_view replacement_host;
-    std::string_view expected;
-  };
-
-  struct ReplacePathCase {
-    std::string_view base;
-    std::string_view replacement_path;
-    std::string_view expected;
-  };
-
-  void TestResolve(const ResolveCase& resolve_case) {
-    SCOPED_TRACE(testing::Message() << "base: " << resolve_case.base
-                                    << ", relative: " << resolve_case.relative);
-    GURL input(resolve_case.base);
-    GURL output = input.Resolve(resolve_case.relative);
-    if (resolve_case.expected) {
-      ASSERT_TRUE(output.is_valid());
-      EXPECT_EQ(output.spec(), *resolve_case.expected);
-    } else {
-      EXPECT_FALSE(output.is_valid());
-    }
-  }
-
-  void TestReplace(const ReplaceCase& replace) {
-    GURL output = replace.apply_replacements(GURL(replace.base));
-    EXPECT_EQ(output.spec(), replace.expected);
-  }
-
-  void TestReplaceHost(const ReplaceHostCase& replace) {
-    GURL url(replace.base);
-    GURL::Replacements replacements;
-    replacements.SetHostStr(replace.replacement_host);
-    GURL output = url.ReplaceComponents(replacements);
-    EXPECT_EQ(output.spec(), replace.expected);
-  }
-
-  void TestReplacePath(const ReplacePathCase& replace) {
-    GURL url(replace.base);
-    GURL::Replacements replacements;
-    replacements.SetPathStr(replace.replacement_path);
-    GURL output = url.ReplaceComponents(replacements);
-    EXPECT_EQ(output.spec(), replace.expected);
-  }
-
-  bool use_standard_compliant_non_special_scheme_url_parsing_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(GURLTypedTest, Resolve) {
-  // Test flag-dependent behaviors.
-  // Existing tests in GURLTest::Resolve cover common cases.
-  if (use_standard_compliant_non_special_scheme_url_parsing_) {
-    ResolveCase cases[] = {
-        // Non-special base URLs whose paths are empty.
-        {"git://host", "", "git://host"},
-        {"git://host", ".", "git://host/"},
-        {"git://host", "..", "git://host/"},
-        {"git://host", "a", "git://host/a"},
-        {"git://host", "/a", "git://host/a"},
-
-        // Non-special base URLs whose paths are "/".
-        {"git://host/", "", "git://host/"},
-        {"git://host/", ".", "git://host/"},
-        {"git://host/", "..", "git://host/"},
-        {"git://host/", "a", "git://host/a"},
-        {"git://host/", "/a", "git://host/a"},
-
-        // Non-special base URLs whose hosts and paths are non-empty.
-        {"git://host/b", "a", "git://host/a"},
-        {"git://host/b/c", "a", "git://host/b/a"},
-        {"git://host/b/c", "../a", "git://host/a"},
-
-        // An opaque path can be specified.
-        {"git://host", "git:opaque", "git:opaque"},
-        {"git://host/path#ref", "git:opaque", "git:opaque"},
-        {"git:/path", "git:opaque", "git:opaque"},
-        {"https://host/path", "git:opaque", "git:opaque"},
-
-        // Path-only base URLs should remain path-only URLs unless a host is
-        // specified.
-        {"git:/", "", "git:/"},
-        {"git:/", ".", "git:/"},
-        {"git:/", "..", "git:/"},
-        {"git:/", "a", "git:/a"},
-        {"git:/", "/a", "git:/a"},
-        {"git:/#ref", "", "git:/"},
-        {"git:/#ref", "a", "git:/a"},
-
-        // Non-special base URLs whose hosts and path are both empty. The
-        // result's host should remain empty unless a relative URL specify a
-        // host.
-        {"git://", "", "git://"},
-        {"git://", ".", "git:///"},
-        {"git://", "..", "git:///"},
-        {"git://", "a", "git:///a"},
-        {"git://", "/a", "git:///a"},
-
-        // Non-special base URLs whose hosts are empty, but with non-empty path.
-        {"git:///", "", "git:///"},
-        {"git:///", ".", "git:///"},
-        {"git:///", "..", "git:///"},
-        {"git:///", "a", "git:///a"},
-        {"git:///", "/a", "git:///a"},
-        {"git:///#ref", "", "git:///"},
-        {"git:///#ref", "a", "git:///a"},
-
-        // Relative URLs can specify empty hosts for non-special base URLs.
-        // e.g. "///path"
-        {"git://host/", "//", "git://"},
-        {"git://host/", "//a", "git://a"},
-        {"git://host/", "///", "git:///"},
-        {"git://host/", "////", "git:////"},
-        {"git://host/", "////..", "git:///"},
-        {"git://host/", "////../..", "git:///"},
-        {"git://host/", "////../../..", "git:///"},
-    };
-    for (const auto& i : cases) {
-      TestResolve(i);
-    }
-  } else {
-    ResolveCase cases[] = {
-        {"git:/", "", "git:/"},
-        {"git:/", "a", "git:/a"},
-        {"git:/path", "a", "git:/a"},
-        // All non-special base URLs which don't start with a *single* slash
-        // can not be resolved with a relative URL.
-        {"git:", "", std::nullopt},
-        {"git://host", "", std::nullopt},
-        {"git://host", "a", std::nullopt},
-        {"git://", "", std::nullopt},
-        {"git:///", "", std::nullopt},
-    };
-    for (const auto& i : cases) {
-      TestResolve(i);
-    }
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(All, GURLTypedTest, ::testing::Bool());
-
-TEST(GURLTest, GetOrigin) {
+TEST_F(GURLTest, GetOrigin) {
   struct TestCase {
     const char* input;
     const char* expected;
   };
-  auto cases = std::to_array<TestCase>({
+  static constexpr auto cases = std::to_array<TestCase>({
       {"http://www.google.com", "http://www.google.com/"},
       {"javascript:window.alert(\"hello,world\");", ""},
       {"http://user:pass@www.google.com:21/blah#baz",
@@ -585,19 +527,20 @@ TEST(GURLTest, GetOrigin) {
       {"blob:null/guid-goes-here", ""},
       {"blob:http://origin/guid-goes-here", "" /* should be http://origin/ */},
   });
-  for (size_t i = 0; i < std::size(cases); i++) {
-    GURL url(cases[i].input);
+
+  for (const TestCase& c : cases) {
+    GURL url(c.input);
     GURL origin = url.DeprecatedGetOriginAsURL();
-    EXPECT_EQ(cases[i].expected, origin.spec());
+    EXPECT_EQ(c.expected, origin.spec());
   }
 }
 
-TEST(GURLTest, GetAsReferrer) {
+TEST_F(GURLTest, GetAsReferrer) {
   struct TestCase {
     const char* input;
     const char* expected;
   };
-  auto cases = std::to_array<TestCase>({
+  static constexpr auto cases = std::to_array<TestCase>({
       {"http://www.google.com", "http://www.google.com/"},
       {"http://user:pass@www.google.com:21/blah#baz",
        "http://www.google.com:21/blah"},
@@ -611,19 +554,19 @@ TEST(GURLTest, GetAsReferrer) {
       {"file:///tmp/test.html", ""},
       {"https://www.google.com", "https://www.google.com/"},
   });
-  for (size_t i = 0; i < std::size(cases); i++) {
-    GURL url(cases[i].input);
+  for (const TestCase& c : cases) {
+    GURL url(c.input);
     GURL origin = url.GetAsReferrer();
-    EXPECT_EQ(cases[i].expected, origin.spec());
+    EXPECT_EQ(c.expected, origin.spec());
   }
 }
 
-TEST(GURLTest, GetWithEmptyPath) {
+TEST_F(GURLTest, GetWithEmptyPath) {
   struct TestCase {
     const char* input;
     const char* expected;
   };
-  auto cases = std::to_array<TestCase>({
+  static constexpr auto cases = std::to_array<TestCase>({
       {"http://www.google.com", "http://www.google.com/"},
       {"javascript:window.alert(\"hello, world\");", ""},
       {"http://www.google.com/foo/bar.html?baz=22", "http://www.google.com/"},
@@ -632,20 +575,19 @@ TEST(GURLTest, GetWithEmptyPath) {
       {"filesystem:file:///temporary/bar.html?baz=22",
        "filesystem:file:///temporary/"},
   });
-
-  for (size_t i = 0; i < std::size(cases); i++) {
-    GURL url(cases[i].input);
+  for (const auto& c : cases) {
+    GURL url(c.input);
     GURL empty_path = url.GetWithEmptyPath();
-    EXPECT_EQ(cases[i].expected, empty_path.spec());
+    EXPECT_EQ(c.expected, empty_path.spec());
   }
 }
 
-TEST(GURLTest, GetWithoutFilename) {
+TEST_F(GURLTest, GetWithoutFilename) {
   struct TestCase {
     const char* input;
     const char* expected;
   };
-  auto cases = std::to_array<TestCase>({
+  static constexpr auto cases = std::to_array<TestCase>({
       // Common Standard URLs.
       {"https://www.google.com", "https://www.google.com/"},
       {"https://www.google.com/", "https://www.google.com/"},
@@ -689,19 +631,19 @@ TEST(GURLTest, GetWithoutFilename) {
       {"foobar", ""},
   });
 
-  for (size_t i = 0; i < std::size(cases); i++) {
-    GURL url(cases[i].input);
+  for (const auto& c : cases) {
+    GURL url(c.input);
     GURL without_filename = url.GetWithoutFilename();
-    EXPECT_EQ(cases[i].expected, without_filename.spec()) << i;
+    EXPECT_EQ(c.expected, without_filename.spec());
   }
 }
 
-TEST(GURLTest, GetWithoutRef) {
+TEST_F(GURLTest, GetWithoutRef) {
   struct TestCase {
     const char* input;
     const char* expected;
   };
-  auto cases = std::to_array<TestCase>({
+  static constexpr auto cases = std::to_array<TestCase>({
       // Common Standard URLs.
       {"https://www.google.com/index.html",
        "https://www.google.com/index.html"},
@@ -765,24 +707,18 @@ TEST(GURLTest, GetWithoutRef) {
       {"foobar", ""},
   });
 
-  for (size_t i = 0; i < std::size(cases); i++) {
-    GURL url(cases[i].input);
+  for (const auto& i : cases) {
+    GURL url(i.input);
     GURL without_ref = url.GetWithoutRef();
-    EXPECT_EQ(cases[i].expected, without_ref.spec());
+    EXPECT_EQ(i.expected, without_ref.spec());
   }
 }
 
-TEST(GURLTest, Replacements) {
+TEST_F(GURLTest, Replacements) {
   // The URL canonicalizer replacement test will handle most of these case.
   // The most important thing to do here is to check that the proper
   // canonicalizer gets called based on the scheme of the input.
-  struct ReplaceCase {
-    using ApplyReplacementsFunc = GURL(const GURL&);
-
-    const char* base;
-    ApplyReplacementsFunc* apply_replacements;
-    const char* expected;
-  } replace_cases[] = {
+  static constexpr ReplaceCase replace_cases[] = {
       {.base = "http://www.google.com/foo/bar.html?foo#bar",
        .apply_replacements =
            +[](const GURL& url) {
@@ -857,120 +793,84 @@ TEST(GURLTest, Replacements) {
              return url.ReplaceComponents(replacements);
            },
        .expected = "steam:b"},
-  };
+
+      // Test cases that Chromium used to parse incorrectly.
+      {.base = "git://a1/a2?a3=a4#a5",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetHostStr("b1");
+             replacements.SetPortStr("99");
+             replacements.SetPathStr("b2");
+             replacements.SetQueryStr("b3=b4");
+             replacements.SetRefStr("b5");
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "git://b1:99/b2?b3=b4#b5"},
+      // URL Standard: https://url.spec.whatwg.org/#dom-url-username
+      // > 1. If this’s URL cannot have a username/password/port, then return.
+      {.base = "git:///",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetUsernameStr("x");
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "git:///"},
+      // URL Standard: https://url.spec.whatwg.org/#dom-url-password
+      // > 1. If this’s URL cannot have a username/password/port, then return.
+      {.base = "git:///",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetPasswordStr("x");
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "git:///"},
+      // URL Standard: https://url.spec.whatwg.org/#dom-url-port
+      // > 1. If this’s URL cannot have a username/password/port, then return.
+      {.base = "git:///",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetPortStr("80");
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "git:///"}};
 
   for (const ReplaceCase& c : replace_cases) {
-    GURL output = c.apply_replacements(GURL(c.base));
-
-    EXPECT_EQ(c.expected, output.spec());
-
-    EXPECT_EQ(output.SchemeIsFileSystem(), output.inner_url() != NULL);
-    if (output.SchemeIsFileSystem()) {
-      // TODO(mmenke): inner_url()->spec() is currently the same as the spec()
-      // for the GURL itself.  This should be fixed.
-      // See https://crbug.com/619596
-      EXPECT_EQ(c.expected, output.inner_url()->spec());
-    }
+    TestReplace(c);
   }
-}
 
-TEST_P(GURLTypedTest, Replacements) {
-  // Test flag-dependent behavior.
-  // Existing tests in GURLTest::Replacements cover common cases.
+  static constexpr ReplaceHostCase replace_host_cases[] = {
+      {"git:/", "host", "git://host/"},
+      {"git:/a", "host", "git://host/a"},
+      {"git://", "host", "git://host"},
+      {"git:///", "host", "git://host/"},
+      {"git://h/a", "host", "git://host/a"},
+      // The following behavior is different from Web-facing URL APIs
+      // because DOMURLUtils::setHostname disallows setting an empty host.
+      //
+      // Web-facing URL API behavior is:
+      // > const url = new URL("git://u:p@h:80/");
+      // > url.hostname = "";
+      // > assertEquals(url.href, "git://u:p@h:80/");
+      {"git://u:p@h:80/", "", "git:///"}};
+  for (const ReplaceHostCase& c : replace_host_cases) {
+    TestReplaceHost(c);
+  }
 
-  if (use_standard_compliant_non_special_scheme_url_parsing_) {
-    ReplaceCase replace_cases[] = {
-        {.base = "git://a1/a2?a3=a4#a5",
-         .apply_replacements =
-             +[](const GURL& url) {
-               GURL::Replacements replacements;
-               replacements.SetHostStr("b1");
-               replacements.SetPortStr("99");
-               replacements.SetPathStr("b2");
-               replacements.SetQueryStr("b3=b4");
-               replacements.SetRefStr("b5");
-               return url.ReplaceComponents(replacements);
-             },
-         .expected = "git://b1:99/b2?b3=b4#b5"},
-        // URL Standard: https://url.spec.whatwg.org/#dom-url-username
-        // > 1. If this’s URL cannot have a username/password/port, then return.
-        {.base = "git:///",
-         .apply_replacements =
-             +[](const GURL& url) {
-               GURL::Replacements replacements;
-               replacements.SetUsernameStr("x");
-               return url.ReplaceComponents(replacements);
-             },
-         .expected = "git:///"},
-        // URL Standard: https://url.spec.whatwg.org/#dom-url-password
-        // > 1. If this’s URL cannot have a username/password/port, then return.
-        {.base = "git:///",
-         .apply_replacements =
-             +[](const GURL& url) {
-               GURL::Replacements replacements;
-               replacements.SetPasswordStr("x");
-               return url.ReplaceComponents(replacements);
-             },
-         .expected = "git:///"},
-        // URL Standard: https://url.spec.whatwg.org/#dom-url-port
-        // > 1. If this’s URL cannot have a username/password/port, then return.
-        {.base = "git:///",
-         .apply_replacements =
-             +[](const GURL& url) {
-               GURL::Replacements replacements;
-               replacements.SetPortStr("80");
-               return url.ReplaceComponents(replacements);
-             },
-         .expected = "git:///"}};
-
-    for (const ReplaceCase& c : replace_cases) {
-      TestReplace(c);
-    }
-
-    ReplaceHostCase replace_host_cases[] = {
-        {"git:/", "host", "git://host/"},
-        {"git:/a", "host", "git://host/a"},
-        {"git://", "host", "git://host"},
-        {"git:///", "host", "git://host/"},
-        {"git://h/a", "host", "git://host/a"},
-        // The following behavior is different from Web-facing URL APIs
-        // because DOMURLUtils::setHostname disallows setting an empty host.
-        //
-        // Web-facing URL API behavior is:
-        // > const url = new URL("git://u:p@h:80/");
-        // > url.hostname = "";
-        // > assertEquals(url.href, "git://u:p@h:80/");
-        {"git://u:p@h:80/", "", "git:///"}};
-    for (const ReplaceHostCase& c : replace_host_cases) {
-      TestReplaceHost(c);
-    }
-
-    ReplacePathCase replace_path_cases[] = {
-        {"git:/", "a", "git:/a"},
-        {"git:/", "", "git:/"},
-        {"git:/", "//a", "git:/.//a"},
-        {"git:/", "/.//a", "git:/.//a"},
-        {"git://", "a", "git:///a"},
-        {"git:///", "a", "git:///a"},
-        {"git://host", "a", "git://host/a"},
-        {"git://host/b", "a", "git://host/a"}};
-    for (const ReplacePathCase& c : replace_path_cases) {
-      TestReplacePath(c);
-    }
-  } else {
-    // Non-compliant behaviors.
-    ReplaceHostCase replace_host_cases[] = {
-        {"git://host", "h2", "git://host"},
-    };
-    for (const ReplaceHostCase& c : replace_host_cases) {
-      TestReplaceHost(c);
-    }
-
-    // Non-compliant behaviors.
-    ReplacePathCase replace_path_cases[] = {{"git://host", "path", "git:path"}};
-    for (const ReplacePathCase& c : replace_path_cases) {
-      TestReplacePath(c);
-    }
+  static constexpr ReplacePathCase replace_path_cases[] = {
+      {"git:/", "a", "git:/a"},
+      {"git:/", "", "git:/"},
+      {"git:/", "//a", "git:/.//a"},
+      {"git:/", "/.//a", "git:/.//a"},
+      {"git://", "a", "git:///a"},
+      {"git:///", "a", "git:///a"},
+      {"git://host", "a", "git://host/a"},
+      {"git://host/b", "a", "git://host/a"}};
+  for (const ReplacePathCase& c : replace_path_cases) {
+    TestReplacePath(c);
   }
 }
 
@@ -1008,13 +908,13 @@ TEST(GURLTypedTest, ClearFragmentOnDataUrl) {
   EXPECT_EQ("data: one", reparsed_url.spec());
 }
 
-TEST(GURLTest, PathForRequest) {
+TEST_F(GURLTest, PathForRequest) {
   struct TestCase {
     const char* input;
     const char* expected;
     const char* inner_expected;
   };
-  auto cases = std::to_array<TestCase>({
+  static constexpr auto cases = std::to_array<TestCase>({
       {"http://www.google.com", "/", nullptr},
       {"http://www.google.com/", "/", nullptr},
       {"http://www.google.com/foo/bar.html?baz=22", "/foo/bar.html?baz=22",
@@ -1028,25 +928,24 @@ TEST(GURLTest, PathForRequest) {
        "/foo/bar.html?query", "/temporary"},
   });
 
-  for (size_t i = 0; i < std::size(cases); i++) {
-    GURL url(cases[i].input);
-    EXPECT_EQ(cases[i].expected, url.PathForRequest());
-    EXPECT_EQ(cases[i].expected, url.PathForRequestPiece());
-    EXPECT_EQ(cases[i].inner_expected == NULL, url.inner_url() == NULL);
-    if (url.inner_url() && cases[i].inner_expected) {
-      EXPECT_EQ(cases[i].inner_expected, url.inner_url()->PathForRequest());
-      EXPECT_EQ(cases[i].inner_expected,
-                url.inner_url()->PathForRequestPiece());
+  for (const auto& i : cases) {
+    GURL url(i.input);
+    EXPECT_EQ(i.expected, url.PathForRequest());
+    EXPECT_EQ(i.expected, url.PathForRequestPiece());
+    EXPECT_EQ(i.inner_expected == nullptr, url.inner_url() == nullptr);
+    if (url.inner_url() && i.inner_expected) {
+      EXPECT_EQ(i.inner_expected, url.inner_url()->PathForRequest());
+      EXPECT_EQ(i.inner_expected, url.inner_url()->PathForRequestPiece());
     }
   }
 }
 
-TEST(GURLTest, EffectiveIntPort) {
+TEST_F(GURLTest, EffectiveIntPort) {
   struct PortTest {
     const char* spec;
     int expected_int_port;
   };
-  auto port_tests = std::to_array<PortTest>({
+  static constexpr auto port_tests = std::to_array<PortTest>({
       // http
       {"http://www.google.com/", 80},
       {"http://www.google.com:80/", 80},
@@ -1075,18 +974,18 @@ TEST(GURLTest, EffectiveIntPort) {
       {"filesystem:file:///t/foo", PORT_UNSPECIFIED},
   });
 
-  for (size_t i = 0; i < std::size(port_tests); i++) {
-    GURL url(port_tests[i].spec);
-    EXPECT_EQ(port_tests[i].expected_int_port, url.EffectiveIntPort());
+  for (const auto& port_test : port_tests) {
+    GURL url(port_test.spec);
+    EXPECT_EQ(port_test.expected_int_port, url.EffectiveIntPort());
   }
 }
 
-TEST(GURLTest, IPAddress) {
+TEST_F(GURLTest, IPAddress) {
   struct IPTest {
     const char* spec;
     bool expected_ip;
   };
-  auto ip_tests = std::to_array<IPTest>({
+  static constexpr auto ip_tests = std::to_array<IPTest>({
       {"http://www.google.com/", false},
       {"http://192.168.9.1/", true},
       {"http://192.168.9.1.2/", false},
@@ -1097,19 +996,19 @@ TEST(GURLTest, IPAddress) {
       {"some random input!", false},
   });
 
-  for (size_t i = 0; i < std::size(ip_tests); i++) {
-    GURL url(ip_tests[i].spec);
-    EXPECT_EQ(ip_tests[i].expected_ip, url.HostIsIPAddress());
+  for (const auto& ip_test : ip_tests) {
+    GURL url(ip_test.spec);
+    EXPECT_EQ(ip_test.expected_ip, url.HostIsIPAddress());
   }
 }
 
-TEST(GURLTest, HostNoBrackets) {
+TEST_F(GURLTest, HostNoBrackets) {
   struct TestCase {
     const char* input;
     const char* expected_host;
     const char* expected_plainhost;
   };
-  auto cases = std::to_array<TestCase>({
+  static constexpr auto cases = std::to_array<TestCase>({
       {"http://www.google.com", "www.google.com", "www.google.com"},
       {"http://[2001:db8::1]/", "[2001:db8::1]", "2001:db8::1"},
       {"http://[::]/", "[::]", "::"},
@@ -1123,15 +1022,15 @@ TEST(GURLTest, HostNoBrackets) {
       {"http://]/", "]", "]"},
       {"", "", ""},
   });
-  for (size_t i = 0; i < std::size(cases); i++) {
-    GURL url(cases[i].input);
-    EXPECT_EQ(cases[i].expected_host, url.host());
-    EXPECT_EQ(cases[i].expected_plainhost, url.HostNoBrackets());
-    EXPECT_EQ(cases[i].expected_plainhost, url.HostNoBracketsPiece());
+  for (const auto& i : cases) {
+    GURL url(i.input);
+    EXPECT_EQ(i.expected_host, url.host());
+    EXPECT_EQ(i.expected_plainhost, url.HostNoBrackets());
+    EXPECT_EQ(i.expected_plainhost, url.HostNoBracketsPiece());
   }
 }
 
-TEST(GURLTest, DomainIs) {
+TEST_F(GURLTest, DomainIs) {
   GURL url_1("http://google.com/foo");
   EXPECT_TRUE(url_1.DomainIs("google.com"));
 
@@ -1162,7 +1061,7 @@ TEST(GURLTest, DomainIs) {
   EXPECT_TRUE(url_with_escape_chars.DomainIs(",.test"));
 }
 
-TEST(GURLTest, DomainIsTerminatingDotBehavior) {
+TEST_F(GURLTest, DomainIsTerminatingDotBehavior) {
   // If the host part ends with a dot, it matches input domains
   // with or without a dot.
   GURL url_with_dot("http://www.google.com./foo");
@@ -1181,7 +1080,7 @@ TEST(GURLTest, DomainIsTerminatingDotBehavior) {
   EXPECT_FALSE(url_with_two_dots.DomainIs("google.com"));
 }
 
-TEST(GURLTest, DomainIsWithFilesystemScheme) {
+TEST_F(GURLTest, DomainIsWithFilesystemScheme) {
   GURL url_1("filesystem:http://www.google.com:99/foo/");
   EXPECT_TRUE(url_1.DomainIs("google.com"));
 
@@ -1190,7 +1089,7 @@ TEST(GURLTest, DomainIsWithFilesystemScheme) {
 }
 
 // Newlines should be stripped from inputs.
-TEST(GURLTest, Newlines) {
+TEST_F(GURLTest, Newlines) {
   // Constructor.
   GURL url_1(" \t ht\ntp://\twww.goo\rgle.com/as\ndf \n ");
   EXPECT_EQ("http://www.google.com/asdf", url_1.spec());
@@ -1218,7 +1117,7 @@ TEST(GURLTest, Newlines) {
   // Note that newlines are NOT stripped from ReplaceComponents.
 }
 
-TEST(GURLTest, IsStandard) {
+TEST_F(GURLTest, IsStandard) {
   GURL a("http:foo/bar");
   EXPECT_TRUE(a.IsStandard());
 
@@ -1232,19 +1131,19 @@ TEST(GURLTest, IsStandard) {
   EXPECT_FALSE(d.IsStandard());
 }
 
-TEST(GURLTest, SchemeIsHTTPOrHTTPS) {
+TEST_F(GURLTest, SchemeIsHTTPOrHTTPS) {
   EXPECT_TRUE(GURL("http://bar/").SchemeIsHTTPOrHTTPS());
   EXPECT_TRUE(GURL("HTTPS://BAR").SchemeIsHTTPOrHTTPS());
   EXPECT_FALSE(GURL("ftp://bar/").SchemeIsHTTPOrHTTPS());
 }
 
-TEST(GURLTest, SchemeIsWSOrWSS) {
+TEST_F(GURLTest, SchemeIsWSOrWSS) {
   EXPECT_TRUE(GURL("WS://BAR/").SchemeIsWSOrWSS());
   EXPECT_TRUE(GURL("wss://bar/").SchemeIsWSOrWSS());
   EXPECT_FALSE(GURL("http://bar/").SchemeIsWSOrWSS());
 }
 
-TEST(GURLTest, SchemeIsCryptographic) {
+TEST_F(GURLTest, SchemeIsCryptographic) {
   EXPECT_TRUE(GURL("https://foo.bar.com/").SchemeIsCryptographic());
   EXPECT_TRUE(GURL("HTTPS://foo.bar.com/").SchemeIsCryptographic());
   EXPECT_TRUE(GURL("HtTpS://foo.bar.com/").SchemeIsCryptographic());
@@ -1257,7 +1156,7 @@ TEST(GURLTest, SchemeIsCryptographic) {
   EXPECT_FALSE(GURL("ws://foo.bar.com/").SchemeIsCryptographic());
 }
 
-TEST(GURLTest, SchemeIsCryptographicStatic) {
+TEST_F(GURLTest, SchemeIsCryptographicStatic) {
   EXPECT_TRUE(GURL::SchemeIsCryptographic("https"));
   EXPECT_TRUE(GURL::SchemeIsCryptographic("wss"));
   EXPECT_FALSE(GURL::SchemeIsCryptographic("http"));
@@ -1265,13 +1164,13 @@ TEST(GURLTest, SchemeIsCryptographicStatic) {
   EXPECT_FALSE(GURL::SchemeIsCryptographic("ftp"));
 }
 
-TEST(GURLTest, SchemeIsBlob) {
+TEST_F(GURLTest, SchemeIsBlob) {
   EXPECT_TRUE(GURL("BLOB://BAR/").SchemeIsBlob());
   EXPECT_TRUE(GURL("blob://bar/").SchemeIsBlob());
   EXPECT_FALSE(GURL("http://bar/").SchemeIsBlob());
 }
 
-TEST(GURLTest, SchemeIsLocal) {
+TEST_F(GURLTest, SchemeIsLocal) {
   EXPECT_TRUE(GURL("BLOB://BAR/").SchemeIsLocal());
   EXPECT_TRUE(GURL("blob://bar/").SchemeIsLocal());
   EXPECT_TRUE(GURL("DATA:TEXT/HTML,BAR").SchemeIsLocal());
@@ -1288,8 +1187,8 @@ TEST(GURLTest, SchemeIsLocal) {
 // Tests that the 'content' of the URL is properly extracted. This can be
 // complex in cases such as multiple schemes (view-source:http:) or for
 // javascript URLs. See GURL::GetContent for more details.
-TEST(GURLTest, ContentForNonStandardURLs) {
-  struct TestCase {
+TEST_F(GURLTest, ContentForNonStandardURLs) {
+  static constexpr struct TestCase {
     const char* url;
     const char* expected;
   } cases[] = {
@@ -1318,6 +1217,10 @@ TEST(GURLTest, ContentForNonStandardURLs) {
       // Javascript URLs include '#' symbols in their content.
       {"javascript:#", "#"},
       {"javascript:alert('#');", "alert('#');"},
+
+      // Test cases which Chromium used to handle wrongly.
+      {"blob://http://example.com/GUID", "http//example.com/GUID"},
+      {"git://host/path#fragment", "host/path"},
   };
 
   for (const auto& test : cases) {
@@ -1327,40 +1230,11 @@ TEST(GURLTest, ContentForNonStandardURLs) {
   }
 }
 
-TEST_P(GURLTypedTest, ContentForNonStandardURLs) {
-  struct TestCase {
-    const std::string_view url;
-    const std::string_view expected;
-  };
-
-  if (use_standard_compliant_non_special_scheme_url_parsing_) {
-    TestCase cases[] = {
-        {"blob://http://example.com/GUID", "http//example.com/GUID"},
-        {"git://host/path#fragment", "host/path"},
-    };
-    for (const auto& test : cases) {
-      GURL url(test.url);
-      EXPECT_EQ(url.GetContent(), test.expected) << test.url;
-      EXPECT_EQ(url.GetContentPiece(), test.expected) << test.url;
-    }
-  } else {
-    TestCase cases[] = {
-        {"blob://http://example.com/GUID", "//http://example.com/GUID"},
-        {"git://host/path#fragment", "//host/path"},
-    };
-    for (const auto& test : cases) {
-      GURL url(test.url);
-      EXPECT_EQ(url.GetContent(), test.expected) << test.url;
-      EXPECT_EQ(url.GetContentPiece(), test.expected) << test.url;
-    }
-  }
-}
-
 // Tests that the URL path is properly extracted for unusual URLs. This can be
 // complex in cases such as multiple schemes (view-source:http:) or when
 // octothorpes ('#') are involved.
-TEST(GURLTest, PathForNonStandardURLs) {
-  struct TestCase {
+TEST_F(GURLTest, PathForNonStandardURLs) {
+  static constexpr struct TestCase {
     const char* url;
     const char* expected;
   } cases[] = {
@@ -1377,6 +1251,10 @@ TEST(GURLTest, PathForNonStandardURLs) {
       {"data:text/html,Question?<div style=\"color: #bad\">idea</div>",
        "text/html,Question"},
 
+      // Test cases which Chromium used to handle wrongly.
+      {"blob://http://example.com/GUID", "//example.com/GUID"},
+      {"git://host/path#fragment", "/path"},
+
       // TODO(mkwst): This seems like a bug. https://crbug.com/513600
       {"filesystem:http://example.com/path", "/"},
   };
@@ -1387,35 +1265,8 @@ TEST(GURLTest, PathForNonStandardURLs) {
   }
 }
 
-TEST_P(GURLTypedTest, PathForNonStandardURLs) {
-  struct TestCase {
-    const std::string_view url;
-    const std::string_view expected;
-  };
-
-  if (use_standard_compliant_non_special_scheme_url_parsing_) {
-    TestCase cases[] = {
-        {"blob://http://example.com/GUID", "//example.com/GUID"},
-        {"git://host/path#fragment", "/path"},
-    };
-    for (const auto& test : cases) {
-      GURL url(test.url);
-      EXPECT_EQ(url.path(), test.expected) << test.url;
-    }
-  } else {
-    TestCase cases[] = {
-        {"blob://http://example.com/GUID", "//http://example.com/GUID"},
-        {"git://host/path#fragment", "//host/path"},
-    };
-    for (const auto& test : cases) {
-      GURL url(test.url);
-      EXPECT_EQ(url.path(), test.expected) << test.url;
-    }
-  }
-}
-
-TEST(GURLTest, EqualsIgnoringRef) {
-  const struct {
+TEST_F(GURLTest, EqualsIgnoringRef) {
+  static constexpr struct {
     const char* url_a;
     const char* url_b;
     bool are_equals;
@@ -1477,13 +1328,13 @@ TEST(GURLTest, EqualsIgnoringRef) {
   }
 }
 
-TEST(GURLTest, DebugAlias) {
+TEST_F(GURLTest, DebugAlias) {
   GURL url("https://foo.com/bar");
   DEBUG_ALIAS_FOR_GURL(url_debug_alias, url);
   EXPECT_STREQ("https://foo.com/bar", url_debug_alias);
 }
 
-TEST(GURLTest, InvalidHost) {
+TEST_F(GURLTest, InvalidHost) {
   // This contains an invalid percent escape (%T%) and also a valid
   // percent escape that's not 7-bit ascii (%ae), so that the unescaped
   // host contains both an invalid percent escape and invalid UTF-8.
@@ -1498,7 +1349,7 @@ TEST(GURLTest, InvalidHost) {
   EXPECT_EQ(url.host_piece(), "%25t%EF%BF%BD");
 }
 
-TEST(GURLTest, PortZero) {
+TEST_F(GURLTest, PortZero) {
   GURL port_zero_url("http://127.0.0.1:0/blah");
 
   // https://url.spec.whatwg.org/#port-state says that the port 1) consists of

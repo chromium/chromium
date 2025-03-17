@@ -11,6 +11,8 @@ message Bundle {
   repeated ContentConfig content_configs = 1;
 
   bool locked = 2;
+
+  bool lock_to_app_home = 3;
 }
 
 message ContentConfig {
@@ -45,6 +47,8 @@ message LockedNavigationOptions {
     LIMITED_NAVIGATION = 4;
 
     SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION = 5;
+
+    WORKSPACE_NAVIGATION = 6;
   }
 
   NavigationType navigation_type = 1;

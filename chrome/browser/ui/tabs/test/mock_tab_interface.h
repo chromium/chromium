@@ -23,14 +23,23 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               RegisterWillDiscardContents,
               (WillDiscardContentsCallback),
               (override));
-  MOCK_METHOD(bool, IsInForeground, (), (const, override));
+  MOCK_METHOD(bool, IsActivated, (), (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
-              RegisterDidEnterForeground,
-              (DidEnterForegroundCallback),
+              RegisterDidActivate,
+              (DidActivateCallback),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
-              RegisterWillEnterBackground,
-              (WillEnterBackgroundCallback),
+              RegisterWillDeactivate,
+              (WillDeactivateCallback),
+              (override));
+  MOCK_METHOD(bool, IsVisible, (), (const, override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterDidBecomeVisible,
+              (DidBecomeVisibleCallback),
+              (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterWillBecomeHidden,
+              (WillBecomeHiddenCallback),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterWillDetach,
@@ -61,10 +70,19 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               (override));
   MOCK_METHOD(TabFeatures*, GetTabFeatures, (), (override));
   MOCK_METHOD(bool, IsPinned, (), (const override));
+  MOCK_METHOD(bool, IsSplit, (), (const override));
   MOCK_METHOD(std::optional<tab_groups::TabGroupId>,
               GetGroup,
               (),
               (const override));
+  MOCK_METHOD(bool,
+              ShouldAcceptMouseEventsWhileWindowInactive,
+              (),
+              (const override));
+  MOCK_METHOD(std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>,
+              AcceptMouseEventsWhileWindowInactive,
+              (),
+              (override));
   MOCK_METHOD(uint32_t, GetTabHandle, (), (const override));
 };
 

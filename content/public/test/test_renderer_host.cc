@@ -215,7 +215,7 @@ RenderViewHostTestHarness::CreateTestWebContents() {
 
   scoped_refptr<SiteInstance> instance =
       SiteInstance::Create(GetBrowserContext());
-  instance->GetProcess()->Init();
+  instance->GetOrCreateProcess()->Init();
 
   return TestWebContents::Create(GetBrowserContext(), std::move(instance));
 }

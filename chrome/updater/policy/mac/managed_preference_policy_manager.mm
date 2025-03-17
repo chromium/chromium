@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
-
 #include <optional>
 #include <string>
 #include <vector>
@@ -18,6 +16,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
 #include "chrome/updater/policy/manager.h"
+#include "chrome/updater/policy/platform_policy_manager.h"
 #include "chrome/updater/updater_branding.h"
 
 namespace {
@@ -237,7 +236,7 @@ NSDictionary* ReadManagedPreferencePolicyDictionary() {
   return base::apple::CFToNSOwnershipCast((CFDictionaryRef)policies.release());
 }
 
-scoped_refptr<PolicyManagerInterface> CreateManagedPreferencePolicyManager(
+scoped_refptr<PolicyManagerInterface> CreatePlatformPolicyManager(
     std::optional<bool> override_is_managed_device) {
   NSDictionary* policyDict = ReadManagedPreferencePolicyDictionary();
   return base::MakeRefCounted<ManagedPreferencePolicyManager>(

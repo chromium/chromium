@@ -627,7 +627,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 }
 
 // Verifies the existence and state of toolbar UI elements.
-- (void)testToolbarUI {
+- (void)testToolbarsUI {
   // Load a page to have the toolbar visible (hidden on NTP).
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
 

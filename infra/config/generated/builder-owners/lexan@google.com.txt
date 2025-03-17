@@ -7,7 +7,6 @@ ci/ToTAndroid (dbg)
 ci/ToTAndroid x64
 ci/ToTAndroid x86
 ci/ToTAndroid64
-ci/ToTAndroidASan
 ci/ToTAndroidCoverage x86
 ci/ToTAndroidOfficial
 ci/ToTChromeOS

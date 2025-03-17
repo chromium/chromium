@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/sysroot.gni")
 import("//chrome/common/features.gni")
@@ -181,7 +180,7 @@ static_library("utility") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chrome/services/file_util",
       "//chrome/services/sharing",
@@ -200,6 +199,10 @@ static_library("utility") {
       "//chromeos/ash/services/orca/public/mojom",
       "//chromeos/ash/services/quick_pair",
       "//chromeos/ash/services/recording",
+      "//chromeos/components/mahi:content_extraction",
+      "//chromeos/components/mahi/public/mojom",
+      "//chromeos/components/quick_answers/public/cpp",
+      "//chromeos/components/quick_answers/public/mojom",
       "//chromeos/constants:constants",
       "//chromeos/services/tts",
       "//chromeos/services/tts/public/mojom",
@@ -216,15 +219,6 @@ static_library("utility") {
 
     assert(enable_pdf)
     deps += [ "//chrome/services/pdf:lib" ]
-  }
-
-  if (is_chromeos) {
-    deps += [
-      "//chromeos/components/mahi:content_extraction",
-      "//chromeos/components/mahi/public/mojom",
-      "//chromeos/components/quick_answers/public/cpp",
-      "//chromeos/components/quick_answers/public/mojom",
-    ]
   }
 
   # NSS decryptor is not needed on ChromeOS.
@@ -247,7 +241,7 @@ static_library("utility") {
       deps += [ "//chrome/services/printing:lib" ]
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [
         "//chrome/services/ipp_parser",
         "//chrome/services/ipp_parser/public/mojom",

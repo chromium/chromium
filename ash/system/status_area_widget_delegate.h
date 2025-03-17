@@ -58,8 +58,9 @@ class ASH_EXPORT StatusAreaWidgetDelegate : public views::AccessiblePaneView,
   // Clears most of the Widget to prevent destruction problems before ~Widget.
   void Shutdown();
 
+  void UpdateAccessiblePreviousAndNextFocus();
+
   // views::AccessiblePaneView:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   View* GetDefaultFocusableChild() override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;

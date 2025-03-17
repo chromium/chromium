@@ -20,7 +20,6 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_com_initializer.h"
-#include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
@@ -67,11 +66,6 @@ int Setup(UpdaterScope scope) {
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
 
-  base::FilePath temp_dir;
-  if (!base::GetTempDir(&temp_dir)) {
-    LOG(ERROR) << "GetTempDir failed.";
-    return kErrorCreatingTempDir;
-  }
   const std::optional<base::FilePath> versioned_dir =
       GetVersionedInstallDirectory(scope);
   if (!versioned_dir) {
@@ -89,17 +83,17 @@ int Setup(UpdaterScope scope) {
     return kErrorPathServiceFailed;
   }
 
-  installer::SelfCleaningTempDir backup_dir;
-  if (!backup_dir.Initialize(temp_dir, L"updater-backup")) {
-    LOG(ERROR) << "Failed to initialize the backup dir.";
-    return kErrorInitializingBackupDir;
-  }
-
   const auto source_dir = exe_path.DirName();
   const auto setup_files = GetSetupFiles(source_dir);
   if (setup_files.empty()) {
     LOG(ERROR) << "No files to set up.";
     return kErrorFailedToGetSetupFiles;
+  }
+
+  std::optional<base::ScopedTempDir> temp_dir = CreateSecureTempDir();
+  if (!temp_dir) {
+    LOG(ERROR) << "CreateSecureTempDir failed.";
+    return kErrorCreatingTempDir;
   }
 
   // All source files are installed in a flat directory structure inside the
@@ -108,8 +102,8 @@ int Setup(UpdaterScope scope) {
   for (const auto& file : setup_files) {
     const base::FilePath target_path = versioned_dir->Append(file.BaseName());
     const base::FilePath source_path = source_dir.Append(file);
-    install_list->AddCopyTreeWorkItem(source_path, target_path, temp_dir,
-                                      WorkItem::ALWAYS);
+    install_list->AddCopyTreeWorkItem(source_path, target_path,
+                                      temp_dir->GetPath(), WorkItem::ALWAYS);
   }
 
   const HKEY key = UpdaterScopeToHKeyRoot(scope);
@@ -121,7 +115,7 @@ int Setup(UpdaterScope scope) {
                                          true);
     install_list->AddSetRegValueWorkItem(
         key, key_path, KEY_WOW64_32KEY, kRegValueName,
-        base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
+        base::UTF8ToWide(PRODUCT_FULLNAME_STRING), true);
   }
 
   const base::FilePath updater_exe = GetExecutableRelativePath();
@@ -149,8 +143,12 @@ int Setup(UpdaterScope scope) {
                              install_list.get());
   }
 
-  install_list->AddWorkItem(
-      new RegisterWakeTaskWorkItem(run_updater_wake_command, scope));
+  WorkItem* register_wake_task =
+      new RegisterWakeTaskWorkItem(run_updater_wake_command, scope);
+
+  // Updater installs even if the task scheduler wake task creation fails.
+  register_wake_task->set_best_effort(true);
+  install_list->AddWorkItem(register_wake_task);
 
   if (!install_list->Do()) {
     LOG(ERROR) << "Install failed, rolling back...";

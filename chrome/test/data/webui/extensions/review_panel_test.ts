@@ -34,7 +34,7 @@ suite('ExtensionsReviewPanel', function() {
     return microtasksFinished();
   });
 
-  test('ReviewPanelTextExists', async function() {
+  test('ReviewPanelTextExists', function() {
     // Review panel should be visible.
     const reviewPanelContainer = element.$.reviewPanelContainer;
     assertTrue(!!reviewPanelContainer);
@@ -66,7 +66,7 @@ suite('ExtensionsReviewPanel', function() {
     const expandButton = element.$.expandButton;
     assertTrue(!!expandButton);
 
-    const extensionsList = element.shadowRoot!.querySelector('cr-collapse');
+    const extensionsList = element.shadowRoot.querySelector('cr-collapse');
     assertTrue(!!extensionsList);
 
     // Button and list start out expanded.
@@ -90,9 +90,9 @@ suite('ExtensionsReviewPanel', function() {
     assertTrue(extensionsList.opened);
   });
 
-  test('ReviewPanelUnsafeExtensionRowsExist', async function() {
+  test('ReviewPanelUnsafeExtensionRowsExist', function() {
     const extensionNameContainers =
-        element.shadowRoot!.querySelectorAll('.panel-extension-row');
+        element.shadowRoot.querySelectorAll('.panel-extension-row');
     assertEquals(extensionNameContainers.length, 1);
     assertEquals(
         extensionNameContainers[0]
@@ -105,7 +105,7 @@ suite('ExtensionsReviewPanel', function() {
       'CompletionStateShouldNotBeShownIfNoExtensionsAndNoAction',
       async function() {
         const completionTextContainer =
-            element.shadowRoot!.querySelector('.completion-container');
+            element.shadowRoot.querySelector('.completion-container');
         assertTrue(!!completionTextContainer);
         assertFalse(isVisible(completionTextContainer));
 
@@ -117,7 +117,7 @@ suite('ExtensionsReviewPanel', function() {
 
   test('CompletionStateShouldBeShownAfterDeletingItems', async function() {
     const completionTextContainer =
-        element.shadowRoot!.querySelector('.completion-container');
+        element.shadowRoot.querySelector('.completion-container');
     assertFalse(isVisible(completionTextContainer));
     class MockUninstallItemDelegate extends MockItemDelegate {
       override uninstallItem(id: string): Promise<void> {
@@ -129,7 +129,7 @@ suite('ExtensionsReviewPanel', function() {
       override setItemSafetyCheckWarningAcknowledged(): void {}
     }
     element.delegate = new MockUninstallItemDelegate();
-    element.shadowRoot!.querySelector('cr-icon-button')?.click();
+    element.shadowRoot.querySelector('cr-icon-button')?.click();
     await microtasksFinished();
     const completionText = pluralString.getArgs('getPluralString')[5];
     assertTrue(!!completionTextContainer);
@@ -142,7 +142,7 @@ suite('ExtensionsReviewPanel', function() {
       'CompletionStateShouldBeShownAfterDeletingMultipleExtensions',
       async function() {
         const completionTextContainer =
-            element.shadowRoot!.querySelector('.completion-container');
+            element.shadowRoot.querySelector('.completion-container');
         assertFalse(isVisible(completionTextContainer));
         class MockDeleteItemDelegate extends MockItemDelegate {
           override deleteItems(ids: string[]) {
@@ -178,8 +178,8 @@ suite('ExtensionsReviewPanel', function() {
 
         // Wait until the async response comes back. This should trigger 3
         // calls for plural strings.
-        element.shadowRoot!.querySelector<HTMLElement>(
-                               '#removeAllButton')!.click();
+        element.shadowRoot.querySelector<HTMLElement>(
+                              '#removeAllButton')!.click();
         await microtasksFinished();
         const completionText = pluralString.getArgs('getPluralString')[2];
         assertTrue(!!completionTextContainer);
@@ -190,7 +190,7 @@ suite('ExtensionsReviewPanel', function() {
 
   test('CompletionStateShouldBeShownAfterKeepingItems', async function() {
     const completionTextContainer =
-        element.shadowRoot!.querySelector('.completion-container');
+        element.shadowRoot.querySelector('.completion-container');
     class MockKeepItemDelegate extends MockItemDelegate {
       override setItemSafetyCheckWarningAcknowledged(): void {
         // Update extensions to be an empty list since the only previous
@@ -201,7 +201,7 @@ suite('ExtensionsReviewPanel', function() {
     element.delegate = new MockKeepItemDelegate();
     assertFalse(isVisible(completionTextContainer));
     const extensionRowContainers =
-        element.shadowRoot!.querySelectorAll('.panel-extension-row');
+        element.shadowRoot.querySelectorAll('.panel-extension-row');
     assertEquals(1, extensionRowContainers.length);
     const menuButton = extensionRowContainers[0]!.querySelector<HTMLElement>(
         '.icon-more-vert')!;

@@ -22,6 +22,8 @@
 // URL load parameters associated with the external intent.
 @property(nonatomic, assign) UrlLoadParams urlLoadParams;
 
+@property(nonatomic, assign) BOOL incognitoDisabled;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

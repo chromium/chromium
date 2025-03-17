@@ -101,7 +101,17 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   ax_annotators_manager_ = std::make_unique<AXAnnotatorsManager>(this);
 }
 
-RenderAccessibilityImpl::~RenderAccessibilityImpl() = default;
+RenderAccessibilityImpl::~RenderAccessibilityImpl() {
+  if (ax_context_) {
+    // Accessibility has been turned off for this frame. Destruction of this
+    // instance's WebAXContext will destroy the document's AXObjectCache if
+    // there are no other active contexts on the document. If there are other
+    // active contexts, the serializer must be reset to ensure that the full
+    // tree is serialized should accessibility be once again turned on for this
+    // frame.
+    ax_context_->ResetSerializer();
+  }
+}
 
 void RenderAccessibilityImpl::DidCreateNewDocument() {
   const WebDocument& document = GetMainDocument();
@@ -315,6 +325,13 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     return;
   }
 
+  // Schedule the next serialization to come immediately after the action is
+  // complete, even if the document is still loading.
+  // Do this scheduling now, because in some cases performing the action
+  // could cause script to run that destroys the frame, which destroys |this|,
+  // and ax_context_ is no longer at a valid memory address.
+  ScheduleImmediateAXUpdate();
+
   // TODO: think about how to handle this without holding onto a plugin tree
   // source.
   std::unique_ptr<ui::AXActionTarget> target =
@@ -395,13 +412,6 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kSuspendMedia:
     case ax::mojom::Action::kLongClick:
       break;
-  }
-
-  // Ensure the next serialization comes immediately after the action is
-  // complete, even if the document is still loading.
-  // Note: the document could close as a result of the action.
-  if (ax_context_ && !GetMainDocument().IsNull()) {
-    ScheduleImmediateAXUpdate();
   }
 }
 

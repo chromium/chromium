@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/metrics/quality_metrics_filling.h"
 
+#include <algorithm>
+
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"

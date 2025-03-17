@@ -54,6 +54,15 @@ source_set("string_util") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("string_conversions") {
+  sources = [
+    "NSString+Chromium.h",
+    "NSString+Chromium.mm",
+  ]
+  public_deps = [ "//base" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("timing") {
   sources = [
     "material_timing.h",

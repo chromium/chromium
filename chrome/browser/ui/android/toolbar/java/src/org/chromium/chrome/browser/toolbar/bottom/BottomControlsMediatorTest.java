@@ -19,7 +19,6 @@ import static org.chromium.chrome.browser.toolbar.bottom.BottomControlsPropertie
 import static org.chromium.chrome.browser.toolbar.bottom.BottomControlsProperties.COMPOSITED_VIEW_VISIBLE;
 
 import android.app.Activity;
-import android.graphics.Color;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
@@ -38,7 +37,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -50,6 +48,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.ui.InsetObserver;
@@ -89,6 +88,7 @@ public class BottomControlsMediatorTest {
     @Mock Supplier<Boolean> mReadAloudRestoringSupplier;
     @Mock InsetObserver mInsetObserver;
     @Mock EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    @Mock EdgeToEdgeManager mEdgeToEdgeManager;
 
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private ObservableSupplierImpl<Tab> mTabObservableSupplier = new ObservableSupplierImpl();
@@ -104,6 +104,7 @@ public class BottomControlsMediatorTest {
         doReturn(SYSTEM_BARS_WINDOW_INSETS).when(mInsetObserver).getLastRawWindowInsets();
         doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();
         doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
+        doReturn(mEdgeToEdgeStateProvider).when(mEdgeToEdgeManager).getEdgeToEdgeStateProvider();
         mModel =
                 new PropertyModel.Builder(BottomControlsProperties.ALL_KEYS)
                         .with(BottomControlsProperties.ANDROID_VIEW_VISIBLE, false)
@@ -176,7 +177,7 @@ public class BottomControlsMediatorTest {
                         mWindowAndroid,
                         mTabObservableSupplier,
                         null,
-                        mEdgeToEdgeStateProvider,
+                        mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
                         new ObservableSupplierImpl<>(mLayoutManager),
                         mFullscreenManager);
@@ -199,7 +200,6 @@ public class BottomControlsMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
     public void testEdgeToEdge_ObserverCalled() {
         // Set up a mediator with a live EdgeToEdgeController.
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
@@ -209,7 +209,7 @@ public class BottomControlsMediatorTest {
                         mWindowAndroid,
                         mTabObservableSupplier,
                         null,
-                        mEdgeToEdgeStateProvider,
+                        mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
                         new ObservableSupplierImpl<>(mLayoutManager),
                         mFullscreenManager);
@@ -270,14 +270,5 @@ public class BottomControlsMediatorTest {
                 "Android view is not visible during overlay panel.",
                 mModel.get(ANDROID_VIEW_VISIBLE));
         verify(mBrowserControlsVisibilityDelegate).showControlsTransient();
-    }
-
-    @Test
-    public void testColorChange() {
-        mMediator.setBottomControlsColor(Color.RED);
-        verify(mBottomControlsStacker).notifyBackgroundColor(Color.RED);
-
-        mMediator.setBottomControlsColor(Color.BLUE);
-        verify(mBottomControlsStacker).notifyBackgroundColor(Color.BLUE);
     }
 }

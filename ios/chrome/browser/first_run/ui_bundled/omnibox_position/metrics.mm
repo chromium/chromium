@@ -40,23 +40,23 @@ void RecordScreenEvent(OmniboxPositionChoiceScreenEvent event) {
   // Record action.
   switch (event) {
     case OmniboxPositionChoiceScreenEvent::kScreenDisplayed: {
-        base::RecordAction(
-            base::UserMetricsAction("IOS.Omnibox.Promo.Presented.Startup"));
+      base::RecordAction(
+          base::UserMetricsAction("IOS.Omnibox.Promo.Presented.Startup"));
       break;
     }
     case OmniboxPositionChoiceScreenEvent::kPositionValidated: {
-        base::RecordAction(base::UserMetricsAction(
-            "IOS.Omnibox.Promo.PositionValidated.Startup"));
+      base::RecordAction(base::UserMetricsAction(
+          "IOS.Omnibox.Promo.PositionValidated.Startup"));
       break;
     }
     case OmniboxPositionChoiceScreenEvent::kPositionDiscarded: {
-        base::RecordAction(base::UserMetricsAction(
-            "IOS.Omnibox.Promo.PositionDiscarded.Startup"));
+      base::RecordAction(base::UserMetricsAction(
+          "IOS.Omnibox.Promo.PositionDiscarded.Startup"));
       break;
     }
     case OmniboxPositionChoiceScreenEvent::kScreenSkipped: {
-        base::RecordAction(
-            base::UserMetricsAction("IOS.Omnibox.Promo.Skipped.Startup"));
+      base::RecordAction(
+          base::UserMetricsAction("IOS.Omnibox.Promo.Skipped.Startup"));
       break;
     }
     default:

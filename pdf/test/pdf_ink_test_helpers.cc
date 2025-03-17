@@ -28,20 +28,19 @@ std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
 
 base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
     std::string_view type,
-    double size,
     const TestAnnotationBrushMessageParams* params) {
   base::Value::Dict message;
   message.Set("type", "setAnnotationBrush");
 
   base::Value::Dict data;
   data.Set("type", type);
-  data.Set("size", size);
   if (params) {
     base::Value::Dict color;
     color.Set("r", params->color_r);
     color.Set("g", params->color_g);
     color.Set("b", params->color_b);
     data.Set("color", std::move(color));
+    data.Set("size", params->size);
   }
   message.Set("data", std::move(data));
   return message;
@@ -68,8 +67,8 @@ base::Value::Dict CreateSetAnnotationUndoRedoMessageForTesting(
   NOTREACHED();
 }
 
-base::FilePath GetInkTestDataFilePath(std::string_view filename) {
-  return base::FilePath(FILE_PATH_LITERAL("ink")).AppendASCII(filename);
+base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename) {
+  return base::FilePath(FILE_PATH_LITERAL("ink")).Append(filename);
 }
 
 }  // namespace chrome_pdf

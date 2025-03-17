@@ -11,7 +11,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
-#include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_widget_builder.h"
@@ -21,7 +20,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/experiences/arc/overlay/arc_overlay_manager.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
@@ -898,7 +897,7 @@ TEST_F(KeyboardTest, FocusWithArcOverlay) {
                       .SetBounds(gfx::Rect(200, 200))
                       .BuildOwnedByNativeWidget();
   views::Textfield* textfield1 = new views::Textfield();
-  widget1->GetContentsView()->AddChildView(textfield1);
+  widget1->GetContentsView()->AddChildViewRaw(textfield1);
   textfield1->SetBounds(0, 0, 100, 100);
 
   auto* widget2 = ash::TestWidgetBuilder()
@@ -928,15 +927,15 @@ TEST_F(KeyboardTest, FocusWithArcOverlay) {
   EXPECT_EQ(keyboard.focused_surface_for_testing(), surface.get());
 
   constexpr char kFocusedViewClassName[] = "OverlayNativeViewHost";
-  EXPECT_STREQ(kFocusedViewClassName,
-               widget1->GetFocusManager()->GetFocusedView()->GetClassName());
+  EXPECT_EQ(kFocusedViewClassName,
+            widget1->GetFocusManager()->GetFocusedView()->GetClassName());
 
   // Tabbing should not move the focus away from the overlay.
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
   generator.PressKey(ui::VKEY_TAB, 0);
 
-  EXPECT_STREQ(kFocusedViewClassName,
-               widget1->GetFocusManager()->GetFocusedView()->GetClassName());
+  EXPECT_EQ(kFocusedViewClassName,
+            widget1->GetFocusManager()->GetFocusedView()->GetClassName());
   EXPECT_EQ(keyboard.focused_surface_for_testing(), surface.get());
 
   hold.RunAndReset();
@@ -1183,8 +1182,8 @@ TEST_F(KeyboardTest, KeyRepeatSettingsUpdateAtRuntime) {
 
 TEST_F(KeyboardTest, KeyRepeatSettingsIgnoredForNonActiveUser) {
   // Simulate two users, with the first user as active.
-  auto active_account_id = SimulateUserLogin("user0@gmail.com");
-  auto inactive_account_id = SimulateUserLogin("user1@gmail.com");
+  auto active_account_id = SimulateUserLogin({"user0@gmail.com"});
+  auto inactive_account_id = SimulateUserLogin({"user1@gmail.com"});
   SwitchActiveUser(active_account_id);
 
   // Key repeat settings should be sent exactly once, for the default values.
@@ -1209,8 +1208,8 @@ TEST_F(KeyboardTest, KeyRepeatSettingsIgnoredForNonActiveUser) {
 
 TEST_F(KeyboardTest, KeyRepeatSettingsUpdateOnProfileChange) {
   // Simulate two users, with the first user as active.
-  auto active_account_id = SimulateUserLogin("user0@gmail.com");
-  auto inactive_account_id = SimulateUserLogin("user1@gmail.com");
+  auto active_account_id = SimulateUserLogin({"user0@gmail.com"});
+  auto inactive_account_id = SimulateUserLogin({"user1@gmail.com"});
   SwitchActiveUser(active_account_id);
 
   // Second user has different preferences.
@@ -1231,7 +1230,7 @@ TEST_F(KeyboardTest, KeyRepeatSettingsUpdateOnProfileChange) {
   // Switching user should load new prefs.
   EXPECT_CALL(*delegate_ptr,
               OnKeyRepeatSettingsChanged(true, kDelta1000Ms, kDelta1000Ms));
-  SimulateUserLogin(email, user_manager::UserType::kRegular);
+  SimulateUserLogin({email});
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 

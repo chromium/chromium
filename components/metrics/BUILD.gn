@@ -27,6 +27,11 @@ source_set("library_support") {
     "library_support/histogram_manager.cc",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   deps = [
     "//base",
     "//third_party/metrics_proto",
@@ -88,6 +93,10 @@ source_set("client_info") {
     "client_info.cc",
     "client_info.h",
   ]
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
 }
 
 # Used by the Chrome installer, which doesn't need the whole metrics library.
@@ -95,6 +104,10 @@ source_set("metrics_pref_names") {
   sources = [
     "metrics_pref_names.cc",
     "metrics_pref_names.h",
+  ]
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
   ]
 }
 
@@ -109,6 +122,10 @@ if (!is_cronet_build || is_ios) {
       "histogram_controller.cc",
       "histogram_controller.h",
       "histogram_subscriber.h",
+    ]
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
     ]
 
     deps = [
@@ -238,6 +255,11 @@ if (!is_cronet_build || is_ios) {
       "version_utils.h",
     ]
 
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
+    ]
+
     public_deps = [
       ":metrics_component",
       "//components/metrics:client_info",
@@ -253,7 +275,6 @@ if (!is_cronet_build || is_ios) {
       "//base:base_static",
       "//base:i18n",
       "//build:branding_buildflags",
-      "//components/flags_ui:switches",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
       "//components/metrics/public/mojom:histogram_fetcher_mojo_bindings",
       "//components/network_time",
@@ -261,6 +282,7 @@ if (!is_cronet_build || is_ios) {
       "//components/variations",
       "//components/variations/field_trial_config",
       "//components/version_info:version_info",
+      "//components/webui/flags:switches",
       "//crypto",
       "//extensions/buildflags",
       "//mojo/public/cpp/base:protobuf_support",
@@ -371,6 +393,11 @@ if (!is_cronet_build) {
       "component_metrics_provider.h",
     ]
 
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
+    ]
+
     public_deps = [ "//third_party/metrics_proto" ]
 
     deps = [
@@ -388,6 +415,8 @@ if (!is_cronet_build) {
         "content/accessibility_metrics_provider.h",
         "content/content_stability_metrics_provider.cc",
         "content/content_stability_metrics_provider.h",
+        "content/dwa_web_contents_observer.cc",
+        "content/dwa_web_contents_observer.h",
         "content/extensions_helper.h",
         "content/gpu_metrics_provider.cc",
         "content/gpu_metrics_provider.h",
@@ -398,9 +427,14 @@ if (!is_cronet_build) {
         "content/subprocess_metrics_provider.cc",
         "content/subprocess_metrics_provider.h",
       ]
+      configs += [
+        "//build/config/compiler:wexit_time_destructors",
+        "//build/config/compiler:wglobal_constructors",
+      ]
       public_deps = [ ":metrics" ]
       deps = [
         "//base",
+        "//components/metrics/dwa",
         "//content/public/browser",
         "//extensions/buildflags",
         "//gpu/config",
@@ -419,6 +453,11 @@ if (!is_cronet_build) {
       "net/net_metrics_log_uploader.h",
       "net/network_metrics_provider.cc",
       "net/network_metrics_provider.h",
+    ]
+
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
     ]
 
     public_deps = [ ":metrics" ]
@@ -444,6 +483,11 @@ if (!is_cronet_build) {
       "ui/form_factor_metrics_provider.h",
       "ui/screen_info_metrics_provider.cc",
       "ui/screen_info_metrics_provider.h",
+    ]
+
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
     ]
 
     public_deps = [ ":metrics" ]
@@ -480,6 +524,11 @@ if (!is_cronet_build) {
     public = [ "call_stacks/call_stack_profile_encoding.h" ]
     sources = [ "call_stacks/call_stack_profile_encoding.cc" ]
 
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
+    ]
+
     deps = [
       "//base:base",
       "//components/sampling_profiler:profile_params",
@@ -498,6 +547,10 @@ if (!is_cronet_build) {
       "call_stacks/call_stack_profile_builder.cc",
       "call_stacks/call_stack_profile_metadata.cc",
       "call_stacks/child_call_stack_profile_collector.cc",
+    ]
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
     ]
     public_deps = [ ":call_stack_profile_encoding" ]
     deps = [
@@ -525,6 +578,10 @@ if (!is_cronet_build) {
     sources = [
       "call_stacks/call_stack_profile_collector.cc",
       "call_stacks/call_stack_profile_collector.h",
+    ]
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
     ]
     deps = [
       ":metrics",
@@ -605,6 +662,7 @@ if (!is_cronet_build) {
       "//build:branding_buildflags",
       "//components/component_updater:test_support",
       "//components/encrypted_messages:encrypted_message_proto",
+      "//components/metrics/dwa",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
       "//components/network_time:network_time_test_support",
       "//components/prefs:test_support",
@@ -677,6 +735,7 @@ if (!is_cronet_build) {
     } else {
       sources += [
         "content/content_stability_metrics_provider_unittest.cc",
+        "content/dwa_web_contents_observer_unittest.cc",
         "content/subprocess_metrics_provider_unittest.cc",
       ]
       deps += [ "//extensions/buildflags" ]

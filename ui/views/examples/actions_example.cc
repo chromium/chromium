@@ -170,7 +170,7 @@ size_t ActionItemComboboxModel::GetItemCount() const {
 }
 
 std::u16string ActionItemComboboxModel::GetItemAt(size_t index) const {
-  return GetActionItemAt(index)->GetText();
+  return std::u16string(GetActionItemAt(index)->GetText());
 }
 
 actions::ActionItem* ActionItemComboboxModel::GetActionItemAt(
@@ -267,7 +267,7 @@ void ActionsExample::CreateExampleView(View* container) {
                   Builder<View>()
                       .CopyAddressTo(&action_panel_)
                       .SetLayoutManager(std::make_unique<FlowLayout>())
-                      .SetBorder(CreateThemedSolidBorder(
+                      .SetBorder(CreateSolidBorder(
                           1, ui::kColorFocusableBorderUnfocused)),
                   Builder<BoxLayoutView>()
                       .CopyAddressTo(&control_panel_)
@@ -309,7 +309,7 @@ void ActionsExample::CreateExampleView(View* container) {
             Builder<Combobox>(std::make_unique<Combobox>(std::move(model)))
                 .CopyAddressTo(&combobox))
         .BuildChildren();
-    combobox->GetViewAccessibility().SetName(label->GetText());
+    combobox->GetViewAccessibility().SetName(std::u16string(label->GetText()));
     return {row, combobox};
   };
 
@@ -362,7 +362,9 @@ void ActionsExample::CreateExampleView(View* container) {
         .AfterBuild(base::BindOnce(
             [](Textfield** textfield, Label** label, BoxLayoutView* row) {
               row->SetFlexForView(*textfield, 1);
-              (*textfield)->GetViewAccessibility().SetName((*label)->GetText());
+              (*textfield)
+                  ->GetViewAccessibility()
+                  .SetName(std::u16string((*label)->GetText()));
             },
             &textfield, &label))
         .BuildChildren();
@@ -459,7 +461,7 @@ void ActionsExample::ActionInvoked(actions::ActionItem* action,
   auto bool_to_string = [](bool value) {
     return value ? kBoolStrings[1] : kBoolStrings[0];
   };
-  std::u16string text = actions_trigger_info_->GetText();
+  std::u16string text(actions_trigger_info_->GetText());
   if (!text.empty()) {
     text.append(u"\n");
   }

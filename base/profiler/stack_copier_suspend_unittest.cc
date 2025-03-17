@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "base/profiler/stack_copier_suspend.h"
+
 #include <algorithm>
 #include <cstring>
 #include <memory>
@@ -15,8 +17,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/stack_buffer.h"
-#include "base/profiler/stack_copier_suspend.h"
 #include "base/profiler/suspendable_thread_delegate.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -48,10 +50,11 @@ class TestSuspendableThreadDelegate : public SuspendableThreadDelegate {
     bool WasSuccessful() const override { return true; }
   };
 
-  TestSuspendableThreadDelegate(const std::vector<uintptr_t>& fake_stack,
-                                // The register context will be initialized to
-                                // *|thread_context| if non-null.
-                                RegisterContext* thread_context = nullptr)
+  explicit TestSuspendableThreadDelegate(
+      const std::vector<uintptr_t>& fake_stack,
+      // The register context will be initialized to
+      // *|thread_context| if non-null.
+      RegisterContext* thread_context = nullptr)
       : fake_stack_(fake_stack), thread_context_(thread_context) {}
 
   TestSuspendableThreadDelegate(const TestSuspendableThreadDelegate&) = delete;
@@ -63,8 +66,9 @@ class TestSuspendableThreadDelegate : public SuspendableThreadDelegate {
   }
 
   bool GetThreadContext(RegisterContext* thread_context) override {
-    if (thread_context_)
+    if (thread_context_) {
       *thread_context = *thread_context_;
+    }
     // Set the stack pointer to be consistent with the provided fake stack.
     RegisterContextStackPointer(thread_context) =
         reinterpret_cast<uintptr_t>(&(*fake_stack_)[0]);
@@ -96,9 +100,7 @@ class TestSuspendableThreadDelegate : public SuspendableThreadDelegate {
 
 class TestStackCopierDelegate : public StackCopier::Delegate {
  public:
-  void OnStackCopy() override {
-    on_stack_copy_was_invoked_ = true;
-  }
+  void OnStackCopy() override { on_stack_copy_was_invoked_ = true; }
 
   bool on_stack_copy_was_invoked() const { return on_stack_copy_was_invoked_; }
 

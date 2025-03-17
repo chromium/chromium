@@ -77,6 +77,7 @@ class KioskController;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
 class AuthEventsRecorder;
+class MagicBoostControllerAsh;
 class MultiCaptureNotifications;
 class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
@@ -94,6 +95,7 @@ class SystemTokenCertDBInitializer;
 class VideoConferenceAppServiceClient;
 class VideoConferenceAshFeatureClient;
 class DozeModePowerStatusScheduler;
+class UserLoginPermissionTracker;
 
 namespace carrier_lock {
 class CarrierLockManager;
@@ -192,6 +194,9 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       system_token_certdb_initializer_;
 
   std::unique_ptr<ShutdownPolicyForwarder> shutdown_policy_forwarder_;
+
+  std::unique_ptr<ash::UserLoginPermissionTracker>
+      user_login_permission_tracker_;
 
   std::unique_ptr<EventRewriterDelegateImpl> event_rewriter_delegate_;
 
@@ -297,6 +302,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       video_conference_manager_client_;
 
   std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
+
+  std::unique_ptr<ash::MagicBoostControllerAsh> magic_boost_controller_ash_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

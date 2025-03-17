@@ -6,6 +6,7 @@
 #define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_METHOD_MANIFEST_TABLE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -150,7 +151,7 @@ class PaymentMethodManifestTable : public WebDatabaseTable {
   //
   // Returns the browser bound key id or nullopt when not found (or error
   // occurred during retrieval).
-  std::optional<std::vector<uint8_t>> GetBrowserBoundKeyForTest(
+  std::optional<std::vector<uint8_t>> GetBrowserBoundKey(
       std::vector<uint8_t> credential_id,
       std::string_view relying_party_id);
 };

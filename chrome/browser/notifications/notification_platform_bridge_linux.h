@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_LINUX_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_LINUX_H_
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 
 class NotificationPlatformBridgeLinuxImpl;
@@ -49,7 +49,7 @@ class NotificationPlatformBridgeLinux : public NotificationPlatformBridge {
 
   void CleanUp();
 
-  scoped_refptr<NotificationPlatformBridgeLinuxImpl> impl_;
+  std::unique_ptr<NotificationPlatformBridgeLinuxImpl> impl_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_LINUX_H_

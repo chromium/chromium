@@ -98,17 +98,18 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
   }
 
   void SetPageContent(base::OnceClosure quit_closure,
-                      std::optional<proto::AnnotatedPageContent> page_content) {
-    page_content_ = std::move(page_content);
+                      std::optional<AIPageContentResult> page_content) {
+    page_content_ = std::move(page_content->proto);
     std::move(quit_closure).Run();
   }
 
   const proto::AnnotatedPageContent& page_content() { return *page_content_; }
 
-  void LoadData() {
+  void LoadData(blink::mojom::AIPageContentOptionsPtr request =
+                    DefaultAIPageContentOptions()) {
     base::RunLoop run_loop;
     GetAIPageContent(
-        web_contents(),
+        web_contents(), std::move(request),
         base::BindOnce(&PageContentProtoProviderBrowserTest::SetPageContent,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -160,6 +161,34 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
             window_bounds.width());
   EXPECT_EQ(root_geometry.visible_bounding_box().height(),
             window_bounds.height());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       AIPageContentNoGeometry) {
+  LoadPage(https_server()->GetURL("/simple.html"),
+           /* with_page_content = */ false);
+
+  auto request = blink::mojom::AIPageContentOptions::New();
+  request->include_geometry = false;
+  LoadData(std::move(request));
+
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+  AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
+  EXPECT_FALSE(page_content().root_node().content_attributes().has_geometry());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       AIPageContentNoCriticalPath) {
+  LoadPage(https_server()->GetURL("/simple.html"),
+           /* with_page_content = */ false);
+
+  auto request = blink::mojom::AIPageContentOptions::New();
+  request->on_critical_path = false;
+  LoadData(std::move(request));
+
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+  AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
+  EXPECT_TRUE(page_content().root_node().content_attributes().has_geometry());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
@@ -221,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(iframe.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   const auto& iframe_data = iframe.content_attributes().iframe_data();
-  AssertValidURL(iframe_data.url(), "a.com");
+  EXPECT_TRUE(iframe_data.url().empty());
   EXPECT_FALSE(iframe_data.likely_ad_frame());
 
   EXPECT_EQ(iframe.children_nodes().size(), 1);
@@ -237,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(iframe.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   const auto& iframe_data = iframe.content_attributes().iframe_data();
-  AssertValidURL(iframe_data.url(), "a.com");
+  EXPECT_TRUE(iframe_data.url().empty());
   EXPECT_FALSE(iframe_data.likely_ad_frame());
 
   EXPECT_EQ(iframe.children_nodes().size(), 1);
@@ -253,6 +282,94 @@ class PageContentProtoProviderBrowserTestSiteIsolation
     return EnableCrossSiteFrames() ? "?domain=/cross-site/b.com/" : "";
   }
 };
+
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
+                       LatencyMetrics) {
+  base::HistogramTester tester;
+
+  LoadPage(https_server()->GetURL(
+      "a.com",
+      base::StringPrintf("/paragraph_iframe_partially_offscreen.html%s",
+                         QueryParam())));
+  ASSERT_EQ(page_content().root_node().children_nodes().size(), 1);
+  content::FetchHistogramsFromChildProcesses();
+
+  constexpr char kMainFrame[] =
+      "OptimizationGuide.AIPageContent.RendererLatency.MainFrame";
+  constexpr char kMainFrameSchedulingDelay[] =
+      "OptimizationGuide.AIPageContent.RendererLatencyWithSchedulingDelay."
+      "Critical.MainFrame";
+  constexpr char kRemoteSubframe[] =
+      "OptimizationGuide.AIPageContent.RendererLatency.RemoteSubFrame";
+  constexpr char kRemoteSubframeSchedulingDelay[] =
+      "OptimizationGuide.AIPageContent.RendererLatencyWithSchedulingDelay."
+      "Critical.RemoteSubFrame";
+  constexpr char kTotal[] = "OptimizationGuide.AIPageContent.TotalLatency";
+
+  tester.ExpectTotalCount(kMainFrame, 1);
+  tester.ExpectTotalCount(kMainFrameSchedulingDelay, 1);
+  tester.ExpectTotalCount(kTotal, 1);
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/384585933): Enable this assert on Android.
+  if (EnableCrossSiteFrames()) {
+    return;
+  }
+#endif
+  tester.ExpectTotalCount(kRemoteSubframe, EnableCrossSiteFrames() ? 1 : 0);
+  tester.ExpectTotalCount(kRemoteSubframeSchedulingDelay,
+                          EnableCrossSiteFrames() ? 1 : 0);
+}
+
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
+                       LatencyMetricsNotOnCriticalPath) {
+  base::HistogramTester tester;
+
+  LoadPage(https_server()->GetURL(
+               "a.com", base::StringPrintf(
+                            "/paragraph_iframe_partially_offscreen.html%s",
+                            QueryParam())),
+           /* with_page_content = */ false);
+
+  auto request = optimization_guide::DefaultAIPageContentOptions();
+  request->on_critical_path = false;
+  LoadData(std::move(request));
+  content::FetchHistogramsFromChildProcesses();
+
+  ASSERT_EQ(page_content().root_node().children_nodes().size(), 1);
+
+  constexpr char kMainFrame[] =
+      "OptimizationGuide.AIPageContent.RendererLatency.MainFrame";
+  constexpr char kMainFrameSchedulingDelay[] =
+      "OptimizationGuide.AIPageContent.RendererLatencyWithSchedulingDelay."
+      "NonCritical.MainFrame";
+  constexpr char kRemoteSubframe[] =
+      "OptimizationGuide.AIPageContent.RendererLatency.RemoteSubFrame";
+  constexpr char kRemoteSubframeSchedulingDelay[] =
+      "OptimizationGuide.AIPageContent.RendererLatencyWithSchedulingDelay."
+      "Critical.RemoteSubFrame";
+  constexpr char kRemoteSubframeSchedulingDelayNonCritical[] =
+      "OptimizationGuide.AIPageContent.RendererLatencyWithSchedulingDelay."
+      "NonCritical.RemoteSubFrame";
+  constexpr char kTotal[] = "OptimizationGuide.AIPageContent.TotalLatency";
+
+  tester.ExpectTotalCount(kMainFrame, 1);
+  tester.ExpectTotalCount(kMainFrameSchedulingDelay, 1);
+  tester.ExpectTotalCount(kTotal, 1);
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/384585933): Enable this assert on Android.
+  if (EnableCrossSiteFrames()) {
+    return;
+  }
+#endif
+  // TODO(crbug.com/389737599): We should have a metric for subframes once they
+  // can use off critical path scheduling.
+  tester.ExpectTotalCount(kRemoteSubframeSchedulingDelayNonCritical, 0);
+  tester.ExpectTotalCount(kRemoteSubframe, EnableCrossSiteFrames() ? 1 : 0);
+  tester.ExpectTotalCount(kRemoteSubframeSchedulingDelay,
+                          EnableCrossSiteFrames() ? 1 : 0);
+}
 
 // Ensure that clip from an ancestor frame is included in visible rect
 // computation.
@@ -276,10 +393,8 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
   ASSERT_EQ(iframe_root.children_nodes().size(), 1);
   const auto& p = iframe_root.children_nodes()[0];
   EXPECT_EQ(p.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
-  EXPECT_EQ(p.content_attributes().annotated_roles().size(), 1);
-  EXPECT_EQ(p.content_attributes().annotated_roles()[0],
-            optimization_guide::proto::ANNOTATED_ROLE_PARAGRAPH);
+            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+  EXPECT_EQ(p.content_attributes().annotated_roles().size(), 0);
   const auto& geometry = p.content_attributes().geometry();
   AssertRectsEqual(geometry.outer_bounding_box(),
                    gfx::Rect(-20, -10, 100, 200));
@@ -309,10 +424,8 @@ IN_PROC_BROWSER_TEST_P(
 
   const auto& p = iframe_root.children_nodes()[0];
   EXPECT_EQ(p.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
-  EXPECT_EQ(p.content_attributes().annotated_roles().size(), 1);
-  EXPECT_EQ(p.content_attributes().annotated_roles()[0],
-            optimization_guide::proto::ANNOTATED_ROLE_PARAGRAPH);
+            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+  EXPECT_EQ(p.content_attributes().annotated_roles().size(), 0);
 
 // TODO(khushalsagar): This is an existing bug where the scroll offset of the
 // root scroller in the ancestor remote frame is not applied.

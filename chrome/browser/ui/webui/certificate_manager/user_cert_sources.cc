@@ -13,9 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/net/server_certificate_database.h"
-#include "chrome/browser/net/server_certificate_database.pb.h"
-#include "chrome/browser/net/server_certificate_database_service.h"
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/certificate_dialogs.h"
@@ -28,6 +25,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/server_certificate_database/server_certificate_database.h"
+#include "components/server_certificate_database/server_certificate_database.pb.h"
+#include "components/server_certificate_database/server_certificate_database_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/sha2.h"
@@ -80,6 +80,10 @@ void UpdateCertificateAsync(
   net::ServerCertificateDatabaseService* server_cert_service =
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile.get());
+  if (!server_cert_service) {
+    std::move(update_callback).Run(false);
+    return;
+  }
   std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
   cert_infos.push_back(std::move(cert_info));
   server_cert_service->AddOrUpdateUserCertificates(
@@ -165,36 +169,6 @@ void ExportCertificatesAsync(
                               std::move(export_certs), file_name);
 }
 
-void DeleteCertificateResultAsync(
-    CertificateManagerPageHandler::DeleteCertificateCallback callback,
-    bool result) {
-  if (result) {
-    std::move(callback).Run(
-        certificate_manager_v2::mojom::ActionResult::NewSuccess(
-            certificate_manager_v2::mojom::SuccessResult::kSuccess));
-    return;
-  }
-  std::move(callback).Run(certificate_manager_v2::mojom::ActionResult::NewError(
-      "Error deleting certificate"));
-}
-
-void GotDeleteConfirmation(
-    const std::string& sha256hash_hex,
-    CertificateManagerPageHandler::DeleteCertificateCallback callback,
-    base::WeakPtr<Profile> profile,
-    bool confirmed) {
-  if (confirmed && profile) {
-    net::ServerCertificateDatabaseService* server_cert_service =
-        net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-            profile.get());
-    server_cert_service->DeleteCertificate(
-        sha256hash_hex,
-        base::BindOnce(&DeleteCertificateResultAsync, std::move(callback)));
-    return;
-  }
-  std::move(callback).Run(nullptr);
-}
-
 }  // namespace
 
 UserCertSource::UserCertSource(
@@ -221,7 +195,8 @@ void UserCertSource::GetCertificateInfos(
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_);
   if (!base::FeatureList::IsEnabled(
-          ::features::kEnableCertManagementUIV2Write)) {
+          ::features::kEnableCertManagementUIV2Write) ||
+      !server_cert_service) {
     std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr> cert_infos;
     std::move(callback).Run(std::move(cert_infos));
     return;
@@ -237,6 +212,9 @@ void UserCertSource::ViewCertificate(
   net::ServerCertificateDatabaseService* server_cert_service =
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_);
+  if (!server_cert_service) {
+    return;
+  }
   server_cert_service->GetAllCertificates(base::BindOnce(
       &ViewCertificateAsync, sha256_hex_hash, trust_, web_contents,
       profile_->GetWeakPtr(), weak_ptr_factory_.GetWeakPtr()));
@@ -247,6 +225,9 @@ void UserCertSource::ExportCertificates(
   net::ServerCertificateDatabaseService* server_cert_service =
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_);
+  if (!server_cert_service) {
+    return;
+  }
   server_cert_service->GetAllCertificates(base::BindOnce(
       &ExportCertificatesAsync, web_contents, trust_, export_file_name_));
 }
@@ -272,8 +253,44 @@ void UserCertSource::DeleteCertificate(
               base::UTF8ToUTF16(display_name)),
           l10n_util::GetStringUTF8(
               IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_SERVER_CERT_DESCRIPTION),
-          base::BindOnce(&GotDeleteConfirmation, sha256hash_hex,
-                         std::move(callback), profile_->GetWeakPtr()));
+          base::BindOnce(&UserCertSource::GotDeleteConfirmation,
+                         weak_ptr_factory_.GetWeakPtr(), sha256hash_hex,
+                         std::move(callback)));
+}
+
+void UserCertSource::GotDeleteConfirmation(
+    const std::string& sha256hash_hex,
+    CertificateManagerPageHandler::DeleteCertificateCallback callback,
+    bool confirmed) {
+  if (confirmed) {
+    net::ServerCertificateDatabaseService* server_cert_service =
+        net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+            profile_.get());
+    if (server_cert_service) {
+      server_cert_service->DeleteCertificate(
+          sha256hash_hex,
+          base::BindOnce(&UserCertSource::DeleteCertificateResultAsync,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      return;
+    }
+  }
+  std::move(callback).Run(nullptr);
+}
+
+void UserCertSource::DeleteCertificateResultAsync(
+    CertificateManagerPageHandler::DeleteCertificateCallback callback,
+    bool result) {
+  if (result) {
+    // Trigger metadata refresh on local certs page to update count.
+    (*remote_client_)->TriggerMetadataUpdate();
+
+    std::move(callback).Run(
+        certificate_manager_v2::mojom::ActionResult::NewSuccess(
+            certificate_manager_v2::mojom::SuccessResult::kSuccess));
+    return;
+  }
+  std::move(callback).Run(certificate_manager_v2::mojom::ActionResult::NewError(
+      "Error deleting certificate"));
 }
 
 void UserCertSource::ImportCertificate(
@@ -327,6 +344,7 @@ void UserCertSource::FileSelected(const ui::SelectedFileInfo& file, int index) {
       base::BindOnce(&UserCertSource::FileRead,
                      weak_ptr_factory_.GetWeakPtr()));
 }
+
 void UserCertSource::FileSelectionCanceled() {
   select_file_dialog_ = nullptr;
   std::move(import_callback_).Run(nullptr);
@@ -349,7 +367,7 @@ void UserCertSource::FileRead(std::optional<std::vector<uint8_t>> file_bytes) {
       std::move(import_callback_)
           .Run(certificate_manager_v2::mojom::ActionResult::NewError(
               l10n_util::GetStringUTF8(
-                  IDS_SETTINGS_CERTIFICATE_MANAGER_V2_READ_FILE_ERROR)));
+                  IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_INVALID_FILE)));
       return;
     }
     std::move(import_callback_)
@@ -364,6 +382,10 @@ void UserCertSource::FileRead(std::optional<std::vector<uint8_t>> file_bytes) {
   net::ServerCertificateDatabaseService* server_cert_service =
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_);
+  if (!server_cert_service) {
+    std::move(import_callback_).Run(nullptr);
+    return;
+  }
 
   net::ServerCertificateDatabase::CertInformation cert_info(
       cert_to_import->cert_span());
@@ -379,6 +401,9 @@ void UserCertSource::FileRead(std::optional<std::vector<uint8_t>> file_bytes) {
 
 void UserCertSource::ImportCertificateResult(bool success) {
   if (success) {
+    // Trigger metadata refresh on local certs page to update count.
+    (*remote_client_)->TriggerMetadataUpdate();
+
     std::move(import_callback_)
         .Run(certificate_manager_v2::mojom::ActionResult::NewSuccess(
             certificate_manager_v2::mojom::SuccessResult::kSuccess));

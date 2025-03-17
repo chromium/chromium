@@ -24,15 +24,10 @@ import '../cr_icon_button/cr_icon_button.js';
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {CrContainerShadowMixinLit} from '../cr_container_shadow_mixin_lit.js';
 import type {CrInputElement} from '../cr_input/cr_input.js';
-import {CrScrollObserverMixinLit} from '../cr_scroll_observer_mixin_lit.js';
 
 import {getCss} from './cr_dialog.css.js';
 import {getHtml} from './cr_dialog.html.js';
-
-const CrDialogElementBase =
-    CrContainerShadowMixinLit(CrScrollObserverMixinLit(CrLitElement));
 
 export interface CrDialogElement {
   $: {
@@ -40,7 +35,7 @@ export interface CrDialogElement {
   };
 }
 
-export class CrDialogElement extends CrDialogElementBase {
+export class CrDialogElement extends CrLitElement {
   static get is() {
     return 'cr-dialog';
   }
@@ -133,10 +128,8 @@ export class CrDialogElement extends CrDialogElementBase {
     super.connectedCallback();
     const mutationObserverCallback = () => {
       if (this.$.dialog.open) {
-        this.enableScrollObservation(true);
         this.addKeydownListener_();
       } else {
-        this.enableScrollObservation(false);
         this.removeKeydownListener_();
       }
     };
@@ -344,7 +337,7 @@ export class CrDialogElement extends CrDialogElementBase {
 
   override focus() {
     const titleContainer =
-        this.shadowRoot!.querySelector<HTMLElement>('.title-container');
+        this.shadowRoot.querySelector<HTMLElement>('.title-container');
     assert(titleContainer);
     titleContainer.focus();
   }

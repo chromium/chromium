@@ -170,7 +170,7 @@
    },
    "install_state": "1",
    "is_diy_app": true,
-   "was_shortcut_app": true,
+   "diy_app_icons_masked_on_mac": true,
    "is_from_sync_and_pending_installation": true,
    "is_generated_icon": true,
    "is_uninstalling": false,
@@ -220,7 +220,8 @@
    "latest_install_source": "ml promotion",
    "latest_install_time": "1970-01-06 12:19:09.338000 UTC",
    "launch_handler": {
-      "client_mode": "kNavigateExisting"
+      "client_mode": "kNavigateExisting",
+      "client_mode_valid_and_specified": true
    },
    "launch_query_params": "322714900",
    "lock_screen_start_url": "https://example.com/scope1234/lock_screen_start_url2077353522",
@@ -303,27 +304,50 @@
       "protocol": "web+test17396056594",
       "url": "https://example.com/17396056594"
    } ],
+   "related_applications": [ {
+      "id": "id3",
+      "platform": "windows",
+      "url": "https://example.com/3"
+   }, {
+      "id": "id2",
+      "platform": "f-droid",
+      "url": "https://example.com/2"
+   }, {
+      "id": "id1",
+      "platform": "chromeos_play",
+      "url": "https://example.com/1"
+   }, {
+      "id": "id0",
+      "platform": "windows",
+      "url": "https://example.com/0"
+   } ],
    "run_on_os_login_mode": "windowed",
    "scope": "https://example.com/scope1234/",
    "scope_extensions": [ {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629020.com"
+      "origin": "https://app-30111629020.com",
+      "scope": "https://app-30111629020.com/"
    }, {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629021.com"
+      "origin": "https://app-30111629021.com",
+      "scope": "https://app-30111629021.com/"
    }, {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629022.com"
+      "origin": "https://app-30111629022.com",
+      "scope": "https://app-30111629022.com/"
    } ],
    "scope_extensions_validated": [ {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629020.com"
+      "origin": "https://app-30111629020.com",
+      "scope": "https://app-30111629020.com/"
    }, {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629021.com"
+      "origin": "https://app-30111629021.com",
+      "scope": "https://app-30111629021.com/"
    }, {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629022.com"
+      "origin": "https://app-30111629022.com",
+      "scope": "https://app-30111629022.com/"
    } ],
    "share_target": {
       "action": "https://example.com/path/target/986688382",
@@ -496,5 +520,6 @@
    },
    "theme_color": "rgba(220,247,174,0.6470588235294118)",
    "user_link_capturing_preference": "1",
+   "was_shortcut_app": true,
    "window_controls_overlay_enabled": false
 }

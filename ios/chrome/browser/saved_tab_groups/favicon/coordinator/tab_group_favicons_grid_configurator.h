@@ -5,9 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_FAVICON_COORDINATOR_TAB_GROUP_FAVICONS_GRID_CONFIGURATOR_H_
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_FAVICON_COORDINATOR_TAB_GROUP_FAVICONS_GRID_CONFIGURATOR_H_
 
+#import <UIKit/UIKit.h>
+
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 
 class FaviconLoader;
+@class ShareKitPreviewItem;
 class TabGroup;
 @class TabGroupFaviconsGrid;
 
@@ -18,6 +22,8 @@ class Uuid;
 namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
+
+using FaviconsGridImageCallBack = base::OnceCallback<void(UIImage*)>;
 
 // Configures favicon for TabGroupFaviconsGrid objects.
 class TabGroupFaviconsGridConfigurator {
@@ -39,6 +45,15 @@ class TabGroupFaviconsGridConfigurator {
   // Configures `favicons_grid` to display the favicons of `tab_group`.
   void ConfigureFaviconsGrid(TabGroupFaviconsGrid* favicons_grid,
                              const TabGroup* tab_group);
+
+  // Configures `favicons_grid` to display the favicons of the given
+  // `preview_items`.
+  void ConfigureFaviconsGrid(TabGroupFaviconsGrid* favicons_grid,
+                             NSArray<ShareKitPreviewItem*>* preview_items);
+
+  // Fetches a favicons grid image and executes `callback`.
+  void FetchFaviconsGrid(const TabGroup* tab_group,
+                         FaviconsGridImageCallBack callback);
 
  private:
   // The tab group sync service to retrieve group info.

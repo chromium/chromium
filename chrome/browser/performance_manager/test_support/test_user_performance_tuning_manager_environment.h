@@ -57,7 +57,7 @@ class TestUserPerformanceTuningManagerEnvironment {
   raw_ptr<base::test::TestBatteryLevelProvider> battery_level_provider_;
   std::unique_ptr<base::BatteryStateSampler> battery_sampler_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Some tests combine this helper with other helpers that also initialize
   // FakePowerManagerClient. E.g. BrowserWithTestWindowTest tests. True if we
   // called chromeos::PowerManagerClient::InitializeFake, because we are then

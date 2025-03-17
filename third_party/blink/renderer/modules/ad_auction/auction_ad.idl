@@ -18,4 +18,6 @@ dictionary AuctionAd {
   any metadata;
   DOMString adRenderId;
   sequence<USVString> allowedReportingOrigins;
+  [RuntimeEnabled=FledgeTrustedSignalsKVv1CreativeScanning]
+  USVString creativeScanningMetadata;
 };

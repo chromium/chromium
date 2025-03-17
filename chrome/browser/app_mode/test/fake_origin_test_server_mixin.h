@@ -29,7 +29,7 @@ class FakeOriginTestServerMixin : public InProcessBrowserTestMixin {
  public:
   FakeOriginTestServerMixin(InProcessBrowserTestMixinHost* host,
                             GURL origin,
-                            base::FilePath::StringPieceType path_to_be_served);
+                            base::FilePath::StringViewType path_to_be_served);
   FakeOriginTestServerMixin(const FakeOriginTestServerMixin&) = delete;
   FakeOriginTestServerMixin operator=(const FakeOriginTestServerMixin&) =
       delete;

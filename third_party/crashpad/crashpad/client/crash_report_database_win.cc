@@ -1024,9 +1024,9 @@ void CrashReportDatabaseWin::CleanOrphanedAttachments() {
         continue;
       }
 
-      // Remove attachments if corresponding report doen't exist.
-      base::FilePath report_path =
-          reports_dir.Append(uuid.ToWString() + kCrashReportFileExtension);
+      // Remove attachments if corresponding report doesn't exist.
+      base::FilePath report_path = reports_dir.Append(
+          uuid.ToWString() + L"." + kCrashReportFileExtension);
       if (!IsRegularFile(report_path)) {
         RemoveAttachmentsByUUID(uuid);
       }

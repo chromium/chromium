@@ -434,7 +434,10 @@ enum FieldType {
   // Departamento).
   ADDRESS_HOME_APT_TYPE = 157,
 
-  // Reserved for a server-side-only use: 158-159
+  // Loyalty program card or membeship ID.
+  LOYALTY_MEMBERSHIP_ID = 158,
+
+  // Reserved for a server-side-only use: 159
 
   // Similar to `SINGLE_USERNAME`, but for the case when there are additional
   // fields between single username and password forms.
@@ -457,6 +460,7 @@ enum FieldType {
   // This type is a metatype and does not correspond to a specific sort of
   // data.
   // It should not take precedence over existing types.
+  // TODO(crbug.com/389629676): Deprecate this field type.
   IMPROVED_PREDICTION = 162,
 
   // Types to represent alternative names (e.g. phonetic name in Japanese).
@@ -475,6 +479,42 @@ enum FieldType {
   // E.g. "Gogh" in "Vincent van Gogh".
   NAME_LAST_CORE = 167,
 
+  // Types corresponding to the "Passport" entity from
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+  // *TAG field types are merely placeholder tagging that the type belongs to
+  // the passport entity, but that the existing Autofill classification or logic
+  // should be used.
+  PASSPORT_NAME_TAG = 168,
+  PASSPORT_NUMBER = 169,
+  PASSPORT_ISSUING_COUNTRY = 170,
+  PASSPORT_EXPIRATION_DATE = 171,
+  PASSPORT_ISSUE_DATE = 172,
+
+  // Types corresponding to the "Loyalty card" entity from
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+  LOYALTY_MEMBERSHIP_PROGRAM = 173,
+  LOYALTY_MEMBERSHIP_PROVIDER = 174,
+  // The member ID is represented by LOYALTY_MEMBERSHIP_ID.
+
+  // Types corresponding to the "Car" entity from
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+  VEHICLE_OWNER_TAG = 175,
+  VEHICLE_LICENSE_PLATE = 176,
+  VEHICLE_VIN = 177,
+  VEHICLE_MAKE = 178,
+  VEHICLE_MODEL = 179,
+
+  // Types corresponding to the "Drivers license" entity from
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+  DRIVERS_LICENSE_NAME_TAG = 180,
+  DRIVERS_LICENSE_REGION = 181,
+  DRIVERS_LICENSE_NUMBER = 182,
+  DRIVERS_LICENSE_EXPIRATION_DATE = 183,
+  DRIVERS_LICENSE_ISSUE_DATE = 184,
+
+  VEHICLE_YEAR = 185,
+  VEHICLE_PLATE_STATE = 186,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
@@ -485,7 +525,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 168,
+  MAX_VALID_FIELD_TYPE = 187,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -508,11 +548,8 @@ enum class FieldTypeGroup {
 };
 
 template <>
-struct DenseSetTraits<FieldType> {
-  static constexpr FieldType kMinValue = NO_SERVER_DATA;
-  static constexpr FieldType kMaxValue = MAX_VALID_FIELD_TYPE;
-  static constexpr bool kPacked = false;
-};
+struct DenseSetTraits<FieldType>
+    : EnumDenseSetTraits<FieldType, NO_SERVER_DATA, MAX_VALID_FIELD_TYPE> {};
 
 using FieldTypeSet = DenseSet<FieldType>;
 
@@ -531,8 +568,8 @@ std::string_view FieldTypeToStringView(FieldType type);
 // Returns a string describing `type`.
 std::string FieldTypeToString(FieldType type);
 
-// Inverse FieldTypeToStringView(). Checks that only valid FieldType string
-// representations are being passed.
+// Inverse FieldTypeToStringView(). Returns UNKNOWN_TYPE for unknown FieldType
+// string representations.
 FieldType TypeNameToFieldType(std::string_view type_name);
 
 // Returns a string view describing `type`. The devtools UI uses this string to
@@ -581,8 +618,7 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            // Reserved for server-side only use.
            !(111 <= t && t <= 113) && t != 117 && t != 127 &&
            !(130 <= t && t <= 132) && t != 134 && !(137 <= t && t <= 139) &&
-           !(147 <= t && t <= 149) && t != 155 && t != 158 &&
-           t != 159 && t != 161;
+           !(147 <= t && t <= 149) && t != 155 && t != 159 && t != 161;
   };
   return IsValid(raw_value) ? static_cast<FieldType>(raw_value)
                             : fallback_value;
@@ -628,6 +664,8 @@ constexpr HtmlFieldTypeSet kAllHtmlFieldTypes = [] {
   }
   return fields;
 }();
+
+bool IsDateFieldType(FieldType field_type);
 
 }  // namespace autofill
 

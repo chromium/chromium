@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
@@ -18,7 +20,6 @@
 #include "ash/wm/wm_event.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -103,7 +104,7 @@ class ResizeShadowAndCursorTest : public AshTestBase {
       if (visible) {
         // Make sure the shadow layer is stacked directly beneath the window
         // layer.
-        EXPECT_EQ(*(base::ranges::find(layers, shadow_layer) + 1),
+        EXPECT_EQ(*(std::ranges::find(layers, shadow_layer) + 1),
                   window_->layer());
       }
     }
@@ -242,8 +243,9 @@ TEST_F(ResizeShadowAndCursorTest, DefaultCursorOnBubbleWidgetCorners) {
 
   // Create the bubble widget.
   views::Widget* bubble(views::BubbleDialogDelegateView::CreateBubble(
-      new views::BubbleDialogDelegateView(child_view,
-                                          views::BubbleBorder::NONE)));
+      new views::BubbleDialogDelegateView(
+          views::BubbleDialogDelegateView::CreatePassKey(), child_view,
+          views::BubbleBorder::NONE)));
   bubble->Show();
 
   // Get the screen rectangle for the bubble frame
@@ -498,14 +500,31 @@ TEST_F(ResizeShadowAndCursorTest, ResizeShadowTypeChange) {
   Shell::Get()->resize_shadow_controller()->HideShadow(window());
 }
 
-// Tests that resize shadow matches window rounded corners.
-TEST_F(ResizeShadowAndCursorTest, ResizeShadowMatchesWindowRoundness) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {chromeos::features::kRoundedWindows,
-       chromeos::features::kFeatureManagementRoundedWindows},
-      /*disabled_features=*/{});
+class ResizeShadowWithRoundedWindowsTest : public ResizeShadowAndCursorTest {
+ public:
+  ResizeShadowWithRoundedWindowsTest() = default;
 
+  ResizeShadowWithRoundedWindowsTest(
+      const ResizeShadowWithRoundedWindowsTest&) = delete;
+  ResizeShadowWithRoundedWindowsTest& operator=(
+      const ResizeShadowWithRoundedWindowsTest&) = delete;
+
+  ~ResizeShadowWithRoundedWindowsTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kRoundedWindows,
+         chromeos::features::kFeatureManagementRoundedWindows},
+        /*disabled_features=*/{});
+    ResizeShadowAndCursorTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that resize shadow matches window rounded corners.
+TEST_F(ResizeShadowWithRoundedWindowsTest, ResizeShadowMatchesWindowRoundness) {
   ASSERT_FALSE(GetShadow());
   WindowState* window_state = WindowState::Get(window());
   ASSERT_TRUE(window_state->IsNormalStateType());
@@ -683,8 +702,8 @@ TEST_F(ResizeShadowAndCursorTest, KeepShadowBeneathFloatWindow) {
   auto parent_children = shadow_layer->parent()->children();
   auto* window_layer = test_window->layer();
 
-  auto shadow_iter = base::ranges::find(parent_children, shadow_layer);
-  auto window_iter = base::ranges::find(parent_children, window_layer);
+  auto shadow_iter = std::ranges::find(parent_children, shadow_layer);
+  auto window_iter = std::ranges::find(parent_children, window_layer);
   EXPECT_LT(std::distance(parent_children.begin(), shadow_iter),
             std::distance(parent_children.begin(), window_iter));
 }

@@ -8,6 +8,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation_traits.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_base.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
@@ -23,20 +26,19 @@ class WebContents;
 
 namespace resource_coordinator {
 
-class TabLifecycleObserver;
 class TabLifecycleStateObserver;
 class TabLifecycleUnitExternal;
-class UsageClock;
 
 // Creates and destroys LifecycleUnits as tabs are created and destroyed.
 class TabLifecycleUnitSource : public BrowserListObserver,
                                public LifecycleUnitSourceBase,
+                               public LifecycleUnitObserver,
                                public TabStripModelObserver {
  public:
   class TabLifecycleUnit;
   class LifecycleStateObserver;
 
-  explicit TabLifecycleUnitSource(UsageClock* usage_clock);
+  TabLifecycleUnitSource();
 
   TabLifecycleUnitSource(const TabLifecycleUnitSource&) = delete;
   TabLifecycleUnitSource& operator=(const TabLifecycleUnitSource&) = delete;
@@ -52,10 +54,10 @@ class TabLifecycleUnitSource : public BrowserListObserver,
   static TabLifecycleUnitExternal* GetTabLifecycleUnitExternal(
       content::WebContents* web_contents);
 
-  // Adds / removes an observer that is notified when the discarded or auto-
-  // discardable state of a tab changes.
-  void AddTabLifecycleObserver(TabLifecycleObserver* observer);
-  void RemoveTabLifecycleObserver(TabLifecycleObserver* observer);
+  // Adds / removes an observer that is notified when the discarded state of any
+  // tab changes.
+  void AddLifecycleObserver(LifecycleUnitObserver* observer);
+  void RemoveLifecycleObserver(LifecycleUnitObserver* observer);
 
   // Pretend that |tab_strip| is the TabStripModel of the focused window.
   void SetFocusedTabStripModelForTesting(TabStripModel* tab_strip);
@@ -119,6 +121,13 @@ class TabLifecycleUnitSource : public BrowserListObserver,
   void OnBrowserSetLastActive(Browser* browser) override;
   void OnBrowserNoLongerActive(Browser* browser) override;
 
+  // LifecycleUnitObserver:
+  void OnLifecycleUnitStateChanged(
+      LifecycleUnit* lifecycle_unit,
+      LifecycleUnitState last_state,
+      LifecycleUnitStateChangeReason reason) override;
+  void OnLifecycleUnitDestroyed(LifecycleUnit* lifecycle_unit) override;
+
   // This is called indirectly from the corresponding event on a PageNode in the
   // performance_manager Graph.
   static void OnLifecycleStateChanged(
@@ -143,18 +152,40 @@ class TabLifecycleUnitSource : public BrowserListObserver,
   // The currently focused TabLifecycleUnit. Updated by UpdateFocusedTab().
   raw_ptr<TabLifecycleUnit> focused_lifecycle_unit_ = nullptr;
 
-  // Observers notified when the discarded or auto-discardable state of a tab
-  // changes.
-  base::ObserverList<TabLifecycleObserver>::UncheckedAndDanglingUntriaged
-      tab_lifecycle_observers_;
+  // Observers notified when the discarded state of any tab changes.
+  base::ObserverList<LifecycleUnitObserver>::UncheckedAndDanglingUntriaged
+      lifecycle_unit_observers_;
 
-  // A clock that advances when Chrome is in use.
-  const raw_ptr<UsageClock> usage_clock_;
+  // Observes all LifecycleUnits tracked by this source to forward their
+  // notifications to `lifecycle_unit_observers_`
+  base::ScopedMultiSourceObservation<LifecycleUnit, LifecycleUnitObserver>
+      lifecycle_unit_observations_{this};
 
   // The enterprise policy for setting a limit on total physical memory usage.
   bool memory_limit_enterprise_policy_ = false;
 };
 
 }  // namespace resource_coordinator
+
+namespace base {
+
+// Adaptor to allow base::ScopedObservation to install LifecycleUnitObservers
+// for all tabs.
+template <>
+struct ScopedObservationTraits<resource_coordinator::TabLifecycleUnitSource,
+                               resource_coordinator::LifecycleUnitObserver> {
+  static void AddObserver(
+      resource_coordinator::TabLifecycleUnitSource* source,
+      resource_coordinator::LifecycleUnitObserver* observer) {
+    source->AddLifecycleObserver(observer);
+  }
+  static void RemoveObserver(
+      resource_coordinator::TabLifecycleUnitSource* source,
+      resource_coordinator::LifecycleUnitObserver* observer) {
+    source->RemoveLifecycleObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_UNIT_SOURCE_H_

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_relative_bounds.h"
@@ -49,6 +48,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityFuchsia : public Browser
   AXPlatformNode* GetAXPlatformNode() const override;
   bool AccessibilityPerformAction(const AXActionData& action_data) override;
 
+  void OnScrollChanged();
+
   // Returns this object's AXUniqueID as a uint32_t.
   uint32_t GetFuchsiaNodeID() const;
 
@@ -85,7 +86,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityFuchsia : public Browser
   bool IsFuchsiaDefaultAction() const;
 
   // Fuchsia-specific representation of this node.
-  raw_ptr<AXPlatformNodeFuchsia> platform_node_;
+  AXPlatformNode::Pointer platform_node_;
 };
 
 BrowserAccessibilityFuchsia* COMPONENT_EXPORT(AX_PLATFORM)

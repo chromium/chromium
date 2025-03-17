@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -38,7 +38,6 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -241,7 +240,7 @@ void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
 template <typename T>
 std::vector<T> ToStdVector(const Vector<T>& format_vector) {
   std::vector<T> formats;
-  base::ranges::copy(format_vector, std::back_inserter(formats));
+  std::ranges::copy(format_vector, std::back_inserter(formats));
   return formats;
 }
 
@@ -598,7 +597,7 @@ void UserMediaProcessor::RequestInfo::OnTrackStarted(
     MediaStreamRequestResult result,
     const blink::WebString& result_name) {
   SendLogMessage(GetOnTrackStartedLogString(source, result));
-  auto it = base::ranges::find(sources_waiting_for_callback_, source);
+  auto it = std::ranges::find(sources_waiting_for_callback_, source);
   CHECK(it != sources_waiting_for_callback_.end(), base::NotFatalUntil::M130);
   sources_waiting_for_callback_.erase(it);
   // All tracks must be started successfully. Otherwise the request is a
@@ -624,7 +623,7 @@ void UserMediaProcessor::RequestInfo::CheckAllTracksStarted() {
 }
 
 size_t UserMediaProcessor::RequestInfo::count_video_devices() const {
-  return base::ranges::count_if(
+  return std::ranges::count_if(
       stream_devices_set_.stream_devices.begin(),
       stream_devices_set_.stream_devices.end(),
       [](const mojom::blink::StreamDevicesPtr& stream_devices) {
@@ -752,7 +751,7 @@ void UserMediaProcessor::SelectAudioDeviceSettings(
     // such source will contain the same non-reconfigurable settings that limit
     // the associated capabilities.
     blink::MediaStreamAudioSource* audio_source = nullptr;
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         local_sources_, [&device](MediaStreamSource* source) {
           DCHECK(source);
           MediaStreamAudioSource* platform_source =
@@ -1338,7 +1337,7 @@ void UserMediaProcessor::OnStreamsGenerated(
 
   current_request_info_->SetDevices(stream_devices_set->Clone());
 
-  if (base::ranges::none_of(
+  if (std::ranges::none_of(
           stream_devices_set->stream_devices,
           [](const mojom::blink::StreamDevicesPtr& stream_devices) {
             return stream_devices->video_device.has_value();
@@ -1570,6 +1569,14 @@ void UserMediaProcessor::OnDeviceChanged(const MediaStreamDevice& old_device,
 
   WebPlatformMediaStreamSource* const source_impl = source->GetPlatformSource();
   source_impl->ChangeSource(new_device);
+  source = FindLocalSource(new_device);
+  if (!source) {
+    return;
+  }
+  if (new_device.display_media_info) {
+    source->OnZoomLevelChange(
+        new_device, new_device.display_media_info->initial_zoom_level);
+  }
 }
 
 void UserMediaProcessor::OnDeviceRequestStateChange(

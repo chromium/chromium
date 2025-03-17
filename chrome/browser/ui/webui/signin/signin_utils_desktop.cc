@@ -97,14 +97,7 @@ SigninUIError CanOfferSignin(Profile* profile,
                   switches::kBypassAccountAlreadyUsedByAnotherProfileCheck)) {
             continue;
           }
-          // For backward compatibility, need to check also the username of the
-          // profile, since the GAIA ID may not have been set yet in the
-          // ProfileAttributesStorage.  It will be set once the profile
-          // is opened.
-          GaiaId profile_gaia_id = entry->GetGAIAId();
-          std::string profile_email = base::UTF16ToUTF8(entry->GetUserName());
-          if (gaia_id == profile_gaia_id ||
-              gaia::AreEmailsSame(email, profile_email)) {
+          if (gaia_id == entry->GetGAIAId()) {
             return SigninUIError::AccountAlreadyUsedByAnotherProfile(
                 email, entry->GetPath());
           }

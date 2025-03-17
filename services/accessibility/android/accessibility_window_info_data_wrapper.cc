@@ -209,7 +209,7 @@ int32_t AccessibilityWindowInfoDataWrapper::GetWindowId() const {
 }
 
 void AccessibilityWindowInfoDataWrapper::AddVirtualChild(int32_t child_id) {
-  if (base::ranges::find(virtual_child_ids_, child_id) !=
+  if (std::ranges::find(virtual_child_ids_, child_id) !=
       virtual_child_ids_.end()) {
     LOG(ERROR) << "Given child id already exists as a virtual child.";
   } else {

@@ -23,10 +23,6 @@ extension_repack_all_locales("packed_resources") {
 
 source_set("share") {
   sources = [
-    "share_extension_view.h",
-    "share_extension_view.mm",
-    "share_view_controller.h",
-    "share_view_controller.mm",
     "ui_util.h",
     "ui_util.mm",
   ]
@@ -50,6 +46,23 @@ source_set("share") {
     "UIKit.framework",
     "UniformTypeIdentifiers.framework",
   ]
+  if (ios_enable_extended_share_extension) {
+    sources += [
+      "extended_share_view_controller.h",
+      "extended_share_view_controller.mm",
+      "share_extension_delegate.h",
+      "share_extension_sheet.h",
+      "share_extension_sheet.mm",
+    ]
+    deps += [ "//ios/chrome/common/ui/confirmation_alert" ]
+  } else {
+    sources += [
+      "share_extension_view.h",
+      "share_extension_view.mm",
+      "share_view_controller.h",
+      "share_view_controller.mm",
+    ]
+  }
 }
 
 generate_localizable_strings("system_strings") {

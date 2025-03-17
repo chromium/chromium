@@ -103,6 +103,7 @@ enum CookieExemptionReason {
     kStorageAccess = 7,
     kTopLevelStorageAccess = 8,
     kScheme = 9,
+    kSameSiteNoneCookiesInSandbox = 10,
 };
 
 enum ContextType {
@@ -152,7 +153,6 @@ enum HttpMethod {
 struct CookieSameSiteContextMetadata {
   CookieSameSiteContextMetadataDowngradeType cross_site_redirect_downgrade = kNoDowngrade;
   ContextRedirectTypeBug1221316 redirect_type_bug_1221316 = kUnset;
-  HttpMethod http_method_bug_1221316 = kUnset;
 };
 
 // Keep defaults here in sync with net/cookies/cookie_options.h.
@@ -212,16 +212,24 @@ struct CanonicalCookie {
   CookieSourceType source_type = kUnknown;
 };
 
+struct ExclusionReasons {
+  // Bitfield. Is defined in
+  // net::CookieInclusionStatus::ExclusionReason.
+  uint64 exclusions_bitmask;
+};
+
+struct WarningReasons {
+  // Bitfield. Is defined in
+  // net::CookieInclusionStatus::WarningReason.
+  uint64 warnings_bitmask;
+};
+
 // Indicates reasons why a cookie may be excluded in a get or set
 // operation and if it should be warned about.
 // TODO(crbug.com/40219875): Improve serialization validation comments.
 struct CookieInclusionStatus {
-  // Bitfield. Is defined in
-  // net::CookieInclusionStatus::ExclusionReason.
-  uint32 exclusion_reasons;
-  // Bitfield. Is defined in
-  // net::CookieInclusionStatus::WarningReason.
-  uint32 warning_reasons;
+  ExclusionReasons exclusion_reasons;
+  WarningReasons warning_reasons;
 
   CookieExemptionReason exemption_reason;
 };
@@ -362,6 +370,9 @@ struct CookieDeletionFilter {
   bool partitioned_state_only;
 };
 
+// Interface used to register event listeners in processes like the Browser and
+// privileged Renderer processes to receive synchronous cookie change
+// notifications from the Network Service's CookieStore.
 interface CookieChangeListener {
   // TODO(rdsmith): Should this be made a batch interface?
   OnCookieChange(CookieChangeInfo change);
@@ -425,6 +436,17 @@ interface CookieManager {
 
   // Delete a cookie. Returns true if a cookie was deleted.
   DeleteCanonicalCookie(CanonicalCookie cookie) => (bool success);
+
+  // Returns true if a site has cookies in a separate partition than the
+  // current site's partition.
+  // If a nullopt is returned, it means either the partition key wasn't set
+  // or the cookie store isn't fully initialized yet.
+  // Note: Calls here do not follow normal sequencing rules. The results
+  // are processed and returned to the caller as soon as requests
+  // are received.
+  SiteHasCookieInOtherPartition(SchemefulSite schemeful_site,
+                                CookiePartitionKey? partition_key)
+                                  => (bool? site_has_cookie_in_other_partition);
 
   // Delete a set of cookies matching the passed filter.
   // Returns the number of cookies deleted.

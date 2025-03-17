@@ -32,10 +32,12 @@ suite('<history-list>', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
-    testService.setQueryResult({
-      info: createHistoryInfo(),
-      value: TEST_HISTORY_RESULTS,
-    });
+    testService.handler.setResultFor('queryHistory', Promise.resolve({
+      results: {
+        info: createHistoryInfo(),
+        value: TEST_HISTORY_RESULTS,
+      },
+    }));
 
     app = document.createElement('history-app');
     document.body.appendChild(app);
@@ -100,7 +102,7 @@ suite('<history-list>', function() {
 
     pressAndReleaseKeyOn(focused, 37, [], 'ArrowLeft');
     flush();
-    focused = items[2]!.shadowRoot!.querySelector('#bookmark-star')!;
+    focused = items[2]!.shadowRoot.querySelector('#bookmark-star')!;
     assertEquals(focused, getDeepActiveElement());
     assertTrue(items[2]!.getFocusRow().isActive());
     assertFalse(items[3]!.getFocusRow().isActive());

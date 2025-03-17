@@ -5,13 +5,13 @@
 #include "chrome/browser/profiles/profile_statistics_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_statistics.h"
-#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -23,10 +23,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "device/fido/cros/credential_store.h"
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #endif
 
 // static
@@ -52,6 +48,7 @@ ProfileStatisticsFactory::ProfileStatisticsFactory()
               .Build()) {
   DependsOn(WebDataServiceFactory::GetInstance());
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
+  DependsOn(autofill::AutofillEntityDataManagerFactory::GetInstance());
   DependsOn(BookmarkModelFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(ProfilePasswordStoreFactory::GetInstance());
@@ -77,16 +74,11 @@ ProfileStatisticsFactory::BuildServiceInstanceForBrowserContext(
       WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       autofill::PersonalDataManagerFactory::GetForBrowserContext(profile),
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile),
       BookmarkModelFactory::GetForBrowserContext(profile),
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       ProfilePasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
-      profile->GetPrefs(),
-#if !BUILDFLAG(IS_ANDROID)
-      UserAnnotationsServiceFactory::GetForProfile(profile),
-#else
-      /*user_annotations_service=*/nullptr,
-#endif
-      std::move(credential_store));
+      profile->GetPrefs(), std::move(credential_store));
 }

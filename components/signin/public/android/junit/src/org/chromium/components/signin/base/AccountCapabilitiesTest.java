@@ -82,6 +82,10 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canUseSpeakerLabelInRecorderApp();
             case AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_IN_RECORDER_APP:
                 return capabilities.canUseGenerativeAiInRecorderApp();
+            case AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_PHOTO_EDITING:
+                return capabilities.canUseGenerativeAiPhotoEditing();
+            case AccountCapabilitiesConstants.CAN_USE_CHROMEOS_GENERATIVE_AI:
+                return capabilities.canUseChromeOSGenerativeAi();
         }
         assert false : "Capability name is not known.";
         return -1;
@@ -177,7 +181,17 @@ public final class AccountCapabilitiesTest {
                                 .name("CanUseGenerativeAiInRecorderApp")
                                 .value(
                                         AccountCapabilitiesConstants
-                                                .CAN_USE_GENERATIVE_AI_IN_RECORDER_APP));
+                                                .CAN_USE_GENERATIVE_AI_IN_RECORDER_APP),
+                        new ParameterSet()
+                                .name("CanUseGenerativeAiPhotoEditing")
+                                .value(
+                                        AccountCapabilitiesConstants
+                                                .CAN_USE_GENERATIVE_AI_PHOTO_EDITING),
+                        new ParameterSet()
+                                .name("CanUseChromeOSGenerativeAi")
+                                .value(
+                                        AccountCapabilitiesConstants
+                                                .CAN_USE_CHROMEOS_GENERATIVE_AI));
 
         // Returns String value added from Capabilities ParameterSet.
         static String getCapabilityName(ParameterSet parameterSet) {
@@ -207,21 +221,21 @@ public final class AccountCapabilitiesTest {
     @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
     public void testCapabilityResponseException(String capabilityName) {
         AccountCapabilities capabilities = new AccountCapabilities(Map.of());
-        Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.UNKNOWN);
+        Assert.assertEquals(Tribool.UNKNOWN, getCapability(capabilityName, capabilities));
     }
 
     @Test
     @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
     public void testCapabilityResponseYes(String capabilityName) {
         AccountCapabilities capabilities = new AccountCapabilities(Map.of(capabilityName, true));
-        Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.TRUE);
+        Assert.assertEquals(Tribool.TRUE, getCapability(capabilityName, capabilities));
     }
 
     @Test
     @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
     public void testCapabilityResponseNo(String capabilityName) {
         AccountCapabilities capabilities = new AccountCapabilities(Map.of(capabilityName, false));
-        Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.FALSE);
+        Assert.assertEquals(Tribool.FALSE, getCapability(capabilityName, capabilities));
     }
 
     @Test
@@ -233,7 +247,7 @@ public final class AccountCapabilitiesTest {
 
         for (String capabilityName :
                 AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
-            Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.TRUE);
+            Assert.assertEquals(Tribool.TRUE, getCapability(capabilityName, capabilities));
         }
     }
 
@@ -245,7 +259,7 @@ public final class AccountCapabilitiesTest {
 
         for (String capabilityName :
                 AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
-            Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.FALSE);
+            Assert.assertEquals(Tribool.FALSE, getCapability(capabilityName, capabilities));
         }
     }
 
@@ -258,7 +272,7 @@ public final class AccountCapabilitiesTest {
 
         for (String capabilityName :
                 AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
-            Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.UNKNOWN);
+            Assert.assertEquals(Tribool.UNKNOWN, getCapability(capabilityName, capabilities));
         }
     }
 }

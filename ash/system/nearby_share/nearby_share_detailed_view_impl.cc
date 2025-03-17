@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/nearby_share_delegate.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -20,6 +21,8 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -44,15 +47,80 @@ void FormatVisibilityRow(ash::HoverHighlightView* visibility_row,
   visibility_row->AddIconAndLabel(
       ui::ImageModel::FromVectorIcon(vector_icon, /*color_id=*/color_id),
       label);
-  visibility_row->text_label()->SetEnabledColorId(color_id);
+  visibility_row->text_label()->SetEnabledColor(color_id);
   visibility_row->SetSubText(sublabel);
-  visibility_row->sub_text_label()->SetEnabledColorId(color_id);
+  visibility_row->sub_text_label()->SetEnabledColor(color_id);
   visibility_row->AddRightIcon(ui::ImageModel::FromVectorIcon(
                                    ash::kHollowCheckCircleIcon,
                                    /*color_id=*/cros_tokens::kCrosSysOnSurface),
                                20);
   visibility_row->SetRightViewVisible(false);
+  visibility_row->SetAccessibilityState(
+      ash::HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
   visibility_row->SetEnabled(is_row_enabled);
+}
+
+std::u16string GetUserEmail() {
+  auto* quick_pair_browser_delegate =
+      ash::quick_pair::QuickPairBrowserDelegate::Get();
+  if (!quick_pair_browser_delegate) {
+    return std::u16string();
+  }
+  signin::IdentityManager* identity_manager =
+      quick_pair_browser_delegate->GetIdentityManager();
+  if (!identity_manager) {
+    return std::u16string();
+  }
+
+  return base::ASCIIToUTF16(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email);
+}
+
+std::u16string GetYourDevicesLabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_YOUR_DEVICES);
+}
+
+std::u16string GetContactsLabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_CONTACTS);
+}
+
+std::u16string GetHiddenLabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_HIDDEN);
+}
+
+std::u16string GetEveryoneLabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_EVERYONE_LABEL);
+}
+
+std::u16string GetYourDevicesSublabel(std::u16string user_email) {
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_YOUR_DEVICES_SUBLABEL,
+      user_email);
+}
+
+std::u16string GetContactsSublabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_CONTACTS_SUBLABEL);
+}
+
+std::u16string GetHiddenSublabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_HIDDEN_SUBLABEL);
+}
+
+std::u16string GetEveryoneSublabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_EVERYONE_SUBLABEL);
+}
+
+std::u16string GetSettingsButtonTooltip() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_SETTINGS_BUTTON_TOOLTIP);
 }
 }  // namespace
 
@@ -61,8 +129,8 @@ namespace ash {
 NearbyShareDetailedViewImpl::NearbyShareDetailedViewImpl(
     DetailedViewDelegate* detailed_view_delegate)
     : TrayDetailedView(detailed_view_delegate),
+      user_email_(GetUserEmail()),
       nearby_share_delegate_(Shell::Get()->nearby_share_delegate()) {
-  // TODO(brandosocarras, b/360150790): Create and use a Quick Share string.
   CreateTitleRow(IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL);
   CreateScrollableList();
   CreateIsEnabledContainer();
@@ -87,6 +155,7 @@ void NearbyShareDetailedViewImpl::CreateExtraTitleRowButtons() {
   settings_button_->SetState(TrayPopupUtils::CanOpenWebUISettings()
                                  ? views::Button::STATE_NORMAL
                                  : views::Button::STATE_DISABLED);
+  settings_button_->SetTooltipText(GetSettingsButtonTooltip());
   tri_view()->AddView(TriView::Container::END, settings_button_);
 }
 
@@ -126,8 +195,13 @@ void NearbyShareDetailedViewImpl::CreateIsEnabledContainer() {
 
   // TODO(brandosocarras, b/360150790): Create and use 'On'/'Off' strings.
   const bool is_qs_enabled = nearby_share_delegate_->IsEnabled();
-  toggle_row_->AddLabelRow(is_qs_enabled ? u"On" : u"Off", /*start_inset=*/0);
-  toggle_row_->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  toggle_row_->AddLabelRow(
+      is_qs_enabled ? l10n_util::GetStringUTF16(
+                          IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_ON)
+                    : l10n_util::GetStringUTF16(
+                          IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_OFF),
+      /*start_inset=*/0);
+  toggle_row_->text_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                         *toggle_row_->text_label());
 
@@ -172,13 +246,10 @@ void NearbyShareDetailedViewImpl::CreateYourDevicesRow() {
 
   your_devices_row_ = visibility_selection_container_->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
-  // TODO(brandosocarras, b/360150790): replace label, sublabel with IDS
-  // strings.
   CreateVisibilityRow(your_devices_row_,
                       kQuickSettingsQuickShareYourDevicesIcon,
-                      /*label=*/u"Your devices",
-                      /*sublabel=*/u"Only devices signed into test@gmail.com");
-  your_devices_row_->SetFocusBehavior(FocusBehavior::NEVER);
+                      /*label=*/GetYourDevicesLabel(),
+                      /*sublabel=*/GetYourDevicesSublabel(user_email_));
 }
 
 void NearbyShareDetailedViewImpl::CreateContactsRow() {
@@ -187,12 +258,9 @@ void NearbyShareDetailedViewImpl::CreateContactsRow() {
 
   contacts_row_ = visibility_selection_container_->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
-  // TODO(brandosocarras, b/360150790): replace label, sublabel with IDS
-  // strings.
   CreateVisibilityRow(contacts_row_, kQuickSettingsQuickShareContactsIcon,
-                      /*label=*/u"Contacts",
-                      /*sublabel=*/u"Only your contacts with a Google Account");
-  contacts_row_->SetFocusBehavior(FocusBehavior::NEVER);
+                      /*label=*/GetContactsLabel(),
+                      /*sublabel=*/GetContactsSublabel());
 }
 
 void NearbyShareDetailedViewImpl::CreateHiddenRow() {
@@ -201,12 +269,9 @@ void NearbyShareDetailedViewImpl::CreateHiddenRow() {
 
   hidden_row_ = visibility_selection_container_->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
-  // TODO(brandosocarras, b/360150790): replace label, sublabel with IDS
-  // strings.
   CreateVisibilityRow(hidden_row_, kQuickSettingsQuickShareHiddenIcon,
-                      /*label=*/u"Hidden",
-                      /*sublabel=*/u"No one can share with you");
-  hidden_row_->SetFocusBehavior(FocusBehavior::NEVER);
+                      /*label=*/GetHiddenLabel(),
+                      /*sublabel=*/GetHiddenSublabel());
 }
 
 void NearbyShareDetailedViewImpl::CreateVisibilityRow(
@@ -243,14 +308,13 @@ void NearbyShareDetailedViewImpl::FormatEveryoneRow(
     const bool is_row_enabled) {
   everyone_toggle_ = nullptr;
   everyone_row_->Reset();
-  // TODO(brandosocarras, b/360150790): Use IDS strings for label and sublabel.
   everyone_row_->AddIconAndLabel(
       ui::ImageModel::FromVectorIcon(kQuickSettingsQuickShareEveryoneIcon,
                                      /*color_id=*/color_id),
-      u"Visible to everyone");
-  everyone_row_->text_label()->SetEnabledColorId(color_id);
-  everyone_row_->SetSubText(u"You will be visible to everyone for 5 minutes.");
-  everyone_row_->sub_text_label()->SetEnabledColorId(color_id);
+      GetEveryoneLabel());
+  everyone_row_->text_label()->SetEnabledColor(color_id);
+  everyone_row_->SetSubText(GetEveryoneSublabel());
+  everyone_row_->sub_text_label()->SetEnabledColor(color_id);
   auto toggle_switch = std::make_unique<Switch>(
       base::BindRepeating(&NearbyShareDetailedViewImpl::OnEveryoneToggleClicked,
                           weak_factory_.GetWeakPtr()));
@@ -280,18 +344,18 @@ void NearbyShareDetailedViewImpl::FormatVisibilitySelectionContainer(
 
   FormatVisibilityRow(your_devices_row_,
                       kQuickSettingsQuickShareYourDevicesIcon,
-                      /*label=*/u"Your devices",
-                      /*sublabel=*/u"Only devices signed into test@gmail.com",
+                      /*label=*/GetYourDevicesLabel(),
+                      /*sublabel=*/GetYourDevicesSublabel(user_email_),
                       /*color_id=*/background_visibility_row_color,
                       /*is_row_enabled=*/is_background_visibility_enabled);
   FormatVisibilityRow(contacts_row_, kQuickSettingsQuickShareContactsIcon,
-                      /*label=*/u"Contacts",
-                      /*sublabel=*/u"Only your contacts with a Google Account",
+                      /*label=*/GetContactsLabel(),
+                      /*sublabel=*/GetContactsSublabel(),
                       /*color_id=*/background_visibility_row_color,
                       /*is_row_enabled=*/is_background_visibility_enabled);
   FormatVisibilityRow(hidden_row_, kQuickSettingsQuickShareHiddenIcon,
-                      /*label=*/u"Hidden",
-                      /*sublabel=*/u"No one can share with you",
+                      /*label=*/GetHiddenLabel(),
+                      /*sublabel=*/GetHiddenSublabel(),
                       /*color_id=*/background_visibility_row_color,
                       /*is_row_enabled=*/is_background_visibility_enabled);
   FormatEveryoneRow(/*color_id=*/everyone_row_color, in_high_visibility,
@@ -314,8 +378,11 @@ void NearbyShareDetailedViewImpl::OnQuickShareToggleClicked() {
   }
 
   const bool new_enabled_state = !nearby_share_delegate_->IsEnabled();
-  // TODO(brandosocarras, b/360150790): Create and use 'On'/'Off' strings.
-  toggle_row_->text_label()->SetText(new_enabled_state ? u"On" : u"Off");
+  toggle_row_->text_label()->SetText(
+      new_enabled_state ? l10n_util::GetStringUTF16(
+                              IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_ON)
+                        : l10n_util::GetStringUTF16(
+                              IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_OFF));
   nearby_share_delegate_->SetEnabled(new_enabled_state);
   quick_share_toggle_->SetIsOn(new_enabled_state);
   FormatVisibilitySelectionContainer(/*in_high_visibility=*/false);
@@ -374,14 +441,20 @@ void NearbyShareDetailedViewImpl::SetCheckCircle(
     case ::nearby_share::mojom::Visibility::kYourDevices:
       CHECK(your_devices_row_);
       your_devices_row_->SetRightViewVisible(true);
+      your_devices_row_->SetAccessibilityState(
+          HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX);
       break;
     case ::nearby_share::mojom::Visibility::kAllContacts:
       CHECK(contacts_row_);
       contacts_row_->SetRightViewVisible(true);
+      contacts_row_->SetAccessibilityState(
+          HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX);
       break;
     case ::nearby_share::mojom::Visibility::kNoOne:
       CHECK(hidden_row_);
       hidden_row_->SetRightViewVisible(true);
+      hidden_row_->SetAccessibilityState(
+          HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX);
       break;
     default:
       break;

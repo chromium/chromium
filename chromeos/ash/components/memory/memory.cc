@@ -14,6 +14,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/memory/elf_sections.h"
 
 namespace ash {

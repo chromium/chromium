@@ -43,7 +43,8 @@ class EmbeddedPermissionPromptContentScrimView : public views::View,
   };
 
   EmbeddedPermissionPromptContentScrimView(base::WeakPtr<Delegate> delegate,
-                                           views::Widget* widget);
+                                           views::Widget* widget,
+                                           bool should_dismiss_on_click);
 
   ~EmbeddedPermissionPromptContentScrimView() override;
 
@@ -55,7 +56,8 @@ class EmbeddedPermissionPromptContentScrimView : public views::View,
   // Create and returns the widget that contains this scrim view.
   static std::unique_ptr<views::Widget> CreateScrimWidget(
       base::WeakPtr<Delegate> delegate,
-      SkColor color);
+      SkColor color,
+      bool should_dismiss_on_click);
 
   // Views::View
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -70,6 +72,7 @@ class EmbeddedPermissionPromptContentScrimView : public views::View,
   base::ScopedObservation<views::Widget, WidgetObserver> observation_{this};
 
   base::WeakPtr<Delegate> delegate_;
+  bool should_dismiss_on_click_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_CONTENT_SCRIM_VIEW_H_

@@ -1,0 +1,4 @@
+Tests that session isn't suspended during a same-doc navigation intercepted by the navigate event with { commit: 'after-transition' });
+
+Evaluate finished!
+

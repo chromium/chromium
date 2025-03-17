@@ -27,6 +27,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowAndroid
 import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowShareHelper;
 import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowShareSheetCoordinator;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetController;
+import org.chromium.chrome.browser.share.android_share_sheet.TabGroupSharingController;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -74,6 +76,7 @@ public class ShareDelegateImplUnitTest {
     @Mock private Activity mActivity;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private Tracker mTracker;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
 
     private ShareDelegateImpl mShareDelegate;
 
@@ -86,7 +89,8 @@ public class ShareDelegateImplUnitTest {
                         () -> mTabModelSelector,
                         () -> mProfile,
                         new ShareSheetDelegate(),
-                        isCustomTab);
+                        isCustomTab,
+                        mDataSharingTabManager);
     }
 
     @Before
@@ -387,6 +391,7 @@ public class ShareDelegateImplUnitTest {
                 Supplier<TabModelSelector> tabModelSelectorSupplier,
                 Supplier<Profile> profileSupplier,
                 Callback<Tab> printCallback,
+                TabGroupSharingController tabGroupSharingController,
                 DeviceLockActivityLauncher deviceLockActivityLauncher) {
             sShareWithSystemShareSheetUiCalled = true;
         }

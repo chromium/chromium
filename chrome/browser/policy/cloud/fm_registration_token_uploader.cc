@@ -98,15 +98,11 @@ class FmRegistrationTokenUploader::CloudPolicyClientRegistrationObserver
     observation.Observe(client);
   }
 
-  void OnPolicyFetched(CloudPolicyClient* client) override {}
-
   void OnRegistrationStateChanged(CloudPolicyClient* client) override {
     if (client->is_registered()) {
       std::move(on_connected_callback_).Run();
     }
   }
-
-  void OnClientError(CloudPolicyClient* client) override {}
 
  private:
   base::ScopedObservation<CloudPolicyClient,
@@ -152,9 +148,6 @@ FmRegistrationTokenUploader::FmRegistrationTokenUploader(
   CHECK_NE(scope_, PolicyInvalidationScope::kDeviceLocalAccount)
       << "Registration token is not expected for device local "
          "accounts";
-  LOG_POLICY(WARNING, REMOTE_COMMANDS)
-      << "Starting FmRegistrationTokenUploader for " << ToString(scope_)
-      << " scope, " << invalidation_listener_->project_number() << " project";
   invalidation_listener_->Start(this);
 }
 
@@ -263,10 +256,6 @@ void FmRegistrationTokenUploader::OnRegistrationTokenUploaded(
     upload_retry_backoff_.InformOfRequest(/*succeeded=*/false);
     return;
   }
-
-  LOG_POLICY(ERROR, REMOTE_COMMANDS)
-      << "Registration token uploaded for " << ToString(scope_) << " scope, "
-      << invalidation_listener_->project_number() << " project";
 
   invalidation_listener_->SetRegistrationUploadStatus(
       invalidation::InvalidationListener::RegistrationTokenUploadStatus::

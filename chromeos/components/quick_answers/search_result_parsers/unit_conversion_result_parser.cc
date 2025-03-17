@@ -4,10 +4,10 @@
 
 #include "chromeos/components/quick_answers/search_result_parsers/unit_conversion_result_parser.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
@@ -81,7 +81,7 @@ std::vector<UnitConversion> ParseAlternativeUnitConversions(
   // Sort |alternative_unit_conversions| from lowest to highest linear
   // conversion rates, then limit the vector size to
   // |kMaxAlternativeUnitsNumber| results.
-  base::ranges::sort(alternative_unit_conversions);
+  std::ranges::sort(alternative_unit_conversions);
   if (alternative_unit_conversions.size() > kMaxAlternativeUnitsNumber) {
     alternative_unit_conversions.erase(
         alternative_unit_conversions.begin() + kMaxAlternativeUnitsNumber,

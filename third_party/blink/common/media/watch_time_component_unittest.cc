@@ -228,7 +228,8 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
             return media::WatchTimeKey::kAudioVideoDisplayInline;
           case DisplayType::kFullscreen:
             return media::WatchTimeKey::kAudioVideoDisplayFullscreen;
-          case DisplayType::kPictureInPicture:
+          case DisplayType::kVideoPictureInPicture:
+          case DisplayType::kDocumentPictureInPicture:
             return media::WatchTimeKey::kAudioVideoDisplayPictureInPicture;
         }
       }));
@@ -269,14 +270,14 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
 
   // Cycle through all three properties...
   const base::TimeDelta kWatchTime3 = base::Seconds(4);
-  test_component->SetCurrentValue(DisplayType::kPictureInPicture);
+  test_component->SetCurrentValue(DisplayType::kVideoPictureInPicture);
   EXPECT_CALL(
       recorder_,
       RecordWatchTime(media::WatchTimeKey::kAudioVideoDisplayPictureInPicture,
                       kWatchTime3 - kStartTime));
   test_component->RecordWatchTime(kWatchTime3);
   EXPECT_EQ(test_component->current_value_for_testing(),
-            DisplayType::kPictureInPicture);
+            DisplayType::kVideoPictureInPicture);
   EXPECT_FALSE(test_component->NeedsFinalize());
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 

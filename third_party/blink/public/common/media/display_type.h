@@ -16,8 +16,10 @@ enum class DisplayType {
   // set when Blink detects that the video is effectively fullscreen even if
   // the element is not.
   kFullscreen,
-  // Playback is happening in a Picture-in-Picture window.
-  kPictureInPicture,
+  // Playback is happening in a video Picture-in-Picture window.
+  kVideoPictureInPicture,
+  // Playback is happening in a document Picture-in-Picture window.
+  kDocumentPictureInPicture,
 };
 
 }  // namespace blink

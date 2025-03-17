@@ -14,26 +14,6 @@ if (is_ios) {
   import("//build/config/ios/bundle_data_from_filelist.gni")
 }
 
-blink_python_runner("make_generated_permissions_policy_features") {
-  script = "../renderer/build/scripts/make_permissions_policy_features.py"
-
-  inputs = scripts_for_json5_files + [
-             "../renderer/build/scripts/make_runtime_features_utilities.py",
-             "../renderer/core/permissions_policy/permissions_policy_features.json5",
-             "../renderer/build/scripts/templates/permissions_policy_features_generated.cc.tmpl",
-           ]
-  outputs = [ "$root_gen_dir/third_party/blink/common/permissions_policy/permissions_policy_features_generated.cc" ]
-
-  args = [
-    rebase_path(
-        "../renderer/core/permissions_policy/permissions_policy_features.json5",
-        root_build_dir),
-    "--output_dir",
-    rebase_path("$root_gen_dir/third_party/blink/common/permissions_policy",
-                root_build_dir),
-  ]
-}
-
 blink_python_runner("make_generated_document_policy_features") {
   script = "../renderer/build/scripts/make_document_policy_features.py"
 
@@ -264,18 +244,8 @@ source_set("common") {
     "page_state/page_state.cc",
     "page_state/page_state_serialization.cc",
     "peerconnection/webrtc_ip_handling_policy.cc",
-    "performance/performance_scenario_observer.cc",
-    "performance/performance_scenarios.cc",
     "permissions/permission_utils.cc",
     "permissions_policy/document_policy.cc",
-    "permissions_policy/origin_with_possible_wildcards.cc",
-    "permissions_policy/permissions_policy.cc",
-    "permissions_policy/permissions_policy_declaration.cc",
-    "permissions_policy/permissions_policy_features.cc",
-    "permissions_policy/permissions_policy_features_generated.h",
-    "permissions_policy/permissions_policy_features_internal.cc",
-    "permissions_policy/permissions_policy_features_internal.h",
-    "permissions_policy/permissions_policy_mojom_traits.cc",
     "permissions_policy/policy_value.cc",
     "renderer_preferences/renderer_preferences.cc",
     "renderer_preferences/renderer_preferences_mojom_traits.cc",
@@ -284,7 +254,6 @@ source_set("common") {
     "scheduler/web_scheduler_tracked_feature.cc",
     "scheme_registry.cc",
     "security/address_space_feature.cc",
-    "service_worker/extended_service_worker_status_code.cc",
     "service_worker/service_worker_loader_helpers.cc",
     "service_worker/service_worker_router_rule.cc",
     "service_worker/service_worker_router_rule_mojom_traits.cc",
@@ -305,6 +274,8 @@ source_set("common") {
     "web_package/web_package_request_matcher.cc",
     "web_preferences/web_preferences.cc",
     "web_preferences/web_preferences_mojom_traits.cc",
+    "webid/login_status_account.cc",
+    "webid/login_status_options.cc",
     "widget/constants.cc",
     "widget/device_emulation_params_mojom_traits.cc",
     "widget/visual_properties.cc",
@@ -314,14 +285,12 @@ source_set("common") {
   sources += get_target_outputs(":make_generated_document_policy_features")
   sources += get_target_outputs(":make_generated_features")
   sources += get_target_outputs(":make_generated_origin_trials")
-  sources += get_target_outputs(":make_generated_permissions_policy_features")
   sources += get_target_outputs(":make_runtime_feature_state_contexts_impl")
 
   public_deps = [
     ":make_generated_document_policy_features",
     ":make_generated_features",
     ":make_generated_origin_trials",
-    ":make_generated_permissions_policy_features",
     ":make_runtime_feature_state_contexts_impl",
     "//components/viz/common:common",
     "//third_party/blink/common/privacy_budget:privacy_budget",
@@ -334,7 +303,6 @@ source_set("common") {
     "//base",
     "//build:android_buildflags",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//media/capture:capture_base",
     "//media/capture/mojom:video_capture_mojom_support",
     "//mojo/public/cpp/system",
@@ -343,6 +311,7 @@ source_set("common") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom:mojom",
     "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom:mojom_permissions_policy",
     "//third_party/blink/common/rust_crash",
     "//third_party/blink/public/common:buildflags",
     "//third_party/re2",
@@ -452,13 +421,7 @@ source_set("common_unittests_sources") {
     "page/content_to_visible_time_reporter_unittest.cc",
     "page_state/page_state_serialization_unittest.cc",
     "peerconnection/webrtc_ip_handling_policy_unittest.cc",
-    "performance/performance_scenario_observer_unittest.cc",
-    "performance/performance_scenarios_unittest.cc",
     "permissions_policy/document_policy_unittest.cc",
-    "permissions_policy/origin_with_possible_wildcards_unittest.cc",
-    "permissions_policy/permissions_policy_declaration_unittest.cc",
-    "permissions_policy/permissions_policy_features_internal.h",
-    "permissions_policy/permissions_policy_unittest.cc",
     "permissions_policy/policy_value_unittest.cc",
     "scheduler/web_scheduler_tracked_feature_unittest.cc",
     "security/address_space_feature_unittest.cc",
@@ -473,6 +436,7 @@ source_set("common_unittests_sources") {
     "unique_name/unique_name_helper_unittest.cc",
     "user_agent/user_agent_metadata_unittest.cc",
     "web_package/web_package_request_matcher_unittest.cc",
+    "webid/federated_auth_request_mojom_traits_unittest.cc",
   ]
 
   deps = [
@@ -489,6 +453,7 @@ source_set("common_unittests_sources") {
     "//net:test_support",
     "//services/device:test_support",
     "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
     "//skia/public/mojom",
     "//testing/gmock",
     "//testing/gtest",

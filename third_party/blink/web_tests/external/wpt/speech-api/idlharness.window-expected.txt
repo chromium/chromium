@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 125 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 103 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SpeechRecognition interface: existence and properties of interface object
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface object length
@@ -12,8 +12,6 @@ Found 125 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: existence and properties of interface prototype object's @@unscopables property
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
-[FAIL] SpeechRecognition interface: attribute grammars
-  assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: attribute lang
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: attribute continuous
@@ -22,11 +20,19 @@ Found 125 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: attribute maxAlternatives
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
+[FAIL] SpeechRecognition interface: attribute mode
+  assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: operation start()
+  assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
+[FAIL] SpeechRecognition interface: operation start(MediaStreamTrack)
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: operation stop()
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: operation abort()
+  assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
+[FAIL] SpeechRecognition interface: operation availableOnDevice(DOMString)
+  assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
+[FAIL] SpeechRecognition interface: operation installOnDevice(DOMString)
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: attribute onaudiostart
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
@@ -54,8 +60,6 @@ Found 125 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] Stringification of new SpeechRecognition()
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
-[FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "grammars" with the proper type
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "lang" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "continuous" with the proper type
@@ -64,11 +68,25 @@ Found 125 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "maxAlternatives" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "mode" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "start()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "start(MediaStreamTrack)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: calling start(MediaStreamTrack) on new SpeechRecognition() with too few arguments must throw TypeError
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "stop()" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "abort()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "availableOnDevice(DOMString)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: calling availableOnDevice(DOMString) on new SpeechRecognition() with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "installOnDevice(DOMString)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: calling installOnDevice(DOMString) on new SpeechRecognition() with too few arguments must throw TypeError
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "onaudiostart" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
@@ -174,68 +192,6 @@ Found 125 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "SpeechRecognitionEvent" expected property "SpeechRecognitionEvent" missing
 [FAIL] SpeechRecognitionEvent interface: attribute results
   assert_own_property: self does not have own property "SpeechRecognitionEvent" expected property "SpeechRecognitionEvent" missing
-[FAIL] SpeechGrammar interface: existence and properties of interface object
-  assert_own_property: self does not have own property "SpeechGrammar" expected property "SpeechGrammar" missing
-[FAIL] SpeechGrammar interface object length
-  assert_own_property: self does not have own property "SpeechGrammar" expected property "SpeechGrammar" missing
-[FAIL] SpeechGrammar interface object name
-  assert_own_property: self does not have own property "SpeechGrammar" expected property "SpeechGrammar" missing
-[FAIL] SpeechGrammar interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "SpeechGrammar" expected property "SpeechGrammar" missing
-[FAIL] SpeechGrammar interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "SpeechGrammar" expected property "SpeechGrammar" missing
-[FAIL] SpeechGrammar interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "SpeechGrammar" expected property "SpeechGrammar" missing
-[FAIL] SpeechGrammar interface: attribute src
-  assert_own_property: self does not have own property "SpeechGrammar" expected property "SpeechGrammar" missing
-[FAIL] SpeechGrammar interface: attribute weight
-  assert_own_property: self does not have own property "SpeechGrammar" expected property "SpeechGrammar" missing
-[FAIL] SpeechGrammar must be primary interface of new SpeechGrammar()
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammar is not defined"
-[FAIL] Stringification of new SpeechGrammar()
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammar is not defined"
-[FAIL] SpeechGrammar interface: new SpeechGrammar() must inherit property "src" with the proper type
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammar is not defined"
-[FAIL] SpeechGrammar interface: new SpeechGrammar() must inherit property "weight" with the proper type
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammar is not defined"
-[FAIL] SpeechGrammarList interface: existence and properties of interface object
-  assert_own_property: self does not have own property "SpeechGrammarList" expected property "SpeechGrammarList" missing
-[FAIL] SpeechGrammarList interface object length
-  assert_own_property: self does not have own property "SpeechGrammarList" expected property "SpeechGrammarList" missing
-[FAIL] SpeechGrammarList interface object name
-  assert_own_property: self does not have own property "SpeechGrammarList" expected property "SpeechGrammarList" missing
-[FAIL] SpeechGrammarList interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "SpeechGrammarList" expected property "SpeechGrammarList" missing
-[FAIL] SpeechGrammarList interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "SpeechGrammarList" expected property "SpeechGrammarList" missing
-[FAIL] SpeechGrammarList interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "SpeechGrammarList" expected property "SpeechGrammarList" missing
-[FAIL] SpeechGrammarList interface: attribute length
-  assert_own_property: self does not have own property "SpeechGrammarList" expected property "SpeechGrammarList" missing
-[FAIL] SpeechGrammarList interface: operation item(unsigned long)
-  assert_own_property: self does not have own property "SpeechGrammarList" expected property "SpeechGrammarList" missing
-[FAIL] SpeechGrammarList interface: operation addFromURI(DOMString, optional float)
-  assert_own_property: self does not have own property "SpeechGrammarList" expected property "SpeechGrammarList" missing
-[FAIL] SpeechGrammarList interface: operation addFromString(DOMString, optional float)
-  assert_own_property: self does not have own property "SpeechGrammarList" expected property "SpeechGrammarList" missing
-[FAIL] SpeechGrammarList must be primary interface of new SpeechGrammarList()
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammarList is not defined"
-[FAIL] Stringification of new SpeechGrammarList()
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammarList is not defined"
-[FAIL] SpeechGrammarList interface: new SpeechGrammarList() must inherit property "length" with the proper type
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammarList is not defined"
-[FAIL] SpeechGrammarList interface: new SpeechGrammarList() must inherit property "item(unsigned long)" with the proper type
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammarList is not defined"
-[FAIL] SpeechGrammarList interface: calling item(unsigned long) on new SpeechGrammarList() with too few arguments must throw TypeError
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammarList is not defined"
-[FAIL] SpeechGrammarList interface: new SpeechGrammarList() must inherit property "addFromURI(DOMString, optional float)" with the proper type
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammarList is not defined"
-[FAIL] SpeechGrammarList interface: calling addFromURI(DOMString, optional float) on new SpeechGrammarList() with too few arguments must throw TypeError
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammarList is not defined"
-[FAIL] SpeechGrammarList interface: new SpeechGrammarList() must inherit property "addFromString(DOMString, optional float)" with the proper type
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammarList is not defined"
-[FAIL] SpeechGrammarList interface: calling addFromString(DOMString, optional float) on new SpeechGrammarList() with too few arguments must throw TypeError
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammarList is not defined"
 [FAIL] SpeechSynthesisVoice must be primary interface of voice
   assert_equals: wrong typeof object expected "object" but got "undefined"
 [FAIL] Stringification of voice

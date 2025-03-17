@@ -794,7 +794,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="5983179082906765664">मार्गदर्शक विवरण का स्‍तर बढ़ाएं</translation>
 <translation id="5988563937187882754">दाईं ओर देखें</translation>
 <translation id="5992285135956208197">ग्राफ़िक्स दस्तावेज़</translation>
-<translation id="5999630716831179808">ध्वनियां</translation>
+<translation id="5999630716831179808">आवाज़ें</translation>
 <translation id="6006050241733874051">फ़ॉर्म</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{बैकस्लैश}one{# बैकस्लैश}other{# बैकस्लैश}}</translation>
 <translation id="6010616110396250088">घटते क्रम में लगाएं</translation>
@@ -1114,6 +1114,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8316881042119029234">ओल्ड लेस</translation>
 <translation id="8326783648485765113">हल्का हरा</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{पाउंड}one{# पाउंड चिह्न}other{# पाउंड चिह्न}}</translation>
+<translation id="8351821207686449674">कैप्शन को टॉगल करें</translation>
 <translation id="8378855320830505539">क्षेत्र</translation>
 <translation id="8382679411218029383">अपने आप पूरा होने का इनलाइन और सूची</translation>
 <translation id="8394908167088220973">मीडिया चलाएं/रोकें</translation>

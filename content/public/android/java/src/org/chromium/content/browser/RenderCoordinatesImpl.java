@@ -5,6 +5,8 @@
 package org.chromium.content.browser;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
@@ -17,8 +19,9 @@ import org.chromium.content_public.browser.WebContents;
  *
  * Unless stated otherwise, all coordinates are in CSS (document) coordinate space.
  */
+@NullMarked
 public class RenderCoordinatesImpl implements RenderCoordinates {
-    private static RenderCoordinatesImpl sInstanceForTesting;
+    private static @Nullable RenderCoordinatesImpl sInstanceForTesting;
 
     // Scroll offset from the native in CSS.
     private float mScrollXCss;

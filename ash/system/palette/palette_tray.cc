@@ -112,7 +112,7 @@ class TitleView : public views::View {
     auto* title_label = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE)));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    title_label->SetEnabledColorId(kColorAshTextColorPrimary);
+    title_label->SetEnabledColor(kColorAshTextColorPrimary);
     title_label->SetAutoColorReadabilityEnabled(false);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                           *title_label);
@@ -568,7 +568,7 @@ void PaletteTray::ShowBubble() {
   // Add palette tools.
   std::vector<PaletteToolView> views = palette_tool_manager_->CreateViews();
   for (const PaletteToolView& view : views) {
-    bubble_view->AddChildView(view.view.get());
+    bubble_view->AddChildViewRaw(view.view.get());
   }
 
   // Show the bubble.
@@ -614,10 +614,10 @@ void PaletteTray::UpdateTrayIcon() {
   color = GetColorProvider()->GetColor(
       is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                   : cros_tokens::kCrosSysOnSurface);
-  icon_->SetImage(CreateVectorIcon(
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
       palette_tool_manager_->GetActiveTrayIcon(
           palette_tool_manager_->GetActiveTool(PaletteGroup::MODE)),
-      kTrayIconSize, color));
+      color, kTrayIconSize));
 }
 
 void PaletteTray::OnPaletteEnabledPrefChanged() {

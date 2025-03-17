@@ -65,7 +65,14 @@ function assertIsValidStreamId(streamId) {
     stream.getVideoTracks()[0].stop();
     succeedOnCaptureStopped();
   }, function(error) {
-    chrome.test.fail(error);
+    // Successful stream creation is not guaranteed and may time out because
+    // of resource constraints.  Do not treat this as a failure.
+    // See: crbug.com/393188938
+    if (error.name == 'AbortError' && error.message.indexOf('Timeout') > -1) {
+      chrome.test.succeed()
+    } else {
+      chrome.test.fail(error);
+    }
   });
 }
 

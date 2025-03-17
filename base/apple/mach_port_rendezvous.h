@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#include "base/apple/dispatch_source_mach.h"
+#include "base/apple/dispatch_source.h"
 #include "base/apple/scoped_mach_port.h"
 #include "base/base_export.h"
 #include "base/containers/buffer_iterator.h"
@@ -99,7 +99,7 @@ class BASE_EXPORT MachPortRendezvousServerBase {
   apple::ScopedMachReceiveRight server_port_;
 
   // Mach message dispatch source for |server_port_|.
-  std::unique_ptr<apple::DispatchSourceMach> dispatch_source_;
+  std::unique_ptr<apple::DispatchSource> dispatch_source_;
 
   // Ask for the associated ports associated with `audit_token`.
   // Return `std::nullopt` if the client is not authorized to

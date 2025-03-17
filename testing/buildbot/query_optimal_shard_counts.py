@@ -85,7 +85,8 @@ def _query_overheads(lookback_start_date, lookback_end_date):
   ])
 
 
-def _query_suite_durations(lookback_start_date, lookback_end_date, percentile):
+def _query_suite_durations(lookback_start_date, lookback_end_date, percentile,
+                           ignore_cl_owner):
   query_file = os.path.join(os.path.dirname(__file__), 'autosharder_sql',
                             'query_suite_durations.sql')
   with open(query_file, 'r') as f:
@@ -94,6 +95,8 @@ def _query_suite_durations(lookback_start_date, lookback_end_date, percentile):
       lookback_start_date=lookback_start_date,
       lookback_end_date=lookback_end_date,
       percentile=percentile,
+      ignore_cl_owner=','.join(
+          [f'"{u}"' for u in ignore_cl_owner] if ignore_cl_owner else '""'),
   )
   return _run_query([
       'bq', 'query', '--project_id=' + _CLOUD_PROJECT_ID, '--format=json',
@@ -326,6 +329,10 @@ def main(args):
                       action='store_true',
                       help=('Output more info like max shard duration, '
                             'overheads, estimated bot_cost, and more.'))
+  parser.add_argument('--ignore-cl-owner',
+                      action='append',
+                      help=('CL owners to ignore builds from (e.g. the '
+                            'service account of the builder'))
   opts = parser.parse_args(args)
 
   if opts.desired_runtime < 5:
@@ -346,6 +353,7 @@ def main(args):
       lookback_start_date=lookback_start_date,
       lookback_end_date=lookback_end_date,
       percentile=opts.percentile,
+      ignore_cl_owner=opts.ignore_cl_owner,
   )
 
   data = {}

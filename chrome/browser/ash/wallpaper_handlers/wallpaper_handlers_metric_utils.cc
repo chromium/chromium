@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
@@ -104,13 +105,27 @@ void RecordSeaPenTimeout(
 void RecordSeaPenThumbnailsCount(
     ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
     size_t thumbnails_count) {
-  const size_t limit =
+  if (!ash::features::IsSeaPenTextInputEnabled()) {
+    const size_t limit = SeaPenFetcher::kNumTemplateThumbnailsRequested;
+    base::UmaHistogramExactLinear(
+        ToHistogramString(query_tag, SeaPenApiType::kThumbnails, "Count"),
+        std::min(thumbnails_count, limit), limit + 1);
+    return;
+  }
+  const size_t limit = SeaPenFetcher::kNumTextThumbnailsRequested;
+  // The histogram name is different because when SeaPenTextInput is enabled,
+  // template query will request 4 thumbnails instead of 8.
+  //
+  // Ash.SeaPen.Api.Thumbnails.Count: template thumbnails from 0-8.
+  // Ash.SeaPen.Api.Thumbnails.Count2: template thumbnails from 0-4.
+  // Ash.SeaPen.Freeform.Api.Thumbnails.Count: text thumbnails from 0-4.
+  const std::string_view histogram_name =
       (query_tag ==
        ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery)
-          ? SeaPenFetcher::kNumTextThumbnailsRequested
-          : SeaPenFetcher::kNumTemplateThumbnailsRequested;
+          ? "Count"
+          : "Count2";
   base::UmaHistogramExactLinear(
-      ToHistogramString(query_tag, SeaPenApiType::kThumbnails, "Count"),
+      ToHistogramString(query_tag, SeaPenApiType::kThumbnails, histogram_name),
       std::min(thumbnails_count, limit), limit + 1);
 }
 

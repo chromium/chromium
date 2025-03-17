@@ -50,6 +50,8 @@ class PictureInPictureSession : public blink::mojom::PictureInPictureSession {
       const viz::SurfaceId& surface_id,
       const gfx::Size& natural_size,
       bool show_play_pause_button) final;
+  void UpdateMediaPosition(
+      const media_session::MediaPosition& media_position) final;
 
   void NotifyWindowResized(const gfx::Size& size);
 

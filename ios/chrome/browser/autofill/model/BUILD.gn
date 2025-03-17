@@ -70,6 +70,19 @@ source_set("model") {
   frameworks = [ "QuartzCore.framework" ]
 }
 
+source_set("autofill_agent_delegate") {
+  sources = [
+    "autofill_agent_delegate.h",
+    "autofill_agent_delegate.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/ios/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
 source_set("model_shared") {
   sources = [
     "form_input_accessory_view_handler.h",
@@ -96,6 +109,7 @@ source_set("model_internal") {
     "autofill_tab_helper.mm",
   ]
   deps = [
+    ":autofill_agent_delegate",
     ":model",
     "//base",
     "//components/autofill/core/browser",

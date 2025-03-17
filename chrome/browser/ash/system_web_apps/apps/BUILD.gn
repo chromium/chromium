@@ -5,7 +5,7 @@
 import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("apps") {
   sources = [
@@ -80,11 +80,12 @@ static_library("apps") {
     "//ash/webui/shortcut_customization_ui:url_constants",
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/policy:policy_util",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//content/public/browser",
     "//ui/base",
     "//ui/gfx/geometry",
@@ -99,6 +100,7 @@ static_library("apps") {
     "//ash/webui/boca_ui",
     "//ash/webui/boca_ui/resources",
     "//ash/webui/connectivity_diagnostics/resources",
+    "//ash/webui/demo_mode_app_ui/resources:resources",
     "//ash/webui/diagnostics_ui:url_constants",
     "//ash/webui/diagnostics_ui/resources",
     "//ash/webui/eche_app_ui",
@@ -117,7 +119,6 @@ static_library("apps") {
     "//ash/webui/print_preview_cros:url_constants",
     "//ash/webui/print_preview_cros/resources",
     "//ash/webui/projector_app/public/cpp",
-    "//ash/webui/resources:demo_mode_app_resources",
     "//ash/webui/resources:eche_bundle_resources",
     "//ash/webui/resources:projector_app_untrusted_resources",
     "//ash/webui/sanitize_ui",
@@ -135,7 +136,6 @@ static_library("apps") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/app_service:constants",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
@@ -238,6 +238,7 @@ source_set("browser_tests") {
     "//ash/webui/web_applications/test:test_support",
     "//base",
     "//base/test:test_support",
+    "//chrome/app:command_ids",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
@@ -256,6 +257,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
     "//chromeos/constants",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
@@ -271,6 +273,7 @@ source_set("browser_tests") {
     "//ui/base:types",
     "//ui/display",
     "//ui/display:display_manager_test_api",
+    "//ui/events:test_support",
     "//ui/gfx/geometry",
     "//ui/views",
     "//url",

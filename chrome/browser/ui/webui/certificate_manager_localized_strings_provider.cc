@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/certificate_manager_localized_strings_provider.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -93,6 +92,8 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_DETAILS},
       {"certificateProvisioningAdvancedSectionTitle",
        IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_ADVANCED},
+      {"certificateProvisioningProcessId",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_PROCESS_ID},
       {"certificateProvisioningProfileName",
        IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_CERTIFICATE_PROFILE_NAME},
       {"certificateProvisioningProfileId",

@@ -20,7 +20,7 @@
 namespace profiles {
 
 // Name of the badged icon file generated for a given profile.
-extern const base::FilePath::StringPieceType kProfileIconFileName;
+extern const base::FilePath::StringViewType kProfileIconFileName;
 
 namespace internal {
 

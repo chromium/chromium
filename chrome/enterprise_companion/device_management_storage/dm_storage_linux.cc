@@ -143,9 +143,9 @@ scoped_refptr<DMStorage> CreateDMStorage(
 
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
   return CreateDMStorage(base::FilePath("/opt")
-                             .AppendASCII(COMPANY_SHORTNAME_STRING)
-                             .AppendASCII(PRODUCT_FULLNAME_STRING)
-                             .AppendASCII("DeviceManagement"));
+                             .Append(COMPANY_SHORTNAME_STRING)
+                             .Append(PRODUCT_FULLNAME_STRING)
+                             .Append("DeviceManagement"));
 }
 
 }  // namespace device_management_storage

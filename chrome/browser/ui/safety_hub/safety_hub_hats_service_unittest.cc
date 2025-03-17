@@ -31,9 +31,6 @@ class SafetyHubHatsServiceTest : public testing::Test {
 };
 
 TEST_F(SafetyHubHatsServiceTest, SafetyHubInteractionState) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(features::kSafetyHub);
-
   // A profile password store is required to launch the password status check
   // service, which is used to get the password card data, which is part of the
   // retrieved PSD.

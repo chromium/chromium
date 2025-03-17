@@ -107,7 +107,7 @@ class PrivacyIndicatorsTrayItemViewTest
   ~PrivacyIndicatorsTrayItemViewTest() override = default;
 
   std::u16string GetTooltipText() {
-    return privacy_indicators_view()->GetTooltipText(gfx::Point());
+    return privacy_indicators_view()->GetRenderedTooltipText(gfx::Point());
   }
 
   views::BoxLayout* GetLayoutManager(
@@ -743,8 +743,14 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 }
 
+// TODO(crbug.com/402479687): Re-enable test when flakiness is fixed.
+#if BUILDFLAG(IS_LINUX) || defined(MEMORY_SANITIZER)
+#define MAYBE_HidingDelayTimerEnabledWithMultipleAppsAccess DISABLED_HidingDelayTimerEnabledWithMultipleAppsAccess
+#else
+#define MAYBE_HidingDelayTimerEnabledWithMultipleAppsAccess HidingDelayTimerEnabledWithMultipleAppsAccess
+#endif
 TEST_F(PrivacyIndicatorsTrayItemViewTest,
-       HidingDelayTimerEnabledWithMultipleAppsAccess) {
+       MAYBE_HidingDelayTimerEnabledWithMultipleAppsAccess) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 
   UpdateCameraAndMicrophoneUsage(
@@ -829,7 +835,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowTypeMetrics) {
 }
 
 // TODO(crbug.com/373996845): Re-enable test.
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER)
 #define MAYBE_RecordShowPerSessionMetrics DISABLED_RecordShowPerSessionMetrics
 #else
 #define MAYBE_RecordShowPerSessionMetrics RecordShowPerSessionMetrics

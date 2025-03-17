@@ -102,6 +102,10 @@ class CONTENT_EXPORT AttributionResolverDelegate {
   // Must be positive.
   virtual base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const = 0;
 
+  // Returns the maximum frequency at which to delete expired OS registrations.
+  // Must be positive.
+  virtual base::TimeDelta GetDeleteExpiredOsRegistrationsFrequency() const = 0;
+
   // Returns a new report ID.
   virtual base::Uuid NewReportID() const = 0;
 

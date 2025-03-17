@@ -1,12 +1,110 @@
+diff --git a/src/google/protobuf/compiler/cpp/file.cc b/src/google/protobuf/compiler/cpp/file.cc
+index 460ff6c0244ec..8672b34a76967 100644
+--- a/src/google/protobuf/compiler/cpp/file.cc
++++ b/src/google/protobuf/compiler/cpp/file.cc
+@@ -588,7 +588,7 @@ void FileGenerator::GenerateSourceDefaultInstance(int idx, io::Printer* p) {
+             };
+           };
+ 
+-          PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT$ dllexport_decl$
++          PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR$ dllexport_decl$
+               PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const $type$ $name$;
+         )cc");
+   }
+@@ -616,7 +616,7 @@ void FileGenerator::GenerateSourceDefaultInstance(int idx, io::Printer* p) {
+             };
+           };
+ 
+-          PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT$ dllexport_decl$
++          PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR$ dllexport_decl$
+               PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 $type$ $name$;
+         )cc");
+   } else if (UsingImplicitWeakDescriptor(file_, options_)) {
+@@ -642,7 +642,7 @@ void FileGenerator::GenerateSourceDefaultInstance(int idx, io::Printer* p) {
+                 file_default_instances + $index$, sizeof($type$)};
+           };
+ 
+-          PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT$ dllexport_decl$
++          PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR$ dllexport_decl$
+               PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 $type$ $name$
+               __attribute__((section("$section$")));
+         )cc");
+@@ -662,7 +662,7 @@ void FileGenerator::GenerateSourceDefaultInstance(int idx, io::Printer* p) {
+             };
+           };
+ 
+-          PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT$ dllexport_decl$
++          PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR$ dllexport_decl$
+               PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 $type$ $name$;
+         )cc");
+   }
+diff --git a/src/google/protobuf/compiler/cpp/message.cc b/src/google/protobuf/compiler/cpp/message.cc
+index bca954732d122..bd5b8cc3818ec 100644
+--- a/src/google/protobuf/compiler/cpp/message.cc
++++ b/src/google/protobuf/compiler/cpp/message.cc
+@@ -4052,7 +4052,7 @@ void MessageGenerator::GenerateClassData(io::Printer* p) {
+              }},
+         },
+         R"cc(
+-          PROTOBUF_CONSTINIT
++          PROTOBUF_CONSTINIT_WITH_PTR
+           PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+           const $pbi$::ClassDataFull $classname$::_class_data_ = {
+               $pbi$::ClassData{
+diff --git a/src/google/protobuf/compiler/cpp/parse_function_generator.cc b/src/google/protobuf/compiler/cpp/parse_function_generator.cc
+index d0a1731ddf7d5..283e9cc3b2d5b 100644
+--- a/src/google/protobuf/compiler/cpp/parse_function_generator.cc
++++ b/src/google/protobuf/compiler/cpp/parse_function_generator.cc
+@@ -269,7 +269,7 @@ void ParseFunctionGenerator::GenerateTailCallTable(io::Printer* printer) {
+       // FileDescriptorProto is safe from this.
+       IsFileDescriptorProto(descriptor_->file(), options_)
+           ? "constexpr"
+-          : "PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1\nconst",
++          : "PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1\nconst",
+       tc_table_info_->table_size_log2, ordered_fields_.size(),
+       tc_table_info_->aux_entries.size(),
+       FieldNameDataSize(tc_table_info_->field_name_data),
+diff --git a/src/google/protobuf/extension_set.cc b/src/google/protobuf/extension_set.cc
+index bad7d59e2bcdd..94229c6491476 100644
+--- a/src/google/protobuf/extension_set.cc
++++ b/src/google/protobuf/extension_set.cc
+@@ -171,7 +171,8 @@ void ExtensionSet::RegisterMessageExtension(const MessageLite* extendee,
+   ExtensionInfo info(extendee, number, type, is_repeated, is_packed,
+                      verify_func, is_lazy);
+   info.message_info = {prototype,
+-#if defined(PROTOBUF_CONSTINIT_DEFAULT_INSTANCES)
++#if defined(PROTOBUF_CONSTINIT_DEFAULT_INSTANCES) && \
++    !defined(PROTOBUF_DEFAULT_INSTANCES_MAY_NOT_BE_CONSTINIT)
+                        prototype->GetTcParseTable()
+ #else
+                        nullptr
+diff --git a/src/google/protobuf/map_field.h b/src/google/protobuf/map_field.h
+index 0e37a16d7bc53..656a99fdc04e1 100644
+--- a/src/google/protobuf/map_field.h
++++ b/src/google/protobuf/map_field.h
+@@ -680,7 +680,7 @@ class MapField final : public TypeDefinedMapFieldBase<Key, T> {
+ template <typename Derived, typename Key, typename T,
+           WireFormatLite::FieldType kKeyFieldType_,
+           WireFormatLite::FieldType kValueFieldType_>
+-PROTOBUF_CONSTINIT const MapFieldBase::VTable
++PROTOBUF_CONSTINIT_WITH_PTR const MapFieldBase::VTable
+     MapField<Derived, Key, T, kKeyFieldType_, kValueFieldType_>::kVTable =
+         MapField::template MakeVTable<MapField>();
+ 
 diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
-index 8bd06d340f7c3..cae9ebe01ec2c 100644
+index 075e10e925efa..999032346b18a 100644
 --- a/src/google/protobuf/port_def.inc
 +++ b/src/google/protobuf/port_def.inc
-@@ -434,19 +434,26 @@
+@@ -326,19 +326,31 @@ static_assert(PROTOBUF_ABSL_MIN(20230125, 3),
  #  define PROTOBUF_EXPORT __declspec(dllexport)
  #  define PROTOBUF_EXPORT_TEMPLATE_DECLARE
  #  define PROTOBUF_EXPORT_TEMPLATE_DEFINE __declspec(dllexport)
 +#  define PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_CONSTINIT
++// See PROTOBUF_CONSTINIT_WITH_PTR below. This define is used by code inside the
++// protobuf library that needs to know whether it can assume a default instance,
++// which may be initialized inside the same binary or in another library, is
++// constinit.
++#  define PROTOBUF_DEFAULT_INSTANCES_MAY_NOT_BE_CONSTINIT
  # else
  #  define PROTOBUF_EXPORT __declspec(dllimport)
  #  define PROTOBUF_EXPORT_TEMPLATE_DECLARE
@@ -30,16 +128,14 @@ index 8bd06d340f7c3..cae9ebe01ec2c 100644
  
  #ifdef PROTOC_EXPORT
 diff --git a/src/google/protobuf/port_undef.inc b/src/google/protobuf/port_undef.inc
-index 58136a4b47350..056c9b790ba4d 100644
+index 784b102d4c633..fa6de4dccd008 100644
 --- a/src/google/protobuf/port_undef.inc
 +++ b/src/google/protobuf/port_undef.inc
-@@ -80,6 +80,7 @@
+@@ -47,6 +47,7 @@
+ #undef PROTOBUF_ALIGNAS
  #undef PROTOBUF_THREAD_LOCAL
- #undef PROTOBUF_MESSAGE_OWNED_ARENA_EXPERIMENT
  #undef PROTOBUF_CONSTINIT
 +#undef PROTOBUF_CONSTINIT_WITH_PTR
  #undef PROTOBUF_CONSTEXPR
+ #undef PROTOBUF_CONSTINIT_DEFAULT_INSTANCES
  #undef PROTOBUF_ATTRIBUTE_WEAK
- #undef PROTOBUF_HAVE_ATTRIBUTE_WEAK
--- 
-2.37.0.rc0.104.g0611611a94-goog

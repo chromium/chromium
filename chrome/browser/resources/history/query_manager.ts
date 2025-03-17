@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 import {HistoryEmbeddingsUserActions, QUERY_RESULT_MINIMUM_AGE} from 'chrome://resources/cr_components/history/constants.js';
+import type {QueryResult, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
-import type {HistoryEntry, HistoryQuery, QueryResult, QueryState} from './externs.js';
+import {RESULTS_PER_PAGE} from './constants.js';
 import type {HistoryRouterElement} from './router.js';
 
 // Converts a JS Date object to a human readable string in the format of
@@ -81,6 +82,7 @@ export class HistoryQueryManagerElement extends PolymerElement {
       // A query is initiated by page load.
       querying: true,
       searchTerm: '',
+      after: '',
     };
   }
 
@@ -121,10 +123,12 @@ export class HistoryQueryManagerElement extends PolymerElement {
 
     const browserService = BrowserServiceImpl.getInstance();
     const promise = incremental ?
-        browserService.queryHistoryContinuation() :
-        browserService.queryHistory(this.queryState.searchTerm, afterTimestamp);
+        browserService.handler.queryHistoryContinuation() :
+        browserService.handler.queryHistory(
+            this.queryState.searchTerm, RESULTS_PER_PAGE,
+            afterTimestamp ? afterTimestamp : null);
     // Ignore rejected (cancelled) queries.
-    promise.then(result => this.onQueryResult_(result), () => {});
+    promise.then((result) => this.onQueryResult_(result.results), () => {});
   }
 
   private onChangeQuery_(e: CustomEvent<{search?: string, after?: string}>) {
@@ -160,10 +164,10 @@ export class HistoryQueryManagerElement extends PolymerElement {
   /**
    * @param results List of results with information about the query.
    */
-  private onQueryResult_(results: {info: HistoryQuery, value: HistoryEntry[]}) {
+  private onQueryResult_(results: QueryResult) {
     this.set('queryState.querying', false);
     this.set('queryResult.info', results.info);
-    this.set('queryResult.results', results.value);
+    this.set('queryResult.value', results.value);
     this.dispatchEvent(
         new CustomEvent('query-finished', {bubbles: true, composed: true}));
   }

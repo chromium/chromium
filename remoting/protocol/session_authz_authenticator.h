@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "remoting/base/constants.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/session_authz_service_client.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/proto/session_authz_service.h"
@@ -60,6 +60,11 @@ class SessionAuthzAuthenticator : public Authenticator {
   // will be an empty string.
   const std::string& session_id() const { return session_id_; }
 
+  // The host token returned by the SessionAuthz server. This is only set if
+  // the GenerateHostToken API call has completed and succeeded. Otherwise, this
+  // will be an empty string.
+  const std::string& host_token() const { return host_token_; }
+
   // Authenticator implementation.
   CredentialsType credentials_type() const override;
   const Authenticator& implementing_authenticator() const override;
@@ -78,6 +83,7 @@ class SessionAuthzAuthenticator : public Authenticator {
   void SetReauthorizerForTesting(
       std::unique_ptr<SessionAuthzReauthorizer> reauthorizer);
   void SetSessionIdForTesting(std::string_view session_id);
+  void SetHostTokenForTesting(std::string_view host_token);
 
  private:
   enum class SessionAuthzState {
@@ -113,7 +119,7 @@ class SessionAuthzAuthenticator : public Authenticator {
   void GenerateHostToken(base::OnceClosure resume_callback);
   void OnHostTokenGenerated(
       base::OnceClosure resume_callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<internal::GenerateHostTokenResponseStruct> response);
   void AddHostTokenElement(jingle_xmpp::XmlElement* message);
   void VerifySessionToken(const jingle_xmpp::XmlElement& message,
@@ -121,10 +127,10 @@ class SessionAuthzAuthenticator : public Authenticator {
   void OnVerifiedSessionToken(
       const jingle_xmpp::XmlElement& message,
       base::OnceClosure resume_callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<internal::VerifySessionTokenResponseStruct> response);
   void HandleSessionAuthzError(const std::string_view& action_name,
-                               const ProtobufHttpStatus& status);
+                               const HttpStatus& status);
   void StartReauthorizerIfNecessary();
   void OnReauthorizationFailed();
 

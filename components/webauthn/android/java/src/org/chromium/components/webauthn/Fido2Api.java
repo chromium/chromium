@@ -4,6 +4,8 @@
 
 package org.chromium.components.webauthn;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -13,8 +15,6 @@ import android.os.Parcel;
 import android.os.ResultReceiver;
 import android.util.Base64;
 import android.util.Pair;
-
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -37,6 +37,9 @@ import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.blink.mojom.UserVerificationRequirement;
 import org.chromium.blink.mojom.UvmEntry;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo_base.mojom.TimeDelta;
 
 import java.nio.ByteBuffer;
@@ -85,6 +88,7 @@ import java.util.concurrent.TimeUnit;
  * https://android.googlesource.com/platform/frameworks/native/+/3cf307284a620c67b9eb024439583fc1c42574ee/libs/binder/Parcel.cpp#1545
  */
 @JNINamespace("webauthn")
+@NullMarked
 public final class Fido2Api {
     public interface Calls {
         /**
@@ -104,7 +108,7 @@ public final class Fido2Api {
         void makeCredential(
                 PublicKeyCredentialCreationOptions options,
                 @Nullable Uri uri,
-                @Nullable byte[] clientDataHash,
+                byte @Nullable [] clientDataHash,
                 @Nullable Bundle browserOptions,
                 @Nullable ResultReceiver resultReceiver,
                 Parcel parcel)
@@ -126,8 +130,8 @@ public final class Fido2Api {
         void getAssertion(
                 PublicKeyCredentialRequestOptions options,
                 @Nullable Uri uri,
-                @Nullable byte[] clientDataHash,
-                @Nullable byte[] tunnelId,
+                byte @Nullable [] clientDataHash,
+                byte @Nullable [] tunnelId,
                 @Nullable ResultReceiver resultReceiver,
                 Parcel parcel);
     }
@@ -191,7 +195,7 @@ public final class Fido2Api {
     public static void appendBrowserMakeCredentialOptionsToParcel(
             PublicKeyCredentialCreationOptions options,
             Uri origin,
-            @Nullable byte[] clientDataHash,
+            byte @Nullable [] clientDataHash,
             @Nullable Bundle browserOptions,
             @Nullable ResultReceiver resultReceiver,
             Parcel parcel)
@@ -461,8 +465,8 @@ public final class Fido2Api {
     public static void appendBrowserGetAssertionOptionsToParcel(
             PublicKeyCredentialRequestOptions options,
             Uri origin,
-            byte[] clientDataHash,
-            byte[] tunnelId,
+            byte @Nullable [] clientDataHash,
+            byte @Nullable [] tunnelId,
             @Nullable ResultReceiver resultReceiver,
             Parcel parcel) {
         final int a = writeHeader(OBJECT_MAGIC, parcel);
@@ -496,7 +500,7 @@ public final class Fido2Api {
      */
     public static void appendGetAssertionOptionsToParcel(
             PublicKeyCredentialRequestOptions options,
-            byte[] tunnelId,
+            byte @Nullable [] tunnelId,
             @Nullable ResultReceiver resultReceiver,
             Parcel parcel) {
         final int a = writeHeader(OBJECT_MAGIC, parcel);
@@ -554,7 +558,7 @@ public final class Fido2Api {
     }
 
     private static void appendGetAssertionExtensionsToParcel(
-            PublicKeyCredentialRequestOptions options, byte[] tunnelId, Parcel parcel) {
+            PublicKeyCredentialRequestOptions options, byte @Nullable [] tunnelId, Parcel parcel) {
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
         // 2: appId
@@ -726,7 +730,7 @@ public final class Fido2Api {
         parcel.setDataPosition(totalLength);
     }
 
-    private static String attachmentToString(int attachment) {
+    private static @Nullable String attachmentToString(int attachment) {
         // This is the closest one can get to a static assert that no new enumeration values have
         // been added.
         assert AuthenticatorAttachment.MAX_VALUE == AuthenticatorAttachment.CROSS_PLATFORM;
@@ -742,14 +746,14 @@ public final class Fido2Api {
         }
     }
 
-    private static int stringToAttachment(String v) {
+    private static int stringToAttachment(@Nullable String v) {
         // This is the closest one can get to a static assert that no new enumeration values have
         // been added.
         assert AuthenticatorAttachment.MAX_VALUE == AuthenticatorAttachment.CROSS_PLATFORM;
 
-        if (v.equals("platform")) {
+        if ("platform".equals(v)) {
             return AuthenticatorAttachment.PLATFORM;
-        } else if (v.equals("cross-platform")) {
+        } else if ("cross-platform".equals(v)) {
             return AuthenticatorAttachment.CROSS_PLATFORM;
         }
         return AuthenticatorAttachment.MIN_VALUE - 1;
@@ -1114,15 +1118,15 @@ public final class Fido2Api {
         for (int i = 0; i < numValues; i++) {
             String transport = parcel.readString();
 
-            if (transport.equals("usb")) {
+            if ("usb".equals(transport)) {
                 pending[j++] = AuthenticatorTransport.USB;
-            } else if (transport.equals("nfc")) {
+            } else if ("nfc".equals(transport)) {
                 pending[j++] = AuthenticatorTransport.NFC;
-            } else if (transport.equals("ble")) {
+            } else if ("ble".equals(transport)) {
                 pending[j++] = AuthenticatorTransport.BLE;
-            } else if (transport.equals("cable") || transport.equals("hybrid")) {
+            } else if ("cable".equals(transport) || "hybrid".equals(transport)) {
                 pending[j++] = AuthenticatorTransport.HYBRID;
-            } else if (transport.equals("internal")) {
+            } else if ("internal".equals(transport)) {
                 pending[j++] = AuthenticatorTransport.INTERNAL;
             }
         }
@@ -1237,14 +1241,14 @@ public final class Fido2Api {
     }
 
     private static class Extensions {
-        public ArrayList<UvmEntry> userVerificationMethods;
+        public @Nullable ArrayList<UvmEntry> userVerificationMethods;
         public boolean hasCredProps;
         public boolean didCreateDiscoverableCredential;
         // prf contains an "enabled" flag and a bytestring that contains either
         // one or two 32-byte strings.
-        public Pair<Boolean, byte[]> prf;
+        public @Nullable Pair<Boolean, byte[]> prf;
 
-        PrfValues getPrfResults() {
+        @Nullable PrfValues getPrfResults() {
             if (prf == null || prf.second == null) {
                 return null;
             }
@@ -1413,6 +1417,7 @@ public final class Fido2Api {
 
                 case 2:
                     outputs = parcel.createByteArray();
+                    assumeNonNull(outputs);
                     if (outputs.length != 32 && outputs.length != 64) {
                         throw new IllegalArgumentException("bad PRF output length");
                     }
@@ -1473,6 +1478,7 @@ public final class Fido2Api {
 
     /** AttestationObjectParts groups together the return values of |parseAttestationObject|. */
     public static final class AttestationObjectParts {
+        @Initializer
         @CalledByNative("AttestationObjectParts")
         void setAll(
                 byte[] authenticatorData,

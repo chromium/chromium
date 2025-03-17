@@ -333,7 +333,6 @@ class BaseFileInputStream : public google::protobuf::io::ZeroCopyInputStream {
 
 }  // namespace
 
-using ::google::protobuf::int32;
 using ::google::protobuf::RepeatedField;
 using ::google::protobuf::RepeatedPtrField;
 
@@ -446,8 +445,8 @@ ApplyUpdateResult V4Store::ProcessUpdate(
     const HashPrefixMapView& hash_prefix_map_old,
     const std::unique_ptr<ListUpdateResponse>& response,
     bool delay_checksum_check) {
-  const RepeatedField<int32>* raw_removals = nullptr;
-  RepeatedField<int32> rice_removals;
+  const RepeatedField<int32_t>* raw_removals = nullptr;
+  RepeatedField<int32_t> rice_removals;
   size_t removals_size = response->removals_size();
   DCHECK_LE(removals_size, 1u);
   if (removals_size == 1) {
@@ -682,7 +681,7 @@ void V4Store::InitializeIteratorMap(const HashPrefixMapView& hash_prefix_map,
 ApplyUpdateResult V4Store::MergeUpdate(
     const HashPrefixMapView& old_prefixes_map,
     const HashPrefixMapView& additions_map,
-    const RepeatedField<int32>* raw_removals,
+    const RepeatedField<int32_t>* raw_removals,
     const std::string& expected_checksum) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(hash_prefix_map_->view().empty());

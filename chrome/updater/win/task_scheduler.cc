@@ -67,7 +67,7 @@ std::wstring GetTimestampString(base::Time timestamp) {
   base::Time::Exploded exploded_time;
   // The Z timezone info at the end of the string means UTC.
   timestamp.UTCExplode(&exploded_time);
-  return base::ASCIIToWide(base::StringPrintf(
+  return base::UTF8ToWide(base::StringPrintf(
       "%04d-%02d-%02dT%02d:%02d:%02dZ", exploded_time.year, exploded_time.month,
       exploded_time.day_of_month, exploded_time.hour, exploded_time.minute,
       exploded_time.second));

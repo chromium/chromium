@@ -108,7 +108,7 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
       currentButton.parentElement!.ariaSort = 'none';
     }
 
-    const th = e.target.parentElement! as HTMLElement;
+    const th = e.target.parentElement!;
     if (th.ariaSort === 'ascending') {
       th.ariaSort = 'descending';
       e.target.title = `Sort by ${e.target.innerText} ascending`;

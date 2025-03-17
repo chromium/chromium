@@ -19,7 +19,9 @@ class AILanguageDetector final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit AILanguageDetector(LanguageDetectionModel* language_detection_model);
+  explicit AILanguageDetector(
+      LanguageDetectionModel* language_detection_model,
+      scoped_refptr<base::SequencedTaskRunner>& task_runner);
   ~AILanguageDetector() override = default;
 
   void Trace(Visitor* visitor) const override;
@@ -40,6 +42,7 @@ class AILanguageDetector final : public ScriptWrappable {
                      DetectLanguageError> result);
 
  private:
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   Member<LanguageDetectionModel> language_detection_model_;
 };
 

@@ -1,0 +1,3 @@
+# TODO(accessibility) Update script processing to provide the results of get_selections()
+# so that this test is meaningful.
+input.QueryInterface(IAccessibleTextSelectionContainer).setSelections([])=IA2TextSelectionContainerComPtr

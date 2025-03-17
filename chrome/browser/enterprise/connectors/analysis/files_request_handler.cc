@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -11,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -75,31 +76,24 @@ FilesRequestHandler::FileInfo::FileInfo(FileInfo&& other) = default;
 FilesRequestHandler::FileInfo::~FileInfo() = default;
 
 FilesRequestHandler::FilesRequestHandler(
+    ContentAnalysisInfo* content_analysis_info,
     safe_browsing::BinaryUploadService* upload_service,
     Profile* profile,
-    const enterprise_connectors::AnalysisSettings& analysis_settings,
     GURL url,
     const std::string& source,
     const std::string& destination,
-    const std::string& user_action_id,
-    const std::string& tab_title,
     const std::string& content_transfer_method,
     safe_browsing::DeepScanAccessPoint access_point,
-    ContentAnalysisRequest::Reason reason,
     const std::vector<base::FilePath>& paths,
     CompletionCallback callback)
-    : RequestHandlerBase(upload_service,
+    : RequestHandlerBase(content_analysis_info,
+                         upload_service,
                          profile,
-                         analysis_settings,
                          url,
-                         source,
-                         destination,
-                         user_action_id,
-                         tab_title,
-                         paths.size(),
-                         access_point,
-                         reason),
+                         access_point),
       paths_(paths),
+      source_(source),
+      destination_(destination),
       content_transfer_method_(content_transfer_method),
       callback_(std::move(callback)) {
   results_.resize(paths_.size());
@@ -109,30 +103,27 @@ FilesRequestHandler::FilesRequestHandler(
 
 // static
 std::unique_ptr<FilesRequestHandler> FilesRequestHandler::Create(
+    ContentAnalysisInfo* content_analysis_info,
     safe_browsing::BinaryUploadService* upload_service,
     Profile* profile,
-    const enterprise_connectors::AnalysisSettings& analysis_settings,
     GURL url,
     const std::string& source,
     const std::string& destination,
-    const std::string& user_action_id,
-    const std::string& tab_title,
     const std::string& content_transfer_method,
     safe_browsing::DeepScanAccessPoint access_point,
-    ContentAnalysisRequest::Reason reason,
     const std::vector<base::FilePath>& paths,
     CompletionCallback callback) {
   if (GetFactoryStorage()->is_null()) {
     return base::WrapUnique(new FilesRequestHandler(
-        upload_service, profile, analysis_settings, url, source, destination,
-        user_action_id, tab_title, content_transfer_method, access_point,
-        reason, paths, std::move(callback)));
+        content_analysis_info, upload_service, profile, url, source,
+        destination, content_transfer_method, access_point, paths,
+        std::move(callback)));
   } else {
     // Use the factory to create a fake FilesRequestHandler.
-    return GetFactoryStorage()->Run(
-        upload_service, profile, analysis_settings, url, source, destination,
-        user_action_id, tab_title, content_transfer_method, access_point,
-        reason, paths, std::move(callback));
+    return GetFactoryStorage()->Run(content_analysis_info, upload_service,
+                                    profile, url, source, destination,
+                                    content_transfer_method, access_point,
+                                    paths, std::move(callback));
   }
 }
 
@@ -168,7 +159,7 @@ void FilesRequestHandler::FileRequestCallbackForTesting(
     base::FilePath path,
     safe_browsing::BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
-  auto it = base::ranges::find(paths_, path);
+  auto it = std::ranges::find(paths_, path);
   CHECK(it != paths_.end(), base::NotFatalUntil::M130);
   size_t index = std::distance(paths_.begin(), it);
   FileRequestCallback(index, result, response);
@@ -206,14 +197,19 @@ safe_browsing::FileAnalysisRequest* FilesRequestHandler::PrepareFileRequest(
   DCHECK_LT(index, paths_.size());
   base::FilePath path = paths_[index];
   auto request = std::make_unique<safe_browsing::FileAnalysisRequest>(
-      *analysis_settings_, path, path.BaseName(), /*mime_type*/ "",
+      content_analysis_info_->settings(), path, path.BaseName(),
+      /*mime_type*/ "",
       /* delay_opening_file */ true,
       base::BindOnce(&FilesRequestHandler::FileRequestCallback,
                      weak_ptr_factory_.GetWeakPtr(), index),
       base::BindOnce(&FilesRequestHandler::FileRequestStartCallback,
                      weak_ptr_factory_.GetWeakPtr(), index));
   safe_browsing::FileAnalysisRequest* request_raw = request.get();
-  PrepareRequest(AccessPointToEnterpriseConnector(access_point_), request_raw);
+  content_analysis_info_->InitializeRequest(request_raw);
+  request_raw->set_analysis_connector(
+      AccessPointToEnterpriseConnector(access_point_));
+  request_raw->set_source(source_);
+  request_raw->set_destination(destination_);
   request_raw->GetRequestData(base::BindOnce(
       &FilesRequestHandler::OnGotFileInfo, weak_ptr_factory_.GetWeakPtr(),
       std::move(request), index));
@@ -233,13 +229,13 @@ void FilesRequestHandler::OnGotFileInfo(
   file_info_[index].size = data.size;
   file_info_[index].mime_type = data.mime_type;
 
-  bool is_cloud =
-      analysis_settings_->cloud_or_local_settings.is_cloud_analysis();
+  const auto& analysis_settings = content_analysis_info_->settings();
+  bool is_cloud = analysis_settings.cloud_or_local_settings.is_cloud_analysis();
   bool is_resumable = IsResumableUpload(*request);
   bool failed = is_resumable
                     ? CloudResumableResultIsFailure(
-                          result, analysis_settings_->block_large_files,
-                          analysis_settings_->block_password_protected_files)
+                          result, analysis_settings.block_large_files,
+                          analysis_settings.block_password_protected_files)
                     : (is_cloud ? CloudMultipartResultIsFailure(result)
                                 : LocalResultIsFailure(result));
   if (failed) {
@@ -325,13 +321,14 @@ void FilesRequestHandler::FileRequestCallback(
                                    ? start_times_[index]
                                    : upload_start_time_;
 
+  const auto& analysis_settings = content_analysis_info_->settings();
   RecordDeepScanMetrics(
-      analysis_settings_->cloud_or_local_settings.is_cloud_analysis(),
+      analysis_settings.cloud_or_local_settings.is_cloud_analysis(),
       access_point_, base::TimeTicks::Now() - start_timestamp,
       file_info_[index].size, upload_result, response);
 
-  RequestHandlerResult request_handler_result = CalculateRequestHandlerResult(
-      *analysis_settings_, upload_result, response);
+  RequestHandlerResult request_handler_result =
+      CalculateRequestHandlerResult(analysis_settings, upload_result, response);
   results_[index] = request_handler_result;
   ++file_result_count_;
 
@@ -345,9 +342,8 @@ void FilesRequestHandler::FileRequestCallback(
       profile_, url_, url_, source_, destination_, path.AsUTF8Unsafe(),
       file_info_[index].sha256, file_info_[index].mime_type,
       AccessPointToTriggerString(access_point_), content_transfer_method_,
-
       access_point_, file_info_[index].size, upload_result, response,
-      CalculateEventResult(*analysis_settings_, request_handler_result.complies,
+      CalculateEventResult(analysis_settings, request_handler_result.complies,
                            result_is_warning));
 
   safe_browsing::DecrementCrashKey(

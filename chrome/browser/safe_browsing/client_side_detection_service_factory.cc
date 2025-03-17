@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -47,6 +47,10 @@ ClientSideDetectionServiceFactory::ClientSideDetectionServiceFactory()
 std::unique_ptr<KeyedService>
 ClientSideDetectionServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!g_browser_process || !g_browser_process->safe_browsing_service()) {
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
 
   auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(

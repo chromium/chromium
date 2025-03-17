@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_browsertest.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -113,7 +113,7 @@ class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
             .BuildBundle();
 
     url_info1_ = std::make_unique<web_app::IsolatedWebAppUrlInfo>(
-        *app1_->TrustBundleAndInstall(profile()));
+        *app1_->Install(profile()));
 
     app2_ =
         web_app::IsolatedWebAppBuilder(
@@ -121,7 +121,7 @@ class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
             .BuildBundle();
 
     url_info2_ = std::make_unique<web_app::IsolatedWebAppUrlInfo>(
-        *app2_->TrustBundleAndInstall(profile()));
+        *app2_->Install(profile()));
   }
 
  protected:

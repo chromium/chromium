@@ -17,10 +17,21 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
 
+namespace webid {
 namespace {
 
 class FedCmCUJTest : public InteractiveBrowserTest {
  public:
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
   auto OpenAccounts(blink::mojom::RpMode mode) {
     return Do([this, mode]() {
       delegate_ = std::make_unique<FakeDelegate>(
@@ -29,11 +40,12 @@ class FedCmCUJTest : public InteractiveBrowserTest {
           delegate_.get(), browser()->GetActiveTabInterface());
       idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
           "idp-example.com", content::IdentityProviderMetadata(),
-          content::ClientMetadata(GURL(), GURL(), GURL()),
+          content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
           blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/false)};
       accounts_ = {base::MakeRefCounted<Account>(
-          "id", "email", "name", "given_name", GURL(),
+          "id", "display_identifier", "display_name", "email", "name",
+          "given_name", GURL(),
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>())};
@@ -75,23 +87,48 @@ class FedCmCUJTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(FedCmCUJTest, SelectAccount) {
   RunTestSequence(OpenAccountsModal(),
                   WaitForShow(kFedCmAccountChooserDialogAccountElementId),
-                  PressButton(kFedCmAccountChooserDialogAccountElementId), );
+                  PressButton(kFedCmAccountChooserDialogAccountElementId));
 }
 
-// TODO(https://crbug.com/382867817): Fix this on windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_BubbleHidesWhenModalUIShown DISABLED_BubbleHidesWhenModalUIShown
-#else
-#define MAYBE_BubbleHidesWhenModalUIShown BubbleHidesWhenModalUIShown
-#endif
 // Shows the bubble account picker. It should hide when a modal UI is shown. It
 // should re-show when the modal UI goes away.
-IN_PROC_BROWSER_TEST_F(FedCmCUJTest, MAYBE_BubbleHidesWhenModalUIShown) {
+IN_PROC_BROWSER_TEST_F(FedCmCUJTest, BubbleHidesWhenModalUIShown) {
   RunTestSequence(
       OpenAccountsBubble(),
       WaitForShow(kFedCmAccountChooserDialogAccountElementId), ShowTabModalUI(),
       WaitForHide(kFedCmAccountChooserDialogAccountElementId), HideTabModalUI(),
-      WaitForShow(kFedCmAccountChooserDialogAccountElementId), );
+      WaitForShow(kFedCmAccountChooserDialogAccountElementId));
+}
+
+// TODO(https://crbug.com/387473078): Fix this on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OneClickOutsideBubble DISABLED_OneClickOutsideBubble
+#else
+#define MAYBE_OneClickOutsideBubble OneClickOutsideBubble
+#endif
+// When the bubble view is showing, a single click outside the bubble should be
+// received by the website.
+IN_PROC_BROWSER_TEST_F(FedCmCUJTest, MAYBE_OneClickOutsideBubble) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  // chrome/test/data/button.html
+  const GURL url = embedded_test_server()->GetURL("/button.html");
+  const DeepQuery kPathToButton{
+      "button",
+  };
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
+      OpenAccountsBubble(),
+      WaitForShow(kFedCmAccountChooserDialogAccountElementId),
+      MoveMouseTo(kActiveTab, kPathToButton),
+      CheckJsResult(
+          kActiveTab,
+          "() => document.getElementById('text').style.display == 'none'"),
+      ClickMouse(),
+      CheckJsResult(
+          kActiveTab,
+          "() => document.getElementById('text').style.display == 'block'"));
 }
 
 }  // namespace
+}  // namespace webid

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/cancelable_callback.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

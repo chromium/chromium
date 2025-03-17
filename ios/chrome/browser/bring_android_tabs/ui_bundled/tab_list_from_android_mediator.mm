@@ -9,14 +9,14 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/model/metrics.h"
+#import "ios/chrome/browser/bring_android_tabs/ui_bundled/constants.h"
+#import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_consumer.h"
+#import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_table_view_item.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions_util.h"
-#import "ios/chrome/browser/bring_android_tabs/ui_bundled/constants.h"
-#import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_consumer.h"
-#import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_table_view_item.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 
 namespace {

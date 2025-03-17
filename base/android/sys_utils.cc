@@ -17,20 +17,9 @@
 namespace base {
 namespace android {
 
-bool SysUtils::IsLowEndDeviceFromJni() {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_SysUtils_isLowEndDevice(env);
-}
-
 bool SysUtils::IsCurrentlyLowMemory() {
   JNIEnv* env = AttachCurrentThread();
   return Java_SysUtils_isCurrentlyLowMemory(env);
-}
-
-// static
-int SysUtils::AmountOfPhysicalMemoryKB() {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_SysUtils_amountOfPhysicalMemoryKB(env);
 }
 
 // Logs the number of minor / major page faults to tracing (and also the time to
@@ -40,8 +29,9 @@ static void JNI_SysUtils_LogPageFaultCountToTracing(JNIEnv* env) {
   // expensive (reading and parsing a file).
   bool enabled;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("startup", &enabled);
-  if (!enabled)
+  if (!enabled) {
     return;
+  }
   TRACE_EVENT_BEGIN2("memory", "CollectPageFaultCount", "minor", 0, "major", 0);
   std::unique_ptr<base::ProcessMetrics> process_metrics(
       base::ProcessMetrics::CreateProcessMetrics(

@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Interface that used to provider information about divider customization in this fragment.
  * Extending class can override any number for this class to provider information about the divider
@@ -42,6 +44,7 @@ package org.chromium.components.browser_ui.settings;
  * }
  * </pre>
  */
+@NullMarked
 public interface CustomDividerFragment {
     /** Return whether divider should be added into this fragment. */
     default boolean hasDivider() {

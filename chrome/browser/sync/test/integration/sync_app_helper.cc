@@ -11,7 +11,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/launch_util.h"
+#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -24,6 +24,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/launch_util.h"
 #include "extensions/common/extension_set.h"
 
 using extensions::AppSorting;
@@ -103,9 +104,7 @@ AppStateMap GetAppStates(Profile* profile) {
   }
 
   const extensions::PendingExtensionManager* pending_extension_manager =
-      extensions::ExtensionSystem::Get(profile)
-          ->extension_service()
-          ->pending_extension_manager();
+      extensions::PendingExtensionManager::Get(profile);
 
   std::list<std::string> pending_crx_ids =
       pending_extension_manager->GetPendingIdsForUpdateCheck();

@@ -5,7 +5,6 @@
 """Siso configuration for clang-cl/windows."""
 
 load("@builtin//lib/gn.star", "gn")
-load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
@@ -28,6 +27,7 @@ def __clang_compile_coverage(ctx, cmd):
 __handlers = {
     "clang_compile_coverage": __clang_compile_coverage,
 }
+__handlers.update(clang_all.handlers)
 
 def __step_config(ctx, step_config):
     cfg = "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_windows.cfg"
@@ -47,6 +47,7 @@ def __step_config(ctx, step_config):
         step_config["platforms"].update({
             "clang-cl": reproxy_config["platform"],
             "clang-cl_large": largePlatform,
+            "lld-link": largePlatform,
         })
         step_config["input_deps"].update(clang_all.input_deps)
 
@@ -136,6 +137,83 @@ def __step_config(ctx, step_config):
                 "canonicalize_dir": canonicalize_dir,
                 "remote_wrapper": remote_wrapper,
                 "timeout": timeout,
+            },
+            {
+                "name": "lld-link/alink",
+                "action": "(.*_)?alink",
+                "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe /lib",
+                "handler": "lld_thin_archive",
+                "remote": False,
+                "accumulate": True,
+            },
+            {
+                "name": "lld-link/solink",
+                "action": "(.*_)?solink",
+                "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
+                "handler": "lld_link",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/lld-link.exe",
+                    win_sdk.toolchain_dir(ctx) + ":libs",
+                ],
+                "exclude_input_patterns": [
+                    "*.cc",
+                    "*.h",
+                    "*.js",
+                    "*.pak",
+                    "*.py",
+                ],
+                "remote": config.get(ctx, "remote-link"),
+                "remote_wrapper": remote_wrapper,
+                "platform_ref": "lld-link",
+                "input_root_absolute_path": input_root_absolute_path,
+                "canonicalize_dir": canonicalize_dir,
+                "timeout": "2m",
+            },
+            {
+                "name": "lld-link/solink_module",
+                "action": "(.*_)?solink_module",
+                "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
+                "handler": "lld_link",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/lld-link.exe",
+                    win_sdk.toolchain_dir(ctx) + ":libs",
+                ],
+                "exclude_input_patterns": [
+                    "*.cc",
+                    "*.h",
+                    "*.js",
+                    "*.pak",
+                    "*.py",
+                ],
+                "remote": config.get(ctx, "remote-link"),
+                "remote_wrapper": remote_wrapper,
+                "platform_ref": "lld-link",
+                "input_root_absolute_path": input_root_absolute_path,
+                "canonicalize_dir": canonicalize_dir,
+                "timeout": "2m",
+            },
+            {
+                "name": "lld-link/link",
+                "action": "(.*_)?link",
+                "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
+                "handler": "lld_link",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/lld-link.exe",
+                    win_sdk.toolchain_dir(ctx) + ":libs",
+                ],
+                "exclude_input_patterns": [
+                    "*.cc",
+                    "*.h",
+                    "*.js",
+                    "*.pak",
+                    "*.py",
+                ],
+                "remote": config.get(ctx, "remote-link"),
+                "remote_wrapper": remote_wrapper,
+                "platform_ref": "lld-link",
+                "input_root_absolute_path": input_root_absolute_path,
+                "canonicalize_dir": canonicalize_dir,
+                "timeout": "2m",
             },
         ])
     elif gn.args(ctx).get("use_remoteexec") == "true":

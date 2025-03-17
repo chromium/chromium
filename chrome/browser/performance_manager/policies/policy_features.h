@@ -6,11 +6,10 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/session/arc_session.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/allocator/buildflags.h"
+#include "chromeos/ash/experiences/arc/session/arc_session.h"
 #endif
 
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_POLICY_FEATURES_H_
@@ -19,7 +18,7 @@
 namespace performance_manager {
 namespace features {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // The trim on Memory Pressure feature will trim a process nodes working set
 // according to the parameters below.
@@ -146,7 +145,7 @@ struct TrimOnMemoryPressureParams {
   int trim_arcvm_pages_per_minute = arc::ArcSession::kNoPageLimit;
 };
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace features
 }  // namespace performance_manager

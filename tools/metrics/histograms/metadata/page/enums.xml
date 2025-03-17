@@ -236,6 +236,9 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="kHeaderChunkEnd"/>
   <int value="20" label="kBodyChunkStart"/>
   <int value="21" label="kBodyChunkEnd"/>
+  <int value="22" label="kSecondRedirectedRequestStart"/>
+  <int value="23" label="kSecondedirectResponseStart"/>
+  <int value="24" label="kCommitReplySent"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:NavigationMilestone) -->
@@ -252,22 +255,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/gws_page_load_metrics_observer.h:NavigationSourceType) -->
-
-<enum name="OriginTrialStatusChange">
-  <int value="0"
-      label="kDisabled: Origin-specific origin trial token was disabled (i.e.
-             removed from the top-level site's partition)"/>
-  <int value="1"
-      label="kDisabled_MatchesSubdomains: Subdomain-matching origin trial
-             token was disabled (i.e. removed from the top-level site's
-             partition)"/>
-  <int value="2"
-      label="kEnabled: Origin-specific token was used to enable the origin
-             trial"/>
-  <int value="3"
-      label="kEnabled_MatchesSubdomains: Subdomain-matching token was used to
-             enable the origin trial"/>
-</enum>
 
 <enum name="PageActionCTREvent">
   <int value="0" label="Shown"/>
@@ -464,6 +451,9 @@ chromium-metrics-reviews@google.com.
   <int value="20"
       label="kAllowByTrackingProtectionException: Allowed by explicit
              tracking protection content setting."/>
+  <int value="21"
+      label="kAllowBySandboxValue: Allowed by sandbox value
+             `allow-same-site-none-cookies`"/>
 </enum>
 
 <!-- LINT.IfChange(WebViewPageAttemptResult) -->

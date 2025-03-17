@@ -4,12 +4,12 @@
 
 package org.chromium.content.browser.input;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.HandwritingGestureResult;
 import org.chromium.blink.mojom.StylusWritingGestureData;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Executor;
 import java.util.function.IntConsumer;
@@ -18,17 +18,18 @@ import java.util.function.IntConsumer;
  * Stores data needed to process and record the result of a gesture, reporting it to Android.
  * Also records how long it took to process the gesture.
  */
+@NullMarked
 class OngoingGesture {
     private static int sLastId;
 
     private final int mId;
-    private final @Nullable StylusWritingGestureData mGestureData;
+    private final StylusWritingGestureData mGestureData;
     private final @Nullable Executor mExecutor;
     private final @Nullable IntConsumer mConsumer;
     private final long mCreationTimestamp;
 
     OngoingGesture(
-            @Nullable StylusWritingGestureData gestureData,
+            StylusWritingGestureData gestureData,
             @Nullable Executor executor,
             @Nullable IntConsumer consumer) {
         ThreadUtils.assertOnUiThread();
@@ -63,7 +64,6 @@ class OngoingGesture {
         return mId;
     }
 
-    @Nullable
     StylusWritingGestureData getGestureData() {
         return mGestureData;
     }

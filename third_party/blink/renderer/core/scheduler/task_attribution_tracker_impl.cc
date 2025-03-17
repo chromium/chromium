@@ -80,7 +80,7 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
     TaskAttributionInfo* task_state,
     TaskScopeType type) {
   return CreateTaskScope(script_state, task_state, type,
-                         /*abort_source=*/nullptr, /*priority_source=*/nullptr);
+                         /*continuation_context=*/nullptr);
 }
 
 TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
@@ -91,15 +91,14 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
       next_task_id_, soft_navigation_context);
   return CreateTaskScope(script_state, task_state,
                          TaskScopeType::kSoftNavigation,
-                         /*abort_source=*/nullptr, /*priority_source=*/nullptr);
+                         /*continuation_context=*/nullptr);
 }
 
 TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
     ScriptState* script_state,
     TaskAttributionInfo* task_state,
     TaskScopeType type,
-    AbortSignal* abort_source,
-    DOMTaskSignal* priority_source) {
+    SchedulerTaskContext* continuation_context) {
   CHECK(script_state);
   CHECK_EQ(script_state->GetIsolate(), isolate_);
 
@@ -109,9 +108,9 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
       previous_task_state ? previous_task_state->WrappedState() : nullptr;
 
   WrappableTaskState* running_task_state = nullptr;
-  if (abort_source || priority_source) {
+  if (continuation_context) {
     running_task_state = MakeGarbageCollected<WebSchedulingTaskState>(
-        task_state, abort_source, priority_source);
+        task_state, continuation_context);
   } else {
     // If there's no scheduling state to propagate, we can just propagate the
     // same object.

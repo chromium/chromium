@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "best_features_cell.h",
+    "best_features_cell.mm",
+    "best_features_delegate.h",
+    "best_features_item.h",
+    "best_features_item.mm",
+    "best_features_screen_consumer.h",
+    "best_features_view_controller.h",
+    "best_features_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}

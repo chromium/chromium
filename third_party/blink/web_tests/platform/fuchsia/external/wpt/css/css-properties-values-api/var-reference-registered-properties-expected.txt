@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Invalid values for registered properties are serialized as the empty string
+  assert_equals: expected "" but got "0px"
+Harness: the test ran to completion.
+

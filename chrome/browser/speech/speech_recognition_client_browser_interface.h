@@ -44,14 +44,12 @@ class SpeechRecognitionClientBrowserInterface
       mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
           pending_remote) override;
   void REMOVED_1() override;
-
-  // BabelOrca feature methods are chromeos only.
 #if BUILDFLAG(IS_CHROMEOS)
-  void BindBabelOrcaSpeechRecognitionBrowserObserver(
+  void REMOVED_2(
       mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
           pending_remote) override;
-  void ChangeBabelOrcaSpeechRecognitionAvailability(bool enabled);
 #endif
+
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
   void OnSodaProgress(speech::LanguageCode language_code,
@@ -66,19 +64,7 @@ class SpeechRecognitionClientBrowserInterface
   // Live Caption Event handling
   void OnLiveCaptionAvailabilityChanged();
   void OnLiveCaptionLanguageChanged();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnBabelOrcaLanguageChanged();
-  void OnBabelOrcaAvailabilityChanged(bool enabled);
-  void NotifyBabelOrcaCaptionObservers(bool enabled);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void NotifyLiveCaptionObservers(bool enabled);
-
-  bool waiting_on_live_caption_ = false;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool waiting_on_babel_orca_ = false;
-  bool babel_orca_enabled_ = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   mojo::RemoteSet<media::mojom::SpeechRecognitionBrowserObserver>
       live_caption_availibility_observers_;

@@ -4,12 +4,14 @@
 
 package org.chromium.components.browser_ui.widget.impression;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker.Listener;
 
 /**
  * Filters {@link ImpressionTracker} impressions to only forward the first impression.
  * This can be useful to record whether a given view has ever been seen.
  */
+@NullMarked
 public class OneShotImpressionListener implements Listener {
     private final Listener mListener;
     private boolean mTriggered;

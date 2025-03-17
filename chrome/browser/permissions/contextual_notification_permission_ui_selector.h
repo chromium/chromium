@@ -37,7 +37,8 @@ class ContextualNotificationPermissionUiSelector
   ~ContextualNotificationPermissionUiSelector() override;
 
   // NotificationPermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
+  void SelectUiToUse(content::WebContents* web_contents,
+                     permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override;
 
   void Cancel() override;

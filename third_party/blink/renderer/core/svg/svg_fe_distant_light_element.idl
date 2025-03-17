@@ -28,6 +28,6 @@
 [
     Exposed=Window
 ] interface SVGFEDistantLightElement : SVGElement {
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber azimuth;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber elevation;
+    readonly attribute SVGAnimatedNumber azimuth;
+    readonly attribute SVGAnimatedNumber elevation;
 };

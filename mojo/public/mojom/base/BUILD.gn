@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -58,12 +57,6 @@ mojom_component("base") {
   }
 
   webui_module_path = "chrome://resources/mojo/mojo/public/mojom/base"
-
-  # Still widely used by Closure Compiler targets on ChromeOS, so generate
-  # WebUI bindings in JavaScript for that platform.
-  if (is_chromeos_ash) {
-    generate_webui_js_bindings = true
-  }
 
   # Always generate legacy bindings since this target is used by Blink, fuzzers,
   # etc and not just by WebUI.
@@ -654,15 +647,25 @@ mojom_component("base") {
       ]
     },
   ]
+
+  ts_typemaps = [
+    {
+      source = "time_converters.ts"
+      types = [
+        {
+          converter = "JsTimeConverter"
+          mojom = "mojo_base.mojom.JSTime"
+          ts = "Date"
+        },
+      ]
+    },
+  ]
 }
 
 mojom_component("protobuf_support") {
   sources = [ "proto_wrapper.mojom" ]
   generate_java = true
   webui_module_path = "chrome://resources/mojo/mojo/public/mojom/base"
-  if (is_chromeos_ash) {
-    generate_webui_js_bindings = true
-  }
   generate_legacy_js_bindings = true
   output_prefix = "mojo_base_mojom_protobuf_support"
   macro_prefix = "MOJO_BASE_MOJOM_PROTOBUF_SUPPORT"

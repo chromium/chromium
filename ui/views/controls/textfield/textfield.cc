@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -14,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -345,11 +345,11 @@ void Textfield::SetTextInputFlags(int flags) {
   OnPropertyChanged(&text_input_flags_, kPropertyEffectsNone);
 }
 
-const std::u16string& Textfield::GetText() const {
+std::u16string_view Textfield::GetText() const {
   return model_->text();
 }
 
-void Textfield::SetText(const std::u16string& new_text) {
+void Textfield::SetText(std::u16string_view new_text) {
   SetTextWithoutCaretBoundsChangeNotification(new_text, new_text.length());
   // The above call already notified for the text change; fire notifications
   // etc. for the cursor changes as well.
@@ -357,7 +357,7 @@ void Textfield::SetText(const std::u16string& new_text) {
 }
 
 void Textfield::SetTextWithoutCaretBoundsChangeNotification(
-    const std::u16string& text,
+    std::u16string_view text,
     size_t cursor_position) {
   model_->SetText(text, cursor_position);
   UpdateAfterChange(TextChangeType::kInternal, false, false);
@@ -386,7 +386,7 @@ void Textfield::InsertOrReplaceText(const std::u16string& new_text) {
   UpdateAfterChange(TextChangeType::kUserTriggered, true);
 }
 
-std::u16string Textfield::GetSelectedText() const {
+std::u16string_view Textfield::GetSelectedText() const {
   return model_->GetSelectedText();
 }
 
@@ -511,16 +511,16 @@ void Textfield::SetMinimumWidthInChars(int minimum_width) {
   minimum_width_in_chars_ = minimum_width;
 }
 
-const std::u16string& Textfield::GetPlaceholderText() const {
+std::u16string_view Textfield::GetPlaceholderText() const {
   return placeholder_text_;
 }
 
-void Textfield::SetPlaceholderText(const std::u16string& text) {
+void Textfield::SetPlaceholderText(std::u16string_view text) {
   if (placeholder_text_ == text) {
     return;
   }
 
-  placeholder_text_ = text;
+  placeholder_text_ = std::u16string(text);
   GetViewAccessibility().SetPlaceholder(base::UTF16ToUTF8(text));
   OnPropertyChanged(&placeholder_text_, kPropertyEffectsPaint);
 }
@@ -702,7 +702,8 @@ void Textfield::SetBorder(std::unique_ptr<Border> b) {
 }
 
 ui::Cursor Textfield::GetCursor(const ui::MouseEvent& event) {
-  bool platform_arrow = PlatformStyle::kTextfieldUsesDragCursorWhenDraggable;
+  constexpr bool platform_arrow =
+      PlatformStyle::kTextfieldUsesDragCursorWhenDraggable;
   bool in_selection = GetRenderText()->IsPointInSelection(event.location());
   bool drag_event = event.type() == ui::EventType::kMouseDragged;
   bool text_cursor =
@@ -790,18 +791,18 @@ bool Textfield::OnKeyPressed(const ui::KeyEvent& event) {
   }
 
 #if BUILDFLAG(IS_LINUX)
-  auto* linux_ui = ui::LinuxUi::instance();
-  std::vector<ui::TextEditCommandAuraLinux> commands;
-  if (!handled && linux_ui &&
-      linux_ui->GetTextEditCommandsForEvent(event, ui::TEXT_INPUT_FLAG_NONE,
-                                            &commands)) {
-    for (const auto& command : commands) {
-      if (IsTextEditCommandEnabled(command.command())) {
-        ExecuteTextEditCommand(command.command());
-        handled = true;
+  if (!handled) {
+    if (auto* linux_ui = ui::LinuxUi::instance()) {
+      const auto command =
+          linux_ui->GetTextEditCommandForEvent(event, ui::TEXT_INPUT_FLAG_NONE);
+      if (command != ui::TextEditCommand::INVALID_COMMAND) {
+        if (IsTextEditCommandEnabled(command)) {
+          ExecuteTextEditCommand(command);
+          return true;
+        }
+        return false;
       }
     }
-    return handled;
   }
 #endif
 
@@ -976,14 +977,9 @@ void Textfield::AboutToRequestFocusFromTabTraversal(bool reverse) {
 bool Textfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
 #if BUILDFLAG(IS_LINUX)
   // Skip any accelerator handling that conflicts with custom keybindings.
-  auto* linux_ui = ui::LinuxUi::instance();
-  std::vector<ui::TextEditCommandAuraLinux> commands;
-  if (linux_ui && linux_ui->GetTextEditCommandsForEvent(
-                      event, ui::TEXT_INPUT_FLAG_NONE, &commands)) {
-    const auto is_enabled = [this](const auto& command) {
-      return IsTextEditCommandEnabled(command.command());
-    };
-    if (base::ranges::any_of(commands, is_enabled)) {
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    if (IsTextEditCommandEnabled(linux_ui->GetTextEditCommandForEvent(
+            event, ui::TEXT_INPUT_FLAG_NONE))) {
       return true;
     }
   }
@@ -1270,7 +1266,7 @@ void Textfield::ShowContextMenuForViewImpl(
 void Textfield::WriteDragDataForView(View* sender,
                                      const gfx::Point& press_pt,
                                      OSExchangeData* data) {
-  const std::u16string& selected_text(GetSelectedText());
+  const std::u16string_view selected_text = GetSelectedText();
   data->SetString(selected_text);
   Label label(selected_text, {GetFontList()});
   label.SetBackgroundColor(GetBackgroundColor());
@@ -1684,8 +1680,8 @@ void Textfield::ClearCompositionText() {
 void Textfield::InsertText(const std::u16string& new_text,
                            InsertTextCursorBehavior cursor_behavior) {
   std::u16string filtered_new_text;
-  base::ranges::copy_if(new_text, std::back_inserter(filtered_new_text),
-                        IsValidCharToInsert);
+  std::ranges::copy_if(new_text, std::back_inserter(filtered_new_text),
+                       IsValidCharToInsert);
 
   if (GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE ||
       filtered_new_text.empty()) {
@@ -1779,7 +1775,7 @@ std::optional<gfx::Rect> Textfield::GetProximateCharacterBounds(
 }
 
 std::optional<size_t> Textfield::GetProximateCharacterIndexFromPoint(
-    const gfx::Point& point,
+    const gfx::Point& screen_point_in_dips,
     ui::IndexFromPointFlags flags) const {
   NOTIMPLEMENTED_LOG_ONCE();
   return std::nullopt;
@@ -2140,7 +2136,7 @@ void Textfield::SetActiveCompositionForAccessibility(
 // Textfield, views::ViewObserver overrides:
 void Textfield::OnViewFocused(views::View* observed_view) {
   observed_view->RemoveObserver(this);
-  observed_view->NotifyAccessibilityEvent(
+  observed_view->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kTextSelectionChanged, true);
 }
 
@@ -2728,9 +2724,9 @@ void Textfield::UpdateDefaultBorder() {
   if (!use_default_border_) {
     return;
   }
+
   auto border = std::make_unique<views::FocusableBorder>();
   const LayoutProvider* provider = LayoutProvider::Get();
-  border->SetColorId(ui::kColorTextfieldOutline);
   border->SetInsets(gfx::Insets::TLBR(
       extra_insets_.top() +
           provider->GetDistanceMetric(DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
@@ -2740,11 +2736,16 @@ void Textfield::UpdateDefaultBorder() {
           provider->GetDistanceMetric(DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
       extra_insets_.right() + provider->GetDistanceMetric(
                                   DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING)));
+
+  auto border_color_id = ui::kColorTextfieldOutline;
   if (invalid_) {
-    border->SetColorId(ui::kColorTextfieldOutlineInvalid);
+    border_color_id = ui::kColorTextfieldOutlineInvalid;
   } else if (!GetEnabled() || GetReadOnly()) {
-    border->SetColorId(ui::kColorTextfieldOutlineDisabled);
+    border_color_id = ui::kColorTextfieldOutlineDisabled;
   }
+
+  border->SetColor(border_color_id);
+
   border->SetCornerRadius(GetCornerRadius());
   View::SetBorder(std::move(border));
 }
@@ -2784,7 +2785,7 @@ void Textfield::UpdateAfterChange(
     std::optional<bool> notify_caret_bounds_changed) {
   if (text_change_type != TextChangeType::kNone) {
     if ((text_change_type == TextChangeType::kUserTriggered) && controller_) {
-      controller_->ContentsChanged(this, GetText());
+      controller_->ContentsChanged(this, std::u16string(GetText()));
     }
     UpdateAccessibleValue();
   }
@@ -2932,7 +2933,8 @@ void Textfield::OnCaretBoundsChanged() {
       }
     } else {
       UpdateAccessibleTextSelection();
-      NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+      NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kTextSelectionChanged, true);
     }
   }
 
@@ -3357,7 +3359,7 @@ void Textfield::UpdateAccessibleDefaultActionVerb() {
 
 BEGIN_METADATA(Textfield)
 ADD_PROPERTY_METADATA(bool, ReadOnly)
-ADD_PROPERTY_METADATA(std::u16string, Text)
+ADD_PROPERTY_METADATA(std::u16string_view, Text)
 ADD_PROPERTY_METADATA(ui::TextInputType, TextInputType)
 ADD_PROPERTY_METADATA(int, TextInputFlags)
 ADD_PROPERTY_METADATA(SkColor, TextColor, ui::metadata::SkColorConverter)
@@ -3370,7 +3372,7 @@ ADD_PROPERTY_METADATA(SkColor,
                       SelectionBackgroundColor,
                       ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, CursorEnabled)
-ADD_PROPERTY_METADATA(std::u16string, PlaceholderText)
+ADD_PROPERTY_METADATA(std::u16string_view, PlaceholderText)
 ADD_PROPERTY_METADATA(bool, Invalid)
 ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(gfx::Range, SelectedRange)

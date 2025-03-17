@@ -10,10 +10,13 @@ import android.widget.EditText;
 
 import androidx.appcompat.widget.AppCompatEditText;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This custom {@link EditText} does not allow the user to scroll the text vertically.  This is
  * can be useful when the EditText is put into a layout where it is smaller than it's normal height.
  */
+@NullMarked
 public class VerticallyFixedEditText extends AppCompatEditText {
     public VerticallyFixedEditText(Context context, AttributeSet attrs) {
         super(context, attrs);

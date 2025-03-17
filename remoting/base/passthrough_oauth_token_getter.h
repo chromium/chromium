@@ -24,6 +24,7 @@ class PassthroughOAuthTokenGetter : public OAuthTokenGetter {
   // OAuthTokenGetter overrides.
   void CallWithToken(OAuthTokenGetter::TokenCallback on_access_token) override;
   void InvalidateCache() override;
+  base::WeakPtr<OAuthTokenGetter> GetWeakPtr() override;
 
   void set_username(const std::string& username) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -34,8 +35,6 @@ class PassthroughOAuthTokenGetter : public OAuthTokenGetter {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     token_info_.set_access_token(access_token);
   }
-
-  base::WeakPtr<PassthroughOAuthTokenGetter> GetWeakPtr();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

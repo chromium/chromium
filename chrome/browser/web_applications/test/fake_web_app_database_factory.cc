@@ -95,13 +95,13 @@ std::set<webapps::AppId> FakeWebAppDatabaseFactory::ReadAllAppIds() {
 }
 
 void FakeWebAppDatabaseFactory::WriteProtos(
-    const std::vector<std::unique_ptr<WebAppProto>>& protos) {
+    const std::vector<std::unique_ptr<proto::WebApp>>& protos) {
   base::RunLoop run_loop;
 
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
       GetStore()->CreateWriteBatch();
 
-  for (const std::unique_ptr<WebAppProto>& proto : protos) {
+  for (const std::unique_ptr<proto::WebApp>& proto : protos) {
     GURL start_url(proto->sync_data().start_url());
     DCHECK(!start_url.is_empty());
     DCHECK(start_url.is_valid());
@@ -122,10 +122,10 @@ void FakeWebAppDatabaseFactory::WriteProtos(
 }
 
 void FakeWebAppDatabaseFactory::WriteRegistry(const Registry& registry) {
-  std::vector<std::unique_ptr<WebAppProto>> protos;
+  std::vector<std::unique_ptr<proto::WebApp>> protos;
   for (const Registry::value_type& kv : registry) {
     const WebApp* app = kv.second.get();
-    std::unique_ptr<WebAppProto> proto =
+    std::unique_ptr<proto::WebApp> proto =
         WebAppDatabase::CreateWebAppProto(*app);
     protos.push_back(std::move(proto));
   }

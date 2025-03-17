@@ -4,29 +4,29 @@
 
 #import "ios/net/protocol_handler_util.h"
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/memory/ptr_util.h"
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/task_environment.h"
+#import "base/memory/ptr_util.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/task_environment.h"
 #import "net/base/apple/url_conversions.h"
-#include "net/base/elements_upload_data_stream.h"
-#include "net/base/upload_bytes_element_reader.h"
-#include "net/http/http_request_headers.h"
-#include "net/http/http_response_headers.h"
-#include "net/url_request/url_request.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_builder.h"
-#include "net/url_request/url_request_filter.h"
-#include "net/url_request/url_request_interceptor.h"
-#include "net/url_request/url_request_job.h"
-#include "net/url_request/url_request_test_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "net/base/elements_upload_data_stream.h"
+#import "net/base/upload_bytes_element_reader.h"
+#import "net/http/http_request_headers.h"
+#import "net/http/http_response_headers.h"
+#import "net/url_request/url_request.h"
+#import "net/url_request/url_request_context.h"
+#import "net/url_request/url_request_context_builder.h"
+#import "net/url_request/url_request_filter.h"
+#import "net/url_request/url_request_interceptor.h"
+#import "net/url_request/url_request_job.h"
+#import "net/url_request/url_request_test_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 namespace net {
 namespace {
@@ -79,8 +79,9 @@ class HeadersURLRequestJob : public URLRequestJob {
 
  protected:
   std::string GetContentTypeValue() const {
-    if (request()->url().path_piece() == "/badcontenttype")
+    if (request()->url().path_piece() == "/badcontenttype") {
       return "\xff";
+    }
     return kTextHtml;
   }
 };
@@ -153,8 +154,7 @@ TEST_F(ProtocolHandlerUtilTest, BadHttpContentType) {
   // Create a response from the request.
   @try {
     GetNSURLResponseForRequest(request.get());
-  }
-  @catch (id exception) {
+  } @catch (id exception) {
     FAIL() << "Exception while creating response";
   }
 }
@@ -181,10 +181,10 @@ TEST_F(ProtocolHandlerUtilTest, CopyHttpHeaders) {
   NSMutableURLRequest* in_request =
       [[NSMutableURLRequest alloc] initWithURL:NSURLWithGURL(url)];
   [in_request setAllHTTPHeaderFields:@{
-      @"Referer" : @"referrer",
-      @"User-Agent" : @"secret",
-      @"Accept" : @"money/cash",
-      @"Foo" : @"bar",
+    @"Referer" : @"referrer",
+    @"User-Agent" : @"secret",
+    @"Accept" : @"money/cash",
+    @"Foo" : @"bar",
   }];
   std::unique_ptr<URLRequest> out_request(
       request_context_->CreateRequest(url, DEFAULT_PRIORITY, nullptr));

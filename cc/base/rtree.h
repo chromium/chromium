@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_BASE_RTREE_H_
 #define CC_BASE_RTREE_H_
 
@@ -21,6 +16,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/clamped_math.h"
 #include "ui/gfx/geometry/rect.h"
@@ -136,14 +132,14 @@ class RTree {
   };
 
   template <typename ResultFunctor>
-  void SearchRecursive(const Node<T>* root,
+  void SearchRecursive(const Node<T>& node,
                        const gfx::Rect& query,
                        const ResultFunctor& result_handler) const;
 
   // The following two functions are slow fallback versions of SearchRecursive
   // and SearchRefsRecursive for when !has_valid_bounds().
   template <typename ResultFunctor>
-  void SearchRecursiveFallback(const Node<T>* root,
+  void SearchRecursiveFallback(const Node<T>& node,
                                const gfx::Rect& query,
                                const ResultFunctor& result_handler) const;
 
@@ -151,7 +147,7 @@ class RTree {
   Branch<T> BuildRecursive(std::vector<Branch<T>>* branches, uint16_t level);
   Node<T>* AllocateNodeAtLevel(uint16_t level);
 
-  void GetAllBoundsRecursive(const Node<T>* root,
+  void GetAllBoundsRecursive(const Node<T>& node,
                              std::map<T, gfx::Rect>* results) const;
 
   // This is the count of data elements (rather than total nodes in the tree)
@@ -296,7 +292,7 @@ auto RTree<T>::BuildRecursive(std::vector<Branch<T>>* branches, uint16_t level)
       right = std::max(right, bounds.right());
       bottom = std::max(bottom, bounds.bottom());
 
-      node->children[k] = (*branches)[current_branch];
+      UNSAFE_TODO(node->children[k]) = (*branches)[current_branch];
       ++node->num_children;
       ++current_branch;
     }
@@ -323,10 +319,11 @@ void RTree<T>::Search(const gfx::Rect& query,
   if (num_data_elements_ == 0) {
     return;
   }
+  CHECK(root_.subtree);
   if (!has_valid_bounds_) {
-    SearchRecursiveFallback(root_.subtree, query, result_handler);
+    SearchRecursiveFallback(*root_.subtree, query, result_handler);
   } else if (query.Intersects(root_.bounds)) {
-    SearchRecursive(root_.subtree, query, result_handler);
+    SearchRecursive(*root_.subtree, query, result_handler);
   }
 }
 
@@ -357,15 +354,17 @@ void RTree<T>::SearchRefs(const gfx::Rect& query,
 
 template <typename T>
 template <typename ResultFunctor>
-void RTree<T>::SearchRecursive(const Node<T>* node,
+void RTree<T>::SearchRecursive(const Node<T>& node,
                                const gfx::Rect& query,
                                const ResultFunctor& result_handler) const {
-  for (uint16_t i = 0; i < node->num_children; ++i) {
-    if (query.Intersects(node->children[i].bounds)) {
-      if (node->level == 0) {
-        result_handler(node->children[i].payload, node->children[i].bounds);
+  for (uint16_t i = 0; i < node.num_children; ++i) {
+    const auto& child = UNSAFE_TODO(node.children[i]);
+    if (query.Intersects(child.bounds)) {
+      if (node.level == 0) {
+        result_handler(child.payload, child.bounds);
       } else {
-        SearchRecursive(node->children[i].subtree, query, result_handler);
+        CHECK(child.subtree);
+        SearchRecursive(*child.subtree, query, result_handler);
       }
     }
   }
@@ -376,16 +375,18 @@ void RTree<T>::SearchRecursive(const Node<T>* node,
 template <typename T>
 template <typename ResultFunctor>
 void RTree<T>::SearchRecursiveFallback(
-    const Node<T>* node,
+    const Node<T>& node,
     const gfx::Rect& query,
     const ResultFunctor& result_handler) const {
-  for (uint16_t i = 0; i < node->num_children; ++i) {
-    if (node->level == 0) {
-      if (query.Intersects(node->children[i].bounds)) {
-        result_handler(node->children[i].payload, node->children[i].bounds);
+  for (uint16_t i = 0; i < node.num_children; ++i) {
+    const auto& child = UNSAFE_TODO(node.children[i]);
+    if (node.level == 0) {
+      if (query.Intersects(child.bounds)) {
+        result_handler(child.payload, child.bounds);
       }
     } else {
-      SearchRecursive(node->children[i].subtree, query, result_handler);
+      CHECK(child.subtree);
+      SearchRecursive(*child.subtree, query, result_handler);
     }
   }
 }
@@ -402,19 +403,22 @@ template <typename T>
 std::map<T, gfx::Rect> RTree<T>::GetAllBoundsForTracing() const {
   std::map<T, gfx::Rect> results;
   if (num_data_elements_ > 0) {
-    GetAllBoundsRecursive(root_.subtree, &results);
+    CHECK(root_.subtree);
+    GetAllBoundsRecursive(*root_.subtree, &results);
   }
   return results;
 }
 
 template <typename T>
-void RTree<T>::GetAllBoundsRecursive(const Node<T>* node,
+void RTree<T>::GetAllBoundsRecursive(const Node<T>& node,
                                      std::map<T, gfx::Rect>* results) const {
-  for (uint16_t i = 0; i < node->num_children; ++i) {
-    if (node->level == 0) {
-      (*results)[node->children[i].payload] = node->children[i].bounds;
+  for (uint16_t i = 0; i < node.num_children; ++i) {
+    const auto& child = UNSAFE_TODO(node.children[i]);
+    if (node.level == 0) {
+      (*results)[child.payload] = child.bounds;
     } else {
-      GetAllBoundsRecursive(node->children[i].subtree, results);
+      CHECK(child.subtree);
+      GetAllBoundsRecursive(*child.subtree, results);
     }
   }
 }

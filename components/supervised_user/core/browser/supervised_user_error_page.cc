@@ -14,6 +14,7 @@
 #include "components/grit/components_resources.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -53,13 +54,27 @@ int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent) {
   }
 }
 
+int GetInterstitialMessageID(FilteringBehaviorReason reason) {
+  if (supervised_user::IsBlockInterstitialV3Enabled()) {
+    // For the V3 interstitial, the filtering reason is included in the
+    // interstitial message.
+    switch (reason) {
+      case FilteringBehaviorReason::DEFAULT:
+        return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_BLOCK_ALL;
+      case FilteringBehaviorReason::ASYNC_CHECKER:
+        return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_SAFE_SITES;
+      case FilteringBehaviorReason::MANUAL:
+        return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_MANUAL;
+      default:
+        NOTREACHED();
+    }
+  }
+  return IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2;
+}
+
 std::string BuildErrorPageHtml(bool allow_access_requests,
-                               const std::string& profile_image_url,
-                               const std::string& profile_image_url2,
-                               const std::string& custodian,
-                               const std::string& custodian_email,
-                               const std::string& second_custodian,
-                               const std::string& second_custodian_email,
+                               std::optional<Custodian> custodian,
+                               std::optional<Custodian> second_custodian,
                                FilteringBehaviorReason reason,
                                const std::string& app_locale,
                                bool already_sent_remote_request,
@@ -68,43 +83,77 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
   strings.Set("blockPageTitle",
               l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_TITLE));
   strings.Set("allowAccessRequests", allow_access_requests);
-  strings.Set("avatarURL1x",
-              BuildAvatarImageUrl(profile_image_url, kAvatarSize1x));
-  strings.Set("avatarURL2x",
-              BuildAvatarImageUrl(profile_image_url, kAvatarSize2x));
-  strings.Set("secondAvatarURL1x",
-              BuildAvatarImageUrl(profile_image_url2, kAvatarSize1x));
-  strings.Set("secondAvatarURL2x",
-              BuildAvatarImageUrl(profile_image_url2, kAvatarSize2x));
-  strings.Set("custodianName", custodian);
-  strings.Set("custodianEmail", custodian_email);
-  strings.Set("secondCustodianName", second_custodian);
-  strings.Set("secondCustodianEmail", second_custodian_email);
+
+  if (custodian.has_value()) {
+    strings.Set("custodianName", custodian->GetName());
+    strings.Set("custodianEmail", custodian->GetEmailAddress());
+    strings.Set(
+        "avatarURL1x",
+        BuildAvatarImageUrl(custodian->GetProfileImageUrl(), kAvatarSize1x));
+    strings.Set(
+        "avatarURL2x",
+        BuildAvatarImageUrl(custodian->GetProfileImageUrl(), kAvatarSize2x));
+  } else {
+    // empty custodianName denotes no custodian, see
+    // components/supervised_user/core/browser/resources/supervised_user_block_interstitial_v2.js
+    strings.Set("custodianName", "");
+  }
+
+  if (second_custodian.has_value()) {
+    strings.Set("secondCustodianName", second_custodian->GetName());
+    strings.Set("secondCustodianEmail", second_custodian->GetEmailAddress());
+    strings.Set("secondAvatarURL1x",
+                BuildAvatarImageUrl(second_custodian->GetProfileImageUrl(),
+                                    kAvatarSize1x));
+    strings.Set("secondAvatarURL2x",
+                BuildAvatarImageUrl(second_custodian->GetProfileImageUrl(),
+                                    kAvatarSize2x));
+  } else {
+    // empty secondCustodianName denotes no second custodian, see
+    // components/supervised_user/core/browser/resources/supervised_user_block_interstitial_v2.js
+    strings.Set("secondCustodianName", "");
+  }
+
   strings.Set("alreadySentRemoteRequest", already_sent_remote_request);
   strings.Set("isMainFrame", is_main_frame);
+
   bool local_web_approvals_enabled =
-      supervised_user::IsLocalWebApprovalsEnabled();
+      (is_main_frame && supervised_user::IsLocalWebApprovalsEnabled()) ||
+      (!is_main_frame &&
+       supervised_user::IsLocalWebApprovalsEnabledForSubframes());
   strings.Set("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
 
-  std::string block_header;
-  std::string block_message;
+  std::string block_page_header;
+  std::string block_page_message;
   if (allow_access_requests) {
-    block_header =
+    block_page_header =
         l10n_util::GetStringUTF8(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER);
-    block_message =
-        l10n_util::GetStringUTF8(IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2);
+    block_page_message =
+        l10n_util::GetStringUTF8(GetInterstitialMessageID(reason));
   } else {
-    block_header = l10n_util::GetStringUTF8(
+    block_page_header = l10n_util::GetStringUTF8(
         IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED);
   }
-  strings.Set("blockPageHeader", block_header);
-  strings.Set("blockPageMessage", block_message);
-  strings.Set("blockReasonMessage", l10n_util::GetStringUTF8(GetBlockMessageID(
-                                        reason, second_custodian.empty())));
-  strings.Set("blockReasonHeader",
-              l10n_util::GetStringUTF8(IDS_SUPERVISED_USER_BLOCK_HEADER));
-  strings.Set("siteBlockHeader",
-              l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
+
+  strings.Set("blockPageHeader", block_page_header);
+  strings.Set("blockPageMessage", block_page_message);
+
+  if (!supervised_user::IsBlockInterstitialV3Enabled()) {
+    // For the V2 interstitial, the filtering reason is displayed in a
+    // separate UI component.
+    strings.Set("blockReasonMessage",
+                l10n_util::GetStringUTF8(GetBlockMessageID(
+                    reason, /*single_parent=*/!second_custodian.has_value())));
+    strings.Set("blockReasonHeader",
+                l10n_util::GetStringUTF8(IDS_SUPERVISED_USER_BLOCK_HEADER));
+    strings.Set("siteBlockHeader",
+                l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
+    strings.Set("showDetailsLink",
+                l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SHOW_DETAILS));
+    strings.Set("hideDetailsLink",
+                l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS));
+  }
+
   strings.Set(
       "remoteApprovalsButton",
       l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_ASK_IN_A_MESSAGE_BUTTON));
@@ -116,21 +165,18 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
   strings.Set("localApprovalsRemoteRequestSentButton",
               l10n_util::GetStringUTF8(
                   IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_INSTEAD_BUTTON));
-  strings.Set("showDetailsLink",
-              l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SHOW_DETAILS));
-  strings.Set("hideDetailsLink",
-              l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS));
+
   std::string request_sent_message;
   std::string request_failed_message;
   std::string request_sent_description;
   request_sent_message = l10n_util::GetStringUTF8(
       IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE);
   request_sent_description = l10n_util::GetStringUTF8(
-      second_custodian.empty()
+      !second_custodian.has_value()
           ? IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_SINGLE_PARENT
           : IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_MULTI_PARENT);
   request_failed_message = l10n_util::GetStringUTF8(
-      second_custodian.empty()
+      !second_custodian.has_value()
           ? IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT
           : IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT);
 
@@ -140,7 +186,9 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
   webui::SetLoadTimeDataDefaults(app_locale, &strings);
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V2_HTML);
+          supervised_user::IsBlockInterstitialV3Enabled()
+              ? IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V3_HTML
+              : IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V2_HTML);
   webui::AppendWebUiCssTextDefaults(&html);
   std::string error_html = webui::GetI18nTemplateHtml(html, strings);
   return error_html;

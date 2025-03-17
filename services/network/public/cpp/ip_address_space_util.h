@@ -123,6 +123,14 @@ mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
     CalculateResourceAddressSpace(const GURL& url,
                                   const net::IPEndPoint& endpoint);
 
+// Return the IP address of the host if the host is a private IP address
+// literal, otherwise returns std::nullopt.
+std::optional<net::IPAddress> COMPONENT_EXPORT(NETWORK_CPP)
+    ParsePrivateIpFromUrl(const GURL& url);
+
+// Return true if the host of the URL is a .local domain as per RFC6762.
+bool COMPONENT_EXPORT(NETWORK_CPP) IsRFC6762LocalDomain(const GURL& url);
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_IP_ADDRESS_SPACE_UTIL_H_

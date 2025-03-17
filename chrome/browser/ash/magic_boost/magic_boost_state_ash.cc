@@ -9,13 +9,15 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/mahi/mahi_utils.h"
 #include "base/functional/bind.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ash/mahi/mahi_availability.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/crosapi/mojom/editor_panel.mojom.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -52,6 +54,8 @@ bool MagicBoostStateAsh::IsMagicBoostAvailable() {
 bool MagicBoostStateAsh::CanShowNoticeBannerForHMR() {
   PrefService* pref = pref_change_registrar_->prefs();
 
+  // TODO(b:397521071): now the kHmrEnabled is not managed, this logic needs to
+  // be revisited.
   // Only show the notice when:
   //  1. HMR is forced ON by the admin, and
   //  2. The consent status is currently disabled.
@@ -82,20 +86,29 @@ void MagicBoostStateAsh::ShouldIncludeOrcaInOptIn(
     base::OnceCallback<void(bool)> callback) {
   GetEditorPanelManager()->GetEditorPanelContext(base::BindOnce(
       [](base::OnceCallback<void(bool)> callback,
-         crosapi::mojom::EditorPanelContextPtr panel_context) {
+         const chromeos::editor_menu::EditorContext& editor_context) {
         // If the mode is not `kHardBlocked` and consent status is not set, it
         // means that we should include Orca in this opt-in flow.
         bool should_include_orca =
-            panel_context->editor_panel_mode !=
-                crosapi::mojom::EditorPanelMode::kHardBlocked &&
-            !panel_context->consent_status_settled;
+            editor_context.mode !=
+                chromeos::editor_menu::EditorMode::kHardBlocked &&
+            !editor_context.consent_status_settled;
         std::move(callback).Run(should_include_orca);
       },
       std::move(callback)));
 }
 
+bool MagicBoostStateAsh::ShouldIncludeOrcaInOptInSync() {
+  return GetEditorPanelManager()->ShouldOptInEditor();
+}
+
 void MagicBoostStateAsh::DisableOrcaFeature() {
   GetEditorPanelManager()->OnMagicBoostPromoCardDeclined();
+}
+
+void MagicBoostStateAsh::DisableLobsterSettings() {
+  pref_change_registrar_->prefs()->SetBoolean(ash::prefs::kLobsterEnabled,
+                                              false);
 }
 
 void MagicBoostStateAsh::EnableOrcaFeature() {
@@ -137,6 +150,10 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
       base::BindRepeating(&MagicBoostStateAsh::OnHMREnabledUpdated,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
+      ash::prefs::kHmrManagedSettings,
+      base::BindRepeating(&MagicBoostStateAsh::OnHMREnabledUpdated,
+                          base::Unretained(this)));
+  pref_change_registrar_->Add(
       ash::prefs::kHMRConsentStatus,
       base::BindRepeating(&MagicBoostStateAsh::OnHMRConsentStatusUpdated,
                           base::Unretained(this)));
@@ -171,8 +188,13 @@ void MagicBoostStateAsh::OnMagicBoostEnabledUpdated() {
 }
 
 void MagicBoostStateAsh::OnHMREnabledUpdated() {
+  // Looks up both the enterprise policy controlled pref and the user controlled
+  // pref.
+  PrefService* prefs = pref_change_registrar_->prefs();
   bool enabled =
-      pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kHmrEnabled);
+      prefs->GetInteger(ash::prefs::kHmrManagedSettings) !=
+          static_cast<int>(mahi_utils::HmrEnterprisePolicy::kDisallowed) &&
+      prefs->GetBoolean(ash::prefs::kHmrEnabled);
 
   UpdateHMREnabled(enabled);
 

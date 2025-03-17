@@ -1,34 +1,106 @@
-# Preventing OOB through Unsafe Buffers errors (aka Spanification)
+# The Unsafe Buffers Clang plugin.
 
-Out-of-bounds (OOB) security bugs commonly happen through C-style pointers which
-have no bounds information associated with them. We can prevent such
-bugs by always using C++ containers. Furthermore, the Clang compiler can
+Our compiler contains a [plugin](../tools/clang/plugins/UnsafeBuffersPlugin.cpp)
+which reports places in the code where unsafe buffer operations are present.
+
+[TOC]
+
+
+## Preventing OOB by removing Unsafe Buffers operations.
+
+Out-of-bounds (OOB) security bugs commonly happen through C-style pointers
+which have no bounds information associated with them. We can prevent such
+bugs by always using C++ containers. Furthermore, the plugin will warn
 warn about unsafe pointer usage that should be converted to containers.
 When an unsafe usage is detected, Clang prints a warning similar to
 ```
 error: unsafe buffer access [-Werror,-Wunsafe-buffer-usage]
 ```
-and directs developers to this file for more information.
+and directs developers to this file for more information. Several common
+[Techniques](#container-based-ecosystem) for fixing these issues are presented
+later in this document.
 
 Clang documentation includes a guide to working with unsafe-buffer-usage
 warnings here: https://clang.llvm.org/docs/SafeBuffers.html
 
-[TOC]
+## Preventing OOB by removing unsafe libc calls.
 
-## Suppressions
+OOB bugs also commonly happen through C-style library calls such as
+memcpy() and memset() where the programmer is responsible for specifying
+an (unchecked) length. In order to encourage safer alternatives, the
+plugin can warn about unsafe calls which should be converted to safer
+C++ alternatives. When an unsafe libc call is detected, Clang prints
+a warning similar to
+```
+error: function 'memcpy' is unsafe [-Werror,-Wunsafe-buffer-usage-in-libc-call]
+```
+These warnings are not yet enabled by default for chromium builds.
+Suppressions are being incrementally added prior to enabling these
+warnings.
 
-Our [compiler](../tools/clang/plugins/UnsafeBuffersPlugin.cpp) enables
-the `-Wunsafe-buffer-usage` warning on all files by default. Because the
-Chromium codebase is not yet compliant with these warnings, there are
-mechanisms to opt out code on a directory, file, or per-occurence basis.
+## Unsafe buffer warning suppressions
 
-Entire directories are opted out of unsafe pointer usage warnings through
+Because the Chromium codebase is not yet compliant with these warnings,
+there are mechanisms to opt out code on a directory, file, or per-occurence
+basis.
+
+By default, all files are checked for unsafe-buffer-usage.
+
+### Opting out entire directories
+
+Entire directories are opted out of unsafe buffer usage warnings through
 the [`//build/config/unsafe_buffers_paths.txt`](../build/config/unsafe_buffers_paths.txt)
 file. As work progresses, directories will be removed from this list, and
 non-compliant files marked on a per-file basis as below. Early results
 indicate that often 85%+ of files in a directory already happen to be
 compliant, so file-by-file suppression allows this code to be subject
 to enforcement.
+
+This mechanism opts directories out of all warning categories (unsafe
+buffers and unsafe libc calls).
+
+#### Syntax of Unsafe Buffer Paths file
+
+Note: Paths should be written as relative to the root of the source tree with
+unix-style path separators. Directory prefixes should end with `/`, such
+as `base/`.
+
+Empty lines are ignored.
+
+The `#` character introduces a comment until the end of the line.
+
+Lines starting with `.` declare which checks are to be enforced, as
+a comma-separated list of values. Currently allowed values are `buffers`
+and `libc`.
+
+All other lines specify which paths are to be included/excluded.
+
+Lines that begin with `-` are immediately followed by path prefixes that
+will *not* be checked for unsafe-buffer-usage. They are known to do unsafe
+things and should be changed to use constructs like base::span or containers
+like base::HeapArray and std::vector instead. See https://crbug.com/40285824
+
+Lines that begin with `+` are immediately followed by path prefixes that will
+be checked for unsafe-buffer-usage. These have no such usage (or all such
+usage is annotated), and are protected against new unsafe pointer behaviour
+by the compiler. Generally, `+` lines are used to enable checks for
+sub-directories of a path that has previously disabled checks (with a
+`-` line).
+
+If a file matches both a `-` and `+` line, the longest matching prefix takes
+precedence.
+
+#### Removing directories from Unsafe Buffers Paths file
+
+The recommended process for removing a `-dir/` line from this file is:
+
+1. Remove the `-dir/` line from this paths file. Possibly add some subdirectories
+now needed to reduce scope, like `-dir/sub_dir/`.
+
+2. Add `#pragma allow_unsafe_buffers` to every file in the directory that now
+has a compilation error (see the next section).
+
+### Opting out individual files
 
 Individual files are opted out of unsafe pointer usage warnings though
 the use of the following snippet, which is to be placed immediately
@@ -39,6 +111,35 @@ following the copyright header in a source file.
 #pragma allow_unsafe_buffers
 #endif
 ```
+
+The above mechanism also suppress unsafe libc call warnings in addition
+to the unsafe buffer warnings.
+
+To prevent back-sliding on files which have been made safe with respect
+to unsafe buffers, there is now a per-file pragma which suppresses the
+libc warnings while still enforcing the unsafe buffer warnings.
+
+```
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/ABC): Remove libc calls to fix these warnings.
+#pragma allow_unsafe_libc_calls
+#endif
+```
+
+An initial set of files containing allow\_unsafe\_libc\_calls has been
+uploaded; please keep these in place until the pending libc enforcement
+is enabled for Chromium.
+
+#### Removing pragmas from individual files.
+
+The recommended process for removing pragmas from individual files is:
+
+1. 1. Remove the pragma from the file.
+
+2. Use the compiler warnings now generated to identify the individual
+expressions to suppress (see the next section).
+
+### Opting out individual expressions
 
 Individual expressions or blocks of code are opted out by using the
 `UNSAFE_BUFFERS()` macro as defined in [`//base/compiler_specific.h`[(../base/compiler_specific.h)
@@ -55,6 +156,14 @@ using the `UNSAFE_TODO()` macro. This provides the same functionality as
 the `UNSAFE_BUFFERS()` macro, but allows easier searching for code in need
 of revision. Add TODO() comment, along the lines of
 `// TODO(crbug.com/xxxxxx): resolve safety issues`.
+
+This mechanism opts expressions out of all warning categories (unsafe
+buffers and unsafe libc calls).
+
+#### Removing UNSAFE_TODO() from individual expressions
+
+We seek to convert code to use owning containers like HeapArray and vector,
+as explained in the next section.
 
 ## Container-based ecosystem
 
@@ -159,9 +268,11 @@ For arrays where the size is determined by the compiler (e.g.
 should be used along with the `auto` keyword:
 `auto arr = std::to_array<int>({1, 3, 5});`
 
-## Avoid reinterpret_cast
+### Avoid reinterpret_cast
 
-### Writing to a byte span
+Casts to bytes are common and can be handled as follows.
+
+#### Writing to a byte span
 
 A common idiom in older code is to write into a byte array by casting
 the array into a pointer to a larger type (such as `uint32_t` or `float`)
@@ -226,7 +337,7 @@ void write_floats(base::span<uint8_t> out, std::vector<const float> floats) {
 }
 ```
 
-### Reading from a byte span
+#### Reading from a byte span
 
 Instead of turning a `span<const uint8_t>` into a pointer of a larger type,
 which can cause Undefined Behaviour, read values out of the byte span and
@@ -458,7 +569,7 @@ Use a range, with `span()` providing a view of a subset of the range:
 auto it = std::ranges::find(base::span(vec).subspan(offset), 20);
 ```
 
-# Functions with array pointer parameters
+### Functions with array pointer parameters
 
 Functions that receive a pointer argument into an array may read
 or write out of bounds of that array if subsequent manual size
@@ -480,7 +591,7 @@ access. For instance, replace `memcpy()`, `std::copy()` and
 `std::ranges::copy()` with `base::span::copy_from()`. And
 replace `memset()` with `std::ranges::fill()`.
 
-# Aligned memory
+### Aligned memory
 
 An aligned heap allocation can be constructed into a `base::HeapArray` through
 the `base::AlignedUninit<T>(size, alignment)` function in
@@ -508,3 +619,4 @@ auto [a, s] = base::AlignedUninitCharArray<float>(size, alignment);
 base::AlignedHeapArray<char> array = std::move(a);
 base::span<float> span = s;
 ```
+

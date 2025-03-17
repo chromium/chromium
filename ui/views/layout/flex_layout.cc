@@ -19,7 +19,6 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/class_property.h"
 #include "ui/events/event_target.h"
 #include "ui/events/event_target_iterator.h"
@@ -893,7 +892,7 @@ void FlexLayout::AllocateFlexItem(const NormalizedSizeBounds& bounds,
     // order. Zero-preferred-size views are sorted directly onto the list of
     // expandable views, because they're already at their preferred size.
     ChildIndices view_indices;
-    base::ranges::copy_if(
+    std::ranges::copy_if(
         MaybeReverse(flex_elem.second, flex_allocation_order()),
         std::back_inserter(view_indices),
         [skip_zero_preferred_size_view, &data](size_t child_index) {
@@ -981,12 +980,12 @@ void FlexLayout::FilterZeroSizeChildreIfNeeded(
   ChildIndices zero_size_children;
   ChildViewSpacing temp_spacing(child_spacing);
   const int old_spacing = temp_spacing.GetTotalSpace();
-  base::ranges::copy_if(child_list, std::back_inserter(zero_size_children),
-                        [&child_spacing, &data](auto index) {
-                          return !child_spacing.HasViewIndex(index) &&
-                                 data.child_data[index].preferred_size.main() ==
-                                     0;
-                        });
+  std::ranges::copy_if(child_list, std::back_inserter(zero_size_children),
+                       [&child_spacing, &data](auto index) {
+                         return !child_spacing.HasViewIndex(index) &&
+                                data.child_data[index].preferred_size.main() ==
+                                    0;
+                       });
 
   if (zero_size_children.empty()) {
     return;

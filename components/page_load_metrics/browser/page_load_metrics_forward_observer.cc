@@ -307,12 +307,10 @@ void PageLoadMetricsForwardObserver::OnFeaturesUsageObserved(
   parent_observer_->OnFeaturesUsageObserved(rfh, features);
 }
 
-// SetUpSharedMemoryForSmoothness is called only for the outermost page.
-void PageLoadMetricsForwardObserver::SetUpSharedMemoryForSmoothness(
-    const base::ReadOnlySharedMemoryRegion& shared_memory) {
-  // See also MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness and
-  // the relevant TODO. Currently, information from OOPIFs and FencedFrames are
-  // not handled.
+// SetUpSharedMemoryForUkms is called only for the outermost page.
+void PageLoadMetricsForwardObserver::SetUpSharedMemoryForUkms(
+    const base::ReadOnlySharedMemoryRegion& smoothness_memory,
+    const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) {
   // TODO(crbug.com/40895492): Investigate whether this should truly be
   // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
   // they are not all necessarily hit.

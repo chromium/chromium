@@ -360,21 +360,6 @@ TEST_F(AutofillSuggestionControllerTest, HidingClearsPreview) {
   client().popup_controller(manager()).DoHide();
 }
 
-TEST_F(AutofillSuggestionControllerTest, DontHideWhenWaitingForData) {
-  client().popup_controller(manager()).PinView();
-  EXPECT_CALL(*client().popup_view(), Hide).Times(0);
-
-  // Hide() will not work for stale data or when focusing native UI.
-  client().popup_controller(manager()).DoHide(
-      SuggestionHidingReason::kStaleData);
-  client().popup_controller(manager()).DoHide(
-      SuggestionHidingReason::kEndEditing);
-
-  // Check the expectations now since TearDown will perform a successful hide.
-  Mock::VerifyAndClearExpectations(&manager().external_delegate());
-  Mock::VerifyAndClearExpectations(client().popup_view());
-}
-
 TEST_F(AutofillSuggestionControllerTest, ShouldReportHidingPopupReason) {
   base::HistogramTester histogram_tester;
   ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
@@ -420,7 +405,7 @@ TEST_F(AutofillSuggestionControllerTest,
   ShowSuggestions(manager(), {SuggestionType::kAutocompleteEntry});
   EXPECT_CALL(client().popup_controller(manager()), Hide).Times(0);
   manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeTextFieldDidChange, FormGlobalId(),
+      &AutofillManager::Observer::OnBeforeTextFieldValueChanged, FormGlobalId(),
       FieldGlobalId());
   Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
 }

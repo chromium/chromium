@@ -32,12 +32,12 @@ class ShortcutSubManager : public OsIntegrationSubManager {
   ShortcutSubManager(Profile& profile, WebAppProvider& provider);
   ~ShortcutSubManager() override;
   void Configure(const webapps::AppId& app_id,
-                 proto::WebAppOsIntegrationState& desired_state,
+                 proto::os_state::WebAppOsIntegration& desired_state,
                  base::OnceClosure configure_done) override;
   void Execute(const webapps::AppId& app_id,
                const std::optional<SynchronizeOsOptions>& synchronize_options,
-               const proto::WebAppOsIntegrationState& desired_state,
-               const proto::WebAppOsIntegrationState& current_state,
+               const proto::os_state::WebAppOsIntegration& desired_state,
+               const proto::os_state::WebAppOsIntegration& current_state,
                base::OnceClosure callback) override;
   void ForceUnregister(const webapps::AppId& app_id,
                        base::OnceClosure callback) override;
@@ -55,7 +55,7 @@ class ShortcutSubManager : public OsIntegrationSubManager {
   void OnShortcutsDeleted(const webapps::AppId& app_id,
                           base::OnceClosure final_callback,
                           bool success);
-  void StoreIconDataFromDisk(proto::ShortcutDescription* shortcut,
+  void StoreIconDataFromDisk(proto::os_state::ShortcutDescription* shortcut,
                              base::flat_map<SquareSizePx, base::Time> time_map);
 
   const raw_ref<Profile> profile_;

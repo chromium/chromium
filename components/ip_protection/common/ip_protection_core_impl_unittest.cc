@@ -8,35 +8,48 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "base/strings/stringprintf.h"
+#include "base/functional/callback_forward.h"
+#include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
+#include "components/ip_protection/common/masked_domain_list_manager.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/proxy_config.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ip_protection {
 
 namespace {
+using ::masked_domain_list::MaskedDomainList;
+using ::masked_domain_list::Resource;
+using ::masked_domain_list::ResourceOwner;
+using ::network::mojom::IpProtectionProxyBypassPolicy;
 
 constexpr char kEmptyTokenCacheHistogram[] =
-    "NetworkService.IpProtection.EmptyTokenCache";
+    "NetworkService.IpProtection.EmptyTokenCache2";
+constexpr char kMdlMatchesTimeHistogram[] =
+    "NetworkService.MaskedDomainList.MatchesTime";
 
 constexpr char kMountainViewGeoId[] = "US,US-CA,MOUNTAIN VIEW";
 constexpr char kSunnyvaleGeoId[] = "US,US-CA,SUNNYVALE";
-
-constexpr bool kEnableTokenCacheByGeo = true;
-constexpr bool kDisableTokenCacheByGeo = false;
 
 class MockIpProtectionTokenManager : public IpProtectionTokenManager {
  public:
@@ -126,11 +139,46 @@ class MockIpProtectionProxyConfigManager
   base::OnceClosure on_force_refresh_proxy_list_;
 };
 
+class FakePRTFetcher : public IpProtectionProbabilisticRevealTokenFetcher {
+ public:
+  FakePRTFetcher() = default;
+  ~FakePRTFetcher() override = default;
+  void TryGetProbabilisticRevealTokens(
+      TryGetProbabilisticRevealTokensCallback callback) override {
+    NOTREACHED();
+  }
+};
+
+class FakePRTManager : public IpProtectionProbabilisticRevealTokenManager {
+ public:
+  explicit FakePRTManager(
+      std::unique_ptr<IpProtectionProbabilisticRevealTokenFetcher> fetcher)
+      : IpProtectionProbabilisticRevealTokenManager(std::move(fetcher)) {}
+  ~FakePRTManager() override = default;
+  bool IsTokenAvailable() override { NOTREACHED(); }
+  std::optional<ProbabilisticRevealToken> GetToken(
+      const std::string& top_level,
+      const std::string& third_party) override {
+    return response_;
+  }
+  void SetMockResponse(ProbabilisticRevealToken mock_response) {
+    mock_response_ = mock_response;
+  }
+  // If SetMockResponse() is called and GetTokens() returns nullopt, this
+  // indicates manager did not call RequestTokens().
+  void RequestTokens() override { response_ = mock_response_; }
+  std::optional<ProbabilisticRevealToken> response_ = std::nullopt;
+  std::optional<ProbabilisticRevealToken> mock_response_ = std::nullopt;
+};
+
 class IpProtectionCoreImplTest : public testing::Test {
  protected:
   IpProtectionCoreImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    SetTokenCachingByGeoParam(kEnableTokenCacheByGeo);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        network::features::kMaskedDomainList,
+        {{network::features::kSplitMaskedDomainList.name,
+          base::ToString(true)}});
   }
 
   std::unique_ptr<IpProtectionCoreImpl> MakeCore(
@@ -140,7 +188,23 @@ class IpProtectionCoreImplTest : public testing::Test {
         /*masked_domain_list_manager=*/nullptr,
         /*ip_protection_proxy_config_manager=*/nullptr,
         std::move(ip_protection_token_managers),
-        /*is_ip_protection_enabled=*/true);
+        /*probabilistic_reveal_token_registry=*/nullptr,
+        /*ipp_prt_manager=*/nullptr,
+        /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
+  }
+
+  std::unique_ptr<IpProtectionCoreImpl> MakeCore(
+      MaskedDomainListManager* masked_domain_list_manager,
+      bool ip_protection_incognito = false) {
+    return std::make_unique<IpProtectionCoreImpl>(
+        masked_domain_list_manager,
+        /*ip_protection_proxy_config_manager=*/nullptr,
+        /*ip_protection_token_managers=*/
+        std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+        /*probabilistic_reveal_token_registry=*/nullptr,
+        /*ipp_prt_manager=*/nullptr,
+        /*is_ip_protection_enabled=*/true,
+        /*ip_protection_incognito=*/ip_protection_incognito);
   }
 
   std::unique_ptr<IpProtectionCoreImpl> MakeCore(
@@ -152,7 +216,9 @@ class IpProtectionCoreImplTest : public testing::Test {
         /*masked_domain_list_manager=*/nullptr,
         std::move(ip_protection_proxy_config_manager),
         std::move(ip_protection_token_managers),
-        /*is_ip_protection_enabled=*/true);
+        /*probabilistic_reveal_token_registry=*/nullptr,
+        /*ipp_prt_manager=*/nullptr,
+        /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
   }
 
   // Shortcut to create a ProxyChain from hostnames.
@@ -165,26 +231,54 @@ class IpProtectionCoreImplTest : public testing::Test {
     return net::ProxyChain::ForIpProtection(servers);
   }
 
-  void SetTokenCachingByGeoParam(bool should_enable_feature) {
-    // Set token caching by geo param value.
-    scoped_feature_list_.Reset();
-    std::map<std::string, std::string> parameters;
-    parameters[net::features::kIpPrivacyCacheTokensByGeo.name] =
-        should_enable_feature ? "true" : "false";
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kEnableIpProtectionProxy, std::move(parameters));
+  ContentSettingsForOneType CreateSetting(const std::string& first_party_url,
+                                          ContentSetting setting) {
+    content_settings::RuleMetaData metadata;
+    metadata.SetExpirationAndLifetime(base::Time(), base::TimeDelta());
+
+    return {ContentSettingPatternSource(
+        ContentSettingsPattern::Wildcard(),
+        ContentSettingsPattern::FromString(first_party_url),
+        base::Value(setting), content_settings::ProviderType::kNone,
+        /*incognito=*/true, std::move(metadata))};
   }
 
   base::HistogramTester histogram_tester_;
 
-  // TODO(abhipatel): Reorder scoped_feature_list_ to be
-  // initialized before task_environment_
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Verify that a TRACKING PROTECTION exception is created for a given url.
+TEST_F(IpProtectionCoreImplTest, TrackingProtectionExceptionAddedAndRetrieved) {
+  const std::string kUrl = "https://example.com";
+  auto masked_domain_list_manager =
+      MaskedDomainListManager(IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl = masked_domain_list::MaskedDomainList();
+  masked_domain_list_manager.UpdateMaskedDomainList(mdl,
+                                                    /*exclusion_list=*/{});
+  auto ip_protection_core =
+      MakeCore(&masked_domain_list_manager, /*ip_protection_incognito=*/true);
+
+  EXPECT_FALSE(ip_protection_core->HasTrackingProtectionException(GURL(kUrl)));
+
+  ip_protection_core->SetTrackingProtectionContentSetting(
+      CreateSetting(kUrl, CONTENT_SETTING_ALLOW));
+
+  EXPECT_TRUE(ip_protection_core->HasTrackingProtectionException(GURL(kUrl)));
+}
+
+// Verify that RequestShouldBeProxied measures the time taken to call Matches().
+TEST_F(IpProtectionCoreImplTest, RequestShouldBeProxiedMeasured) {
+  auto masked_domain_list_manager =
+      MaskedDomainListManager(IpProtectionProxyBypassPolicy::kNone);
+  auto ip_protection_core = MakeCore(&masked_domain_list_manager);
+  ip_protection_core->RequestShouldBeProxied(GURL(),
+                                             net::NetworkAnonymizationKey());
+  histogram_tester_.ExpectTotalCount(kMdlMatchesTimeHistogram, 1);
+}
 
 TEST_F(IpProtectionCoreImplTest, AreAuthTokensAvailable_NoProxiesConfigured) {
   // A proxy list is available. This should ensure that the only reason tokens
@@ -272,23 +366,20 @@ TEST_F(IpProtectionCoreImplTest, GetAuthTokenFromManagerForProxyB) {
   ASSERT_TRUE(ip_protection_core->GetAuthToken(1));
 }
 
-// If a required token is missing from one of the token caches, the availability
-// is set to false.
-TEST_F(IpProtectionCoreImplTest, AreAuthTokensAvailable_OneTokenCacheIsEmpty) {
+TEST_F(IpProtectionCoreImplTest,
+       AreAuthTokensAvailable_OneTokenCacheNeverFilled_ReturnsFalse) {
   auto ipp_proxy_config_manager =
       std::make_unique<MockIpProtectionProxyConfigManager>();
   ipp_proxy_config_manager->SetProxyList({MakeChain({"a-proxy"})});
   ipp_proxy_config_manager->SetCurrentGeo(kMountainViewGeoId);
 
-  BlindSignedAuthToken exp_token;
-  exp_token.token = "a-token";
-  exp_token.geo_hint =
-      GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value();
-  auto ipp_token_manager = std::make_unique<MockIpProtectionTokenManager>();
-  ipp_token_manager->SetAuthToken(std::move(exp_token));
+  auto token_manager = std::make_unique<MockIpProtectionTokenManager>();
+  token_manager->SetAuthToken(BlindSignedAuthToken{
+      .token = "secret-token",
+      .geo_hint = GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value()});
 
   std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>> managers;
-  managers.insert({ProxyLayer::kProxyA, std::move(ipp_token_manager)});
+  managers.insert({ProxyLayer::kProxyA, std::move(token_manager)});
   managers.insert(
       {ProxyLayer::kProxyB, std::make_unique<MockIpProtectionTokenManager>()});
   auto ip_protection_core =
@@ -296,9 +387,42 @@ TEST_F(IpProtectionCoreImplTest, AreAuthTokensAvailable_OneTokenCacheIsEmpty) {
 
   ASSERT_FALSE(ip_protection_core->WereTokenCachesEverFilled());
   ASSERT_FALSE(ip_protection_core->AreAuthTokensAvailable());
+  // The empty token cache metric should not be emitted since the cache was
+  // never filled.
+  histogram_tester_.ExpectTotalCount(kEmptyTokenCacheHistogram, 0);
+}
+
+TEST_F(IpProtectionCoreImplTest,
+       AreAuthTokensAvailable_OneTokenCacheExhausted_ReturnsFalse) {
+  auto ipp_proxy_config_manager =
+      std::make_unique<MockIpProtectionProxyConfigManager>();
+  ipp_proxy_config_manager->SetProxyList({MakeChain({"a-proxy"})});
+  ipp_proxy_config_manager->SetCurrentGeo(kMountainViewGeoId);
+
+  // Create two token managers, both with one token.
+  std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>> managers;
+  for (auto proxy_layer : {ProxyLayer::kProxyA, ProxyLayer::kProxyB}) {
+    auto token_manager = std::make_unique<MockIpProtectionTokenManager>();
+    token_manager->SetAuthToken(BlindSignedAuthToken{
+        .token = "secret-token",
+        .geo_hint = GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value()});
+    managers.insert({proxy_layer, std::move(token_manager)});
+  }
+
+  auto ip_protection_core =
+      MakeCore(std::move(ipp_proxy_config_manager), std::move(managers));
+
+  // Exhaust the token for ProxyA.
+  ASSERT_TRUE(ip_protection_core->GetAuthToken(0));
+
+  ASSERT_TRUE(ip_protection_core->WereTokenCachesEverFilled());
+
+  // The token for ProxyA is exhausted, so `AreAuthTokensAvailable()` should
+  // return false.
+  ASSERT_FALSE(ip_protection_core->AreAuthTokensAvailable());
   histogram_tester_.ExpectTotalCount(kEmptyTokenCacheHistogram, 1);
   histogram_tester_.ExpectBucketCount(kEmptyTokenCacheHistogram,
-                                      ProxyLayer::kProxyB, 1);
+                                      ProxyLayer::kProxyA, 1);
 }
 
 // GetAuthToken for where proxy list manager's geo is different than the current
@@ -522,49 +646,6 @@ TEST_F(IpProtectionCoreImplTest,
   EXPECT_FALSE(refresh_requested);
 }
 
-// When token caching by geo is disabled, `GeoObserved` has no impact.
-TEST_F(IpProtectionCoreImplTest, GeoObservedTokenCachingByGeoDisabledNoImpact) {
-  SetTokenCachingByGeoParam(kDisableTokenCacheByGeo);
-
-  // Old geo used to set current geo in both the proxy list manager and token
-  // cache manager.
-  std::string old_geo_id = "US,US-CA,MOUNTAIN VIEW";
-
-  // Set up `IppTokenManager` to have an "old geo"
-  auto ipp_token_manager = std::make_unique<MockIpProtectionTokenManager>();
-  ipp_token_manager->SetCurrentGeo(old_geo_id);
-
-  // Set up IppProxyConfigManager to have a "old" geo.
-  auto ipp_proxy_config_manager =
-      std::make_unique<MockIpProtectionProxyConfigManager>();
-  bool refresh_requested = false;
-  ipp_proxy_config_manager->SetOnRequestRefreshProxyList(
-      base::BindLambdaForTesting([&]() { refresh_requested = true; }),
-      old_geo_id);
-  ipp_proxy_config_manager->SetProxyList({MakeChain({"a-proxy"})});
-  ipp_proxy_config_manager->SetCurrentGeo(old_geo_id);
-
-  std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>> managers;
-  managers.insert({ProxyLayer::kProxyA, std::move(ipp_token_manager)});
-  auto ip_protection_core =
-      MakeCore(std::move(ipp_proxy_config_manager), std::move(managers));
-
-  // Simulate a new geo signal that is non-empty. In theory this should cause
-  // both the token cache manager and proxy list manager to set the new geo. But
-  // the disabled experiment means this is short circuited.
-  ip_protection_core->GeoObserved("US,US-CA,SUNNYVALE");
-
-  // Both should still contain the old geo id.
-  EXPECT_EQ(ip_protection_core
-                ->GetIpProtectionTokenManagerForTesting(ProxyLayer::kProxyA)
-                ->CurrentGeo(),
-            old_geo_id);
-
-  EXPECT_EQ(ip_protection_core->GetIpProtectionProxyConfigManagerForTesting()
-                ->CurrentGeo(),
-            old_geo_id);
-}
-
 // Simulates a geo change detected in the IppTokenManager.
 TEST_F(IpProtectionCoreImplTest, GeoChangeObservedInIppTokenManager) {
   // Set up `IppTokenManager` to have an "new geo"
@@ -603,6 +684,153 @@ TEST_F(IpProtectionCoreImplTest, GeoChangeObservedInIppTokenManager) {
   // Since the new geo matches the geo of the proxy list manager, it should not
   // refresh the proxy list.
   EXPECT_TRUE(refresh_requested);
+}
+
+TEST_F(IpProtectionCoreImplTest,
+       RequestShouldBeProxied_MdlMatchesForDefaultMdlType) {
+  // Create a MDL manager w/ a single entry that matches the default MDL type.
+  std::string example_com = "example.com";
+  auto masked_domain_list_manager =
+      MaskedDomainListManager(IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl = masked_domain_list::MaskedDomainList();
+  ResourceOwner* resource_owner = mdl.add_resource_owners();
+  // By not setting an `Experiments` value, the entry is considered 'default'.
+  Resource* resource = resource_owner->add_owned_resources();
+  resource->set_domain(example_com);
+  masked_domain_list_manager.UpdateMaskedDomainList(mdl,
+                                                    /*exclusion_list=*/{});
+
+  // The core should be constructed with the default MDL type (i.e. incognito),
+  // so we set `ip_protection_incognito` to true.
+  auto ip_protection_core =
+      MakeCore(&masked_domain_list_manager, /*ip_protection_incognito=*/true);
+
+  EXPECT_FALSE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", "irrelevant.com"})),
+      net::NetworkAnonymizationKey()));
+
+  EXPECT_TRUE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", example_com})),
+      net::NetworkAnonymizationKey()));
+}
+
+TEST_F(IpProtectionCoreImplTest,
+       RequestShouldBeProxied_MdlMatchesForNonDefaultMdlType) {
+  // Create a MDL manager w/ a single non-default entry.
+  std::string example_com = "example.com";
+  auto masked_domain_list_manager =
+      MaskedDomainListManager(IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl = masked_domain_list::MaskedDomainList();
+  ResourceOwner* resource_owner = mdl.add_resource_owners();
+  // The following resource should only match when the MDL type is
+  // `MdlType::kRegularBrowsing`.
+  Resource* resource = resource_owner->add_owned_resources();
+  resource->set_domain(example_com);
+  resource->add_experiments(
+      Resource::Experiment::Resource_Experiment_EXPERIMENT_EXTERNAL_REGULAR);
+  resource->set_exclude_default_group(true);
+  masked_domain_list_manager.UpdateMaskedDomainList(mdl,
+                                                    /*exclusion_list=*/{});
+
+  // The core should be constructed with the regular browsing MDL type, so we
+  // set `ip_protection_incognito` to false.
+  auto ip_protection_core =
+      MakeCore(&masked_domain_list_manager, /*ip_protection_incognito=*/false);
+
+  EXPECT_FALSE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", "irrelevant.com"})),
+      net::NetworkAnonymizationKey()));
+
+  EXPECT_TRUE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", example_com})),
+      net::NetworkAnonymizationKey()));
+}
+
+TEST_F(
+    IpProtectionCoreImplTest,
+    RequestShouldBeProxied_SplitMdlDisabled_RegularAndIncognitoMatchDefault) {
+  // Disable the split MDL feature.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      network::features::kMaskedDomainList,
+      {{network::features::kSplitMaskedDomainList.name,
+        base::ToString(false)}});
+
+  // Create a MDL manager w/ a single entry that matches the default MDL type.
+  std::string example_com = "example.com";
+  auto masked_domain_list_manager =
+      MaskedDomainListManager(IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl = masked_domain_list::MaskedDomainList();
+  ResourceOwner* resource_owner = mdl.add_resource_owners();
+  // By not setting an `Experiments` value, the entry is considered 'default'.
+  Resource* resource = resource_owner->add_owned_resources();
+  resource->set_domain(example_com);
+  masked_domain_list_manager.UpdateMaskedDomainList(mdl,
+                                                    /*exclusion_list=*/{});
+
+  // The core should be constructed with the regular browsing MDL type, so we
+  // set `ip_protection_incognito` to false.
+  auto ip_protection_core =
+      MakeCore(&masked_domain_list_manager, /*ip_protection_incognito=*/false);
+
+  EXPECT_FALSE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", "irrelevant.com"})),
+      net::NetworkAnonymizationKey()));
+
+  // The default MDL type should match for regular browsing since the split MDL
+  // feature is disabled.
+  EXPECT_TRUE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", example_com})),
+      net::NetworkAnonymizationKey()));
+
+  // A IP Protection core should also match during an incognito session since
+  // the split MDL feature is disabled.
+  ip_protection_core =
+      MakeCore(&masked_domain_list_manager, /*ip_protection_incognito=*/true);
+  EXPECT_TRUE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", example_com})),
+      net::NetworkAnonymizationKey()));
+}
+
+TEST_F(IpProtectionCoreImplTest, IncognitoCoreCallsPRTRequest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+  auto ipp_prt_manager =
+      std::make_unique<FakePRTManager>(std::make_unique<FakePRTFetcher>());
+  ProbabilisticRevealToken expected_token{};
+  ipp_prt_manager->SetMockResponse(expected_token);
+
+  auto core = std::make_unique<IpProtectionCoreImpl>(
+      /*masked_domain_list_manager=*/nullptr,
+      /*ip_protection_proxy_config_manager=*/nullptr,
+      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+      /*probabilistic_reveal_token_registry=*/nullptr,
+      std::move(ipp_prt_manager),
+      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
+  auto maybe_token = core->GetProbabilisticRevealToken("a", "b");
+  ASSERT_TRUE(maybe_token.has_value());
+  EXPECT_EQ(maybe_token.value(), expected_token);
+}
+
+TEST_F(IpProtectionCoreImplTest, RegularCoreDoesNotCallPRTRequest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+  auto ipp_prt_manager =
+      std::make_unique<FakePRTManager>(std::make_unique<FakePRTFetcher>());
+  ProbabilisticRevealToken expected_token{};
+  ipp_prt_manager->SetMockResponse(expected_token);
+
+  auto core = std::make_unique<IpProtectionCoreImpl>(
+      /*masked_domain_list_manager=*/nullptr,
+      /*ip_protection_proxy_config_manager=*/nullptr,
+      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+      /*probabilistic_reveal_token_registry=*/nullptr,
+      std::move(ipp_prt_manager),
+      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/false);
+  auto maybe_token = core->GetProbabilisticRevealToken("a", "b");
+  EXPECT_FALSE(maybe_token.has_value());
 }
 
 }  // namespace

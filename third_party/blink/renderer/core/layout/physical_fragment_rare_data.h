@@ -51,6 +51,7 @@ class PhysicalFragmentRareData
     visitor->Trace(table_column_geometries_);
     visitor->Trace(mathml_paint_info_);
     visitor->Trace(reading_flow_nodes_);
+    visitor->Trace(gap_geometry_);
   }
 
  private:
@@ -74,9 +75,8 @@ class PhysicalFragmentRareData
     kTableSectionRowOffsets,
     kPageName,
     kMargins,
-    kGapGeometry,
 
-    kMaxValue = kGapGeometry,
+    kMaxValue = kMargins,
   };
   static_assert(sizeof(RareBitFieldType) * CHAR_BIT >
                     static_cast<unsigned>(FieldId::kMaxValue),
@@ -92,9 +92,8 @@ class PhysicalFragmentRareData
       std::unique_ptr<const FrameSetLayoutData> frame_set_layout_data;
       LogicalRect table_grid_rect;
       scoped_refptr<const TableBorders> table_collapsed_borders;
-      std::unique_ptr<TableFragmentData::CollapsedBordersGeometry>
+      std::unique_ptr<CollapsedTableBordersGeometry>
           table_collapsed_borders_geometry;
-      std::unique_ptr<GapFragmentData::GapGeometry> gap_geometry;
       wtf_size_t table_cell_column_index;
       wtf_size_t table_section_start_row_index;
       Vector<LayoutUnit> table_section_row_offsets;
@@ -159,14 +158,15 @@ class PhysicalFragmentRareData
     bit_field_ = bit_field_ & ~FieldIdBit(field_id);
   }
 
-  Vector<RareField> field_list_;
+  Vector<RareField, 1> field_list_;
   RareBitFieldType bit_field_ = 0u;
   // A garbage-collected field is not stored in the Vector in order to avoid
   // troublesome conditional tracing.
   Member<const TableBorders> table_collapsed_borders_;
-  Member<const TableFragmentData::ColumnGeometries> table_column_geometries_;
+  Member<const TableColumnGeometries> table_column_geometries_;
   Member<const MathMLPaintInfo> mathml_paint_info_;
   Member<const HeapVector<Member<Node>>> reading_flow_nodes_;
+  Member<const GapFragmentData::GapGeometry> gap_geometry_;
 };
 
 }  // namespace blink

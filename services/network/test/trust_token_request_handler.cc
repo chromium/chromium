@@ -4,11 +4,14 @@
 
 #include "services/network/test/trust_token_request_handler.h"
 
+#include <optional>
+#include <string>
+
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -146,8 +149,6 @@ TrustTokenRequestHandler::~TrustTokenRequestHandler() = default;
 std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   base::AutoLock lock(mutex_);
 
-  std::string ret;
-  JSONStringValueSerializer serializer(&ret);
 
   base::Value::Dict dict;
   const std::string protocol_string = internal::ProtocolVersionToString(
@@ -171,8 +172,9 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   // It's OK to be a bit crashy in exceptional failure cases because it
   // indicates a serious coding error in this test-only code; we'd like to find
   // this out sooner rather than later.
-  CHECK(serializer.Serialize(dict));
-  return ret;
+  std::optional<std::string> ret = base::WriteJson(dict);
+  CHECK(ret);
+  return *ret;
 }
 
 std::optional<std::string> TrustTokenRequestHandler::Issue(

@@ -10,7 +10,10 @@
 #include <string_view>
 #include <vector>
 
+#include "build/blink_buildflags.h"
 #import "ios/web/public/web_client.h"
+
+class IOSChromeMainParts;
 
 // Chrome implementation of WebClient.
 class ChromeWebClient : public web::WebClient {
@@ -24,6 +27,7 @@ class ChromeWebClient : public web::WebClient {
 
   // WebClient implementation.
   std::unique_ptr<web::WebMainParts> CreateWebMainParts() override;
+  void InitializeFieldTrialAndFeatureList() override;
   void PreWebViewCreation() const override;
   void AddAdditionalSchemes(Schemes* schemes) const override;
   std::string GetApplicationLocale() const override;
@@ -71,6 +75,10 @@ class ChromeWebClient : public web::WebClient {
  private:
   // Reference to a view that is attached to a window.
   UIView* windowed_container_ = nil;
+
+#if BUILDFLAG(USE_BLINK)
+  std::unique_ptr<IOSChromeMainParts> main_parts_;
+#endif
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_CHROME_WEB_CLIENT_H_

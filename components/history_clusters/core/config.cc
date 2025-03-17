@@ -260,9 +260,6 @@ Config::Config() {
     should_check_hosts_to_skip_clustering_for =
         base::FeatureList::IsEnabled(features::kOnDeviceClusteringBlocklists);
 
-    use_continue_on_shutdown = base::FeatureList::IsEnabled(
-        internal::kHistoryClustersUseContinueOnShutdown);
-
     should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kShouldShowAllClustersOnProminentUiSurfaces);

@@ -16,9 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/crosapi/cert_database_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,7 +39,7 @@ using content::BrowserThread;
 namespace {
 
 // The following four functions are responsible for initializing NSS for each
-// profile on ChromeOS Ash, which has a separate NSS database and TPM slot
+// profile on ChromeOS, which has a separate NSS database and TPM slot
 // per-profile.
 //
 // Initialization basically follows these steps:
@@ -159,21 +156,11 @@ void StartNSSInitOnIOThread(const AccountId& account_id,
       &StartTPMSlotInitializationOnIOThread, account_id, username_hash));
 }
 
-void NotifyCertsChangedInAshOnUIThread(
-    crosapi::mojom::CertDatabaseChangeType change_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->cert_database_ash()
-      ->NotifyCertsChangedInAsh(change_type);
-}
-
 }  // namespace
 
 // Creates and manages a NSSCertDatabaseChromeOS. Created on the UI thread, but
 // all other calls are made on the IO thread.
-class NssService::NSSCertDatabaseChromeOSManager
-    : public net::NSSCertDatabase::Observer {
+class NssService::NSSCertDatabaseChromeOSManager {
  public:
   using GetNSSCertDatabaseCallback =
       base::OnceCallback<void(net::NSSCertDatabase*)>;
@@ -190,12 +177,7 @@ class NssService::NSSCertDatabaseChromeOSManager
   NSSCertDatabaseChromeOSManager& operator=(
       const NSSCertDatabaseChromeOSManager&) = delete;
 
-  ~NSSCertDatabaseChromeOSManager() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    if (nss_cert_database_) {
-      nss_cert_database_->RemoveObserver(this);
-    }
-  }
+  ~NSSCertDatabaseChromeOSManager() { DCHECK_CURRENTLY_ON(BrowserThread::IO); }
 
   net::NSSCertDatabase* GetNSSCertDatabase(
       GetNSSCertDatabaseCallback callback) {
@@ -216,21 +198,6 @@ class NssService::NSSCertDatabaseChromeOSManager
     }
 
     return nullptr;
-  }
-
-  // net::NSSCertDatabase::Observer
-  void OnTrustStoreChanged() override {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&NotifyCertsChangedInAshOnUIThread,
-                       crosapi::mojom::CertDatabaseChangeType::kTrustStore));
-  }
-  void OnClientCertStoreChanged() override {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &NotifyCertsChangedInAshOnUIThread,
-            crosapi::mojom::CertDatabaseChangeType::kClientCertStore));
   }
 
  private:
@@ -265,7 +232,7 @@ class NssService::NSSCertDatabaseChromeOSManager
 
     auto public_slot = crypto::GetPublicSlotForChromeOSUser(username_hash_);
 
-#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE)
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
     if (!public_slot) {
       // This is a "for testing" branch. The code below will intentionally crash
       // when the public slot fails to load. By default prevent this from
@@ -288,7 +255,6 @@ class NssService::NSSCertDatabaseChromeOSManager
 
     if (system_slot)
       nss_cert_database_->SetSystemSlot(std::move(system_slot));
-    nss_cert_database_->AddObserver(this);
 
     ready_callback_list_.Notify(nss_cert_database_.get());
   }

@@ -1357,7 +1357,7 @@ static absl::Duration TimeoutTestAllowedSchedulingDelay() {
 
 // Returns true if `actual_delay` is close enough to `expected_delay` to pass
 // the timeouts/deadlines test.  Otherwise, logs warnings and returns false.
-ABSL_MUST_USE_RESULT
+[[nodiscard]]
 static bool DelayIsWithinBounds(absl::Duration expected_delay,
                                 absl::Duration actual_delay) {
   bool pass = true;

@@ -179,8 +179,8 @@ void PasswordAddUsernameView::AddedToWidget() {
 void PasswordAddUsernameView::UpdateUsernameInModel() {
   CHECK_EQ(controller_.state(),
            password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE);
-  std::u16string new_username = username_dropdown_->GetText();
-  base::TrimString(new_username, u" ", &new_username);
+  std::u16string new_username;
+  base::TrimString(username_dropdown_->GetText(), u" ", &new_username);
 
   controller_.OnCredentialEdited(std::move(new_username),
                                  controller_.pending_password().password_value);

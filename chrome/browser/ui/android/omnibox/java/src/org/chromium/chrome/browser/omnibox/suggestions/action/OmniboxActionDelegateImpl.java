@@ -51,7 +51,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
         if (mOpenQuickDeleteCb != null) {
             mOpenQuickDeleteCb.run();
         } else {
-            openSettingsPage(SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
+            openSettingsPage(SettingsFragment.CLEAR_BROWSING_DATA);
         }
     }
 
@@ -89,7 +89,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     @Override
     public boolean startActivity(@NonNull Intent intent) {
         try {
-            if (IntentUtils.intentTargetsSelf(mContext, intent)) {
+            if (IntentUtils.intentTargetsSelf(intent)) {
                 IntentUtils.addTrustedIntentExtras(intent);
             }
             mContext.startActivity(intent);

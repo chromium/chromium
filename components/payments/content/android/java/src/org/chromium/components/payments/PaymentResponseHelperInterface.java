@@ -4,12 +4,14 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.payments.mojom.PaymentResponse;
 
 /**
  * The interface of a helper class that generates a {@link PaymentResponse} with the input of
  * payment details.
  */
+@NullMarked
 public interface PaymentResponseHelperInterface {
     /**
      * Generates a {@link PaymentResponse} with the given payment details.

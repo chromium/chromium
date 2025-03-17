@@ -21,10 +21,10 @@ SET BAZEL_LLVM=C:\Program Files\LLVM
 CD %~dp0\..
 if %errorlevel% neq 0 EXIT /B 1
 
-:: Set the standard version, [c++14|c++17|c++20|c++latest]
+:: Set the standard version, [c++17|c++20|c++latest]
 :: https://msdn.microsoft.com/en-us/library/mt490614.aspx
-:: The default is c++14 if not set on command line.
-IF "%STD%"=="" SET STD=c++14
+:: The default is c++17 if not set on command line.
+IF "%STD%"=="" SET STD=c++17
 
 :: Set the compilation_mode (fastbuild|opt|dbg)
 :: https://docs.bazel.build/versions/master/user-manual.html#flag--compilation_mode
@@ -39,7 +39,7 @@ IF NOT "%ALTERNATE_OPTIONS%"=="" copy %ALTERNATE_OPTIONS% absl\base\options.h
 :: /google/data/rw/teams/absl/kokoro/windows.
 ::
 :: TODO(absl-team): Remove -Wno-microsoft-cast
-%KOKORO_GFILE_DIR%\bazel-7.0.0-windows-x86_64.exe ^
+%KOKORO_GFILE_DIR%\bazel-8.0.0-windows-x86_64.exe ^
   test ... ^
   --compilation_mode=%COMPILATION_MODE% ^
   --compiler=clang-cl ^

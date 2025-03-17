@@ -564,6 +564,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Local file"/>
   <int value="1" label="Drive file"/>
   <int value="2" label="Unknown"/>
+  <int value="3" label="Help app - release notes"/>
+  <int value="4" label="Desks admin template"/>
 </enum>
 
 <!-- LINT.IfChange(LauncherSearchSessionConclusion) -->

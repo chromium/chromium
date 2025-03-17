@@ -149,7 +149,7 @@ export class ModificationsPanelElement extends ModificationsPanelElementBase {
         .then(this.onTrustStateChangeFinished_.bind(this));
   }
 
-  private onTrustStateChangeFinished_(result: CertMetadataChangeResult) {
+  private async onTrustStateChangeFinished_(result: CertMetadataChangeResult) {
     if (result.success) {
       // Update state to the new trust value.
       this.trustStateValue = this.$.trustStateSelect.value;
@@ -163,6 +163,9 @@ export class ModificationsPanelElement extends ModificationsPanelElementBase {
       }
     }
     this.editControlsEnabled = true;
+    // Can't focus disabled elements; wait for update to complete first.
+    await this.updateComplete;
+    this.$.trustStateSelect.focus();
   }
 
   protected onConstraintKeyPress_(event: KeyboardEvent): void {

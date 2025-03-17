@@ -17,6 +17,7 @@ source_set("model") {
     ":context",
     "//components/data_sharing/internal",
     "//components/data_sharing/public",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
@@ -66,6 +67,14 @@ source_set("context") {
   sources = [
     "ios_share_url_interception_context.cc",
     "ios_share_url_interception_context.h",
+  ]
+  deps = [ "//components/data_sharing/public" ]
+}
+
+source_set("observer_bridge") {
+  sources = [
+    "data_sharing_service_observer_bridge.h",
+    "data_sharing_service_observer_bridge.mm",
   ]
   deps = [ "//components/data_sharing/public" ]
 }

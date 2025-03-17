@@ -23,6 +23,15 @@ class ContextDelegate {
   // longer be used and be considered as deleted.
   virtual void OnClientCertificateDeleted(
       scoped_refptr<net::X509Certificate> certificate) = 0;
+
+  // Returns a identity name for the current context.
+  virtual std::string GetIdentityName() = 0;
+
+  // Returns a temporary identity name for the current context.
+  virtual std::string GetTemporaryIdentityName() = 0;
+
+  // Returns the pref associated with a policy for the current context.
+  virtual std::string GetPolicyPref() = 0;
 };
 
 }  // namespace client_certificates

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<title>Clicking on the track selection buttons shows the track selection menus.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<script src="../overflow-menu.js"></script>
+
+<!--Padding ensures the overflow menu is visible for the tests. -->
+<body style="padding-top: 200px; padding-left: 100px">
+<video controls></video>
+<script>
+async_test(function(t) {
+
+
+  const expect_labels = (video, avtracks, labels) => {
+    const overflowList = getOverflowList(video);
+    const overflowMenu = getOverflowMenuButton(video);
+    const trackName = (avtracks == OverflowMenuButtons.AUDIO_TRACKS) ?
+                       "audio" : "video";
+    const trackList = mediaControlsElement(internals.shadowRoot(video).firstChild,
+      `-internal-media-controls-${trackName}-track-selection-list`);
+    assert_not_equals(trackList, null);
+
+    // list should switch from invisible to visible when the button is clicked
+    assert_equals(getComputedStyle(trackList).display, "none");
+    clickAtCoordinates(...elementCoordinates(overflowMenu));
+    clickAtCoordinates(...elementCoordinates(overflowList.children[avtracks]));
+    assert_not_equals(getComputedStyle(trackList).display, "none");
+
+    Array.from(trackList.children).map((e, i) => {
+      assert_equals(e.innerText, labels[i]);
+      return i;
+    });
+  };
+
+  const test_expectations = (first, ...rest) => {
+    t.step_func(() => {
+      const [filename, tracktype, labels] = first;
+      const video = document.querySelector("video");
+      video.src = `../content/${filename}`;
+      enableTestMode(video);
+      video.onloadeddata = t.step_func(() => {
+        expect_labels(video, tracktype, labels);
+        if (rest.length === 0) {
+          t.done();
+          return;
+        }
+        test_expectations(...rest);
+      });
+    })();
+  };
+
+  test_expectations(["multitrack_a3.mp4",
+                     OverflowMenuButtons.AUDIO_TRACKS,
+                     ["Options", "Track #1", "Track #2", "Track #3"]],
+                    ["multitrack_a3_label.mp4",
+                     OverflowMenuButtons.AUDIO_TRACKS,
+                     ["Options", "440Hz", "880Hz", "1320Hz"]],
+                    ["multitrack_v3_label.mp4",
+                     OverflowMenuButtons.VIDEO_TRACKS,
+                     ["Options", "Blue", "Green", "Red"]]);
+});
+</script>
+</body>

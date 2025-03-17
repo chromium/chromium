@@ -1,4 +1,7 @@
 include_rules = [
+  "+chromeos/ash/components/channel",
+  "+chromeos/components/kiosk",
+  "+components/feedback",
   "+components/metrics/metrics_state_manager.h",
   "+components/signin/public",
   "+components/variations/service",
@@ -7,6 +10,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*_unittest.cc": [
+    "+components/user_manager",
     "+components/metrics/test/test_enabled_state_provider.h",
   ],
 }

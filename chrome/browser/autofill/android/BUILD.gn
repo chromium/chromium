@@ -12,6 +12,18 @@ java_cpp_enum("autofill_generated_enums") {
   ]
 }
 
+# Minimal Java library for the AutofillThirdPartyModeContentProvider which will
+# be included in the base module.
+android_library("third_party_provider_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/autofill/AutofillThirdPartyModeContentProvider.java" ]
+  deps = [
+    "//base:base_java",
+    "//base:base_shared_preferences_java",
+    "//chrome/browser/preferences:java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
+  ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/autofill/AddressNormalizerFactory.java",
@@ -19,6 +31,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/AutofillClientProviderUtils.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillEditorBase.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillImageFetcher.java",
+    "java/src/org/chromium/chrome/browser/autofill/AutofillImageFetcherFactory.java",
+    "java/src/org/chromium/chrome/browser/autofill/AutofillImageFetcherUtils.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillProfileBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillUiUtils.java",
     "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
@@ -53,6 +67,7 @@ android_library("java") {
 
   deps = [
     ":java_resources",
+    ":third_party_provider_java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
@@ -66,6 +81,7 @@ android_library("java") {
     "//chrome/browser/settings:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
+    "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/util:java",
     "//components/autofill/android:autofill_features_java",
@@ -73,6 +89,7 @@ android_library("java") {
     "//components/autofill/android:autofill_java_resources",
     "//components/autofill/android:autofill_payments_java_resources",
     "//components/autofill/android:main_autofill_java",
+    "//components/autofill/android:payments_interfaces_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
@@ -133,6 +150,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill/AddressNormalizerFactory.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillClientProviderUtils.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillImageFetcher.java",
+    "java/src/org/chromium/chrome/browser/autofill/AutofillImageFetcherFactory.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillProfileBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
     "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",
@@ -165,17 +183,19 @@ android_library("test_java") {
   resources_package = "org.chromium.chrome.browser.autofill"
 
   sources = [
+    "javatest/src/org/chromium/chrome/browser/autofill/AutofillThirdPartyModeContentProviderIntegrationTest.java",
     "javatest/src/org/chromium/chrome/browser/autofill/editors/AddressEditorRenderTest.java",
     "javatest/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldViewTest.java",
   ]
 
   deps = [
     ":java",
+    ":third_party_provider_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
-    "//chrome/android:chrome_test_java",
     "//chrome/android:chrome_test_util_java",
+    "//chrome/android/javatests:chrome_test_java_helper",
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
@@ -190,6 +210,7 @@ android_library("test_java") {
     "//components/sync/android:sync_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
@@ -206,6 +227,7 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.autofill"
 
   sources = [
+    "junit/src/org/chromium/chrome/browser/autofill/AutofillThirdPartyModeContentProviderTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/AddressEditorTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/TextFieldViewUnitTest.java",
@@ -215,6 +237,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":java_resources",
+    ":third_party_provider_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

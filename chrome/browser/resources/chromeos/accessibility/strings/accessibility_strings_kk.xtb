@@ -9,7 +9,7 @@
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Екі саусағыңызбен оңға сырғытыңыз</translation>
 <translation id="1022586497894531524">ChromeVox дауыстық ақпарат функциясын алғаш рет пайдаланып жатырсыз ба? Бұл қысқаша оқулықта ChromeVox қызметін қалай қолдану керектігі жөнінде маңызды ақпарат берілген.</translation>
-<translation id="1025074108959230262">Жабысу режимі өшірілген</translation>
+<translation id="1025074108959230262">Пернелерді жабыстыру режимі өшірулі</translation>
 <translation id="1031961866430398710">содан кейін</translation>
 <translation id="1038643060055067718">Жолдар:</translation>
 <translation id="1038795173450935438">Беттегі элементтен элементке ауысу үшін Search пернесін + оңға/солға өту көрсеткісін басыңыз. Келесі жолға ауысу үшін Search пернесі + төменге өту көрсеткісін, ал алдыңғы жолға ауысу үшін Search пернесі + жоғарыға өту көрсеткісін басыңыз. Қажетті элементке жеткенде, Search + бос орын пернесін басыңыз.</translation>
@@ -93,7 +93,7 @@
 <translation id="1465097259579587977">Қысқаша курсты қайта бастау</translation>
 <translation id="1480046233931937785">Авторлар</translation>
 <translation id="1487494366197411587">Chromebook құрылғысында Search пернесі сол жақ Shift пернесінің дәл үстінде тұрады.</translation>
-<translation id="1498498210836053409">Мәтінге өзгерістер енгізу кезінде пернелерді жабыстыру режимін өшіру (Смарт пернелерді жабыстыру режимі)</translation>
+<translation id="1498498210836053409">Мәтінге өзгерістер енгізу кезінде пернелерді жабыстыру режимін өшіру (пернелерді жабыстыру смарт режимі)</translation>
 <translation id="1499041187027566160">дыбыс деңгейін арттыру</translation>
 <translation id="1502086903961450562">Алдыңғы графика</translation>
 <translation id="1506187449813838456">Қадамды үлкейту</translation>
@@ -303,7 +303,7 @@
 <translation id="2909584066358367921">Келесі түйме жоқ.</translation>
 <translation id="2911433807131383493">ChromeVox оқулығын ашу</translation>
 <translation id="2912405967290226587">Үш саусағыңызбен оңға сырғытыңыз</translation>
-<translation id="2919107550468490321">Смарт пернелерді жабыстыру режимі қосулы</translation>
+<translation id="2919107550468490321">Пернелерді жабыстыру смарт режимі қосулы</translation>
 <translation id="2937799153569150791">Келесі 3-деңгей тақырыбы жоқ.</translation>
 <translation id="2942710183375260152">Қою сұрқай көк</translation>
 <translation id="2943596527105977722">Қошқыл алтын сары</translation>
@@ -574,7 +574,7 @@
 <translation id="4601367666219428522">кст <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4606933160360542263">Арнаулы пернелер тіркесімі: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Келесі перненің басылуын елемеу</translation>
-<translation id="4617384941327705512">Смарт пернелерді жабыстыру режимі өшірулі</translation>
+<translation id="4617384941327705512">Пернелерді жабыстыру смарт режимі өшірулі</translation>
 <translation id="4623097797855662355">Баспа белгісі</translation>
 <translation id="4624970070706497034">TalkBack бұдан былай Chromebook құрылғыларына бейімделіп реттелмейді. Оны тек TalkBack әдепкі перне тіркесімдерімен пайдалана аласыз. "Search+A", содан соң "K" пернесін басып, қолжетімді тіркесімдерді көріңіз. Сонда да TalkBack-ті пайдаланғыңыз келсе, пәрменді қайта басыңыз.</translation>
 <translation id="4649220074413114917">Экранды екі саусақпен түрту арқылы ағымдағы кез келген сөзді тоқтатуға болады. ChromeVox құралының бір нәрсені оқығанын қаламасаңыз, осы функцияны пайдаланыңыз. Жалғастыру үшін экранды екі саусақпен түртіңіз.</translation>
@@ -674,7 +674,7 @@
 <translation id="5308380583665731573">Қосылу</translation>
 <translation id="5310788376443009632">жойылды:</translation>
 <translation id="5316825363044614340">келесі жолға өту</translation>
-<translation id="5320727453979144100">Маңызды режим қосылған</translation>
+<translation id="5320727453979144100">Пернелерді жабыстыру режимі қосулы</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{үтір}other{# үтір}}</translation>
 <translation id="532485153932049746">Мәтінді форматтау
         <ph name="FONT_SIZE_STRING" />
@@ -1114,6 +1114,7 @@
 <translation id="8316881042119029234">Ақшыл сары</translation>
 <translation id="8326783648485765113">Шөп реңкті жасыл</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{фунт}other{# фунт белгісі}}</translation>
+<translation id="8351821207686449674">Жазуларды қосу/өшіру</translation>
 <translation id="8378855320830505539">Аймақ</translation>
 <translation id="8382679411218029383">Автотолтыру жолы мен тізімі</translation>
 <translation id="8394908167088220973">Медиа ойнату/кідірту</translation>
@@ -1230,7 +1231,7 @@
 <translation id="958854023026327378">Бір саусағыңызбен төмен сырғытыңыз</translation>
 <translation id="962913030769097253">Келесі 1-деңгей тақырыбы</translation>
 <translation id="966588271015727539">Bluetooth Брайль дисплейін таңдаңыз</translation>
-<translation id="973955474346881951">Маңызды режимді қосу/өшіру</translation>
+<translation id="973955474346881951">Пернелерді жабыстыру режимін қосу/өшіру</translation>
 <translation id="985654871861528815">Бір жол төмен түсу</translation>
 <translation id="992256792861109788">Қызғылт</translation>
 </translationbundle>

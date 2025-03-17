@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_FINGERPRINTING_PROTECTION_CHROME_FINGERPRINTING_PROTECTION_WEB_CONTENTS_HELPER_FACTORY_H_
 #define CHROME_BROWSER_FINGERPRINTING_PROTECTION_CHROME_FINGERPRINTING_PROTECTION_WEB_CONTENTS_HELPER_FACTORY_H_
 
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+
 class PrefService;
 
 namespace content {
@@ -21,6 +23,7 @@ class TrackingProtectionSettings;
 void CreateFingerprintingProtectionWebContentsHelper(
     content::WebContents* web_contents,
     PrefService* pref_service,
+    HostContentSettingsMap* content_settings,
     privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     bool is_incognito);
 

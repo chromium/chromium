@@ -33,6 +33,7 @@
 #include "content/common/frame.mojom-forward.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/navigation_discard_reason.h"
+#include "content/public/browser/process_allocation_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/referrer.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -81,11 +82,6 @@ enum class GetFrameHostForNavigationFailed {
   // RenderFrameHost (because the pre-existing unsuitable speculative
   // RenderFrameHost cannot be discarded).
   kBlockedByPendingCommit,
-  // Intentionally defer the creation of the RenderFrameHost to prioritize
-  // initiating the network request instead.
-  // Please refer to the comments of features:kDeferSpeculativeRFHCreation
-  // in contents/common/features.cc for more details.
-  kIntentionalDefer,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -489,6 +485,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   GetFrameHostForNavigation(
       NavigationRequest* request,
       BrowsingContextGroupSwap* browsing_context_group_swap,
+      const ProcessAllocationContext& process_allocation_context,
       std::string* reason = nullptr);
 
   // Discards `speculative_render_frame_host_` if it exists, even if there are
@@ -628,8 +625,9 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // by |navigation_request|.
   // Note: the SiteInstance returned by this function may not have an
   // initialized RenderProcessHost. It will only be initialized when
-  // GetProcess() is called on the SiteInstance. In particular, calling this
-  // function will never lead to a process being created for the navigation.
+  // GetOrCreateProcess() is called on the SiteInstance. In particular, calling
+  // this function will never lead to a process being created for the
+  // navigation.
   //
   // |is_same_site| is a struct to cache the output of `IsNavigationSameSite()`
   // if/when it gets called. See `IsSameSiteGetter` for more details.
@@ -1011,16 +1009,19 @@ class CONTENT_EXPORT RenderFrameHostManager {
       const blink::DocumentToken& document_token,
       base::UnguessableToken devtools_frame_token,
       bool renderer_initiated_creation,
-      scoped_refptr<BrowsingContextState> browsing_context_state);
+      scoped_refptr<BrowsingContextState> browsing_context_state,
+      const ProcessAllocationContext& process_allocation_context);
 
   // Create and initialize a speculative RenderFrameHost for an ongoing
   // navigation. It might be destroyed and re-created later if the navigation is
   // redirected to a different SiteInstance. |recovering_without_early_commit|
   // is true if we are reviving a crashed render frame by creating a proxy and
   // committing later rather than doing an immediate commit.
-  bool CreateSpeculativeRenderFrameHost(SiteInstanceImpl* old_instance,
-                                        SiteInstanceImpl* new_instance,
-                                        bool recovering_without_early_commit);
+  bool CreateSpeculativeRenderFrameHost(
+      SiteInstanceImpl* old_instance,
+      SiteInstanceImpl* new_instance,
+      bool recovering_without_early_commit,
+      const ProcessAllocationContext& process_allocation_context);
 
   // Initialization for RenderFrameHost uses the same sequence as InitRenderView
   // above.

@@ -31,6 +31,10 @@
 
 using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 
+// Not defined in current versions of library, but may be in the future:
+#define NSAccessibilityChildrenInNavigationOrderAttribute \
+  @"AXChildrenInNavigationOrder"
+
 @interface AXAnnouncementSpec ()
 
 @property(nonatomic, strong) NSString* announcement;
@@ -162,7 +166,6 @@ ui::CocoaActionList BuildActionList() {
   const ui::CocoaActionList::value_type entries[] = {
       // NSAccessibilityPressAction must come first in this list.
       {ax::mojom::Action::kDoDefault, NSAccessibilityPressAction},
-
       {ax::mojom::Action::kDecrement, NSAccessibilityDecrementAction},
       {ax::mojom::Action::kIncrement, NSAccessibilityIncrementAction},
       {ax::mojom::Action::kShowContextMenu, NSAccessibilityShowMenuAction},
@@ -196,8 +199,18 @@ void PostAnnouncementNotification(NSString* announcement,
 // Returns true if |action| should be added implicitly for |data|.
 bool HasImplicitAction(const ui::AXPlatformNodeBase& node,
                        ax::mojom::Action action) {
-  return action == ax::mojom::Action::kDoDefault &&
-         node.GetData().IsClickable();
+  // TODO integrate the method into AXNodeData, see crrev.com/c/6115619
+  // for details.
+  switch (action) {
+    case ax::mojom::Action::kDoDefault:
+      return node.GetData().IsClickable();
+    case ax::mojom::Action::kDecrement:
+    case ax::mojom::Action::kIncrement:
+      return node.GetRole() == ax::mojom::Role::kSlider ||
+             node.GetRole() == ax::mojom::Role::kSpinButton;
+    default:
+      return false;
+  }
 }
 
 // For roles that show a menu for the default action, ensure "show menu" also
@@ -275,6 +288,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     dict = @{
       @"accessibilityCellForColumn:row:" :
           NSAccessibilityCellForColumnAndRowParameterizedAttribute,
+      @"accessibilityChildrenInNavigationOrder" :
+          NSAccessibilityChildrenInNavigationOrderAttribute,
       @"accessibilityColumns" : NSAccessibilityColumnsAttribute,
       @"accessibilityColumnCount" : NSAccessibilityColumnCountAttribute,
       @"accessibilityColumnIndexRange" :
@@ -283,6 +298,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       @"accessibilityDisclosedRows" : NSAccessibilityDisclosedRowsAttribute,
       @"accessibilityDisclosureLevel" : NSAccessibilityDisclosureLevelAttribute,
       @"accessibilityHeader" : NSAccessibilityHeaderAttribute,
+      @"accessibilityHorizontalScrollBar" :
+          NSAccessibilityHorizontalScrollBarAttribute,
       @"accessibilityIndex" : NSAccessibilityIndexAttribute,
       @"accessibilityLinkedUIElements" :
           NSAccessibilityLinkedUIElementsAttribute,
@@ -294,6 +311,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       @"accessibilitySplitters" : NSAccessibilitySplittersAttribute,
       @"accessibilityTabs" : NSAccessibilityTabsAttribute,
       @"accessibilityToolbarButton" : NSAccessibilityToolbarButtonAttribute,
+      @"accessibilityVerticalScrollBar" :
+          NSAccessibilityVerticalScrollBarAttribute,
       @"accessibilityVisibleColumns" : NSAccessibilityVisibleColumnsAttribute,
       @"accessibilityVisibleCells" : NSAccessibilityVisibleCellsAttribute,
       @"accessibilityVisibleRows" : NSAccessibilityVisibleRowsAttribute,
@@ -311,7 +330,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     dict = @{
+      @"accessibilityPerformConfirm" : NSAccessibilityConfirmAction,
       @"accessibilityPerformPress" : NSAccessibilityPressAction,
+      @"accessibilityPerformShowMenu" : NSAccessibilityShowMenuAction,
+      @"accessibilityPerformDecrement" : NSAccessibilityDecrementAction,
+      @"accessibilityPerformIncrement" : NSAccessibilityIncrementAction,
     };
   });
   return dict;
@@ -415,14 +438,21 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (BOOL)conditionallyRespondsToSelector:(SEL)selector {
-  static std::unordered_set<SEL> methodSelectorsForParameterizedAttributes = {
-      @selector(accessibilityCellForColumn:row:),
-  };
+  static base::NoDestructor<std::unordered_set<SEL>> methodSelectorsForActions(
+      { @selector(accessibilityPerformPress), });
+
+  static base::NoDestructor<std::unordered_set<SEL>>
+      methodSelectorsForParameterizedAttributes({
+        @selector(accessibilityCellForColumn:row:),
+            @selector(accessibilityRangeForIndex:),
+            @selector(accessibilityRangeForLine:),
+            @selector(accessibilityRangeForPosition:),
+      });
 
   // See if the method is permitted by checking its corresponding parameterized
   // attribute counterpart.
-  if (methodSelectorsForParameterizedAttributes.find(selector) !=
-      methodSelectorsForParameterizedAttributes.end()) {
+  if (methodSelectorsForParameterizedAttributes->find(selector) !=
+      methodSelectorsForParameterizedAttributes->end()) {
     NSString* selectorString = NSStringFromSelector(selector);
     NSString* attribute =
         [[AXPlatformNodeCocoa newAccessibilityAPIMethodToAttributeMap]
@@ -433,6 +463,20 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       return NO;
     }
   }
+
+  // See if the method is permitted by checking its corresponding action
+  // counterpart.
+  if (methodSelectorsForActions->find(selector) !=
+      methodSelectorsForActions->end()) {
+    NSString* selectorString = NSStringFromSelector(selector);
+    NSString* action =
+        [[AXPlatformNodeCocoa newAccessibilityAPIMethodToActionMap]
+            objectForKey:selectorString];
+    NSArray* actions = [self internalAccessibilityActionNames];
+    if (![actions containsObject:action]) {
+      return NO;
+    }
+  }
   return YES;
 }
 
@@ -440,19 +484,20 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   // If we're in old-accessibility-API mode, disable methods that we've added
   // to support the new API.
   if (!features::IsMacAccessibilityAPIMigrationEnabled()) {
-    static std::unordered_set<SEL> newAccessibilityAPISelectors;
+    static base::NoDestructor<std::unordered_set<SEL>>
+        newAccessibilityAPISelectors;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
       NSSet<NSString*>* methodNames =
           [AXPlatformNodeCocoa newAccessibilityAPIMethods];
       for (NSString* methodName in methodNames) {
         SEL methodSelector = NSSelectorFromString(methodName);
-        newAccessibilityAPISelectors.insert(methodSelector);
+        newAccessibilityAPISelectors->insert(methodSelector);
       }
     });
 
-    if (newAccessibilityAPISelectors.find(selector) !=
-        newAccessibilityAPISelectors.end()) {
+    if (newAccessibilityAPISelectors->find(selector) !=
+        newAccessibilityAPISelectors->end()) {
       return NO;
     }
   } else {
@@ -460,14 +505,12 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     // that are expected to continue to work independent of the flag. For any
     // such API, ensure the corresponding old API is not available when the flag
     // is enabled.
-    static std::unordered_set<SEL> deprecatedSelectors = {
-        @selector(AXInsertionPointLineNumber),
-        @selector(AXNumberOfCharacters),
-        @selector(AXPlaceholderValue),
-        @selector(AXSelectedText),
-        @selector(AXSelectedTextRange),
-        @selector(AXVisibleCharacterRange)};
-    if (deprecatedSelectors.find(selector) != deprecatedSelectors.end()) {
+    static base::NoDestructor<std::unordered_set<SEL>> deprecatedSelectors({
+      @selector(AXInsertionPointLineNumber), @selector(AXNumberOfCharacters),
+          @selector(AXPlaceholderValue), @selector(AXSelectedText),
+          @selector(AXSelectedTextRange), @selector(AXVisibleCharacterRange)
+    });
+    if (deprecatedSelectors->find(selector) != deprecatedSelectors->end()) {
       return NO;
     }
   }
@@ -1017,6 +1060,17 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return _node->HasAction(action) || HasImplicitAction(*_node, action);
 }
 
+- (BOOL)performAction:(ax::mojom::Action)action {
+  if (![self hasAction:action]) {
+    return NO;
+  }
+
+  ui::AXActionData data;
+  data.action = action;
+  _node->GetDelegate()->AccessibilityPerformAction(data);
+  return YES;
+}
+
 - (AXPlatformNodeCocoa*)fromNodeID:(ui::AXNodeID)id {
   ui::AXPlatformNode* cell = _node->GetDelegate()->GetFromNodeID(id);
   if (cell)
@@ -1345,8 +1399,10 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   // should be given a press action implicitly.
   DCHECK([action_list[0].second isEqualToString:NSAccessibilityPressAction]);
   for (const auto& item : action_list) {
-    if (_node->HasAction(item.first) || HasImplicitAction(*_node, item.first))
+    if ((_node->HasAction(item.first) ||
+         HasImplicitAction(*_node, item.first))) {
       [axActions addObject:item.second];
+    }
   }
 
   if (AlsoUseShowMenuActionForDefaultAction(*_node))
@@ -1355,11 +1411,14 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return axActions;
 }
 
+// This API is deprecated.
 - (void)accessibilityPerformAction:(NSString*)action {
   // Actions are performed asynchronously, so it's always possible for an object
   // to change its mind after previously reporting an action as available.
-  if (![[self accessibilityActionNames] containsObject:action])
+
+  if (![[self accessibilityActionNames] containsObject:action]) {
     return;
+  }
 
   ui::AXActionData data;
   if ([action isEqualToString:NSAccessibilityShowMenuAction] &&
@@ -1383,15 +1442,44 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (BOOL)accessibilityPerformPress {
-  ax::mojom::Action action = ax::mojom::Action::kDoDefault;
-  if (![self hasAction:action]) {
+  if (![self instanceActive]) {
+    return NO;
+  }
+  return [self performAction:ax::mojom::Action::kDoDefault];
+}
+
+- (BOOL)accessibilityPerformShowMenu {
+  if (![self instanceActive]) {
     return NO;
   }
 
-  ui::AXActionData data;
-  data.action = action;
-  _node->GetDelegate()->AccessibilityPerformAction(data);
-  return YES;
+  if (AlsoUseShowMenuActionForDefaultAction(*_node)) {
+    return [self accessibilityPerformPress];
+  }
+
+  if ([self performAction:ax::mojom::Action::kShowContextMenu]) {
+    return YES;
+  }
+  return NO;
+}
+
+- (BOOL)accessibilityPerformDecrement {
+  if (![self instanceActive]) {
+    return NO;
+  }
+  return [self performAction:ax::mojom::Action::kDecrement];
+}
+
+- (BOOL)accessibilityPerformIncrement {
+  if (![self instanceActive]) {
+    return NO;
+  }
+  return [self performAction:ax::mojom::Action::kIncrement];
+}
+
+- (BOOL)accessibilityPerformConfirm {
+  // Placeholder for the future. Needs to implement Return press key action.
+  return NO;
 }
 
 - (NSMutableArray*)internalAccessibilityAttributeNames {
@@ -2249,6 +2337,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return NSAccessibilityUnignoredChildren(children);
 }
 
+- (NSArray*)accessibilityChildrenInNavigationOrder {
+  // We follow Webkit's implementation here.
+  return [self accessibilityChildren];
+}
+
 - (id)AXWindow {
   return _node->GetDelegate()->GetNSWindow();
 }
@@ -2369,16 +2462,18 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
 // Parameterized text-specific attributes.
 
-- (id)AXLineForIndex:(id)parameter {
-  // TODO: multiline is not supported on views.
-  return @0;
-}
-
 - (id)AXRangeForLine:(id)parameter {
-  if (![parameter isKindOfClass:[NSNumber class]] || [parameter intValue] != 0)
+  NSNumber* lineNumber = base::apple::ObjCCast<NSNumber>(parameter);
+  if (!lineNumber) {
     return nil;
+  }
 
-  return [NSValue valueWithRange:{0, [[self getAXValueAsString] length]}];
+  int lineIndex = [lineNumber intValue];
+  if (lineIndex != 0) {
+    return nil;
+  }
+
+  return [NSValue valueWithRange:[self accessibilityRangeForLine:lineIndex]];
 }
 
 - (id)AXStringForRange:(id)parameter {
@@ -2390,14 +2485,23 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)AXRangeForPosition:(id)parameter {
-  // TODO(tapted): Hit-test [parameter pointValue] and return an NSRange.
-  NOTIMPLEMENTED();
-  return nil;
+  NSValue* positionValue = base::apple::ObjCCast<NSValue>(parameter);
+  if (!positionValue) {
+    return nil;
+  }
+
+  NSPoint point = [positionValue pointValue];
+  return [NSValue valueWithRange:[self accessibilityRangeForPosition:point]];
 }
 
 - (id)AXRangeForIndex:(id)parameter {
-  NOTIMPLEMENTED();
-  return nil;
+  NSNumber* indexNumber = base::apple::ObjCCast<NSNumber>(parameter);
+  if (!indexNumber) {
+    return nil;
+  }
+
+  NSInteger index = [indexNumber intValue];
+  return [NSValue valueWithRange:[self accessibilityRangeForIndex:index]];
 }
 
 - (id)AXBoundsForRange:(id)parameter {
@@ -2413,12 +2517,13 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)AXStyleRangeForIndex:(id)parameter {
-  if (![parameter isKindOfClass:[NSNumber class]])
+  NSNumber* indexNumber = base::apple::ObjCCast<NSNumber>(parameter);
+  if (!indexNumber) {
     return nil;
-
-  // TODO(crbug.com/41456329): Implement this for real.
+  }
   return [NSValue
-      valueWithRange:NSMakeRange(0, [self accessibilityNumberOfCharacters])];
+      valueWithRange:[self accessibilityStyleRangeForIndex:[indexNumber
+                                                               intValue]]];
 }
 
 - (id)AXAttributedStringForRange:(id)parameter {
@@ -3122,6 +3227,55 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
 }
 
+- (id)accessibilityDisclosedByRow {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  // The row that contains this row.
+  // It should be the same as the first parent that is a treeitem.
+  return nil;
+}
+
+- (id)accessibilityDisclosedRows {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  // The rows that are considered inside this row.
+  return nil;
+}
+
+- (NSInteger)accessibilityDisclosureLevel {
+  if (![self instanceActive]) {
+    return 0;
+  }
+
+  ax::mojom::Role role = [self internalRole];
+  if (role == ax::mojom::Role::kRow || role == ax::mojom::Role::kTreeItem ||
+      role == ax::mojom::Role::kHeading) {
+    int level =
+        _node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
+    // Mac disclosureLevel is 0-based, but web levels are 1-based.
+    if (level > 0) {
+      level--;
+    }
+    return level;
+  }
+  return 0;
+}
+
+- (BOOL)isAccessibilityDisclosed {
+  if (![self instanceActive]) {
+    return NO;
+  }
+
+  if ([self internalRole] == ax::mojom::Role::kTreeItem) {
+    return _node->HasState(ax::mojom::State::kExpanded);
+  }
+  return NO;
+}
+
 // NSAccessibility: Setting the Focus.
 - (void)setAccessibilityFocused:(BOOL)isFocused {
   if (!_node)
@@ -3287,6 +3441,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return [[self getAXValueAsString] substringWithRange:range];
 }
 
+- (NSInteger)accessibilityLineForIndex:(NSInteger)index {
+  // TODO: multiline is not supported on views.
+  return 0;
+}
+
 - (NSAttributedString*)accessibilityAttributedStringForRange:(NSRange)range {
   if (!_node)
     return nil;
@@ -3294,36 +3453,39 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return [self AXAttributedStringForRange:[NSValue valueWithRange:range]];
 }
 
-- (NSInteger)accessibilityLineForIndex:(NSInteger)index {
-  if (!_node)
-    return 0;
-
-  return [[self AXLineForIndex:@(index)] integerValue];
+- (id)AXLineForIndex:(id)parameter {
+  NSNumber* lineNumber = base::apple::ObjCCast<NSNumber>(parameter);
+  if (!lineNumber) {
+    return nil;
+  }
+  return @([self accessibilityLineForIndex:[lineNumber intValue]]);
 }
 
 - (NSRange)accessibilityRangeForIndex:(NSInteger)index {
-  if (!_node)
-    return NSMakeRange(0, 0);
-
-  return [[self AXRangeForIndex:@(index)] rangeValue];
+  NOTIMPLEMENTED();
+  return NSMakeRange(0, 0);
 }
 
 - (NSRange)accessibilityStyleRangeForIndex:(NSInteger)index {
-  if (!_node)
+  if (![self instanceActive]) {
     return NSMakeRange(0, 0);
+  }
 
-  return [[self AXStyleRangeForIndex:@(index)] rangeValue];
+  // TODO(crbug.com/41456329): Implement this for real.
+  return NSMakeRange(0, [self accessibilityNumberOfCharacters]);
 }
 
 - (NSRange)accessibilityRangeForLine:(NSInteger)line {
-  if (!_node)
+  if (![self instanceActive]) {
     return NSMakeRange(0, 0);
-
-  return [[self AXRangeForLine:@(line)] rangeValue];
+  }
+  return NSMakeRange(0, [[self getAXValueAsString] length]);
 }
 
 - (NSRange)accessibilityRangeForPosition:(NSPoint)point {
-  return [[self AXRangeForPosition:[NSValue valueWithPoint:point]] rangeValue];
+  // TODO(tapted): Hit-test [parameter pointValue] and return an NSRange.
+  NOTIMPLEMENTED();
+  return NSMakeRange(0, 0);
 }
 
 // NSAccessibility: setting content and values.
@@ -3381,6 +3543,36 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 - (id)accessibilityToolbarButton {
   // Chromium windows do not have a toolbar button.
   return nil;
+}
+
+- (id)accessibilityScrollBar:(ax::mojom::State)state {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  // TODO(crbug.com/363275809): For this to work for `ScrollView`, `ScrollView`
+  // should add `kControlsIds` on its horizontal and vertical scrollbars.
+  std::vector<ui::AXPlatformNode*> targets =
+      _node->GetDelegate()->GetSourceNodesForReverseRelations(
+          ax::mojom::IntListAttribute::kControlsIds);
+  for (auto target : targets) {
+    if (auto* delegate = target->GetDelegate()) {
+      if (delegate->GetRole() == ax::mojom::Role::kScrollBar &&
+          delegate->HasState(state)) {
+        return target->GetNativeViewAccessible();
+      }
+    }
+  }
+
+  return nil;
+}
+
+- (id)accessibilityHorizontalScrollBar {
+  return [self accessibilityScrollBar:ax::mojom::State::kHorizontal];
+}
+
+- (id)accessibilityVerticalScrollBar {
+  return [self accessibilityScrollBar:ax::mojom::State::kVertical];
 }
 
 // NSAccessibility: configuring linkage elements.

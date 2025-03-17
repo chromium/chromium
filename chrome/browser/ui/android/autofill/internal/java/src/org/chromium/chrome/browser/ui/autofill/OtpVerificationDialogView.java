@@ -83,6 +83,11 @@ public class OtpVerificationDialogView extends RelativeLayout {
         mProgressBarOverlayView.setAlpha(0f);
         mProgressBarOverlayView.animate().alpha(1f).setDuration(ANIMATION_DURATION_MS);
         mOtpVerificationDialogViewContents.animate().alpha(0f).setDuration(ANIMATION_DURATION_MS);
+        String progressMessage =
+                getContext()
+                        .getString(R.string.autofill_card_unmask_otp_input_dialog_pending_message);
+        ((TextView) mProgressBarOverlayView.findViewById(R.id.progress_bar_message))
+                .setText(progressMessage);
     }
 
     /**

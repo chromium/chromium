@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/session_authz_service_client.h"
 #include "remoting/proto/session_authz_service.h"
 #include "remoting/protocol/authenticator.h"
@@ -155,6 +155,11 @@ void SessionAuthzAuthenticator::SetSessionIdForTesting(
   session_id_ = session_id;
 }
 
+void SessionAuthzAuthenticator::SetHostTokenForTesting(
+    std::string_view host_token) {
+  host_token_ = host_token;
+}
+
 void SessionAuthzAuthenticator::GenerateHostToken(
     base::OnceClosure resume_callback) {
   session_authz_state_ = SessionAuthzState::GENERATING_HOST_TOKEN;
@@ -168,7 +173,7 @@ void SessionAuthzAuthenticator::GenerateHostToken(
 
 void SessionAuthzAuthenticator::OnHostTokenGenerated(
     base::OnceClosure resume_callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<internal::GenerateHostTokenResponseStruct> response) {
   if (!status.ok()) {
     HandleSessionAuthzError("GenerateHostToken", status);
@@ -197,10 +202,9 @@ void SessionAuthzAuthenticator::VerifySessionToken(
     const jingle_xmpp::XmlElement& message,
     base::OnceClosure resume_callback) {
   session_authz_state_ = SessionAuthzState::VERIFYING_SESSION_TOKEN;
-  internal::VerifySessionTokenRequestStruct request;
-  request.session_token = message.TextNamed(kSessionTokenTag);
+  std::string session_token = message.TextNamed(kSessionTokenTag);
   service_client_->VerifySessionToken(
-      request,
+      session_token,
       base::BindOnce(&SessionAuthzAuthenticator::OnVerifiedSessionToken,
                      base::Unretained(this), message,
                      std::move(resume_callback)));
@@ -209,7 +213,7 @@ void SessionAuthzAuthenticator::VerifySessionToken(
 void SessionAuthzAuthenticator::OnVerifiedSessionToken(
     const jingle_xmpp::XmlElement& message,
     base::OnceClosure resume_callback,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<internal::VerifySessionTokenResponseStruct> response) {
   if (!status.ok()) {
     HandleSessionAuthzError("VerifySessionToken", status);
@@ -239,21 +243,21 @@ void SessionAuthzAuthenticator::OnVerifiedSessionToken(
 
 void SessionAuthzAuthenticator::HandleSessionAuthzError(
     const std::string_view& action_name,
-    const ProtobufHttpStatus& status) {
+    const HttpStatus& status) {
   DCHECK(!status.ok());
   rejection_details_ = RejectionDetails(base::StringPrintf(
       "SessionAuthz %s error, code: %d, message: %s", action_name,
       static_cast<int>(status.error_code()), status.error_message()));
   session_authz_state_ = SessionAuthzState::FAILED;
   switch (status.error_code()) {
-    case ProtobufHttpStatus::Code::PERMISSION_DENIED:
+    case HttpStatus::Code::PERMISSION_DENIED:
       session_authz_rejection_reason_ =
           RejectionReason::AUTHZ_POLICY_CHECK_FAILED;
       break;
-    case ProtobufHttpStatus::Code::UNAUTHENTICATED:
+    case HttpStatus::Code::UNAUTHENTICATED:
       session_authz_rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
       break;
-    case ProtobufHttpStatus::Code::RESOURCE_EXHAUSTED:
+    case HttpStatus::Code::RESOURCE_EXHAUSTED:
       session_authz_rejection_reason_ = RejectionReason::TOO_MANY_CONNECTIONS;
       break;
     default:

@@ -89,6 +89,20 @@ bool CanSendProvisionalNotifications(
   return auth_status == UNAuthorizationStatusProvisional;
 }
 
+NotificationType NotificationTypeForSafetyCheckNotificationType(
+    SafetyCheckNotificationType type) {
+  switch (type) {
+    case SafetyCheckNotificationType::kPasswords:
+      return NotificationType::kSafetyCheckPasswords;
+    case SafetyCheckNotificationType::kSafeBrowsing:
+      return NotificationType::kSafetyCheckSafeBrowsing;
+    case SafetyCheckNotificationType::kUpdateChrome:
+      return NotificationType::kSafetyCheckUpdateChrome;
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 SafetyCheckNotificationClient::SafetyCheckNotificationClient(
@@ -445,7 +459,7 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
               base::CallbackToBlock(base::BindOnce(
                   &SafetyCheckNotificationClient::ShowUIForNotificationMetadata,
                   weak_ptr_factory_.GetWeakPtr(),
-                  interacted_notification_metadata_, browser))];
+                  interacted_notification_metadata_, browser->AsWeakPtr()))];
     }
   }
 
@@ -464,8 +478,13 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
 
 void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
     NSDictionary* notification_metadata,
-    Browser* browser) {
+    base::WeakPtr<Browser> weak_browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Browser* browser = weak_browser.get();
+  if (!browser) {
+    // The Scene has been closed while preparing to present the notification.
+    return;
+  }
 
   // The notification metadata must correspond to one of the Safety Check
   // notification types.
@@ -477,17 +496,16 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
 
   if (IsProvisionalNotificationAlertEnabled()) {
     AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForProfile(
-            GetSceneLevelForegroundActiveBrowser()->GetProfile());
+        AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
     id<SystemIdentity> identity =
         authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-    const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
+    const GaiaId gaiaID(identity.gaiaID);
     if (!push_notification_settings::
             GetMobileNotificationPermissionStatusForClient(
                 PushNotificationClientId::kSafetyCheck, gaiaID)) {
       PushNotificationService* service =
           GetApplicationContext()->GetPushNotificationService();
-      service->SetPreference(base::SysUTF8ToNSString(gaiaID),
+      service->SetPreference(gaiaID.ToNSString(),
                              PushNotificationClientId::kSafetyCheck, true);
     }
   }
@@ -555,6 +573,9 @@ void SafetyCheckNotificationClient::LogTriggeredNotifications() {
 
   base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Triggered",
                                 type);
+  base::UmaHistogramEnumeration(
+      "IOS.Notification.Received",
+      NotificationTypeForSafetyCheckNotificationType(type));
 
   local_pref_service->SetInteger(
       prefs::kIosSafetyCheckNotificationsLastTriggered, int(type));

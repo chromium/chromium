@@ -13,9 +13,7 @@ class MockWebContentsCloseHandlerDelegate
  public:
   MockWebContentsCloseHandlerDelegate()
       : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
-        got_clone_(false),
-        got_destroy_(false) {}
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
   MockWebContentsCloseHandlerDelegate(
       const MockWebContentsCloseHandlerDelegate&) = delete;
@@ -38,8 +36,8 @@ class MockWebContentsCloseHandlerDelegate
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  bool got_clone_;
-  bool got_destroy_;
+  bool got_clone_ = false;
+  bool got_destroy_ = false;
 };
 
 // -----------------------------------------------------------------------------

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -51,8 +52,15 @@ class ScopedSharesheetAppSelection {
 
 namespace web_app {
 
-class ShareToTargetBrowserTest : public WebAppBrowserTestBase {
+class ShareToTargetBrowserTest : public WebAppBrowserTestBase,
+                                 public testing::WithParamInterface<
+                                     apps::test::LinkCapturingFeatureVersion> {
  public:
+  ShareToTargetBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
+  }
+
   std::string ExecuteShare(const std::string& script) {
     const GURL url = https_server()->GetURL("/webshare/index.html");
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -99,9 +107,11 @@ class ShareToTargetBrowserTest : public WebAppBrowserTestBase {
   }
 
   webapps::AppId app_id_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToPosterWebApp) {
+IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareToPosterWebApp) {
   const GURL app_url = https_server()->GetURL("/web_share_target/poster.html");
   InstallWebAppFromManifest(app_url);
   ScopedSharesheetAppSelection selection(app_id());
@@ -117,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToPosterWebApp) {
   EXPECT_EQ("https://example.com/", ReadTextContent(web_contents, "link"));
 }
 
-IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToChartsWebApp) {
+IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareToChartsWebApp) {
   const GURL app_url = https_server()->GetURL("/web_share_target/charts.html");
   InstallWebAppFromManifest(app_url);
   ScopedSharesheetAppSelection selection(app_id());
@@ -129,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToChartsWebApp) {
   EXPECT_EQ("https://example.com/", ReadTextContent(web_contents, "link"));
 }
 
-IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareImage) {
+IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareImage) {
   const GURL app_url =
       https_server()->GetURL("/web_share_target/multimedia.html");
   InstallWebAppFromManifest(app_url);
@@ -140,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareImage) {
   EXPECT_EQ("sample.webp", ReadTextContent(web_contents, "image_filename"));
 }
 
-IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareMultimedia) {
+IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareMultimedia) {
   const GURL app_url =
       https_server()->GetURL("/web_share_target/multimedia.html");
   InstallWebAppFromManifest(app_url);
@@ -155,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareMultimedia) {
   EXPECT_EQ("sam_ple.gif", ReadTextContent(web_contents, "image_filename"));
 }
 
-IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToPartialWild) {
+IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareToPartialWild) {
   const GURL app_url =
       https_server()->GetURL("/web_share_target/partial-wild.html");
   InstallWebAppFromManifest(app_url);
@@ -168,5 +178,12 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToPartialWild) {
   content::WebContents* web_contents = ShareToTarget("share_single_file()");
   EXPECT_EQ("************", ReadTextContent(web_contents, "graphs"));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ShareToTargetBrowserTest,
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
+    apps::test::LinkCapturingVersionToString);
 
 }  // namespace web_app

@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
@@ -58,11 +57,6 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "components/user_manager/fake_user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using ::testing::_;
 
 namespace {
@@ -70,8 +64,7 @@ namespace {
 // Error class has a menu item.
 class MenuError : public GlobalError {
  public:
-  explicit MenuError(int command_id)
-      : command_id_(command_id), execute_count_(0) {}
+  explicit MenuError(int command_id) : command_id_(command_id) {}
 
   MenuError(const MenuError&) = delete;
   MenuError& operator=(const MenuError&) = delete;
@@ -90,7 +83,7 @@ class MenuError : public GlobalError {
 
  private:
   int command_id_;
-  int execute_count_;
+  int execute_count_ = 0;
 };
 
 class FakeIconDelegate : public AppMenuIconController::Delegate {
@@ -113,19 +106,6 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
   AppMenuModelTest& operator=(const AppMenuModelTest&) = delete;
 
   ~AppMenuModelTest() override = default;
-
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto* user_manager = static_cast<user_manager::FakeUserManager*>(
-        user_manager::UserManager::Get());
-    const auto account_id = AccountId::FromUserEmail("test@test");
-    auto* user = user_manager->AddUser(account_id);
-    user_manager->UserLoggedIn(account_id, user->username_hash(),
-                               /*browser_restart=*/false,
-                               /*is_child=*/false);
-#endif
-  }
 
   // Don't handle accelerators.
   bool GetAcceleratorForCommandId(int command_id,
@@ -155,10 +135,7 @@ class TestAppMenuModel : public AppMenuModel {
   TestAppMenuModel(ui::AcceleratorProvider* provider,
                    Browser* browser,
                    AppMenuIconController* app_menu_icon_controller)
-      : AppMenuModel(provider, browser, app_menu_icon_controller),
-        execute_count_(0),
-        checked_count_(0),
-        enable_count_(0) {}
+      : AppMenuModel(provider, browser, app_menu_icon_controller) {}
 
   // Testing overrides to ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override {
@@ -178,20 +155,20 @@ class TestAppMenuModel : public AppMenuModel {
     ++execute_count_;
   }
 
-  int execute_count_;
-  mutable int checked_count_;
-  mutable int enable_count_;
+  int execute_count_ = 0;
+  mutable int checked_count_ = 0;
+  mutable int enable_count_ = 0;
 };
 
 class TestLogMetricsAppMenuModel : public AppMenuModel {
  public:
   TestLogMetricsAppMenuModel(ui::AcceleratorProvider* provider,
                              Browser* browser)
-      : AppMenuModel(provider, browser), log_metrics_count_(0) {}
+      : AppMenuModel(provider, browser) {}
 
   void LogMenuAction(AppMenuAction action_id) override { log_metrics_count_++; }
 
-  int log_metrics_count_;
+  int log_metrics_count_ = 0;
 };
 
 TEST_F(AppMenuModelTest, Basics) {
@@ -289,12 +266,8 @@ TEST_F(AppMenuModelTest, GlobalError) {
   EXPECT_EQ(1, error1->execute_count());
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST_F(AppMenuModelTest, DefaultBrowserPrompt) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeatureWithParameters(
-      features::kDefaultBrowserPromptRefresh,
-      {{features::kShowDefaultBrowserAppMenuItem.name, "true"}});
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   FakeIconDelegate fake_delegate;
   AppMenuIconController app_menu_icon_controller(browser()->profile(),
@@ -309,7 +282,7 @@ TEST_F(AppMenuModelTest, DefaultBrowserPrompt) {
       model.GetIndexOfCommandId(IDC_SET_BROWSER_AS_DEFAULT).value();
   EXPECT_TRUE(model.IsEnabledAt(default_prompt_index));
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // Tests that extensions sub menu (when enabled) generates the correct elements
 // or does not generate its elements when disabled.
@@ -339,8 +312,6 @@ TEST_F(AppMenuModelTest, PerformanceItem) {
 }
 
 TEST_F(AppMenuModelTest, CustomizeChromeItem) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(features::kToolbarPinning);
   AppMenuModel model(this, browser());
   model.Init();
   ToolsMenuModel tool_model(&model, browser());
@@ -353,9 +324,6 @@ TEST_F(AppMenuModelTest, CustomizeChromeItem) {
 }
 
 TEST_F(AppMenuModelTest, CustomizeChromeLogMetrics) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(features::kToolbarPinning);
-
   TestLogMetricsAppMenuModel model(this, browser());
   model.Init();
   model.ExecuteCommand(IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL, 0);

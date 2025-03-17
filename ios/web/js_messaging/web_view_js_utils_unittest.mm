@@ -15,8 +15,8 @@
 #import "testing/platform_test.h"
 #import "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 
@@ -248,8 +248,9 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
     ASSERT_TRUE(current_list);
 
     inner_list = nullptr;
-    if (!current_list->empty())
+    if (!current_list->empty()) {
       inner_list = (*current_list)[0].GetIfList();
+    }
     current_list = inner_list;
   }
   EXPECT_FALSE(current_list);

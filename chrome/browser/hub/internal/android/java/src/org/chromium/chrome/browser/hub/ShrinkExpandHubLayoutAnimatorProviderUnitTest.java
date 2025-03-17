@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -35,7 +38,6 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,7 +53,10 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.ShrinkExpandHubLayoutAnimatorProvider.ImageViewWeakRefBitmapCallback;
 import org.chromium.ui.base.TestActivity;
 
@@ -103,7 +108,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShrinkTab() {
         var watcher =
                 HistogramWatcher.newBuilder()
@@ -136,7 +140,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         int finalTopCorner = 30;
         int finalBottomCorner = 40;
         ShrinkExpandAnimationData data =
-                new ShrinkExpandAnimationData(
+                ShrinkExpandAnimationData.createHubShrinkExpandAnimationData(
                         initialRect,
                         finalRect,
                         initialTopCorner,
@@ -144,13 +148,19 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         finalTopCorner,
                         finalBottomCorner,
                         thumbnailSize,
+                        /* isTopToolbar= */ true,
                         /* useFallbackAnimation= */ false);
 
         HubLayoutAnimationRunner runner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
 
         setUpShrinkExpandListener(
-                /* isShrink= */ true, imageView, initialRect, finalRect, /* hasBitmap= */ true);
+                /* isShrink= */ true,
+                imageView,
+                initialRect,
+                finalRect,
+                /* hasBitmap= */ true,
+                /* toolbarFades= */ true);
         runner.addListener(mListener);
         runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
 
@@ -173,7 +183,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testExpandTab() {
         var watcher =
                 HistogramWatcher.newBuilder()
@@ -206,7 +215,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         int finalTopCorner = 0;
         int finalBottomCorner = 0;
         ShrinkExpandAnimationData data =
-                new ShrinkExpandAnimationData(
+                ShrinkExpandAnimationData.createHubShrinkExpandAnimationData(
                         initialRect,
                         finalRect,
                         initialTopCorner,
@@ -214,13 +223,19 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         finalTopCorner,
                         finalBottomCorner,
                         thumbnailSize,
+                        /* isTopToolbar= */ true,
                         /* useFallbackAnimation= */ false);
 
         HubLayoutAnimationRunner runner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
 
         setUpShrinkExpandListener(
-                /* isShrink= */ false, imageView, initialRect, finalRect, /* hasBitmap= */ true);
+                /* isShrink= */ false,
+                imageView,
+                initialRect,
+                finalRect,
+                /* hasBitmap= */ true,
+                /* toolbarFades= */ true);
         runner.addListener(mListener);
         runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
 
@@ -243,11 +258,15 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
-    public void testNewTab() {
+    @DisableFeatures({ChromeFeatureList.SHOW_NEW_TAB_ANIMATIONS})
+    public void testNewTab_FeatureDisabled() {
+        ShrinkExpandImageView imageView = spy(new ShrinkExpandImageView(mActivity));
         HubLayoutAnimatorProvider animatorProvider =
-                ShrinkExpandHubLayoutAnimationFactory.createNewTabAnimatorProvider(
+                new ShrinkExpandHubLayoutAnimatorProvider(
+                        HubLayoutAnimationType.EXPAND_NEW_TAB,
+                        /* needsBitmap= */ false,
                         mHubContainerView,
+                        imageView,
                         mAnimationDataSupplier,
                         Color.RED,
                         HUB_LAYOUT_EXPAND_NEW_TAB_DURATION_MS,
@@ -259,23 +278,27 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         Rect initialRect = new Rect(100, 0, 101, 1);
         Rect finalRect = new Rect(10, 15, WIDTH - 10, HEIGHT - 15);
         ShrinkExpandAnimationData data =
-                new ShrinkExpandAnimationData(
+                ShrinkExpandAnimationData.createHubNewTabAnimationData(
                         initialRect,
                         finalRect,
-                        /* initialTopCornerRadius= */ 0,
-                        /* initialBottomCornerRadius= */ 0,
-                        /* finalTopCornerRadius= */ 0,
-                        /* finalBottomCornerRadius= */ 0,
-                        /* thumbnailSize= */ null,
+                        /* cornerRadius= */ 0,
                         /* useFallbackAnimation= */ false);
         mAnimationDataSupplier.set(data);
+
+        int[] cornerRadii = new int[] {0, 0, 0, 0};
+        assertArrayEquals(cornerRadii, data.getInitialCornerRadii());
+        assertArrayEquals(cornerRadii, data.getFinalCornerRadii());
 
         HubLayoutAnimationRunner runner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
 
-        ShrinkExpandImageView imageView = getImageView(animatorProvider);
         setUpShrinkExpandListener(
-                /* isShrink= */ false, imageView, initialRect, finalRect, /* hasBitmap= */ false);
+                /* isShrink= */ false,
+                imageView,
+                initialRect,
+                finalRect,
+                /* hasBitmap= */ false,
+                /* toolbarFades= */ true);
         runner.addListener(mListener);
         runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
 
@@ -283,11 +306,75 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
+        verify(imageView, atLeastOnce()).setRoundedCorners(0, 0, 0, 0);
+
         verifyFinalState(animatorProvider, /* wasForcedToFinish= */ false);
     }
 
     @Test
-    @SmallTest
+    @EnableFeatures({ChromeFeatureList.SHOW_NEW_TAB_ANIMATIONS})
+    public void testNewTab_FeatureEnabled() {
+        ShrinkExpandImageView imageView = spy(new ShrinkExpandImageView(mActivity));
+        HubLayoutAnimatorProvider animatorProvider =
+                new ShrinkExpandHubLayoutAnimatorProvider(
+                        HubLayoutAnimationType.EXPAND_NEW_TAB,
+                        /* needsBitmap= */ false,
+                        mHubContainerView,
+                        imageView,
+                        mAnimationDataSupplier,
+                        Color.RED,
+                        HUB_LAYOUT_EXPAND_NEW_TAB_DURATION_MS,
+                        mOnAlphaChange);
+        assertEquals(
+                HubLayoutAnimationType.EXPAND_NEW_TAB, animatorProvider.getPlannedAnimationType());
+        assertNull(animatorProvider.getThumbnailCallback());
+
+        Rect initialRect = new Rect(20, -10, 40, HEIGHT);
+        Rect finalRect = new Rect(20, -10, WIDTH + 10, HEIGHT + 15);
+        int startCornerRadius = 30;
+        int endCornerRadius = 7;
+        int[] initialCornerRadius =
+                new int[] {0, startCornerRadius, startCornerRadius, startCornerRadius};
+        int[] finalCornerRadius = new int[] {0, endCornerRadius, endCornerRadius, endCornerRadius};
+        ShrinkExpandAnimationData data =
+                ShrinkExpandAnimationData.createHubNewTabAnimationData(
+                        initialRect,
+                        finalRect,
+                        startCornerRadius,
+                        /* useFallbackAnimation= */ false);
+
+        assertArrayEquals(initialCornerRadius, data.getInitialCornerRadii());
+        assertArrayEquals(finalCornerRadius, data.getFinalCornerRadii());
+
+        mAnimationDataSupplier.set(data);
+
+        HubLayoutAnimationRunner runner =
+                HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
+
+        setUpShrinkExpandListener(
+                /* isShrink= */ false,
+                imageView,
+                initialRect,
+                finalRect,
+                /* hasBitmap= */ false,
+                /* toolbarFades= */ true);
+        runner.addListener(mListener);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
+
+        // No bitmap is required.
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(imageView, atLeastOnce())
+                .setRoundedCorners(0, startCornerRadius, startCornerRadius, startCornerRadius);
+
+        verify(imageView, atLeastOnce())
+                .setRoundedCorners(0, endCornerRadius, endCornerRadius, endCornerRadius);
+
+        verifyFinalState(animatorProvider, /* wasForcedToFinish= */ false);
+    }
+
+    @Test
     public void testShrinkFallbackAnimationDueToTimeoutMissingData() {
         HubLayoutAnimatorProvider animatorProvider =
                 ShrinkExpandHubLayoutAnimationFactory.createShrinkTabAnimatorProvider(
@@ -314,7 +401,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShrinkFallbackAnimationDueToTimeoutMissingBitmap() {
         HubLayoutAnimatorProvider animatorProvider =
                 ShrinkExpandHubLayoutAnimationFactory.createShrinkTabAnimatorProvider(
@@ -328,7 +414,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         Rect initialRect = new Rect(0, 0, WIDTH, HEIGHT);
         Rect finalRect = new Rect(50, 10, 70, 95);
         ShrinkExpandAnimationData data =
-                new ShrinkExpandAnimationData(
+                ShrinkExpandAnimationData.createHubShrinkExpandAnimationData(
                         initialRect,
                         finalRect,
                         /* initialTopCornerRadius= */ 0,
@@ -336,6 +422,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         /* finalTopCornerRadius= */ 0,
                         /* finalBottomCornerRadius= */ 0,
                         thumbnailSize,
+                        /* isTopToolbar= */ true,
                         /* useFallbackAnimation= */ false);
         HubLayoutAnimationRunner runner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
@@ -353,7 +440,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShrinkFallbackAnimationViaSupplierData() {
         HubLayoutAnimatorProvider animatorProvider =
                 ShrinkExpandHubLayoutAnimationFactory.createShrinkTabAnimatorProvider(
@@ -367,7 +453,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         Rect initialRect = new Rect(0, 0, WIDTH, HEIGHT);
         Rect finalRect = new Rect(50, 10, 70, 95);
         ShrinkExpandAnimationData data =
-                new ShrinkExpandAnimationData(
+                ShrinkExpandAnimationData.createHubShrinkExpandAnimationData(
                         initialRect,
                         finalRect,
                         /* initialTopCornerRadius= */ 0,
@@ -375,6 +461,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         /* finalTopCornerRadius= */ 0,
                         /* finalBottomCornerRadius= */ 0,
                         thumbnailSize,
+                        /* isTopToolbar= */ true,
                         /* useFallbackAnimation= */ true);
         HubLayoutAnimationRunner runner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
@@ -392,7 +479,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testExpandFallbackAnimationViaForcedToFinish() {
         HubLayoutAnimatorProvider animatorProvider =
                 ShrinkExpandHubLayoutAnimationFactory.createExpandTabAnimatorProvider(
@@ -417,7 +503,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testNewTabFallbackAnimation() {
         HubLayoutAnimatorProvider animatorProvider =
                 ShrinkExpandHubLayoutAnimationFactory.createNewTabAnimatorProvider(
@@ -433,19 +518,20 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         Rect initialRect = new Rect(50, 50, 51, 51);
         Rect finalRect = new Rect(0, 10, WIDTH, HEIGHT - 10);
         ShrinkExpandAnimationData data =
-                new ShrinkExpandAnimationData(
+                ShrinkExpandAnimationData.createHubNewTabAnimationData(
                         initialRect,
                         finalRect,
-                        /* initialTopCornerRadius= */ 0,
-                        /* initialBottomCornerRadius= */ 0,
-                        /* finalTopCornerRadius= */ 0,
-                        /* finalBottomCornerRadius= */ 0,
-                        /* thumbnailSize= */ null,
+                        /* cornerRadius= */ 0,
                         /* useFallbackAnimation= */ true);
 
         ShrinkExpandImageView imageView = getImageView(animatorProvider);
         setUpShrinkExpandListener(
-                /* isShrink= */ false, imageView, initialRect, finalRect, /* hasBitmap= */ false);
+                /* isShrink= */ false,
+                imageView,
+                initialRect,
+                finalRect,
+                /* hasBitmap= */ false,
+                /* toolbarFades= */ true);
         runner.addListener(mListener);
         runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
 
@@ -457,7 +543,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testImageViewWeakRefBitmapCallback() {
         ImageViewWeakRefBitmapCallback weakRefCallback =
                 new ImageViewWeakRefBitmapCallback(mImageViewMock, mRunnableMock);
@@ -469,7 +554,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testImageViewWeakRefBitmapCallbackGarbageCollection() {
         ImageView imageView = new ImageView(mActivity);
         WeakReference<ImageView> imageViewWeakRef = new WeakReference<>(imageView);
@@ -497,7 +581,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testImageViewWeakRefBitmapCallbackNoBitmapIfNoView() {
         ImageView imageView = new ImageView(mActivity);
         WeakReference<ImageView> imageViewWeakRef = new WeakReference<>(imageView);
@@ -515,12 +598,123 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         verify(mRunnableMock, never()).run();
     }
 
+    @Test
+    public void testAnimationAfterDestroy() {
+        HubLayoutAnimatorProvider animatorProvider =
+                ShrinkExpandHubLayoutAnimationFactory.createNewTabAnimatorProvider(
+                        mHubContainerView,
+                        mAnimationDataSupplier,
+                        Color.RED,
+                        HUB_LAYOUT_EXPAND_NEW_TAB_DURATION_MS,
+                        mOnAlphaChange);
+
+        // Remove all views like a tear down/destroy would.
+        mHubContainerView.removeAllViews();
+
+        ShrinkExpandAnimationData data =
+                ShrinkExpandAnimationData.createHubNewTabAnimationData(
+                        /* initialRect */ new Rect(100, 0, 101, 1),
+                        /* finalRect= */ new Rect(10, 15, WIDTH - 10, HEIGHT - 15),
+                        /* cornerRadius= */ 0,
+                        /* useFallbackAnimation= */ false);
+        mAnimationDataSupplier.set(data);
+
+        HubLayoutAnimationRunner runner =
+                HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
+
+        mListener = mock(HubLayoutAnimationListener.class);
+        runner.addListener(mListener);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mListener).beforeStart();
+        verify(mListener).onEnd(anyBoolean());
+        verify(mListener).afterEnd();
+    }
+
+    @Test
+    public void testShrinkTab_NoToolbarFadeForBottomToolbar() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("GridTabSwitcher.FramePerSecond.Shrink")
+                        .expectAnyRecord("GridTabSwitcher.MaxFrameInterval.Shrink")
+                        .expectAnyRecord("Android.GridTabSwitcher.Animation.TotalDuration.Shrink")
+                        .expectAnyRecord(
+                                "Android.GridTabSwitcher.Animation.FirstFrameLatency.Shrink")
+                        .build();
+        ShrinkExpandImageView imageView = spy(new ShrinkExpandImageView(mActivity));
+        HubLayoutAnimatorProvider animatorProvider =
+                new ShrinkExpandHubLayoutAnimatorProvider(
+                        HubLayoutAnimationType.SHRINK_TAB,
+                        /* needsBitmap= */ true,
+                        mHubContainerView,
+                        imageView,
+                        mAnimationDataSupplier,
+                        Color.BLUE,
+                        HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
+                        mOnAlphaChange);
+        assertEquals(HubLayoutAnimationType.SHRINK_TAB, animatorProvider.getPlannedAnimationType());
+        Callback<Bitmap> thumbnailCallback = animatorProvider.getThumbnailCallback();
+        assertNotNull(thumbnailCallback);
+
+        Size thumbnailSize = new Size(20, 85);
+        Rect initialRect = new Rect(0, 0, WIDTH, HEIGHT);
+        Rect finalRect = new Rect(50, 10, 70, 95);
+        int initialTopCorner = 0;
+        int initialBottomCorner = 0;
+        int finalTopCorner = 30;
+        int finalBottomCorner = 40;
+        ShrinkExpandAnimationData data =
+                ShrinkExpandAnimationData.createHubShrinkExpandAnimationData(
+                        initialRect,
+                        finalRect,
+                        initialTopCorner,
+                        initialBottomCorner,
+                        finalTopCorner,
+                        finalBottomCorner,
+                        thumbnailSize,
+                        /* isTopToolbar= */ false,
+                        /* useFallbackAnimation= */ false);
+
+        HubLayoutAnimationRunner runner =
+                HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
+
+        setUpShrinkExpandListener(
+                /* isShrink= */ true,
+                imageView,
+                initialRect,
+                finalRect,
+                /* hasBitmap= */ true,
+                /* toolbarFades= */ false);
+        runner.addListener(mListener);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
+
+        thumbnailCallback.onResult(mBitmap);
+        mAnimationDataSupplier.set(data);
+
+        ShadowLooper.runUiThreadTasks();
+
+        verify(imageView, atLeastOnce())
+                .setRoundedCorners(
+                        initialTopCorner,
+                        initialTopCorner,
+                        initialBottomCorner,
+                        initialBottomCorner);
+        verify(imageView, atLeastOnce())
+                .setRoundedCorners(
+                        finalTopCorner, finalTopCorner, finalBottomCorner, finalBottomCorner);
+        verifyFinalState(animatorProvider, /* wasForcedToFinish= */ false);
+        watcher.assertExpected();
+    }
+
     private void setUpShrinkExpandListener(
             boolean isShrink,
             @NonNull ShrinkExpandImageView imageView,
             @NonNull Rect initialRect,
             @NonNull Rect finalRect,
-            boolean hasBitmap) {
+            boolean hasBitmap,
+            boolean toolbarFades) {
         View toolbarView = mHubContainerView.findViewById(R.id.hub_toolbar);
         mListener =
                 spy(
@@ -557,7 +751,12 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                                 }
                                 assertEquals(imageView, mHubContainerView.getChildAt(1));
                                 assertImageViewRect(imageView, initialRect);
-                                float expectedAlpha = isShrink ? 0.0f : 1.0f;
+                                float expectedAlpha;
+                                if (toolbarFades) {
+                                    expectedAlpha = isShrink ? 0.0f : 1.0f;
+                                } else {
+                                    expectedAlpha = 1.0f;
+                                }
                                 assertEquals(
                                         "Unexpected initial toolbar alpha",
                                         expectedAlpha,
@@ -568,7 +767,12 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                             @Override
                             public void onEnd(boolean wasForcedToFinish) {
                                 assertImageViewRect(imageView, finalRect);
-                                float expectedAlpha = isShrink ? 1.0f : 0.0f;
+                                float expectedAlpha;
+                                if (toolbarFades) {
+                                    expectedAlpha = isShrink ? 1.0f : 0.0f;
+                                } else {
+                                    expectedAlpha = 1.0f;
+                                }
                                 assertEquals(
                                         "Unexpected final toolbar alpha",
                                         expectedAlpha,

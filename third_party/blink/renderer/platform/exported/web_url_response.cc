@@ -30,13 +30,14 @@
 
 #include "third_party/blink/public/platform/web_url_response.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
@@ -154,36 +155,25 @@ WebURLResponse WebURLResponse::Create(
   }
   response.SetType(head.response_type);
   response.SetPadding(head.padding);
-  WebVector<KURL> url_list_via_service_worker(
-      head.url_list_via_service_worker.size());
-  base::ranges::transform(head.url_list_via_service_worker,
-                          url_list_via_service_worker.begin(),
-                          [](const GURL& h) { return KURL(h); });
-  response.SetUrlListViaServiceWorker(url_list_via_service_worker);
+  response.SetUrlListViaServiceWorker(
+      base::ToVector(head.url_list_via_service_worker,
+                     [](const GURL& url) { return WebURL(KURL(url)); }));
   response.SetCacheStorageCacheName(
       head.service_worker_response_source ==
               network::mojom::FetchResponseSource::kCacheStorage
           ? WebString::FromUTF8(head.cache_storage_cache_name)
           : WebString());
 
-  WebVector<WebString> dns_aliases(head.dns_aliases.size());
-  base::ranges::transform(head.dns_aliases, dns_aliases.begin(),
-                          &WebString::FromASCII);
-  response.SetDnsAliases(dns_aliases);
+  response.SetDnsAliases(
+      base::ToVector(head.dns_aliases, &WebString::FromASCII));
   response.SetRemoteIPEndpoint(head.remote_endpoint);
   response.SetAddressSpace(head.response_address_space);
   response.SetClientAddressSpace(head.client_address_space);
   response.SetPrivateNetworkAccessPreflightResult(
       head.private_network_access_preflight_result);
 
-  WebVector<WebString> cors_exposed_header_names(
-      head.cors_exposed_header_names.size());
-  base::ranges::transform(head.cors_exposed_header_names,
-                          cors_exposed_header_names.begin(),
-                          [](const auto& header_name) {
-                            return WebString::FromLatin1(header_name);
-                          });
-  response.SetCorsExposedHeaderNames(cors_exposed_header_names);
+  response.SetCorsExposedHeaderNames(
+      base::ToVector(head.cors_exposed_header_names, &WebString::FromLatin1));
   response.SetDidServiceWorkerNavigationPreload(
       head.did_service_worker_navigation_preload);
   response.SetIsValidated(head.is_validated);
@@ -524,10 +514,10 @@ int64_t WebURLResponse::GetPadding() const {
 }
 
 void WebURLResponse::SetUrlListViaServiceWorker(
-    const WebVector<WebURL>& url_list_via_service_worker) {
+    const std::vector<WebURL>& url_list_via_service_worker) {
   Vector<KURL> url_list(
       base::checked_cast<wtf_size_t>(url_list_via_service_worker.size()));
-  base::ranges::copy(url_list_via_service_worker, url_list.begin());
+  std::ranges::copy(url_list_via_service_worker, url_list.begin());
   resource_response_->SetUrlListViaServiceWorker(url_list);
 }
 
@@ -546,12 +536,13 @@ void WebURLResponse::SetCacheStorageCacheName(
   resource_response_->SetCacheStorageCacheName(cache_storage_cache_name);
 }
 
-WebVector<WebString> WebURLResponse::CorsExposedHeaderNames() const {
-  return resource_response_->CorsExposedHeaderNames();
+std::vector<WebString> WebURLResponse::CorsExposedHeaderNames() const {
+  return base::ToVector(resource_response_->CorsExposedHeaderNames(),
+                        ToWebString);
 }
 
 void WebURLResponse::SetCorsExposedHeaderNames(
-    const WebVector<WebString>& header_names) {
+    const std::vector<WebString>& header_names) {
   Vector<String> exposed_header_names;
   exposed_header_names.AppendSpan(base::span(header_names));
   resource_response_->SetCorsExposedHeaderNames(exposed_header_names);
@@ -699,10 +690,10 @@ bool WebURLResponse::FromArchive() const {
   return resource_response_->FromArchive();
 }
 
-void WebURLResponse::SetDnsAliases(const WebVector<WebString>& aliases) {
+void WebURLResponse::SetDnsAliases(const std::vector<WebString>& aliases) {
   Vector<String> dns_aliases(base::checked_cast<wtf_size_t>(aliases.size()));
-  base::ranges::transform(aliases, dns_aliases.begin(),
-                          &WebString::operator WTF::String);
+  std::ranges::transform(aliases, dns_aliases.begin(),
+                         &WebString::operator WTF::String);
   resource_response_->SetDnsAliases(std::move(dns_aliases));
 }
 

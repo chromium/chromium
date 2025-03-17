@@ -9,6 +9,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
@@ -21,6 +22,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
@@ -30,6 +32,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
@@ -279,8 +282,10 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
     RecordApprovedClientsSize(approved_clients->size());
   }
 
+  // TODO(crbug.com/382086282): Support usernames and phone number for
+  // display_name and display_identifier.
   return base::MakeRefCounted<IdentityRequestAccount>(
-      *id, *email, *name, given_name ? *given_name : "",
+      *id, *email, *name, *email, *name, given_name ? *given_name : "",
       picture ? GURL(*picture) : GURL(), std::move(account_hints),
       std::move(domain_hints), std::move(labels), approved_value,
       /*browser_trusted_login_state=*/LoginState::kSignUp);
@@ -447,13 +452,14 @@ void OnDownloadedJson(
     IdpNetworkRequestManager::ParseJsonCallback parse_json_callback,
     std::unique_ptr<std::string> response_body,
     int response_code,
-    const std::string& mime_type) {
+    const std::string& mime_type,
+    bool cors_error = false) {
   ParseStatus parse_status =
       GetResponseError(response_body.get(), response_code, mime_type);
 
   if (parse_status != ParseStatus::kSuccess) {
     std::move(parse_json_callback)
-        .Run({parse_status, response_code},
+        .Run({parse_status, response_code, cors_error},
              data_decoder::DataDecoder::ValueOrError());
     return;
   }
@@ -735,7 +741,7 @@ std::pair<GURL, std::optional<ErrorUrlType>> GetErrorUrlAndType(
     return std::make_pair(error_url, ErrorUrlType::kSameOrigin);
   }
 
-  if (!webid::IsSameSite(error_origin, idp_origin)) {
+  if (!net::SchemefulSite::IsSameSite(error_origin, idp_origin)) {
     return std::make_pair(GURL(), ErrorUrlType::kCrossSite);
   }
 
@@ -916,7 +922,8 @@ void OnTokenRequestParsed(
 void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
                        std::unique_ptr<std::string> response_body,
                        int response_code,
-                       const std::string& mime_type) {
+                       const std::string& mime_type,
+                       bool cors_error) {
   std::move(callback).Run();
 }
 
@@ -943,7 +950,6 @@ void OnDisconnectResponseParsed(
 }
 
 }  // namespace
-
 IdpNetworkRequestManager::Endpoints::Endpoints() = default;
 IdpNetworkRequestManager::Endpoints::~Endpoints() = default;
 IdpNetworkRequestManager::Endpoints::Endpoints(const Endpoints& other) =
@@ -1109,23 +1115,21 @@ void IdpNetworkRequestManager::SendTokenRequest(
 
 void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
-    bool did_show_ui,
     base::TimeDelta api_call_to_show_dialog_time,
     base::TimeDelta show_dialog_to_continue_clicked_time,
     base::TimeDelta account_selected_to_token_response_time,
     base::TimeDelta api_call_to_token_response_time) {
   std::string url_encoded_post_data = base::StringPrintf(
-      "time_to_show_ui=%d"
+      "outcome=success"
+      "&time_to_show_ui=%d"
       "&time_to_continue=%d"
       "&time_to_receive_token=%d"
-      "&turnaround_time=%d"
-      "&did_show_ui=%s",
+      "&turnaround_time=%d",
       static_cast<int>(api_call_to_show_dialog_time.InMilliseconds()),
       static_cast<int>(show_dialog_to_continue_clicked_time.InMilliseconds()),
       static_cast<int>(
           account_selected_to_token_response_time.InMilliseconds()),
-      static_cast<int>(api_call_to_token_response_time.InMilliseconds()),
-      did_show_ui ? "true" : "false");
+      static_cast<int>(api_call_to_token_response_time.InMilliseconds()));
 
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateCredentialedResourceRequest(
@@ -1145,8 +1149,8 @@ void IdpNetworkRequestManager::SendFailedTokenRequestMetrics(
     bool did_show_ui,
     MetricsEndpointErrorCode error_code) {
   std::string url_encoded_post_data = base::StringPrintf(
-      "error_code=%d&did_show_ui=%s", static_cast<int>(error_code),
-      did_show_ui ? "true" : "false");
+      "outcome=failure&error_code=%d&did_show_ui=%s",
+      static_cast<int>(error_code), base::ToString(did_show_ui));
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateUncredentialedResourceRequest(metrics_endpoint_url,
                                           /*send_origin=*/false);
@@ -1268,9 +1272,17 @@ void IdpNetworkRequestManager::OnDownloadedUrl(
     response_info->headers->GetMimeType(&mime_type);
   }
 
+  // Check for CORS error
+  std::optional<network::URLLoaderCompletionStatus> status =
+      url_loader->CompletionStatus();
+  bool cors_error = false;
+  if (status && status.value().cors_error_status.has_value()) {
+    cors_error = true;
+  }
+
   url_loader.reset();
   std::move(callback).Run(std::move(response_body), response_code,
-                          std::move(mime_type));
+                          std::move(mime_type), cors_error);
 }
 
 void IdpNetworkRequestManager::FetchClientMetadata(
@@ -1298,7 +1310,8 @@ void IdpNetworkRequestManager::OnDownloadedImage(
     ImageCallback callback,
     std::unique_ptr<std::string> response_body,
     int response_code,
-    const std::string& mime_type) {
+    const std::string& mime_type,
+    bool cors_error) {
   if (!response_body || response_code != net::HTTP_OK) {
     std::move(callback).Run(gfx::Image());
     return;

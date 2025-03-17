@@ -4,6 +4,8 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.util.Size;
@@ -13,12 +15,15 @@ import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.memory.MemoryPressureMonitor;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /** Manages the bitmaps shown in the PlayerFrameView at a given scale factor. */
+@NullMarked
 public class PlayerFrameBitmapState {
     private final UnguessableToken mGuid;
 
@@ -28,17 +33,21 @@ public class PlayerFrameBitmapState {
     /** The scale factor of bitmaps. */
     private float mScaleFactor;
 
-    /** Bitmaps that make up the contents. */
-    private Bitmap[][] mBitmapMatrix;
+    /**
+     * Bitmaps that make up the contents.
+     * Should be "@Nullable Bitmap @Nullable [][]", but there is a bug in NullAway
+     * (https://github.com/uber/NullAway/issues/1150) that prevents us from doing that.
+     */
+    private Bitmap @Nullable [][] mBitmapMatrix;
 
     /** Whether a request for a bitmap tile is pending. */
-    private BitmapRequestHandler[][] mPendingBitmapRequests;
+    private BitmapRequestHandler @Nullable [][] mPendingBitmapRequests;
 
     /**
      * Whether we currently need a bitmap tile. This is used for deleting bitmaps that we don't
      * need and freeing up memory.
      */
-    private boolean[][] mRequiredBitmaps;
+    private boolean @Nullable [][] mRequiredBitmaps;
 
     /** Whether a bitmap is visible for a given request. */
     private boolean[][] mVisibleBitmaps;
@@ -47,7 +56,7 @@ public class PlayerFrameBitmapState {
     private final PlayerCompositorDelegate mCompositorDelegate;
 
     private final PlayerFrameBitmapStateController mStateController;
-    private Set<Integer> mInitialMissingVisibleBitmaps = new HashSet<>();
+    private @Nullable Set<Integer> mInitialMissingVisibleBitmaps = new HashSet<>();
 
     PlayerFrameBitmapState(
             UnguessableToken guid,
@@ -79,11 +88,11 @@ public class PlayerFrameBitmapState {
         mVisibleBitmaps = new boolean[rows][cols];
     }
 
-    boolean[][] getRequiredBitmapsForTest() {
+    boolean @Nullable [][] getRequiredBitmapsForTest() {
         return mRequiredBitmaps;
     }
 
-    Bitmap[][] getMatrix() {
+    Bitmap @Nullable [][] getMatrix() {
         return mBitmapMatrix;
     }
 
@@ -106,6 +115,7 @@ public class PlayerFrameBitmapState {
     void destroy() {
         mRequiredBitmaps = null;
         mPendingBitmapRequests = null;
+        assumeNonNull(mBitmapMatrix);
         for (int i = 0; i < mBitmapMatrix.length; i++) {
             for (int j = 0; j < mBitmapMatrix[i].length; j++) {
                 if (mBitmapMatrix[i][j] != null) {
@@ -356,11 +366,6 @@ public class PlayerFrameBitmapState {
         @Override
         public void onResult(Bitmap result) {
             TraceEvent.begin("BitmapRequestHandler.onResult");
-            if (result == null) {
-                onError();
-                TraceEvent.end("BitmapRequestHandler.onResult");
-                return;
-            }
             if (mBitmapMatrix == null
                     || mPendingBitmapRequests == null
                     || mRequiredBitmaps == null

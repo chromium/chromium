@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/crash_ids_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
@@ -16,7 +15,7 @@
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "components/supervised_user/core/common/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/system_logs/app_service_log_source.h"
 #include "chrome/browser/ash/system_logs/bluetooth_log_source.h"
@@ -45,6 +44,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/feedback/system_logs/log_sources/ozone_platform_state_dump_source.h"
+#endif
+
 namespace system_logs {
 
 SystemLogsFetcher* BuildChromeSystemLogsFetcher(Profile* profile,
@@ -68,7 +71,7 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(Profile* profile,
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // These sources rely on scrubbing in SystemLogsFetcher.
   fetcher->AddSource(std::make_unique<BluetoothLogSource>());
   fetcher->AddSource(std::make_unique<CommandLineLogSource>());
@@ -97,6 +100,10 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(Profile* profile,
   fetcher->AddSource(std::make_unique<ShillLogSource>(scrub_data));
   fetcher->AddSource(std::make_unique<UiHierarchyLogSource>(scrub_data));
 #endif
+
+#if BUILDFLAG(IS_LINUX)
+  fetcher->AddSource(std::make_unique<OzonePlatformStateDumpSource>());
+#endif  // BUILDFLAG(IS_LINUX)
 
   return fetcher;
 }

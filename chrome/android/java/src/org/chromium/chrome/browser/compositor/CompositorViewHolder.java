@@ -16,7 +16,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
@@ -42,10 +41,8 @@ import org.chromium.base.InputHintChecker;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -69,7 +66,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -86,12 +82,11 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
 import org.chromium.ui.base.SPenSupport;
-import org.chromium.ui.base.UiAndroidFeatureList;
-import org.chromium.ui.base.UiAndroidFeatureMap;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
+import org.chromium.ui.resources.AndroidResourceType;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.url.GURL;
@@ -219,14 +214,7 @@ public class CompositorViewHolder extends FrameLayout
     /** Used to remove the temporary tab strip on startup, once ready (or timed out). */
     private Runnable mSetBackgroundRunnable;
 
-    private boolean mDelayTempStripRemoval;
-    private boolean mSetBackgroundTimedOut;
-    private boolean mCanSetBackground;
-    private boolean mFirstTabCreated;
     private boolean mHasDrawnOnce;
-    private int mDelayTempStripRemovalTimeoutMs;
-    private long mBuffersSwappedTimestamp;
-    private long mTabStateInitializedTimestamp;
 
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
@@ -397,10 +385,6 @@ public class CompositorViewHolder extends FrameLayout
                     });
         }
         handleSystemUiVisibilityChange();
-
-        mDelayTempStripRemoval = TabUiFeatureUtilities.isDelayTempStripRemovalEnabled(getContext());
-        mDelayTempStripRemovalTimeoutMs =
-                ChromeFeatureList.sDelayTempStripRemovalTimeoutMs.getValue();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             setDefaultFocusHighlightEnabled(false);
@@ -760,14 +744,12 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     public boolean dispatchDragEvent(DragEvent e) {
         mEventOffsetHandler.onPreDispatchDragEvent(e.getAction(), 0.f, 0.f);
-        if (UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_FILES)) {
-            if (e.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-                releaseDragAndDropPermissions();
-            } else if (e.getAction() == DragEvent.ACTION_DROP) {
-                mDragAndDropPermissions = mActivity.requestDragAndDropPermissions(e);
-                if (e.getClipData() != null && e.getClipData().getItemCount() == 1) {
-                    mDropUri = e.getClipData().getItemAt(0).getUri();
-                }
+        if (e.getAction() == DragEvent.ACTION_DRAG_STARTED) {
+            releaseDragAndDropPermissions();
+        } else if (e.getAction() == DragEvent.ACTION_DROP) {
+            mDragAndDropPermissions = mActivity.requestDragAndDropPermissions(e);
+            if (e.getClipData() != null && e.getClipData().getItemCount() == 1) {
+                mDropUri = e.getClipData().getItemAt(0).getUri();
             }
         }
         boolean ret = super.dispatchDragEvent(e);
@@ -1022,6 +1004,13 @@ public class CompositorViewHolder extends FrameLayout
             boolean bottomControlsMinHeightChanged,
             boolean requestNewFrame,
             boolean isVisibilityForced) {
+        if (ChromeFeatureList.sAndroidDumpOnScrollWithoutResource.isEnabled()
+                && !isVisibilityForced
+                && getResourceManager() != null) {
+            getResourceManager()
+                    .dumpIfNoResource(AndroidResourceType.DYNAMIC, R.id.control_container);
+        }
+
         onViewportChanged();
 
         // When scrolling browser controls in viz, don't produce new browser frames unless it's
@@ -1230,29 +1219,9 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public void didSwapBuffers(boolean swappedCurrentSize, int framesUntilHideBackground) {
-        if (mSetBackgroundRunnable != null
-                && mHasDrawnOnce
-                && framesUntilHideBackground == 0
-                && !mCanSetBackground) {
-            // Remove temporary background if tab state is ready. Otherwise, mark that the
-            // background can be removed and handle in TabModelSelectorObserver.
-            if (!mDelayTempStripRemoval
-                    || mTabModelSelector.isTabStateInitialized()
-                    || mSetBackgroundTimedOut) {
-                runSetBackgroundRunnable();
-            } else {
-                mCanSetBackground = true;
-            }
-
-            // If tab state is already initialized, record how long it took for the real tab strip
-            // to be ready to be drawn.
-            if (mTabStateInitializedTimestamp != 0) {
-                RecordHistogram.recordTimesHistogram(
-                        "Android.TabStrip.TimeToBufferSwapAfterInitializeTabState",
-                        SystemClock.elapsedRealtime() - mTabStateInitializedTimestamp);
-            } else {
-                mBuffersSwappedTimestamp = SystemClock.elapsedRealtime();
-            }
+        if (mSetBackgroundRunnable != null && mHasDrawnOnce && framesUntilHideBackground == 0) {
+            // Remove temporary background if tab state is ready.
+            runSetBackgroundRunnable();
         }
 
         for (Runnable runnable : mDidSwapBuffersCallbacks) {
@@ -1268,39 +1237,6 @@ public class CompositorViewHolder extends FrameLayout
 
         new Handler().post(mSetBackgroundRunnable);
         mSetBackgroundRunnable = null;
-
-        // Mark that we timed out if we remove the background before the tab state is initialized.
-        // Called when the background is actually being removed, since if the timeout is reached,
-        // but the second buffer swap happens after the tab state is initialized, we shouldn't
-        // actually see any jank.
-        RecordHistogram.recordBooleanHistogram(
-                "Android.TabStrip.DelayTempStripRemovalTimedOut",
-                !mTabModelSelector.isTabStateInitialized());
-    }
-
-    @VisibleForTesting
-    void maybeInitializeSetBackgroundRunnableTimeout() {
-        if (mDelayTempStripRemoval && !mFirstTabCreated) {
-            mFirstTabCreated = true;
-            new Handler()
-                    .postDelayed(
-                            () -> {
-                                // If null, the background has already been removed before the
-                                // timeout.
-                                if (mSetBackgroundRunnable == null) return;
-
-                                if (mCanSetBackground) {
-                                    // If the background can be removed, remove it now.
-                                    runSetBackgroundRunnable();
-                                } else {
-                                    // If the background cannot be removed, mark that we have timed
-                                    // out, so that we can remove the background when the buffer
-                                    // swaps.
-                                    mSetBackgroundTimedOut = true;
-                                }
-                            },
-                            mDelayTempStripRemovalTimeoutMs);
-        }
     }
 
     @Override
@@ -1432,7 +1368,7 @@ public class CompositorViewHolder extends FrameLayout
     public void onFinishNativeInitialization(
             TabModelSelector tabModelSelector,
             TabCreatorManager tabCreatorManager,
-            Supplier<Integer> bottomControlsOffsetSupplier) {
+            ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         assert mLayoutManager != null;
         mLayoutManager.init(
                 tabModelSelector,
@@ -1451,30 +1387,8 @@ public class CompositorViewHolder extends FrameLayout
                     }
 
                     @Override
-                    public void onTabStateInitialized() {
-                        // Tab state is initialized, so remove background if we've not yet done so
-                        // and a frame is ready.
-                        if (mDelayTempStripRemoval
-                                && mSetBackgroundRunnable != null
-                                && mCanSetBackground) {
-                            runSetBackgroundRunnable();
-                        }
-
-                        // If real tab strip is ready to be drawn, record how long it took for the
-                        // tab state to be initialized.
-                        if (mBuffersSwappedTimestamp != 0) {
-                            RecordHistogram.recordTimesHistogram(
-                                    "Android.TabStrip.TimeToInitializeTabStateAfterBufferSwap",
-                                    SystemClock.elapsedRealtime() - mBuffersSwappedTimestamp);
-                        } else {
-                            mTabStateInitializedTimestamp = SystemClock.elapsedRealtime();
-                        }
-                    }
-
-                    @Override
                     public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
                         initializeTab(tab);
-                        maybeInitializeSetBackgroundRunnableTimeout();
                     }
                 });
 

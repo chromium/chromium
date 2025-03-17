@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
@@ -17,7 +18,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -32,7 +32,6 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace content {
 
@@ -146,12 +145,13 @@ const int ModeCollectionForTarget::kUserDataKey;
 
 // Returns a subset of `mode` for delivery to a WebContents.
 ui::AXMode FilterAccessibilityModeInvariants(ui::AXMode mode) {
-  // Strip kLabelImages if kScreenReader is absent.
+  // Strip kLabelImages if kExtendedProperties is absent.
   // TODO(grt): kLabelImages is a feature of //chrome. Find a way to
   // achieve this filtering without teaching //content about it. Perhaps via
   // the delegate interface to be added in support of https://crbug.com/1470199.
-  if (ui::AXMode(mode.flags() ^ ui::AXMode::kScreenReader)
-          .has_mode(ui::AXMode::kLabelImages | ui::AXMode::kScreenReader)) {
+  if (ui::AXMode(mode.flags() ^ ui::AXMode::kExtendedProperties)
+          .has_mode(ui::AXMode::kLabelImages |
+                    ui::AXMode::kExtendedProperties)) {
     mode.set_mode(ui::AXMode::kLabelImages, false);
   }
 
@@ -169,9 +169,9 @@ ui::AXMode FilterAccessibilityModeInvariants(ui::AXMode mode) {
   // screen reader mode is turned on after forms control mode. In that case,
   // forms mode must be removed.
   if (mode.has_mode(ui::AXMode::kInlineTextBoxes) ||
-      mode.has_mode(ui::AXMode::kScreenReader)) {
-    return ui::AXMode(mode.flags(), mode.experimental_flags() &
-                                        ~ui::AXMode::kExperimentalFormControls);
+      mode.has_mode(ui::AXMode::kExtendedProperties)) {
+    return ui::AXMode(mode.flags(),
+                      mode.filter_flags() & ~ui::AXMode::kFormsAndLabelsOnly);
   }
 
   return mode;
@@ -190,8 +190,9 @@ BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
   return g_instance;
 }
 
-// On Android, Mac, and Windows there are platform-specific subclasses.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+// On Android, Mac, Windows and Linux there are platform-specific subclasses.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && \
+    !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 // static
 std::unique_ptr<BrowserAccessibilityStateImpl>
 BrowserAccessibilityStateImpl::Create() {
@@ -303,9 +304,63 @@ void BrowserAccessibilityStateImpl::OnScreenReaderStopped() {
       base::Seconds(kDisableAccessibilitySupportDelaySecs));
 }
 
+void BrowserAccessibilityStateImpl::UpdateKnownAssistiveTechSlow() {
+  // Overridden by some platforms, specifically Windows and Linux.
+}
+
+void BrowserAccessibilityStateImpl::SetKnownScreenReaderAppActive(
+    bool is_active) {
+  // Currently only meaningful on macOS, for VoiceOver detection,
+  // ChromeOS for ChromeVox detection, Android for Talkback detection, and
+  // unit tests.
+  // Other platforms detect specific, known screen reader apps in the
+  // OS-specific subclass.
+}
+
+BrowserAccessibilityState::AssistiveTech
+BrowserAccessibilityStateImpl::ActiveKnownAssistiveTech() {
+  return kNone;
+}
+
+bool BrowserAccessibilityStateImpl::IsKnownScreenReaderActiveSlow() {
+  // There is no need to run asssistive tech detection code if the
+  // AXMode does not have kExtendedProperties set, because an assistive tech
+  // would have made API calls causing that AXMode to be set.
+  if (GetAccessibilityMode().has_mode((ui::AXMode::kExtendedProperties))) {
+    return false;
+  }
+  UpdateKnownAssistiveTechSlow();
+  switch (ActiveKnownAssistiveTech()) {
+    case kUnknown:
+      NOTREACHED();
+    case kNone:
+    case kZoomText:
+      return false;
+    case kChromeVox:
+    case kJaws:
+    case kNarrator:
+    case kNvda:
+    case kOrca:
+    case kSupernova:
+    case kTalkback:
+    case kVoiceOver:
+    case kZdsr:
+      return true;
+  }
+}
+
 void BrowserAccessibilityStateImpl::EnableAccessibility() {
   if (!allow_ax_mode_changes_) {
     return;
+  }
+
+  // Track the time since start-up before the kWebContents mode was enabled,
+  // ensuring we record this value only one time.
+  if (!has_enabled_accessibility_in_session_ &&
+      GetAccessibilityMode().has_mode(ui::AXMode::kWebContents)) {
+    has_enabled_accessibility_in_session_ = true;
+    UMA_HISTOGRAM_LONG_TIMES_100("Accessibility.EngineUse.TimeUntilStart",
+                                 timer_.Elapsed());
   }
 
   // Enabling accessibility is generally the result of an accessibility API
@@ -399,14 +454,6 @@ void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
       "Accessibility.ManuallyEnabled",
       !GetAccessibilityMode().is_mode_off() && !allow_ax_mode_changes_);
 
-#if BUILDFLAG(IS_WIN)
-  base::UmaHistogramEnumeration(
-      "Accessibility.WinHighContrastTheme",
-      ui::NativeTheme::GetInstanceForNativeUi()
-          ->GetPlatformHighContrastColorScheme(),
-      ui::NativeTheme::PlatformHighContrastColorScheme::kMaxValue);
-#endif
-
   ui_thread_done_ = true;
   if (other_thread_done_ && background_thread_done_callback_) {
     std::move(background_thread_done_callback_).Run();
@@ -414,6 +461,8 @@ void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
 }
 
 void BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread() {
+  UpdateKnownAssistiveTechSlow();
+
   for (auto& callback : other_thread_histogram_callbacks_) {
     std::move(callback).Run();
   }
@@ -463,6 +512,26 @@ ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityModeForBrowserContext(
       ModeCollectionForTarget::GetAccessibilityMode(browser_context));
 }
 
+bool BrowserAccessibilityStateImpl::ShouldBlockAutoDisable() {
+  if (ActiveKnownAssistiveTech()) {
+    // This condition should only occur if a known assistive tech is active.
+    // * If the assistive tech is actually still active, it indicates an error
+    // with the heuristic, and we should notify a histogram so that we can
+    // gather data and improve the heuristic's logic, as well as block the auto
+    // disable from occurring.
+    // * If the assistive tech is no longer active, then it has been unloaded
+    // and it is fine to auto-disable.
+    // Reaching here should be a rare case, and therefore we call the 'slow'
+    // code (uses system calls on Windows/Linux) to update the running active
+    // assistive tech state, before we make a determination.
+    UpdateKnownAssistiveTechSlow();
+    if (ActiveKnownAssistiveTech()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void BrowserAccessibilityStateImpl::OnUserInputEvent() {
   // No need to do anything if accessibility is off, or if it was forced on.
   if (GetAccessibilityMode().is_mode_off() || !allow_ax_mode_changes_) {
@@ -473,6 +542,14 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
   // events, more than kAutoDisableAccessibilityTimeSecs apart, with
   // no accessibility API usage in-between disable accessibility.
   // (See also OnAccessibilityApiUsage()).
+  // TODO(accessibility) This heuristic will possibly be removed because it's
+  // easy for user input events to occur without causing any changes to the
+  // a11y tree, or firing any events that an assistive tech would process.
+  // However, we should also consider whether to use this heuristic in addition
+  // to the focus/load complete one. Some categories of AT don't listen to focus
+  // or load complete either e.g. Select to Speak. It may not be necessary for
+  // Select-To-Speak to block auto disable if the disabling is lazy, e.g. on
+  // next page load and just for this WebContents.
   base::TimeTicks now = ui::EventTimeForNow();
   user_input_event_count_++;
   if (user_input_event_count_ == 1) {
@@ -481,6 +558,13 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
   }
 
   if (user_input_event_count_ < kAutoDisableAccessibilityEventCount) {
+    return;
+  }
+
+  if (ShouldBlockAutoDisable()) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.AutoDisabled.BlockedAfter.UserInput",
+        ActiveKnownAssistiveTech());
     return;
   }
 
@@ -643,7 +727,7 @@ void BrowserAccessibilityStateImpl::OnModeChangedForProcess(
 
   // Combine the new mode for the process with the effective mode for each
   // WebContents and its associated BrowserContext.
-  base::ranges::for_each(
+  std::ranges::for_each(
       WebContentsImpl::GetAllWebContents(),
       [new_mode](WebContentsImpl* web_contents) {
         if (!web_contents->IsBeingDestroyed()) {
@@ -692,7 +776,7 @@ void BrowserAccessibilityStateImpl::OnModeChangedForBrowserContext(
 
   // Combine this with the effective mode for each WebContents associated with
   // `browser_context`.
-  base::ranges::for_each(
+  std::ranges::for_each(
       WebContentsImpl::GetAllWebContents(),
       [browser_context, mode_for_context](WebContentsImpl* web_contents) {
         if (!web_contents->IsBeingDestroyed() &&

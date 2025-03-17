@@ -211,6 +211,7 @@ ui::ResourceBundle::FontDetails TypographyProvider::GetFontDetailsImpl(
       details.weight = gfx::Font::Weight::BOLD;
       break;
     case style::STYLE_BODY_2:
+    case style::STYLE_LINK_2:
       details.size_delta = gfx::PlatformFont::GetFontSizeDelta(14);
       details.weight = gfx::Font::Weight::NORMAL;
       break;
@@ -296,6 +297,7 @@ ui::ColorId TypographyProvider::GetColorIdImpl(int context, int style) const {
     case style::STYLE_DISABLED:
       return GetDisabledColorId(context);
     case style::STYLE_LINK:
+    case style::STYLE_LINK_2:
     case style::STYLE_LINK_3:
     case style::STYLE_LINK_4:
     case style::STYLE_LINK_5:
@@ -347,9 +349,9 @@ int TypographyProvider::GetLineHeightImpl(int context, int style) const {
       {style::STYLE_BODY_3_BOLD, 20},     {style::STYLE_BODY_4, 18},
       {style::STYLE_BODY_4_MEDIUM, 18},   {style::STYLE_BODY_4_BOLD, 18},
       {style::STYLE_BODY_5, 16},          {style::STYLE_BODY_5_MEDIUM, 16},
-      {style::STYLE_BODY_5_BOLD, 16},     {style::STYLE_LINK_3, 20},
-      {style::STYLE_LINK_4, 18},          {style::STYLE_LINK_5, 16},
-      {style::STYLE_CAPTION, 12},
+      {style::STYLE_BODY_5_BOLD, 16},     {style::STYLE_LINK_2, 20},
+      {style::STYLE_LINK_3, 20},          {style::STYLE_LINK_4, 18},
+      {style::STYLE_LINK_5, 16},          {style::STYLE_CAPTION, 12},
   });
   const auto it = kLineHeights.find(style);
   return (it == kLineHeights.end())

@@ -366,4 +366,6 @@ bool FakeWSCProductList::ShouldFail(FakeWSCProductList::FailureStep step) {
 
 IMPL_IDISPATCH(FakeWSCProductList)
 
+#undef IMPL_IDISPATCH
+#undef IMPL_IUNKOWN_NOQI_WITH_REF
 }  // namespace device_signals

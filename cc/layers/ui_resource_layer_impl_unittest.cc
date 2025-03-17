@@ -7,7 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
+#include "cc/layers/draw_mode.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_client.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
@@ -57,7 +59,9 @@ void QuadSizeTest(FakeUIResourceLayerTreeHostImpl* host_impl,
   auto render_pass = viz::CompositorRenderPass::Create();
 
   AppendQuadsData data;
-  host_impl->active_tree()->root_layer()->AppendQuads(render_pass.get(), &data);
+  host_impl->active_tree()->root_layer()->AppendQuads(
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
 
   // Verify quad rects
   const viz::QuadList& quads = render_pass->quad_list;
@@ -105,7 +109,9 @@ void NeedsBlendingTest(FakeUIResourceLayerTreeHostImpl* host_impl,
   auto render_pass = viz::CompositorRenderPass::Create();
 
   AppendQuadsData data;
-  host_impl->active_tree()->root_layer()->AppendQuads(render_pass.get(), &data);
+  host_impl->active_tree()->root_layer()->AppendQuads(
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
 
   // Verify needs_blending is set appropriately.
   const viz::QuadList& quads = render_pass->quad_list;

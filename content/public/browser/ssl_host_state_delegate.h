@@ -63,13 +63,11 @@ class SSLHostStateDelegate {
 
   // Records that a host has run insecure content of the given |content_type|.
   virtual void HostRanInsecureContent(const std::string& host,
-                                      int child_id,
                                       InsecureContentType content_type) = 0;
 
   // Returns whether the specified host ran insecure content of the given
   // |content_type|.
   virtual bool DidHostRunInsecureContent(const std::string& host,
-                                         int child_id,
                                          InsecureContentType content_type) = 0;
 
   // Allowlists site so it can be loaded over HTTP when HTTPS-First Mode is

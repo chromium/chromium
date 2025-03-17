@@ -50,19 +50,17 @@ class LayerTreeFrameSink::ContextLostForwarder
 };
 
 LayerTreeFrameSink::LayerTreeFrameSink()
-    : LayerTreeFrameSink(nullptr, nullptr, nullptr, nullptr, nullptr) {}
+    : LayerTreeFrameSink(nullptr, nullptr, nullptr, nullptr) {}
 
 LayerTreeFrameSink::LayerTreeFrameSink(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<RasterContextProviderWrapper> worker_context_provider_wrapper,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface)
     : context_provider_(std::move(context_provider)),
       worker_context_provider_wrapper_(
           std::move(worker_context_provider_wrapper)),
       compositor_task_runner_(std::move(compositor_task_runner)),
-      gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       shared_image_interface_(std::move(shared_image_interface)) {
   DETACH_FROM_THREAD(thread_checker_);
 }

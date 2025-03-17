@@ -50,7 +50,6 @@ class OnDeviceModelAccessController;
 class OnDeviceModelAdaptationMetadata;
 class OnDeviceModelComponentStateManager;
 class OnDeviceModelMetadata;
-class ModelQualityLogsUploaderService;
 class OnDeviceModelAdaptationController;
 
 // Controls the lifetime of the on-device model service, loading and unloading
@@ -83,8 +82,6 @@ class OnDeviceModelServiceController
       ModelBasedCapabilityKey feature,
       ExecuteRemoteFn execute_remote_fn,
       base::WeakPtr<OptimizationGuideLogger> logger,
-      base::WeakPtr<ModelQualityLogsUploaderService>
-          model_quality_uploader_service,
       const std::optional<SessionConfigParams>& config_params);
 
   // Starts the service and executes a benchmark to determine the performance
@@ -143,7 +140,7 @@ class OnDeviceModelServiceController
   }
 
  private:
-  class OnDeviceModelClient final : public SessionImpl::OnDeviceModelClient {
+  class OnDeviceModelClient final : public OnDeviceOptions::Client {
    public:
     OnDeviceModelClient(
         ModelBasedCapabilityKey feature,
@@ -152,10 +149,10 @@ class OnDeviceModelServiceController
         base::optional_ref<const on_device_model::AdaptationAssetPaths>
             adaptation_assets);
     ~OnDeviceModelClient() override;
-    std::unique_ptr<SessionImpl::OnDeviceModelClient> Clone() const override;
+    std::unique_ptr<OnDeviceOptions::Client> Clone() const override;
     bool ShouldUse() override;
-    mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetModelRemote()
-        override;
+    void StartSession(mojo::PendingReceiver<on_device_model::mojom::Session>
+                          pending) override;
     void OnResponseCompleted() override;
 
    private:

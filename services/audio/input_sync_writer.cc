@@ -19,6 +19,7 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/audio_glitch_info.h"
@@ -70,7 +71,8 @@ InputSyncWriter::InputSyncWriter(
         return shared_memory_mapping_.size() / shared_memory_segment_count;
       }()),
       creation_time_(base::TimeTicks::Now()),
-      audio_bus_memory_size_(media::AudioBus::CalculateMemorySize(params)),
+      audio_bus_memory_size_(base::checked_cast<uint32_t>(
+          media::AudioBus::CalculateMemorySize(params))),
       glitch_counter_(std::move(glitch_counter)),
       confirm_reads_via_shmem_(
           base::FeatureList::IsEnabled(media::kAudioInputConfirmReadsViaShmem)),

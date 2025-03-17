@@ -46,6 +46,12 @@ class PerformanceManager {
   // the main thread only.
   static bool IsAvailable();
 
+  // Returns the performance manager graph. Valid to call from the main thread
+  // only and if `IsAvailable()` returns true.
+  static Graph* GetGraph();
+
+  // DEPRECATED: Use objects living in the graph directly on the UI thread.
+  //
   // Posts a callback that will run on the PM sequence. Valid to call from any
   // sequence.
   //
@@ -58,11 +64,16 @@ class PerformanceManager {
   static void CallOnGraph(const base::Location& from_here,
                           base::OnceClosure callback);
 
+  // DEPRECATED: Use `GetGraph()` directly from the UI thread.
+  //
   // Same as the above, but the callback is provided a pointer to the graph.
   using GraphCallback = base::OnceCallback<void(Graph*)>;
   static void CallOnGraph(const base::Location& from_here,
                           GraphCallback callback);
 
+  // DEPRECATED: Use `GetGraph()` and call `Graph::PassToGraph()` directly from
+  // the UI thread.
+  //
   // Passes a GraphOwned object into the Graph on the PM sequence. Must only be
   // called if "IsAvailable()" returns true. Valid to call from the main thread
   // only.

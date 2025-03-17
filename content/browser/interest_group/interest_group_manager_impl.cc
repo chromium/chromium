@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -41,6 +42,7 @@
 #include "content/browser/interest_group/interest_group_real_time_report_util.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
+#include "content/browser/interest_group/protected_audience_network_util.h"
 #include "content/browser/interest_group/trusted_signals_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
@@ -128,7 +130,7 @@ std::unique_ptr<network::ResourceRequest> BuildUncredentialedRequest(
   resource_request->request_initiator = frame_origin;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   resource_request->trusted_params->client_security_state =
       client_security_state.Clone();
   if (user_agent_override.has_value()) {
@@ -157,7 +159,8 @@ std::unique_ptr<network::ResourceRequest> BuildUncredentialedRequest(
 }
 
 std::vector<uint8_t> BuildRealTimeReport(
-    const std::vector<uint8_t>& real_time_histogram) {
+    const std::vector<uint8_t>& real_time_histogram,
+    double flip_probability) {
   size_t num_user_buckets =
       blink::features::kFledgeRealTimeReportingNumBuckets.Get();
   size_t num_platform_buckets =
@@ -185,9 +188,17 @@ std::vector<uint8_t> BuildRealTimeReport(
       "buckets", BitPacking(std::move(platform_histogram_list)));
 
   cbor::Value::MapValue report;
-  report.emplace("version", kRealTimeReportDataVersion);
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeEnableUnNoisedRealTimeReport)) {
+    report.emplace("version", 2);
+    report.emplace("flipProbability", flip_probability);
+  } else {
+    report.emplace("version", kRealTimeReportDataVersion);
+  }
+
   report.emplace("histogram", std::move(histogram_map));
   report.emplace("platformHistogram", std::move(platform_histogram_map));
+
   std::optional<std::vector<uint8_t>> report_cbor =
       cbor::Writer::Write(cbor::Value(std::move(report)));
   if (!report_cbor.has_value()) {
@@ -201,14 +212,17 @@ std::vector<uint8_t> BuildRealTimeReport(
 // ad auction to an auction participant.
 std::unique_ptr<network::SimpleURLLoader> BuildSimpleUrlLoader(
     std::unique_ptr<network::ResourceRequest> resource_request,
-    std::optional<std::vector<uint8_t>> real_time_histogram) {
+    std::optional<std::vector<uint8_t>> real_time_histogram,
+    std::optional<double> real_time_report_flip_probability) {
   auto simple_url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
   simple_url_loader->SetTimeoutDuration(base::Seconds(30));
   simple_url_loader->SetAllowHttpErrorResults(true);
 
   if (real_time_histogram.has_value()) {
-    auto report = BuildRealTimeReport(*real_time_histogram);
+    CHECK(real_time_report_flip_probability.has_value());
+    auto report = BuildRealTimeReport(*real_time_histogram,
+                                      *real_time_report_flip_probability);
     simple_url_loader->AttachStringForUpload(
         std::string(report.begin(), report.end()), "application/cbor");
   }
@@ -243,6 +257,17 @@ double GetRealTimeReportingQuota(
   return std::min(new_quota, max_real_time_reports);
 }
 
+void RecordNumberOfSelectableBuyerAndSellerReportingIds(
+    base::span<const blink::InterestGroup::Ad> ads) {
+  for (const blink::InterestGroup::Ad& ad : ads) {
+    if (ad.selectable_buyer_and_seller_reporting_ids) {
+      UMA_HISTOGRAM_COUNTS_1000(
+          "Ads.InterestGroup.NumSelectableBuyerAndSellerReportingIds",
+          ad.selectable_buyer_and_seller_reporting_ids->size());
+    }
+  }
+}
+
 }  // namespace
 
 InterestGroupManagerImpl::ReportRequest::ReportRequest() = default;
@@ -267,11 +292,10 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
               blink::features::kFledgeTrustedSignalsKVv2Support) &&
                   base::FeatureList::IsEnabled(
                       features::kFledgeUseKVv2SignalsCache)
-              ? std::make_unique<TrustedSignalsCacheImpl>(
-                    url_loader_factory,
-                    base::BindRepeating(&InterestGroupManagerImpl::
-                                            GetBiddingAndAuctionServerKey,
-                                        base::Unretained(this)))
+              ? std::make_unique<TrustedSignalsCacheImpl>(base::BindRepeating(
+                    &InterestGroupManagerImpl::GetTrustedServerKey,
+                    base::Unretained(this),
+                    TrustedServerAPIType::kTrustedKeyValue))
               : nullptr),
       auction_process_manager_(
           base::WrapUnique(process_mode == ProcessMode::kDedicated
@@ -380,6 +404,10 @@ void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
   base::OnceClosure notify_callback = CreateNotifyInterestGroupAccessedCallback(
       InterestGroupObserver::kJoin, group.owner, group.name);
 
+  if (group.ads) {
+    RecordNumberOfSelectableBuyerAndSellerReportingIds(*group.ads);
+  }
+
   blink::InterestGroupKey group_key(group.owner, group.name);
   caching_storage_.JoinInterestGroup(
       group, joining_url,
@@ -477,8 +505,15 @@ void InterestGroupManagerImpl::RecordInterestGroupWin(
 }
 
 void InterestGroupManagerImpl::RecordDebugReportLockout(
-    base::Time last_report_sent_time) {
-  caching_storage_.RecordDebugReportLockout(last_report_sent_time);
+    base::Time starting_time,
+    base::TimeDelta duration) {
+  caching_storage_.RecordDebugReportLockout(starting_time, duration);
+}
+
+void InterestGroupManagerImpl::RecordRandomDebugReportLockout(
+    base::Time starting_time) {
+  int random = base::RandInt(1, 90);
+  caching_storage_.RecordDebugReportLockout(starting_time, base::Days(random));
 }
 
 void InterestGroupManagerImpl::RecordDebugReportCooldown(
@@ -554,32 +589,6 @@ void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(
       std::move(callback));
 }
 
-std::optional<std::string> InterestGroupManagerImpl::MaybeGetUserAgentOverride(
-    const FrameTreeNodeId& frame_tree_node_id) {
-  if (base::FeatureList::IsEnabled(features::kFledgeEnableUserAgentOverrides)) {
-    FrameTreeNode* frame_tree_node =
-        FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-
-    if (frame_tree_node != nullptr) {
-      const bool override_user_agent =
-          frame_tree_node->navigator()
-              .GetDelegate()
-              ->ShouldOverrideUserAgentForRendererInitiatedNavigation();
-      if (override_user_agent) {
-        std::string maybe_user_agent =
-            frame_tree_node->navigator()
-                .GetDelegate()
-                ->GetUserAgentOverride(frame_tree_node->frame_tree())
-                .ua_string_override;
-        if (!maybe_user_agent.empty()) {
-          return std::move(maybe_user_agent);
-        }
-      }
-    }
-  }
-  return std::nullopt;
-}
-
 void InterestGroupManagerImpl::EnqueueReports(
     ReportType report_type,
     std::vector<GURL> report_urls,
@@ -622,7 +631,7 @@ void InterestGroupManagerImpl::EnqueueReports(
     report_request->url_loader_factory = url_loader_factory;
     report_request->frame_tree_node_id = frame_tree_node_id;
     report_request->user_agent_override =
-        MaybeGetUserAgentOverride(frame_tree_node_id);
+        GetUserAgentOverrideForProtectedAudience(frame_tree_node_id);
     report_requests_.emplace_back(std::move(report_request));
   }
 
@@ -658,11 +667,19 @@ void InterestGroupManagerImpl::EnqueueRealTimeReports(
     report_requests_.clear();
   }
 
+  // TODO(crbug.com/392148872): Set `add_noise` based on cookie setting.
+  bool add_noise = true;
+  double flip_probability =
+      add_noise ? CalculateFlipProbability(
+                      blink::features::kFledgeRealTimeReportingEpsilon.Get())
+                : 0;
+
   std::map<url::Origin, std::vector<uint8_t>> histograms =
-      CalculateRealTimeReportingHistograms(std::move(contributions));
+      CalculateRealTimeReportingHistograms(std::move(contributions),
+                                           flip_probability);
 
   std::optional<std::string> user_agent_override =
-      MaybeGetUserAgentOverride(frame_tree_node_id);
+      GetUserAgentOverrideForProtectedAudience(frame_tree_node_id);
 
   base::TimeTicks now = base::TimeTicks::Now();
   for (auto& [origin, histogram] : histograms) {
@@ -679,6 +696,7 @@ void InterestGroupManagerImpl::EnqueueRealTimeReports(
     report_request->request_url_size_bytes = report_url.spec().size();
     report_request->report_url = std::move(report_url);
     report_request->real_time_histogram = std::move(histogram);
+    report_request->real_time_report_flip_probability = flip_probability;
     report_request->frame_origin = frame_origin;
     report_request->client_security_state = client_security_state;
     report_request->name = "RealTimeReport";
@@ -712,16 +730,24 @@ void InterestGroupManagerImpl::UpdateInterestGroupPriorityOverrides(
 
 void InterestGroupManagerImpl::SetBiddingAndAuctionServerKeys(
     const url::Origin& coordinator,
-    const std::vector<BiddingAndAuctionServerKey>& keys,
+    std::string serialized_keys,
     base::Time expiration) {
-  caching_storage_.SetBiddingAndAuctionServerKeys(coordinator, keys,
-                                                  expiration);
+  caching_storage_.SetBiddingAndAuctionServerKeys(
+      coordinator, std::move(serialized_keys), expiration);
 }
+
+void InterestGroupManagerImpl::AddTrustedServerKeysDebugOverride(
+    TrustedServerAPIType api,
+    const url::Origin& coordinator,
+    std::string serialized_keys,
+    base::OnceCallback<void(std::optional<std::string>)> callback) {
+  ba_key_fetcher_.AddKeysDebugOverride(
+      api, coordinator, std::move(serialized_keys), std::move(callback));
+}
+
 void InterestGroupManagerImpl::GetBiddingAndAuctionServerKeys(
     const url::Origin& coordinator,
-    base::OnceCallback<
-        void(std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>)>
-        callback) {
+    base::OnceCallback<void(std::pair<base::Time, std::string>)> callback) {
   caching_storage_.GetBiddingAndAuctionServerKeys(coordinator,
                                                   std::move(callback));
 }
@@ -866,9 +892,9 @@ void InterestGroupManagerImpl::OnInterestGroupAdAuctionDataLoadComplete(
 
 void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
     AdAuctionDataLoaderState state,
-    std::optional<base::Time> last_report_sent_time) {
+    std::optional<DebugReportLockout> lockout) {
   state.serializer.SetDebugReportInLockout(
-      IsInDebugReportLockout(last_report_sent_time, base::Time::Now()));
+      IsInDebugReportLockout(lockout, base::Time::Now()));
   BiddingAndAuctionData data = state.serializer.Build();
   base::UmaHistogramTimes(
       "Ads.InterestGroup.ServerAuction.AdAuctionDataLoadTime",
@@ -876,11 +902,13 @@ void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
   std::move(state.callback).Run(std::move(data));
 }
 
-void InterestGroupManagerImpl::GetBiddingAndAuctionServerKey(
+void InterestGroupManagerImpl::GetTrustedServerKey(
+    TrustedServerAPIType api,
+    const url::Origin& seller,
     const std::optional<url::Origin>& coordinator,
     base::OnceCallback<void(
         base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
-  ba_key_fetcher_.GetOrFetchKey(coordinator, std::move(callback));
+  ba_key_fetcher_.GetOrFetchKey(api, seller, coordinator, std::move(callback));
 }
 
 void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
@@ -985,6 +1013,9 @@ void InterestGroupManagerImpl::UpdateInterestGroup(
     const blink::InterestGroupKey& group_key,
     InterestGroupUpdate update,
     base::OnceCallback<void(bool)> callback) {
+  if (update.ads) {
+    RecordNumberOfSelectableBuyerAndSellerReportingIds(*update.ads);
+  }
   caching_storage_.UpdateInterestGroup(
       group_key, std::move(update),
       base::BindOnce(&InterestGroupManagerImpl::OnUpdateComplete,
@@ -1098,7 +1129,8 @@ void InterestGroupManagerImpl::TrySendingOneReport() {
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       BuildSimpleUrlLoader(std::move(resource_request),
-                           report_request->real_time_histogram);
+                           report_request->real_time_histogram,
+                           report_request->real_time_report_flip_probability);
 
   // Pass simple_url_loader to keep it alive until the request fails or succeeds
   // to prevent cancelling the request.

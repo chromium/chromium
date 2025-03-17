@@ -700,6 +700,8 @@ TEST_P(CSSAnimationsTest, CSSTransitionBlockedByAnimationUseCounter) {
 class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
  public:
   CSSAnimationsCompositorSyncTest() = default;
+  explicit CSSAnimationsCompositorSyncTest(bool auto_start)
+      : auto_start_(auto_start) {}
 
   void SetUp() override {
     CSSAnimationsTest::SetUp();
@@ -729,6 +731,11 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
 
     element_->setAttribute(html_names::kClassAttr, AtomicString("fade"));
     UpdateAllLifecyclePhasesForTest();
+
+    if (!auto_start_) {
+      return;
+    }
+
     SyncAnimationOnCompositor(/*needs_start_time*/ true);
 
     Animation* animation = GetAnimation();
@@ -833,9 +840,32 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
   }
 
   Persistent<Element> element_;
+  bool auto_start_ = true;
+};
+
+class CSSAnimationsCompositorStartTest
+    : public CSSAnimationsCompositorSyncTest {
+ public:
+  CSSAnimationsCompositorStartTest() : CSSAnimationsCompositorSyncTest(false) {}
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CSSAnimationsCompositorSyncTest);
+
+// Verifies that cancel is immediately reflected in style update despite being
+// deferred on the compositor until PreCommit.
+TEST_P(CSSAnimationsCompositorSyncTest, AsyncCancel) {
+  Animation* animation = GetAnimation();
+  EXPECT_TRUE(
+      element_->GetComputedStyle()->IsRunningOpacityAnimationOnCompositor());
+  animation->cancel();
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(
+      element_->GetComputedStyle()->IsRunningOpacityAnimationOnCompositor());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+}
 
 // Verifies that changes to the playback rate are synced with the compositor.
 TEST_P(CSSAnimationsCompositorSyncTest, UpdatePlaybackRate) {
@@ -936,9 +966,9 @@ TEST_P(CSSAnimationsCompositorSyncTest, SetStartTime) {
   EXPECT_NEAR(250, current_time->GetAsDouble(), kTimeToleranceMilliseconds);
   EXPECT_NEAR(0.75, element_->GetComputedStyle()->Opacity(), kTolerance);
 
-  // Compositor animation needs to restart and will keep its compositor group.
+  // Compositor animation needs to restart and will have a new compositor group.
   int post_update_compositor_group = animation->CompositorGroup();
-  EXPECT_EQ(compositor_group, post_update_compositor_group);
+  EXPECT_NE(compositor_group, post_update_compositor_group);
   SyncAnimationOnCompositor(/*needs_start_time*/ false);
 
   // Verify updates to cc Keyframe model.
@@ -976,9 +1006,9 @@ TEST_P(CSSAnimationsCompositorSyncTest, SetCurrentTime) {
   EXPECT_NEAR(750, current_time->GetAsDouble(), kTimeToleranceMilliseconds);
   EXPECT_NEAR(0.25, element_->GetComputedStyle()->Opacity(), kTolerance);
 
-  // Compositor animation needs to restart and will keep its compositor group.
+  // Compositor animation needs to restart and will have a new compositor group.
   int post_update_compositor_group = animation->CompositorGroup();
-  EXPECT_EQ(compositor_group, post_update_compositor_group);
+  EXPECT_NE(compositor_group, post_update_compositor_group);
   SyncAnimationOnCompositor(/*needs_start_time*/ false);
 
   // Verify updates to cc Keyframe model.
@@ -997,6 +1027,78 @@ TEST_P(CSSAnimationsCompositorSyncTest, SetCurrentTime) {
   EXPECT_EQ(post_update_compositor_group, animation->CompositorGroup());
   VerifyCompositorIterationTime(950);
   VerifyCompositorOpacity(0.05);
+}
+
+TEST_P(CSSAnimationsCompositorSyncTest, PendingCancel) {
+  Animation* animation = GetAnimation();
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  animation->cancel();
+  // Cancel is still pending. We avoid stopping on the compositor until commit
+  // to prevent blocking on a protected sequence longer than necessary.
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+}
+
+TEST_P(CSSAnimationsCompositorSyncTest, CancelThenPlay) {
+  Animation* animation = GetAnimation();
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  animation->cancel();
+  animation->play();
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  UpdateAllLifecyclePhasesForTest();
+  SyncAnimationOnCompositor(/*needs_start_time*/ true);
+  // Animation is rewound to the start.
+  VerifyCompositorOpacity(1.0);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+}
+
+TEST_P(CSSAnimationsCompositorSyncTest, PauseSetCurrentTimePlay) {
+  // Opacity changes linearly from 1 to 0 over 1 second. The setup leaves the
+  // animation at the midpoint.
+  Animation* animation = GetAnimation();
+
+  // Advances the clock, and ensures that the compositor animation is not
+  // restarted and that it remains in sync.
+  AdvanceClockSeconds(0.2);
+  UpdateAllLifecyclePhasesForTest();
+  VerifyCompositorOpacity(0.3);
+
+  animation->pause();
+  // Advance current time.
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(750),
+                            ASSERT_NO_EXCEPTION);
+  animation->play();
+  UpdateAllLifecyclePhasesForTest();
+  SyncAnimationOnCompositor(/*needs_start_time*/ true);
+  VerifyCompositorOpacity(0.25);
+}
+
+INSTANTIATE_PAINT_TEST_SUITE_P(CSSAnimationsCompositorStartTest);
+
+// Simulate slow start of a composited animation (e.g. due to paint holding).
+TEST_P(CSSAnimationsCompositorStartTest, DelayedStart) {
+  // Opacity changes linearly from 1 to 0 over 1 second.
+  // Animation has not been started on the compositor.
+  Animation* animation = GetAnimation();
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(animation->StartTimeInternal());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  AdvanceClockSeconds(0.1);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(animation->StartTimeInternal());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  AdvanceClockSeconds(0.1);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(animation->StartTimeInternal());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  SyncAnimationOnCompositor(/*needs_start_time*/ true);
+  EXPECT_TRUE(animation->StartTimeInternal());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  VerifyCompositorOpacity(1.0);
 }
 
 TEST_P(CSSAnimationsTest, LingeringTimelineAttachments) {

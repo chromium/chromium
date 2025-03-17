@@ -52,9 +52,10 @@ class MockNotificationContentDetectionModel
                                               background_task_runner,
                                               browser_context) {}
 
-  MOCK_METHOD4(Execute,
+  MOCK_METHOD5(Execute,
                void(blink::PlatformNotificationData& notification_data,
                     const GURL& origin,
+                    bool is_allowlisted_by_user,
                     bool did_match_allowlist,
                     ModelVerdictCallback model_verdict_callback));
 
@@ -170,7 +171,7 @@ TEST_F(NotificationContentDetectionServiceTest, DelayedAllowlistCheckCallback) {
   SetUpTestNotificationContentDetectionModel();
   notification_content_detection_service()
       ->MaybeCheckNotificationContentDetectionModel(
-          *notification_data, origin,
+          *notification_data, origin, /*is_allowlisted_by_user=*/false,
           /*model_verdict_callback=*/base::DoNothing());
 
   // Deleting `notification_data` should still result in successful callback
@@ -179,7 +180,7 @@ TEST_F(NotificationContentDetectionServiceTest, DelayedAllowlistCheckCallback) {
   EXPECT_CALL(*notification_content_detection_model(),
               Execute(testing::Field(&blink::PlatformNotificationData::title,
                                      u"Notification title"),
-                      origin, false, _))
+                      origin, false, false, _))
       .Times(1);
   database_manager()->RestartDelayedCallback(origin);
 }
@@ -193,12 +194,13 @@ TEST_F(NotificationContentDetectionServiceTest,
   blink::PlatformNotificationData notification_data;
   SetUpTestNotificationContentDetectionModel();
   EXPECT_CALL(*notification_content_detection_model(),
-              Execute(_, origin, false, _))
+              Execute(_, origin, false, false, _))
       .Times(1);
   EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(0);
   notification_content_detection_service()
       ->MaybeCheckNotificationContentDetectionModel(
-          notification_data, origin, model_verdict_callback_.Get());
+          notification_data, origin, /*is_allowlisted_by_user=*/false,
+          model_verdict_callback_.Get());
 
   // Check that histograms logging happens as expected.
   histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);
@@ -214,12 +216,14 @@ TEST_F(NotificationContentDetectionServiceTest,
   blink::PlatformNotificationData notification_data;
   SetUpTestNotificationContentDetectionModel();
   EXPECT_CALL(*notification_content_detection_model(),
-              Execute(_, origin, true, _))
+              Execute(_, origin, /*is_allowlisted_by_user=*/false,
+                      /*did_match_allowlist=*/true, _))
       .Times(1);
-  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(0);
+  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(1);
   notification_content_detection_service()
       ->MaybeCheckNotificationContentDetectionModel(
-          notification_data, origin, model_verdict_callback_.Get());
+          notification_data, origin, /*is_allowlisted_by_user=*/false,
+          model_verdict_callback_.Get());
 
   // Check that histograms logging happens as expected.
   histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);
@@ -234,12 +238,13 @@ TEST_F(NotificationContentDetectionServiceTest,
   // Model should not be checked.
   blink::PlatformNotificationData notification_data;
   SetUpTestNotificationContentDetectionModel();
-  EXPECT_CALL(*notification_content_detection_model(), Execute(_, _, _, _))
+  EXPECT_CALL(*notification_content_detection_model(), Execute(_, _, _, _, _))
       .Times(0);
   EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(1);
   notification_content_detection_service()
       ->MaybeCheckNotificationContentDetectionModel(
-          notification_data, origin, model_verdict_callback_.Get());
+          notification_data, origin, /*is_allowlisted_by_user=*/false,
+          model_verdict_callback_.Get());
 
   // Check that histograms logging happens as expected.
   histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);

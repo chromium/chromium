@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EmojiPickerApiProxy, EmojiSearch, TRENDING_GROUP_ID} from 'chrome://emoji-picker/emoji_picker.js';
+import type {EmojiSearch} from 'chrome://emoji-picker/emoji_picker.js';
+import {EmojiPickerApiProxy, TRENDING_GROUP_ID} from 'chrome://emoji-picker/emoji_picker.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -50,8 +51,7 @@ suite('emoji-picker-offline-gif', () => {
   });
 
   test(
-      'There exists emoji-error component in the Emoji Category.',
-      async () => {
+      'There exists emoji-error component in the Emoji Category.', () => {
         const categoryButton =
             emojiSearch.shadowRoot!
                 .querySelectorAll('emoji-category-button')[categoryIndex]!
@@ -77,10 +77,10 @@ suite('emoji-picker-offline-gif', () => {
         const results = await waitForCondition(
             () => emojiSearch.shadowRoot!.getElementById('results'),
             'wait for results');
-        const errorElement = results!.querySelector('.no-result > emoji-error');
+        const errorElement = results.querySelector('.no-result > emoji-error');
         assert(errorElement);
 
-        const errorText = errorElement!.shadowRoot!.querySelector(
+        const errorText = errorElement.shadowRoot!.querySelector(
             '.gif-error-container > .error-text');
         assertEquals(
             errorText!.textContent,

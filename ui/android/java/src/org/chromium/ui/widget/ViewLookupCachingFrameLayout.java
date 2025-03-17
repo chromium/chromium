@@ -88,15 +88,16 @@ public class ViewLookupCachingFrameLayout extends OptimizedFrameLayout {
 
     /**
      * Does the same thing as {@link #findViewById(int)} but caches the result if not null.
-     * Subsequent lookups are cheaper as a result. Adding or removing a child view invalidates
-     * the cache for the ID of the view removed and causes a re-lookup.
+     * Subsequent lookups are cheaper as a result. Adding or removing a child view invalidates the
+     * cache for the ID of the view removed and causes a re-lookup.
+     *
      * @param id The ID of the view to lookup.
      * @return The view if it exists.
      */
-    public @Nullable View fastFindViewById(@IdRes int id) {
+    public <T extends @Nullable View> T fastFindViewById(@IdRes int id) {
         WeakReference<View> ref = mCachedViews.get(id);
-        View view = null;
-        if (ref != null) view = ref.get();
+        T view = null;
+        if (ref != null) view = (T) ref.get();
         if (view == null) view = findViewById(id);
         if (BuildConfig.ENABLE_ASSERTS) {
             assert view == findViewById(id) : "View caching logic is broken!";

@@ -11,7 +11,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_BACKING_H_
 
 #include <type_traits>
+
 #include "base/check_op.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/utils.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -122,6 +124,14 @@ struct ThreadingTrait<HeapVectorBacking<T, Traits>> {
   static constexpr ThreadAffinity kAffinity = ThreadingTrait<T>::kAffinity;
 };
 
+namespace internal {
+template <typename T>
+struct CompactionTraits<blink::HeapVectorBacking<T>> {
+  static constexpr bool SupportsCompaction() {
+    return blink::HeapVectorBacking<T>::TraitsType::kCanMoveWithMemcpy;
+  }
+};
+}  // namespace internal
 }  // namespace blink
 
 namespace WTF {
@@ -190,8 +200,8 @@ namespace cppgc {
 // into a space supporting compaction.
 template <typename T>
 struct SpaceTrait<blink::HeapVectorBacking<T>,
-                  std::enable_if_t<blink::HeapVectorBacking<
-                      T>::TraitsType::kCanMoveWithMemcpy>> {
+                  std::enable_if_t<blink::internal::CompactionTraits<
+                      blink::HeapVectorBacking<T>>::SupportsCompaction()>> {
   using Space = blink::CompactableHeapVectorBackingSpace;
 };
 
@@ -228,6 +238,15 @@ struct TraceTrait<blink::HeapVectorBacking<T, Traits>> {
   }
 
   static void Trace(Visitor* visitor, const void* self) {
+    static_assert(!WTF::IsWeak<T>::value,
+                  "Weakness is not supported in HeapVector and HeapDeque");
+
+    // Early bailout for non-traceable types. `GetTraceDescriptor()` doesn't
+    // support returning a null callback, so this is the best we can do for now.
+    if (!WTF::IsTraceable<T>::value) {
+      return;
+    }
+
     if (!Traits::kCanTraceConcurrently && self) {
       if (visitor->DeferTraceToMutatorThreadIfConcurrent(
               self, &Trace,
@@ -237,13 +256,9 @@ struct TraceTrait<blink::HeapVectorBacking<T, Traits>> {
       }
     }
 
-    static_assert(!WTF::IsWeak<T>::value,
-                  "Weakness is not supported in HeapVector and HeapDeque");
-    if (WTF::IsTraceable<T>::value) {
-      WTF::TraceInCollectionTrait<WTF::kNoWeakHandling,
-                                  blink::HeapVectorBacking<T, Traits>,
-                                  void>::Trace(visitor, self);
-    }
+    WTF::TraceInCollectionTrait<WTF::kNoWeakHandling,
+                                blink::HeapVectorBacking<T, Traits>,
+                                void>::Trace(visitor, self);
   }
 };
 

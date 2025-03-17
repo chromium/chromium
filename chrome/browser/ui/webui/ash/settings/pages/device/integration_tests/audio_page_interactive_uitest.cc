@@ -189,10 +189,10 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
 
     return Steps(If(
         [primary_node, device_id]() { return primary_node != device_id; },
-        Steps(Log(base::StringPrintf(
-                  "Waiting for primary input device to match node ID: %" PRIu64,
-                  device_id)),
-              WaitForState(kActiveInputNodeState, device_id))));
+        Then(Log(base::StringPrintf(
+                 "Waiting for primary input device to match node ID: %" PRIu64,
+                 device_id)),
+             WaitForState(kActiveInputNodeState, device_id))));
   }
 
   auto MaybeWaitForOutputDevice(const uint64_t device_id) {
@@ -201,11 +201,10 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
 
     return Steps(If(
         [primary_node, device_id]() { return primary_node != device_id; },
-        Steps(
-            Log(base::StringPrintf(
-                "Waiting for primary output device to match node ID: %" PRIu64,
-                device_id)),
-            WaitForState(kActiveOutputNodeState, device_id))));
+        Then(Log(base::StringPrintf(
+                 "Waiting for primary output device to match node ID: %" PRIu64,
+                 device_id)),
+             WaitForState(kActiveOutputNodeState, device_id))));
   }
 
   // Wait for an element described by `selector` to exists. Valid selector

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+<select>
+  <option>normal option</option>
+</select>
+<script>
+  const select = document.querySelector('select');
+
+  const div = document.createElement('div');
+  div.innerHTML = '<option>option inside div</option>';
+  select.appendChild(div);
+
+  window.onload = openPickerAppearanceOnly(select);
+</script>

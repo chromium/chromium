@@ -14,25 +14,34 @@
 
 namespace data_sharing {
 
-DataSharingUIDelegateAndroid::DataSharingUIDelegateAndroid(Profile* profile) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_profile = profile->GetJavaObject();
-  java_obj_.Reset(
-      env, Java_DataSharingUiDelegateAndroid_create(env, j_profile).obj());
-}
+DataSharingUIDelegateAndroid::DataSharingUIDelegateAndroid(Profile* profile)
+    : profile_(profile) {}
 
 DataSharingUIDelegateAndroid::~DataSharingUIDelegateAndroid() = default;
 
 void DataSharingUIDelegateAndroid::HandleShareURLIntercepted(
     const GURL& url,
     std::unique_ptr<ShareURLInterceptionContext> context) {
+  LazyInitializeIfNeeded();
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DataSharingUiDelegateAndroid_handleShareURLIntercepted(
       env, java_obj_, url::GURLAndroid::FromNativeGURL(env, url));
 }
 
 ScopedJavaLocalRef<jobject> DataSharingUIDelegateAndroid::GetJavaObject() {
+  LazyInitializeIfNeeded();
   return ScopedJavaLocalRef<jobject>(java_obj_);
+}
+
+void DataSharingUIDelegateAndroid::LazyInitializeIfNeeded() {
+  if (java_obj_) {
+    return;
+  }
+  // TODO(ritikagup): Add UMA metrics to track number of times init happens.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto j_profile = profile_->GetJavaObject();
+  java_obj_.Reset(
+      env, Java_DataSharingUiDelegateAndroid_create(env, j_profile).obj());
 }
 
 }  // namespace data_sharing

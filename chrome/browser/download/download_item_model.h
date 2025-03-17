@@ -85,7 +85,7 @@ class DownloadItemModel : public DownloadUIModel,
   download::DownloadItem::InsecureDownloadStatus GetInsecureDownloadStatus()
       const override;
   void OpenUsingPlatformHandler() override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::optional<DownloadCommands::Command> MaybeGetMediaAppAction()
       const override;
   void OpenUsingMediaApp() override;
@@ -133,7 +133,7 @@ class DownloadItemModel : public DownloadUIModel,
   bool IsEphemeralWarning() const override;
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   void CompleteSafeBrowsingScan() override;
   void ReviewScanningVerdict(content::WebContents* web_contents) override;
 #endif

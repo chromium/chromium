@@ -4,10 +4,10 @@
 
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher_base.h"
 
+#include <algorithm>
 #include <string_view>
 #include <tuple>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "content/public/browser/navigation_handle.h"
@@ -120,8 +120,8 @@ bool GetModifiedQuery(const GURL& url,
       continue;
     }
 
-    auto replace_iterator = base::ranges::find(add_or_replace_query_params, key,
-                                               &QueryReplace::key);
+    auto replace_iterator =
+        std::ranges::find(add_or_replace_query_params, key, &QueryReplace::key);
 
     // Nothing to do.
     if (replace_iterator == add_or_replace_query_params.end()) {
@@ -185,7 +185,11 @@ GURL GetTransformedURL(const RequestParams& params,
   } else if (transform.query()) {
     replacements.SetQueryStr(transform.query()->string_view());
   } else if (GetModifiedQuery(*params.url, transform, &query)) {
-    replacements.SetQueryStr(query);
+    if (query.empty()) {
+      replacements.ClearQuery();
+    } else {
+      replacements.SetQueryStr(query);
+    }
   }
 
   DCHECK(!(transform.clear_fragment() && transform.fragment()));

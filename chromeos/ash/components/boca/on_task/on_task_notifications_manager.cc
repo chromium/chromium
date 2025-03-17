@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/boca/on_task/notification_constants.h"
 #include "chromeos/ash/components/boca/on_task/on_task_notification_blocker.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -63,9 +64,18 @@ OnTaskNotificationsManager::ToastCreateParams::~ToastCreateParams() = default;
 OnTaskNotificationsManager::NotificationCreateParams::NotificationCreateParams(
     std::string id,
     std::u16string title,
-    std::u16string message,
-    message_center::NotifierId notifier_id)
-    : id(id), title(title), message(message), notifier_id(notifier_id) {}
+    int message_id,
+    message_center::NotifierId notifier_id,
+    base::RepeatingClosure completion_callback,
+    base::TimeDelta countdown_period,
+    bool is_counting_down)
+    : id(id),
+      title(title),
+      message_id(message_id),
+      notifier_id(notifier_id),
+      completion_callback(std::move(completion_callback)),
+      countdown_period(countdown_period),
+      is_counting_down(is_counting_down) {}
 
 OnTaskNotificationsManager::NotificationCreateParams::NotificationCreateParams(
     const NotificationCreateParams& other) = default;
@@ -132,16 +142,27 @@ void OnTaskNotificationsManager::CreateToast(ToastCreateParams params) {
 
 void OnTaskNotificationsManager::CreateNotification(
     NotificationCreateParams params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Clear pre-existing notifications with the same id if it exists. This is
   // to ensure they pop up when the window happens to be locked.
-  delegate_->ClearNotification(params.id);
-  std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
-      NotificationType::NOTIFICATION_TYPE_SIMPLE, params.id, params.title,
-      params.message, /*display_source=*/std::u16string(),
-      /*origin_url=*/GURL(), params.notifier_id,
-      message_center::RichNotificationData(), /*delegate=*/nullptr,
-      ash::kSecurityIcon, SystemNotificationWarningLevel::NORMAL);
-  delegate_->ShowNotification(std::move(notification));
+  ClearNotification(params.id);
+  if (pending_notifications_map_.contains(params.id)) {
+    StopProcessingNotification(params.id);
+  }
+  auto notification_timer = std::make_unique<base::RepeatingTimer>();
+
+  // Add an extra kOnTaskNotificationCountdownInterval to end_time for the timer
+  // to start calling the callback.
+  const base::TimeTicks end_time = params.countdown_period +
+                                   kOnTaskNotificationCountdownInterval +
+                                   base::TimeTicks::Now();
+  notification_timer->Start(
+      FROM_HERE, kOnTaskNotificationCountdownInterval,
+      base::BindRepeating(
+          &OnTaskNotificationsManager::CreateNotificationInternal,
+          weak_ptr_factory_.GetWeakPtr(), base::OwnedRef(params), end_time));
+  pending_notifications_map_[params.id] = std::move(notification_timer);
 }
 
 void OnTaskNotificationsManager::StopProcessingNotification(
@@ -151,6 +172,11 @@ void OnTaskNotificationsManager::StopProcessingNotification(
     return;
   }
   pending_notifications_map_.erase(notification_id);
+}
+
+void OnTaskNotificationsManager::ClearNotification(
+    const std::string& notification_id) {
+  delegate_->ClearNotification(notification_id);
 }
 
 void OnTaskNotificationsManager::ConfigureForLockedMode(bool locked) {
@@ -173,6 +199,48 @@ OnTaskNotificationBlocker*
 OnTaskNotificationsManager::GetNotificationBlockerForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return notification_blocker_.get();
+}
+
+void OnTaskNotificationsManager::CreateNotificationInternal(
+    NotificationCreateParams& params,
+    const base::TimeTicks end_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pending_notifications_map_.contains(params.id)) {
+    return;
+  }
+
+  // Check if we've reached the end time and trigger callback if needed.
+  base::TimeDelta time_left = end_time - base::TimeTicks::Now();
+  if (time_left.is_negative()) {
+    params.completion_callback.Run();
+    if (params.is_counting_down) {
+      // When the countdown finishes, immediately clear the last countdown
+      // notification.
+      ClearNotification(params.id);
+    } else {
+      StopProcessingNotification(params.id);
+    }
+    return;
+  }
+
+  // Display notification.
+  const std::u16string message =
+      params.is_counting_down
+          ? l10n_util::GetStringFUTF16(
+                params.message_id,
+                base::NumberToString16(time_left.InSeconds() + 1))
+          : l10n_util::GetStringUTF16(params.message_id);
+  const gfx::VectorIcon& icon = params.is_counting_down
+                                    ? ash::kNotificationTimerIcon
+                                    : ash::kSecurityIcon;
+  std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
+      NotificationType::NOTIFICATION_TYPE_SIMPLE, params.id, params.title,
+      message,
+      /*display_source=*/std::u16string(),
+      /*origin_url=*/GURL(), params.notifier_id,
+      message_center::RichNotificationData(),
+      /*delegate=*/nullptr, icon, SystemNotificationWarningLevel::NORMAL);
+  delegate_->ShowNotification(std::move(notification));
 }
 
 void OnTaskNotificationsManager::CreateToastInternal(

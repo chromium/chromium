@@ -114,7 +114,7 @@ void SVGCircleElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGCircleElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
       {cx_.Get(), cy_.Get(), r_.Get()});
   AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);

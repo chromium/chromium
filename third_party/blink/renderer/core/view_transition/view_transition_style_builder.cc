@@ -5,8 +5,6 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_builder.h"
 
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -88,36 +86,6 @@ void ViewTransitionStyleBuilder::AddAnimations(
       rule_builder.Append("animation-iteration-count: 1;\n");
       rule_builder.Append("animation-direction: normal;\n");
       AddRules(kGroupTagName, tag, rule_builder.ReleaseString());
-      if (!source_properties.box_geometry) {
-        break;
-      }
-
-      StringBuilder keyframe_name_builder;
-      keyframe_name_builder.Append("-ua-view-transition-content-geometry-");
-      keyframe_name_builder.Append(tag);
-      String image_pair_animation_name = keyframe_name_builder.ReleaseString();
-      StringBuilder image_pair_animation_properties_builder;
-      image_pair_animation_properties_builder.Append("animation-name: ");
-      image_pair_animation_properties_builder.Append(image_pair_animation_name);
-      image_pair_animation_properties_builder.Append(";\n");
-      image_pair_animation_properties_builder.Append(
-          "animation-delay: inherit;\n"
-          "animation-direction: inherit;\n"
-          "animation-iteration-count: inherit;\n"
-          "animation-timing-function: inherit;\n");
-      AddRules(kImagePairTagName, tag,
-               image_pair_animation_properties_builder.ReleaseString());
-      builder_.Append("@keyframes ");
-      builder_.Append(image_pair_animation_name);
-      builder_.AppendFormat(
-          R"CSS({
-        from {
-          width: %.3fpx;
-          height: %.3fpx;
-        } }
-      )CSS",
-          source_properties.box_geometry->content_box.Width().ToFloat(),
-          source_properties.box_geometry->content_box.Height().ToFloat());
       break;
   }
 }
@@ -191,18 +159,6 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
         value.Utf8().c_str());
   }
 
-  if (properties.box_geometry) {
-    StringBuilder image_pair_rule_builder;
-    image_pair_rule_builder.AppendFormat(
-        "width: %.3fpx;\n"
-        "height: %.3fpx;\n"
-        "position: relative;\n"
-        "display: block;\n"
-        "inset: unset;\n",
-        properties.box_geometry->content_box.Width().ToFloat(),
-        properties.box_geometry->content_box.Height().ToFloat());
-    AddRules(kImagePairTagName, tag, image_pair_rule_builder.ReleaseString());
-  }
   AddRules(kGroupTagName, tag, group_rule_builder.ReleaseString());
 }
 

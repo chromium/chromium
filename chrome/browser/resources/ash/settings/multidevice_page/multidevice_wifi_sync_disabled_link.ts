@@ -81,7 +81,7 @@ export class SettingsMultideviceWifiSyncDisabledLinkElement extends
 
   private onChromeSyncLinkClick_(event: Event): void {
     event.preventDefault();
-    Router.getInstance().navigateTo(routes.OS_SYNC);
+    Router.getInstance().navigateTo(routes.OS_SYNC_CONTROLS);
   }
 }
 

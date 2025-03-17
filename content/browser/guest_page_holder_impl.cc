@@ -5,6 +5,7 @@
 #include "content/browser/guest_page_holder_impl.h"
 
 #include "base/notimplemented.h"
+#include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -112,7 +113,7 @@ NavigationController& GuestPageHolderImpl::GetController() {
   return frame_tree_.controller();
 }
 
-RenderFrameHost* GuestPageHolderImpl::GetGuestMainFrame() {
+RenderFrameHostImpl* GuestPageHolderImpl::GetGuestMainFrame() {
   return frame_tree_.root()->current_frame_host();
 }
 
@@ -243,6 +244,15 @@ const blink::RendererPreferences& GuestPageHolderImpl::GetRendererPrefs() {
   return renderer_preferences_;
 }
 
+const blink::web_pref::WebPreferences&
+GuestPageHolderImpl::GetWebPreferences() {
+  if (!web_preferences_) {
+    web_preferences_ = std::make_unique<blink::web_pref::WebPreferences>(
+        owner_web_contents_->ComputeWebPreferences(GetGuestMainFrame()));
+  }
+  return *web_preferences_;
+}
+
 GuestPageHolderImpl* GuestPageHolderImpl::FromRenderFrameHost(
     RenderFrameHostImpl& render_frame_host) {
   // Escape fenced frames, looking at the outermost main frame (not escaping
@@ -290,6 +300,27 @@ FrameTree* GuestPageHolderImpl::CreateNewWindow(
     return nullptr;
   }
   return &guest_page->frame_tree();
+}
+
+bool GuestPageHolderImpl::OnRenderFrameProxyVisibilityChanged(
+    RenderFrameProxyHost* render_frame_proxy_host,
+    blink::mojom::FrameVisibility visibility) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
+  if (render_frame_proxy_host->frame_tree_node() != frame_tree_.root()) {
+    return false;
+  }
+  const bool hidden_with_parent_state =
+      render_frame_proxy_host->cross_process_frame_connector()->IsHidden() ||
+      render_frame_proxy_host->cross_process_frame_connector()
+              ->EmbedderVisibility() != Visibility::VISIBLE;
+  frame_tree_.ForEachRenderViewHost([hidden_with_parent_state](
+                                        RenderViewHostImpl* rvh) {
+    rvh->SetFrameTreeVisibility(
+        hidden_with_parent_state ? blink::mojom::PageVisibilityState::kHidden
+                                 : blink::mojom::PageVisibilityState::kVisible);
+  });
+  return false;
 }
 
 }  // namespace content

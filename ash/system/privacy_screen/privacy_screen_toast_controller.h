@@ -43,6 +43,12 @@ class ASH_EXPORT PrivacyScreenToastController
   void StartAutoCloseTimer();
 
  private:
+  friend class PrivacyScreenToastControllerTest;
+
+  // Calculates the bubble's accessible name based on the state of the privacy
+  // screen.
+  static std::u16string CalculateAccessibleNameForBubble();
+
   // Updates the toast UI with the current privacy screen state.
   void UpdateToastView();
 

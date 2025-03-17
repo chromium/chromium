@@ -17,7 +17,7 @@
 
 namespace {
 
-// Returns a string with the width of each gfx::Rect in |tab_bounds|, separated
+// Returns a string with the width of each gfx::Rect in `tab_bounds`, separated
 // by spaces.
 std::string TabWidthsAsString(const std::vector<gfx::Rect>& tab_bounds) {
   std::string result;
@@ -30,7 +30,7 @@ std::string TabWidthsAsString(const std::vector<gfx::Rect>& tab_bounds) {
   return result;
 }
 
-// Returns a string with the x-coordinate of each gfx::Rect in |tab_bounds|,
+// Returns a string with the x-coordinate of each gfx::Rect in `tab_bounds`,
 // separated by spaces.
 std::string TabXPositionsAsString(const std::vector<gfx::Rect>& tab_bounds) {
   std::string result;

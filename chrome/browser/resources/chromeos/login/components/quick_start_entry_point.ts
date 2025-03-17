@@ -16,11 +16,10 @@
  *     'quickStartTextkey' - ID of localized string to be used as button text.
  */
 
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeI18nMixin} from './mixins/oobe_i18n_mixin.js';
-
 import {getTemplate} from './quick_start_entry_point.html.js';
 
 const QuickStartEntryPointBase = OobeI18nMixin(PolymerElement);

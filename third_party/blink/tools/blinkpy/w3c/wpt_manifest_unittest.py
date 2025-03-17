@@ -37,6 +37,7 @@ class WPTManifestUnitTest(unittest.TestCase):
     def test_ensure_manifest_updates_manifest_if_it_exists(self):
         host = MockHost()
         port = TestPort(host)
+        port.should_update_manifest = lambda x: True
         manifest_path = MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json'
 
         host.filesystem.write_text_file(manifest_path,

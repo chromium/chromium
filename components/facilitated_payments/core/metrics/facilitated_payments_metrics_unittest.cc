@@ -15,6 +15,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments::facilitated {
+namespace {
+
+std::string GetPurchaseActionResultString(PurchaseActionResult result) {
+  switch (result) {
+    case PurchaseActionResult::kResultOk:
+      return "Succeeded";
+    case PurchaseActionResult::kCouldNotInvoke:
+      return "Failed";
+    case PurchaseActionResult::kResultCanceled:
+      return "Abandoned";
+  }
+}
+
+}  // namespace
 
 TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopied) {
   base::HistogramTester histogram_tester;
@@ -26,15 +40,59 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopied) {
                                       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogFopSelected) {
+TEST(FacilitatedPaymentsMetricsTest, LogEwalletPaymentLinkDetected) {
   base::HistogramTester histogram_tester;
 
-  LogFopSelected();
+  LogPaymentLinkDetected(ukm::UkmRecorder::GetNewSourceID());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PaymentLinkDetected",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest, LogPixFopSelectedAndLatency) {
+  base::HistogramTester histogram_tester;
+
+  LogPixFopSelectedAndLatency(base::Milliseconds(10));
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.FopSelector.UserAction",
       /*sample=*/FopSelectorAction::kFopSelected,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "FacilitatedPayments.Pix.FopSelected.Latency",
+      /*sample=*/10,
+      /*expected_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest, LogEwalletFopSelected) {
+  for (AvailableEwalletsConfiguration type :
+       {AvailableEwalletsConfiguration::kSingleBoundEwallet,
+        AvailableEwalletsConfiguration::kSingleUnboundEwallet,
+        AvailableEwalletsConfiguration::kMultipleEwallets}) {
+    base::HistogramTester histogram_tester;
+
+    LogEwalletFopSelected(type);
+
+    std::string type_string;
+    switch (type) {
+      case AvailableEwalletsConfiguration::kSingleBoundEwallet:
+        type_string = "SingleBoundEwallet";
+        break;
+      case AvailableEwalletsConfiguration::kSingleUnboundEwallet:
+        type_string = "SingleUnboundEwallet";
+        break;
+      case AvailableEwalletsConfiguration::kMultipleEwallets:
+        type_string = "MultipleEwallets";
+        break;
+    }
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"FacilitatedPayments.Ewallet.FopSelector.UserAction.",
+                      type_string}),
+        /*sample=*/FopSelectorAction::kFopSelected,
+        /*expected_bucket_count=*/1);
+  }
 }
 
 TEST(FacilitatedPaymentsMetricsTest,
@@ -78,43 +136,91 @@ TEST(FacilitatedPaymentsMetricsTest,
 }
 
 TEST(FacilitatedPaymentsMetricsTest,
-     LogInitiatePurchaseActionResultAndLatency) {
+     LogPixInitiatePurchaseActionResultAndLatency) {
   for (PurchaseActionResult result :
        {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
         PurchaseActionResult::kResultCanceled}) {
     base::HistogramTester histogram_tester;
 
-    LogInitiatePurchaseActionResultAndLatency(result, base::Milliseconds(10));
+    LogPixInitiatePurchaseActionResultAndLatency(result,
+                                                 base::Milliseconds(10));
 
-    std::string result_string;
-    switch (result) {
-      case PurchaseActionResult::kResultOk:
-        result_string = "Succeeded";
-        break;
-      case PurchaseActionResult::kCouldNotInvoke:
-        result_string = "Failed";
-        break;
-      case PurchaseActionResult::kResultCanceled:
-        result_string = "Abandoned";
-        break;
-    }
     histogram_tester.ExpectBucketCount(
         base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.",
-                      result_string, ".Latency"}),
+                      GetPurchaseActionResultString(result), ".Latency"}),
         /*sample=*/10,
         /*expected_count=*/1);
   }
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogPixFopSelectorShownLatency) {
-  base::HistogramTester histogram_tester;
+TEST(FacilitatedPaymentsMetricsTest, LogPixTransactionResultAndLatency) {
+  for (PurchaseActionResult result :
+       {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
+        PurchaseActionResult::kResultCanceled}) {
+    base::HistogramTester histogram_tester;
 
-  LogPixFopSelectorShownLatency(base::Milliseconds(10));
+    LogPixTransactionResultAndLatency(result, base::Milliseconds(10));
 
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.FopSelectorShown.LatencyAfterCopy",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Pix.Transaction.",
+                      GetPurchaseActionResultString(result), ".Latency"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+  }
+}
+
+TEST(FacilitatedPaymentsMetricsTest,
+     LogEwalletInitiatePurchaseActionResultAndLatency_DeviceBound) {
+  for (PurchaseActionResult result :
+       {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
+        PurchaseActionResult::kResultCanceled}) {
+    base::HistogramTester histogram_tester;
+
+    LogEwalletInitiatePurchaseActionResultAndLatency(
+        result, base::Milliseconds(10),
+        PaymentLinkValidator::Scheme::kShopeePay,
+        /*is_device_bound=*/true);
+
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Ewallet.InitiatePurchaseAction.",
+                      GetPurchaseActionResultString(result),
+                      ".Latency.DeviceBound"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Ewallet.InitiatePurchaseAction.",
+                      GetPurchaseActionResultString(result),
+                      ".Latency.ShopeePay.DeviceBound"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+  }
+}
+
+TEST(FacilitatedPaymentsMetricsTest,
+     LogEwalletInitiatePurchaseActionResultAndLatency_DeviceNotBound) {
+  for (PurchaseActionResult result :
+       {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
+        PurchaseActionResult::kResultCanceled}) {
+    base::HistogramTester histogram_tester;
+
+    LogEwalletInitiatePurchaseActionResultAndLatency(
+        result, base::Milliseconds(10),
+        PaymentLinkValidator::Scheme::kShopeePay,
+        /*is_device_bound=*/false);
+
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Ewallet.InitiatePurchaseAction.",
+                      GetPurchaseActionResultString(result),
+                      ".Latency.DeviceNotBound"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Ewallet.InitiatePurchaseAction.",
+                      GetPurchaseActionResultString(result),
+                      ".Latency.ShopeePay.DeviceNotBound"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+  }
 }
 
 class FacilitatedPaymentsMetricsEwalletExitedReasonTest
@@ -177,7 +283,11 @@ INSTANTIATE_TEST_SUITE_P(
                         EwalletFlowExitedReason::kClientTokenNotAvailable,
                         EwalletFlowExitedReason::kInitiatePaymentFailed,
                         EwalletFlowExitedReason::kActionTokenNotAvailable,
-                        EwalletFlowExitedReason::kUserLoggedOut),
+                        EwalletFlowExitedReason::kUserLoggedOut,
+                        EwalletFlowExitedReason::kFopSelectorClosedNotByUser,
+                        EwalletFlowExitedReason::kFopSelectorClosedByUser,
+                        EwalletFlowExitedReason::kFoldableDevice,
+                        EwalletFlowExitedReason::kMaxStrikes),
         testing::Values(PaymentLinkValidator::Scheme::kDuitNow,
                         PaymentLinkValidator::Scheme::kShopeePay,
                         PaymentLinkValidator::Scheme::kTngd)));
@@ -232,8 +342,40 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogPixCodeCopied) {
   EXPECT_EQ(ukm_entries[0].metrics.at("PixCodeCopied"), true);
 }
 
-TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorShownUkm) {
-  LogFopSelectorShownUkm(ukm::UkmRecorder::GetNewSourceID());
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogEwalletPaymentLinkDetectedUkm) {
+  LogPaymentLinkDetected(ukm::UkmRecorder::GetNewSourceID());
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_PaymentLinkDetected::kEntryName,
+      {ukm::builders::FacilitatedPayments_PaymentLinkDetected::
+           kPaymentLinkDetectedName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("PaymentLinkDetected"), true);
+}
+
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogEwalletFopSelectorShownUkm) {
+  size_t index = 0;
+  for (PaymentLinkValidator::Scheme scheme :
+       {PaymentLinkValidator::Scheme::kDuitNow,
+        PaymentLinkValidator::Scheme::kShopeePay,
+        PaymentLinkValidator::Scheme::kTngd}) {
+    LogEwalletFopSelectorShownUkm(ukm::UkmRecorder::GetNewSourceID(), scheme);
+
+    auto ukm_entries = ukm_recorder_.GetEntries(
+        ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::kEntryName,
+        {ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::
+             kShownName,
+         ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::
+             kSchemeName});
+    ASSERT_EQ(ukm_entries.size(), index + 1);
+    EXPECT_EQ(ukm_entries[index].metrics.at("Shown"), true);
+    EXPECT_EQ(ukm_entries[index++].metrics.at("Scheme"),
+              static_cast<uint8_t>(scheme));
+  }
+}
+
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogPixFopSelectorShownUkm) {
+  LogPixFopSelectorShownUkm(ukm::UkmRecorder::GetNewSourceID());
 
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_Pix_FopSelectorShown::kEntryName,
@@ -242,10 +384,10 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorShownUkm) {
   EXPECT_EQ(ukm_entries[0].metrics.at("Shown"), true);
 }
 
-TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorResult) {
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogPixFopSelectorResult) {
   size_t index = 0;
   for (bool accepted : {true, false}) {
-    LogFopSelectorResultUkm(accepted, ukm::UkmRecorder::GetNewSourceID());
+    LogPixFopSelectorResultUkm(accepted, ukm::UkmRecorder::GetNewSourceID());
 
     auto ukm_entries = ukm_recorder_.GetEntries(
         ukm::builders::FacilitatedPayments_Pix_FopSelectorResult::kEntryName,
@@ -253,6 +395,31 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorResult) {
              kResultName});
     ASSERT_EQ(ukm_entries.size(), index + 1);
     EXPECT_EQ(ukm_entries[index++].metrics.at("Result"), accepted);
+  }
+}
+
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogEwalletFopSelectorResult) {
+  size_t index = 0;
+  for (bool accepted : {true, false}) {
+    for (PaymentLinkValidator::Scheme scheme :
+         {PaymentLinkValidator::Scheme::kDuitNow,
+          PaymentLinkValidator::Scheme::kShopeePay,
+          PaymentLinkValidator::Scheme::kTngd}) {
+      LogEwalletFopSelectorResultUkm(
+          accepted, ukm::UkmRecorder::GetNewSourceID(), scheme);
+
+      auto ukm_entries = ukm_recorder_.GetEntries(
+          ukm::builders::FacilitatedPayments_Ewallet_FopSelectorResult::
+              kEntryName,
+          {ukm::builders::FacilitatedPayments_Ewallet_FopSelectorResult::
+               kResultName,
+           ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::
+               kSchemeName});
+      ASSERT_EQ(ukm_entries.size(), index + 1);
+      EXPECT_EQ(ukm_entries[index].metrics.at("Result"), accepted);
+      EXPECT_EQ(ukm_entries[index++].metrics.at("Scheme"),
+                static_cast<uint8_t>(scheme));
+    }
   }
 }
 
@@ -306,6 +473,15 @@ class FacilitatedPaymentsMetricsParameterizedTest
         return "Tngd";
       case PaymentLinkValidator::Scheme::kInvalid:
         NOTREACHED();
+    }
+  }
+
+  std::string GetFopSelectorShownLatencyString() const {
+    switch (payment_type()) {
+      case FacilitatedPaymentsType::kEwallet:
+        return "LatencyAfterDetectingPaymentLink";
+      case FacilitatedPaymentsType::kPix:
+        return "LatencyAfterCopy";
     }
   }
 };
@@ -539,26 +715,97 @@ TEST_P(FacilitatedPaymentsMetricsParameterizedTest, LogInitiatePaymentAttempt) {
           : 0);
 }
 
+TEST_P(FacilitatedPaymentsMetricsParameterizedTest,
+       LogFopSelectorShownLatency) {
+  base::HistogramTester histogram_tester;
+
+  LogFopSelectorShownLatency(payment_type(), base::Milliseconds(10), scheme());
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"FacilitatedPayments.", GetFacilitatedPaymentsTypeString(),
+                    ".FopSelectorShown.", GetFopSelectorShownLatencyString()}),
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"FacilitatedPayments.Ewallet.FopSelectorShown."
+                    "LatencyAfterDetectingPaymentLink.",
+                    GetSchemeString()}),
+      /*sample=*/10,
+      /*expected_bucket_count=*/payment_type() ==
+              FacilitatedPaymentsType::kEwallet
+          ? 1
+          : 0);
+}
+
 class FacilitatedPaymentsMetricsTestForUiScreens
-    : public testing::TestWithParam<UiState> {
+    : public testing::TestWithParam<std::tuple<FacilitatedPaymentsType,
+                                               PaymentLinkValidator::Scheme,
+                                               UiState>> {
  public:
-  UiState ui_screen() { return GetParam(); }
+  FacilitatedPaymentsType payment_type() const {
+    return std::get<0>(GetParam());
+  }
+
+  PaymentLinkValidator::Scheme scheme() const {
+    return std::get<1>(GetParam());
+  }
+
+  UiState ui_screen() { return std::get<2>(GetParam()); }
+
+  std::string GetFacilitatedPaymentsTypeString() const {
+    switch (payment_type()) {
+      case FacilitatedPaymentsType::kEwallet:
+        return "Ewallet";
+      case FacilitatedPaymentsType::kPix:
+        return "Pix";
+    }
+  }
+
+  std::string GetSchemeString() const {
+    switch (scheme()) {
+      case PaymentLinkValidator::Scheme::kDuitNow:
+        return "DuitNow";
+      case PaymentLinkValidator::Scheme::kShopeePay:
+        return "ShopeePay";
+      case PaymentLinkValidator::Scheme::kTngd:
+        return "Tngd";
+      case PaymentLinkValidator::Scheme::kInvalid:
+        NOTREACHED();
+    }
+  }
 };
 
-INSTANTIATE_TEST_SUITE_P(FacilitatedPaymentsMetricsTest,
-                         FacilitatedPaymentsMetricsTestForUiScreens,
-                         testing::Values(UiState::kFopSelector,
-                                         UiState::kProgressScreen,
-                                         UiState::kErrorScreen));
+INSTANTIATE_TEST_SUITE_P(
+    FacilitatedPaymentsMetricsTest,
+    FacilitatedPaymentsMetricsTestForUiScreens,
+    testing::Combine(testing::Values(FacilitatedPaymentsType::kEwallet,
+                                     FacilitatedPaymentsType::kPix),
+                     testing::Values(PaymentLinkValidator::Scheme::kDuitNow,
+                                     PaymentLinkValidator::Scheme::kShopeePay,
+                                     PaymentLinkValidator::Scheme::kTngd),
+                     testing::Values(UiState::kFopSelector,
+                                     UiState::kProgressScreen,
+                                     UiState::kErrorScreen)));
 
 TEST_P(FacilitatedPaymentsMetricsTestForUiScreens, LogUiScreenShown) {
   base::HistogramTester histogram_tester;
 
-  LogUiScreenShown(ui_screen());
+  LogUiScreenShown(payment_type(), ui_screen(), scheme());
 
-  histogram_tester.ExpectUniqueSample("FacilitatedPayments.Pix.UiScreenShown",
-                                      /*sample=*/ui_screen(),
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"FacilitatedPayments.", GetFacilitatedPaymentsTypeString(),
+                    ".UiScreenShown"}),
+      /*sample=*/ui_screen(),
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"FacilitatedPayments.", GetFacilitatedPaymentsTypeString(),
+                    ".UiScreenShown.", GetSchemeString()}),
+      /*sample=*/ui_screen(),
+      /*expected_bucket_count=*/payment_type() ==
+              FacilitatedPaymentsType::kEwallet
+          ? 1
+          : 0);
 }
 
 }  // namespace payments::facilitated

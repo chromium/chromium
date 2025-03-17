@@ -6,13 +6,15 @@ import './scan_settings_section.js';
 import '/strings.m.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './page_size_select.html.js';
 import {PageSize} from './scanning.mojom-webui.js';
 import {alphabeticalCompare, getPageSizeString} from './scanning_app_util.js';
-import {AbstractConstructor, SelectMixin, SelectMixinInterface} from './select_mixin.js';
+import type {AbstractConstructor, SelectMixinInterface} from './select_mixin.js';
+import {SelectMixin} from './select_mixin.js';
 
 /** @type {PageSize} */
 const DEFAULT_PAGE_SIZE = PageSize.kNaLetter;

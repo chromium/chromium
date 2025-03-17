@@ -5,10 +5,11 @@
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
 
 #include <memory>
-#include <utility>
 
-#include "base/functional/bind.h"
+#include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -17,8 +18,8 @@
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
@@ -38,7 +39,7 @@ static const int kHotspotY = 12;
 
 class ThreadCheckMouseCursorMonitor : public webrtc::MouseCursorMonitor {
  public:
-  ThreadCheckMouseCursorMonitor(
+  explicit ThreadCheckMouseCursorMonitor(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : task_runner_(task_runner), callback_(nullptr) {}
 
@@ -118,10 +119,9 @@ TEST_F(MouseCursorMonitorProxyTest, CursorShape) {
   // Initialize the proxy.
   proxy_ = std::make_unique<MouseCursorMonitorProxy>(
       capture_thread_.task_runner(),
-      webrtc::DesktopCaptureOptions::CreateDefault());
-  proxy_->SetMouseCursorMonitorForTests(
-      std::make_unique<ThreadCheckMouseCursorMonitor>(
-          capture_thread_.task_runner()));
+      base::ReturnValueOnce<std::unique_ptr<webrtc::MouseCursorMonitor>>(
+          std::make_unique<ThreadCheckMouseCursorMonitor>(
+              capture_thread_.task_runner())));
   proxy_->Init(this, webrtc::MouseCursorMonitor::SHAPE_ONLY);
   proxy_->Capture();
 

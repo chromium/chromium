@@ -18,8 +18,7 @@ per-file ppapi_plugin_process_host_receiver_bindings.*=set noparent
 per-file ppapi_plugin_process_host_receiver_bindings.*=file://ipc/SECURITY_OWNERS
 per-file browser_child_process_host_impl_receiver_bindings.*=set noparent
 per-file browser_child_process_host_impl_receiver_bindings.*=file://ipc/SECURITY_OWNERS
-per-file utility_process_host_receiver_bindings.*=set noparent
-per-file utility_process_host_receiver_bindings.*=file://ipc/SECURITY_OWNERS
+per-file child_process_launcher_helper_ios.mm=file://ipc/SECURITY_OWNERS
 
 per-file host_zoom_*=wjmaclean@chromium.org
 per-file site_per_process_*=kenrb@chromium.org
@@ -31,15 +30,6 @@ per-file sandbox_mac_unittest.*=file://sandbox/mac/OWNERS
 # Linux sandboxing.
 per-file sandbox_host_linux.*=file://sandbox/linux/OWNERS
 per-file sandbox_ipc_linux.*=file://sandbox/linux/OWNERS
-per-file utility_process_sandbox_browsertest.cc=file://sandbox/linux/OWNERS
-
-# Utility sandbox delegate requires security review.
-per-file utility_sandbox_delegate.*=set noparent
-per-file utility_sandbox_delegate.*=file://sandbox/OWNERS
-per-file utility_sandbox_delegate_unittest.*=set noparent
-per-file utility_sandbox_delegate_unittest.*=file://sandbox/OWNERS
-per-file utility_sandbox_delegate_win.*=set noparent
-per-file utility_sandbox_delegate_win.*=file://sandbox/win/OWNERS
 
 # PPAPI sandbox delegate requires security review.
 per-file ppapi_plugin_sandboxed_process_launcher_delegate.*=set noparent

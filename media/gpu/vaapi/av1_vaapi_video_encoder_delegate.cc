@@ -9,6 +9,7 @@
 
 #include "media/gpu/vaapi/av1_vaapi_video_encoder_delegate.h"
 
+#include <array>
 #include <bit>
 #include <bitset>
 #include <utility>
@@ -47,7 +48,7 @@ constexpr int kPrimaryReferenceNone = 7;
 // The table is generated from the table of
 // ited from //third_party/libaom/source/libaom/av1/encoder/av1_quantize.c.
 uint8_t QindexToQuantizer(uint8_t q_index) {
-  constexpr static uint8_t kQindexToQuantizer[] = {
+  constexpr static const auto kQindexToQuantizer = std::to_array<uint8_t>({
       0,  1,  1,  1,  1,  2,  2,  2,  2,  3,  3,  3,  3,  4,  4,  4,  4,  5,
       5,  5,  5,  6,  6,  6,  6,  7,  7,  7,  7,  8,  8,  8,  8,  9,  9,  9,
       9,  10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 13, 13, 13, 13, 14,
@@ -63,7 +64,7 @@ uint8_t QindexToQuantizer(uint8_t q_index) {
       54, 55, 55, 55, 55, 56, 56, 56, 56, 57, 57, 57, 57, 58, 58, 58, 58, 59,
       59, 59, 59, 60, 60, 60, 60, 61, 61, 61, 61, 62, 62, 62, 62, 62, 63, 63,
       63, 63, 63, 63,
-  };
+  });
   static_assert(std::size(kQindexToQuantizer) == 256,
                 "Unexpected kQindexToQuantizer size");
   CHECK_LT(base::strict_cast<size_t>(q_index), std::size(kQindexToQuantizer));

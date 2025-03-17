@@ -85,9 +85,7 @@ void MoveGroupAcrossWindows(Browser* source_browser,
     return;
   }
 
-  target_tab_strip->group_model()->AddTabGroup(
-      group_id,
-      std::optional<tab_groups::TabGroupVisualData>{*group->visual_data()});
+  target_tab_strip->AddTabGroup(group_id, *group->visual_data());
 
   const gfx::Range source_tab_indices = group->ListTabs();
   const int tab_count = source_tab_indices.length();
@@ -235,8 +233,8 @@ bool DropTabsInNewBrowser(Browser* new_browser,
     if (!new_group_model) {
       return false;
     }
-    new_group_model->AddTabGroup(*source_group_id,
-                                 *source_group->visual_data());
+    new_browser->tab_strip_model()->AddTabGroup(*source_group_id,
+                                                *source_group->visual_data());
   }
 
   const int source_index = tab_indices_to_move.start();

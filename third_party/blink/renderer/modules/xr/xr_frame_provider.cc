@@ -23,10 +23,14 @@
 #include "third_party/blink/renderer/modules/xr/xr_gpu_binding.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_swap_chain.h"
+#include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
+#include "third_party/blink/renderer/modules/xr/xr_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewport.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
+#include "third_party/blink/renderer/modules/xr/xr_webgl_layer_client.h"
+#include "third_party/blink/renderer/modules/xr/xr_webgl_projection_layer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_frame_transport.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "ui/display/display.h"
@@ -292,7 +296,8 @@ void XRFrameProvider::OnImmersiveFrameData(
   if (data.is_null()) {
     DVLOG(2) << __func__ << ": no data, current frame_id=" << frame_id_;
   } else {
-    DVLOG(2) << __func__ << ": have data, frame_id=" << data->frame_id;
+    DVLOG(2) << __func__
+             << ": have data, frame_id=" << data->render_info->frame_id;
   }
 
   // We may have lost the immersive session since the last VSync request.
@@ -331,16 +336,16 @@ void XRFrameProvider::OnImmersiveFrameData(
   // [1] https://immersive-web.github.io/webxr/#xr-animation-frame
   double high_res_now_ms = UpdateImmersiveFrameTime(window, *data);
 
-  frame_id_ = data->frame_id;
+  frame_id_ = data->render_info->frame_id;
   if (data->buffer_shared_image.has_value()) {
     buffer_shared_image_ = gpu::ClientSharedImage::ImportUnowned(
-        data->buffer_shared_image.value());
+        std::move(data->buffer_shared_image.value()));
     buffer_sync_token_ = data->buffer_sync_token.value();
   }
 
   if (data->camera_image_buffer_shared_image.has_value()) {
     camera_image_shared_image_ = gpu::ClientSharedImage::ImportUnowned(
-        data->camera_image_buffer_shared_image.value());
+        std::move(data->camera_image_buffer_shared_image.value()));
     camera_image_sync_token_ = data->camera_image_buffer_sync_token.value();
   }
 
@@ -488,10 +493,11 @@ void XRFrameProvider::ProcessScheduledFrame(
     }
 
     bool emulated_position = false;
-    if (frame_data && frame_data->mojo_from_viewer) {
+    if (frame_data && frame_data->render_info->mojo_from_viewer) {
       DVLOG(3) << __func__ << ": pose available, emulated_position="
-               << frame_data->mojo_from_viewer->emulated_position;
-      emulated_position = frame_data->mojo_from_viewer->emulated_position;
+               << frame_data->render_info->mojo_from_viewer->emulated_position;
+      emulated_position =
+          frame_data->render_info->mojo_from_viewer->emulated_position;
     } else {
       DVLOG(2) << __func__ << ": emulating immersive frame position";
       emulated_position = true;
@@ -629,9 +635,14 @@ double XRFrameProvider::UpdateImmersiveFrameTime(
   return high_res_now_ms;
 }
 
-void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
-  CHECK(layer);
+void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayerClient* layer_client,
+                                       bool was_changed) {
+  CHECK(layer_client);
   CHECK(immersive_session_);
+
+  const XRLayer* layer = layer_client->layer();
+  CHECK(layer);
+
   CHECK_EQ(layer->session(), immersive_session_);
   CHECK_EQ(layer->session()->GraphicsApi(), XRGraphicsBinding::Api::kWebGL);
   if (!immersive_presentation_provider_.is_bound())
@@ -640,7 +651,7 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
   TRACE_EVENT1("gpu", "XRFrameProvider::SubmitWebGLLayer", "frame", frame_id_);
   DVLOG(3) << __func__ << ": frame=" << frame_id_;
 
-  WebGLRenderingContextBase* webgl_context = layer->context();
+  WebGLRenderingContextBase* webgl_context = layer_client->context();
 
   if (frame_id_ < 0) {
     // There is no valid frame_id_, and the browser side is not currently
@@ -681,7 +692,7 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
   }
 
   scoped_refptr<StaticBitmapImage> image_ref =
-      layer->TransferToStaticBitmapImage();
+      layer_client->TransferToStaticBitmapImage();
 
   if (!image_ref)
     return;
@@ -778,10 +789,6 @@ void XRFrameProvider::SubmitWebGPULayer(XRGPUProjectionLayer* layer,
     return;
   }
 
-  // TODO(crbug.com/359418629): This should be handled somewhere else and only
-  // called when the viewports actually change.
-  UpdateWebGPULayerViewports(layer);
-
   frame_transport_->FramePreImageWebGPU(device->GetDawnControlClient());
 
   if (!frame_transport_->DrawingIntoSharedBuffer()) {
@@ -806,15 +813,17 @@ void XRFrameProvider::SubmitWebGPULayer(XRGPUProjectionLayer* layer,
 
 // TODO(bajones): This only works because we're restricted to a single layer at
 // the moment. Will need an overhaul when we get more robust layering support.
-void XRFrameProvider::UpdateWebGPULayerViewports(XRGPUProjectionLayer* layer) {
+void XRFrameProvider::UpdateLayerViewports(XRProjectionLayer* layer) {
   DCHECK(layer->session() == immersive_session_);
-  DCHECK(layer->session()->GraphicsApi() == XRGraphicsBinding::Api::kWebGPU);
   DCHECK(immersive_presentation_provider_.is_bound());
 
-  XRGPUBinding* webgpu_binding = static_cast<XRGPUBinding*>(layer->binding());
+  XRGraphicsBinding* binding = layer->binding();
 
-  // TODO(crbug.com/359418629): Adjust viewport calculations once we start using
-  // texture array-capable mailboxes.
+  // TODO(crbug.com/359418629): Currently we have no way to submit texture
+  // arrays to the compositor, so any array textures produced by the page will
+  // be copied to a side-by-side texture prior to submission. That does mean
+  // that we need to adjust the viewports from those reported to the page,
+  // however, by altering the texture width here...
   float width = layer->textureWidth() * layer->textureArrayLength();
   float height = layer->textureHeight();
 
@@ -826,16 +835,20 @@ void XRFrameProvider::UpdateWebGPULayerViewports(XRGPUProjectionLayer* layer) {
     XRViewData* right_view =
         immersive_session_->ViewDataForEye(device::mojom::blink::XREye::kRight);
 
-    gfx::Rect left = webgpu_binding->GetViewportForView(layer, left_view);
-    gfx::Rect right = webgpu_binding->GetViewportForView(layer, right_view);
-    right.set_x(right.x() + layer->textureWidth());
+    gfx::Rect left = binding->GetViewportForView(layer, left_view);
+    gfx::Rect right = binding->GetViewportForView(layer, right_view);
+
+    // (continued from prior comment) ...and offsetting the viewports here.
+    if (layer->textureArrayLength() > 1) {
+      right.set_x(right.x() + layer->textureWidth());
+    }
 
     left_coords = NormalizeViewport(left, width, height);
     right_coords = NormalizeViewport(right, width, height);
   } else {
     XRViewData* mono_view =
         immersive_session_->ViewDataForEye(device::mojom::blink::XREye::kNone);
-    gfx::Rect viewport = webgpu_binding->GetViewportForView(layer, mono_view);
+    gfx::Rect viewport = binding->GetViewportForView(layer, mono_view);
 
     left_coords = NormalizeViewport(viewport, width, height);
 

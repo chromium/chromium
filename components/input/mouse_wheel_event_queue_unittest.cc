@@ -155,11 +155,17 @@ class MouseWheelEventQueueTest : public testing::Test,
   // MouseWheelEventQueueClient
   void SendMouseWheelEventImmediately(
       const MouseWheelEventWithLatencyInfo& event,
-      MouseWheelEventHandledCallback callback) override {
+      MouseWheelEventHandledCallback callback,
+      DispatchToRendererCallback& dispatch_callback) override {
     WebMouseWheelEvent* cloned_event = new WebMouseWheelEvent();
     std::unique_ptr<WebInputEvent> cloned_event_holder(cloned_event);
     *cloned_event = event.event;
     sent_events_.push_back(std::move(cloned_event_holder));
+    // Currently the tests assume the events are always dispatched, to simulate
+    // events not being dispatched the `dispatch_callback` should be run with
+    // `kNotDispatched`.
+    std::move(dispatch_callback)
+        .Run(event.event, DispatchToRendererResult::kDispatched);
     callbacks_.emplace_back(base::BindOnce(
         [](MouseWheelEventHandledCallback callback,
            const MouseWheelEventWithLatencyInfo& event,
@@ -260,7 +266,12 @@ class MouseWheelEventQueueTest : public testing::Test,
     event.momentum_phase = momentum_phase;
     event.rails_mode = rails_mode;
     event.has_synthetic_phase = has_synthetic_phase;
-    queue_->QueueEvent(MouseWheelEventWithLatencyInfo(event));
+
+    {
+      ScopedDispatchToRendererCallback dispatch_callback(base::DoNothing());
+      queue_->QueueEvent(MouseWheelEventWithLatencyInfo(event),
+                         dispatch_callback.callback);
+    }
   }
   void SendMouseWheel(float x,
                       float y,

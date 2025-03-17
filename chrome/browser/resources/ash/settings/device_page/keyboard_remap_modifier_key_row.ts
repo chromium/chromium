@@ -8,7 +8,6 @@
  * allow users to customize the remapped key.
  */
 
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 import '../controls/settings_dropdown_menu.js';

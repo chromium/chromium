@@ -14,10 +14,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -28,12 +28,10 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
-#include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/display/display.h"
-#include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_counter.h"
 #include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -129,9 +127,7 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
       frame_sink_id_(frame_sink_id),
       surface_resource_holder_(this),
       is_root_(is_root),
-      allow_copy_output_requests_(is_root),
-      use_blit_request_for_view_transition_(base::FeatureList::IsEnabled(
-          features::kBlitRequestsForViewTransition)) {
+      allow_copy_output_requests_(is_root) {
   // This may result in SetBeginFrameSource() being called.
   frame_sink_manager_->RegisterCompositorFrameSinkSupport(frame_sink_id_, this);
 }
@@ -166,12 +162,6 @@ CompositorFrameSinkSupport::~CompositorFrameSinkSupport() {
   // is added as an observer of `frame_sink_manager_`). Therefore we explicitly
   // clear the requests here regardless.
   ClearAllPendingCopyOutputRequests();
-
-  // The display compositor has ownership of shared memory for each
-  // SharedBitmapId that has been reported from the client. Since the client is
-  // gone that memory can be freed. If we don't then it would leak.
-  for (const auto& id : owned_bitmaps_)
-    frame_sink_manager_->shared_bitmap_manager()->ChildDeletedSharedBitmap(id);
 
   // No video capture clients should remain after calling
   // UnregisterCompositorFrameSinkSupport().
@@ -635,7 +625,7 @@ void CompositorFrameSinkSupport::SetThreads(
   }
   base::flat_set<base::PlatformThreadId> thread_ids;
   for (const auto& thread : unverified_threads) {
-    thread_ids.insert(thread.id);
+    thread_ids.insert(base::PlatformThreadId(thread.id));
   }
   frame_sink_manager_->VerifySandboxedThreadIds(
       thread_ids,
@@ -718,52 +708,6 @@ void CompositorFrameSinkSupport::SubmitCompositorFrame(
       submit_time,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   DCHECK_EQ(result, SubmitResult::ACCEPTED);
-}
-
-bool CompositorFrameSinkSupport::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const SharedBitmapId& id) {
-  if (!frame_sink_manager_->shared_bitmap_manager()->ChildAllocatedSharedBitmap(
-          region.Map(), id)) {
-    return false;
-  }
-
-  owned_bitmaps_.insert(id);
-  return true;
-}
-
-void CompositorFrameSinkSupport::DidDeleteSharedBitmap(
-    const SharedBitmapId& id) {
-  frame_sink_manager_->shared_bitmap_manager()->ChildDeletedSharedBitmap(id);
-  owned_bitmaps_.erase(id);
-}
-
-void CompositorFrameSinkSupport::SubmitCompositorFrameLocally(
-    const SurfaceId& surface_id,
-    CompositorFrame frame,
-    const RendererSettings& settings) {
-  CHECK_EQ(surface_id, last_created_surface_id_);
-
-  pending_frames_.push_back(FrameData{.local_frame = true});
-  Surface* surface = surface_manager_->GetSurfaceForId(surface_id);
-
-  auto frame_rejected_callback =
-      base::ScopedClosureRunner(base::BindOnce([] { NOTREACHED(); }));
-  auto frame_index = ++last_frame_index_;
-  Surface::QueueFrameResult result = surface->QueueFrame(
-      std::move(frame), frame_index, std::move(frame_rejected_callback));
-  // Currently, frames are only queued on Android, and we don't need to use
-  // `SubmitCompositorFrameLocally` for evicting resources on Android.
-  CHECK_EQ(result, Surface::QueueFrameResult::ACCEPTED_ACTIVE);
-
-  // Make sure this surface will be stretched to match the display size. If
-  // `auto_resize_output_surface` is false, then swap will not occur meaning
-  // that the content of this compositor frame will not be presented. If it is
-  // not, then we won't properly push out existing resources. A mismatch between
-  // root surface size and display size can happen. For example, there is a race
-  // condition if `Display` is resized after it is set not visible but before
-  // any compositor frame with that new size is submitted.
-  CHECK(settings.auto_resize_output_surface);
 }
 
 SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
@@ -1194,16 +1138,32 @@ void CompositorFrameSinkSupport::UpdateDisplayRootReference(
 }
 
 void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
-  int64_t trace_id = ComputeTraceId();
+  int64_t trace_id = base::trace_event::GetNextGlobalTraceId();
   TRACE_EVENT(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-      perfetto::Flow::Global(trace_id), [trace_id](perfetto::EventContext ctx) {
+      perfetto::Flow::Global(trace_id),
+      [trace_id, &args](perfetto::EventContext ctx) {
         base::TaskAnnotator::EmitTaskTimingDetails(ctx);
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_ISSUE_BEGIN_FRAME);
         data->set_surface_frame_trace_id(trace_id);
+        auto* possible_deadlines = data->set_possible_deadlines();
+        possible_deadlines->set_frame_time_us(
+            args.frame_time.since_origin().InMicroseconds());
+        if (args.possible_deadlines.has_value()) {
+          for (const PossibleDeadline& deadline :
+               args.possible_deadlines->deadlines) {
+            auto* timeline = possible_deadlines->add_frame_timeline();
+            timeline->set_vsync_id(deadline.vsync_id);
+            timeline->set_latch_delta_us(deadline.latch_delta.InMicroseconds());
+            timeline->set_present_delta_us(
+                deadline.present_delta.InMicroseconds());
+          }
+          possible_deadlines->set_preferred_frame_timeline_index(
+              args.possible_deadlines->preferred_index);
+        }
       });
 
   if (compositor_frame_callback_) {
@@ -1396,7 +1356,7 @@ void CompositorFrameSinkSupport::AttachCaptureClient(
 
 void CompositorFrameSinkSupport::DetachCaptureClient(
     CapturableFrameSink::Client* client) {
-  const auto it = base::ranges::find(capture_clients_, client);
+  const auto it = std::ranges::find(capture_clients_, client);
   if (it != capture_clients_.end())
     capture_clients_.erase(it);
   if (client->IsVideoCaptureStarted())
@@ -1533,15 +1493,6 @@ const char* CompositorFrameSinkSupport::GetSubmitResultAsString(
       return "Surface belongs to another client";
   }
   NOTREACHED();
-}
-
-int64_t CompositorFrameSinkSupport::ComputeTraceId() {
-  // This is losing some info, but should normally be sufficient to avoid
-  // collisions.
-  ++trace_sequence_;
-  uint64_t client = (frame_sink_id_.client_id() & 0xffff);
-  uint64_t sink = (frame_sink_id_.sink_id() & 0xffff);
-  return (client << 48) | (sink << 32) | trace_sequence_;
 }
 
 bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
@@ -1692,14 +1643,15 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
 
       view_transition_token_to_animation_manager_[transition_token] =
           SurfaceAnimationManager::CreateWithSave(
-              directive, surface, frame_sink_manager_->shared_bitmap_manager(),
-              use_blit_request_for_view_transition_
-                  ? frame_sink_manager_->GetSharedImageInterface()
-                  : nullptr,
+              directive, surface,
+              frame_sink_manager_->GetSharedImageInterface(),
               frame_sink_manager_->reserved_resource_id_tracker(),
               base::BindOnce(&CompositorFrameSinkSupport::
                                  OnSaveTransitionDirectiveProcessed,
                              base::Unretained(this)));
+      if (surface_animation_manager_callback_) {
+        std::move(surface_animation_manager_callback_).Run();
+      }
       break;
     case CompositorFrameTransitionDirective::Type::kAnimateRenderer: {
       if (directive.maybe_cross_frame_sink()) {
@@ -1823,6 +1775,16 @@ void CompositorFrameSinkSupport::SetLayerContextWantsBeginFrames(
     bool wants_begin_frames) {
   layer_context_wants_begin_frames_ = wants_begin_frames;
   UpdateNeedsBeginFramesInternal();
+}
+
+void CompositorFrameSinkSupport::RegisterSurfaceAnimationManagerNotification(
+    base::OnceCallback<void()> callback) {
+  if (!view_transition_token_to_animation_manager_.empty()) {
+    std::move(callback).Run();
+  } else {
+    CHECK(!surface_animation_manager_callback_);
+    surface_animation_manager_callback_ = std::move(callback);
+  }
 }
 
 void CompositorFrameSinkSupport::DestroySelf() {

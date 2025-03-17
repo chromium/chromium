@@ -113,7 +113,7 @@ export class DeclutterPageElement extends CrLitElement {
 
   override focus() {
     if (this.showBackButton) {
-      const backButton = this.shadowRoot!.querySelector('cr-icon-button')!;
+      const backButton = this.shadowRoot.querySelector('cr-icon-button')!;
       backButton.focus();
     } else {
       super.focus();
@@ -133,14 +133,14 @@ export class DeclutterPageElement extends CrLitElement {
   }
 
   private onAvailableHeightChange_() {
-    const scrollable = this.shadowRoot!.querySelector('#scrollable');
+    const scrollable = this.shadowRoot.querySelector('#scrollable');
     if (scrollable) {
       this.updateScroll_();
     }
   }
 
-  private async maybeAddScrollListener_() {
-    const scrollable = this.shadowRoot!.querySelector('#scrollable');
+  private maybeAddScrollListener_() {
+    const scrollable = this.shadowRoot.querySelector('#scrollable');
     if (scrollable) {
       scrollable.addEventListener('scroll', this.updateScroll_.bind(this));
     }
@@ -149,7 +149,7 @@ export class DeclutterPageElement extends CrLitElement {
   private async updateScroll_() {
     await this.updateComplete;
     const scrollable =
-        this.shadowRoot!.querySelector<HTMLElement>('#scrollable');
+        this.shadowRoot.querySelector<HTMLElement>('#scrollable');
     if (scrollable) {
       const maxHeight = this.getMaxScrollableHeight_();
       scrollable.style.maxHeight = maxHeight + 'px';
@@ -196,7 +196,7 @@ export class DeclutterPageElement extends CrLitElement {
       const tabSearchItem: TabSearchItemElement = e.target;
       tabSearchItem.classList.toggle('selected', true);
       const closeButton =
-          tabSearchItem.shadowRoot!.querySelector('#closeButton')!;
+          tabSearchItem.shadowRoot.querySelector('#closeButton')!;
       closeButton.setAttribute('aria-selected', 'true');
     } else {
       throw new Error('Invalid onTabFocus_ target type: ' + typeof e.target);
@@ -208,7 +208,7 @@ export class DeclutterPageElement extends CrLitElement {
       const tabSearchItem: TabSearchItemElement = e.target;
       tabSearchItem.classList.toggle('selected', false);
       const closeButton =
-          tabSearchItem.shadowRoot!.querySelector('#closeButton')!;
+          tabSearchItem.shadowRoot.querySelector('#closeButton')!;
       closeButton.setAttribute('aria-selected', 'false');
     } else {
       throw new Error('Invalid onTabBlur_ target type: ' + typeof e.target);
@@ -220,7 +220,7 @@ export class DeclutterPageElement extends CrLitElement {
       return;
     }
     const tabSearchItems =
-        Array.from(this.shadowRoot!.querySelectorAll('tab-search-item'));
+        Array.from(this.shadowRoot.querySelectorAll('tab-search-item'));
     const tabSearchItemCount = tabSearchItems.length;
     const focusedIndex =
         tabSearchItems.findIndex((element) => element.matches(':focus'));
@@ -236,7 +236,7 @@ export class DeclutterPageElement extends CrLitElement {
     }
     const selectedItem = tabSearchItems[nextFocusedIndex]!;
     const focusableElement =
-        selectedItem.shadowRoot!.querySelector(`cr-icon-button`)!;
+        selectedItem.shadowRoot.querySelector(`cr-icon-button`)!;
     focusableElement.focus();
     e.preventDefault();
     e.stopPropagation();
@@ -272,9 +272,11 @@ export class DeclutterPageElement extends CrLitElement {
     this.duplicateTabDatas_ = [];
     for (const url in tabs) {
       const urlTabs = tabs[url]!;
-      if (urlTabs.length > 0) {
+      // `tabs` include all the tabs with the url. The duplicate tab count
+      // should be one less than the count of `tabs`.
+      const duplicateCount = urlTabs.length - 1;
+      if (duplicateCount > 0) {
         const tabData: TabData = this.tabDataFromTab_(urlTabs[0]!);
-        const duplicateCount = urlTabs.length - 1;
         if (duplicateCount === 1) {
           tabData.tab.title =
               loadTimeData.getStringF('duplicateItemTitleSingle', url);

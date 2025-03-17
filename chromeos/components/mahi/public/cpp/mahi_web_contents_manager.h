@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_MAHI_PUBLIC_CPP_MAHI_WEB_CONTENTS_MANAGER_H_
 
 #include <cstdint>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
@@ -52,7 +53,7 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiWebContentsManager {
   // Virtual so we can override in tests.
   virtual void OnContextMenuClicked(int64_t display_id,
                                     mahi::ButtonType button_type,
-                                    const std::u16string& question,
+                                    std::u16string_view question,
                                     const gfx::Rect& mahi_menu_bounds) = 0;
 
   // Returns boolean to indicate if the current focused page is distillable. The

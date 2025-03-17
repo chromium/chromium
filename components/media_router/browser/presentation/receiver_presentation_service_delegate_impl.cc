@@ -21,8 +21,9 @@ void ReceiverPresentationServiceDelegateImpl::CreateForWebContents(
     const std::string& presentation_id) {
   DCHECK(web_contents);
 
-  if (FromWebContents(web_contents))
+  if (FromWebContents(web_contents)) {
     return;
+  }
 
   web_contents->SetUserData(
       UserDataKey(),

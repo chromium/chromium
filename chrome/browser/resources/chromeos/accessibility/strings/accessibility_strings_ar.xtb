@@ -608,7 +608,7 @@
 <translation id="4844625982113518938">‏اضغط على أي مفتاح للتعرُّف على اسمه. يؤدي الضغط على Ctrl+W إلى إغلاق وضع التعلم.</translation>
 <translation id="4846428657345567687">‏مرحبًا بكم في ChromeVox!</translation>
 <translation id="4848993367330139335">tmr</translation>
-<translation id="4854380505292502090">ليست هناك أداة وسائط سابقة.</translation>
+<translation id="4854380505292502090">ما من تطبيق مصغَّر سابق للوسائط.</translation>
 <translation id="4855927945655956315">‏مفاتيح مهمّة على لوحة المفاتيح: Control</translation>
 <translation id="485806788160414322">تشغيل الوسائط أو إيقافها مؤقتًا</translation>
 <translation id="4862744964787595316">غير غامق</translation>
@@ -1006,7 +1006,7 @@
 <translation id="7609342235116740824">‏الإعلان عن عنوان URL للصفحة الحالية</translation>
 <translation id="7609363189280667021">التبديل إلى تسميات برايل التوضيحية</translation>
 <translation id="761303759119251275">إسهام</translation>
-<translation id="762020119231868829">إيقاف كل أدوات الوسائط التي يتم تشغيلها حاليًا مؤقتًا</translation>
+<translation id="762020119231868829">إيقاف كل التطبيقات المصغَّرة للوسائط التي يتم تشغيلها حاليًا مؤقتًا</translation>
 <translation id="7625690649919402823">الجدول التالي</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)، الدرجة <ph name="GRADE" /></translation>
 <translation id="7637342083105831460">اضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين للاطّلاع على زر "التدريب العملي" أو زر "الدرس التالي". بعد ذلك، اضغط على مفتاح البحث + مفتاح المسافة لتنشيط الزر.</translation>
@@ -1025,7 +1025,7 @@
 <translation id="7714340021005120797">ليس هناك مربع تحرير وسرد تالٍ.</translation>
 <translation id="7715455358521357192">تضييق العين اليمنى</translation>
 <translation id="7724603315864178912">قص</translation>
-<translation id="7731785449856576010">ليست هناك أداة وسائط تالية.</translation>
+<translation id="7731785449856576010">ما من تطبيق مصغَّر تالٍ للوسائط.</translation>
 <translation id="7735498529470878067">تساعدك ميزة "الاستكشاف باللمس" في التعرّف سريعًا على ما يتم عرضه على الشاشة.</translation>
 <translation id="773906353055481349">‏اضغط على Search+Ctrl+Alt مع استخدام الأسهم للتنقل بين الخلايا.</translation>
 <translation id="7746976083433980639"><ph name="ACTION" /> من أجل <ph name="LABEL" /></translation>
@@ -1114,6 +1114,7 @@
 <translation id="8316881042119029234">برتقالي مصفر عتيق</translation>
 <translation id="8326783648485765113">أخضر عشبي</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{علامة جنيه واحدة}zero{# pound signs}two{علامتا جنيه (#)}few{# علامات جنيه}many{# علامة جنيه}other{# من علامات الجنيه}}</translation>
+<translation id="8351821207686449674">عرض الشرح أو إخفاؤه</translation>
 <translation id="8378855320830505539">منطقة</translation>
 <translation id="8382679411218029383">إكمال تلقائي على السطر وعلى هيئة قائمة</translation>
 <translation id="8394908167088220973">تشغيل/إيقاف الوسائط</translation>

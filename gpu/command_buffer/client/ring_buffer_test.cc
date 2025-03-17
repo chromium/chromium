@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+
 // This file contains the tests for the RingBuffer class.
 
 #include "gpu/command_buffer/client/ring_buffer.h"
@@ -160,7 +162,7 @@ TEST_F(RingBufferTest, TestFreePendingToken) {
 
   delay_set_token_ = true;
   // Allocate several buffers to fill in the memory.
-  int32_t tokens[kAllocCount];
+  std::array<int32_t, kAllocCount> tokens;
   for (unsigned int ii = 0; ii < kAllocCount; ++ii) {
     void* pointer = allocator_->Alloc(kSize);
     EXPECT_GE(kBufferSize,

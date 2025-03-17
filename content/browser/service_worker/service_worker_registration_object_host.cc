@@ -347,11 +347,12 @@ bool ServiceWorkerRegistrationObjectHost::CanServeRegistrationObjectHostMethods(
     return false;
   }
 
-  std::vector<GURL> urls = {container_host_->url(), registration_->scope()};
+  std::vector<GURL> urls = {container_host_->url_for_access_check(),
+                            registration_->scope()};
   if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
           urls)) {
     SCOPED_CRASH_KEY_STRING256("SWROH_CSROHM", "host_url",
-                               container_host_->url().spec());
+                               container_host_->url_for_access_check().spec());
     SCOPED_CRASH_KEY_STRING256("SWROH_CSROHM", "reg_scope",
                                registration_->scope().spec());
     receivers_.ReportBadMessage(

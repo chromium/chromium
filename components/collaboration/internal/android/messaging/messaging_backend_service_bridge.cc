@@ -175,6 +175,32 @@ MessagingBackendServiceBridge::GetActivityLog(
   return ActivityLogItemsToJava(env, activity_log_items);
 }
 
+void MessagingBackendServiceBridge::ClearDirtyTabMessagesForGroup(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_caller,
+    const base::android::JavaParamRef<jstring>& j_collaboration_id) {
+  auto collaboration_id = data_sharing::GroupId(
+      base::android::ConvertJavaStringToUTF8(env, j_collaboration_id));
+  service_->ClearDirtyTabMessagesForGroup(collaboration_id);
+}
+
+void MessagingBackendServiceBridge::ClearPersistentMessage(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_caller,
+    const base::android::JavaParamRef<jstring>& j_message_id,
+    jint j_type) {
+  CHECK(j_message_id);
+  auto message_id = base::Uuid::ParseLowercase(
+      base::android::ConvertJavaStringToUTF8(env, j_message_id));
+  auto type = static_cast<PersistentNotificationType>(j_type);
+  std::optional<PersistentNotificationType> type_opt = std::make_optional(type);
+  if (type == PersistentNotificationType::UNDEFINED) {
+    type_opt = std::nullopt;
+  }
+
+  service_->ClearPersistentMessage(message_id, type_opt);
+}
+
 void MessagingBackendServiceBridge::RunInstantaneousMessageSuccessCallback(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_caller,
@@ -219,7 +245,7 @@ void MessagingBackendServiceBridge::HidePersistentMessage(
 }
 
 void MessagingBackendServiceBridge::DisplayInstantaneousMessage(
-    InstantMessage message,
+    const std::vector<InstantMessage>& messages,
     InstantMessageDelegate::SuccessCallback success_callback) {
   if (java_ref_.is_null()) {
     // We definitely failed to display the message.
@@ -229,21 +255,17 @@ void MessagingBackendServiceBridge::DisplayInstantaneousMessage(
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  std::unique_ptr<
-      MessagingBackendService::InstantMessageDelegate::SuccessCallback>
-      wrapped_callback = std::make_unique<
-          MessagingBackendService::InstantMessageDelegate::SuccessCallback>(
-          std::move(success_callback));
-  CHECK(wrapped_callback.get());
-  jlong j_native_ptr = reinterpret_cast<jlong>(wrapped_callback.get());
-
-  Java_MessagingBackendServiceBridge_displayInstantaneousMessage(
-      env, java_ref_, InstantMessageToJava(env, message), j_native_ptr);
-
   // We expect Java to always call us back through
   // MessagingBackendServiceBridge::RunInstantaneousMessageSuccessCallback,
-  // which means we assume it is OK to release this object.
-  wrapped_callback.release();
+  // Copy |callback| on the heap to pass the pointer through JNI. This callback
+  // will be deleted when it's run.
+  CHECK(!success_callback.is_null());
+  jlong j_native_ptr = reinterpret_cast<jlong>(
+      new MessagingBackendService::InstantMessageDelegate::SuccessCallback(
+          std::move(success_callback)));
+
+  Java_MessagingBackendServiceBridge_displayInstantaneousMessage(
+      env, java_ref_, InstantMessagesToJava(env, messages), j_native_ptr);
 }
 
 }  // namespace collaboration::messaging::android

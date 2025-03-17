@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_suggestions_delegate.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "base/containers/adapters.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace ash {
 namespace {
@@ -69,7 +71,7 @@ void HoldingSpaceSuggestionsDelegate::RemoveSuggestions(
 
 void HoldingSpaceSuggestionsDelegate::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
-  if (base::ranges::any_of(items, [&](const HoldingSpaceItem* item) {
+  if (std::ranges::any_of(items, [&](const HoldingSpaceItem* item) {
         return item->IsInitialized() &&
                ItemIsPinnedSuggestion(item, suggestions_by_type_);
       })) {
@@ -81,7 +83,7 @@ void HoldingSpaceSuggestionsDelegate::OnHoldingSpaceItemsAdded(
 
 void HoldingSpaceSuggestionsDelegate::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
-  if (base::ranges::any_of(items, [&](const HoldingSpaceItem* item) {
+  if (std::ranges::any_of(items, [&](const HoldingSpaceItem* item) {
         return item->IsInitialized() &&
                ItemIsPinnedSuggestion(item, suggestions_by_type_);
       })) {
@@ -168,8 +170,8 @@ void HoldingSpaceSuggestionsDelegate::OnSuggestionsFetched(
 
   // Extract file paths from `suggestions`.
   std::vector<base::FilePath> updated_suggestions(suggestions->size());
-  base::ranges::transform(*suggestions, updated_suggestions.begin(),
-                          &FileSuggestData::file_path);
+  std::ranges::transform(*suggestions, updated_suggestions.begin(),
+                         &FileSuggestData::file_path);
 
   // No-op if `updated_suggestions` are unchanged.
   const HoldingSpaceItem::Type item_type = GetItemTypeFromSuggestionType(type);

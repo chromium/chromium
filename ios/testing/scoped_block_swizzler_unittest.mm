@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/testing/scoped_block_swizzler.h"
+
 #import "base/apple/foundation_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -33,7 +34,9 @@ TEST_F(ScopedBlockSwizzlerTest, SwizzlingClassMethods) {
               [ScopedBlockSwizzlerTestClass classMethodToSwizzle]);
 
   {
-    id block = ^NSString*(id self) { return kSwizzledClassValue; };
+    id block = ^NSString*(id self) {
+      return kSwizzledClassValue;
+    };
     ScopedBlockSwizzler swizzler([ScopedBlockSwizzlerTestClass class],
                                  @selector(classMethodToSwizzle), block);
     EXPECT_NSEQ(kSwizzledClassValue,
@@ -72,7 +75,9 @@ TEST_F(ScopedBlockSwizzlerTest, TestReset) {
   EXPECT_NSEQ(kOriginalClassValue,
               [ScopedBlockSwizzlerTestClass classMethodToSwizzle]);
 
-  id block = ^NSString*(id self) { return kSwizzledClassValue; };
+  id block = ^NSString*(id self) {
+    return kSwizzledClassValue;
+  };
   std::unique_ptr<ScopedBlockSwizzler> swizzler(
       new ScopedBlockSwizzler([ScopedBlockSwizzlerTestClass class],
                               @selector(classMethodToSwizzle), block));

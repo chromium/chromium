@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/http_firewall_routine.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/storage_partition.h"
@@ -156,7 +156,7 @@ void HttpFirewallRoutine::OnProbeComplete(
   if (probe_exit_enum == TlsProber::ProbeExitEnum::kDnsFailure) {
     dns_resolution_failures_++;
   } else {
-    const auto* iter = base::ranges::find(kRetryResponseCodes, result);
+    const auto* iter = std::ranges::find(kRetryResponseCodes, result);
     if (iter != std::end(kRetryResponseCodes) && num_retries_ > 0) {
       num_retries_--;
       AttemptProbe(url);

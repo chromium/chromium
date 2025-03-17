@@ -45,7 +45,8 @@ std::unique_ptr<PolicyContainer> PolicyContainer::CreateFromWebPolicyContainer(
           container->policies.sandbox_flags,
           container->policies.ip_address_space,
           container->policies.can_navigate_top_without_user_gesture,
-          container->policies.allow_cross_origin_isolation);
+          container->policies.allow_cross_origin_isolation,
+          container->policies.cross_origin_isolation_enabled_by_dip);
 
   return std::make_unique<PolicyContainer>(std::move(container->remote),
                                            std::move(policies));

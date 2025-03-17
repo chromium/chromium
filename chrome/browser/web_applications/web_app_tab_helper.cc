@@ -20,16 +20,20 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 
 namespace web_app {
 
@@ -122,7 +126,13 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
                        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) ||
          provider_->registrar_unsafe().IsUninstalling(*app_id));
+
   if (app_id_ == app_id && window_app_id_ == window_app_id) {
+    // This can be triggered for navigations that are happening in the same app
+    // window, like if a navigation is captured in an open window causing a page
+    // load to happen. Record the `UseCounter` there as well, as that is
+    // treated as an app launch.
+    ScheduleManifestAppliedUseCounter();
     return;
   }
 
@@ -134,6 +144,7 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
     OnAssociatedAppChanged(previous_app_id, app_id_);
   }
   UpdateAudioFocusGroupId();
+  ScheduleManifestAppliedUseCounter();
 }
 
 void WebAppTabHelper::SetAppId(std::optional<webapps::AppId> app_id) {
@@ -162,13 +173,8 @@ void WebAppTabHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame()) {
     const GURL& url = navigation_handle->GetURL();
-    // TODO(crbug.com/379827962): Evaluate call sites of
-    // FindBestAppWithUrlInScope for correctness.
     SetAppId(provider_->registrar_unsafe().FindBestAppWithUrlInScope(
-        url, {
-                 proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                 proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-             }));
+        url, web_app::WebAppFilter::InstalledInChrome()));
   }
 
   // If navigating to a Web App (including navigation in sub frames), let
@@ -208,6 +214,12 @@ void WebAppTabHelper::PrimaryPageChanged(content::Page& page) {
       page.GetMainDocument().GetLastCommittedURL());
 }
 
+void WebAppTabHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                                    const GURL& validated_url) {
+  can_record_manifest_applied_ = true;
+  MaybeRecordManifestAppliedUseCounter();
+}
+
 void WebAppTabHelper::FlushLaunchQueueForTesting() const {
   if (!launch_queue_) {
     return;
@@ -224,29 +236,49 @@ WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
       tab->GetBrowserWindowInterface()->GetProfile());
   CHECK(provider_);
   observation_.Observe(&provider_->install_manager());
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   SetState(provider_->registrar_unsafe().FindBestAppWithUrlInScope(
                contents->GetLastCommittedURL(),
-               {
-                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               }),
+               web_app::WebAppFilter::InstalledInChrome()),
            /*window_app_id=*/std::nullopt);
+}
+
+bool WebAppTabHelper::CanBeUsedForFocusExisting() const {
+  constexpr std::array<std::string_view, 3>
+      kMimeTypesWithExpectedLaunchConsumer = {
+          "text/html",
+          "text/xhtml+xml",
+          "application/xhtml+xml",
+      };
+
+  const std::string& mime_type = web_contents()->GetContentsMimeType();
+  for (std::string_view allowed_mime_type :
+       kMimeTypesWithExpectedLaunchConsumer) {
+    if (mime_type == allowed_mime_type) {
+      return true;
+    }
+  }
+
+  const network::mojom::URLResponseHead* response_head =
+      web_contents()->GetPrimaryMainFrame()->GetLastResponseHead();
+  if (response_head) {
+    for (std::string_view allowed_mime_type :
+         kMimeTypesWithExpectedLaunchConsumer) {
+      if (response_head->mime_type == allowed_mime_type) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 void WebAppTabHelper::OnWebAppInstalled(
     const webapps::AppId& installed_app_id) {
   // Check if current web_contents url is in scope for the newly installed app.
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> app_id =
       provider_->registrar_unsafe().FindBestAppWithUrlInScope(
           web_contents()->GetLastCommittedURL(),
-          {
-              proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-              proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-          });
+          web_app::WebAppFilter::InstalledInChrome());
   if (app_id == installed_app_id) {
     SetAppId(app_id);
   }
@@ -326,7 +358,7 @@ void WebAppTabHelper::SubscribeToTabState(tabs::TabInterface* tab_interface) {
   tab_subscriptions_.clear();
   CHECK(tab_interface);
   tab_subscriptions_.push_back(
-      tab_interface->RegisterWillEnterBackground(base::BindRepeating(
+      tab_interface->RegisterWillDeactivate(base::BindRepeating(
           &WebAppTabHelper::OnTabBackgrounded, weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(
       tab_interface->RegisterWillDetach(base::BindRepeating(
@@ -337,6 +369,29 @@ void WebAppTabHelper::MaybeNotifyTabChanged() {
   if (on_tab_details_changed_callback_) {
     std::move(on_tab_details_changed_callback_).Run();
   }
+}
+
+void WebAppTabHelper::ScheduleManifestAppliedUseCounter() {
+  bool should_measure_use_counter_for_standalone_launch =
+      app_id_.has_value() && app_id_ == window_app_id_ &&
+      !provider_->registrar_unsafe().GetAppManifestUrl(*app_id_).is_empty();
+  if (!should_measure_use_counter_for_standalone_launch) {
+    return;
+  }
+  meaure_manifest_applied_use_counter_ = true;
+  MaybeRecordManifestAppliedUseCounter();
+}
+
+void WebAppTabHelper::MaybeRecordManifestAppliedUseCounter() {
+  if (!meaure_manifest_applied_use_counter_ || !can_record_manifest_applied_) {
+    return;
+  }
+
+  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+      web_contents()->GetPrimaryMainFrame(),
+      blink::mojom::WebFeature::kInstalledManifestApplied);
+  meaure_manifest_applied_use_counter_ = false;
+  can_record_manifest_applied_ = false;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper);

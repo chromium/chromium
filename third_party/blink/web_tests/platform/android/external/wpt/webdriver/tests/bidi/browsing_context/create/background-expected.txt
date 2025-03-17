@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_background[True-tab]
+  AssertionError: assert 'hidden' == 'visible'
+[FAIL] test_background[True-window]
+  AssertionError: assert 'hidden' == 'visible'
+Harness: the test ran to completion.
+

@@ -599,6 +599,13 @@ be identical, and then tag the primary as `EBU_3213_E` inside the container.
 ffmpeg -f lavfi -i testsrc=s=320x240:r=1:d=1 -pix_fmt yuv420p -vf "colorspace=space=bt470bg:range=tv:primaries=smpte170m:trc=smpte170m:ispace=smpte170m:irange=tv:iprimaries=smpte170m:itrc=smpte170m" -color_range 1 -colorspace 6 -color_primaries 22 -color_trc 6 -c:v vp9 ebu-3213-e-vp9.mp4
 ```
 
+#### testsrc-no-durations-h264.mkv
+
+Playback of vp9.mp4 file recorded via MediaRecorder({mimeType: "video/webm;codecs=h264,opus"}) in Chrome 133.0.6943.132.
+```
+ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -pix_fmt yuv420p -vcodec vp9 vp9.mp4
+```
+
 ### AAC test data from MPEG-DASH demoplayer (44100 Hz, stereo)
 Duration of each packet is (1024/44100 Hz), approximately 23.22 ms.
 
@@ -839,6 +846,15 @@ Same as av1-I-frame-320x240 but using bear-1280x720.webm as input.
 
 #### av1-monochrome-I-frame-320x240-[8,10,12]bpp
 Same as av1-I-frame-320x240 with --monochrome and -b=[8,10,12] aomenc options.
+
+#### av1-I-frame-320x240-agtm
+Same as av1-I-frame-320x240 but with an AGTM ITU_T35 metadata OBU added.
+
+#### av1-I-frame-320x240-agtm.ivf
+Created by converting av1-I-frame-320x240-agtm (raw OBU) to IVF:
+```
+ffmpeg -i av1-I-frame-320x240-agtm -c:v copy av1-I-frame-320x240-agtm.ivf
+```
 
 #### bear-av1-cenc.mp4
 Encrypted version of bear-av1.mp4. Encrypted by [Shaka Packager] built locally
@@ -1380,6 +1396,11 @@ This image has Huffman table.
 #### blank-1x1.jpg
 1x1 small picture to test special cases.
 
+### PNG Test Files
+
+#### quick-brown-fox.png
+A picture with a resolution of `1280x720` has the words "The quick brown fox jumps over the lazy dog" in colorful text repeated many times on the left side, and on the right side, colorful vertical stripes are repeated many times. The image was created using Photoshop.
+
 ### MP4 files with non-square pixels.
 
 #### bear-640x360-non_square_pixel-with_pasp.mp4
@@ -1499,66 +1520,6 @@ HEVC video stream with 10-bit main10 profile, generated with
 ffmpeg -i bear-1280x720-hevc-10bit.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-no-audio.mp4
 ```
 
-#### bear-1280x720-hevc-8bit-422.mp4
-HEVC video stream with 8-bit 422 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec hevc -pix_fmt yuv422p bear-1280x720-hevc-8bit-422.mp4
-```
-
-#### bear-1280x720-hevc-8bit-422-no-audio.mp4
-HEVC video stream with 8-bit 422 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720-hevc-8bit-422.mp4 -vcodec copy -an bear-1280x720-hevc-8bit-422-no-audio.mp4
-```
-
-#### bear-1280x720-hevc-8bit-444-no-audio.mp4
-HEVC video stream with 8-bit 444 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec hevc -an -pix_fmt yuv444p bear-1280x720-hevc-8bit-444-no-audio.mp4
-```
-
-#### bear-1280x720-hevc-10bit-422.mp4
-HEVC video stream with 10-bit 422 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv422p10le bear-1280x720-hevc-10bit-422.mp4
-```
-
-#### bear-1280x720-hevc-10bit-422-no-audio.mp4
-HEVC video stream with 10-bit 422 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720-hevc-10bit-422.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-422-no-audio.mp4
-```
-
-#### bear-1280x720-hevc-10bit-444.mp4
-HEVC video stream with 10-bit 444 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv444p10le bear-1280x720-hevc-10bit-444.mp4
-```
-
-#### bear-1280x720-hevc-10bit-444-no-audio.mp4
-HEVC video stream with 10-bit 444 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720-hevc-10bit-444.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-444-no-audio.mp4
-```
-
-#### bear-1280x720-hevc-12bit-420.mp4
-HEVC video stream with 12-bit 420 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv420p12le bear-1280x720-hevc-12bit-420.mp4
-```
-
-#### bear-1280x720-hevc-12bit-422.mp4
-HEVC video stream with 12-bit 422 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv422p12le bear-1280x720-hevc-12bit-422.mp4
-```
-
-#### bear-1280x720-hevc-12bit-444.mp4
-HEVC video stream with 12-bit 444 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv444p12le bear-1280x720-hevc-12bit-444.mp4
-```
-
 #### bear-1280x720-hevc-10bit-hdr10.mp4
 HEVC video stream with HDR10 metadata included, generated with
 ````
@@ -1569,6 +1530,78 @@ ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -x265-params colorprim=bt2020:transf
 HEVC video stream with 8-bit main profile, generated with
 ```
 ffmpeg -i bear-1280x720.mp4 -vf "scale=3840:2160,setpts=4*PTS" -c:v libx265 -crf 28 -c:a copy bear-3840x2160-hevc.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-8bit-400-no-audio.mp4
+HEVC video stream with 8-bit 400 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt gray -vcodec libx265 -x265-params range=full:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-8bit-400-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-8bit-420-no-audio.mp4
+HEVC video stream with 8-bit 420 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv420p -profile:v main-intra -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-8bit-420-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-8bit-422-no-audio.mp4
+HEVC video stream with 8-bit 422 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv422p -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-8bit-422-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-8bit-444-no-audio.mp4
+HEVC video stream with 8-bit 444 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv444p -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-8bit-444-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-10bit-400-no-audio.mp4
+HEVC video stream with 10-bit 400 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt gray10le -vcodec libx265 -x265-params range=full:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-10bit-400-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-10bit-420-no-audio.mp4
+HEVC video stream with 10-bit 420 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv420p10le -profile:v main10-intra -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-10bit-420-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-10bit-422-no-audio.mp4
+HEVC video stream with 10-bit 422 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv422p10le -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-10bit-422-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-10bit-444-no-audio.mp4
+HEVC video stream with 10-bit 444 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv444p10le -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-10bit-444-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-12bit-400-no-audio.mp4
+HEVC video stream with 12-bit 400 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt gray12le -vcodec libx265 -x265-params range=full:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-12bit-400-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-12bit-420-no-audio.mp4
+HEVC video stream with 12-bit 420 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv420p12le -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-12bit-420-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-12bit-422-no-audio.mp4
+HEVC video stream with 12-bit 422 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv422p12le -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-12bit-422-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-12bit-444-no-audio.mp4
+HEVC video stream with 12-bit 444 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv444p12le -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-12bit-444-no-audio.mp4
 ```
 
 ### MP4 file with Dolby Vision

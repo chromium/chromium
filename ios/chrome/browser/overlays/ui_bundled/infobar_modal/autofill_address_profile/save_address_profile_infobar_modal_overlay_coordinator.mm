@@ -190,7 +190,7 @@ using autofill_address_profile_infobar_overlays::
 @end
 
 @implementation
-    SaveAddressProfileInfobarModalOverlayCoordinator (ModalConfiguration)
+SaveAddressProfileInfobarModalOverlayCoordinator (ModalConfiguration)
 
 - (void)configureModal {
   DCHECK(!self.modalMediator);

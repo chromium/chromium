@@ -785,8 +785,8 @@ public class SafeModeTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "Overall status should be unknown if at least one action is unrecognized and no"
                         + " actions failed",
-                success,
-                SafeModeController.SafeModeExecutionResult.ACTION_UNKNOWN);
+                SafeModeController.SafeModeExecutionResult.ACTION_UNKNOWN,
+                success);
         histogramExpectation.assertExpected("Unregistered safemode actions should be logged");
         // If we got this far without crashing, we assume SafeModeController correctly ignored the
         // unregistered actions.
@@ -826,8 +826,8 @@ public class SafeModeTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "Overall status should be failure if at least one"
                         + " action is unrecognized and at least one action is a failure",
-                success,
-                SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
+                SafeModeController.SafeModeExecutionResult.ACTION_FAILED,
+                success);
         histogramExpectation.assertExpected("Failed safemode actions should be logged");
         // If we got this far without crashing, we assume SafeModeController correctly ignored the
         // unregistered actions.
@@ -909,8 +909,8 @@ public class SafeModeTest extends AwParameterizedTest {
         int success = SafeModeController.getInstance().executeActions(allSuccessful);
         Assert.assertEquals(
                 "Overall status should be successful if all actions are successful",
-                success,
-                SafeModeController.SafeModeExecutionResult.SUCCESS);
+                SafeModeController.SafeModeExecutionResult.SUCCESS,
+                success);
         histogramExpectation.assertExpected(
                 "Overall status should be successful if all actions are successful");
         Assert.assertEquals(
@@ -936,8 +936,8 @@ public class SafeModeTest extends AwParameterizedTest {
         success = SafeModeController.getInstance().executeActions(oneFailure);
         Assert.assertEquals(
                 "Overall status should be failure if at least one action fails",
-                success,
-                SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
+                SafeModeController.SafeModeExecutionResult.ACTION_FAILED,
+                success);
         histogramExpectation.assertExpected(
                 "Overall status should be failure if at least one action fails");
         Assert.assertEquals(

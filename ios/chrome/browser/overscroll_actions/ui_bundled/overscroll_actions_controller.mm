@@ -16,13 +16,13 @@
 #import "base/notreached.h"
 #import "base/time/time.h"
 #import "build/blink_buildflags.h"
-#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_gesture_recognizer.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_view.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_constants.h"
 #import "ios/chrome/browser/voice/ui_bundled/voice_search_notification_names.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
@@ -102,10 +102,12 @@ void SetViewFrameHeight(UIView* view, CGFloat height, CGFloat topMargin) {
 // Clamp a value between min and max.
 CGFloat Clamp(CGFloat value, CGFloat min, CGFloat max) {
   DCHECK(min < max);
-  if (value < min)
+  if (value < min) {
     return min;
-  if (value > max)
+  }
+  if (value > max) {
     return max;
+  }
   return value;
 }
 
@@ -120,7 +122,7 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 
 // This protocol describes the subset of methods used between the
 // CRWWebViewScrollViewProxy and the UIWebView.
-@protocol OverscrollActionsScrollView<NSObject>
+@protocol OverscrollActionsScrollView <NSObject>
 
 @property(nonatomic, assign) UIEdgeInsets contentInset;
 @property(nonatomic, assign) CGPoint contentOffset;
@@ -134,9 +136,9 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 
 @end
 
-@interface OverscrollActionsController ()<CRWWebViewScrollViewProxyObserver,
-                                          UIGestureRecognizerDelegate,
-                                          OverscrollActionsViewDelegate> {
+@interface OverscrollActionsController () <CRWWebViewScrollViewProxyObserver,
+                                           UIGestureRecognizerDelegate,
+                                           OverscrollActionsViewDelegate> {
   // Display link used to animate the bounce back effect.
   CADisplayLink* _dpLink;
   SpringInsetState _bounceState;
@@ -381,8 +383,9 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
   CGFloat contentOffsetFromExpandedHeader =
       contentOffsetFromTheTop + self.initialHeaderInset;
   CGFloat topMargin = 0;
-  if (!_webViewProxy)
+  if (!_webViewProxy) {
     topMargin = self.scrollView.safeAreaInsets.top;
+  }
   if (round(contentOffsetFromExpandedHeader) >= 0) {
     // Record initial content offset and dispatch delegate on state change.
     self.overscrollState = OverscrollState::NO_PULL_STARTED;
@@ -407,8 +410,9 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
   _allowPullingActions = NO;
   _didTransitionToActionReady = NO;
   [self.overscrollActionView pullStarted];
-  if (!_performingScrollViewIndependentAnimation)
+  if (!_performingScrollViewIndependentAnimation) {
     _allowPullingActions = [self isOverscrollActionsAllowed];
+  }
   _lastScrollBeginTime = base::TimeTicks::Now();
 }
 
@@ -475,8 +479,9 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 - (void)scrollViewWillEndDraggingWithVelocity:(CGPoint)velocity
                           targetContentOffset:
                               (inout CGPoint*)targetContentOffset {
-  if (![self isOverscrollActionEnabled])
+  if (![self isOverscrollActionEnabled]) {
     return;
+  }
 
   if (self.overscrollState != OverscrollState::NO_PULL_STARTED) {
     *targetContentOffset = [[self scrollView] contentOffset];
@@ -612,8 +617,9 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 }
 
 - (BOOL)viewportAdjustsContentInset {
-  if (_webViewProxy.shouldUseViewContentInset)
+  if (_webViewProxy.shouldUseViewContentInset) {
     return YES;
+  }
   return ios::provider::IsFullscreenSmoothScrollingSupported();
 }
 
@@ -668,10 +674,6 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 }
 
 - (void)setup {
-  if (self.panGestureRecognizer) {
-    return;
-  }
-
   UIPanGestureRecognizer* panGesture;
   // Workaround a bug occurring when Speak Selection is enabled.
   // See crbug.com/699655.
@@ -700,10 +702,11 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 }
 
 - (void)setScrollViewContentInset:(UIEdgeInsets)contentInset {
-  if (_scrollview)
+  if (_scrollview) {
     [_scrollview setContentInset:contentInset];
-  else
+  } else {
     [_webViewScrollViewProxy setContentInset:contentInset];
+  }
 }
 
 - (void)resetScrollViewTopContentInset {
@@ -724,15 +727,17 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
       [_lockNotificationsCounterparts objectForKey:notif.name];
   if ([_lockIncrementNotifications containsObject:counterpartName]) {
     [_lockIncrementNotifications removeObject:counterpartName];
-    if (_overscrollActionLock > 0)
+    if (_overscrollActionLock > 0) {
       --_overscrollActionLock;
+    }
   }
 }
 
 - (void)deviceOrientationDidChange {
   if (self.overscrollState == OverscrollState::NO_PULL_STARTED &&
-      !_performingScrollViewIndependentAnimation)
+      !_performingScrollViewIndependentAnimation) {
     return;
+  }
 
   const UIDeviceOrientation deviceOrientation =
       [[UIDevice currentDevice] orientation];
@@ -880,8 +885,9 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
   // Add a dummy view on top of the webview in order to catch touches on some
   // specific subviews.
   if (!enabled) {
-    if (!_dummyView)
+    if (!_dummyView) {
       _dummyView = [[UIView alloc] init];
+    }
     [_dummyView setFrame:[_webViewProxy bounds]];
     [_webViewProxy addSubview:_dummyView];
   } else {
@@ -903,8 +909,9 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
   // Content inset is not used for displaying header if the web view's
   // `self.viewportAdjustsContentInset` is NO, instead the whole web view frame
   // is changed.
-  if (!_scrollview && !self.viewportAdjustsContentInset)
+  if (!_scrollview && !self.viewportAdjustsContentInset) {
     return 0;
+  }
   return self.initialHeaderInset;
 }
 
@@ -922,19 +929,22 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 }
 
 - (void)setDisablingFullscreen:(BOOL)disablingFullscreen {
-  if (self.disablingFullscreen == disablingFullscreen)
+  if (self.disablingFullscreen == disablingFullscreen) {
     return;
+  }
 
   _fullscreenDisabler = nullptr;
-  if (!disablingFullscreen)
+  if (!disablingFullscreen) {
     return;
+  }
 
   // Ask the delegate for a fullscreen controller. It may return nothing if
   // (for example) the UI is in the middle of teardown.
   FullscreenController* fullscreenController =
       [self.delegate fullscreenControllerForOverscrollActionsController:self];
-  if (!fullscreenController)
+  if (!fullscreenController) {
     return;
+  }
 
   // Disabling fullscreen will show the toolbars, which may potentially produce
   // a `-scrollViewDidScroll` event if the browser viewport insets need to be

@@ -760,12 +760,6 @@ class TemplateURL {
   const std::string& image_url_post_params() const {
     return data().image_url_post_params;
   }
-  const std::string& side_search_param() const {
-    return data().side_search_param;
-  }
-  const std::string& side_image_search_param() const {
-    return data().side_image_search_param;
-  }
   const std::string& image_translate_source_language_param_key() const {
     return data().image_translate_source_language_param_key;
   }
@@ -809,7 +803,6 @@ class TemplateURL {
     return data().policy_origin;
   }
   bool enforced_by_policy() const { return data().enforced_by_policy; }
-  bool created_from_play_api() const { return data().created_from_play_api; }
   bool featured_by_policy() const { return data().featured_by_policy; }
 
   int usage_count() const { return data().usage_count; }
@@ -945,31 +938,6 @@ class TemplateURL {
   // Returns an empty GURL if this template URL has no suggestions_url().
   GURL GenerateSuggestionURL(const SearchTermsData& search_terms_data) const;
 
-  // Returns true if this search engine supports the side search feature.
-  bool IsSideSearchSupported() const;
-
-  // Returns true if this search engine supports the side image search feature.
-  bool IsSideImageSearchSupported() const;
-
-  // Takes a search URL belonging to this search engine and generates the URL
-  // appropriate for the side search side panel.
-  GURL GenerateSideSearchURL(const GURL& search_url,
-                             const std::string& version,
-                             const SearchTermsData& search_terms_data) const;
-
-  // Takes a search URL that belongs to this side search in the side panel and
-  // removes the side search param from the URL.
-  GURL RemoveSideSearchParamFromURL(const GURL& side_search_url) const;
-
-  // Takes a search URL belonging to this image search engine and generates the
-  // URL appropriate for the image search in the side panel.
-  GURL GenerateSideImageSearchURL(const GURL& image_search_url,
-                                  const std::string& version) const;
-
-  // Takes a search URL that belongs to this image search in the side panel and
-  // removes the side image search param from the URL.
-  GURL RemoveSideImageSearchParamFromURL(const GURL& image_search_url) const;
-
   // TemplateURL internally caches values derived from a passed SearchTermsData
   // to make its functions quick. This method invalidates any cached values and
   // it should be called after SearchTermsData has been changed.
@@ -978,12 +946,6 @@ class TemplateURL {
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
-
-  // Returns whether |url| query contains a side search param.
-  bool ContainsSideSearchParam(const GURL& url) const;
-
-  // Returns whether |url| query contains a side image search param.
-  bool ContainsSideImageSearchParam(const GURL& url) const;
 
   // Returns the RegulatoryExtensionType appropriate for this instance of the
   // TemplateURL.
@@ -1002,6 +964,11 @@ class TemplateURL {
   // Returns whether this search engine was created by an Enterprise policy that
   // doesn't define the Default Search Provider.
   bool CreatedByNonDefaultSearchProviderPolicy() const;
+  // Returns whether this search engine was created by the
+  // EnterpriseSearchAggregatorSettings policy.
+  bool CreatedByEnterpriseSearchAggregatorPolicy() const;
+  // Returns whether this search engine was created by a regulatory program.
+  bool CreatedByRegulatoryProgram() const;
 
   void SetURL(const std::string& url);
   void SetPrepopulateId(int id);
@@ -1017,6 +984,8 @@ class TemplateURL {
 
   const std::optional<TemplateURLData>& GetLocalData() const;
   const std::optional<TemplateURLData>& GetAccountData() const;
+
+  void CopyActiveValueToLocalAndAccount();
 
  private:
   // Resizes the |url_refs_| vector, which always holds the search URL as the

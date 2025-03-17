@@ -132,14 +132,14 @@ export class CrToolbarElement extends CrLitElement {
     // Wait for rendering to finish to ensure menuButton exists on the DOM.
     await this.updateComplete;
     const menuButton =
-        this.shadowRoot!.querySelector<HTMLElement>('#menuButton');
+        this.shadowRoot.querySelector<HTMLElement>('#menuButton');
     assert(!!menuButton);
     menuButton.focus();
   }
 
   isMenuFocused(): boolean {
-    return !!this.shadowRoot!.activeElement &&
-        this.shadowRoot!.activeElement.id === 'menuButton';
+    return !!this.shadowRoot.activeElement &&
+        this.shadowRoot.activeElement.id === 'menuButton';
   }
 
   protected onShowingSearchChanged_(e: CustomEvent<{value: boolean}>) {

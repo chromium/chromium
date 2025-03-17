@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -156,7 +156,7 @@ class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
   void OnDeviceCreated(WrappedDevice* device) { devices_.push_back(device); }
 
   void OnDeviceDestroyed(WrappedDevice* device) {
-    const auto it = base::ranges::find(devices_, device);
+    const auto it = std::ranges::find(devices_, device);
     CHECK(it != devices_.end());
     devices_.erase(it);
   }
@@ -240,10 +240,10 @@ class ScreenlockMonitorTestSource : public ScreenlockMonitorSource {
 class MockBrowserClient : public content::ContentBrowserClient {
  public:
   MOCK_METHOD(void,
-              BindVideoEffectsManager,
+              BindReadonlyVideoEffectsManager,
               (const std::string& device_id,
                content::BrowserContext* browser_context,
-               mojo::PendingReceiver<media::mojom::VideoEffectsManager>
+               mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
                    video_effects_manager),
               (override));
 
@@ -428,7 +428,8 @@ class VideoCaptureManagerTest : public testing::Test {
 // Try to open, start, stop and close a device.
 TEST_F(VideoCaptureManagerTest, CreateAndClose) {
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  EXPECT_CALL(browser_client_, BindVideoEffectsManager(_, _, _)).Times(0);
+  EXPECT_CALL(browser_client_, BindReadonlyVideoEffectsManager(_, _, _))
+      .Times(0);
 #endif
   InSequence s;
   EXPECT_CALL(*listener_,
@@ -453,7 +454,7 @@ TEST_F(VideoCaptureManagerTest, CreateAndClose) {
 TEST_F(VideoCaptureManagerTest, CreateWithVideoEffectsProcessor) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kCameraMicEffects);
-  mojo::PendingReceiver<media::mojom::VideoEffectsManager> receiver;
+  mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager> receiver;
   EXPECT_CALL(browser_client_, BindVideoEffectsProcessor(devices_.front().id,
                                                          &browser_context_, _))
       .Times(1);

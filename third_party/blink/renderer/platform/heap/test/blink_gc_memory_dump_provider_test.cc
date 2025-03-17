@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/platform/heap/blink_gc_memory_dump_provider.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -38,11 +39,11 @@ template <typename Callback>
 void IterateMemoryDumps(base::trace_event::ProcessMemoryDump& dump,
                         const std::string dump_prefix,
                         Callback callback) {
-  auto dump_prefix_depth = base::ranges::count(dump_prefix, '/');
+  auto dump_prefix_depth = std::ranges::count(dump_prefix, '/');
   for (auto& it : dump.allocator_dumps()) {
     const std::string& key = it.first;
     if ((key.compare(0, dump_prefix.size(), dump_prefix) == 0) &&
-        (base::ranges::count(key, '/') == dump_prefix_depth)) {
+        (std::ranges::count(key, '/') == dump_prefix_depth)) {
       callback(it.second.get());
     }
   }

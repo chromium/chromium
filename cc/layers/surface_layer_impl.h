@@ -60,6 +60,8 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   void SetIsReflection(bool is_reflection);
   bool is_reflection() const { return is_reflection_; }
 
+  bool will_draw_needs_reset() const { return will_draw_needs_reset_; }
+
   void SetOverrideChildPaintFlags(bool override_child_paint_flags);
   bool override_child_paint_flags() const {
     return override_child_paint_flags_;
@@ -74,7 +76,8 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   void PushPropertiesTo(LayerImpl* layer) override;
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   bool is_surface_layer() const override;
   gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;

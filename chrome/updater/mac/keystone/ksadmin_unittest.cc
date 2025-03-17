@@ -24,6 +24,7 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
+#include "components/policy/core/common/policy_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -120,7 +121,8 @@ TEST(KSAdminTest, Register) {
                 (override));
     MOCK_METHOD(void,
                 FetchPolicies,
-                (base::OnceCallback<void(int)> callback),
+                (policy::PolicyFetchReason reason,
+                 base::OnceCallback<void(int)> callback),
                 (override));
     MOCK_METHOD(void,
                 RegisterApp,

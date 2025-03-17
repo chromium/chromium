@@ -47,9 +47,6 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
   void DidNotProduceFrame(const viz::BeginFrameAck& ack) override {
     did_not_produce_frame_ = true;
   }
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id) override {}
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override {}
   void InitializeCompositorFrameSinkType(
       viz::mojom::CompositorFrameSinkType type) override {}
   void BindLayerContext(viz::mojom::PendingLayerContextPtr context) override {}

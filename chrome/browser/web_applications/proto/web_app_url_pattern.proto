@@ -16,10 +16,10 @@ message UrlPattern {
 
 message UrlPatternPart {
   enum PartType {
-    UNKNOWN_PART_TYPE = 0;
-    FULL_WILDCARD = 1;
-    SEGMENT_WILDCARD = 2;
-    FIXED = 3;
+    PART_TYPE_UNSPECIFIED = 0;
+    PART_TYPE_FULL_WILDCARD = 1;
+    PART_TYPE_SEGMENT_WILDCARD = 2;
+    PART_TYPE_FIXED = 3;
   }
   optional PartType part_type = 1;
 
@@ -29,11 +29,11 @@ message UrlPatternPart {
   optional string suffix = 5;
 
   enum Modifier {
-    UNKNOWN_MODIFIER = 0;
-    ZERO_OR_MORE = 1;
-    OPTIONAL = 2;
-    ONE_OR_MORE = 3;
-    NONE = 4;
+    MODIFIER_UNSPECIFIED = 0;
+    MODIFIER_ZERO_OR_MORE = 1;
+    MODIFIER_OPTIONAL = 2;
+    MODIFIER_ONE_OR_MORE = 3;
+    MODIFIER_NONE = 4;
   }
   optional Modifier modifier = 6;
 }

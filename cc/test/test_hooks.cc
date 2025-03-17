@@ -4,6 +4,10 @@
 
 #include "cc/test/test_hooks.h"
 
+#include <memory>
+
+#include "cc/raster/raster_buffer_provider.h"
+
 namespace cc {
 
 TestHooks::TestHooks() = default;

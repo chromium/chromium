@@ -15,6 +15,7 @@ namespace vr {
 // Tests that WebXR sessions can be created when permission is granted.
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase,
                        TestGrantingPermissionCreatesSession) {
+  MockXRDeviceHookBase mock;
   SetPermissionAutoResponse(
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
 
@@ -29,6 +30,7 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase,
 // Tests that a session is not created if the user explicitly denies permission.
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase,
                        TestDenyingPermissionFailsSessionCreation) {
+  MockXRDeviceHookBase mock;
   SetPermissionAutoResponse(
       permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 
@@ -48,6 +50,7 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase,
 // dialog.
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase,
                        TestDismissingPromptCloseFailsSessionCreation) {
+  MockXRDeviceHookBase mock;
   SetPermissionAutoResponse(
       permissions::PermissionRequestManager::AutoResponseType::DISMISS);
 

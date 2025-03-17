@@ -4,9 +4,12 @@
 
 package org.chromium.components.tab_group_sync;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Interface to handle tab group UI actions such as open tab groups from tab group revisit surface.
  */
+@NullMarked
 public interface TabGroupUiActionHandler {
 
     /**

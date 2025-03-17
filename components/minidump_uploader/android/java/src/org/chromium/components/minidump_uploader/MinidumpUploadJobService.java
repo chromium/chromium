@@ -13,10 +13,15 @@ import android.os.PersistableBundle;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.NullUtil;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import javax.annotation.concurrent.GuardedBy;
 
 /** Class that interacts with the Android JobScheduler to upload Minidumps at appropriate times. */
+@NullMarked
 public abstract class MinidumpUploadJobService extends JobService
         implements MinidumpUploadJob.UploadsFinishedCallback {
     private static final String TAG = "MinidumpJobService";
@@ -34,10 +39,10 @@ public abstract class MinidumpUploadJobService extends JobService
     private final Object mLock = new Object();
 
     @GuardedBy("mLock")
-    private MinidumpUploadJob mActiveJob;
+    private @Nullable MinidumpUploadJob mActiveJob;
 
     @GuardedBy("mLock")
-    private JobParameters mActiveJobParams;
+    private @Nullable JobParameters mActiveJobParams;
 
     @GuardedBy("mLock")
     private long mActiveJobStartTime;
@@ -65,6 +70,7 @@ public abstract class MinidumpUploadJobService extends JobService
         assert result == JobScheduler.RESULT_SUCCESS;
     }
 
+    @Initializer
     @Override
     public boolean onStartJob(JobParameters params) {
         synchronized (mLock) {
@@ -74,6 +80,7 @@ public abstract class MinidumpUploadJobService extends JobService
             // 2) each time a job is scheduled, it has the same params.getExtras().
             mShouldReschedule = mActiveJob != null;
             if (mShouldReschedule) {
+                NullUtil.assumeNonNull(mActiveJobParams);
                 // Querying size forces unparcelling, which changes the output of toString().
                 assert params.getExtras().size() + mActiveJobParams.getExtras().size() < 10000;
                 assert params.getExtras().toString().equals(mActiveJobParams.getExtras().toString())

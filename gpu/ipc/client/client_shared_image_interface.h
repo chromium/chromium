@@ -47,9 +47,6 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   SyncToken GenVerifiedSyncToken() override;
   void VerifySyncToken(SyncToken& sync_token) override;
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
-  void Flush() override;
-  scoped_refptr<gfx::NativePixmap> GetNativePixmap(
-      const Mailbox& mailbox) override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
@@ -74,8 +71,6 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   // Used by the software compositor only. |usage| must be
   // gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY. Call client_shared_image->Map()
   // later to get the shared memory mapping.
-  SharedImageInterface::SharedImageMapping CreateSharedImage(
-      const SharedImageInfo& si_info) override;
   scoped_refptr<ClientSharedImage> CreateSharedImageForSoftwareCompositor(
       const SharedImageInfo& si_info) override;
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
@@ -127,9 +122,15 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
       uint32_t texture_target) override;
 
   scoped_refptr<ClientSharedImage> ImportSharedImage(
-      const ExportedSharedImage& exported_shared_image) override;
+      ExportedSharedImage exported_shared_image) override;
 
   const SharedImageCapabilities& GetCapabilities() override;
+
+  void CreateSharedImagePool(
+      const SharedImagePoolId& pool_id,
+      mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote)
+      override;
+  void DestroySharedImagePool(const SharedImagePoolId& pool_id) override;
 
   gpu::GpuChannelHost* gpu_channel() { return gpu_channel_.get(); }
 

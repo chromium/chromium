@@ -4,6 +4,7 @@
 
 module viz.mojom;
 
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Note: These mojo definitions are intended for exclusive use in testing.
@@ -17,4 +18,14 @@ interface FrameSinkManagerTestApi {
   // Customizes the CopyOutputRequest's result size during tests.
   [Sync]
   SetSameDocNavigationScreenshotSize(gfx.mojom.Size result_size) => ();
+
+  // Returns force enable zoom state of RenderInputRouter corresponding to
+  // |frame_sink_id| in Viz for tests with InputVizard.
+  [Sync]
+  GetForceEnableZoomState(FrameSinkId frame_sink_id) => (bool enabled);
+
+  // This calls notifies the callback when the given frame sink has a
+  // SurfaceAnimationManager.
+  [Sync]
+  WaitForSurfaceAnimationManager(FrameSinkId frame_sink_id) => ();
 };

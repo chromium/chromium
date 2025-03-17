@@ -174,8 +174,9 @@ class SpotlightBookmarkModelBridge;
     [self removeURLNodeFromIndex:node];
     return;
   }
-  for (const auto& child : node->children())
+  for (const auto& child : node->children()) {
     [self removeNodeFromIndex:child.get()];
+  }
 }
 
 // Helper to remove URL nodes at the leaves of the bookmark index.

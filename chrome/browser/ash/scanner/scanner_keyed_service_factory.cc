@@ -67,9 +67,9 @@ std::unique_ptr<KeyedService> ScannerKeyedServiceFactory::BuildInstanceFor(
   if (manta_service) {
     scanner_provider = manta_service->CreateScannerProvider();
   }
-  return std::make_unique<ScannerKeyedService>(identity_manager,
-                                               std::move(url_loader_factory),
-                                               std::move(scanner_provider));
+  return std::make_unique<ScannerKeyedService>(
+      profile->GetPrefs(), identity_manager, std::move(url_loader_factory),
+      std::move(scanner_provider));
 }
 
 std::unique_ptr<KeyedService>

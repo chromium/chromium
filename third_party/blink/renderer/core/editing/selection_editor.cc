@@ -486,8 +486,8 @@ void SelectionEditor::UpdateCachedVisibleSelectionIfNeeded() const {
   // Note: Since we |FrameCaret::updateApperance()| is called from
   // |FrameView::performPostLayoutTasks()|, we check lifecycle against
   // |AfterPerformLayout| instead of |LayoutClean|.
-  CHECK_GE(GetDocument().Lifecycle().GetState(),
-           DocumentLifecycle::kAfterPerformLayout);
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kAfterPerformLayout);
   AssertSelectionValid();
   if (!NeedsUpdateVisibleSelection())
     return;

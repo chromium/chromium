@@ -12,35 +12,54 @@ namespace {
 void PrintUsage() {
   fprintf(
       stderr,
-      "Usage: iossim [-d device] [-s sdk_version] <app_path> <xctest_path>\n"
+      "Usage: iossim [options] <app_path> <xctest_path>\n"
       "  where <app_path> is the path to the .app directory and <xctest_path> "
-      "is the path to an optional xctest bundle.\n"
+      "is the path to an optional xctest bundle. The -i option is disallowed.\n"
+      "Simplified usage: iossim -i [options] <app_path>\n"
+      "  where <app_path> is the path to the .app directory. The -t option is "
+      "disallowed.\n"
+      "\n"
+      "The -x option allows choosing between iOS and tvOS simulators.\n"
+      "\n"
       "Options:\n"
+      "  -h  Print this help message and exit.\n"
+      "  -l  Print list of supported devices and runtimes and exit.\n"
+      "  -p  Print the device's home directory and exit.\n"
+      "  -w  Wipe the device's contents and settings and exit.\n"
+      "\n"
+      "  -v  Be more verbose, showing all the xcrun commands we call.\n"
+      "  -i  Use iossim instead of xcodebuild (disables all xctest "
+      "features). This is incompatible with -t.\n"
+      "  -t  Specifies a test or test suite that should be included in the "
+      "test run. All other tests will be excluded from this run. This is "
+      "incompatible with -i.\n"
+      "  -e  Specifies an environment key=value pair that will be"
+      " set in the simulated application's environment.\n"
+      "  -c  Specifies command line flags to pass to application.\n"
+      "  -k  When to kill the iOS Simulator : before, after, both, never "
+      "(default: both)\n"
+      "\n"
       "  -u  Specifies the device udid to use. Will use -d, -s values to get "
       "devices if not specified.\n"
       "  -d  Specifies the device (must be one of the values from the iOS "
       "Simulator's Hardware -> Device menu. Defaults to 'iPhone 6s'.\n"
-      "  -w  Wipe the device's contents and settings before running the "
-      "test.\n"
-      "  -e  Specifies an environment key=value pair that will be"
-      " set in the simulated application's environment.\n"
-      "  -t  Specifies a test or test suite that should be included in the "
-      "test run. All other tests will be excluded from this run. This is "
-      "incompatible with -i.\n"
-      "  -c  Specifies command line flags to pass to application.\n"
-      "  -p  Print the device's home directory, does not run a test.\n"
       "  -s  Specifies the SDK version to use (e.g '9.3'). Will use system "
       "default if not specified.\n"
-      "  -v  Be more verbose, showing all the xcrun commands we call\n"
-      "  -k  When to kill the iOS Simulator : before, after, both, never "
-      "(default: both)\n"
-      "  -i  Use iossim instead of xcodebuild (disables all xctest "
-      "features). This is incompatible with -t.\n");
+      "  -x  Specifies the desired platform for simulator selection: ios or "
+      "tvos (default: ios)\n");
 }
 
 // Exit status codes.
 const int kExitSuccess = EXIT_SUCCESS;
 const int kExitInvalidArguments = 2;
+
+// As of XCode 16.2, passing --console causes `xcode simctl launch` to block
+// indefinitely if there is stderr output longer than 8192 bytes (e.g. a long
+// stack trace if a (D)CHECK is hit).
+// Apple's documentation is very vague about the differences between --console
+// and --console-pty, but the latter seems to work fine including in the case
+// above.
+constexpr NSString* kSimCtlLaunchConsoleArg = @"--console-pty";
 
 void LogError(NSString* format, ...) {
   va_list list;
@@ -53,7 +72,12 @@ void LogError(NSString* format, ...) {
   va_end(list);
 }
 
-}
+}  // namespace
+
+typedef enum {
+  PLATFORM_TYPE_IOS,
+  PLATFORM_TYPE_TVOS,
+} PlatformType;
 
 typedef enum {
   KILL_NEVER = 0,
@@ -126,18 +150,26 @@ typedef enum {
 
 @end
 
-// Return array of available iOS runtime dictionaries.  Unavailable (old Xcode
-// versions) or other runtimes (tvOS, watchOS) are removed.
-NSArray* Runtimes(NSDictionary* simctl_list) {
+// Return array of available iOS and tvOS runtime dictionaries.  Unavailable
+// (old Xcode versions) or other runtimes (e.g. watchOS) are removed.
+NSArray* Runtimes(NSDictionary* simctl_list, PlatformType platform_type) {
+  NSString* runtime_prefix;
+  switch (platform_type) {
+    case PLATFORM_TYPE_IOS:
+      runtime_prefix = @"com.apple.CoreSimulator.SimRuntime.iOS";
+      break;
+    case PLATFORM_TYPE_TVOS:
+      runtime_prefix = @"com.apple.CoreSimulator.SimRuntime.tvOS";
+      break;
+  }
+
   NSMutableArray* runtimes = [simctl_list[@"runtimes"] mutableCopy];
   for (NSDictionary* runtime in simctl_list[@"runtimes"]) {
     BOOL available =
         [runtime[@"availability"] isEqualToString:@"(available)"] ||
         runtime[@"isAvailable"];
 
-    if (![runtime[@"identifier"]
-            hasPrefix:@"com.apple.CoreSimulator.SimRuntime.iOS"] ||
-        !available) {
+    if (![runtime[@"identifier"] hasPrefix:runtime_prefix] || !available) {
       [runtimes removeObject:runtime];
     }
   }
@@ -145,20 +177,27 @@ NSArray* Runtimes(NSDictionary* simctl_list) {
 }
 
 // Return array of device dictionaries.
-NSArray* Devices(NSDictionary* simctl_list) {
+NSArray* Devices(NSDictionary* simctl_list, PlatformType platform_type) {
+  NSSet* product_families;
+  switch (platform_type) {
+    case PLATFORM_TYPE_IOS:
+      product_families = [NSSet setWithArray:@[ @"iPad", @"iPhone" ]];
+      break;
+    case PLATFORM_TYPE_TVOS:
+      product_families = [NSSet setWithObject:@"Apple TV"];
+      break;
+  }
+
   NSMutableArray* devicetypes = [simctl_list[@"devicetypes"] mutableCopy];
   for (NSDictionary* devicetype in simctl_list[@"devicetypes"]) {
-    if (![devicetype[@"identifier"]
-            hasPrefix:@"com.apple.CoreSimulator.SimDeviceType.iPad"] &&
-        ![devicetype[@"identifier"]
-            hasPrefix:@"com.apple.CoreSimulator.SimDeviceType.iPhone"]) {
+    if (![product_families containsObject:devicetype[@"productFamily"]]) {
       [devicetypes removeObject:devicetype];
     }
   }
   return devicetypes;
 }
 
-// Get list of devices, runtimes, etc from sim_ctl.
+// Get list of devices, runtimes, etc from simctl.
 NSDictionary* GetSimulatorList(bool verbose) {
   XCRunTask* task =
       [[XCRunTask alloc] initWithArguments:@[ @"simctl", @"list", @"-j" ]];
@@ -181,13 +220,14 @@ NSDictionary* GetSimulatorList(bool verbose) {
 }
 
 // List supported runtimes and devices.
-void PrintSupportedDevices(NSDictionary* simctl_list) {
-  printf("\niOS devices:\n");
-  for (NSDictionary* type in Devices(simctl_list)) {
+void PrintSupportedDevices(NSDictionary* simctl_list,
+                           PlatformType platform_type) {
+  printf("\ndevices:\n");
+  for (NSDictionary* type in Devices(simctl_list, platform_type)) {
     printf("%s\n", [type[@"name"] UTF8String]);
   }
   printf("\nruntimes:\n");
-  for (NSDictionary* runtime in Runtimes(simctl_list)) {
+  for (NSDictionary* runtime in Runtimes(simctl_list, platform_type)) {
     printf("%s\n", [runtime[@"version"] UTF8String]);
   }
 }
@@ -208,9 +248,9 @@ NSString* ResolvePath(NSString* path) {
 // Search |simctl_list| for a udid matching |device_name| and |sdk_version|.
 NSString* GetDeviceBySDKAndName(NSDictionary* simctl_list,
                                 NSString* device_name,
-                                NSString* sdk_version) {
-  NSString* sdk = nil;
-  NSString* name = nil;
+                                NSString* sdk_version,
+                                PlatformType platform_type) {
+  BOOL found_runtime_with_version = NO;
   // Get runtime identifier based on version property to handle
   // cases when version and identifier are not the same,
   // e.g. below identifer is *13-2 but version is 13.2.2
@@ -220,43 +260,49 @@ NSString* GetDeviceBySDKAndName(NSDictionary* simctl_list,
   //   "identifier" : "com.apple.CoreSimulator.SimRuntime.iOS-13-2",
   //   "buildversion" : "17K90"
   // }
-  for (NSDictionary* runtime in Runtimes(simctl_list)) {
+  for (NSDictionary* runtime in Runtimes(simctl_list, platform_type)) {
     if ([runtime[@"version"] isEqualToString:sdk_version]) {
-      sdk = runtime[@"identifier"];
-      name = runtime[@"name"];
-      break;
+      found_runtime_with_version = YES;
+      NSString* sdk = runtime[@"identifier"];
+      NSArray* devices = [simctl_list[@"devices"] objectForKey:sdk];
+      for (NSDictionary* device in devices) {
+        if ([device[@"name"] isEqualToString:device_name]) {
+          return device[@"udid"];
+        }
+      }
     }
   }
-  if (sdk == nil) {
-    printf("\nDid not find Runtime with specified version.\n");
-    PrintSupportedDevices(simctl_list);
+  if (!found_runtime_with_version) {
+    printf("\nDid not find runtime with specified version.\n");
+    PrintSupportedDevices(simctl_list, platform_type);
     exit(kExitInvalidArguments);
   }
-  NSArray* devices = [simctl_list[@"devices"] objectForKey:sdk];
-  if (devices == nil || devices.count == 0) {
-    // Specific for XCode 10.1 and lower,
-    // where name from 'runtimes' uses as a key in 'devices'.
-    devices = [simctl_list[@"devices"] objectForKey:name];
-  }
-  for (NSDictionary* device in devices) {
-    if ([device[@"name"] isEqualToString:device_name]) {
-      return device[@"udid"];
-    }
-  }
+  // In this case we did find a runtime matching `sdk_version`, but no device
+  // matching it.
   return nil;
 }
 
 // Create and return a device udid of |device| and |sdk_version|.
 NSString* CreateDeviceBySDKAndName(NSString* device,
                                    NSString* sdk_version,
+                                   PlatformType platform_type,
                                    bool verbose) {
-  NSString* sdk = [@"iOS" stringByAppendingString:sdk_version];
+  NSString* sdk;
+  switch (platform_type) {
+    case PLATFORM_TYPE_IOS:
+      sdk = [@"iOS" stringByAppendingString:sdk_version];
+      break;
+    case PLATFORM_TYPE_TVOS:
+      sdk = [@"tvOS" stringByAppendingString:sdk_version];
+      break;
+  }
+
   XCRunTask* create = [[XCRunTask alloc]
       initWithArguments:@[ @"simctl", @"create", device, device, sdk ]];
   [create run:verbose];
 
   NSDictionary* simctl_list = GetSimulatorList(verbose);
-  return GetDeviceBySDKAndName(simctl_list, device, sdk_version);
+  return GetDeviceBySDKAndName(simctl_list, device, sdk_version, platform_type);
 }
 
 bool FindDeviceByUDID(NSDictionary* simctl_list, NSString* udid) {
@@ -342,7 +388,7 @@ int RunWebTest(NSString* app_path,
   NSMutableArray* arguments = [NSMutableArray array];
   [arguments addObject:@"simctl"];
   [arguments addObject:@"launch"];
-  [arguments addObject:@"--console"];
+  [arguments addObject:kSimCtlLaunchConsoleArg];
   [arguments addObject:@"--terminate-running-process"];
   [arguments addObject:udid];
   [arguments addObject:GetBundleIdentifierFromPath(app_path)];
@@ -398,7 +444,8 @@ int SimpleRunApplication(NSString* app_path,
   RunSimCtl(@[ @"install", udid, app_path ], verbose);
 
   NSArray* command = [@[
-    @"launch", @"--console", @"--terminate-running-process", udid, bundle_id
+    @"launch", kSimCtlLaunchConsoleArg, @"--terminate-running-process", udid,
+    bundle_id
   ] arrayByAddingObjectsFromArray:cmd_args];
   return RunSimCtl(command, verbose);
 }
@@ -406,6 +453,7 @@ int SimpleRunApplication(NSString* app_path,
 int RunApplication(NSString* app_path,
                    NSString* xctest_path,
                    NSString* udid,
+                   PlatformType platform_type,
                    NSMutableDictionary* app_env,
                    NSMutableArray* cmd_args,
                    NSMutableArray* tests_filter,
@@ -426,18 +474,36 @@ int RunApplication(NSString* app_path,
   testingEnvironmentVariables[@"IDEiPhoneInternalTestBundleName"] =
       app_path.lastPathComponent;
 
-  testingEnvironmentVariables[@"DYLD_FRAMEWORK_PATH"] =
-      @"__TESTROOT__/Debug-iphonesimulator:__PLATFORMS__/"
-      @"iPhoneSimulator.platform/Developer/Library/Frameworks";
-  testingEnvironmentVariables[@"DYLD_LIBRARY_PATH"] =
-      @"__TESTROOT__/Debug-iphonesimulator:__PLATFORMS__/"
-      @"iPhoneSimulator.platform/Developer/Library";
+  NSString* out_dir_name;
+  NSString* platform_dir_name;
+  NSString* simulator_platform_name;
+  switch (platform_type) {
+    case PLATFORM_TYPE_IOS:
+      out_dir_name = @"Debug-iphonesimulator";
+      platform_dir_name = @"iPhoneSimulator.platform";
+      simulator_platform_name = @"iOS Simulator";
+      break;
+    case PLATFORM_TYPE_TVOS:
+      out_dir_name = @"Debug-appletvsimulator";
+      platform_dir_name = @"AppleTVSimulator.platform";
+      simulator_platform_name = @"tvOS Simulator";
+      break;
+  }
+
+  testingEnvironmentVariables[@"DYLD_FRAMEWORK_PATH"] = [NSString
+      stringWithFormat:
+          @"__TESTROOT__/%@:__PLATFORMS__/%@/Developer/Library/Frameworks",
+          out_dir_name, platform_dir_name];
+  testingEnvironmentVariables[@"DYLD_LIBRARY_PATH"] = [NSString
+      stringWithFormat:@"__TESTROOT__/%@:__PLATFORMS__/%@/Developer/Library",
+                       out_dir_name, platform_dir_name];
 
   if (xctest_path) {
     testTargetName[@"TestBundlePath"] = xctest_path;
     testingEnvironmentVariables[@"DYLD_INSERT_LIBRARIES"] =
-        @"__PLATFORMS__/iPhoneSimulator.platform/Developer/"
-        @"usr/lib/libXCTestBundleInject.dylib";
+        [NSString stringWithFormat:@"__PLATFORMS__/%@/Developer/"
+                                   @"usr/lib/libXCTestBundleInject.dylib",
+                                   platform_dir_name];
     testingEnvironmentVariables[@"XCInjectBundleInto"] =
         [NSString stringWithFormat:@"__TESTHOST__/%@",
                                    app_path.lastPathComponent
@@ -471,7 +537,8 @@ int RunApplication(NSString* app_path,
 
   XCRunTask* task = [[XCRunTask alloc] initWithArguments:@[
     @"xcodebuild", @"-xctestrun", tempFilePath, @"-destination",
-    [@"platform=iOS Simulator,id=" stringByAppendingString:udid],
+    [NSString
+        stringWithFormat:@"platform=%@,id=%@", simulator_platform_name, udid],
     @"test-without-building"
   ]];
 
@@ -516,9 +583,10 @@ int main(int argc, char* const argv[]) {
   bool verbose_commands = false;
   SimulatorKill kill_simulator = KILL_BOTH;
   bool wants_simple_iossim = false;
+  PlatformType platform_type = PLATFORM_TYPE_IOS;
 
   int c;
-  while ((c = getopt(argc, argv, "hs:d:u:t:e:c:pwlvk:i")) != -1) {
+  while ((c = getopt(argc, argv, "hs:d:u:t:e:c:pwlvk:ix:")) != -1) {
     switch (c) {
       case 's':
         sdk_version = @(optarg);
@@ -579,6 +647,18 @@ int main(int argc, char* const argv[]) {
       case 'i':
         wants_simple_iossim = true;
         break;
+      case 'x': {
+        NSString* cmd_arg = @(optarg);
+        if ([cmd_arg isEqualToString:@"ios"]) {
+          platform_type = PLATFORM_TYPE_IOS;
+        } else if ([cmd_arg isEqualToString:@"tvos"]) {
+          platform_type = PLATFORM_TYPE_TVOS;
+        } else {
+          LogError(@"Invalid value for -x.");
+          PrintUsage();
+          exit(kExitInvalidArguments);
+        }
+      } break;
       case 'h':
         PrintUsage();
         exit(kExitSuccess);
@@ -596,13 +676,13 @@ int main(int argc, char* const argv[]) {
   NSDictionary* simctl_list = GetSimulatorList(verbose_commands);
 
   if (wants_print_supported_devices) {
-    PrintSupportedDevices(simctl_list);
+    PrintSupportedDevices(simctl_list, platform_type);
     exit(kExitSuccess);
   }
 
   if (!sdk_version) {
     float sdk = 0;
-    for (NSDictionary* runtime in Runtimes(simctl_list)) {
+    for (NSDictionary* runtime in Runtimes(simctl_list, platform_type)) {
       sdk = fmax(sdk, [runtime[@"version"] floatValue]);
     }
     sdk_version = [NSString stringWithFormat:@"%0.1f", sdk];
@@ -626,14 +706,15 @@ int main(int argc, char* const argv[]) {
   }
 
   if (udid == nil) {
-    udid = GetDeviceBySDKAndName(simctl_list, device_name, sdk_version);
+    udid = GetDeviceBySDKAndName(simctl_list, device_name, sdk_version,
+                                 platform_type);
     if (udid == nil) {
-      udid =
-          CreateDeviceBySDKAndName(device_name, sdk_version, verbose_commands);
+      udid = CreateDeviceBySDKAndName(device_name, sdk_version, platform_type,
+                                      verbose_commands);
       if (udid == nil) {
         LogError(@"Unable to find a device %@ with SDK %@.", device_name,
                  sdk_version);
-        PrintSupportedDevices(simctl_list);
+        PrintSupportedDevices(simctl_list, platform_type);
         exit(kExitInvalidArguments);
       }
     }
@@ -709,8 +790,9 @@ int main(int argc, char* const argv[]) {
     return_code =
         SimpleRunApplication(app_path, udid, cmd_args, verbose_commands);
   } else {
-    return_code = RunApplication(app_path, xctest_path, udid, app_env, cmd_args,
-                                 tests_filter, verbose_commands);
+    return_code =
+        RunApplication(app_path, xctest_path, udid, platform_type, app_env,
+                       cmd_args, tests_filter, verbose_commands);
   }
 
   if (kill_simulator & KILL_AFTER) {

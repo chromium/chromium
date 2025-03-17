@@ -36,11 +36,11 @@
 ] interface Window : WindowProperties {
     // the current browsing context
     // FIXME: The spec uses the WindowProxy type for this and many other attributes.
-    [LegacyUnforgeable, CrossOrigin, CachedAccessor=kWindowProxy] readonly attribute Window window;
-    [Replaceable, CrossOrigin, CachedAccessor=kWindowProxy] readonly attribute Window self;
+    [LegacyUnforgeable, CrossOrigin, CachedAccessor=kWindowProxy, Measure] readonly attribute Window window;
+    [Replaceable, CrossOrigin, CachedAccessor=kWindowProxy, Measure] readonly attribute Window self;
     [LegacyUnforgeable, CachedAccessor=kWindowDocument] readonly attribute Document document;
     attribute DOMString name;
-    [PutForwards=href, LegacyUnforgeable, CrossOrigin=(Getter,Setter)] readonly attribute Location location;
+    [PutForwards=href, LegacyUnforgeable, CrossOrigin=(Getter,Setter), Measure] readonly attribute Location location;
     [CallWith=ScriptState] readonly attribute CustomElementRegistry customElements;
     readonly attribute History history;
     [Replaceable] readonly attribute Navigation navigation;
@@ -51,19 +51,19 @@
     [Replaceable, MeasureAs=BarPropStatusbar] readonly attribute BarProp statusbar;
     [Replaceable, MeasureAs=BarPropToolbar] readonly attribute BarProp toolbar;
     attribute DOMString status;
-    [CrossOrigin, CallWith=Isolate] void close();
+    [CrossOrigin, CallWith=Isolate, Measure] void close();
     [MeasureAs=WindowClosed, CrossOrigin] readonly attribute boolean closed;
     void stop();
-    [CrossOrigin, CallWith=Isolate] void focus();
-    [CrossOrigin] void blur();
+    [CrossOrigin, CallWith=Isolate, Measure] void focus();
+    [CrossOrigin, Measure] void blur();
 
     // other browsing contexts
-    [Replaceable, CrossOrigin, CachedAccessor=kWindowProxy] readonly attribute Window frames;
-    [Replaceable, CrossOrigin] readonly attribute unsigned long length;
-    [LegacyUnforgeable, CrossOrigin] readonly attribute Window? top;
+    [Replaceable, CrossOrigin, CachedAccessor=kWindowProxy, Measure] readonly attribute Window frames;
+    [Replaceable, CrossOrigin, Measure] readonly attribute unsigned long length;
+    [LegacyUnforgeable, CrossOrigin, Measure] readonly attribute Window? top;
     // FIXME: opener should be of type any.
-    [CrossOrigin, ImplementedAs=openerForBindings, CallWith=Isolate, RaisesException=Setter] attribute any opener;
-    [Replaceable, CrossOrigin] readonly attribute Window? parent;
+    [CrossOrigin, ImplementedAs=openerForBindings, CallWith=Isolate, RaisesException=Setter, Measure] attribute any opener;
+    [Replaceable, CrossOrigin, Measure] readonly attribute Window? parent;
     [CheckSecurity=ReturnValue] readonly attribute Element? frameElement;
 
     [CallWith=Isolate, RaisesException] Window? open(optional USVString url="", optional DOMString target = "_blank", optional [LegacyNullToEmptyString] DOMString features = "");
@@ -90,9 +90,9 @@
     [Measure, CallWith=ScriptState] DOMString? prompt(optional DOMString message = "", optional DOMString defaultValue = "");
     [Measure, CallWith=ScriptState] void print();
 
-    [CrossOrigin, CallWith=Isolate, RaisesException] void postMessage(any message, USVString targetOrigin, optional sequence<object> transfer = []);
+    [CrossOrigin, CallWith=Isolate, RaisesException, Measure] void postMessage(any message, USVString targetOrigin, optional sequence<object> transfer = []);
 
-    [CrossOrigin, CallWith=Isolate, RaisesException] void postMessage(any message, optional WindowPostMessageOptions options = {});
+    [CrossOrigin, CallWith=Isolate, RaisesException, Measure] void postMessage(any message, optional WindowPostMessageOptions options = {});
 
     // WindowOrWorkerGlobalScope mixin
     // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin

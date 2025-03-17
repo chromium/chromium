@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/cable/fido_cable_discovery.h"
@@ -53,7 +52,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
       return {};
     case FidoTransportProtocol::kHybrid:
 #if BUILDFLAG(IS_MAC)
-      if (!base::IsProcessSelfResponsible()) {
+      if (!base::DoesResponsibleProcessHaveBluetoothMetadata()) {
         // On recent macOS a process must have listed Bluetooth metadata in
         // its Info.plist in order to call Bluetooth APIs. Failure to do so
         // results in the system killing with process with SIGABRT once
@@ -67,8 +66,9 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
         //
         // Thus, if the responsible process is not Chromium itself, then we
         // disable caBLE (and thus avoid Bluetooth calls).
-        FIDO_LOG(ERROR) << "Cannot start caBLE because process is not "
-                           "self-responsible. Launch from Finder to fix.";
+        FIDO_LOG(ERROR) << "Cannot use Bluetooth because the responsible app "
+                           "for the process does not have Bluetooth metadata "
+                           "in its Info.plist. Launch from Finder to fix.";
         return {};
       }
 #endif  // BUILDFLAG(IS_MAC)
@@ -127,8 +127,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
 
 std::optional<std::unique_ptr<FidoDiscoveryBase>>
 FidoDiscoveryFactory::MaybeCreateEnclaveDiscovery() {
-  if (!base::FeatureList::IsEnabled(kWebAuthnEnclaveAuthenticator) ||
-      !enclave_ui_request_stream_ || !network_context_factory_) {
+  if (!enclave_ui_request_stream_ || !network_context_factory_) {
     return std::nullopt;
   }
   return std::make_unique<enclave::EnclaveAuthenticatorDiscovery>(

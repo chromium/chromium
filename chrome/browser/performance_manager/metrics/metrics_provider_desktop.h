@@ -69,7 +69,6 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   EfficiencyMode ComputeCurrentMode() const;
   bool IsMemorySaverEnabled() const;
 
-  void RecordAvailableMemoryMetrics();
   void ResetTrackers();
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_WIN)
@@ -108,8 +107,6 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
 
   base::SequenceBound<DiskMetricsThreadPoolGetter> disk_metrics_getter_;
   std::optional<DiskMetrics> pending_disk_metrics_;
-
-  base::RepeatingTimer available_memory_metrics_timer_;
 
   std::unique_ptr<ScopedTimeInModeTracker> battery_saver_mode_tracker_;
   std::unique_ptr<ScopedTimeInModeTracker> memory_saver_mode_tracker_;

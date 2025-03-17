@@ -18,7 +18,7 @@
 namespace ui {
 
 // Map of strings for template replacement in |ReplaceTemplateExpressions|.
-typedef std::map<const std::string, std::string> TemplateReplacements;
+typedef std::map<std::string, std::string> TemplateReplacements;
 
 // Convert a dictionary to a replacement map. This helper function is to assist
 // migration to using TemplateReplacements directly (which is preferred).

@@ -41,13 +41,13 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.max_size_for_auto_resize;
   }
 
-  static const gfx::Size& new_size(const blink::VisualProperties& r) {
-    return r.new_size;
+  static const gfx::Size& new_size_device_px(const blink::VisualProperties& r) {
+    return r.new_size_device_px;
   }
 
-  static const gfx::Size& visible_viewport_size(
+  static const gfx::Size& visible_viewport_size_device_px(
       const blink::VisualProperties& r) {
-    return r.visible_viewport_size;
+    return r.visible_viewport_size_device_px;
   }
 
   static const gfx::Rect& compositor_viewport_pixel_rect(
@@ -95,9 +95,9 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.css_zoom_factor;
   }
 
-  static int virtual_keyboard_resize_height_physical_px(
+  static int virtual_keyboard_resize_height_device_px(
       const blink::VisualProperties& r) {
-    return r.virtual_keyboard_resize_height_physical_px;
+    return r.virtual_keyboard_resize_height_device_px;
   }
 
   static double page_scale_factor(const blink::VisualProperties& r) {

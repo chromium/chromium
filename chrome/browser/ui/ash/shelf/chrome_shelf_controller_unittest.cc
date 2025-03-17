@@ -22,13 +22,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/app/arc_app_constants.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
@@ -45,6 +38,7 @@
 #include "ash/shelf/shelf_application_menu_model.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -103,8 +97,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/os_flags_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
+#include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -128,6 +121,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -137,6 +131,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -150,11 +145,21 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window_aura.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/compatibility_mode.mojom.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
@@ -175,7 +180,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_sync_change_processor.h"
-#include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -209,6 +213,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/views/widget/widget.h"
@@ -280,24 +285,6 @@ bool ValidateImageIsFullyLoaded(const gfx::ImageSkia& image) {
 
   return true;
 }
-
-std::unique_ptr<syncer::SyncChangeProcessor> CreateSyncChangeProcessor(
-    syncer::SyncChangeProcessor* processor) {
-  if (processor) {
-    return std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-        processor);
-  }
-  return std::make_unique<syncer::FakeSyncChangeProcessor>();
-}
-
-enum class PinAssertion {
-  kNotPinned,
-  kUnknownPinSource,
-  kOnlyPolicyPinned,
-  kUserPinned
-};
-
-using PinAssertionMap = base::flat_map<std::string, PinAssertion>;
 
 // Test implementation of AppIconLoader.
 class TestAppIconLoaderImpl : public AppIconLoader {
@@ -518,6 +505,20 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
 
     BrowserWithTestWindowTest::SetUp();
+    // WallpaperControllerClientImpl should be created before Profile
+    // instantiation happening in BrowserWithTestWindowTest::SetUp().
+    // However, it should run after more global object set up, such as
+    // local_state's creation, which is also done together in
+    // BrowserWithTestWindowTest::SetUp(). Unfortunately, there's no
+    // clean way to handle such a case, and at this moment, this reordering
+    // fortunately, does not seem to impact to the real testing behavior
+    // we workaround it by instantiating WallpaperControllerClientImpl
+    // after profile creation.
+    wallpaper_controller_client_ = std::make_unique<
+        WallpaperControllerClientImpl>(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+        std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
+    wallpaper_controller_client_->Init();
 
     model_ = std::make_unique<ash::ShelfModel>();
 
@@ -706,6 +707,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     app_registry_cache_observer_.Reset();
     arc_test_.TearDown();
     shelf_controller_ = nullptr;
+    wallpaper_controller_client_.reset();
     BrowserWithTestWindowTest::TearDown();
     ash::ConciergeClient::Shutdown();
     app_list::AppListSyncableServiceFactory::SetUseInTesting(false);
@@ -759,10 +761,10 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     return CreateShelfController();
   }
 
-  void StartAppSyncService(const syncer::SyncDataList& init_sync_list,
-                           syncer::SyncChangeProcessor* processor = nullptr) {
+  void StartAppSyncService(const syncer::SyncDataList& init_sync_list) {
     app_list_syncable_service_->MergeDataAndStartSyncing(
-        syncer::APP_LIST, init_sync_list, CreateSyncChangeProcessor(processor));
+        syncer::APP_LIST, init_sync_list,
+        std::make_unique<syncer::FakeSyncChangeProcessor>());
     EXPECT_EQ(init_sync_list.size(),
               app_list_syncable_service_->sync_items().size());
   }
@@ -824,24 +826,12 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
         ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, policy_id));
   }
 
-  void AppendPrefValue(base::Value::List& pref_values,
-                       ash::SystemWebAppType app_type) {
-    AppendPrefValue(pref_values,
-                    *apps_util::GetPolicyIdForSystemWebAppType(app_type));
-  }
-
   void RemovePrefValue(base::Value::List& pref_values,
                        std::string_view policy_id) {
     pref_values.EraseIf([&policy_id](const auto& entry) {
       return *entry.GetDict().FindString(
                  ChromeShelfPrefs::kPinnedAppsPrefAppIDKey) == policy_id;
     });
-  }
-
-  void RemovePrefValue(base::Value::List& pref_values,
-                       ash::SystemWebAppType app_type) {
-    RemovePrefValue(pref_values,
-                    *apps_util::GetPolicyIdForSystemWebAppType(app_type));
   }
 
   void InsertRemoveAllPinsChange(syncer::SyncChangeList* list) {
@@ -1262,18 +1252,18 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     apps::AppReadinessWaiter(profile(), web_app_id).Await();
   }
 
-  web_app::IsolatedWebAppUrlInfo AddIsolatedWebApp(const GURL& url) {
-    web_app::AddDummyIsolatedAppToRegistry(
-        profile(), url, "IWA",
-        web_app::IsolationData::Builder(
-            web_app::IwaStorageOwnedBundle{"", false}, base::Version("1.0.0"))
-            .Build(),
-        webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
-    base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
-        web_app::IsolatedWebAppUrlInfo::Create(url);
-    CHECK(url_info.has_value());
-    apps::AppReadinessWaiter(profile(), url_info->app_id()).Await();
-    return *url_info;
+  web_app::IsolatedWebAppUrlInfo AddIsolatedWebApp() {
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_bundle =
+        web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+            .BuildBundle();
+    const web_app::IsolatedWebAppUrlInfo url_info =
+        app_bundle
+            ->InstallWithSource(
+                profile(),
+                &web_app::IsolatedWebAppInstallSource::FromExternalPolicy)
+            .value();
+    apps::AppReadinessWaiter(profile(), url_info.app_id()).Await();
+    return url_info;
   }
 
   webapps::AppId InstallExternalWebApp(
@@ -1311,58 +1301,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override {
     app_registry_cache_observer_.Reset();
-  }
-
-  void UpdateSyncPinAssertion(const std::string& app_id,
-                              PinAssertion pin_assertion) {
-    pin_assertions_[app_id] = pin_assertion;
-  }
-
-  void ValidateSyncPinAssertions() {
-    base::flat_set<std::string> processed_assertions;
-    for (const auto& [item_id, sync_item] :
-         app_list_syncable_service_->sync_items()) {
-      auto itr = pin_assertions_.find(item_id);
-      if (itr == pin_assertions_.end()) {
-        continue;
-      }
-      switch (itr->second) {
-        case PinAssertion::kNotPinned:
-          ASSERT_FALSE(sync_item->item_pin_ordinal.IsValid());
-          ASSERT_FALSE(sync_item->is_user_pinned.has_value());
-          break;
-        case PinAssertion::kUnknownPinSource:
-          ASSERT_TRUE(sync_item->item_pin_ordinal.IsValid());
-          ASSERT_FALSE(sync_item->is_user_pinned.has_value());
-          break;
-        case PinAssertion::kOnlyPolicyPinned:
-          ASSERT_TRUE(sync_item->item_pin_ordinal.IsValid());
-          ASSERT_TRUE(sync_item->is_user_pinned.has_value());
-          ASSERT_FALSE(*sync_item->is_user_pinned);
-          break;
-        case PinAssertion::kUserPinned:
-          ASSERT_TRUE(sync_item->item_pin_ordinal.IsValid());
-          ASSERT_TRUE(sync_item->is_user_pinned.has_value());
-          ASSERT_TRUE(*sync_item->is_user_pinned);
-          break;
-      }
-      processed_assertions.insert(item_id);
-    }
-    ASSERT_EQ(processed_assertions.size(), pin_assertions_.size());
-  }
-
-  syncer::SyncData GetSyncDataFor(std::string_view app_id) const {
-    auto sync_data = app_list_syncable_service_->GetAllSyncDataForTesting();
-    auto itr = base::ranges::find(sync_data, app_id, [](const auto& sync_item) {
-      return sync_item.GetSpecifics().app_list().item_id();
-    });
-    EXPECT_FALSE(itr == sync_data.end());
-    return *itr;
-  }
-
-  sync_pb::AppListSpecifics GetAppListSpecificsFor(
-      std::string_view app_id) const {
-    return GetSyncDataFor(app_id).GetSpecifics().app_list();
   }
 
   template <class... Args>
@@ -1412,8 +1350,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   raw_ptr<app_list::AppListSyncableService, DanglingUntriaged>
       app_list_syncable_service_ = nullptr;
 
-  PinAssertionMap pin_assertions_;
-
   base::AutoReset<bool> skip_preinstalled_web_app_startup_;
 
   base::ScopedObservation<apps::AppRegistryCache,
@@ -1433,6 +1369,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     return std::make_unique<TestBrowserWindowAura>(std::move(window));
   }
 
+  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   apps::AppServiceTest app_service_test_;
 };
 
@@ -1452,6 +1389,10 @@ class ChromeShelfControllerWithArcTest : public ChromeShelfControllerTestBase {
 
     ChromeShelfControllerTestBase::SetUp();
   }
+
+ private:
+  // isolated web app builder uses json parser from the decoder
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 class ChromeShelfControllerTest : public ChromeShelfControllerTestBase {
@@ -1459,11 +1400,7 @@ class ChromeShelfControllerTest : public ChromeShelfControllerTestBase {
   ChromeShelfControllerTest() {
     // `media_router::kMediaRouter` is disabled because it has unmet
     // dependencies and is unrelated to this unit test.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {ash::features::
-             kRemoveStalePolicyPinnedAppsFromShelf}, /*disabled_features=*/
-        {media_router::kMediaRouter});
+    feature_list_.InitAndDisableFeature(media_router::kMediaRouter);
   }
   ~ChromeShelfControllerTest() override = default;
 
@@ -1567,7 +1504,7 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     ChromeShelfControllerTestBase::SetUp();
 
     // Ensure there are multiple profiles. User 0 is created during setup.
-    CreateMultiUserProfile("user1@example.com");
+    CreateMultiUserProfile("user1@example.com", GaiaId("fakegaia1"));
     ASSERT_TRUE(SessionControllerClientImpl::IsMultiProfileAvailable());
   }
 
@@ -1586,9 +1523,10 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
 
   // Creates a user and profile for a given `email`. Note that this class will
   // keep the ownership of the created object.
-  TestingProfile* CreateMultiUserProfile(const std::string& email) {
-    LogIn(email);
-    return CreateProfile(email);
+  TestingProfile* CreateMultiUserProfile(std::string_view email,
+                                         const GaiaId& gaia_id) {
+    LogIn(email, gaia_id);
+    return CreateProfile(std::string(email));
   }
 
   // Switch to another user by AccountId.
@@ -1633,13 +1571,11 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     return "user0@example.com";
   }
 
-  void LogIn(const std::string& email) override {
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     // TODO(crbug.com/40286020): Merge into BrowserWithTestWindowTest.
-    const AccountId account_id = AccountId::FromUserEmail(email);
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
     // Add a user to the fake user manager.
-    auto* user = user_manager()->AddUser(account_id);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(
-        user->GetDisplayEmail());
+    user_manager()->AddGaiaUser(account_id, user_manager::UserType::kRegular);
     user_manager()->UserLoggedIn(
         account_id,
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
@@ -2627,8 +2563,9 @@ TEST_F(ChromeShelfControllerMultiProfileWithArcTest, DISABLED_ArcMultiUser) {
   // user is active.
   // Gmail created when secondary user is active.
 
-  const std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  const GaiaId kFakeGaia2("fakegaia2");
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, kFakeGaia2);
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
   const AccountId account_id2(
@@ -3130,8 +3067,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
     EXPECT_EQ(2, model_->item_count());
 
     // After switching to a second user the item should be gone.
-    std::string user2 = "user2@example.com";
-    TestingProfile* profile2 = CreateMultiUserProfile(user2);
+    const char kUser2[] = "user2@example.com";
+    const GaiaId kFakeGaia2("fakegaia2");
+    TestingProfile* profile2 = CreateMultiUserProfile(kUser2, kFakeGaia2);
     const AccountId account_id2(
         multi_user_util::GetAccountIdFromProfile(profile2));
     const AccountId account_id(
@@ -3154,8 +3092,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   InitShelfController();
 
   // First test: Create an app when the user is not active.
-  std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  const GaiaId kFakeGaia2("fakegaia2");
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, kFakeGaia2);
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
   const AccountId account_id(
@@ -3190,8 +3129,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   InitShelfController();
 
   // First create an app when the user is active.
-  std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  const GaiaId kFakeGaia2("fakegaia2");
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, kFakeGaia2);
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
   const AccountId account_id2(
@@ -3226,8 +3166,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   InitShelfController();
 
   // First test: Create an app when the user is not active.
-  std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  const GaiaId kFakeGaia2("fakegaia2");
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, kFakeGaia2);
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
   const AccountId account_id2(
@@ -3269,7 +3210,8 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // BrowserWithTestWindowTest::SetUp(). No need to add the profiles to the
   // MultiUserWindowManagerHelper here. CreateMultiUserProfile() already does
   // that.
-  TestingProfile* profile2 = CreateMultiUserProfile("user2@example.com");
+  TestingProfile* profile2 =
+      CreateMultiUserProfile("user2@example.com", GaiaId("fakegaia2"));
   const AccountId current_user =
       multi_user_util::GetAccountIdFromProfile(profile());
 
@@ -3302,8 +3244,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // Create a browser item in the controller.
   InitShelfController();
 
-  std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  const GaiaId kFakeGaia2("fakegaia2");
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, kFakeGaia2);
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
   const AccountId account_id2(
@@ -3547,30 +3490,20 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   auto gmail_install_url = gmail_start_url;
   InstallExternalWebApp(gmail_start_url, gmail_install_url);
 
-  // Start the controller.
-  InitShelfController();
-
-  // Pin Camera and Gmail to shelf; they should be synced with `is_user_pinned =
-  // true`.
-  PinAppWithIDToShelf(ash::kCameraAppId);
-  PinAppWithIDToShelf(ash::kGmailAppId);
-
-  // `extension2_` is not pinned yet.
-  UpdateSyncPinAssertion(extension2_->id(), PinAssertion::kNotPinned);
-  UpdateSyncPinAssertion(ash::kCameraAppId, PinAssertion::kUserPinned);
-  UpdateSyncPinAssertion(ash::kGmailAppId, PinAssertion::kUserPinned);
-  ValidateSyncPinAssertions();
-
-  // Construct a pinning policy.
+  // Pin policy should be initialized before controller start.
   base::Value::List policy_value;
   AppendPrefValue(policy_value, extension1_->id());
   AppendPrefValue(policy_value, extension2_->id());
-  AppendPrefValue(policy_value, ash::SystemWebAppType::CAMERA);
+  AppendPrefValue(policy_value,
+                  std::string{*apps_util::GetPolicyIdForSystemWebAppType(
+                      ash::SystemWebAppType::CAMERA)});
   // Pin Gmail by its install_url (see above).
   AppendPrefValue(policy_value, gmail_install_url.spec());
 
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
+
+  InitShelfController();
 
   // |extension2_|, Camera and Gmail should get pinned. |extension1_| is
   // specified but not installed, and Youtube is part of the default set, but
@@ -3580,199 +3513,34 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   EXPECT_TRUE(IsAppPolicyPinned(ash::kCameraAppId));
   EXPECT_TRUE(IsAppPolicyPinned(ash::kGmailAppId));
 
-  // `extension2_` is only pinned by the policy, whereas the other two apps have
-  // also been previously pinned by us directly.
-  UpdateSyncPinAssertion(extension2_->id(), PinAssertion::kOnlyPolicyPinned);
-  ValidateSyncPinAssertions();
-
   // Installing |extension1_| should add it to the shelf. Note, App1 goes
   // before App2 that is aligned with the pin order in policy.
   AddExtension(extension1_.get());
   EXPECT_EQ("Chrome, App1, App2, Camera, Gmail", GetPinnedAppStatus());
   EXPECT_TRUE(IsAppPolicyPinned(extension1_->id()));
 
-  // `extension1_` is now installed and is present in the pinning policy.
-  UpdateSyncPinAssertion(extension1_->id(), PinAssertion::kOnlyPolicyPinned);
-  ValidateSyncPinAssertions();
-
-  // Removing `extension1_` from the policy should be reflected in the shelf and
-  // the pin should get removed as it was only policy-pinned.
+  // Removing |extension1_| from the policy should not be reflected in the
+  // shelf and pin will exist.
   RemovePrefValue(policy_value, extension1_->id());
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
-  EXPECT_EQ("Chrome, App2, Camera, Gmail", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App1, App2, Camera, Gmail", GetPinnedAppStatus());
   EXPECT_FALSE(IsAppPolicyPinned(extension1_->id()));
 
-  // `extension1_` was introduced by the policy but is no longer a part of it,
-  // so we unpin it.
-  UpdateSyncPinAssertion(extension1_->id(), PinAssertion::kNotPinned);
-  ValidateSyncPinAssertions();
-
-  // Remove Gmail from the policy. It should stay pinned as it was originally
-  // pinned by the user (as simulated in the test), but is no longer fixed.
+  // Remove Gmail from the policy. It should stay pinned, but is no longer
+  // fixed.
   RemovePrefValue(policy_value, gmail_install_url.spec());
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
-  EXPECT_EQ("Chrome, App2, Camera, Gmail", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App1, App2, Camera, Gmail", GetPinnedAppStatus());
   EXPECT_FALSE(IsAppPolicyPinned(ash::kGmailAppId));
-
-  // Gmail was backed by both the policy and the user, but now that it's removed
-  // from the policy, only the user pin should persist.
-  UpdateSyncPinAssertion(ash::kGmailAppId, PinAssertion::kUserPinned);
-  ValidateSyncPinAssertions();
 
   // Check that Gmail can also be pinned by direct mapping.
   AppendPrefValue(policy_value, std::string(kGmailPolicyId));
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
-  EXPECT_EQ("Chrome, App2, Camera, Gmail", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App1, App2, Camera, Gmail", GetPinnedAppStatus());
   EXPECT_TRUE(IsAppPolicyPinned(ash::kGmailAppId));
-
-  ValidateSyncPinAssertions();
-
-  // Assert that this configuration can be restored from sync data.
-  auto sync_data = app_list_syncable_service_->GetAllSyncDataForTesting();
-  ResetShelfController();
-  SendPinChanges(syncer::SyncChangeList(), /*reset_pin_model=*/true);
-  StopAppSyncService();
-  EXPECT_EQ(0U, app_list_syncable_service_->sync_items().size());
-
-  // Remove `extension2_` from the policy and add `extension1_` again to
-  // validate that policy deltas are handled correctly.
-  RemovePrefValue(policy_value, extension2_->id());
-  AppendPrefValue(policy_value, extension1_->id());
-  profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
-
-  // Simulate UI start.
-  StartAppSyncService(sync_data);
-
-  RecreateShelfController()->Init();
-
-  EXPECT_EQ("Chrome, App1, Camera, Gmail", GetPinnedAppStatus());
-  UpdateSyncPinAssertion(extension2_->id(), PinAssertion::kNotPinned);
-  UpdateSyncPinAssertion(extension1_->id(), PinAssertion::kOnlyPolicyPinned);
-  ValidateSyncPinAssertions();
-}
-
-TEST_F(ChromeShelfControllerTest, ChromeCannotBeUnpinnedByPolicy) {
-  SetPinnedLauncherAppsPolicy(app_constants::kChromeAppId);
-
-  // Start the controller.
-  InitShelfController();
-  EXPECT_EQ("Chrome", GetPinnedAppStatus());
-  UpdateSyncPinAssertion(app_constants::kChromeAppId,
-                         PinAssertion::kUserPinned);
-  ValidateSyncPinAssertions();
-
-  EXPECT_EQ(app_list_syncable_service_->sync_items().size(), 1U);
-  auto chrome_item = GetAppListSpecificsFor(app_constants::kChromeAppId);
-
-  // Simulate an update from an older version with unset `is_user_pinned` paired
-  // with valid `item_pin_ordinal`. The expected result is for the client to
-  // ignore this empty value and retain the current state.
-  app_list_syncable_service_->ProcessSyncChanges(
-      FROM_HERE,
-      {syncer::SyncChange(
-          FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
-          app_list::CreateAppRemoteData(
-              chrome_item.item_id(), chrome_item.item_name(),
-              chrome_item.parent_id(), chrome_item.item_ordinal(),
-              chrome_item.item_pin_ordinal(), chrome_item.item_type(),
-              /*is_user_pinned=*/std::nullopt))});
-
-  EXPECT_EQ("Chrome", GetPinnedAppStatus());
-  UpdateSyncPinAssertion(app_constants::kChromeAppId,
-                         PinAssertion::kUserPinned);
-  ValidateSyncPinAssertions();
-
-  SetPinnedLauncherAppsPolicy(/**/);
-
-  EXPECT_EQ("Chrome", GetPinnedAppStatus());
-  UpdateSyncPinAssertion(app_constants::kChromeAppId,
-                         PinAssertion::kUserPinned);
-  ValidateSyncPinAssertions();
-}
-
-// Tests that an app that is pinned to shelf but doesn't have a pin source
-// receives `is_user_pinned = false` during initial merge if the app is listed
-// in PinnedLauncherApps policy.
-TEST_F(ChromeShelfControllerTest, InitialMergeAndUpdateForPolicyPinnedApps) {
-  InstallSystemWebApp(std::make_unique<CameraSystemAppDelegate>(profile()));
-
-  EXPECT_EQ(app_list_syncable_service_->sync_items().size(), 2U);
-  auto camera_item = GetAppListSpecificsFor(ash::kCameraAppId);
-
-  StopAppSyncService();
-
-  // Pin camera by policy.
-  SetPinnedLauncherAppsPolicy(ash::SystemWebAppType::CAMERA);
-
-  auto sync_processor = std::make_unique<syncer::FakeSyncChangeProcessor>();
-  // Create a pinned app.
-  StartAppSyncService(
-      {GetSyncDataFor(app_constants::kChromeAppId),
-       app_list::CreateAppRemoteData(
-           camera_item.item_id(), camera_item.item_name(),
-           camera_item.parent_id(), camera_item.item_ordinal(), "pinordinalx")},
-      sync_processor.get());
-
-  EXPECT_EQ(sync_processor->changes().size(), 1U);
-  const auto& camera_change =
-      sync_processor->changes()[0].sync_data().GetSpecifics().app_list();
-  EXPECT_EQ(camera_change.item_id(), ash::kCameraAppId);
-  EXPECT_TRUE(
-      syncer::StringOrdinal(camera_change.item_pin_ordinal()).IsValid());
-  EXPECT_TRUE(camera_change.has_is_user_pinned());
-  EXPECT_FALSE(camera_change.is_user_pinned());
-}
-
-// Tests that an app can be unpinned by the admin by correctly toggling the
-// policy even after the initial sync.
-TEST_F(ChromeShelfControllerTest, PostFactumPolicyUnpin) {
-  InstallSystemWebApp(std::make_unique<CameraSystemAppDelegate>(profile()));
-
-  auto sync_changes = app_list_syncable_service_->GetAllSyncDataForTesting();
-  ASSERT_EQ(sync_changes.size(), 2U);
-  auto camera_sync = std::move(sync_changes[1]);
-  sync_changes.pop_back();
-
-  const auto& camera_sync_specs = camera_sync.GetSpecifics().app_list();
-  ASSERT_EQ(camera_sync_specs.item_id(), ash::kCameraAppId);
-
-  StopAppSyncService();
-
-  // Create a pinned app.
-  StartAppSyncService(
-      {std::move(sync_changes[0]),
-       app_list::CreateAppRemoteData(
-           camera_sync_specs.item_id(), camera_sync_specs.item_name(),
-           camera_sync_specs.parent_id(), camera_sync_specs.item_ordinal(),
-           "pinordinalx")});
-
-  // Start the controller.
-  InitShelfController();
-
-  // App should be pinned, but the exact pin source is unclear.
-  EXPECT_EQ("Chrome, Camera", GetPinnedAppStatus());
-  UpdateSyncPinAssertion(ash::kCameraAppId, PinAssertion::kUnknownPinSource);
-  ValidateSyncPinAssertions();
-
-  // Pin camera by policy.
-  SetPinnedLauncherAppsPolicy(ash::SystemWebAppType::CAMERA);
-
-  // App should be pinned with source = policy.
-  EXPECT_EQ("Chrome, Camera", GetPinnedAppStatus());
-  UpdateSyncPinAssertion(ash::kCameraAppId, PinAssertion::kOnlyPolicyPinned);
-  ValidateSyncPinAssertions();
-
-  // Reset policy value.
-  SetPinnedLauncherAppsPolicy(/**/);
-
-  // App should no longer be pinned.
-  EXPECT_EQ("Chrome", GetPinnedAppStatus());
-  UpdateSyncPinAssertion(ash::kCameraAppId, PinAssertion::kNotPinned);
-  ValidateSyncPinAssertions();
 }
 
 TEST_F(ChromeShelfControllerTest, UnpinWithUninstall) {
@@ -3961,8 +3729,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   // Create a browser for another user and check that it is not included in the
   // users running browser list.
-  std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  const GaiaId kFakeGaia2("fakegaia2");
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, kFakeGaia2);
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
   std::unique_ptr<Browser> browser2(
@@ -4079,8 +3848,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   CheckAppMenu(shelf_controller_.get(), item_gmail, 1, one_menu_item);
 
   // Create a second profile and switch to that user.
-  std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  const GaiaId kFakeGaia2("fakegaia2");
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, kFakeGaia2);
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
   SwitchActiveUserByAccountId(account_id2);
@@ -4113,7 +3883,8 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   EXPECT_EQ(2, model_->item_count());
 
   // Create a profile for our second user (will be destroyed by the framework).
-  TestingProfile* profile2 = CreateMultiUserProfile("user2@example.com");
+  TestingProfile* profile2 =
+      CreateMultiUserProfile("user2@example.com", GaiaId("fakegaia2"));
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
 
@@ -4133,7 +3904,8 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
        V2AppHandlingTwoUsersEdgeCases) {
   InitShelfController();
   // Create a profile for our second user (will be destroyed by the framework).
-  TestingProfile* profile2 = CreateMultiUserProfile("user2@example.com");
+  TestingProfile* profile2 =
+      CreateMultiUserProfile("user2@example.com", GaiaId("fakegaia2"));
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
   const AccountId account_id2(
@@ -4234,9 +4006,12 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
       MultiUserWindowManagerHelper::GetWindowManager();
 
   // Create and add three users / profiles, and go to #1's desktop.
-  TestingProfile* profile1 = CreateMultiUserProfile("user-1@example.com");
-  TestingProfile* profile2 = CreateMultiUserProfile("user-2@example.com");
-  TestingProfile* profile3 = CreateMultiUserProfile("user-3@example.com");
+  TestingProfile* profile1 =
+      CreateMultiUserProfile("user-1@example.com", GaiaId("fakegaia1"));
+  TestingProfile* profile2 =
+      CreateMultiUserProfile("user-2@example.com", GaiaId("fakegaia2"));
+  TestingProfile* profile3 =
+      CreateMultiUserProfile("user-3@example.com", GaiaId("fakegaia3"));
   const AccountId account_id1(
       multi_user_util::GetAccountIdFromProfile(profile1));
   const AccountId account_id2(
@@ -4313,7 +4088,8 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
        V2AppHiddenWindows) {
   InitShelfController();
 
-  TestingProfile* profile2 = CreateMultiUserProfile("user-2@example.com");
+  TestingProfile* profile2 =
+      CreateMultiUserProfile("user-2@example.com", GaiaId("fakegaia2"));
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
   // If switch to account_id2 is not run, the following switch to account_id
@@ -4393,8 +4169,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
-  const std::string user2 = "user2@example.com";
-  const TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  const GaiaId kFakeGaia2("fakegaia2");
+  const TestingProfile* profile2 = CreateMultiUserProfile(kUser2, kFakeGaia2);
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
 
@@ -4434,8 +4211,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
-  const std::string user2 = "user2@example.com";
-  const TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  const GaiaId kFakeGaia2("fakegaia2");
+  const TestingProfile* profile2 = CreateMultiUserProfile(kUser2, kFakeGaia2);
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
 
@@ -4771,16 +4549,12 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinPolicy) {
 
 TEST_F(ChromeShelfControllerWithArcTest, IwaPinPolicy) {
   InitShelfControllerWithBrowser();
+  const web_app::IsolatedWebAppUrlInfo url_info = AddIsolatedWebApp();
 
-  constexpr char kExampleIwaBundleId[] =
-      "w2gqjem6b4m7vhiqpjr3btcpp7dxfyjt6h4uuyuxklcsmygtgncaaaac";
-
-  const auto url_info = AddIsolatedWebApp(
-      GURL{base::StrCat({"isolated-app://", kExampleIwaBundleId})});
-  SetPinnedLauncherAppsPolicy(kExampleIwaBundleId);
+  SetPinnedLauncherAppsPolicy(url_info.web_bundle_id().id());
   EXPECT_TRUE(shelf_controller_->IsAppPinned(url_info.app_id()));
-  EXPECT_TRUE(AppListControllerDelegate::PIN_FIXED ==
-              GetPinnableForAppID(url_info.app_id(), profile()));
+  EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
+            GetPinnableForAppID(url_info.app_id(), profile()));
 }
 
 TEST_F(ChromeShelfControllerWithArcTest, ApkWebAppPinPolicy) {
@@ -6147,7 +5921,6 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
       /*item_pin_ordinal=*/
       syncer::StringOrdinal::CreateInitialOrdinal().ToDebugString(),
       /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-      /*is_user_pinned=*/true,
       /*promise_package_id=*/package_id.ToString())));
   StartAppSyncService(sync_list);
   base::RunLoop().RunUntilIdle();
@@ -6183,7 +5956,6 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
       /*item_pin_ordinal=*/
       syncer::StringOrdinal::CreateInitialOrdinal().ToDebugString(),
       /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-      /*is_user_pinned=*/true,
       /*promise_package_id=*/package_id.ToString())));
   StartAppSyncService(sync_list);
   base::RunLoop().RunUntilIdle();
@@ -6225,7 +5997,6 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, SyncDataCreatesCorrectShelfItem) {
       app_id, "App Name", /*parent_id=*/std::string(), "ordinal",
       /*item_pin_ordinal=*/GeneratePinPosition(1).ToDebugString(),
       /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-      /*is_user_pinned=*/true,
       /*promise_package_id=*/package_id.ToString())));
   StartAppSyncService(sync_list);
   base::RunLoop().RunUntilIdle();

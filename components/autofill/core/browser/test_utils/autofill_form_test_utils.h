@@ -6,27 +6,18 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_AUTOFILL_FORM_TEST_UTILS_H_
 
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
-namespace test {
-
-namespace {
-
-// Default form url.
-constexpr char kFormUrl[] = "https://example.com/form.html";
-
-// Default form action url.
-constexpr char kFormActionUrl[] = "https://example.com/submit.html";
-
-}  // namespace
+namespace autofill::test {
 
 namespace internal {
 
@@ -62,8 +53,7 @@ struct FieldDescription {
   std::vector<SelectOption> select_options;
   std::vector<SelectOption> datalist_options;
   FieldPropertiesMask properties_mask = 0;
-  FormFieldData::CheckStatus check_status =
-      FormFieldData::CheckStatus::kNotCheckable;
+  bool checked = false;
 };
 
 // Attributes provided to the test form.
@@ -74,8 +64,8 @@ struct FormDescription {
   std::optional<LocalFrameToken> host_frame;
   std::optional<FormRendererId> renderer_id;
   const std::u16string name = u"TestForm";
-  const std::string url = kFormUrl;
-  const std::string action = kFormActionUrl;
+  const std::string url = "https://example.com/form.html";
+  const std::string action = "https://example.com/submit.html";
   std::optional<url::Origin> main_frame_origin;
 };
 
@@ -92,8 +82,12 @@ struct TestFormFlags {
   bool should_be_queried = false;
   bool should_be_uploaded = false;
   bool has_author_specified_types = false;
-  // The implicit default value `std::nullopt` means no checking.
-  std::optional<bool> is_complete_credit_card_form;
+  // The implicit default value `std::nullopt` means no checking. The first
+  // value is the argument for `IsCompleteCreditCardForm()` specifying the
+  // required completeness level of the credit card form. The second value is
+  // the expected result of `IsCompleteCreditCardForm()`.
+  std::optional<std::pair<FormStructure::CreditCardFormCompleteness, bool>>
+      is_complete_credit_card_form;
   std::optional<int> field_count;
   std::optional<int> autofill_count;
   std::optional<int> section_count;
@@ -156,7 +150,6 @@ class FormStructureTest : public testing::Test {
       const std::vector<FormStructureTestCase>& test_cases);
 };
 
-}  // namespace test
-}  // namespace autofill
+}  // namespace autofill::test
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_AUTOFILL_FORM_TEST_UTILS_H_

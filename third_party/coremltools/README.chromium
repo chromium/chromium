@@ -1,9 +1,8 @@
 Name: Core ML Tools
 Short Name: coremltools
 URL: https://github.com/apple/coremltools
-Version: 7.1
-Date: 2023-10-18
-Revision: dbb0094fd0cb936469e35320bf37e866ef7a1da4
+Version: 8.2
+Revision: 1a0d051c945cfa06d2ef6c9745538ac803f6b2bb
 License: BSD-3-Clause
 License File: mlmodel/format/LICENSE
 Shipped: yes

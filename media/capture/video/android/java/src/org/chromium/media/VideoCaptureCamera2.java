@@ -37,7 +37,6 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -55,7 +54,7 @@ import java.util.List;
  * system cameras and their capabilities, using android.hardware.camera2.CameraManager.
  */
 @JNINamespace("media")
-@NullMarked
+@NullUnmarked
 public class VideoCaptureCamera2 extends VideoCapture {
     // Inner class to extend a CameraDevice state change listener.
     private class CrStateListener extends CameraDevice.StateCallback {
@@ -387,7 +386,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
             mCallbackId = callbackId;
         }
 
-        @NullUnmarked
         @Override
         public void run() {
             assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
@@ -816,7 +814,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
             mOptions = options;
         }
 
-        @NullUnmarked
         @Override
         public void run() {
             assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
@@ -971,7 +968,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
             mCallbackId = callbackId;
         }
 
-        @NullUnmarked
         @Override
         public void run() {
             assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
@@ -1170,7 +1166,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 "Error starting or restarting preview");
     }
 
-    @NullUnmarked
     private boolean createPreviewObjectsAndStartPreview() {
         assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
         if (mCameraDevice == null) return false;
@@ -1259,7 +1254,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    @NullUnmarked
     private void configureCommonCaptureSettings(CaptureRequest.Builder requestBuilder) {
         assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
         try (TraceEvent trace_event =
@@ -1439,7 +1433,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
         return closestSize;
     }
 
-    @NullUnmarked
     private static int findInIntArray(int @Nullable [] hayStack, int needle) {
         for (int i = 0; i < hayStack.length; ++i) {
             if (needle == hayStack[i]) return i;
@@ -1464,7 +1457,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
         return matchedTemperature;
     }
 
-    @NullUnmarked
     public static boolean isLegacyDevice(int id) {
         final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
         return cameraCharacteristics != null
@@ -1493,7 +1485,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    @NullUnmarked
     public static int getCaptureApiType(int index) {
         final CameraCharacteristics cameraCharacteristics =
                 getCameraCharacteristics(getDeviceIdInt(index));
@@ -1533,7 +1524,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    @NullUnmarked
     public static boolean isZoomSupported(int index) {
         final CameraCharacteristics cameraCharacteristics =
                 getCameraCharacteristics(getDeviceIdInt(index));
@@ -1547,7 +1537,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
         return isZoomSupported;
     }
 
-    @NullUnmarked
     public static int getFacingMode(int index) {
         final CameraCharacteristics cameraCharacteristics =
                 getCameraCharacteristics(getDeviceIdInt(index));
@@ -1566,7 +1555,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    @NullUnmarked
     public static @Nullable String getName(int index) {
         final CameraCharacteristics cameraCharacteristics =
                 getCameraCharacteristics(getDeviceIdInt(index));
@@ -1654,7 +1642,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    @NullUnmarked
     public static VideoCaptureFormat @Nullable [] getDeviceSupportedFormats(int index) {
         final CameraCharacteristics cameraCharacteristics =
                 getCameraCharacteristics(getDeviceIdInt(index));
@@ -1707,7 +1694,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    @NullUnmarked
     VideoCaptureCamera2(int id, long nativeVideoCaptureDeviceAndroid) {
         super(id, nativeVideoCaptureDeviceAndroid);
 
@@ -1734,7 +1720,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
         mCameraThreadHandler.getLooper().quit();
     }
 
-    @NullUnmarked
     @Override
     public boolean allocate(int width, int height, int frameRate, boolean enableFaceDetection) {
         Log.d(TAG, "allocate: requested (%d x %d) @%dfps", width, height, frameRate);

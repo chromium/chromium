@@ -88,7 +88,7 @@ ContentSecurityPolicyIsolatedCopy(
           csp->header->type, csp->header->source),
       csp->use_reporting_api,
       CrossThreadCopier<Vector<String>>::Copy(csp->report_endpoints),
-      csp->require_trusted_types_for,
+      csp->require_sri_for, csp->require_trusted_types_for,
       csp->trusted_types ? network::mojom::blink::CSPTrustedTypes::New(
                                CrossThreadCopier<Vector<String>>::Copy(
                                    csp->trusted_types->list),

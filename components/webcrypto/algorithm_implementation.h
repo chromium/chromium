@@ -161,7 +161,7 @@ class AlgorithmImplementation {
   // Note that SerializeKeyForClone() is not virtual because all
   // implementations end up doing the same thing.
   Status SerializeKeyForClone(const blink::WebCryptoKey& key,
-                              blink::WebVector<uint8_t>* key_data) const;
+                              std::vector<uint8_t>* key_data) const;
 
   // Deserializes key data from Blink (used for structured cloning).
   //

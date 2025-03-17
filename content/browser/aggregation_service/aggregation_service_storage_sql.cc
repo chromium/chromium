@@ -157,7 +157,7 @@ AggregationServiceStorageSql::AggregationServiceStorageSql(
       clock_(*clock),
       max_stored_requests_per_reporting_origin_(
           max_stored_requests_per_reporting_origin),
-      db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 32},
+      db_(sql::DatabaseOptions().set_page_size(4096).set_cache_size(32),
           /*tag=*/"AggregationService") {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   CHECK(clock);
@@ -760,7 +760,7 @@ AggregationServiceStorageSql::GetReportRequestReportingOrigins() {
 
   while (statement.Step()) {
     url::Origin reporting_origin =
-        url::Origin::Create(GURL(statement.ColumnString(0)));
+        url::Origin::Create(GURL(statement.ColumnStringView(0)));
     if (reporting_origin.opaque()) {
       continue;
     }
@@ -823,7 +823,7 @@ void AggregationServiceStorageSql::ClearRequestsStoredBetween(
 
   while (select_requests_to_delete_statement.Step()) {
     url::Origin reporting_origin = url::Origin::Create(
-        GURL(select_requests_to_delete_statement.ColumnString(1)));
+        GURL(select_requests_to_delete_statement.ColumnStringView(1)));
     if (filter.is_null() ||
         filter.Run(blink::StorageKey::CreateFirstParty(reporting_origin))) {
       if (!DeleteRequestImpl(

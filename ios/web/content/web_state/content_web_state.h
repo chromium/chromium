@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <map>
 #import <memory>
 #import <optional>
 
@@ -247,7 +248,7 @@ class ContentWebState : public WebState,
   base::ObserverList<WebStatePolicyDecider, true> policy_deciders_;
   base::ObserverList<WebStateObserver, true> observers_;
   std::unique_ptr<ContentNavigationManager> navigation_manager_;
-  std::unique_ptr<ContentWebFramesManager> web_frames_manager_;
+  std::map<ContentWorld, std::unique_ptr<ContentWebFramesManager>> managers_;
   FaviconStatus favicon_status_;
   bool top_control_scroll_in_progress_ = false;
   bool cached_shrink_controls_ = false;

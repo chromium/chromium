@@ -32,9 +32,9 @@
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
@@ -795,7 +795,8 @@ static const CSSPropertyID kStaticBlockProperties[] = {
                                // elements
     CSSPropertyID::kColumnCount, CSSPropertyID::kColumnGap,
     CSSPropertyID::kColumnRuleColor, CSSPropertyID::kColumnRuleStyle,
-    CSSPropertyID::kColumnRuleWidth, CSSPropertyID::kWebkitColumnBreakBefore,
+    CSSPropertyID::kColumnRuleWidth, CSSPropertyID::kRowRuleWidth,
+    CSSPropertyID::kWebkitColumnBreakBefore,
     CSSPropertyID::kWebkitColumnBreakAfter,
     CSSPropertyID::kWebkitColumnBreakInside, CSSPropertyID::kColumnWidth,
     CSSPropertyID::kPageBreakAfter, CSSPropertyID::kPageBreakBefore,
@@ -1621,6 +1622,9 @@ void EditingStyle::MergeStyleFromRulesForSerialization(Element* element) {
     mutable_style_->SetLonghandProperty(CSSPropertyID::kTextDecorationColor,
                                         CSSValueID::kInitial, false);
   }
+  if (RuntimeEnabledFeatures::ResolveVarStylesOnCopyEnabled()) {
+    ComputeValues(element);
+  }
 }
 
 static void RemovePropertiesInStyle(
@@ -1966,6 +1970,46 @@ static bool FontWeightNeedsResolving(const CSSValue* font_weight) {
     return true;
   const CSSValueID value = font_weight_identifier_value->GetValueID();
   return value == CSSValueID::kLighter || value == CSSValueID::kBolder;
+}
+
+void EditingStyle::ComputeValues(Element* element) {
+  DCHECK(element);
+  DCHECK(mutable_style_);
+
+  if (!element || !mutable_style_) {
+    return;
+  }
+
+  if (!element->GetComputedStyle()) {
+    return;
+  }
+
+  StyleResolver& resolver = element->GetDocument().GetStyleResolver();
+
+  // Create a new mutable CSS property value set for resolved styles.
+  MutableCSSPropertyValueSet* resolved_property_value_set =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(
+          mutable_style_->CssParserMode());
+
+  // Resolve each property in the current mutable_style_.
+  for (const CSSPropertyValue& property : mutable_style_->Properties()) {
+    const CSSValue& value = property.Value();
+
+    if (value.IsUnparsedDeclaration() || value.IsPendingSubstitutionValue()) {
+      if (const CSSValue* resolved_value =
+              resolver.ComputeValue(element, property.Name(), value)) {
+        resolved_property_value_set->SetProperty(
+            property.Name(), *resolved_value, property.IsImportant());
+        continue;
+      }
+    }
+
+    resolved_property_value_set->SetProperty(property.Name(), value,
+                                             property.IsImportant());
+  }
+
+  // Update the mutable style with the resolved style set.
+  mutable_style_ = resolved_property_value_set;
 }
 
 MutableCSSPropertyValueSet* GetPropertiesNotIn(

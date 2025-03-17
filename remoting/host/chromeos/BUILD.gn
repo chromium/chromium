@@ -26,7 +26,6 @@ source_set("chromeos") {
 
   public_deps = [
     "//ash",
-    "//build:chromeos_buildflags",
     "//cc",
     "//components/prefs",
     "//components/viz/host",
@@ -52,13 +51,11 @@ source_set("chromeos") {
   ]
 }
 
-# ChromeOS enterprise specific stuff that is also accessed from other areas
-# like //remoting/host/it2me.
-# Split out in its own target to prevent cyclic dependencies.
-source_set("enterprise_support") {
-  sources = [ "chromeos_enterprise_params.h" ]
-}
-
+# browser_interop can't explicitly depend on //chrome/browser since they form
+# a dependency circle
+# (chrome/browser->remote_command->browser_interop->chrome/browser).
+# Targets depending on browser_interop must have //chrome/browser in their
+# dependency tree.
 source_set("browser_interop") {
   sources = [
     "browser_interop.cc",
@@ -66,8 +63,11 @@ source_set("browser_interop") {
   ]
 
   deps = [
+    "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
     "//content/public/browser:browser",
+    "//net",
     "//remoting/base:base",
     "//remoting/host",
   ]
@@ -86,7 +86,7 @@ source_set("remoting_service") {
   ]
 
   public_deps = [
-    ":enterprise_support",
+    "//remoting/host:enterprise_params",
     "//remoting/host/it2me:chrome_os_host",
     "//remoting/host/it2me:common",
   ]
@@ -155,8 +155,10 @@ source_set("unit_tests") {
     ":features",
     ":remoting_service",
     "//base/test:test_support",
+    "//chrome/browser",  # Required for browser_interop
     "//components/policy/core/common:test_support",
     "//components/viz/service",
+    "//content/public/browser",
     "//remoting/host:common",
     "//remoting/host:test_support",
     "//remoting/host/it2me:common",

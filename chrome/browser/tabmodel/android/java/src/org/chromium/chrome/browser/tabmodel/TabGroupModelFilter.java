@@ -4,18 +4,19 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.List;
 import java.util.Set;
 
 /** Interface for getting tab groups for the tabs in the {@link TabModel}. */
+@NullMarked
 public interface TabGroupModelFilter extends TabList {
     /**
      * Adds a {@link TabModelObserver} to be notified on {@link TabGroupModelFilter} changes.
@@ -46,15 +47,8 @@ public interface TabGroupModelFilter extends TabList {
      */
     void removeTabGroupObserver(TabGroupModelFilterObserver observer);
 
-    /** Whether this is filter for the currently active {@link TabModel}. */
-    boolean isCurrentlySelectedFilter();
-
     /** Returns the {@link TabModel} that the filter is acting on. */
-    @NonNull
     TabModel getTabModel();
-
-    /** Returns the total tab count in the underlying {@link TabModel}. */
-    int getTotalTabCount();
 
     /** Returns the number of tab groups. */
     int getTabGroupCount();
@@ -65,14 +59,22 @@ public interface TabGroupModelFilter extends TabList {
      *
      * @param tabRootId The tab root id that is used to find the related group.
      * @return The number of related tabs.
+     * @deprecated Use {@link #getTabCountForGroup(Token)}. This method returns 1 in the event the
+     *     group was not found or a tab is not in a group which is confusing. Any existing usages of
+     *     this method will be migrated and any reliance on this method returning 1 if the group
+     *     doesn't exist will be fixed as part of the migration.
      */
-    int getRelatedTabCountForRootId(int tabRootId);
+    @Deprecated
+    int getRelatedTabCountForRootId(@TabId int tabRootId);
 
     /**
-     * @param rootId The root identifier of the tab group.
-     * @return Whether the given rootId has any tab group associated with it.
+     * Returns the number of tabs in the tab group with {@code tabGroupId} or 0 if the tab group
+     * does not exist.
      */
-    boolean tabGroupExistsForRootId(int rootId);
+    int getTabCountForGroup(@Nullable Token tabGroupId);
+
+    /** Returns whether a tab group exists with {@code tabGroupId}. */
+    boolean tabGroupExists(@Nullable Token tabGroupId);
 
     /**
      * Given a tab group's stable ID, finds out the root ID, or {@link Tab.INVALID_TAB_ID} if the
@@ -82,7 +84,8 @@ public interface TabGroupModelFilter extends TabList {
      * @return The root ID of the tab group or {@link Tab.INVALID_TAB_ID} if the group isn't found
      *     in the tab model.
      */
-    int getRootIdFromStableId(@NonNull Token stableId);
+    @TabId
+    int getRootIdFromTabGroupId(@Nullable Token tabGroupId);
 
     /**
      * Given a tab group's root ID, finds out the stable ID, or null if the tab group doesn't exist
@@ -91,32 +94,25 @@ public interface TabGroupModelFilter extends TabList {
      * @param rootId The root ID of the tab group.
      * @return The stable ID of the tab group or null if the group isn't found in the tab model.
      */
-    @Nullable
-    Token getStableIdFromRootId(int rootId);
+    @Nullable Token getTabGroupIdFromRootId(@TabId int rootId);
 
     /**
-     * Any of the concrete class can override and define a relationship that links a {@link Tab} to
-     * a list of related {@link Tab}s. By default, this returns an unmodifiable list that only
-     * contains the {@link Tab} with the given id. Note that the meaning of related can vary
-     * depending on the filter being applied.
+     * Returns the list of {@link Tab}s that are grouped with the given {@code tabId}.
      *
-     * @param tabId Id of the {@link Tab} try to relate with.
-     * @return An unmodifiable list of {@link Tab} that relate with the given tab id.
+     * @param tabId The id of a {@link Tab} in the group.
+     * @return An unmodifiable list of {@link Tab}s that are grouped, or a list containing only the
+     *     given tab if the tab is not in a group.
      */
-    @NonNull
-    List<Tab> getRelatedTabList(int tabId);
+    List<Tab> getRelatedTabList(@TabId int tabId);
 
     /**
-     * Any of the concrete class can override and define a relationship that links a {@link Tab} to
-     * a list of related {@link Tab}s. By default, this returns an unmodifiable list that only
-     * contains the given id. Note that the meaning of related can vary depending on the filter
-     * being applied.
+     * Returns the list of tab ids that are grouped with the given {@code tabId}.
      *
-     * @param tabId Id of the {@link Tab} try to relate with.
-     * @return An unmodifiable list of id that relate with the given tab id.
+     * @param tabId The id of a {@link Tab} in the group.
+     * @return An unmodifiable list of tab ids that are grouped, or a list containing only the given
+     *     tab's id if the tab is not in a group.
      */
-    @NonNull
-    List<Integer> getRelatedTabIds(int tabId);
+    List<@TabId Integer> getRelatedTabIds(@TabId int tabId);
 
     /**
      * This method returns all tabs in a tab group with reference to {@code tabRootId} as root id.
@@ -124,29 +120,26 @@ public interface TabGroupModelFilter extends TabList {
      * @param tabRootId The tab root id that is used to find the related group.
      * @return An unmodifiable list of {@link Tab} that relate with the given tab root id.
      */
-    List<Tab> getRelatedTabListForRootId(int tabRootId);
+    List<Tab> getRelatedTabListForRootId(@TabId int tabRootId);
 
-    /**
-     * @param tab A {@link Tab} to check group membership of.
-     * @return Whether the given {@link Tab} is part of a tab group.
-     */
+    /** Returns whether the given {@link Tab} is in a tab group. */
     boolean isTabInTabGroup(Tab tab);
 
     /** Returns the position of the given {@link Tab} in its group. */
     int getIndexOfTabInGroup(Tab tab);
 
-    /**
-     * @param rootId The rootId of the group to lookup.
-     * @return the last shown tab in that group or Tab.INVALID_TAB_ID otherwise.
-     */
-    int getGroupLastShownTabId(int rootId);
+    /** Returns the last shown tab id in the tab group with {@code tabGroupId}. */
+    @TabId
+    int getGroupLastShownTabId(@Nullable Token tabGroupId);
 
     /**
-     * @param rootId The rootId of the group to lookup.
-     * @return the last shown tab in that group or null otherwise.
+     * Returns the last shown tab id in the tab group with {@code rootId}.
+     *
+     * @deprecated Use {@link #getGroupLastShownTabId(Token)} instead.
      */
-    @Nullable
-    Tab getGroupLastShownTab(int rootId);
+    @Deprecated
+    @TabId
+    int getGroupLastShownTabId(@TabId int rootId);
 
     /**
      * This method moves the tab group which contains the tab with tab {@code id} to {@code
@@ -155,7 +148,7 @@ public interface TabGroupModelFilter extends TabList {
      * @param id The id of the tab whose related tabs are being moved.
      * @param newIndex The new index in TabModel that these tabs are being moved to.
      */
-    void moveRelatedTabs(int id, int newIndex);
+    void moveRelatedTabs(@TabId int id, int newIndex);
 
     /**
      * This method checks if an impending group merge action will result in a new group creation.
@@ -168,12 +161,11 @@ public interface TabGroupModelFilter extends TabList {
      * Creates a tab group containing a single tab.
      *
      * @param tabId The tab id of the tab to create the group for.
-     * @param notify Whether to notify observers to create an undo snackbar.
      */
-    void createSingleTabGroup(int tabId, boolean notify);
+    void createSingleTabGroup(@TabId int tabId);
 
-    /** Same as {@link #createSingleTabGroup(int, boolean)}, but with a {@link Tab} object. */
-    void createSingleTabGroup(Tab tab, boolean notify);
+    /** Same as {@link #createSingleTabGroup(int)}, but with a {@link Tab} object. */
+    void createSingleTabGroup(Tab tab);
 
     /**
      * Creates a tab group with a preallocated {@link Token} for the TabGroupId.
@@ -186,7 +178,7 @@ public interface TabGroupModelFilter extends TabList {
      *     root tab. An empty list will no-op.
      * @param tabGroupId An externally minted tab group id token.
      */
-    void createTabGroupForTabGroupSync(@NonNull List<Tab> tabs, @NonNull Token tabGroupId);
+    void createTabGroupForTabGroupSync(List<Tab> tabs, Token tabGroupId);
 
     /**
      * This method merges the source group that contains the {@code sourceTabId} to the destination
@@ -196,7 +188,7 @@ public interface TabGroupModelFilter extends TabList {
      * @param sourceTabId The id of the {@link Tab} to get the source group.
      * @param destinationTabId The id of a {@link Tab} to get the destination group.
      */
-    void mergeTabsToGroup(int sourceTabId, int destinationTabId);
+    void mergeTabsToGroup(@TabId int sourceTabId, @TabId int destinationTabId);
 
     /**
      * This method merges the source group that contains the {@code sourceTabId} to the destination
@@ -208,7 +200,8 @@ public interface TabGroupModelFilter extends TabList {
      * @param skipUpdateTabModel True if updating the tab model will be handled elsewhere (e.g. by
      *     the tab strip).
      */
-    void mergeTabsToGroup(int sourceTabId, int destinationTabId, boolean skipUpdateTabModel);
+    void mergeTabsToGroup(
+            @TabId int sourceTabId, @TabId int destinationTabId, boolean skipUpdateTabModel);
 
     /**
      * This method appends a list of {@link Tab}s to the destination group that contains the {@code}
@@ -223,7 +216,6 @@ public interface TabGroupModelFilter extends TabList {
     void mergeListOfTabsToGroup(List<Tab> tabs, Tab destinationTab, boolean notify);
 
     /** Returns a utility interface to help with that ungrouping tabs from a tab group. */
-    @NonNull
     TabUngrouper getTabUngrouper();
 
     // TODO(crbug.com/372068933): This method should probably have more restricted access.
@@ -236,10 +228,10 @@ public interface TabGroupModelFilter extends TabList {
      * @param originalTabGroupId The tabGroupId before grouped.
      */
     void undoGroupedTab(
-            Tab tab, int originalIndex, int originalRootId, @Nullable Token originalTabGroupId);
-
-    /** Get all tab group root ids that are associated with tab groups. */
-    Set<Integer> getAllTabGroupRootIds();
+            Tab tab,
+            int originalIndex,
+            @TabId int originalRootId,
+            @Nullable Token originalTabGroupId);
 
     /** Get all tab group IDs that are associated with tab groups. */
     Set<Token> getAllTabGroupIds();
@@ -261,41 +253,33 @@ public interface TabGroupModelFilter extends TabList {
     boolean isTabGroupHiding(@Nullable Token tabGroupId);
 
     /**
-     * Returns a lazy oneshot supplier that generates all the tab group IDs including those pending
-     * closure except those requested to be excluded.
+     * Returns a lazy oneshot supplier that generates all the tab group IDs except those requested
+     * to be excluded.
      *
      * @param tabsToExclude The list of tabs to exclude.
-     * @return A lazy oneshot supplier containing all the tab group IDs including those pending
-     *     closure.
+     * @param includePendingClosures Whether to include pending tab closures.
+     * @return A lazy oneshot supplier containing all the tab group IDs.
      */
-    LazyOneshotSupplier<Set<Token>> getLazyAllTabGroupIdsInComprehensiveModel(
-            List<Tab> tabsToExclude);
+    LazyOneshotSupplier<Set<Token>> getLazyAllTabGroupIds(
+            List<Tab> tabsToExclude, boolean includePendingClosures);
 
-    /**
-     * Returns a lazy oneshot supplier that generates all the root IDs including those pending
-     * closure except those requested to be excluded.
-     *
-     * @param tabsToExclude The list of tabs to exclude.
-     * @return A lazy oneshot supplier containing all the root IDs including those pending closure.
-     */
-    LazyOneshotSupplier<Set<Integer>> getLazyAllRootIdsInComprehensiveModel(
-            List<Tab> tabsToExclude);
+    // TODO(crbug.com/399354986): Migrate these methods to use tabGroupIds instead of rootIds.
 
     /** Returns the current title of the tab group. */
-    String getTabGroupTitle(int rootId);
+    String getTabGroupTitle(@TabId int rootId);
 
     /** Stores the given title for the tab group. */
-    void setTabGroupTitle(int rootId, String title);
+    void setTabGroupTitle(@TabId int rootId, String title);
 
     /** Deletes the stored title for the tab group, defaulting it back to "N tabs." */
-    void deleteTabGroupTitle(int rootId);
+    void deleteTabGroupTitle(@TabId int rootId);
 
     /**
      * This method fetches tab group colors id for the specified tab group. It will be a {@link
      * TabGroupColorId} if found, otherwise a {@link TabGroupTitleUtils.INVALID_COLOR_ID} if there
      * is no color entry for the group.
      */
-    int getTabGroupColor(int rootId);
+    int getTabGroupColor(@TabId int rootId);
 
     /**
      * This method fetches tab group colors for the related tab group root ID. If the color does not
@@ -306,29 +290,23 @@ public interface TabGroupModelFilter extends TabList {
      * @return The color that should be used for this group.
      */
     @TabGroupColorId
-    int getTabGroupColorWithFallback(int rootId);
+    int getTabGroupColorWithFallback(@TabId int rootId);
 
     /** Stores the given color for the tab group. */
-    void setTabGroupColor(int rootId, @TabGroupColorId int color);
+    void setTabGroupColor(@TabId int rootId, @TabGroupColorId int color);
 
     /** Deletes the color that was recorded for the group. */
-    void deleteTabGroupColor(int rootId);
+    void deleteTabGroupColor(@TabId int rootId);
 
     /** Returns whether the tab group is expanded or collapsed. */
-    boolean getTabGroupCollapsed(int rootId);
+    boolean getTabGroupCollapsed(@TabId int rootId);
 
     /** Sets whether the tab group is expanded or collapsed. */
-    void setTabGroupCollapsed(int rootId, boolean isCollapsed);
+    void setTabGroupCollapsed(@TabId int rootId, boolean isCollapsed);
 
     /** Deletes the record that the group is collapsed, setting it to expanded. */
-    void deleteTabGroupCollapsed(int rootId);
+    void deleteTabGroupCollapsed(@TabId int rootId);
 
     /** Delete the title, color and collapsed state of a tab group. */
-    void deleteTabGroupVisualData(int rootId);
-
-    /** Returns the sync ID associated with the tab group. */
-    String getTabGroupSyncId(int rootId);
-
-    /** Stores the sync ID associated with the tab group. */
-    void setTabGroupSyncId(int rootId, String syncId);
+    void deleteTabGroupVisualData(@TabId int rootId);
 }

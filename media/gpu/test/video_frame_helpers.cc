@@ -11,7 +11,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
@@ -32,8 +33,7 @@
 #include "media/gpu/video_frame_mapper_factory.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-namespace media {
-namespace test {
+namespace media::test {
 
 namespace {
 
@@ -328,6 +328,7 @@ scoped_refptr<VideoFrame> ScaleVideoFrame(const VideoFrame* src_frame,
 scoped_refptr<VideoFrame> CloneVideoFrame(
     const VideoFrame* const src_frame,
     const VideoFrameLayout& dst_layout,
+    gpu::TestSharedImageInterface* test_sii,
     VideoFrame::StorageType dst_storage_type,
     std::optional<gfx::BufferUsage> dst_buffer_usage) {
   if (!src_frame)
@@ -377,8 +378,8 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
     // Here, the content in |src_frame| is already copied to |dst_frame|, which
     // is a DMABUF based VideoFrame.
     // Create GpuMemoryBuffer based VideoFrame from |dst_frame|.
-    dst_frame =
-        CreateGpuMemoryBufferVideoFrame(dst_frame.get(), *dst_buffer_usage);
+    dst_frame = CreateGpuMemoryBufferVideoFrame(dst_frame.get(),
+                                                *dst_buffer_usage, test_sii);
   }
 
   return dst_frame;
@@ -411,7 +412,8 @@ scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
 
 scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     const VideoFrame* const frame,
-    gfx::BufferUsage buffer_usage) {
+    gfx::BufferUsage buffer_usage,
+    gpu::TestSharedImageInterface* test_sii) {
   gfx::GpuMemoryBufferHandle gmb_handle;
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   gmb_handle = CreateGpuMemoryBufferHandle(frame);
@@ -428,21 +430,26 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     return nullptr;
   }
 
-  // Create GpuMemoryBuffer from GpuMemoryBufferHandle.
-  gpu::GpuMemoryBufferSupport support;
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-      support.CreateGpuMemoryBufferImplFromHandle(
-          std::move(gmb_handle), frame->coded_size(), *buffer_format,
-          buffer_usage, base::DoNothing());
-  if (!gpu_memory_buffer) {
-    LOG(ERROR) << "Failed to create GpuMemoryBuffer from GpuMemoryBufferHandle";
+  // Setting some default usage in order to get a mappable shared image.
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  auto si_format = viz::GetSharedImageFormat(*buffer_format);
+  // Create a mappable shared image.
+  auto shared_image = test_sii->CreateSharedImage(
+      {si_format, frame->coded_size(), gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "VideoFrameTestHelpers"},
+      gpu::kNullSurfaceHandle, buffer_usage, std::move(gmb_handle));
+  if (!shared_image) {
+    LOG(ERROR)
+        << "Failed to create ClientSharedImage with GpuMemoryBufferHandle";
     return nullptr;
   }
 
   scoped_refptr<VideoFrame> video_frame =
-      media::VideoFrame::WrapExternalGpuMemoryBuffer(
-          frame->visible_rect(), frame->natural_size(),
-          std::move(gpu_memory_buffer), frame->timestamp());
+      media::VideoFrame::WrapMappableSharedImage(
+          std::move(shared_image), test_sii->GenVerifiedSyncToken(),
+          base::NullCallback(), frame->visible_rect(), frame->natural_size(),
+          frame->timestamp());
 
   video_frame->metadata().tracking_token = base::UnguessableToken::Create();
 
@@ -508,5 +515,4 @@ std::optional<VideoFrameLayout> CreateVideoFrameLayout(
                                             std::move(planes));
 }
 
-}  // namespace test
-}  // namespace media
+}  // namespace media::test

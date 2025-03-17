@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_LIST_H_
 
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/style/gap_data.h"
 
 namespace blink {
@@ -46,6 +48,13 @@ class CORE_EXPORT GapDataList {
   void Trace(Visitor* visitor) const { visitor->Trace(gap_data_list_); }
 
   const GapDataVector& GetGapDataList() const { return gap_data_list_; }
+
+  bool MaybeDependsOnCurrentColor() const {
+    return std::ranges::any_of(gap_data_list_, [](const GapData<T>& gap_data) {
+      return gap_data.GetValue().IsCurrentColor() ||
+             gap_data.GetValue().IsUnresolvedColorFunction();
+    });
+  }
 
   const T GetLegacyValue() const {
     CHECK_EQ(gap_data_list_.size(), 1U);

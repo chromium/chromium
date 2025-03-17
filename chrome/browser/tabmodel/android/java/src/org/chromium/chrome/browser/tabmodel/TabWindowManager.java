@@ -14,6 +14,9 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Manages multiple {@link TabModelSelector} instances, each owned by different {@link Activity}s.
  *
@@ -114,10 +117,27 @@ public interface TabWindowManager {
     TabModel getTabModelForTab(Tab tab);
 
     /**
+     * Use {@link #getTabById(int, int)} preferably and when possible for a more efficient lookup.
+     *
      * @param tabId The ID of the tab in question.
      * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found.
      */
     Tab getTabById(int tabId);
+
+    /**
+     * @param tabId The ID of the tab in question.
+     * @param windowId The ID of the window that holds the tab.
+     * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found.
+     */
+    Tab getTabById(int tabId, int windowId);
+
+    /**
+     * @param windowId The ID of the window that holds the tab group.
+     * @param rootId The root ID of the tab group.
+     * @param isIncognito Whether the grouped tabs are incognito tabs.
+     * @return A list of tabs associated with the root ID, or {@code null} if no tabs are found.
+     */
+    List<Tab> getGroupedTabsByWindow(int windowId, int rootId, boolean isIncognito);
 
     /**
      * Finds the {@link TabModelSelector} bound to an Activity instance of a given index.
@@ -126,6 +146,9 @@ public interface TabWindowManager {
      * @return Specified {@link TabModelSelector} or {@code null} if not found.
      */
     TabModelSelector getTabModelSelectorById(int index);
+
+    /** Gets a Collection of all TabModelSelectors. */
+    Collection<TabModelSelector> getAllTabModelSelectors();
 
     /** Returns whether the tab with the given id can safely be deleted. */
     boolean canTabStateBeDeleted(int tabId);

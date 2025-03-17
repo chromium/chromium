@@ -434,8 +434,10 @@ TEST_F(DomainReliabilityContextTest, ReportUploadNetworkIsolationKey) {
   const auto kIsolationInfo1 =
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
                                  kOrigin1, kOrigin1, kSiteForCookies1);
-  const auto kIsolationInfo2 = net::IsolationInfo::CreateTransient();
-  const auto kIsolationInfo3 = net::IsolationInfo::CreateTransient();
+  const auto kIsolationInfo2 =
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  const auto kIsolationInfo3 =
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
   InitContext(MakeTestConfig());
 
@@ -565,9 +567,9 @@ TEST_F(DomainReliabilityContextTest, ReportUploadNetworkIsolationKey) {
 // IsolationInfos with different NetworkIsolationKeys.
 TEST_F(DomainReliabilityContextTest, ReportUploadDepthNetworkIsolationKeys) {
   const net::IsolationInfo kIsolationInfo1 =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   const net::IsolationInfo kIsolationInfo2 =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
   InitContext(MakeTestConfig());
 
@@ -1264,8 +1266,8 @@ TEST_F(DomainReliabilityContextTest,
   InitContext(MakeTestConfig());
 
   auto isolation_infos = std::to_array<net::IsolationInfo>({
-      net::IsolationInfo::CreateTransient(),
-      net::IsolationInfo::CreateTransient(),
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
   });
 
   // Add `DomainReliabilityContext::kMaxQueuedBeacons` beacons, using a

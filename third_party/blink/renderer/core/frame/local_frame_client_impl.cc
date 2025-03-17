@@ -32,7 +32,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client_impl.h"
 
 #include <utility>
+#include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
@@ -42,7 +44,6 @@
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -56,11 +57,11 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_dom_event.h"
 #include "third_party/blink/public/web/web_form_element.h"
+#include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_manifest_manager.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
@@ -422,7 +423,8 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
     bool is_synchronously_committed,
     mojom::blink::SameDocumentNavigationType same_document_navigation_type,
     bool is_client_redirect,
-    bool is_browser_initiated) {
+    bool is_browser_initiated,
+    bool should_skip_screenshot) {
   bool should_create_history_entry = commit_type == kWebStandardCommit;
   // TODO(dglazkov): Does this need to be called for subframes?
   web_frame_->ViewImpl()->DidCommitLoad(should_create_history_entry, true);
@@ -447,7 +449,12 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
       CHECK(frame_widget);
       frame_widget->PropagateHistorySequenceNumberToCompositor();
 
-      if (commit_type != kWebHistoryInertCommit &&
+      // When the navigation call goes through the browser,
+      // should_skip_screenshot makes the remaining checks redundant. However,
+      // some navigations originate in the renderer and do not involve a commit
+      // IPC from the browser (e.g., navigations to an anchor from an HTML
+      // element)
+      if (!should_skip_screenshot && commit_type != kWebHistoryInertCommit &&
           !web_frame_->GetFrame()->GetSettings()->GetPrefersReducedMotion()) {
         navigation_with_screenshot = true;
         if (RuntimeEnabledFeatures::
@@ -515,7 +522,7 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
     HistoryItem* item,
     WebHistoryCommitType commit_type,
     bool should_reset_browser_interface_broker,
-    const blink::ParsedPermissionsPolicy& permissions_policy_header,
+    const network::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header) {
   if (!web_frame_->Parent()) {
     web_frame_->ViewImpl()->DidCommitLoad(commit_type == kWebStandardCommit,
@@ -555,10 +562,13 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
             web_frame_->GetDocument().GetUkmSourceId(),
             KURL(web_frame_->Client()->LastCommittedUrlForUKM()));
 
-        auto shmem = frame_widget->CreateSharedMemoryForSmoothnessUkm();
-        if (shmem.IsValid()) {
-          web_frame_->Client()->SetUpSharedMemoryForSmoothness(
-              std::move(shmem));
+        auto smoothness_shmem =
+            frame_widget->CreateSharedMemoryForSmoothnessUkm();
+        auto dropped_frames_shmem =
+            frame_widget->CreateSharedMemoryForDroppedFramesUkm();
+        if (smoothness_shmem.IsValid() && dropped_frames_shmem.IsValid()) {
+          web_frame_->Client()->SetUpSharedMemoryForUkms(
+              std::move(smoothness_shmem), std::move(dropped_frames_shmem));
         }
       }
     }
@@ -879,8 +889,8 @@ void LocalFrameClientImpl::SelectorMatchChanged(
     const Vector<String>& added_selectors,
     const Vector<String>& removed_selectors) {
   if (WebLocalFrameClient* client = web_frame_->Client()) {
-    client->DidMatchCSS(WebVector<WebString>(added_selectors),
-                        WebVector<WebString>(removed_selectors));
+    client->DidMatchCSS(base::ToVector(added_selectors, ToWebString),
+                        base::ToVector(removed_selectors, ToWebString));
   }
 }
 
@@ -958,8 +968,8 @@ WebPluginContainerImpl* LocalFrameClientImpl::CreatePlugin(
   WebPluginParams params;
   params.url = url;
   params.mime_type = mime_type;
-  params.attribute_names = param_names;
-  params.attribute_values = param_values;
+  params.attribute_names = base::ToVector(param_names, ToWebString);
+  params.attribute_values = base::ToVector(param_values, ToWebString);
   params.load_manually = load_manually;
 
   WebPlugin* web_plugin = web_frame_->Client()->CreatePlugin(params);

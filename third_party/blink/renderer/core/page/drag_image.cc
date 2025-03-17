@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/fonts/string_truncator.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
@@ -45,7 +46,9 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -123,7 +126,7 @@ std::unique_ptr<DragImage> DragImage::Create(
   return base::WrapUnique(new DragImage(bm, interpolation_quality));
 }
 
-static Font DeriveDragLabelFont(int size, FontSelectionValue font_weight) {
+static Font* DeriveDragLabelFont(int size, FontSelectionValue font_weight) {
   const AtomicString& family =
       LayoutThemeFontProvider::SystemFontFamily(CSSValueID::kNone);
 
@@ -133,21 +136,20 @@ static Font DeriveDragLabelFont(int size, FontSelectionValue font_weight) {
   description.SetWeight(font_weight);
   description.SetSpecifiedSize(size);
   description.SetComputedSize(size);
-  Font result(description);
-  return result;
+  return MakeGarbageCollected<Font>(description);
 }
 
 // static
 std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
                                              const String& in_label,
                                              float device_scale_factor) {
-  const Font label_font =
+  const Font* label_font =
       DeriveDragLabelFont(kDragLinkLabelFontSize, kBoldWeightValue);
-  const SimpleFontData* label_font_data = label_font.PrimaryFont();
+  const SimpleFontData* label_font_data = label_font->PrimaryFont();
   DCHECK(label_font_data);
-  const Font url_font =
+  const Font* url_font =
       DeriveDragLabelFont(kDragLinkUrlFontSize, kNormalWeightValue);
-  const SimpleFontData* url_font_data = url_font.PrimaryFont();
+  const SimpleFontData* url_font_data = url_font->PrimaryFont();
   DCHECK(url_font_data);
 
   if (!label_font_data || !url_font_data)
@@ -167,11 +169,15 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
     draw_url_string = false;
     label = url_string;
   }
+  PlainTextPainter* text_painter =
+      RuntimeEnabledFeatures::PlainTextPainterEnabled()
+          ? &PlainTextPainter::Shared()
+          : nullptr;
 
   // First step is drawing the link drag image width.
-  TextRun label_run(label.Impl());
-  TextRun url_run(url_string.Impl());
-  gfx::Size label_size(label_font.Width(label_run),
+  gfx::Size label_size(text_painter ? text_painter->ComputeInlineSize(
+                                          TextRun(label), *label_font)
+                                    : label_font->Width(TextRun(label)),
                        label_font_data->GetFontMetrics().Ascent() +
                            label_font_data->GetFontMetrics().Descent());
 
@@ -185,7 +191,10 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
                        label_size.height() + kDragLabelBorderY * 2);
 
   if (draw_url_string) {
-    url_string_size.set_width(url_font.Width(url_run));
+    url_string_size.set_width(text_painter
+                                  ? text_painter->ComputeInlineSizeWithoutBidi(
+                                        TextRun(url_string), *url_font)
+                                  : url_font->Width(TextRun(url_string)));
     url_string_size.set_height(url_font_data->GetFontMetrics().Ascent() +
                                url_font_data->GetFontMetrics().Descent());
     image_size.set_height(image_size.height() + url_string_size.height());
@@ -206,8 +215,8 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   // TODO(fserb): are we sure this should be software?
   std::unique_ptr<CanvasResourceProvider> resource_provider(
       CanvasResourceProvider::CreateBitmapProvider(
-          scaled_image_size, kN32_SkColorType, kPremul_SkAlphaType,
-          SkColorSpace::MakeSRGB(),
+          scaled_image_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
+          gfx::ColorSpace::CreateSRGB(),
           CanvasResourceProvider::ShouldInitialize::kNo));
   if (!resource_provider)
     return nullptr;
@@ -228,37 +237,57 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   // Draw the text
   cc::PaintFlags text_paint;
   if (draw_url_string) {
-    if (clip_url_string)
+    if (clip_url_string) {
       url_string = StringTruncator::CenterTruncate(
           url_string, image_size.width() - (kDragLabelBorderX * 2.0f),
-          url_font);
+          *url_font);
+    }
     gfx::PointF text_pos(
         kDragLabelBorderX,
         image_size.height() -
             (kLabelBorderYOffset + url_font_data->GetFontMetrics().Descent()));
     TextRun text_run(url_string);
-    url_font.DrawText(&resource_provider->Canvas(), TextRunPaintInfo(text_run),
-                      text_pos, device_scale_factor, text_paint);
+    if (RuntimeEnabledFeatures::DragImageNoNodeIdEnabled()) {
+      if (text_painter) {
+        text_painter->DrawWithoutBidi(text_run, *url_font,
+                                      resource_provider->Canvas(), text_pos,
+                                      text_paint);
+      } else {
+        url_font->DrawText(&resource_provider->Canvas(), text_run, text_pos,
+                           text_paint);
+      }
+    } else {
+      url_font->DrawText(&resource_provider->Canvas(), text_run, text_pos,
+                         device_scale_factor, text_paint);
+    }
   }
 
   if (clip_label_string) {
     label = StringTruncator::RightTruncate(
-        label, image_size.width() - (kDragLabelBorderX * 2.0f), label_font);
+        label, image_size.width() - (kDragLabelBorderX * 2.0f), *label_font);
   }
 
-  TextRun text_run(label);
-  text_run.SetDirectionFromText();
+  TextRun text_run(label, BidiParagraph::BaseDirectionForStringOrLtr(label));
   gfx::Point text_pos(
       kDragLabelBorderX,
-      kDragLabelBorderY + label_font.GetFontDescription().ComputedPixelSize());
+      kDragLabelBorderY + label_font->GetFontDescription().ComputedPixelSize());
   if (text_run.Direction() == TextDirection::kRtl) {
-    float text_width = label_font.Width(text_run);
+    float text_width =
+        text_painter ? text_painter->ComputeInlineSize(text_run, *label_font)
+                     : label_font->Width(text_run);
     int available_width = image_size.width() - kDragLabelBorderX * 2;
     text_pos.set_x(available_width - ceilf(text_width));
   }
-  label_font.DrawBidiText(&resource_provider->Canvas(),
-                          TextRunPaintInfo(text_run), gfx::PointF(text_pos),
-                          Font::kDoNotPaintIfFontNotReady, text_paint);
+  if (text_painter) {
+    text_painter->DrawWithBidiReorder(
+        text_run, 0, text_run.length(), *label_font,
+        Font::kDoNotPaintIfFontNotReady, resource_provider->Canvas(),
+        gfx::PointF(text_pos), text_paint);
+  } else {
+    label_font->DrawBidiText(&resource_provider->Canvas(),
+                             TextRunPaintInfo(text_run), gfx::PointF(text_pos),
+                             Font::kDoNotPaintIfFontNotReady, text_paint);
+  }
 
   scoped_refptr<StaticBitmapImage> image =
       resource_provider->Snapshot(FlushReason::kNon2DCanvas);

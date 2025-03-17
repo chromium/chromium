@@ -42,7 +42,7 @@ class CORE_EXPORT CSSIdentifierValue : public CSSValue {
   // specialize the create() method instead.
   template <typename T>
   CSSIdentifierValue(
-      T t)  // Overriden for special cases in CSSPrimitiveValueMappings.h
+      T t)  // Overridden for special cases in css_identifier_value_mappings.h
       : CSSValue(kIdentifierClass), value_id_(PlatformEnumToCSSValueID(t)) {}
 
   CSSIdentifierValue(const Length&);
@@ -57,8 +57,8 @@ class CORE_EXPORT CSSIdentifierValue : public CSSValue {
   unsigned CustomHash() const { return static_cast<unsigned>(value_id_); }
 
   template <typename T>
-  inline T ConvertTo()
-      const {  // Overridden for special cases in CSSPrimitiveValueMappings.h
+  inline T ConvertTo() const {  // Overridden for special cases in
+                                // css_identifier_value_mappings.h
     return CssValueIDToPlatformEnum<T>(value_id_);
   }
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // This command-line program converts an effective-TLD data file in UTF-8 from
 // the format provided by Mozilla to the format expected by Chrome.  This
 // program generates an intermediate file which is then used by gperf to

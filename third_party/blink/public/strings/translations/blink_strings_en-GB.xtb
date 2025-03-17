@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">Please enter a valid value. The two nearest valid values are <ph name="VALID_VALUE_LOW" /> and <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4664250907885839816">A part following '<ph name="ATSIGN" />' should not contain the symbol '<ph name="INVALIDCHARACTER" />'.</translation>
+<translation id="4703271465972936359">Audio tracks</translation>
 <translation id="4718048029184481307">Playing in picture-in-picture</translation>
 <translation id="4812940957355064477">Please enter a number.</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> selected</translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5630795885300617244">Double-tap left or right to skip 10s</translation>
 <translation id="57838592816432529">Mute</translation>
+<translation id="5868587040512539609">Video tracks</translation>
 <translation id="588258955323874662">Full screen</translation>
 <translation id="5888666972993069672">Now casting to <ph name="DEVICE_FRIENDLY_NAME" /></translation>
 <translation id="5939518447894949180">Reset</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">Pretty print</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="6643016212128521049">Clear</translation>
+<translation id="6661136971638885481">Track #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Other...</translation>
 <translation id="6709093583001123835">Value must be <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Poor playback quality</translation>

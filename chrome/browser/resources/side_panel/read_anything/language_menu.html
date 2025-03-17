@@ -42,8 +42,7 @@
         ${this.i18nWraper(item.notification.text)}
       </span>
     `)}
-    <language-toast .showErrors="${false}"
-        .availableVoices="${this.availableVoices}">
+    <language-toast .numAvailableVoices="${this.availableVoices.length}">
     </language-toast>
   </div>
 </cr-dialog>

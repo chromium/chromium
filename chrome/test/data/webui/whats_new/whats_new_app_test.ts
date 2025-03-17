@@ -4,7 +4,6 @@
 
 import {CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
-import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -40,10 +39,7 @@ suite('WhatsNewAppTest', function() {
     const iframe =
         whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
     assertTrue(!!iframe);
-    // iframe has latest=true URL query parameter except on CrOS
-    assertEquals(
-        whatsNewURL + (isChromeOS ? '?latest=false' : '?latest=true'),
-        iframe.src);
+    assertEquals(whatsNewURL + '?updated=true', iframe.src);
   });
 
   test('with version as query parameter', async () => {
@@ -58,11 +54,7 @@ suite('WhatsNewAppTest', function() {
     const iframe =
         whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
     assertTrue(!!iframe);
-    // iframe has latest=true URL query parameter except on CrOS
-    assertEquals(
-        whatsNewURL + '?version=m98' +
-            (isChromeOS ? '&latest=false' : '&latest=true'),
-        iframe.src);
+    assertEquals(whatsNewURL + '?version=m98&updated=true', iframe.src);
   });
 
   test('no query parameters', async () => {
@@ -77,31 +69,7 @@ suite('WhatsNewAppTest', function() {
     const iframe =
         whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
     assertTrue(!!iframe);
-    assertEquals(whatsNewURL + '?latest=false', iframe.src);
-  });
-
-  test('with legacy command format', async () => {
-    const proxy = new TestWhatsNewBrowserProxy(
-        getUrlForFixture('test_with_legacy_command_3'));
-    WhatsNewProxyImpl.setInstance(proxy);
-    const browserCommandHandler = TestMock.fromClass(CommandHandlerRemote);
-    BrowserCommandProxy.getInstance().handler = browserCommandHandler;
-    browserCommandHandler.setResultFor(
-        'canExecuteCommand', Promise.resolve({canExecute: true}));
-    window.history.replaceState({}, '', '/');
-    const whatsNewApp = document.createElement('whats-new-app');
-    document.body.appendChild(whatsNewApp);
-
-    const whenMessage = eventToPromise('message', window);
-    const commandId =
-        await browserCommandHandler.whenCalled('canExecuteCommand');
-    assertEquals(3, commandId);
-
-    const {data} = await whenMessage;
-    assertEquals(3, data.data.commandId);
-
-    await proxy.handler.whenCalled('recordBrowserCommandExecuted');
-    assertEquals(1, proxy.handler.getCallCount('recordBrowserCommandExecuted'));
+    assertEquals(whatsNewURL + '?updated=false', iframe.src);
   });
 
   test('with browser command format', async () => {
@@ -157,7 +125,7 @@ suite('WhatsNewAppTest', function() {
     const moduleImpression =
         await proxy.handler.whenCalled('recordModuleImpression');
     assertEquals('ChromeFeature', moduleImpression[0]);
-    assertEquals(ModulePosition.kUndefined, moduleImpression[1]);
+    assertEquals(ModulePosition.kSpotlight1, moduleImpression[1]);
   });
 
   test('with explore_more_toggled metrics from embedded page', async () => {
@@ -214,7 +182,7 @@ suite('WhatsNewAppTest', function() {
     assertEquals(ModulePosition.kSpotlight1, clickedModule[1]);
   });
 
-  test('with different module name formats', async () => {
+  test('with different module name formats', () => {
     // Formats legacy format correctly.
     assertEquals('ChromeFeature', formatModuleName('123-chrome-feature'));
     // Ignores modern format.
@@ -230,5 +198,38 @@ suite('WhatsNewAppTest', function() {
     assertEquals('Feature', formatModuleName('-feature'));
     // Does not remove numbers within name.
     assertEquals('Chrome123Feature', formatModuleName('chrome-123-feature'));
+  });
+
+  test('with video metrics from embedded page', async () => {
+    const proxy = new TestWhatsNewBrowserProxy(
+        getUrlForFixture('test_with_metrics_module_video_events'));
+    WhatsNewProxyImpl.setInstance(proxy);
+    window.history.replaceState({}, '', '/');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+
+    const videoStarted =
+        await proxy.handler.whenCalled('recordModuleVideoStarted');
+    assertEquals('ChromeFeature', videoStarted[0]);
+    assertEquals(ModulePosition.kSpotlight1, videoStarted[1]);
+
+    const videoEnded = await proxy.handler.whenCalled('recordModuleVideoEnded');
+    assertEquals('ChromeVideoEndFeature', videoEnded[0]);
+    assertEquals(ModulePosition.kSpotlight3, videoEnded[1]);
+
+    const playClicked =
+        await proxy.handler.whenCalled('recordModulePlayClicked');
+    assertEquals('ChromeVideoFeature', playClicked[0]);
+    assertEquals(ModulePosition.kSpotlight1, playClicked[1]);
+
+    const pauseClicked =
+        await proxy.handler.whenCalled('recordModulePauseClicked');
+    assertEquals('ChromeVideoFeature', pauseClicked[0]);
+    assertEquals(ModulePosition.kSpotlight2, pauseClicked[1]);
+
+    const restartClicked =
+        await proxy.handler.whenCalled('recordModuleRestartClicked');
+    assertEquals('ChromeVideoFeature', restartClicked[0]);
+    assertEquals(ModulePosition.kSpotlight3, restartClicked[1]);
   });
 });

@@ -7,10 +7,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/media/web_encrypted_media_client_impl.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -80,8 +80,8 @@ void WebContentDecryptionModuleAccessImpl::CreateContentDecryptionModule(
   // gets garbage-collected.
   auto result_copy = std::make_unique<WebContentDecryptionModuleResult>(result);
   task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(&CreateCdm, client_, security_origin_,
-                                       cdm_config_, std::move(result_copy)));
+                        WTF::BindOnce(&CreateCdm, client_, security_origin_,
+                                      cdm_config_, std::move(result_copy)));
 }
 
 bool WebContentDecryptionModuleAccessImpl::UseHardwareSecureCodecs() const {

@@ -544,9 +544,9 @@ TEST(CSSMathExpressionNode, TestProgressNotation) {
     const std::string input;
     const double output;
   } test_cases[] = {
-      {"progress(1px from 0px to 4px)", 0.25f},
-      {"progress(10deg from 0deg to 10deg)", 1.0f},
-      {"progress(progress(10% from 0% to 40%) * 1px from 0.5px to 1px)", -0.5f},
+      {"progress(1px, 0px, 4px)", 0.25f},
+      {"progress(10deg, 0deg, 10deg)", 1.0f},
+      {"progress(progress(10%, 0%, 40%) * 1px, 0.5px, 1px)", -0.5f},
   };
 
   for (const auto& test_case : test_cases) {
@@ -569,7 +569,7 @@ TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
     const std::string input;
     const double output;
   } test_cases[] = {
-      {"progress(abs(5%) from hypot(3%, 4%) to 10%)", 0.0f},
+      {"progress(abs(5%), hypot(3%, 4%), 10%)", 0.0f},
   };
 
   for (const auto& test_case : test_cases) {
@@ -591,8 +591,8 @@ TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
 
 TEST(CSSMathExpressionNode, TestInvalidProgressNotation) {
   const std::string test_cases[] = {
-      "progress(1% from 0px to 4px)",
-      "progress(1px, 0px, 4px)",
+      "progress(1px from 0px to 4px)",
+      "progress(1%, 0px, 4px)",
       "progress(10deg from 0 to 10deg)",
   };
 

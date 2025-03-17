@@ -4,6 +4,8 @@
 
 #include "cc/scheduler/scheduler_state_machine.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/format_macros.h"
 #include "base/notreached.h"
@@ -12,6 +14,7 @@
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/features.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace cc {
 
@@ -178,8 +181,6 @@ SchedulerStateMachine::ActionToProtozeroEnum(Action action) {
       return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_DRAW_FORCED;
     case Action::DRAW_ABORT:
       return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_DRAW_ABORT;
-    case Action::UPDATE_DISPLAY_TREE:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_UPDATE_DISPLAY_TREE;
     case Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION:
       return pbzeroSchedulerAction::
           CC_SCHEDULER_ACTION_V2_BEGIN_LAYER_TREE_FRAME_SINK_CREATION;
@@ -361,10 +362,6 @@ bool SchedulerStateMachine::ShouldBeginLayerTreeFrameSinkCreation() const {
 }
 
 bool SchedulerStateMachine::ShouldDraw() const {
-  if (settings_.use_layer_context_for_display) {
-    return false;
-  }
-
   // If we need to abort draws, we should do so ASAP since the draw could
   // be blocking other important actions (like output surface initialization),
   // from occurring. If we are waiting for the first draw, then perform the
@@ -413,22 +410,6 @@ bool SchedulerStateMachine::ShouldDraw() const {
     return true;
 
   return needs_redraw_;
-}
-
-bool SchedulerStateMachine::ShouldUpdateDisplayTree() const {
-  if (!settings_.use_layer_context_for_display) {
-    return false;
-  }
-
-  if (did_update_display_tree_) {
-    return false;
-  }
-
-  if (layer_tree_frame_sink_state_ != LayerTreeFrameSinkState::ACTIVE) {
-    return false;
-  }
-
-  return needs_update_display_tree_;
 }
 
 bool SchedulerStateMachine::ShouldActivateSyncTree() const {
@@ -673,13 +654,24 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
 
   // This comes last, because we only want to throttle main frame that would
   // otherwise actually be sent, and we do not want to throttle forced redraws.
-  if (main_frame_throttled_interval_.is_positive() &&
-      Now() - last_sent_begin_main_frame_time_ <
-          main_frame_throttled_interval_) {
-    TRACE_EVENT0("cc", "ThrottleMainFrame");
+  if (ShouldThrottleSendBeginMainFrame()) {
     return false;
   }
+
   return true;
+}
+
+bool SchedulerStateMachine::ShouldThrottleSendBeginMainFrame() const {
+  bool result = false;
+  auto throttled_interval = MainFrameThrottledInterval();
+  if (throttled_interval.is_positive() &&
+      last_begin_impl_frame_time_ - last_sent_begin_main_frame_time_ <
+          throttled_interval) {
+    result = true;
+  }
+
+  TRACE_EVENT_INSTANT("cc", __PRETTY_FUNCTION__, "result", result);
+  return result;
 }
 
 bool SchedulerStateMachine::ShouldCommit() const {
@@ -775,9 +767,6 @@ SchedulerStateMachine::Action SchedulerStateMachine::NextAction() const {
       return Action::DRAW_FORCED;
     else
       return Action::DRAW_IF_POSSIBLE;
-  }
-  if (ShouldUpdateDisplayTree()) {
-    return Action::UPDATE_DISPLAY_TREE;
   }
   if (ShouldPerformImplSideInvalidation())
     return Action::PERFORM_IMPL_SIDE_INVALIDATION;
@@ -939,7 +928,10 @@ void SchedulerStateMachine::WillSendBeginMainFrame() {
   did_send_begin_main_frame_for_current_frame_ = true;
   // TODO(szager): Make sure this doesn't break perfetto
   last_frame_number_begin_main_frame_sent_ = current_frame_number_;
-  last_sent_begin_main_frame_time_ = Now();
+  // Not setting this to Now(), as we align everything on the last impl frame,
+  // in order to avoid the effects of delay in-between BeginImplFrame and
+  // SendBeginMainFrame(), that might lead to frame pacing issues.
+  last_sent_begin_main_frame_time_ = last_begin_impl_frame_time_;
 }
 
 void SchedulerStateMachine::WillNotifyBeginMainFrameNotExpectedUntil() {
@@ -1041,15 +1033,9 @@ void SchedulerStateMachine::WillActivate() {
 
   has_pending_tree_ = false;
   pending_tree_is_ready_for_activation_ = false;
-  if (settings_.use_layer_context_for_display) {
-    needs_update_display_tree_ = true;
-    did_update_display_tree_ = false;
-  } else {
-    needs_redraw_ = true;
-    active_tree_needs_first_draw_ =
-        pending_tree_needs_first_draw_on_activation_;
-    pending_tree_needs_first_draw_on_activation_ = false;
-  }
+  needs_redraw_ = true;
+  active_tree_needs_first_draw_ = pending_tree_needs_first_draw_on_activation_;
+  pending_tree_needs_first_draw_on_activation_ = false;
   waiting_for_activation_after_rendering_resumed_ = false;
 
   previous_pending_tree_was_impl_side_ = current_pending_tree_is_impl_side_;
@@ -1086,7 +1072,9 @@ void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
     case DrawResult::kAbortedCantDraw:
       if (consecutive_cant_draw_count_++ < 3u) {
         needs_redraw_ = true;
-      } else {
+      } else if (!settings_.using_synchronous_renderer_compositor) {
+        // We cannot enforce this for WebView, as we cannot prevent the
+        // application from attempting to force draws when we are unable to.
         DUMP_WILL_BE_NOTREACHED()
             << consecutive_cant_draw_count_ << " consecutve draws"
             << " with DrawResult::kAbortedCantDraw result";
@@ -1132,11 +1120,6 @@ void SchedulerStateMachine::WillDraw() {
   // in WillDrawInternal because AbortDraw calls WillDrawInternal but shouldn't
   // request another frame.
   did_attempt_draw_in_last_frame_ = true;
-}
-
-void SchedulerStateMachine::WillUpdateDisplayTree() {
-  needs_update_display_tree_ = false;
-  did_update_display_tree_ = true;
 }
 
 void SchedulerStateMachine::DidDraw(DrawResult draw_result) {
@@ -1338,11 +1321,14 @@ bool SchedulerStateMachine::ProactiveBeginFrameWanted() const {
   return false;
 }
 
-void SchedulerStateMachine::OnBeginImplFrame(const viz::BeginFrameId& frame_id,
-                                             bool animate_only) {
+void SchedulerStateMachine::OnBeginImplFrame(const viz::BeginFrameArgs& args) {
   begin_impl_frame_state_ = BeginImplFrameState::INSIDE_BEGIN_FRAME;
   current_frame_number_++;
-  begin_frame_is_animate_only_ = animate_only;
+  begin_frame_is_animate_only_ = args.animate_only;
+  // Pin the timestamp as passed from the caller. This makes timestamps more
+  // consistent, and insensitive to e.g. descheduling between receiving a
+  // BeginFrame() call, and actually getting to BeginImplFrame().
+  last_begin_impl_frame_time_ = args.frame_time;
 
   // Cache the values from the previous impl frame before reseting them for this
   // frame.
@@ -1463,16 +1449,30 @@ bool SchedulerStateMachine::ShouldTriggerBeginImplFrameDeadlineImmediately()
   if (active_tree_needs_first_draw_)
     return true;
 
+  // TODO(XXX): This condition should not need to be there. There was an attempt
+  // to remove it, which was reverted due to regressions (see
+  // https://chromium-review.googlesource.com/c/chromium/src/+/1211664).
+  // Investigate why this is the case.
   if (!needs_redraw_)
     return false;
+
+  // We did not send a BeginMainFrame() and main is not busy, we can trigger the
+  // deadline immediately.
+  bool wait_for_main = CommitPending() || has_pending_tree_;
+  if (last_begin_impl_frame_time_ != last_sent_begin_main_frame_time_ &&
+      !wait_for_main) {
+    TRACE_EVENT_INSTANT("cc", "TriggerDeadlineDueToThrottling");
+    return true;
+  }
 
   // This is used to prioritize impl-thread draws when the main thread isn't
   // producing anything, e.g., after an aborted commit. We also check that we
   // don't have a pending tree -- otherwise we should give it a chance to
   // activate.
   // TODO(skyostil): Revisit this when we have more accurate deadline estimates.
-  if (!CommitPending() && !has_pending_tree_)
+  if (!wait_for_main) {
     return true;
+  }
 
   // Prioritize impl-thread draws in ImplLatencyTakesPriority mode.
   if (ImplLatencyTakesPriority())
@@ -1527,8 +1527,30 @@ bool SchedulerStateMachine::ShouldBlockDeadlineIndefinitely() const {
   return false;
 }
 
-void SchedulerStateMachine::SetThrottleMainFrames(base::TimeDelta interval) {
-  main_frame_throttled_interval_ = interval;
+void SchedulerStateMachine::FrameIntervalUpdated(
+    base::TimeDelta frame_interval) {
+  unthrottled_frame_interval_ = frame_interval;
+  // Only query the feature (and thus enter the experiment group) if we see a
+  // short interval. This ignores 90Hz displays, on purpose, and adds some
+  // leeway.
+  //
+  // Apply some slack, so that if for some reason the interval is a bit larger
+  // than 8.33333333333333ms, then we catch it still.
+  constexpr float kSlackFactor = .9;
+  if (frame_interval < base::Hertz(120) * (1 / kSlackFactor) &&
+      base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz)) {
+    // Here as well, use a slack factor, to make sure that small timing
+    // variations don't result in uneven pacing.
+    //
+    // Use interval / 2 rather than an actual interval as refresh rates are
+    // not necessarily 120: it could be something really close, or it could be
+    // 144Hz for instance.
+    main_frame_throttled_interval_ = kSlackFactor * frame_interval * 2;
+    TRACE_EVENT("cc", "ThrottleMainFrame", "interval",
+                main_frame_throttled_interval_);
+  } else {
+    main_frame_throttled_interval_ = base::TimeDelta();
+  }
 }
 
 bool SchedulerStateMachine::IsDrawThrottled() const {
@@ -1578,11 +1600,6 @@ void SchedulerStateMachine::SetSkipDraw(bool skip_draw) {
 
 void SchedulerStateMachine::SetNeedsRedraw() {
   needs_redraw_ = true;
-}
-
-void SchedulerStateMachine::SetNeedsUpdateDisplayTree() {
-  needs_update_display_tree_ = true;
-  did_update_display_tree_ = false;
 }
 
 void SchedulerStateMachine::SetNeedsPrepareTiles() {
@@ -1651,8 +1668,12 @@ bool SchedulerStateMachine::ImplLatencyTakesPriority() const {
   return false;
 }
 
-void SchedulerStateMachine::SetNeedsBeginMainFrame() {
+void SchedulerStateMachine::SetNeedsBeginMainFrame(bool now) {
   needs_begin_main_frame_ = true;
+
+  if (now) {
+    last_sent_begin_main_frame_time_ = base::TimeTicks();
+  }
 }
 
 void SchedulerStateMachine::SetNeedsOneBeginImplFrame() {
@@ -1686,7 +1707,7 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
         // the next BeginMainFrame after the deferred commit timeout will cause
         // a commit, but it might come later than optimal.
         begin_main_frame_state_ = BeginMainFrameState::IDLE;
-        SetNeedsBeginMainFrame();
+        SetNeedsBeginMainFrame(/* now = */ false);
         break;
       case CommitEarlyOutReason::kFinishedNoUpdates:
         WillCommit(/*commit_had_no_updates=*/true);
@@ -1701,7 +1722,7 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
       case CommitEarlyOutReason::kAbortedNotVisible:
       case CommitEarlyOutReason::kAbortedDeferredMainFrameUpdate:
       case CommitEarlyOutReason::kAbortedDeferredCommit:
-        SetNeedsBeginMainFrame();
+        SetNeedsBeginMainFrame(/* now = */ false);
         break;
       case CommitEarlyOutReason::kFinishedNoUpdates:
         commit_count_++;
@@ -1721,7 +1742,6 @@ void SchedulerStateMachine::DidLoseLayerTreeFrameSink() {
     return;
   layer_tree_frame_sink_state_ = LayerTreeFrameSinkState::NONE;
   needs_redraw_ = false;
-  needs_update_display_tree_ = false;
 }
 
 bool SchedulerStateMachine::NotifyReadyToActivate() {
@@ -1808,8 +1828,24 @@ bool SchedulerStateMachine::HasInitializedLayerTreeFrameSink() const {
   NOTREACHED();
 }
 
-base::TimeTicks SchedulerStateMachine::Now() const {
-  return base::TimeTicks::Now();
+void SchedulerStateMachine::SetShouldThrottleFrameRate(bool flag) {
+  if (base::FeatureList::IsEnabled(features::kRenderThrottleFrameRate)) {
+    throttle_frame_rate_ = flag;
+  }
+}
+
+base::TimeDelta SchedulerStateMachine::MainFrameThrottledInterval() const {
+  if (!throttle_frame_rate_) {
+    return main_frame_throttled_interval_;
+  } else {
+    auto throttled_interval =
+        std::max(base::Hertz(features::kRenderThrottledFrameIntervalHz.Get()),
+                 main_frame_throttled_interval_);
+    if (throttled_interval < unthrottled_frame_interval_) {
+      return base::TimeDelta();
+    }
+    return throttled_interval;
+  }
 }
 
 }  // namespace cc

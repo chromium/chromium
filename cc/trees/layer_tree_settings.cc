@@ -29,6 +29,11 @@ bool LayerTreeSettings::UseLayerContextForDisplay() const {
          base::FeatureList::IsEnabled(features::kTreesInViz);
 }
 
+bool LayerTreeSettings::UseLayerContextForAnimations() const {
+  return UseLayerContextForDisplay() &&
+         base::FeatureList::IsEnabled(features::kTreeAnimationsInViz);
+}
+
 SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
   SchedulerSettings scheduler_settings;
   scheduler_settings.main_frame_before_activation_enabled =

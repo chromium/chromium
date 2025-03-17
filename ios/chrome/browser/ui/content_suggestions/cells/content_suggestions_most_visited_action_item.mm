@@ -41,15 +41,17 @@
 #pragma mark - Accessors
 
 - (void)setTitle:(NSString*)title {
-  if ([_title isEqualToString:title])
+  if ([_title isEqualToString:title]) {
     return;
+  }
   _title = title;
   [self updateAccessibilityLabel];
 }
 
 - (void)setCount:(NSInteger)count {
-  if (_count == count)
+  if (_count == count) {
     return;
+  }
   _count = count;
   [self updateAccessibilityLabel];
 }

@@ -8,16 +8,14 @@ per-file subprojects/chromium/try/tryserver.chromium.mac.star=file://infra/confi
 
 # For LUCI Analysis configs.
 per-file chops-weetbix*=meiring@google.com
-per-file chops-weetbix*=mwarton@google.com
-per-file chops-weetbix*=mdraz@google.com
+per-file chops-weetbix*=nqmtuan@google.com
 per-file luci-analysis*=meiring@google.com
-per-file luci-analysis*=mwarton@google.com
-per-file luci-analysis*=mdraz@google.com
+per-file luci-analysis*=nqmtuan@google.com
 
 # For LUCI Bisection configs.
-per-file luci-bisection*=beining@google.com
-per-file luci-bisection*=mwarton@google.com
+per-file luci-bisection*=meiring@google.com
 per-file luci-bisection*=nqmtuan@google.com
+
 
 # For Code Coverage configs
 per-file subprojects/chromium/ci/chromium.coverage.star=jeffyoon@google.com
@@ -36,3 +34,7 @@ per-file subprojects/chromium/try/tryserver.chromium.fuchsia.star=file://build/f
 per-file subprojects/chromium/ci/chromium.android.fyi.star=wnwen@chromium.org
 per-file subprojects/chromium/ci/chromium.android.star=wnwen@chromium.org
 per-file subprojects/chromium/try/tryserver.chromium.android.star=wnwen@chromium.org
+
+# Autosharder owners
+per-file targets/autoshard_exceptions.json=chromium-autosharder@chops-service-accounts.iam.gserviceaccount.com
+per-file generated/builders/*/*/targets/*=chromium-autosharder@chops-service-accounts.iam.gserviceaccount.com

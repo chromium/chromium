@@ -29,11 +29,15 @@ public class PdfUtilsUnitTest {
     @Mock private NativePage mNativePage;
     private AutoCloseable mCloseableMocks;
     private String mPdfPageUrl;
+    private String mPdfPageBlobUrl;
 
     private static final String DEFAULT_TAB_TITLE = "Loading PDF…";
     private static final String CONTENT_URL = "content://media/external/downloads/1000000022";
+    private static final String CONTENT_URL_SPECIAL_CHARACTER =
+            "content://com.android.chrome.DownloadFileProvider/external_volume?file=abc%20(1).pdf";
     private static final String FILE_URL = "file:///media/external/downloads/sample.pdf";
     private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
+    private static final String PDF_BLOB_URL = "blob:https://www.foo.com/abc";
     private static final String PDF_LINK_ENCODED =
             "chrome-native://pdf/link?url=https%3A%2F%2Fwww.foo.com%2Ftestfiles%2Fpdf%2Fsample.pdf";
     private static final String FILE_PATH = "/media/external/downloads/sample.pdf";
@@ -46,6 +50,7 @@ public class PdfUtilsUnitTest {
         PdfUtils.setShouldOpenPdfInlineForTesting(true);
         ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(CONTENT_URL));
         mPdfPageUrl = PdfUtils.encodePdfPageUrl(PDF_LINK);
+        mPdfPageBlobUrl = PdfUtils.encodePdfPageUrl(PDF_BLOB_URL);
     }
 
     @After
@@ -67,6 +72,10 @@ public class PdfUtilsUnitTest {
                 uri.toString());
         uri = PdfUtils.getUriFromFilePath(FILE_URL);
         Assert.assertNotNull("Uri should not be null.", uri);
+        Assert.assertEquals(
+                "Uri should match the input when it is already a file uri",
+                FILE_URL,
+                uri.toString());
     }
 
     @Test
@@ -101,6 +110,21 @@ public class PdfUtilsUnitTest {
                 "It is not pdf navigation when IsPdf is not set in LoadUrlParams.", result);
 
         result = PdfUtils.isPdfNavigation(mPdfPageUrl, null);
+        Assert.assertFalse("It is not pdf navigation when LoadUrlParams is null.", result);
+    }
+
+    @Test
+    public void testIsPdfNavigation_PdfLink_BlobUrl() {
+        doReturn(true).when(mLoadUrlParams).getIsPdf();
+        boolean result = PdfUtils.isPdfNavigation(mPdfPageBlobUrl, mLoadUrlParams);
+        Assert.assertTrue("It is pdf navigation when IsPdf is set in LoadUrlParams.", result);
+
+        doReturn(false).when(mLoadUrlParams).getIsPdf();
+        result = PdfUtils.isPdfNavigation(mPdfPageBlobUrl, mLoadUrlParams);
+        Assert.assertFalse(
+                "It is not pdf navigation when IsPdf is not set in LoadUrlParams.", result);
+
+        result = PdfUtils.isPdfNavigation(mPdfPageBlobUrl, null);
         Assert.assertFalse("It is not pdf navigation when LoadUrlParams is null.", result);
     }
 
@@ -200,5 +224,13 @@ public class PdfUtilsUnitTest {
         String decodedUrl = PdfUtils.decodePdfPageUrl(PDF_LINK_ENCODED);
         Assert.assertEquals("The decoded url should match", PDF_LINK, decodedUrl);
         histogramExpectation.assertExpected();
+    }
+
+    @Test
+    public void testEncodeDecodeUrlWithSpecialCharacter() {
+        String encodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL_SPECIAL_CHARACTER);
+        String decodedUrl = PdfUtils.decodePdfPageUrl(encodedUrl);
+        Assert.assertEquals(
+                "The decoded url should match", CONTENT_URL_SPECIAL_CHARACTER, decodedUrl);
     }
 }

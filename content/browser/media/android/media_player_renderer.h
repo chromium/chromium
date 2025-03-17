@@ -43,10 +43,6 @@ class CONTENT_EXPORT MediaPlayerRenderer
   using RendererExtension = media::mojom::MediaPlayerRendererExtension;
   using ClientExtension = media::mojom::MediaPlayerRendererClientExtension;
 
-  // Permits embedders to handle custom urls.
-  static void RegisterMediaUrlInterceptor(
-      media::MediaUrlInterceptor* media_url_interceptor);
-
   MediaPlayerRenderer(
       int process_id,
       int routing_id,
@@ -78,7 +74,6 @@ class CONTENT_EXPORT MediaPlayerRenderer
 
   // media::MediaPlayerBridge::Client implementation
   media::MediaResourceGetter* GetMediaResourceGetter() override;
-  media::MediaUrlInterceptor* GetMediaUrlInterceptor() override;
   void OnMediaDurationChanged(base::TimeDelta duration) override;
   void OnPlaybackComplete() override;
   void OnError(int error) override;

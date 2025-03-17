@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import './screens/common/user_creation.js';
-import {OobeTypes} from './components/oobe_types.js';
+
+import type {OobeTypes} from './components/oobe_types.js';
 
 export const priorityCommonScreenList: OobeTypes.ScreensList =
     [{tag: 'user-creation-element', id: 'user-creation'}];

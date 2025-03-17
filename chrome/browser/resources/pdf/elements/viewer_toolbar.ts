@@ -44,7 +44,7 @@ declare global {
 
 export interface ViewerToolbarElement {
   $: {
-    sidenavToggle: HTMLElement,
+    sidenavToggle: HTMLButtonElement,
     menu: CrActionMenuElement,
     'present-button': HTMLButtonElement,
     'two-page-view-button': HTMLButtonElement,
@@ -262,11 +262,22 @@ export class ViewerToolbarElement extends CrLitElement {
   }
   // </if>
 
-  // <if expr="enable_ink or enable_pdf_ink2">
+  // <if expr="enable_ink">
   protected showAnnotationsBar_(): boolean {
-    return this.pdfAnnotationsEnabled && !this.loading_ && this.annotationMode;
+    return this.pdfAnnotationsEnabled && !this.loading_ &&
+        this.isInInk1AnnotationMode_();
   }
-  // </if>
+
+  protected isInInk1AnnotationMode_(): boolean {
+    // <if expr="enable_pdf_ink2">
+    if (this.pdfInk2Enabled) {
+      return false;
+    }
+    // </if> enable_pdf_ink2
+
+    return this.annotationMode;
+  }
+  // </if> enable_ink
 
   protected onPrintClick_() {
     this.dispatchEvent(new CustomEvent('print'));
@@ -347,7 +358,7 @@ export class ViewerToolbarElement extends CrLitElement {
   }
 
   private getZoomInput_(): HTMLInputElement {
-    return this.shadowRoot!.querySelector('#zoom-controls input')!;
+    return this.shadowRoot.querySelector('#zoom-controls input')!;
   }
 
   protected onZoomChange_() {
@@ -385,7 +396,7 @@ export class ViewerToolbarElement extends CrLitElement {
   }
 
   protected onMoreClick_() {
-    const anchor = this.shadowRoot!.querySelector<HTMLElement>('#more')!;
+    const anchor = this.shadowRoot.querySelector<HTMLElement>('#more')!;
     this.$.menu.showAt(anchor, {
       anchorAlignmentX: AnchorAlignment.CENTER,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
@@ -410,8 +421,8 @@ export class ViewerToolbarElement extends CrLitElement {
   // <if expr="enable_ink">
   protected onDialogClose_() {
     const confirmed =
-        this.shadowRoot!.querySelector(
-                            'viewer-annotations-mode-dialog')!.wasConfirmed();
+        this.shadowRoot.querySelector(
+                           'viewer-annotations-mode-dialog')!.wasConfirmed();
     this.showAnnotationsModeDialog_ = false;
     if (confirmed) {
       this.dispatchEvent(new CustomEvent('annotation-mode-dialog-confirmed'));

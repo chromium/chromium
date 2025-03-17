@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include <stdint.h>
@@ -57,9 +57,9 @@ class AudioBlockFifoTest : public testing::Test {
     EXPECT_EQ(fifo->available_blocks(), expected_available_blocks);
 
     // Verify the audio data is not 0.
-    for (int i = 0; i < bus->channels(); ++i) {
-      EXPECT_GT(bus->channel(i)[0], 0.0f);
-      EXPECT_GT(bus->channel(i)[bus->frames() - 1], 0.0f);
+    for (auto channel : bus->AllChannels()) {
+      EXPECT_GT(channel[0], 0.0f);
+      EXPECT_GT(channel[bus->frames() - 1], 0.0f);
     }
   }
 };

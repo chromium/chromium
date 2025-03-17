@@ -4,13 +4,13 @@
 
 #include "components/browser_sync/active_devices_provider_impl.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/browser_sync/browser_sync_switches.h"
@@ -156,8 +156,8 @@ ActiveDevicesProviderImpl::GetActiveDevicesSortedByUpdateTime() const {
            expected_expiration_time <= clock_->Now();
   });
 
-  base::ranges::sort(device_infos, [](const syncer::DeviceInfo* left_device,
-                                      const syncer::DeviceInfo* right_device) {
+  std::ranges::sort(device_infos, [](const syncer::DeviceInfo* left_device,
+                                     const syncer::DeviceInfo* right_device) {
     return left_device->last_updated_timestamp() <
            right_device->last_updated_timestamp();
   });

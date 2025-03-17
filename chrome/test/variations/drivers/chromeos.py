@@ -36,6 +36,7 @@ from telemetry.internal.backends.chrome import cros_browser_finder
 
 
 CACHE_DIR = os.path.join(SRC_DIR, "build", "cros_cache")
+VNC_SERVER_ADDRESS = 'localhost:5900'
 
 class _PossibleCrOSBrowser(cros_browser_finder.PossibleCrOSBrowser):
   """The CrOS browser wrapper to filter out start-up args."""
@@ -177,6 +178,26 @@ class CrOSDriverFactory(DriverFactory):
     finally:
       tunnel.terminate()
 
+  @contextmanager
+  def window_context(self):
+    # We want to start local VNC receiver so the Selenium driver will detect
+    # Chromium window as present.
+    vnc_process = subprocess.Popen(
+      ['vncviewer', VNC_SERVER_ADDRESS],
+      stdout = subprocess.PIPE,
+      stderr = subprocess.PIPE,
+    )
+    # Check if the process is running.
+    if vnc_process.poll() is not None:
+      raise WebDriverException(
+        'Unable to start vncviewer session, process exit code:' +
+        f'{vnc_process.returcode}'
+      )
+    try:
+      yield
+    finally:
+      vnc_process.kill()
+
   #override
   @contextmanager
   def create_driver(
@@ -195,6 +216,9 @@ class CrOSDriverFactory(DriverFactory):
         f'--fake-variations-channel={self.channel}',
         '--disable-variations-safe-mode',
         '--disable-field-trial-config',
+        # TODO(http://crbug.com/379869158) -- remove this once the new
+        # seed loading mechanism is fixed.
+        '--force-fieldtrials=SeedFileTrial/Default'
       ])
 
     browser = _launch_browser(browser_args)
@@ -203,7 +227,9 @@ class CrOSDriverFactory(DriverFactory):
     options = options or self.default_options
     options.debugger_address=f'localhost:{debugging_port}'
 
-    with self.tunnel_context(debugging_port, self.server_port):
+
+    with self.tunnel_context(debugging_port, self.server_port), \
+      self.window_context():
       driver = webdriver.Chrome(service=self.get_driver_service(),
                                 options=options)
       # VM may not be fully ready before it returns, wait for window handle

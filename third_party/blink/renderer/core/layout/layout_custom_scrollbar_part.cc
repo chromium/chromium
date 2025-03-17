@@ -41,7 +41,7 @@ LayoutCustomScrollbarPart::LayoutCustomScrollbarPart(
     CustomScrollbar* scrollbar,
     ScrollbarPart part,
     bool suppress_use_counters)
-    : LayoutReplaced(nullptr, PhysicalSize()),
+    : LayoutReplaced(nullptr),
       scrollable_area_(scrollable_area),
       scrollbar_(scrollbar),
       part_(part),
@@ -187,6 +187,18 @@ LayoutPoint LayoutCustomScrollbarPart::LocationInternal() const {
 PhysicalSize LayoutCustomScrollbarPart::Size() const {
   NOT_DESTROYED();
   return overridden_size_;
+}
+
+PhysicalNaturalSizingInfo LayoutCustomScrollbarPart::GetNaturalDimensions()
+    const {
+  NOT_DESTROYED();
+  // 300x150, no aspect ratio. (Should probably be none.)
+  PhysicalSize natural_size{LayoutUnit(kDefaultWidth),
+                            LayoutUnit(kDefaultHeight)};
+  natural_size.Scale(StyleRef().EffectiveZoom());
+  PhysicalNaturalSizingInfo sizing_info;
+  sizing_info.size = natural_size;
+  return sizing_info;
 }
 
 static LayoutUnit ComputeMargin(const Length& style_margin) {

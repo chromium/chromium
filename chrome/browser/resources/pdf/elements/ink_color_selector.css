@@ -5,6 +5,7 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=./pdf_shared.css.js
+ * #import=./shared_vars.css.js
  * #include=pdf-shared
  * #css_wrapper_metadata_end */
 
@@ -41,4 +42,9 @@ div {
 .color-chip[checked] {
   height: 36px;
   width: 36px;
+}
+
+.color-chip:focus-visible:focus {
+  outline: var(--viewer-icon-focus-outline-color) solid 2px;
+  outline-offset: 2px;
 }

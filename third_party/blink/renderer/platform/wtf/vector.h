@@ -42,9 +42,7 @@
 #include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
-#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -353,28 +351,38 @@ struct VectorTypeOperations {
     }
   }
 
-  template <typename U, typename Proj = std::identity>
+  template <typename U>
   static void UninitializedCopy(const U* src,
                                 const U* src_end,
                                 T* dst,
-                                VectorOperationOrigin origin,
-                                Proj proj = {}) {
+                                VectorOperationOrigin origin) {
     if (!dst || !src) [[unlikely]] {
       return;
     }
-    if constexpr (std::is_same_v<T, U> && std::is_same_v<Proj, std::identity> &&
-                  VectorTraits<T>::kCanCopyWithMemcpy) {
+    if constexpr (std::is_same_v<T, U> && VectorTraits<T>::kCanCopyWithMemcpy) {
       Copy(src, src_end, dst, origin);
-    } else if (origin == VectorOperationOrigin::kConstruction) {
+    } else {
+      UninitializedTransform(src, src_end, dst, origin, std::identity());
+    }
+  }
+
+  template <typename InputIterator, typename Proj>
+  static void UninitializedTransform(InputIterator src,
+                                     InputIterator src_end,
+                                     T* dst,
+                                     VectorOperationOrigin origin,
+                                     Proj proj) {
+    if (origin == VectorOperationOrigin::kConstruction) {
       while (src != src_end) {
-        ConstructTraits::Construct(dst, std::invoke(proj, *src));
+        ConstructTraits::Construct(
+            dst, std::invoke(proj, std::forward<decltype(*src)>(*src)));
         ++dst;
         ++src;
       }
     } else {
       while (src != src_end) {
-        ConstructTraits::ConstructAndNotifyElement(dst,
-                                                   std::invoke(proj, *src));
+        ConstructTraits::ConstructAndNotifyElement(
+            dst, std::invoke(proj, std::forward<decltype(*src)>(*src)));
         ++dst;
         ++src;
       }
@@ -1202,6 +1210,19 @@ inline constexpr bool kVectorNeedsDestructor<T, 0, true> = false;
 template <typename T, wtf_size_t InlineCapacity>
 inline constexpr bool kVectorNeedsDestructor<T, InlineCapacity, true> = true;
 
+template <typename T,
+          wtf_size_t InlineCapacity,
+          typename Allocator,
+          typename Range,
+          typename Proj>
+concept VectorCanAssignFromRange =
+    std::ranges::input_range<Range> && std::ranges::sized_range<Range> &&
+    std::indirectly_unary_invocable<Proj, std::ranges::iterator_t<Range>> &&
+    // This prevents accidental fallback from the more efficient code paths.
+    (!std::is_base_of_v<Vector<T, InlineCapacity, Allocator>,
+                        std::decay_t<Range>> ||
+     !std::is_same_v<Proj, std::identity>);
+
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   USE_ALLOCATOR(Vector, Allocator);
@@ -1230,7 +1251,7 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   // Create an empty vector.
   inline Vector();
   // Create a vector containing the specified number of default-initialized
-  // elements.
+  // elements. Requires T to have a default constructor.
   inline explicit Vector(wtf_size_t);
   // Create a vector containing the specified number of elements, each of which
   // is copy initialized from the specified value.
@@ -1251,30 +1272,19 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   template <wtf_size_t otherCapacity>
   Vector& operator=(const Vector<T, otherCapacity, Allocator>&);
 
-  // Copying with projection.
-  template <
-      typename Proj,
-      typename = std::enable_if<std::is_invocable_v<Proj, const_reference>>>
-  Vector(const Vector&, Proj);
-  template <typename U,
-            wtf_size_t otherCapacity,
-            typename Proj,
-            typename = std::enable_if<std::is_invocable_v<
-                Proj,
-                typename Vector<U, otherCapacity, Allocator>::const_reference>>>
-  explicit Vector(const Vector<U, otherCapacity, Allocator>&, Proj);
+  // Creates a vector with elements copied or moved from an input and sized
+  // range, with optional projection. To move elements, use
+  // base::RangeAsRvalues(std::move(range)) as the first parameter.
+  template <typename Range, typename Proj = std::identity>
+    requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
+  explicit Vector(Range&&, Proj = {});
 
-  // Creates a vector with items copied from a collection. |Collection| must
-  // have size(), begin() and end() methods.
-  template <typename Range>
-    requires std::ranges::input_range<Range> && std::ranges::sized_range<Range>
-  explicit Vector(const Range& range) : Vector() {
-    assign(range);
-  }
-  // Replaces the vector with items copied from a collection.
-  template <typename Range>
-    requires std::ranges::input_range<Range> && std::ranges::sized_range<Range>
-  void assign(const Range&);
+  // Replaces the vector with elements copied or moved from an input and sized
+  // range. To move elements, use base::RangeAsRvalues(std::move(range)) as the
+  // first parameter.
+  template <typename Range, typename Proj = std::identity>
+    requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
+  void assign(Range&&, Proj = {});
 
   // Moving.
   Vector(Vector&&);
@@ -1396,9 +1406,11 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   // Resize the vector to the specified size.
   //
   // These three functions are essentially similar. They differ in that
-  // (1) shrink() has a DCHECK to make sure the specified size is not more than
-  // size(), and (2) grow() has a DCHECK to make sure the specified size is
-  // not less than size().
+  // (1) Shrink() has a DCHECK to make sure the specified size is not more than
+  //     size();
+  // (2) Grow() has a DCHECK to make sure the specified size is not less than
+  //     size();
+  // (3) Grow() and resize() can be called only if T has a default constructor.
   //
   // When a vector shrinks, the extra elements in the back will be destructed.
   // All the iterators pointing to a to-be-destructed element will be
@@ -1449,12 +1461,17 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   //     Insert a single element constructed as T(args...) to the back. The
   //     element is constructed directly on the backing buffer with placement
   //     new.
+  // Append(buffer, size)
   // AppendVector(vector)
   // AppendRange(begin, end)
   // AppendSpan(span)
-  //     Insert multiple elements represented by (1) `vector` (for
-  //     AppendVector), (2) a pair of iterators (for AppendRange), or (3)
-  //     `span` (for AppendSpan) to the back. The elements will be copied.
+  //     Insert multiple elements represented by (1) |buffer| and |size|
+  //     (for append), (2) |vector| (for AppendVector), (3) a pair of
+  //     iterators (for AppendRange), or (4) |span| (for AppendSpan) to the
+  //     back. Except for AppendRange, the elements will be copied. For
+  //     AppendRange, the elements will be copied or moved depending on the
+  //     iterators. For example, the elements will be moved if the iterators
+  //     are from std::make_move_iterator().
   // UncheckedAppend(value)
   //     Insert a single element like push_back(), but this function assumes
   //     the vector has enough capacity such that it can store the new element
@@ -1468,6 +1485,8 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
     Grow(size_ + 1);
     return back();
   }
+  template <typename U>
+  void Append(const U*, wtf_size_t);
   template <typename U, wtf_size_t otherCapacity, typename V>
   void AppendVector(const Vector<U, otherCapacity, V>&);
   template <typename Iterator>
@@ -1611,14 +1630,6 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   void Trace(auto visitor) const
     requires Allocator::kIsGarbageCollected;
 
-  class GCForbiddenScope {
-    STACK_ALLOCATED();
-
-   public:
-    GCForbiddenScope() { Allocator::EnterGCForbiddenScope(); }
-    ~GCForbiddenScope() { Allocator::LeaveGCForbiddenScope(); }
-  };
-
  protected:
   using Base::CheckUnusedSlots;
   using Base::ClearUnusedSlots;
@@ -1726,17 +1737,6 @@ Vector<T, InlineCapacity, Allocator>::Vector(const Vector& other)
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-template <typename Proj, typename>
-Vector<T, InlineCapacity, Allocator>::Vector(const Vector& other, Proj proj)
-    : Base(other.capacity()) {
-  ANNOTATE_NEW_BUFFER(data(), capacity(), other.size());
-  size_ = other.size();
-  TypeOperations::UninitializedCopy(other.data(), other.DataEnd(), data(),
-                                    VectorOperationOrigin::kConstruction,
-                                    std::move(proj));
-}
-
-template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <wtf_size_t otherCapacity>
 Vector<T, InlineCapacity, Allocator>::Vector(
     const Vector<T, otherCapacity, Allocator>& other)
@@ -1748,16 +1748,20 @@ Vector<T, InlineCapacity, Allocator>::Vector(
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-template <typename U, wtf_size_t otherCapacity, typename Proj, typename>
-Vector<T, InlineCapacity, Allocator>::Vector(
-    const Vector<U, otherCapacity, Allocator>& other,
-    Proj proj)
-    : Base(other.capacity()) {
-  ANNOTATE_NEW_BUFFER(data(), capacity(), other.size());
-  size_ = other.size();
-  TypeOperations::UninitializedCopy(other.data(), other.DataEnd(), data(),
-                                    VectorOperationOrigin::kConstruction,
-                                    std::move(proj));
+template <typename Range, typename Proj>
+  requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
+Vector<T, InlineCapacity, Allocator>::Vector(Range&& other, Proj proj)
+    : Base(std::ranges::size(other)) {
+  // Note that `size(other)` may become smaller if `other` is a hash table
+  // with WeakMember keys and `Base(size(other))` above caused GC which
+  // removed some entries from `other`, see crbug.com/40448463. This won't
+  // cause problems as long as we won't use the old `size(other)` in the
+  // following code.
+  ANNOTATE_NEW_BUFFER(data(), capacity(), std::ranges::size(other));
+  TypeOperations::UninitializedTransform(
+      std::ranges::begin(other), std::ranges::end(other), data(),
+      VectorOperationOrigin::kConstruction, std::move(proj));
+  size_ = std::ranges::size(other);
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
@@ -1823,20 +1827,29 @@ Vector<T, InlineCapacity, Allocator>::operator=(
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-template <typename Range>
-  requires std::ranges::input_range<Range> && std::ranges::sized_range<Range>
-void Vector<T, InlineCapacity, Allocator>::assign(const Range& range) {
-  static_assert(
-      !std::is_same_v<Vector<T, InlineCapacity, Allocator>, Range>,
-      "This method is for copying from a collection of a different type.");
-
-  {
-    // Disallow GC across resize allocation, see crbug.com/568173.
-    GCForbiddenScope scope;
-    resize(base::checked_cast<wtf_size_t>(std::ranges::size(range)));
+template <typename Range, typename Proj>
+  requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
+void Vector<T, InlineCapacity, Allocator>::assign(Range&& other, Proj proj) {
+  if (std::ranges::size(other) > capacity()) {
+    clear();
+    reserve(std::ranges::size(other));
+    // Note that `size(other)` may become smaller if `other` is a hash table
+    // with `WeakMember` keys and `reserve` caused GC which removed some
+    // entries from `other`, see crbug.com/40448463. This won't cause problems
+    // as long as we won't use the old `size(other)` in the following code.
+  } else {
+    if (std::ranges::size(other) < size()) {
+      Shrink(std::ranges::size(other));
+    }
+    TypeOperations::Destruct(data(), DataEnd());
   }
 
-  base::ranges::copy(range, begin());
+  MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, data(), capacity(), size_,
+                                     std::ranges::size(other));
+  TypeOperations::UninitializedTransform(
+      std::ranges::begin(other), std::ranges::end(other), data(),
+      VectorOperationOrigin::kRegularModification, std::move(proj));
+  size_ = std::ranges::size(other);
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
@@ -2179,23 +2192,21 @@ ALWAYS_INLINE T& Vector<T, InlineCapacity, Allocator>::emplace_back(
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-template <typename U, size_t N, typename Ptr>
-void Vector<T, InlineCapacity, Allocator>::AppendSpan(
-    base::span<U, N, Ptr> span) {
+template <typename U>
+void Vector<T, InlineCapacity, Allocator>::Append(const U* data,
+                                                  wtf_size_t data_size) {
   DCHECK(Allocator::IsAllocationAllowed());
-  U* data = span.data();
-  base::CheckedNumeric<wtf_size_t> data_size = span.size();
-  data_size += size_;
-  wtf_size_t new_size = data_size.ValueOrDie();
+  wtf_size_t new_size = size_ + data_size;
   if (new_size > capacity()) {
     data = ExpandCapacity(new_size, data);
     DCHECK(this->data());
   }
+  CHECK_GE(new_size, size_);
   T* dest = DataEnd();
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, this->data(), capacity(), size_,
                                      new_size);
   TypeOperations::UninitializedCopy(
-      data, &data[span.size()], dest,
+      data, &data[data_size], dest,
       VectorOperationOrigin::kRegularModification);
   size_ = new_size;
 }
@@ -2221,7 +2232,7 @@ template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U, wtf_size_t otherCapacity, typename OtherAllocator>
 inline void Vector<T, InlineCapacity, Allocator>::AppendVector(
     const Vector<U, otherCapacity, OtherAllocator>& val) {
-  AppendSpan(base::span(val));
+  Append(val.data(), val.size());
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
@@ -2230,6 +2241,13 @@ void Vector<T, InlineCapacity, Allocator>::AppendRange(Iterator begin,
                                                        Iterator end) {
   for (Iterator it = begin; it != end; ++it)
     push_back(*it);
+}
+
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+template <typename U, size_t N, typename Ptr>
+void Vector<T, InlineCapacity, Allocator>::AppendSpan(
+    base::span<U, N, Ptr> data) {
+  Append(data.data(), base::checked_cast<wtf_size_t>(data.size()));
 }
 
 // This version of append saves a branch in the case where you know that the
@@ -2548,6 +2566,19 @@ wtf_size_t EraseIf(Vector<T, inline_capacity, Allocator>& v, Pred pred) {
   wtf_size_t removed = base::checked_cast<wtf_size_t>(v.end() - it);
   v.erase(it, v.end());
   return removed;
+}
+
+// The WTF version of base::ToVector. This is more convenient to use than
+// Vector::Vector(range[, proj]) in some cases, e.g. when a temporary vector is
+// needed and the desired result type is the same as the deducted return type.
+// See Vector::Vector(range, proj) and Vector::assign() about copying vs moving.
+template <typename Range, typename Proj = std::identity>
+  requires std::ranges::sized_range<Range> && std::ranges::input_range<Range> &&
+           std::indirectly_unary_invocable<Proj, std::ranges::iterator_t<Range>>
+auto ToVector(Range&& range, Proj proj = {}) {
+  using ProjectedType =
+      std::projected<std::ranges::iterator_t<Range>, Proj>::value_type;
+  return Vector<ProjectedType>(std::forward<Range>(range), std::move(proj));
 }
 
 }  // namespace WTF

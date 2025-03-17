@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -24,23 +23,16 @@
 #include "components/signin/public/base/signin_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/signin/core/browser/mirror_landing_account_reconcilor_delegate.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -49,7 +41,7 @@
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class ChromeOSLimitedAccessAccountReconcilorDelegate
     : public signin::MirrorAccountReconcilorDelegate {
  public:
@@ -111,7 +103,7 @@ class ChromeOSLimitedAccessAccountReconcilorDelegate
  private:
   const ReconcilorBehavior reconcilor_behavior_;
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -166,7 +158,7 @@ AccountReconcilorFactory::BuildServiceInstanceForBrowserContext(
 
 void AccountReconcilorFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(prefs::kForceLogoutUnauthenticatedUserEnabled,
                                 false);
 #endif
@@ -180,7 +172,7 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
       AccountConsistencyModeManager::GetMethodForProfile(profile);
   switch (account_consistency) {
     case signin::AccountConsistencyMethod::kMirror:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // Only for child accounts on Chrome OS, use the specialized Mirror
       // delegate.
       if (profile->IsChild()) {
@@ -197,19 +189,9 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
                 kEnterprise,
             IdentityManagerFactory::GetForProfile(profile));
       }
-
-      return std::make_unique<signin::MirrorAccountReconcilorDelegate>(
-          IdentityManagerFactory::GetForProfile(profile));
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      return std::make_unique<signin::MirrorLandingAccountReconcilorDelegate>(
-          IdentityManagerFactory::GetForProfile(profile),
-          ChromeSigninClientFactory::GetForProfile(profile)
-              ->GetInitialPrimaryAccount()
-              .has_value());
-#else
-      return std::make_unique<signin::MirrorAccountReconcilorDelegate>(
-          IdentityManagerFactory::GetForProfile(profile));
 #endif
+      return std::make_unique<signin::MirrorAccountReconcilorDelegate>(
+          IdentityManagerFactory::GetForProfile(profile));
 
     case signin::AccountConsistencyMethod::kDisabled:
       return std::make_unique<signin::AccountReconcilorDelegate>();

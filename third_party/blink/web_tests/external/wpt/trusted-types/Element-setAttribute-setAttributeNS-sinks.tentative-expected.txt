@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] HTMLIFrameElement.setAttribute('srcdoc', plain_string)
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttribute"
+[FAIL] HTMLIFrameElement.setAttributeNS(null, 'srcdoc', plain_string)
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttributeNS"
+[FAIL] HTMLScriptElement.setAttribute('src', plain_string)
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttribute"
+[FAIL] HTMLScriptElement.setAttributeNS(null, 'src', plain_string)
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttributeNS"
+[FAIL] SVGScriptElement.setAttribute('href', plain_string)
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] SVGScriptElement.setAttributeNS(null, 'href', plain_string)
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNS"
+[FAIL] SVGScriptElement.setAttributeNS(NSURI_XLINK, 'href', plain_string)
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNS"
+Harness: the test ran to completion.
+

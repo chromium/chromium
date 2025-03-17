@@ -1,4 +1,0 @@
-include_rules = {
-  "+content/public/test",
-  "+services/accessibility/android/public/mojom",
-}

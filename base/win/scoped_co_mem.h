@@ -56,8 +56,9 @@ class ScopedCoMem {
   }
 
   void Reset(T* ptr) {
-    if (mem_ptr_)
+    if (mem_ptr_) {
       CoTaskMemFree(mem_ptr_);
+    }
     mem_ptr_ = ptr;
   }
 

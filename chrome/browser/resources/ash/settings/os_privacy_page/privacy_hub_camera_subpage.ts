@@ -183,7 +183,7 @@ export class SettingsPrivacyHubCameraSubpage extends
    * The function is used for sorting app names alphabetically.
    */
   private alphabeticalSort_(first: App, second: App): number {
-    return first.name!.localeCompare(second.name!);
+    return first.name.localeCompare(second.name);
   }
 
   private isCameraPermissionEnabled_(app: App): boolean {

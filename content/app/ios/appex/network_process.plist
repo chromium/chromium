@@ -15,5 +15,7 @@
 	<string>1.0</string>
 	<key>CFBundleName</key>
 	<string>${PRODUCT_NAME}</string>
+	<key>CFBundlePackageType</key>
+	<string>XPC!</string>
 </dict>
 </plist>

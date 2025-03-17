@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromecast/media/cma/backend/mixer/audio_output_redirector.h"
 
 #include <algorithm>
@@ -11,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/pattern.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/media/audio/audio_fader.h"
@@ -26,6 +32,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/channel_layout.h"
 #include "media/base/channel_mixer.h"
+#include "media/base/vector_math.h"
 
 namespace chromecast {
 namespace media {
@@ -460,9 +467,13 @@ void AudioOutputRedirector::FinishBuffer() {
   }
 
   // Hard limit to [1.0, -1.0].
-  for (int s = 0; s < config_.num_output_channels * next_num_frames_; ++s) {
-    current_mix_data_[s] = std::clamp(current_mix_data_[s], -1.0f, 1.0f);
-  }
+  size_t total_frames =
+      base::CheckMul(next_num_frames_, config_.num_output_channels)
+          .Cast<size_t>()
+          .ValueOrDie();
+
+  auto data_to_clamp = base::span(current_mix_data_, total_frames);
+  ::media::vector_math::FCLAMP(data_to_clamp, data_to_clamp);
 
   io_task_runner_->PostTask(
       FROM_HERE,

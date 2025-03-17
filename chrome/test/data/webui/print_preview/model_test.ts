@@ -4,34 +4,17 @@
 
 import type {ColorOption, DpiOption, DuplexOption, PrintPreviewModelElement, PrintTicket, RecentDestination, Settings} from 'chrome://print/print_preview.js';
 import {
-  // <if expr="is_chromeos">
-  ColorModeRestriction,
-  // </if>
   Destination, DestinationOrigin, DuplexMode,
-  // <if expr="is_chromeos">
-  DuplexModeRestriction, GooglePromotedDestinationId,
-  // </if>
   makeRecentDestination, MarginsType,
-  // <if expr="is_chromeos">
-  PinModeRestriction, PrinterStatusReason,
-  // </if>
   PrinterType, ScalingType, Size} from 'chrome://print/print_preview.js';
-// <if expr="is_chromeos">
-import {ManagedPrintOptionsDuplexType, ManagedPrintOptionsQualityType} from 'chrome://print/print_preview.js';
-import type {DestinationOptionalParams, ManagedPrintOptions} from 'chrome://print/print_preview.js';
-// </if>
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {
-  // <if expr="is_chromeos">
-  getCddTemplate,
-  // </if>
   getCddTemplateWithAdvancedSettings} from './print_preview_test_utils.js';
 
-// </if>
 
 function assertMarginsSettingsResetToDefault(settings: Settings) {
   assertEquals(settings.margins.value, MarginsType.DEFAULT);
@@ -73,10 +56,6 @@ suite('ModelTest', function() {
       isLandscapeEnabled: false,
       isColorEnabled: true,
       vendorOptions: {},
-      // <if expr="is_chromeos">
-      isPinEnabled: false,
-      pinValue: '',
-      // </if>
     };
 
     // Non-default state
@@ -100,10 +79,6 @@ suite('ModelTest', function() {
         paperType: 1,
         printArea: 6,
       },
-      // <if expr="is_chromeos">
-      isPinEnabled: true,
-      pinValue: '0000',
-      // </if>
     };
 
     const settingsSet = ['version'];
@@ -145,31 +120,21 @@ suite('ModelTest', function() {
     };
 
     model.applyStickySettings();
-    let promise =
-        testStickySetting('collate', 'isCollateEnabled')
-            .then(() => testStickySetting('color', 'isColorEnabled'))
-            .then(
-                () => testStickySetting(
-                    'cssBackground', 'isCssBackgroundEnabled'))
-            .then(() => testStickySetting('dpi', 'dpi'))
-            .then(() => testStickySetting('duplex', 'isDuplexEnabled'))
-            .then(
-                () => testStickySetting('duplexShortEdge', 'isDuplexShortEdge'))
-            .then(
-                () =>
-                    testStickySetting('headerFooter', 'isHeaderFooterEnabled'))
-            .then(() => testStickySetting('layout', 'isLandscapeEnabled'))
-            .then(() => testStickySetting('margins', 'marginsType'))
-            .then(() => testStickySetting('mediaSize', 'mediaSize'))
-            .then(() => testStickySetting('scaling', 'scaling'))
-            .then(() => testStickySetting('scalingType', 'scalingType'))
-            .then(() => testStickySetting('scalingTypePdf', 'scalingTypePdf'))
-            .then(() => testStickySetting('vendorItems', 'vendorOptions'));
-    // <if expr="is_chromeos">
-    promise = promise.then(() => testStickySetting('pin', 'isPinEnabled'))
-                  .then(() => testStickySetting('pinValue', 'pinValue'));
-    // </if>
-    return promise;
+    return testStickySetting('collate', 'isCollateEnabled')
+        .then(() => testStickySetting('color', 'isColorEnabled'))
+        .then(
+            () => testStickySetting('cssBackground', 'isCssBackgroundEnabled'))
+        .then(() => testStickySetting('dpi', 'dpi'))
+        .then(() => testStickySetting('duplex', 'isDuplexEnabled'))
+        .then(() => testStickySetting('duplexShortEdge', 'isDuplexShortEdge'))
+        .then(() => testStickySetting('headerFooter', 'isHeaderFooterEnabled'))
+        .then(() => testStickySetting('layout', 'isLandscapeEnabled'))
+        .then(() => testStickySetting('margins', 'marginsType'))
+        .then(() => testStickySetting('mediaSize', 'mediaSize'))
+        .then(() => testStickySetting('scaling', 'scaling'))
+        .then(() => testStickySetting('scalingType', 'scalingType'))
+        .then(() => testStickySetting('scalingTypePdf', 'scalingTypePdf'))
+        .then(() => testStickySetting('vendorItems', 'vendorOptions'));
   });
 
   /**
@@ -208,8 +173,8 @@ suite('ModelTest', function() {
       collate: false,
       layout: true,
       color: false,
-      mediaSize: testDestination.capabilities!.printer!.media_size!.option[1]!,
-      mediaType: testDestination.capabilities!.printer!.media_type!.option[1]!,
+      mediaSize: testDestination.capabilities!.printer.media_size!.option[1]!,
+      mediaType: testDestination.capabilities!.printer.media_type!.option[1],
       margins: MarginsType.CUSTOM,
       customMargins: {
         marginTop: 100,
@@ -235,10 +200,6 @@ suite('ModelTest', function() {
         paperType: 1,
       },
       ranges: [{from: 2, to: 2}],
-      // <if expr="is_chromeos">
-      pin: true,
-      pinValue: '0000',
-      // </if>
     };
 
     // Update settings
@@ -278,20 +239,11 @@ suite('ModelTest', function() {
    * print ticket.
    */
   test('GetPrintTicket', function() {
-    // <if expr="is_chromeos">
-    const origin = DestinationOrigin.CROS;
-    // </if>
-    // <if expr="not is_chromeos">
     const origin = DestinationOrigin.LOCAL;
-    // </if>
     const testDestination = new Destination('FooDevice', origin, 'FooName');
     testDestination.capabilities =
         getCddTemplateWithAdvancedSettings(2, 'FooDevice').capabilities;
 
-    // <if expr="is_chromeos">
-    // Make device managed. It's used for testing pin setting behavior.
-    loadTimeData.overrideValues({isEnterpriseManaged: true});
-    // </if>
     loadTimeData.overrideValues({isBorderlessPrintingEnabled: true});
     initializeModel();
     model.destination = testDestination;
@@ -299,8 +251,8 @@ suite('ModelTest', function() {
         model.createPrintTicket(testDestination, false, false);
 
     const expectedDefaultTicketObject: PrintTicket = {
-      mediaSize: testDestination.capabilities!.printer!.media_size!.option[0]!,
-      mediaType: testDestination.capabilities!.printer!.media_type!.option[0]!
+      mediaSize: testDestination.capabilities!.printer.media_size!.option[0]!,
+      mediaType: testDestination.capabilities!.printer.media_type!.option[0]!
                      .vendor_id,
       pageCount: 3,
       landscape: false,
@@ -325,15 +277,6 @@ suite('ModelTest', function() {
       pageWidth: 612,
       pageHeight: 792,
       showSystemDialog: false,
-      // <if expr="is_chromeos">
-      printToGoogleDrive: false,
-      printerManuallySelected: false,
-      advancedSettings: {
-        printArea: 4,
-        paperType: 0,
-      },
-      printerStatusReason: PrinterStatusReason.UNKNOWN_REASON,
-      // </if>
     };
     assertEquals(JSON.stringify(expectedDefaultTicketObject), defaultTicket);
 
@@ -341,9 +284,9 @@ suite('ModelTest', function() {
     toggleSettings(testDestination);
     const newTicket = model.createPrintTicket(testDestination, false, false);
     const expectedNewTicketObject: PrintTicket = {
-      mediaSize: testDestination.capabilities!.printer!.media_size!.option[1]!,
+      mediaSize: testDestination.capabilities!.printer.media_size!.option[1]!,
       borderless: false,
-      mediaType: testDestination.capabilities!.printer!.media_type!.option[1]!
+      mediaType: testDestination.capabilities!.printer.media_type!.option[1]!
                      .vendor_id,
       pageCount: 1,
       landscape: true,
@@ -368,24 +311,12 @@ suite('ModelTest', function() {
       pageWidth: 612,
       pageHeight: 792,
       showSystemDialog: false,
-      // <if expr="is_chromeos">
-      printToGoogleDrive: false,
-      printerManuallySelected: false,
-      // </if>
       marginsCustom: {
         marginTop: 100,
         marginRight: 200,
         marginBottom: 300,
         marginLeft: 400,
       },
-      // <if expr="is_chromeos">
-      pinValue: '0000',
-      advancedSettings: {
-        printArea: 6,
-        paperType: 1,
-      },
-      printerStatusReason: PrinterStatusReason.UNKNOWN_REASON,
-      // </if>
     };
 
     assertEquals(JSON.stringify(expectedNewTicketObject), newTicket);
@@ -491,7 +422,7 @@ suite('ModelTest', function() {
     // destination store in the production code.
     model.destination = supportedLocal;
     model.applyStickySettings();
-    model.applyDestinationSpecificPolicies();
+    model.applyPoliciesOnDestinationUpdate();
 
     // Make sure nothing changed.
     recentDestinations =
@@ -506,7 +437,7 @@ suite('ModelTest', function() {
     testDestination.capabilities =
         getCddTemplateWithAdvancedSettings(2, 'FooDevice').capabilities;
     // Make black and white printing the default.
-    testDestination.capabilities!.printer!.color = {
+    testDestination.capabilities!.printer.color = {
       option: [
         {type: 'STANDARD_COLOR'},
         {type: 'STANDARD_MONOCHROME', is_default: true},
@@ -533,10 +464,10 @@ suite('ModelTest', function() {
     model.setSetting('duplex', true);
     model.setSetting(
         'mediaSize',
-        testDestination.capabilities!.printer!.media_size!.option[1]!);
+        testDestination.capabilities!.printer.media_size!.option[1]!);
     model.setSetting('color', true);
     model.setSetting(
-        'dpi', testDestination.capabilities!.printer!.dpi!.option[1]!);
+        'dpi', testDestination.capabilities!.printer.dpi!.option[1]!);
 
     // Confirm toggles.
     assertEquals(true, model.getSettingValue('color'));
@@ -558,7 +489,7 @@ suite('ModelTest', function() {
         new Destination('Device1', DestinationOrigin.LOCAL, 'One');
     testDestination3.capabilities =
         Object.assign({}, testDestination.capabilities);
-    testDestination3.capabilities!.printer!.media_size = {
+    testDestination3.capabilities.printer.media_size = {
       option: [
         {
           name: 'ISO_A4',
@@ -569,17 +500,17 @@ suite('ModelTest', function() {
         },
       ],
     };
-    testDestination3.capabilities!.printer!.color = {
+    testDestination3.capabilities.printer.color = {
       option: [
         {type: 'STANDARD_MONOCHROME', is_default: true},
       ] as ColorOption[],
     };
-    testDestination3.capabilities!.printer!.duplex = {
+    testDestination3.capabilities.printer.duplex = {
       option: [
         {type: 'NO_DUPLEX', is_default: true},
       ] as DuplexOption[],
     };
-    testDestination3.capabilities!.printer!.dpi = {
+    testDestination3.capabilities.printer.dpi = {
       option: [
         {horizontal_dpi: 400, vertical_dpi: 400, is_default: true},
         {horizontal_dpi: 800, vertical_dpi: 800},
@@ -721,12 +652,11 @@ suite('ModelTest', function() {
     testDestination2.capabilities =
         getTestCapabilities(/*resetToDefault=*/ true);
     // Remove the `is_default` attribute from all the settings.
-    delete testDestination2.capabilities!.printer!.color!.option[0]!.is_default;
-    delete testDestination2.capabilities!.printer!.duplex!.option[0]!
+    delete testDestination2.capabilities.printer.color!.option[0]!.is_default;
+    delete testDestination2.capabilities.printer.duplex!.option[0]!.is_default;
+    delete testDestination2.capabilities.printer.media_size!.option[0]!
         .is_default;
-    delete testDestination2.capabilities!.printer!.media_size!.option[0]!
-        .is_default;
-    delete testDestination2.capabilities!.printer!.dpi!.option[0]!.is_default;
+    delete testDestination2.capabilities.printer.dpi!.option[0]!.is_default;
 
     model.destination = testDestination2;
 
@@ -819,227 +749,4 @@ suite('ModelTest', function() {
     model.applyStickySettings();
     assertMarginsSettingsResetToDefault(model.settings);
   });
-
-  // <if expr="is_chromeos">
-  // Tests that printToGoogleDrive is set correctly on the print ticket for Save
-  // to Drive CrOS.
-  test('PrintToGoogleDriveCros', function() {
-    const driveDestination = new Destination(
-        GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS, DestinationOrigin.LOCAL,
-        'Save to Google Drive');
-    initializeModel();
-    model.destination = driveDestination;
-    const ticket = model.createPrintTicket(driveDestination, false, false);
-    assertTrue(JSON.parse(ticket).printToGoogleDrive);
-  });
-
-  test('PolicyDefaultsOverrideDestinationDefaults', function() {
-    const testDestination1 = new Destination(
-        /*id_=*/ 'TestDestination1',
-        /*origin_=*/ DestinationOrigin.LOCAL,
-        /*displayName_=*/ 'TestDestination1');
-    testDestination1.capabilities =
-        getCddTemplate('TestDestination1').capabilities;
-    testDestination1.capabilities!.printer!.duplex = {
-      option: [
-        {type: 'NO_DUPLEX', is_default: true},
-        {type: 'LONG_EDGE'},
-        {type: 'SHORT_EDGE'},
-      ] as DuplexOption[],
-    };
-
-    const testDestination2 = new Destination(
-        /*id_=*/ 'TestDestination2',
-        /*origin_=*/ DestinationOrigin.LOCAL,
-        /*displayName_=*/ 'TestDestination2');
-    testDestination2.capabilities =
-        Object.assign({}, testDestination1.capabilities);
-
-    // Note that the default value set here differs from `testDestination1` and
-    // `testDestination2` defaults.
-    // TODO(b/303790797): fix overriding default printing destination settings
-    // for color and pin. Check that all three policy defaults are respected.
-    const policies = {
-      duplex: {
-        allowedMode: DuplexModeRestriction.UNSET,
-        defaultMode: DuplexModeRestriction.LONG_EDGE,
-      },
-    };
-
-    initializeModel();
-    model.destination = testDestination1;
-    model.setPolicySettings(policies);
-    model.applyStickySettings();
-
-    // Check that the initial settings correspond to defaults set by policies.
-    assertEquals(model.getSettingValue('duplex'), true);
-    assertEquals(model.getSettingValue('duplexShortEdge'), false);
-
-    // Check that changing the printing destination doesn't change the settings.
-    model.destination = testDestination2;
-    assertEquals(model.getSettingValue('duplex'), true);
-    assertEquals(model.getSettingValue('duplexShortEdge'), false);
-  });
-
-  test('UserSelectedOptionsOverridePolicyDefaults', function() {
-    const testDestination1 = new Destination(
-        /*id_=*/ 'TestDestination1',
-        /*origin_=*/ DestinationOrigin.LOCAL,
-        /*displayName_=*/ 'TestDestination1');
-    testDestination1.capabilities =
-        getCddTemplate('TestDestination1').capabilities;
-
-    const testDestination2 = new Destination(
-        /*id_=*/ 'TestDestination2',
-        /*origin_=*/ DestinationOrigin.LOCAL,
-        /*displayName_=*/ 'TestDestination2');
-    testDestination2.capabilities =
-        Object.assign({}, testDestination1.capabilities);
-
-    const policies = {
-      color: {
-        allowedMode: ColorModeRestriction.UNSET,
-        defaultMode: ColorModeRestriction.MONOCHROME,
-      },
-      duplex: {
-        allowedMode: DuplexModeRestriction.UNSET,
-        defaultMode: DuplexModeRestriction.LONG_EDGE,
-      },
-      pin: {
-        allowedMode: PinModeRestriction.UNSET,
-        defaultMode: PinModeRestriction.PIN,
-      },
-    };
-
-    initializeModel();
-    model.destination = testDestination1;
-    model.setPolicySettings(policies);
-    model.applyStickySettings();
-
-    // Toggle some settings.
-    model.setSetting('color', true);
-    model.setSetting('duplex', false);
-    model.setSetting('pin', false);
-
-    // Check that user selected values override policy defaults.
-    model.destination = testDestination2;
-    assertEquals(model.getSettingValue('color'), true);
-    assertEquals(model.getSettingValue('duplex'), false);
-    assertEquals(model.getSettingValue('pin'), false);
-  });
-
-  test('ManagedPrintOptionsDisabledViaExperiment', function() {
-    loadTimeData.overrideValues(
-      {isUseManagedPrintJobOptionsInPrintPreviewEnabled: false});
-    const managedPrintOptions: ManagedPrintOptions = {
-      color: {defaultValue: false},
-    };
-    const params: DestinationOptionalParams = {
-      managedPrintOptions: managedPrintOptions,
-    };
-    const testDestination1 = new Destination(
-        /*id_=*/ 'TestDestination1',
-        /*origin_=*/ DestinationOrigin.LOCAL,
-        /*displayName_=*/ 'TestDestination1',
-        /*params_=*/ params);
-    testDestination1.capabilities =
-        getCddTemplate('TestDestination1').capabilities;
-    initializeModel();
-    model.destination = testDestination1;
-
-    model.applyDestinationSpecificPolicies();
-
-    // Managed per-printers options are disabled via experiment, so the
-    // destination default value should be selected.
-    assertEquals(model.getSettingValue('color'), true);
-  });
-
-  test('ManagedPrintOptionsSupportedDefaultValues', function() {
-    loadTimeData.overrideValues(
-        {isUseManagedPrintJobOptionsInPrintPreviewEnabled: true});
-    const managedPrintOptions: ManagedPrintOptions = {
-      mediaSize: {defaultValue: {width: 101600, height: 152400}},
-      mediaType: {defaultValue: 'photographic'},
-      duplex: {defaultValue: ManagedPrintOptionsDuplexType.SHORT_EDGE},
-      color: {defaultValue: false},
-      dpi: {defaultValue: {horizontal: 100, vertical: 100}},
-      quality: {defaultValue: ManagedPrintOptionsQualityType.HIGH},
-      printAsImage: {defaultValue: true},
-    };
-    const params: DestinationOptionalParams = {
-      managedPrintOptions: managedPrintOptions,
-    };
-    const testDestination1 = new Destination(
-        /*id_=*/ 'TestDestination1',
-        /*origin_=*/ DestinationOrigin.LOCAL,
-        /*displayName_=*/ 'TestDestination1',
-        /*params_=*/ params);
-    testDestination1.capabilities =
-        getCddTemplateWithAdvancedSettings(5, 'TestDestination1').capabilities;
-    initializeModel();
-
-    model.destination = testDestination1;
-    model.applyDestinationSpecificPolicies();
-
-    assertEquals(model.getSettingValue('mediaSize').name, '4x6');
-    assertEquals(model.getSettingValue('mediaType').vendor_id, 'photographic');
-    assertEquals(model.getSettingValue('duplex'), true);
-    assertEquals(model.getSettingValue('duplexShortEdge'), true);
-    assertEquals(model.getSettingValue('color'), false);
-    assertEquals(model.getSettingValue('dpi').horizontal_dpi, 100);
-    assertEquals(model.getSettingValue('dpi').vertical_dpi, 100);
-    assertEquals(
-        model.getSettingValue('vendorItems')['print-quality'],
-        /* ManagedPrintOptionsQualityType.HIGH */ '5');
-    assertEquals(model.getSettingValue('rasterize'), true);
-  });
-
-  test('ManagedPrintOptionsUnsupportedDefaultValues', function() {
-    loadTimeData.overrideValues(
-        {isUseManagedPrintJobOptionsInPrintPreviewEnabled: true});
-    const managedPrintOptions: ManagedPrintOptions = {
-      mediaSize: {defaultValue: {width: 1, height: 1}},
-      mediaType: {defaultValue: 'abacaba'},
-      duplex: {defaultValue: ManagedPrintOptionsDuplexType.UNKNOWN_DUPLEX},
-      color: {defaultValue: true},
-      dpi: {defaultValue: {horizontal: 1, vertical: 1}},
-      quality: {defaultValue: ManagedPrintOptionsQualityType.UNKNOWN_QUALITY},
-      printAsImage: {defaultValue: true},
-    };
-    const params: DestinationOptionalParams = {
-      managedPrintOptions: managedPrintOptions,
-    };
-    const testDestination1 = new Destination(
-        /*id_=*/ 'TestDestination1',
-        /*origin_=*/ DestinationOrigin.LOCAL,
-        /*displayName_=*/ 'TestDestination1',
-        /*params_=*/ params);
-    testDestination1.capabilities =
-        getCddTemplateWithAdvancedSettings(5, 'TestDestination1').capabilities;
-    testDestination1.capabilities!.printer.color = {
-      option: [
-        {type: 'STANDARD_MONOCHROME', is_default: true},
-      ] as ColorOption[],
-    };
-    initializeModel();
-    model.set('settings.rasterize.available', false);
-    // Now all the default values in `managedPrintOptions` are unsupported.
-
-    model.destination = testDestination1;
-    model.applyDestinationSpecificPolicies();
-
-    // For each setting the destination default value should be selected.
-    assertEquals(model.getSettingValue('mediaSize').name, 'NA_LETTER');
-    assertEquals(model.getSettingValue('mediaType').vendor_id, 'stationery');
-    assertEquals(model.getSettingValue('duplex'), false);
-    assertEquals(model.getSettingValue('duplexShortEdge'), false);
-    assertEquals(model.getSettingValue('color'), false);
-    assertEquals(model.getSettingValue('dpi').horizontal_dpi, 200);
-    assertEquals(model.getSettingValue('dpi').vertical_dpi, 200);
-    assertEquals(
-        model.getSettingValue('vendorItems')['print-quality'],
-        /* ManagedPrintOptionsQualityType.NORMAL */ '4');
-    assertEquals(model.getSettingValue('rasterize'), false);
-  });
-  // </if>
 });

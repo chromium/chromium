@@ -8,8 +8,9 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/pressure_update.mojom-forward.h"
 
@@ -40,20 +41,22 @@ class CONTENT_EXPORT PressureClientImpl : public device::mojom::PressureClient {
 
   void Reset();
 
-  // Binds the Blink-side PressureClient mojo::Remote and returns its
-  // corresponding mojo::PendingReceiver.
-  mojo::PendingReceiver<device::mojom::PressureClient>
-  BindNewPipeAndPassReceiver();
+  // Set the services-side mojo::Receiver pressure source type owned by this
+  // class.
+  void SetPressureSourceType(bool is_virtual_source);
 
-  // Binds a mojo::PendingReceiver to the services-side mojo::Receiver owned by
-  // this class.
-  void BindReceiver(mojo::PendingReceiver<device::mojom::PressureClient>,
-                    bool is_virtual_source);
+  // Binds the associated remote from the Blink-side.
+  void BindPendingAssociatedRemote(
+      mojo::PendingAssociatedRemote<device::mojom::PressureClient>);
 
-  bool is_client_remote_bound() const {
+  // Create pending remote endpoint to //services.
+  mojo::PendingAssociatedRemote<device::mojom::PressureClient>
+  BindNewEndpointAndPassRemote();
+
+  bool is_client_associated_remote_bound() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    return client_remote_.is_bound();
+    return client_associated_remote_.is_bound();
   }
 
   PressureSourceType pressure_source_type() const {
@@ -62,10 +65,11 @@ class CONTENT_EXPORT PressureClientImpl : public device::mojom::PressureClient {
     return pressure_source_type_;
   }
 
+  // Client to //services.
   bool is_client_receiver_bound() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    return client_receiver_.is_bound();
+    return client_associated_receiver_.is_bound();
   }
 
  private:
@@ -79,12 +83,12 @@ class CONTENT_EXPORT PressureClientImpl : public device::mojom::PressureClient {
       GUARDED_BY_CONTEXT(sequence_checker_) = PressureSourceType::kUnknown;
 
   // Services side.
-  mojo::Receiver<device::mojom::PressureClient> GUARDED_BY_CONTEXT(
-      sequence_checker_) client_receiver_{this};
+  mojo::AssociatedReceiver<device::mojom::PressureClient> GUARDED_BY_CONTEXT(
+      sequence_checker_) client_associated_receiver_{this};
 
   // Blink side.
-  mojo::Remote<device::mojom::PressureClient> client_remote_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  mojo::AssociatedRemote<device::mojom::PressureClient>
+      client_associated_remote_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content

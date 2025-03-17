@@ -36,7 +36,8 @@ from urllib.request import urlopen
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(SCRIPT_DIR)))
 
-VALID_ARCHS = ("amd64", "i386", "armhf", "arm64", "mipsel", "mips64el")
+VALID_ARCHS = ("amd64", "i386", "armhf", "arm64", "mipsel", "mips64el",
+               "ppc64el")
 
 ARCH_TRANSLATIONS = {
     "x64": "amd64",
@@ -44,6 +45,7 @@ ARCH_TRANSLATIONS = {
     "arm": "armhf",
     "mips": "mipsel",
     "mips64": "mips64el",
+    "ppc64le": "ppc64el",
 }
 
 DEFAULT_SYSROOTS_PATH = os.path.join(os.path.relpath(SCRIPT_DIR, SRC_DIR),

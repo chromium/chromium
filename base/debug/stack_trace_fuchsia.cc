@@ -9,8 +9,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "base/debug/stack_trace.h"
-
 #include <elf.h>
 #include <link.h>
 #include <stddef.h>
@@ -30,6 +28,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/debug/elf_reader.h"
+#include "base/debug/stack_trace.h"
 #include "base/logging.h"
 
 namespace base {
@@ -48,8 +47,9 @@ _Unwind_Reason_Code UnwindStore(struct _Unwind_Context* context,
   uintptr_t pc = _Unwind_GetIP(context);
   data->trace_array[*data->count] = reinterpret_cast<void*>(pc);
   *data->count += 1;
-  if (*data->count == data->max)
+  if (*data->count == data->max) {
     return _URC_END_OF_STACK;
+  }
   return _URC_NO_REASON;
 }
 
@@ -59,14 +59,17 @@ _Unwind_Reason_Code UnwindStore(struct _Unwind_Context* context,
 const char* PermissionFlagsToString(int flags, char permission_buf[4]) {
   char* permission = permission_buf;
 
-  if (flags & PF_R)
+  if (flags & PF_R) {
     (*permission++) = 'r';
+  }
 
-  if (flags & PF_W)
+  if (flags & PF_W) {
     (*permission++) = 'w';
+  }
 
-  if (flags & PF_X)
+  if (flags & PF_X) {
     (*permission++) = 'x';
+  }
 
   *permission = '\0';
 
@@ -145,8 +148,9 @@ void SymbolMap::Populate() {
 
   // Populate ELF binary metadata into |modules_|.
   while (lmap != nullptr) {
-    if (count_ >= kMaxMapEntries)
+    if (count_ >= kMaxMapEntries) {
       break;
+    }
 
     SymbolMap::Module& next_entry = modules_[count_];
     ++count_;
@@ -157,8 +161,9 @@ void SymbolMap::Populate() {
     // Each Segment corresponds to a "mmap" line in the output.
     next_entry.segment_count = 0;
     for (const Elf64_Phdr& phdr : GetElfProgramHeaders(next_entry.addr)) {
-      if (phdr.p_type != PT_LOAD)
+      if (phdr.p_type != PT_LOAD) {
         continue;
+      }
 
       if (next_entry.segment_count > Module::kMaxSegmentCount) {
         LOG(WARNING) << "Exceeded the maximum number of segments.";
@@ -284,15 +289,16 @@ void StackTrace::OutputToStreamWithPrefixImpl(
           << std::dec << ":load:" << module_id << ":"
           << PermissionFlagsToString(segment.permission_flags,
                                      permission_string)
-          << ":"
-          << "0x" << std::hex << segment.relative_addr << std::dec << "}}}\n";
+          << ":" << "0x" << std::hex << segment.relative_addr << std::dec
+          << "}}}\n";
     }
 
     ++module_id;
   }
 
-  for (size_t i = 0; i < count_; ++i)
+  for (size_t i = 0; i < count_; ++i) {
     *os << "{{{bt:" << i << ":" << trace_[i] << "}}}\n";
+  }
 
   *os << "{{{reset}}}\n";
 }

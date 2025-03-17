@@ -44,7 +44,7 @@
 namespace ash {
 
 using ::chromeos::WindowStateType;
-using Sample = base::HistogramBase::Sample;
+using Sample32 = base::HistogramBase::Sample32;
 
 class PipWindowResizerTest : public AshTestBase,
                              public ::testing::WithParamInterface<
@@ -663,7 +663,7 @@ TEST_P(PipWindowResizerTest, PipStartAndFinishFreeResizeUmaMetrics) {
   ASSERT_TRUE(resizer.get());
 
   EXPECT_EQ(1, histograms().GetBucketCount(kAshPipEventsHistogramName,
-                                           Sample(AshPipEvents::FREE_RESIZE)));
+                                           Sample32(AshPipEvents::FREE_RESIZE)));
   histograms().ExpectTotalCount(kAshPipEventsHistogramName, 1);
 
   resizer->Drag(CalculateDragPoint(*resizer, 100, 0), 0);
@@ -686,7 +686,7 @@ TEST_P(PipWindowResizerTest, PipPinchResizeTriggersResizeUmaMetrics) {
   Shell::Get()->toplevel_window_event_handler()->OnGestureEvent(&event);
 
   EXPECT_EQ(1, histograms().GetBucketCount(kAshPipEventsHistogramName,
-                                           Sample(AshPipEvents::FREE_RESIZE)));
+                                           Sample32(AshPipEvents::FREE_RESIZE)));
   histograms().ExpectTotalCount(kAshPipEventsHistogramName, 1);
 }
 

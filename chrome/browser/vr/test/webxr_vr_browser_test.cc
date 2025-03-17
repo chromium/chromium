@@ -16,6 +16,10 @@
 #include "device/vr/public/cpp/features.h"
 #endif
 
+#if BUILDFLAG(ENABLE_OPENXR)
+#include "content/public/common/content_switches.h"
+#endif
+
 using testing::_;
 using testing::Invoke;
 
@@ -140,8 +144,16 @@ XrBrowserTestBase::RuntimeType WebXrVrOpenXrBrowserTestBase::GetRuntimeType()
   return XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR;
 }
 
+void WebXrVrOpenXrBrowserTestBase::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  command_line->AppendSwitchASCII(switches::kWebXrForceRuntime,
+                                  switches::kWebXrRuntimeOpenXr);
+}
+
 WebXrVrOpenXrBrowserTest::WebXrVrOpenXrBrowserTest() {
+#if BUILDFLAG(IS_WIN)
   runtime_requirements_.push_back(XrTestRequirement::DIRECTX_11_1);
+#endif
 }
 
 WebXrVrOpenXrBrowserTestWebXrDisabled::WebXrVrOpenXrBrowserTestWebXrDisabled() {

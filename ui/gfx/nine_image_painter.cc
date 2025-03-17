@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <limits>
 
 #include "base/numerics/safe_conversions.h"
@@ -116,7 +117,7 @@ void NineImagePainter::Paint(Canvas* canvas,
   // is at (0,0), we need to translate the canvas to the mapped origin.
   canvas->Translate(gfx::Vector2d(left_in_pixels, top_in_pixels));
 
-  ImageSkiaRep image_reps[9];
+  std::array<ImageSkiaRep, 9> image_reps;
   static_assert(std::size(image_reps) == std::extent<decltype(images_)>(), "");
   for (size_t i = 0; i < std::size(image_reps); ++i) {
     image_reps[i] = images_[i].GetRepresentation(scale);
@@ -186,10 +187,18 @@ void NineImagePainter::GetSubsetRegions(const ImageSkia& image,
 
   std::vector<Rect> result(9);
 
-  const int x[] = {
-      0, insets.left(), image.width() - insets.right(), image.width()};
-  const int y[] = {
-      0, insets.top(), image.height() - insets.bottom(), image.height()};
+  const auto x = std::to_array<int>({
+      0,
+      insets.left(),
+      image.width() - insets.right(),
+      image.width(),
+  });
+  const auto y = std::to_array<int>({
+      0,
+      insets.top(),
+      image.height() - insets.bottom(),
+      image.height(),
+  });
 
   for (size_t j = 0; j < 3; ++j) {
     for (size_t i = 0; i < 3; ++i) {

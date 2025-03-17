@@ -53,3 +53,7 @@ per-file prerender*=file://content/browser/preloading/OWNERS
 
 # For browsing data changes.
 per-file browsing_data_remover_test_util.*=file://content/browser/browsing_data/OWNERS
+
+# For Captured Surface Control.
+per-file *captured_surface_controller*=eladalon@chromium.org
+per-file *captured_surface_controller*=guidou@chromium.org

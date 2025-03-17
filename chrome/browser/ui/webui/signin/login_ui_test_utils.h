@@ -73,16 +73,6 @@ bool CompleteSigninEmailConfirmationDialog(
     base::TimeDelta timeout,
     SigninEmailConfirmationDialog::Action action);
 
-// Waits for the reauth confirmation dialog to get displayed, then executes
-// javascript to click on confirm button. Returns false if dialog wasn't
-// dismissed before |timeout|.
-bool ConfirmReauthConfirmationDialog(Browser* browser, base::TimeDelta timeout);
-
-// Waits for the reauth confirmation dialog to get displayed, then executes
-// javascript to click on cancel button. Returns false if dialog wasn't
-// dismissed before |timeout|.
-bool CancelReauthConfirmationDialog(Browser* browser, base::TimeDelta timeout);
-
 // Waits for profile customization dialog to get displayed, then executes
 // javascript to click on done button. Returns false if dialog wasn't
 // dismissed before |timeout|.

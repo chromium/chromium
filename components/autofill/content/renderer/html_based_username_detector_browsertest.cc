@@ -84,7 +84,7 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
 
   WebFormElement GetFormElement() {
     const WebLocalFrame* frame = GetMainFrame();
-    const blink::WebVector<WebFormElement>& forms =
+    const std::vector<WebFormElement>& forms =
         frame->GetDocument().GetTopLevelForms();
     EXPECT_EQ(1U, forms.size());
     EXPECT_TRUE(forms[0]);
@@ -93,10 +93,7 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
   }
 
   std::vector<WebFormControlElement> GetFormControlElements() {
-    const WebFormElement& form = GetFormElement();
-    blink::WebVector<WebFormControlElement> control_elements =
-        form.GetFormControlElements();
-    return control_elements.ReleaseVector();
+    return GetFormElement().GetFormControlElements();  // nocheck
   }
 
   void PredictAndCheckUsernameId(const std::string& html,

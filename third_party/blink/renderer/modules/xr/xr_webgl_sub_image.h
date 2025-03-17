@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 #include "third_party/blink/renderer/modules/xr/xr_sub_image.h"
+#include "third_party/blink/renderer/modules/xr/xr_webgl_swap_chain.h"
 
 namespace blink {
 
@@ -16,7 +17,11 @@ class XRWebGLSubImage final : public XRSubImage {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit XRWebGLSubImage(const gfx::Rect& viewport) : XRSubImage(viewport) {}
+  XRWebGLSubImage(const gfx::Rect& viewport,
+                  std::optional<uint16_t> image_index,
+                  XRWebGLSwapChain* color_swap_chain,
+                  XRWebGLSwapChain* depth_stencil_swap_chain,
+                  XRWebGLSwapChain* motion_vector_swap_chain);
 
   WebGLTexture* colorTexture() const { return color_texture_.Get(); }
   WebGLTexture* depthStencilTexture() const {
@@ -42,12 +47,7 @@ class XRWebGLSubImage final : public XRSubImage {
     return motion_vector_texture_height_;
   }
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(color_texture_);
-    visitor->Trace(depth_stencil_texture_);
-    visitor->Trace(motion_vector_texture_);
-    XRSubImage::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const override;
 
  private:
   Member<WebGLTexture> color_texture_{nullptr};

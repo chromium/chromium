@@ -48,9 +48,6 @@ CWVCertStatus CWVCertStatusFromNetCertStatus(net::CertStatus cert_status) {
   if (cert_status & net::CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED) {
     cwv_status |= CWVCertStatusCertificateTransparencyRequired;
   }
-  if (cert_status & net::CERT_STATUS_SYMANTEC_LEGACY) {
-    cwv_status |= CWVCertStatusSymantecLegacy;
-  }
   if (cert_status & net::CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED) {
     cwv_status |= CWVCertStatusKnownInterceptionBlocked;
   }

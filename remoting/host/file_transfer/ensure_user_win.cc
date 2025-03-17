@@ -5,7 +5,10 @@
 #include "remoting/host/file_transfer/ensure_user.h"
 
 #include <Windows.h>
+
 #include <WtsApi32.h>
+
+#include <variant>
 
 #include "base/check_is_test.h"
 #include "base/logging.h"
@@ -15,7 +18,7 @@ namespace remoting {
 
 static bool g_disable_user_context_check_for_testing = false;
 
-protocol::FileTransferResult<absl::monostate> EnsureUserContext() {
+protocol::FileTransferResult<std::monostate> EnsureUserContext() {
   if (g_disable_user_context_check_for_testing) {
     CHECK_IS_TEST();
     return kSuccessTag;

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/omnibox/browser/autocomplete_provider.h"
 
 #include <algorithm>
@@ -82,6 +87,8 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "EnterpriseSearchAggregator";
     case TYPE_UNSCOPED_EXTENSION:
       return "UnscopedExtension";
+    case TYPE_RECENTLY_CLOSED_TABS:
+      return "RecentlyClosedTabs";
     default:
       DUMP_WILL_BE_NOTREACHED()
           << "Unhandled AutocompleteProvider::Type " << type;
@@ -146,6 +153,7 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
     case TYPE_QUERY_TILE:
       return metrics::OmniboxEventProto::QUERY_TILE;
     case TYPE_MOST_VISITED_SITES:
+      // TODO(crbug.com/399872654): Log this as MOST_VISITED_SITES.
       return metrics::OmniboxEventProto::ZERO_SUGGEST;
     case TYPE_VERBATIM_MATCH:
       return metrics::OmniboxEventProto::ZERO_SUGGEST;
@@ -167,6 +175,8 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
       return metrics::OmniboxEventProto::ENTERPRISE_SEARCH_AGGREGATOR;
     case TYPE_UNSCOPED_EXTENSION:
       return metrics::OmniboxEventProto::UNSCOPED_EXTENSION;
+    case TYPE_RECENTLY_CLOSED_TABS:
+      return metrics::OmniboxEventProto::RECENTLY_CLOSED_TABS;
     default:
       // TODO(crbug.com/40940012) This was a NOTREACHED that we converted to
       //   help debug crbug.com/1499235 since NOTREACHED's don't log their
@@ -199,6 +209,23 @@ size_t AutocompleteProvider::EstimateMemoryUsage() const {
 
 AutocompleteProvider::~AutocompleteProvider() {
   Stop(false, false);
+}
+
+// static
+AutocompleteProvider::AdjustedInputAndStarterPackKeyword
+AutocompleteProvider::AdjustInputForStarterPackKeyword(
+    const AutocompleteInput& input,
+    TemplateURLService* turl_service) {
+  if (input.prefer_keyword()) {
+    AutocompleteInput keyword_input = input;
+    const TemplateURL* template_url =
+        AutocompleteInput::GetSubstitutingTemplateURLForInput(turl_service,
+                                                              &keyword_input);
+    if (template_url && template_url->starter_pack_id() > 0) {
+      return {keyword_input, template_url};
+    }
+  }
+  return {input, nullptr};
 }
 
 // static
@@ -316,9 +343,9 @@ void AutocompleteProvider::ResizeMatches(size_t max_matches,
   // The provider should pass all match candidates to the controller if ML
   // scoring is enabled. Mark any matches over `max_matches` with zero relevance
   // and `culled_by_provider` set to true to simulate the resizing.
-  base::ranges::for_each(std::next(matches_.begin(), max_matches),
-                         matches_.end(), [&](auto& match) {
-                           match.relevance = 0;
-                           match.culled_by_provider = true;
-                         });
+  std::ranges::for_each(std::next(matches_.begin(), max_matches),
+                        matches_.end(), [&](auto& match) {
+                          match.relevance = 0;
+                          match.culled_by_provider = true;
+                        });
 }

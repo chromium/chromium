@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
+
 import android.content.Context;
 
 import org.chromium.base.ObserverList;
@@ -140,10 +144,27 @@ public class HomeModulesConfigManager {
     @ModuleType
     public List<Integer> getModuleListShownInSettings() {
         @ModuleType List<Integer> moduleListShownInSettings = new ArrayList<>();
+        boolean isTabModuleAdded = false;
+        boolean isEducationalTipModuleAdded = false;
+
         for (Entry<Integer, ModuleConfigChecker> entry : mModuleConfigCheckerMap.entrySet()) {
             ModuleConfigChecker configChecker = entry.getValue();
             if (configChecker.isEligible()) {
-                moduleListShownInSettings.add(entry.getKey());
+                int moduleType = entry.getKey();
+                if (moduleType == SINGLE_TAB || moduleType == TAB_RESUMPTION) {
+                    // The SINGLE_TAB and TAB_RESUMPTION modules are controlled by the same
+                    // preference.
+                    if (isTabModuleAdded) continue;
+
+                    isTabModuleAdded = true;
+                } else if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+                    // All the educational tip modules are controlled by the same preference.
+                    if (isEducationalTipModuleAdded) continue;
+
+                    isEducationalTipModuleAdded = true;
+                }
+
+                moduleListShownInSettings.add(moduleType);
             }
         }
         return moduleListShownInSettings;
@@ -168,6 +189,13 @@ public class HomeModulesConfigManager {
             return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
                     String.valueOf(ModuleType.TAB_RESUMPTION));
         }
+
+        // All the educational tip modules are controlled by the same preference key.
+        if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+            return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                    String.valueOf(DEFAULT_BROWSER_PROMO));
+        }
+
         return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(moduleType));
     }
 

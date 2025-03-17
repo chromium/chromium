@@ -32,5 +32,10 @@ NFCProviderBinder& GetNFCProviderBinderOverride() {
 }
 #endif
 
+UsbDeviceManagerBinder& GetUsbDeviceManagerBinderOverride() {
+  static base::NoDestructor<UsbDeviceManagerBinder> binder;
+  return *binder;
+}
+
 }  // namespace internal
 }  // namespace device

@@ -167,13 +167,6 @@ class FormData {
   // Must not be leaked to renderer process. See FormGlobalId for details.
   FormGlobalId global_id() const { return {host_frame(), renderer_id()}; }
 
-  // TODO(crbug.com/40183094): This function is deprecated. Use
-  // FormData::DeepEqual() instead. Returns true if two forms are the same, not
-  // counting the values of the form elements.
-  // TODO(crbug.com/40100455): Remove when
-  // kAutofillUseFewerFormAndFieldComparison is removed.
-  bool SameFormAs(const FormData& other) const;
-
   // Returns a pointer to the field if found, otherwise returns nullptr.
   // Note that FormFieldData::global_id() is not guaranteed to be unique among
   // FormData::fields.
@@ -216,8 +209,8 @@ class FormData {
   void set_url(GURL url) { url_ = std::move(url); }
 
   // The full URL, including query parameters and fragment.
-  // This value should be set only for password forms.
-  // This value should not be sent via mojo.
+  // If `kAutofillIncludeUrlInCrowdsourcing` is disabled, this value should only
+  // be set for password forms. This value should not be sent via mojo.
   const GURL& full_url() const { return full_url_; }
   void set_full_url(GURL full_url) { full_url_ = std::move(full_url); }
 

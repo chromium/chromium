@@ -13,7 +13,6 @@
 
 #include <vk_mem_alloc.h>
 
-#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 
@@ -78,10 +77,6 @@ VkResult CreateAllocator(VkPhysicalDevice physical_device,
   // of optional extensions in VulkanImplementation.
   bool vk_ext_memory_budget_supported = gfx::HasExtension(
       enabled_extensions, VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
-
-  // Collect data on how often it is supported.
-  base::UmaHistogramBoolean("GPU.Vulkan.ExtMemoryBudgetSupported",
-                            vk_ext_memory_budget_supported);
 
   // Enable VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT flag if extension is
   // available.

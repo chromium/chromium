@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -80,8 +81,9 @@ IN_PROC_BROWSER_TEST_F(
       extension_id_, disable_reason::DISABLE_PERMISSIONS_INCREASE);
   EXPECT_TRUE(registry_->disabled_extensions().Contains(extension_id_));
 
-  EXPECT_EQ(disable_reason::DISABLE_PERMISSIONS_INCREASE,
-            prefs_->GetDisableReasons(extension_id_));
+  EXPECT_THAT(prefs_->GetDisableReasons(extension_id_),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_PERMISSIONS_INCREASE));
 
   {
     // Visit an associated url and deny the prompt. The extension should remain
@@ -90,8 +92,9 @@ IN_PROC_BROWSER_TEST_F(
     NavigateToUrlInNewTab(extension_resource_url_);
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(registry_->disabled_extensions().Contains(extension_id_));
-    EXPECT_EQ(disable_reason::DISABLE_PERMISSIONS_INCREASE,
-              prefs_->GetDisableReasons(extension_id_));
+    EXPECT_THAT(prefs_->GetDisableReasons(extension_id_),
+                testing::UnorderedElementsAre(
+                    disable_reason::DISABLE_PERMISSIONS_INCREASE));
   }
 
   {
@@ -102,8 +105,7 @@ IN_PROC_BROWSER_TEST_F(
     NavigateToUrlInNewTab(extension_resource_url_);
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(registry_->enabled_extensions().Contains(extension_id_));
-    EXPECT_EQ(disable_reason::DISABLE_NONE,
-              prefs_->GetDisableReasons(extension_id_));
+    EXPECT_TRUE(prefs_->GetDisableReasons(extension_id_).empty());
   }
 }
 
@@ -115,8 +117,9 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   extension_service()->DisableExtension(extension_id_,
                                         disable_reason::DISABLE_USER_ACTION);
   EXPECT_TRUE(registry_->disabled_extensions().Contains(extension_id_));
-  EXPECT_EQ(disable_reason::DISABLE_USER_ACTION,
-            prefs_->GetDisableReasons(extension_id_));
+  EXPECT_THAT(
+      prefs_->GetDisableReasons(extension_id_),
+      testing::UnorderedElementsAre(disable_reason::DISABLE_USER_ACTION));
 
   {
     // We only prompt for permissions increases, not any other disable reason.
@@ -126,8 +129,9 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
     NavigateToUrlInNewTab(extension_resource_url_);
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(registry_->disabled_extensions().Contains(extension_id_));
-    EXPECT_EQ(disable_reason::DISABLE_USER_ACTION,
-              prefs_->GetDisableReasons(extension_id_));
+    EXPECT_THAT(
+        prefs_->GetDisableReasons(extension_id_),
+        testing::UnorderedElementsAre(disable_reason::DISABLE_USER_ACTION));
   }
 }
 
@@ -147,8 +151,9 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   extension_service()->DisableExtension(
       kHostedAppId, disable_reason::DISABLE_PERMISSIONS_INCREASE);
   EXPECT_TRUE(registry_->disabled_extensions().Contains(kHostedAppId));
-  EXPECT_EQ(disable_reason::DISABLE_PERMISSIONS_INCREASE,
-            prefs_->GetDisableReasons(kHostedAppId));
+  EXPECT_THAT(prefs_->GetDisableReasons(kHostedAppId),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_PERMISSIONS_INCREASE));
 
   {
     // When visiting a site that's associated with a hosted app, but not a
@@ -160,8 +165,9 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
     NavigateToUrlInNewTab(kHostedAppUrl);
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(registry_->disabled_extensions().Contains(kHostedAppId));
-    EXPECT_EQ(disable_reason::DISABLE_PERMISSIONS_INCREASE,
-              prefs_->GetDisableReasons(kHostedAppId));
+    EXPECT_THAT(prefs_->GetDisableReasons(kHostedAppId),
+                testing::UnorderedElementsAre(
+                    disable_reason::DISABLE_PERMISSIONS_INCREASE));
   }
 }
 

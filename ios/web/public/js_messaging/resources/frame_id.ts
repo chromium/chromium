@@ -11,7 +11,7 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
  * as this JavaScript context lives. For example, the frameId will be the same
  * when navigating 'back' to this frame.
  */
-function getFrameId(): string {
+export function getFrameId(): string {
   if (!gCrWeb.hasOwnProperty('frameId')) {
     gCrWeb.frameId = generateRandomId();
   }
@@ -24,7 +24,7 @@ function getFrameId(): string {
  * that class on the C++ side.
  * @return the generated number as a hex string.
  */
-function generateRandomId(): string {
+export function generateRandomId(): string {
   // Generate 128 bit unique identifier.
   const components = new Uint32Array(4);
   window.crypto.getRandomValues(components);
@@ -35,14 +35,11 @@ function generateRandomId(): string {
     id += component.toString(16).padStart(8, '0');
   }
   return id;
-};
+}
 
 /**
  * Registers this frame by sending its frameId to the native application.
  */
-function registerFrame() {
+export function registerFrame() {
   sendWebKitMessage('FrameBecameAvailable', {'crwFrameId': getFrameId()});
-};
-
-
-export {getFrameId, generateRandomId, registerFrame};
+}

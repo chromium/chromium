@@ -137,6 +137,11 @@ declare_args() {
 
   # Compile for Undefined Behaviour Sanitizer's vptr checks.
   is_ubsan_vptr = is_ubsan_security || is_ubsan
+
+  # These are set for some non-host toolchain which requires to run built binary
+  # from host toolchain with msan config but in non-host toolchain context.
+  host_toolchain_is_msan = is_msan
+  host_toolchain_msan_track_origins = msan_track_origins
 }
 
 # Whether we are doing a fuzzer build. Normally this should be checked instead

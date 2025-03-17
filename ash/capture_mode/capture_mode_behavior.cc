@@ -19,14 +19,17 @@
 #include "ash/capture_mode/normal_capture_bar_view.h"
 #include "ash/capture_mode/sunfish_capture_bar_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_disclaimer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -35,6 +38,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -101,7 +105,7 @@ class DefaultBehavior : public CaptureModeBehavior {
     // TODO(crbug.com/376103983): Verify `CaptureRegionOverlayController` works
     // correctly. It is always created in Sunfish session to paint the region
     // selection UI, but should only support text overlay if Scanner is enabled.
-    return IsSunfishAllowedAndEnabled();
+    return CanShowSunfishOrScannerUi();
   }
   bool CanPaintRegionOverlay() const override {
     auto* controller = CaptureModeController::Get();
@@ -114,18 +118,22 @@ class DefaultBehavior : public CaptureModeBehavior {
            capture_type == PerformCaptureType::kScanner;
   }
   bool ShouldEndSessionOnShowingSearchResults() const override { return true; }
-  bool CanShowSmartActionsButton() const override {
-    auto* scanner_controller = Shell::Get()->scanner_controller();
-    return scanner_controller && scanner_controller->CanStartSession();
-  }
   bool CanShowActionButtons() const override { return true; }
-  void OnRegionSelectedOrAdjusted() override {
-    if (ShouldShowDefaultActionButtonsAfterRegionSelected() &&
-        features::IsScannerEnabled()) {
-      // Perform text detection to determine whether the copy text and scanner
+  void OnRegionSelectedOrAdjustedWhenActionContainerShowing() override {
+    CHECK(ShouldShowDefaultActionButtonsInActionContainer());
+    auto* capture_mode_controller = CaptureModeController::Get();
+    if (features::IsCaptureModeOnDeviceOcrEnabled()) {
+      // Perform text detection to determine whether the copy text and smart
       // actions buttons should be shown.
-      CaptureModeController::Get()->PerformCapture(
+      capture_mode_controller->PerformCapture(
           PerformCaptureType::kTextDetection);
+    } else {
+      // Show the smart actions button regardless of whether there is text
+      // in the selected area or not.
+      BaseCaptureModeSession* session =
+          capture_mode_controller->capture_mode_session();
+      CHECK(session);
+      session->AddSmartActionsButton();
     }
   }
 };
@@ -341,12 +349,8 @@ class SunfishBehavior : public CaptureModeBehavior {
   ~SunfishBehavior() override = default;
 
   // CaptureModeBehavior:
-  void AttachToSession() override {
-    CaptureModeBehavior::AttachToSession();
-    if (auto* scanner_controller = Shell::Get()->scanner_controller()) {
-      scanner_controller->StartNewSession();
-    }
-  }
+  // The Scanner session is started from
+  // `CaptureModeController::MaybeShowScannerDisclaimerOnSunfishStartup`.
   void DetachFromSession() override {
     CaptureModeBehavior::DetachFromSession();
     if (auto* scanner_controller = Shell::Get()->scanner_controller()) {
@@ -354,7 +358,7 @@ class SunfishBehavior : public CaptureModeBehavior {
     }
   }
   bool ShouldRegionOverlayBeAllowed() const override {
-    return IsSunfishAllowedAndEnabled();
+    return CanShowSunfishOrScannerUi();
   }
   bool CanPaintRegionOverlay() const override { return true; }
   bool ShouldShowGlowWhileProcessingCaptureType(
@@ -366,7 +370,7 @@ class SunfishBehavior : public CaptureModeBehavior {
       PerformCaptureType capture_type) const override {
     return true;
   }
-  bool ShouldShowDefaultActionButtonsAfterRegionSelected() const override {
+  bool ShouldShowDefaultActionButtonsInActionContainer() const override {
     // We show action buttons in Sunfish mode for individual Scanner actions,
     // which is a different set of buttons to the default action buttons shown
     // in normal capture mode (search, copy text, smart actions button).
@@ -375,10 +379,35 @@ class SunfishBehavior : public CaptureModeBehavior {
   bool ShouldShowCaptureButtonAfterRegionSelected() const override {
     return false;
   }
+  bool ShouldPaintSunfishCaptureRegion() const override { return true; }
   bool CanShowActionButtons() const override { return true; }
   bool ShouldEndSessionOnSearchResultClicked() const override { return true; }
+  bool NeedsDisclaimerOnInit() const override {
+    // Return true if Scanner is enabled and any type of disclaimer should be
+    // shown at the start of a Sunfish-session.
+    return ScannerController::CanShowUiForShell() &&
+           GetScannerDisclaimerType(
+               *capture_mode_util::GetActiveUserPrefService(),
+               ScannerEntryPoint::kSunfishSession) !=
+               ScannerDisclaimerType::kNone;
+  }
+  bool ShouldAnnounceCaptureModeUIOnDisclaimerDismissed() const override {
+    return true;
+  }
   const std::u16string GetCaptureLabelRegionText() const override {
     return l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_CAPTURE_LABEL);
+  }
+  const std::u16string GetActionButtonContainerTitle() const override {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_SCREEN_CAPTURE_SUNFISH_ACTION_BUTTON_WINDOW_TITLE);
+  }
+  const std::u16string GetCaptureModeBarTitle() const override {
+    // The capture mode bar window does not need a title for Sunfish behavior
+    // since it only contains a close button.
+    return u"";
+  }
+  const std::string GetCaptureModeOpenAnnouncement() const override {
+    return l10n_util::GetStringUTF8(IDS_ASH_SUNFISH_MODE_ALERT_OPEN);
   }
   int GetCaptureBarWidth() const override {
     // Return the height so the button is circular.
@@ -387,7 +416,7 @@ class SunfishBehavior : public CaptureModeBehavior {
   std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView() override {
     return std::make_unique<SunfishCaptureBarView>();
   }
-  void OnRegionSelectedOrAdjusted() override {
+  void OnRegionSelectedOrAdjustedWhenActionContainerShowing() override {
     auto* controller = CaptureModeController::Get();
     controller->MaybeUpdateSearchResultsPanelBounds();
 
@@ -548,21 +577,16 @@ bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture(
   }
 }
 
-bool CaptureModeBehavior::ShouldShowDefaultActionButtonsAfterRegionSelected()
+bool CaptureModeBehavior::ShouldShowDefaultActionButtonsInActionContainer()
     const {
-  if (!IsSunfishAllowedAndEnabled()) {
-    return false;
-  }
-  auto* controller = CaptureModeController::Get();
-  return controller->type() == CaptureModeType::kImage &&
-         controller->source() == CaptureModeSource::kRegion;
-}
-
-bool CaptureModeBehavior::CanShowSmartActionsButton() const {
-  return false;
+  return true;
 }
 
 bool CaptureModeBehavior::CanShowActionButtons() const {
+  return false;
+}
+
+bool CaptureModeBehavior::ShouldPaintSunfishCaptureRegion() const {
   return false;
 }
 
@@ -575,6 +599,15 @@ bool CaptureModeBehavior::ShouldEndSessionOnShowingSearchResults() const {
 }
 
 bool CaptureModeBehavior::ShouldEndSessionOnSearchResultClicked() const {
+  return false;
+}
+
+bool CaptureModeBehavior::NeedsDisclaimerOnInit() const {
+  return false;
+}
+
+bool CaptureModeBehavior::ShouldAnnounceCaptureModeUIOnDisclaimerDismissed()
+    const {
   return false;
 }
 
@@ -620,6 +653,40 @@ const std::u16string CaptureModeBehavior::GetCaptureLabelRegionText() const {
       controller->type() == CaptureModeType::kImage
           ? IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE
           : IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD);
+}
+
+const std::u16string CaptureModeBehavior::GetActionButtonContainerTitle()
+    const {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_SCREEN_CAPTURE_DEFAULT_ACTION_BUTTON_WINDOW_TITLE);
+}
+
+const std::u16string CaptureModeBehavior::GetCaptureModeBarTitle() const {
+  return l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE);
+}
+
+const std::string CaptureModeBehavior::GetCaptureModeOpenAnnouncement() const {
+  CaptureModeController* controller = CaptureModeController::Get();
+  int capture_source_id;
+  switch (controller->source()) {
+    case CaptureModeSource::kFullscreen:
+      capture_source_id = IDS_ASH_SCREEN_CAPTURE_SOURCE_FULLSCREEN;
+      break;
+    case CaptureModeSource::kRegion:
+      capture_source_id = IDS_ASH_SCREEN_CAPTURE_SOURCE_PARTIAL;
+      break;
+    case CaptureModeSource::kWindow:
+      capture_source_id = IDS_ASH_SCREEN_CAPTURE_SOURCE_WINDOW;
+      break;
+  }
+
+  return l10n_util::GetStringFUTF8(
+      IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN,
+      l10n_util::GetStringUTF16(capture_source_id),
+      l10n_util::GetStringUTF16(
+          controller->type() == CaptureModeType::kImage
+              ? IDS_ASH_SCREEN_CAPTURE_TYPE_SCREENSHOT
+              : IDS_ASH_SCREEN_CAPTURE_TYPE_SCREEN_RECORDING));
 }
 
 std::unique_ptr<CaptureModeBarView>
@@ -671,7 +738,8 @@ void CaptureModeBehavior::OnAudioRecordingModeChanged() {}
 
 void CaptureModeBehavior::OnDemoToolsSettingsChanged() {}
 
-void CaptureModeBehavior::OnRegionSelectedOrAdjusted() {}
+void CaptureModeBehavior::
+    OnRegionSelectedOrAdjustedWhenActionContainerShowing() {}
 
 void CaptureModeBehavior::OnEnterKeyPressed() {
   CaptureModeController::Get()->PerformCapture();

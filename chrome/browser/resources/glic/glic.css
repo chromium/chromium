@@ -11,9 +11,169 @@ body {
   overflow: hidden;
 }
 
-#guest-frame {
+webview:not([hidden]) {
   display: block;
+  height: 100%;
+}
+
+.dialog {
+  position: absolute;
+  right: 0;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 20px;
+  color: #C4C7C5;
+}
+
+.dialog .container {
+  background: #1b1c1d;
+  border-radius: 12px;
+  color: white;
+  padding-bottom: 24px;
+}
+
+#loadingPanel {
+  width: 100%;
+}
+
+#loadingPanel .container {
+  padding-bottom: 0px;
+}
+
+.panel .header {
+  padding: 12px 20px 12px 12px;
+  height: 24px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.panel .logo {
+  padding: 0 0 0 2px;
+}
+
+.panel .close-button {
+  --cr-icon-button-size: 24px;
+  --cr-icon-button-icon-size: 14px;
+  color: #C4C7C5;
+}
+
+.dialog .notice {
+  background-color: #282a2c;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 0 14px;
+}
+
+.dialog p {
+  margin: 0 0 8px;
+}
+
+.dialog .headline {
+  font-size: 14px;
+  font-weight: 400;
+  margin: 8px 0 4px;
+}
+
+/* Guest panel contains glic webview. If in the show-header state, a header
+   will also be visible. */
+#guestPanel {
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+.hidden {
+ display: none;
+}
+
+.outerheader {
+  background: #1b1c1d;
+  position: absolute;
+  width: 100%;
+  height: 48px;
+}
+
+#webviewHeader {
+  display: none;
+}
+
+#guestPanel.show-header #webviewHeader {
+  display: block;
+}
+
+#webviewContainer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+#guestPanel.show-header #webviewContainer {
+  position: absolute;
+  width: 100%;
+  /* If showing a login page, the window height will always be 800px */
+  height: 752px;
+  bottom: 0;
+}
+.tonal-button {
+  width: 100%;
+  background-color: #004a77;
+  color: #c2e7ff;
+}
+
+#debug {
+  position: absolute;
+  right: 30px;
+}
+cr-progress {
+  width: 80%;
+  margin: 20px 10% 0;
+  --cr-progress-active-color: #A8C7FA;
+}
+
+.placeholder {
+  flex: 1;
+  height: 24px;
+  background-color: #35383b;
+  background-image:
+    linear-gradient(135deg, #161617 0%,
+                            #161617 10%,
+                            #1e1f20 30%,
+                            #35383b 50%,
+                            #1e1f20 70%,
+                            #161617 90%,
+                            #161617 100%);
+  background-size: calc(400cqw);
+  background-position: center;
+  border-radius: 8px;
+  animation: 1.5s infinite linear gradient-move,
+    1.5s infinite linear pulse;
+  margin-right: 60px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0;
+  }
+  22% {
+    opacity: 1;
+  }
+  67% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes gradient-move {
+  0% {
+    background-position: 75% 0;
+  }
+  100% {
+    background-position: 12.5% 0;
+  }
 }

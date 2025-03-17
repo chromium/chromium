@@ -8,42 +8,22 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ui/base/device_form_factor.h"
 
 const int kInactiveTabsDisabledByUser = -1;
 
-BASE_FEATURE(kInactiveTabsIPadFeature,
-             "InactiveTabsIPadFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsInactiveTabsAvailable() {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    return true;
-  }
-
-  return base::FeatureList::IsEnabled(kInactiveTabsIPadFeature);
+bool IsInactiveTabsExplicitlyDisabledByUser(PrefService* prefs) {
+  return IsInactiveTabsExplicitlyDisabledByUser(
+      prefs->GetInteger(prefs::kInactiveTabsTimeThreshold));
 }
 
-bool IsInactiveTabsEnabled() {
-  if (!IsInactiveTabsAvailable()) {
-    return false;
-  }
-
-  return !IsInactiveTabsExplicitlyDisabledByUser();
+bool IsInactiveTabsExplicitlyDisabledByUser(int raw_threshold_value) {
+  return raw_threshold_value == kInactiveTabsDisabledByUser;
 }
 
-bool IsInactiveTabsExplicitlyDisabledByUser() {
-  CHECK(IsInactiveTabsAvailable());
-  return GetApplicationContext()->GetLocalState()->GetInteger(
-             prefs::kInactiveTabsTimeThreshold) == kInactiveTabsDisabledByUser;
-}
-
-const base::TimeDelta InactiveTabsTimeThreshold() {
-  CHECK(IsInactiveTabsAvailable());
-
+const base::TimeDelta InactiveTabsTimeThreshold(PrefService* prefs) {
   if (experimental_flags::ShouldUseInactiveTabsTestThreshold()) {
     return base::Seconds(0);
   }
@@ -53,9 +33,8 @@ const base::TimeDelta InactiveTabsTimeThreshold() {
   }
 
   // Preference.
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
   int user_preference_threshold =
-      local_state->GetInteger(prefs::kInactiveTabsTimeThreshold);
+      prefs->GetInteger(prefs::kInactiveTabsTimeThreshold);
   if (user_preference_threshold > 0) {
     return base::Days(user_preference_threshold);
   }

@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">దయచేసి చెల్లుబాటు అయ్యే విలువను నమోదు చేయండి. <ph name="VALID_VALUE_LOW" /> మరియు <ph name="VALID_VALUE_HIGHER" /> అనేవి రెండు సమీప చెల్లుబాటు విలువలు.</translation>
 <translation id="4522570452068850558">వివరాలు</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'కి తర్వాత ఉన్న భాగంలో '<ph name="INVALIDCHARACTER" />' చిహ్నం ఉండకూడదు.</translation>
+<translation id="4703271465972936359">ఆడియో ట్రాక్‌లు</translation>
 <translation id="4718048029184481307">చిత్రంలో చిత్రం మోడ్‌లో ప్లే అవుతోంది</translation>
 <translation id="4812940957355064477">దయచేసి సంఖ్యను నమోదు చేయండి.</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ఎంచుకోబడ్డాయి</translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5630795885300617244">10సె దాటవేయడానికి రెండుసార్లు ఎడమ లేదా కుడివైపుకి నొక్కండి</translation>
 <translation id="57838592816432529">మ్యూట్ చేయి</translation>
+<translation id="5868587040512539609">వీడియో ట్రాక్‌లు</translation>
 <translation id="588258955323874662">పూర్తితెర</translation>
 <translation id="5888666972993069672">ఇప్పుడు <ph name="DEVICE_FRIENDLY_NAME" />కి ప్రసారం చేస్తోంది</translation>
 <translation id="5939518447894949180">రీసెట్ చేయండి</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">ప్రెట్టీ ప్రింట్</translation>
 <translation id="6550675742724504774">ఎంపికలు</translation>
 <translation id="6643016212128521049">క్లియర్ చేయండి</translation>
+<translation id="6661136971638885481">ట్రాక్ #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">ఇతర...</translation>
 <translation id="6709093583001123835">విలువ ఖచ్చితంగా <ph name="VALUE" /> అయ్యి ఉండాలి.</translation>
 <translation id="6709570249143506788">ప్లేబ్యాక్ క్వాలిటీ బాగాలేదు</translation>

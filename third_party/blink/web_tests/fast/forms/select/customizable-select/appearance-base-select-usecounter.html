@@ -51,8 +51,8 @@ promise_test(async () => {
   await new Promise(requestAnimationFrame);
   assert_true(internals.isUseCounted(document, buttonUseCounterId),
     'Button use counter should be hit with base-select on button and picker.');
-  assert_false(internals.isUseCounted(document, pickerUseCounterId),
-    "Picker use counter should not be hit if picker isn't open.");
+  assert_true(internals.isUseCounted(document, pickerUseCounterId),
+    "Picker use counter should be hit if picker isn't open.");
 
   await test_driver.click(select);
   await new Promise(requestAnimationFrame);

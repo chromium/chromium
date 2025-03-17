@@ -22,8 +22,6 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
 
-    scoped_feature_list_.InitAndEnableFeature(features::kUiaProvider);
-
     widget_ = std::make_unique<Widget>();
 
     Widget::InitParams params =
@@ -34,7 +32,7 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
 
     textfield_ = new Textfield();
     textfield_->SetBounds(10, 20, 30, 40);
-    widget_->GetContentsView()->AddChildView(textfield_.get());
+    widget_->GetContentsView()->AddChildViewRaw(textfield_.get());
 
     delegate_ = static_cast<ViewAXPlatformNodeDelegate*>(
         &textfield_->GetViewAccessibility());

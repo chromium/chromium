@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("file_manager") {
   sources = [
@@ -12,6 +12,8 @@ static_library("file_manager") {
     "app_service_file_tasks.h",
     "cloud_upload_prefs_watcher.cc",
     "cloud_upload_prefs_watcher.h",
+    "cloud_upload_prompt_prefs_handler.cc",
+    "cloud_upload_prompt_prefs_handler.h",
     "copy_or_move_encrypted_hook_delegate.cc",
     "copy_or_move_encrypted_hook_delegate.h",
     "copy_or_move_io_task.cc",
@@ -102,7 +104,6 @@ static_library("file_manager") {
   ]
 
   public_deps = [
-    "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
@@ -113,6 +114,7 @@ static_library("file_manager") {
     "//chromeos/ash/components/drivefs/mojom",
     "//chromeos/ash/components/file_manager",
     "//chromeos/ash/components/trash_service/public/cpp",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/download/content/public",
     "//components/drive",
     "//components/file_access",
@@ -133,10 +135,6 @@ static_library("file_manager") {
   deps = [
     "//apps",
     "//ash",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:arc_features",
-    "//ash/components/arc/mojom:notifications",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/file_manager:constants",
@@ -162,6 +160,7 @@ static_library("file_manager") {
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/profiles",
+    "//chrome/browser/sync:factories",
     "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_shared",
     "//chrome/browser/web_applications",
     "//chrome/common",
@@ -172,6 +171,11 @@ static_library("file_manager") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/file_manager:constants",
+    "//chromeos/ash/components/policy",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc/mojom:notifications",
+    "//chromeos/ash/experiences/arc/session",
     "//chromeos/components/disks:prefs",
     "//chromeos/constants",
     "//chromeos/dbus/power",
@@ -289,12 +293,6 @@ source_set("unit_tests") {
     ":file_manager",
     ":test_support",
     "//ash",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:arc_features",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//base",
     "//base:i18n",
@@ -349,6 +347,12 @@ source_set("unit_tests") {
     "//chromeos/ash/components/trash_service",
     "//chromeos/ash/components/trash_service/public/cpp",
     "//chromeos/ash/components/trash_service/public/mojom",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/session",
     "//chromeos/components/disks:prefs",
     "//chromeos/constants",
     "//chromeos/dbus/power",
@@ -389,6 +393,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "cloud_upload_prompt_prefs_handler_browsertest.cc",
     "external_filesystem_apitest.cc",
     "file_manager_browsertest.cc",
     "file_manager_browsertest_base.cc",
@@ -409,13 +414,6 @@ source_set("browser_tests") {
     ":test_support",
     "//ash",
     "//ash:test_support",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:arc_features",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
-    "//ash/components/arc/session:connection_holder",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/common:trusted_types_util",
@@ -459,7 +457,9 @@ source_set("browser_tests") {
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/enterprise/connectors/test:test_support",
     "//chrome/browser/extensions",
+    "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync:sync",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/cast_config",
     "//chrome/browser/ui/ash/sharesheet",
@@ -487,6 +487,13 @@ source_set("browser_tests") {
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/smbfs",
     "//chromeos/ash/components/smbfs/mojom",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/arc/session:connection_holder",
     "//chromeos/constants",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/dlp",

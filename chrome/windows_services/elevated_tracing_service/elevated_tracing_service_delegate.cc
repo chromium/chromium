@@ -101,7 +101,8 @@ Delegate::CreateClassFactories() {
     // the factory, so pass a task runner to be the "main" runner to the factory
     // ex post facto.
     static_cast<SystemTracingSessionClassFactory*>(result[0].factory.Get())
-        ->set_task_runner(base::ThreadPool::CreateSequencedTaskRunner({}));
+        ->set_task_runner(
+            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock{}}));
   }
   if (FAILED(hr)) {
     return base::unexpected(hr);
@@ -127,8 +128,7 @@ bool Delegate::PreRun() {
       "elevated_tracing_service");
 
   // Initialize tracing in the process.
-  tracing::InitTracingPostThreadPoolStartAndFeatureList(
-      /*enable_consumer=*/false);
+  tracing::InitTracingPostFeatureList(/*enable_consumer=*/false);
 
   // Create the global SessionRegistry.
   session_registry_ = base::MakeRefCounted<SessionRegistry>();

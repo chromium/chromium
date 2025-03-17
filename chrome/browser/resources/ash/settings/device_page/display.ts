@@ -212,6 +212,13 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
+      opsDisplayScaleFactorEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('opsDisplayScaleFactorEnabled');
+        },
+      },
+
       unifiedDesktopMode_: {
         type: Boolean,
         value: false,
@@ -334,6 +341,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private mirroringExcludedId_: string;
   private modeToParentModeMap_: Map<number, number>;
   private modeValues_: number[];
+  private opsDisplayScaleFactorEnabled_: boolean;
   private parentModeToRefreshRateMap_: Map<number, DropdownMenuOptionList>;
   private pendingSettingId_: Setting|null;
   private refreshRateList_: DropdownMenuOptionList;
@@ -1168,7 +1176,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    */
   private updateLogicalResolutionText_(zoomFactor: number): void {
     assertExists(this.selectedDisplay);
-    if (!this.selectedDisplay.isInternal) {
+    if (!this.selectedDisplay.isInternal &&
+        !this.opsDisplayScaleFactorEnabled_) {
       this.logicalResolutionText_ = '';
       return;
     }

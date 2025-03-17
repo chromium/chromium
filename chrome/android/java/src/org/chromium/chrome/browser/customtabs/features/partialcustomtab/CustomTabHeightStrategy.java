@@ -7,12 +7,13 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 import android.app.Activity;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsCallback;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
@@ -55,7 +56,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             return new CustomTabHeightStrategy();
         }
 
-        CustomTabsSessionToken session = intentData.getSession();
+        SessionHolder<?> session = intentData.getSession();
         OnResizedCallback resizeCallback =
                 (height, width) ->
                         CustomTabsConnection.getInstance().onResized(session, height, width);
@@ -107,10 +108,11 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
     }
 
     /**
-     * Set the scrim value to apply to partial CCT UI.
-     * @param scrimFraction Scrim fraction.
+     * Set the scrim color to apply to partial CCT UI.
+     *
+     * @param scrimColor The color (including transparency) that's effecting the CCT UI.
      */
-    public void setScrimFraction(float scrimFraction) {}
+    public void setScrimColor(@ColorInt int scrimColor) {}
 
     // FindToolbarObserver implementation.
 

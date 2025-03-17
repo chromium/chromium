@@ -4,12 +4,13 @@
 
 #include "media/capture/video_capture_types.h"
 
+#include <algorithm>
 #include <ostream>
 
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "media/base/limits.h"
 
 namespace media {
@@ -55,8 +56,8 @@ std::string VideoCaptureFormat::ToString(const VideoCaptureFormat& format) {
 bool VideoCaptureFormat::ComparePixelFormatPreference(
     const VideoPixelFormat& lhs,
     const VideoPixelFormat& rhs) {
-  auto* format_lhs = base::ranges::find(kSupportedCapturePixelFormats, lhs);
-  auto* format_rhs = base::ranges::find(kSupportedCapturePixelFormats, rhs);
+  auto* format_lhs = std::ranges::find(kSupportedCapturePixelFormats, lhs);
+  auto* format_rhs = std::ranges::find(kSupportedCapturePixelFormats, rhs);
   return format_lhs < format_rhs;
 }
 
@@ -77,7 +78,7 @@ std::string VideoCaptureParams::SuggestedConstraints::ToString() const {
   return base::StrCat(
       {"min = ", min_frame_size.ToString(),
        ", max = ", max_frame_size.ToString(),
-       ", fixed_aspect_ratio = ", fixed_aspect_ratio ? "true" : "false"});
+       ", fixed_aspect_ratio = ", base::ToString(fixed_aspect_ratio)});
 }
 
 VideoCaptureParams::SuggestedConstraints

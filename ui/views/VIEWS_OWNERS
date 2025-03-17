@@ -3,20 +3,24 @@
 # These CLs will be automatically reassigned to a reviewer within about
 # 5 minutes. This approach helps our team to load-balance incoming reviews.
 # Googlers can read more about this at go/gwsq-gerrit.
+chromium-ui-views-reviews@google.com
 
-dayeung@chromium.org
-dfried@chromium.org
-ellyjones@chromium.org
-kerenzhu@chromium.org
-kylixrd@chromium.org
-msw@chromium.org
-pbos@chromium.org
-pkasting@chromium.org
-robliao@chromium.org
-tluk@chromium.org
+# The find-owners plugin does not support groups, so the actual Views reviewers
+# are listed below but tagged with {LAST_RESORT_SUGGESTION} so that Gerrit will
+# preferentially suggest the review alias above.
+dayeung@chromium.org    #{LAST_RESORT_SUGGESTION}
+dfried@chromium.org     #{LAST_RESORT_SUGGESTION}
+dpranke@google.com      #{LAST_RESORT_SUGGESTION}
+ellyjones@chromium.org  #{LAST_RESORT_SUGGESTION}
+kerenzhu@chromium.org   #{LAST_RESORT_SUGGESTION}
+kylixrd@chromium.org    #{LAST_RESORT_SUGGESTION}
+msw@chromium.org        #{LAST_RESORT_SUGGESTION}
+pkasting@chromium.org   #{LAST_RESORT_SUGGESTION}
+robliao@chromium.org    #{LAST_RESORT_SUGGESTION}
+tluk@chromium.org       #{LAST_RESORT_SUGGESTION}
 
 # For accessibility-related changes.
-dpranke@google.com
+dpranke@google.com      #{LAST_RESORT_SUGGESTION}
 
 # Prefer avi@, ellyjones@, or lgrey@ for mac specific changes.
 per-file *_mac.*=avi@chromium.org

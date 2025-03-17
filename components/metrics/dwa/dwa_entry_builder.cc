@@ -14,7 +14,7 @@ DwaEntryBuilder::DwaEntryBuilder(std::string_view event_name)
 DwaEntryBuilder::~DwaEntryBuilder() = default;
 
 void DwaEntryBuilder::SetContent(std::string_view content) {
-  SetContentInternal(base::HashMetricName(content));
+  SetContentInternal(base::HashMetricName(SanitizeContent(content)));
 }
 
 void DwaEntryBuilder::SetMetric(std::string_view metric_name, int64_t value) {

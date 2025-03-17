@@ -5,10 +5,9 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.components.browser_ui.widget.SurfaceColorDrawable
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:shape="rectangle"
-    app:surfaceElevation="@dimen/message_bg_tinted_elev">
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+  <solid android:color="@color/message_bg_color"/>
   <corners android:radius="@dimen/message_banner_radius"/>
-</org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
+</shape>
+

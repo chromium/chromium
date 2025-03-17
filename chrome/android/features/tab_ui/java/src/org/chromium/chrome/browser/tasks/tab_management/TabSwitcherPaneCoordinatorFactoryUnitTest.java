@@ -18,7 +18,6 @@ import android.app.Activity;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,13 +35,15 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.hub.PaneHubController;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -63,7 +64,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationStatus;
 import org.chromium.components.collaboration.ServiceStatus;
@@ -81,7 +82,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     private static final int TAB1_ID = 456;
-    private static final int TAB2_ID = 789;
     private static final String TAB1_TITLE = "Hello world";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -96,7 +96,9 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
             new ObservableSupplierImpl<>(true);
     private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
             new ObservableSupplierImpl<>(false);
-    private final ObservableSupplierImpl<PaneHubController> mPaneHubControllerSupplier =
+    private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
 
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -108,7 +110,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
-    @Mock private ScrimCoordinator mScrimCoordinator;
+    @Mock private ScrimManager mScrimManager;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabSwitcherResetHandler mResetHandler;
@@ -125,15 +127,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor private ArgumentCaptor<LifecycleObserver> mLifecycleObserverCaptor;
 
-    private Tab mTab1;
-
-    private Activity mActivity;
     private FrameLayout mParentView;
     private TabSwitcherPaneCoordinatorFactory mFactory;
-    private ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
-            new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
-            new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
@@ -149,9 +144,10 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                                 SigninStatus.NOT_SIGNED_IN,
                                 SyncStatus.NOT_SYNCING,
                                 CollaborationStatus.DISABLED));
-        mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE);
+        Tab tab = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE);
         mProfileProviderSupplier.set(mProfileProvider);
         when(mProfile.isOffTheRecord()).thenReturn(false);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
 
         when(mTabModelSelector.getTabGroupModelFilterProvider())
@@ -166,15 +162,14 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                 .thenReturn(mTabGroupModelFilterSupplier);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getCount()).thenReturn(1);
-        when(mTabModel.getTabAt(0)).thenReturn(mTab1);
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabAt(0)).thenReturn(tab);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(tab);
         when(mTabModel.getProfile()).thenReturn(mProfile);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityReady);
     }
 
     private void onActivityReady(Activity activity) {
-        mActivity = activity;
         mParentView = new FrameLayout(activity);
         mFactory =
                 new TabSwitcherPaneCoordinatorFactory(
@@ -186,7 +181,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mTabCreatorManager,
                         mBrowserControlsStateProvider,
                         mMultiWindowModeStateDispatcher,
-                        mScrimCoordinator,
+                        mScrimManager,
                         mSnackbarManager,
                         mModalDialogManager,
                         mBottomSheetController,
@@ -197,7 +192,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreate_NativeAlreadyInitialized() {
         when(mLifecycleDispatcher.isNativeInitializationFinished()).thenReturn(true);
         TabSwitcherPaneCoordinator coordinator =
@@ -223,7 +217,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateTwoCoordinators_NativeAlreadyInitialized() {
         when(mLifecycleDispatcher.isNativeInitializationFinished()).thenReturn(true);
         TabSwitcherPaneCoordinator coordinator1 =
@@ -265,7 +258,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreate_NativeNotInitialized() {
         when(mLifecycleDispatcher.isNativeInitializationFinished()).thenReturn(false);
         TabSwitcherPaneCoordinator coordinator =
@@ -297,27 +289,26 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
     public void testTabListMode_HighEnd() {
         assertEquals(TabListMode.GRID, mFactory.getTabListMode());
     }
 
     @Test
-    @SmallTest
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
+    @DisableFeatures(ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER)
     public void testTabListMode_LowEnd() {
         assertEquals(TabListMode.LIST, mFactory.getTabListMode());
     }
 
     @Test
-    @SmallTest
-    public void testCreateScrimCoordinatorForTablet() {
-        assertNotNull(TabSwitcherPaneCoordinatorFactory.createScrimCoordinatorForTablet(mActivity));
+    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
+    @EnableFeatures(ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER)
+    public void testTabListMode_LowEnd_ListDisabled() {
+        assertEquals(TabListMode.GRID, mFactory.getTabListMode());
     }
 
     @Test
-    @SmallTest
     public void testCreateTabGroupModelFilterSupplier_AlreadyCreated() {
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
 
@@ -327,7 +318,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateTabGroupModelFilterSupplier_WaitForChange() {
         when(mTabModelSelector.getModels()).thenReturn(Collections.emptyList());
 

@@ -735,7 +735,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
               policy::policy_prefs::kDownloadRestrictions));
   if (download_restriction == policy::DownloadRestriction::ALL_FILES) {
     saveImage.subtitle =
-        l10n_util::GetNSString(IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION);
+        l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION);
     saveImage.attributes = UIMenuElementAttributesDisabled;
   }
 
@@ -853,7 +853,8 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                                                               completion:nil];
 }
 
-// Calls the shareURLFromContextMenu with the given command.
+// Calls the `-showShareSheetForURL:` command with the given
+// `ActivityServiceShareURLCommand` command.
 - (void)shareURLFromContextMenu:(const GURL&)URLToShare
                        URLTitle:(NSString*)URLTitle
                          params:(web::ContextMenuParams)params {
@@ -867,7 +868,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                                                     title:URLTitle
                                                sourceView:params.view
                                                sourceRect:sourceRect];
-  [handler shareURLFromContextMenu:command];
+  [handler showShareSheetForURL:command];
 }
 
 // Informs the delegate that a new tab has been opened in the background.

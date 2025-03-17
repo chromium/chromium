@@ -23,8 +23,9 @@ using ::testing::StrictMock;
 
 namespace content {
 
-using UserConsent = SmsFetcher::UserConsent;
 using FailureType = SmsFetchFailureType;
+using OriginList = SmsFetcher::OriginList;
+using UserConsent = SmsFetcher::UserConsent;
 
 namespace {
 

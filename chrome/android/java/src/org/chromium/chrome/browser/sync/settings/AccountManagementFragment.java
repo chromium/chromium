@@ -50,6 +50,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -402,16 +404,39 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
     private void setAccountBadges(List<CoreAccountInfo> coreAccountInfos) {
         for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
-            AccountManagerFacadeProvider.getInstance()
-                    .checkChildAccountStatus(
-                            coreAccountInfo,
-                            (isChild, childAccount) -> {
-                                if (isChild) {
-                                    mProfileDataCache.setBadge(
-                                            childAccount.getEmail(),
-                                            R.drawable.ic_account_child_20dp);
-                                }
-                            });
+            if (SigninFeatureMap.isEnabled(
+                    SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)) {
+                AccountManagerFacadeProvider.getInstance()
+                        .checkIsSubjectToParentalControls(
+                                coreAccountInfo,
+                                (isChild, childAccount) -> {
+                                    Context context = getContext();
+                                    if (isChild && context != null) {
+                                        mProfileDataCache.setBadge(
+                                                childAccount.getEmail(),
+                                                ProfileDataCache
+                                                        .createDefaultSizeChildAccountBadgeConfig(
+                                                                context,
+                                                                R.drawable.ic_account_child_20dp));
+                                    }
+                                });
+
+            } else {
+                AccountManagerFacadeProvider.getInstance()
+                        .checkChildAccountStatus(
+                                coreAccountInfo,
+                                (isChild, childAccount) -> {
+                                    Context context = getContext();
+                                    if (isChild && context != null) {
+                                        mProfileDataCache.setBadge(
+                                                childAccount.getEmail(),
+                                                ProfileDataCache
+                                                        .createDefaultSizeChildAccountBadgeConfig(
+                                                                context,
+                                                                R.drawable.ic_account_child_20dp));
+                                    }
+                                });
+            }
         }
     }
 

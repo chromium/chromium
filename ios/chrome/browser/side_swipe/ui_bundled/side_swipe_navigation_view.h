@@ -7,31 +7,19 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/side_swipe/ui_bundled/horizontal_pan_gesture_handler.h"
+
 @class SideSwipeGestureRecognizer;
 
 // Accessory view showing forward or back arrow while the main target view
 // is dragged from side to side.
-@interface SideSwipeNavigationView : UIView
-
-@property(nonatomic, weak) UIView* targetView;
+@interface SideSwipeNavigationView : UIView <HorizontalPanGestureHandler>
 
 // Initialize with direction.
 - (instancetype)initWithFrame:(CGRect)frame
                 withDirection:(UISwipeGestureRecognizerDirection)direction
                   canNavigate:(BOOL)canNavigate
                         image:(UIImage*)image;
-
-// Update views for latest gesture, and call completion blocks whether
-// `threshold` is met.
-- (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture
-     onOverThresholdCompletion:(void (^)(void))onOverThresholdCompletion
-    onUnderThresholdCompletion:(void (^)(void))onUnderThresholdCompletion;
-
-// Performs an animation on the view that simulates a swipe in `direction` and
-// call `completion` when the animation completes.
-- (void)animateHorizontalPanWithDirection:
-            (UISwipeGestureRecognizerDirection)direction
-                        completionHandler:(void (^)(void))completion;
 
 @end
 

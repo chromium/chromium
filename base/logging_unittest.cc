@@ -29,7 +29,6 @@
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -67,8 +66,8 @@ namespace logging {
 
 namespace {
 
-using ::testing::Return;
 using ::testing::_;
+using ::testing::Return;
 
 class LoggingTest : public testing::Test {
  protected:
@@ -101,16 +100,19 @@ TEST_F(LoggingTest, BasicLogging) {
   int expected_logs = 4;
 
   // 4 verbose logs: VLOG, VLOG_IF, VPLOG, VPLOG_IF.
-  if (VLOG_IS_ON(0))
+  if (VLOG_IS_ON(0)) {
     expected_logs += 4;
+  }
 
   // 4 debug logs: DLOG, DLOG_IF, DPLOG, DPLOG_IF.
-  if (DCHECK_IS_ON())
+  if (DCHECK_IS_ON()) {
     expected_logs += 4;
+  }
 
   // 4 verbose debug logs: DVLOG, DVLOG_IF, DVPLOG, DVPLOG_IF
-  if (VLOG_IS_ON(0) && DCHECK_IS_ON())
+  if (VLOG_IS_ON(0) && DCHECK_IS_ON()) {
     expected_logs += 4;
+  }
 
   EXPECT_CALL(mock_log_source, Log())
       .Times(expected_logs)
@@ -209,8 +211,9 @@ TEST_F(LoggingTest, LoggingIsLazyByDestination) {
   EXPECT_CALL(mock_log_source, Log()).Times(0);
 
   // Severity >= ERROR is always printed to stderr.
-  EXPECT_CALL(mock_log_source_error, Log()).Times(1).
-      WillRepeatedly(Return("log message"));
+  EXPECT_CALL(mock_log_source_error, Log())
+      .Times(1)
+      .WillRepeatedly(Return("log message"));
 
   LoggingSettings settings;
   settings.logging_dest = LOG_NONE;
@@ -315,7 +318,7 @@ TEST_F(LoggingTest, AlwaysLogErrorsToStderr) {
 }
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(LoggingTest, InitWithFileDescriptor) {
   const char kErrorLogMessage[] = "something bad happened";
 
@@ -371,7 +374,7 @@ TEST_F(LoggingTest, DuplicateLogFile) {
   ASSERT_NE(written_logs.find(kErrorLogMessage2), std::string::npos);
   fclose(log_file_dup);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !CHECK_WILL_STREAM() && BUILDFLAG(IS_WIN)
 // Tell clang to not optimize this function or else it will remove the CHECKs.
@@ -737,17 +740,17 @@ TEST_F(LoggingTest, NestedLogAssertHandlers) {
 // found by ADL, since defining another operator<< prevents name lookup from
 // looking in the global namespace.
 namespace nested_test {
-  class Streamable {};
-  [[maybe_unused]] std::ostream& operator<<(std::ostream& out,
-                                            const Streamable&) {
-    return out << "Streamable";
-  }
-  TEST_F(LoggingTest, StreamingWstringFindsCorrectOperator) {
-    std::wstring wstr = L"Hello World";
-    std::ostringstream ostr;
-    ostr << wstr;
-    EXPECT_EQ("Hello World", ostr.str());
-  }
+class Streamable {};
+[[maybe_unused]] std::ostream& operator<<(std::ostream& out,
+                                          const Streamable&) {
+  return out << "Streamable";
+}
+TEST_F(LoggingTest, StreamingWstringFindsCorrectOperator) {
+  std::wstring wstr = L"Hello World";
+  std::ostringstream ostr;
+  ostr << wstr;
+  EXPECT_EQ("Hello World", ostr.str());
+}
 }  // namespace nested_test
 
 TEST_F(LoggingTest, LogPrefix) {
@@ -771,7 +774,7 @@ TEST_F(LoggingTest, LogPrefix) {
   EXPECT_EQ(std::string::npos, log_string->find(kPrefix));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(LoggingTest, LogCrosSyslogFormat) {
   // Set log format to syslog format.
   scoped_logging_settings().SetLogFormat(LogFormat::LOG_FORMAT_SYSLOG);
@@ -844,7 +847,7 @@ TEST_F(LoggingTest, LogCrosSyslogFormat) {
     EXPECT_THAT(*log_string, ::testing::MatchesRegex(kExpected));
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // We define a custom operator<< for std::u16string so we can use it with
 // logging. This tests that conversion.
@@ -892,8 +895,9 @@ TEST_F(LoggingTest, ScopedVmoduleSwitches) {
 
   // To avoid unreachable-code warnings when VLOG is disabled at compile-time.
   int expected_logs = 0;
-  if (VLOG_IS_ON(0))
+  if (VLOG_IS_ON(0)) {
     expected_logs += 1;
+  }
 
   SetMinLogLevel(LOGGING_FATAL);
 

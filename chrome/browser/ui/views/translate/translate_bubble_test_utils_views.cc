@@ -12,9 +12,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 
-namespace translate {
-
-namespace test_utils {
+namespace translate::test_utils {
 
 TranslateBubbleView* GetTranslateBubble(Browser* browser) {
   return TranslateBubbleController::FromWebContents(
@@ -82,6 +80,4 @@ void SelectTargetLanguageByDisplayName(Browser* browser,
   bubble->TargetLanguageChanged();
 }
 
-}  // namespace test_utils
-
-}  // namespace translate
+}  // namespace translate::test_utils

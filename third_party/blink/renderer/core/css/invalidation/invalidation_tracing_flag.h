@@ -5,8 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_INVALIDATION_INVALIDATION_TRACING_FLAG_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_INVALIDATION_INVALIDATION_TRACING_FLAG_H_
 
-#include "base/trace_event/trace_event.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "base/compiler_specific.h"
 
 namespace blink {
 // Style invalidation is super sensitive to performance benchmarks.
@@ -17,13 +16,12 @@ namespace blink {
 class InvalidationTracingFlag {
  public:
   ALWAYS_INLINE static bool IsEnabled() {
-    DEFINE_STATIC_LOCAL(
-        const unsigned char*, is_tracing_enabled,
-        (TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT(
-            "devtools.timeline.invalidationTracking"))));
-
+    static const unsigned char* is_tracing_enabled = GetCategoryGroupEnabled();
     return *is_tracing_enabled;
   }
+
+ private:
+  static const unsigned char* GetCategoryGroupEnabled();
 };
 
 }  // namespace blink

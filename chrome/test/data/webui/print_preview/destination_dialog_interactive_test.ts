@@ -43,7 +43,6 @@ suite('DestinationDialogInteractiveTest', function() {
     // Initialize
     destinationSettings.init(
         'FooDevice' /* printerName */, false /* pdfPrinterDisabled */,
-        true /* isDriveMounted */,
         '' /* serializedDefaultDestinationSelectionRulesStr */);
     return nativeLayer.whenCalled('getPrinterCapabilities').then(() => {
       // Retrieve a reference to dialog

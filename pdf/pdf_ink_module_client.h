@@ -10,8 +10,8 @@
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_ink_ids.h"
+#include "pdf/ui/thumbnail.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -23,6 +23,10 @@ class PointF;
 
 namespace ink {
 class Stroke;
+}
+
+namespace ui {
+class Cursor;
 }
 
 namespace chrome_pdf {
@@ -49,8 +53,16 @@ class PdfInkModuleClient {
 
   // Gets the current scaled and rotated rectangle area of the page in CSS
   // screen coordinates for the 0-based page index.  Must be non-empty for any
-  // non-negative index returned from `VisiblePageIndexFromPoint()`.
-  virtual gfx::Rect GetPageContentsRect(int index) = 0;
+  // non-negative page index returned from `VisiblePageIndexFromPoint()`.
+  virtual gfx::Rect GetPageContentsRect(int page_index) = 0;
+
+  // Gets the page size in points for `page_index`.  Must be non-empty for any
+  // non-negative page index returned from `VisiblePageIndexFromPoint()`.
+  virtual gfx::SizeF GetPageSizeInPoints(int page_index) = 0;
+
+  // Gets the thumbnail size for `page_index`. The size must be non-empty for
+  // any valid page index.
+  virtual gfx::Size GetThumbnailSize(int page_index) = 0;
 
   // Gets the offset within the rendering viewport to where the page images
   // will be drawn.  Since the offset is a location within the viewport, it
@@ -79,6 +91,12 @@ class PdfInkModuleClient {
   // Asks the client to post `message`.
   virtual void PostMessage(base::Value::Dict message) {}
 
+  // Asks the client to update the page thumbnail for `page_index`. Note that
+  // this is the regular page thumbnail, and not the thumbnail with the Ink
+  // strokes.
+  virtual void RequestThumbnail(int page_index,
+                                SendThumbnailCallback callback) {}
+
   // Notifies that a stroke has been added to the page at `page_index`.
   // Provides an `id` that identifies the `stroke` object.  The `id` can be
   // used later with `UpdateStrokeActive()`.
@@ -89,8 +107,8 @@ class PdfInkModuleClient {
   // Notifies the client that a stroke has finished drawing or erasing.
   virtual void StrokeFinished() {}
 
-  // Asks the client to change the cursor to `bitmap`.
-  virtual void UpdateInkCursorImage(SkBitmap bitmap) {}
+  // Asks the client to change the cursor to `cursor`.
+  virtual void UpdateInkCursor(const ui::Cursor& cursor) {}
 
   // Notifies that an existing shape identified by `id` on the page at
   // `page_index` should update its active state.
@@ -102,9 +120,6 @@ class PdfInkModuleClient {
   // `page_index` should update its active state.
   virtual void UpdateStrokeActive(int page_index, InkStrokeId id, bool active) {
   }
-
-  // Asks the client to update the thumbnail for `page_index`.
-  virtual void UpdateThumbnail(int page_index) {}
 
   // Returns the 0-based page index for the given `point` if it is on a
   // visible page, or -1 if `point` is not on a visible page.

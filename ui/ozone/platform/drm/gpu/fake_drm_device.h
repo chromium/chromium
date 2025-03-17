@@ -218,6 +218,7 @@ class FakeDrmDevice : public DrmDevice {
   void set_overlay_modeset_expectation(bool state) {
     modeset_with_overlays_expectation_ = state;
   }
+  void set_modeset_expectation(bool state) { modeset_expectation_ = state; }
 
   uint32_t current_framebuffer() const { return current_framebuffer_; }
 
@@ -398,6 +399,10 @@ class FakeDrmDevice : public DrmDevice {
   void SetDriverName(std::optional<std::string> name);
   uint32_t GetFramebufferForCrtc(uint32_t crtc_id) const;
 
+  bool SetMaster() override;
+  bool DropMaster() override;
+  bool has_master() const override;
+
   // There is a circular reference between DrmDevice and
   // HardwareDisplayPlaneManager, as described in https://crbug.com/40263526.
   // This function can be used to break the cycle in unittests. It must be
@@ -465,6 +470,7 @@ class FakeDrmDevice : public DrmDevice {
   bool legacy_gamma_ramp_expectation_ = false;
   bool commit_expectation_ = true;
   bool modeset_with_overlays_expectation_ = true;
+  bool modeset_expectation_ = true;
 
   uint32_t current_framebuffer_ = 0;
 
@@ -508,6 +514,8 @@ class FakeDrmDevice : public DrmDevice {
 
   uint64_t system_watermark_limitations_ = std::numeric_limits<uint64_t>::max();
   base::flat_map<uint64_t /*modifier*/, int /*overhead*/> modifiers_overhead_;
+
+  bool has_master_ = true;
 };
 
 }  // namespace ui

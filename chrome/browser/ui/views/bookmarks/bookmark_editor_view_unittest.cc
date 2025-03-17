@@ -6,8 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -89,12 +91,10 @@ class BookmarkEditorViewTest : public testing::Test {
     }
   }
 
-  std::u16string GetURLText() const {
-    if (editor_->details_.type != BookmarkEditor::EditDetails::NEW_FOLDER) {
-      return editor_->url_tf_->GetText();
-    }
-
-    return std::u16string();
+  std::u16string_view GetURLText() const {
+    return (editor_->details_.type == BookmarkEditor::EditDetails::NEW_FOLDER)
+               ? std::u16string_view()
+               : editor_->url_tf_->GetText();
   }
 
   void ApplyEdits() { editor_->ApplyEdits(); }
@@ -372,7 +372,7 @@ TEST_F(BookmarkEditorViewTest, EditKeepsScheme) {
                BookmarkEditorView::SHOW_TREE);
 
   // We expect only the trailing / to be trimmed when userinfo is present
-  EXPECT_EQ(ASCIIToUTF16(kUrl.spec()), GetURLText() + u"/");
+  EXPECT_EQ(ASCIIToUTF16(kUrl.spec()), base::StrCat({GetURLText(), u"/"}));
 
   const std::u16string& kTitle = u"EditingKeepsScheme";
   SetTitleText(kTitle);

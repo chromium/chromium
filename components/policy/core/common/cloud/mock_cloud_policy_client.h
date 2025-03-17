@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/task/single_thread_task_runner.h"
+#include "components/enterprise/common/proto/upload_request_response.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -146,6 +147,12 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               (bool, base::Value::Dict, ResultCallback),
               (override));
   MOCK_METHOD(void,
+              UploadSecurityEvent,
+              (bool,
+               ::chrome::cros::reporting::proto::UploadEventsRequest request,
+               ResultCallback),
+              (override));
+  MOCK_METHOD(void,
               UploadAppInstallReport,
               (base::Value::Dict value, ResultCallback callback),
               (override));
@@ -159,9 +166,16 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               (enterprise_management::FmRegistrationTokenUploadRequest request,
                ResultCallback callback),
               (override));
+  MOCK_METHOD(void,
+              DeterminePromotionEligibility,
+              (PromotionEligibilityCallback callback),
+              (override));
 
   // Sets the DMToken.
   void SetDMToken(const std::string& token);
+
+  // Sets the client id.
+  void SetClientId(const std::string& client_id);
 
   // Injects policy.
   void SetPolicy(const std::string& policy_type,
@@ -174,6 +188,9 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   // Sets the status field.
   void SetStatus(DeviceManagementStatus status);
 
+  // Get the OAuth token from client
+  std::string GetOAuthToken();
+
   // Make the notification helpers public.
   using CloudPolicyClient::NotifyClientError;
   using CloudPolicyClient::NotifyPolicyFetched;
@@ -181,6 +198,7 @@ class MockCloudPolicyClient : public CloudPolicyClient {
 
   using CloudPolicyClient::client_id_;
   using CloudPolicyClient::dm_token_;
+  using CloudPolicyClient::oauth_token_;
   using CloudPolicyClient::fetched_invalidation_version_;
   using CloudPolicyClient::invalidation_payload_;
   using CloudPolicyClient::invalidation_version_;

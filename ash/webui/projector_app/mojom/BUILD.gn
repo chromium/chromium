@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash, "Projector is ChromeOS only")
+assert(is_chromeos, "Projector is ChromeOS only")
 
 cur_dir = rebase_path(".", "//")
 
@@ -17,7 +17,4 @@ mojom("projector_mojo_bindings") {
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "/$cur_dir"
-
-  # Projector app is still using JS + Closure Compiler.
-  generate_webui_js_bindings = true
 }

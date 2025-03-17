@@ -16,7 +16,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
-                "shards-20",
+                "skylab-shards-20",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -156,51 +156,12 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "chromeos_jacuzzi_rel_skylab_tests",
-    basic_suites = {
-        # After the builder gets stabilized, 'chromeos_device_only_gtests' will
-        # be tried to be replaced with 'chromeos_system_friendly_gtests'.
-        "chromeos_device_only_gtests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-                # jacuzzi is slow. So that we use more number of shards.
-                "shards-30",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "chromeos_jacuzzi_skylab_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # jacuzzi is slow. So that we use more number of shards.
-                "shards-30",
+                "skylab-shards-30",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -230,43 +191,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "chromeos_octopus_rel_skylab_tests",
-    basic_suites = {
-        # After the builder gets stabilized, 'chromeos_device_only_gtests' will
-        # be tried to be replaced with 'chromeos_system_friendly_gtests'.
-        "chromeos_device_only_gtests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "chromeos_octopus_skylab_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
@@ -288,7 +212,7 @@ targets.legacy_matrix_compound_suite(
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # trogdor is slow. So that we use more number of shards.
-                "shards-20",
+                "skylab-shards-20",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -345,7 +269,7 @@ targets.legacy_matrix_compound_suite(
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # Board with more capacity will run full tast test with many shards.
-                "shards-30",
+                "skylab-shards-30",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -370,7 +294,7 @@ targets.legacy_matrix_compound_suite(
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # jacuzzi is slow. So that we use more number of shards.
-                "shards-50",
+                "skylab-shards-50",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -384,41 +308,6 @@ targets.legacy_matrix_compound_suite(
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
             variants = [
                 "CROS_RELEASE_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "dawn_chromeos_release_tests_volteer_skylab",
-    basic_suites = {
-        # gtests
-        "gpu_common_gtests_passthrough": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        "gpu_dawn_gtests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        "gpu_dawn_gtests_with_validation": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "dawn_chromeos_release_telemetry_tests_volteer_skylab",
-    basic_suites = {
-        # TODO(crbug.com/340815322): Add gpu_dawn_webgpu_compat_cts once
-        # compat works properly on ChromeOS.
-        "gpu_dawn_webgpu_cts": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
             ],
         ),
     },
@@ -441,21 +330,6 @@ targets.legacy_matrix_compound_suite(
         "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
             variants = [
                 "CROS_GPU_CORSOLA_RELEASE_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "gpu_fyi_chromeos_release_gtests_volteer_skylab",
-    basic_suites = {
-        # gpu_angle_unit_gtests and gpu_desktop_specific_gtests should also be
-        # enabled here, but are removed for various reasons. See the definition
-        # for gpu_fyi_chromeos_release_gtests in compound_suites.star for more
-        # information.
-        "gpu_common_gtests_passthrough": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
             ],
         ),
     },
@@ -487,37 +361,6 @@ targets.legacy_matrix_compound_suite(
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "gpu_fyi_chromeos_release_telemetry_tests_volteer_skylab",
-    basic_suites = {
-        "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        "gpu_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        "gpu_webcodecs_telemetry_test": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
             ],
         ),
     },
@@ -622,12 +465,7 @@ targets.legacy_matrix_compound_suite(
         "model_validation_tests_suite": None,
         "model_validation_tests_light_suite": None,
         "ondevice_stability_tests_suite": None,
-        "chrome_ai_wpt_tests_suite": targets.legacy_matrix_config(
-            mixins = [
-                # TODO: crbug.com/378549335 Remove experiments after stablization.
-                "experiments",
-            ],
-        ),
+        "chrome_ai_wpt_tests_suite": None,
     },
 )
 

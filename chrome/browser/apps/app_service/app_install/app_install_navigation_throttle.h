@@ -11,7 +11,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "content/public/browser/navigation_throttle.h"
 

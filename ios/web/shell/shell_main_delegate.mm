@@ -8,11 +8,9 @@
 
 namespace web {
 
-ShellMainDelegate::ShellMainDelegate() {
-}
+ShellMainDelegate::ShellMainDelegate() {}
 
-ShellMainDelegate::~ShellMainDelegate() {
-}
+ShellMainDelegate::~ShellMainDelegate() {}
 
 void ShellMainDelegate::BasicStartupComplete() {
   web_client_.reset(new ShellWebClient());

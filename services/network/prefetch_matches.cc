@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "services/network/prefetch_matches.h"
 
+#include <algorithm>
 #include <array>
 #include <functional>
 #include <iomanip>
@@ -26,11 +32,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "build/buildflag.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_flags_to_string.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -114,9 +120,12 @@ namespace {
   DO_FIELD(shared_dictionary_writer_enabled) __VA_ARGS__       \
   DO_FIELD(attribution_reporting_src_token) __VA_ARGS__        \
   DO_FIELD(is_ad_tagged) __VA_ARGS__                           \
+  DO_FIELD(client_side_content_decoding_enabled) __VA_ARGS__   \
   DO_FIELD(prefetch_token) __VA_ARGS__                         \
   DO_FIELD(socket_tag) __VA_ARGS__                             \
-  DO_FIELD(keepalive_token)
+  DO_FIELD(keepalive_token) __VA_ARGS__                        \
+  DO_FIELD(allows_device_bound_sessions) __VA_ARGS__           \
+  DO_FIELD(permissions_policy)
 
 // clang-format on
 
@@ -214,7 +223,9 @@ enum class FieldsForUma {
   kIsAdTagged = 62,
   kKeepaliveToken = 63,
   kExpectedSignatures = 64,
-  kMaxValue = kExpectedSignatures,
+  kPermissionsPolicy = 65,
+  kClientSideContentDecodingEnabled = 66,
+  kMaxValue = kClientSideContentDecodingEnabled,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:PrefetchMatchesResourceRequestField)
 
@@ -292,7 +303,10 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
     {Fields::kattribution_reporting_src_token,
      FieldsForUma::kAttributionReportingSrcToken},
     {Fields::kis_ad_tagged, FieldsForUma::kIsAdTagged},
+    {Fields::kclient_side_content_decoding_enabled,
+     FieldsForUma::kClientSideContentDecodingEnabled},
     {Fields::kkeepalive_token, FieldsForUma::kKeepaliveToken},
+    {Fields::kpermissions_policy, FieldsForUma::kPermissionsPolicy},
 });
 
 // Fields that should be completely ignored for the purposes of matching should

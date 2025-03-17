@@ -8,13 +8,12 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace storage {
 
 FileSystemOptions CreateIncognitoFileSystemOptions() {
   std::vector<std::string> additional_allowed_schemes;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   additional_allowed_schemes.push_back("chrome-extension");
 #endif
   return FileSystemOptions(FileSystemOptions::PROFILE_MODE_INCOGNITO,
@@ -25,7 +24,7 @@ FileSystemOptions CreateIncognitoFileSystemOptions() {
 FileSystemOptions CreateAllowFileAccessOptions() {
   std::vector<std::string> additional_allowed_schemes;
   additional_allowed_schemes.push_back("file");
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   additional_allowed_schemes.push_back("chrome-extension");
 #endif
   return FileSystemOptions(FileSystemOptions::PROFILE_MODE_NORMAL,
@@ -35,7 +34,7 @@ FileSystemOptions CreateAllowFileAccessOptions() {
 
 FileSystemOptions CreateDisallowFileAccessOptions() {
   std::vector<std::string> additional_allowed_schemes;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   additional_allowed_schemes.push_back("chrome-extension");
 #endif
   return FileSystemOptions(FileSystemOptions::PROFILE_MODE_NORMAL,

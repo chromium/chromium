@@ -32,8 +32,6 @@
 
 namespace blink {
 
-SVGViewSpec::SVGViewSpec() : zoom_and_pan_(kSVGZoomAndPanUnknown) {}
-
 void SVGViewSpec::Trace(Visitor* visitor) const {
   visitor->Trace(view_box_);
   visitor->Trace(preserve_aspect_ratio_);
@@ -58,6 +56,16 @@ const SVGViewSpec* SVGViewSpec::CreateForViewElement(
   }
   if (view.hasAttribute(svg_names::kZoomAndPanAttr))
     view_spec->zoom_and_pan_ = view.zoomAndPan();
+  return view_spec;
+}
+
+const SVGViewSpec* SVGViewSpec::CreateFromAspectRatio(
+    const SVGPreserveAspectRatio* preserve_aspect_ratio) {
+  if (!preserve_aspect_ratio) {
+    return nullptr;
+  }
+  SVGViewSpec* view_spec = MakeGarbageCollected<SVGViewSpec>();
+  view_spec->preserve_aspect_ratio_ = preserve_aspect_ratio;
   return view_spec;
 }
 
@@ -151,15 +159,21 @@ bool SVGViewSpec::ParseViewSpecInternal(const CharType* ptr,
         if (zoom_and_pan_ == kSVGZoomAndPanUnknown)
           return false;
         break;
-      case kPreserveAspectRatio:
-        preserve_aspect_ratio_ = MakeGarbageCollected<SVGPreserveAspectRatio>();
-        if (!preserve_aspect_ratio_->Parse(ptr, end, false))
+      case kPreserveAspectRatio: {
+        auto* preserve_aspect_ratio =
+            MakeGarbageCollected<SVGPreserveAspectRatio>();
+        if (!preserve_aspect_ratio->Parse(ptr, end, false)) {
           return false;
+        }
+        preserve_aspect_ratio_ = preserve_aspect_ratio;
         break;
-      case kTransform:
-        transform_ = MakeGarbageCollected<SVGTransformList>();
-        transform_->Parse(ptr, end);
+      }
+      case kTransform: {
+        auto* transform = MakeGarbageCollected<SVGTransformList>();
+        transform->Parse(ptr, end);
+        transform_ = transform;
         break;
+      }
       default:
         NOTREACHED();
     }

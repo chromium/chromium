@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrostiniBrowserProxyImpl, CrostiniPortSetting, GuestOsBrowserProxyImpl, SettingsCrostiniDiskResizeDialogElement, SettingsCrostiniSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSliderElement, Router, routes, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {CrostiniPortSetting, SettingsCrostiniDiskResizeDialogElement, SettingsCrostiniSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {CrostiniBrowserProxyImpl, GuestOsBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {CrSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -114,7 +116,7 @@ suite('<settings-crostini-subpage>', () => {
           subpage.shadowRoot!.querySelector('#crostiniExtraContainersRow')));
     });
 
-    test('Shared paths', async () => {
+    test('Shared paths', () => {
       const button = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
           '#crostiniSharedPathsRow');
       assertTrue(!!button);

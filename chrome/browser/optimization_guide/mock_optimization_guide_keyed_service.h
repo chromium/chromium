@@ -86,6 +86,14 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
               ShouldFeatureBeCurrentlyEnabledForUser,
               (optimization_guide::UserVisibleFeatureKey),
               (const));
+  MOCK_METHOD(bool,
+              ShouldFeatureAllowModelExecutionForSignedInUser,
+              (optimization_guide::UserVisibleFeatureKey),
+              (const, override));
+  MOCK_METHOD(bool,
+              ShouldModelExecutionBeAllowedForUser,
+              (),
+              (const, override));
   MOCK_METHOD(
       bool,
       ShouldFeatureBeCurrentlyAllowedForFeedback,
@@ -120,6 +128,11 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
 
   MOCK_METHOD(std::optional<optimization_guide::SamplingParamsConfig>,
               GetSamplingParamsConfig,
+              (optimization_guide::ModelBasedCapabilityKey),
+              (override));
+
+  MOCK_METHOD(std::optional<const optimization_guide::proto::Any>,
+              GetFeatureMetadata,
               (optimization_guide::ModelBasedCapabilityKey),
               (override));
 };

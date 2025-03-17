@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_URL_BUILDER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_URL_BUILDER_H_
 
+#include <map>
 #include <optional>
 #include <string>
 
@@ -73,6 +74,11 @@ bool HasCommonSearchQueryParameters(const GURL& url);
 // finch configured flag.
 bool IsValidSearchResultsUrl(const GURL& url);
 
+// Returns whether the `url` is a valid lens overlay search URL but contains
+// parameters known not to be supported in the side panel and thus should be
+// opened in a new tab.
+bool ShouldOpenSearchURLInNewTab(const GURL& url);
+
 // Returns whether the given |url| is a valid lens overlay search redirect URL.
 // This could differ from values in common APIs since the search URL is set via
 // a finch configured flag.
@@ -85,6 +91,10 @@ GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url);
 // results.
 GURL RemoveIgnoredSearchURLParameters(const GURL& url);
 
+// Remove parameters that cause the SRP to be rendered for the side panel. Used
+// when opening the SRP in a new tab.
+GURL RemoveSidePanelURLParameters(const GURL& url);
+
 // Builds the appropriate translate service URL for fetching supported
 // languages.
 GURL BuildTranslateLanguagesURL(std::string country, std::string language);
@@ -93,6 +103,12 @@ GURL BuildTranslateLanguagesURL(std::string country, std::string language);
 // selection type.
 bool IsLensTextSelectionType(
     lens::LensOverlaySelectionType lens_selection_type);
+
+// Returns whether `first_url` is equal to `second_url` when the text fragment
+// is stripped from the ref if it exists at all. This fragment is stripped from
+// both URLs.
+bool URLsMatchWithoutTextFragment(const GURL& first_url,
+                                  const GURL& second_url);
 
 }  // namespace lens
 

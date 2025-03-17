@@ -4,6 +4,8 @@
 
 package org.chromium.components.externalauth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -12,7 +14,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Binder;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
@@ -27,6 +28,8 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
 
@@ -35,6 +38,7 @@ import org.chromium.gms.ChromiumPlayServicesAvailability;
  *
  * This class is safe to use on any thread.
  */
+@NullMarked
 public class ExternalAuthUtils {
     public static final int FLAG_SHOULD_BE_GOOGLE_SIGNED = 1 << 0;
     public static final int FLAG_SHOULD_BE_SYSTEM = 1 << 1;
@@ -58,7 +62,7 @@ public class ExternalAuthUtils {
     private static String[] getCallingPackages() {
         int callingUid = Binder.getCallingUid();
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
-        return pm.getPackagesForUid(callingUid);
+        return assumeNonNull(pm.getPackagesForUid(callingUid));
     }
 
     /**

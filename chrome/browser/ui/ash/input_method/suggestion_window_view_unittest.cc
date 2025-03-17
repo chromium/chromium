@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/ash/input_method/suggestion_window_view.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ui/ash/input_method/assistive_delegate.h"
@@ -70,7 +70,7 @@ class SuggestionWindowViewTest
     const auto& children =
         suggestion_window_view_->multiple_candidate_area_for_testing()
             ->children();
-    return base::ranges::count_if(
+    return std::ranges::count_if(
         children, [](const views::View* v) { return !!v->background(); });
   }
 
@@ -78,7 +78,7 @@ class SuggestionWindowViewTest
     const auto& children =
         suggestion_window_view_->multiple_candidate_area_for_testing()
             ->children();
-    const auto it = base::ranges::find_if(
+    const auto it = std::ranges::find_if(
         children, [](const views::View* v) { return !!v->background(); });
     return (it == children.cend())
                ? std::nullopt

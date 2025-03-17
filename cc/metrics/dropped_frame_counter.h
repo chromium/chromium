@@ -18,6 +18,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sorter.h"
@@ -60,10 +61,11 @@ class CC_EXPORT DroppedFrameCounter {
     std::array<uint32_t, 101> histogram_bins_ = {0};
     std::array<uint32_t, 7> smoothness_buckets_ = {0};
     uint32_t total_count_ = 0;
+    bool export_extra_metrics_ = !features::StopExportDFCMetrics();
   };
 
   DroppedFrameCounter();
-  ~DroppedFrameCounter();
+  virtual ~DroppedFrameCounter();
 
   DroppedFrameCounter(const DroppedFrameCounter&) = delete;
   DroppedFrameCounter& operator=(const DroppedFrameCounter&) = delete;
@@ -140,8 +142,9 @@ class CC_EXPORT DroppedFrameCounter {
   uint32_t SlidingWindow95PercentilePercentDropped(
       SmoothnessStrategy strategy) const {
     DCHECK_GT(SmoothnessStrategy::kStrategyCount, strategy);
-    return sliding_window_histogram_[strategy].GetPercentDroppedFramePercentile(
-        0.95);
+    return export_extra_metrics_ ? sliding_window_histogram_[strategy]
+                                       .GetPercentDroppedFramePercentile(0.95)
+                                 : 0.0;
   }
 
   uint32_t SlidingWindowMedianPercentDropped(
@@ -208,10 +211,11 @@ class CC_EXPORT DroppedFrameCounter {
     double p95_window = 0;
   } last_reported_metrics_;
 
-  std::optional<SortedFrameCallback> sorted_frame_callback_;
+  SortedFrameCallback sorted_frame_callback_;
 
   bool report_for_ui_ = false;
   std::optional<double> sliding_window_current_percent_dropped_;
+  bool export_extra_metrics_ = !features::StopExportDFCMetrics();
 
   // Sets to true on a newly dropped frame and stays true as long as the frames
   // that follow are dropped. Reset when a frame is presented. It is used to

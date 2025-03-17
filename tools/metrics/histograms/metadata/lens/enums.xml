@@ -26,6 +26,21 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(LensOverlayContextMenuOption) -->
+
+<enum name="LensOverlayContextMenuOption">
+  <summary>The context menu option that was shown in the Lens Overlay.</summary>
+  <int value="0" label="Copy text"/>
+  <int value="1" label="Translate text"/>
+  <int value="2" label="Select text in region"/>
+  <int value="3" label="Translate text in region"/>
+  <int value="4" label="Copy as image"/>
+  <int value="5" label="Save as image"/>
+  <int value="6" label="Copy text in region"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/lens/overlay/metrics_utils.ts:ContextMenuOption) -->
+
 <!-- LINT.IfChange(LensOverlayDismissalSource) -->
 
 <enum name="LensOverlayDismissalSource">
@@ -61,6 +76,7 @@ chromium-metrics-reviews@google.com.
   <int value="28" label="Low memory"/>
   <int value="29" label="Network issue"/>
   <int value="30" label="Escape key press on preselection toast"/>
+  <int value="31" label="Search with camera requested"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->
@@ -88,6 +104,9 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Toolbar button"/>
   <int value="4" label="Find in page dialog button"/>
   <int value="5" label="Omnibox button"/>
+  <int value="6" label="LVF Shutter Button"/>
+  <int value="7" label="LVF Gallery"/>
+  <int value="8" label="Context Menu"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->
@@ -102,6 +121,32 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_new_tab_source.h:LensOverlayNewTabSource) -->
+
+<!-- LINT.IfChange(LensOverlaySidePanelMenuOption) -->
+
+<enum name="LensOverlaySidePanelMenuOption">
+  <summary>
+    Options that may be selected in the lens overlay side panel more options
+    menu.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Open in new tab"/>
+  <int value="2" label="My Activity"/>
+  <int value="3" label="Learn more"/>
+  <int value="4" label="Send feedback"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_side_panel_menu_option.h:LensOverlaySidePanelMenuOption) -->
+
+<!-- LINT.IfChange(LensOverlaySpeedbumpMenuSelection) -->
+
+<enum name="LensOverlaySpeedbumpMenuSelection">
+  <summary>The selected item in the lens speedbump menu.</summary>
+  <int value="0" label="SearchYourScreen"/>
+  <int value="1" label="SearchWithCamera"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_metrics.h:LensOverlaySpeedbumpMenuSelection) -->
 
 <!-- LINT.IfChange(LensOverlayUserAction) -->
 
@@ -143,6 +188,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.IfChange(LensOverlayMimeType) -->
 
+<!-- The MimeType enum used for UKM metrics. -->
+
 <enum name="MimeType">
   <summary>
     The mime type of the document the Lens Overlay is invoked on.
@@ -151,6 +198,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Pdf"/>
   <int value="2" label="Html"/>
   <int value="3" label="PlainText"/>
+  <int value="4" label="Image"/>
+  <int value="5" label="Video"/>
+  <int value="6" label="Audio"/>
+  <int value="7" label="Json"/>
+  <int value="8" label="AnnotatedPageContent"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_mime_type.h:LensOverlayMimeType) -->

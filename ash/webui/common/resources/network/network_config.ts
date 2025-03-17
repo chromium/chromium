@@ -23,17 +23,19 @@ import './network_password_input.js';
 import './network_shared.css.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
-import {CertificateType, ConfigProperties, CrosNetworkConfigInterface, EAPConfigProperties, GlobalPolicy, HiddenSsidMode, IPSecConfigProperties, L2TPConfigProperties, ManagedBoolean, ManagedEAPProperties, ManagedInt32, ManagedIPSecProperties, ManagedL2TPProperties, ManagedOpenVPNProperties, ManagedProperties, ManagedString, ManagedStringList, ManagedWireGuardProperties, NetworkCertificate, OpenVPNConfigProperties, SecurityType, StartConnectResult, SubjectAltName, VpnType, WireGuardConfigProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {ConfigProperties, CrosNetworkConfigInterface, EAPConfigProperties, GlobalPolicy, IPSecConfigProperties, L2TPConfigProperties, ManagedBoolean, ManagedEAPProperties, ManagedInt32, ManagedIPSecProperties, ManagedL2TPProperties, ManagedOpenVPNProperties, ManagedProperties, ManagedString, ManagedStringList, ManagedWireGuardProperties, NetworkCertificate, OpenVPNConfigProperties, SubjectAltName, WireGuardConfigProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CertificateType, HiddenSsidMode, SecurityType, StartConnectResult, VpnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, IPConfigType, NetworkType, OncSource, PolicySource} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 import {getTemplate} from './network_config.html.js';
 import {NetworkConfigInputElement} from './network_config_input.js';
 import {NetworkListenerBehavior} from './network_listener_behavior.js';
-import {NetworkPasswordInputElement} from './network_password_input.js';
+import type {NetworkPasswordInputElement} from './network_password_input.js';
 import {OncMojo} from './onc_mojo.js';
 
 enum VPNConfigType {
@@ -818,9 +820,9 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
   }
 
   private getActiveStringList_(property: ManagedStringList|undefined|
-                               null): string[]|undefined {
+                               null): string[]|null {
     if (!property) {
-      return undefined;
+      return null;
     }
     return property.activeValue;
   }
@@ -941,7 +943,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
           OncMojo.getActiveString(ipSec.authenticationType) || 'PSK',
       clientCertPkcs11Id: OncMojo.getActiveString(ipSec.clientCertPkcs11Id),
       clientCertType: OncMojo.getActiveString(ipSec.clientCertType),
-      eap: ipSec.eap ? this.getEAPConfigProperties_(ipSec.eap) : undefined,
+      eap: ipSec.eap ? this.getEAPConfigProperties_(ipSec.eap) : null,
       group: OncMojo.getActiveString(ipSec.group),
       ikeVersion: this.getActiveInt32_(ipSec.ikeVersion),
       localIdentity: OncMojo.getActiveString(ipSec.localIdentity),
@@ -1043,7 +1045,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
         const eap = managedProperties.typeProperties.ethernet.eap ?
             this.getEAPConfigProperties_(
                 managedProperties.typeProperties.ethernet.eap) :
-            undefined;
+            null;
         security = eap ? SecurityType.kWpaEap : SecurityType.kNone;
         const auth = security === SecurityType.kWpaEap ? '8021X' : 'None';
         assert(configProperties.typeConfig.ethernet);
@@ -1099,6 +1101,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
     const requestCertificates = this.configProperties_ === undefined;
     this.configProperties_ = configProperties;
     this.securityType_ = security;
+    assert(this.configProperties_);
     this.set('eapProperties_', this.getEap_(this.configProperties_));
     if (!this.eapProperties_) {
       this.showEap_ = null;
@@ -1138,7 +1141,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
       assert(this.configProperties_.typeConfig.ethernet);
       this.configProperties_.typeConfig.ethernet.authentication = auth;
     }
-    let eap;
+    let eap = null;
     if (security === SecurityType.kWpaEap) {
       eap = this.getEap_(this.configProperties_, true);
       assert(eap);
@@ -1227,21 +1230,21 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
         useSystemCas: false,
         domainSuffixMatch: [],
         subjectAltNameMatch: [],
-        anonymousIdentity: undefined,
-        clientCertPkcs11Id: undefined,
-        clientCertType: undefined,
-        identity: undefined,
-        inner: undefined,
-        outer: undefined,
-        password: undefined,
-        serverCaPems: undefined,
-        subjectMatch: undefined,
+        anonymousIdentity: null,
+        clientCertPkcs11Id: null,
+        clientCertType: null,
+        identity: null,
+        inner: null,
+        outer: null,
+        password: null,
+        serverCaPems: null,
+        subjectMatch: null,
       };
     }
     return eap || null;
   }
 
-  private setEap_(eapProperties: EAPConfigProperties|undefined) {
+  private setEap_(eapProperties: EAPConfigProperties|null) {
     assert(this.configProperties_);
     switch (this.mojoType_) {
       case NetworkType.kWiFi:
@@ -1406,15 +1409,15 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
             authenticationType: this.ipsecAuthType_,
             ikeVersion: 2,
             saveCredentials: false,
-            clientCertPkcs11Id: undefined,
-            clientCertType: undefined,
-            eap: undefined,
-            group: undefined,
-            localIdentity: undefined,
-            psk: undefined,
-            remoteIdentity: undefined,
-            serverCaPems: undefined,
-            serverCaRefs: undefined,
+            clientCertPkcs11Id: null,
+            clientCertType: null,
+            eap: null,
+            group: null,
+            localIdentity: null,
+            psk: null,
+            remoteIdentity: null,
+            serverCaPems: null,
+            serverCaRefs: null,
           };
         }
         assert(vpn.ipSec);
@@ -1425,14 +1428,14 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
             saveCredentials: false,
             subjectAltNameMatch: [],
             useSystemCas: false,
-            anonymousIdentity: undefined,
-            clientCertPkcs11Id: undefined,
-            clientCertType: undefined,
-            identity: undefined,
-            inner: undefined,
-            password: undefined,
-            serverCaPems: undefined,
-            subjectMatch: undefined,
+            anonymousIdentity: null,
+            clientCertPkcs11Id: null,
+            clientCertType: null,
+            identity: null,
+            inner: null,
+            password: null,
+            serverCaPems: null,
+            subjectMatch: null,
           };
           assert(vpn.ipSec.eap);
           this.eapProperties_ = vpn.ipSec.eap;
@@ -1453,15 +1456,15 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
             authenticationType: this.ipsecAuthType_,
             ikeVersion: 1,
             saveCredentials: false,
-            clientCertPkcs11Id: undefined,
-            clientCertType: undefined,
-            eap: undefined,
-            group: undefined,
-            localIdentity: undefined,
-            psk: undefined,
-            remoteIdentity: undefined,
-            serverCaPems: undefined,
-            serverCaRefs: undefined,
+            clientCertPkcs11Id: null,
+            clientCertType: null,
+            eap: null,
+            group: null,
+            localIdentity: null,
+            psk: null,
+            remoteIdentity: null,
+            serverCaPems: null,
+            serverCaRefs: null,
           };
         }
         break;
@@ -1469,15 +1472,15 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
         vpn.type = {value: VpnType.kOpenVPN};
         vpn.openVpn = vpn.openVpn || {
           saveCredentials: false,
-          clientCertPkcs11Id: undefined,
-          clientCertType: undefined,
-          extraHosts: undefined,
-          otp: undefined,
-          password: undefined,
-          serverCaPems: undefined,
-          serverCaRefs: undefined,
-          username: undefined,
-          userAuthenticationType: undefined,
+          clientCertPkcs11Id: null,
+          clientCertType: null,
+          extraHosts: null,
+          otp: null,
+          password: null,
+          serverCaPems: null,
+          serverCaRefs: null,
+          username: null,
+          userAuthenticationType: null,
         };
         break;
       case VPNConfigType.WIREGUARD:
@@ -1485,13 +1488,13 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
         vpn.wireguard = vpn.wireguard || {
           peers: [{
             publicKey: '',
-            presharedKey: undefined,
-            allowedIps: undefined,
-            endpoint: undefined,
+            presharedKey: null,
+            allowedIps: null,
+            endpoint: null,
             persistentKeepaliveInterval: 0,
           }],
-          ipAddresses: undefined,
-          privateKey: undefined,
+          ipAddresses: null,
+          privateKey: null,
         };
         break;
       default:
@@ -1525,16 +1528,16 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
     }
     if (vpn.type.value !== VpnType.kL2TPIPsec &&
         vpn.type.value !== VpnType.kIKEv2) {
-      delete vpn.ipSec;
+      vpn.ipSec = null;
     }
     if (vpn.type.value !== VpnType.kL2TPIPsec) {
-      delete vpn.l2tp;
+      vpn.l2tp = null;
     }
     if (vpn.type.value !== VpnType.kOpenVPN) {
-      delete vpn.openVpn;
+      vpn.openVpn = null;
     }
     if (vpn.type.value !== VpnType.kWireGuard) {
-      delete vpn.wireguard;
+      vpn.wireguard = null;
     }
     this.updateCertError_();
   }
@@ -1562,7 +1565,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
     if (!ipSec) {
       return;
     }
-    const pem = ipSec.serverCaPems ? ipSec.serverCaPems[0] : undefined;
+    const pem = ipSec.serverCaPems ? ipSec.serverCaPems[0] : null;
     const certId =
         ipSec.clientCertType === 'PKCS11Id' ? ipSec.clientCertPkcs11Id : '';
     this.setSelectedCerts_(pem, certId);
@@ -1577,7 +1580,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
     if (!openVpn) {
       return;
     }
-    const pem = openVpn.serverCaPems ? openVpn.serverCaPems[0] : undefined;
+    const pem = openVpn.serverCaPems ? openVpn.serverCaPems[0] : null;
     const certId =
         openVpn.clientCertType === 'PKCS11Id' ? openVpn.clientCertPkcs11Id : '';
     this.setSelectedCerts_(pem, certId);
@@ -1618,8 +1621,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
    * Sets the selected cert if |pem| (serverCa) or |certId| (user) is specified.
    * Otherwise sets a default value if no certificate is selected.
    */
-  private setSelectedCerts_(pem: string|undefined, certId: string|undefined):
-      void {
+  private setSelectedCerts_(pem: string|null, certId: string|null): void {
     if (pem) {
       const serverCa = this.serverCaCerts_.find(function(cert) {
         return cert.pemOrId === pem;
@@ -2021,7 +2023,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
     const propertiesToSet = Object.assign({}, this.configProperties_);
     // Do not set AutoConnect by default, the connection manager will set
     // it to true on a successful connection.
-    delete propertiesToSet.autoConnect;
+    propertiesToSet.autoConnect = null;
     if (this.guid) {
       propertiesToSet.guid = this.guid;
     }
@@ -2034,7 +2036,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
       assert(vpnConfig);
       // VPN.Host can be an IP address but will not be recognized as such if
       // there is initial whitespace, so trim it.
-      if (vpnConfig.host !== undefined) {
+      if (vpnConfig.host) {
         vpnConfig.host = vpnConfig.host.trim();
       }
       assert(vpnConfig.type);
@@ -2044,7 +2046,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
         this.setOpenVPNProperties_(propertiesToSet);
       } else {
         assert(propertiesToSet.typeConfig.vpn);
-        delete propertiesToSet.typeConfig.vpn.openVpn;
+        propertiesToSet.typeConfig.vpn.openVpn = null;
       }
       if (vpnType === VpnType.kIKEv2) {
         this.setVpnIkev2Properties_(propertiesToSet);
@@ -2052,14 +2054,14 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
         this.setVpnL2tpIpsecProperties_(propertiesToSet);
       } else {
         assert(propertiesToSet.typeConfig.vpn);
-        delete propertiesToSet.typeConfig.vpn.ipSec;
-        delete propertiesToSet.typeConfig.vpn.l2tp;
+        propertiesToSet.typeConfig.vpn.ipSec = null;
+        propertiesToSet.typeConfig.vpn.l2tp = null;
       }
       if (vpnType === VpnType.kWireGuard) {
         this.setWireGuardProperties_(propertiesToSet);
       } else {
         assert(propertiesToSet.typeConfig.vpn);
-        delete propertiesToSet.typeConfig.vpn.wireguard;
+        propertiesToSet.typeConfig.vpn.wireguard = null;
       }
     }
     return propertiesToSet;
@@ -2111,8 +2113,8 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
       ipsec.clientCertType = 'PKCS11Id';
       ipsec.clientCertPkcs11Id = this.getUserCertPkcs11Id_();
     } else {
-      delete ipsec.clientCertType;
-      delete ipsec.clientCertPkcs11Id;
+      ipsec.clientCertType = null;
+      ipsec.clientCertPkcs11Id = null;
     }
 
     if (ipsec.authenticationType === IpsecAuthType.EAP) {
@@ -2127,15 +2129,15 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
         saveCredentials: this.vpnSaveCredentials_,
         subjectAltNameMatch: [],
         useSystemCas: false,
-        anonymousIdentity: undefined,
-        clientCertPkcs11Id: undefined,
-        clientCertType: undefined,
-        inner: undefined,
-        serverCaPems: undefined,
-        subjectMatch: undefined,
+        anonymousIdentity: null,
+        clientCertPkcs11Id: null,
+        clientCertType: null,
+        inner: null,
+        serverCaPems: null,
+        subjectMatch: null,
       };
     } else {
-      delete ipsec.eap;
+      ipsec.eap = null;
     }
 
     ipsec.ikeVersion = 2;
@@ -2178,12 +2180,12 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
       gateway: this.ipAddressInput_,
       routingPrefix: 32,
       type: IPConfigType.kIPv4,
-      ipAddress: undefined,
-      excludedRoutes: undefined,
-      includedRoutes: undefined,
-      nameServers: undefined,
-      searchDomains: undefined,
-      webProxyAutoDiscoveryUrl: undefined,
+      ipAddress: null,
+      excludedRoutes: null,
+      includedRoutes: null,
+      nameServers: null,
+      searchDomains: null,
+      webProxyAutoDiscoveryUrl: null,
     };
     if (this.nameServersInput_) {
       propertiesToSet.nameServersConfigType = 'Static';
@@ -2191,14 +2193,14 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
           this.nameServersInput_.split(',');
     }
     if (this.wireguardKeyType_ === WireGuardKeyConfigType.USE_CURRENT) {
-      delete wireguard.privateKey;
+      wireguard.privateKey = null;
     } else if (this.wireguardKeyType_ === WireGuardKeyConfigType.GENERATE_NEW) {
       wireguard.privateKey = '';
     }
     assert(!!wireguard.peers);
     for (const peer of wireguard.peers) {
       if (peer.presharedKey === PLACEHOLDER_CREDENTIAL) {
-        delete peer.presharedKey;  // No modification
+        peer.presharedKey = null;  // No modification
       } else if (peer.presharedKey === undefined) {
         peer.presharedKey = '';  // Explicitly removed
       }
@@ -2222,9 +2224,9 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
     vpn.l2tp.saveCredentials = this.vpnSaveCredentials_;
 
     // Clear IPsec fields which are only for IKEv2.
-    delete vpn.ipSec.eap;
-    delete vpn.ipSec.localIdentity;
-    delete vpn.ipSec.remoteIdentity;
+    vpn.ipSec.eap = null;
+    vpn.ipSec.localIdentity = null;
+    vpn.ipSec.remoteIdentity = null;
   }
 
   /**
@@ -2310,7 +2312,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
     return [];
   }
 
-  private setError_(error: string|undefined): void {
+  private setError_(error: string|null): void {
     this.error = error || '';
   }
 
@@ -2328,7 +2330,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
           activeValue: OncMojo.getSecurityTypeString(
               managedProperties.typeProperties.wifi.security),
           policySource: policySource,
-          policyValue: undefined,
+          policyValue: null,
         };
       }
       case NetworkType.kEthernet: {
@@ -2337,7 +2339,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
           activeValue: OncMojo.getActiveString(
               managedProperties.typeProperties.ethernet.authentication),
           policySource: policySource,
-          policyValue: undefined,
+          policyValue: null,
         };
       }
     }

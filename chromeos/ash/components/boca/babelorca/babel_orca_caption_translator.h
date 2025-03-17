@@ -9,7 +9,10 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_translation_dispatcher.h"
 #include "components/live_caption/translation_util.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
@@ -40,6 +43,13 @@ class BabelOrcaCaptionTranslator {
   void UnsetCurrentLanguagesForTesting();
 
  private:
+  // wrapper function to invoke a request via the dispatcher.
+  void DispatchTranslationRequest(
+      const media::SpeechRecognitionResult& sr_result,
+      const std::string& source_language,
+      const std::string& target_language,
+      OnTranslationCallback callback);
+
   // Unwraps and formats output from the translation dispatcher, then passes
   // the result, if successful, to the callback.  Otherwise passes a nullopt
   // to indicate an error.
@@ -50,13 +60,22 @@ class BabelOrcaCaptionTranslator {
       const std::string& source_language,
       const std::string& target_language,
       bool is_final,
-      const std::string& result);
+      const captions::TranslateEvent& event);
+
+  // Safely pops the queue by doing nothing if the queue is empty. Otherwise
+  // it invokes the first callback in line and pops it off the queue.
+  void PopQueue();
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   std::optional<std::string> current_source_language_;
   std::optional<std::string> current_target_language_;
 
   ::captions::TranslationCache translation_cache_;
   std::unique_ptr<BabelOrcaTranslationDipsatcher> translation_dispatcher_;
+  base::queue<base::OnceCallback<void()>> dispatch_queue_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  bool pending_is_final_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   base::WeakPtrFactory<BabelOrcaCaptionTranslator> weak_ptr_factory_{this};
 };

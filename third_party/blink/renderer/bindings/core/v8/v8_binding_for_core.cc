@@ -796,59 +796,6 @@ ScriptState* ToScriptStateForMainWorld(ExecutionContext* context) {
                        DOMWrapperWorld::MainWorld(context->GetIsolate()));
 }
 
-v8::Local<v8::Function> GetEsIteratorMethod(v8::Isolate* isolate,
-                                            v8::Local<v8::Object> object,
-                                            ExceptionState& exception_state) {
-  const v8::Local<v8::Value> key = v8::Symbol::GetIterator(isolate);
-
-  TryRethrowScope rethrow_scope(isolate, exception_state);
-  v8::Local<v8::Value> iterator_method;
-  if (!object->Get(isolate->GetCurrentContext(), key)
-           .ToLocal(&iterator_method)) {
-    return v8::Local<v8::Function>();
-  }
-
-  if (iterator_method->IsNullOrUndefined())
-    return v8::Local<v8::Function>();
-
-  if (!iterator_method->IsFunction()) {
-    exception_state.ThrowTypeError("Iterator must be callable function");
-    return v8::Local<v8::Function>();
-  }
-
-  return iterator_method.As<v8::Function>();
-}
-
-v8::Local<v8::Object> GetEsIteratorWithMethod(
-    v8::Isolate* isolate,
-    v8::Local<v8::Function> getter_function,
-    v8::Local<v8::Object> object,
-    ExceptionState& exception_state) {
-  TryRethrowScope rethrow_scope(isolate, exception_state);
-  v8::Local<v8::Value> iterator;
-  if (!V8ScriptRunner::CallFunction(
-           getter_function, ToExecutionContext(isolate->GetCurrentContext()),
-           object, 0, nullptr, isolate)
-           .ToLocal(&iterator)) {
-    return v8::Local<v8::Object>();
-  }
-  if (!iterator->IsObject()) {
-    exception_state.ThrowTypeError("Iterator is not an object.");
-    return v8::Local<v8::Object>();
-  }
-  return iterator.As<v8::Object>();
-}
-
-bool HasCallableIteratorSymbol(v8::Isolate* isolate,
-                               v8::Local<v8::Value> value,
-                               ExceptionState& exception_state) {
-  if (!value->IsObject())
-    return false;
-  v8::Local<v8::Function> iterator_method =
-      GetEsIteratorMethod(isolate, value.As<v8::Object>(), exception_state);
-  return !iterator_method.IsEmpty();
-}
-
 v8::Isolate* ToIsolate(const LocalFrame* frame) {
   DCHECK(frame);
   return frame->GetWindowProxyManager()->GetIsolate();

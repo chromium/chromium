@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EMOJI_PICKER_READY, EmojiButton, EmojiGroupComponent, EmojiPickerApiProxy, EmojiPickerApp} from 'chrome://emoji-picker/emoji_picker.js';
+import type {EmojiGroupComponent} from 'chrome://emoji-picker/emoji_picker.js';
+import {EMOJI_PICKER_READY, EmojiPickerApiProxy, EmojiPickerApp} from 'chrome://emoji-picker/emoji_picker.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -125,8 +126,8 @@ const ACTIVE_TEXT_GROUP_CLASS = 'text-group-active';
  */
 export function isGroupButtonActive(element: Element|null): boolean {
   assert(element, 'group button element should not be null');
-  return element!.classList.contains(ACTIVE_EMOJI_GROUP_CLASS) ||
-      element!.classList.contains(ACTIVE_TEXT_GROUP_CLASS);
+  return element.classList.contains(ACTIVE_EMOJI_GROUP_CLASS) ||
+      element.classList.contains(ACTIVE_TEXT_GROUP_CLASS);
 }
 
 /**
@@ -138,8 +139,8 @@ export function isGroupButtonActive(element: Element|null): boolean {
 export function initialiseEmojiPickerForTest(
     incognito = false, localStorage: Array<{key: string, value: string}> = []) {
   const setIncognito = (incognito: boolean) => {
-    EmojiPickerApiProxy.getInstance().isIncognitoTextField = async () =>
-        ({incognito});
+    EmojiPickerApiProxy.getInstance().isIncognitoTextField = () =>
+        (Promise.resolve({incognito}));
   };
 
   // Set default incognito state to False.
@@ -165,8 +166,7 @@ export function initialiseEmojiPickerForTest(
     window.localStorage.setItem(key, value);
   }
 
-  let emojiPicker =
-      document.createElement('emoji-picker-app') as EmojiPickerApp;
+  let emojiPicker = document.createElement('emoji-picker-app');
 
   const findInEmojiPicker = (...path: string[]) =>
       deepQuerySelector(emojiPicker, path);
@@ -216,8 +216,7 @@ export function initialiseEmojiPickerForTest(
 
     const variantButtons =
         Array.from(variants?.shadowRoot!.querySelectorAll('emoji-button'));
-    const component =
-        variantButtons.find(button => (button as EmojiButton).emoji === text);
+    const component = variantButtons.find(button => (button).emoji === text);
 
     return component?.shadowRoot!.querySelector<HTMLElement>('#emoji-button') ??
         null;

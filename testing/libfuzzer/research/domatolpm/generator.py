@@ -49,7 +49,27 @@ import grammar
 
 def to_snake_case(name):
   name = re.sub(r'([A-Z]{2,})([A-Z][a-z])', r'\1_\2', name)
-  return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', name, sys.maxsize).lower()
+  return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', name, count=sys.maxsize).lower()
+
+
+def GetProtoId(name):
+  # We reserve ids [0,15]
+  # Protobuf implementation reserves [19000,19999]
+  # Max proto id is 2^29-1
+  # 32-bit fnv-1a
+  fnv = 2166136261
+  for c in name:
+    fnv = fnv ^ ord(c)
+    fnv = (fnv * 16777619) & 0xffffffff
+  # xor-fold to 29-bits
+  fnv = (fnv >> 29) ^ (fnv & 0x1fffffff)
+  # now use a modulo to reduce to [0,2^29-1 - 1016]
+  fnv = fnv % 536869895
+  # now we move out the disallowed ranges
+  fnv = fnv + 15
+  if fnv >= 19000:
+    fnv += 1000
+  return fnv
 
 
 DOMATO_INT_TYPE_TO_CPP_INT_TYPE = {
@@ -70,8 +90,8 @@ DOMATO_TO_PROTO_BUILT_IN = {
     'uint32': 'uint32',
     'int8': 'int32',
     'uint8': 'uint32',
-    'int16': 'int16',
-    'uint16': 'uint16',
+    'int16': 'int32',
+    'uint16': 'uint32',
     'int64': 'int64',
     'uint64': 'uint64',
     'float': 'float',
@@ -374,11 +394,12 @@ class DomatoBuilder:
     msg: ProtoMessage
     func: CppFunctionHandler
 
-  def __init__(self, g: grammar.Grammar):
+  def __init__(self, g: grammar.Grammar, stabilize_grammar=False):
     self.handlers: typing.Dict[str, DomatoBuilder.Entry] = {}
     self.backrefs: typing.Dict[str,
                                typing.List[str]] = collections.defaultdict(list)
     self.grammar = g
+    self.stabilize_grammar = stabilize_grammar
     if self.grammar._root and self.grammar._root != 'root':
       self.root = self.grammar._root
     else:
@@ -476,13 +497,17 @@ class DomatoBuilder:
     return True
 
   def get_root(self) -> typing.Tuple[ProtoMessage, CppFunctionHandler]:
-    root_handler = f'{CPP_HANDLER_PREFIX}{self.root}'
-    fuzz_case = ProtoMessage(name='fuzzcase',
-                             fields=[
-                                 ProtoField(type=ProtoType(name=self.root),
-                                            name='root',
-                                            proto_id=1)
-                             ])
+    # If the root is 'line', we actually want to generate an arbitrary number
+    # of lines. In this case, we'll invoke the special proto message 'lines'.
+    # In any other case, we just use the existing root, which has been defined
+    # during grammar construction.
+    root = self.root
+    if self.root == 'line':
+      root = 'lines'
+    root_handler = f'{CPP_HANDLER_PREFIX}{root}'
+    fuzz_case = ProtoMessage(
+        name='fuzzcase',
+        fields=[ProtoField(type=ProtoType(name=root), name='root', proto_id=1)])
     fuzz_fct = CppProtoMessageFunctionHandler(
         name='fuzzcase',
         exprs=[CppHandlerCallExpr(handler=root_handler, field_name='root')])
@@ -530,10 +555,20 @@ class DomatoBuilder:
       should_continue |= self._remove_unlinked_nodes()
       should_continue |= self._merge_proto_messages()
       should_continue |= self._merge_oneofs()
-      should_continue |= self._split_oneofs()
+    if self.stabilize_grammar:
+      self._hash_line_proto_ids()
     self._oneofs_reorderer()
     self._oneof_message_renamer()
     self._message_renamer()
+
+  def _hash_line_proto_ids(self):
+    if 'line' not in self.handlers:
+      return
+    rules = self.grammar._creators['line']
+    for (rule, field) in zip(rules, self.handlers['line'].msg.fields):
+      concat = ''.join(p['text'] if p['type'] == 'text' else p['tagname']
+                       for p in rule['parts'])
+      field.proto_id = GetProtoId(concat)
 
   def _add(self, message: ProtoMessage,
            handler: CppProtoMessageFunctionHandler):
@@ -637,7 +672,14 @@ class DomatoBuilder:
 
       creator = None
       if rule['type'] == 'code' and ret_vars > 0:
-        creator = {'var_type': creator_name, 'var_prefix': 'var'}
+        creates = rule['creates']
+        # For some reason, Domato sets a dictionary when the creator is a line
+        # and a list when its a helper. Thus the unpacking code below. The
+        # assertion ensures we are not dealing with another unknown format.
+        if isinstance(creates, list):
+          assert len(creates) == 1
+          creates = creates[0]
+        creator = {'var_type': creates['tagname'], 'var_prefix': 'var'}
       proto_type = to_proto_type(creator_name)
       rule_msg = ProtoMessage(name=f'{proto_type}_{rule_id}',
                               fields=proto_fields)
@@ -762,7 +804,8 @@ class DomatoBuilder:
         continue
       cases = {}
       for proto_id, field in enumerate(entry.msg.fields, start=1):
-        field.proto_id = proto_id
+        if entry.msg.name != 'line':
+          field.proto_id = proto_id
         exprs = entry.func.cases.pop(field.name)
         field.name = to_proto_field_name(f'field_{proto_id}')
         new_contents = []
@@ -1276,6 +1319,13 @@ def main():
                       '--generated-dir',
                       required=True,
                       help='The path to the target gen directory.')
+  parser.add_argument('-s',
+                      '--stabilize-grammar',
+                      required=False,
+                      default=False,
+                      action='store_true',
+                      help='Whether we should stabilize the proto generation.'
+                      'Grammars should not have duplicate lines')
 
   args = parser.parse_args()
   g = grammar.Grammar()
@@ -1284,7 +1334,7 @@ def main():
   template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                               'templates')
   environment = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
-  builder = DomatoBuilder(g)
+  builder = DomatoBuilder(g, args.stabilize_grammar)
   builder.parse_grammar()
   builder.simplify()
   files = builder.split_files(f'{args.file_format}_sub', file_num=12)

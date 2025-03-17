@@ -18,6 +18,7 @@ namespace blink {
 class MediaQuerySet;
 class CSSParserContext;
 class ContainerQueryParser;
+class CSSIfParser;
 
 class CORE_EXPORT MediaQueryParser {
   STACK_ALLOCATED();
@@ -53,10 +54,32 @@ class CORE_EXPORT MediaQueryParser {
     // Whether the features support range syntax. This is typically false for
     // style container queries.
     virtual bool SupportsRange() const = 0;
+
+    // Whether the features are evaluated in an element context
+    // (true for container queries, false for media queries).
+    virtual bool SupportsElementDependent() const = 0;
+  };
+
+  class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
+    STACK_ALLOCATED();
+
+   public:
+    MediaQueryFeatureSet() = default;
+
+    bool IsAllowed(const AtomicString& feature) const override;
+    bool IsAllowedWithoutValue(
+        const AtomicString& feature,
+        const ExecutionContext* execution_context) const override;
+    bool IsCaseSensitive(const AtomicString& feature) const override {
+      return false;
+    }
+    bool SupportsRange() const override { return true; }
+    bool SupportsElementDependent() const override { return false; }
   };
 
  private:
   friend class ContainerQueryParser;
+  friend class CSSIfParser;
 
   enum ParserType {
     kMediaQuerySetParser,

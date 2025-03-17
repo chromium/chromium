@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/public/cpp/shelf_model.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -104,8 +104,8 @@ void LaunchPluginVmAppImpl(Profile* profile,
   request.set_vm_name(registration->VmName());
   request.set_container_name(registration->ContainerName());
   request.set_desktop_file_id(registration->DesktopFileId());
-  base::ranges::move(file_paths, google::protobuf::RepeatedFieldBackInserter(
-                                     request.mutable_files()));
+  std::ranges::move(file_paths, google::protobuf::RepeatedFieldBackInserter(
+                                    request.mutable_files()));
 
   ash::CiceroneClient::Get()->LaunchContainerApplication(
       std::move(request),

@@ -4,6 +4,7 @@
 
 #include "services/network/network_service.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -17,7 +18,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -28,7 +28,6 @@
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -89,9 +88,9 @@
 #include "net/http/http_auth_handler_negotiate.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "services/network/mock_mojo_dhcp_wpad_url_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
 #include "services/network/test_mojo_proxy_resolver_factory.h"
@@ -273,7 +272,7 @@ TEST_F(NetworkServiceTest, AuthDefaultParams) {
 #if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
   ASSERT_TRUE(auth_handler_factory->IsSchemeAllowedForTesting(
       net::kNegotiateAuthScheme));
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ("", auth_handler_factory->GetNegotiateLibraryNameForTesting());
 #endif
 #endif  // BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
@@ -725,8 +724,8 @@ TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
   auto FindProviderFeature =
       [](std::string_view provider) -> base::test::FeatureRef {
     const auto it =
-        base::ranges::find(net::DohProviderEntry::GetList(), provider,
-                           &net::DohProviderEntry::provider);
+        std::ranges::find(net::DohProviderEntry::GetList(), provider,
+                          &net::DohProviderEntry::provider);
     CHECK(it != net::DohProviderEntry::GetList().end())
         << "Provider named \"" << provider
         << "\" not found in DoH provider list.";
@@ -1158,7 +1157,7 @@ TEST_P(NetworkServiceCookieTest, CookieEncryptionProvider) {
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/377940976): Remove this once the background sequence runner
   // can be fully drained of tasks during network context shutdown.
-  params->enable_locking_cookie_database = false;
+  service()->disable_exclusive_cookie_database_locking_for_testing();
 #endif  // BUILDFLAG(IS_WIN)
 
   mojo::Remote<mojom::NetworkContext> network_context;
@@ -1947,11 +1946,11 @@ TEST_F(NetworkServiceNetworkDelegateTest,
       net::ProxyConfigWithAnnotation(net::ProxyConfig::CreateFromCustomPacURL(
                                          GURL("https://not.a.real.proxy.test")),
                                      kTestPacFetchAnnotation);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   context_params->dhcp_wpad_url_client =
       network::MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(
           std::string());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   CreateNetworkContext(std::move(context_params));
 
   // Load an arbitrary URL. This should trigger the PAC fetch.

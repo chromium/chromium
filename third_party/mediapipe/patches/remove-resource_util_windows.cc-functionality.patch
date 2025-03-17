@@ -1,27 +1,27 @@
-From abea986e218e8c512da9c76b2990c110ac8cff20 Mon Sep 17 00:00:00 2001
-From: Clark DuVall <cduvall@chromium.org>
-Date: Mon, 15 Apr 2024 10:52:49 -0700
-Subject: [PATCH] remove resource_util_windows.cc functionality
+From 1e93ad4a477c57390993434179fa5754e8947356 Mon Sep 17 00:00:00 2001
+From: Victor Hugo Vianna Silva <victorvianna@google.com>
+Date: Wed, 22 Jan 2025 16:22:53 +0000
+Subject: [PATCH] commit
 
 ---
  .../mediapipe/util/resource_util_windows.cc   | 63 +------------------
  1 file changed, 3 insertions(+), 60 deletions(-)
 
 diff --git a/third_party/mediapipe/src/mediapipe/util/resource_util_windows.cc b/third_party/mediapipe/src/mediapipe/util/resource_util_windows.cc
-index 6d620e58c498f..536314315d447 100644
+index e28094eef367d..5e3b202379bf2 100644
 --- a/third_party/mediapipe/src/mediapipe/util/resource_util_windows.cc
 +++ b/third_party/mediapipe/src/mediapipe/util/resource_util_windows.cc
-@@ -12,79 +12,22 @@
+@@ -12,80 +12,23 @@
  // See the License for the specific language governing permissions and
  // limitations under the License.
  
 -#include <fstream>
 -
 -#include "absl/flags/flag.h"
+-#include "absl/status/statusor.h"
 -#include "mediapipe/framework/deps/file_path.h"
 -#include "mediapipe/framework/port/file_helpers.h"
 -#include "mediapipe/framework/port/singleton.h"
--#include "mediapipe/framework/port/statusor.h"
 -#include "tools/cpp/runfiles/runfiles.h"
 -
 -ABSL_FLAG(
@@ -75,7 +75,8 @@ index 6d620e58c498f..536314315d447 100644
  
  }  // namespace internal
  
- absl::StatusOr<std::string> PathToResourceAsFile(const std::string& path) {
+ absl::StatusOr<std::string> PathToResourceAsFile(const std::string& path,
+                                                  bool /*shadow_copy*/) {
 -  std::string qualified_path = path;
 -  if (absl::StartsWith(qualified_path, "./")) {
 -    qualified_path = "mediapipe" + qualified_path.substr(1);
@@ -95,5 +96,5 @@ index 6d620e58c498f..536314315d447 100644
  
  }  // namespace mediapipe
 -- 
-2.44.0.683.g7961c838ac-goog
+2.48.0.rc2.279.g1de40edade-goog
 

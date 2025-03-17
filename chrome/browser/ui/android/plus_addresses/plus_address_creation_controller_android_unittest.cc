@@ -104,6 +104,9 @@ class PlusAddressCreationControllerAndroidEnabledTest
         }));
 
     PlusAddressCreationControllerAndroid::CreateForWebContents(web_contents());
+
+    ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
+        .WillByDefault(Return(true));
   }
 
   void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
@@ -144,12 +147,8 @@ class PlusAddressCreationControllerAndroidEnabledTest
 // Tests that accepting the bottomsheet calls Autofill to fill the plus address
 // and records metrics.
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kPlusAddressUserOnboardingEnabled}, {});
   base::UserActionTester user_action_tester;
 
-  ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
-      .WillByDefault(Return(true));
   // The setting service is not called if the notice is already accepted.
   EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice).Times(0);
 
@@ -189,46 +188,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
             1);
 }
 
-// Tests that no notice is shown if the onboarding feature is disabled.
-TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
-       NoNoticeIfOnboardingFeatureIsDisabled) {
-  std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
-
-  // Simulate that the user has created 3 plus profiles. This is only relevant
-  // for the HaTS survey testing.
-  plus_address_service().add_plus_profile(
-      test::CreatePlusProfile("example1@gmail.com", /*is_confirmed=*/true));
-  plus_address_service().add_plus_profile(
-      test::CreatePlusProfile("example2@gmail.com", /*is_confirmed=*/true));
-  plus_address_service().add_plus_profile(
-      test::CreatePlusProfile("example3@gmail.com", /*is_confirmed=*/true));
-
-  ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
-      .WillByDefault(Return(false));
-  EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice).Times(0);
-
-  controller().set_suppress_ui_for_testing(true);
-  base::test::TestFuture<const std::string&> future;
-  controller().OfferCreation(
-      url::Origin::Create(GURL("https://mattwashere.example")),
-      /*is_manual_fallback=*/false, future.GetCallback());
-  FastForwardBy(kDuration);
-  EXPECT_CALL(
-      autofill_client(),
-      TriggerPlusAddressUserPerceptionSurvey(
-          plus_addresses::hats::SurveyType::kCreatedMultiplePlusAddresses));
-  controller().OnConfirmed();
-  EXPECT_TRUE(future.IsReady());
-}
-
-// Tests that the notice is shown and its acceptance registered if the
-// `kPlusAddressUserOnboardingEnabled` feature is enabled and the notice has not
-// been accepted before.
+// Tests that the notice is shown and its acceptance registered if the notice
+// has not been accepted before.
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeAccept) {
-  base::test::ScopedFeatureList features_{
-      features::kPlusAddressUserOnboardingEnabled};
-
   ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
       .WillByDefault(Return(false));
   EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice);
@@ -269,9 +231,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeAccept) {
 // Tests that the notice is shown if the  `kPlusAddressUserOnboardingEnabled`,
 // but cancelling the dialog does not call the settings service.
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeCancel) {
-  base::test::ScopedFeatureList features_{
-      features::kPlusAddressUserOnboardingEnabled};
-
   ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
       .WillByDefault(Return(false));
   EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice).Times(0);
@@ -309,8 +268,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeCancel) {
 // user tries again to create the plus address.
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
        AcceptAfterErrorWithNotice) {
-  base::test::ScopedFeatureList features_{
-      features::kPlusAddressUserOnboardingEnabled};
   base::UserActionTester user_action_tester;
 
   ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
@@ -391,7 +348,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
   base::UserActionTester user_action_tester;
-
   controller().set_suppress_ui_for_testing(true);
   base::test::TestFuture<const std::string&> future;
   controller().OfferCreation(
@@ -434,7 +390,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
   base::UserActionTester user_action_tester;
-
   controller().set_suppress_ui_for_testing(true);
   base::test::TestFuture<const std::string&> future;
 
@@ -485,9 +440,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, TriesAgainToReserve) {
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
        CancelAfterAffiliationError) {
   base::UserActionTester user_action_tester;
-  ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
-      .WillByDefault(Return(true));
-
   controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> future;
@@ -514,9 +466,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
        AcceptedAfterAffiliationError) {
   base::UserActionTester user_action_tester;
-  ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
-      .WillByDefault(Return(true));
-
   controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> future;
@@ -543,9 +492,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
        AcceptedAfterQuotaError) {
   base::UserActionTester user_action_tester;
-  ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
-      .WillByDefault(Return(true));
-
   controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> future;

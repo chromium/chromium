@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/explainers-by-googlers/prompt-api
+// https://github.com/webmachinelearning/prompt-api
 
 dictionary AILanguageModelCloneOptions {
   AbortSignal signal;
@@ -24,7 +24,7 @@ interface AILanguageModel : EventTarget {
     RaisesException
   ]
   Promise<DOMString> prompt(
-    DOMString input,
+    AILanguageModelPromptInput input,
     optional AILanguageModelPromptOptions options = {}
   );
   [
@@ -33,7 +33,7 @@ interface AILanguageModel : EventTarget {
     RaisesException
   ]
   ReadableStream promptStreaming(
-    DOMString input,
+    AILanguageModelPromptInput input,
     optional AILanguageModelPromptOptions options = {}
   );
 
@@ -58,6 +58,8 @@ interface AILanguageModel : EventTarget {
   readonly attribute unsigned long topK;
   [Measure]
   readonly attribute float temperature;
+  [Measure]
+  readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
 
   attribute EventHandler oncontextoverflow;
 
@@ -72,5 +74,5 @@ interface AILanguageModel : EventTarget {
     CallWith=ScriptState,
     RaisesException
   ]
-  void destroy();
+  undefined destroy();
 };

@@ -74,10 +74,6 @@
       Symbol: "kIdFileUploadButton",
     },
     {
-      name: "optgroup-label",
-      Symbol: "kIdOptGroupLabel",
-    },
-    {
       name: "select-options",
       Symbol: "kSelectOptions",
     },
@@ -165,6 +161,18 @@
     {
       name: "-internal-permission-text",
       Symbol: "kPseudoInternalPermissionTextSpan",
+    },
+    {
+      name: "-internal-optgroup-label",
+      Symbol: "kIdOptGroupLabel",
+    },
+    {
+      name: "-internal-option-label-container",
+      Symbol: "kOptionLabelContainer",
+    },
+    {
+      name: "-internal-option-slot",
+      Symbol: "kOptionSlot",
     },
   ],
 }

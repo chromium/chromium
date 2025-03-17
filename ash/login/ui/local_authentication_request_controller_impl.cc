@@ -21,6 +21,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -309,7 +310,7 @@ void LocalAuthenticationWithPinControllerImpl::MoveToTheCenter() {
 }
 
 void LocalAuthenticationWithPinControllerImpl::OnPasswordSubmit(
-    const std::u16string& password) {
+    std::u16string_view password) {
   if (IsSucceedState()) {
     return;
   }
@@ -341,7 +342,7 @@ void LocalAuthenticationWithPinControllerImpl::OnPasswordSubmit(
 }
 
 void LocalAuthenticationWithPinControllerImpl::OnPinSubmit(
-    const std::u16string& pin) {
+    std::u16string_view pin) {
   if (IsSucceedState()) {
     return;
   }

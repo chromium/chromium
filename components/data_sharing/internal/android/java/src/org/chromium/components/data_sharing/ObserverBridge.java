@@ -7,6 +7,7 @@ package org.chromium.components.data_sharing;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * A wrapper for DataSharingService.Observer
@@ -16,6 +17,7 @@ import org.chromium.base.ObserverList;
  * is not registered to the Java DataSharingService, this implements the DataSharingService.Observer
  * only for readability. The native observer is registered to the native service.
  */
+@NullMarked
 public class ObserverBridge implements DataSharingService.Observer {
     ObserverList<DataSharingService.Observer> mJavaObservers = new ObserverList<>();
 

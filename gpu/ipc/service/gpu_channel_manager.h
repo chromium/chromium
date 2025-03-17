@@ -212,8 +212,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   Scheduler* scheduler() const { return scheduler_; }
 
   bool use_passthrough_cmd_decoder() const {
-    return gpu_preferences_.use_passthrough_cmd_decoder &&
-           gles2::PassthroughCommandDecoderSupported();
+    return gpu_preferences_.use_passthrough_cmd_decoder;
   }
 
   // Retrieve GPU Resource consumption statistics for the task manager

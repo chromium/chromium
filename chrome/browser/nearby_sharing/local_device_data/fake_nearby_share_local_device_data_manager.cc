@@ -17,12 +17,9 @@ FakeNearbyShareLocalDeviceDataManager::Factory::~Factory() = default;
 
 std::unique_ptr<NearbyShareLocalDeviceDataManager>
 FakeNearbyShareLocalDeviceDataManager::Factory::CreateInstance(
-    PrefService* pref_service,
-    NearbyShareClientFactory* http_client_factory,
-    NearbyShareProfileInfoProvider* profile_info_provider) {
-  latest_pref_service_ = pref_service;
+    user_manager::User& user,
+    NearbyShareClientFactory* http_client_factory) {
   latest_http_client_factory_ = http_client_factory;
-  latest_profile_info_provider_ = profile_info_provider;
 
   auto instance = std::make_unique<FakeNearbyShareLocalDeviceDataManager>(
       kDefaultDeviceName);

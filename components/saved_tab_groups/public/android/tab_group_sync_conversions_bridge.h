@@ -34,6 +34,13 @@ class TabGroupSyncConversionsBridge {
       JNIEnv* env,
       const std::optional<LocalTabGroupID>& group_id);
 
+  // Fills in into a native SavedTabGroup object referred by its native pointer
+  // from its Java counterpart.
+  static void FillNativeSavedTabGroup(
+      JNIEnv* env,
+      const jlong native_saved_tab_group_ptr,
+      const JavaParamRef<jobject>& j_saved_tab_group);
+
  private:
   TabGroupSyncConversionsBridge() = default;
 };

@@ -66,21 +66,6 @@ input::NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
       scan_code, unicode_char, is_system_key);
 }
 
-// Takes a std::vector of Rect objects and populates a float vector with each
-// rectangle's left, top, right and bottom points.
-std::vector<float> RectVectorToFloatVector(
-    const std::vector<gfx::Rect>& rects) {
-  std::vector<float> points;
-  points.reserve(rects.size() * 4);
-  for (auto& rect : rects) {
-    points.push_back(rect.x());
-    points.push_back(rect.y());
-    points.push_back(rect.right());
-    points.push_back(rect.bottom());
-  }
-  return points;
-}
-
 }  // anonymous namespace
 
 jlong JNI_ImeAdapterImpl_Init(JNIEnv* env,
@@ -456,10 +441,6 @@ void ImeAdapterAndroid::OnStylusWritingGestureActionCompleted(
 }
 
 void ImeAdapterAndroid::SetImeRenderWidgetHost() {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kCursorAnchorInfoMojoPipe)) {
-    return;
-  }
   if (!rwhva_) {
     return;
   }
@@ -498,31 +479,6 @@ void ImeAdapterAndroid::SetEditableSelectionOffsets(
     return;
 
   input_handler->SetEditableSelectionOffsets(start, end);
-}
-
-void ImeAdapterAndroid::SetBounds(
-    const std::vector<gfx::Rect>& character_bounds,
-    const bool character_bounds_changed,
-    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
-  if (!character_bounds_changed && !line_bounds.has_value()) {
-    return;
-  }
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
-  if (obj.is_null()) {
-    return;
-  }
-
-  Java_ImeAdapterImpl_setBounds(
-      env, obj,
-      character_bounds_changed
-          ? base::android::ToJavaFloatArray(
-                env, RectVectorToFloatVector(character_bounds))
-          : nullptr,
-      line_bounds.has_value()
-          ? base::android::ToJavaFloatArray(
-                env, RectVectorToFloatVector(line_bounds.value()))
-          : nullptr);
 }
 
 void ImeAdapterAndroid::SetComposingRegion(JNIEnv*,

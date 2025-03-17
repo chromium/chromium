@@ -70,6 +70,8 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
 
   virtual void HandleOsRegistration(OsRegistration) = 0;
 
+  virtual void UpdateLastNavigationTime(base::Time navigation_time) = 0;
+
   // Get all sources that are currently stored in this partition. Used for
   // populating WebUI.
   virtual void GetActiveSourcesForWebUI(

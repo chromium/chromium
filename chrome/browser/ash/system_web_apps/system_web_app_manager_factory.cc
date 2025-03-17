@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -68,9 +66,7 @@ bool SystemWebAppManagerFactory::ServiceIsCreatedWithBrowserContext() const {
 
 content::BrowserContext* SystemWebAppManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  // SWAM is guarded by the feature flag in kiosk mode, disabled by default.
-  if (!base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps) &&
-      chromeos::IsKioskSession()) {
+  if (chromeos::IsKioskSession()) {
     return nullptr;
   }
 

@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.readaloud.exceptions;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.readaloud.exceptions.ReadAloudException.ReadAloudErrorCode;
 
 /** Represents a ReadAloud error caused by network issues */
+@NullMarked
 public class ReadAloudNetworkException extends ReadAloudException {
 
     private int mChromeErrorCode;

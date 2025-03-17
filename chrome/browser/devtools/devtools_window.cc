@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/devtools_window.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string_view>
@@ -14,12 +15,12 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -38,7 +39,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
@@ -97,10 +98,7 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-// This should be after all other #includes.
-#if defined(_WINDOWS_)  // Detect whether windows.h was included.
 #include "base/win/windows_h_disallowed.h"
-#endif  // defined(_WINDOWS_)
 
 using blink::WebInputEvent;
 using content::BrowserThread;
@@ -129,29 +127,13 @@ static const char kJSFrontendURL[] = "devtools://devtools/bundled/js_app.html";
 static const char kFallbackFrontendURL[] =
     "devtools://devtools/bundled/inspector.html";
 
-bool FindInspectedBrowserAndTabIndex(
-    WebContents* inspected_web_contents, Browser** browser, int* tab) {
-  if (!inspected_web_contents)
-    return false;
-
-  for (Browser* b : *BrowserList::GetInstance()) {
-    int tab_index =
-        b->tab_strip_model()->GetIndexOfWebContents(inspected_web_contents);
-    if (tab_index != TabStripModel::kNoTab) {
-      *browser = b;
-      *tab = tab_index;
-      return true;
-    }
-  }
-  return false;
-}
-
 void SetPreferencesFromJson(Profile* profile, const std::string& json) {
-  std::optional<base::Value> parsed = base::JSONReader::Read(json);
-  if (!parsed || !parsed->is_dict())
+  std::optional<base::Value::Dict> parsed = base::JSONReader::ReadDict(json);
+  if (!parsed) {
     return;
+  }
   ScopedDictPrefUpdate update(profile->GetPrefs(), prefs::kDevToolsPreferences);
-  for (auto dict_value : parsed->GetDict()) {
+  for (auto dict_value : *parsed) {
     if (!dict_value.second.is_string())
       continue;
     update->Set(dict_value.first, std::move(dict_value.second));
@@ -244,12 +226,8 @@ void DevToolsToolboxDelegate::WebContentsDestroyed() {
 BrowserWindow* DevToolsToolboxDelegate::GetInspectedBrowserWindow() {
   if (!inspected_web_contents_)
     return nullptr;
-  Browser* browser = nullptr;
-  int tab = 0;
-  if (FindInspectedBrowserAndTabIndex(inspected_web_contents_.get(), &browser,
-                                      &tab))
-    return browser->window();
-  return nullptr;
+  Browser* browser = chrome::FindBrowserWithTab(inspected_web_contents_.get());
+  return browser ? browser->window() : nullptr;
 }
 
 // static
@@ -490,7 +468,7 @@ DevToolsWindow::~DevToolsWindow() {
   owned_toolbox_web_contents_.reset();
 
   DevToolsWindows* instances = g_devtools_window_instances.Pointer();
-  auto it = base::ranges::find(*instances, this);
+  auto it = std::ranges::find(*instances, this);
   CHECK(it != instances->end(), base::NotFatalUntil::M130);
   instances->erase(it);
 
@@ -971,13 +949,11 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
     return;
   if (is_docked_) {
     DCHECK(can_dock_);
-    Browser* inspected_browser = nullptr;
-    int inspected_tab_index = -1;
-    FindInspectedBrowserAndTabIndex(GetInspectedWebContents(),
-                                    &inspected_browser,
-                                    &inspected_tab_index);
+    content::WebContents* inspected_web_contents = GetInspectedWebContents();
+    DCHECK(inspected_web_contents);
+    Browser* inspected_browser =
+        chrome::FindBrowserWithTab(inspected_web_contents);
     DCHECK(inspected_browser);
-    DCHECK_NE(-1, inspected_tab_index);
 
     RegisterModalDialogManager(inspected_browser);
 
@@ -986,6 +962,9 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
     main_web_contents_->SetDelegate(this);
 
     TabStripModel* tab_strip_model = inspected_browser->tab_strip_model();
+    int inspected_tab_index =
+        tab_strip_model->GetIndexOfWebContents(inspected_web_contents);
+    DCHECK_NE(TabStripModel::kNoTab, inspected_tab_index);
     tab_strip_model->ActivateTabAt(
         inspected_tab_index,
         TabStripUserGestureDetails(
@@ -1213,11 +1192,8 @@ DevToolsWindow* DevToolsWindow::Create(
 
   if (inspected_web_contents) {
     // Check for a place to dock.
-    Browser* browser = nullptr;
-    int tab;
-    if (!FindInspectedBrowserAndTabIndex(inspected_web_contents, &browser,
-                                         &tab) ||
-        !browser->is_type_normal()) {
+    Browser* browser = chrome::FindBrowserWithTab(inspected_web_contents);
+    if (!browser || !browser->is_type_normal()) {
       can_dock = false;
     }
   }
@@ -1774,10 +1750,13 @@ void DevToolsWindow::ShowCertificateViewer(const std::string& cert_chain) {
 
   WebContents* inspected_contents =
       is_docked_ ? GetInspectedWebContents() : main_web_contents_.get();
-  Browser* browser = nullptr;
-  int tab = 0;
-  if (!FindInspectedBrowserAndTabIndex(inspected_contents, &browser, &tab))
+  if (!inspected_contents) {
     return;
+  }
+  Browser* browser = chrome::FindBrowserWithTab(inspected_contents);
+  if (!browser) {
+    return;
+  }
   gfx::NativeWindow parent = browser->window()->GetNativeWindow();
   ::ShowCertificateViewer(inspected_contents, parent, cert.get());
 }
@@ -1854,12 +1833,12 @@ void DevToolsWindow::CreateDevToolsBrowser() {
 }
 
 BrowserWindow* DevToolsWindow::GetInspectedBrowserWindow() {
-  Browser* browser = nullptr;
-  int tab;
-  return FindInspectedBrowserAndTabIndex(GetInspectedWebContents(), &browser,
-                                         &tab)
-             ? browser->window()
-             : nullptr;
+  content::WebContents* inspected_web_contents = GetInspectedWebContents();
+  if (!inspected_web_contents) {
+    return nullptr;
+  }
+  Browser* browser = chrome::FindBrowserWithTab(inspected_web_contents);
+  return browser ? browser->window() : nullptr;
 }
 
 void DevToolsWindow::DoAction(const DevToolsToggleAction& action) {

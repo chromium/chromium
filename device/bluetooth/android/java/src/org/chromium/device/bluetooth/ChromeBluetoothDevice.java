@@ -7,6 +7,7 @@ package org.chromium.device.bluetooth;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.bluetooth.BluetoothDevice;
+import android.os.ParcelUuid;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -82,6 +83,12 @@ final class ChromeBluetoothDevice {
         return mDevice.getBluetoothClass_getDeviceClass();
     }
 
+    // Implements BluetoothDeviceAndroid::GetType.
+    @CalledByNative
+    private int getType() {
+        return mDevice.getType();
+    }
+
     // Implements BluetoothDeviceAndroid::GetAddress.
     @CalledByNative
     private String getAddress() {
@@ -98,6 +105,20 @@ final class ChromeBluetoothDevice {
     @CalledByNative
     private boolean isPaired() {
         return mDevice.getBondState() == BluetoothDevice.BOND_BONDED;
+    }
+
+    // Implements BluetoothDeviceAndroid::GetUUIDs for classic devices.
+    @CalledByNative
+    private String[] getUuids() {
+        ParcelUuid[] uuids = mDevice.getUuids();
+        if (uuids == null) {
+            return new String[0];
+        }
+        String[] uuidStrings = new String[uuids.length];
+        for (int i = 0; i < uuids.length; i++) {
+            uuidStrings[i] = uuids[i].toString();
+        }
+        return uuidStrings;
     }
 
     // Implements BluetoothDeviceAndroid::CreateGattConnectionImpl.

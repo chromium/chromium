@@ -6,17 +6,19 @@ package org.chromium.components.stylus_handwriting;
 
 import static android.view.MotionEvent.TOOL_TYPE_STYLUS;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Build.VERSION_CODES;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewUtils;
 
 /**
@@ -26,6 +28,7 @@ import org.chromium.ui.base.ViewUtils;
  * view writability.
  */
 @RequiresApi(VERSION_CODES.TIRAMISU)
+@NullMarked
 class StylusHandwritingInitiator {
 
     private static class StylusTouchData {
@@ -41,7 +44,7 @@ class StylusHandwritingInitiator {
         }
     }
 
-    @Nullable private StylusTouchData mStylusTouchData;
+    private @Nullable StylusTouchData mStylusTouchData;
     private final int mHandwritingSlopPx;
     private final InputMethodManager mInputMethodManager;
 
@@ -51,7 +54,7 @@ class StylusHandwritingInitiator {
         mHandwritingSlopPx = ViewUtils.dpToPx(ContextUtils.getApplicationContext(), 2);
     }
 
-    boolean onTouchEvent(@NonNull MotionEvent motionEvent, View view) {
+    boolean onTouchEvent(MotionEvent motionEvent, View view) {
         // Return false early if the feature is not enabled
         if (!isStylusHandwritingFeatureEnabled()) {
             return false;
@@ -72,6 +75,7 @@ class StylusHandwritingInitiator {
                 updateStylusInfoOnDownEvent(motionEvent);
             }
             case MotionEvent.ACTION_MOVE -> {
+                assumeNonNull(mStylusTouchData);
                 float current_x = motionEvent.getX();
                 float current_y = motionEvent.getY();
 

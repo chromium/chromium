@@ -7,7 +7,7 @@ import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js'
 import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import './cr_policy_strings.js';
 
-import {CrPolicyIndicatorElement} from 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
+import type {CrPolicyIndicatorElement} from 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 import {CrPolicyIndicatorType} from 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator_mixin.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
@@ -35,7 +35,7 @@ suite('CrPolicyIndicator', function() {
     assertEquals('cr20:domain', icon.iconClass);
     assertEquals('policy', icon.tooltipText);
 
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     indicator.indicatorType = CrPolicyIndicatorType.OWNER;
     indicator.indicatorSourceName = 'foo@example.com';
 

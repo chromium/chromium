@@ -70,6 +70,8 @@ message LookupSingleLeakRequest {
     // are signed in to the Google Account.
     // See go/odppc-dd
     CHROME_IOS_SIGNED_IN_ON_DEVICE_PROACTIVE_PASSWORD_CHECKUP = 18;
+    // Leak checks done by ios/web_view during sign in to a website.
+    IOS_WEB_VIEW_SIGN_IN_CHECK = 19;
   }
   ClientUseCase client_use_case = 4;
 }

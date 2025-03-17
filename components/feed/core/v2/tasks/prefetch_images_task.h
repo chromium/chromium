@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_TASKS_PREFETCH_IMAGES_TASK_H_
 
 #include <memory>
+#include <unordered_set>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"

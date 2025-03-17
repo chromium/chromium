@@ -16,6 +16,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
+#include "chrome/browser/apps/link_capturing/chromeos_reimpl_navigation_capturing_throttle.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -57,7 +59,6 @@ constexpr char kStartTime[] = "21 Jan 2022 10:00:00 GMT";
 class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
  public:
   ProjectorNavigationThrottleTest() = default;
-
   ~ProjectorNavigationThrottleTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -70,9 +71,18 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
     base::TimeDelta forward_by = start_time - task_runner_->Now();
     EXPECT_LT(base::TimeDelta(), forward_by);
     task_runner_->AdvanceMockTickClock(forward_by);
-    clock_reset_ = std::make_unique<base::AutoReset<const base::TickClock*>>(
-        apps::ChromeOsLinkCapturingDelegate::SetClockForTesting(
-            task_runner_->GetMockTickClock()));
+  }
+
+  void SetUpMockClock(bool use_v2) {
+    if (use_v2) {
+      clock_reset_ = std::make_unique<base::AutoReset<const base::TickClock*>>(
+          apps::ChromeOsReimplNavigationCapturingThrottle::SetClockForTesting(
+              task_runner_->GetMockTickClock()));
+    } else {
+      clock_reset_ = std::make_unique<base::AutoReset<const base::TickClock*>>(
+          apps::ChromeOsLinkCapturingDelegate::SetClockForTesting(
+              task_runner_->GetMockTickClock()));
+    }
   }
 
  protected:
@@ -84,27 +94,38 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
   base::OnceClosure on_browser_removed_callback_;
 };
 
-class ProjectorNavigationThrottleTestParameterized
+using LinkCapturingFeatureVersion = apps::test::LinkCapturingFeatureVersion;
+
+using ProjectorAppNavigationParams =
+    std::tuple<LinkCapturingFeatureVersion, bool, std::string>;
+
+class ProjectorNavigationCapturingParameterizedTest
     : public ProjectorNavigationThrottleTest,
-      public testing::WithParamInterface<
-          ::testing::tuple<bool, ::std::string>> {
- protected:
-  bool navigate_from_link() const { return std::get<0>(GetParam()); }
-  std::string url_params() const { return std::get<1>(GetParam()); }
+      public testing::WithParamInterface<ProjectorAppNavigationParams> {
+ public:
+  ProjectorNavigationCapturingParameterizedTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(feature_version()), {});
+  }
+
+  LinkCapturingFeatureVersion feature_version() const {
+    return std::get<LinkCapturingFeatureVersion>(GetParam());
+  }
+  bool navigate_from_link() const { return std::get<bool>(GetParam()); }
+  std::string url_params() const { return std::get<std::string>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies that navigating to
 // https://screencast.apps.chrome/xyz?resourceKey=abc redirects to
 // chrome://projector/app/xyz?timestamp=[timestamp]&resourceKey=abc and launches
 // the SWA.
-// TODO(crbug.com/327056386): Re-enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_PwaNavigationRedirects DISABLED_PwaNavigationRedirects
-#else
-#define MAYBE_PwaNavigationRedirects PwaNavigationRedirects
-#endif
-IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
-                       MAYBE_PwaNavigationRedirects) {
+IN_PROC_BROWSER_TEST_P(ProjectorNavigationCapturingParameterizedTest,
+                       NavigationRedirects) {
+  SetUpMockClock(feature_version() ==
+                 LinkCapturingFeatureVersion::kV2DefaultOff);
   base::HistogramTester histogram_tester;
 
   std::string url = kChromeUIUntrustedProjectorPwaUrl;
@@ -135,6 +156,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
         browser(), gurl, WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
   }
+
   removed_observer.Wait();
   added_observer.Wait();
 
@@ -175,17 +197,54 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    ProjectorNavigationThrottleTestParameterized,
+    ProjectorNavigationCapturingParameterizedTest,
     ::testing::Combine(
+        /*link_capturing_feature_version=*/::testing::Values(
+            LinkCapturingFeatureVersion::kV1DefaultOff,
+            LinkCapturingFeatureVersion::kV2DefaultOff),
         /*navigate_from_link=*/testing::Bool(),
-        /*url_params=*/::testing::Values("resourceKey=abc",
-                                         "resourceKey=abc&xyz=123",
-                                         "")));
+        /*url_params=*/
+        ::testing::Values("resourceKey=abc", "resourceKey=abc&xyz=123", "")),
+    [](const testing::TestParamInfo<ProjectorAppNavigationParams>& info) {
+      std::string test_name;
+      test_name.append(apps::test::ToString(
+          std::get<LinkCapturingFeatureVersion>(info.param)));
+      test_name.append("_");
+      test_name.append(std::get<bool>(info.param) ? "navigate_from_link"
+                                                  : "navigate_from_omnibox");
+      test_name.append("_");
+
+      // The query params have "=" in them which is not considered a valid param
+      // name during generation of test names.
+      std::string test_query = std::get<std::string>(info.param);
+      if (test_query == "resourceKey=abc") {
+        test_name.append("url");
+      } else if (test_query == "resourceKey=abc&xyz=123") {
+        test_name.append("url_params");
+      } else {
+        test_name.append("basic");
+      }
+      return test_name;
+    });
 
 // Verifies that opening a redirect link from an app such as gchat does not
 // leave a blank tab behind. Prevents a regression to b/211788287.
-IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
-                       AppNavigationRedirectNoBlankTab) {
+class ProjectorNavigationThrottleRedirectionParameterized
+    : public ProjectorNavigationThrottleTest,
+      public testing::WithParamInterface<LinkCapturingFeatureVersion> {
+ public:
+  ProjectorNavigationThrottleRedirectionParameterized() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
+                       NoBlankTab) {
+  SetUpMockClock(GetParam() == LinkCapturingFeatureVersion::kV2DefaultOff);
   // Prior to navigation, there is only one browser available.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 
@@ -236,8 +295,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
 
 // Verifies that navigating to chrome-untrusted://projector/app/ does not
 // redirect but launches the SWA.
-IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
-                       TrustedNavigationNoRedirect) {
+IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
+                       TrustedNoRedirect) {
   GURL untrusted_url(kChromeUIUntrustedProjectorUrl);
 
   ui_test_utils::NavigateToURLWithDisposition(
@@ -257,6 +316,15 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
   // URL remains unchanged.
   EXPECT_EQ(tab->GetVisibleURL(), untrusted_url);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ProjectorNavigationThrottleRedirectionParameterized,
+    ::testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff,
+                      LinkCapturingFeatureVersion::kV2DefaultOff),
+    [](const testing::TestParamInfo<LinkCapturingFeatureVersion>& info) {
+      return apps::test::ToString(info.param);
+    });
 
 // Verifies that navigating to chrome-untrusted://projector-annotator does not
 // lead to a crash. Prevents a regression to b/229124074.

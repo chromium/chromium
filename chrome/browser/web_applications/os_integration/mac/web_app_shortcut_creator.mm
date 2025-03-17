@@ -54,7 +54,7 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 
-#if defined(COMPONENT_BUILD)
+#if defined(COMPONENT_BUILD) || defined(ADDRESS_SANITIZER)
 #include <mach-o/loader.h>
 
 #include "base/base_paths.h"
@@ -124,7 +124,7 @@ void RecordCreateShortcut(CreateShortcutResult result) {
   base::UmaHistogramEnumeration("Apps.CreateShortcuts.Mac.Result2", result);
 }
 
-#if defined(COMPONENT_BUILD)
+#if defined(COMPONENT_BUILD) || defined(ADDRESS_SANITIZER)
 // Adds `new_rpath` to the paths the binary at `executable_path` will look at
 // when loading shared libraries. Assumes there is enough room in the headers of
 // the binary to fit the added path.
@@ -643,7 +643,7 @@ bool WebAppShortcutCreator::BuildShortcut(
     return false;
   }
 
-#if defined(COMPONENT_BUILD)
+#if defined(COMPONENT_BUILD) || defined(ADDRESS_SANITIZER)
   // Test bots could have the build in a different path than where it was on a
   // build bot. If this is the case in a component build, we'll need to fix the
   // rpath of app_mode_loader to make sure it can still find its dynamic
@@ -658,34 +658,6 @@ bool WebAppShortcutCreator::BuildShortcut(
           rpath_to_add)) {
     return false;
   }
-#endif
-
-#if defined(ADDRESS_SANITIZER)
-  const base::FilePath asan_library_path =
-      framework_bundle_path.Append("Versions")
-          .Append("Current")
-          .Append("libclang_rt.asan_osx_dynamic.dylib");
-  if (!base::CopyFile(asan_library_path, destination_executable_path.Append(
-                                             asan_library_path.BaseName()))) {
-    LOG(ERROR) << "Failed to copy asan library: " << asan_library_path;
-    return false;
-  }
-
-  // The address sanitizer runtime must have a valid signature in order for the
-  // containing app bundle to be signed. On Apple Silicon the address sanitizer
-  // runtime library has a linker-generated ad-hoc code signature, but this is
-  // treated as equivalent to being unsigned when signing the containing app
-  // bundle.
-  std::string codesign_output;
-  std::vector<std::string> codesign_argv = {
-      "codesign", "--sign", "-",
-      destination_executable_path.Append(asan_library_path.BaseName()).value()};
-  CHECK(base::GetAppOutputAndError(base::CommandLine(codesign_argv),
-                                   &codesign_output))
-      << "Failed to sign executable at "
-      << destination_executable_path.Append(asan_library_path.BaseName())
-             .value()
-      << ": " << codesign_output;
 #endif
 
   // Copy the Info.plist.

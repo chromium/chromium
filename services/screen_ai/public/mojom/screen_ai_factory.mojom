@@ -10,6 +10,14 @@ import "sandbox/policy/mojom/sandbox.mojom";
 import "services/screen_ai/public/mojom/screen_ai_service.mojom";
 import "ui/accessibility/ax_features.mojom";
 
+
+// An interface to handle shutdowns of ScreenAI service.
+[ServiceSandbox=sandbox.mojom.Sandbox.kScreenAI]
+interface ScreenAIServiceShutdownHandler {
+  // Called to inform that the service is shutting down since it was idle.
+  ShuttingDownOnIdle();
+};
+
 // The service runs in a sandboxed process to run Screen AI service library. The
 // library provides two AI modules:
 //   1) An image processing module to analyze snapshots of the browser or an
@@ -48,6 +56,10 @@ interface ScreenAIServiceFactory {
           model_files,
       pending_receiver<MainContentExtractionService>?
           main_content_extractor_service) => (bool initialized);
+
+  // Sets the shutdown handler.
+  BindShutdownHandler(
+    pending_remote<ScreenAIServiceShutdownHandler> shutdown_handler);
 
   // Shuts down the service if there are no connected remotes.
   ShutDownIfNoClients();

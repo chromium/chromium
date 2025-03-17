@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -19,7 +20,6 @@
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/user_script.h"
 
@@ -83,14 +83,9 @@ void SetMockInstallPromptForTesting(
 scoped_refptr<extensions::CrxInstaller> CreateCrxInstaller(
     Profile* profile,
     const download::DownloadItem& download_item) {
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-  CHECK(service);
-
   scoped_refptr<extensions::CrxInstaller> installer(
       extensions::CrxInstaller::Create(
-          service,
-          CreateExtensionInstallPrompt(profile, download_item),
+          profile, CreateExtensionInstallPrompt(profile, download_item),
           WebstoreInstaller::GetAssociatedApproval(download_item)));
 
   installer->set_error_on_unsupported_requirements(true);
@@ -119,8 +114,8 @@ bool IsExtensionDownload(const DownloadItem& download_item) {
 bool IsTrustedExtensionDownload(Profile* profile, const DownloadItem& item) {
   return IsExtensionDownload(item) &&
          (OffStoreInstallAllowedByPrefs(profile, item) ||
-          extension_urls::IsWebstoreUpdateUrl(item.GetURL()) ||
-          extension_urls::IsWebstoreDomain(item.GetURL()));
+          extension_urls::IsWebstoreUpdateUrl(item.GetOriginalUrl()) ||
+          extension_urls::IsWebstoreDomain(item.GetOriginalUrl()));
 }
 
 std::unique_ptr<base::AutoReset<bool>> OverrideOffstoreInstallAllowedForTesting(

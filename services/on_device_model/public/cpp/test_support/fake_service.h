@@ -75,11 +75,11 @@ class FakeOnDeviceSession final : public mojom::Session {
   ~FakeOnDeviceSession() override;
 
   // mojom::Session:
-  void AddContext(mojom::InputOptionsPtr input,
-                  mojo::PendingRemote<mojom::ContextClient> client) override;
+  void Append(mojom::AppendOptionsPtr options,
+              mojo::PendingRemote<mojom::ContextClient> client) override;
 
-  void Execute(
-      mojom::InputOptionsPtr input,
+  void Generate(
+      mojom::GenerateOptionsPtr input,
       mojo::PendingRemote<mojom::StreamingResponder> response) override;
 
   void GetSizeInTokens(mojom::InputPtr input,
@@ -91,15 +91,14 @@ class FakeOnDeviceSession final : public mojom::Session {
       mojo::PendingReceiver<on_device_model::mojom::Session> session) override;
 
  private:
-  void ExecuteImpl(mojom::InputOptionsPtr input,
-                   mojo::PendingRemote<mojom::StreamingResponder> response);
-
-  void AddContextInternal(mojom::InputOptionsPtr input,
-                          mojo::PendingRemote<mojom::ContextClient> client);
+  void GenerateImpl(mojom::GenerateOptionsPtr options,
+                    mojo::PendingRemote<mojom::StreamingResponder> response);
+  void AppendImpl(mojom::AppendOptionsPtr options,
+                  mojo::Remote<mojom::ContextClient> client);
 
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   std::string adaptation_model_weight_;
-  std::vector<mojom::InputOptionsPtr> context_;
+  std::vector<mojom::AppendOptionsPtr> context_;
   raw_ptr<FakeOnDeviceModel> model_;
 
   base::WeakPtrFactory<FakeOnDeviceSession> weak_factory_{this};
@@ -117,7 +116,8 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
   ~FakeOnDeviceModel() override;
 
   // mojom::OnDeviceModel:
-  void StartSession(mojo::PendingReceiver<mojom::Session> session) override;
+  void StartSession(mojo::PendingReceiver<mojom::Session> session,
+                    mojom::SessionParamsPtr params) override;
 
   void DetectLanguage(const std::string& text,
                       DetectLanguageCallback callback) override;
@@ -192,6 +192,8 @@ class FakeOnDeviceModelService : public mojom::OnDeviceModelService {
   void LoadModel(mojom::LoadModelParamsPtr params,
                  mojo::PendingReceiver<mojom::OnDeviceModel> model,
                  LoadModelCallback callback) override;
+  void GetCapabilities(ModelAssets assets,
+                       GetCapabilitiesCallback callback) override;
   void LoadTextSafetyModel(
       mojom::TextSafetyModelParamsPtr params,
       mojo::PendingReceiver<mojom::TextSafetyModel> model) override;

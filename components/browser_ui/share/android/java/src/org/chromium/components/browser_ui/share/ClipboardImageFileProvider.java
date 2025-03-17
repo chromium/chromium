@@ -11,15 +11,15 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.Clipboard;
 
 /** Implementation class for {@link Clipboard.ImageFileProvider}. */
+@NullMarked
 public class ClipboardImageFileProvider implements Clipboard.ImageFileProvider {
     @Override
     public void storeImageAndGenerateUri(
@@ -28,7 +28,7 @@ public class ClipboardImageFileProvider implements Clipboard.ImageFileProvider {
     }
 
     @Override
-    public void storeLastCopiedImageMetadata(@NonNull ClipboardFileMetadata clipboardFileMetadata) {
+    public void storeLastCopiedImageMetadata(ClipboardFileMetadata clipboardFileMetadata) {
         ContextUtils.getAppSharedPreferences()
                 .edit()
                 .putString(CLIPBOARD_SHARED_URI, clipboardFileMetadata.uri.toString())

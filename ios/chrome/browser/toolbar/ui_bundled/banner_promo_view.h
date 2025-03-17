@@ -7,6 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
+@class BannerPromoView;
+
+@protocol BannerPromoViewDelegate
+
+// Alerts the delegate that the banner was tapped.
+- (void)bannerPromoWasTapped:(BannerPromoView*)bannerPromoView;
+
+// Alerts the delegate that the banner's close button was tapped.
+- (void)bannerPromoCloseButtonWasTapped:(BannerPromoView*)bannerPromoView;
+
+@end
+
 // View to display a banner promo in the toolbar.
 @interface BannerPromoView : UIView
 
@@ -14,6 +26,9 @@
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
+
+// Delegate for this view.
+@property(nonatomic, weak) id<BannerPromoViewDelegate> delegate;
 
 @end
 

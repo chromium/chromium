@@ -315,12 +315,16 @@ bool IsMatchingNoncePresent(
   return directive && CSPSourceListAllowNonce(*directive, nonce);
 }
 
-bool AreAllMatchingHashesPresent(
+bool AreAllMatchingIntegrityChecksPresent(
     const network::mojom::blink::CSPSourceList* directive,
     const IntegrityMetadataSet& integrity_metadata) {
-  if (!directive || integrity_metadata.hashes.empty()) {
+  if (!directive || (integrity_metadata.hashes.empty() &&
+                     integrity_metadata.signatures.empty())) {
     return false;
   }
+
+  // Check that all hashes present in the integrity metadata are allowed
+  // by the relevant policy:
   for (const IntegrityMetadataPair& hash : integrity_metadata.hashes) {
     // Convert the hash from integrity metadata format to CSP format.
     network::mojom::blink::CSPHashSourcePtr csp_hash =
@@ -332,6 +336,23 @@ bool AreAllMatchingHashesPresent(
     if (!CSPSourceListAllowHash(*directive, *csp_hash))
       return false;
   }
+
+  // Now check that all signatures present in the integrity metadata are
+  // allowed by the relevant policy:
+  for (const IntegrityMetadataPair& key : integrity_metadata.signatures) {
+    // Convert the hash from integrity metadata format to CSP format.
+    network::mojom::blink::CSPHashSourcePtr csp_hash =
+        network::mojom::blink::CSPHashSource::New();
+    csp_hash->algorithm = key.second;
+    if (!ParseBase64Digest(key.first, csp_hash->value)) {
+      return false;
+    }
+    // All integrity hashes must be listed in the CSP.
+    if (!CSPSourceListAllowHash(*directive, *csp_hash)) {
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -527,6 +548,7 @@ void ReportViolationForCheckSource(
     case CSPDirectiveName::FrameSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
+    case CSPDirectiveName::RequireSRIFor:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::Sandbox:
     case CSPDirectiveName::TreatAsPublicAddress:
@@ -869,8 +891,8 @@ CSPCheckResult CSPDirectiveListAllowFromSource(
         CSPDirectiveListAllowDynamic(csp, type)) {
       return CSPCheckResult::Allowed();
     }
-    if (AreAllMatchingHashesPresent(OperativeDirective(csp, type).source_list,
-                                    integrity_metadata)) {
+    if (AreAllMatchingIntegrityChecksPresent(
+            OperativeDirective(csp, type).source_list, integrity_metadata)) {
       return CSPCheckResult::Allowed();
     }
   }

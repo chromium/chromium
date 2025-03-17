@@ -44,9 +44,9 @@ class LCPCriticalPathPredictorHost
   GetLcpCriticalPathPredictorPageLoadMetricsObserver() const;
 
   // Implements blink::mojom::LCPCriticalPathPredictorHost.
-  void SetLcpElementLocator(
-      const std::string& lcp_element_locator,
-      std::optional<uint32_t> predicted_lcp_index) override;
+  void OnLcpUpdated(const std::optional<std::string>& lcp_element_locator,
+                    bool is_image_element,
+                    std::optional<uint32_t> predicted_lcp_index) override;
   void SetLcpInfluencerScriptUrls(
       const std::vector<GURL>& lcp_influencer_scripts) override;
   void SetPreconnectOrigins(const std::vector<GURL>& origins) override;

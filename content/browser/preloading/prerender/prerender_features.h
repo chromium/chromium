@@ -38,6 +38,12 @@ CONTENT_EXPORT extern const base::FeatureParam<
 CONTENT_EXPORT extern const base::FeatureParam<size_t>
     kPrerender2FallbackBodySizeLimit;
 
+// This feature was used to launch Prerender2 support for No-Vary-Search header.
+// This work has finished and the old implementation was deleted. Now this flag
+// is just for injecting parameters through field trials as an umberella
+// feature.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2NoVarySearch);
+
 // A field trial param that controls the timeout for waiting on headers
 // during navigation for the prerender URL matched by No-Vary-Search hint before
 // falling back to the default navigation path.

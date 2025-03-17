@@ -4,9 +4,10 @@
 
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_codecs.h"
@@ -42,8 +43,8 @@ std::optional<Fourcc> FindImageProcessorOutputFormat(V4L2Device* ip_device) {
   static constexpr uint32_t kPreferredFormats[] = {V4L2_PIX_FMT_NV12,
                                                    V4L2_PIX_FMT_YVU420};
   auto preferred_formats_first = [](uint32_t a, uint32_t b) -> bool {
-    auto* iter_a = base::ranges::find(kPreferredFormats, a);
-    auto* iter_b = base::ranges::find(kPreferredFormats, b);
+    auto* iter_a = std::ranges::find(kPreferredFormats, a);
+    auto* iter_b = std::ranges::find(kPreferredFormats, b);
     return iter_a < iter_b;
   };
 

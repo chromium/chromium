@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package kids.platform.parentaccess.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Corresponds to `google.protobuf.Any`.
+// `Any` contains an arbitrary serialized protocol buffer message along with a
+// URL that describes the type of the serialized message.
+message Any {
+  // A URL/resource name that uniquely identifies the type of the serialized
+  // protocol buffer message.
+  string type_url = 1;
+
+  // Must be a valid serialized protocol buffer of the above specified type.
+  bytes value = 2;
+}
+
+// Used by the PACP widget.
+// It is a wrapper for a message (`payload`) that needs to passed from Chrome to
+// the PACP widget. The contained payload can be displayed by the PACP widget in
+// the local web approval flow.
+// It can also be used to configure notification requests in the PACP widget,
+// however the relevant fields have been omitted as Chrome does not have a use
+// case for them.
+message TransactionData {
+  // Data that can be consumed by the PACP soy templates.
+  Any payload = 3;
+}
+
+// Payload for the transaction data that is used to render the PACP widget
+// for the local web approval.
+message LocalApprovalPayload {
+  // String containing information about the blocked url subject to approval.
+  // It is displayed in the PACP widget subtitle for the local web approvals case.
+  string url_approval_context = 1;
+}

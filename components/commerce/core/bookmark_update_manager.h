@@ -22,6 +22,10 @@ class GURL;
 
 namespace commerce {
 
+// The maximum number of products to update per update cycle for the shopping
+// list.
+inline constexpr int kShoppingListBookmarkUpdateBatchMaxParam = 150;
+
 // This object manages regular updates of product information stored in
 // bookmarks. This object should be tied to the life of the profile and
 // outlive the shopping service.

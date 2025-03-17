@@ -14,7 +14,6 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/hit_test/hit_test_aggregator_delegate.h"
@@ -57,9 +56,8 @@ class TestHostFrameSinkManager : public HostFrameSinkManager {
 
 class TestFrameSinkManagerImpl : public FrameSinkManagerImpl {
  public:
-  explicit TestFrameSinkManagerImpl(SharedBitmapManager* shared_bitmap_manager)
-      : FrameSinkManagerImpl(
-            FrameSinkManagerImpl::InitParams(shared_bitmap_manager)) {}
+  TestFrameSinkManagerImpl()
+      : FrameSinkManagerImpl(FrameSinkManagerImpl::InitParams()) {}
 
   TestFrameSinkManagerImpl(const TestFrameSinkManagerImpl&) = delete;
   TestFrameSinkManagerImpl& operator=(const TestFrameSinkManagerImpl&) = delete;
@@ -121,8 +119,7 @@ class HitTestAggregatorTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    frame_sink_manager_ =
-        std::make_unique<TestFrameSinkManagerImpl>(&shared_bitmap_manager_);
+    frame_sink_manager_ = std::make_unique<TestFrameSinkManagerImpl>();
     host_frame_sink_manager_ = std::make_unique<TestHostFrameSinkManager>();
     local_surface_id_lookup_delegate_ =
         std::make_unique<TestLatestLocalSurfaceIdLookupDelegate>();
@@ -230,7 +227,6 @@ class HitTestAggregatorTest : public testing::Test {
   }
 
  private:
-  ServerSharedBitmapManager shared_bitmap_manager_;
   std::unique_ptr<TestHitTestAggregator> hit_test_aggregator_;
   std::unique_ptr<TestFrameSinkManagerImpl> frame_sink_manager_;
   std::unique_ptr<TestHostFrameSinkManager> host_frame_sink_manager_;

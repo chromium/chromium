@@ -205,11 +205,9 @@ bool UnittestingSystemAppDelegate::IsUrlInSystemAppScope(
 bool UnittestingSystemAppDelegate::UseSystemThemeColor() const {
   return use_system_theme_color_;
 }
-#if BUILDFLAG(IS_CHROMEOS)
 bool UnittestingSystemAppDelegate::ShouldAnimateThemeChanges() const {
   return should_animate_theme_changes_;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void UnittestingSystemAppDelegate::SetAppIdsToUninstallAndReplace(
     const std::vector<webapps::AppId>& ids) {
@@ -289,11 +287,9 @@ void UnittestingSystemAppDelegate::SetUrlInSystemAppScope(const GURL& url) {
 void UnittestingSystemAppDelegate::SetUseSystemThemeColor(bool value) {
   use_system_theme_color_ = value;
 }
-#if BUILDFLAG(IS_CHROMEOS)
 void UnittestingSystemAppDelegate::SetShouldAnimateThemeChanges(bool value) {
   should_animate_theme_changes_ = value;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TestSystemWebAppInstallation::TestSystemWebAppInstallation(
     std::unique_ptr<UnittestingSystemAppDelegate> delegate)

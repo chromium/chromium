@@ -5,6 +5,7 @@
 #include "components/media_effects/media_effects_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -29,25 +30,23 @@
 namespace {
 
 constexpr char kDeviceId[] = "test_device";
+constexpr char kDeviceId1[] = "test_device_1";
+constexpr char kDeviceId2[] = "test_device_2";
+constexpr char kDeviceId3[] = "test_device_3";
 
 media::mojom::VideoEffectsConfigurationPtr GetConfigurationSync(
-    mojo::Remote<media::mojom::VideoEffectsManager>& effects_manager) {
+    mojo::Remote<media::mojom::ReadonlyVideoEffectsManager>& effects_manager) {
   base::test::TestFuture<media::mojom::VideoEffectsConfigurationPtr>
       output_configuration;
   effects_manager->GetConfiguration(output_configuration.GetCallback());
   return output_configuration.Take();
 }
 
-void SetFramingSync(
-    mojo::Remote<media::mojom::VideoEffectsManager>& effects_manager,
-    float framing_padding_ratio) {
-  base::test::TestFuture<media::mojom::SetConfigurationResult> result_future;
-  effects_manager->SetConfiguration(
-      media::mojom::VideoEffectsConfiguration::New(
-          nullptr, nullptr,
-          media::mojom::Framing::New(gfx::InsetsF{framing_padding_ratio})),
-      result_future.GetCallback());
-  EXPECT_EQ(media::mojom::SetConfigurationResult::kOk, result_future.Get());
+void SetFramingSync(VideoEffectsManagerImpl& effects_manager,
+                    float framing_padding_ratio) {
+  effects_manager.SetConfiguration(media::mojom::VideoEffectsConfiguration::New(
+      nullptr, nullptr,
+      media::mojom::Framing::New(gfx::InsetsF{framing_padding_ratio})));
 }
 
 class FakeModelProvider : public MediaEffectsModelProvider {
@@ -58,7 +57,7 @@ class FakeModelProvider : public MediaEffectsModelProvider {
   void AddObserver(Observer* observer) override {
     observers_.AddObserver(observer);
     if (model_path_) {
-      observer->OnBackgroundSegmentationModelUpdated(*model_path_);
+      observer->OnBackgroundSegmentationModelUpdated(model_path_);
     }
   }
 
@@ -67,10 +66,10 @@ class FakeModelProvider : public MediaEffectsModelProvider {
   }
 
   // Sets the model path and notifies observers about it:
-  void SetModelPath(base::FilePath model_path) {
+  void SetModelPath(std::optional<base::FilePath> model_path) {
     model_path_ = std::move(model_path);
     for (auto& observer : observers_) {
-      observer.OnBackgroundSegmentationModelUpdated(*model_path_);
+      observer.OnBackgroundSegmentationModelUpdated(model_path_);
     }
   }
 
@@ -104,35 +103,38 @@ class MediaEffectsServiceTest : public testing::Test {
   base::WeakPtr<FakeModelProvider> model_provider_;
 };
 
-TEST_F(MediaEffectsServiceTest, BindVideoEffectsManager) {
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager;
-  service_->BindVideoEffectsManager(
+TEST_F(MediaEffectsServiceTest, BindReadonlyVideoEffectsManager) {
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId, effects_manager.BindNewPipeAndPassReceiver());
 
   EXPECT_TRUE(GetConfigurationSync(effects_manager)->framing.is_null());
 
   const float kFramingPaddingRatio = 0.2;
-  SetFramingSync(effects_manager, kFramingPaddingRatio);
+  SetFramingSync(service_->GetOrCreateVideoEffectsManager(kDeviceId),
+                 kFramingPaddingRatio);
 
   auto configuration = GetConfigurationSync(effects_manager);
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio},
             configuration->framing->padding_ratios);
 }
 
-TEST_F(MediaEffectsServiceTest,
-       BindVideoEffectsManager_TwoRegistrantsWithSameIdConnectToSameManager) {
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager1;
-  service_->BindVideoEffectsManager(
+TEST_F(
+    MediaEffectsServiceTest,
+    BindReadonlyVideoEffectsManager_TwoRegistrantsWithSameIdConnectToSameManager) {
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager1;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId, effects_manager1.BindNewPipeAndPassReceiver());
 
   const float kFramingPaddingRatio = 0.234;
-  SetFramingSync(effects_manager1, kFramingPaddingRatio);
+  SetFramingSync(service_->GetOrCreateVideoEffectsManager(kDeviceId),
+                 kFramingPaddingRatio);
 
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio},
             GetConfigurationSync(effects_manager1)->framing->padding_ratios);
 
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager2;
-  service_->BindVideoEffectsManager(
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager2;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId, effects_manager2.BindNewPipeAndPassReceiver());
 
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio},
@@ -141,20 +143,21 @@ TEST_F(MediaEffectsServiceTest,
 
 TEST_F(
     MediaEffectsServiceTest,
-    BindVideoEffectsManager_TwoRegistrantsWithDifferentIdConnectToDifferentManager) {
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager1;
-  service_->BindVideoEffectsManager(
-      "test_device_1", effects_manager1.BindNewPipeAndPassReceiver());
+    BindReadonlyVideoEffectsManager_TwoRegistrantsWithDifferentIdConnectToDifferentManager) {
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager1;
+  service_->BindReadonlyVideoEffectsManager(
+      kDeviceId1, effects_manager1.BindNewPipeAndPassReceiver());
 
   const float kFramingPaddingRatio = 0.234;
-  SetFramingSync(effects_manager1, kFramingPaddingRatio);
+  SetFramingSync(service_->GetOrCreateVideoEffectsManager(kDeviceId1),
+                 kFramingPaddingRatio);
 
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio},
             GetConfigurationSync(effects_manager1)->framing->padding_ratios);
 
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager2;
-  service_->BindVideoEffectsManager(
-      "test_device_2", effects_manager2.BindNewPipeAndPassReceiver());
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager2;
+  service_->BindReadonlyVideoEffectsManager(
+      kDeviceId2, effects_manager2.BindNewPipeAndPassReceiver());
 
   // Expect `framing` to be unset because it is a separate instance of
   // `VideoEffectsManager`.
@@ -171,11 +174,11 @@ TEST_F(
   auto service_reset =
       video_effects::SetVideoEffectsServiceRemoteForTesting(&service);
 
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager1;
-  service_->BindVideoEffectsManager(
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager1;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId, effects_manager1.BindNewPipeAndPassReceiver());
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager2;
-  service_->BindVideoEffectsManager(
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager2;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId, effects_manager2.BindNewPipeAndPassReceiver());
 
   auto effects_processor_future =
@@ -187,7 +190,8 @@ TEST_F(
 
   const float kFramingPaddingRatio = 0.234;
 
-  SetFramingSync(effects_manager1, kFramingPaddingRatio);
+  SetFramingSync(service_->GetOrCreateVideoEffectsManager(kDeviceId),
+                 kFramingPaddingRatio);
 
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio},
             GetConfigurationSync(effects_manager1)->framing->padding_ratios);
@@ -196,7 +200,7 @@ TEST_F(
             GetConfigurationSync(effects_manager2)->framing->padding_ratios);
 
   // Wait for the fake effects service to create the processor:
-  EXPECT_TRUE(effects_processor_future->Wait());
+  EXPECT_TRUE(effects_processor_future.Wait());
   ASSERT_EQ(fake_effects_service.GetProcessors().size(), 1u);
   EXPECT_EQ(
       gfx::InsetsF{kFramingPaddingRatio},
@@ -210,8 +214,8 @@ TEST_F(
   // Wait for the reset to complete
   base::RunLoop().RunUntilIdle();
 
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager3;
-  service_->BindVideoEffectsManager(
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager3;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId, effects_manager3.BindNewPipeAndPassReceiver());
 
   // Expect `framing` to be unset because it is a new instance of
@@ -236,7 +240,7 @@ TEST_F(MediaEffectsServiceTest, BindVideoEffectsProcessor) {
   service_->BindVideoEffectsProcessor(
       kDeviceId, effects_processor.BindNewPipeAndPassReceiver());
 
-  EXPECT_TRUE(effects_processor_future->Wait());
+  EXPECT_TRUE(effects_processor_future.Wait());
   EXPECT_TRUE(effects_processor.is_connected());
   EXPECT_EQ(fake_effects_service.GetProcessors().size(), 1u);
 }
@@ -248,8 +252,8 @@ TEST_F(
   // a different manager if a different ID was used. This is validated by
   // checking that the managers return different configurations. We also set a
   // different config directly via effects manager interface (originating from
-  // a call to `MediaEffectsService::BindVideoEffectsManager()`) so this test
-  // also checks that a correct relationship is established between manager
+  // a call to `MediaEffectsService::BindReadonlyVideoEffectsManager()`) so this
+  // test also checks that a correct relationship is established between manager
   // and processor.
 
   mojo::Remote<video_effects::mojom::VideoEffectsService> service;
@@ -258,12 +262,13 @@ TEST_F(
   auto service_reset =
       video_effects::SetVideoEffectsServiceRemoteForTesting(&service);
 
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager;
-  service_->BindVideoEffectsManager(
-      "test_device_1", effects_manager.BindNewPipeAndPassReceiver());
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager;
+  service_->BindReadonlyVideoEffectsManager(
+      kDeviceId1, effects_manager.BindNewPipeAndPassReceiver());
 
   constexpr float kFramingPaddingRatio1 = 0.234;
-  SetFramingSync(effects_manager, kFramingPaddingRatio1);
+  SetFramingSync(service_->GetOrCreateVideoEffectsManager(kDeviceId1),
+                 kFramingPaddingRatio1);
 
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio1},
             GetConfigurationSync(effects_manager)->framing->padding_ratios);
@@ -273,45 +278,41 @@ TEST_F(
 
   mojo::Remote<video_effects::mojom::VideoEffectsProcessor> effects_processor1;
   service_->BindVideoEffectsProcessor(
-      "test_device_2", effects_processor1.BindNewPipeAndPassReceiver());
-  EXPECT_TRUE(effects_processor_future1->Wait());
+      kDeviceId2, effects_processor1.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(effects_processor_future1.Wait());
   ASSERT_EQ(fake_effects_service.GetProcessors().size(), 1u);
 
   constexpr float kFramingPaddingRatio2 = 0.345;
-  SetFramingSync(fake_effects_service.GetProcessors()["test_device_2"]
-                     ->GetVideoEffectsManager(),
+  SetFramingSync(service_->GetOrCreateVideoEffectsManager(kDeviceId2),
                  kFramingPaddingRatio2);
 
-  EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio2},
-            GetConfigurationSync(
-                fake_effects_service.GetProcessors()["test_device_2"]
-                    ->GetVideoEffectsManager())
-                ->framing->padding_ratios);
+  EXPECT_EQ(
+      gfx::InsetsF{kFramingPaddingRatio2},
+      GetConfigurationSync(fake_effects_service.GetProcessors()[kDeviceId2]
+                               ->GetVideoEffectsManager())
+          ->framing->padding_ratios);
 
   auto effects_processor_future2 =
       fake_effects_service.GetEffectsProcessorCreationFuture();
 
   mojo::Remote<video_effects::mojom::VideoEffectsProcessor> effects_processor2;
   service_->BindVideoEffectsProcessor(
-      "test_device_3", effects_processor2.BindNewPipeAndPassReceiver());
-  EXPECT_TRUE(effects_processor_future2->Wait());
+      kDeviceId3, effects_processor2.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(effects_processor_future2.Wait());
   ASSERT_EQ(fake_effects_service.GetProcessors().size(), 2u);
 
   constexpr float kFramingPaddingRatio3 = 0.456;
-  SetFramingSync(fake_effects_service.GetProcessors()["test_device_3"]
-                     ->GetVideoEffectsManager(),
+  SetFramingSync(service_->GetOrCreateVideoEffectsManager(kDeviceId3),
                  kFramingPaddingRatio3);
 
-  auto padding2 =
-      std::move(GetConfigurationSync(
-                    fake_effects_service.GetProcessors()["test_device_2"]
-                        ->GetVideoEffectsManager())
-                    ->framing->padding_ratios);
-  auto padding3 =
-      std::move(GetConfigurationSync(
-                    fake_effects_service.GetProcessors()["test_device_3"]
-                        ->GetVideoEffectsManager())
-                    ->framing->padding_ratios);
+  auto padding2 = std::move(
+      GetConfigurationSync(fake_effects_service.GetProcessors()[kDeviceId2]
+                               ->GetVideoEffectsManager())
+          ->framing->padding_ratios);
+  auto padding3 = std::move(
+      GetConfigurationSync(fake_effects_service.GetProcessors()[kDeviceId3]
+                               ->GetVideoEffectsManager())
+          ->framing->padding_ratios);
 
   EXPECT_NE(padding2, padding3);
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio2}, padding2);
@@ -340,7 +341,7 @@ TEST_F(MediaEffectsServiceTest, ModelFileIsOpenedAndSentToVideoEffects) {
       fake_effects_service.GetBackgroundSegmentationModelFuture();
   model_provider_->SetModelPath(temporary_model_file_path1.path());
 
-  auto model_file = model_opened_future->Take();
+  auto model_file = model_opened_future.Take();
   EXPECT_TRUE(model_file.IsValid());
 
   // Validate that the contents match the contents of the model file:
@@ -360,7 +361,7 @@ TEST_F(MediaEffectsServiceTest, ModelFileIsOpenedAndSentToVideoEffects) {
       fake_effects_service.GetBackgroundSegmentationModelFuture();
   model_provider_->SetModelPath(temporary_model_file_path2.path());
 
-  model_file = model_opened_future->Take();
+  model_file = model_opened_future.Take();
   EXPECT_TRUE(model_file.IsValid());
 
   // Validate that the contents match the contents of the model file:
@@ -377,9 +378,14 @@ TEST_F(MediaEffectsServiceTest, ModelFileIsOpenedAndSentToVideoEffects) {
       fake_effects_service.GetBackgroundSegmentationModelFuture();
   model_provider_->SetModelPath(
       temporary_directory.GetPath().AppendASCII("should_not_exist.tmp"));
-  // Since we want to make sure that the service did *not* receive the model
-  // file, make the run loop run until it's idle and then verify that the future
-  // is not ready.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(model_opened_future->IsReady());
+
+  model_file = model_opened_future.Take();
+  EXPECT_FALSE(model_file.IsValid());
+
+  model_opened_future =
+      fake_effects_service.GetBackgroundSegmentationModelFuture();
+  model_provider_->SetModelPath(std::nullopt);
+
+  model_file = model_opened_future.Take();
+  EXPECT_FALSE(model_file.IsValid());
 }

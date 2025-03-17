@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/audio/win/audio_low_latency_input_win.h"
 
 #include <objbase.h>
 
+#include <combaseapi.h>
+#include <ksmedia.h>
 #include <propkey.h>
-#include <windows.devices.enumeration.h>
-#include <windows.media.devices.h>
 
 #include <algorithm>
 #include <cmath>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -33,6 +33,7 @@
 #include "base/win/vector.h"
 #include "base/win/windows_version.h"
 #include "media/audio/audio_device_description.h"
+#include "media/audio/audio_device_name.h"
 #include "media/audio/audio_features.h"
 #include "media/audio/win/avrt_wrapper_win.h"
 #include "media/audio/win/core_audio_util_win.h"
@@ -41,23 +42,16 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
 
-using ABI::Windows::Foundation::Collections::IVectorView;
-using ABI::Windows::Media::Devices::IMediaDeviceStatics;
-using ABI::Windows::Media::Effects::IAudioCaptureEffectsManager;
-using ABI::Windows::Media::Effects::IAudioEffectsManagerStatics;
-using base::win::GetActivationFactory;
 using base::win::ScopedCoMem;
 using base::win::ScopedCOMInitializer;
-using base::win::ScopedHString;
 using Microsoft::WRL::ComPtr;
 
 namespace media {
 
 namespace {
-
-constexpr char kUwpDeviceIdPrefix[] = "\\\\?\\SWD#MMDEVAPI#";
 
 constexpr uint32_t KSAUDIO_SPEAKER_UNSUPPORTED = 0;
 
@@ -162,53 +156,6 @@ const char* StreamOpenResultToString(
   return "UNKNOWN";
 }
 
-const char* EffectTypeToString(
-    ABI::Windows::Media::Effects::AudioEffectType type) {
-  switch (type) {
-    case ABI::Windows::Media::Effects::AudioEffectType_Other:
-      return "Other/None";
-    case ABI::Windows::Media::Effects::AudioEffectType_AcousticEchoCancellation:
-      return "AcousticEchoCancellation";
-    case ABI::Windows::Media::Effects::AudioEffectType_NoiseSuppression:
-      return "NoiseSuppression";
-    case ABI::Windows::Media::Effects::AudioEffectType_AutomaticGainControl:
-      return "AutomaticGainControl";
-    case ABI::Windows::Media::Effects::AudioEffectType_BeamForming:
-      return "BeamForming";
-    case ABI::Windows::Media::Effects::AudioEffectType_ConstantToneRemoval:
-      return "ConstantToneRemoval";
-    case ABI::Windows::Media::Effects::AudioEffectType_Equalizer:
-      return "Equalizer";
-    case ABI::Windows::Media::Effects::AudioEffectType_LoudnessEqualizer:
-      return "LoudnessEqualizer";
-    case ABI::Windows::Media::Effects::AudioEffectType_BassBoost:
-      return "BassBoost";
-    case ABI::Windows::Media::Effects::AudioEffectType_VirtualSurround:
-      return "VirtualSurround";
-    case ABI::Windows::Media::Effects::AudioEffectType_VirtualHeadphones:
-      return "VirtualHeadphones";
-    case ABI::Windows::Media::Effects::AudioEffectType_SpeakerFill:
-      return "SpeakerFill";
-    case ABI::Windows::Media::Effects::AudioEffectType_RoomCorrection:
-      return "RoomCorrection";
-    case ABI::Windows::Media::Effects::AudioEffectType_BassManagement:
-      return "BassManagement";
-    case ABI::Windows::Media::Effects::AudioEffectType_EnvironmentalEffects:
-      return "EnvironmentalEffects";
-    case ABI::Windows::Media::Effects::AudioEffectType_SpeakerProtection:
-      return "SpeakerProtection";
-    case ABI::Windows::Media::Effects::AudioEffectType_SpeakerCompensation:
-      return "SpeakerCompensation";
-    case ABI::Windows::Media::Effects::AudioEffectType_DynamicRangeCompression:
-      return "DynamicRangeCompression";
-    case ABI::Windows::Media::Effects::AudioEffectType_FarFieldBeamForming:
-      return "FarFieldBeamForming";
-    case ABI::Windows::Media::Effects::AudioEffectType_DeepNoiseSuppression:
-      return "DeepNoiseSuppression";
-  }
-  return "Unknown";
-}
-
 bool VariantBoolToBool(VARIANT_BOOL var_bool) {
   switch (var_bool) {
     case VARIANT_TRUE:
@@ -230,21 +177,6 @@ std::string GetOpenLogString(WASAPIAudioInputStream::StreamOpenResult result,
       StreamOpenResultToString(result), hr,
       CoreAudioUtil::WaveFormatToString(&input_format).c_str(),
       CoreAudioUtil::WaveFormatToString(&output_format).c_str());
-}
-
-bool InitializeUWPSupport() {
-  // Place the actual body of the initialization in a lambda and store the
-  // result as a static since we don't expect this result to change between
-  // runs.
-  static const bool initialization_result = []() {
-    // Windows.Media.Effects and Windows.Media.Devices requires Windows 10 build
-    // 10.0.10240.0.
-    DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240u);
-
-    return true;
-  }();
-
-  return initialization_result;
 }
 
 void LogFakeAudioCaptureTimestamps(bool use_fake_audio_capture_timestamps,
@@ -303,6 +235,263 @@ class WASAPIAudioInputStream::DataDiscontinuityReporter {
   int data_discontinuity_long_term_count_ = 0;
 };
 
+// Helper class to manage support of an echo canceller provided by either the
+// device OEM or the OS.
+class WASAPIAudioInputStream::EchoCancellationConfig {
+ public:
+  using LogCallback = base::RepeatingCallback<void(std::string)>;
+
+  // Factory method which returns nullptr if system AEC is not supported.
+  static std::unique_ptr<EchoCancellationConfig> Create(
+      const AudioParameters& params,
+      const std::string& device_id,
+      LogCallback log_callback) {
+    if (!(params.effects() & AudioParameters::ECHO_CANCELLER)) {
+      return nullptr;
+    }
+
+    return base::WrapUnique(
+        new EchoCancellationConfig(params, device_id, std::move(log_callback)));
+  }
+
+  // Builds up a string suitable for logging based on the effect `mask`.
+  // Example: "#effects=2 (ECHO_CANCELLER | NOISE_SUPPRESSION)".
+  static std::string GetSupportedEffectsString(int mask) {
+    std::vector<std::string> effects;
+    if (mask & AudioParameters::ECHO_CANCELLER) {
+      effects.push_back("ECHO_CANCELLER");
+    }
+    if (mask & AudioParameters::NOISE_SUPPRESSION) {
+      effects.push_back("NOISE_SUPPRESSION");
+    }
+    if (mask & AudioParameters::AUTOMATIC_GAIN_CONTROL) {
+      effects.push_back("AUTOMATIC_GAIN_CONTROL");
+    }
+
+    std::string result;
+    base::StringAppendF(&result, "%s => #effects=%zu (", __func__,
+                        effects.size());
+    for (size_t i = 0; i < effects.size(); ++i) {
+      if (i > 0) {
+        result += " | ";
+      }
+      result += effects[i];
+    }
+    result += ")";
+    return result;
+  }
+
+  void LogMessage(std::string message) {
+    if (log_callback_.is_null()) {
+      return;
+    }
+    message.insert(0, "AEC::");
+    log_callback_.Run(std::move(message));
+  }
+
+  PRINTF_FORMAT(2, 3) void LogMessage(const char* format, ...) {
+    if (log_callback_.is_null()) {
+      return;
+    }
+    va_list args;
+    va_start(args, format);
+    std::string msg(base::StrCat({"AEC::", base::StringPrintV(format, args)}));
+    va_end(args);
+    log_callback_.Run(std::move(msg));
+  }
+
+  // Enumerates supported voice processing audio effects (AEC, NS and AGC) and
+  // logs the supported effect mask. Also performs an extra check that the
+  // device really supports the AEC effect and logs an error if that is not the
+  // case. Finally, it sets the preferred output device for the supported AEC.
+  // Returns true if enumeration succeeded and AEC is among the supported
+  // effects.
+  bool SetAudioClientAndLogEffects(ComPtr<IAudioClient> audio_client) {
+    CHECK(!AudioDeviceDescription::IsLoopbackDevice(device_id_));
+
+    // We need an initialized audio client to be able to perform a correct check
+    // of supported audio effects since we want to perform the check under the
+    // exact same conditions as the stream will be opened under.
+    CHECK(CoreAudioUtil::IsClientInitialized(audio_client.Get()));
+
+    // Cache the initialized audio client.
+    audio_client_ = audio_client;
+    CHECK(audio_client_);
+
+    // Find the supported voice processing effects and check if AEC is among
+    // them. This call does not reinitialize the already initialized client.
+    // Also triggers a "Media.Audio.Capture.Win.VoiceProcessingEffects"
+    // histogram.
+    auto [effects, echo_cancellation_is_available] =
+        CoreAudioUtil::GetVoiceProcessingEffectsAndCheckForAEC(
+            audio_client_.Get());
+    if (effects != params_.effects()) {
+      // Most probable cause for this state to happen is that some supported
+      // effects have been disabled using constraints.
+      LogMessage(
+          "%s => (WARNING: supported effects do not match requested effects)",
+          __func__);
+    }
+
+    // Set the preferred output device for the supported AEC.
+    if (echo_cancellation_is_available) {
+      UpdateEchoCancellationRenderEndpoint();
+    } else {
+      LogMessage("%s => (ERROR: system AEC is not supported)", __func__);
+    }
+
+    LogMessage(GetSupportedEffectsString(effects));
+    return echo_cancellation_is_available;
+  }
+
+  // Set echo cancellation endpoint to `output_device_id_for_aec_` which is
+  // kDefaultDeviceId unless it has been changed by SetOutputDeviceForAec().
+  void UpdateEchoCancellationRenderEndpoint() {
+    CHECK(audio_client_);
+
+    // Use CoreAudioUtil::CreateDevice to create an IMMDevice since it also
+    // checks that the selected device is active. The data-flow direction and
+    // role are only utilized if the device ID is `kDefaultDeviceId` or
+    // `kCommunicationsDeviceId`.
+    ERole role = eConsole;
+    if (AudioDeviceDescription::IsCommunicationsDevice(
+            output_device_id_for_aec_)) {
+      role = eCommunications;
+    }
+    ComPtr<IMMDevice> audio_device =
+        CoreAudioUtil::CreateDevice(output_device_id_for_aec_, eRender, role);
+    if (!audio_device.Get()) {
+      LogMessage("%s => (ERROR: CoreAudioUtil::CreateDevice failed)", __func__);
+      return;
+    }
+
+    AudioDeviceName device_name;
+    CoreAudioUtil::GetDeviceName(audio_device.Get(), &device_name);
+    LogMessage("%s => (AEC output device=[name: %s, id: %s])", __func__,
+               device_name.device_name.c_str(), device_name.unique_id.c_str());
+
+    // Get the IAcousticEchoCancellationControl interface using GetService.
+    // Requires an initialized audio client and build 22621 or higher.
+    ComPtr<IAcousticEchoCancellationControl> aec_control;
+    HRESULT hr = audio_client_->GetService(IID_PPV_ARGS(&aec_control));
+    if (FAILED(hr)) {
+      LogMessage("%s => (ERROR: IAudioClient::GetService=[%s])", __func__,
+                 ErrorToString(hr).c_str());
+      return;
+    }
+
+    // Set the audio render endpoint that should be used as the reference
+    // stream for acoustic echo cancellation (AEC). If it succeeds, the
+    // capture endpoint supports control of the loopback reference endpoint
+    // for AEC. Note that an endpoint may support AEC, but may not support
+    // control of loopback reference endpoint for AEC. By default, the
+    // system uses the default render device as the reference stream.
+    std::wstring endpoint_id_wide = base::UTF8ToWide(device_name.unique_id);
+    LPCWSTR endpoint_id = endpoint_id_wide.c_str();
+    hr = aec_control->SetEchoCancellationRenderEndpoint(endpoint_id);
+    if (FAILED(hr)) {
+      LogMessage(
+          "%s => (ERROR: "
+          "IAcousticEchoCancellationControl::SetEchoCancellationRenderEndpoint="
+          "[%s])",
+          __func__, ErrorToString(hr).c_str());
+    }
+  }
+
+  void SetOutputDeviceForAec(const std::string& output_device_id) {
+    std::string new_output_device_id =
+        output_device_id.empty() ? AudioDeviceDescription::kDefaultDeviceId
+                                 : output_device_id;
+    // Don't set an output device that's already in use.
+    if (new_output_device_id == output_device_id_for_aec_) {
+      return;
+    }
+
+    // Store the requested new ID to ensure that it can be utilized later if
+    // a valid audio client does not exist yet.
+    output_device_id_for_aec_ = new_output_device_id;
+
+    // It is possible that an attempt to set the AEC render endpoint takes place
+    // before a valid audio client exists. If so, simply store the device ID
+    // and return.
+    if (!audio_client_) {
+      return;
+    }
+
+    // Set the new preferred AEC output.
+    UpdateEchoCancellationRenderEndpoint();
+  }
+
+ private:
+  explicit EchoCancellationConfig(const AudioParameters& params,
+                                  const std::string& device_id,
+                                  const LogCallback log_callback)
+      : params_(params),
+        device_id_(device_id),
+        log_callback_(std::move(log_callback)) {}
+
+  const AudioParameters params_;
+  const std::string device_id_;
+
+  // Stores log callback in outer WASAPIAudioInputStream class.
+  // The resulting total prefix added to logs is "WAIS::AEC::".
+  const LogCallback log_callback_;
+
+  // Contains a copy of the main audio client in WASAPIAudioInputStream.
+  ComPtr<IAudioClient> audio_client_;
+
+  // Device ID corresponding to the audio render endpoint used as the reference
+  // stream for acoustic echo cancellation (AEC). We use the default device as a
+  // reference, unless something else was requested.
+  std::string output_device_id_for_aec_ =
+      AudioDeviceDescription::kDefaultDeviceId;
+};
+
+// Creates an audio input stream given preferred audio parameters in `params`
+// and an input device given by `device_id`.
+// Support for system effects exists behind a command-line flag called
+// `media::EnforceSystemEchoCancellation` and it will have an effect on the
+// content in `params` and especially in the `effects` part of `params`.
+// Audio parameters are enumerated and set in
+// AudioManagerWin::GetInputStreamParameters() for the `device_id` and they
+// represent the "most suitable" parameters for the given device in terms of
+// number of audio channels, sample rate etc. But they also contain a special
+// part given by params.effects() which is a bitwise OR combination of effect
+// flags (e.g. ECHO_CANCELLER | NOISE_SUPPRESSION | AUTOMATIC_GAIN_CONTROL).
+// These are the results of a previous check of supported system effects for the
+// specified device in CoreAudioUtil::GetVoiceProcessingEffectsAndCheckForAEC().
+// To be able to enumerate them, an IAudioClient object must be initialized and
+// then used to create an IAudioEffectsManager which then supports a API called
+// GetAudioEffects(). System effects are only supported if the audio client is
+// working in a "raw" mode and if it is set to a communications mode and these
+// details are done explicitly in GetInputStreamParameters() and then the
+// audio client is closed and destroyed. It means that params.effects() will
+// contain information about what effects that *should" be supported.
+// The parameters are provided to a helper class called EchoCancellationConfig
+// which is stored in `aec_config_`. It will only be a valid object (not null)
+// if `params` contains ECHO_CANCELLER. The other effects are not analyzed.
+// The existence of the AEC helper class object will changed the behavior of
+// WASAPIAudioInputStream in the following way:
+// - In Open(): the audio client properties will be changed from
+//   AUDCLNT_STREAMOPTIONS_RAW to AUDCLNT_STREAMOPTIONS_NONE since RAW would
+//   bypass all supported effects (and we we are now asked to support AEC).
+// - In Open(): an additional enumeration of the supported audio effects is
+//   done by EchoCancellationConfig to ensure that we log what this stream
+//   actually uses and that the AEC *really* is enabled.
+// This last step uses CoreAudioUtil::GetVoiceProcessingEffectsAndCheckForAEC(),
+// as was done during the previous enumeration, but this time an already
+// initialized audio client is utilized. Hence, there is no extra "dummy"
+// initialization taking place this time since we already know that this stream
+// will use a non-raw audio client in communications mode.
+// Additional details:
+// - This class only looks for AEC in the requested effect parameter, hence
+//   NOISE_SUPPRESSION | AUTOMATIC_GAIN_CONTROL would result in an input stream
+//   with *no* effects.
+// - Even if AEC is the key effect here, there is no way to enable only the AEC
+//   effect since it always comes as a "package" with AEC and NS and AGC.
+// - When an AEC is requested, this class will update the
+//   Media.Audio.Capture.Win.VoiceProcessingEffects histogram when the stream
+//   is opened. The same histogram is also updated during the enumeration.
 WASAPIAudioInputStream::WASAPIAudioInputStream(
     AudioManagerWin* manager,
     const AudioParameters& params,
@@ -316,7 +505,14 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
       data_discontinuity_reporter_(
           std::make_unique<DataDiscontinuityReporter>()),
       device_id_(device_id),
-      log_callback_(std::move(log_callback)) {
+      log_callback_(std::move(log_callback)),
+      aec_config_(EchoCancellationConfig::Create(
+          params,
+          device_id,
+          base::BindRepeating(
+              static_cast<void (WASAPIAudioInputStream::*)(std::string)>(
+                  &WASAPIAudioInputStream::SendLogMessage),
+              base::Unretained(this)))) {
   DCHECK(manager_);
   DCHECK(!device_id_.empty());
   DCHECK(!log_callback_.is_null());
@@ -326,6 +522,8 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
          params.channel_layout() == CHANNEL_LAYOUT_DISCRETE);
   SendLogMessage("%s({device_id=%s}, {params=[%s]})", __func__,
                  device_id.c_str(), params.AsHumanReadableString().c_str());
+  SendLogMessage("%s => (AEC is requested=[%s])", __func__,
+                 aec_config_ ? "true" : "false");
 
   // Load the Avrt DLL if not already loaded. Required to support MMCSS.
   bool avrt_init = avrt::Initialize();
@@ -418,24 +616,6 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
   // Check if raw audio processing is supported for the selected capture device.
   raw_processing_supported_ = RawProcessingSupported();
 
-  if (raw_processing_supported_ &&
-      !AudioDeviceDescription::IsLoopbackDevice(device_id_) &&
-      InitializeUWPSupport()) {
-    // Retrieve a unique identifier of the selected audio device but in a
-    // format which can be used by UWP (or Core WinRT) APIs. It can then be
-    // utilized in combination with the Windows.Media.Effects UWP API to
-    // discover the audio processing chain on a device.
-    std::string uwp_device_id = GetUWPDeviceId();
-    if (!uwp_device_id.empty()) {
-      // For the selected device, generate two lists of enabled audio effects
-      // and store them in |default_effect_types_| and |raw_effect_types_|.
-      // Default corresponds to "Normal audio signal processing" and Raw is for
-      // "Minimal audio signal processing". These two lists are used for UMA
-      // stats when the stream is closed.
-      GetAudioCaptureEffects(uwp_device_id);
-    }
-  }
-
   // Obtain an IAudioClient interface which enables us to create and initialize
   // an audio stream between an audio application and the audio engine.
   hr = endpoint_device_->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr,
@@ -457,7 +637,8 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
   hr = GetAudioEngineNumChannels(&audio_engine_channels);
 
   // Attempt to enable communications category and raw capture mode on the audio
-  // stream. Ignoring return value since the method logs its own error messages
+  // stream. Avoid using raw capture if echo cancellation has been requested.
+  // Ignoring return value since the method logs its own error messages
   // and it should be OK to continue opening the stream even after a failure.
   if (raw_processing_supported_ &&
       !AudioDeviceDescription::IsLoopbackDevice(device_id_) && SUCCEEDED(hr)) {
@@ -480,6 +661,15 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
     open_result_ = OPEN_RESULT_OK_WITH_RESAMPLING;
   ReportOpenResult(hr);  // Report before we assign a value to |opened_|.
   opened_ = SUCCEEDED(hr);
+
+  // Enumerate all supported audio effects and set the preferred output device
+  // for the AEC if AEC is requested and supported. These operations require an
+  // initialized audio client.
+  if (aec_config_) {
+    if (!aec_config_->SetAudioClientAndLogEffects(audio_client_)) {
+      aec_config_.reset();
+    }
+  }
 
   if (opened_) {
     return OpenOutcome::kSuccess;
@@ -613,17 +803,6 @@ void WASAPIAudioInputStream::Close() {
     // capture or not. See https://crbug.com/1133643.
     base::UmaHistogramBoolean("Media.Audio.RawProcessingSupportedWin",
                               raw_processing_supported_);
-
-    // These UMAs are deprecated but keep adding the information as text logs
-    // for debugging purposes.
-    for (auto const& type : default_effect_types_) {
-      SendLogMessage("%s => (Media.Audio.Capture.Win.DefaultEffectType=%s)",
-                     __func__, EffectTypeToString(type));
-    }
-    for (auto const& type : raw_effect_types_) {
-      SendLogMessage("%s => (Media.Audio.Capture.Win.RawEffectType=%s)",
-                     __func__, EffectTypeToString(type));
-    }
   }
 
   if (converter_)
@@ -709,7 +888,19 @@ bool WASAPIAudioInputStream::IsMuted() {
 
 void WASAPIAudioInputStream::SetOutputDeviceForAec(
     const std::string& output_device_id) {
-  // Not supported. Do nothing.
+  SendLogMessage("%s({output_device_id=%s})", __func__,
+                 output_device_id.c_str());
+  if (aec_config_) {
+    aec_config_->SetOutputDeviceForAec(output_device_id);
+  }
+}
+
+void WASAPIAudioInputStream::SendLogMessage(std::string message) {
+  if (log_callback_.is_null()) {
+    return;
+  }
+  message.insert(0, "WAIS::");
+  log_callback_.Run(std::move(message));
 }
 
 void WASAPIAudioInputStream::SendLogMessage(const char* format, ...) {
@@ -717,9 +908,9 @@ void WASAPIAudioInputStream::SendLogMessage(const char* format, ...) {
     return;
   va_list args;
   va_start(args, format);
-  std::string msg("WAIS::" + base::StringPrintV(format, args));
-  log_callback_.Run(msg);
+  std::string msg(base::StrCat({"WAIS::", base::StringPrintV(format, args)}));
   va_end(args);
+  log_callback_.Run(std::move(msg));
 }
 
 void WASAPIAudioInputStream::Run() {
@@ -1147,190 +1338,6 @@ bool WASAPIAudioInputStream::RawProcessingSupported() {
   return raw_processing_supported;
 }
 
-std::string WASAPIAudioInputStream::GetUWPDeviceId() {
-  DCHECK(endpoint_device_.Get());
-
-  // The Windows.Media.Devices.IMediaDeviceStatics interface provides access to
-  // the implementation of Windows.Media.Devices.MediaDevice.
-  ComPtr<IMediaDeviceStatics> media_device_statics;
-  HRESULT hr =
-      GetActivationFactory<IMediaDeviceStatics,
-                           RuntimeClass_Windows_Media_Devices_MediaDevice>(
-          &media_device_statics);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "IMediaDeviceStatics factory failed: " << ErrorToString(hr);
-    return std::string();
-  }
-
-  // The remaining part of this method builds up the unique device ID needed
-  // by the Windows.Media.Effects.AudioEffectsManager UWP API to enumerate
-  // active capture effects like AEC and NS. The ID contains three parts.
-  // Example:
-  //   1) \\?\SWD#MMDEVAPI#
-  //   2) {0.0.1.00000000}.{7c24467c-94fc-4fa1-a2b2-a3f5d9cb8a5b}
-  //   3) #{2eef81be-33fa-4800-9670-1cd474972c3f}
-  // Where (1) is a constant string, (2) comes from the IMMDevice::GetId() API,
-  // and (3) is a substring of of the selector string which can be retrieved by
-  // the IMediaDeviceStatics::GetAudioCaptureSelector UWP API. Knowledge about
-  // the structure of this device ID can be gained by using the
-  // IMediaDeviceStatics::GetDefaultAudioCaptureId UWP API but this method also
-  // adds support for non default devices.
-
-  // (1) Start building the final device ID. Start with the constant prefix.
-  std::string device_id(kUwpDeviceIdPrefix);
-
-  // (2) Next, add the unique ID from IMMDevice::GetId() API.
-  // Example: {0.0.1.00000000}.{7c24467c-94fc-4fa1-a2b2-a3f5d9cb8a5b}.
-  ScopedCoMem<WCHAR> immdevice_id16;
-  hr = endpoint_device_->GetId(&immdevice_id16);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "IMMDevice::GetId failed: " << ErrorToString(hr);
-    return std::string();
-  }
-  std::string immdevice_id8;
-  base::WideToUTF8(immdevice_id16, wcslen(immdevice_id16), &immdevice_id8);
-  device_id.append(immdevice_id8);
-
-  // (3) Finally, add the last part from the selector string.
-  // Example: '#{2eef81be-33fa-4800-9670-1cd474972c3f}'.
-  HSTRING selector;
-  // Returns the identifier string of a device for capturing audio. A substring
-  // will be used when generating the final unique device ID.
-  // Example: part of the selector string can look like
-  // System.Devices.InterfaceClassGuid:="{2eef81be-33fa-4800-9670-1cd474972c3f}"
-  // and we want the {2eef81be-33fa-4800-9670-1cd474972c3f} substring for our
-  // purposes.
-  hr = media_device_statics->GetAudioCaptureSelector(&selector);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "IMediaDeviceStatics::GetAudioCaptureSelector failed: "
-                << ErrorToString(hr);
-    return std::string();
-  }
-  device_id.append("#");
-  std::string selector_string = ScopedHString(selector).GetAsUTF8();
-  std::size_t start = selector_string.find("{");
-  std::size_t stop = selector_string.find("}", start + 1);
-  if (start != std::string::npos && stop != std::string::npos) {
-    // Will extract '{2eef81be-33fa-4800-9670-1cd474972c3f}' in the example
-    // above.
-    device_id.append(selector_string.substr(start, stop - start + 1));
-  } else {
-    DLOG(ERROR) << "Failed to extract System.Devices.InterfaceClassGuid string";
-    return std::string();
-  }
-
-  return device_id;
-}
-
-HRESULT WASAPIAudioInputStream::GetAudioCaptureEffects(
-    const std::string& uwp_device_id) {
-  DCHECK(!AudioDeviceDescription::IsLoopbackDevice(device_id_));
-  DCHECK(raw_processing_supported_);
-  DCHECK(!uwp_device_id.empty());
-  SendLogMessage("%s()", __func__);
-
-  // The Windows.Media.Effects.IAudioEffectsManagerStatics interface provides
-  // access to the implementation of Windows.Media.Effects.AudioEffectsManager.
-  ComPtr<IAudioEffectsManagerStatics> audio_effects_manager;
-  HRESULT hr = GetActivationFactory<
-      IAudioEffectsManagerStatics,
-      RuntimeClass_Windows_Media_Effects_AudioEffectsManager>(
-      &audio_effects_manager);
-  if (FAILED(hr)) {
-    SendLogMessage(
-        "%s => (ERROR: IAudioEffectsManagerStatics factory failed: [%s])",
-        __func__, ErrorToString(hr).c_str());
-    return hr;
-  }
-
-  SendLogMessage("%s => (uwp_device_id=[%s])", __func__, uwp_device_id.c_str());
-  ScopedHString device_id = ScopedHString::Create(uwp_device_id);
-
-  // Check capture effects for two different audio processing modes:
-  // - Default: Normal audio signal processing
-  // - Raw: Minimal audio signal processing
-  // Raw is included since it is not possible to disable all effects on all
-  // devices. In most cases, the number of found capture effects will be zero
-  // for the raw mode.
-  ABI::Windows::Media::AudioProcessing audio_processing_mode[] = {
-      ABI::Windows::Media::AudioProcessing::AudioProcessing_Default,
-      ABI::Windows::Media::AudioProcessing::AudioProcessing_Raw};
-  for (size_t i = 0; i < std::size(audio_processing_mode); ++i) {
-    // Create an AudioCaptureEffectsManager manager which can be used to
-    // discover the audio processing chain on a device for a specific media
-    // category and audio processing mode. The media category is fixed and set
-    // to Communications since that is what we aim at using when audio effects
-    // later are disabled.
-    ComPtr<IAudioCaptureEffectsManager> capture_effects_manager;
-    hr = audio_effects_manager->CreateAudioCaptureEffectsManagerWithMode(
-        device_id.get(),
-        ABI::Windows::Media::Capture::MediaCategory::
-            MediaCategory_Communications,
-        audio_processing_mode[i], &capture_effects_manager);
-    if (FAILED(hr)) {
-      SendLogMessage(
-          "%s => (ERROR: IAudioEffectsManagerStatics::"
-          "CreateAudioCaptureEffectsManager=[%s])",
-          __func__, ErrorToString(hr).c_str());
-      return hr;
-    }
-
-    // Get a list of audio effects on the device. Based on tests on different
-    // devices, only enabled effects will be included. Hence, if a user has
-    // explicitly disabled an effect using the System Sound Settings, that
-    // component will not show up here.
-    ComPtr<IVectorView<ABI::Windows::Media::Effects::AudioEffect*>> effects;
-    hr = capture_effects_manager->GetAudioCaptureEffects(&effects);
-    if (FAILED(hr)) {
-      SendLogMessage(
-          "%s => (ERROR: IAudioCaptureEffectsManager::"
-          "GetAudioCaptureEffects=[%s])",
-          __func__, ErrorToString(hr).c_str());
-      return hr;
-    }
-
-    unsigned int count = 0;
-    if (effects) {
-      // Returns number of supported effects.
-      effects->get_Size(&count);
-    }
-
-    // Store all supported and active effect types in |default_effect_types_|
-    // or |raw_effect_types_| depending on selected audio processing mode.
-    // These will be utilized later for UMA histograms.
-    for (unsigned int j = 0; j < count; ++j) {
-      ComPtr<ABI::Windows::Media::Effects::IAudioEffect> effect;
-      hr = effects->GetAt(j, &effect);
-      if (SUCCEEDED(hr)) {
-        ABI::Windows::Media::Effects::AudioEffectType type;
-        hr = effect->get_AudioEffectType(&type);
-        if (SUCCEEDED(hr)) {
-          audio_processing_mode[i] ==
-                  ABI::Windows::Media::AudioProcessing::AudioProcessing_Default
-              ? default_effect_types_.push_back(type)
-              : raw_effect_types_.push_back(type);
-        }
-      }
-    }
-
-    // For cases when no audio effects were found (common in raw mode), add a
-    // dummy effect type called AudioEffectType_Other so that the vector
-    // contains at least one value. This is done to ensure that an UMA histogram
-    // is uploaded also for the empty case. Hence, AudioEffectType_Other is
-    // used to indicate an unknown audio effect and "no audio effect found".
-    if (count == 0) {
-      const ABI::Windows::Media::Effects::AudioEffectType no_effect_found =
-          ABI::Windows::Media::Effects::AudioEffectType::AudioEffectType_Other;
-      audio_processing_mode[i] ==
-              ABI::Windows::Media::AudioProcessing::AudioProcessing_Default
-          ? default_effect_types_.push_back(no_effect_found)
-          : raw_effect_types_.push_back(no_effect_found);
-    }
-  }
-
-  return hr;
-}
-
 HRESULT WASAPIAudioInputStream::GetAudioEngineNumChannels(WORD* channels) {
   DCHECK(audio_client_.Get());
   SendLogMessage("%s()", __func__);
@@ -1379,6 +1386,17 @@ WASAPIAudioInputStream::SetCommunicationsCategoryAndMaybeRawCaptureMode(
     // capture mode on devices with more than eight input channels.
     if (channels > 0 && channels <= media::kMaxConcurrentChannels) {
       audio_props.Options = AUDCLNT_STREAMOPTIONS_RAW;
+    }
+    // Use AUDCLNT_STREAMOPTIONS_NONE instead of AUDCLNT_STREAMOPTIONS_RAW if
+    // system AEC has been enabled to ensure that "Voice Clarity" can kick in.
+    // From Win11 24H2, apps which use Communications Signal Processing Mode
+    // do not need any additional modifications and Voice Clarity will work for
+    // them automatically when the OEM device does not offer Communications Mode
+    // processing.
+    if (aec_config_) {
+      audio_props.Options = AUDCLNT_STREAMOPTIONS_NONE;
+      SendLogMessage("%s => (WARNING: attempting to enable system AEC)",
+                     __func__);
     }
     hr = audio_client2->SetClientProperties(&audio_props);
     if (FAILED(hr)) {

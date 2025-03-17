@@ -34,7 +34,7 @@ typedef NS_ENUM(NSInteger, CWVMediaCaptureType) {
 // UI delegate interface for a CWVWebView.  Embedders can implement the
 // functions in order to customize library behavior.
 CWV_EXPORT
-@protocol CWVUIDelegate<NSObject>
+@protocol CWVUIDelegate <NSObject>
 
 @optional
 // Instructs the delegate to create a new browsing window (f.e. in response to
@@ -97,7 +97,7 @@ CWV_EXPORT
 // webView:contextMenuForElement:willCommitWithAnimator:].
 - (void)webView:(CWVWebView*)webView
     contextMenuWillCommitWithAnimator:
-           (id<UIContextMenuInteractionCommitAnimating>)animator;
+        (id<UIContextMenuInteractionCommitAnimating>)animator;
 
 @end
 

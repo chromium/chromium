@@ -18,7 +18,6 @@
 #include "content/public/browser/service_worker_client_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "net/base/isolation_info.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
@@ -57,6 +56,11 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
       const DedicatedOrSharedWorkerToken& worker_token,
       base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle);
 
+  static std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
+  CreateForPrefetch(
+      const network::ResourceRequest& resource_request,
+      base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle);
+
   ServiceWorkerMainResourceLoaderInterceptor(
       const ServiceWorkerMainResourceLoaderInterceptor&) = delete;
   ServiceWorkerMainResourceLoaderInterceptor& operator=(
@@ -86,9 +90,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
 
   ServiceWorkerMainResourceLoaderInterceptor(
       base::WeakPtr<ServiceWorkerMainResourceHandle> handle,
-      bool skip_service_worker,
-      FrameTreeNodeId frame_tree_node_id,
-      const net::IsolationInfo& isolation_info);
+      bool skip_service_worker);
 
   // Returns true if a ServiceWorkerMainResourceLoaderInterceptor should be
   // created for a navigation to |url|.
@@ -114,14 +116,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
 
   // For all clients:
   const bool skip_service_worker_;
-
-  // Updated on redirects.
-  net::IsolationInfo isolation_info_;
-
-  // For window clients:
-  // If the intercepted resource load is on behalf
-  // of a window, the |frame_tree_node_id_| will be set.
-  const FrameTreeNodeId frame_tree_node_id_;
 
   // Handles a single request. Set to a new instance on redirects.
   std::unique_ptr<ServiceWorkerControlleeRequestHandler> request_handler_;

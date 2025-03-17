@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="1122068467107743258">Puna</translation>
 <translation id="1275718070701477396">Përzgjedhur</translation>
 <translation id="138513070655895675">Ndrysho mënyrën tjetër të pagesës nën këtë artikull të menysë.</translation>
 <translation id="2129442648318919291">Menaxho adresat.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Adresa e transportit</translation>
 <translation id="8873105120914375071">Do ta përfundosh më shpejt blerjen?</translation>
 <translation id="9032876013752408138">Plotëso automatikisht informacionet e mia</translation>
+<translation id="932327136139879170">Faqja kryesore</translation>
 <translation id="984275831282074731">Mënyrat e pagesës</translation>
 </translationbundle>

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("exo") {
   sources = [
@@ -17,17 +17,16 @@ static_library("exo") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/arc:arc_util",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/borealis",
+    "//chromeos/ash/experiences/arc",
     "//components/exo",
     "//content/public/common",
     "//ui/aura",
@@ -48,7 +47,6 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/bruschetta",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os",

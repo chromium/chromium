@@ -46,16 +46,12 @@ class InputDeviceTrackerTest
     AshTestBase::SetUp();
     std::tie(category_, pref_path_) = GetParam();
     tracker_ = std::make_unique<InputDeviceTracker>();
-    SimulateUserLogin(GetAccountId(kUserEmail1));
+    SimulateUserLogin({kUserEmail1});
   }
 
   void TearDown() override {
     tracker_.reset();
     AshTestBase::TearDown();
-  }
-
-  AccountId GetAccountId(std::string_view email) {
-    return AccountId::FromUserEmail(std::string(email));
   }
 
   void CheckObservedDevicesList(
@@ -148,7 +144,7 @@ TEST_P(InputDeviceTrackerTest, RecordDevicesTwoUsers) {
   CheckObservedDevicesList({kDeviceKey1, kDeviceKey2, kDeviceKey3});
 
   // Switch account
-  SimulateUserLogin(GetAccountId(kUserEmail2));
+  SimulateUserLogin({kUserEmail2});
   CheckObservedDevicesList({});
 
   CallOnDeviceConnected(kDeviceKey1);

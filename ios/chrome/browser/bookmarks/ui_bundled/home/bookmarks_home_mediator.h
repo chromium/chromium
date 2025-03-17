@@ -6,8 +6,10 @@
 #define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_HOME_BOOKMARKS_HOME_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
+
 #import <set>
 #import <string>
+
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
 @protocol BookmarksHomeConsumer;

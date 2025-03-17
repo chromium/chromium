@@ -21,13 +21,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 
+#include <array>
+
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -47,8 +45,10 @@ namespace blink {
 namespace {
 
 // These should be kept in sync with enum SVGTransformType
-const unsigned kRequiredValuesForType[] = {0, 6, 1, 1, 1, 1, 1};
-const unsigned kOptionalValuesForType[] = {0, 0, 1, 1, 2, 0, 0};
+const auto kRequiredValuesForType =
+    std::to_array<unsigned int>({0, 6, 1, 1, 1, 1, 1});
+const auto kOptionalValuesForType =
+    std::to_array<unsigned int>({0, 0, 1, 1, 2, 0, 0});
 static_assert(static_cast<int>(SVGTransformType::kUnknown) == 0,
               "index of SVGTransformType::kUnknown has changed");
 static_assert(static_cast<int>(SVGTransformType::kMatrix) == 1,
@@ -139,7 +139,7 @@ SVGParseStatus ParseTransformArgumentsForType(SVGTransformType type,
       break;
 
     if (SkipOptionalSVGSpaces(ptr, end) && *ptr == ',') {
-      ++ptr;
+      UNSAFE_TODO(++ptr);
       trailing_delimiter = true;
     }
   }
@@ -363,7 +363,7 @@ SVGParsingError SVGTransformList::ParseInternal(const CharType*& ptr,
     if (!SkipOptionalSVGSpaces(ptr, end) || *ptr != '(')
       return SVGParsingError(SVGParseStatus::kExpectedStartOfArguments,
                              ptr - start);
-    ptr++;
+    UNSAFE_TODO(ptr++);
 
     TransformArguments arguments;
     SVGParseStatus status =
@@ -376,12 +376,12 @@ SVGParsingError SVGTransformList::ParseInternal(const CharType*& ptr,
     if (!SkipOptionalSVGSpaces(ptr, end) || *ptr != ')')
       return SVGParsingError(SVGParseStatus::kExpectedEndOfArguments,
                              ptr - start);
-    ptr++;
+    UNSAFE_TODO(ptr++);
 
     Append(CreateTransformFromValues(transform_type, arguments));
 
     if (SkipOptionalSVGSpaces(ptr, end) && *ptr == ',') {
-      ++ptr;
+      UNSAFE_TODO(++ptr);
       delim_parsed = true;
     }
   }

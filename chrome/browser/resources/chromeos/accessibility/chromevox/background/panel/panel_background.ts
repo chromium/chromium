@@ -8,7 +8,7 @@
  */
 import {AsyncUtil} from '/common/async_util.js';
 import {BridgeHelper} from '/common/bridge_helper.js';
-import {constants} from '/common/constants.js';
+import type {constants} from '/common/constants.js';
 import {CursorRange} from '/common/cursors/range.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
@@ -18,12 +18,13 @@ import {PanelBridge} from '../../common/panel_bridge.js';
 import {ALL_PANEL_MENU_NODE_DATA} from '../../common/panel_menu_data.js';
 import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVox} from '../chromevox.js';
-import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
+import type {ChromeVoxRangeObserver} from '../chromevox_range.js';
+import {ChromeVoxRange} from '../chromevox_range.js';
 import {Output} from '../output/output.js';
 import {OutputCustomEvent} from '../output/output_types.js';
 
 import {ISearch} from './i_search.js';
-import {ISearchHandler} from './i_search_handler.js';
+import type {ISearchHandler} from './i_search_handler.js';
 import {PanelNodeMenuBackground} from './panel_node_menu_background.js';
 
 type ActionType = chrome.automation.ActionType;

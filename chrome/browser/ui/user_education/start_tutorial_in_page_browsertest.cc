@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(StartTutorialInPageBrowserTest,
 
   auto params = GetDefaultParams();
   params.target_url = GURL(kTargetPageURL);
-  params.overwrite_active_tab = true;
+  params.page_open_mode = user_education::PageOpenMode::kOverwriteActiveTab;
   params.callback = tutorial_triggered.Get();
   handle = StartTutorialInPage::Start(browser(), std::move(params));
 

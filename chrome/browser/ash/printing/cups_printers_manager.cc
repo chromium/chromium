@@ -417,10 +417,10 @@ class CupsPrintersManagerImpl
           PrinterConfigurer::Create(ppd_provider_, dlc_service_client_);
       printers_being_setup_[id].fingerprint = fingerprint;
       printers_being_setup_[id].configurer->SetUpPrinterInCups(
-          printer,
-          base::BindOnce(&CupsPrintersManagerImpl::OnPrinterSetupResult,
-                         weak_ptr_factory_.GetWeakPtr(), id,
-                         is_automatic_installation));
+          printer, base::BindOnce(
+                       &CupsPrintersManagerImpl::OnPrinterSetupResult,
+                       weak_ptr_factory_.GetWeakPtr(), id,
+                       is_automatic_installation, printer.ipp_printer_info()));
     }
   }
 
@@ -646,7 +646,8 @@ class CupsPrintersManagerImpl
       const std::string& make_and_model,
       const std::vector<std::string>& document_formats,
       bool ipp_everywhere,
-      const chromeos::PrinterAuthenticationInfo& auth_info) {
+      const chromeos::PrinterAuthenticationInfo& auth_info,
+      const chromeos::IppPrinterInfo& ipp_printer_info) {
     ParsePrinterStatusFromPrinterQuery(printer_id, std::move(cb), result,
                                        printer_status, auth_info);
   }
@@ -730,9 +731,10 @@ class CupsPrintersManagerImpl
 
   void QueryPrinterForAutoConf(
       const Printer& printer,
-      base::OnceCallback<void(bool)> callback) override {
+      base::OnceCallback<void(bool, const chromeos::IppPrinterInfo&)> callback)
+      override {
     if (!IsIppUri(printer.uri())) {
-      std::move(callback).Run(false);
+      std::move(callback).Run(false, chromeos::IppPrinterInfo{});
       return;
     }
 
@@ -746,19 +748,20 @@ class CupsPrintersManagerImpl
 
   // Callback for QueryPrinterForAutoConf
   void OnQueryPrinterForAutoConf(
-      base::OnceCallback<void(bool)> callback,
+      base::OnceCallback<void(bool, const chromeos::IppPrinterInfo&)> callback,
       PrinterQueryResult result,
       const ::printing::PrinterStatus& printer_status,
       const std::string& make_and_model,
       const std::vector<std::string>& document_formats,
       bool ipp_everywhere,
-      const chromeos::PrinterAuthenticationInfo& auth_info) {
+      const chromeos::PrinterAuthenticationInfo& auth_info,
+      const chromeos::IppPrinterInfo& ipp_printer_info) {
     if (result != PrinterQueryResult::kSuccess) {
-      std::move(callback).Run(false);
+      std::move(callback).Run(false, chromeos::IppPrinterInfo{});
       return;
     }
 
-    std::move(callback).Run(ipp_everywhere);
+    std::move(callback).Run(ipp_everywhere, ipp_printer_info);
   }
 
  private:
@@ -808,8 +811,10 @@ class CupsPrintersManagerImpl
     return nullptr;
   }
 
-  void MaybeRecordInstallation(const Printer& printer,
-                               bool is_automatic_installation) {
+  void MaybeRecordInstallation(
+      const Printer& printer,
+      bool is_automatic_installation,
+      const std::optional<chromeos::IppPrinterInfo>& ipp_printer_info) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     if (synced_printers_manager_->GetPrinter(printer.id())) {
       // It's just an update, not a new installation, so don't record an event.
@@ -848,7 +853,8 @@ class CupsPrintersManagerImpl
       } else {
         mode = PrinterEventTracker::kUser;
       }
-      event_tracker_->RecordIppPrinterInstalled(printer, mode);
+      event_tracker_->RecordIppPrinterInstalled(printer, mode,
+                                                ipp_printer_info);
     }
   }
 
@@ -1042,9 +1048,11 @@ class CupsPrintersManagerImpl
   }
 
   // Callback for `SetUpPrinterInCups`.
-  void OnPrinterSetupResult(const std::string& printer_id,
-                            bool is_automatic_installation,
-                            PrinterSetupResult result) {
+  void OnPrinterSetupResult(
+      const std::string& printer_id,
+      bool is_automatic_installation,
+      const std::optional<chromeos::IppPrinterInfo>& ipp_printer_info,
+      PrinterSetupResult result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
 
     std::map<std::string, PrinterSetupTracker>::iterator it =
@@ -1063,7 +1071,8 @@ class CupsPrintersManagerImpl
       if (user_printers_allowed_.GetValue()) {
         std::optional<chromeos::Printer> printer = printers_.Get(printer_id);
         if (printer) {
-          MaybeRecordInstallation(*printer, is_automatic_installation);
+          MaybeRecordInstallation(*printer, is_automatic_installation,
+                                  ipp_printer_info);
         }
       }
     }

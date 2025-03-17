@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 use std::env;
-use std::io::Write;
-use std::path::Path;
-use std::process::Command;
-use std::str::{self, FromStr};
 
 fn main() {
     println!("cargo:rustc-cfg=build_script_ran");

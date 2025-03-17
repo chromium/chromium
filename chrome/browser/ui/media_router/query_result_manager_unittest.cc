@@ -42,8 +42,7 @@ class MockObserver : public MediaSinkWithCastModesObserver {
 
 class QueryResultManagerTest : public ::testing::Test {
  public:
-  QueryResultManagerTest()
-      : mock_router_(), query_result_manager_(&mock_router_) {}
+  QueryResultManagerTest() : query_result_manager_(&mock_router_) {}
 
   QueryResultManagerTest(const QueryResultManagerTest&) = delete;
   QueryResultManagerTest& operator=(const QueryResultManagerTest&) = delete;

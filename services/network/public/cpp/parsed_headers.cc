@@ -126,7 +126,9 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
     parsed_headers->cookie_indices = net::ParseCookieIndices(*headers);
   }
 
-  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
+  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
+      base::FeatureList::IsEnabled(
+          network::features::kReduceAcceptLanguageHTTP)) {
     if (std::optional<std::string> avail_language =
             headers->GetNormalizedHeader("Avail-Language")) {
       parsed_headers->avail_language = ParseAvailLanguage(*avail_language);

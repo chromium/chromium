@@ -74,23 +74,23 @@ NotificationItemView::NotificationItemView(
   text_container_ = new views::View();
   text_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  AddChildView(text_container_.get());
+  AddChildViewRaw(text_container_.get());
 
   title_label_ = new views::Label(title_);
   title_label_->SetEnabledColor(kNotificationTitleTextColor);
   title_label_->SetLineHeight(kNotificationItemTextLineHeight);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  text_container_->AddChildView(title_label_.get());
+  text_container_->AddChildViewRaw(title_label_.get());
 
   message_label_ = new views::Label(message_);
   message_label_->SetEnabledColor(kNotificationMessageTextColor);
   message_label_->SetLineHeight(kNotificationItemTextLineHeight);
   message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  text_container_->AddChildView(message_label_.get());
+  text_container_->AddChildViewRaw(message_label_.get());
 
   proportional_icon_view_ =
       new message_center::ProportionalImageView(kProportionalIconViewSize);
-  AddChildView(proportional_icon_view_.get());
+  AddChildViewRaw(proportional_icon_view_.get());
   proportional_icon_view_->SetImage(icon, kProportionalIconViewSize);
 }
 

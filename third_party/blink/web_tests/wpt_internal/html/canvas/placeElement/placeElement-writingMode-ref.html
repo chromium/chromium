@@ -30,7 +30,10 @@
     const element = document.createElement("div");
     element.classList.add("fallback");
     element.style.writingMode = mode;
-    element.innerText = mode;
+    // Append an exclamation mark to avoid ending the text with a glyph that
+    // does not have glyph overflow past the bounding box, which leads to pixel
+    // differences.
+    element.innerText = mode + "!";
 
     container.appendChild(element);
     document.body.appendChild(container);

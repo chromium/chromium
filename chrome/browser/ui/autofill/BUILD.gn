@@ -41,7 +41,6 @@ source_set("autofill") {
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/signin/public/identity_manager",
-    "//components/user_annotations:types",
     "//components/zoom",
     "//content/public/browser",
     "//ui/gfx",
@@ -70,8 +69,9 @@ source_set("autofill") {
       "address_bubbles_controller.h",
       "address_bubbles_icon_controller.h",
       "address_editor_controller.h",
-      "autofill_ai/save_autofill_ai_data_controller.h",
-      "autofill_ai/save_autofill_ai_data_controller_impl.h",
+      "autofill_ai/save_or_update_autofill_ai_data_controller.cc",
+      "autofill_ai/save_or_update_autofill_ai_data_controller.h",
+      "autofill_ai/save_or_update_autofill_ai_data_controller_impl.h",
       "autofill_context_menu_manager.h",
       "autofill_field_promo_controller.h",
       "autofill_field_promo_controller_impl.h",
@@ -87,6 +87,7 @@ source_set("autofill") {
       "update_address_bubble_controller.h",
     ]
     public_deps += [
+      "//components/autofill_ai/core/browser",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:password_form",
       "//components/renderer_context_menu",
@@ -95,13 +96,6 @@ source_set("autofill") {
       "//ui/base",
       "//ui/menus",
       "//ui/views",
-    ]
-  }
-
-  if (enable_dice_support) {
-    sources += [
-      "autofill_bubble_signin_promo_controller.h",
-      "autofill_signin_promo_tab_helper.h",
     ]
   }
 
@@ -142,7 +136,7 @@ source_set("impl") {
     "//components/autofill/content/browser:risk_proto",
     "//components/compose/core/browser",
     "//components/compose/core/browser:features",
-    "//components/embedder_support:browser_util",
+    "//components/embedder_support:user_agent",
     "//components/feature_engagement/public",
     "//components/infobars/content",
     "//components/infobars/core",
@@ -154,6 +148,7 @@ source_set("impl") {
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser/form_parsing",
     "//components/plus_addresses:features",
+    "//components/plus_addresses:hats_utils",
     "//components/plus_addresses:types",
     "//components/plus_addresses/resources/strings",
     "//components/profile_metrics",
@@ -183,7 +178,7 @@ source_set("impl") {
       "address_bubbles_controller.cc",
       "address_bubbles_icon_controller.cc",
       "address_editor_controller.cc",
-      "autofill_ai/save_autofill_ai_data_controller_impl.cc",
+      "autofill_ai/save_or_update_autofill_ai_data_controller_impl.cc",
       "autofill_context_menu_manager.cc",
       "autofill_field_promo_controller_impl.cc",
       "autofill_popup_controller_impl.cc",
@@ -199,7 +194,6 @@ source_set("impl") {
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/feedback",
       "//chrome/browser/promos:utils",
-      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/toasts:toasts",
@@ -215,13 +209,6 @@ source_set("impl") {
     if (is_chrome_branded) {
       deps += [ "//components/plus_addresses/resources:vector_icons" ]
     }
-  }
-
-  if (enable_dice_support) {
-    sources += [
-      "autofill_bubble_signin_promo_controller.cc",
-      "autofill_signin_promo_tab_helper.cc",
-    ]
   }
 
   if (is_mac) {
@@ -267,6 +254,8 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/common",
     "//components/plus_addresses:features",
+    "//components/plus_addresses:hats_utils",
+    "//components/plus_addresses:test_support",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings",
@@ -308,10 +297,6 @@ source_set("unit_tests") {
       "update_address_bubble_controller_unittest.cc",
     ]
     deps += [ "//chrome/browser/ui/hats:test_support" ]
-  }
-
-  if (enable_dice_support) {
-    sources += [ "autofill_bubble_signin_promo_controller_unittest.cc" ]
   }
 }
 
@@ -444,7 +429,10 @@ if (!is_android) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "autofill_context_menu_manager_browsertest.cc" ]
+    sources = [
+      "autofill_ai/save_or_update_autofill_ai_data_controller_impl_browsertest.cc",
+      "autofill_context_menu_manager_browsertest.cc",
+    ]
 
     deps = [
       ":autofill",
@@ -490,9 +478,5 @@ if (!is_android) {
       "//ui/base",
       "//url",
     ]
-
-    if (enable_dice_support) {
-      sources += [ "autofill_signin_promo_tab_helper_browsertest.cc" ]
-    }
   }
 }

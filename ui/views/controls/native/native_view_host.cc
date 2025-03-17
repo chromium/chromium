@@ -234,7 +234,7 @@ void NativeViewHost::OnFocus() {
   if (native_view_) {
     native_wrapper_->SetFocus();
   }
-  NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
 }
 
 gfx::NativeViewAccessible NativeViewHost::GetNativeViewAccessible() {
@@ -297,8 +297,7 @@ void NativeViewHost::ClearFocus() {
     return;
   }
 
-  Widget::Widgets widgets;
-  Widget::GetAllChildWidgets(native_view(), &widgets);
+  Widget::Widgets widgets = Widget::GetAllChildWidgets(native_view());
   for (Widget* widget : widgets) {
     focus_manager->ViewRemoved(widget->GetRootView());
     if (!focus_manager->GetFocusedView()) {

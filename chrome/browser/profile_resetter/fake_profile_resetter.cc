@@ -4,6 +4,8 @@
 
 #include "chrome/browser/profile_resetter/fake_profile_resetter.h"
 
+#include "build/build_config.h"
+
 FakeProfileResetter::FakeProfileResetter(TestingProfile* profile)
     : ProfileResetter(profile) {}
 
@@ -23,6 +25,6 @@ size_t FakeProfileResetter::Resets() const {
   return reset_count_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void FakeProfileResetter::ResetDnsConfigurations() {}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

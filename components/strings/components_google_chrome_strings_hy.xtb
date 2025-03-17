@@ -9,8 +9,11 @@
 <translation id="2447485272386224171">Chrome-ը ստեղծվել է <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> նախագծի և այլ <ph name="BEGIN_LINK_OSS" />բաց կոդով ծրագրակազմերի<ph name="END_LINK_OSS" /> հիման վրա։</translation>
 <translation id="2588322182880276190">Chrome-ի պատկերանշան</translation>
 <translation id="3444832043240812445">Այս էջը ցույց կտա միայն վերջին խափանումների մասին տեղեկությունները, եթե <ph name="BEGIN_LINK" />միացնեք խափանման հաշվետվությունների ուղարկումը<ph name="END_LINK" />:</translation>
+<translation id="3512634283363927263">Այս էջերը, որոնք նախատեսված են Chrome-ի մշակողների համար, չեն կարող պարբերաբար փորձարկվել կամ մշակվել։ Միացնելու համար անցեք <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> էջ, սեղմեք կոճակը՝ վրիպազերծման էջերը միացնելու համար, այնուհետև վերադարձեք այստեղ։</translation>
 <translation id="3875312571075912821">Հրապատի կամ հակավիրուսային ծրագրի կարգավորումներում
        թույլատրեք Chrome-ին միանալ ցանցին:</translation>
+<translation id="4949828774841497663">Գնացեք Հավելվածներ &gt; Համակարգի կարգավորումներ &gt; Ցանց, ընտրեք
+         ակտիվ ցանցը, սեղմեք Մանրամասներ... կոճակը և չեղարկեք ցանկացած                              պրոքսի սերվերի ընտրությունը։</translation>
 <translation id="5005121315113832363">Այս էջն արգելափակվել է Chrome-ի կողմից</translation>
 <translation id="6011049234605203654">Անցեք
           Chrome-ի ընտրացանկ &gt;
@@ -39,9 +42,6 @@
           LAN-ի կարգավորումներ
           և ապանշեք «Օգտագործել պրոքսի սերվեր LAN-ի համար»:</translation>
 <translation id="7230956101631259640">Դուք դիտում եք Chrome-ի անվտանգ էջ</translation>
-<translation id="8187289872471304532">Անցեք
-          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
-          և ապընտեք բոլոր ընտրված պրոքսի-սերվերները:</translation>
 <translation id="8232971017369963250">Chrome-ը ստեղծվել է <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-ի բաց կոդով նախագծի հիման վրա։</translation>
 <translation id="8279509328145658601">Chrome-ը նաև աշխատում է այլ <ph name="BEGIN_LINK_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_OSS" /> շնորհիվ։</translation>
 <translation id="8544217240017914508">Google Chrome-ը փորձում է փոխել վճարման եղանակների լրացման կարգավորումները։</translation>

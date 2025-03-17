@@ -22,6 +22,7 @@
 #include "chrome/browser/net/proxy_config_monitor.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/network_service_instance.h"
@@ -81,9 +82,9 @@ class SSLPrivateKeyBridge : public network::mojom::SSLPrivateKey {
   base::WeakPtrFactory<SSLPrivateKeyBridge> weak_ptr_factory_{this};
 };
 
-BruschettaNetworkContext::BruschettaNetworkContext(Profile* profile)
-    : profile_(profile),
-      proxy_config_monitor_(g_browser_process->local_state()) {
+BruschettaNetworkContext::BruschettaNetworkContext(Profile* profile,
+                                                   PrefService& local_state)
+    : profile_(profile), proxy_config_monitor_(&local_state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -275,5 +276,11 @@ void BruschettaNetworkContext::Clone(
 
 void BruschettaNetworkContext::OnWebSocketConnectedToPrivateNetwork(
     network::mojom::IPAddressSpace ip_address_space) {}
+
+void BruschettaNetworkContext::OnUrlLoaderConnectedToPrivateNetwork(
+    const GURL& request_url,
+    network::mojom::IPAddressSpace response_address_space,
+    network::mojom::IPAddressSpace client_address_space,
+    network::mojom::IPAddressSpace target_address_space) {}
 
 }  // namespace bruschetta

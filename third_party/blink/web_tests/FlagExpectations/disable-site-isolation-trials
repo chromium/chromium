@@ -2,9 +2,6 @@
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
-# Isolated-sandboxed-iframe require site isolation to be effective.
-virtual/isolate-sandboxed-iframes/* [ Skip ]
-
 # crbug/1358670 run fewer tests for disable-site-isolation-trials.
 # Those tests are fairly independent of site isolation and unlikely to be affected by it.
 css1/* [ Skip ]
@@ -79,6 +76,14 @@ crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigati
 crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/400832116 external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.html [ Failure Pass Skip ]
+crbug.com/400832116 external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.inherit.html [ Failure Pass Skip ]
+crbug.com/398894517 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?5-6 [ Crash Failure ]
+crbug.com/396460424 external/wpt/html/semantics/the-button-element/command-and-commandfor/button-event-dispatch.tentative.html [ Crash Failure ]
+crbug.com/395462245 external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Timeout ]
+crbug.com/392180059 external/wpt/digital-credentials/disabled-by-permissions-policy.https.sub.html [ Crash Failure ]
+crbug.com/388345823 external/wpt/fetch/api/credentials/cookies.any.sharedworker.html [ Crash ]
+crbug.com/386547453 external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?3-4 [ Crash ]
 crbug.com/384972937 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html [ Timeout ]
 crbug.com/383814062 virtual/disable-raster-inducing-scroll/external/wpt/acid/acid2/reftest.html [ Failure ]
 crbug.com/377965584 virtual/fenced-frame-mparch/external/wpt/fenced-frame/csp-allowed.https.html [ Timeout ]
@@ -156,3 +161,7 @@ virtual/document-isolation-policy/* [ Skip ]
 # IsolatedContext, so skip them here.
 virtual/isolated-context/* [ Skip ]
 virtual/isolated-context-stable/* [ Skip ]
+
+# Reftest failure related to off-main-thread interaction (imperceptible AA differences)
+crbug.com/395909730 virtual/off-main-thread-css-paint/http/tests/csspaint/paint2d-zoom.html [ Failure ]  # Reftest image failure
+crbug.com/395909730 virtual/off-main-thread-css-paint/http/tests/csspaint/transform-with-page-zoom-003.html [ Failure ]  # Reftest image failure

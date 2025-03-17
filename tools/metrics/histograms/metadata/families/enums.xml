@@ -40,6 +40,21 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Has conflict"/>
 </enum>
 
+<!-- LINT.IfChange(ClassifyUrlThrottleFinalStatus) -->
+
+<enum name="ClassifyUrlThrottleFinalStatus">
+  <int value="0" label="Allowed">
+    The navigation is allowed as a result of aggregating filtering results from
+    SupervisedUserURLFilter
+  </int>
+  <int value="1" label="Blocked">
+    The navigation is denied as a result of aggregating filtering results from
+    SupervisedUserURLFilter, and an interstitial is scheduled.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/classify_url_navigation_throttle.h:ClassifyUrlThrottleFinalStatus) -->
+
 <!-- LINT.IfChange(ClassifyUrlThrottleStatus) -->
 
 <enum name="ClassifyUrlThrottleStatus">
@@ -146,6 +161,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(FamilyLinkUserLocalWebApprovalResult) -->
+
 <enum name="FamilyLinkUserLocalWebApprovalResult">
   <summary>
     The result of local web approval request. Reported by the browser once
@@ -161,8 +178,13 @@ chromium-metrics-reviews@google.com.
     Request was canceled at any point (before, during or after parent
     verification).
   </int>
-  <int value="3" label="Error">An error occured during the request flow.</int>
+  <int value="3" label="Error">
+    An error occured during the request flows, including malformed requests and
+    server-client connection errors.
+  </int>
 </enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:LocalApprovalResult) -->
 
 <enum name="FamilyLinkUserLogSegment">
   <summary>
@@ -190,6 +212,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(FamilyLinkUserParentAccessWidgetError) -->
+
 <enum name="FamilyLinkUserParentAccessWidgetError">
   <summary>
     Error that occurs in the parent access widget. ChromeOS only.
@@ -213,6 +237,8 @@ chromium-metrics-reviews@google.com.
     ParentAccessHandler::OnParentAccessCallback.
   </int>
 </enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:ParentAccessWidgetError) -->
 
 <enum name="FamilyLinkUserParentAccessWidgetShowDialogError">
   <summary>
@@ -268,6 +294,31 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Hidden on login screen"/>
   <int value="2" label="Attempted cryptohome deletion"/>
 </enum>
+
+<!-- LINT.IfChange(LocalWebApprovalErrorType) -->
+
+<enum name="LocalWebApprovalErrorType">
+  <summary>Error type that occurs during the local web approval flow.</summary>
+  <int value="0" label="Failure to decode PACP response">
+    The response provided by the PACP widget does not have valid url base 64
+    encoding
+  </int>
+  <int value="1" label="Failure to parse PACP response">
+    The response provided by the PACP widget could not be parsed in the expected
+    format provided by the PACP contract
+  </int>
+  <int value="2" label="Unexpected PACP response">
+    The response provided by the PACP does not apply to the parent approval flow
+  </int>
+  <int value="3" label="PACP timeout exceeded">
+    Failed to connect to the PACP widget within the provided timeout
+  </int>
+  <int value="4" label="Empty PACP response">
+    The response provided by the PACP was empty
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:LocalWebApprovalErrorType) -->
 
 <enum name="ManagedModeBlockingCommand">
   <int value="0" label="Preview"/>

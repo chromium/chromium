@@ -146,9 +146,14 @@ std::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
     info.use_skia = ShouldEnableSkiaRenderer(contents);
     if (chrome_pdf::features::IsOopifPdfEnabled()) {
       net::HttpResponseHeaders* response_headers = stream->response_headers();
-      info.require_corp = response_headers &&
-                          response_headers->HasHeaderValue(
-                              "Cross-Origin-Embedder-Policy", "require-corp");
+      if (response_headers) {
+        std::optional<std::string> coep_header =
+            response_headers->GetNormalizedHeader(
+                "Cross-Origin-Embedder-Policy");
+        if (coep_header.has_value()) {
+          info.coep_header = coep_header.value();
+        }
+      }
     }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   } else if (stream_url.GetWithEmptyPath() ==

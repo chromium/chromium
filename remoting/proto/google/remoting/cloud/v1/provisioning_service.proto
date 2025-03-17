@@ -31,6 +31,12 @@ message ProvisionGceInstanceRequest {
   // backend will validate the other fields in the request and ensure
   // `owner_email` owns the previous instance as well.
   optional string existing_directory_id = 5;
+
+  // An instance identity token which includes GCP project and instance
+  // information for a specific Compute Engine Instance.
+  // More information about the contents of the token can be found at:
+  // https://cloud.google.com/compute/docs/instances/verifying-instance-identity
+  optional string instance_identity_token = 6;
 }
 
 // Represents a service account created for a remote access host instance.

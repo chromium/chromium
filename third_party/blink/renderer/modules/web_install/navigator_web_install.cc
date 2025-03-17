@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_install_result.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -22,6 +23,8 @@
 namespace blink {
 
 const char NavigatorWebInstall::kSupplementName[] = "NavigatorWebInstall";
+const char kInvalidInstallUrlErrorDetails[] = "Invalid install url";
+const char kInvalidManifestIdErrorDetails[] = "Invalid manifest id";
 
 void OnInstallResponse(ScriptPromiseResolver<WebInstallResult>* resolver,
                        mojom::blink::WebInstallServiceResult result,
@@ -46,52 +49,39 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::install(
     ScriptState* script_state,
     Navigator& navigator,
     ExceptionState& exception_state) {
-  return NavigatorWebInstall::From(navigator).InstallImpl(script_state,
-                                                          exception_state);
+  return NavigatorWebInstall::From(navigator).InstallImpl(
+      script_state,
+      /*install_url=*/std::optional<String>(),
+      /*manifest_id=*/std::optional<String>(), exception_state);
 }
 
 // static:
 ScriptPromise<WebInstallResult> NavigatorWebInstall::install(
     ScriptState* script_state,
     Navigator& navigator,
-    const String& manifest_id,
     const String& install_url,
     ExceptionState& exception_state) {
   return NavigatorWebInstall::From(navigator).InstallImpl(
-      script_state, manifest_id, install_url, exception_state);
+      script_state, std::optional<String>(install_url),
+      /*manifest_id=*/std::optional<String>(), exception_state);
 }
 
-ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
+// static:
+ScriptPromise<WebInstallResult> NavigatorWebInstall::install(
     ScriptState* script_state,
-    ExceptionState& exception_state) {
-  if (!CheckPreconditionsMaybeThrow(script_state, exception_state)) {
-    return ScriptPromise<WebInstallResult>();
-  }
-
-  auto* frame = GetSupplementable()->DomWindow()->GetFrame();
-  if (!LocalFrame::ConsumeTransientUserActivation(frame)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Unable to install app. This API can only be called shortly after a "
-        "user activation.");
-    return ScriptPromise<WebInstallResult>();
-  }
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<WebInstallResult>>(
-          script_state);
-  ScriptPromise<WebInstallResult> promise = resolver->Promise();
-
-  CHECK(GetService());
-  GetService()->Install(nullptr, WTF::BindOnce(&blink::OnInstallResponse,
-                                               WrapPersistent(resolver)));
-  return promise;
-}
-
-ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
-    ScriptState* script_state,
-    const String& manifest_id,
+    Navigator& navigator,
     const String& install_url,
+    const String& manifest_id,
+    ExceptionState& exception_state) {
+  return NavigatorWebInstall::From(navigator).InstallImpl(
+      script_state, std::optional<String>(install_url),
+      std::optional<String>(manifest_id), exception_state);
+}
+
+ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
+    ScriptState* script_state,
+    const std::optional<String>& install_url,
+    const std::optional<String>& manifest_id,
     ExceptionState& exception_state) {
   if (!CheckPreconditionsMaybeThrow(script_state, exception_state)) {
     return ScriptPromise<WebInstallResult>();
@@ -106,20 +96,43 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
     return ScriptPromise<WebInstallResult>();
   }
 
-  KURL resolved_id = ResolveManifestId(manifest_id, exception_state);
-  if (!resolved_id.IsValid()) {
-    return ScriptPromise<WebInstallResult>();
-  }
-
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<WebInstallResult>>(
           script_state);
   ScriptPromise<WebInstallResult> promise = resolver->Promise();
 
   CHECK(GetService());
+
+  // `navigator.install()` was called.
+  // Initiate installation of the current document.
+  if (!manifest_id && !install_url) {
+    GetService()->Install(
+        /*options=*/nullptr,
+        WTF::BindOnce(&blink::OnInstallResponse, WrapPersistent(resolver)));
+    return promise;
+  }
+
+  // `install_url` is a required field for all other signatures.
+  CHECK(install_url.has_value());
+
+  if (!IsInstallUrlValid(install_url.value())) {
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(), kInvalidInstallUrlErrorDetails));
+    return promise;
+  }
   mojom::blink::InstallOptionsPtr options = mojom::blink::InstallOptions::New();
-  options->manifest_id = resolved_id;
-  options->install_url = KURL(install_url);
+  options->install_url = KURL(install_url.value());
+
+  // `navigator.install(install_url, manifest_id)` was called.
+  if (manifest_id) {
+    KURL resolved_id = ValidateAndResolveManifestId(manifest_id.value());
+    if (!resolved_id.IsValid()) {
+      resolver->Reject(V8ThrowException::CreateTypeError(
+          script_state->GetIsolate(), kInvalidManifestIdErrorDetails));
+      return promise;
+    }
+    options->manifest_id = resolved_id;
+  }
 
   GetService()->Install(
       std::move(options),
@@ -165,8 +178,14 @@ void NavigatorWebInstall::OnConnectionError() {
 bool NavigatorWebInstall::CheckPreconditionsMaybeThrow(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  // TODO(crbug.com/333795265): Verify that site has been granted web install
-  // permission once implemented.
+  if (!ExecutionContext::From(script_state)
+           ->IsFeatureEnabled(
+               network::mojom::PermissionsPolicyFeature::kWebAppInstallation)) {
+    exception_state.ThrowSecurityError(
+        "Access to the feature \"web-app-installation\" is disallowed by "
+        "Permissions Policy.");
+    return false;
+  }
 
   Navigator* const navigator = GetSupplementable();
 
@@ -195,8 +214,26 @@ bool NavigatorWebInstall::CheckPreconditionsMaybeThrow(
   return true;
 }
 
-KURL NavigatorWebInstall::ResolveManifestId(const String& manifest_id,
-                                            ExceptionState& exception_state) {
+bool NavigatorWebInstall::IsInstallUrlValid(const String& install_url) {
+  // This covers edge cases such as the empty string, undefined, null, other
+  // JavaScript types (eg. Number, Boolean), and general invalid strings
+  // (strings that are not valid URLs).
+  return !install_url.empty() && KURL(install_url).IsValid();
+}
+
+KURL NavigatorWebInstall::ValidateAndResolveManifestId(
+    const String& manifest_id) {
+  // TODO(crbug.com/397043069): Verify manifest id resolution on blink side.
+  // Ensure that edge cases are handled correctly as well.
+
+  // Manifest id validation is different than install url, since
+  // `manifest_id` alone doesn't have to be a valid URL, so we can only check
+  // for empty, undefined, and null arguments to the API at this point.
+  if (manifest_id.empty() || manifest_id == "null" ||
+      manifest_id == "undefined") {
+    return KURL();
+  }
+
   KURL resolved = KURL(manifest_id);
   if (resolved.IsValid()) {
     return resolved;
@@ -207,13 +244,7 @@ KURL NavigatorWebInstall::ResolveManifestId(const String& manifest_id,
   KURL origin = KURL(SecurityOrigin::Create(document_url)->ToString());
 
   resolved = KURL(origin, manifest_id);
-  if (!resolved.IsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      "Invalid manifest id.");
-    return KURL();
-  }
-
-  return resolved;
+  return resolved.IsValid() ? resolved : KURL();
 }
 
 }  // namespace blink

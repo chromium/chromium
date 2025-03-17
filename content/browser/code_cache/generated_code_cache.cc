@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/code_cache/generated_code_cache.h"
 
 #include <iostream>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -247,16 +243,6 @@ bool GeneratedCodeCache::IsValidHeader(
   return buffer_size == kHeaderSizeInBytes + kSHAKeySizeInBytes;
 }
 
-void GeneratedCodeCache::ReportPeriodicalHistograms() {
-  DCHECK_EQ(cache_type_, CodeCacheType::kJavaScript);
-  base::UmaHistogramCustomCounts(
-      "SiteIsolatedCodeCache.JS.PotentialMemoryBackedCodeCacheSize2",
-      lru_cache_.GetSize(),
-      /*min=*/0,
-      /*exclusive_max=*/kLruCacheCapacity,
-      /*buckets=*/50);
-}
-
 std::string GeneratedCodeCache::GetResourceURLFromKey(const std::string& key) {
   constexpr size_t kPrefixStringLen = std::size(kPrefix) - 1;
   // |key| may not have a prefix and separator (e.g. for deduplicated entries).
@@ -458,12 +444,6 @@ GeneratedCodeCache::GeneratedCodeCache(const base::FilePath& path,
                      ? kLruCacheCapacity
                      : std::min<int64_t>(kLruCacheCapacity, max_size_bytes)) {
   CreateBackend();
-  if (cache_type == CodeCacheType::kJavaScript) {
-    histograms_timer_.Start(
-        FROM_HERE, base::Minutes(5),
-        base::BindRepeating(&GeneratedCodeCache::ReportPeriodicalHistograms,
-                            base::Unretained(this)));
-  }
 }
 
 GeneratedCodeCache::~GeneratedCodeCache() = default;
@@ -535,7 +515,7 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
     // change shared memory before we can compute the hash and write the data.
     // TODO(crbug.com/40151989) Eliminate this copy when the shared memory can't
     // be written by the sender.
-    mojo_base::BigBuffer copy({data.data(), data.size()});
+    mojo_base::BigBuffer copy(base::span{data});
     if (copy.size() != data.size())
       return;
     data = mojo_base::BigBuffer();  // Release the old buffer.
@@ -928,7 +908,7 @@ void GeneratedCodeCache::ReadComplete(PendingOperation* op) {
         DCHECK_EQ(static_cast<int>(kHeaderSizeInBytes + kSHAKeySizeInBytes),
                   op->small_buffer()->size());
         std::string checksum_key(
-            op->small_buffer()->data() + kHeaderSizeInBytes,
+            UNSAFE_TODO(op->small_buffer()->data() + kHeaderSizeInBytes),
             kSHAKeySizeInBytes);
         auto small_buffer = base::MakeRefCounted<net::IOBufferWithSize>(0);
         auto large_buffer = base::MakeRefCounted<BigIOBuffer>(data_size);

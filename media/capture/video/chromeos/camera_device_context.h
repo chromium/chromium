@@ -16,6 +16,10 @@
 #include "media/capture/video/video_capture_device.h"
 #include "ui/gfx/color_space.h"
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace media {
 
 enum class ClientType : uint32_t {
@@ -135,15 +139,15 @@ class CAPTURE_EXPORT CameraDeviceContext {
       const VideoFrameMetadata& metadata);
 
   // Submits the captured camera frame through a locally-allocated
-  // GpuMemoryBuffer.  The captured buffer would be submitted through
-  // |client_->OnIncomingCapturedGfxBuffer|, which would perform buffer copy
+  // image.  The captured buffer would be submitted through
+  // |client_->OnIncomingCapturedImage|, which would perform buffer copy
   // and/or format conversion to an I420 SharedMemory-based video capture buffer
   // for client consumption.
-  void SubmitCapturedGpuMemoryBuffer(ClientType client_type,
-                                     gfx::GpuMemoryBuffer* buffer,
-                                     const VideoCaptureFormat& frame_format,
-                                     base::TimeTicks reference_time,
-                                     base::TimeDelta timestamp);
+  void SubmitCapturedImage(ClientType client_type,
+                           scoped_refptr<gpu::ClientSharedImage> shared_image,
+                           const VideoCaptureFormat& frame_format,
+                           base::TimeTicks reference_time,
+                           base::TimeDelta timestamp);
 
   void SetSensorOrientation(int sensor_orientation);
 

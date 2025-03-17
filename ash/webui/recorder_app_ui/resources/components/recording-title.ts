@@ -61,8 +61,15 @@ export class RecordingTitle extends ReactiveLitElement {
       position-anchor: --title-textfield;
       position-area: bottom span-right;
       margin-top: 4.5px;
-      max-width: 402px;
+
+      /* Prevents overflow and excessive resizing beyond content size. */
+      max-width: calc-size(
+        fit-content,
+        /* Excludes page margins, icon-button size, and header padding. */
+        min(size, 100vw - 16px * 2 - 44px - var(--header-padding))
+      );
       min-width: 360px;
+      width: fit-content;
     }
 
     #title {
@@ -131,9 +138,9 @@ export class RecordingTitle extends ReactiveLitElement {
   });
 
   private readonly shouldShowTitleSuggestion = computed(() => {
-    const modelState = this.platformHandler.titleSuggestionModelLoader.state;
+    const modelState = this.platformHandler.getGenAiModelState();
     return (
-      modelState.value.kind === 'installed' &&
+      modelState.kind === 'installed' &&
       settings.value.summaryEnabled === SummaryEnableState.ENABLED &&
       this.transcription.value !== null && !this.transcription.value.isEmpty()
     );
@@ -268,6 +275,7 @@ export class RecordingTitle extends ReactiveLitElement {
       @change=${this.onSuggestTitle}
       .suggestedTitles=${this.suggestedTitles}
       .wordCount=${this.transcription.value?.getWordCount() ?? 0}
+      .transcription=${this.transcription.value?.toPlainText() ?? ''}
       ${ref(this.recordingTitleSuggestion)}
     ></recording-title-suggestion>`;
   }

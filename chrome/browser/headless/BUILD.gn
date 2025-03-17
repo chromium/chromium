@@ -138,6 +138,7 @@ if (!is_android) {
     data = [
       "test/data/",
       "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/inspector-protocol-test.js",
+      "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/http-interceptor.js",
     ]
   }
 }

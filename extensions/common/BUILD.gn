@@ -97,6 +97,7 @@ mojom("mojom") {
     "mojom/injection_type.mojom",
     "mojom/keep_alive.mojom",
     "mojom/manifest.mojom",
+    "mojom/match_origin_as_fallback.mojom",
     "mojom/message_port.mojom",
     "mojom/permission_set.mojom",
     "mojom/renderer.mojom",
@@ -466,7 +467,6 @@ static_library("common") {
     "permissions/usb_device_permission_data.cc",
     "permissions/usb_device_permission_data.h",
     "process_context_data.h",
-    "script_constants.h",
     "stack_frame.cc",
     "stack_frame.h",
     "switches.cc",
@@ -479,6 +479,10 @@ static_library("common") {
     "url_pattern_set.h",
     "user_script.cc",
     "user_script.h",
+    "user_scripts_allowed_state.cc",
+    "user_scripts_allowed_state.h",
+    "user_scripts_availability.cc",
+    "user_scripts_availability.h",
     "utils/base_string.cc",
     "utils/base_string.h",
     "utils/content_script_utils.cc",
@@ -564,8 +568,6 @@ static_library("common") {
 
   if (is_chromeos) {
     sources += [
-      "manifest_handlers/action_handlers_handler.cc",
-      "manifest_handlers/action_handlers_handler.h",
       "manifest_handlers/input_components_handler.cc",
       "manifest_handlers/input_components_handler.h",
     ]
@@ -716,10 +718,7 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
-    sources += [
-      "manifest_handlers/action_handlers_handler_unittest.cc",
-      "manifest_handlers/file_handler_manifest_unittest.cc",
-    ]
+    sources += [ "manifest_handlers/file_handler_manifest_unittest.cc" ]
   }
 
   data = [
@@ -744,6 +743,8 @@ if (enable_extensions) {
     deps = [
       ":common",
       "//base",
+      "//content/public/common",
+      "//content/test:test_support",
       "//extensions:test_support",
     ]
 

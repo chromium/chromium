@@ -212,8 +212,8 @@ class UnsentLogStore : public LogStore {
   void ReadLogsFromPrefList(const base::Value::List& list);
 
   // Writes the unsent log info to the |metadata_pref_name_| preference.
-  void WriteToMetricsPref(base::HistogramBase::Count unsent_samples_count,
-                          base::HistogramBase::Count sent_samples_count,
+  void WriteToMetricsPref(base::HistogramBase::Count32 unsent_samples_count,
+                          base::HistogramBase::Count32 sent_samples_count,
                           size_t persisted_size) const;
 
   // Records the info in |metadata_pref_name_| as UMA metrics.
@@ -264,7 +264,7 @@ class UnsentLogStore : public LogStore {
   int staged_log_index_;
 
   // The total number of samples that have been sent from this LogStore.
-  base::HistogramBase::Count total_samples_sent_ = 0;
+  base::HistogramBase::Count32 total_samples_sent_ = 0;
 };
 
 }  // namespace metrics

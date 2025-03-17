@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/common/password_manager_constants.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
+#import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -132,11 +133,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   // If password sync is not on (represented by the user's email not being
   // available as used in the sync disclaimer), then don't show the "Suggest
   // Strong Password" button.
-  NSString* syncingUserEmail = [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
-  BOOL passwordSyncOn = syncingUserEmail != nil;
-  return (passwordSyncOn) ? NewPasswordTableCellTypeNumRows
-                          : NewPasswordTableCellTypeNumRows - 1;
+  NSString* syncingUserEmail = app_group::UserDefaultsStringForKey(
+      AppGroupUserDefaultsCredentialProviderUserEmail(),
+      /*default_value=*/@"");
+  return syncingUserEmail.length ? NewPasswordTableCellTypeNumRows
+                                 : NewPasswordTableCellTypeNumRows - 1;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
@@ -549,6 +550,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NEW_"
                                         @"PASSWORD_PREVIOUS_FIELD_HINT",
                                         @"Previous field")
+                             manualFillButtonTitle:nil
                 manualFillButtonAccessibilityLabel:nil
         passwordManualFillButtonAccessibilityLabel:nil
       creditCardManualFillButtonAccessibilityLabel:nil

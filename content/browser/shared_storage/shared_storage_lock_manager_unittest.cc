@@ -19,7 +19,7 @@ namespace content {
 
 namespace {
 
-using AccessScope = SharedStorageLockManager::AccessScope;
+using AccessScope = blink::SharedStorageAccessScope;
 
 class TestLockRequest : public blink::mojom::LockRequest {
  public:

@@ -15,7 +15,6 @@
 #include "base/process/launch.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,7 +29,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -92,30 +91,31 @@ void SSLErrorControllerClient::GoBack() {
 }
 
 void SSLErrorControllerClient::Proceed() {
-  MaybeTriggerSecurityInterstitialProceededEvent(web_contents_, request_url_,
+  content::WebContents* const web_contents = this->web_contents();
+  MaybeTriggerSecurityInterstitialProceededEvent(web_contents, request_url_,
                                                  "SSL_ERROR", cert_error_);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Hosted Apps should not be allowed to run if there is a problem with their
   // certificate. So, when users click proceed on an interstitial, move the tab
   // to a regular Chrome window and proceed as usual there.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (web_app::AppBrowserController::IsWebApp(browser))
     chrome::OpenInChrome(browser);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   StatefulSSLHostStateDelegate* state =
       static_cast<StatefulSSLHostStateDelegate*>(
           profile->GetSSLHostStateDelegate());
   // StatefulSSLHostStateDelegate can be null during tests.
   if (state) {
     // Notifies the browser process when a certificate exception is allowed.
-    web_contents_->SetAlwaysSendSubresourceNotifications();
+    web_contents->SetAlwaysSendSubresourceNotifications();
 
     state->AllowCert(
         request_url_.host(), *ssl_info_.cert.get(), cert_error_,
-        web_contents_->GetPrimaryMainFrame()->GetStoragePartition());
+        web_contents->GetPrimaryMainFrame()->GetStoragePartition());
     Reload();
   }
 }
@@ -127,7 +127,7 @@ bool SSLErrorControllerClient::CanLaunchDateAndTimeSettings() {
 void SSLErrorControllerClient::LaunchDateAndTimeSettings() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       ProfileManager::GetActiveUserProfile(),
       chromeos::settings::mojom::kSystemPreferencesSectionPath);
@@ -139,5 +139,5 @@ void SSLErrorControllerClient::LaunchDateAndTimeSettings() {
 }
 
 bool SSLErrorControllerClient::HasSeenRecurrentError() {
-  return HasSeenRecurrentErrorInternal(web_contents_, cert_error_);
+  return HasSeenRecurrentErrorInternal(web_contents(), cert_error_);
 }

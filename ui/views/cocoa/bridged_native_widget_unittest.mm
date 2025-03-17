@@ -671,7 +671,7 @@ Textfield* BridgedNativeWidgetTest::InstallTextField(
   textfield->SetTextInputType(text_input_type);
   textfield->set_controller(this);
   view_->RemoveAllChildViews();
-  view_->AddChildView(textfield);
+  view_->AddChildViewRaw(textfield);
   textfield->SetBoundsRect(bounds_);
 
   // Request focus so the InputMethod can dispatch events to the RootView, and

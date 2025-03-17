@@ -353,6 +353,11 @@ var availableTests = [
     });
 
     chrome.test.notifyPass();
+  },
+
+  function testEnableLiveCaption() {
+    chrome.accessibilityPrivate.enableLiveCaption(
+        true, () => chrome.test.notifyPass());
   }
 ];
 

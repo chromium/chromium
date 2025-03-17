@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
 
 #import <memory>
+#import <optional>
 #import <string>
 #import <vector>
 
@@ -68,7 +69,7 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
 
 }  // namespace
 
-@interface ManualFillInjectionHandler ()<FormActivityObserver>
+@interface ManualFillInjectionHandler () <FormActivityObserver>
 
 // The object in charge of listening to form events and reporting back.
 @property(nonatomic, strong) FormObserverHelper* formHelper;
@@ -226,15 +227,17 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
     // It is really odd to not have params here as getting a suggestion for the
     // manual fallback should correlate with a form activity. Only
     // crash when stateless is enabled so we don't perturbate the current flow.
-    CHECK(_lastFocusedElementParams, base::NotFatalUntil::M134);
+    CHECK(_lastFocusedElementParams, base::NotFatalUntil::M137);
 
+    // Do not pass the params yet as the client will wrap its own params around
+    // the suggestion. This is to keep the status quo of how params are handled
+    // when doing a manual fill.
     FormSuggestion* decoratedSuggestion =
         [FormSuggestion copy:formSuggestion
-                andSetParams:*_lastFocusedElementParams
+                andSetParams:std::nullopt
                     provider:[self providerForSuggestion:formSuggestion]];
     [self.formSuggestionClient didSelectSuggestion:decoratedSuggestion
-                                           atIndex:index
-                                            params:*_lastFocusedElementParams];
+                                           atIndex:index];
   } else {
     [self.formSuggestionClient didSelectSuggestion:formSuggestion
                                            atIndex:index];

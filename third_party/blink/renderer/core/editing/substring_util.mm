@@ -102,7 +102,7 @@ NSAttributedString* AttributedSubstringFromRange(LocalFrame* frame,
     // scale factor must be multiplied in.
 
     const ComputedStyle* style = layout_object->Style();
-    const SimpleFontData* primaryFont = style->GetFont().PrimaryFont();
+    const SimpleFontData* primaryFont = style->GetFont()->PrimaryFont();
     const FontPlatformData& font_platform_data = primaryFont->PlatformData();
 
     const float page_scale_factor = frame->GetPage()->PageScaleFactor();
@@ -132,7 +132,7 @@ NSAttributedString* AttributedSubstringFromRange(LocalFrame* frame,
     if (!font || floor(font_platform_data.size()) !=
                      floor(original_font.fontDescriptor.pointSize)) {
       font = [NSFont systemFontOfSize:style->GetFont()
-                                          .GetFontDescription()
+                                          ->GetFontDescription()
                                           .ComputedSize() *
                                       page_scale_factor / device_scale_factor];
     }

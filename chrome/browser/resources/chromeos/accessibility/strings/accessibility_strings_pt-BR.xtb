@@ -1021,7 +1021,7 @@
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Botão de opção anterior</translation>
 <translation id="7696631298608145306">passar para a próxima palavra</translation>
-<translation id="7701040980221191251">Nenhuma</translation>
+<translation id="7701040980221191251">Não há</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Nenhuma caixa de combinação a seguir</translation>
 <translation id="7715455358521357192">Apertar o olho direito</translation>
@@ -1115,6 +1115,7 @@
 <translation id="8316881042119029234">Palha</translation>
 <translation id="8326783648485765113">Verde-grama</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{sinal de cerquilha}one{# indicadores de cerquilha}other{# indicadores de cerquilha}}</translation>
+<translation id="8351821207686449674">Ativar/desativar legendas</translation>
 <translation id="8378855320830505539">Região</translation>
 <translation id="8382679411218029383">Preenchimento automático em linha e lista</translation>
 <translation id="8394908167088220973">Reproduzir/pausar mídia</translation>

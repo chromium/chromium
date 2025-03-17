@@ -96,6 +96,32 @@ TEST(SyncedSessionTest, SessionNavigationToSyncData) {
   EXPECT_EQ(navigation.http_status_code(), sync_data.http_status_code());
 }
 
+// Same as above but uses invalid URLs.
+TEST(SyncedSessionTest, SessionNavigationToSyncDataWithInvalidURL) {
+  SerializedNavigationEntry navigation =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  navigation.set_virtual_url(GURL("http:google.com:foo"));
+  navigation.set_referrer_url(navigation.virtual_url());
+
+  ASSERT_FALSE(navigation.virtual_url().is_valid());
+  ASSERT_FALSE(navigation.virtual_url().is_empty());
+
+  const sync_pb::TabNavigation sync_data =
+      SessionNavigationToSyncData(navigation);
+
+  EXPECT_EQ("", sync_data.virtual_url());
+  EXPECT_EQ("", sync_data.referrer());
+  EXPECT_EQ(navigation.title(), base::UTF8ToUTF16(sync_data.title()));
+  EXPECT_EQ(sync_pb::SyncEnums_PageTransition_AUTO_SUBFRAME,
+            sync_data.page_transition());
+  EXPECT_TRUE(sync_data.has_redirect_type());
+  EXPECT_EQ(navigation.unique_id(), sync_data.unique_id());
+  EXPECT_EQ(syncer::TimeToProtoTime(navigation.timestamp()),
+            sync_data.timestamp_msec());
+  EXPECT_EQ(navigation.favicon_url().spec(), sync_data.favicon_url());
+  EXPECT_EQ(navigation.http_status_code(), sync_data.http_status_code());
+}
+
 // Ensure all transition types and qualifiers are converted to/from the sync
 // SerializedNavigationEntry representation properly.
 TEST(SyncedSessionTest, SessionNavigationToSyncDataWithTransitionTypes) {

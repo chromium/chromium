@@ -10,7 +10,7 @@
 namespace web {
 struct ContextMenuParams;
 class WebState;
-}
+}  // namespace web
 
 class Browser;
 @protocol ContextMenuConfigurationProviderDelegate;

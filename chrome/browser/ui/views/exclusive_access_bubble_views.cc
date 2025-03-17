@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -32,7 +31,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/l10n/l10n_util_win.h"
@@ -64,7 +63,7 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   view_->SetProperty(views::kElementIdentifierKey,
                      kExclusiveAccessBubbleViewElementId);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Technically the exit fullscreen key on ChromeOS is F11 and the
   // "Fullscreen" key on the keyboard is just translated to F11 or F4 (which
   // is also a toggle-fullscreen command on ChromeOS). However most Chromebooks
@@ -148,19 +147,22 @@ void ExclusiveAccessBubbleViews::Update(
     ExclusiveAccessBubbleHideCallback first_hide_callback) {
   DCHECK(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != params.type ||
          params.has_download);
-  if (params_.type == params.type && params_.url == params.url &&
-      !params.force_update && (IsShowing() || IsVisible())) {
+  bool already_shown = IsShowing() || IsVisible();
+  if (params_.type == params.type && params_.origin == params.origin &&
+      !params.force_update && already_shown) {
     return;
   }
 
-  // Show the notification about overriding only if requesting a download
-  // notification, a notification was visible earlier, and the earlier
-  // notification was either a non-download one, or was one about an override
-  // itself.
-  notify_overridden_ = params.has_download &&
-                       (IsVisible() || animation_->IsShowing()) &&
-                       (!params_.has_download || notify_overridden_);
-  params_.has_download = params.has_download;
+  // Show the notification about overriding only if:
+  // 1. There was a notification visible earlier, and
+  // 2. Exactly one of the previous and current notifications has a download,
+  //    or the previous notification was about an override itself.
+  // If both the previous and current notifications have a download, but
+  // neither is an override, then we don't need to show an override.
+  notify_overridden_ =
+      already_shown &&
+      (notify_overridden_ || (params.has_download ^ params_.has_download));
+  params_.has_download = params.has_download || notify_overridden_;
 
   // Bubble maybe be re-used after timeout.
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kInterrupted);
@@ -170,7 +172,7 @@ void ExclusiveAccessBubbleViews::Update(
   const bool entering_tab_fullscreen =
       !IsTabFullscreenType(params_.type) && IsTabFullscreenType(params.type);
 
-  params_.url = params.url;
+  params_.origin = params.origin;
   // When a request to notify about a download is made, the bubble type
   // should be preserved from the old value, and not be updated.
   if (!params.has_download) {
@@ -283,7 +285,8 @@ void ExclusiveAccessBubbleViews::AnimationProgressed(
 void ExclusiveAccessBubbleViews::AnimationEnded(
     const gfx::Animation* animation) {
   if (animation_->IsShowing()) {
-    GetView()->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    GetView()->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                  true);
   }
   AnimationProgressed(animation);
 }

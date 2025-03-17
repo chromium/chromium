@@ -29,11 +29,6 @@ UILabel* GetTitleLabelFromBubbleView(BubbleView* bubble_view) {
       [UILabel class], kBubbleViewTitleLabelIdentifier, bubble_view));
 }
 
-UIImageView* GetImageViewFromBubbleView(BubbleView* bubble_view) {
-  return base::apple::ObjCCastStrict<UIImageView>(GetViewOfClassWithIdentifier(
-      [UIImageView class], kBubbleViewImageViewIdentifier, bubble_view));
-}
-
 UIButton* GetSnoozeButtonFromBubbleView(BubbleView* bubble_view) {
   return base::apple::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
       [UIButton class], kBubbleViewSnoozeButtonIdentifier, bubble_view));

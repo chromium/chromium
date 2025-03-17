@@ -42,7 +42,7 @@ MessagePopupView::MessagePopupView(MessageView* message_view,
   if (!message_view_->IsManuallyExpandedOrCollapsed()) {
     message_view_->SetExpanded(message_view_->IsAutoExpandingAllowed());
   }
-  AddChildView(message_view_.get());
+  AddChildViewRaw(message_view_.get());
 
   SetNotifyEnterExitOnChild(true);
 
@@ -90,7 +90,7 @@ void MessagePopupView::OnMessageViewNameUpdated(
 
   if (should_make_spoken_feedback_for_popup_updates) {
     if (!new_name.empty() && old_name != new_name) {
-      NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+      NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
     }
   }
 }
@@ -194,7 +194,7 @@ std::unique_ptr<views::Widget> MessagePopupView::Show() {
   widget->ShowInactive();
 
   if (a11y_feedback_on_init_)
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 
   return widget;
 }

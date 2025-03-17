@@ -5,11 +5,13 @@
 package org.chromium.components.paintpreview.player;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /** Helper class for recording paint preview user actions. */
+@NullMarked
 class PlayerUserActionRecorder {
     private static final String ACTION_FLING = "PaintPreview.Player.Flung";
     private static final String ACTION_SCROLL = "PaintPreview.Player.Scrolled";

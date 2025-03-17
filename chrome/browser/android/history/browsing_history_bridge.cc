@@ -127,11 +127,12 @@ void BrowsingHistoryBridge::OnQueryComplete(
 
     // This relies on |all_timestamps| being a sorted data structure.
     int64_t most_recent_java_timestamp =
-        base::Time::FromInternalValue(*entry.all_timestamps.rbegin())
-            .InMillisecondsSinceUnixEpoch();
-    std::vector<int64_t> native_timestamps(entry.all_timestamps.begin(),
-                                           entry.all_timestamps.end());
-
+        entry.all_timestamps.rbegin()->InMillisecondsSinceUnixEpoch();
+    std::vector<int64_t> native_timestamps;
+    for (const base::Time& val : entry.all_timestamps) {
+      native_timestamps.push_back(
+          val.ToDeltaSinceWindowsEpoch().InMicroseconds());
+    }
     Java_BrowsingHistoryBridge_createHistoryItemAndAddToList(
         env, j_query_result_obj_,
         url::GURLAndroid::FromNativeGURL(env, entry.url),
@@ -165,8 +166,10 @@ void BrowsingHistoryBridge::MarkItemForRemoval(
   entry.app_id = j_app_id
                      ? base::android::ConvertJavaStringToUTF8(env, j_app_id)
                      : history::kNoAppIdFilter;
-  entry.all_timestamps.insert(timestamps.begin(), timestamps.end());
-
+  for (int64_t val : timestamps) {
+    entry.all_timestamps.insert(
+        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(val)));
+  }
   items_to_remove_.push_back(entry);
 }
 

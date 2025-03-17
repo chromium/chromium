@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
+import type {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ConfigProperties, ManagedProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import type {ConfigProperties, ManagedProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {FakeNetworkConfig} from '../fake_network_config_mojom.js';
+import type {FakeNetworkConfig} from '../fake_network_config_mojom.js';
 
 export function clearBody(): void {
   document.body.innerHTML = window.trustedTypes!.emptyHTML;

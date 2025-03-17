@@ -25,7 +25,6 @@ static_library("url_formatter") {
     "elide_url.h",
     "spoof_checks/idn_spoof_checker.cc",
     "spoof_checks/idn_spoof_checker.h",
-    "spoof_checks/idna_metrics.h",
     "url_fixer.cc",
     "url_fixer.h",
     "url_formatter.cc",

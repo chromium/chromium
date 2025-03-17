@@ -5,17 +5,16 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_PAGE_NODE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_PAGE_NODE_H_
 
+#include <iosfwd>
 #include <optional>
-#include <ostream>
 #include <string>
 
 #include "base/containers/flat_set.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/graph/node_set_view.h"
-#include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
-#include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
@@ -23,6 +22,10 @@ class GURL;
 
 namespace content {
 class WebContents;
+}
+
+namespace resource_attribution {
+class PageContext;
 }
 
 namespace performance_manager {

@@ -91,7 +91,7 @@ constexpr base::TimeDelta kLongWarning = base::Days(kLongWarningInDays);
 constexpr base::TimeDelta kVeryLongWarning = base::Days(kVeryLongWarningInDays);
 const char kPublicSessionId[] = "demo@example.com";
 const char kManagedUserId[] = "user@example.com";
-const char kManagedUserGaiaId[] = "11111";
+const GaiaId::Literal kManagedUserGaiaId("11111");
 const char kUpdateRequiredNotificationId[] = "policy.update_required";
 const char kWifiServicePath[] = "/service/wifi2";
 const char kCellularServicePath[] = "/service/cellular1";
@@ -220,8 +220,7 @@ class MinimumVersionPolicyTest : public MinimumVersionPolicyTestBase {
 
  protected:
   const ash::LoginManagerMixin::TestUserInfo managed_user{
-      AccountId::FromUserEmailGaiaId(kManagedUserId,
-                                     GaiaId(kManagedUserGaiaId))};
+      AccountId::FromUserEmailGaiaId(kManagedUserId, kManagedUserGaiaId)};
   ash::UserPolicyMixin user_policy_mixin_{&mixin_host_,
                                           managed_user.account_id};
   ash::LoginManagerMixin login_manager_{&mixin_host_, {managed_user}};

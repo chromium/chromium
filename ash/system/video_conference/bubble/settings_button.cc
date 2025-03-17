@@ -13,6 +13,7 @@
 #include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/video_conference/video_conference_utils.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"

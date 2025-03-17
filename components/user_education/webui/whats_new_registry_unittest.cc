@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/webui/mock_whats_new_storage_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,8 +76,7 @@ class WhatsNewRegistryTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     feature_list_.InitWithFeatures(
-        {features::kWhatsNewVersion2, kTestModuleEnabled, kTestEditionEnabled1,
-         kTestEditionEnabled2},
+        {kTestModuleEnabled, kTestEditionEnabled1, kTestEditionEnabled2},
         {kTestModuleDisabled});
   }
 
@@ -179,6 +177,8 @@ TEST_F(WhatsNewRegistryTest, FindModulesForActiveFeatures) {
       .WillOnce(Return(std::nullopt));
   EXPECT_CALL(*mock_storage_service, ReadModuleData())
       .WillOnce(testing::ReturnRef(stored_enabled_modules_));
+  EXPECT_CALL(*mock_storage_service, WasVersionPageUsedForCurrentMilestone)
+      .WillRepeatedly(Return(false));
 
   RegisterModules(std::move(mock_storage_service));
 
@@ -196,6 +196,8 @@ TEST_F(WhatsNewRegistryTest, FindModulesForActiveFeaturesWithEditions) {
       .WillOnce(testing::ReturnRef(stored_enabled_modules_));
   EXPECT_CALL(*mock_storage_service, IsUsedEdition(testing::_))
       .WillRepeatedly(Return(false));
+  EXPECT_CALL(*mock_storage_service, WasVersionPageUsedForCurrentMilestone)
+      .WillRepeatedly(Return(false));
   RegisterModulesAndEditions(std::move(mock_storage_service));
 
   auto active_features = whats_new_registry_->GetActiveFeatureNames();
@@ -206,6 +208,26 @@ TEST_F(WhatsNewRegistryTest, FindModulesForActiveFeaturesWithEditions) {
   EXPECT_EQ("TestEditionEnabledByDefault", active_features.at(2));
   // Modules appear last.
   EXPECT_EQ("TestModuleEnabled", active_features.at(3));
+}
+
+TEST_F(WhatsNewRegistryTest, IgnoresEditionsWhenVersionWasUsed) {
+  auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
+  // No used edition.
+  EXPECT_CALL(*mock_storage_service, FindEditionForCurrentVersion())
+      .WillOnce(Return(std::nullopt));
+  EXPECT_CALL(*mock_storage_service, ReadModuleData())
+      .WillOnce(testing::ReturnRef(stored_enabled_modules_));
+  EXPECT_CALL(*mock_storage_service, IsUsedEdition(testing::_))
+      .WillRepeatedly(Return(false));
+  // Version page is marked as used for this milestone.
+  EXPECT_CALL(*mock_storage_service, WasVersionPageUsedForCurrentMilestone)
+      .WillRepeatedly(Return(true));
+  RegisterModulesAndEditions(std::move(mock_storage_service));
+
+  auto active_features = whats_new_registry_->GetActiveFeatureNames();
+  EXPECT_EQ(static_cast<size_t>(1), active_features.size());
+  // Only modules appear.
+  EXPECT_EQ("TestModuleEnabled", active_features.at(0));
 }
 
 TEST_F(WhatsNewRegistryTest, FindModulesForActiveFeaturesWithUsedEdition) {

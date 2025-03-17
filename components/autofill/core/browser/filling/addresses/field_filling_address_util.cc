@@ -4,27 +4,28 @@
 
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/unicodestring.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
+#include "components/autofill/core/browser/data_model/transliterator.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/state_names.h"
-#include "components/autofill/core/browser/select_control_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
@@ -35,238 +36,6 @@
 namespace autofill {
 
 namespace {
-
-// Helper method to normalize the `admin_area` for the given `country_code`.
-// The value in `admin_area` will be overwritten.
-bool NormalizeAdminAreaForCountryCode(std::u16string& admin_area,
-                                      const std::string& country_code,
-                                      AddressNormalizer& address_normalizer) {
-  if (admin_area.empty() || country_code.empty()) {
-    return false;
-  }
-
-  AutofillProfile tmp_profile((AddressCountryCode(country_code)));
-  tmp_profile.SetRawInfo(ADDRESS_HOME_STATE, admin_area);
-  if (!address_normalizer.NormalizeAddressSync(&tmp_profile)) {
-    return false;
-  }
-
-  admin_area = tmp_profile.GetRawInfo(ADDRESS_HOME_STATE);
-  return true;
-}
-
-// Returns the SelectOption::value of `field_options` that best matches the
-// normalized `value`. Returns an empty string if no match is found.
-// Normalization is relative to the `country_code` and to `address_normalizer`.
-std::u16string GetNormalizedStateSelectControlValue(
-    std::u16string value,
-    base::span<const SelectOption> field_options,
-    const std::string& country_code,
-    AddressNormalizer& address_normalizer,
-    std::string* failure_to_fill) {
-  // We attempt to normalize `value`. If normalization was not successful, it
-  // means the rules were probably not loaded. Give up. Note that the normalizer
-  // will fetch the rule next time it's called.
-  // TODO(crbug.com/40551524): We should probably sanitize |value| before
-  // normalizing.
-  if (!NormalizeAdminAreaForCountryCode(value, country_code,
-                                        address_normalizer)) {
-    if (failure_to_fill) {
-      *failure_to_fill += "Could not normalize admin area for country code. ";
-    }
-    return {};
-  }
-
-  // If successful, try filling the normalized value with the existing field
-  // |options|.
-  if (std::optional<std::u16string> select_control_value =
-          GetSelectControlValue(value, field_options, failure_to_fill)) {
-    return *select_control_value;
-  }
-
-  // Normalize `field_options` using a copy.
-  // TODO(crbug.com/40551524): We should probably sanitize the values in
-  // `field_options_copy` before normalizing.
-  bool normalized = false;
-  std::vector<SelectOption> field_options_copy(field_options.begin(),
-                                               field_options.end());
-  for (SelectOption& option : field_options_copy) {
-    normalized |= NormalizeAdminAreaForCountryCode(option.value, country_code,
-                                                   address_normalizer);
-    normalized |= NormalizeAdminAreaForCountryCode(option.text, country_code,
-                                                   address_normalizer);
-  }
-
-  // Try filling the normalized value with the existing `field_options_copy`.
-  size_t best_match_index = 0;
-  if (normalized && GetSelectControlValue(value, field_options_copy,
-                                          failure_to_fill, &best_match_index)) {
-    // `best_match_index` now points to the option in `field->options`
-    // that corresponds to our best match.
-    return field_options[best_match_index].value;
-  }
-  if (failure_to_fill) {
-    *failure_to_fill += "Could not set normalized state in control element. ";
-  }
-  return {};
-}
-
-// Gets the state value to fill in a select control.
-// Returns an empty string if no value for filling was found.
-std::u16string GetStateSelectControlValue(
-    const std::u16string& value,
-    base::span<const SelectOption> field_options,
-    const std::string& country_code,
-    AddressNormalizer* address_normalizer,
-    std::string* failure_to_fill) {
-  std::vector<std::u16string> abbreviations;
-  std::vector<std::u16string> full_names;
-
-  // Fetch the corresponding entry from AlternativeStateNameMap.
-  std::optional<StateEntry> state_entry =
-      AlternativeStateNameMap::GetInstance()->GetEntry(
-          AlternativeStateNameMap::CountryCode(country_code),
-          AlternativeStateNameMap::StateName(value));
-
-  // State abbreviations will be empty for non-US countries.
-  if (state_entry) {
-    for (const std::string& abbreviation : state_entry->abbreviations()) {
-      if (!abbreviation.empty()) {
-        abbreviations.push_back(base::UTF8ToUTF16(abbreviation));
-      }
-    }
-    if (state_entry->has_canonical_name()) {
-      full_names.push_back(base::UTF8ToUTF16(state_entry->canonical_name()));
-    }
-    for (const std::string& alternative_name :
-         state_entry->alternative_names()) {
-      full_names.push_back(base::UTF8ToUTF16(alternative_name));
-    }
-  } else {
-    if (value.size() > 2) {
-      full_names.push_back(value);
-    } else if (!value.empty()) {
-      abbreviations.push_back(value);
-    }
-  }
-
-  std::u16string state_name;
-  std::u16string state_abbreviation;
-  state_names::GetNameAndAbbreviation(value, &state_name, &state_abbreviation);
-
-  full_names.push_back(std::move(state_name));
-  if (!state_abbreviation.empty()) {
-    abbreviations.push_back(std::move(state_abbreviation));
-  }
-
-  // Remove `abbreviations` from the `full_names` as a precautionary measure in
-  // case the `AlternativeStateNameMap` contains bad data.
-  base::ranges::sort(abbreviations);
-  std::erase_if(full_names, [&](const std::u16string& full_name) {
-    return full_name.empty() ||
-           base::ranges::binary_search(abbreviations, full_name);
-  });
-
-  // Try an exact match of the abbreviation first.
-  for (const std::u16string& abbreviation : abbreviations) {
-    if (std::optional<std::u16string> select_control_value =
-            GetSelectControlValue(abbreviation, field_options,
-                                  failure_to_fill)) {
-      return *select_control_value;
-    }
-  }
-
-  // Try an exact match of the full name.
-  for (const std::u16string& full : full_names) {
-    if (std::optional<std::u16string> select_control_value =
-            GetSelectControlValue(full, field_options, failure_to_fill)) {
-      return *select_control_value;
-    }
-  }
-
-  // Try an inexact match of the full name.
-  for (const std::u16string& full : full_names) {
-    if (std::optional<std::u16string> select_control_value =
-            GetSelectControlValueSubstringMatch(
-                full, /*ignore_whitespace=*/false, field_options,
-                failure_to_fill)) {
-      return *select_control_value;
-    }
-  }
-
-  // Try an inexact match of the abbreviation name.
-  for (const std::u16string& abbreviation : abbreviations) {
-    if (std::optional<std::u16string> select_control_value =
-            GetSelectControlValueTokenMatch(abbreviation, field_options,
-                                            failure_to_fill)) {
-      return *select_control_value;
-    }
-  }
-
-  if (!address_normalizer) {
-    if (failure_to_fill) {
-      *failure_to_fill += "Could not fill state in select control element. ";
-    }
-    return {};
-  }
-
-  // Try to match a normalized `value` of the state and the `field_options`.
-  return GetNormalizedStateSelectControlValue(
-      value, field_options, country_code, *address_normalizer, failure_to_fill);
-}
-
-// Gets the country value to fill in a select control.
-// Returns an empty string if no value for filling was found.
-std::u16string GetCountrySelectControlValue(
-    const std::u16string& value,
-    base::span<const SelectOption> field_options,
-    std::string* failure_to_fill = nullptr) {
-  // Search for exact matches.
-  if (std::optional<std::u16string> select_control_value =
-          GetSelectControlValue(value, field_options, failure_to_fill)) {
-    return *select_control_value;
-  }
-  std::string country_code = CountryNames::GetInstance()->GetCountryCode(value);
-  if (country_code.empty()) {
-    if (failure_to_fill) {
-      *failure_to_fill += "Cannot fill empty country code. ";
-    }
-    return {};
-  }
-
-  // Sometimes options contain a country name and phone country code (e.g.
-  // "Germany (+49)"). This can happen if such a <select> is annotated as
-  // autocomplete="tel-country-code". The following lambda strips the phone
-  // country code so that the remainder ideally matches a country name.
-  auto strip_phone_country_code =
-      [](const std::u16string& value) -> std::u16string {
-    static base::NoDestructor<std::unique_ptr<const RE2>> regex_pattern(
-        std::make_unique<const RE2>("[(]?(?:00|\\+)\\s*[1-9]\\d{0,3}[)]?"));
-    std::string u8string = base::UTF16ToUTF8(value);
-    if (RE2::Replace(&u8string, **regex_pattern, "")) {
-      return base::UTF8ToUTF16(
-          base::TrimWhitespaceASCII(u8string, base::TRIM_ALL));
-    }
-    return value;
-  };
-
-  for (const SelectOption& option : field_options) {
-    // Canonicalize each <option> value to a country code, and compare to the
-    // target country code.
-    if (country_code == CountryNames::GetInstance()->GetCountryCode(
-                            strip_phone_country_code(option.value)) ||
-        country_code == CountryNames::GetInstance()->GetCountryCode(
-                            strip_phone_country_code(option.text))) {
-      return option.value;
-    }
-  }
-
-  if (failure_to_fill) {
-    *failure_to_fill +=
-        "Did not find country to fill in select control element. ";
-  }
-  return {};
-}
 
 // Returns appropriate street address for `field`. Translates newlines into
 // equivalent separators when necessary, i.e. when filling a single-line field.
@@ -286,47 +55,6 @@ std::u16string GetStreetAddressForInput(
   std::string line;
   ::i18n::addressinput::GetStreetAddressLinesAsSingleLine(address_data, &line);
   return base::UTF8ToUTF16(line);
-}
-
-// Returns appropriate state value that matches `field`.
-// The canonical state is checked if it fits in the field and at last the
-// abbreviations are tried. Does not return a state if neither |state_value| nor
-// the canonical state name nor its abbreviation fit into the field.
-std::u16string GetStateTextForInput(const std::u16string& state_value,
-                                    const std::string& country_code,
-                                    uint64_t field_max_length,
-                                    std::string* failure_to_fill) {
-  if (field_max_length == 0 || field_max_length >= state_value.size()) {
-    // Return the state value directly.
-    return state_value;
-  }
-  std::optional<StateEntry> state =
-      AlternativeStateNameMap::GetInstance()->GetEntry(
-          AlternativeStateNameMap::CountryCode(country_code),
-          AlternativeStateNameMap::StateName(state_value));
-  if (state) {
-    // Return the canonical state name if possible.
-    if (state->has_canonical_name() && !state->canonical_name().empty() &&
-        field_max_length >= state->canonical_name().size()) {
-      return base::UTF8ToUTF16(state->canonical_name());
-    }
-    // Return the abbreviation if possible.
-    for (const auto& abbreviation : state->abbreviations()) {
-      if (!abbreviation.empty() && field_max_length >= abbreviation.size()) {
-        return base::i18n::ToUpper(base::UTF8ToUTF16(abbreviation));
-      }
-    }
-  }
-  // Return with the state abbreviation.
-  std::u16string abbreviation;
-  state_names::GetNameAndAbbreviation(state_value, nullptr, &abbreviation);
-  if (!abbreviation.empty() && field_max_length >= abbreviation.size()) {
-    return base::i18n::ToUpper(abbreviation);
-  }
-  if (failure_to_fill) {
-    *failure_to_fill += "Could not fit raw state nor abbreviation. ";
-  }
-  return {};
 }
 
 // Returns true if there is at least one Katakana character present in the
@@ -358,10 +86,9 @@ std::u16string GetAlternativeNameForInput(
   base::UmaHistogramBoolean(
       "Autofill.Filling.DidAlternativeNameFieldRequireConversion",
       requires_conversion);
-  return requires_conversion
-             ? TransliterateAlternativeName(
-                   value, TransliterationId::kHiraganaToKatakana)
-             : value;
+  return requires_conversion ? TransliterateAlternativeName(
+                                   value, /*inverse_transliteration=*/true)
+                             : value;
 }
 
 // Finds the best suitable option in the `field` that corresponds to the
@@ -414,7 +141,7 @@ std::u16string GetPhoneCountryCodeSelectControlValue(
                phone_country_code;
   };
   auto first_match =
-      base::ranges::find_if(field_options, value_or_content_matches);
+      std::ranges::find_if(field_options, value_or_content_matches);
 
   if (base::FeatureList::IsEnabled(
           features::
@@ -440,7 +167,7 @@ std::u16string GetPhoneCountryCodeSelectControlValue(
       }
       // If the <option>s do contain phone country codes, we pick the current
       // option only if the phone country code matches.
-      auto selected_option = base::ranges::find_if(
+      auto selected_option = std::ranges::find_if(
           field_options,
           [&](const SelectOption& o) { return o.value == option; });
       if (value_or_content_matches(*selected_option)) {
@@ -530,18 +257,17 @@ std::pair<std::u16string, FieldType> GetFillingValueAndTypeForProfile(
     const FormFieldData& field_data,
     AddressNormalizer* address_normalizer,
     std::string* failure_to_fill) {
-  AutofillType filling_type = profile.GetFillingType(field_type);
-  CHECK(IsAddressType(filling_type.GetStorableType()));
+  CHECK(IsAddressType(field_type.GetStorableType()));
   std::u16string value = GetValueForProfileForInput(
-      profile, app_locale, filling_type, field_data, failure_to_fill);
+      profile, app_locale, field_type, field_data, failure_to_fill);
 
   if (field_data.IsSelectElement() && !value.empty()) {
     value = GetValueForProfileSelectControl(
         profile, value, app_locale, field_data.options(),
-        filling_type.GetStorableType(), address_normalizer, failure_to_fill);
+        field_type.GetStorableType(), address_normalizer, failure_to_fill);
   }
 
-  return {value, filling_type.GetStorableType()};
+  return {value, field_type.GetStorableType()};
 }
 
 std::u16string GetPhoneNumberValueForInput(

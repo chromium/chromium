@@ -61,7 +61,7 @@ class CORE_EXPORT FontFaceSetWorker final
     return GetFontSelector()->GetFontFaceCache()->CssConnectedFontFaces();
   }
 
-  bool ResolveFontStyle(const String&, Font&) override;
+  const Font* ResolveFontStyle(const String&) override;
 
  private:
   void FireDoneEventIfPossible() override;

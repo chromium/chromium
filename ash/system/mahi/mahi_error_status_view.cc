@@ -86,7 +86,7 @@ class ErrorContentsView : public views::FlexLayoutView,
                 }))
                 .CopyAddressTo(&error_status_text_)
                 .SetBorder(views::CreateEmptyBorder(kLabelPaddings))
-                .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
                 .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
                 .SetID(mahi_constants::ViewId::kErrorStatusLabel)
                 .SetMultiLine(true)

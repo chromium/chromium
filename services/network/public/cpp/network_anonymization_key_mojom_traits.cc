@@ -8,6 +8,8 @@
 
 #include "base/unguessable_token.h"
 #include "net/base/features.h"
+#include "net/base/network_isolation_partition.h"
+#include "services/network/public/cpp/network_isolation_partition_mojom_traits.h"
 
 namespace mojo {
 
@@ -29,13 +31,16 @@ bool StructTraits<network::mojom::NonEmptyNetworkAnonymizationKeyDataView,
   // Read is_cross_site boolean flag value.
   bool is_cross_site = data.is_cross_site();
   std::optional<base::UnguessableToken> nonce;
+  net::NetworkIsolationPartition network_isolation_partition;
 
-  if (!data.ReadTopFrameSite(&top_frame_site) || !data.ReadNonce(&nonce)) {
+  if (!data.ReadTopFrameSite(&top_frame_site) || !data.ReadNonce(&nonce) ||
+      !data.ReadNetworkIsolationPartition(&network_isolation_partition)) {
     return false;
   }
 
   *out = net::NetworkAnonymizationKey::CreateFromParts(
-      std::move(top_frame_site), is_cross_site, std::move(nonce));
+      std::move(top_frame_site), is_cross_site, std::move(nonce),
+      network_isolation_partition);
   return true;
 }
 

@@ -25,6 +25,7 @@
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_rules_registry.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -115,7 +116,7 @@ class DeclarativeApiTest : public ExtensionApiTest {
         extensions::RulesRegistryService::Get(browser()->profile());
     scoped_refptr<RulesRegistry> rules_registry =
         rules_registry_service->GetRulesRegistry(
-            RulesRegistryService::kDefaultRulesRegistryID,
+            rules_registry_ids::kDefaultRulesRegistryID,
             extensions::declarative_webrequest_constants::kOnRequest);
 
     std::vector<const api::events::Rule*> rules;

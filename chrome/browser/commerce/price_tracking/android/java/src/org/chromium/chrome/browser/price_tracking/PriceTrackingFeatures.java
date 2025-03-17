@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.price_tracking;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -20,6 +24,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import java.util.concurrent.TimeUnit;
 
 /** Flag configuration for price tracking features. */
+@NullMarked
 public class PriceTrackingFeatures {
     @VisibleForTesting
     public static final String ALLOW_DISABLE_PRICE_ANNOTATIONS_PARAM =
@@ -28,8 +33,8 @@ public class PriceTrackingFeatures {
     private static final String PRICE_ANNOTATIONS_ENABLED_METRICS_WINDOW_DURATION_PARAM =
             "price_annotations_enabled_metrics_window_duration_ms";
 
-    private static Boolean sIsSignedInAndSyncEnabledForTesting;
-    private static Boolean sPriceAnnotationsEnabledForTesting;
+    private static @Nullable Boolean sIsSignedInAndSyncEnabledForTesting;
+    private static @Nullable Boolean sPriceAnnotationsEnabledForTesting;
 
     /**
      * @return Whether the price annotations feature is eligible to work. Now it is used to
@@ -65,8 +70,7 @@ public class PriceTrackingFeatures {
         if (profile.isOffTheRecord()) {
             return false;
         }
-        return IdentityServicesProvider.get()
-                .getIdentityManager(profile)
+        return assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
                 .hasPrimaryAccount(ConsentLevel.SIGNIN);
     }
 

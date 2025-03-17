@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/webauthn/fake_magic_arch.h"
+
+#include <algorithm>
 
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
@@ -93,7 +99,7 @@ std::optional<std::vector<uint8_t>> FakeMagicArch::RecoverWithPIN(
   CHECK_LE(security_domain_service.num_pin_members(), 1u);
 
   // Find the security domain member.
-  const auto member_it = base::ranges::find_if(
+  const auto member_it = std::ranges::find_if(
       security_domain_service.members(), [](const auto& member) -> bool {
         return member.member_type() ==
                trusted_vault_pb::SecurityDomainMember::
@@ -105,7 +111,7 @@ std::optional<std::vector<uint8_t>> FakeMagicArch::RecoverWithPIN(
   const std::string_view public_key = member_it->public_key();
 
   // Find the corresponding vault.
-  const auto vault_it = base::ranges::find_if(
+  const auto vault_it = std::ranges::find_if(
       recovery_key_store.vaults(), [&public_key](const auto& vault) -> bool {
         return GetKeyPairWithPublicKey(vault, public_key) != nullptr;
       });

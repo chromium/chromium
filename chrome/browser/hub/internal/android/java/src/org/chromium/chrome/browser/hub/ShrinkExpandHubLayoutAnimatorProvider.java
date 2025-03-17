@@ -266,27 +266,42 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
         if (mAnimatorSupplier.hasValue()) return;
 
         assert mAnimationDataSupplier.hasValue();
+        ShrinkExpandAnimationData animationData = mAnimationDataSupplier.get();
 
-        View toolbarView = mHubContainerView.findViewById(R.id.hub_toolbar);
+        @Nullable View toolbarView = mHubContainerView.findViewById(R.id.hub_toolbar);
+        RecordHistogram.recordBooleanHistogram(
+                "Android.Hub.ToolbarPresentOnAnimation", toolbarView != null);
+
         boolean isShrink = mAnimationType == HubLayoutAnimationType.SHRINK_TAB;
-        float initialAlpha = isShrink ? 0.0f : 1.0f;
-        float finalAlpha = isShrink ? 1.0f : 0.0f;
-        ObjectAnimator fadeAnimator =
-                ObjectAnimator.ofFloat(toolbarView, View.ALPHA, initialAlpha, finalAlpha);
-        fadeAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
-        fadeAnimator.addUpdateListener(
-                animation -> {
-                    if (animation.getAnimatedValue() instanceof Float animationAlpha) {
-                        mOnAlphaChange.accept(animationAlpha);
-                    }
-                });
+        float initialAlpha;
+        float finalAlpha;
+        if (animationData.isTopToolbar()) {
+            initialAlpha = isShrink ? 0.0f : 1.0f;
+            finalAlpha = isShrink ? 1.0f : 0.0f;
+        } else {
+            initialAlpha = 1.0f;
+            finalAlpha = 1.0f;
+        }
+        final @Nullable ObjectAnimator fadeAnimator;
+        if (toolbarView != null) {
+            fadeAnimator =
+                    ObjectAnimator.ofFloat(toolbarView, View.ALPHA, initialAlpha, finalAlpha);
+            fadeAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
+            fadeAnimator.addUpdateListener(
+                    animation -> {
+                        if (animation.getAnimatedValue() instanceof Float animationAlpha) {
+                            mOnAlphaChange.accept(animationAlpha);
+                        }
+                    });
+        } else {
+            fadeAnimator = null;
+        }
 
         int searchBoxHeight =
                 OmniboxFeatures.sAndroidHubSearch.isEnabled()
                         ? HubUtils.getSearchBoxHeight(
                                 mHubContainerView, R.id.hub_toolbar, R.id.toolbar_action_container)
                         : 0;
-        ShrinkExpandAnimationData animationData = mAnimationDataSupplier.get();
         Rect initialRect = animationData.getInitialRect();
         Rect finalRect = animationData.getFinalRect();
         mShrinkExpandAnimator =
@@ -308,38 +323,34 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
             shrinkExpandAnimator.addUpdateListener(ignored -> mAnimationTracker.onUpdate());
         }
 
-        int initialTopRadius = Math.round(animationData.getInitialTopCornerRadius());
-        int initialBottomRadius = Math.round(animationData.getInitialBottomCornerRadius());
-        int initialRectWidth = initialRect.width();
-        int finalRectWidth = finalRect.width();
-        float scaleFactor = (float) initialRectWidth / finalRectWidth;
-        int finalTopRadius = Math.round(animationData.getFinalTopCornerRadius() * scaleFactor);
-        int finalBottomRadius =
-                Math.round(animationData.getFinalBottomCornerRadius() * scaleFactor);
+        int[] initialRoundedCorners = animationData.getInitialCornerRadii();
+        int[] finalRoundedCorners = animationData.getFinalCornerRadii();
         mShrinkExpandImageView.setRoundedCorners(
-                initialTopRadius, initialTopRadius, initialBottomRadius, initialBottomRadius);
-        ValueAnimator cornerAnimator = ValueAnimator.ofFloat(0f, 1f);
+                initialRoundedCorners[0],
+                initialRoundedCorners[1],
+                initialRoundedCorners[2],
+                initialRoundedCorners[3]);
+
+        ValueAnimator cornerAnimator =
+                RoundedCornerAnimatorUtil.createRoundedCornerAnimator(
+                        mShrinkExpandImageView, initialRoundedCorners, finalRoundedCorners);
         cornerAnimator.setInterpolator(interpolator);
-        int deltaTop = finalTopRadius - initialTopRadius;
-        int deltaBottom = finalBottomRadius - initialBottomRadius;
-        cornerAnimator.addUpdateListener(
-                animation -> {
-                    float fraction = animation.getAnimatedFraction();
-                    int top = initialTopRadius + Math.round(deltaTop * fraction);
-                    int bottom = initialBottomRadius + Math.round(deltaBottom * fraction);
-                    mShrinkExpandImageView.setRoundedCorners(top, top, bottom, bottom);
-                    mShrinkExpandImageView.invalidate();
-                });
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(shrinkExpandAnimator, fadeAnimator, cornerAnimator);
+        if (fadeAnimator == null) {
+            animatorSet.playTogether(shrinkExpandAnimator, cornerAnimator);
+        } else {
+            animatorSet.playTogether(shrinkExpandAnimator, fadeAnimator, cornerAnimator);
+        }
         animatorSet.setDuration(mDurationMs);
 
         HubLayoutAnimationListener listener =
                 new HubLayoutAnimationListener() {
                     @Override
                     public void beforeStart() {
-                        toolbarView.setAlpha(initialAlpha);
+                        if (toolbarView != null) {
+                            toolbarView.setAlpha(initialAlpha);
+                        }
                         mOnAlphaChange.accept(initialAlpha);
                         mHubContainerView.setVisibility(View.VISIBLE);
                         mShrinkExpandImageView.setVisibility(View.VISIBLE);
@@ -372,7 +383,9 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                         // Reset the toolbar to the default alpha of 1. For future animations this
                         // will be updated again. At this point the Hub is either gone or visible
                         // so the correct alpha is 1 regardless of the animation direction.
-                        toolbarView.setAlpha(1.0f);
+                        if (toolbarView != null) {
+                            toolbarView.setAlpha(1.0f);
+                        }
                         mOnAlphaChange.accept(finalAlpha);
                     }
                 };

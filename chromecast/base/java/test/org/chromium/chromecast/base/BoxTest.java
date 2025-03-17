@@ -19,20 +19,20 @@ public class BoxTest {
     @Test
     public void testValueConstructorInteger() {
         Box<Integer> box = new Box<>(10);
-        assertEquals((int) box.value, 10);
+        assertEquals(10, (int) box.value);
     }
 
     @Test
     public void testValueConstructorString() {
         Box<String> box = new Box<>("hello");
-        assertEquals(box.value, "hello");
+        assertEquals("hello", box.value);
     }
 
     @Test
     public void testCanMutateValue() {
         Box<Integer> box = new Box<>(0);
         box.value++;
-        assertEquals((int) box.value, 1);
+        assertEquals(1, (int) box.value);
     }
 
     @Test

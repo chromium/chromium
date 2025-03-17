@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/browser_caption_button_container_win.h"
 
+#include <windows.h>
+
 #include <memory>
 
 #include "chrome/browser/ui/frame/window_frame_util.h"

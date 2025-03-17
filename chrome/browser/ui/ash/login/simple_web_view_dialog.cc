@@ -12,7 +12,6 @@
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/ash/login/captive_portal_window_proxy.h"
@@ -25,6 +24,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/password_manager/core/browser/password_manager.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
@@ -47,6 +47,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
+#endif
+
 namespace ash {
 namespace {
 
@@ -63,8 +67,7 @@ class ToolbarRowView : public views::View {
 
  public:
   ToolbarRowView() {
-    SetBackground(
-        views::CreateThemedSolidBackground(ui::kColorDialogBackground));
+    SetBackground(views::CreateSolidBackground(ui::kColorDialogBackground));
   }
 
   ToolbarRowView(const ToolbarRowView&) = delete;
@@ -155,8 +158,10 @@ void SimpleWebViewDialog::StartLoad(const GURL& url) {
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Create the password reuse detection manager for simple web view dialog.
   ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
+#endif
 
   // Set this as the web modal delegate so that web dialog can appear.
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
@@ -173,7 +178,7 @@ void SimpleWebViewDialog::Init() {
   location_bar_model_ = std::make_unique<LocationBarModelImpl>(
       this, content::kMaxURLDisplayChars);
 
-  SetBackground(views::CreateThemedSolidBackground(ui::kColorDialogBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDialogBackground));
 
   // Back/Forward buttons.
   auto back = std::make_unique<views::ImageButton>(base::BindRepeating(
@@ -201,9 +206,18 @@ void SimpleWebViewDialog::Init() {
   forward->SetID(VIEW_ID_FORWARD_BUTTON);
   forward_ = forward.get();
 
-  // Location bar.
+  // Location bar. Passing in nullptr as there's no browser in this case. This
+  // may lead to crash, which was discussed in crbug.com/379534750 and was
+  // mitigated in crrev.com/c/6043176. So far simple_web_view_dialog, which is
+  // specifically for ChromeOS, is one of the only two classes that passes in
+  // nullptr as the browser argument, when initiating a location_bar_view in
+  // production code. The other known case is presentation_receiver_window_view.
+  // There is discussion to move simple_web_view_dialog away from using
+  // location_bar_view to avoid this unwanted nullptr situation. As for
+  // presentation_receiver_window_view, it is about to be sunsetted in a year or
+  // so.
   auto location_bar = std::make_unique<LocationBarView>(
-      nullptr, profile_, command_updater_.get(), this, true);
+      /*browser=*/nullptr, profile_, command_updater_.get(), this, true);
   location_bar_ = location_bar.get();
 
   // Reload button.

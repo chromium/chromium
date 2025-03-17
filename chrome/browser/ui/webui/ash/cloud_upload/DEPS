@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/resources/vector_icons",
+  "+chromeos/ash/experiences/system_web_apps/types",
 
   # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
   # details.
@@ -14,7 +15,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/arc/fileapi",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/extensions/file_manager",
   "+chrome/browser/ash/file_manager",
@@ -23,7 +23,6 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/ash/system_web_apps/types",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/office_web_app",
   "+chrome/browser/chromeos/upload_office_to_cloud",

@@ -293,7 +293,7 @@ TEST_F(BrightnessControllerChromeosTest,
   user_manager::KnownUser known_user(local_state());
   EXPECT_FALSE(HasBrightnessPrefValue(known_user, account_id));
 
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Wait for callback in
   // BrightnessControllerChromeos::OnActiveUserSessionChanged to finish.
@@ -337,7 +337,7 @@ TEST_F(BrightnessControllerChromeosTest,
   EXPECT_EQ(GetBrightnessPrefValue(known_user, account_id),
             brightness_change_percent);
 
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Wait for callback in
   // BrightnessControllerChromeos::OnActiveUserSessionChanged to finish.
@@ -916,7 +916,7 @@ TEST_F(BrightnessControllerChromeosTest,
   ClearLogin();
   AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Set display brightness.
   known_user.SetPath(account_id, prefs::kInternalDisplayScreenBrightnessPercent,
@@ -1258,7 +1258,7 @@ TEST_F(BrightnessControllerChromeosTest,
   ClearLogin();
   AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Set ALS to false, and set the disabled reason to be
   // USER_REQUEST_SETTINGS_APP.
@@ -1323,7 +1323,7 @@ TEST_F(BrightnessControllerChromeosTest,
   ClearLogin();
   AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Set ALS to false, and set the disabled reason to be
   // BRIGHTNESS_USER_REQUEST.
@@ -1387,7 +1387,7 @@ TEST_F(BrightnessControllerChromeosTest,
   ClearLogin();
   AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Disable ALS using the brightness key.
   SetAmbientLightSensorEnabled(
@@ -1433,7 +1433,7 @@ TEST_F(BrightnessControllerChromeosTest,
   AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   login_data_dispatcher()->NotifyFocusPod(account_id);
   LoginScreenFocusAccount(account_id);
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // The ambient light sensor should be enabled by default.
   ExpectAmbientLightSensorEnabled(
@@ -1536,7 +1536,7 @@ TEST_F(BrightnessControllerChromeosTest,
   AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   login_data_dispatcher()->NotifyFocusPod(account_id);
   LoginScreenFocusAccount(account_id);
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // The ambient light sensor should be enabled by default.
   ExpectAmbientLightSensorEnabled(
@@ -1633,7 +1633,7 @@ TEST_F(BrightnessControllerChromeosTest,
   ClearLogin();
   AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Set brightness to 100%.
   SetAmbientLightSensorEnabled(
@@ -1673,7 +1673,7 @@ TEST_F(BrightnessControllerChromeosTest,
   ClearLogin();
   AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Set brightness to 100%.
   SetAmbientLightSensorEnabled(
@@ -1703,7 +1703,7 @@ TEST_F(BrightnessControllerChromeosTest,
   // Simulate reboot, and log in.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Expect the brightness is not restored to 10%.
   brightness_control_delegate()->GetBrightnessPercent(
@@ -1756,7 +1756,7 @@ TEST_F(BrightnessControllerChromeosTest, RestoreBrightnessSettings_NoSensor) {
   ClearLogin();
   AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Disable ALS
   SetAmbientLightSensorEnabled(
@@ -1808,7 +1808,7 @@ TEST_F(BrightnessControllerChromeosTest, RestoreBrightnessSettings_HasSensor) {
   ClearLogin();
   AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Disable ALS
   SetAmbientLightSensorEnabled(

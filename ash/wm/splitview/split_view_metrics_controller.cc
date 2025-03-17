@@ -4,6 +4,7 @@
 
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/root_window_controller.h"
@@ -27,7 +28,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -101,7 +101,7 @@ bool IsRecordingTabletMultiDisplaySplitView() {
 // Number of root windows in split view.
 int NumRootWindowsInSplitViewRecording() {
   auto root_windows = Shell::GetAllRootWindows();
-  return base::ranges::count_if(root_windows, [](aura::Window* root_window) {
+  return std::ranges::count_if(root_windows, [](aura::Window* root_window) {
     return SplitViewController::Get(root_window)
         ->split_view_metrics_controller()
         ->in_split_view_recording();
@@ -582,7 +582,7 @@ void SplitViewMetricsController::AddOrStackWindowOnTop(aura::Window* window) {
   if (!CanIncludeWindowInMruList(window))
     return;
 
-  auto iter = base::ranges::find(observed_windows_, window);
+  auto iter = std::ranges::find(observed_windows_, window);
   if (iter == observed_windows_.end()) {
     AddObservedWindow(window);
   } else {

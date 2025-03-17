@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "build/build_config.h"
 #include "device/vr/buildflags/buildflags.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/permissions/android/android_permission_util.h"
@@ -27,7 +27,7 @@ WebXrPermissionContext::WebXrPermissionContext(
     ContentSettingsType content_settings_type)
     : PermissionContextBase(browser_context,
                             content_settings_type,
-                            blink::mojom::PermissionsPolicyFeature::kWebXr),
+                            network::mojom::PermissionsPolicyFeature::kWebXr),
       content_settings_type_(content_settings_type) {
   DCHECK(content_settings_type_ == ContentSettingsType::VR ||
          content_settings_type_ == ContentSettingsType::AR ||

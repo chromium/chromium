@@ -6,6 +6,7 @@
 
 #include <sys/types.h>
 
+#include <cstddef>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -14,12 +15,16 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
+#include "services/on_device_model/ml/chrome_ml_audio_buffer.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace optimization_guide {
 
@@ -33,18 +38,18 @@ using on_device_model::mojom::InputPtr;
 // A context for resolving substitution expressions.
 struct ResolutionContext {
   // The message we are resolving expressions against.
-  raw_ptr<const google::protobuf::MessageLite> message;
+  MultimodalMessageReadView view;
 
   // 0-based index of 'message' in the repeated field that contains it.
   // 0 for the top level message.
-  size_t offset = 0;
+  int offset = 0;
 };
 
 // Returns whether `condition` applies based on `message`.
 bool EvaluateCondition(const ResolutionContext& ctx,
                        const proto::Condition& condition) {
   std::optional<proto::Value> proto_value =
-      GetProtoValue(*ctx.message, condition.proto_field());
+      ctx.view.GetValue(condition.proto_field());
   if (!proto_value) {
     return false;
   }
@@ -132,11 +137,15 @@ class InputBuilder final {
                          const proto::IndexExpr& field);
   Error ResolveControlToken(const ResolutionContext& ctx,
                             proto::ControlToken token);
+  Error ResolveMediaField(const ResolutionContext& ctx,
+                          proto::MediaField token);
 
   void AddToken(ml::Token token) { out_->pieces.emplace_back(token); }
 
   void AddString(std::string_view str) {
-    out_->pieces.emplace_back(std::string(str));
+    if (!str.empty()) {
+      out_->pieces.emplace_back(std::string(str));
+    }
   }
 
   InputPtr out_;
@@ -146,9 +155,9 @@ class InputBuilder final {
 InputBuilder::Error InputBuilder::ResolveProtoField(
     const ResolutionContext& ctx,
     const proto::ProtoField& field) {
-  std::optional<proto::Value> value = GetProtoValue(*ctx.message, field);
+  std::optional<proto::Value> value = ctx.view.GetValue(field);
   if (!value) {
-    DVLOG(1) << "Invalid proto field of " << ctx.message->GetTypeName();
+    DVLOG(1) << "Invalid proto field of " << ctx.view.GetTypeName();
     return Error::FAILED;
   }
   AddString(GetStringFromValue(*value));
@@ -158,17 +167,16 @@ InputBuilder::Error InputBuilder::ResolveProtoField(
 InputBuilder::Error InputBuilder::ResolveRangeExpr(
     const ResolutionContext& ctx,
     const proto::RangeExpr& expr) {
-  std::vector<std::string> vals;
-  auto it = GetProtoRepeated(ctx.message, expr.proto_field());
-  if (!it) {
+  auto repeated = ctx.view.GetRepeated(expr.proto_field());
+  if (!repeated) {
     DVLOG(1) << "Invalid proto field for RangeExpr over "
-             << ctx.message->GetTypeName();
+             << ctx.view.GetTypeName();
     return Error::FAILED;
   }
-  size_t i = 0;
-  for (const auto* msg : *it) {
-    Error error =
-        ResolveSubstitutedString(ResolutionContext{msg, i++}, expr.expr());
+  int repeated_size = repeated->Size();
+  for (int i = 0; i < repeated_size; i++) {
+    Error error = ResolveSubstitutedString(
+        ResolutionContext{repeated->Get(i), i}, expr.expr());
     if (error != Error::OK) {
       return error;
     }
@@ -205,6 +213,22 @@ InputBuilder::Error InputBuilder::ResolveControlToken(
   return Error::OK;
 }
 
+InputBuilder::Error InputBuilder::ResolveMediaField(
+    const ResolutionContext& ctx,
+    proto::MediaField field) {
+  MultimodalType mtype = ctx.view.GetMultimodalType(field.proto_field());
+  switch (mtype) {
+    case MultimodalType::kAudio:
+      out_->pieces.emplace_back(*ctx.view.GetAudio(field.proto_field()));
+      return Error::OK;
+    case MultimodalType::kImage:
+      out_->pieces.emplace_back(*ctx.view.GetImage(field.proto_field()));
+      return Error::OK;
+    case MultimodalType::kNone:
+      return Error::OK;
+  }
+}
+
 InputBuilder::Error InputBuilder::ResolveStringArg(
     const ResolutionContext& ctx,
     const proto::StringArg& candidate) {
@@ -220,6 +244,8 @@ InputBuilder::Error InputBuilder::ResolveStringArg(
       return ResolveIndexExpr(ctx, candidate.index_expr());
     case proto::StringArg::kControlToken:
       return ResolveControlToken(ctx, candidate.control_token());
+    case proto::StringArg::kMediaField:
+      return ResolveMediaField(ctx, candidate.media_field());
     case proto::StringArg::ARG_NOT_SET:
       DVLOG(1) << "StringArg is incomplete.";
       return Error::FAILED;
@@ -308,9 +334,14 @@ std::string OnDeviceInputToString(const on_device_model::mojom::Input& input) {
   for (const auto& piece : input.pieces) {
     if (std::holds_alternative<std::string>(piece)) {
       oss << std::get<std::string>(piece);
-    }
-    if (std::holds_alternative<ml::Token>(piece)) {
+    } else if (std::holds_alternative<ml::Token>(piece)) {
       oss << PlaceholderForToken(std::get<ml::Token>(piece));
+    } else if (std::holds_alternative<SkBitmap>(piece)) {
+      oss << "<image>";
+    } else if (std::holds_alternative<ml::AudioBuffer>(piece)) {
+      oss << "<audio>";
+    } else {
+      NOTREACHED();
     }
   }
   return oss.str();
@@ -321,13 +352,13 @@ std::string SubstitutionResult::ToString() const {
 }
 
 std::optional<SubstitutionResult> CreateSubstitutions(
-    const google::protobuf::MessageLite& request,
+    MultimodalMessageReadView request,
     const google::protobuf::RepeatedPtrField<proto::SubstitutedString>&
         config_substitutions) {
   InputBuilder builder;
   for (const auto& substitution : config_substitutions) {
-    auto error = builder.ResolveSubstitutedString(
-        ResolutionContext{&request, 0}, substitution);
+    auto error = builder.ResolveSubstitutedString(ResolutionContext{request, 0},
+                                                  substitution);
     if (error != InputBuilder::Error::OK) {
       return std::nullopt;
     }

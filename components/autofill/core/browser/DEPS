@@ -1,5 +1,5 @@
 include_rules = [
-  "+components/autofill_ai/core/browser/autofill_ai_features.h",
+  # go/keep-sorted start
   "+components/browser_ui/device_lock/android",
   "+components/device_reauth/device_authenticator.h",
   "+components/feature_engagement",
@@ -9,21 +9,22 @@ include_rules = [
   "+components/infobars/core",
   "+components/keyed_service/core",
   "+components/language/core/browser",
+  "+components/language_detection/core",
   "+components/leveldb_proto",
   "+components/metrics",
   "+components/optimization_guide",
   "+components/optimization_guide/core",
   "+components/password_manager/core/browser/features/password_features.h",
-  "+components/profile_metrics",
   "+components/policy",
-  "+components/user_annotations",
+  "+components/profile_metrics",
   "+components/resources",
-  "+components/security_state",
   "+components/security_interstitials/core/insecure_form_util.h",
   "+components/security_interstitials/core/pref_names.h",
+  "+components/security_state",
   "+components/signin/public",
   "+components/strings",
   "+components/sync",
+  "+components/sync_preferences",
   "+components/translate/core/browser",
   "+components/translate/core/common",
   "+components/variations",
@@ -32,6 +33,7 @@ include_rules = [
   "+components/webdata_services",
   "+crypto/hkdf.h",
   "+crypto/random.h",
+  "+crypto/sha2.h",
   "+google_apis/common",
   "+google_apis/gaia",
   "+google_apis/google_api_keys.h",
@@ -49,6 +51,7 @@ include_rules = [
   "+ui/accessibility",
   "+ui/base",
   "+ui/gfx",
+  # go/keep-sorted end
 ]
 
 specific_include_rules = {

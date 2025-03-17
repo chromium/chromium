@@ -4,7 +4,7 @@
 
 #include "ash/auth/views/auth_textfield_timer.h"
 
-#include <string>
+#include <string_view>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/auth/views/auth_textfield.h"
@@ -46,7 +46,7 @@ AuthTextfieldTimer::~AuthTextfieldTimer() {
   auth_textfield_ = nullptr;
 }
 
-void AuthTextfieldTimer::OnContentsChanged(const std::u16string& new_contents) {
+void AuthTextfieldTimer::OnContentsChanged(std::u16string_view new_contents) {
   if (new_contents.empty()) {
     hide_text_timer_.Stop();
     clear_text_timer_.Stop();

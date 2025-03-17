@@ -57,7 +57,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
                 std::string&& render_url);
     explicit Ad(base::PassKey<content::InterestGroupStorage>,
                 const std::string& render_url);
-    Ad(GURL render_gurl,
+    Ad(const GURL& render_url,
        std::optional<std::string> metadata,
        std::optional<std::string> size_group = std::nullopt,
        std::optional<std::string> buyer_reporting_id = std::nullopt,
@@ -66,7 +66,8 @@ struct BLINK_COMMON_EXPORT InterestGroup {
            selectable_buyer_and_seller_reporting_ids = std::nullopt,
        std::optional<std::string> ad_render_id = std::nullopt,
        std::optional<std::vector<url::Origin>> allowed_reporting_origins =
-           std::nullopt);
+           std::nullopt,
+       std::optional<std::string> creative_scanning_metadata = std::nullopt);
     ~Ad();
 
     // Returns the approximate size of the contents of this InterestGroup::Ad,
@@ -94,6 +95,9 @@ struct BLINK_COMMON_EXPORT InterestGroup {
     // Optional origins that can receive macro expanded reports.
     std::optional<std::vector<url::Origin>> allowed_reporting_origins;
 
+    // Optional metadata to provide v1 trusted seller signals server.
+    std::optional<std::string> creative_scanning_metadata;
+
     // TODO(crbug.com/355010821): Remove once all callers have been migrated.
     bool operator==(const Ad& other) const;
 
@@ -114,6 +118,10 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   // Checks for validity. Performs same checks as ValidateBlinkInterestGroup().
   // Automatically checked when passing InterestGroups over Mojo.
   bool IsValid() const;
+
+  // Additional checks for validity performed only at join and update time.
+  // Performs same checks as PerformAdditionalJoinAndUpdateTimeValidations().
+  bool IsValidForJoinAndUpdate() const;
 
   // Returns the approximate size of the contents of this InterestGroup, in
   // bytes.
@@ -162,6 +170,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
       TrustedBiddingSignalsSlotSizeMode::kNone;
   int32_t max_trusted_bidding_signals_url_length = 0;
   std::optional<url::Origin> trusted_bidding_signals_coordinator;
+  std::optional<std::vector<url::Origin>> view_and_click_counts_providers;
   std::optional<std::string> user_bidding_signals;
   std::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
   std::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
@@ -173,7 +182,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   std::optional<AdditionalBidKey> additional_bid_key;
   std::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 176, R"(
+  static_assert(__LINE__ == 185, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and in this class
@@ -181,13 +190,14 @@ If modifying InterestGroup fields, make sure to also modify:
 * SerializeInterestGroupForDevtools()
     (in devtools_serialization.cc; test in devtools_serialization_unittest.cc)
 * auction_ad_interest_group.idl
-* navigator_auction.cc
+* navigator_auction.cc (test logic in interest_group_browsertest.cc)
 * interest_group_types.mojom
-* validate_blink_interest_group.cc
+* validate_blink_interest_group.cc (includes blink version of EstimateSize)
 * validate_blink_interest_group_test.cc
+    (at least CreateFullyPopulatedInterestGroup)
 * test_interest_group_builder[.h/.cc]
-* interest_group_mojom_traits[.h/.cc/.test]
-* bidder_worklet.cc (to pass the InterestGroup to generateBid())
+* interest_group_mojom_traits[.h/.cc/_test.cc]
+* bidder_lazy_filler.cc (to pass the InterestGroup to generateBid())
 * shared_storage_worklet_global_scope.cc (interestGroups())
 * shared_storage_worklet_unittest.cc (SharedStorageWorkletTest.InterestGroups)
 
@@ -200,12 +210,12 @@ If the new field is to be updatable via updateURL, also update *all* of
 these:
 
 * Add field to content::InterestGroupUpdate
-* InterestGroupStorage::DoStoreInterestGroupUpdate()
+* DoUpdateInterestGroup in interest_group_storage.cc
 * ParseUpdateJson in interest_group_update_manager.cc
 * Update AdAuctionServiceImplTest.UpdateAllUpdatableFields
 
 If the new field is a required Mojo field, set a value for it in all the
-texprotos in the ad_auction_service_mojolpm_fuzzer/ directory.
+textprotos in the ad_auction_service_mojolpm_fuzzer/ directory.
 
 See crrev.com/c/3517534 for an example (adding the priority field), and also
 remember to update bidder_worklet.cc too.

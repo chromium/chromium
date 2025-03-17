@@ -75,8 +75,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
   PrefService* prefs = browser_state->GetPrefs();
 
   controller_builder.SetAutofillWebDataService(
-      web::GetUIThreadTaskRunner({}),
-      autofill_profile_web_data_service,
+      web::GetUIThreadTaskRunner({}), autofill_profile_web_data_service,
       WebViewWebDataServiceWrapperFactory::GetAutofillWebDataForAccount(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS));
   controller_builder.SetDeviceInfoSyncService(

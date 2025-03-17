@@ -32,6 +32,7 @@ import org.chromium.components.browser_ui.edge_to_edge.R;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
+import org.chromium.ui.test.util.WindowInsetsTestUtils.SpyWindowInsetsBuilder;
 
 import java.io.IOException;
 
@@ -55,6 +56,9 @@ public class EdgeToEdgeLayoutViewTest {
 
     private static final int STATUS_BAR_SIZE = 100;
     private static final int NAV_BAR_SIZE = 150;
+    private static final int DISPLAY_CUTOUT_SIZE = 75;
+    private static final int IME_SIZE = 300;
+
     private static final int STATUS_BAR_COLOR = Color.RED;
     private static final int NAV_BAR_COLOR = Color.GREEN;
     private static final int NAV_BAR_DIVIDER_COLOR = Color.BLUE;
@@ -132,5 +136,81 @@ public class EdgeToEdgeLayoutViewTest {
 
         CriteriaHelper.pollUiThread(() -> !mEdgeToEdgeLayout.isDirty());
         mRenderTestRule.render(mEdgeToEdgeLayout, "left_nav_Bar");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void renderDisplayCutoutOverlapSystemBars() throws IOException {
+        WindowInsetsCompat topBottomSysBarsWithLeftCutoutInsets =
+                new SpyWindowInsetsBuilder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.statusBars(),
+                                Insets.of(0, STATUS_BAR_SIZE, 0, 0))
+                        .setInsets(
+                                WindowInsetsCompat.Type.navigationBars(),
+                                Insets.of(0, 0, 0, NAV_BAR_SIZE))
+                        .setInsets(
+                                WindowInsetsCompat.Type.displayCutout(),
+                                Insets.of(DISPLAY_CUTOUT_SIZE, 0, 0, 0))
+                        .build();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(
+                            mContentView, topBottomSysBarsWithLeftCutoutInsets);
+                });
+
+        CriteriaHelper.pollUiThread(() -> !mEdgeToEdgeLayout.isDirty());
+        mRenderTestRule.render(mEdgeToEdgeLayout, "left_display_cutout_overlap");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void renderDisplayCutoutOverlapStatusBarOnly() throws IOException {
+        WindowInsetsCompat topLeftSysBarsRightCutoutInsets =
+                new SpyWindowInsetsBuilder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.statusBars(),
+                                Insets.of(0, STATUS_BAR_SIZE, 0, 0))
+                        .setInsets(
+                                WindowInsetsCompat.Type.navigationBars(),
+                                Insets.of(NAV_BAR_SIZE, 0, 0, 0))
+                        .setInsets(
+                                WindowInsetsCompat.Type.displayCutout(),
+                                Insets.of(0, 0, DISPLAY_CUTOUT_SIZE, 0))
+                        .build();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(
+                            mContentView, topLeftSysBarsRightCutoutInsets);
+                });
+
+        CriteriaHelper.pollUiThread(() -> !mEdgeToEdgeLayout.isDirty());
+        mRenderTestRule.render(mEdgeToEdgeLayout, "top_left_sys_bars_right_cutout");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void renderImeInsets() throws IOException {
+        WindowInsetsCompat topLeftSysBarsRightCutoutInsets =
+                new SpyWindowInsetsBuilder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.statusBars(),
+                                Insets.of(0, STATUS_BAR_SIZE, 0, 0))
+                        .setInsets(
+                                WindowInsetsCompat.Type.navigationBars(),
+                                Insets.of(0, 0, 0, NAV_BAR_SIZE))
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, IME_SIZE))
+                        .build();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(
+                            mContentView, topLeftSysBarsRightCutoutInsets);
+                });
+
+        CriteriaHelper.pollUiThread(() -> !mEdgeToEdgeLayout.isDirty());
+        mRenderTestRule.render(mEdgeToEdgeLayout, "top_bottom_ime");
     }
 }

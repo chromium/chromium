@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
@@ -50,12 +48,6 @@ class PerformanceDetectionManagerBrowserTest : public InProcessBrowserTest {
   PerformanceDetectionManagerBrowserTest() = default;
   ~PerformanceDetectionManagerBrowserTest() override = default;
 
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        performance_manager::features::kPerformanceInterventionUI);
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -94,16 +86,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceDetectionManagerBrowserTest,
   std::vector<resource_attribution::PageContext> page_contexts = {
       GetPageContext(1), GetPageContext(2)};
 
-  base::RunLoop run_loop;
-  manager()->DiscardTabs(
-      page_contexts,
-      base::BindOnce(
-          [](base::RepeatingClosure quit_closure, bool did_discard) {
-            quit_closure.Run();
-            EXPECT_TRUE(did_discard);
-          },
-          run_loop.QuitClosure()));
-  run_loop.Run();
+  EXPECT_TRUE(manager()->DiscardTabs(page_contexts));
 
   EXPECT_FALSE(GetWebContentsAt(0)->WasDiscarded());
   EXPECT_TRUE(GetWebContentsAt(1)->WasDiscarded());
@@ -125,16 +108,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceDetectionManagerBrowserTest,
   tab_strip_model->CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(last_page_context.GetWebContents(), nullptr);
 
-  base::RunLoop run_loop;
-  manager()->DiscardTabs(
-      page_contexts,
-      base::BindOnce(
-          [](base::RepeatingClosure quit_closure, bool did_discard) {
-            quit_closure.Run();
-            EXPECT_TRUE(did_discard);
-          },
-          run_loop.QuitClosure()));
-  run_loop.Run();
+  EXPECT_TRUE(manager()->DiscardTabs(page_contexts));
 
   // The detection manager should discard the contents at index 1 even though
   // the contents at index 2 was closed.
@@ -154,16 +128,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceDetectionManagerBrowserTest,
   tab_strip_model->CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
   tab_strip_model->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
 
-  base::RunLoop run_loop;
-  manager()->DiscardTabs(
-      page_contexts,
-      base::BindOnce(
-          [](base::RepeatingClosure quit_closure, bool did_discard) {
-            quit_closure.Run();
-            EXPECT_FALSE(did_discard);
-          },
-          run_loop.QuitClosure()));
-  run_loop.Run();
+  EXPECT_FALSE(manager()->DiscardTabs(page_contexts));
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceDetectionManagerBrowserTest,
@@ -176,16 +141,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceDetectionManagerBrowserTest,
 
   browser()->tab_strip_model()->ActivateTabAt(2);
 
-  base::RunLoop run_loop;
-  manager()->DiscardTabs(
-      page_contexts,
-      base::BindOnce(
-          [](base::RepeatingClosure quit_closure, bool did_discard) {
-            quit_closure.Run();
-            EXPECT_TRUE(did_discard);
-          },
-          run_loop.QuitClosure()));
-  run_loop.Run();
+  EXPECT_TRUE(manager()->DiscardTabs(page_contexts));
 
   // The detection manager should discard the contents at index 1 even though
   // the contents at index 2 is active.
@@ -200,9 +156,7 @@ class PerformanceInterventionDemoModeTest
     set_open_about_blank_on_browser_launch(true);
 
     feature_list_.InitWithFeatures(
-        {performance_manager::features::kPerformanceInterventionUI,
-         performance_manager::features::kPerformanceInterventionDemoMode},
-        {});
+        {performance_manager::features::kPerformanceInterventionDemoMode}, {});
     InProcessBrowserTest::SetUp();
   }
 

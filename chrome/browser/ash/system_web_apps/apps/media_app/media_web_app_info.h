@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 
 namespace web_app {
 struct WebAppInstallInfo;
@@ -34,9 +34,6 @@ class MediaSystemAppDelegate : public ash::SystemWebAppDelegate {
       const GURL& url,
       const apps::AppLaunchParams& params) const override;
 };
-
-// Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForMediaWebApp();
 
 // Returns a snapshot of the product-specific data that is attached to HaTS for
 // the MediaApp.

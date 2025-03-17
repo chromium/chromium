@@ -32,13 +32,12 @@ const char kDarkModeSettings[] = "dark-mode-settings";
 // Overrides data: URLs in SVGUseElement deprecation through enterprise policy.
 const char kDataUrlInSvgUseEnabled[] = "data-url-in-svg-use-enabled";
 
+// Toggles partitioning of Blob URLs through enterprise policy.
+const char kDisableBlobUrlPartitioning[] = "disable-blob-url-partitioning";
+
 // Sets the tile size used by composited layers.
 const char kDefaultTileWidth[] = "default-tile-width";
 const char kDefaultTileHeight[] = "default-tile-height";
-
-// If set, the unload event cannot be disabled by default by Permissions-Policy.
-const char kForcePermissionPolicyUnloadDefaultEnabled[] =
-    "force-permission-policy-unload-default-enabled";
 
 // Disallow image animations to be reset to the beginning to avoid skipping
 // many frames. Only effective if compositor image animations are enabled.
@@ -177,9 +176,6 @@ const char kDisableStandardizedBrowserZoom[] =
 // enabling cross-origin isolation.
 const char kSharedArrayBufferAllowedOrigins[] =
     "shared-array-buffer-allowed-origins";
-
-// Allows overriding the conditional focus window's length.
-const char kConditionalFocusWindowMs[] = "conditional-focus-window-ms";
 
 // Specifies the flags passed to JS engine.
 const char kJavaScriptFlags[] = "js-flags";

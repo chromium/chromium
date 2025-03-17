@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.android.webid.data;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.url.GURL;
 
@@ -14,7 +15,8 @@ public class IdentityCredentialTokenError {
     private final GURL mUrl;
 
     @CalledByNative
-    public IdentityCredentialTokenError(String code, GURL url) {
+    public IdentityCredentialTokenError(
+            @JniType("std::string") String code, @JniType("GURL") GURL url) {
         mCode = code;
         mUrl = url;
     }

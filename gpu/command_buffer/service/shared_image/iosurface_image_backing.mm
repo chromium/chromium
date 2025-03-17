@@ -51,6 +51,8 @@
 namespace gpu {
 
 namespace {
+using GraphiteTextureHolder = SkiaImageRepresentation::GraphiteTextureHolder;
+
 struct ScopedIOSurfaceLock {
   ScopedIOSurfaceLock(IOSurfaceRef iosurface, IOSurfaceLockOptions options)
       : io_surface_(iosurface) {
@@ -167,17 +169,18 @@ base::apple::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
   return mtl_texture;
 }
 
-std::vector<skgpu::graphite::BackendTexture> CreateGraphiteMetalTextures(
+std::vector<scoped_refptr<GraphiteTextureHolder>> CreateGraphiteMetalTextures(
     std::vector<base::apple::scoped_nsprotocol<id<MTLTexture>>> mtl_textures,
     const viz::SharedImageFormat format,
     const gfx::Size& size) {
   int num_planes = format.NumberOfPlanes();
-  std::vector<skgpu::graphite::BackendTexture> graphite_textures;
+  std::vector<scoped_refptr<GraphiteTextureHolder>> graphite_textures;
   graphite_textures.reserve(num_planes);
   for (int plane = 0; plane < num_planes; plane++) {
     SkISize sk_size = gfx::SizeToSkISize(format.GetPlaneSize(plane, size));
-    graphite_textures.emplace_back(skgpu::graphite::BackendTextures::MakeMetal(
-        sk_size, mtl_textures[plane].get()));
+    graphite_textures.emplace_back(base::MakeRefCounted<GraphiteTextureHolder>(
+        skgpu::graphite::BackendTextures::MakeMetal(
+            sk_size, mtl_textures[plane].get())));
   }
   return graphite_textures;
 }
@@ -510,14 +513,14 @@ void IOSurfaceImageBacking::SkiaGaneshRepresentation::CheckContext() {
 
 #if BUILDFLAG(SKIA_USE_METAL)
 ///////////////////////////////////////////////////////////////////////////////
-// SkiaGraphiteRepresentation
+// SkiaGraphiteMetalRepresentation
 
-class IOSurfaceImageBacking::SkiaGraphiteRepresentation final
+class IOSurfaceImageBacking::SkiaGraphiteMetalRepresentation final
     : public SkiaGraphiteImageRepresentation {
  public:
   // Graphite does not keep track of the MetalTexture like Ganesh, so the
   // representation/backing needs to keep the Metal texture alive.
-  SkiaGraphiteRepresentation(
+  SkiaGraphiteMetalRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
@@ -529,7 +532,7 @@ class IOSurfaceImageBacking::SkiaGraphiteRepresentation final
     CHECK_EQ(mtl_textures_.size(), NumPlanesExpected());
   }
 
-  ~SkiaGraphiteRepresentation() override {
+  ~SkiaGraphiteMetalRepresentation() override {
     if (!write_surfaces_.empty()) {
       DLOG(ERROR) << "SkiaImageRepresentation was destroyed while still "
                   << "open for write access.";
@@ -541,9 +544,9 @@ class IOSurfaceImageBacking::SkiaGraphiteRepresentation final
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
       const gfx::Rect& update_rect) override;
-  std::vector<skgpu::graphite::BackendTexture> BeginWriteAccess() override;
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess() override;
   void EndWriteAccess() override;
-  std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override;
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override;
   void EndReadAccess() override;
 
   IOSurfaceImageBacking* backing_impl() const {
@@ -556,7 +559,7 @@ class IOSurfaceImageBacking::SkiaGraphiteRepresentation final
 };
 
 std::vector<sk_sp<SkSurface>>
-IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginWriteAccess(
+IOSurfaceImageBacking::SkiaGraphiteMetalRepresentation::BeginWriteAccess(
     const SkSurfaceProps& surface_props,
     const gfx::Rect& update_rect) {
   if (!write_surfaces_.empty()) {
@@ -589,15 +592,15 @@ IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginWriteAccess(
   return write_surfaces_;
 }
 
-std::vector<skgpu::graphite::BackendTexture>
-IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginWriteAccess() {
+std::vector<scoped_refptr<GraphiteTextureHolder>>
+IOSurfaceImageBacking::SkiaGraphiteMetalRepresentation::BeginWriteAccess() {
   if (!backing_impl()->BeginAccess(/*readonly=*/false)) {
     return {};
   }
   return CreateGraphiteMetalTextures(mtl_textures_, format(), size());
 }
 
-void IOSurfaceImageBacking::SkiaGraphiteRepresentation::EndWriteAccess() {
+void IOSurfaceImageBacking::SkiaGraphiteMetalRepresentation::EndWriteAccess() {
 #if DCHECK_IS_ON()
   for (auto& surface : write_surfaces_) {
     DCHECK(surface->unique());
@@ -607,15 +610,15 @@ void IOSurfaceImageBacking::SkiaGraphiteRepresentation::EndWriteAccess() {
   backing_impl()->EndAccess(/*readonly=*/false);
 }
 
-std::vector<skgpu::graphite::BackendTexture>
-IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginReadAccess() {
+std::vector<scoped_refptr<GraphiteTextureHolder>>
+IOSurfaceImageBacking::SkiaGraphiteMetalRepresentation::BeginReadAccess() {
   if (!backing_impl()->BeginAccess(/*readonly=*/true)) {
     return {};
   }
   return CreateGraphiteMetalTextures(mtl_textures_, format(), size());
 }
 
-void IOSurfaceImageBacking::SkiaGraphiteRepresentation::EndReadAccess() {
+void IOSurfaceImageBacking::SkiaGraphiteMetalRepresentation::EndReadAccess() {
   backing_impl()->EndAccess(/*readonly=*/true);
 }
 #endif
@@ -729,7 +732,6 @@ class IOSurfaceImageBacking::DawnRepresentation final
   wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
                             wgpu::TextureUsage internal_usage) final;
   void EndAccess() final;
-  bool SupportsMultipleConcurrentReadAccess() final;
 
  private:
   static constexpr wgpu::TextureUsage kReadOnlyUsage =
@@ -771,14 +773,14 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   usage_ = wgpu_texture_usage;
   internal_usage_ = internal_usage;
 
-  texture_ = iosurface_backing->GetDawnTextureHolder()->GetCachedWGPUTexture(
+  texture_ = iosurface_backing->GetDawnTextureCache()->GetCachedWGPUTexture(
       device_, usage_);
   if (!texture_) {
     texture_ = CreateWGPUTexture(shared_texture_memory_, usage(),
                                  io_surface_size_, wgpu_format_, view_formats_,
                                  wgpu_texture_usage, internal_usage);
-    iosurface_backing->GetDawnTextureHolder()->MaybeCacheWGPUTexture(device_,
-                                                                     texture_);
+    iosurface_backing->GetDawnTextureCache()->MaybeCacheWGPUTexture(device_,
+                                                                    texture_);
   }
 
   // If there is already an ongoing Dawn access for this texture, then the
@@ -839,14 +841,14 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
     // handling.
     LOG(ERROR) << "SharedTextureMemory::BeginAccess() failed";
     iosurface_backing->TrackEndAccessToWGPUTexture(texture_);
-    iosurface_backing->GetDawnTextureHolder()->RemoveWGPUTextureFromCache(
+    iosurface_backing->GetDawnTextureCache()->RemoveWGPUTextureFromCache(
         device_, texture_);
-    texture_ = {};
+    texture_ = nullptr;
 
     iosurface_backing->EndAccess(readonly);
   }
 
-  return texture_.Get();
+  return texture_;
 }
 
 void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
@@ -881,7 +883,7 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   }
 
   wgpu::SharedTextureMemoryEndAccessState end_access_desc;
-  CHECK_EQ(shared_texture_memory_.EndAccess(texture_.Get(), &end_access_desc),
+  CHECK_EQ(shared_texture_memory_.EndAccess(texture_, &end_access_desc),
            wgpu::Status::Success);
 
   if (end_access_desc.initialized) {
@@ -909,7 +911,7 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
                                                   readonly);
   }
 
-  iosurface_backing->GetDawnTextureHolder()->DestroyWGPUTextureIfNotCached(
+  iosurface_backing->GetDawnTextureCache()->DestroyWGPUTextureIfNotCached(
       device_, texture_);
 
   if (end_access_desc.fenceCount > 0) {
@@ -927,6 +929,19 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   usage_ = internal_usage_ = wgpu::TextureUsage::None;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// SkiaGraphiteDawnMetalRepresentation
+
+class IOSurfaceImageBacking::SkiaGraphiteDawnMetalRepresentation
+    : public SkiaGraphiteDawnImageRepresentation {
+ public:
+  using SkiaGraphiteDawnImageRepresentation::
+      SkiaGraphiteDawnImageRepresentation;
+  ~SkiaGraphiteDawnMetalRepresentation() override = default;
+
+  bool SupportsMultipleConcurrentReadAccess() final;
+};
+
 // Enabling this functionality reduces overhead in the compositor by lowering
 // the frequency of begin/end access pairs. The semantic constraints for a
 // representation being able to return true are the following:
@@ -943,10 +958,8 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
 //   Vulkan access). SupportsMultipleConcurrentReadAccess() results in the
 //   compositor's read access being long-lived (i.e., beyond the scope of
 //   a single GPU task).
-// The Graphite Skia representation returns true if the underlying Dawn
-// representation does so. This representation meets both of the above
-// constraints.
-bool IOSurfaceImageBacking::DawnRepresentation::
+// This representation meets both of the above constraints.
+bool IOSurfaceImageBacking::SkiaGraphiteDawnMetalRepresentation::
     SupportsMultipleConcurrentReadAccess() {
   return true;
 }
@@ -986,7 +999,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
                        IOSurfaceGetHeight(io_surface_.get())),
       io_surface_format_(IOSurfaceGetPixelFormat(io_surface_.get())),
       io_surface_id_(io_surface_id),
-      dawn_texture_holder_(std::make_unique<DawnSharedTextureHolder>()),
+      dawn_texture_cache_(base::MakeRefCounted<DawnSharedTextureCache>()),
       gl_target_(gl_target),
       framebuffer_attachment_angle_(framebuffer_attachment_angle),
       cleared_rect_(is_cleared ? gfx::Rect(size) : gfx::Rect()),
@@ -1277,8 +1290,9 @@ int IOSurfaceImageBacking::TrackEndAccessToWGPUTexture(wgpu::Texture texture) {
   return num_outstanding_accesses;
 }
 
-DawnSharedTextureHolder* IOSurfaceImageBacking::GetDawnTextureHolder() {
-  return dawn_texture_holder_.get();
+const scoped_refptr<DawnSharedTextureCache>&
+IOSurfaceImageBacking::GetDawnTextureCache() {
+  return dawn_texture_cache_;
 }
 
 void IOSurfaceImageBacking::AddWGPUDeviceWithPendingCommands(
@@ -1348,15 +1362,30 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     // importantly ensures that a new SharedTextureMemory instance will be
     // created if another Device occupies the same memory as a previously-used,
     // now-lost Device.
-    dawn_texture_holder_->EraseDataIfDeviceLost();
+    dawn_texture_cache_->EraseDataIfDeviceLost();
 
     CHECK(device.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface));
 
     wgpu::SharedTextureMemory shared_texture_memory =
-        dawn_texture_holder_->GetSharedTextureMemory(device);
+        dawn_texture_cache_->GetSharedTextureMemory(device);
     if (!shared_texture_memory) {
+      // NOTE: `shared_dawn_context` may be null if Graphite is not being used.
+      const auto* shared_dawn_context = context_state->dawn_context_provider();
+      const bool is_graphite_device =
+          shared_dawn_context &&
+          shared_dawn_context->GetDevice().Get() == device.Get();
+
       wgpu::SharedTextureMemoryIOSurfaceDescriptor io_surface_desc;
       io_surface_desc.ioSurface = io_surface_.get();
+      // Set storage binding usage only if explicitly needed for WebGPU - this
+      // forces the MTLTexture wrapping the IOSurface to have ShaderWrite usage
+      // which in turn prevents texture compression. It's possible this doesn't
+      // have any effect given that IOSurfaces have linear layout, but it might
+      // if the kernel chooses to create a separate allocation for the GPU.
+      io_surface_desc.allowStorageBinding =
+          (usage() & SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) &&
+          !is_graphite_device;
+
       wgpu::SharedTextureMemoryDescriptor desc = {};
       desc.nextInChain = &io_surface_desc;
 
@@ -1369,14 +1398,10 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
       // We cache the SharedTextureMemory instance that is associated with the
       // Graphite device.
       // TODO(crbug.com/345674550): Extend caching to WebGPU devices as well.
-      // NOTE: `dawn_context_provider` may be null if Graphite is not being
-      // used.
-      auto* dawn_context_provider = context_state->dawn_context_provider();
-      if (dawn_context_provider &&
-          dawn_context_provider->GetDevice().Get() == device.Get()) {
+      if (is_graphite_device) {
         // This is the Graphite device, so we cache its SharedTextureMemory
         // instance.
-        dawn_texture_holder_->MaybeCacheSharedTextureMemory(
+        dawn_texture_cache_->MaybeCacheSharedTextureMemory(
             device, shared_texture_memory);
       }
     }
@@ -1446,9 +1471,18 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
       LOG(ERROR) << "Could not create Dawn Representation";
       return nullptr;
     }
+
     // Use GPU main recorder since this should only be called for
     // fulfilling Graphite promise images on GPU main thread.
-    return SkiaGraphiteDawnImageRepresentation::Create(
+    if (backend_type == wgpu::BackendType::Metal) {
+      return std::make_unique<SkiaGraphiteDawnMetalRepresentation>(
+          std::move(dawn_representation), context_state,
+          context_state->gpu_main_graphite_recorder(), manager, this, tracker);
+    }
+
+    // Use default skia representation
+    CHECK_EQ(backend_type, wgpu::BackendType::Vulkan);
+    return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
         std::move(dawn_representation), context_state,
         context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else
@@ -1475,7 +1509,7 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
 
     // Use GPU main recorder since this should only be called for
     // fulfilling Graphite promise images on GPU main thread.
-    return std::make_unique<SkiaGraphiteRepresentation>(
+    return std::make_unique<SkiaGraphiteMetalRepresentation>(
         manager, this, tracker, context_state->gpu_main_graphite_recorder(),
         std::move(mtl_textures));
 #else

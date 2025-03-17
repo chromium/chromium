@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
 import android.content.Context;
@@ -19,7 +20,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -27,12 +27,14 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.CheckBoxWithDescription;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 /** A utility class for the UI recording exceptions to the blocked list for site settings. */
+@NullMarked
 public class AddExceptionPreference extends Preference
         implements Preference.OnPreferenceClickListener {
     // The callback to notify when the user adds a site.
@@ -105,6 +107,7 @@ public class AddExceptionPreference extends Preference
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         TextView titleView = (TextView) holder.findViewById(android.R.id.title);
+        assumeNonNull(titleView);
         titleView.setTextColor(mPrefAccentColor);
     }
 
@@ -204,7 +207,7 @@ public class AddExceptionPreference extends Preference
     }
 
     @VisibleForTesting
-    static String updatePatternIfNeeded(@NonNull String pattern, int type, boolean isChecked) {
+    static String updatePatternIfNeeded(String pattern, int type, boolean isChecked) {
         if (type == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             if (isChecked) {
                 return WebsitePreferenceBridge.toDomainWildcardPattern(pattern);
@@ -216,7 +219,7 @@ public class AddExceptionPreference extends Preference
     }
 
     @VisibleForTesting
-    static String getPrimaryPattern(@NonNull String pattern, int type, boolean isChecked) {
+    static String getPrimaryPattern(String pattern, int type, boolean isChecked) {
         if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
             return SITE_WILDCARD;
         }
@@ -224,7 +227,7 @@ public class AddExceptionPreference extends Preference
     }
 
     @VisibleForTesting
-    static String getSecondaryPattern(@NonNull String pattern, int type, boolean isChecked) {
+    static String getSecondaryPattern(String pattern, int type, boolean isChecked) {
         if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
             return pattern;
         }
@@ -232,7 +235,7 @@ public class AddExceptionPreference extends Preference
     }
 
     @VisibleForTesting
-    static boolean isPatternValid(@NonNull String pattern, int type) {
+    static boolean isPatternValid(String pattern, int type) {
         if (pattern.length() == 0) {
             return true;
         }

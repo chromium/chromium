@@ -3,7 +3,15 @@
 // found in the LICENSE file.
 
 #import "components/policy/policy_constants.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
+#import "ios/chrome/browser/authentication/ui_bundled/history_sync/pref_names.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -12,11 +20,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
-#import "ios/chrome/browser/ui/authentication/history_sync/pref_names.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -29,7 +32,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using chrome_test_util::GoogleSyncSettingsButton;
 using chrome_test_util::SettingsSignInRowMatcher;
 
 @interface SigninSettingsTestCase : ChromeTestCase
@@ -82,17 +84,16 @@ using chrome_test_util::SettingsSignInRowMatcher;
           grey_allOf(chrome_test_util::ButtonWithForegroundColor(
                          kSolidButtonTextColor),
                      chrome_test_util::ButtonWithBackgroundColor(kBlueColor),
-                     chrome_test_util::SigninScreenPromoPrimaryButtonMatcher(),
-                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
+                     chrome_test_util::PromoScreenPrimaryButtonMatcher(), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(
-              chrome_test_util::ButtonWithForegroundColor(kBlueColor),
-              chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+          grey_allOf(chrome_test_util::ButtonWithForegroundColor(kBlueColor),
+                     chrome_test_util::PromoScreenSecondaryButtonMatcher(),
+                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:
-                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           PromoScreenPrimaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -138,18 +139,18 @@ using chrome_test_util::SettingsSignInRowMatcher;
           grey_allOf(
               chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
               chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::SigninScreenPromoPrimaryButtonMatcher(), nil)]
+              chrome_test_util::PromoScreenPrimaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(
               chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
               chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
+              chrome_test_util::PromoScreenSecondaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:
-                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           PromoScreenPrimaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -182,8 +183,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
                             grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:
-                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           PromoScreenPrimaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -242,8 +243,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
                             grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:
-                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           PromoScreenPrimaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -283,19 +284,15 @@ using chrome_test_util::SettingsSignInRowMatcher;
 // Tests sign-in and accept history sync opt-in from the settings when having
 // no account on the device.
 - (void)testSigninWithNoAccountOnDevice {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [ChromeEarlGreyUI openSettingsMenu];
   // Tap on sign-in cell.
   [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       performAction:grey_tap()];
   // Set up a fake identity to add and sign-in with.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(
-                                       kFakeAuthAddAccountButtonIdentifier),
-                                   grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  [SigninEarlGreyUI addFakeAccountInFakeAddAccountMenu:fakeIdentity];
   // Make sure the fake SSO view controller is fully removed.
   [ChromeEarlGreyUI waitForAppToIdle];
   // Verify that buttons of the History Sync screen have the expected colors.
@@ -304,17 +301,16 @@ using chrome_test_util::SettingsSignInRowMatcher;
           grey_allOf(chrome_test_util::ButtonWithForegroundColor(
                          kSolidButtonTextColor),
                      chrome_test_util::ButtonWithBackgroundColor(kBlueColor),
-                     chrome_test_util::SigninScreenPromoPrimaryButtonMatcher(),
-                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
+                     chrome_test_util::PromoScreenPrimaryButtonMatcher(), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(
-              chrome_test_util::ButtonWithForegroundColor(kBlueColor),
-              chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+          grey_allOf(chrome_test_util::ButtonWithForegroundColor(kBlueColor),
+                     chrome_test_util::PromoScreenSecondaryButtonMatcher(),
+                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:
-                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           PromoScreenPrimaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -330,26 +326,30 @@ using chrome_test_util::SettingsSignInRowMatcher;
   GREYAssertTrue(
       [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
       @"Tabs sync should be enabled.");
+
+  ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
+      initWithAccessPoint:signin_metrics::AccessPoint::kSettings];
+  // TODO(crbug.com/41493423): We should log that the signin was offered.
+  expecteds.signinSignInStarted = 1;
+  expecteds.signinSigninStartedAccessPoint = 1;
+  expecteds.signinSignInCompleted = 1;
+  [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
 // Tests sign-in and accept history sync opt-in from the settings when having
 // no account on the device. Capabilities are not set to simulate unsuccessful
 // capabilities fetches.
 - (void)testSigninWithNoAccountOnDeviceWithUnknownCapabilities {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [ChromeEarlGreyUI openSettingsMenu];
   // Tap on sign-in cell.
   [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       performAction:grey_tap()];
   // Set up a fake identity with unset capabilities to add and sign-in with.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity
-                                  withUnknownCapabilities:YES];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(
-                                       kFakeAuthAddAccountButtonIdentifier),
-                                   grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  [SigninEarlGreyUI addFakeAccountInFakeAddAccountMenu:fakeIdentity
+                               withUnknownCapabilities:YES];
   // Make sure the fake SSO view controller is fully removed.
   [ChromeEarlGreyUI waitForAppToIdle];
   // Wait for the History Sync Opt-In screen.
@@ -365,18 +365,18 @@ using chrome_test_util::SettingsSignInRowMatcher;
           grey_allOf(
               chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
               chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::SigninScreenPromoPrimaryButtonMatcher(), nil)]
+              chrome_test_util::PromoScreenPrimaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(
               chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
               chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
+              chrome_test_util::PromoScreenSecondaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:
-                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           PromoScreenPrimaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -392,6 +392,14 @@ using chrome_test_util::SettingsSignInRowMatcher;
   GREYAssertTrue(
       [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
       @"Tabs sync should be enabled.");
+
+  ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
+      initWithAccessPoint:signin_metrics::AccessPoint::kSettings];
+  // TODO(crbug.com/41493423): We should log that the signin was offered.
+  expecteds.signinSignInStarted = 1;
+  expecteds.signinSigninStartedAccessPoint = 1;
+  expecteds.signinSignInCompleted = 1;
+  [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
 // For a signed out user with device accounts, tests that the sign-in row is
@@ -419,6 +427,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
 // For a signed out user with no device accounts, tests that the sign-in row is
 // shown with the correct strings and opens the auth activity on tap.
 - (void)testSigninRowOpensAuthActivityIfSignedOutAndNoDeviceAccounts {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [ChromeEarlGreyUI openSettingsMenu];
 
   [[EarlGrey
@@ -432,6 +442,14 @@ using chrome_test_util::SettingsSignInRowMatcher;
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kFakeAuthActivityViewIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
+      initWithAccessPoint:signin_metrics::AccessPoint::kSettings];
+  // TODO(crbug.com/41493423): We should log that the signin was offered,
+  // completed.
+  expecteds.signinSignInStarted = 1;
+  expecteds.signinSigninStartedAccessPoint = 1;
+  [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
 // For a signed out user with the SyncDisabled policy, tests that the sign-in
@@ -515,8 +533,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
       assertWithMatcher:grey_notNil()];
 
   // Decline History Sync.
-  [[[EarlGrey selectElementWithMatcher:
-                  chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           PromoScreenSecondaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -556,8 +574,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Decline History Sync.
-  [[[EarlGrey selectElementWithMatcher:
-                  chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           PromoScreenSecondaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];

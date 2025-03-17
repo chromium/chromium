@@ -16,8 +16,17 @@ import {
   assertExists,
   assertNotReached,
 } from '../../core/utils/assert.js';
+import {
+  chunkContentByWord,
+} from '../../core/utils/utils.js';
 
 import {PlatformHandler} from './handler.js';
+import {
+  isCannedResponse,
+  isInvalidFormatResponse,
+  parseResponse,
+  trimRepeatedBulletPoints,
+} from './on_device_model_utils.js';
 import {
   FormatFeature,
   LoadModelResult,
@@ -34,19 +43,32 @@ import {
   StreamingResponderCallbackRouter,
 } from './types.js';
 
-function parseResponse(res: string): string {
-  // Note this is NOT an underscore: ▁(U+2581)
-  return res.replaceAll('▁', ' ').replaceAll(/\n+/g, '\n').trim();
-}
 
 // The minimum transcript token length for title generation and summarization.
 const MIN_TOKEN_LENGTH = 200;
+
+// The maximum content input length for T&S model.
+// Based on tests, 1k input tokens is the most efficient.
+// According to the Gemini tokenizer documentation
+// (https://ai.google.dev/gemini-api/docs/tokens), 100 tokens are roughly
+// equivalent to 60-80 English words, chose 700 since it is average.
+const MAX_TS_MODEL_INPUT_WORD_LENGTH = 700;
+
+// The config for model repetition judgement.
+// We split model response into bullet points and check string length and LCS
+// (longest common subsequence) scores by words.
+// If conditions are over threshold, show invalid or trim repetition.
+// Thresholds are designed based on real model responses.
+const MODEL_REPETITION_CONFIG = {
+  maxLength: 1000,
+  lcsScoreThreshold: 0.9,
+};
 
 abstract class OnDeviceModel<T> implements Model<T> {
   constructor(
     private readonly remote: OnDeviceModelRemote,
     private readonly pageRemote: PageHandlerRemote,
-    private readonly modelInfo: ModelInfo,
+    protected readonly modelInfo: ModelInfo,
   ) {
     // TODO(pihsun): Handle disconnection error
   }
@@ -54,7 +76,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
   async execute(content: string, language: LanguageCode):
     Promise<ModelResponse<T>> {
     const session = new SessionRemote();
-    this.remote.startSession(session.$.bindNewPipeAndPassReceiver());
+    this.remote.startSession(session.$.bindNewPipeAndPassReceiver(), null);
     const result =
       await this.executeInRemoteSession(content, language, session);
     session.$.close();
@@ -86,8 +108,12 @@ abstract class OnDeviceModel<T> implements Model<T> {
    * Check input token size first and then execute.
    * Share the session from params without creating new session.
    */
-  private async executeRaw(text: string, session: SessionRemote):
-    Promise<ModelResponse<string>> {
+  private async executeRaw(
+    text: string,
+    session: SessionRemote,
+    expectedBulletPointCount: number,
+    language: LanguageCode,
+  ): Promise<ModelResponse<string>> {
     const inputPieces = {pieces: [{text}]};
     const size = await this.getInputTokenSize(text, session);
 
@@ -121,36 +147,82 @@ abstract class OnDeviceModel<T> implements Model<T> {
         resolve(response.join('').trimStart());
       },
     );
-    session.execute(
+    session.append(
       {
-        ignoreContext: false,
         maxTokens: 0,
         tokenOffset: 0,
+        input: inputPieces,
+      },
+      null,
+    );
+    session.generate(
+      {
         maxOutputTokens: 0,
         topK: 1,
         temperature: 0,
-        input: inputPieces,
       },
       responseRouter.$.bindNewPipeAndPassRemote(),
     );
     const result = await promise;
-    return {kind: 'success', result};
+
+    // When the model returns the canned response, show the same UI as
+    // unsafe content for now.
+    if (isCannedResponse(result)) {
+      return {kind: 'error', error: ModelResponseError.UNSAFE};
+    }
+
+    const parsedResult = parseResponse(result);
+    // TODO(yuanchieh): retry inference with higher temperature.
+    if (isInvalidFormatResponse(
+          parsedResult,
+          expectedBulletPointCount,
+        )) {
+      return {kind: 'error', error: ModelResponseError.UNSAFE};
+    }
+
+    const finalBulletPoints = trimRepeatedBulletPoints(
+      parsedResult,
+      MODEL_REPETITION_CONFIG.maxLength,
+      language,
+      MODEL_REPETITION_CONFIG.lcsScoreThreshold,
+    );
+
+    // Show unsafe content if no valid bullet point.
+    if (finalBulletPoints.length === 0) {
+      return {kind: 'error', error: ModelResponseError.UNSAFE};
+    }
+
+    // To align with model response type, concatenated bullet points back to one
+    // string.
+    const finalResult = finalBulletPoints.join('\n');
+
+    return {kind: 'success', result: finalResult};
   }
 
   private async contentIsUnsafe(
     content: string,
     safetyFeature: SafetyFeature,
+    language: LanguageCode,
   ): Promise<boolean> {
-    const {safetyInfo} = await this.remote.classifyTextSafety(content);
-    if (safetyInfo === null) {
-      return false;
+    // Split the content into chunks due to model performance considerations.
+    const contentChunks =
+      chunkContentByWord(content, MAX_TS_MODEL_INPUT_WORD_LENGTH, language);
+    for (const chunk of contentChunks) {
+      const {safetyInfo} = await this.remote.classifyTextSafety(chunk);
+      if (safetyInfo === null) {
+        continue;
+      }
+
+      const {isSafe} = await this.pageRemote.validateSafetyResult(
+        safetyFeature,
+        chunk,
+        safetyInfo,
+      );
+      if (!isSafe) {
+        return true;
+      }
     }
-    const {isSafe} = await this.pageRemote.validateSafetyResult(
-      safetyFeature,
-      content,
-      safetyInfo,
-    );
-    return !isSafe;
+    return false;
   }
 
   close(): void {
@@ -183,20 +255,31 @@ abstract class OnDeviceModel<T> implements Model<T> {
     responseSafetyFeature: SafetyFeature,
     fields: Record<string, string>,
     session: SessionRemote,
+    language: LanguageCode,
+    expectedBulletPointCount: number,
   ): Promise<ModelResponse<string>> {
     const prompt = await this.formatInput(formatFeature, fields);
     if (prompt === null) {
       console.error('formatInput returns null, wrong model?');
       return {kind: 'error', error: ModelResponseError.GENERAL};
     }
-    if (await this.contentIsUnsafe(prompt, requestSafetyFeature)) {
+    if (await this.contentIsUnsafe(prompt, requestSafetyFeature, language)) {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
     }
-    const response = await this.executeRaw(prompt, session);
+    const response = await this.executeRaw(
+      prompt,
+      session,
+      expectedBulletPointCount,
+      language,
+    );
     if (response.kind === 'error') {
       return response;
     }
-    if (await this.contentIsUnsafe(response.result, responseSafetyFeature)) {
+    if (await this.contentIsUnsafe(
+          response.result,
+          responseSafetyFeature,
+          language,
+        )) {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
     }
     return {kind: 'success', result: response.result};
@@ -210,49 +293,73 @@ export class SummaryModel extends OnDeviceModel<string> {
     session: SessionRemote,
   ): Promise<ModelResponse<string>> {
     const inputTokenSize = await this.getInputTokenSize(content, session);
-    const bulletPointsRequest = this.getBulletPointsRequest(inputTokenSize);
+    // For large model, we use v2 safety feature. It only affects on response.
+    const safetyFeatureOnResponse = this.modelInfo.isLargeModel ?
+      SafetyFeature.kAudioSummaryResponseV2 :
+      SafetyFeature.kAudioSummaryResponse;
+
+    const expectedBulletPointCount =
+      this.getExpectedBulletPoints(inputTokenSize);
+    const bulletPointsRequest =
+      this.formatBulletPointRequest(expectedBulletPointCount);
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioSummary,
       SafetyFeature.kAudioSummaryRequest,
-      SafetyFeature.kAudioSummaryResponse,
+      safetyFeatureOnResponse,
       {
         transcription: content,
-        language: language,
+        language,
         /**
          * Param format is requested by model.
          * See
          * http://google3/chromeos/odml_foundations/lib/inference/features/models/audio_summary_v2.cc.
          */
-        /* eslint-disable @typescript-eslint/naming-convention */
+        /* eslint-disable-next-line @typescript-eslint/naming-convention */
         bullet_points_request: bulletPointsRequest,
       },
       session,
+      language,
+      expectedBulletPointCount,
     );
     // TODO(pihsun): `Result` monadic helper class?
     if (resp.kind === 'error') {
       return resp;
     }
-    const summary = parseResponse(resp.result);
-    return {kind: 'success', result: summary};
+    return {kind: 'success', result: resp.result};
   }
 
   /**
-   * Map inputTokenSize to bullet points.
+   * Get expected bullet points by input token size.
    */
-  private getBulletPointsRequest(inputTokenSize: number): string {
-    if (inputTokenSize < 250) {
-      return '1 bullet point';
-    } else if (inputTokenSize < 600) {
-      return '2 bullet points';
-    } else if (inputTokenSize < 4000) {
-      return '3 bullet points';
-    } else if (inputTokenSize < 6600) {
-      return '4 bullet points';
-    } else if (inputTokenSize < 9300) {
-      return '5 bullet points';
-    } else {
-      return '6 bullet points';
+  private getExpectedBulletPoints(inputTokenSize: number): number {
+    // For Xss model, return fixed 3 bullet points.
+    if (!this.modelInfo.isLargeModel) {
+      return 3;
     }
+
+    if (inputTokenSize < 250) {
+      return 1;
+    } else if (inputTokenSize < 600) {
+      return 2;
+    } else if (inputTokenSize < 4000) {
+      return 3;
+    } else if (inputTokenSize < 6600) {
+      return 4;
+    } else if (inputTokenSize < 9300) {
+      return 5;
+    } else {
+      return 6;
+    }
+  }
+
+  /**
+   * Format bullet point request to fit model prompt format.
+   */
+  private formatBulletPointRequest(request: number): string {
+    if (request <= 0) {
+      assertNotReached('Got non-positive bullet point request.');
+    }
+    return `${request} bullet point` + (request > 1 ? 's' : '');
   }
 }
 
@@ -260,20 +367,30 @@ export class TitleSuggestionModel extends OnDeviceModel<string[]> {
   // For title suggestion, model input only needs transcription.
   override async executeInRemoteSession(
     content: string,
-    _: LanguageCode,
+    language: LanguageCode,
     session: SessionRemote,
   ): Promise<ModelResponse<string[]>> {
+    // For large model, we use v2 safety feature. It only affects on response.
+    const safetyFeatureOnResponse = this.modelInfo.isLargeModel ?
+      SafetyFeature.kAudioTitleResponseV2 :
+      SafetyFeature.kAudioTitleResponse;
+
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioTitle,
       SafetyFeature.kAudioTitleRequest,
-      SafetyFeature.kAudioTitleResponse,
-      {transcription: content},
+      safetyFeatureOnResponse,
+      {
+        transcription: content,
+        language,
+      },
       session,
+      language,
+      3,  // always return 3 bullet points
     );
     if (resp.kind === 'error') {
       return resp;
     }
-    const lines = parseResponse(resp.result).split('\n');
+    const lines = resp.result.split('\n');
 
     const titles: string[] = [];
     for (const line of lines) {

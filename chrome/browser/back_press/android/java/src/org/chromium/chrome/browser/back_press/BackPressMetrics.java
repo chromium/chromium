@@ -10,8 +10,10 @@ import androidx.activity.BackEventCompat;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.BackGestureEventSwipeEdge;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,6 +34,7 @@ public class BackPressMetrics {
             "Android.BackPress.IncorrectEdgeSwipe";
     private static final String INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM =
             "Android.BackPress.IncorrectEdgeSwipe.CountChained";
+    private static final String BACK_FALSING_HISTOGRAM = "Android.BackPress.Backfalsing";
 
     @IntDef({
         PredictiveGestureNavPhase.ACTIVATED,
@@ -48,7 +51,52 @@ public class BackPressMetrics {
     }
 
     /**
-     * @param edge The edge from which the gesture is swiped from {@link BackEventCompat}.
+     * Used to record when trying to capture a screenshot of native page view used for back forward
+     * transition.
+     *
+     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused.
+     */
+    @IntDef({
+        CaptureNativeViewResult.NULL_WINDOW_ANDROID,
+        CaptureNativeViewResult.VIEW_NOT_LAID_OUT,
+        CaptureNativeViewResult.BETWEEN_NATIVE_PAGES,
+        CaptureNativeViewResult.CAPTURE_SCREENSHOT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CaptureNativeViewResult {
+        int NULL_WINDOW_ANDROID = 0;
+        int VIEW_NOT_LAID_OUT = 1;
+        int BETWEEN_NATIVE_PAGES = 2;
+        int CAPTURE_SCREENSHOT = 3;
+
+        int NUM_ENTRIES = 4;
+    }
+
+    @IntDef({
+        NavigationDirection.FORWARD,
+        NavigationDirection.BACKWARD,
+        NavigationDirection.NEITHER
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NavigationDirection {
+        int FORWARD = 0;
+        int BACKWARD = 1;
+        int NEITHER = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
+    /**
+     * @param navigationDirection The direction of the navigation.
+     */
+    public static void recordBackFalsing(@NavigationDirection int navigationDirection) {
+        RecordHistogram.recordEnumeratedHistogram(
+                BACK_FALSING_HISTOGRAM, navigationDirection, NavigationDirection.NUM_ENTRIES);
+    }
+
+    /**
+     * @param edge The edge from which the gesture is swiped from {@link BackGestureEventSwipeEdge}.
      */
     public static void recordIncorrectEdgeSwipe(int edge) {
         RecordHistogram.recordEnumeratedHistogram(INCORRECT_EDGE_SWIPE_HISTOGRAM, edge, 2);
@@ -137,5 +185,59 @@ public class BackPressMetrics {
                         : "Android.PredictiveGestureNavigation.WithoutTransition",
                 phase,
                 PredictiveGestureNavPhase.NUM_ENTRIES);
+    }
+
+    /**
+     * Record how long the feed stream is restored on NTP.
+     *
+     * @param duration The duration of feed restoration.
+     */
+    public static void recordNTPFeedRestorationDuration(long duration) {
+        RecordHistogram.recordTimesHistogram(
+                "Android.PredictiveNavigationTransition.NTPFeedRestorationDuration", duration);
+    }
+
+    /**
+     * Record if NTP smooth transition is triggered by fallback or because of restored feed stream.
+     *
+     * @param byFallback True if the smooth transition is triggered by fallback.
+     */
+    public static void recordNTPSmoothTransitionMethod(boolean byFallback) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.PredictiveNavigationTransition.NTPSmoothTransitionByFallback", byFallback);
+    }
+
+    /**
+     * @param betweenNativePages True if this navigation is from a chrome native page to another
+     *     native page.
+     */
+    public static void recordNavigateBetweenChromeNativePages(boolean betweenNativePages) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.PredictiveNavigationTransition.NavigateBetweenNativePages",
+                betweenNativePages);
+    }
+
+    /**
+     * @param reason The reason why a fallback ux should be used during capturing a native page.
+     */
+    public static void recordCaptureNativeViewResult(@CaptureNativeViewResult int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.PredictiveNavigationTransition.CaptureNativeViewResult",
+                reason,
+                CaptureNativeViewResult.NUM_ENTRIES);
+    }
+
+    /**
+     * The delay used by the fallback of NTP smooth transition in case the restoring state is not
+     * correctly supplied.
+     *
+     * @return The max fallback delay.
+     */
+    public static long maxFallbackDelayOfNtpSmoothTransition() {
+        return (long)
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.BACK_FORWARD_TRANSITIONS,
+                        "max_fallback_delay_ntp_smooth_transition",
+                        1500);
     }
 }

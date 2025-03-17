@@ -24,6 +24,7 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     gardener_rotations = gardener_rotations.CHROMIUM,
     tree_closing = True,
+    tree_closing_notifiers = ci.DEFAULT_TREE_CLOSING_NOTIFIERS,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.modified_default({
         "Unhealthy": struct(
@@ -32,6 +33,7 @@ ci.defaults.set(
             ),
         ),
     }),
+    reclient_enabled = False,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
@@ -306,6 +308,12 @@ ci.thin_tester(
         mixins = [
             "chromeos-generic-vm",
         ],
+        per_test_modifications = {
+            "net_unittests": targets.mixin(
+                # TODO(crbug.com/398792039): Deflake & reenable, or just remove.
+                ci_only = True,
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.CROS_CHROME,
@@ -573,6 +581,27 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             "arm64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            targets.bundle(
+                targets = [
+                    "chromeos_jacuzzi_rel_skylab_tests",
+                ],
+                mixins = targets.mixin(
+                    skylab = targets.skylab(
+                        cros_board = "jacuzzi",
+                    ),
+                ),
+            ),
+        ],
+        additional_compile_targets = [
+            "chromiumos_preflight",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.CROS,
+        use_swarming = False,
+    ),
     # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
     gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     console_view_entry = consoles.console_view_entry(
@@ -632,6 +661,27 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             "remoteexec",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            targets.bundle(
+                targets = [
+                    "chromeos_octopus_rel_skylab_tests",
+                ],
+                mixins = targets.mixin(
+                    skylab = targets.skylab(
+                        cros_board = "octopus",
+                    ),
+                ),
+            ),
+        ],
+        additional_compile_targets = [
+            "chromiumos_preflight",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.CROS,
+        use_swarming = False,
     ),
     # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
     gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),

@@ -469,7 +469,8 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewResize) {
 
 TEST_P(PaintAndRasterInvalidationTest, FullInvalidationWithHTMLTransform) {
   GetDocument().documentElement()->setAttribute(
-      html_names::kStyleAttr, AtomicString("transform: scale(0.5)"));
+      html_names::kStyleAttr,
+      AtomicString("transform: scale(0.5) translateX(1px)"));
   const DisplayItemClient& client = ViewScrollingBackgroundClient();
   UpdateAllLifecyclePhasesForTest();
 
@@ -477,6 +478,7 @@ TEST_P(PaintAndRasterInvalidationTest, FullInvalidationWithHTMLTransform) {
   GetDocument().View()->Resize(gfx::Size(500, 500));
   UpdateAllLifecyclePhasesForTest();
 
+  ASSERT_TRUE(GetRasterInvalidationTracking());
   EXPECT_THAT(
       GetRasterInvalidationTracking()->Invalidations(),
       UnorderedElementsAre(

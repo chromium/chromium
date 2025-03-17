@@ -95,7 +95,7 @@ import public "ClassConfidenceThresholding.proto";
 package CoreML.Specification;
 
 /*
- * A pipeline consisting of one or more models.
+ * A pipeline consists of one or more models.
  */
 message Pipeline {
   repeated Model models = 1;
@@ -121,7 +121,7 @@ message PipelineRegressor {
 }
 
 /*
- * A feature description,
+ * A feature description
  * consisting of a name, short description, and type.
  */
 message FeatureDescription {
@@ -145,6 +145,35 @@ message Metadata {
 }
 
 /*
+ * A description of a function.
+ */
+message FunctionDescription {
+  // The function name.
+  string name = 1;
+
+  // Input feature descriptions for the function.
+  repeated FeatureDescription input = 2;
+
+  // Output feature descriptions for the function.
+  repeated FeatureDescription output = 3;
+
+  // State feature descriptions for the function.
+  //
+  // The `type` of each feature description must be `StateFeatureType`.
+  repeated FeatureDescription state = 6;
+
+  // [Required for regressor and classifier functions]: the name
+  // to give to an output feature containing the prediction.
+  string predictedFeatureName = 4;
+
+  // [Optional for classifier functions]: the name to give to an
+  // output feature containing a dictionary mapping class
+  // labels to their predicted probabilities. If not specified,
+  // the dictionary will not be returned by the model.
+  string predictedProbabilitiesName = 5;
+}
+
+/*
  * A description of a model,
  * consisting of descriptions of its input and output features.
  * Both regressor and classifier models require the name of the
@@ -154,8 +183,47 @@ message Metadata {
  * (``predictedProbabilitiesName``).
  */
 message ModelDescription {
+  // Functions in the model.
+  //
+  // Some model types (e.g. ML Program) support multiple functions. For
+  // example, a large language model might have "prompt" and "extend"
+  // functions. Each has a different input and output behavior, but
+  // they are in a same model and share resources.
+  //
+  // If the model has more than one function, use the multiple
+  // function configuration and declare the feature descriptions and
+  // associated properties at function level.
+  //
+  // If the model type doesn't support multiple functions or the
+  // model has just "main" function, declare the feature
+  // descriptions and associated properties at the model level.
+  //
+  // Note: feature descriptions and associated properties mentioned
+  // above include input, output, state, predictedFeatureName,
+  // predictedProbabilitiesName, and trainingInput fields.
+  repeated FunctionDescription functions = 20;
+
+  // The default function.
+  //
+  // The default function is the one that is automatically used when
+  // one doesn't explicitly specify.
+  //
+  // The value must be one of the names in `functions` message
+  // above. If `functions` is empty, this field must not be present.
+  string defaultFunctionName = 21;
+
+  // The metadata (e.g. author, licence, etc) of the model.
+  Metadata metadata = 100;
+
+  // Use these fields below only when `functions` above is empty.
+
   repeated FeatureDescription input = 1;
   repeated FeatureDescription output = 10;
+
+  // State feature descriptions for the function.
+  //
+  // The `type` of each feature description must be `StateFeatureType`.
+  repeated FeatureDescription state = 13;
 
   // [Required for regressor and classifier models]: the name
   // to give to an output feature containing the prediction.
@@ -168,8 +236,6 @@ message ModelDescription {
   string predictedProbabilitiesName = 12;
 
   repeated FeatureDescription trainingInput = 50;
-
-  Metadata metadata = 100;
 }
 
 message SerializedModel {
@@ -263,6 +329,9 @@ message SerializedModel {
  * - iOS 17 ops
  * - Scene print v2
  * - ClassConfidenceThresholding model
+ *
+ * 9 : iOS 18, macOS 15, tvOS 18, watchOS 11 (Core ML 8)
+ * - multiple functions
  */
 message Model {
   int32 specificationVersion = 1;

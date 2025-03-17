@@ -30,7 +30,7 @@ namespace {
 // 16384 bytes. So we define our own constant here to convert from page count
 // to bytes.
 const uint64_t kVMPageSize = 4096;
-}
+}  // namespace
 
 namespace memory_util {
 
@@ -53,8 +53,9 @@ uint64_t GetRealMemoryUsedInBytes() {
   kern_return_t kr =
       task_info(mach_task_self(), TASK_VM_INFO,
                 reinterpret_cast<task_info_t>(&task_info_data), &count);
-  if (kr != KERN_SUCCESS)
+  if (kr != KERN_SUCCESS) {
     return 0;
+  }
 
   return task_info_data.resident_size - task_info_data.reusable;
 }

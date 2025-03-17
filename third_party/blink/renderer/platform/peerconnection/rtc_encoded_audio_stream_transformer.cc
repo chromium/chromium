@@ -23,10 +23,10 @@ namespace blink {
 namespace {
 
 // This delegate class exists to work around the fact that
-// RTCEncodedAudioStreamTransformer cannot derive from rtc::RefCountedObject
+// RTCEncodedAudioStreamTransformer cannot derive from webrtc::RefCountedObject
 // and post tasks referencing itself as an rtc::scoped_refptr. Instead,
 // RTCEncodedAudioStreamTransformer creates a delegate using
-// rtc::RefCountedObject and posts tasks referencing the delegate, which
+// webrtc::RefCountedObject and posts tasks referencing the delegate, which
 // invokes the RTCEncodedAudioStreamTransformer via callbacks.
 class RTCEncodedAudioStreamTransformerDelegate
     : public webrtc::FrameTransformerInterface {
@@ -156,10 +156,10 @@ void RTCEncodedAudioStreamTransformer::Broker::StartShortCircuiting() {
 RTCEncodedAudioStreamTransformer::RTCEncodedAudioStreamTransformer(
     scoped_refptr<base::SingleThreadTaskRunner> realm_task_runner)
     : broker_(base::AdoptRef(new Broker(this))),
-      delegate_(
-          new rtc::RefCountedObject<RTCEncodedAudioStreamTransformerDelegate>(
-              std::move(realm_task_runner),
-              broker_)) {}
+      delegate_(new webrtc::RefCountedObject<
+                RTCEncodedAudioStreamTransformerDelegate>(
+          std::move(realm_task_runner),
+          broker_)) {}
 
 RTCEncodedAudioStreamTransformer::~RTCEncodedAudioStreamTransformer() {
   broker_->ClearTransformer();

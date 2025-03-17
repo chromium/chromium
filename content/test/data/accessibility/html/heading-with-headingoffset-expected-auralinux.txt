@@ -1,0 +1,74 @@
+[document web]
+++[section] description='container headingoffset=1' description-from:tooltip
+++++[heading] level:2
+++++[heading] level:3
+++++[heading] level:4
+++++[section] description='container headingoffset=2' description-from:tooltip
+++++++[heading] level:4
+++++++[heading] level:5
+++++++[section] description='container headingreset' description-from:tooltip
+++++++++[heading] level:1
+++++++[dialog] name='container dialog'
+++++++++[heading] level:4
+++++++++[heading] level:1
+++[section] description='container headingoffset=8' description-from:tooltip
+++++[heading] level:9
+++++[heading] level:9
+++++[heading] level:9
+++++[heading] level:9
+++++[heading] level:9
+++++[heading] level:9
+++++[section] description='container headingreset' description-from:tooltip
+++++++[heading] level:1
+++++[dialog] name='container dialog'
+++++++[heading] level:9
+++[section] description='container headingoffset=-3' description-from:tooltip
+++++[heading] level:1
+++++[heading] level:2
+++++[heading] level:3
+++++[heading] level:4
+++++[heading] level:5
+++++[heading] level:6
+++++[section] description='container headingreset' description-from:tooltip
+++++++[heading] level:1
+++++[dialog] name='container dialog'
+++++++[heading] level:1
+++[section] description='container shadowroot headingoffset=1' description-from:tooltip
+++++[heading] level:2
+++++[heading] level:2
+++[section] description='container shadowroot slotted headingoffset=1' description-from:tooltip
+++++[heading] level:2
+++++[heading] level:3
+++++[heading] level:3
+++++[heading] level:2
+++[section] description='container shadowroot slotted with container headingoffset=1' description-from:tooltip
+++++[heading] level:2
+++++[section] description='container inside shadowroot headingoffset=1' description-from:tooltip
+++++++[heading] level:4
+++++++[heading] level:6
+++++++[heading] level:4
+++[section] description='container shadowroot slot with attr headingoffset=1' description-from:tooltip
+++++[heading] level:2
+++++[heading] level:4
+++[heading] level:2
+++[heading] level:3
+++[heading] level:3
+++[heading] level:4
+++[heading] level:2
+++[heading] level:3
+++[heading] level:3
+++[heading] level:4
+++[heading] level:9
+++[heading] level:9
+++[heading] level:1
+++[heading] level:2
+++[section] description='container with no attr' description-from:tooltip
+++++[heading] level:2
+++++[heading] level:3
+++++[heading] level:2
+++++[heading] level:3
+++++[heading] level:1
+++++[heading] level:2
+++[section] description='many nested + and - values' description-from:tooltip
+++++[heading] level:5
+++[heading] level:3

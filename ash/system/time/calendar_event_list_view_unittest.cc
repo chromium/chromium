@@ -4,6 +4,8 @@
 
 #include "ash/system/time/calendar_event_list_view.h"
 
+#include <string_view>
+
 #include "ash/calendar/calendar_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -171,7 +173,7 @@ class CalendarViewEventListViewTest
             ->GetViewByID(kSummaryLabelID));
   }
 
-  std::u16string GetEmptyLabel() {
+  std::u16string_view GetEmptyLabel() {
     return static_cast<views::LabelButton*>(
                content_view()->children()[0]->children()[0])
         ->GetText();
@@ -593,7 +595,7 @@ class CalendarViewEventListViewFetchTest
             ->GetViewByID(kSummaryLabelID));
   }
 
-  std::u16string GetEmptyLabel() {
+  std::u16string_view GetEmptyLabel() {
     return static_cast<views::LabelButton*>(
                content_view()->children()[0]->children()[0])
         ->GetText();

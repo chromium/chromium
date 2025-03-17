@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "CRURegistration requires ARC support. Compile with `-fobjc-arc.`"
+#endif
+
 #import "CRURegistration.h"
 
 #import <Foundation/Foundation.h>
 #import <dispatch/dispatch.h>
+#include <unistd.h>
 
 #import "CRURegistration-Private.h"
 
@@ -192,6 +197,7 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
 
 @synthesize binPathCallback = _binPathCallback;
 @synthesize args = _args;
+@synthesize onDone = _onDone;
 @synthesize resultCallback = _resultCallback;
 
 @end
@@ -338,22 +344,70 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
 }
 
 - (void)installUpdaterWithReply:(void (^)(NSError* _Nullable))reply {
-  CRURegistrationWorkItem* installItem = [[CRURegistrationWorkItem alloc] init];
-  installItem.binPathCallback = ^{
-    return [self syncBundledHelperPath];
-  };
-  installItem.args = @[ @"--install" ];
-  installItem.resultCallback =
-      ^(NSString* gotStdout, NSString* gotStderr, NSError* gotFailure) {
-        if (reply) {
-          dispatch_async(self->_parentQueue, ^{
-            reply([self wrapError:gotFailure
-                       withStdout:gotStdout
-                        andStderr:gotStderr]);
+  // Build the "unzip and install" task chain on the private queue since
+  // creating the temp dir is a synchronous file operation, which we need to
+  // keep away from the calling thread since CRURegistration promises to do
+  // all the expensive stuff asynchronously.
+  dispatch_async(_privateQueue, ^{
+    NSString* tempDir = [self syncNewTempDir];
+    CRURegistrationWorkItem* unzipItem =
+        [self workItemUnzippingInstallerToPath:tempDir];
+    if (!unzipItem) {
+      // We can't find anything to install. Fail immediately; we cannot create
+      // the installation task.
+      if (reply) {
+        dispatch_async(self->_parentQueue, ^{
+          NSString* expectedFilename =
+              [CRUArchiveBasename stringByAppendingString:@".zip"];
+          reply([NSError
+              errorWithDomain:CRURegistrationErrorDomain
+                         code:CRURegistrationErrorUpdaterArchiveNotFound
+                     userInfo:@{NSFilePathErrorKey : expectedFilename}]);
+        });
+      }
+      return;
+    }
+    CRURegistrationWorkItem* installItem =
+        [self workItemInstallingFromDirectory:tempDir];
+    unzipItem.onDone = ^CRURegistrationWorkItem*(
+        CRURegistrationWorkItem* me, NSString* ignored, NSString* ignored2,
+        NSError* error) {
+      if (error) {
+        me.resultCallback =
+            ^(NSString* gotStdout, NSString* gotStderr, NSError* gotFailure) {
+              if (reply) {
+                dispatch_async(self->_parentQueue, ^{
+                  reply([self wrapError:gotFailure
+                             withStdout:gotStdout
+                              andStderr:gotStderr]);
+                });
+              }
+            };
+        return nil;
+      }
+      return installItem;
+    };
+    installItem.resultCallback =
+        ^(NSString* gotStdout, NSString* gotStderr, NSError* gotFailure) {
+          dispatch_async(self->_privateQueue, ^{
+            // Temp dir cleanup is best effort; we can't do anything useful with
+            // the error here anyway.
+            [[NSFileManager defaultManager] removeItemAtPath:tempDir error:nil];
           });
-        }
-      };
-  [self addWorkItems:@[ installItem ]];
+          if (reply) {
+            dispatch_async(self->_parentQueue, ^{
+              reply([self wrapError:gotFailure
+                         withStdout:gotStdout
+                          andStderr:gotStderr]);
+            });
+          }
+        };
+    // Don't re-dispatch to _privateQueue to avoid potentially reordering
+    // this "install" request behind another operation that might have been
+    // enqueued before we got around to running this setup work.
+    [self->_pendingWork addObject:unzipItem];
+    [self syncMaybeStartMoreWork];
+  });
 }
 
 - (void)markActiveWithReply:(void (^)(NSError* _Nullable))reply {
@@ -389,12 +443,19 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
 
   NSURL* taskURL = nextItem.binPathCallback();
   if (!taskURL) {
+    NSError* error = [NSError errorWithDomain:CRURegistrationErrorDomain
+                                         code:CRURegistrationErrorHelperNotFound
+                                     userInfo:nil];
+    if (nextItem.onDone) {
+      CRURegistrationWorkItem* preempt =
+          nextItem.onDone(nextItem, nil, nil, error);
+      if (preempt) {
+        [_pendingWork insertObject:preempt atIndex:0];
+      }
+    }
+    self->_currentWork = nil;
     dispatch_async(_parentQueue, ^{
-      nextItem.resultCallback(
-          nil, nil,
-          [NSError errorWithDomain:CRURegistrationErrorDomain
-                              code:CRURegistrationErrorHelperNotFound
-                          userInfo:nil]);
+      nextItem.resultCallback(nil, nil, error);
     });
     [self syncMaybeStartMoreWork];
     return;
@@ -408,36 +469,28 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
                                               targetQueue:_privateQueue];
   [_currentWork
       launchWithReply:^(NSString* taskOut, NSString* taskErr, NSError* error) {
+        if (nextItem.onDone) {
+          CRURegistrationWorkItem* preempt =
+              nextItem.onDone(nextItem, taskOut, taskErr, error);
+          if (preempt) {
+            [self->_pendingWork insertObject:preempt atIndex:0];
+          }
+        }
         self->_currentWork = nil;
-        dispatch_async(self->_parentQueue, ^{
-          nextItem.resultCallback(taskOut, taskErr, error);
-        });
+        if (nextItem.resultCallback) {
+          dispatch_async(self->_parentQueue, ^{
+            nextItem.resultCallback(taskOut, taskErr, error);
+          });
+        }
         [self syncMaybeStartMoreWork];
       }];
 }
 
-- (NSURL*)syncBundledHelperPath {
-  NSURL* bundleURL = NSBundle.mainBundle.bundleURL;
-  NSString* helperPathInBundle = [NSString
-      stringWithFormat:@"Contents/Helpers/%1$s.app/Contents/MacOS/%1$s",
-                       CRU_PRODUCT_FULLNAME_STRING];
-  NSURL* helperURL = [bundleURL URLByAppendingPathComponent:helperPathInBundle
-                                                isDirectory:NO];
-  NSFileManager* fm = [NSFileManager defaultManager];
-  if ([fm isExecutableFileAtPath:helperURL.path]) {
-    return helperURL;
-  }
-  // Look for a test updater bundle instead.
-  helperPathInBundle =
-      [NSString stringWithFormat:
-                    @"Contents/Helpers/%1$s_test.app/Contents/MacOS/%1$s_test",
-                    CRU_PRODUCT_FULLNAME_STRING];
-  helperURL = [bundleURL URLByAppendingPathComponent:helperPathInBundle
-                                         isDirectory:NO];
-  if ([fm isExecutableFileAtPath:helperURL.path]) {
-    return helperURL;
-  }
-  return nil;
+- (NSString*)installerPathInDirectory:(NSString*)directory {
+  NSString* helperPathInBundle =
+      [NSString stringWithFormat:@"%1$@.app/Contents/MacOS/%1$@",
+                                 CRUInstallerAppBasename];
+  return [directory stringByAppendingPathComponent:helperPathInBundle];
 }
 
 /**
@@ -477,6 +530,60 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
                     error:error];
 }
 
+/**
+ * syncNewTempDir uses mkdtemp to create a unique temp directory named after
+ * the updater. It's marked as "sync" only because it performs synchronous
+ * file I/O so should be kept off the caller's thread, which might be the
+ * application's main thread.
+ */
+- (NSString*)syncNewTempDir {
+  NSString* templateSuffix =
+      [NSString stringWithFormat:@"%@_UpdaterInstaller_XXXXXX", _appId];
+  NSString* template =
+      [NSTemporaryDirectory() stringByAppendingPathComponent:templateSuffix];
+  char* pathTemplateCString = strdup([template fileSystemRepresentation]);
+  if (!pathTemplateCString) {
+    return nil;
+  }
+  char* out = mkdtemp(pathTemplateCString);
+  NSString* result = out ? [NSString stringWithUTF8String:out] : nil;
+  free(pathTemplateCString);
+  return result;
+}
+
+- (NSString*)syncInstallerArchivePath {
+  return [NSBundle.mainBundle pathForResource:CRUArchiveBasename ofType:@"zip"];
+}
+
+- (CRURegistrationWorkItem*)workItemUnzippingInstallerToPath:(NSString*)path {
+  NSString* archivePath = [self syncInstallerArchivePath];
+  if (!archivePath) {
+    return nil;
+  }
+  CRURegistrationWorkItem* unzipItem = [[CRURegistrationWorkItem alloc] init];
+  unzipItem.binPathCallback = ^{
+    return [NSURL fileURLWithPath:@"/usr/bin/tar" isDirectory:NO];
+  };
+  unzipItem.args = @[
+    @"-x",
+    @"-f",
+    [self syncInstallerArchivePath],
+    @"-C",
+    path,
+    @"--no-same-owner",
+  ];
+  return unzipItem;
+}
+
+- (CRURegistrationWorkItem*)workItemInstallingFromDirectory:(NSString*)path {
+  CRURegistrationWorkItem* installItem = [[CRURegistrationWorkItem alloc] init];
+  installItem.binPathCallback = ^{
+    return [NSURL fileURLWithPath:[self installerPathInDirectory:path]
+                      isDirectory:NO];
+  };
+  installItem.args = @[ @"--install" ];
+  return installItem;
+}
 @end
 
 #pragma mark - CRURegistration (VisibleForTesting)

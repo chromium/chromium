@@ -989,7 +989,7 @@
   </event>
 </project>
 
-<project name="CrOSEvents" cros_events="true" targets="webui,chromium">
+<project name="CrOSEvents" cros_events="true" targets="chromium,webui">
   <owner>jongahn@chromium.org</owner>
   <id>per-project</id>
   <scope>device</scope>
@@ -1232,7 +1232,6 @@
     <variant value="0">UNKNOWN</variant>
     <variant value="1">OPEN_EDITOR_WRITE</variant>
     <variant value="2">OPEN_EDITOR_REWRITE</variant>
-    <variant value="2">OPEN_LOBSTER</variant>
     <variant value="3">OPEN_LINKS</variant>
     <variant value="4">OPEN_EXPRESSIONS</variant>
     <variant value="5">OPEN_CLIPBOARD</variant>
@@ -1247,6 +1246,7 @@
     <variant value="14">CAPS_ON</variant>
     <variant value="15">CAPS_OFF</variant>
     <variant value="16">OPEN_GIFS</variant>
+    <variant value="17">OPEN_LOBSTER</variant>
   </enum>
 
   <enum name="PickerResultSource">
@@ -3413,6 +3413,38 @@
     <metric name="Context" type="int">
       <summary>
         Arbitrary contextual information for the event.
+      </summary>
+    </metric>
+    <metric name="TimeSinceSessionStart" type="int">
+      <summary>
+        Time in milliseconds since DevTools sessions start.
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="SettingAccess">
+    <summary>
+      Recorded when a setting value is first read and when it is changed.
+    </summary>
+    <metric name="Name" type="int">
+      <summary>
+        Hash of the setting name
+      </summary>
+    </metric>
+    <metric name="NumericValue" type="int">
+      <summary>
+        Value of the setting if it is numeric, enum or boolean.
+      </summary>
+    </metric>
+    <metric name="StringValue" type="int">
+      <summary>
+        Hash of the setting value if it is a string.
       </summary>
     </metric>
     <metric name="TimeSinceSessionStart" type="int">

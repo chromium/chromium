@@ -6,11 +6,10 @@
 #define IOS_WEB_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_IMPL_H_
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/timer/timer.h"
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
 #import "ios/web/public/web_state_observer.h"
-
-#import "base/memory/weak_ptr.h"
 
 @protocol CRWFindInteraction;
 @protocol CRWFindSession;

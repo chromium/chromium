@@ -18,7 +18,6 @@
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/borealis/borealis_disallowed_dialog.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -83,7 +82,7 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
     SetModalType(ui::mojom::ModalType::kNone);
     SetOwnedByWidget(true);
     SetShowCloseButton(false);
-    set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+    set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   }
 
@@ -137,7 +136,7 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
         CONTEXT_IPH_BUBBLE_TITLE, views::style::STYLE_EMPHASIZED);
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_label->SetMultiLine(true);
-    view->AddChildView(title_label);
+    view->AddChildViewRaw(title_label);
 
     std::u16string body_string;
     switch (failure_) {
@@ -155,7 +154,7 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
     views::Label* message_label = new views::Label(body_string);
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    view->AddChildView(message_label);
+    view->AddChildViewRaw(message_label);
 
     if (failure_ == FailureType::FAILURE_RETRY) {
       auto checkbox = std::make_unique<views::Checkbox>(

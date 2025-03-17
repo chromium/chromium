@@ -20,7 +20,6 @@ class Location;
 
 namespace viz {
 class FrameSinkManagerImpl;
-class ServerSharedBitmapManager;
 class SharedImageInterfaceProvider;
 }  // namespace viz
 
@@ -95,7 +94,6 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
 
   // Only accessed on |viz_task_runner_|.
   THREAD_CHECKER(viz_thread_checker_);
-  std::unique_ptr<viz::ServerSharedBitmapManager> server_shared_bitmap_manager_;
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
   raw_ptr<viz::GpuServiceImpl> gpu_service_impl_ = nullptr;
   base::flat_set<base::PlatformThreadId> thread_ids_;

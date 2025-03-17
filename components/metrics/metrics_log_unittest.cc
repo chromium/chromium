@@ -220,6 +220,27 @@ TEST_F(MetricsLogTest, SessionHash) {
             log2.uma_proto()->system_profile().session_hash());
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+TEST_F(MetricsLogTest, FgBgId) {
+  MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+  MetricsLog log2(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+
+  // Verify that both logs have the same fg_bg_id.
+  EXPECT_TRUE(log1.uma_proto()->system_profile().has_fg_bg_id());
+  EXPECT_TRUE(log2.uma_proto()->system_profile().has_fg_bg_id());
+  EXPECT_EQ(log1.uma_proto()->system_profile().fg_bg_id(),
+            log2.uma_proto()->system_profile().fg_bg_id());
+
+  // Verify that a log created after a call to IncrementFgBgId() will have a
+  // different `fg_bg_id` than the ones before.
+  MetricsLog::IncrementFgBgId();
+  MetricsLog log3(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+  EXPECT_TRUE(log3.uma_proto()->system_profile().has_fg_bg_id());
+  EXPECT_NE(log1.uma_proto()->system_profile().fg_bg_id(),
+            log3.uma_proto()->system_profile().fg_bg_id());
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
 TEST_F(MetricsLogTest, LogType) {
   MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
   EXPECT_EQ(MetricsLog::ONGOING_LOG, log1.log_type());
@@ -281,6 +302,9 @@ TEST_F(MetricsLogTest, BasicRecord) {
   // The session hash.
   system_profile->set_session_hash(
       log.uma_proto()->system_profile().session_hash());
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  system_profile->set_fg_bg_id(log.uma_proto()->system_profile().fg_bg_id());
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 #if defined(ADDRESS_SANITIZER) || DCHECK_IS_ON()
   system_profile->set_is_instrumented_build(true);
@@ -809,8 +833,7 @@ TEST_F(MetricsLogTest, OngoingLogStabilityMetrics) {
   delegating_provider.RegisterMetricsProvider(
       base::WrapUnique<MetricsProvider>(test_provider));
   log.RecordEnvironment(&delegating_provider);
-  log.RecordCurrentSessionData(base::TimeDelta(), base::TimeDelta(),
-                               &delegating_provider, &prefs_);
+  log.RecordCurrentSessionData(&delegating_provider, &prefs_);
 
   // The test provider should have been called upon to provide regular but not
   // initial stability metrics.

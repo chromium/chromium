@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_ui_views.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -18,10 +19,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -362,7 +361,7 @@ void TabSharingUIViews::TabChangedAt(WebContents* contents,
 void TabSharingUIViews::OnInfoBarRemoved(infobars::InfoBar* infobar,
                                          bool animate) {
   auto infobars_entry =
-      base::ranges::find(infobars_, infobar, &InfoBars::value_type::second);
+      std::ranges::find(infobars_, infobar, &InfoBars::value_type::second);
   if (infobars_entry == infobars_.end()) {
     return;
   }
@@ -565,8 +564,7 @@ void TabSharingUIViews::CreateTabCaptureIndicator() {
                                   ->GetMediaStreamCaptureIndicator()
                                   ->RegisterMediaStream(shared_tab_, devices);
   tab_capture_indicator_ui_->OnStarted(
-      /*stop_callback=*/base::DoNothing(),
-      content::MediaStreamUI::SourceCallback(),
+      /*stop=*/base::DoNothing(), content::MediaStreamUI::SourceCallback(),
       /*label=*/std::string(), /*screen_capture_ids=*/{},
       content::MediaStreamUI::StateChangeCallback());
 }

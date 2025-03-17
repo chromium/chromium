@@ -13,8 +13,6 @@
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "ui/native_theme/caption_style.h"
 
-class PrefService;
-
 namespace content {
 class BrowserContext;
 }
@@ -22,6 +20,7 @@ class BrowserContext;
 namespace captions {
 
 class CaptionBubbleContext;
+class CaptionBubbleSettings;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble Controller
@@ -40,7 +39,7 @@ class CaptionBubbleController {
   CaptionBubbleController& operator=(const CaptionBubbleController&) = delete;
 
   static std::unique_ptr<CaptionBubbleController> Create(
-      PrefService* profile_prefs,
+      CaptionBubbleSettings* caption_bubble_settings,
       const std::string& application_locale);
 
   // Called when a transcription is received from the service. Returns whether

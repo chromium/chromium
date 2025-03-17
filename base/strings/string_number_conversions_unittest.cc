@@ -85,8 +85,9 @@ TEST(StringNumberConversionsTest, Uint64ToString) {
       {std::numeric_limits<uint64_t>::max(), "18446744073709551615"},
   };
 
-  for (const auto& i : cases)
+  for (const auto& i : cases) {
     EXPECT_EQ(i.output, NumberToString(i.input));
+  }
 }
 
 TEST(StringNumberConversionsTest, SizeTToString) {
@@ -97,19 +98,20 @@ TEST(StringNumberConversionsTest, SizeTToString) {
     size_t input;
     std::string output;
   } cases[] = {
-    {0, "0"},
-    {9, "9"},
-    {42, "42"},
-    {INT_MAX, "2147483647"},
-    {2147483648U, "2147483648"},
+      {0, "0"},
+      {9, "9"},
+      {42, "42"},
+      {INT_MAX, "2147483647"},
+      {2147483648U, "2147483648"},
 #if SIZE_MAX > 4294967295U
-    {99999999999U, "99999999999"},
+      {99999999999U, "99999999999"},
 #endif
-    {size_t_max, size_t_max_string},
+      {size_t_max, size_t_max_string},
   };
 
-  for (const auto& i : cases)
+  for (const auto& i : cases) {
     EXPECT_EQ(i.output, NumberToString(i.input));
+  }
 }
 
 TEST(StringNumberConversionsTest, StringToInt) {
@@ -392,38 +394,38 @@ TEST(StringNumberConversionsTest, StringToSizeT) {
     size_t output;
     bool success;
   } cases[] = {
-    {"0", 0, true},
-    {"42", 42, true},
-    {"-2147483648", 0, false},
-    {"2147483647", INT_MAX, true},
-    {"-2147483649", 0, false},
-    {"-99999999999", 0, false},
-    {"2147483648", 2147483648U, true},
+      {"0", 0, true},
+      {"42", 42, true},
+      {"-2147483648", 0, false},
+      {"2147483647", INT_MAX, true},
+      {"-2147483649", 0, false},
+      {"-99999999999", 0, false},
+      {"2147483648", 2147483648U, true},
 #if SIZE_MAX > 4294967295U
-    {"99999999999", 99999999999U, true},
+      {"99999999999", 99999999999U, true},
 #endif
-    {"-9223372036854775808", 0, false},
-    {"09", 9, true},
-    {"-09", 0, false},
-    {"", 0, false},
-    {" 42", 42, false},
-    {"42 ", 42, false},
-    {"0x42", 0, false},
-    {"\t\n\v\f\r 42", 42, false},
-    {"blah42", 0, false},
-    {"42blah", 42, false},
-    {"blah42blah", 0, false},
-    {"-273.15", 0, false},
-    {"+98.6", 98, false},
-    {"--123", 0, false},
-    {"++123", 0, false},
-    {"-+123", 0, false},
-    {"+-123", 0, false},
-    {"-", 0, false},
-    {"-9223372036854775809", 0, false},
-    {"-99999999999999999999", 0, false},
-    {"999999999999999999999999", size_t_max, false},
-    {size_t_max_string, size_t_max, true},
+      {"-9223372036854775808", 0, false},
+      {"09", 9, true},
+      {"-09", 0, false},
+      {"", 0, false},
+      {" 42", 42, false},
+      {"42 ", 42, false},
+      {"0x42", 0, false},
+      {"\t\n\v\f\r 42", 42, false},
+      {"blah42", 0, false},
+      {"42blah", 42, false},
+      {"blah42blah", 0, false},
+      {"-273.15", 0, false},
+      {"+98.6", 98, false},
+      {"--123", 0, false},
+      {"++123", 0, false},
+      {"-+123", 0, false},
+      {"+-123", 0, false},
+      {"-", 0, false},
+      {"-9223372036854775809", 0, false},
+      {"-99999999999999999999", 0, false},
+      {"999999999999999999999999", size_t_max, false},
+      {size_t_max_string, size_t_max, true},
   };
 
   for (const auto& i : cases) {
@@ -773,8 +775,9 @@ TEST(StringNumberConversionsTest, HexStringToBytesStringSpan) {
     // Test HexStringToSpan() with an output that is 1 byte too small.
     {
       std::vector<uint8_t> output;
-      if (test.input.size() > 1)
+      if (test.input.size() > 1) {
         output.resize(test.input.size() / 2 - 1);
+      }
 
       EXPECT_FALSE(HexStringToSpan(test.input, output))
           << test_i << ": " << test.input;
@@ -879,8 +882,9 @@ TEST(StringNumberConversionsTest, StringToDouble) {
     double output;
     errno = 1;
     EXPECT_EQ(cases[i].success, StringToDouble(cases[i].input, &output));
-    if (cases[i].success)
+    if (cases[i].success) {
       EXPECT_EQ(1, errno) << i;  // confirm that errno is unchanged.
+    }
     EXPECT_DOUBLE_EQ(cases[i].output, output);
   }
 

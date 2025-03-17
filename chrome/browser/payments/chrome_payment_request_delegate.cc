@@ -45,7 +45,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
 
@@ -68,7 +68,7 @@ std::unique_ptr<::i18n::addressinput::Storage> GetAddressInputStorage() {
 bool FrameSupportsPayments(content::RenderFrameHost* rfh) {
   return rfh && rfh->IsActive() && rfh->IsRenderFrameLive() &&
          rfh->IsFeatureEnabled(
-             blink::mojom::PermissionsPolicyFeature::kPayment);
+             network::mojom::PermissionsPolicyFeature::kPayment);
 }
 
 }  // namespace
@@ -307,35 +307,7 @@ ChromePaymentRequestDelegate::GetNoMatchingCredentialsDialogForTesting() {
 
 std::optional<base::UnguessableToken>
 ChromePaymentRequestDelegate::GetChromeOSTWAInstanceId() const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!FrameSupportsPayments(rfh)) {
-    return std::nullopt;
-  }
-
-  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents) {
-    return std::nullopt;
-  }
-  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
-  if (!profile) {
-    return std::nullopt;
-  }
-  auto* app_instance_tracker =
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-          ->BrowserAppInstanceTracker();
-  if (!app_instance_tracker) {
-    return std::nullopt;
-  }
-  const apps::BrowserAppInstance* app_instance =
-      app_instance_tracker->GetAppInstance(web_contents);
-  if (!app_instance) {
-    return std::nullopt;
-  }
-  return app_instance->id;
-#else
   return std::nullopt;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 const base::WeakPtr<PaymentUIObserver>

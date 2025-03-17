@@ -134,6 +134,11 @@ struct StructTraits<content_settings::mojom::RuleMetaDataDataView,
     return r.decided_by_related_website_sets_;
   }
 
+  static const base::Value& rule_options(
+      const content_settings::RuleMetaData& r) {
+    return r.rule_options_;
+  }
+
   static bool Read(content_settings::mojom::RuleMetaDataDataView data,
                    content_settings::RuleMetaData* out);
 };
@@ -157,7 +162,7 @@ struct StructTraits<
     return r.setting_value;
   }
 
-  static const content_settings::RuleMetaData metadata(
+  static const content_settings::RuleMetaData& metadata(
       const ContentSettingPatternSource& r) {
     return r.metadata;
   }

@@ -30,7 +30,7 @@ UBiDiLevel GetParagraphLevelForDirection(base::i18n::TextDirection direction) {
 BiDiLineIterator::BiDiLineIterator() = default;
 BiDiLineIterator::~BiDiLineIterator() = default;
 
-bool BiDiLineIterator::Open(const std::u16string& text,
+bool BiDiLineIterator::Open(std::u16string_view text,
                             base::i18n::TextDirection direction) {
   DCHECK(!bidi_);
   UErrorCode error = U_ZERO_ERROR;

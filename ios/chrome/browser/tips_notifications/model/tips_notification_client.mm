@@ -16,6 +16,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/search/search.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -48,7 +49,6 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
-#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
@@ -186,8 +186,7 @@ void TipsNotificationClient::HandleNotificationInteraction(
     // Set `permitted_` here so that the OnPermittedPrefChanged exits early.
     permitted_ = true;
     AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForProfile(
-            GetSceneLevelForegroundActiveBrowser()->GetProfile());
+        AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
     id<SystemIdentity> identity =
         authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
     const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
@@ -571,8 +570,7 @@ void TipsNotificationClient::ShowSignin(Browser* browser) {
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:nil
-            accessPoint:signin_metrics::AccessPoint::
-                            ACCESS_POINT_TIPS_NOTIFICATION
+            accessPoint:signin_metrics::AccessPoint::kTipsNotification
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:nil];
@@ -644,6 +642,8 @@ void TipsNotificationClient::MaybeLogTriggeredNotification() {
   TipsNotificationType type =
       static_cast<TipsNotificationType>(last_sent->GetValue()->GetInt());
   base::UmaHistogramEnumeration("IOS.Notifications.Tips.Triggered", type);
+  base::UmaHistogramEnumeration("IOS.Notification.Received",
+                                NotificationTypeForTipsNotificationType(type));
   local_state_->SetInteger(kTipsNotificationsLastTriggered, int(type));
   local_state_->ClearPref(kTipsNotificationsLastSent);
 }
@@ -728,9 +728,11 @@ bool TipsNotificationClient::DismissLimitReached() {
 void TipsNotificationClient::OnPermittedPrefChanged(const std::string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool newpermitted_ = IsPermitted();
-  if (permitted_ != newpermitted_ && IsSceneLevelForegroundActive()) {
+  if (permitted_ != newpermitted_) {
     ClearAllRequestedNotifications();
-    CheckAndMaybeRequestNotification(base::DoNothing());
+    if (IsSceneLevelForegroundActive()) {
+      CheckAndMaybeRequestNotification(base::DoNothing());
+    }
   }
 }
 
@@ -768,7 +770,7 @@ void TipsNotificationClient::ClassifyUser() {
 }
 
 bool TipsNotificationClient::HasIdentitiesOnDevice(ProfileIOS* profile) const {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     return !IdentityManagerFactory::GetForProfile(profile)
                 ->GetAccountsOnDevice()
                 .empty();

@@ -414,7 +414,7 @@ events that are fired.
 
 To write a test for accessibility events, your document must contain a
 JavaScript function called `go()`. This function will be called when the
-document is loaded (or when the `@WAIT_FOR` directive passes), and any
+document is loaded (or when the `@WAIT-FOR` directive passes), and any
 subsequent events will be dumped. Filters apply to events just like in tree
 dumps.
 

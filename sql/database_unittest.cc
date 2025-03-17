@@ -14,6 +14,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -33,7 +34,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
@@ -147,18 +147,16 @@ class SQLDatabaseTest : public testing::Test,
   }
 
   DatabaseOptions GetDBOptions() {
-    DatabaseOptions options;
-    options.wal_mode = IsWALEnabled();
+    return DatabaseOptions()
+        .set_wal_mode(IsWALEnabled())
     // TODO(crbug.com/40146017): Remove after switching to exclusive mode on by
     // default.
-    options.exclusive_locking = false;
 #if BUILDFLAG(IS_FUCHSIA)  // Exclusive mode needs to be enabled to enter WAL
-                           // mode on Fuchsia
-    if (IsWALEnabled()) {
-      options.exclusive_locking = true;
-    }
+        .set_exclusive_locking(IsWALEnabled())
+#else
+        .set_exclusive_locking(false)
 #endif  // BUILDFLAG(IS_FUCHSIA)
-    return options;
+        ;
   }
 
   bool IsWALEnabled() { return GetParam(); }
@@ -663,8 +661,9 @@ int TestVfsFullPathname(sqlite3_vfs* vfs,
 
   // `copy()` returns an output iterator just past the last char copied. Write
   // the string terminator to that location.
-  *base::ranges::copy(file_path_view,
-                      base::span(result, expected_result_size).begin()) = 0;
+  *std::ranges::copy(file_path_view,
+                     base::span(result, expected_result_size).begin())
+       .out = 0;
   return SQLITE_OK;
 }
 
@@ -705,8 +704,7 @@ TEST_P(SQLDatabaseTest, UseVfs) {
   sqlite3_vfs_register(&vfs, /*makeDflt=*/false);
   absl::Cleanup vfs_unregisterer = [&vfs]() { sqlite3_vfs_unregister(&vfs); };
 
-  DatabaseOptions options = GetDBOptions();
-  options.vfs_name_discouraged = kVFSName;
+  DatabaseOptions options = GetDBOptions().set_vfs_name_discouraged(kVFSName);
   Database other_db(options, test::kTestTag);
 
   // Since the vfs's Open function is not implemented `Open()` will fail.
@@ -1049,7 +1047,8 @@ void TestPageSize(const base::FilePath& db_prefix,
   const base::FilePath db_path = db_prefix.InsertBeforeExtensionASCII(
       base::NumberToString(initial_page_size));
   Database::Delete(db_path);
-  Database db({.page_size = initial_page_size}, test::kTestTag);
+  Database db(DatabaseOptions().set_page_size(initial_page_size),
+              test::kTestTag);
   ASSERT_TRUE(db.Open(db_path));
   ASSERT_TRUE(db.Execute(kCreateSql));
   ASSERT_TRUE(db.Execute(kInsertSql1));
@@ -1059,7 +1058,8 @@ void TestPageSize(const base::FilePath& db_prefix,
   db.Close();
 
   // Re-open the database while setting a new |options.page_size| in the object.
-  Database razed_db({.page_size = final_page_size}, test::kTestTag);
+  Database razed_db(DatabaseOptions().set_page_size(final_page_size),
+                    test::kTestTag);
   ASSERT_TRUE(razed_db.Open(db_path));
   // Raze will use the page size set in the connection object, which may not
   // match the file's page size.
@@ -1937,9 +1937,9 @@ TEST_P(SQLDatabaseTest, MmapInitiallyEnabledAltStatus) {
   db_->Close();
   Database::Delete(db_path_);
 
-  DatabaseOptions options = GetDBOptions();
-  options.mmap_alt_status_discouraged = true;
-  options.enable_views_discouraged = true;
+  DatabaseOptions options = GetDBOptions()
+                                .set_mmap_alt_status_discouraged(true)
+                                .set_enable_views_discouraged(true);
   db_ = std::make_unique<Database>(options, test::kTestTag);
   ASSERT_TRUE(db_->Open(db_path_));
 
@@ -2022,9 +2022,9 @@ TEST_P(SQLDatabaseTest, ComputeMmapSizeForOpenAltStatus) {
   ASSERT_FALSE(db_->DoesViewExist("MmapStatus"));
 
   // Using alt status, everything should be mapped, with state in the view.
-  DatabaseOptions options = GetDBOptions();
-  options.mmap_alt_status_discouraged = true;
-  options.enable_views_discouraged = true;
+  DatabaseOptions options = GetDBOptions()
+                                .set_mmap_alt_status_discouraged(true)
+                                .set_enable_views_discouraged(true);
   db_ = std::make_unique<Database>(options, test::kTestTag);
   ASSERT_TRUE(db_->Open(db_path_));
 
@@ -2188,14 +2188,14 @@ TEST_P(SQLDatabaseTest, ReOpenWithDifferentJournalMode) {
   }
 
   // Re-open the database with a different mode (Rollback vs WAL).
-  DatabaseOptions options = GetDBOptions();
-  options.wal_mode = !is_wal;
+  DatabaseOptions options =
+      GetDBOptions()
+          .set_wal_mode(!is_wal)
 #if BUILDFLAG(IS_FUCHSIA)
-  // Exclusive mode needs to be enabled to enter WAL mode on Fuchsia.
-  if (options.wal_mode) {
-    options.exclusive_locking = true;
-  }
+          // Exclusive mode needs to be enabled to enter WAL mode on Fuchsia.
+          .set_exclusive_locking(!is_wal)
 #endif  // BUILDFLAG(IS_FUCHSIA)
+      ;
 
   db_ = std::make_unique<Database>(options, test::kTestTag);
   ASSERT_TRUE(db_->Open(db_path_));
@@ -2209,8 +2209,8 @@ TEST_P(SQLDatabaseTest, ReOpenWithDifferentJournalMode) {
   }
 
   // Ensure appropriate journal file exists.
-  EXPECT_TRUE(IsOpenedInCorrectJournalMode(db_.get(), options.wal_mode));
-  EXPECT_EQ(base::PathExists(wal_path), options.wal_mode);
+  EXPECT_TRUE(IsOpenedInCorrectJournalMode(db_.get(), options.wal_mode_));
+  EXPECT_EQ(base::PathExists(wal_path), options.wal_mode_);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -2229,11 +2229,10 @@ class SQLDatabaseTestExclusiveFileLockMode
   }
 
   DatabaseOptions GetDBOptions() {
-    DatabaseOptions options;
-    options.wal_mode = IsWALEnabled();
-    options.exclusive_locking = true;
-    options.exclusive_database_file_lock = IsExclusivelockEnabled();
-    return options;
+    return DatabaseOptions()
+        .set_wal_mode(IsWALEnabled())
+        .set_exclusive_locking(true)
+        .set_exclusive_database_file_lock(IsExclusivelockEnabled());
   }
 
   bool IsWALEnabled() { return std::get<0>(GetParam()); }
@@ -2275,7 +2274,8 @@ TEST(SQLInvalidDatabaseFlagsDeathTest, ExclusiveDatabaseLock) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   auto db_path = temp_dir.GetPath().AppendASCII("database_test_locked.sqlite");
 
-  Database db({.exclusive_database_file_lock = true}, test::kTestTag);
+  Database db(DatabaseOptions().set_exclusive_database_file_lock(true),
+              test::kTestTag);
 
   EXPECT_CHECK_DEATH_WITH(
       { std::ignore = db.Open(db_path); },
@@ -2297,10 +2297,9 @@ class SQLDatabaseTestExclusiveMode : public testing::Test,
   }
 
   DatabaseOptions GetDBOptions() {
-    DatabaseOptions options;
-    options.wal_mode = IsWALEnabled();
-    options.exclusive_locking = true;
-    return options;
+    return DatabaseOptions()
+        .set_wal_mode(IsWALEnabled())
+        .set_exclusive_locking(true);
   }
 
   bool IsWALEnabled() { return GetParam(); }
@@ -2358,6 +2357,112 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
             "1");
   EXPECT_EQ(ExecuteWithResult(db_.get(), "SELECT value FROM foo where id=2"),
             "2");
+}
+
+#if BUILDFLAG(IS_WIN)
+
+TEST_P(SQLDatabaseTest, OpenFails_WindowsExclusiveReadMode) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                // Do not allow others to read from the file.
+                                base::File::FLAG_WIN_EXCLUSIVE_READ);
+  ASSERT_TRUE(file.IsValid());
+
+  base::HistogramTester tester;
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_CANTOPEN);
+  ASSERT_FALSE(db_->Open(db_path_));
+  ASSERT_TRUE(expecter.SawExpectedErrors());
+  tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
+  db_->Close();
+
+  file.Close();
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+TEST_P(SQLDatabaseTest, OpenFails_WindowsExclusiveWriteMode) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                // Do not allow others to write to the file.
+                                base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+  ASSERT_TRUE(file.IsValid());
+
+  base::HistogramTester tester;
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_READONLY);
+  ASSERT_FALSE(db_->Open(db_path_));
+  ASSERT_TRUE(expecter.SawExpectedErrors());
+  tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
+  db_->Close();
+
+  file.Close();
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+TEST_P(SQLDatabaseTest, OpenFails_ExclusiveLock) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file.IsValid());
+  ASSERT_EQ(base::File::FILE_OK, file.Lock(base::File::LockMode::kExclusive));
+
+  {
+    base::HistogramTester tester;
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_IOERR_READ);
+    ASSERT_FALSE(db_->Open(db_path_));
+    ASSERT_TRUE(expecter.SawExpectedErrors());
+    tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
+    db_->Close();
+  }
+
+  ASSERT_EQ(base::File::FILE_OK, file.Unlock());
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+// This test is simulating an common error code received on Windows when
+// the database file is being copied by a third-party. The common API used
+// is CopyFileEx(...) which is acquiring a shared lock on the file.
+TEST_P(SQLDatabaseTest, OpenFails_SharedLock) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file.IsValid());
+  ASSERT_EQ(base::File::FILE_OK, file.Lock(base::File::LockMode::kShared));
+
+  {
+    base::HistogramTester tester;
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_BUSY);
+    ASSERT_FALSE(db_->Open(db_path_));
+    ASSERT_TRUE(expecter.SawExpectedErrors());
+    tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
+    db_->Close();
+  }
+
+  ASSERT_EQ(base::File::FILE_OK, file.Unlock());
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+#endif  // BUILDFLAG(IS_WIN)
+
+TEST_P(SQLDatabaseTest, OpenHistograms) {
+  static constexpr char kCreateSql[] = "CREATE TABLE foo (id INTEGER UNIQUE)";
+  ASSERT_TRUE(db_->Execute(kCreateSql));
+  db_->Close();
+
+  base::HistogramTester tester;
+  ASSERT_TRUE(db_->Open(db_path_));
+  tester.ExpectTotalCount("Sql.Database.Success.SqliteOpenTime.Test", 1);
+  tester.ExpectTotalCount("Sql.Database.Success.OpenInternalTime.Test", 1);
+  tester.ExpectUniqueSample("Sql.Database.Success.SqliteOpenAttempts.Test", 1,
+                            1);
 }
 
 TEST_P(SQLDatabaseTest, OpenFailsAfterCorruptSizeInHeader) {
@@ -2425,6 +2530,14 @@ TEST_P(SQLDatabaseTest, OpenWithRecoveryHandlesCorruption) {
     EXPECT_EQ(error_count, 1u);
     EXPECT_FALSE(db_->has_error_callback());
   }
+}
+
+TEST_P(SQLDatabaseTest, OpenWithPreload) {
+  db_->Close();
+
+  DatabaseOptions options = GetDBOptions().set_preload(true);
+  db_ = std::make_unique<Database>(options, test::kTestTag);
+  ASSERT_TRUE(db_->Open(db_path_));
 }
 
 TEST_P(SQLDatabaseTest, ExecuteFailsAfterCorruptSizeInHeader) {

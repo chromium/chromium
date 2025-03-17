@@ -40,6 +40,10 @@
 // Notifies that IPH bubble will be presenting on tools menu button.
 - (void)notifyIPHBubblePresenting;
 
+// Displays the Reminder Notifications IPH bubble on the tools menu button, if
+// permitted by the Feature Engagement Tracker.
+- (void)displayPopupMenuTabRemindersIPH;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_POPUP_MENU_HELP_COORDINATOR_H_

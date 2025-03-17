@@ -24,6 +24,9 @@ class TracedValue;
 
 namespace cc {
 
+// This number of bits is reserved for cc internal use.
+const int kElementIdReservedBitCount = 1;
+
 // Element ids are chosen by cc's clients and can be used as a stable identifier
 // across updates.
 //
@@ -91,6 +94,8 @@ struct CC_PAINT_EXPORT ElementId {
 };
 
 ElementId CC_PAINT_EXPORT LayerIdToElementIdForTesting(int layer_id);
+
+ElementId CC_PAINT_EXPORT RemapElementIdToCcNamespace(ElementId element_id);
 
 struct CC_PAINT_EXPORT ElementIdHash {
   size_t operator()(ElementId key) const;

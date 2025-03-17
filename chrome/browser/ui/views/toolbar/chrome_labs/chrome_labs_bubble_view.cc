@@ -17,8 +17,6 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_item_view.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/grit/branded_strings.h"
@@ -27,7 +25,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -79,7 +76,7 @@ class ChromeLabsFooter : public views::View {
                      .SetStyle(ui::ButtonStyle::kProminent)
                      .Build());
     SetBackground(
-        views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
+        views::CreateSolidBackground(ui::kColorBubbleFooterBackground));
     SetBorder(views::CreateEmptyBorder(
         views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
     SetProperty(
@@ -180,28 +177,24 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view,
                           base::Unretained(this))));
   restart_prompt_->SetVisible(about_flags::IsRestartNeededToCommitChanges());
 
-  if (features::IsToolbarPinningEnabled()) {
-    CHECK(browser);
-    chrome_labs_action_item_ =
-        actions::ActionManager::Get()
-            .FindAction(kActionShowChromeLabs,
-                        browser->browser_actions()->root_action_item())
-            ->GetAsWeakPtr();
-    CHECK(chrome_labs_action_item_.get());
-    chrome_labs_action_item_.get()->SetIsShowingBubble(true);
-  }
+  CHECK(browser);
+  chrome_labs_action_item_ =
+      actions::ActionManager::Get()
+          .FindAction(kActionShowChromeLabs,
+                      browser->browser_actions()->root_action_item())
+          ->GetAsWeakPtr();
+  CHECK(chrome_labs_action_item_.get());
+  chrome_labs_action_item_.get()->SetIsShowingBubble(true);
 }
 
 ChromeLabsBubbleView::~ChromeLabsBubbleView() {
-  if (features::IsToolbarPinningEnabled()) {
-    if (chrome_labs_action_item_.get()) {
-      chrome_labs_action_item_.get()->SetIsShowingBubble(false);
+  if (chrome_labs_action_item_.get()) {
+    chrome_labs_action_item_.get()->SetIsShowingBubble(false);
 
-      BrowserView::GetBrowserViewForBrowser(browser_)
-          ->toolbar()
-          ->pinned_toolbar_actions_container()
-          ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, false);
-    }
+    BrowserView::GetBrowserViewForBrowser(browser_)
+        ->toolbar()
+        ->pinned_toolbar_actions_container()
+        ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, false);
   }
 }
 

@@ -1663,14 +1663,14 @@ TEST_F(ComputedStyleTest, DerivedDebugDiff) {
   ASSERT_EQ(2u, style1->DebugDiffFields(*style2).size());
 
   EXPECT_EQ(DebugField::forces_stacking_context_,
-            style1->DebugDiffFields(*style2)[0].field);
-  EXPECT_EQ("1", style1->DebugDiffFields(*style2)[0].actual);
-  EXPECT_EQ("0", style1->DebugDiffFields(*style2)[0].correct);
+            style1->DebugDiffFields(*style2)[1].field);
+  EXPECT_EQ("1", style1->DebugDiffFields(*style2)[1].actual);
+  EXPECT_EQ("0", style1->DebugDiffFields(*style2)[1].correct);
 
   EXPECT_EQ(DebugField::is_stacking_context_without_containment_,
-            style1->DebugDiffFields(*style2)[1].field);
-  EXPECT_EQ("true", style1->DebugDiffFields(*style2)[1].actual);
-  EXPECT_EQ("false", style1->DebugDiffFields(*style2)[1].correct);
+            style1->DebugDiffFields(*style2)[0].field);
+  EXPECT_EQ("true", style1->DebugDiffFields(*style2)[0].actual);
+  EXPECT_EQ("false", style1->DebugDiffFields(*style2)[0].correct);
 }
 
 TEST_F(ComputedStyleTest, DerivedDebugDiffLazy) {
@@ -1999,7 +1999,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToConstrainedHigh) {
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(standard 30%, constrained-high 70%)");
+            "dynamic-range-limit-mix(standard 30%, constrained 70%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2033,7 +2033,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToHigh) {
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(standard 40%, high 60%)");
+            "dynamic-range-limit-mix(standard 40%, no-limit 60%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2067,7 +2067,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixConstrainedHighToHigh) {
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(constrained-high 55%, high 45%)");
+            "dynamic-range-limit-mix(constrained 55%, no-limit 45%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2102,7 +2102,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixAllThree) {
 
   EXPECT_EQ(
       dynamic_range_limit_mix_value->CssText(),
-      "dynamic-range-limit-mix(standard 20%, constrained-high 60%, high 20%)");
+      "dynamic-range-limit-mix(standard 20%, constrained 60%, no-limit 20%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2242,6 +2242,44 @@ TEST_F(ComputedStyleTest, BottomRelativeToSafeAreaInset) {
   EXPECT_TRUE(StyleForElement("t4").IsBottomRelativeToSafeAreaInset());
   EXPECT_TRUE(StyleForElement("t5").IsBottomRelativeToSafeAreaInset());
   EXPECT_TRUE(StyleForElement("t6").IsBottomRelativeToSafeAreaInset());
+}
+
+TEST_F(ComputedStyleTest, HasEnvSafeAreaInsetBottom) {
+  Document& document = GetDocument();
+  document.body()->setInnerHTML(R"HTML(
+    <div id="f1" style="bottom: 5px"></div>
+    <div id="f2" style="bottom: calc(5px + 5px)"></div>
+    <div id="f3" style="bottom: env(safe-area-inset-top)"></div>
+    <div id="f4" style="bottom: calc(env(safe-area-inset-top))"></div>
+    <div id="f5" style="padding: env(safe-area-inset-left)"></div>
+    <div id="f6" style="padding-bottom: env(safe-area-inset-top)"></div>
+    <div id="f7" style="margin-bottom: env(safe-area-inset-top)"></div>
+    <div id="f8" style="height: calc(env(safe-area-inset-top) + 30px)"></div>
+
+    <div id="t1" style="bottom: env(safe-area-inset-bottom)"></div>
+    <div id="t2" style="bottom: calc(env(safe-area-inset-bottom))"></div>
+    <div id="t3" style="padding: env(safe-area-inset-bottom)"></div>
+    <div id="t4" style="padding-bottom: env(safe-area-inset-bottom)"></div>
+    <div id="t5" style="margin-bottom: env(safe-area-inset-bottom)"></div>
+    <div id="t6" style="height: calc(env(safe-area-inset-bottom) + 30px)"></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(StyleForElement("f1").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f2").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f3").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f4").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f5").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f6").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f7").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f8").HasEnvSafeAreaInsetBottom());
+
+  EXPECT_TRUE(StyleForElement("t1").HasEnvSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t2").HasEnvSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t3").HasEnvSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t4").HasEnvSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t5").HasEnvSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t6").HasEnvSafeAreaInsetBottom());
 }
 
 }  // namespace blink

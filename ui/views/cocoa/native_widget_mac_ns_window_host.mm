@@ -4,6 +4,7 @@
 
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
+#include <algorithm>
 #include <tuple>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_delegate_mac.h"
@@ -771,7 +771,7 @@ void NativeWidgetMacNSWindowHost::SetParent(
   }
 
   if (parent_) {
-    auto found = base::ranges::find(parent_->children_, this);
+    auto found = std::ranges::find(parent_->children_, this);
     DCHECK(found != parent_->children_.end());
     parent_->children_.erase(found);
     parent_ = nullptr;
@@ -924,7 +924,7 @@ NativeWidgetMacNSWindowHost::AddEventMonitor(
     if (!weak_this) {
       return;
     }
-    auto found = base::ranges::find(weak_this->event_monitors_, monitor);
+    auto found = std::ranges::find(weak_this->event_monitors_, monitor);
     CHECK(found != weak_this->event_monitors_.end());
     weak_this->event_monitors_.erase(found);
 
@@ -1644,7 +1644,7 @@ void NativeWidgetMacNSWindowHost::GetTooltipTextAt(
     gfx::Point view_point = location_in_content;
     views::View::ConvertPointToScreen(root_view_, &view_point);
     views::View::ConvertPointFromScreen(view, &view_point);
-    new_tooltip_text = view->GetTooltipText(view_point);
+    new_tooltip_text = view->GetRenderedTooltipText(view_point);
   }
   std::move(callback).Run(new_tooltip_text);
 }

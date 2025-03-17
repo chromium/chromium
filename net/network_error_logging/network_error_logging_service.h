@@ -296,6 +296,10 @@ class NET_EXPORT NetworkErrorLoggingService {
   virtual PersistentNelStore* GetPersistentNelStoreForTesting();
   virtual ReportingService* GetReportingServiceForTesting();
 
+  // Loads a specified list of Nel policies and marks the service as
+  // initialized.
+  virtual void LoadPoliciesForTesting(std::vector<NelPolicy> policies);
+
  protected:
   NetworkErrorLoggingService();
 

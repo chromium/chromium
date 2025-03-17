@@ -27,7 +27,7 @@ const kNamelessFieldIDPrefix = 'gChrome~field~';
  * programmatically.
  * If the map is null, the source of changed is not track.
  */
-const wasEditedByUser: WeakMap<any, any>|null = null;
+const wasEditedByUser: WeakMap<any, any> = new WeakMap();
 
 /**
  * Based on Element::isFormControlElement() (WebKit)
@@ -292,20 +292,15 @@ function getFormElementFromRendererId(identifier: number): HTMLFormElement|
 
 /**
  * Returns whether the last `input` or `change` event on `element` was
- * triggered by a user action (was "trusted").
+ * triggered by a user action (was "trusted"). Returns true by default if the
+ * feature to fix the user edited bit isn't enabled which is the status quo.
  * TODO(crbug.com/40941928): Match Blink's behavior so that only a 'reset' event
  * makes an edited field unedited.
  */
 function fieldWasEditedByUser(element: Element) {
-  if (wasEditedByUser === null) {
-    // Input event sources is not tracked.
-    // Return true to preserve previous behavior.
-    return true;
-  }
-  if (!wasEditedByUser.has(element)) {
-    return false;
-  }
-  return wasEditedByUser.get(element);
+  return !gCrWeb.autofill_form_features
+              .isAutofillCorrectUserEditedBitInParsedField() ||
+      (wasEditedByUser.get(element) ?? false);
 }
 
 /**

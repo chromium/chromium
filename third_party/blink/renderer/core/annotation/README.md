@@ -31,8 +31,6 @@ Current consumers of `core/annotation` are:
     - Also known as scroll-to-text, allows links to scroll to a specified text snipped on loading.
   * [Shared Highlighting](https://source.chromium.org/chromium/chromium/src/+/main:components/shared_highlighting/;drc=92e2d6aeefc1242e1b11467b994e4bfd14d17d20)
     which enables generating and sharing scroll-to-text links.
-  * [User Notes](https://source.chromium.org/chromium/chromium/src/+/main:components/user_notes/;drc=d4f15fdf843b097546d7d8b1cfa715f094a01a33)
-    which enables users to make notes on web pages.
 
 ## Concepts
 

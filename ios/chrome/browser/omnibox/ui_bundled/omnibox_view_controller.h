@@ -9,11 +9,11 @@
 
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_consumer.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_offset_provider.h"
 
 @class LayoutGuideCenter;
+@protocol OmniboxMutator;
 @protocol OmniboxKeyboardDelegate;
 @protocol OmniboxReturnDelegate;
 @class OmniboxViewController;
@@ -48,8 +48,10 @@ class OmniboxTextChangeDelegate;
 
 @interface OmniboxViewController : UIViewController <EditViewAnimatee,
                                                      LocationBarOffsetProvider,
-                                                     OmniboxConsumer,
-                                                     OmniboxViewConsumer>
+                                                     OmniboxConsumer>
+
+/// Mutator of the omnibox.
+@property(nonatomic, weak) id<OmniboxMutator> mutator;
 
 /// Whether the UI is configured for search-only mode.
 @property(nonatomic, assign) BOOL isSearchOnlyUI;

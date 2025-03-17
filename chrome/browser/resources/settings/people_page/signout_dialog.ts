@@ -153,34 +153,12 @@ export class SettingsSignoutDialogElement extends
   private onDisconnectConfirm_() {
     this.$.dialog.close();
     // <if expr="not chromeos_ash">
-    const deleteProfile =
-        this.isClearProfileConfirmButtonVisible_() || this.deleteProfile_;
-    SyncBrowserProxyImpl.getInstance().signOut(deleteProfile);
+    SyncBrowserProxyImpl.getInstance().signOut(this.deleteProfile_);
     // </if>
     // <if expr="chromeos_ash">
     // Chrome OS users are always signed-in, so just turn off sync.
     SyncBrowserProxyImpl.getInstance().turnOffSync();
     // </if>
-  }
-
-  /**
-   * @return true if the profile is a secondary profile on LaCros, has the
-   *     option to turn off sync without deleting the profile.
-   */
-  private isDeleteProfileFooterVisible_(): boolean {
-    // If the "Clear and Continue" button is not shown, show the footer that
-    // allows the user to delete the profile.
-    return !this.isClearProfileConfirmButtonVisible_();
-  }
-
-  /**
-   * @return true if the profile is managed and the feature to turn Sync off for
-   *     managed profiles is not enabled. In that case the profile has to be
-   *     cleared, otherwise the user may turn off sync.
-   */
-  private isClearProfileConfirmButtonVisible_(): boolean {
-    return !!this.syncStatus!.domain &&
-        !loadTimeData.getBoolean('turnOffSyncAllowedForManagedProfiles');
   }
 }
 

@@ -26,14 +26,14 @@
         optional GPUSize64 byteSize);
 
     [CallWith=ScriptState, RaisesException] void writeTexture(
-        GPUImageCopyTexture destination,
+        GPUTexelCopyTextureInfo destination,
         [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView data,
-        GPUImageDataLayout dataLayout,
+        GPUTexelCopyBufferLayout dataLayout,
         GPUExtent3D size);
     [CallWith=ScriptState, RaisesException] void writeTexture(
-        GPUImageCopyTexture destination,
+        GPUTexelCopyTextureInfo destination,
         [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBuffer data,
-        GPUImageDataLayout dataLayout,
+        GPUTexelCopyBufferLayout dataLayout,
         GPUExtent3D size);
 
     [RaisesException] void copyExternalImageToTexture(

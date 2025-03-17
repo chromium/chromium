@@ -153,7 +153,12 @@ component("gl") {
     "trace_util.h",
   ]
 
-  configs += [ "//build/config:precompiled_headers" ]
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+    "//build/config:precompiled_headers",
+  ]
+
   defines = [ "GL_IMPLEMENTATION" ]
   if (enable_gpu_service_logging) {
     defines += [ "GPU_ENABLE_SERVICE_LOGGING" ]
@@ -161,6 +166,7 @@ component("gl") {
 
   deps = [
     ":buildflags",
+    "//build:android_buildflags",
     "//mojo/public/cpp/bindings",
     "//ui/base:ozone_buildflags",
     "//ui/gfx/mojom",
@@ -256,8 +262,14 @@ component("gl") {
       "swap_chain_presenter.h",
       "vsync_provider_win.cc",
       "vsync_provider_win.h",
+      "vsync_provider_win_dcomp.cc",
+      "vsync_provider_win_dcomp.h",
       "vsync_thread_win.cc",
       "vsync_thread_win.h",
+      "vsync_thread_win_dcomp.cc",
+      "vsync_thread_win_dcomp.h",
+      "vsync_thread_win_dxgi.cc",
+      "vsync_thread_win_dxgi.h",
     ]
 
     libs = [
@@ -453,6 +465,7 @@ static_library("test_support") {
   ]
   deps = [
     "//base/test:test_support",
+    "//gpu/config",
     "//testing/gtest",
     "//third_party/angle:includes",
     "//ui/base",

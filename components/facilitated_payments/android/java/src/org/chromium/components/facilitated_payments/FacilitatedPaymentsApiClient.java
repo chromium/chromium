@@ -4,20 +4,24 @@
 
 package org.chromium.components.facilitated_payments;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 /**
  * Client for facilitated payment APIs, such as PIX. The default implementation cannot invoke
- * payments. An implementing subclass must provide a factory that builds its instances.
- * Example usage:
+ * payments. An implementing subclass must provide a factory that builds its instances. Example
+ * usage:
  *
- *  FacilitatedPaymentsApiClient apiClient =
- *      FacilitatedPaymentsApiClient.create(renderFrameHost, delegate);
- *  apiClient.isAvailable();
+ * <pre>
+ * FacilitatedPaymentsApiClient apiClient =
+ *      FacilitatedPaymentsApiClient.create(renderFrameHost,delegate); apiClient.isAvailable();
+ * </pre>
  */
+@NullMarked
 public class FacilitatedPaymentsApiClient {
-    private static Factory sFactory;
+    private static @Nullable Factory sFactory;
 
     /** The delegate to notify of payment result. */
     protected final Delegate mDelegate;
@@ -82,7 +86,7 @@ public class FacilitatedPaymentsApiClient {
          * @param clientToken An opaque client token for initiating a payment. Can be null or empty
          * to indicate a failure.
          */
-        default void onGetClientToken(byte[] clientToken) {}
+        default void onGetClientToken(byte @Nullable [] clientToken) {}
 
         /**
          * Notifies the delegate about the result of the facilitated payment.
@@ -152,7 +156,19 @@ public class FacilitatedPaymentsApiClient {
      * Initiates the payment flow UI. Will invoke a delegate callback with the result.
      *
      * @param primaryAccount User's signed in account.
+     * @param securePayload The secure payload received from Payments backend that is required for
+     *     invoking the purchase action in Google Play Services.
+     */
+    public void invokePurchaseAction(CoreAccountInfo primaryAccount, SecurePayload securePayload) {
+        mDelegate.onPurchaseActionResultEnum(PurchaseActionResult.COULD_NOT_INVOKE);
+    }
+
+    /**
+     * Initiates the payment flow UI. Will invoke a delegate callback with the result.
+     *
+     * @param primaryAccount User's signed in account.
      * @param actionToken An opaque token used for invoking the purchase action.
+     * @deprecated TODO(https://crbug.com/329108444): Remove this method.
      */
     public void invokePurchaseAction(CoreAccountInfo primaryAccount, byte[] actionToken) {
         mDelegate.onPurchaseActionResultEnum(PurchaseActionResult.COULD_NOT_INVOKE);

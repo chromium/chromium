@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AudioAndCaptionsPageBrowserProxyImpl, NotificationColor, SettingsAudioAndCaptionsPageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, CrSettingsPrefs, Router, routes, settingMojom, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsAudioAndCaptionsPageElement} from 'chrome://os-settings/lazy_load.js';
+import {AudioAndCaptionsPageBrowserProxyImpl, NotificationColor} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

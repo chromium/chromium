@@ -230,7 +230,7 @@ void ModelValidatorKeyedService::OnDeviceModelExecuteResponse(
     return;
   }
   // Complete responses with empty log entry indicate errors.
-  if (!result.log_entry || !result.provided_by_on_device) {
+  if (!result.execution_info || !result.provided_by_on_device) {
     LOCAL_HISTOGRAM_BOOLEAN(kModelValidationErrorHistogramString, true);
   }
   proto::ModelValidationOutput output;

@@ -8,12 +8,21 @@
     overflow: auto;
   }
 
+  iron-icon[icon='cr20:domain'] {
+    margin-inline-end: 10px;
+  }
+
   cr-search-field {
     margin-top: 20px;
   }
 
   cr-search-field::part(searchInput) {
     font: var(--cros-body-2-font);
+  }
+
+  .managed-by-policy {
+    font: var(--cros-body-2-font);
+    padding-left: 0px;
   }
 
   .label {
@@ -38,6 +47,12 @@
         clear-label="$i18n{clearSearch}" autofocus
         on-search-changed="onSearchChanged_" on-keydown="onKeydown_">
     </cr-search-field>
+    <template is="dom-if" if="[[showManagedByPolicy]]">
+      <div class="managed-by-policy cr-row continuation" id="managedByPolicy">
+        <iron-icon icon="cr20:domain"></iron-icon>
+        <div class="secondary">[[managedByPolicyLabel]]</div>
+      </div>
+    </template>
   </div>
   <div id="dialog-body" slot="body" scrollable>
     <template is="dom-if" if="[[showSuggestedList_]]">
@@ -63,14 +78,13 @@
       <iron-list id="filtered-items-list" items="[[filteredItems_]]"
           scroll-target="dialog-body">
         <template>
-          <cr-checkbox-with-policy
+          <cr-checkbox
               class="list-item no-outline"
               checked="[[willAdd_(item.id, itemIdsToAdd_.size)]]"
               disabled="[[item.disabledByPolicy]]"
-              policy-tooltip="[[policyTooltip]]"
               tab-index="[[tabIndex]]" on-change="onCheckboxChange_">
             [[item.name]]
-          </cr-checkbox-with-policy>
+          </cr-checkbox>
         </template>
       </iron-list>
     </template>

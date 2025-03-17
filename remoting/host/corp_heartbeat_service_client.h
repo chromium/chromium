@@ -13,10 +13,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/base/corp_service_client.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/internal_headers.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/host/heartbeat_service_client.h"
 #include "remoting/proto/empty.pb.h"
+
+namespace net {
+class ClientCertStore;
+}  // namespace net
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -31,7 +35,8 @@ class CorpHeartbeatServiceClient : public HeartbeatServiceClient {
       const std::string& directory_id,
       const std::string& refresh_token,
       const std::string& service_account_email,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<net::ClientCertStore> client_cert_store);
 
   CorpHeartbeatServiceClient(const CorpHeartbeatServiceClient&) = delete;
   CorpHeartbeatServiceClient& operator=(const CorpHeartbeatServiceClient&) =
@@ -49,21 +54,21 @@ class CorpHeartbeatServiceClient : public HeartbeatServiceClient {
 
  private:
   void OnSendHeartbeatResponse(HeartbeatResponseCallback callback,
-                               const ProtobufHttpStatus& status,
+                               const HttpStatus& status,
                                std::unique_ptr<Empty>);
   void OnUpdateRemoteAccessHostResponse(
       HeartbeatResponseCallback callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<internal::RemoteAccessHostV1Proto>);
   void OnReportHostOffline(HeartbeatResponseCallback callback,
-                           const ProtobufHttpStatus& status,
+                           const HttpStatus& status,
                            std::unique_ptr<internal::RemoteAccessHostV1Proto>);
   void MakeUpdateRemoteAccessHostCall(
       std::optional<std::string> signaling_id,
       std::optional<std::string> offline_reason,
       CorpServiceClient::UpdateRemoteAccessHostCallback callback);
   void RunHeartbeatResponseCallback(HeartbeatResponseCallback callback,
-                                    const ProtobufHttpStatus& status);
+                                    const HttpStatus& status);
 
   // The entity to update in Directory service.
   std::string directory_id_;

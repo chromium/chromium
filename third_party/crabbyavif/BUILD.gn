@@ -156,15 +156,18 @@ rust_static_library("crabbyavif") {
     "src/src/reformat/scale.rs",
     "src/src/utils/clap.rs",
     "src/src/utils/mod.rs",
-    "src/src/utils/raw.rs",
-    "src/src/utils/y4m.rs",
   ]
 
   features = [
     "dav1d",
     "libyuv",
     "capi",
+    "disable_cfi",
   ]
+
+  # Required for disable_cfi feature.
+  configs -= [ "//build/config/compiler:disallow_unstable_features" ]
+  rustflags = [ "-Zallow-features=no_sanitize" ]
 
   public_deps = [ ":header_files" ]
   deps = [

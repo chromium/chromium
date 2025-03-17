@@ -25,6 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_DEFAULT_STYLE_SHEETS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -84,12 +85,6 @@ class CSSDefaultStyleSheets final
 
   StyleSheetContents* DefaultStyleSheet() { return default_style_sheet_.Get(); }
   StyleSheetContents* QuirksStyleSheet() { return quirks_style_sheet_.Get(); }
-  StyleSheetContents* CustomizableSelectStyleSheet() {
-    return customizable_select_style_sheet_.Get();
-  }
-  StyleSheetContents* CustomizableSelectForcedColorsStyleSheet() {
-    return customizable_select_forced_colors_style_sheet_.Get();
-  }
   StyleSheetContents* SvgStyleSheet() { return svg_style_sheet_.Get(); }
   StyleSheetContents* MathmlStyleSheet() { return mathml_style_sheet_.Get(); }
   StyleSheetContents* MediaControlsStyleSheet() {
@@ -101,6 +96,9 @@ class CSSDefaultStyleSheets final
   StyleSheetContents* MarkerStyleSheet() { return marker_style_sheet_.Get(); }
   StyleSheetContents* ScrollButtonStyleSheet() {
     return scroll_button_style_sheet_.Get();
+  }
+  StyleSheetContents* ScrollMarkerStyleSheet() {
+    return scroll_marker_style_sheet_.Get();
   }
   StyleSheetContents* ForcedColorsStyleSheet() {
     return forced_colors_style_sheet_.Get();
@@ -125,6 +123,10 @@ class CSSDefaultStyleSheets final
   }
 
   void CollectFeaturesTo(const Document&, RuleFeatureSet&);
+
+  HeapVector<std::pair<unsigned, RuleSetGroup>>& RuleSetGroupCache() {
+    return rule_set_group_cache_;
+  }
 
   void Trace(Visitor*) const;
 
@@ -178,13 +180,27 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> permission_element_style_sheet_;
   Member<StyleSheetContents> text_track_style_sheet_;
   Member<StyleSheetContents> fullscreen_style_sheet_;
-  Member<StyleSheetContents> customizable_select_style_sheet_;
-  Member<StyleSheetContents> customizable_select_forced_colors_style_sheet_;
   Member<StyleSheetContents> marker_style_sheet_;
   Member<StyleSheetContents> scroll_button_style_sheet_;
+  Member<StyleSheetContents> scroll_marker_style_sheet_;
   Member<StyleSheetContents> forced_colors_style_sheet_;
 
   std::unique_ptr<UAStyleSheetLoader> media_controls_style_sheet_loader_;
+
+  // This is used by StyleResolver to avoid building up MatchRequests
+  // for the set of UA stylesheets over and over again. It is keyed by
+  // a bit mask for which stylesheets participate in the RuleSetGroup
+  // (e.g., HTML elements have different sets of RuleSets from what
+  // SVG elements have). It lives in CSSDefaultStyleSheets because
+  // this class is pretty much the only place that knows when these
+  // RuleSets change, and thus when to clear the cache. (Ideally,
+  // RuleSets should really be entirely static, but they're not,
+  // and for the fullscreen RuleSet, media queries may change it anyway.)
+  //
+  // This is fundamentally an associative array, but since it typically
+  // holds so few elements (rarely more than three), it's just as simple
+  // and fast to just use a flat vector.
+  HeapVector<std::pair<unsigned, RuleSetGroup>> rule_set_group_cache_;
 };
 
 }  // namespace blink

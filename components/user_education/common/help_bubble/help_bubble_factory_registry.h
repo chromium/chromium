@@ -53,6 +53,13 @@ class HelpBubbleFactoryRegistry {
   // exists.
   HelpBubble* GetHelpBubble(ui::ElementContext context);
 
+  // Adds the given bubble to the registry. The bubble must be valid and open.
+  // It will be removed when it is closed.
+  //
+  // This can be used to add an external help bubble as well (e.g. for custom
+  // help bubbles).
+  void AddHelpBubble(HelpBubble* help_bubble);
+
   // Adds a bubble factory of type `T` to the list of bubble factories, if it
   // is not already present.
   template <class T, typename... Args>

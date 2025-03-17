@@ -11,6 +11,7 @@
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -78,10 +79,11 @@ bool IsOnDeviceSpeechRecognitionSupported() {
 #endif
 }
 
-bool IsOnDeviceSpeechRecognitionAvailable(const std::string& language) {
+media::mojom::AvailabilityStatus IsOnDeviceSpeechRecognitionAvailable(
+    const std::string& language) {
   if (!base::FeatureList::IsEnabled(media::kOnDeviceWebSpeech) ||
       !IsOnDeviceSpeechRecognitionSupported()) {
-    return false;
+    return media::mojom::AvailabilityStatus::kUnavailable;
   }
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
@@ -100,16 +102,25 @@ bool IsOnDeviceSpeechRecognitionAvailable(const std::string& language) {
   }
 
   if (!is_language_supported) {
-    return false;
+    return media::mojom::AvailabilityStatus::kUnavailable;
   }
 
-  if (!soda_installer->IsSodaInstalled(lang_code)) {
-    return false;
+  if (soda_installer->IsSodaInstalled(lang_code)) {
+    return media::mojom::AvailabilityStatus::kAvailable;
   }
 
-  // TODO(crbug.com/40286514): Check other params.
+  if (soda_installer->IsLanguageEnabled(language)) {
+    // By this point the language must be either be available but not yet
+    // installed or currently downloading.
+    if (soda_installer->IsSodaLanguageDownloading(
+            speech::GetLanguageCode(language))) {
+      return media::mojom::AvailabilityStatus::kDownloading;
+    }
 
-  return true;
+    return media::mojom::AvailabilityStatus::kDownloadable;
+  }
+
+  return media::mojom::AvailabilityStatus::kUnavailable;
 }
 
 }  // namespace speech

@@ -11,6 +11,7 @@ include_rules = [
   "+chrome/browser/manta/manta_service_factory.h",
   # And any browser dependencies required for a ProfileKeyedService.
   "+chrome/browser/profiles",
+  "+chrome/browser/browser_process.h",
 
   # Required for getting a `signin::IdentityManager`.
   "+chrome/browser/signin",

@@ -151,13 +151,13 @@ TEST_F(CrostiniUpgradeAvailableNotificationTest, ShowsWhenNotified) {
 
   histogram_tester.ExpectUniqueSample(
       "Crostini.UpgradeDialogEvent",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           crostini::UpgradeDialogEvent::kDialogShown),
       1);
 
   histogram_tester.ExpectUniqueSample(
       "Crostini.UpgradeAvailable",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           crostini::CrostiniUpgradeAvailableNotificationClosed::kUpgradeButton),
       1);
 }

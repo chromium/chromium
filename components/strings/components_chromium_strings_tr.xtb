@@ -20,6 +20,7 @@
 <translation id="4622039161600275920">Bu sayfa Chromium tarafından engellendi</translation>
 <translation id="48558539577516920">Güvenlik duvarınızın veya virüsten korunma programınızın ayarlarından,
         Chromium'un ağa erişmesine izin verin.</translation>
+<translation id="4949828774841497663">Uygulamalar &gt; Sistem Ayarları &gt; Ağ'a gidip etkin ağı seçin, Ayrıntılar... düğmesini tıklayın ve seçilmiş olabilecek tüm proxy'lerin seçimini kaldırın.</translation>
 <translation id="580822234363523061">Chromium menüsü &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
@@ -27,6 +28,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
            öğesine gidin ve yapılandırmanızın "proxy yok" veya "doğrudan" olarak ayarlandığından emin olun.</translation>
+<translation id="648062525172759633">Bu sayfalar Chromium geliştiricilerinin kullanması için tasarlanmış olup etkin şekilde yönetilmiyor veya test edilmemiş olabilir. Bu özellikleri etkinleştirmek için <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> adresine giderek hata ayıklama sayfalarını etkinleştirme düğmesini tıklayın ve tekrar bu sayfaya gelin.</translation>
 <translation id="6549378540556750549">Chromium ayrıca diğer <ph name="BEGIN_LINK_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="6613594504749178791">Değişiklikleriniz, Chromium tekrar başlatıldığında geçerli olacak.</translation>
 <translation id="691026815377248078">Chromium'un eşlemeye devam edebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -37,8 +39,6 @@
           <ph name="ADVANCED_TITLE" /> öğesine gidin
           ve "<ph name="NO_PREFETCH_DESCRIPTION" />" seçeneğinin işaretini kaldırın.
           Bu işlem sorunu çözmezse performansın iyileşmesi için bu seçeneği tekrar işaretlemenizi öneririz.</translation>
-<translation id="8187289872471304532">Uygulamalar &gt; Sistem Tercihleri &gt; Ağ &gt; Gelişmiş &gt; Proxy'ler
-          öğesine gidin ve seçilmiş olabilecek proxy'lerin seçimini kaldırın.</translation>
 <translation id="8597726643333341451">Güvenli bir Chrome for Testing sayfasını görüntülüyorsunuz</translation>
 <translation id="8684913864886094367">Chromium düzgün bir şekilde kapatılmadı.</translation>
 </translationbundle>

@@ -252,7 +252,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestEntrypointTapped) {
 
   [[mocked_contextual_sheet_handler_ expect] openContextualSheet];
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:YES];
+      dismissContextualPanelEntrypointIPH:YES];
 
   [mediator_ entrypointTapped];
   tab_helper->OpenContextualPanel();
@@ -260,7 +260,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestEntrypointTapped) {
 
   [[mocked_contextual_sheet_handler_ expect] closeContextualSheet];
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:YES];
+      dismissContextualPanelEntrypointIPH:YES];
 
   [mediator_ entrypointTapped];
   tab_helper->CloseContextualPanel();
@@ -289,7 +289,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestEntrypointTapped) {
 
 TEST_F(ContextualPanelEntrypointMediatorTest, TestTabHelperDestroyed) {
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:NO];
+      dismissContextualPanelEntrypointIPH:NO];
 
   // Start off with entrypoint showing.
   [entrypoint_consumer_ showEntrypoint];
@@ -308,7 +308,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestTabHelperDestroyed) {
 TEST_F(ContextualPanelEntrypointMediatorTest, TestOneConfiguration) {
   const base::HistogramTester histogram_tester;
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:NO];
+      dismissContextualPanelEntrypointIPH:NO];
 
   ContextualPanelItemConfiguration configuration(
       ContextualPanelItemType::SamplePanelItem);
@@ -359,7 +359,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestDisconnect) {
 TEST_F(ContextualPanelEntrypointMediatorTest, TestLargeEntrypointAppears) {
   const base::HistogramTester histogram_tester;
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:NO];
+      dismissContextualPanelEntrypointIPH:NO];
 
   std::unique_ptr<SamplePanelItemConfiguration> configuration =
       std::make_unique<SamplePanelItemConfiguration>();
@@ -428,17 +428,15 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
       &feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
   configuration->iph_text = "test_text";
   configuration->iph_title = "test_title";
-  configuration->iph_image_name = "test_image";
 
-  OCMStub(
-      [mocked_entrypoint_help_handler_
-          maybeShowContextualPanelEntrypointIPHWithConfig:configuration.get()
-                                              anchorPoint:CGPointMake(0, 0)
-                                          isBottomOmnibox:NO])
+  OCMStub([mocked_entrypoint_help_handler_
+              showContextualPanelEntrypointIPHWithConfig:configuration.get()
+                                             anchorPoint:CGPointMake(0, 0)
+                                         isBottomOmnibox:NO])
       .andReturn(YES);
 
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:NO];
+      dismissContextualPanelEntrypointIPH:NO];
 
   delegate_.canShowLargeContextualPanelEntrypoint = YES;
 
@@ -467,7 +465,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsColored);
 
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:YES];
+      dismissContextualPanelEntrypointIPH:YES];
 
   // Advance time until the IPH is dismissed.
   task_environment_.FastForwardBy(
@@ -498,9 +496,9 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
 // Tests a change in the active WebState.
 TEST_F(ContextualPanelEntrypointMediatorTest, TestWebStateListChanged) {
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:NO];
+      dismissContextualPanelEntrypointIPH:NO];
   [[mocked_entrypoint_help_handler_ expect]
-      dismissContextualPanelEntrypointIPHAnimated:NO];
+      dismissContextualPanelEntrypointIPH:NO];
 
   auto web_state = std::make_unique<web::FakeWebState>();
   std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;

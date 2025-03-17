@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TASK_MANAGER_SEARCH_BAR_VIEW_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -16,7 +17,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
 namespace task_manager {
@@ -25,17 +25,11 @@ class TaskManagerSearchBarView : public views::View,
   METADATA_HEADER(TaskManagerSearchBarView, views::View)
 
  public:
-  using OnInputChangedCallback =
-      base::RepeatingCallback<void(const std::u16string&)>;
-
   class Delegate {
    public:
     // Called when text in the textfield changes. Calls are throttled with
     // a delay of kInputChangeCallbackDelay to avoid excessive triggering.
-    virtual void SearchBarOnInputChanged(const std::u16string& text) = 0;
-    // Called when the controls (textfield and clear button) hover status
-    // changes.
-    virtual void SearchBarOnHoverChange(const bool is_focus_on) = 0;
+    virtual void SearchBarOnInputChanged(std::u16string_view text) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -44,7 +38,7 @@ class TaskManagerSearchBarView : public views::View,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInputField);
 
   // The delay between the textfield text change and triggering
-  // the `OnInputChangedCallback`, used to throttle fast user input.
+  // `SearchBarOnInputChanged`, used to throttle fast user input.
   static constexpr base::TimeDelta kInputChangeCallbackDelay =
       base::Milliseconds(50);
 
@@ -57,10 +51,6 @@ class TaskManagerSearchBarView : public views::View,
 
   // views::View:
   void OnThemeChanged() override;
-
-  // views::View:
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,

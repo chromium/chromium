@@ -9,7 +9,7 @@
 #include "base/i18n/character_encoding.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "cc/base/features.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_delegate.h"
@@ -43,9 +43,18 @@ PageImpl::PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate)
     select_url_max_bits_per_site_ =
         features::kSharedStorageSelectURLBitBudgetPerSitePerPageLoad.Get();
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  page_proxy_ = std::make_unique<PageProxy>(this);
+#endif
 }
 
 PageImpl::~PageImpl() {
+#if BUILDFLAG(IS_ANDROID)
+  page_proxy_->WillDeletePage(GetMainDocument().IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kPrerendering));
+#endif
+
   // As SupportsUserData is a base class of PageImpl, Page members will be
   // destroyed before running ~SupportsUserData, which would delete the
   // associated PageUserData objects. Avoid this by calling ClearAllUserData
@@ -112,12 +121,18 @@ void PageImpl::SetResizableForTesting(std::optional<bool> resizable) {
 
 void PageImpl::SetResizable(std::optional<bool> resizable) {
   resizable_ = resizable;
-  delegate_->OnCanResizeFromWebAPIChanged();
+  delegate_->OnWebApiWindowResizableChanged();
 }
 
 std::optional<bool> PageImpl::GetResizable() {
   return resizable_;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+const base::android::JavaRef<jobject>& PageImpl::GetJavaPage() {
+  return page_proxy_->java_page();
+}
+#endif
 
 void PageImpl::OnFirstVisuallyNonEmptyPaint() {
   did_first_visually_non_empty_paint_ = true;
@@ -324,7 +339,8 @@ void PageImpl::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
     bool animate,
-    const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {
+    const std::optional<cc::BrowserControlsOffsetTagModifications>&
+        offset_tag_modifications) {
   // TODO(crbug.com/40159655): Asking for the LocalMainFrame interface
   // before the RenderFrame is created is racy.
   if (!GetMainDocument().IsRenderFrameLive()) {
@@ -332,7 +348,7 @@ void PageImpl::UpdateBrowserControlsState(
   }
 
   GetMainDocument().GetRenderWidgetHost()->UpdateBrowserControlsState(
-      constraints, current, animate, offset_tags_info);
+      constraints, current, animate, offset_tag_modifications);
 }
 
 float PageImpl::GetPageScaleFactor() const {

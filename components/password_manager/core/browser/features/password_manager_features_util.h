@@ -12,7 +12,6 @@ namespace syncer {
 class SyncService;
 }
 
-class GaiaId;
 class PrefService;
 
 namespace password_manager::features_util {
@@ -21,22 +20,12 @@ namespace password_manager::features_util {
 // Used for metrics. Always keep this enum in sync with the corresponding
 // histogram_suffixes in histograms.xml!
 enum class PasswordAccountStorageUserState {
-  // Signed-out user (and no account storage opt-in exists).
+  // Signed-out user (so account storage is disabled).
   kSignedOutUser,
-  // Signed-out user, but an account storage opt-in exists.
-  kSignedOutAccountStoreUser,
-  // Signed-in non-syncing user, not opted in to the account storage (but may
-  // save passwords to the account storage by default).
+  // Signed-in non-syncing user, with account storage disabled.
   kSignedInUser,
-  // Signed-in non-syncing user, not opted in to the account storage, and has
-  // explicitly chosen to save passwords only on the device.
-  kSignedInUserSavingLocally,
-  // Signed-in non-syncing user, opted in to the account storage, and saving
-  // passwords to the account storage.
+  // Signed-in non-syncing user, with account storage enabled.
   kSignedInAccountStoreUser,
-  // Signed-in non-syncing user and opted in to the account storage, but has
-  // chosen to save passwords only on the device.
-  kSignedInAccountStoreUserSavingLocally,
   // Syncing user.
   kSyncUser,
 };
@@ -48,96 +37,33 @@ enum class PasswordAccountStorageUserState {
 // numeric values should never be reused.
 enum class PasswordAccountStorageUsageLevel {
   // The user is not using the account-scoped password storage. Either they're
-  // not signed in, or they haven't opted in to the account storage.
+  // not signed in, or account storage was disabled.
   kNotUsingAccountStorage = 0,
-  // The user is signed in (but not syncing) and has opted in to the account
-  // storage.
+  // The user is signed in (but not syncing) and has account storage enabled.
   kUsingAccountStorage = 1,
   // The user has enabled Sync.
   kSyncing = 2,
 };
 
-// Note on password-account-storage methods on desktop vs mobile:
-// On desktop, there is an explicit per-user opt-in, and various associated
-// settings (e.g. which store is the default). On mobile, there is no explicit
-// opt-in, and no per-user settings.
-// As a consequence, all the corresponding setters (opting in/out, setting the
-// default store, etc) only exist on desktop. The getters exist on mobile too,
-// but have different (usually simpler) implementation.
-// Accordingly, the implementation is split up into *_common.cc, *_desktop.cc,
-// and *_mobile.cc files.
-
-// Internal helpers, not meant to be used directly:
-namespace internal {
-bool CanAccountStorageBeEnabled(const PrefService* pref_service,
-                                const syncer::SyncService* sync_service);
-bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
-                                     const syncer::SyncService* sync_service);
-}  // namespace internal
-
 // Whether to instantiate a second PasswordStore whose data is account-scoped.
 // This doesn't necessarily mean the store is being used, e.g. this predicate
 // can return true for a signed-out user. For whether the store can be used,
-// see IsOptedInForAccountStorage() instead.
-// TODO(b/324038136): Rename IsOptedInForAccountStorage() to
-// CanUseAccountStore() - there's no opt-in on mobile platforms anyway. Rename
-// CanAccountStorageBeEnabled() and IsUserEligibleForAccountStorage().
+// see IsAccountStorageEnabled() instead.
+// On Android, if the internal backend is not present (i.e. in a public build),
+// this method will return true, but the store itself will not be created.
 bool CanCreateAccountStore(const PrefService* pref_service);
 
-// Whether the current signed-in user (aka unconsented primary account) has
-// opted in to use the Google account storage for passwords (as opposed to
-// local/profile storage). This always returns false for sync-the-feature users.
+// Whether the Google account storage for passwords is enabled for the current
+// signed-in user. This always returns false for sync-the-feature users and
+// signed out users. Account storage can be enabled/disabled via
+// syncer::SyncUserSettings::SetSelectedType().
+//
 // |pref_service| must not be null.
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will simply return false.
-// See PasswordFeatureManager::IsOptedInForAccountStorage.
-bool IsOptedInForAccountStorage(const PrefService* pref_service,
-                                const syncer::SyncService* sync_service);
-
-// Whether it makes sense to ask the user to opt-in for account-based
-// password storage. This is true if the opt-in doesn't exist yet, but all
-// other requirements are met (i.e. there is a signed-in user, Sync-the-feature
-// is not enabled, etc).
-// |pref_service| must not be null.
-// |sync_service| may be null (commonly the case in incognito mode), in which
-// case this will simply return false.
-// See PasswordFeatureManager::ShouldShowAccountStorageOptIn.
-bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
-                                   const syncer::SyncService* sync_service);
-
-// Whether it makes sense to ask the user to signin again to access the
-// account-based password storage. This is true if a user on this device
-// previously opted into using the account store but is signed-out now.
-// |current_page_url| is the current URL, used to suppress the promo on the
-// Google signin page (no point in asking the user to sign in while they're
-// already doing that). For non-web contexts (e.g. native UIs), it is valid to
-// pass an empty GURL.
-// See PasswordFeatureManager::ShouldShowAccountStorageReSignin.
-bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service,
-                                      const GURL& current_page_url);
-
-// Returns the default storage location for signed-in but non-syncing users
-// (i.e. will new passwords be saved to locally or to the account by default).
-// Always returns an actual value, never kNotSet.
-// |pref_service| must not be null.
-// |sync_service| may be null (commonly the case in incognito mode), in which
-// case this will return kProfileStore.
-// See PasswordFeatureManager::GetDefaultPasswordStore.
-PasswordForm::Store GetDefaultPasswordStore(
-    const PrefService* pref_service,
-    const syncer::SyncService* sync_service);
-
-// Returns whether the default storage location for newly-saved passwords is
-// explicitly set, i.e. whether the user has made an explicit choice where to
-// save. This can be used to detect "new" users, i.e. those that have never
-// interacted with an account-storage-enabled Save flow yet.
-// |pref_service| must not be null.
-// |sync_service| may be null (commonly the case in incognito mode), in which
-// case this will return false.
-// See PasswordFeatureManager::IsDefaultPasswordStoreSet.
-bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
-                               const syncer::SyncService* sync_service);
+// See PasswordFeatureManager::IsAccountStorageEnabled.
+bool IsAccountStorageEnabled(const PrefService* pref_service,
+                             const syncer::SyncService* sync_service);
 
 // See definition of PasswordAccountStorageUserState.
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
@@ -153,55 +79,24 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
-// Sets opt-in to using account storage for passwords for the current
-// signed-in user (unconsented primary account).
-// |pref_service| and |sync_service| must not be null.
-// See PasswordFeatureManager::OptInToAccountStorage.
-void OptInToAccountStorage(PrefService* pref_service,
-                           syncer::SyncService* sync_service);
-
-// Opts-out from using account storage for passwords for the
-// current signed-in user (unconsented primary account). Addditionally it sets
-// the default password store to kProfileStore.
-void OptOutOfAccountStorage(PrefService* pref_service,
-                            syncer::SyncService* sync_service);
-
-// Clears the opt-in to using account storage for passwords for the
-// current signed-in user (unconsented primary account), as well as all other
-// associated settings (e.g. default store choice).
-// WARNING: this does not clear the account key from prefs like
-// KeepAccountStorageSettingsOnlyForUsers().
-// |pref_service| and |sync_service| must not be null.
-// See PasswordFeatureManager::OptOutOfAccountStorageAndClearSettings.
-void OptOutOfAccountStorageAndClearSettings(PrefService* pref_service,
-                                            syncer::SyncService* sync_service);
-
-// Sets the default storage location for signed-in but non-syncing users. This
-// store is used for saving new credentials and adding blacking listing entries.
-// |pref_service| and |sync_service| must not be null.
-// See PasswordFeatureManager::SetDefaultPasswordStore.
-void SetDefaultPasswordStore(PrefService* pref_service,
-                             const syncer::SyncService* sync_service,
-                             PasswordForm::Store default_store);
-
-// Clears all account-storage-related settings for all users *except* the ones
-// in the passed-in |gaia_ids|. Most notably, the default password store.
-// WARNING: this does not clear the opt-in!
-// |pref_service| must not be null.
-void KeepAccountStorageSettingsOnlyForUsers(
-    PrefService* pref_service,
-    const std::vector<GaiaId>& gaia_ids);
-
 // Whether the user toggle for account storage is shown in settings.
 bool ShouldShowAccountStorageSettingToggle(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service);
 
-// Necessary but not sufficient condition to promote account storage opt-in
-// for users currently opted-out. In particular for
-// ShouldShowAccountStorageOptIn() and ShouldShowAccountStorageReSignin().
-// If the promos are disallowed, no reauth is required to enable the feature.
-bool AreAccountStorageOptInPromosAllowed();
+// Users with account storage enabled used to have the choice of saving new
+// passwords only locally, while keeping existing account passwords available
+// for autofill. That was achieved by setting a certain "default store pref" to
+// the "profile store". This logic was removed in crbug.com/369341336.
+// MigrateDefaultProfileStorePref() migrates users in the legacy state to have
+// account storage completely disabled instead, i.e. so they can't save nor
+// autofill account passwords. The migration affects both signed-in and
+// signed-out users (because account storage settings should survive sign-out).
+// kObsoleteAccountStorageDefaultStoreKey was part of the legacy pref's schema
+// and is exposed for testing.
+inline constexpr char kObsoleteAccountStorageDefaultStoreKey[] =
+    "default_store";
+void MigrateDefaultProfileStorePref(PrefService* pref_service);
 
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 

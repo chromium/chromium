@@ -16,7 +16,10 @@ class MockCollaborationControllerDelegate
   MockCollaborationControllerDelegate();
   ~MockCollaborationControllerDelegate() override;
 
-  MOCK_METHOD(void, PrepareFlowUI, (ResultCallback result), (override));
+  MOCK_METHOD(void,
+              PrepareFlowUI,
+              (base::OnceCallback<void()> exit_callback, ResultCallback result),
+              (override));
   MOCK_METHOD(void,
               ShowError,
               (const ErrorInfo& error, ResultCallback result),
@@ -30,13 +33,30 @@ class MockCollaborationControllerDelegate
                const data_sharing::SharedDataPreview& preview_data,
                ResultCallback result),
               (override));
-  MOCK_METHOD(void, ShowShareDialog, (ResultCallback result), (override));
-  MOCK_METHOD(void, ShowManageDialog, (ResultCallback result), (override));
+  MOCK_METHOD(
+      void,
+      ShowShareDialog,
+      (const tab_groups::EitherGroupID& either_id,
+       base::OnceCallback<
+           void(Outcome, std::optional<data_sharing::GroupToken>)> result),
+      (override));
+  MOCK_METHOD(void,
+              OnUrlReadyToShare,
+              (const data_sharing::GroupId& group_id,
+               const GURL& url,
+               ResultCallback result),
+              (override));
+  MOCK_METHOD(void,
+              ShowManageDialog,
+              (const tab_groups::EitherGroupID& either_id,
+               ResultCallback result),
+              (override));
   MOCK_METHOD(void,
               PromoteTabGroup,
               (const data_sharing::GroupId& group_id, ResultCallback result),
               (override));
   MOCK_METHOD(void, PromoteCurrentScreen, (), (override));
+  MOCK_METHOD(void, OnFlowFinished, (), (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(base::android::ScopedJavaLocalRef<jobject>,
               GetJavaObject,

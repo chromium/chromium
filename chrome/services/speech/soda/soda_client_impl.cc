@@ -7,9 +7,11 @@
 #include <tuple>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "media/base/media_switches.h"
 
 namespace soda {
 
@@ -24,7 +26,10 @@ SodaClientImpl::SodaClientImpl(base::FilePath library_path)
       mark_done_func_(reinterpret_cast<MarkDoneFunction>(
           lib_.GetFunctionPointer("ExtendedSodaMarkDone"))),
       soda_start_func_(reinterpret_cast<SodaStartFunction>(
-          lib_.GetFunctionPointer("ExtendedSodaStart"))) {
+          lib_.GetFunctionPointer("ExtendedSodaStart"))),
+      update_recognition_context_func_(
+          reinterpret_cast<UpdateRecognitionContextFunction>(
+              lib_.GetFunctionPointer("UpdateRecognitionContext"))) {
   if (!lib_.is_valid()) {
     LOG(ERROR) << "SODA binary at " << library_path.value()
                << " could not be loaded.";
@@ -32,6 +37,8 @@ SodaClientImpl::SodaClientImpl(base::FilePath library_path)
     DCHECK(false);
   }
 
+  // We do not need to check the |update_recognition_context_func_| since it is
+  // not available in old SODA versions.
   DCHECK(create_soda_func_);
   DCHECK(delete_soda_func_);
   DCHECK(add_audio_func_);
@@ -41,9 +48,9 @@ SodaClientImpl::SodaClientImpl(base::FilePath library_path)
   if (!lib_.is_valid()) {
     load_soda_result_ = LoadSodaResultValue::kBinaryInvalid;
 
-    // TODO(crbug.com/377332141): Remove once SODA version 1.1.1.8 is rolled out
-    // successfully.
-    base::debug::DumpWithoutCrashing();
+    if (base::FeatureList::IsEnabled(media::kLogSodaLoadFailures)) {
+      base::debug::DumpWithoutCrashing();
+    }
   } else if (!(create_soda_func_ && delete_soda_func_ && add_audio_func_ &&
                soda_start_func_ && mark_done_func_)) {
     load_soda_result_ = LoadSodaResultValue::kFunctionPointerInvalid;
@@ -112,6 +119,16 @@ void SodaClientImpl::Reset(const SerializedSodaConfig config,
   channel_count_ = channel_count;
   is_initialized_ = true;
   soda_start_func_(soda_async_handle_);
+}
+
+NO_SANITIZE("cfi-icall")
+void SodaClientImpl::UpdateRecognitionContext(
+    const RecognitionContext context) {
+  if (load_soda_result_ != LoadSodaResultValue::kSuccess ||
+      !update_recognition_context_func_) {
+    return;
+  }
+  update_recognition_context_func_(soda_async_handle_, context);
 }
 
 bool SodaClientImpl::IsInitialized() {

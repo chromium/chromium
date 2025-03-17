@@ -28,6 +28,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace enterprise_companion {
 namespace {
 
@@ -37,7 +41,10 @@ constexpr int32_t kIpcCallerNotAllowedExitCode = 42;
 class MockEnterpriseCompanionService final : public EnterpriseCompanionService {
  public:
   MOCK_METHOD(void, Shutdown, (base::OnceClosure callback), (override));
-  MOCK_METHOD(void, FetchPolicies, (StatusCallback callback), (override));
+  MOCK_METHOD(void,
+              FetchPolicies,
+              (policy::PolicyFetchReason reason, StatusCallback callback),
+              (override));
 };
 
 }  // namespace
@@ -77,9 +84,9 @@ class AppShutdownTest : public ::testing::Test {
                          ".service"});
 #elif BUILDFLAG(IS_LINUX)
     return base::GetTempDirForTesting()
-        .AppendASCII(base::StrCat({"ChromeEnterpriseCompanionTest",
-                                   base::UnguessableToken::Create().ToString(),
-                                   ".service.sk"}))
+        .AppendUTF8(base::StrCat({"ChromeEnterpriseCompanionTest",
+                                  base::UnguessableToken::Create().ToString(),
+                                  ".service.sk"}))
         .AsUTF8Unsafe();
 #elif BUILDFLAG(IS_WIN)
     return base::UTF8ToWide(

@@ -193,7 +193,7 @@ public class AwFileChooserTest extends AwParameterizedTest {
         Intent i = params.createIntent();
         Assert.assertEquals(
                 i.getStringArrayExtra(Intent.EXTRA_MIME_TYPES), expectedIntentExtraTypes);
-        Assert.assertEquals(i.getType(), expectedIntentType);
+        Assert.assertEquals(expectedIntentType, i.getType());
     }
 
     @Test

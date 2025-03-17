@@ -12,7 +12,7 @@
 namespace overflow_menu {
 enum class Destination;
 enum class ActionType;
-}
+}  // namespace overflow_menu
 @class ActionCustomizationModel;
 @class DestinationCustomizationModel;
 @class OverflowMenuAction;

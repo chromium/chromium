@@ -3,7 +3,7 @@ Issue reported: {
     code : AttributionReportingIssue
     details : {
         attributionReportingIssueDetails : {
-            invalidParameter : http://insecure.com
+            invalidParameter : http://devtools.test:8000
             violatingNodeId : <number>
             violationType : UntrustworthyReportingOrigin
         }

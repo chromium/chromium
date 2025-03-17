@@ -34,6 +34,7 @@ ShortcutIntegrationInteractionTestApi::ShowCreateShortcutDialog() {
       // Sometimes the "Save and Share" item isn't immediately present, so
       // explicitly wait for it to show.
       WaitForShow(AppMenuModel::kSaveAndShareMenuItem),
+      ScrollIntoView(AppMenuModel::kSaveAndShareMenuItem),
       SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
       // Sometimes the "Create Shortcut" item isn't immediately present, so
       // explicitly wait for it.
@@ -82,7 +83,7 @@ ShortcutIntegrationInteractionTestApi::InstrumentNextShortcut(
   });
 }
 
-ui::test::InteractiveTestApi::StepBuilder
+ui::test::InteractiveTestApi::MultiStep
 ShortcutIntegrationInteractionTestApi::LaunchShortcut(
     ui::ElementIdentifier identifier) {
   return InAnyContext(WithElement(identifier, [](ui::TrackedElement* element) {

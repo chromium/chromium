@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 
+#include <algorithm>
 #include <map>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -168,8 +168,8 @@ void CastMediaNotificationProducer::OnRoutesUpdated(
       continue;
     }
 
-    auto item_it = base::ranges::find(items_, route.media_route_id(),
-                                      &Items::value_type::first);
+    auto item_it = std::ranges::find(items_, route.media_route_id(),
+                                     &Items::value_type::first);
     if (item_it == items_.end()) {
       mojo::Remote<media_router::mojom::MediaController> controller_remote;
       mojo::PendingReceiver<media_router::mojom::MediaController>
@@ -203,7 +203,6 @@ bool CastMediaNotificationProducer::HasActiveItems() const {
 }
 
 bool CastMediaNotificationProducer::HasLocalMediaRoute() const {
-  return base::ranges::any_of(items_,
-                              &CastMediaNotificationItem::route_is_local,
-                              &Items::value_type::second);
+  return std::ranges::any_of(items_, &CastMediaNotificationItem::route_is_local,
+                             &Items::value_type::second);
 }

@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -33,12 +31,11 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
-import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.ui.base.TestActivity;
 
@@ -53,6 +50,7 @@ public class SharedImageTilesCoordinatorUnitTest {
     private static final String EMAIL = "test@test.com";
 
     @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private Bitmap mAvatarBitmap;
 
@@ -64,14 +62,14 @@ public class SharedImageTilesCoordinatorUnitTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        initialize(
-                SharedImageTilesType.DEFAULT,
-                new SharedImageTilesColor(SharedImageTilesColor.Style.DEFAULT));
+        SharedImageTilesConfig config = new SharedImageTilesConfig.Builder(mActivity).build();
+        initialize(config);
     }
 
-    private void initialize(@SharedImageTilesType int type, SharedImageTilesColor color) {
+    private void initialize(SharedImageTilesConfig config) {
         mSharedImageTilesCoordinator =
-                new SharedImageTilesCoordinator(mActivity, type, color, mDataSharingService);
+                new SharedImageTilesCoordinator(
+                        mActivity, config, mDataSharingService, mCollaborationService);
         mView = mSharedImageTilesCoordinator.getView();
         mCountTileView = mView.findViewById(R.id.tiles_count);
         doReturn(mDataSharingUiDelegate).when(mDataSharingService).getUiDelegate();
@@ -115,26 +113,16 @@ public class SharedImageTilesCoordinatorUnitTest {
                         /* role= */ 0,
                         /* avatarUrl= */ null,
                         /* givenName= */ null);
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(
-                        new GroupData(
-                                /* groupId= */ null,
-                                /* displayName= */ null,
-                                new GroupMember[] {
-                                    memberValid1, memberValid2, memberInvalid1, memberInvalid2
-                                },
-                                /* accessToken= */ null),
-                        PeopleGroupActionFailure.UNKNOWN);
+        GroupData groupData =
+                new GroupData(
+                        /* groupId= */ null,
+                        /* displayName= */ null,
+                        new GroupMember[] {
+                            memberValid1, memberValid2, memberInvalid1, memberInvalid2
+                        },
+                        /* accessToken= */ null);
 
-        doAnswer(
-                        invocation -> {
-                            Callback<GroupDataOrFailureOutcome> callback =
-                                    invocation.getArgument(1);
-                            callback.onResult(outcome);
-                            return null;
-                        })
-                .when(mDataSharingService)
-                .readGroup(eq(COLLABORATION_ID), any(Callback.class));
+        doReturn(groupData).when(mCollaborationService).getGroupData(eq(COLLABORATION_ID));
     }
 
     @Test

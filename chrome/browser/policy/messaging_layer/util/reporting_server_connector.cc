@@ -24,7 +24,6 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -55,10 +54,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using ::policy::CloudPolicyClient;
 using ::policy::CloudPolicyCore;
@@ -89,9 +88,9 @@ ReportingServerConnector::ReportingServerConnector()
   // Initialize `ReportingServerConnector` instance. For non-Ash configurations
   // it is initialized on the first use, but for Ash we need it to be prepared
   // for encryption key delivery early after enrollment.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::IgnoreResult(EnsureUsableClient());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 ReportingServerConnector::~ReportingServerConnector() {
@@ -246,8 +245,8 @@ StatusOr<::policy::CloudPolicyManager*>
 ReportingServerConnector::GetUserCloudPolicyManager() {
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
   // Pointer to `policy::CloudPolicyManager` is retrieved differently
-  // for ChromeOS-Ash, for Android and for all other cases.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // for ChromeOS, for Android and for all other cases.
+#if BUILDFLAG(IS_CHROMEOS)
   if (!ash::InstallAttributes::IsInitialized()) {
     CHECK_IS_TEST();
     return base::unexpected(

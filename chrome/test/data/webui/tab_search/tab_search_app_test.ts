@@ -14,7 +14,7 @@ suite('TabOrganizationPageTest', () => {
   let tabSearchApp: TabSearchAppElement;
   let testProxy: TestTabSearchApiProxy;
 
-  setup(async () => {
+  setup(() => {
     testProxy = new TestTabSearchApiProxy();
     TabSearchApiProxyImpl.setInstance(testProxy);
 
@@ -29,7 +29,7 @@ suite('TabOrganizationPageTest', () => {
   });
 
   test('Setting tab index from callback router', async () => {
-    const crTabs = tabSearchApp.shadowRoot!.querySelector('cr-tabs');
+    const crTabs = tabSearchApp.shadowRoot.querySelector('cr-tabs');
     assertTrue(!!crTabs);
     assertEquals(0, crTabs.selected);
 

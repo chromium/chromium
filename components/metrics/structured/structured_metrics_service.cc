@@ -95,9 +95,9 @@ StructuredMetricsService::StructuredMetricsService(
       base::BindRepeating(&StructuredMetricsService::GetUploadTimeInterval,
                           base::Unretained(this));
 
-  const bool fast_startup_for_test = client->ShouldStartUpFastForTesting();
+  const bool fast_startup = client->ShouldStartUpFast();
   scheduler_ = std::make_unique<StructuredMetricsScheduler>(
-      rotate_callback, get_upload_interval_callback, fast_startup_for_test);
+      rotate_callback, get_upload_interval_callback, fast_startup);
 }
 
 StructuredMetricsService::~StructuredMetricsService() {

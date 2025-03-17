@@ -1,0 +1,6 @@
+[document web]
+++[dialog]
+++++[push button] name='d1 button - inside - show-modal'
+++++[push button] name='d1 button - inside - close'
+++++[push button] name='Button inside popover, with unrelated action'
+++++[push button] name='d1 button - inside - custom action'

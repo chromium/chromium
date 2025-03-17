@@ -32,9 +32,12 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/install_verifier.h"
+#include "chrome/browser/extensions/manifest_check_level.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -72,7 +75,7 @@ using download::DownloadUrlParameters;
 
 namespace {
 
-// Key used to attach the Approval to the DownloadItem.
+// Key used to attach the InstallApproval to the DownloadItem.
 const char kApprovalKey[] = "extensions.webstore_installer";
 
 const char kInvalidIdError[] = "Invalid id";
@@ -188,8 +191,9 @@ GURL WebstoreInstaller::GetWebstoreInstallURL(
   if (cmd_line->HasSwitch(::switches::kAppsGalleryDownloadURL)) {
     std::string download_url =
         cmd_line->GetSwitchValueASCII(::switches::kAppsGalleryDownloadURL);
-    return GURL(base::StringPrintfNonConstexpr(download_url.c_str(),
-                                               extension_id.c_str()));
+    base::ReplaceFirstSubstringAfterOffset(&download_url, 0, "%s",
+                                           extension_id);
+    return GURL(download_url);
   }
   std::vector<std::string_view> params;
   std::string extension_param = "id=" + extension_id;
@@ -210,48 +214,11 @@ GURL WebstoreInstaller::GetWebstoreInstallURL(
   return url;
 }
 
-WebstoreInstaller::Approval::Approval() = default;
-
-std::unique_ptr<WebstoreInstaller::Approval>
-WebstoreInstaller::Approval::CreateWithInstallPrompt(Profile* profile) {
-  std::unique_ptr<Approval> result(new Approval());
-  result->profile = profile;
-  return result;
-}
-
-std::unique_ptr<WebstoreInstaller::Approval>
-WebstoreInstaller::Approval::CreateForSharedModule(Profile* profile) {
-  std::unique_ptr<Approval> result(new Approval());
-  result->profile = profile;
-  result->skip_install_dialog = true;
-  result->skip_post_install_ui = true;
-  result->manifest_check_level = MANIFEST_CHECK_LEVEL_NONE;
-  return result;
-}
-
-std::unique_ptr<WebstoreInstaller::Approval>
-WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
-    Profile* profile,
-    const extensions::ExtensionId& extension_id,
-    base::Value::Dict parsed_manifest,
-    bool strict_manifest_check) {
-  std::unique_ptr<Approval> result(new Approval());
-  result->extension_id = extension_id;
-  result->profile = profile;
-  result->manifest =
-      std::make_unique<Manifest>(mojom::ManifestLocation::kInvalidLocation,
-                                 std::move(parsed_manifest), extension_id);
-  result->skip_install_dialog = true;
-  result->manifest_check_level = strict_manifest_check ?
-    MANIFEST_CHECK_LEVEL_STRICT : MANIFEST_CHECK_LEVEL_LOOSE;
-  return result;
-}
-
-WebstoreInstaller::Approval::~Approval() = default;
-
-const WebstoreInstaller::Approval* WebstoreInstaller::GetAssociatedApproval(
+// static
+const InstallApproval* WebstoreInstaller::GetAssociatedApproval(
     const DownloadItem& download) {
-  return static_cast<const Approval*>(download.GetUserData(kApprovalKey));
+  return static_cast<const InstallApproval*>(
+      download.GetUserData(kApprovalKey));
 }
 
 WebstoreInstaller::WebstoreInstaller(Profile* profile,
@@ -259,7 +226,7 @@ WebstoreInstaller::WebstoreInstaller(Profile* profile,
                                      FailureCallback failure_callback,
                                      content::WebContents* web_contents,
                                      const extensions::ExtensionId& id,
-                                     std::unique_ptr<Approval> approval,
+                                     std::unique_ptr<InstallApproval> approval,
                                      InstallSource source)
     : web_contents_(web_contents->GetWeakPtr()),
       profile_(profile),
@@ -433,8 +400,8 @@ void WebstoreInstaller::OnDownloadStarted(
   download_item_->AddObserver(this);
   if (pending_modules_.size() > 1) {
     // We are downloading a shared module. We need create an approval for it.
-    std::unique_ptr<Approval> approval =
-        Approval::CreateForSharedModule(profile_);
+    std::unique_ptr<InstallApproval> approval =
+        InstallApproval::CreateForSharedModule(profile_);
     const SharedModuleInfo::ImportInfo& info = pending_modules_.front();
     approval->extension_id = info.extension_id;
     const base::Version version_required(info.minimum_version);
@@ -683,7 +650,7 @@ void WebstoreInstaller::StartCrxInstaller(const DownloadItem& download) {
       extension_service();
   CHECK(service);
 
-  const Approval* approval = GetAssociatedApproval(download);
+  const InstallApproval* approval = GetAssociatedApproval(download);
   DCHECK(approval);
 
   crx_installer_ = download_crx_util::CreateCrxInstaller(profile_, download);

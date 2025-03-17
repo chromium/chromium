@@ -115,10 +115,10 @@ FeaturePromoPreconditionList& FeaturePromoPreconditionList::operator=(
 FeaturePromoPreconditionList::~FeaturePromoPreconditionList() = default;
 
 FeaturePromoPreconditionList::CheckResult
-FeaturePromoPreconditionList::CheckPreconditions() const {
-  FeaturePromoPrecondition::ComputedData data;
+FeaturePromoPreconditionList::CheckPreconditions(
+    ComputedData& computed_data) const {
   for (const auto& precondition : preconditions_) {
-    const auto result = precondition->CheckPrecondition(data);
+    const auto result = precondition->CheckPrecondition(computed_data);
     if (!result) {
       return CheckResult(result, precondition->GetIdentifier());
     }

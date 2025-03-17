@@ -11,11 +11,10 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
-#include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
@@ -31,7 +30,7 @@
 #include "content/public/browser/frame_rate_throttling.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #endif
@@ -49,10 +48,6 @@ class MemorySaverModeDelegateImpl
           MemorySaverModeDelegate {
  public:
   void ToggleMemorySaverMode(MemorySaverModeState state) override {
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            [](MemorySaverModeState state) {
               auto* memory_saver_mode_policy =
                   policies::MemorySaverModePolicy::GetInstance();
               CHECK(memory_saver_mode_policy);
@@ -68,20 +63,12 @@ class MemorySaverModeDelegateImpl
                   return;
               }
               NOTREACHED();
-            },
-            state));
   }
 
   void SetMode(prefs::MemorySaverModeAggressiveness mode) override {
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindOnce(
-                       [](prefs::MemorySaverModeAggressiveness mode) {
-                         auto* policy =
-                             policies::MemorySaverModePolicy::GetInstance();
-                         CHECK(policy);
-                         policy->SetMode(mode);
-                       },
-                       mode));
+    auto* policy = policies::MemorySaverModePolicy::GetInstance();
+    CHECK(policy);
+    policy->SetMode(mode);
   }
 
   ~MemorySaverModeDelegateImpl() override = default;
@@ -200,8 +187,7 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
   g_user_performance_tuning_manager = this;
 
   if (notifier) {
-    performance_manager::PerformanceManager::PassToGraph(FROM_HERE,
-                                                         std::move(notifier));
+    PerformanceManager::GetGraph()->PassToGraph(std::move(notifier));
   }
 
   performance_manager::user_tuning::prefs::MigrateMemorySaverModePref(
@@ -267,28 +253,17 @@ void UserPerformanceTuningManager::NotifyMemoryThresholdReached() {
 
 void UserPerformanceTuningManager::DiscardPageForTesting(
     content::WebContents* web_contents) {
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  // The RunLoop is quit after discarding is executed on the main thread, so the
-  // caller can check if discarding succeeded via WebContents::WasDiscarded().
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::ScopedClosureRunner quit_closure,
-             base::WeakPtr<performance_manager::PageNode> page_node,
-             performance_manager::Graph* graph) {
-            if (page_node) {
-              performance_manager::policies::PageDiscardingHelper::GetFromGraph(
-                  graph)
-                  ->ImmediatelyDiscardMultiplePages(
-                      {page_node.get()},
-                      ::mojom::LifecycleUnitDiscardReason::PROACTIVE,
-                      base::DoNothingWithBoundArgs(std::move(quit_closure)));
-            }
-          },
-          base::ScopedClosureRunner(run_loop.QuitClosure()),
-          performance_manager::PerformanceManager::
-              GetPrimaryPageNodeForWebContents(web_contents)));
-  run_loop.Run();
+  performance_manager::Graph* graph =
+      performance_manager::PerformanceManager::GetGraph();
+
+  base::WeakPtr<performance_manager::PageNode> page_node =
+      performance_manager::PerformanceManager::GetPrimaryPageNodeForWebContents(
+          web_contents);
+  CHECK(page_node);
+
+  performance_manager::policies::PageDiscardingHelper::GetFromGraph(graph)
+      ->ImmediatelyDiscardMultiplePages(
+          {page_node.get()}, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 }
 
 }  // namespace performance_manager::user_tuning

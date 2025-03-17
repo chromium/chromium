@@ -58,6 +58,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/origin.h"
@@ -1246,14 +1247,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        TriggersDisplayed) {
   NavigateAndWaitForObserver();
 
-  const auto create_trigger =
-      []() {
-        return AttributionTrigger(
-            /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
-            attribution_reporting::TriggerRegistration(),
-            *SuitableOrigin::Deserialize("https://d.test"),
-            /*is_within_fenced_frame=*/false);
-      };
+  const auto create_trigger = []() {
+    return AttributionTrigger(
+        /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
+        attribution_reporting::TriggerRegistration(),
+        *SuitableOrigin::Deserialize("https://d.test"),
+        /*is_within_fenced_frame=*/false, ukm::kInvalidSourceId);
+  };
 
   static constexpr char kScript[] = R"(
 

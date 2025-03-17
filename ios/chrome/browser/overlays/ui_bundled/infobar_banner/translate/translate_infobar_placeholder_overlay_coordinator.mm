@@ -33,8 +33,9 @@
 }
 
 - (void)stopAnimated:(BOOL)animated {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
 
   // Mark started as NO before calling dismissal callback to prevent dup
   // stopAnimated: executions.

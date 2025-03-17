@@ -62,8 +62,9 @@ void TimerBase::Stop() {
 void TimerBase::AbandonScheduledTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (delayed_task_handle_.IsValid())
+  if (delayed_task_handle_.IsValid()) {
     delayed_task_handle_.CancelTask();
+  }
 
   // It's safe to destroy or restart Timer on another sequence after the task is
   // abandoned.
@@ -111,8 +112,9 @@ void DelayTimerBase::ScheduleNewTask(TimeDelta delay) {
 
   // Ignore negative deltas.
   // TODO(pmonette): Fix callers providing negative deltas and ban passing them.
-  if (delay < TimeDelta())
+  if (delay < TimeDelta()) {
     delay = TimeDelta();
+  }
 
   if (!timer_callback_) {
     timer_callback_ = BindRepeating(&DelayTimerBase::OnScheduledTaskInvoked,

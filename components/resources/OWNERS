@@ -3,7 +3,7 @@ per-file autofill*=file://components/autofill/OWNERS
 per-file commerce*=file://components/commerce/OWNERS
 per-file crash_*=file://components/crash/OWNERS
 per-file dom_distiller*=file://components/dom_distiller/OWNERS
-per-file flags_ui*=file://components/flags_ui/OWNERS
+per-file flags_ui*=file://components/webui/flags/OWNERS
 per-file gcm_driver_resources.grdp=peter@chromium.org
 per-file neterror*=mmenke@chromium.org
 per-file neterror*=file://net/OWNERS
@@ -16,6 +16,7 @@ per-file printing_resources.grdp=file://printing/OWNERS
 per-file search_engine_choice_scaled_resources.grdp=file://components/search_engines/search_engine_choice/COMPLIANCE_OWNERS
 per-file security_interstitials_dev_ui_resources.grdp=file://components/security_interstitials/OWNERS
 per-file security_interstitials_resources.grdp=file://components/security_interstitials/OWNERS
+per-file supervised_user_resources.grdp=file://components/supervised_user/OWNERS
 per-file sync_driver_resources.grdp=file://components/sync/OWNERS
 per-file translate_resources.grdp=file://components/translate/OWNERS
 

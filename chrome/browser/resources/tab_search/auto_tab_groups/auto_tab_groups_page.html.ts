@@ -42,7 +42,6 @@ export function getHtml(this: AutoTabGroupsPageElement) {
     <auto-tab-groups-results id="results"
         ?shown="${this.isState_(TabOrganizationState.kSuccess)}"
         .session="${this.session_}"
-        ?multi-tab-organization="${this.multiTabOrganization_}"
         available-height="${this.availableHeight}"
         @name-change="${this.onNameChange_}"
         @reject-click="${this.onRejectClick_}"

@@ -13,8 +13,8 @@ namespace blink {
 class TestCustomCountHistogram : public CustomCountHistogram {
  public:
   TestCustomCountHistogram(const char* name,
-                           base::HistogramBase::Sample min,
-                           base::HistogramBase::Sample max,
+                           base::HistogramBase::Sample32 min,
+                           base::HistogramBase::Sample32 max,
                            int32_t bucket_count)
       : CustomCountHistogram(name, min, max, bucket_count) {}
 

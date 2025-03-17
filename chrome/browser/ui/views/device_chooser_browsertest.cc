@@ -88,9 +88,7 @@ IN_PROC_BROWSER_TEST_F(UsbChooserBrowserTest, InvokeUi_WithDevicesModal) {
 // page or extension.
 class BluetoothChooserBrowserTest : public DialogBrowserTest {
  public:
-  BluetoothChooserBrowserTest()
-      : status_(permissions::FakeBluetoothChooserController::BluetoothStatus::
-                    UNAVAILABLE) {}
+  BluetoothChooserBrowserTest() = default;
 
   BluetoothChooserBrowserTest(const BluetoothChooserBrowserTest&) = delete;
   BluetoothChooserBrowserTest& operator=(const BluetoothChooserBrowserTest&) =
@@ -156,7 +154,8 @@ class BluetoothChooserBrowserTest : public DialogBrowserTest {
   }
 
  private:
-  permissions::FakeBluetoothChooserController::BluetoothStatus status_;
+  permissions::FakeBluetoothChooserController::BluetoothStatus status_ =
+      permissions::FakeBluetoothChooserController::BluetoothStatus::UNAVAILABLE;
   std::vector<permissions::FakeBluetoothChooserController::FakeDevice> devices_;
 };
 

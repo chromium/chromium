@@ -22,7 +22,6 @@
 #include "content/test/test_render_view_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/gfx/geometry/rect.h"
@@ -38,7 +37,8 @@ namespace content {
 namespace {
 class MockRenderFrameHostDelegate : public RenderFrameHostDelegate {
  public:
-  void RequestMediaAccessPermission(const MediaStreamRequest& request,
+  void RequestMediaAccessPermission(RenderFrameHostImpl* render_frame_host,
+                                    const MediaStreamRequest& request,
                                     MediaResponseCallback callback) override {
     return RequestMediaAccessPermission(request, &callback);
   }
@@ -588,7 +588,7 @@ class MediaStreamUIProxyPermissionsPolicyTest
   // The header policy should only be set once on page load, so we refresh the
   // page to simulate that.
   void RefreshPageAndSetHeaderPolicy(
-      blink::mojom::PermissionsPolicyFeature feature) {
+      network::mojom::PermissionsPolicyFeature feature) {
     auto navigation = NavigationSimulator::CreateRendererInitiated(
         main_rfh()->GetLastCommittedURL(), main_rfh());
     navigation->SetPermissionsPolicyHeader(
@@ -632,7 +632,8 @@ class MediaStreamUIProxyPermissionsPolicyTest
  private:
   class TestRFHDelegate : public RenderFrameHostDelegate {
    public:
-    void RequestMediaAccessPermission(const MediaStreamRequest& request,
+    void RequestMediaAccessPermission(RenderFrameHostImpl* render_frame_host,
+                                      const MediaStreamRequest& request,
                                       MediaResponseCallback callback) override {
       blink::mojom::StreamDevicesSet stream_devices_set;
       stream_devices_set.stream_devices.emplace_back(
@@ -730,7 +731,7 @@ TEST_F(MediaStreamUIProxyPermissionsPolicyTest, PermissionsPolicy) {
 
   // Mic disabled.
   RefreshPageAndSetHeaderPolicy(
-      blink::mojom::PermissionsPolicyFeature::kMicrophone);
+      network::mojom::PermissionsPolicyFeature::kMicrophone);
   GetResultForRequest(
       CreateRequest(main_rfh(),
                     blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
@@ -743,7 +744,7 @@ TEST_F(MediaStreamUIProxyPermissionsPolicyTest, PermissionsPolicy) {
 
   // Camera disabled.
   RefreshPageAndSetHeaderPolicy(
-      blink::mojom::PermissionsPolicyFeature::kCamera);
+      network::mojom::PermissionsPolicyFeature::kCamera);
   GetResultForRequest(
       CreateRequest(main_rfh(),
                     blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
@@ -756,7 +757,7 @@ TEST_F(MediaStreamUIProxyPermissionsPolicyTest, PermissionsPolicy) {
 
   // Camera disabled resulting in no devices being returned.
   RefreshPageAndSetHeaderPolicy(
-      blink::mojom::PermissionsPolicyFeature::kCamera);
+      network::mojom::PermissionsPolicyFeature::kCamera);
   GetResultForRequest(
       CreateRequest(main_rfh(), blink::mojom::MediaStreamType::NO_SERVICE,
                     blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE),

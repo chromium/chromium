@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/v4l2_queue.h"
 
 #include <errno.h>
@@ -13,9 +18,12 @@
 #include <sys/mman.h>
 
 #include "base/containers/contains.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -375,6 +383,8 @@ const scoped_refptr<FrameResource>& V4L2Buffer::GetFrameResource() {
 // in order to ensure the list remains alive as long as they need it.
 class V4L2BuffersList : public base::RefCountedThreadSafe<V4L2BuffersList> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   V4L2BuffersList() = default;
 
   V4L2BuffersList(const V4L2BuffersList&) = delete;
@@ -917,7 +927,8 @@ size_t V4L2WritableBufferRef::BufferId() const {
   return buffer_data_->v4l2_buffer_.index;
 }
 
-V4L2ReadableBuffer::V4L2ReadableBuffer(const struct v4l2_buffer& v4l2_buffer,
+V4L2ReadableBuffer::V4L2ReadableBuffer(base::PassKey<V4L2BufferRefFactory>,
+                                       const struct v4l2_buffer& v4l2_buffer,
                                        base::WeakPtr<V4L2Queue> queue,
                                        scoped_refptr<FrameResource> frame)
     : buffer_data_(
@@ -1045,7 +1056,8 @@ struct SecureBufferData {
 #define DVQLOGF(level) \
   DVLOGF(level) << "(" << V4L2BufferTypeToString(type_) << ") "
 
-V4L2Queue::V4L2Queue(const IoctlAsCallback& ioctl_cb,
+V4L2Queue::V4L2Queue(base::PassKey<PassKey>,
+                     const IoctlAsCallback& ioctl_cb,
                      const base::RepeatingClosure& schedule_poll_cb,
                      const MmapAsCallback& mmap_cb,
                      const AllocateSecureBufferAsCallback& allocate_secure_cb,
@@ -1202,7 +1214,7 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
 
   memory_ = memory;
 
-  free_buffers_ = new V4L2BuffersList();
+  free_buffers_ = base::MakeRefCounted<V4L2BuffersList>();
 
   // Now query all buffer information.
   for (size_t i = 0; i < reqbufs.count; i++) {
@@ -1304,8 +1316,9 @@ class V4L2BufferRefFactory {
       const struct v4l2_buffer& v4l2_buffer,
       base::WeakPtr<V4L2Queue> queue,
       scoped_refptr<FrameResource> frame) {
-    return new V4L2ReadableBuffer(v4l2_buffer, std::move(queue),
-                                  std::move(frame));
+    return base::MakeRefCounted<V4L2ReadableBuffer>(
+        base::PassKey<V4L2BufferRefFactory>(), v4l2_buffer, std::move(queue),
+        std::move(frame));
   }
 };
 

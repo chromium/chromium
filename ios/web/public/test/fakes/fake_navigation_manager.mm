@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
+
 #import "ios/web/public/navigation/navigation_item.h"
 
 namespace web {
@@ -73,8 +74,9 @@ web::NavigationItem* FakeNavigationManager::GetItemAtIndex(size_t index) const {
 int FakeNavigationManager::GetIndexOfItem(
     const web::NavigationItem* item) const {
   for (size_t index = 0; index < items_.size(); ++index) {
-    if (items_[index].get() == item)
+    if (items_[index].get() == item) {
       return index;
+    }
   }
   return -1;
 }

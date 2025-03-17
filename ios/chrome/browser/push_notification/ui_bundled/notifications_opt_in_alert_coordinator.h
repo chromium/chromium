@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class NotificationsOptInAlertCoordinator;
+enum class NotificationOptInAccessPoint;
 enum class PushNotificationClientId;
 
 // The result of asking for permission to receive notifications.
@@ -61,6 +62,9 @@ enum class NotificationsOptInAlertResult {
 
 // The message of the alert. If not set, default message will be used.
 @property(nonatomic, copy) NSString* alertMessage;
+
+// The access point from which the opt-in alert is shown.
+@property(nonatomic, assign) NotificationOptInAccessPoint accessPoint;
 
 @end
 

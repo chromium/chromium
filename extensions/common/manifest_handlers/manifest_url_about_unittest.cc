@@ -19,7 +19,7 @@ TEST_F(AboutPageManifestTest, AboutPageInSharedModules) {
   EXPECT_EQ(GURL("chrome-extension://" + extension->id() + "/about.html"),
             ManifestURL::GetAboutPage(extension.get()));
 
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       // Forbid data types other than strings.
       Testcase("shared_module_about_invalid_type.json",
                errors::kInvalidAboutPage),
@@ -27,7 +27,7 @@ TEST_F(AboutPageManifestTest, AboutPageInSharedModules) {
       // Forbid absolute URLs.
       Testcase("shared_module_about_absolute.json",
                errors::kInvalidAboutPageExpectRelativePath)};
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, EXPECT_TYPE_ERROR);
 }
 
 }  // namespace extensions

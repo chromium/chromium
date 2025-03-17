@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
+#include "third_party/blink/renderer/platform/loader/fetch/webui_bundled_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -392,20 +393,31 @@ void ScriptResource::ResponseReceived(const ResourceResponse& response) {
       Platform::Current()->ShouldUseCodeCacheWithHashing(
           WebURL(GetResourceRequest().Url()));
 
-  bool code_cache_supported = http_family || code_cache_with_hashing_supported;
-  if (code_cache_supported) {
+  bool webui_bundled_code_cache_supported =
+      SchemeRegistry::SchemeSupportsWebUIBundledBytecode(
+          GetResourceRequest().Url().Protocol()) &&
+      GetResourceRequest().Url().ProtocolIs(
+          response.CurrentRequestUrl().Protocol()) &&
+      Platform::Current()->GetWebUIBundledCodeCacheResourceId(
+          GURL(GetResourceRequest().Url()));
+
+  if (webui_bundled_code_cache_supported) {
+    cached_metadata_handler_ =
+        MakeGarbageCollected<WebUIBundledCachedMetadataHandler>();
+  } else if (code_cache_with_hashing_supported) {
     std::unique_ptr<CachedMetadataSender> sender = CachedMetadataSender::Create(
         response, mojom::blink::CodeCacheType::kJavascript,
         GetResourceRequest().RequestorOrigin());
-    if (code_cache_with_hashing_supported) {
-      cached_metadata_handler_ =
-          MakeGarbageCollected<ScriptCachedMetadataHandlerWithHashing>(
-              Encoding(), std::move(sender));
-    } else {
-      cached_metadata_handler_ =
-          MakeGarbageCollected<ScriptCachedMetadataHandler>(Encoding(),
-                                                            std::move(sender));
-    }
+    cached_metadata_handler_ =
+        MakeGarbageCollected<ScriptCachedMetadataHandlerWithHashing>(
+            Encoding(), std::move(sender));
+  } else if (http_family) {
+    std::unique_ptr<CachedMetadataSender> sender = CachedMetadataSender::Create(
+        response, mojom::blink::CodeCacheType::kJavascript,
+        GetResourceRequest().RequestorOrigin());
+    cached_metadata_handler_ =
+        MakeGarbageCollected<ScriptCachedMetadataHandler>(Encoding(),
+                                                          std::move(sender));
   }
 }
 

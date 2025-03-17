@@ -37,6 +37,7 @@ export enum ContentSettingsTypes {
   JAVASCRIPT_OPTIMIZER = 'javascript-optimizer',
   KEYBOARD_LOCK = 'keyboard-lock',
   LOCAL_FONTS = 'local-fonts',
+  LOCAL_NETWORK_ACCESS = 'local-network-access',
   MIC = 'media-stream-mic',  // AKA Microphone.
   MIDI_DEVICES = 'midi-sysex',
   MIXEDSCRIPT = 'mixed-script',

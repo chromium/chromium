@@ -100,6 +100,7 @@ public class SharedBookmarkModelMocks {
         doReturn(OTHER_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(OTHER_BOOKMARK_ID);
         doReturn(MOBILE_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(MOBILE_BOOKMARK_ID);
         doReturn(READING_LIST_ITEM).when(bookmarkModel).getBookmarkById(READING_LIST_BOOKMARK_ID);
+        doReturn(true).when(bookmarkModel).isReadingListFolder(READING_LIST_BOOKMARK_ID);
         doReturn(PARTNER_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(PARTNER_BOOKMARK_ID);
         doReturn(FOLDER_ITEM_A).when(bookmarkModel).getBookmarkById(FOLDER_BOOKMARK_ID_A);
         doReturn(URL_ITEM_A).when(bookmarkModel).getBookmarkById(URL_BOOKMARK_ID_A);

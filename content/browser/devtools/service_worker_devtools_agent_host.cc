@@ -154,6 +154,8 @@ ServiceWorkerDevToolsAgentHost::ServiceWorkerDevToolsAgentHost(
     network::mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter,
     const base::UnguessableToken& devtools_worker_token)
     : DevToolsAgentHostImpl(devtools_worker_token.ToString()),
       auto_attacher_(
@@ -170,7 +172,8 @@ ServiceWorkerDevToolsAgentHost::ServiceWorkerDevToolsAgentHost(
       version_installed_time_(is_installed_version ? base::Time::Now()
                                                    : base::Time()),
       client_security_state_(std::move(client_security_state)),
-      coep_reporter_(std::move(coep_reporter)) {
+      coep_reporter_(std::move(coep_reporter)),
+      dip_reporter_(std::move(dip_reporter)) {
   UpdateProcessHost();
   NotifyCreated();
 }
@@ -276,10 +279,13 @@ void ServiceWorkerDevToolsAgentHost::WorkerReadyForInspection(
 void ServiceWorkerDevToolsAgentHost::UpdateClientSecurityState(
     network::mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter) {
+        coep_reporter,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter) {
   DCHECK(client_security_state);
   client_security_state_ = std::move(client_security_state);
   coep_reporter_.Bind(std::move(coep_reporter));
+  dip_reporter_.Bind(std::move(dip_reporter));
 }
 
 void ServiceWorkerDevToolsAgentHost::WorkerStarted(int worker_process_id,
@@ -355,6 +361,14 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
         coep_reporter_for_subresource_loader.InitWithNewPipeAndPassReceiver());
   }
 
+  // There should never be a DIP reporter without a client security state.
+  DCHECK(!dip_reporter_ || client_security_state_);
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter;
+  if (dip_reporter_) {
+    dip_reporter_->Clone(dip_reporter.InitWithNewPipeAndPassReceiver());
+  }
+
   auto* version = context_wrapper_->GetLiveVersion(version_id_);
   if (!version) {
     std::move(callback).Run();
@@ -364,11 +378,12 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
   auto script_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
       rph, worker_route_id_, version->key(), client_security_state_.Clone(),
       std::move(coep_reporter_for_script_loader),
+      /*dip_reporter=*/mojo::NullRemote(),
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
       GetId());
   auto subresource_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
       rph, worker_route_id_, version->key(), client_security_state_.Clone(),
-      std::move(coep_reporter_for_subresource_loader),
+      std::move(coep_reporter_for_subresource_loader), std::move(dip_reporter),
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
       GetId());
 
@@ -388,6 +403,7 @@ ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
   auto factory = URLLoaderFactoryParamsHelper::CreateForWorker(
       rph, origin, version->key().ToPartialNetIsolationInfo(),
       /*coep_reporter=*/mojo::NullRemote(),
+      /*dip_reporter=*/mojo::NullRemote(),
       static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
           ->CreateAuthCertObserverForServiceWorker(rph->GetDeprecatedID()),
       NetworkServiceDevToolsObserver::MakeSelfOwned(GetId()),

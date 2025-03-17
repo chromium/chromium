@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
@@ -56,6 +57,10 @@ class COMPONENT_EXPORT(UI_WM) CursorManager
   bool IsCursorVisible() const override;
   void SetCursorSize(ui::CursorSize cursor_size) override;
   ui::CursorSize GetCursorSize() const override;
+  void SetLargeCursorSizeInDip(int large_cursor_size_in_dip) override;
+  int GetLargeCursorSizeInDip() const override;
+  void SetCursorColor(SkColor color) override;
+  SkColor GetCursorColor() const override;
   void EnableMouseEvents() override;
   void DisableMouseEvents() override;
   bool IsMouseEventsEnabled() const override;
@@ -69,33 +74,18 @@ class COMPONENT_EXPORT(UI_WM) CursorManager
   bool ShouldHideCursorOnKeyEvent(const ui::KeyEvent& event) const override;
   bool ShouldHideCursorOnTouchEvent(const ui::TouchEvent& event) const override;
   gfx::Size GetSystemCursorSize() const override;
-#if BUILDFLAG(IS_WIN)
-  void UpdateSystemCursorVisibilityForTest(bool visible) override;
-#endif
 
  private:
   // Overridden from NativeCursorManagerDelegate:
   void CommitCursor(gfx::NativeCursor cursor) override;
   void CommitVisibility(bool visible) override;
   void CommitCursorSize(ui::CursorSize cursor_size) override;
+  void CommitLargeCursorSizeInDip(int large_cursor_size_in_dip) override;
+  void CommitCursorColor(SkColor color) override;
   void CommitMouseEventsEnabled(bool enabled) override;
   void CommitSystemCursorSize(const gfx::Size& cursor_size) override;
-  void CommitSystemCursorVisibility(bool visible) override;
 
   void SetCursorImpl(gfx::NativeCursor cursor, bool forced);
-
-  // Holds one LockCursor request if this object exists.
-  class ScopedCursorLock {
-   public:
-    explicit ScopedCursorLock(CursorManager* cursor_manager)
-        : cursor_manager_(cursor_manager) {
-      cursor_manager_->LockCursor();
-    }
-    ~ScopedCursorLock() { cursor_manager_->UnlockCursor(); }
-
-   private:
-    raw_ptr<CursorManager> cursor_manager_;
-  };
 
   std::unique_ptr<NativeCursorManager> delegate_;
 
@@ -114,9 +104,6 @@ class COMPONENT_EXPORT(UI_WM) CursorManager
 
   base::ObserverList<aura::client::CursorClientObserver>::
       UncheckedAndDanglingUntriaged observers_;
-
-  // This is used for lock cursor during system cursor is invisible.
-  std::optional<ScopedCursorLock> scoped_cursor_lock_;
 
   // This flag holds the cursor visibility state for the duration of the
   // process. Defaults to true. This flag helps ensure that when a

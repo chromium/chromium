@@ -10,7 +10,7 @@
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a137f
-#             android-sm-a235m android-sm-s911u1
+#             android-sm-a236b android-sm-s911u1
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
@@ -27,7 +27,7 @@
 #         web-engine-shell
 #         cros-chrome ]
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
+# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340 amd-0x7480
 #         apple apple-apple-m1 apple-apple-m2
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -65,8 +65,6 @@
 # tags: [ asan no-asan ]
 # Display Server
 # tags: [ display-server-wayland display-server-x ]
-# OOP-Canvas
-# tags: [ oop-c no-oop-c ]
 # WebGPU Backend Validation
 # tags: [ dawn-backend-validation dawn-no-backend-validation ]
 # WebGPU Adapter
@@ -78,6 +76,8 @@
 #         webgpu-service-worker
 #         webgpu-dedicated-worker
 #         webgpu-shared-worker ]
+# WebGPU Compat context
+# tags: [ compat-default compat-min-es31 ]
 # Clang coverage
 # tags: [ clang-coverage no-clang-coverage ]
 # Skia Graphite
@@ -116,13 +116,13 @@ crbug.com/1368785 [ android-pixel-6 arm renderer-skia-vulkan target-cpu-64 ] Web
 crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-cpu-32 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_* [ Failure ]
 crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-cpu-32 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
 
+# Platform API doesn't report correct 8k 30 framerate for vp09 coded on ChromeOS intel devices.
+crbug.com/373648897 [ chromeos intel angle-vulkan graphite-disabled ] WebCodecs_EncodingFramerateResolutions_7680x3840_30_vp09.00.62.08_prefer-hardware_quality [ Failure ]
 
 # MediaFoundation report `max_macroblocks_per_second=194400`, but only supports 1920x1080
 # up to 238fps instead of 240fps.
 crbug.com/373648897 [ win qualcomm ] WebCodecs_EncodingFramerateResolutions_1920x1080_240_hvc1.1.6.L186.B0_prefer-hardware_quality [ Failure ]
 
-# Looks like AMD RX 5500 XT can't control HEVC CBR bitrate well.
-crbug.com/1465531 [ win amd-0x7340 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_* [ Failure ]
 
 # Encoding rate control bitrate is too far off on older Windows Qualcomm GPUs.
 crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_3000000 [ Failure ]
@@ -134,24 +134,20 @@ crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hv
 crbug.com/1470336 [ android-oreo android-nexus-5x ] WebCodecs_EncodingRateControl_vp8_prefer-hardware_constant_3000000 [ Failure ]
 crbug.com/1474916 [ android-nexus-5x ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 
-
-crbug.com/1466102 [ nvidia-0x2184 nvidia_lt_31.0.15.4601 win ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
-crbug.com/1517101 [ win amd-0x7340 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
-
-crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_avc1.42001E_text [ Failure ]
-crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release-x64 target-cpu-64 win ] WebCodecs_ContentHint_avc1.42001E_motion [ Failure ]
-crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_hvc1.1.6.L123.00_text [ Failure ]
-crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_hvc1.1.6.L123.00_motion [ Failure ]
-crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_hvc1.1.6.L123.00_detail [ Failure ]
-
-
 # Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
 crbug.com/371802469 [ angle-opengl bigsur graphite-disabled no-asan nvidia-0xfe9 ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/371802469 [ mac intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
 # Same with prefer-hardware
 crbug.com/371802469 [ mac intel ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/371802469 [ amd-0x7340 angle-opengl asan graphite-disabled mac ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+
+crbug.com/389978730 [ win11 nvidia-0x2783 ] WebCodecs_EncodeColorSpace_av01.0.04M.08_prefer-hardware [ Failure ]
+
+# Win/AMD RX 7600 Failures
+crbug.com/398904317 [ win11 amd-0x7480 ] WebCodecs_DrawImage_hw_decoder [ Failure ]
+crbug.com/398904317 [ win11 amd-0x7480 ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
+crbug.com/398904317 [ win11 amd-0x7480 ] WebCodecs_copyTo_hw_decoder [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

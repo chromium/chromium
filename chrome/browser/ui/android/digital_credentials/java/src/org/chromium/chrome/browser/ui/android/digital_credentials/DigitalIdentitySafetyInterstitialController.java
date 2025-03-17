@@ -9,6 +9,8 @@ import android.content.res.Resources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.webid.DigitalIdentityInterstitialType;
@@ -21,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.Origin;
 
 /** Shows modal dialog asking user whether they want to share their identity with website. */
+@NullMarked
 public class DigitalIdentitySafetyInterstitialController {
     private PropertyModel mDialogModel;
     private Origin mOrigin;
@@ -29,6 +32,7 @@ public class DigitalIdentitySafetyInterstitialController {
         mOrigin = origin;
     }
 
+    @Initializer
     public void show(
             ModalDialogManager modalDialogManager,
             @DigitalIdentityInterstitialType int interstitialType,
@@ -62,11 +66,6 @@ public class DigitalIdentitySafetyInterstitialController {
                 interstitialType == DigitalIdentityInterstitialType.HIGH_RISK
                         ? R.string.digital_identity_interstitial_high_risk_negative_button_text
                         : R.string.digital_identity_interstitial_low_risk_negative_button_text;
-        @ModalDialogProperties.ButtonStyles
-        int buttonStyles =
-                interstitialType == DigitalIdentityInterstitialType.HIGH_RISK
-                        ? ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED
-                        : ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE;
 
         Context context = ContextUtils.getApplicationContext();
         String bodyText =
@@ -92,7 +91,9 @@ public class DigitalIdentitySafetyInterstitialController {
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 resources,
                                 negativeButtonTextResourceId)
-                        .with(ModalDialogProperties.BUTTON_STYLES, buttonStyles)
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
                         .with(
                                 ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
                                 UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS);

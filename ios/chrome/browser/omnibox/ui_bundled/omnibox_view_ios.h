@@ -14,24 +14,21 @@
 #import "components/omnibox/browser/location_bar_model.h"
 #import "components/omnibox/browser/omnibox_view.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_change_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_provider.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_view_suggestions_delegate.h"
 
 struct AutocompleteMatch;
 class GURL;
 class OmniboxClient;
 @protocol OmniboxCommands;
 @protocol OmniboxFocusDelegate;
+@class OmniboxTextController;
 @class OmniboxTextFieldIOS;
-@protocol OmniboxViewConsumer;
 class ProfileIOS;
 @protocol ToolbarCommands;
 
 // iOS implementation of OmniBoxView.  Wraps a UITextField and
 // interfaces with the rest of the autocomplete system.
 class OmniboxViewIOS : public OmniboxView,
-                       public OmniboxPopupViewSuggestionsDelegate,
                        public OmniboxTextChangeDelegate,
                        public OmniboxTextAcceptDelegate {
  public:
@@ -42,7 +39,6 @@ class OmniboxViewIOS : public OmniboxView,
                  id<OmniboxCommands> omnibox_focuser,
                  id<OmniboxFocusDelegate> focus_delegate,
                  id<ToolbarCommands> toolbar_commands_handler,
-                 id<OmniboxViewConsumer> consumer,
                  bool is_lens_overlay);
 
   ~OmniboxViewIOS() override;
@@ -51,43 +47,9 @@ class OmniboxViewIOS : public OmniboxView,
     popup_provider_ = provider;
   }
 
-  void OnReceiveClipboardURLForOpenMatch(
-      const AutocompleteMatch& match,
-      WindowOpenDisposition disposition,
-      const GURL& alternate_nav_url,
-      const std::u16string& pasted_text,
-      size_t selected_line,
-      base::TimeTicks match_selection_timestamp,
-      std::optional<GURL> optional_gurl);
-
-  void OnReceiveClipboardTextForOpenMatch(
-      const AutocompleteMatch& match,
-      WindowOpenDisposition disposition,
-      const GURL& alternate_nav_url,
-      const std::u16string& pasted_text,
-      size_t selected_line,
-      base::TimeTicks match_selection_timestamp,
-      std::optional<std::u16string> optional_text);
-
-  void OnReceiveClipboardImageForOpenMatch(
-      const AutocompleteMatch& match,
-      WindowOpenDisposition disposition,
-      const GURL& alternate_nav_url,
-      const std::u16string& pasted_text,
-      size_t selected_line,
-      base::TimeTicks match_selection_timestamp,
-      std::optional<gfx::Image> optional_image);
-
-  void OnReceiveImageMatchForOpenMatch(
-      WindowOpenDisposition disposition,
-      const GURL& alternate_nav_url,
-      const std::u16string& pasted_text,
-      size_t selected_line,
-      base::TimeTicks match_selection_timestamp,
-      std::optional<AutocompleteMatch> optional_match);
-
-  /// Sets the image used in image search.
-  void SetThumbnailImage(UIImage* image);
+  void SetOmniboxTextController(OmniboxTextController* controller) {
+    omnibox_text_controller_ = controller;
+  }
 
   // OmniboxView implementation.
   std::u16string GetText() const override;
@@ -140,21 +102,15 @@ class OmniboxViewIOS : public OmniboxView,
   void WillPaste() override;
   void OnDeleteBackward() override;
   void OnAcceptAutocomplete() override;
-  void OnRemoveAdditionalText() override;
-  void RemoveThumbnail() override;
 
   // OmniboxTextAcceptDelegate methods
   void OnAccept() override;
 
-  // OmniboxPopupViewSuggestionsDelegate methods
-  void OnPopupDidScroll() override;
-  void OnSelectedMatchForAppending(const std::u16string& str) override;
-  void OnSelectedMatchForOpening(AutocompleteMatch match,
-                                 WindowOpenDisposition disposition,
-                                 const GURL& alternate_nav_url,
-                                 const std::u16string& pasted_text,
-                                 size_t index) override;
-  void OnCallActionTap() override;
+  // OmniboxAutocompleteController interactions.
+  void OnPopupDidScroll();
+  void OnSelectedMatchForAppending(const std::u16string& str);
+
+  void OnCallActionTap();
 
   // Updates this edit view to show the proper text, highlight and images.
   void UpdateAppearance();
@@ -191,9 +147,6 @@ class OmniboxViewIOS : public OmniboxView,
   // focused and defocused.
   __weak id<OmniboxFocusDelegate> focus_delegate_;
 
-  // Consumer for this class.
-  __weak id<OmniboxViewConsumer> consumer_;
-
   State state_before_change_;
   NSString* marked_text_before_change_;
   NSRange current_selection_;
@@ -211,6 +164,10 @@ class OmniboxViewIOS : public OmniboxView,
   bool is_lens_overlay_;
 
   raw_ptr<OmniboxPopupProvider> popup_provider_;  // weak
+
+  /// Controller that will replace OmniboxViewIOS at the end of the refactoring
+  /// crbug.com/390409559.
+  __weak OmniboxTextController* omnibox_text_controller_;
 
   // Used to cancel clipboard callbacks if this is deallocated;
   base::WeakPtrFactory<OmniboxViewIOS> weak_ptr_factory_{this};

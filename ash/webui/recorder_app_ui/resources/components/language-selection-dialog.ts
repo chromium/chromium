@@ -16,7 +16,7 @@ import {
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {signal} from '../core/reactive/signal.js';
+import {computed, signal} from '../core/reactive/signal.js';
 import {LanguageCode} from '../core/soda/language_info.js';
 import {setTranscriptionLanguage} from '../core/state/transcription.js';
 
@@ -58,12 +58,23 @@ export class LanguageSelectionDialog extends ReactiveLitElement {
 
   private readonly dialog = createRef<CraFeatureTourDialog>();
 
-  private readonly selectedLanguage = signal<LanguageCode|null>(null);
+  private readonly platformHandler = usePlatformHandler();
+
+  private readonly selectedLanguage = signal<LanguageCode>(
+    this.platformHandler.getDefaultLanguage(),
+  );
+
+  private readonly availableLanguages = computed(() => {
+    const languageList = this.platformHandler.getLangPackList();
+    return languageList.filter((langPack) => {
+      const sodaState =
+        this.platformHandler.getSodaState(langPack.languageCode);
+      return sodaState.value.kind !== 'unavailable';
+    });
+  });
 
   private readonly speakerLabelConsentDialog =
     createRef<SpeakerLabelConsentDialog>();
-
-  private readonly platformHandler = usePlatformHandler();
 
   async show(): Promise<void> {
     await this.dialog.value?.show();
@@ -90,7 +101,7 @@ export class LanguageSelectionDialog extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    const onDropdownChange = (ev: CustomEvent<LanguageCode|null>) => {
+    const onDropdownChange = (ev: CustomEvent<LanguageCode>) => {
       this.selectedLanguage.value = ev.detail;
     };
 
@@ -105,7 +116,8 @@ export class LanguageSelectionDialog extends ReactiveLitElement {
         <div slot="content">
           ${i18n.onboardingDialogLanguageSelectionDescription}
           <language-dropdown
-            .languageList=${this.platformHandler.getLangPackList()}
+            .languageList=${this.availableLanguages.value}
+            .defaultLanguage=${this.platformHandler.getDefaultLanguage()}
             @dropdown-changed=${onDropdownChange}
           >
           </language-dropdown>

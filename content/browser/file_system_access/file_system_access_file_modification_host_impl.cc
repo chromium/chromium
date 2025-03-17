@@ -89,8 +89,7 @@ void FileSystemAccessFileModificationHostImpl::RequestCapacityChange(
   }
 
   quota_manager_proxy()->GetUsageAndQuota(
-      url_.storage_key(), blink::mojom::StorageType::kTemporary,
-      base::SequencedTaskRunner::GetCurrentDefault(),
+      url_.storage_key(), base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           &FileSystemAccessFileModificationHostImpl::DidGetUsageAndQuota,
           weak_factory_.GetWeakPtr(), capacity_delta, std::move(callback)));

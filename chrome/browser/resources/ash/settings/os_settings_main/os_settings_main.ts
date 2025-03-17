@@ -6,7 +6,6 @@
  * @fileoverview
  * 'os-settings-main' displays the selected settings page.
  */
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/js/search_highlight_utils.js';

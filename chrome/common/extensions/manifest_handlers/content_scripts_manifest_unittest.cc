@@ -14,7 +14,7 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
-#include "extensions/common/script_constants.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +26,7 @@ class ContentScriptsManifestTest : public ChromeManifestTest {
 };
 
 TEST_F(ContentScriptsManifestTest, MatchPattern) {
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       // chrome:// urls are not allowed.
       Testcase("content_script_invalid_match_chrome_url.json",
                ErrorUtils::FormatErrorMessage(
@@ -56,7 +56,7 @@ TEST_F(ContentScriptsManifestTest, MatchPattern) {
                "Error at key 'content_scripts'. Parsing array failed at index "
                "0: Error at key 'matches': Parsing array failed at index 0: "
                "expected string, got integer")};
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, EXPECT_TYPE_ERROR);
 
   LoadAndExpectSuccess("ports_in_content_scripts.json");
 }
@@ -129,27 +129,28 @@ TEST_F(ContentScriptsManifestTest, MatchOriginAsFallback) {
   ASSERT_EQ(7u, user_scripts.size());
 
   // The first script specifies `"match_origin_as_fallback": true`.
-  EXPECT_EQ(MatchOriginAsFallbackBehavior::kAlways,
+  EXPECT_EQ(mojom::MatchOriginAsFallbackBehavior::kAlways,
             user_scripts[0]->match_origin_as_fallback());
   // The second specifies `"match_origin_as_fallback": false`.
-  EXPECT_EQ(MatchOriginAsFallbackBehavior::kNever,
+  EXPECT_EQ(mojom::MatchOriginAsFallbackBehavior::kNever,
             user_scripts[1]->match_origin_as_fallback());
   // The third specifies `"match_about_blank": true`.
-  EXPECT_EQ(MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree,
-            user_scripts[2]->match_origin_as_fallback());
+  EXPECT_EQ(
+      mojom::MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree,
+      user_scripts[2]->match_origin_as_fallback());
   // The fourth specifies `"match_about_blank": false`.
-  EXPECT_EQ(MatchOriginAsFallbackBehavior::kNever,
+  EXPECT_EQ(mojom::MatchOriginAsFallbackBehavior::kNever,
             user_scripts[3]->match_origin_as_fallback());
   // The fifth specifies `"match_origin_as_fallback": false` *and*
   // `"match_about_blank": true`. "match_origin_as_fallback" takes precedence.
-  EXPECT_EQ(MatchOriginAsFallbackBehavior::kNever,
+  EXPECT_EQ(mojom::MatchOriginAsFallbackBehavior::kNever,
             user_scripts[4]->match_origin_as_fallback());
   // The sixth specifies `"match_origin_as_fallback": true` *and*
   // `"match_about_blank": false`. "match_origin_as_fallback" takes precedence.
-  EXPECT_EQ(MatchOriginAsFallbackBehavior::kAlways,
+  EXPECT_EQ(mojom::MatchOriginAsFallbackBehavior::kAlways,
             user_scripts[5]->match_origin_as_fallback());
   // The seventh and final does not specify a value for either.
-  EXPECT_EQ(MatchOriginAsFallbackBehavior::kNever,
+  EXPECT_EQ(mojom::MatchOriginAsFallbackBehavior::kNever,
             user_scripts[6]->match_origin_as_fallback());
 }
 

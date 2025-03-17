@@ -23,29 +23,6 @@
 
 namespace net {
 
-namespace {
-
-NSHTTPCookie* CreateCookie(NSString* name, NSString* value, NSURL* url) {
-  return [NSHTTPCookie cookieWithProperties:@{
-    NSHTTPCookiePath : url.path,
-    NSHTTPCookieName : name,
-    NSHTTPCookieValue : value,
-    NSHTTPCookieDomain : url.host,
-  }];
-}
-
-// Sets |cookie| in the SystemCookieStore |store|, doesn't care about callback
-// and doesn't set creation time.
-void SetCookieInStoreWithNoCallback(NSHTTPCookie* cookie,
-                                    SystemCookieStore* store) {
-  base::RunLoop run_loop;
-  store->SetCookieAsync(cookie, /*optional_creation_time=*/nullptr,
-                        run_loop.QuitClosure());
-  run_loop.Run();
-}
-
-}  // namespace
-
 // This class defines tests that implementations of SystemCookieStore should
 // pass in order to be conformant.
 // To use this test, A delegate class should be created for each implementation.
@@ -83,6 +60,25 @@ class SystemCookieStoreTest : public PlatformTest {
   // Returns the number of cookies set in the |delegate_| cookie store.
   int CookiesCount() { return delegate_.CookiesCount(); }
 
+  // Creates a cookie with `name`, `value` and `url`.
+  NSHTTPCookie* CreateCookie(NSString* name, NSString* value, NSURL* url) {
+    return [NSHTTPCookie cookieWithProperties:@{
+      NSHTTPCookiePath : url.path,
+      NSHTTPCookieName : name,
+      NSHTTPCookieValue : value,
+      NSHTTPCookieDomain : url.host,
+    }];
+  }
+
+  // Sets |cookie| in the SystemCookieStore, doesn't care about
+  // callback and doesn't set creation time.
+  void SetCookieInStoreWithNoCallback(NSHTTPCookie* cookie) {
+    base::RunLoop run_loop;
+    GetCookieStore()->SetCookieAsync(cookie, /*optional_creation_time=*/nullptr,
+                                     run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  protected:
   NSURL* test_cookie_url1_;
   NSURL* test_cookie_url2_;
@@ -96,17 +92,17 @@ TYPED_TEST_SUITE_P(SystemCookieStoreTest);
 
 TYPED_TEST_P(SystemCookieStoreTest, SetCookieAsync) {
   NSHTTPCookie* system_cookie =
-      CreateCookie(@"a", @"b", this->test_cookie_url1_);
-  SetCookieInStoreWithNoCallback(system_cookie, this->GetCookieStore());
+      this->CreateCookie(@"a", @"b", this->test_cookie_url1_);
+  this->SetCookieInStoreWithNoCallback(system_cookie);
   EXPECT_TRUE(this->IsCookieSet(system_cookie, this->test_cookie_url1_));
 }
 
 // Tests that inserting multiple cookies with identical creation times works.
 TYPED_TEST_P(SystemCookieStoreTest, SetCookieAsyncWithIdenticalCreationTime) {
   NSHTTPCookie* system_cookie_1 =
-      CreateCookie(@"a", @"b", this->test_cookie_url1_);
+      this->CreateCookie(@"a", @"b", this->test_cookie_url1_);
   NSHTTPCookie* system_cookie_2 =
-      CreateCookie(@"c", @"d", this->test_cookie_url2_);
+      this->CreateCookie(@"c", @"d", this->test_cookie_url2_);
   SystemCookieStore* cookie_store = this->GetCookieStore();
   const base::Time creation_time = base::Time::Now();
 
@@ -126,16 +122,16 @@ TYPED_TEST_P(SystemCookieStoreTest, GetCookiesAsync) {
   SystemCookieStore* cookie_store = this->GetCookieStore();
   NSMutableDictionary* input_cookies = [[NSMutableDictionary alloc] init];
   NSHTTPCookie* system_cookie =
-      CreateCookie(@"a", @"b", this->test_cookie_url1_);
+      this->CreateCookie(@"a", @"b", this->test_cookie_url1_);
   [input_cookies setValue:system_cookie forKey:@"a"];
-  SetCookieInStoreWithNoCallback(system_cookie, cookie_store);
+  this->SetCookieInStoreWithNoCallback(system_cookie);
 
-  system_cookie = CreateCookie(@"x", @"d", this->test_cookie_url2_);
+  system_cookie = this->CreateCookie(@"x", @"d", this->test_cookie_url2_);
   [input_cookies setValue:system_cookie forKey:@"x"];
-  SetCookieInStoreWithNoCallback(system_cookie, cookie_store);
-  system_cookie = CreateCookie(@"l", @"m", this->test_cookie_url3_);
+  this->SetCookieInStoreWithNoCallback(system_cookie);
+  system_cookie = this->CreateCookie(@"l", @"m", this->test_cookie_url3_);
   [input_cookies setValue:system_cookie forKey:@"l"];
-  SetCookieInStoreWithNoCallback(system_cookie, cookie_store);
+  this->SetCookieInStoreWithNoCallback(system_cookie);
 
   // Test GetCookieForURLAsync.
   NSHTTPCookie* input_cookie = [input_cookies valueForKey:@"a"];
@@ -182,14 +178,14 @@ TYPED_TEST_P(SystemCookieStoreTest, GetCookiesAsync) {
 TYPED_TEST_P(SystemCookieStoreTest, DeleteCookiesAsync) {
   SystemCookieStore* cookie_store = this->GetCookieStore();
   NSHTTPCookie* system_cookie1 =
-      CreateCookie(@"a", @"b", this->test_cookie_url1_);
-  SetCookieInStoreWithNoCallback(system_cookie1, cookie_store);
+      this->CreateCookie(@"a", @"b", this->test_cookie_url1_);
+  this->SetCookieInStoreWithNoCallback(system_cookie1);
   NSHTTPCookie* system_cookie2 =
-      CreateCookie(@"x", @"d", this->test_cookie_url2_);
+      this->CreateCookie(@"x", @"d", this->test_cookie_url2_);
   cookie_store->SetCookieAsync(system_cookie2,
                                /*optional_creation_time=*/nullptr,
                                SystemCookieStore::SystemCookieCallback());
-  SetCookieInStoreWithNoCallback(system_cookie2, cookie_store);
+  this->SetCookieInStoreWithNoCallback(system_cookie2);
   EXPECT_EQ(2, this->CookiesCount());
   EXPECT_TRUE(this->IsCookieSet(system_cookie2, this->test_cookie_url2_));
 
@@ -214,10 +210,10 @@ TYPED_TEST_P(SystemCookieStoreTest, DeleteCookiesAsync) {
 
 TYPED_TEST_P(SystemCookieStoreTest, ClearCookiesAsync) {
   SystemCookieStore* cookie_store = this->GetCookieStore();
-  SetCookieInStoreWithNoCallback(
-      CreateCookie(@"a", @"b", this->test_cookie_url1_), cookie_store);
-  SetCookieInStoreWithNoCallback(
-      CreateCookie(@"x", @"d", this->test_cookie_url2_), cookie_store);
+  this->SetCookieInStoreWithNoCallback(
+      this->CreateCookie(@"a", @"b", this->test_cookie_url1_));
+  this->SetCookieInStoreWithNoCallback(
+      this->CreateCookie(@"x", @"d", this->test_cookie_url2_));
   EXPECT_EQ(2, this->CookiesCount());
 
   base::RunLoop run_loop;

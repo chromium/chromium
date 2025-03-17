@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -21,7 +22,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -377,10 +377,10 @@ void CloudExternalDataManagerBase::Backend::PruneDataStore() {
   // Extract the list of (key, hash) pairs from the Metadata map to tell the
   // store which data should be kept.
   CloudExternalDataStore::PruningData key_hash_pairs;
-  base::ranges::transform(metadata_, std::back_inserter(key_hash_pairs),
-                          [](const std::pair<MetadataKey, MetadataEntry>& p) {
-                            return make_pair(p.first.ToString(), p.second.hash);
-                          });
+  std::ranges::transform(metadata_, std::back_inserter(key_hash_pairs),
+                         [](const std::pair<MetadataKey, MetadataEntry>& p) {
+                           return make_pair(p.first.ToString(), p.second.hash);
+                         });
   external_data_store_->Prune(key_hash_pairs);
 }
 

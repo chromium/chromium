@@ -819,7 +819,8 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, ApplyingChangesFromSync) {
   // Deletion of a cookie we added at the start of the test. We expect it to
   // eventually generate a `net::CookieChangeCause::EXPLICIT` event.
   change_list.push_back(syncer::EntityChange::CreateDelete(
-      existing_local_cookie_specifics.unique_key()));
+      existing_local_cookie_specifics.unique_key(),
+      CreateEntityDataForTest(sync_pb::CookieSpecifics())));
   // Addition of a new persistent cookie: we expect it to pass our filters and
   // eventually generate a `net::CookieChangeCause::INSERTED` event.
   change_list.push_back(syncer::EntityChange::CreateAdd(
@@ -885,17 +886,9 @@ class MockFloatingSsoSyncBridge : public FloatingSsoSyncBridge {
 
 class FloatingSsoWithMockedBridgeTest : public FloatingSsoTest {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
-    FloatingSsoTest::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&FloatingSsoWithMockedBridgeTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    FloatingSsoTest::SetUpBrowserContextKeyedServices(context);
     FloatingSsoServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindOnce([](content::BrowserContext* context)
                                     -> std::unique_ptr<KeyedService> {
@@ -948,8 +941,9 @@ class FloatingSsoWithMockedBridgeTest : public FloatingSsoTest {
                                   cookie_change_future.GetRepeatingCallback());
 
     syncer::EntityChangeList deletion_list;
-    deletion_list.push_back(
-        syncer::EntityChange::CreateDelete(specifics.unique_key()));
+    deletion_list.push_back(syncer::EntityChange::CreateDelete(
+        specifics.unique_key(),
+        CreateEntityDataForTest(sync_pb::CookieSpecifics())));
     bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
                                          std::move(deletion_list));
 
@@ -962,9 +956,6 @@ class FloatingSsoWithMockedBridgeTest : public FloatingSsoTest {
     return static_cast<testing::NiceMock<MockFloatingSsoSyncBridge>&>(
         *floating_sso_service().GetBridgeForTesting());
   }
-
- private:
-  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(FloatingSsoWithMockedBridgeTest,

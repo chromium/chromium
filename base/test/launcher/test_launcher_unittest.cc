@@ -29,7 +29,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -43,6 +42,8 @@ using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::ReturnPointee;
+
+constexpr int kExcessiveBytes = 700000;
 
 TestResult GenerateTestResult(const std::string& test_name,
                               TestResult::Status status,
@@ -616,7 +617,7 @@ TEST_F(TestLauncherTest, ExcessiveOutput) {
   command_line->AppendSwitchASCII("test-launcher-print-test-stdio", "never");
   TestResult test_result =
       GenerateTestResult("Test.firstTest", TestResult::TEST_SUCCESS,
-                         Milliseconds(30), std::string(500000, 'a'));
+                         Milliseconds(30), std::string(kExcessiveBytes, 'a'));
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .WillOnce(OnTestResult(&test_launcher, test_result));
   EXPECT_FALSE(test_launcher.Run(command_line.get()));
@@ -627,10 +628,11 @@ TEST_F(TestLauncherTest, OutputLimitSwitch) {
   AddMockedTests("Test", {"firstTest"});
   SetUpExpectCalls();
   command_line->AppendSwitchASCII("test-launcher-print-test-stdio", "never");
-  command_line->AppendSwitchASCII("test-launcher-output-bytes-limit", "800000");
+  command_line->AppendSwitchASCII("test-launcher-output-bytes-limit",
+                                  base::ToString(kExcessiveBytes + 100000));
   TestResult test_result =
       GenerateTestResult("Test.firstTest", TestResult::TEST_SUCCESS,
-                         Milliseconds(30), std::string(500000, 'a'));
+                         Milliseconds(30), std::string(kExcessiveBytes, 'a'));
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .WillOnce(OnTestResult(&test_launcher, test_result));
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
@@ -1006,38 +1008,36 @@ TEST_F(ResultWatcherTest, PollCompletesSlowly) {
   bool done = false;
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
       .Times(10)
-      .WillRepeatedly(
-          DoAll(Invoke([&](TimeDelta timeout) {
-                  task_environment.AdvanceClock(timeout);
-                  // Append a result with "time" (duration) as 40.000s and
-                  // "timestamp" (test start) as `Now()` - 45s.
-                  AppendToFile(
-                      result_file,
-                      StrCat({"    <testcase name=\"B\" status=\"run\" "
-                              "time=\"40.000\" classname=\"A\" timestamp=\"",
-                              TimeFormatAsIso8601(Time::Now() - Seconds(45))
-                                  .c_str(),
-                              "\">\n", "    </testcase>\n"}));
-                  checks++;
-                  if (checks == 10) {
-                    AppendToFile(result_file,
-                                 "  </testsuite>\n"
-                                 "</testsuites>\n");
-                    done = true;
-                  } else {
-                    // Append a preliminary result for the next test that
-                    // started when the last test completed (i.e., `Now()` - 45s
-                    // + 40s).
-                    AppendToFile(
-                        result_file,
-                        StrCat({"    <x-teststart name=\"B\" classname=\"A\" "
-                                "timestamp=\"",
-                                TimeFormatAsIso8601(Time::Now() - Seconds(5))
-                                    .c_str(),
-                                "\" />\n"}));
-                  }
-                }),
-                ReturnPointee(&done)));
+      .WillRepeatedly(DoAll(
+          Invoke([&](TimeDelta timeout) {
+            task_environment.AdvanceClock(timeout);
+            // Append a result with "time" (duration) as 40.000s and
+            // "timestamp" (test start) as `Now()` - 45s.
+            AppendToFile(
+                result_file,
+                StrCat({"    <testcase name=\"B\" status=\"run\" "
+                        "time=\"40.000\" classname=\"A\" timestamp=\"",
+                        TimeFormatAsIso8601(Time::Now() - Seconds(45)).c_str(),
+                        "\">\n", "    </testcase>\n"}));
+            checks++;
+            if (checks == 10) {
+              AppendToFile(result_file,
+                           "  </testsuite>\n"
+                           "</testsuites>\n");
+              done = true;
+            } else {
+              // Append a preliminary result for the next test that
+              // started when the last test completed (i.e., `Now()` - 45s
+              // + 40s).
+              AppendToFile(
+                  result_file,
+                  StrCat({"    <x-teststart name=\"B\" classname=\"A\" "
+                          "timestamp=\"",
+                          TimeFormatAsIso8601(Time::Now() - Seconds(5)).c_str(),
+                          "\" />\n"}));
+            }
+          }),
+          ReturnPointee(&done)));
 
   ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));
   // The first check occurs 45s after the batch starts, so the sequence of
@@ -1360,8 +1360,9 @@ TEST(ProcessGTestOutputTest, FoundTestCaseNotEnforced) {
 // be launched explicitly by RunMockLeakProcessTest
 
 MULTIPROCESS_TEST_MAIN(LeakChildProcess) {
-  while (true)
+  while (true) {
     PlatformThread::Sleep(base::Seconds(1));
+  }
 }
 
 TEST(LeakedChildProcessTest, DISABLED_LeakChildProcess) {
@@ -1520,15 +1521,15 @@ void MatchesFatalMessagesTest() {
 // retain during truncation.
 TEST(TestLauncherTools, TruncateSnippetFocusedMatchesFatalMessagesTest) {
   logging::ScopedLoggingSettings scoped_logging_settings;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   scoped_logging_settings.SetLogFormat(logging::LogFormat::LOG_FORMAT_SYSLOG);
 #endif
   MatchesFatalMessagesTest();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Validates TestSnippetFocused correctly identifies fatal messages to
-// retain during truncation, for ChromeOS Ash.
+// retain during truncation, for ChromeOS.
 TEST(TestLauncherTools, TruncateSnippetFocusedMatchesFatalMessagesCrosAshTest) {
   logging::ScopedLoggingSettings scoped_logging_settings;
   scoped_logging_settings.SetLogFormat(logging::LogFormat::LOG_FORMAT_CHROME);

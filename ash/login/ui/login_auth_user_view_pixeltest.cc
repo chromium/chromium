@@ -151,7 +151,7 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
     container_ = new views::View();
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    container_->AddChildView(view_.get());
+    container_->AddChildViewRaw(view_.get());
     SetWidget(CreateWidgetWithContent(container_));
   }
 
@@ -197,7 +197,7 @@ TEST_F(LoginAuthUserViewPixeltest,
 
   views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinWithToggleAutosubmitOff", /*revision_number=*/0, view_));
+      "PinWithToggleAutosubmitOff", /*revision_number=*/1, view_));
 
   const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
                              gfx::Point(), ui::EventTimeForNow(), 0, 0);
@@ -207,7 +207,7 @@ TEST_F(LoginAuthUserViewPixeltest,
   ExpectModeVisibility(LoginAuthUserView::InputFieldMode::kPasswordWithToggle);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PasswordWithToggle", /*revision_number=*/0, view_));
+      "PasswordWithToggle", /*revision_number=*/1, view_));
 }
 
 class LoginAuthUserViewPinOnlyPixeltest : public LoginAuthUserViewPixeltest {
@@ -232,7 +232,7 @@ TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitEnabled) {
 
   views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinOnlyEmpty", /*revision_number=*/1, view_));
+      "PinOnlyEmpty", /*revision_number=*/2, view_));
 }
 
 // Verifies the PIN only with auto submit case after all six pin character
@@ -276,7 +276,7 @@ TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitDisabled) {
 
   views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinOnlyEmpty", /*revision_number=*/1, view_));
+      "PinOnlyEmpty", /*revision_number=*/2, view_));
 }
 
 // Verifies the PIN only with auto submit off case after all six pin character

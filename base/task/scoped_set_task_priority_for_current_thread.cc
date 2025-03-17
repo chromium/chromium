@@ -6,8 +6,7 @@
 
 #include "base/compiler_specific.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -34,5 +33,4 @@ TaskPriority GetTaskPriorityForCurrentThread() {
   return task_priority_for_current_thread;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

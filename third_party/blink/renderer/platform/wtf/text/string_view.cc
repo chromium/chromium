@@ -311,6 +311,13 @@ unsigned StringView::NextCodePointOffset(unsigned i) const {
   return next;
 }
 
+UChar32 StringView::CodePointAtAndNext(unsigned& i) const {
+  if (Is8Bit()) {
+    return (*this)[i++];
+  }
+  return WTF::CodePointAtAndNext(Span16(), i);
+}
+
 CodePointIterator StringView::begin() const {
   return CodePointIterator(*this);
 }

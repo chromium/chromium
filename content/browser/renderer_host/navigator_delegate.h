@@ -162,7 +162,7 @@ class NavigatorDelegate {
   // device bound session.
   virtual void OnDeviceBoundSessionAccessed(
       NavigationHandle* navigation,
-      const net::device_bound_sessions::SessionKey& session) = 0;
+      const net::device_bound_sessions::SessionAccess& access) = 0;
 
   // Does a global walk of the session history and all committed/pending-commit
   // origins, and registers origins that match |origin| to their respective
@@ -180,6 +180,9 @@ class NavigatorDelegate {
   // e.g. not enough memory) if this returns true.
   virtual bool MaybeCopyContentAreaAsBitmap(
       base::OnceCallback<void(const SkBitmap&)> callback) = 0;
+
+  // Whether animations when performing forward transitions are supported.
+  virtual bool SupportsForwardTransitionAnimation() = 0;
 };
 
 }  // namespace content

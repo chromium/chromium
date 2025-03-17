@@ -4,13 +4,13 @@
 
 #include "components/password_manager/core/browser/store_metrics_reporter.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -183,6 +183,11 @@ int ReportNumberOfAccountsMetrics(
         base::StrCat({kPasswordManager, store_suffix, kAccountsPerSiteSuffix,
                       kOverallSuffix, custom_passphrase_suffix}),
         accounts_per_site);
+
+    // Same as above but not split by custom passphrase.
+    LogAccountStatHiRes(base::StrCat({kPasswordManager, store_suffix,
+                                      kAccountsPerSiteSuffix, kOverallSuffix}),
+                        accounts_per_site);
   }
 
   static constexpr std::string_view kTotalAccountsByTypeSuffix =
@@ -327,8 +332,8 @@ void ReportPasswordNotesMetrics(
       GetMetricsSuffixForStore(is_account_store);
 
   int credentials_with_non_empty_notes_count =
-      base::ranges::count_if(forms, [](const auto& form) {
-        return base::ranges::any_of(
+      std::ranges::count_if(forms, [](const auto& form) {
+        return std::ranges::any_of(
             form->notes, [](const auto& note) { return !note.value.empty(); });
       });
 
@@ -340,7 +345,7 @@ void ReportPasswordNotesMetrics(
   const std::string histogram_name =
       base::StrCat({kPasswordManager, suffix_for_store,
                     ".PasswordNotes.CountNotesPerCredential3"});
-  base::ranges::for_each(forms, [histogram_name](const auto& form) {
+  std::ranges::for_each(forms, [histogram_name](const auto& form) {
     if (!form->notes.empty()) {
       base::UmaHistogramCounts100(histogram_name, form->notes.size());
     }
@@ -399,7 +404,7 @@ void ReportSyncingAccountStateMetrics(
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
   const GURL gaia_signon_realm =
       GaiaUrls::GetInstance()->gaia_origin().GetURL();
-  bool syncing_account_saved = base::ranges::any_of(
+  bool syncing_account_saved = std::ranges::any_of(
       forms, [&gaia_signon_realm, &sync_username](const auto& form) {
         return gaia_signon_realm == GURL(form->signon_realm) &&
                gaia::AreEmailsSame(sync_username,
@@ -463,14 +468,14 @@ void ReportDuplicateCredentialsMetrics(
 
 void ReportPasswordIssuesMetrics(
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
-  int count_leaked = base::ranges::count_if(forms, [](const auto& form) {
+  int count_leaked = std::ranges::count_if(forms, [](const auto& form) {
     return form->password_issues.contains(InsecureType::kLeaked);
   });
   base::UmaHistogramCounts100(
       base::StrCat({kPasswordManager, ".CompromisedCredentials3.CountLeaked"}),
       count_leaked);
 
-  int count_phished = base::ranges::count_if(forms, [](const auto& form) {
+  int count_phished = std::ranges::count_if(forms, [](const auto& form) {
     return form->password_issues.contains(InsecureType::kPhished);
   });
   base::UmaHistogramCounts100(
@@ -528,7 +533,7 @@ void ReportMultiStoreMetrics(
                              std::u16string>> profile_store_results,
     std::unique_ptr<std::map<std::pair<std::string, std::u16string>,
                              std::u16string>> account_store_results,
-    bool is_opted_in) {
+    bool is_account_storage_enabled) {
   // Count the contents of the account store as compared to the profile store:
   // - Additional:  Credentials that are in the account store, but not in the
   //                profile store.
@@ -582,7 +587,7 @@ void ReportMultiStoreMetrics(
     ++profile_it;
   }
 
-  if (is_opted_in) {
+  if (is_account_storage_enabled) {
     base::UmaHistogramCounts100(
         base::StrCat(
             {kPasswordManager, ".AccountStoreVsProfileStore4.Additional"}),
@@ -605,7 +610,7 @@ void ReportMultiStoreMetrics(
 StoreMetricsReporter::CredentialsCount ReportAllMetrics(
     bool custom_passphrase_enabled,
     const std::string& sync_username,
-    bool is_opted_in_account_storage,
+    bool is_account_storage_enabled,
     bool is_safe_browsing_enabled,
     std::optional<std::vector<std::unique_ptr<PasswordForm>>>
         profile_store_results,
@@ -660,7 +665,7 @@ StoreMetricsReporter::CredentialsCount ReportAllMetrics(
     ReportMultiStoreMetrics(
         std::move(profile_store_passwords_per_signon_and_username),
         std::move(account_store_passwords_per_signon_and_username),
-        is_opted_in_account_storage);
+        is_account_storage_enabled);
   }
 
   return credentials_count;
@@ -728,20 +733,22 @@ StoreMetricsReporter::StoreMetricsReporter(
   custom_passphrase_enabled_ = IsCustomPassphraseEnabled(
       password_manager::sync_util::GetPasswordSyncState(sync_service));
 
-  is_opted_in_account_storage_ =
-      features_util::IsOptedInForAccountStorage(prefs_, sync_service);
+  is_account_storage_enabled_ =
+      features_util::IsAccountStorageEnabled(prefs_, sync_service);
 
   is_safe_browsing_enabled_ = safe_browsing::IsSafeBrowsingEnabled(*prefs_);
 
-  // TODO(crbug/358998546): use PasswordManagerSettingsService here.
-  base::UmaHistogramEnumeration(
-      base::StrCat({kPasswordManager, ".EnableState"}),
-      CredentialsEnableServiceSettingToPasswordManagerEnableState(
-          prefs_->FindPreference(
-              password_manager::prefs::kCredentialsEnableService)));
-  base::UmaHistogramBoolean(
-      base::StrCat({kPasswordManager, ".AutoSignin"}),
-      settings->IsSettingEnabled(PasswordManagerSetting::kAutoSignIn));
+  if (settings) {
+    // TODO(crbug.com/358998546): use PasswordManagerSettingsService here.
+    base::UmaHistogramEnumeration(
+        base::StrCat({kPasswordManager, ".EnableState"}),
+        CredentialsEnableServiceSettingToPasswordManagerEnableState(
+            prefs_->FindPreference(
+                password_manager::prefs::kCredentialsEnableService)));
+    base::UmaHistogramBoolean(
+        base::StrCat({kPasswordManager, ".AutoSignin"}),
+        settings->IsSettingEnabled(PasswordManagerSetting::kAutoSignIn));
+  }
 
   ReportBiometricAuthenticationBeforeFillingMetrics(prefs_);
   ReportPasswordReencryption(prefs_);
@@ -802,7 +809,7 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&ReportAllMetrics, custom_passphrase_enabled_,
-                     sync_username_, is_opted_in_account_storage_,
+                     sync_username_, is_account_storage_enabled_,
                      is_safe_browsing_enabled_,
                      std::exchange(profile_store_results_, std::nullopt),
                      std::exchange(account_store_results_, std::nullopt)),

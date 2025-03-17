@@ -70,17 +70,28 @@ ScriptPromise<IDLString> AIRewriter::rewrite(
     resolver->Reject(signal->reason(script_state));
     return promise;
   }
-  const String context_string = options->getContextOr(g_empty_string);
 
   if (!remote_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kExceptionMessageRewriterDestroyed);
     return promise;
   }
+
+  String trimmed_input = input.StripWhiteSpace();
+  if (trimmed_input.empty()) {
+    // Echo input consisting of only whitespace, unlike Writer or Summarizer.
+    resolver->Resolve(input);
+    return promise;
+  }
+
+  const String trimmed_context =
+      options->getContextOr(g_empty_string).StripWhiteSpace();
   auto pending_remote = CreateModelExecutionResponder(
       script_state, signal, resolver, task_runner_,
-      AIMetrics::AISessionType::kWriter, base::DoNothing());
-  remote_->Rewrite(input, context_string, std::move(pending_remote));
+      AIMetrics::AISessionType::kRewriter,
+      /*complete_callback=*/base::DoNothing(),
+      /*overflow_callback=*/base::DoNothing());
+  remote_->Rewrite(trimmed_input, trimmed_context, std::move(pending_remote));
   return promise;
 }
 
@@ -101,25 +112,88 @@ ReadableStream* AIRewriter::rewriteStreaming(
                              int(input.CharactersSizeInBytes()));
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    // TODO(crbug.com/374879796): figure out how to handling aborted signal for
-    // the streaming API.
-    ThrowAbortedException(exception_state);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
     return nullptr;
   }
-  const String context_string = options->getContextOr(g_empty_string);
 
   if (!remote_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kExceptionMessageRewriterDestroyed);
     return nullptr;
   }
+
+  String trimmed_input = input.StripWhiteSpace();
+  if (trimmed_input.empty()) {
+    return CreateEmptyReadableStream(script_state,
+                                     AIMetrics::AISessionType::kRewriter);
+  }
+
+  const String trimmed_context =
+      options->getContextOr(g_empty_string).StripWhiteSpace();
   auto [readable_stream, pending_remote] =
-      CreateModelExecutionStreamingResponder(script_state, signal, task_runner_,
-                                             AIMetrics::AISessionType::kWriter,
-                                             base::DoNothing());
-  remote_->Rewrite(input, context_string, std::move(pending_remote));
+      CreateModelExecutionStreamingResponder(
+          script_state, signal, task_runner_,
+          AIMetrics::AISessionType::kRewriter,
+          /*complete_callback=*/base::DoNothing(),
+          /*overflow_callback=*/base::DoNothing());
+  remote_->Rewrite(trimmed_input, trimmed_context, std::move(pending_remote));
   return readable_stream;
+}
+
+// TODO(crbug.com/402442890): Refactor Writing Assistance APIs to reduce
+// duplicated code.
+ScriptPromise<IDLDouble> AIRewriter::measureInputUsage(
+    ScriptState* script_state,
+    const String& input,
+    const AIRewriterRewriteOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return ScriptPromise<IDLDouble>();
+  }
+
+  if (!remote_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kExceptionMessageRewriterDestroyed);
+    return ScriptPromise<IDLDouble>();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(script_state);
+  auto promise = resolver->Promise();
+  CHECK(options);
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    resolver->Reject(signal->reason(script_state));
+    return promise;
+  }
+
+  remote_->MeasureUsage(
+      input, options->getContextOr(g_empty_string),
+      WTF::BindOnce(
+          [](ScriptPromiseResolver<IDLDouble>* resolver, AbortSignal* signal,
+             std::optional<uint64_t> usage) {
+            ExecutionContext* context = resolver->GetExecutionContext();
+            if (!context) {
+              return;
+            }
+            if (signal && signal->aborted()) {
+              resolver->Reject(signal->reason(resolver->GetScriptState()));
+              return;
+            }
+            if (!usage.has_value()) {
+              resolver->Reject(
+                  DOMException::Create(kExceptionMessageUnableToCalculateUsage,
+                                       DOMException::GetErrorName(
+                                           DOMExceptionCode::kOperationError)));
+              return;
+            }
+            resolver->Resolve(static_cast<double>(usage.value()));
+          },
+          WrapPersistent(resolver),
+          WrapPersistent(options->getSignalOr(nullptr))));
+
+  return promise;
 }
 
 void AIRewriter::destroy(ScriptState* script_state,

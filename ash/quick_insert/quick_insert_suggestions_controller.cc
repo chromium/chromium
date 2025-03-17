@@ -34,15 +34,16 @@ std::vector<QuickInsertSearchResult> ConvertToSearchResults(
     // TODO: b/325368650 - Add better handling of errors.
     return {};
   }
+  size_t rank = 0;
   return base::ToVector(
-      (*response)->results, [](tenor::mojom::GifResponsePtr& result) {
+      (*response)->results, [&rank](tenor::mojom::GifResponsePtr& result) {
         CHECK(result);
         tenor::mojom::GifUrlsPtr& urls = result->url;
         CHECK(urls);
         return QuickInsertSearchResult(QuickInsertGifResult(
             std::move(urls->preview), std::move(urls->preview_image),
             result->preview_size, std::move(urls->full), result->full_size,
-            base::UTF8ToUTF16(result->content_description)));
+            base::UTF8ToUTF16(result->content_description), rank++));
       });
 }
 

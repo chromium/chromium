@@ -16,6 +16,7 @@
 #include <string>
 #include <utility>
 
+#include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -457,8 +458,11 @@ void GLHelper::CopyTextureToImpl::ReadbackDone(Request* finished_request) {
           dst += dst_stride * (request->size.height() - 1);
           dst_stride = -dst_stride;
         }
+        // We need to use `RelaxedAtomicWriteMemcpy` because we might be writing
+        // into memory observed by JS at the same time.
         for (int y = 0; y < request->size.height(); y++) {
-          memcpy(dst, src, bytes_to_copy);
+          base::subtle::RelaxedAtomicWriteMemcpy(
+              base::span(dst, bytes_to_copy), base::span(src, bytes_to_copy));
           dst += dst_stride;
           src += src_stride;
         }

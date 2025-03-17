@@ -18,6 +18,7 @@
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
+#include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
@@ -84,7 +85,8 @@ class ASH_EXPORT AppListControllerImpl
       public aura::WindowObserver,
       public AssistantControllerObserver,
       public AssistantUiModelObserver,
-      public FeatureDiscoveryDurationReporter::ReporterObserver {
+      public FeatureDiscoveryDurationReporter::ReporterObserver,
+      public SunfishScannerFeatureWatcher::Observer {
  public:
   AppListControllerImpl();
   AppListControllerImpl(const AppListControllerImpl&) = delete;
@@ -128,6 +130,10 @@ class ASH_EXPORT AppListControllerImpl
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnUserSessionAdded(const AccountId& account_id) override;
+
+  // SunfishScannerFeatureWatcher::Observer:
+  void OnSunfishScannerFeatureStatesChanged(
+      SunfishScannerFeatureWatcher& source) override;
 
   // Methods used in ash:
   bool GetTargetVisibility(const std::optional<int64_t>& display_id) const;
@@ -437,6 +443,10 @@ class ASH_EXPORT AppListControllerImpl
   // Gets the container which should contain the fullscreen launcher.
   int GetFullscreenLauncherContainerId() const;
 
+  // Called when eligibility of Assistant new entry point is read. The read is
+  // done as an async operation.
+  void OnAssistantNewEntryPointEligibilityReady(bool eligible);
+
   // Whether the home launcher is
   // * being shown (either through an animation or a drag)
   // * being hidden (either through an animation or a drag)
@@ -560,12 +570,13 @@ class ASH_EXPORT AppListControllerImpl
   // Sub-controller to handle app collections page.
   std::unique_ptr<AppsCollectionsController> apps_collections_controller_;
 
-  // Responsible for calling `UpdateSearchBoxUiVisibilities` when the Sunfish
-  // enabled pref changes.
-  std::unique_ptr<BooleanPrefMember> sunfish_enabled_;
-
   base::ScopedObservation<SplitViewController, SplitViewObserver>
       split_view_observation_{this};
+
+  // Observes changes in Sunfish and Scanner feature states.
+  base::ScopedObservation<SunfishScannerFeatureWatcher,
+                          SunfishScannerFeatureWatcher::Observer>
+      sunfish_scanner_feature_observation_{this};
 
   base::WeakPtrFactory<AppListControllerImpl> weak_ptr_factory_{this};
 };

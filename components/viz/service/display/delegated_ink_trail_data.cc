@@ -50,10 +50,6 @@ void DelegatedInkTrailData::AddPoint(const gfx::DelegatedInkPoint& point) {
 void DelegatedInkTrailData::PredictPoints(
     std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw,
     gfx::DelegatedInkMetadata* metadata) {
-  if (!features::ShouldDrawPredictedInkPoints()) {
-    return;
-  }
-
   TRACE_EVENT0("delegated_ink_trails", "DelegatedInkTrailData::PredictPoints");
 
   base::TimeDelta latency_improvement_with_prediction;

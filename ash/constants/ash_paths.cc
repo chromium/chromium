@@ -63,6 +63,9 @@ const base::FilePath::CharType kDevicePolicyExternalDataDir[] =
 const base::FilePath::CharType kDevicePolicyScreensaverDataDir[] =
     FILE_PATH_LITERAL("/var/cache/managed_screensaver");
 
+const base::FilePath::CharType kDeviceLocalAccountIwaCacheDir[] =
+    FILE_PATH_LITERAL("/var/cache/device_local_account_iwa");
+
 bool PathProvider(int key, base::FilePath* result) {
   switch (key) {
     case FILE_DEFAULT_APP_ORDER:
@@ -109,6 +112,9 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
     case DIR_DEVICE_POLICY_SCREENSAVER_DATA:
       *result = base::FilePath(kDevicePolicyScreensaverDataDir);
+      break;
+    case DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE:
+      *result = base::FilePath(kDeviceLocalAccountIwaCacheDir);
       break;
 
     default:

@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -46,7 +47,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -166,8 +166,8 @@ ui::CallbackLayerAnimationObserver* BuildObserverToNotifyA11yLocationChanged(
           return true;
         }
 
-        view->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
-                                       false /*send_native_event*/);
+        view->NotifyAccessibilityEventDeprecated(
+            ax::mojom::Event::kLocationChanged, false /*send_native_event*/);
         return true;
       },
       view));
@@ -276,7 +276,7 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
         GetTextForLabel(), views::style::CONTEXT_LABEL,
         views::style::STYLE_PRIMARY));
     label_->SetAutoColorReadabilityEnabled(false);
-    label_->SetEnabledColorId(kColorAshTextColorSecondary);
+    label_->SetEnabledColor(kColorAshTextColorSecondary);
     label_->SetSubpixelRenderingEnabled(false);
     label_->SetFontList(views::Label::GetDefaultFontList().Derive(
         /*size_delta=*/1, gfx::Font::FontStyle::ITALIC,
@@ -307,8 +307,8 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
     label_->SetText(GetTextForLabel());
 
     if (state == State::kFailure) {
-      label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                       /*send_native_event=*/true);
+      label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                 /*send_native_event=*/true);
     }
 
     DeprecatedLayoutImmediately();
@@ -495,13 +495,13 @@ void LoginAuthUserView::TestApi::ShowDialog() {
   view_->ShowRemoveAccountDialog();
 }
 
-const std::u16string&
-LoginAuthUserView::TestApi::GetDisabledAuthMessageContent() const {
+std::u16string_view LoginAuthUserView::TestApi::GetDisabledAuthMessageContent()
+    const {
   return DisabledAuthMessageView::TestApi(view_->disabled_auth_message_)
       .GetDisabledAuthMessageContent();
 }
 
-const std::u16string& LoginAuthUserView::TestApi::GetPinStatusMessageContent()
+std::u16string_view LoginAuthUserView::TestApi::GetPinStatusMessageContent()
     const {
   return PinStatusMessageView::TestApi(view_->pin_status_message_view_)
       .GetPinStatusMessageContent();
@@ -558,6 +558,8 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
 
   auto pin_input_view = std::make_unique<LoginPinInputView>();
   pin_input_view_ = pin_input_view.get();
+  pin_input_view_->SetPaintToLayer();  // Needed for opacity animation.
+  pin_input_view_->layer()->SetFillsBoundsOpaquely(false);
   pin_input_view->Init(base::BindRepeating(&LoginAuthUserView::OnAuthSubmit,
                                            base::Unretained(this)),
                        base::BindRepeating(&LoginAuthUserView::OnPinTextChanged,
@@ -859,6 +861,7 @@ void LoginAuthUserView::CaptureStateForAnimationPreLayout() {
   // Stop any running animation scheduled in ApplyAnimationPostLayout.
   stop_animation(this);
   stop_animation(password_view_);
+  stop_animation(pin_input_view_);
   stop_animation(pin_view_);
   stop_animation(challenge_response_view_);
   stop_animation(pin_password_toggle_);
@@ -912,8 +915,7 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
   if (current_state.has_password != previous_state_->has_password) {
     AnimateOpacity<LoginPasswordView>(
         password_view_, /*towards_visible=*/current_state.has_password,
-        /*observe_completion=*/previous_state_->has_password &&
-            !current_state.has_password);
+        /*observe_completion=*/previous_state_->has_password);
   }
 
   ////////
@@ -922,8 +924,7 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
   if (current_state.has_pin_input != previous_state_->has_pin_input) {
     AnimateOpacity<LoginPinInputView>(
         pin_input_view_, /*towards_visible=*/current_state.has_pin_input,
-        /*observe_completion=*/previous_state_->has_pin_input &&
-            !current_state.has_pin_input);
+        /*observe_completion=*/previous_state_->has_pin_input);
   }
 
   ////////
@@ -1115,7 +1116,7 @@ void LoginAuthUserView::OnGestureEvent(ui::GestureEvent* event) {
   RequestFocus();
 }
 
-void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
+void LoginAuthUserView::OnAuthSubmit(std::u16string_view password) {
   AuthEventsRecorder::Get()->OnAuthSubmit();
   LOG(WARNING) << "crbug.com/1339004 : AuthSubmit "
                << password_view_->IsReadOnly() << " / "
@@ -1124,12 +1125,7 @@ void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
   password_view_->SetReadOnly(true);
   pin_input_view_->SetReadOnly(true);
 
-  // Checking if the password is only formed of numbers with base::StringToInt
-  // will easily fail due to numeric limits. ContainsOnlyChars is used instead.
-  const bool authenticated_by_pin =
-      ShouldAuthenticateWithPin() &&
-      base::ContainsOnlyChars(base::UTF16ToUTF8(password), "0123456789");
-
+  const bool authenticated_by_pin = ShouldAuthenticateWithPin();
   Shell::Get()->login_screen_controller()->AuthenticateUserWithPasswordOrPin(
       current_user().basic_user_info.account_id, base::UTF16ToUTF8(password),
       authenticated_by_pin,
@@ -1192,7 +1188,7 @@ void LoginAuthUserView::ShowRemoveAccountDialog() {
                         remove_account_dialog_->GetBubbleOpener()->HasFocus();
 
   if (!remove_account_dialog_->parent()) {
-    login_views_utils::GetBubbleContainer(this)->AddChildView(
+    login_views_utils::GetBubbleContainer(this)->AddChildViewRaw(
         remove_account_dialog_.get());
   }
 

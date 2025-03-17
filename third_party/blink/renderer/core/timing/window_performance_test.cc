@@ -17,6 +17,7 @@
 #include "components/viz/common/frame_timing_details.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -560,6 +561,48 @@ TEST_P(WindowPerformanceTest, FirstInput) {
     EXPECT_EQ(input.should_report, firstInputs.size() == 1u);
     ResetPerformance();
   }
+}
+
+// Test whether we can detect that the event is fully nested in another event
+// during the processing time.
+TEST_P(WindowPerformanceTest, NestedEventInProcessingTime) {
+  RegisterKeyboardEvent(event_type_names::kKeydown, GetTimeOrigin(),
+                        GetTimeOrigin() + base::Milliseconds(1),
+                        GetTimeOrigin() + base::Milliseconds(2), 4);
+  KeyboardEventInit* init = KeyboardEventInit::Create();
+  init->setKeyCode(4);
+  KeyboardEvent* keyboard_event = MakeGarbageCollected<KeyboardEvent>(
+      event_type_names::kKeypress, init, GetTimeOrigin());
+  performance_->EventTimingProcessingStart(
+      *keyboard_event, GetTimeOrigin() + base::Milliseconds(1), nullptr);
+
+  UIEventInit* event_init = UIEventInit::Create();
+  event_init->setBubbles(true);
+  event_init->setCancelable(false);
+  event_init->setComposed(true);
+  UIEvent* event = MakeGarbageCollected<UIEvent>(event_type_names::kBeforeinput,
+                                                 event_init, GetTimeOrigin());
+  performance_->EventTimingProcessingStart(
+      *event, GetTimeOrigin() + base::Milliseconds(2), nullptr);
+
+  performance_->EventTimingProcessingEnd(
+      *event, GetTimeOrigin() + base::Milliseconds(4));
+  performance_->EventTimingProcessingEnd(
+      *keyboard_event, GetTimeOrigin() + base::Milliseconds(5));
+
+  base::TimeTicks presentation_time = GetTimeOrigin() + base::Seconds(6.0);
+  SimulatePaintAndResolvePresentationPromise(presentation_time);
+  const auto& entries =
+      performance_->getBufferedEntriesByType(performance_entry_names::kEvent);
+  EXPECT_EQ(3u, entries.size());
+  EXPECT_EQ(event_type_names::kKeydown, entries.at(0)->name());
+  EXPECT_EQ(event_type_names::kKeypress, entries.at(1)->name());
+
+  PerformanceEventTiming* entry =
+      static_cast<PerformanceEventTiming*>(entries.at(2).Get());
+  EXPECT_EQ(event_type_names::kBeforeinput, entry->name());
+  EXPECT_TRUE(entry->GetEventTimingReportingInfo()
+                  ->is_processing_fully_nested_in_another_event);
 }
 
 // Test that the 'first-input' is populated after some irrelevant events are
@@ -2079,6 +2122,40 @@ TEST_P(InteractionIdTest, ClickIncorrectPointerId) {
   // Flush UKM logging mojo request.
   RunPendingTasks();
   CheckUKMValues({{40, 40, UserInteractionType::kTapOrClick}});
+}
+
+TEST_P(WindowPerformanceTest, ContainerTimingTraceEvent) {
+  using trace_analyzer::Query;
+  trace_analyzer::Start("*");
+  performance_->AddContainerTiming(
+      DOMPaintTimingInfo{.paint_time = 2000, .presentation_time = 2000},
+      gfx::Rect(10, 20, 30, 40), 1200, AtomicString("identifier"),
+      /*element*/ nullptr,
+      DOMPaintTimingInfo{.paint_time = 1000, .presentation_time = 1000});
+  auto analyzer = trace_analyzer::Stop();
+  trace_analyzer::TraceEventVector events;
+  Query q = Query::EventNameIs("PerformanceContainerTiming");
+  analyzer->FindEvents(q, &events);
+  EXPECT_EQ(1u, events.size());
+  EXPECT_EQ("loading", events[0]->category);
+  EXPECT_TRUE(events[0]->HasStringArg("frame"));
+
+  ASSERT_TRUE(events[0]->HasDictArg("data"));
+  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  std::string* element_type = arg_dict.FindString("elementType");
+  ASSERT_TRUE(element_type);
+  EXPECT_EQ(*element_type, "container-paints");
+  EXPECT_EQ(arg_dict.FindInt("startTime").value_or(-1), 2000);
+  EXPECT_EQ(arg_dict.FindInt("firstRenderTime").value_or(-1), 1000);
+  EXPECT_EQ(arg_dict.FindInt("duration").value_or(-1), 0);
+  EXPECT_EQ(arg_dict.FindDouble("rectLeft").value_or(-1), 10);
+  EXPECT_EQ(arg_dict.FindDouble("rectTop").value_or(-1), 20);
+  EXPECT_EQ(arg_dict.FindDouble("rectWidth").value_or(-1), 30);
+  EXPECT_EQ(arg_dict.FindDouble("rectHeight").value_or(-1), 40);
+  EXPECT_EQ(arg_dict.FindDouble("size").value_or(-1), 1200);
+  std::string* identifier = arg_dict.FindString("identifier");
+  ASSERT_TRUE(identifier);
+  EXPECT_EQ(*identifier, "identifier");
 }
 
 INSTANTIATE_TEST_SUITE_P(All, InteractionIdTest, ::testing::Bool());

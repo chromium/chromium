@@ -339,6 +339,30 @@ TEST_P(LayoutViewHitTestTest, FlexBlockChildren) {
             HitTest(45, 5));
 }
 
+// https://issues.chromium.org/issues/40889098
+TEST_P(LayoutViewHitTestTest, FlexBlockEditableChildren) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#outer { display: flex; flex: auto; }");
+  SetBodyInnerHTML(
+      "<div id=outer><div contenteditable id=inner>ab</div></div>");
+  auto* outer = GetElementById("outer");
+  const auto& text = *To<Text>(GetElementById("inner")->firstChild());
+  EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(0, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(5, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(text, 1), TextAffinity::kDownstream),
+            HitTest(10, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(text, 1), TextAffinity::kDownstream),
+            HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(outer, 1), TextAffinity::kDownstream),
+            HitTest(20, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(outer, 1), TextAffinity::kDownstream),
+            HitTest(25, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(outer, 1), TextAffinity::kDownstream),
+            HitTest(25, 25));
+}
+
 // http://crbug.com/1171070
 // See also, FloatLeft*, DOM order of "float" should not affect hit testing.
 TEST_P(LayoutViewHitTestTest, FloatLeftLeft) {

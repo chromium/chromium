@@ -20,6 +20,7 @@
 #import "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #import "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/prefs/pref_service.h"
@@ -39,13 +40,47 @@ class IOSWebViewPaymentsAutofillClient;
 }  // namespace payments
 
 // WebView implementation of AutofillClient.
-class WebViewAutofillClientIOS : public AutofillClient {
+//
+// The argument why it satisfies the AutofillClientIOS contract is lengthy.
+//
+// Firstly, observe that
+// - WebState is an instance variable of CWVWebView and
+// - WebViewAutofillClientIOS is indirectly an implicitly-`strong` property of
+//   CWVWebView.
+//
+// There are multiple ways of destruction of CWVWebView.
+//
+// - Case 1: CWVWebView's `shutDown` is called before `dealloc`.
+//   Then ~WebStateImpl() first notifies WebStateDestroyed(), which leads to
+//   potentially two calls of AutofillDriverIOSFactory::WebStateDestroyed()
+//   (whose relative ordering isn't obvious):
+//   (a) AutofillDriverIOSFactory is notified directly, and
+//   (b) CWVAutofillController is notified, which calls
+//       ~WebViewAutofillClientIOS(), which in turn calls
+//       AutofillDriverIOSFactory::WebStateDestroyed().
+//   Since AutofillDriverIOSFactory::WebStateDestroyed() removes itself as
+//   observer, (a) cannot happen after (b). So either only (b) happens or (a)
+//   happens before (b).
+//   At the time of (b), all members of WebViewAutofillClientIOS are still alive
+//   and web_state() is valid, so the AutofillClientIOS contract is satisfied.
+//
+// - Case 2: CWVWebView's `dealloc` is called without `shutDown`.
+//   Then ~WebViewAutofillClientIOS() may be called before, during, or after
+//   ~WebStateImpl().
+//   If it is called during or after ~WebStateImpl(), the argument from Case 1
+//   applies.
+//   If it is called before ~WebStateImpl(), then ~WebViewAutofillClientIOS()
+//   calls AutofillDriverIOSFactory::WebStateDestroyed(), so the
+//   AutofillClientIOS contract is satisfied.
+class WebViewAutofillClientIOS : public AutofillClientIOS {
  public:
   static std::unique_ptr<WebViewAutofillClientIOS> Create(
+      FromWebStateImpl from_web_state_impl,
       web::WebState* web_state,
       id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge);
 
   WebViewAutofillClientIOS(
+      FromWebStateImpl from_web_state_impl,
       PrefService* pref_service,
       PersonalDataManager* personal_data_manager,
       AutocompleteHistoryManager* autocomplete_history_manager,
@@ -66,10 +101,10 @@ class WebViewAutofillClientIOS : public AutofillClient {
   const std::string& GetAppLocale() const override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  AutofillDriverIOSFactory& GetAutofillDriverFactory() override;
   AutofillCrowdsourcingManager& GetCrowdsourcingManager() override;
   VotesUploader& GetVotesUploader() override;
   PersonalDataManager& GetPersonalDataManager() override;
+  EntityDataManager* GetEntityDataManager() override;
   SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   PrefService* GetPrefs() override;
@@ -98,7 +133,6 @@ class WebViewAutofillClientIOS : public AutofillClient {
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override;
   void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) override;
-  void PinAutofillSuggestions() override;
   void HideAutofillSuggestions(SuggestionHidingReason reason) override;
   bool IsAutofillEnabled() const override;
   bool IsAutofillProfileEnabled() const override;
@@ -116,11 +150,10 @@ class WebViewAutofillClientIOS : public AutofillClient {
   LogManager* GetCurrentLogManager() override;
 
  private:
-  web::WebState* web_state_;
   __weak id<CWVAutofillClientIOSBridge> bridge_;
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
-  std::unique_ptr<VotesUploader> votes_uploader_;
+  VotesUploader votes_uploader_{this};
   PersonalDataManager* personal_data_manager_;
   AutocompleteHistoryManager* autocomplete_history_manager_;
   raw_ptr<signin::IdentityManager> identity_manager_;
@@ -136,7 +169,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   // after all of the members passed into the constructor of
   // `payments_autofill_client_` are initialized, other than `this`.
   payments::IOSWebViewPaymentsAutofillClient payments_autofill_client_{
-      this, bridge_, web_state_};
+      this, bridge_, web_state()};
   SingleFieldFillRouter single_field_fill_router_{
       autocomplete_history_manager_, payments_autofill_client_.GetIbanManager(),
       payments_autofill_client_.GetMerchantPromoCodeManager()};

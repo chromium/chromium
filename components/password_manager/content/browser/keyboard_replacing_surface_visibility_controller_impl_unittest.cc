@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
-#include "base/test/scoped_feature_list.h"
+
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -52,8 +52,6 @@ class KeyboardReplacingSurfaceVisibilityControllerImplTest
 };
 
 TEST_F(KeyboardReplacingSurfaceVisibilityControllerImplTest, Visibility) {
-  base::test::ScopedFeatureList enable_feature(
-      features::kPasswordSuggestionBottomSheetV2);
   KeyboardReplacingSurfaceVisibilityControllerImpl controller;
 
   EXPECT_TRUE(controller.CanBeShown());
@@ -65,8 +63,6 @@ TEST_F(KeyboardReplacingSurfaceVisibilityControllerImplTest, Visibility) {
 }
 
 TEST_F(KeyboardReplacingSurfaceVisibilityControllerImplTest, Reset) {
-  base::test::ScopedFeatureList enable_feature(
-      features::kPasswordSuggestionBottomSheetV2);
   KeyboardReplacingSurfaceVisibilityControllerImpl controller;
 
   EXPECT_TRUE(controller.CanBeShown());
@@ -83,8 +79,6 @@ TEST_F(KeyboardReplacingSurfaceVisibilityControllerImplTest, Reset) {
 
 TEST_F(KeyboardReplacingSurfaceVisibilityControllerImplTest,
        ResetAfterRemovingFrameDriver) {
-  base::test::ScopedFeatureList enable_feature(
-      features::kPasswordSuggestionBottomSheetV2);
   KeyboardReplacingSurfaceVisibilityControllerImpl controller;
 
   controller.SetVisible(password_mananger_driver());

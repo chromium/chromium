@@ -78,6 +78,13 @@ void DesktopSessionDurationTracker::OnUserEvent() {
   }
 }
 
+void DesktopSessionDurationTracker::EndSessionForTesting() {
+  if (!in_session_) {
+    StartSession();
+  }
+  EndSession(base::TimeDelta());
+}
+
 // static
 void DesktopSessionDurationTracker::CleanupForTesting() {
   DCHECK(g_desktop_session_duration_tracker_instance);

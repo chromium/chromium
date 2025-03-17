@@ -84,8 +84,7 @@ class IOSPushNotificationsMetricsProviderTest : public PlatformTest {
       std::optional<std::string> assigned_profile_name =
           GetApplicationContext()
               ->GetAccountProfileMapper()
-              ->FindProfileNameForGaiaID(
-                  base::SysNSStringToUTF8(identity.gaiaID));
+              ->FindProfileNameForGaiaID(GaiaId(identity.gaiaID));
       CHECK(assigned_profile_name.has_value());
       profile_name = *assigned_profile_name;
     } else {
@@ -96,7 +95,7 @@ class IOSPushNotificationsMetricsProviderTest : public PlatformTest {
     ProfileIOS* profile = AddProfileImpl(profile_name);
 
     AuthenticationServiceFactory::GetForProfile(profile)->SignIn(
-        identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+        identity, signin_metrics::AccessPoint::kSettings);
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }

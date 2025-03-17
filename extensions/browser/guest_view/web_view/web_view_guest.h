@@ -187,8 +187,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool GuestMadeEmbedderFullscreen() const;
   void SetFullscreenState(bool is_fullscreen);
 
-  void RequestPointerLockPermission(content::WebContents* web_contents,
-                                    bool user_gesture,
+  void RequestPointerLockPermission(bool user_gesture,
                                     bool last_unlocked_by_target,
                                     base::OnceCallback<void(bool)> callback);
 
@@ -235,6 +234,14 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void GuestOpenURL(const content::OpenURLParams& params,
                     base::OnceCallback<void(content::NavigationHandle&)>
                         navigation_handle_callback) final;
+  void GuestClose() final;
+  void GuestRequestMediaAccessPermission(
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) final;
+  bool GuestCheckMediaAccessPermission(
+      content::RenderFrameHost* render_frame_host,
+      const url::Origin& security_origin,
+      blink::mojom::MediaStreamType type) final;
 
   // GuestpageHolder::Delegate implementation.
   bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
@@ -295,7 +302,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void ExitFullscreenModeForTab(content::WebContents* web_contents) final;
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) final;
-  void RequestPointerLock(content::WebContents* guest_web_contents,
+  void RequestPointerLock(content::WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override;
 

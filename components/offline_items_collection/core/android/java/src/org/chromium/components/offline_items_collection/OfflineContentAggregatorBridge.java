@@ -10,6 +10,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -20,6 +22,7 @@ import java.util.ArrayList;
  * (components/offline_items_collection/core/android/offline_content_aggregator_bridge.h).
  */
 @JNINamespace("offline_items_collection::android")
+@NullMarked
 public class OfflineContentAggregatorBridge implements OfflineContentProvider {
     private long mNativeOfflineContentAggregatorBridge;
     private ObserverList<OfflineContentProvider.Observer> mObservers;
@@ -225,38 +228,38 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
                 OfflineContentAggregatorBridge caller,
                 @LaunchLocation int location,
                 boolean openInIncognito,
-                String nameSpace,
-                String id);
+                @Nullable String nameSpace,
+                @Nullable String id);
 
         void removeItem(
                 long nativeOfflineContentAggregatorBridge,
                 OfflineContentAggregatorBridge caller,
-                String nameSpace,
-                String id);
+                @Nullable String nameSpace,
+                @Nullable String id);
 
         void cancelDownload(
                 long nativeOfflineContentAggregatorBridge,
                 OfflineContentAggregatorBridge caller,
-                String nameSpace,
-                String id);
+                @Nullable String nameSpace,
+                @Nullable String id);
 
         void pauseDownload(
                 long nativeOfflineContentAggregatorBridge,
                 OfflineContentAggregatorBridge caller,
-                String nameSpace,
-                String id);
+                @Nullable String nameSpace,
+                @Nullable String id);
 
         void resumeDownload(
                 long nativeOfflineContentAggregatorBridge,
                 OfflineContentAggregatorBridge caller,
-                String nameSpace,
-                String id);
+                @Nullable String nameSpace,
+                @Nullable String id);
 
         void getItemById(
                 long nativeOfflineContentAggregatorBridge,
                 OfflineContentAggregatorBridge caller,
-                String nameSpace,
-                String id,
+                @Nullable String nameSpace,
+                @Nullable String id,
                 Callback<OfflineItem> callback);
 
         void getAllItems(
@@ -267,22 +270,22 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
         void getVisualsForItem(
                 long nativeOfflineContentAggregatorBridge,
                 OfflineContentAggregatorBridge caller,
-                String nameSpace,
-                String id,
+                @Nullable String nameSpace,
+                @Nullable String id,
                 VisualsCallback callback);
 
         void getShareInfoForItem(
                 long nativeOfflineContentAggregatorBridge,
                 OfflineContentAggregatorBridge caller,
-                String nameSpace,
-                String id,
+                @Nullable String nameSpace,
+                @Nullable String id,
                 ShareCallback callback);
 
         void renameItem(
                 long nativeOfflineContentAggregatorBridge,
                 OfflineContentAggregatorBridge caller,
-                String nameSpace,
-                String id,
+                @Nullable String nameSpace,
+                @Nullable String id,
                 String name,
                 Callback</*RenameResult*/ Integer> callback);
     }

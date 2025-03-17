@@ -58,8 +58,8 @@ std::string TxPowerLevelToName(api::ble_v2::TxPowerLevel tx_power_level) {
 void CancelPendingTasks(
     base::flat_set<raw_ptr<base::WaitableEvent>>& events_to_cancel) {
   if (!events_to_cancel.empty()) {
-    DVLOG(1) << __func__ << ": Canceling " << events_to_cancel.size()
-             << " pending calls.";
+    VLOG(1) << __func__ << ": Canceling " << events_to_cancel.size()
+            << " pending calls.";
   }
 
   for (base::WaitableEvent* event : std::move(events_to_cancel)) {
@@ -143,7 +143,7 @@ bool BleV2Medium::StartAdvertising(
     const api::ble_v2::BleAdvertisementData& advertising_data,
     api::ble_v2::AdvertiseParameters advertise_set_parameters) {
   if (!features::IsNearbyBleV2Enabled()) {
-    DVLOG(1) << __func__ << ": BleV2 is disabled.";
+    VLOG(1) << __func__ << ": BleV2 is disabled.";
     return false;
   }
 
@@ -152,7 +152,7 @@ bool BleV2Medium::StartAdvertising(
   // nature of registering the GATT services via `RegisterGattServices()`,
   // block until registration succeeds or fails.
   if (gatt_server_) {
-    DVLOG(1)
+    VLOG(1)
         << __func__
         << ": attempting to register GATT Services before starting advertising";
 
@@ -172,7 +172,7 @@ bool BleV2Medium::StartAdvertising(
     register_gatt_services_waitable_event.Wait();
 
     if (!registration_success) {
-      DLOG(WARNING)
+      LOG(WARNING)
           << __func__
           << ": failed register GATT Services before starting advertising; "
              "stopping advertising";
@@ -197,23 +197,23 @@ bool BleV2Medium::StartAdvertising(
             it->second.data(), it->second.data() + it->second.size())) +
         (std::next(it) == advertising_data.service_data.end() ? "}" : "}, ");
   }
-  DVLOG(1) << __func__
-           << "BLE_v2 StartAdvertising: "
-              "advertising_data.is_extended_advertisement="
-           << advertising_data.is_extended_advertisement
-           << ", advertising_data.service_data=" << service_data_info
-           << ", tx_power_level="
-           << TxPowerLevelToName(advertise_set_parameters.tx_power_level)
-           << ", is_connectable=" << advertise_set_parameters.is_connectable;
+  VLOG(1) << __func__
+          << "BLE_v2 StartAdvertising: "
+             "advertising_data.is_extended_advertisement="
+          << advertising_data.is_extended_advertisement
+          << ", advertising_data.service_data=" << service_data_info
+          << ", tx_power_level="
+          << TxPowerLevelToName(advertise_set_parameters.tx_power_level)
+          << ", is_connectable=" << advertise_set_parameters.is_connectable;
 
   if (advertising_data.is_extended_advertisement &&
       !IsExtendedAdvertisementsAvailable()) {
     // Nearby Connections is expected to pass us extended advertisements without
     // first checking if we have support. In that case we are expected to return
     // false.
-    DLOG(WARNING) << __func__
-                  << " Extended advertising is not supported, "
-                     "not registering extended adv.";
+    LOG(WARNING) << __func__
+                 << " Extended advertising is not supported, "
+                    "not registering extended adv.";
     metrics::RecordStartAdvertisingResult(
         /*success=*/false,
         /*is_extended_advertisement=*/advertising_data
@@ -227,8 +227,8 @@ bool BleV2Medium::StartAdvertising(
   }
 
   // There are 3 types of advertisements that Nearby Connections will ask us
-  // to broadcast. All 3 are connectable, but there are a few other
-  // differences.
+  // to broadcast. All 3 are non-connectable, but there are a few other
+  // differences:
   // 1. Extended Advertisements - These do not have ScanResponse data, and
   //    contain their full payload in the AdvertisementData. This is limited by
   //    hardware support.
@@ -239,6 +239,10 @@ bool BleV2Medium::StartAdvertising(
   // 3. Fast advertisements - These do use ScanResponse data, and are shorter
   //    than GATT advertisements. These are expected to always be supported by
   //    hardware.
+  //
+  // TODO(crbug/395934066): Change this back to reflect the advertisement
+  // connectable setting once the Nearby SDK sets Fast advertisements to
+  // non-connectable.
   std::map<device::BluetoothUUID,
            mojo::PendingRemote<bluetooth::mojom::Advertisement>>
       registered_advertisements;
@@ -262,7 +266,7 @@ bool BleV2Medium::StartAdvertising(
       // Return early when failing to register an advertisement, even if
       // there are multiple sets of advertising data, as Nearby Connections
       // expects all advertisements to be registered on success.
-      DLOG(WARNING) << __func__ << " Failed to register advertisement.";
+      LOG(WARNING) << __func__ << " Failed to register advertisement.";
       metrics::RecordStartAdvertisingResult(
           /*success=*/false,
           /*is_extended_advertisement=*/advertising_data
@@ -288,7 +292,7 @@ bool BleV2Medium::StartAdvertising(
         std::move(entry.second), task_runner_);
   }
 
-  DVLOG(1) << __func__ << " Started advertising.";
+  VLOG(1) << __func__ << " Started advertising.";
   metrics::RecordStartAdvertisingResult(
       /*success=*/true,
       /*is_extended_advertisement=*/advertising_data.is_extended_advertisement);
@@ -300,7 +304,7 @@ std::unique_ptr<BleV2Medium::AdvertisingSession> BleV2Medium::StartAdvertising(
     api::ble_v2::AdvertiseParameters advertise_set_parameters,
     BleV2Medium::AdvertisingCallback callback) {
   if (!features::IsNearbyBleV2Enabled()) {
-    DVLOG(1) << __func__ << ": BleV2 is disabled.";
+    VLOG(1) << __func__ << ": BleV2 is disabled.";
     return nullptr;
   }
 
@@ -332,12 +336,11 @@ std::unique_ptr<BleV2Medium::AdvertisingSession> BleV2Medium::StartAdvertising(
 
 bool BleV2Medium::StopAdvertising() {
   if (!features::IsNearbyBleV2Enabled()) {
-    DVLOG(1) << __func__ << ": BleV2 is disabled.";
+    VLOG(1) << __func__ << ": BleV2 is disabled.";
     return false;
   }
 
-  CD_LOG(INFO, Feature::NEARBY_INFRA)
-      << __func__ << " Clearing registered advertisements.";
+  VLOG(1) << __func__ << " Clearing registered advertisements.";
   registered_advertisements_map_.clear();
   return true;
 }
@@ -359,7 +362,7 @@ std::unique_ptr<BleV2Medium::ScanningSession> BleV2Medium::StartScanning(
     api::ble_v2::TxPowerLevel tx_power_level,
     BleV2Medium::ScanningCallback callback) {
   if (!features::IsNearbyBleV2Enabled()) {
-    DVLOG(1) << __func__ << ": BleV2 is disabled.";
+    VLOG(1) << __func__ << ": BleV2 is disabled.";
     return nullptr;
   }
 
@@ -480,7 +483,7 @@ std::unique_ptr<BleV2Medium::ScanningSession> BleV2Medium::StartScanning(
 std::unique_ptr<api::ble_v2::GattServer> BleV2Medium::StartGattServer(
     api::ble_v2::ServerGattConnectionCallback callback) {
   if (!features::IsNearbyBleV2Enabled()) {
-    DVLOG(1) << __func__ << ": BleV2 is disabled.";
+    VLOG(1) << __func__ << ": BleV2 is disabled.";
     return nullptr;
   }
 
@@ -508,7 +511,7 @@ std::unique_ptr<api::ble_v2::GattClient> BleV2Medium::ConnectToGattServer(
     api::ble_v2::TxPowerLevel tx_power_level,
     api::ble_v2::ClientGattConnectionCallback callback) {
   if (!features::IsNearbyBleV2Enabled()) {
-    DVLOG(1) << __func__ << ": BleV2 is disabled.";
+    VLOG(1) << __func__ << ": BleV2 is disabled.";
     return nullptr;
   }
 
@@ -543,7 +546,7 @@ std::unique_ptr<api::ble_v2::GattClient> BleV2Medium::ConnectToGattServer(
 std::unique_ptr<api::ble_v2::BleServerSocket> BleV2Medium::OpenServerSocket(
     const std::string& service_id) {
   if (!features::IsNearbyBleV2Enabled()) {
-    DVLOG(1) << __func__ << ": BleV2 is disabled.";
+    VLOG(1) << __func__ << ": BleV2 is disabled.";
     return nullptr;
   }
 
@@ -564,7 +567,7 @@ std::unique_ptr<api::ble_v2::BleSocket> BleV2Medium::Connect(
 
 bool BleV2Medium::IsExtendedAdvertisementsAvailable() {
   if (!features::IsNearbyBleV2Enabled()) {
-    DVLOG(1) << __func__ << ": BleV2 is disabled.";
+    VLOG(1) << __func__ << ": BleV2 is disabled.";
     return false;
   }
 
@@ -634,7 +637,7 @@ void BleV2Medium::DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) {
   }
 
   if (device.is_null()) {
-    CD_LOG(WARNING, Feature::NEARBY_INFRA) << __func__ << " Device is empty.";
+    LOG(WARNING) << __func__ << " Device is empty.";
     return;
   }
 
@@ -683,8 +686,8 @@ void BleV2Medium::DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) {
       // through the IDs.
       auto* ble_peripheral = GetDiscoveredBlePeripheral(address);
       if (!ble_peripheral) {
-        CD_LOG(WARNING, Feature::NEARBY_INFRA)
-            << __func__ << " Can't find previously discovered ble peripheral.";
+        LOG(WARNING) << __func__
+                     << " Can't find previously discovered ble peripheral.";
         continue;
       }
 
@@ -756,9 +759,9 @@ void BleV2Medium::OnRegisterGattServices(
 
   *out_registration_success = in_registration_success;
 
-  DVLOG(1) << "BleV2Medium::" << __func__
-           << ": GATT Services registration result = "
-           << (*out_registration_success ? "success" : "failure");
+  VLOG(1) << "BleV2Medium::" << __func__
+          << ": GATT Services registration result = "
+          << (*out_registration_success ? "success" : "failure");
 
   if (!register_gatt_services_waitable_event->IsSignaled()) {
     register_gatt_services_waitable_event->Signal();

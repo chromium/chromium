@@ -64,7 +64,7 @@ void TestInvalidImage(const char* webp_file, bool parse_error_expected) {
 
 void TestWebPBppHistogram(const char* image_name,
                           const char* histogram_name = nullptr,
-                          base::HistogramBase::Sample sample = 0) {
+                          base::HistogramBase::Sample32 sample = 0) {
   TestBppHistogram(CreateWEBPDecoder, "WebP", image_name, histogram_name,
                    sample);
 }

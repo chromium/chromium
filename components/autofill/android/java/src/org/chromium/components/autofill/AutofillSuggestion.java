@@ -8,22 +8,24 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.DropdownItemBase;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
 
 /** Autofill suggestion container used to store information needed for each Autofill popup entry. */
+@NullMarked
 public class AutofillSuggestion extends DropdownItemBase {
-    private final String mLabel;
-    @Nullable private final String mSecondaryLabel;
+    private final @Nullable String mLabel;
+    private final @Nullable String mSecondaryLabel;
     private final String mSublabel;
-    @Nullable private final String mSecondarySublabel;
-    @Nullable private final String mLabelContentDescription;
-    @Nullable private final String mItemTag;
+    private final @Nullable String mSecondarySublabel;
+    private final @Nullable String mLabelContentDescription;
+    private final @Nullable String mItemTag;
     private final int mIconId;
     private final boolean mIsIconAtStart;
     private final int mSuggestionType;
@@ -32,10 +34,10 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final boolean mIsBoldLabel;
     private final boolean mApplyDeactivatedStyle;
     private final boolean mShouldDisplayTermsAvailable;
-    @Nullable private final String mFeatureForIph;
-    private final String mIphDescriptionText;
-    @Nullable private final GURL mCustomIconUrl;
-    @Nullable private final Drawable mIconDrawable;
+    private final @Nullable String mFeatureForIph;
+    private final @Nullable String mIphDescriptionText;
+    private final @Nullable GURL mCustomIconUrl;
+    private final @Nullable Drawable mIconDrawable;
 
     /**
      * Constructs a Autofill suggestion container. Use the {@link AutofillSuggestion.Builder}
@@ -63,7 +65,7 @@ public class AutofillSuggestion extends DropdownItemBase {
      */
     @VisibleForTesting
     public AutofillSuggestion(
-            String label,
+            @Nullable String label,
             @Nullable String secondaryLabel,
             String sublabel,
             @Nullable String secondarySublabel,
@@ -78,7 +80,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             boolean applyDeactivatedStyle,
             boolean shouldDisplayTermsAvailable,
             @Nullable String featureForIph,
-            String iphDescriptionText,
+            @Nullable String iphDescriptionText,
             @Nullable GURL customIconUrl,
             @Nullable Drawable iconDrawable) {
         mLabel = label;
@@ -102,13 +104,12 @@ public class AutofillSuggestion extends DropdownItemBase {
     }
 
     @Override
-    public String getLabel() {
+    public @Nullable String getLabel() {
         return mLabel;
     }
 
     @Override
-    @Nullable
-    public String getSecondaryLabel() {
+    public @Nullable String getSecondaryLabel() {
         return mSecondaryLabel;
     }
 
@@ -118,14 +119,12 @@ public class AutofillSuggestion extends DropdownItemBase {
     }
 
     @Override
-    @Nullable
-    public String getSecondarySublabel() {
+    public @Nullable String getSecondarySublabel() {
         return mSecondarySublabel;
     }
 
     @Override
-    @Nullable
-    public String getItemTag() {
+    public @Nullable String getItemTag() {
         return mItemTag;
     }
 
@@ -161,19 +160,16 @@ public class AutofillSuggestion extends DropdownItemBase {
     }
 
     @Override
-    @Nullable
-    public GURL getCustomIconUrl() {
+    public @Nullable GURL getCustomIconUrl() {
         return mCustomIconUrl;
     }
 
     @Override
-    @Nullable
-    public Drawable getIconDrawable() {
+    public @Nullable Drawable getIconDrawable() {
         return mIconDrawable;
     }
 
-    @Nullable
-    public String getLabelContentDescription() {
+    public @Nullable String getLabelContentDescription() {
         return mLabelContentDescription;
     }
 
@@ -198,12 +194,11 @@ public class AutofillSuggestion extends DropdownItemBase {
         return mShouldDisplayTermsAvailable;
     }
 
-    @Nullable
-    public String getFeatureForIph() {
+    public @Nullable String getFeatureForIph() {
         return mFeatureForIph;
     }
 
-    public String getIphDescriptionText() {
+    public @Nullable String getIphDescriptionText() {
         return mIphDescriptionText;
     }
 
@@ -216,7 +211,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             return false;
         }
         AutofillSuggestion other = (AutofillSuggestion) o;
-        return this.mLabel.equals(other.mLabel)
+        return Objects.equals(this.mLabel, other.mLabel)
                 && Objects.equals(this.mSecondaryLabel, other.mSecondaryLabel)
                 && this.mSublabel.equals(other.mSublabel)
                 && Objects.equals(this.mSecondarySublabel, other.mSecondarySublabel)
@@ -231,52 +226,30 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && this.mApplyDeactivatedStyle == other.mApplyDeactivatedStyle
                 && this.mShouldDisplayTermsAvailable == other.mShouldDisplayTermsAvailable
                 && Objects.equals(this.mFeatureForIph, other.mFeatureForIph)
-                && this.mIphDescriptionText.equals(other.mIphDescriptionText)
+                && Objects.equals(this.mIphDescriptionText, other.mIphDescriptionText)
                 && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
                 && areIconsEqual(this.mIconDrawable, other.mIconDrawable);
-    }
-
-    public Builder toBuilder() {
-        return new Builder()
-                .setLabel(mLabel)
-                .setSecondaryLabel(mSecondaryLabel)
-                .setSubLabel(mSublabel)
-                .setSecondarySubLabel(mSecondarySublabel)
-                .setLabelContentDescription(mLabelContentDescription)
-                .setItemTag(mItemTag)
-                .setIconId(mIconId)
-                .setIsIconAtStart(mIsIconAtStart)
-                .setSuggestionType(mSuggestionType)
-                .setIsDeletable(mIsDeletable)
-                .setIsMultiLineLabel(mIsMultilineLabel)
-                .setIsBoldLabel(mIsBoldLabel)
-                .setApplyDeactivatedStyle(mApplyDeactivatedStyle)
-                .setShouldDisplayTermsAvailable(mShouldDisplayTermsAvailable)
-                .setFeatureForIph(mFeatureForIph)
-                .setIphDescriptionText(mIphDescriptionText)
-                .setCustomIconUrl(mCustomIconUrl)
-                .setIconDrawable(mIconDrawable);
     }
 
     /** Builder for the {@link AutofillSuggestion}. */
     public static final class Builder {
         private int mIconId;
-        private GURL mCustomIconUrl;
-        private Drawable mIconDrawable;
+        private @Nullable GURL mCustomIconUrl;
+        private @Nullable Drawable mIconDrawable;
         private boolean mIsBoldLabel;
         private boolean mIsIconAtStart;
         private boolean mIsDeletable;
         private boolean mIsMultiLineLabel;
         private boolean mApplyDeactivatedStyle;
         private boolean mShouldDisplayTermsAvailable;
-        private String mFeatureForIph;
-        private String mIphDescriptionText;
-        private String mItemTag;
-        private String mLabel;
-        private String mSecondaryLabel;
-        private String mSubLabel;
-        private String mSecondarySubLabel;
-        private String mLabelContentDescription;
+        private @Nullable String mFeatureForIph;
+        private @Nullable String mIphDescriptionText;
+        private @Nullable String mItemTag;
+        private @Nullable String mLabel;
+        private @Nullable String mSecondaryLabel;
+        private @Nullable String mSubLabel;
+        private @Nullable String mSecondarySubLabel;
+        private @Nullable String mLabelContentDescription;
         private int mSuggestionType;
 
         public Builder setIconId(int iconId) {

@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -27,7 +26,7 @@ class PresentationReceiverWindowDelegate;
 class PresentationReceiverWindowFrame;
 class LocationBarModelImpl;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class FullscreenWindowObserver;
 #endif
 
@@ -90,7 +89,7 @@ class PresentationReceiverWindowView final
   // ExclusiveAccessContext overrides.
   Profile* GetProfile() final;
   bool IsFullscreen() const final;
-  void EnterFullscreen(const GURL& url,
+  void EnterFullscreen(const url::Origin& origin,
                        ExclusiveAccessBubbleType bubble_type,
                        const int64_t display_id) final;
   void ExitFullscreen() final;
@@ -130,7 +129,7 @@ class PresentationReceiverWindowView final
   ui::Accelerator fullscreen_accelerator_;
   std::unique_ptr<ExclusiveAccessBubbleViews> exclusive_access_bubble_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<FullscreenWindowObserver> window_observer_;
 #endif
 };

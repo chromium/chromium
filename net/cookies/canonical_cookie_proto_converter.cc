@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/types/expected.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"

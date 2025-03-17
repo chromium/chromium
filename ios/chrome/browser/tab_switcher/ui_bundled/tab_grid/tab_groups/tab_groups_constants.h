@@ -21,6 +21,9 @@ extern NSString* const kTabGroupNewTabButtonIdentifier;
 extern NSString* const kTabGroupOverflowMenuButtonIdentifier;
 extern NSString* const kTabGroupFacePileButtonIdentifier;
 
+// Accessibility identifiers for the Recent Activity view.
+extern NSString* const kTabGroupRecentActivityIdentifier;
+
 // Accessibility identifiers for the Tab Groups panel in Tab Grid.
 extern NSString* const kTabGroupsPanelIdentifier;
 

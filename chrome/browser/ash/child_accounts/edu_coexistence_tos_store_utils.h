@@ -57,7 +57,7 @@ std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(Profile* profile);
 
 // |profile| is the Primary user profile which is the family link user.
 std::string GetAcceptedToSVersion(Profile* profile,
-                                  const std::string& secondary_edu_gaia_id);
+                                  const GaiaId& secondary_edu_gaia_id);
 
 }  // namespace edu_coexistence
 }  // namespace ash

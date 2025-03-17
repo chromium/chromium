@@ -8,9 +8,9 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {Spannable} from '../../common/spannable.js';
+import type {Spannable} from '../../common/spannable.js';
 
-import {LibLouis} from './liblouis.js';
+import type {LibLouis} from './liblouis.js';
 import {BrailleTextStyleSpan, ExtraCellsSpan, ValueSelectionSpan, ValueSpan} from './spans.js';
 
 interface Chunk {

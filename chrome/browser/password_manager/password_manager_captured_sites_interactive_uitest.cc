@@ -35,8 +35,6 @@ using captured_sites_test_utils::GetParamAsString;
 
 namespace {
 
-constexpr base::TimeDelta kWaitForSaveFallbackInterval = base::Seconds(5);
-
 // Return path to the Password Manager captured sites test root directory. The
 // directory contains subdirectories for different password manager test
 // scenarios. The test scenario subdirectories contain site capture files
@@ -133,8 +131,7 @@ class CapturedSitesPasswordManagerBrowserTest
 
   bool WaitForSaveFallback() override {
     BubbleObserver bubble_observer(WebContents());
-    if (bubble_observer.WaitForFallbackForSaving(
-            kWaitForSaveFallbackInterval)) {
+    if (bubble_observer.WaitForFallbackForSaving()) {
       return true;
     }
     ADD_FAILURE() << "Chrome did not show the save fallback icon!";

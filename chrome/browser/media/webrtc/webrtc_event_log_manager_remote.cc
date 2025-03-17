@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_remote.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1219,15 +1219,15 @@ bool WebRtcRemoteEventLogManager::AdditionalActiveLogAllowed(
   // Limit over the number of pending logs (per BrowserContext). We count active
   // logs too, since they become pending logs once completed.
   const size_t active_count =
-      base::ranges::count(active_logs_, browser_context_id,
-                          [](const decltype(active_logs_)::value_type& log) {
-                            return log.first.browser_context_id;
-                          });
+      std::ranges::count(active_logs_, browser_context_id,
+                         [](const decltype(active_logs_)::value_type& log) {
+                           return log.first.browser_context_id;
+                         });
   const size_t pending_count =
-      base::ranges::count(pending_logs_, browser_context_id,
-                          [](const decltype(pending_logs_)::value_type& log) {
-                            return log.browser_context_id;
-                          });
+      std::ranges::count(pending_logs_, browser_context_id,
+                         [](const decltype(pending_logs_)::value_type& log) {
+                           return log.browser_context_id;
+                         });
   return active_count + pending_count < kMaxPendingRemoteBoundWebRtcEventLogs;
 }
 

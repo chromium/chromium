@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 
 #include "base/at_exit.h"
+#include "base/command_line.h"
 #include "base/i18n/icu_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -27,6 +28,9 @@ class Environment {
     // ICU is as of 2024-11-28 reachable from here so we need to initialize ICU
     // to avoid hitting NOTREACHED()s. See https://crbug.com/381129857.
     CHECK(base::i18n::InitializeICU());
+    // Parsing URLs requires command line to be available.
+    // See https://crbug.com/386688712
+    base::CommandLine::Init(/*argc=*/0, /*argv=*/nullptr);
   }
   // Required by ICU integration according to several other fuzzer environments.
   // TODO(pbos): Consider breaking out this fuzzer environment to something
@@ -49,15 +53,15 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                   "versions": [
                     {
                       "version": "1.0.0",
-                      "url": "https://example.com/bundle.swbn"
+                      "src": "https://example.com/bundle.swbn"
                     },
                     {
                       "version": "1.0.3",
-                      "url": "bundle.swbn"
+                      "src": "bundle.swbn"
                     },
                     {
                       "version": "1.0.0",
-                      "url": "https://example.com/bundle2.swbn"
+                      "src": "https://example.com/bundle2.swbn"
                     }
                   ]
                 })"),
@@ -65,7 +69,7 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                   "versions": [
                     {
                       "version": "1.0.0",
-                      "url": "https://example.com/bundle.swbn",
+                      "src": "https://example.com/bundle.swbn",
                       "blah": 123
                     }
                   ]
@@ -74,7 +78,7 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                   "versions": [
                     {
                       "version": "1.0.0",
-                      "url": "https://example.com/bundle.swbn",
+                      "src": "https://example.com/bundle.swbn",
                       "channels": ["test", "stable", "test"]
                     }
                   ]
@@ -92,7 +96,7 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                   "versions": [
                     {
                       "version": "1.0.0",
-                      "url": "https://example.com/bundle.swbn",
+                      "src": "https://example.com/bundle.swbn",
                       "channels": ["test", "stable", "test"]
                     }
                   ]

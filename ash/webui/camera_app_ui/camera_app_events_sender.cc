@@ -152,7 +152,7 @@ CameraAppEventsSender::CreateConnection() {
 
 void CameraAppEventsSender::SendStartSessionEvent(
     camera_app::mojom::StartSessionEventParamsPtr params) {
-  auto language = static_cast<base::HistogramBase::Sample>(
+  auto language = static_cast<base::HistogramBase::Sample32>(
       base::HashMetricName(system_language_));
   metrics::structured::StructuredMetricsClient::Record(std::move(
       cros_events::CameraApp_StartSession()

@@ -10,6 +10,10 @@
 // Model delegate for the Magic Stack Half Sheet.
 @protocol MagicStackHalfSheetModelDelegate
 
+// Indicate to the model delegate that the combined most visited sites tile
+// enabled state changed.
+- (void)mostVisitedSitesEnabledChanged:(BOOL)mostVisitedSitesEnabled;
+
 // Indicate to the model delegate that the Set Up List enabled state changed.
 - (void)setUpListEnabledChanged:(BOOL)setUpListEnabled;
 

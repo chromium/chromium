@@ -10,7 +10,6 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -64,7 +63,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerFreezingBrowserTest, FreezeTwice) {
       PerformanceManager::GetPrimaryPageNodeForWebContents(contents);
 
   PageLifecycleWaiter waiter;
-  RunInGraph([&](Graph* graph) { graph->AddPageNodeObserver(&waiter); });
+  Graph* graph = PerformanceManager::GetGraph();
+  graph->AddPageNodeObserver(&waiter);
 
   waiter.SetExpectedLifecycleState(PageNode::LifecycleState::kFrozen);
   freezer.MaybeFreezePageNode(page_node.get());
@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerFreezingBrowserTest, FreezeTwice) {
   freezer.MaybeFreezePageNode(page_node.get());
   waiter.WaitForExpectedLifecycleState();
 
-  RunInGraph([&](Graph* graph) { graph->RemovePageNodeObserver(&waiter); });
+  graph->RemovePageNodeObserver(&waiter);
 }
 
 }  // namespace performance_manager

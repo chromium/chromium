@@ -233,7 +233,7 @@ class HomeButton::ButtonImageView : public views::View {
       return;
     }
 
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         GetBackgroundColorId(), shelf_config->control_border_radius()));
 
     if (shelf_config->in_tablet_mode() && !shelf_config->is_in_app()) {
@@ -438,10 +438,6 @@ void HomeButton::AddedToWidget() {
 void HomeButton::OnGestureEvent(ui::GestureEvent* event) {
   if (!controller_.MaybeHandleGestureEvent(event))
     Button::OnGestureEvent(event);
-}
-
-std::u16string HomeButton::GetTooltipText(const gfx::Point& p) const {
-  return GetCachedTooltipText();
 }
 
 void HomeButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(
@@ -682,9 +678,8 @@ void HomeButton::CreateExpandableContainer() {
 
 void HomeButton::UpdateTooltipText() {
   // Don't show a tooltip if we're already showing the app list.
-  SetCachedTooltipText(IsShowingAppList()
-                           ? std::u16string()
-                           : GetViewAccessibility().GetCachedName());
+  SetTooltipText(IsShowingAppList() ? std::u16string()
+                                    : GetViewAccessibility().GetCachedName());
 }
 
 void HomeButton::CreateNudgeLabel() {
@@ -712,7 +707,7 @@ void HomeButton::CreateNudgeLabel() {
   nudge_label_->layer()->SetFillsBoundsOpaquely(false);
   nudge_label_->SetTextContext(CONTEXT_LAUNCHER_NUDGE_LABEL);
   nudge_label_->SetTextStyle(views::style::STYLE_EMPHASIZED);
-  nudge_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  nudge_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                         *nudge_label_);
   expandable_container_->SetVisible(false);

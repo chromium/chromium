@@ -4,27 +4,30 @@
 
 package org.chromium.chrome.browser.grouped_affiliations;
 
-import android.content.Context;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.NonNull;
+import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
 // JNI bridge to display the acknowledgement sheet when filling grouped
 // credentials on Android.
+@NullMarked
 public class AcknowledgeGroupedCredentialSheetBridge {
     private long mNativeAcknowledgeGroupedCredentialSheetBridge;
     private final WindowAndroid mWindowAndroid;
-    private AcknowledgeGroupedCredentialSheetController mController;
+    private @Nullable AcknowledgeGroupedCredentialSheetController mController;
 
     @CalledByNative
     public AcknowledgeGroupedCredentialSheetBridge(
-            long nativeAddUsernameDialogBridge, @NonNull WindowAndroid windowAndroid) {
+            long nativeAddUsernameDialogBridge, WindowAndroid windowAndroid) {
         mNativeAcknowledgeGroupedCredentialSheetBridge = nativeAddUsernameDialogBridge;
         mWindowAndroid = windowAndroid;
     }
@@ -39,7 +42,7 @@ public class AcknowledgeGroupedCredentialSheetBridge {
         mController =
                 new AcknowledgeGroupedCredentialSheetController(
                         context,
-                        BottomSheetControllerProvider.from(mWindowAndroid),
+                        assumeNonNull(BottomSheetControllerProvider.from(mWindowAndroid)),
                         this::onDismissed);
         mController.show(currentHostname, credentialHostname);
     }
@@ -47,6 +50,7 @@ public class AcknowledgeGroupedCredentialSheetBridge {
     @CalledByNative
     public void dismiss() {
         if (mNativeAcknowledgeGroupedCredentialSheetBridge == 0) return;
+        assumeNonNull(mController);
         mController.dismiss();
         mNativeAcknowledgeGroupedCredentialSheetBridge = 0;
     }

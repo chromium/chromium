@@ -21,8 +21,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "remoting/base/fake_oauth_token_getter.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_client.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/protobuf_http_test_responder.h"
 #include "remoting/base/scoped_protobuf_http_request.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
@@ -77,12 +77,11 @@ ftl::InboxMessage CreateInboxMessage(const std::string& message_id,
   return message;
 }
 
-base::OnceCallback<void(const ProtobufHttpStatus&)>
-CheckStatusThenQuitRunLoopCallback(
+base::OnceCallback<void(const HttpStatus&)> CheckStatusThenQuitRunLoopCallback(
     const base::Location& from_here,
-    ProtobufHttpStatus::Code expected_status_code,
+    HttpStatus::Code expected_status_code,
     base::RunLoop* run_loop) {
-  return base::BindLambdaForTesting([=](const ProtobufHttpStatus& status) {
+  return base::BindLambdaForTesting([=](const HttpStatus& status) {
     ASSERT_EQ(expected_status_code, status.error_code())
         << "Incorrect status code. Location: " << from_here.ToString();
     run_loop->QuitWhenIdle();
@@ -186,9 +185,9 @@ TEST_F(FtlMessagingClientTest, TestSendMessage_Unauthenticated) {
   messaging_client_->SendMessage(
       kFakeReceiverId, kFakeSenderRegId, CreateXmppMessage(kMessage1Text),
       CheckStatusThenQuitRunLoopCallback(
-          FROM_HERE, ProtobufHttpStatus::Code::UNAUTHENTICATED, &run_loop));
-  test_responder_.AddErrorToMostRecentRequestUrl(ProtobufHttpStatus(
-      ProtobufHttpStatus::Code::UNAUTHENTICATED, "Unauthenticated"));
+          FROM_HERE, HttpStatus::Code::UNAUTHENTICATED, &run_loop));
+  test_responder_.AddErrorToMostRecentRequestUrl(
+      HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "Unauthenticated"));
   run_loop.Run();
 }
 
@@ -196,8 +195,8 @@ TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithoutRegId) {
   base::RunLoop run_loop;
   messaging_client_->SendMessage(
       kFakeReceiverId, "", CreateXmppMessage(kMessage1Text),
-      CheckStatusThenQuitRunLoopCallback(
-          FROM_HERE, ProtobufHttpStatus::Code::OK, &run_loop));
+      CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
+                                         &run_loop));
 
   ftl::InboxSendRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
@@ -215,8 +214,8 @@ TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithRegId) {
   base::RunLoop run_loop;
   messaging_client_->SendMessage(
       kFakeReceiverId, kFakeSenderRegId, CreateXmppMessage(kMessage1Text),
-      CheckStatusThenQuitRunLoopCallback(
-          FROM_HERE, ProtobufHttpStatus::Code::OK, &run_loop));
+      CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
+                                         &run_loop));
 
   ftl::InboxSendRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
@@ -239,7 +238,7 @@ TEST_F(FtlMessagingClientTest, TestStartReceivingMessages_CallbacksForwarded) {
                            FtlMessagingClient::DoneCallback on_closed) {
         std::move(on_ready).Run();
         std::move(on_closed).Run(
-            ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAUTHENTICATED, ""));
+            HttpStatus(HttpStatus::Code::UNAUTHENTICATED, ""));
       }));
 
   base::MockCallback<base::OnceClosure> mock_on_ready_closure;
@@ -247,9 +246,8 @@ TEST_F(FtlMessagingClientTest, TestStartReceivingMessages_CallbacksForwarded) {
 
   messaging_client_->StartReceivingMessages(
       mock_on_ready_closure.Get(),
-      base::BindLambdaForTesting([&](const ProtobufHttpStatus& status) {
-        ASSERT_EQ(ProtobufHttpStatus::Code::UNAUTHENTICATED,
-                  status.error_code());
+      base::BindLambdaForTesting([&](const HttpStatus& status) {
+        ASSERT_EQ(HttpStatus::Code::UNAUTHENTICATED, status.error_code());
         run_loop.Quit();
       }));
 
@@ -289,11 +287,11 @@ TEST_F(FtlMessagingClientTest,
 
   scoped_stream = mock_message_reception_channel_->stream_opener()->Run(
       on_channel_ready.Get(), mock_on_incoming_msg.Get(),
-      CheckStatusThenQuitRunLoopCallback(
-          FROM_HERE, ProtobufHttpStatus::Code::OK, &run_loop));
+      CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
+                                         &run_loop));
 
   test_responder_.AddStreamResponseToMostRecentRequestUrl(
-      {&response_1, &response_2}, ProtobufHttpStatus::OK());
+      {&response_1, &response_2}, HttpStatus::OK());
 
   run_loop.Run();
 }

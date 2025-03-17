@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/log/file_net_log_observer.h"
 
 #include <algorithm>
@@ -30,10 +35,6 @@
 #include "net/url_request/url_request_context.h"
 
 namespace {
-
-// Number of events that can build up in |write_queue_| before a task is posted
-// to the file task runner to flush them to disk.
-const int kNumWriteQueueEvents = 15;
 
 // TODO(eroman): Should use something other than 10 for number of files?
 const int kDefaultNumFiles = 10;
@@ -436,9 +437,9 @@ void FileNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
 
   // If events build up in |write_queue_|, trigger the file task runner to drain
   // the queue. Because only 1 item is added to the queue at a time, if
-  // queue_size > kNumWriteQueueEvents a task has already been posted, or will
-  // be posted.
-  if (queue_size == kNumWriteQueueEvents) {
+  // queue_size > num_write_queue_events_ a task has already been posted, or
+  // will be posted.
+  if (queue_size == num_write_queue_events_) {
     file_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&FileNetLogObserver::FileWriter::Flush,

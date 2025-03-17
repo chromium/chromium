@@ -9,28 +9,33 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_error_handler.h"
 
-@protocol LensOverlayNetworkIssueDelegate;
+@protocol LensOverlayNetworkIssuePresenterDelegate;
 
 // Utility class for presenting the connectivity alert in Lens Overlay.
-@interface LensOverlayNetworkIssueAlertPresenter
-    : NSObject <LensOverlayErrorHandler>
+@interface LensOverlayNetworkIssuePresenter : NSObject <LensOverlayErrorHandler>
 
 - (instancetype)initWithBaseViewController:
     (UIViewController*)baseViewController;
 
+- (instancetype)init NS_UNAVAILABLE;
+
 // Delegate for events of this presenter.
-@property(nonatomic, weak) id<LensOverlayNetworkIssueDelegate> delegate;
+@property(nonatomic, weak) id<LensOverlayNetworkIssuePresenterDelegate>
+    delegate;
 
 @end
 
 // Delegate for events related to issues in connectivity.
-@protocol LensOverlayNetworkIssueDelegate <NSObject>
+// A set of methods to react to events related to issues in connectivity.
+@protocol LensOverlayNetworkIssuePresenterDelegate <NSObject>
 
-/// Called immediately before the alert is shown.
-- (void)onNetworkIssueAlertWillShow;
+/// Informs the delegate that an alert will be shown.
+- (void)lensOverlayNetworkIssuePresenterWillShowAlert:
+    (LensOverlayNetworkIssuePresenter*)presenter;
 
 /// The user acknowledged the connectivity issue.
-- (void)onNetworkIssueAlertAcknowledged;
+- (void)lensOverlayNetworkIssuePresenterDidAcknowledgeAlert:
+    (LensOverlayNetworkIssuePresenter*)presenter;
 
 @end
 

@@ -19,6 +19,7 @@
 #include "media/cast/constants.h"
 #include "media/cast/openscreen/remoting_proto_utils.h"
 #include "media/cast/sender/frame_sender.h"
+#include "media/cast/test/test_with_cast_environment.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
@@ -114,9 +115,8 @@ class MojoSenderWrapper {
     is_frame_in_flight_ = true;
 
     data_pipe_writer_.Write(
-        buffer->data(), buffer->size(),
-        base::BindOnce(&MojoSenderWrapper::OnPipeWriteComplete,
-                       weak_factory_.GetWeakPtr()));
+        *buffer, base::BindOnce(&MojoSenderWrapper::OnPipeWriteComplete,
+                                weak_factory_.GetWeakPtr()));
     stream_sender_->SendFrame(
         media::mojom::DecoderBuffer::From(*buffer),
         base::BindOnce(&MojoSenderWrapper::OnFrameReadComplete,
@@ -148,15 +148,9 @@ class MojoSenderWrapper {
 
 }  // namespace
 
-class RemotingSenderTest : public ::testing::Test {
+class RemotingSenderTest : public media::cast::TestWithCastEnvironment {
  public:
-  RemotingSenderTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        cast_environment_(new media::cast::CastEnvironment(
-            task_environment_.GetMockTickClock(),
-            task_environment_.GetMainThreadTaskRunner(),
-            task_environment_.GetMainThreadTaskRunner(),
-            task_environment_.GetMainThreadTaskRunner())) {
+  RemotingSenderTest() {
     media::cast::FrameSenderConfig video_config =
         media::cast::GetDefaultVideoSenderConfig();
     std::unique_ptr<testing::StrictMock<FakeSender>> fake_sender =
@@ -173,7 +167,7 @@ class RemotingSenderTest : public ::testing::Test {
                                                   producer_end, consumer_end));
 
     remoting_sender_ = base::WrapUnique(new RemotingSender(
-        cast_environment_, std::move(fake_sender), video_config,
+        cast_environment(), std::move(fake_sender), video_config,
         std::move(consumer_end), sender.InitWithNewPipeAndPassReceiver(),
         base::BindOnce(
             [](bool expecting_error_callback_run) {
@@ -203,23 +197,13 @@ class RemotingSenderTest : public ::testing::Test {
     third_buffer_->set_is_key_frame(true);
   }
 
-  void TearDown() final {
-    remoting_sender_.reset();
-
-    // Allow any pending tasks to run before destruction.
-    RunPendingTasks();
-  }
-
  protected:
   // Allow pending tasks, such as Mojo method calls, to execute.
-  void RunPendingTasks() { task_environment_.RunUntilIdle(); }
+  void RunPendingTasks() { RunUntilIdle(); }
 
   void SendFrameCancelled(media::cast::FrameId id) {
     remoting_sender_->OnFrameCanceled(id);
   }
-
-  base::test::TaskEnvironment task_environment_;
-  const scoped_refptr<media::cast::CastEnvironment> cast_environment_;
 
   raw_ptr<testing::StrictMock<FakeSender>, DanglingUntriaged> sender_;
   bool expecting_error_callback_run_ = false;
@@ -246,7 +230,7 @@ TEST_F(RemotingSenderTest, SendsFramesViaMojoDataPipe) {
 
   EXPECT_CALL(*sender_, GetUnacknowledgedFrameCount).WillOnce(Return(0));
   EXPECT_CALL(*sender_, EnqueueFrame(_))
-      .WillOnce(AreEqualFirstFrame(first_buffer_, &task_environment_));
+      .WillOnce(AreEqualFirstFrame(first_buffer_, &task_environment()));
   mojo_sender_wrapper_->SendFrame(first_buffer_);
   EXPECT_TRUE(mojo_sender_wrapper_->is_frame_in_flight());
   RunPendingTasks();
@@ -254,7 +238,7 @@ TEST_F(RemotingSenderTest, SendsFramesViaMojoDataPipe) {
 
   EXPECT_CALL(*sender_, GetUnacknowledgedFrameCount).WillOnce(Return(0));
   EXPECT_CALL(*sender_, EnqueueFrame(_))
-      .WillOnce(AreEqualNotFirstFrame(second_buffer_, &task_environment_));
+      .WillOnce(AreEqualNotFirstFrame(second_buffer_, &task_environment()));
   mojo_sender_wrapper_->SendFrame(second_buffer_);
   EXPECT_TRUE(mojo_sender_wrapper_->is_frame_in_flight());
   RunPendingTasks();
@@ -262,7 +246,7 @@ TEST_F(RemotingSenderTest, SendsFramesViaMojoDataPipe) {
 
   EXPECT_CALL(*sender_, GetUnacknowledgedFrameCount).WillOnce(Return(0));
   EXPECT_CALL(*sender_, EnqueueFrame(_))
-      .WillOnce(AreEqualNotFirstFrame(third_buffer_, &task_environment_));
+      .WillOnce(AreEqualNotFirstFrame(third_buffer_, &task_environment()));
   mojo_sender_wrapper_->SendFrame(third_buffer_);
   EXPECT_TRUE(mojo_sender_wrapper_->is_frame_in_flight());
   RunPendingTasks();
@@ -295,7 +279,7 @@ TEST_F(RemotingSenderTest, CancelsOrAcksFramesInFlight) {
   EXPECT_TRUE(mojo_sender_wrapper_->is_frame_in_flight());
 
   EXPECT_CALL(*sender_, EnqueueFrame(_))
-      .WillOnce(AreEqualFirstFrame(first_buffer_, &task_environment_));
+      .WillOnce(AreEqualFirstFrame(first_buffer_, &task_environment()));
   EXPECT_CALL(*sender_, GetUnacknowledgedFrameCount)
       .WillOnce(Return(media::cast::kMaxUnackedFrames - 1));
   SendFrameCancelled(first_frame_id_);
@@ -315,7 +299,7 @@ TEST_F(RemotingSenderTest, FramesWaitWhenEnqueueFails) {
 
   EXPECT_CALL(*sender_, GetUnacknowledgedFrameCount).WillOnce(Return(0));
   EXPECT_CALL(*sender_, EnqueueFrame(_))
-      .WillOnce(AreEqualFirstFrame(first_buffer_, &task_environment_));
+      .WillOnce(AreEqualFirstFrame(first_buffer_, &task_environment()));
   SendFrameCancelled(first_frame_id_);
   RunPendingTasks();
   EXPECT_FALSE(mojo_sender_wrapper_->is_frame_in_flight());

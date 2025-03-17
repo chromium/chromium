@@ -6,6 +6,8 @@ package org.chromium.android_webview.common;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -21,6 +23,7 @@ import java.lang.annotation.Target;
     MediaIntegrityErrorCode.INVALID_ARGUMENT,
     MediaIntegrityErrorCode.TOKEN_PROVIDER_INVALID,
 })
+@NullMarked
 public @interface MediaIntegrityErrorCode {
     int INTERNAL_ERROR = 1;
     int NON_RECOVERABLE_ERROR = 2;

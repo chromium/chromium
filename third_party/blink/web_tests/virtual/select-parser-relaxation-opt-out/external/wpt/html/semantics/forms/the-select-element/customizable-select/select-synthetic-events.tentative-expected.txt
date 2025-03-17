@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] defaultbutton: Synthetic events should not trigger behaviors of select element.
+  assert_equals: Selected <option> should be focused after opening the picker. expected Element node <option class="one">one</option> but got Element node <select id="defaultbutton">\n  <option class="one">one</op...
+[FAIL] custombutton: Synthetic events should not trigger behaviors of select element.
+  assert_equals: Selected <option> should be focused after opening the picker. expected Element node <option class="one">one</option> but got Element node <select id="custombutton">\n  button\n  <option class="one"...
+Harness: the test ran to completion.
+

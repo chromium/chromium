@@ -4,6 +4,7 @@
 
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 
+#include "base/auto_reset.h"
 #include "base/observer_list.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -95,8 +96,9 @@ ProfileOAuth2TokenServiceDelegate::ScopedBatchChange::~ScopedBatchChange() {
 ProfileOAuth2TokenServiceDelegate::ProfileOAuth2TokenServiceDelegate(
     bool use_backoff)
     : batch_change_depth_(0) {
-  if (use_backoff)
+  if (use_backoff) {
     backoff_entry_ = std::make_unique<net::BackoffEntry>(&kBackoffPolicy);
+  }
 }
 
 ProfileOAuth2TokenServiceDelegate::~ProfileOAuth2TokenServiceDelegate() =
@@ -146,8 +148,9 @@ void ProfileOAuth2TokenServiceDelegate::EndBatchChanges() {
 }
 
 void ProfileOAuth2TokenServiceDelegate::FireEndBatchChanges() {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnEndBatchChanges();
+  }
 }
 
 void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenAvailable(
@@ -174,8 +177,9 @@ void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenAvailable(
   }
 
   ScopedBatchChange batch(this);
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnRefreshTokenAvailable(account_id);
+  }
 }
 
 void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenRevoked(
@@ -190,8 +194,9 @@ void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenRevoked(
   }
 
   ScopedBatchChange batch(this);
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnRefreshTokenRevoked(account_id);
+  }
 
   CHECK(on_refresh_token_revoked_notified_callback_);
   on_refresh_token_revoked_notified_callback_.Run(account_id);
@@ -202,23 +207,32 @@ void ProfileOAuth2TokenServiceDelegate::FireRefreshTokensLoaded() {
   // was the original state before LoadCredentials was called.
   update_refresh_token_source_ = SourceForRefreshTokenOperation::kUnknown;
 
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnRefreshTokensLoaded();
+  }
 }
 
 void ProfileOAuth2TokenServiceDelegate::FireAuthErrorChanged(
     const CoreAccountId& account_id,
     const GoogleServiceAuthError& error) {
   DCHECK(!account_id.empty());
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnAuthErrorChanged(account_id, error,
                                 update_refresh_token_source_);
+  }
 }
 
 #if BUILDFLAG(IS_IOS)
 void ProfileOAuth2TokenServiceDelegate::FireAccountsOnDeviceChanged() {
   for (auto& observer : observer_list_) {
     observer.OnAccountsOnDeviceChanged();
+  }
+}
+
+void ProfileOAuth2TokenServiceDelegate::FireAccountOnDeviceUpdated(
+    const AccountInfo& account_info) {
+  for (auto& observer : observer_list_) {
+    observer.OnAccountOnDeviceUpdated(account_info);
   }
 }
 #endif
@@ -251,15 +265,14 @@ const net::BackoffEntry* ProfileOAuth2TokenServiceDelegate::BackoffEntry()
 }
 
 void ProfileOAuth2TokenServiceDelegate::LoadCredentials(
-    const CoreAccountId& primary_account_id,
-    bool is_syncing) {
+    const CoreAccountId& primary_account_id) {
   DCHECK_EQ(SourceForRefreshTokenOperation::kUnknown,
             update_refresh_token_source_);
   // AutoReset is not used here since the call to loading the credentials is
   // asynchronous. The source will be reset in `FireRefreshTokensLoaded()`.
   update_refresh_token_source_ =
       SourceForRefreshTokenOperation::kTokenService_LoadCredentials;
-  LoadCredentialsInternal(primary_account_id, is_syncing);
+  LoadCredentialsInternal(primary_account_id);
 }
 
 void ProfileOAuth2TokenServiceDelegate::ExtractCredentials(
@@ -339,8 +352,9 @@ void ProfileOAuth2TokenServiceDelegate::UpdateAuthError(
 
   if (backoff_entry_) {
     backoff_entry_->InformOfRequest(!error.IsTransientError());
-    if (error.IsTransientError())
+    if (error.IsTransientError()) {
       backoff_error_ = error;
+    }
   }
   ValidateAccountId(account_id);
 
@@ -348,27 +362,32 @@ void ProfileOAuth2TokenServiceDelegate::UpdateAuthError(
   // We also want to avoid masking a "real" auth error just because we
   // subsequently get a transient network error.  We do keep it around though
   // to report for future requests being denied for "backoff" reasons.
-  if (error.IsTransientError())
+  if (error.IsTransientError()) {
     return;
+  }
 
   // Scope errors are only relevant to the scope set of the request and it does
   // not imply that the account is in an error state.
-  if (error.IsScopePersistentError())
+  if (error.IsScopePersistentError()) {
     return;
+  }
 
   auto it = errors_.find(account_id);
   if (error.state() == GoogleServiceAuthError::NONE) {
-    if (it == errors_.end())
+    if (it == errors_.end()) {
       return;
+    }
     errors_.erase(it);
   } else {
-    if (it != errors_.end() && it->second == error)
+    if (it != errors_.end() && it->second == error) {
       return;
+    }
     errors_[account_id] = error;
   }
 
-  if (fire_auth_error_changed)
+  if (fire_auth_error_changed) {
     FireAuthErrorChanged(account_id, error);
+  }
 }
 
 void ProfileOAuth2TokenServiceDelegate::ClearAuthError(
@@ -379,8 +398,9 @@ void ProfileOAuth2TokenServiceDelegate::ClearAuthError(
   }
 
   auto it = errors_.find(account_id.value());
-  if (it != errors_.end())
+  if (it != errors_.end()) {
     errors_.erase(it);
+  }
 }
 
 GoogleServiceAuthError ProfileOAuth2TokenServiceDelegate::BackOffError() const {

@@ -41,6 +41,7 @@ class ASH_EXPORT NearbyShareFeaturePodController
 
   // NearbyShareController::Observer
   void OnHighVisibilityEnabledChanged(bool enabled) override;
+  void OnNearbyShareEnabledChanged(bool enabled) override;
   void OnVisibilityChanged(
       ::nearby_share::mojom::Visibility visibility) override;
 

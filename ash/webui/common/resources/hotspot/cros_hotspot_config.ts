@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrosHotspotConfig, CrosHotspotConfigInterface} from './cros_hotspot_config.mojom-webui.js';
+import type {CrosHotspotConfigInterface} from './cros_hotspot_config.mojom-webui.js';
+import {CrosHotspotConfig} from './cros_hotspot_config.mojom-webui.js';
 
 /**
  * @fileoverview

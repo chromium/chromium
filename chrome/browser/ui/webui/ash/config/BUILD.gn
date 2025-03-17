@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("config") {
   sources = [
@@ -105,7 +104,6 @@ static_library("config") {
     "//chrome/browser/ui/webui/ash/slow",
     "//chrome/browser/ui/webui/ash/smb_shares",
     "//chrome/browser/ui/webui/ash/sys_internals",
-    "//chrome/browser/ui/webui/ash/vc_tray_tester",
     "//chrome/browser/ui/webui/ash/vm",
     "//chrome/browser/ui/webui/nearby_share",
     "//chromeos/ash/components/kiosk/vision/webui",

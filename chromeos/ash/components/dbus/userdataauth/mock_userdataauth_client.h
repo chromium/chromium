@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_MOCK_USERDATAAUTH_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_MOCK_USERDATAAUTH_CLIENT_H_
 
-#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-
 #include "base/component_export.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -186,6 +186,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
       (const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
        SetUserDataStorageWriteEnabledCallback),
       (override));
+  MOCK_METHOD(void,
+              LockFactorUntilReboot,
+              (const ::user_data_auth::LockFactorUntilRebootRequest& request,
+               LockFactorUntilRebootCallback callback),
+              (override));
 };
 
 }  // namespace ash

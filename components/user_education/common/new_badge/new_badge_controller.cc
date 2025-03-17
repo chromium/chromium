@@ -4,6 +4,7 @@
 
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 
+#include "base/auto_reset.h"
 #include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"

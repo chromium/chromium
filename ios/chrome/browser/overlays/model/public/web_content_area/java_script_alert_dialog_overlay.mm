@@ -29,8 +29,9 @@ const size_t kAlertBlockButtonIndex = 1;
 std::unique_ptr<OverlayResponse> CreateDialogResponse(
     std::unique_ptr<OverlayResponse> response) {
   AlertResponse* alert_response = response->GetInfo<AlertResponse>();
-  if (!alert_response)
+  if (!alert_response) {
     return nullptr;
+  }
 
   JavaScriptAlertDialogResponse::Action action =
       JavaScriptAlertDialogResponse::Action::kConfirm;

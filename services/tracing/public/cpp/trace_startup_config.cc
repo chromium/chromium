@@ -328,8 +328,15 @@ bool TraceStartupConfig::EnableFromConfigFile() {
 bool TraceStartupConfig::EnableFromBackgroundTracing() {
   bool enabled = false;
 #if BUILDFLAG(IS_ANDROID)
-  // Tests can enable this value.
-  enabled |= base::android::GetBackgroundStartupTracingFlag();
+  // We only enable background startup tracing in the browser process. We must
+  // avoid calling JNI in the renderer process - see crbug.com/391360180.
+  // kProcessType is hardcoded ("type") as we cannot depend on content/.
+  if (base::CommandLine::ForCurrentProcess()
+          ->GetSwitchValueASCII("type")
+          .empty()) {
+    // Tests can enable this value.
+    enabled |= base::android::GetBackgroundStartupTracingFlagFromJava();
+  }
 #else
   // TODO(ssid): Implement saving setting to preference for next startup.
 #endif
@@ -347,14 +354,12 @@ bool TraceStartupConfig::EnableFromBackgroundTracing() {
 
 bool TraceStartupConfig::ParseTraceConfigFileContent(
     const std::string& content) {
-  std::optional<base::Value> value(base::JSONReader::Read(content));
-  if (!value || !value->is_dict()) {
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(content);
+  if (!value) {
     return false;
   }
 
-  auto& dict = value->GetDict();
-
-  auto* trace_config_dict = dict.FindDict(kTraceConfigParam);
+  auto* trace_config_dict = value->FindDict(kTraceConfigParam);
   if (!trace_config_dict) {
     return false;
   }
@@ -366,14 +371,14 @@ bool TraceStartupConfig::ParseTraceConfigFileContent(
       perfetto::protos::gen::ChromeConfig::USER_INITIATED, "");
 
   int startup_duration_in_seconds =
-      dict.FindInt(kStartupDurationParam).value_or(0);
+      value->FindInt(kStartupDurationParam).value_or(0);
   if (startup_duration_in_seconds > 0) {
     perfetto_config_.set_duration_ms(startup_duration_in_seconds * 1000);
   }
 
-  if (auto* result_file = dict.FindString(kResultFileParam)) {
+  if (auto* result_file = value->FindString(kResultFileParam)) {
     result_file_ = base::FilePath::FromUTF8Unsafe(*result_file);
-  } else if (auto* result_dir = dict.FindString(kResultDirectoryParam)) {
+  } else if (auto* result_dir = value->FindString(kResultDirectoryParam)) {
     result_file_ = base::FilePath::FromUTF8Unsafe(*result_dir);
     // Java time to get an int instead of a double.
     result_file_ = result_file_.AppendASCII(

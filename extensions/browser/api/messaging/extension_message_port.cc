@@ -62,18 +62,19 @@ const char kClosedWhenPageEntersBFCache[] =
 
 }  // namespace
 
-// Helper class to detect when frames are destroyed.
-class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
-                                           public ProcessManagerObserver {
+// Helper class to detect when contexts (frames or workers) are destroyed.
+class ExtensionMessagePort::ContextTracker
+    : public content::WebContentsObserver,
+      public ProcessManagerObserver {
  public:
-  explicit FrameTracker(ExtensionMessagePort* port) : port_(port) {}
+  explicit ContextTracker(ExtensionMessagePort* port) : port_(port) {}
 
-  FrameTracker(const FrameTracker&) = delete;
-  FrameTracker& operator=(const FrameTracker&) = delete;
+  ContextTracker(const ContextTracker&) = delete;
+  ContextTracker& operator=(const ContextTracker&) = delete;
 
-  ~FrameTracker() override = default;
+  ~ContextTracker() override = default;
 
-  void TrackExtensionProcessFrames() {
+  void TrackExtensionContexts() {
     pm_observation_.Observe(ProcessManager::Get(port_->browser_context_));
   }
 
@@ -156,30 +157,31 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
 
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       pm_observation_{this};
-  raw_ptr<ExtensionMessagePort> port_;  // Owns this FrameTracker.
+  raw_ptr<ExtensionMessagePort> port_;  // Owns this ContextTracker.
 };
 
-ExtensionMessagePort::ExtensionMessagePort(
+std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForTab(
     base::WeakPtr<ChannelDelegate> channel_delegate,
     const PortId& port_id,
     const ExtensionId& extension_id,
     content::RenderFrameHost* render_frame_host,
-    bool include_child_frames)
-    : MessagePort(std::move(channel_delegate), port_id),
-      extension_id_(extension_id),
-      browser_context_(render_frame_host->GetProcess()->GetBrowserContext()),
-      frame_tracker_(new FrameTracker(this)) {
+    bool include_child_frames) {
+  auto port = std::make_unique<ExtensionMessagePort>(
+      channel_delegate, port_id, extension_id,
+      render_frame_host->GetBrowserContext(), PassKey());
+  port->context_tracker_ = std::make_unique<ContextTracker>(port.get());
+
   content::WebContents* tab =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   CHECK(tab);
-  frame_tracker_->TrackTabFrames(tab);
+  port->context_tracker_->TrackTabFrames(tab);
   if (include_child_frames) {
     // TODO(crbug.com/40189370) We don't yet support MParch for
     // prerender so make sure `include_child_frames` is only provided for
     // primary main frames.
     CHECK(render_frame_host->IsInPrimaryMainFrame());
     render_frame_host->ForEachRenderFrameHostWithAction(
-        [tab, this](content::RenderFrameHost* render_frame_host) {
+        [tab, &port](content::RenderFrameHost* render_frame_host) {
           // RegisterFrame should only be called for frames associated with
           // `tab` and not any inner WebContents.
           if (content::WebContents::FromRenderFrameHost(render_frame_host) !=
@@ -187,12 +189,14 @@ ExtensionMessagePort::ExtensionMessagePort(
             return content::RenderFrameHost::FrameIterationAction::
                 kSkipChildren;
           }
-          RegisterFrame(render_frame_host);
+          port->RegisterFrame(render_frame_host);
           return content::RenderFrameHost::FrameIterationAction::kContinue;
         });
   } else {
-    RegisterFrame(render_frame_host);
+    port->RegisterFrame(render_frame_host);
   }
+
+  return port;
 }
 
 // static
@@ -203,8 +207,8 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForExtension(
     content::BrowserContext* browser_context) {
   auto port = std::make_unique<ExtensionMessagePort>(
       channel_delegate, port_id, extension_id, browser_context, PassKey());
-  port->frame_tracker_ = std::make_unique<FrameTracker>(port.get());
-  port->frame_tracker_->TrackExtensionProcessFrames();
+  port->context_tracker_ = std::make_unique<ContextTracker>(port.get());
+  port->context_tracker_->TrackExtensionContexts();
 
   port->for_all_extension_contexts_ = true;
 
@@ -235,14 +239,14 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForEndpoint(
   auto port = std::make_unique<ExtensionMessagePort>(
       channel_delegate, port_id, extension_id, endpoint.browser_context(),
       PassKey());
-  port->frame_tracker_ = std::make_unique<FrameTracker>(port.get());
+  port->context_tracker_ = std::make_unique<ContextTracker>(port.get());
 
   if (endpoint.is_for_render_frame()) {
     content::RenderFrameHost* render_frame_host = endpoint.GetRenderFrameHost();
     content::WebContents* tab =
         content::WebContents::FromRenderFrameHost(render_frame_host);
     CHECK(tab);
-    port->frame_tracker_->TrackTabFrames(tab);
+    port->context_tracker_->TrackTabFrames(tab);
     auto& receiver = port->frames_[render_frame_host->GetGlobalFrameToken()];
     receiver.Bind(std::move(message_port));
     receiver.set_disconnect_handler(base::BindOnce(&ExtensionMessagePort::Prune,
@@ -251,7 +255,7 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForEndpoint(
                                                    // Unused for endpoints.
                                                    base::UnguessableToken()));
   } else {
-    port->frame_tracker_->TrackExtensionProcessFrames();
+    port->context_tracker_->TrackExtensionContexts();
     auto& receiver = port->service_workers_[endpoint.GetWorkerId()];
     receiver.Bind(std::move(message_port));
     receiver.set_disconnect_handler(base::BindOnce(&ExtensionMessagePort::Prune,

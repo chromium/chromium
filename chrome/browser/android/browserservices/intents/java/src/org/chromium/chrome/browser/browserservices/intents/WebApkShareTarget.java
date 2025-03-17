@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.browserservices.intents;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
 
 /** Stores information about the WebAPK's share intent handlers. */
+@NullMarked
 public class WebApkShareTarget {
     private static final int ACTION_INDEX = 0;
     private static final int PARAM_TITLE_INDEX = 1;

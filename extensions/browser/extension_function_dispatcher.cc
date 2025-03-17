@@ -4,6 +4,7 @@
 
 #include "extensions/browser/extension_function_dispatcher.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -504,8 +504,7 @@ ExtensionFunctionDispatcher::GetAssociatedWebContents() const {
 
 content::WebContents*
 ExtensionFunctionDispatcher::GetVisibleWebContents() const {
-  return delegate_ ? delegate_->GetVisibleWebContents() :
-      GetAssociatedWebContents();
+  return delegate_ ? delegate_->GetVisibleWebContents() : nullptr;
 }
 
 void ExtensionFunctionDispatcher::AddResponseTarget(ExtensionFunction* func) {
@@ -514,7 +513,7 @@ void ExtensionFunctionDispatcher::AddResponseTarget(ExtensionFunction* func) {
 
 void ExtensionFunctionDispatcher::ProcessResponseAck(
     const base::Uuid& request_uuid) {
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       response_targets_, [request_uuid](ExtensionFunction* function) {
         return function->request_uuid() == request_uuid;
       });

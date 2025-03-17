@@ -76,6 +76,13 @@ const CGFloat kActivityButtonWidthMultiplier = 0.4;
   return self;
 }
 
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  _textLabel.text = nil;
+  _delegate = nil;
+  _text = nil;
+}
+
 - (void)setText:(NSString*)text {
   if ([_text isEqualToString:text]) {
     return;

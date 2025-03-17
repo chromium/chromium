@@ -19,6 +19,7 @@ import argparse
 import logging
 import os
 import pathlib
+import random
 import re
 import sys
 
@@ -30,6 +31,15 @@ from rich.logging import RichHandler
 
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
+
+_SURVEY_LINK = 'https://forms.gle/tA41evzW5goqR5WF9'
+
+
+def maybe_print_survey_link():
+  # Only print the link every 100 runs
+  if random.random() < 0.01:
+    logging.info('Help us improve by sharing your feedback in this short '
+                 'survey: %s' % _SURVEY_LINK)
 
 
 def add_common_args(parser):
@@ -151,21 +161,10 @@ def parse_args(args=None):
   add_compile_args(compile_and_test_subp)
   add_test_args(compile_and_test_subp)
 
-  rr_subp = subparsers.add_parser(
-      'rr',
-      aliases=['rr-record', 'record'],
-      help='Compile, run tests with rr tool and upload recorded traces. '
-      'WARNING: this mode is not yet supported.')
-  add_compile_args(rr_subp)
-  add_test_args(rr_subp)
-
   args = parser.parse_args(args)
   if not args.run_mode:
     parser.print_help()
     parser.error('Please select a run_mode: compile,test,compile-and-test')
-  if args.run_mode == 'rr':
-    parser.print_help()
-    parser.error('The rr mode is not yet supported in UTR')
   if args.reuse_task and args.run_mode != 'test':
     parser.print_help()
     parser.error('reuse-task is only compatible with "test"')
@@ -249,6 +248,7 @@ def main():
   if error_msg:
     logging.error('\nUTR failure:')
     logging.error(error_msg)
+  maybe_print_survey_link()
   return exit_code
 
 

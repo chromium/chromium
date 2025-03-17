@@ -158,4 +158,9 @@ void WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(
   SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(scheme);
 }
 
+void WebSecurityPolicy::RegisterURLSchemeAsWebUIBundledBytecode(
+    const WebString& scheme) {
+  SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode(scheme);
+}
+
 }  // namespace blink

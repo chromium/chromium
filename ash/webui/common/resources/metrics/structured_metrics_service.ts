@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Event} from './event.mojom-webui.js';
-import {StructuredMetricsService, StructuredMetricsServiceInterface} from './structured_metrics_service.mojom-webui.js';
+import type {Event} from './event.mojom-webui.js';
+import type {StructuredMetricsServiceInterface} from './structured_metrics_service.mojom-webui.js';
+import {StructuredMetricsService} from './structured_metrics_service.mojom-webui.js';
 
 let structuredMetricsService: StructuredMetricsServiceInterface|null = null;
 

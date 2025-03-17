@@ -34,7 +34,6 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/extra_response_data.mojom.h"
-#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/stack_frame.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
@@ -108,6 +107,24 @@ inline bool FunctionValidateInternalReturnParam(bool param) {
   static constexpr extensions::functions::HistogramValue               \
   static_histogram_value() {                                           \
     return extensions::functions::histogramvalue;                      \
+  }
+
+// Declares/defines an empty extension function. This is useful for APIs that
+// are not yet implemented, but are defined in the IDL/JSON schema.
+#define DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(class_name,     \
+                                                 api_name,       \
+                                                 histogramvalue) \
+  class class_name : public ExtensionFunction {                  \
+   public:                                                       \
+    DECLARE_EXTENSION_FUNCTION(api_name, histogramvalue)         \
+   protected:                                                    \
+    ~class_name() override;                                      \
+    ResponseAction Run() override;                               \
+  }
+#define DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(class_name, api_name) \
+  class_name::~class_name() = default;                                \
+  ExtensionFunction::ResponseAction class_name::Run() {               \
+    return RespondNow(Error(api_name " not implemented"));            \
   }
 
 // Abstract base class for extension functions the ExtensionFunctionDispatcher

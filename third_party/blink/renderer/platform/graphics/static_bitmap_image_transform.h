@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_STATIC_BITMAP_IMAGE_TRANSFORM_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_STATIC_BITMAP_IMAGE_TRANSFORM_H_
 
+#include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -63,13 +64,6 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
   static scoped_refptr<StaticBitmapImage> Clone(
       FlushReason,
       scoped_refptr<StaticBitmapImage> image);
-
-  // If `image` has unpremultiplied alpha, the multipl alpha. If `image` is
-  // opaque or already premultiplied, return `image.
-  static scoped_refptr<StaticBitmapImage> GetWithAlphaDisposition(
-      FlushReason,
-      scoped_refptr<StaticBitmapImage> image,
-      AlphaDisposition);
 
   // Convert `image` to the specified color space.
   static scoped_refptr<StaticBitmapImage> ConvertToColorSpace(

@@ -69,14 +69,14 @@ public class PasswordReauthenticationFragment extends Fragment {
                 RecordHistogram.recordEnumeratedHistogram(
                         SETTINGS_REAUTHENTICATION_HISTOGRAM,
                         ReauthResult.SUCCESS,
-                        ReauthResult.MAX_VALUE + 1);
+                        ReauthResult.MAX_VALUE);
                 ReauthenticationManager.recordLastReauth(
                         System.currentTimeMillis(), getArguments().getInt(SCOPE_ID));
             } else {
                 RecordHistogram.recordEnumeratedHistogram(
                         SETTINGS_REAUTHENTICATION_HISTOGRAM,
                         ReauthResult.FAILURE,
-                        ReauthResult.MAX_VALUE + 1);
+                        ReauthResult.MAX_VALUE);
                 ReauthenticationManager.resetLastReauth();
             }
             mFragmentManager.popBackStack();

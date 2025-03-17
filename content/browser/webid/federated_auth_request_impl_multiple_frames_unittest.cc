@@ -49,6 +49,8 @@ using ApiPermissionStatus =
 using AuthRequestCallbackHelper =
     content::FederatedAuthRequestRequestTokenCallbackHelper;
 using FedCmEntry = ukm::builders::Blink_FedCm;
+using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
+using FedCmRequesterFrameType = content::FedCmRequesterFrameType;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using RequestTokenCallback =
     content::FederatedAuthRequestImpl::RequestTokenCallback;
@@ -215,6 +217,8 @@ class FederatedAuthRequestImplMultipleFramesTest
     // in every test.
     kAccounts = {base::MakeRefCounted<IdentityRequestAccount>(
         kAccountId,                  // id
+        "ken@idp.example",           // display_identifier
+        "Ken R. Example",            // display_name
         "ken@idp.example",           // email
         "Ken R. Example",            // name
         "Ken",                       // given_name
@@ -301,6 +305,24 @@ class FederatedAuthRequestImplMultipleFramesTest
                                  std::move(callback));
     request_remote.FlushForTesting();
   }
+
+  void ExpectUkmValueInEntry(const std::string& metric_name,
+                             const char* entry_name,
+                             int expected_value) {
+    auto entries = ukm_recorder_->GetEntriesByName(entry_name);
+    int count = 0;
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
+      const int64_t* value = ukm_recorder_->GetEntryMetric(entry, metric_name);
+      if (!value) {
+        continue;
+      }
+      ++count;
+    }
+    EXPECT_GT(count, 0) << "Did not find " << metric_name << " in "
+                        << entry_name;
+  }
+
+  ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
 
  protected:
   std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
@@ -398,6 +420,8 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
 // Test that only top frame URL is available for display when FedCM is called
 // within iframes which are same-origin with the top frame.
 TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameOriginIframe) {
+  base::HistogramTester histogram_tester;
+
   const char kSameOriginIframeUrl[] = "https://top-frame.example/iframe.html";
   RenderFrameHost* same_origin_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
@@ -412,16 +436,36 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameOriginIframe) {
       TestDialogController::AccountsDialogAction::kSelectAccount,
       &iframe_dialog_state);
 
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
   AuthRequestCallbackHelper iframe_callback_helper;
   DoRequestTokenAndWait(iframe_request_remote, iframe_callback_helper);
+
+  ukm_loop.Run();
+
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
   EXPECT_EQ("top-frame.example", iframe_dialog_state.rp_for_display);
+
+  // Same-origin iframe is treated the same as same-site frame.
+  histogram_tester.ExpectUniqueSample(
+      "Blink.FedCm.FrameType",
+      static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe), 1);
+  ExpectUkmValueInEntry(
+      "FrameType", FedCmEntry::kEntryName,
+      static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe));
+  ExpectUkmValueInEntry(
+      "FrameType", FedCmIdpEntry::kEntryName,
+      static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe));
 }
 
 // Test that only top frame URL is available for display when FedCM is called
 // within iframes which are same-site with the top frame.
 TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameSiteIframe) {
+  base::HistogramTester histogram_tester;
+
   const char kSameSiteIframeUrl[] =
       "https://subdomain.top-frame.example/iframe.html";
   RenderFrameHost* same_site_iframe =
@@ -437,16 +481,35 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameSiteIframe) {
       TestDialogController::AccountsDialogAction::kSelectAccount,
       &iframe_dialog_state);
 
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
   AuthRequestCallbackHelper iframe_callback_helper;
   DoRequestTokenAndWait(iframe_request_remote, iframe_callback_helper);
+
+  ukm_loop.Run();
+
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
   EXPECT_EQ("top-frame.example", iframe_dialog_state.rp_for_display);
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.FedCm.FrameType",
+      static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe), 1);
+  ExpectUkmValueInEntry(
+      "FrameType", FedCmEntry::kEntryName,
+      static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe));
+  ExpectUkmValueInEntry(
+      "FrameType", FedCmIdpEntry::kEntryName,
+      static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe));
 }
 
 // Test that both top frame and iframe URLs are available for display when FedCM
 // is called within iframes which are cross-site with the top frame.
 TEST_F(FederatedAuthRequestImplMultipleFramesTest, CrossSiteIframe) {
+  base::HistogramTester histogram_tester;
+
   const char kCrossSiteIframeUrl[] = "https://cross-site.example/iframe.html";
   RenderFrameHost* cross_site_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
@@ -461,11 +524,28 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, CrossSiteIframe) {
       TestDialogController::AccountsDialogAction::kSelectAccount,
       &iframe_dialog_state);
 
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
   AuthRequestCallbackHelper iframe_callback_helper;
   DoRequestTokenAndWait(iframe_request_remote, iframe_callback_helper);
+
+  ukm_loop.Run();
+
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
   EXPECT_EQ("top-frame.example", iframe_dialog_state.rp_for_display);
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.FedCm.FrameType",
+      static_cast<int>(FedCmRequesterFrameType::kCrossSiteIframe), 1);
+  ExpectUkmValueInEntry(
+      "FrameType", FedCmEntry::kEntryName,
+      static_cast<int>(FedCmRequesterFrameType::kCrossSiteIframe));
+  ExpectUkmValueInEntry(
+      "FrameType", FedCmIdpEntry::kEntryName,
+      static_cast<int>(FedCmRequesterFrameType::kCrossSiteIframe));
 }
 
 // Tests that preventSilentAccess UKM is not recorded if the embedder does not

@@ -18,15 +18,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/platform_apps/platform_app_launch.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/file_handlers/file_handling_launch_utils.h"
-#include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -48,8 +45,9 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/launch_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
@@ -65,8 +63,8 @@
 using content::WebContents;
 using extensions::Extension;
 using extensions::ExtensionPrefs;
+using extensions::ExtensionRegistrar;
 using extensions::ExtensionRegistry;
-using extensions::ExtensionService;
 
 namespace {
 
@@ -74,12 +72,12 @@ namespace {
 // This class manages its own lifetime.
 class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
  public:
-  EnableViaDialogFlow(ExtensionService* service,
+  EnableViaDialogFlow(ExtensionRegistrar* registrar,
                       ExtensionRegistry* registry,
                       Profile* profile,
                       const std::string& extension_id,
                       base::OnceClosure callback)
-      : service_(service),
+      : registrar_(registrar),
         registry_(registry),
         profile_(profile),
         extension_id_(extension_id),
@@ -91,7 +89,7 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
   ~EnableViaDialogFlow() override = default;
 
   void Run() {
-    DCHECK(!service_->IsExtensionEnabled(extension_id_));
+    DCHECK(!registrar_->IsExtensionEnabled(extension_id_));
     flow_ =
         std::make_unique<ExtensionEnableFlow>(profile_, extension_id_, this);
     flow_->Start();
@@ -111,7 +109,7 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
 
   void ExtensionEnableFlowAborted(bool user_initiated) override { delete this; }
 
-  const raw_ptr<ExtensionService> service_;
+  const raw_ptr<ExtensionRegistrar> registrar_;
   const raw_ptr<ExtensionRegistry> registry_;
   const raw_ptr<Profile> profile_;
   extensions::ExtensionId extension_id_;
@@ -526,14 +524,13 @@ void OpenApplicationWithReenablePrompt(Profile* profile,
     return;
   }
 
-  ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
+  auto* registrar = extensions::ExtensionRegistrar::Get(profile);
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
-  if (!service->IsExtensionEnabled(extension->id()) ||
+  if (!registrar->IsExtensionEnabled(extension->id()) ||
       registry->terminated_extensions().GetByID(extension->id())) {
     // Self deleting.
     auto* flow = new EnableViaDialogFlow(
-        service, registry, profile, extension->id(),
+        registrar, registry, profile, extension->id(),
         base::BindOnce(base::IgnoreResult(OpenEnabledApplication), profile,
                        std::move(params)));
     flow->Run();

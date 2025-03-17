@@ -454,33 +454,33 @@ void DelegatedInkPointRendererGpu::DrawSavedTrailPoints() {
   }
 }
 
-std::unique_ptr<DCLayerOverlayParams>
+std::optional<DCLayerOverlayParams>
 DelegatedInkPointRendererGpu::MakeDelegatedInkOverlay(
     IDCompositionDevice2* dcomp_device2,
     IDXGISwapChain1* root_swap_chain,
     std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   if (!Initialize(dcomp_device2, root_swap_chain)) {
-    return nullptr;
+    return std::nullopt;
   }
-  auto ink_layer = std::make_unique<DCLayerOverlayParams>();
+  DCLayerOverlayParams ink_layer;
   // Ink trail should be rendered on top of all content.
-  ink_layer->z_order = INT_MAX;
+  ink_layer.z_order = INT_MAX;
   const gfx::Rect presentation_rect =
       gfx::ToEnclosedRect(metadata->presentation_area());
   const gfx::Size presentation_area_enclosed_size =
       gfx::Size(presentation_rect.width(), presentation_rect.height());
-  ink_layer->quad_rect = gfx::Rect(presentation_area_enclosed_size);
-  ink_layer->content_rect = gfx::RectF(presentation_area_enclosed_size);
+  ink_layer.quad_rect = gfx::Rect(presentation_area_enclosed_size);
+  ink_layer.content_rect = gfx::RectF(presentation_area_enclosed_size);
   // If (0,0) of a visual is clipped out, it can result in delegated ink not
   // being drawn at all. This is more common when DComp Surfaces are enabled,
   // but doesn't negatively impact things when the swapchain is used, so just
   // offset the visual instead of clipping the top left corner in all cases.
-  ink_layer->clip_rect = std::make_optional<gfx::Rect>(
+  ink_layer.clip_rect = std::make_optional<gfx::Rect>(
       0, 0, presentation_rect.right(), presentation_rect.bottom());
-  ink_layer->transform = gfx::Transform::MakeTranslation(
+  ink_layer.transform = gfx::Transform::MakeTranslation(
       metadata->presentation_area().OffsetFromOrigin());
-  ink_layer->overlay_image = DCLayerOverlayImage(
-      presentation_area_enclosed_size, delegated_ink_trail_);
+  ink_layer.overlay_image = DCLayerOverlayImage(presentation_area_enclosed_size,
+                                                delegated_ink_trail_);
   SetDelegatedInkTrailStartPoint(std::move(metadata));
   return ink_layer;
 }

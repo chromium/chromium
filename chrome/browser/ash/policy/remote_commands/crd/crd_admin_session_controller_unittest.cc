@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_admin_session_controller.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <tuple>
@@ -28,6 +29,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -62,6 +66,7 @@ using ::testing::Eq;
 
 constexpr char kTestUserName[] = "test-username";
 const SessionId kValidSessionId{678};
+const base::TimeDelta kAutoAcceptTimeout = base::Seconds(30);
 
 // Returns a valid response that can be sent to a `StartSupportSessionCallback`.
 StartSupportSessionResponsePtr AnyResponse() {
@@ -426,14 +431,38 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
     session_finish_result_.Clear();
   }
 
+  void FinishLockAccountRecoveryRequestWithSuccess() {
+    ash::FakeUserDataAuthClient::TestApi::Get()->SetNextOperationError(
+        ash::FakeUserDataAuthClient::Operation::kLockFactorUntilReboot,
+        cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+            ::user_data_auth::CRYPTOHOME_ERROR_NOT_SET));
+  }
+
+  void FinishLockAccountRecoveryRequestWithError() {
+    ash::FakeUserDataAuthClient::TestApi::Get()->SetNextOperationError(
+        ash::FakeUserDataAuthClient::Operation::kLockFactorUntilReboot,
+        cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+            ::user_data_auth::CRYPTOHOME_ERROR_NOT_IMPLEMENTED));
+  }
+
+  bool AccountRecoveryOperationIsCalled() {
+    return ash::FakeUserDataAuthClient::Get()
+        ->WasCalled<
+            ash::FakeUserDataAuthClient::Operation::kLockFactorUntilReboot>();
+  }
+
  protected:
   void SetUp() override {
+    ash::UserDataAuthClient::InitializeFake();
+
     AshTestBase::SetUp();
     RecreateSessionController();
     session_controller().SetOAuthTokenForTesting("test-oauth-token");
   }
 
   void TearDown() override {
+    ash::UserDataAuthClient::Shutdown();
+
     session_controller_->Shutdown();
     AshTestBase::TearDown();
   }
@@ -488,6 +517,42 @@ TEST_F(CrdAdminSessionControllerTest, ShouldPassUserNameToRemotingService) {
   EXPECT_EQ(actual_parameters->user_name, "<the-user-name>");
 }
 
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldPassAutoAcceptTimeoutToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
+  SessionParameters parameters;
+  parameters.connection_auto_accept_timeout = kAutoAcceptTimeout;
+
+  remoting::ChromeOsEnterpriseParams actual_parameters;
+  EXPECT_CALL(remoting_service(), StartSession)
+      .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
+
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
+                                    error_callback(),
+                                    session_finished_callback());
+
+  EXPECT_EQ(actual_parameters.connection_auto_accept_timeout,
+            kAutoAcceptTimeout);
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldNotPassAutoAcceptTimeoutIfUnsetToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
+  SessionParameters parameters;
+  parameters.connection_auto_accept_timeout = std::nullopt;
+
+  remoting::ChromeOsEnterpriseParams actual_parameters;
+  EXPECT_CALL(remoting_service(), StartSession)
+      .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
+
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
+                                    error_callback(),
+                                    session_finished_callback());
+
+  EXPECT_EQ(actual_parameters.connection_auto_accept_timeout,
+            base::TimeDelta());
+}
+
 TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassShowConfirmationDialogToRemotingService) {
   InitWithNoReconnectableSession(session_controller());
@@ -504,6 +569,7 @@ TEST_P(CrdAdminSessionControllerTestWithBoolParams,
 
   EXPECT_NE(actual_parameters.suppress_notifications, GetParam());
   EXPECT_NE(actual_parameters.suppress_user_dialogs, GetParam());
+  EXPECT_EQ(actual_parameters.connection_dialog_required, GetParam());
 }
 
 TEST_P(CrdAdminSessionControllerTestWithBoolParams,
@@ -937,6 +1003,60 @@ TEST_F(CrdAdminSessionControllerTest, ShouldAcceptFastIncomingConnections) {
   // Make sure we do not kill the session once the 10 minutes mark hit.
   task_environment()->FastForwardBy(base::Minutes(1));
   ASSERT_TRUE(delegate().HasActiveSession());
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldNotBlockAccountRecoveryBeforeCrdHostSessionIsConnected) {
+  InitWithNoReconnectableSession(session_controller());
+  SupportHostObserver& observer = StartCrdHostAndBindObserver();
+
+  observer.OnHostStateReceivedAccessCode("access-code", base::Days(1));
+  observer.OnHostStateStarting();
+  observer.OnHostStateConnecting();
+  observer.OnHostStateDisconnected(std::nullopt);
+  observer.OnHostStateError(1);
+  observer.OnPolicyError();
+  observer.OnInvalidDomainError();
+  FlushForTesting(observer);
+
+  EXPECT_FALSE(AccountRecoveryOperationIsCalled());
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldBlockAccountRecoveryOnCrdHostSessionIsConnected) {
+  InitWithNoReconnectableSession(session_controller());
+  SupportHostObserver& observer = StartCrdHostAndBindObserver();
+
+  observer.OnHostStateConnected("remote-user");
+  FlushForTesting(observer);
+
+  EXPECT_TRUE(AccountRecoveryOperationIsCalled());
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldNotTerminateIfBlockingAccountRecoverySucceeds) {
+  FinishLockAccountRecoveryRequestWithSuccess();
+  InitWithNoReconnectableSession(session_controller());
+  SupportHostObserver& observer = StartCrdHostAndBindObserver();
+
+  observer.OnHostStateConnected("remote-user");
+  FlushForTesting(observer);
+
+  EXPECT_TRUE(AccountRecoveryOperationIsCalled());
+  ASSERT_TRUE(delegate().HasActiveSession());
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldTerminateSessionIfBlockingAccountRecoveryFails) {
+  FinishLockAccountRecoveryRequestWithError();
+  InitWithNoReconnectableSession(session_controller());
+  SupportHostObserver& observer = StartCrdHostAndBindObserver();
+
+  observer.OnHostStateConnected("remote-user");
+  FlushForTesting(observer);
+
+  EXPECT_TRUE(AccountRecoveryOperationIsCalled());
+  ASSERT_FALSE(delegate().HasActiveSession());
 }
 
 // Fixture for all tests related to reconnecting to an existing session.

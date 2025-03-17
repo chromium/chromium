@@ -47,7 +47,15 @@ class TestSafeAreaInsetsHostImpl : public SafeAreaInsetsHostImpl {
     SafeAreaInsetsHostImpl::ViewportFitChangedForFrame(rfh, value);
   }
 
+  void ComplexSafeAreaConstraintChangedForFrame(RenderFrameHost* rfh,
+                                                bool has_constraint) override {
+    SafeAreaInsetsHostImpl::ComplexSafeAreaConstraintChangedForFrame(
+        rfh, has_constraint);
+  }
+
+  using SafeAreaInsetsHostImpl::GetSafeAreaConstraintOrDefault;
   using SafeAreaInsetsHostImpl::GetValueOrDefault;
+  using SafeAreaInsetsHostImpl::SetSafeAreaConstraintValue;
   using SafeAreaInsetsHostImpl::SetViewportFitValue;
 
   bool did_send_safe_area() { return latest_safe_area_insets_.has_value(); }
@@ -59,11 +67,10 @@ class TestSafeAreaInsetsHostImpl : public SafeAreaInsetsHostImpl {
   }
   RenderFrameHost* latest_rfh() { return latest_rfh_.value(); }
   RenderFrameHost* previous_rfh() { return previous_rfh_.value(); }
+  RenderFrameHost* active_rfh() { return active_render_frame_host(); }
   int send_safe_area_to_frame_call_count() {
     return send_safe_area_to_frame_call_count_;
   }
-
-  RenderFrameHost* active_rfh() { return ActiveRenderFrameHost(); }
 
  protected:
   // Send the safe area insets to a `RenderFrameHost`.
@@ -124,8 +131,18 @@ class SafeAreaInsetsHostImplTest : public RenderViewHostTestHarness {
     return test_safe_area_insets_host()->GetValueOrDefault(main_rfh());
   }
 
+  bool GetSafeAreaConstraintOrDefault() {
+    return test_safe_area_insets_host()->GetSafeAreaConstraintOrDefault(
+        main_rfh());
+  }
+
   void SetViewportFitValue(blink::mojom::ViewportFit value) {
     return test_safe_area_insets_host()->SetViewportFitValue(main_rfh(), value);
+  }
+
+  void SetSafeAreaConstraintValue(bool has_constraint) {
+    return test_safe_area_insets_host()->SetSafeAreaConstraintValue(
+        main_rfh(), has_constraint);
   }
 
   void NavigateToCover() {
@@ -143,6 +160,18 @@ class SafeAreaInsetsHostImplTest : public RenderViewHostTestHarness {
     NavigateAndCommit(GURL("https://www.viewportFitAuto.com"));
     test_safe_area_insets_host()->ViewportFitChangedForFrame(
         main_rfh(), blink::mojom::ViewportFit::kAuto);
+    test_safe_area_insets_host()->ComplexSafeAreaConstraintChangedForFrame(
+        main_rfh(), false);
+    test_web_contents()->SetDisplayCutoutSafeArea(gfx::Insets(0));
+  }
+
+  void NavigateToContain() {
+    FocusWebContentsOnMainFrame();
+    NavigateAndCommit(GURL("https://www.viewportFitAuto.com"));
+    test_safe_area_insets_host()->ViewportFitChangedForFrame(
+        main_rfh(), blink::mojom::ViewportFit::kContain);
+    test_safe_area_insets_host()->ComplexSafeAreaConstraintChangedForFrame(
+        main_rfh(), true);
     test_web_contents()->SetDisplayCutoutSafeArea(gfx::Insets(0));
   }
 
@@ -260,6 +289,13 @@ TEST_F(SafeAreaInsetsHostImplTest, SetViewportFitValue) {
   // optimized to not store anything, but we do not test that directly.
   SetViewportFitValue(blink::mojom::ViewportFit::kAuto);
   EXPECT_EQ(blink::mojom::ViewportFit::kAuto, GetValueOrDefault());
+}
+
+TEST_F(SafeAreaInsetsHostImplTest, SetHasSafeAreaConstraintValue) {
+  SetSafeAreaConstraintValue(false);
+  EXPECT_FALSE(GetSafeAreaConstraintOrDefault());
+  SetSafeAreaConstraintValue(true);
+  EXPECT_TRUE(GetSafeAreaConstraintOrDefault());
 }
 
 TEST_F(SafeAreaInsetsHostImplTest, GetValueOrDefault_ExpiredRfh) {

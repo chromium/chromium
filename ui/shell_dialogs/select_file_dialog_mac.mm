@@ -4,10 +4,11 @@
 
 #include "ui/shell_dialogs/select_file_dialog_mac.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/remote_cocoa/app_shim/select_file_dialog_bridge.h"
 #include "components/remote_cocoa/browser/window.h"
@@ -50,8 +51,8 @@ void SelectFileDialogImpl::FileWasSelected(
     const std::vector<base::FilePath>& files,
     int index,
     const std::vector<std::string>& file_tags) {
-  auto it = base::ranges::find(dialog_data_list_, dialog_data,
-                               [](const DialogData& d) { return &d; });
+  auto it = std::ranges::find(dialog_data_list_, dialog_data,
+                              [](const DialogData& d) { return &d; });
   DCHECK(it != dialog_data_list_.end());
   dialog_data_list_.erase(it);
 

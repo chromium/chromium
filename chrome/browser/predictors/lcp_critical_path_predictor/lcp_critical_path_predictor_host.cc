@@ -52,11 +52,13 @@ LcpCriticalPathPredictorPageLoadMetricsObserver* LCPCriticalPathPredictorHost::
   return nullptr;
 }
 
-void LCPCriticalPathPredictorHost::SetLcpElementLocator(
-    const std::string& lcp_element_locator,
+void LCPCriticalPathPredictorHost::OnLcpUpdated(
+    const std::optional<std::string>& lcp_element_locator,
+    bool is_image_element,
     std::optional<uint32_t> predicted_lcp_index) {
   if (auto* plmo = GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
-    plmo->SetLcpElementLocator(lcp_element_locator, predicted_lcp_index);
+    plmo->OnLcpUpdated(lcp_element_locator, is_image_element,
+                       predicted_lcp_index);
   }
 }
 

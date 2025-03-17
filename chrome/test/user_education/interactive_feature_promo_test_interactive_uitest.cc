@@ -33,26 +33,22 @@ class InteractiveFeaturePromoTestUiTest : public InteractiveFeaturePromoTest {
     return WithView(kBrowserViewElementId, [this](BrowserView* browser) {
       EXPECT_CALL(*GetMockTrackerFor(browser->browser()),
                   ShouldTriggerHelpUI(testing::Ref(kTestIphFeature)))
-          .WillOnce(testing::Return(true));
+          .WillRepeatedly(testing::Return(true));
       browser->MaybeShowFeaturePromo(kTestIphFeature);
     });
   }
 };
 
-IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest, CheckPromoIsActive) {
+IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest, CheckPromoRequested) {
   auto spec = user_education::FeaturePromoSpecification::CreateForTesting(
       kTestIphFeature, kTopContainerElementId, IDS_SETTINGS);
   RegisterTestFeature(browser(), std::move(spec));
 
-  RunTestSequence(
-      ShowPromo(),
-      WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      CheckPromoIsActive(kTestIphFeature));
+  RunTestSequence(ShowPromo(), CheckPromoRequested(kTestIphFeature));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
-                       CheckPromoIsActiveFails) {
+                       CheckPromoRequestedFails) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   auto spec = user_education::FeaturePromoSpecification::CreateForTesting(
       kTestIphFeature, kTopContainerElementId, IDS_SETTINGS);
@@ -60,27 +56,23 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
 
   private_test_impl().set_aborted_callback_for_testing(aborted.Get());
   EXPECT_CALL_IN_SCOPE(aborted, Run,
-                       RunTestSequence(CheckPromoIsActive(kTestIphFeature)));
+                       RunTestSequence(CheckPromoRequested(kTestIphFeature)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
-                       CheckPromoIsActiveInDifferentContext) {
+                       CheckPromoRequestedInDifferentContext) {
   auto* const other = CreateBrowser(browser()->profile());
 
   auto spec = user_education::FeaturePromoSpecification::CreateForTesting(
       kTestIphFeature, kTopContainerElementId, IDS_SETTINGS);
   RegisterTestFeature(other, std::move(spec));
 
-  RunTestSequence(InContext(
-      other->window()->GetElementContext(),
-      Steps(ShowPromo(),
-            WaitForShow(
-                user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-            CheckPromoIsActive(kTestIphFeature))));
+  RunTestSequence(InContext(other->window()->GetElementContext(), ShowPromo(),
+                            CheckPromoRequested(kTestIphFeature)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
-                       CheckPromoIsActiveInDifferentContextFails) {
+                       CheckPromoRequestedInDifferentContextFails) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   auto* const other = CreateBrowser(browser()->profile());
 
@@ -91,16 +83,13 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
   private_test_impl().set_aborted_callback_for_testing(aborted.Get());
   EXPECT_CALL_IN_SCOPE(
       aborted, Run,
-      RunTestSequence(
-          ShowPromo(),
-          WaitForShow(
-              user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-          InContext(other->window()->GetElementContext(),
-                    CheckPromoIsActive(kTestIphFeature))));
+      RunTestSequence(ShowPromo(),
+                      InContext(other->window()->GetElementContext(),
+                                CheckPromoRequested(kTestIphFeature))));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
-                       CheckPromoIsActiveInDifferentContextFromController) {
+                       CheckPromoRequestedInDifferentContextFromController) {
   auto* const other = CreateBrowser(browser()->profile());
 
   auto spec = user_education::FeaturePromoSpecification::CreateForTesting(
@@ -118,16 +107,12 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
       }));
   RegisterTestFeature(browser(), std::move(spec));
 
-  RunTestSequence(
-      ShowPromo(),
-      InAnyContext(Steps(
-          WaitForShow(
-              user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-          CheckPromoIsActive(kTestIphFeature))));
+  RunTestSequence(ShowPromo(),
+                  InAnyContext(CheckPromoRequested(kTestIphFeature)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
-                       CheckPromoIsActiveInAnyContextFails) {
+                       CheckPromoRequestedInAnyContextFails) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   auto* const other = CreateBrowser(browser()->profile());
 
@@ -150,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
 
   EXPECT_CALL_IN_SCOPE(
       aborted, Run,
-      RunTestSequence(InAnyContext(CheckPromoIsActive(kTestIphFeature))));
+      RunTestSequence(InAnyContext(CheckPromoRequested(kTestIphFeature))));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest, WaitForPromo) {
@@ -169,8 +154,8 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
       kTestIphFeature, kTopContainerElementId, IDS_SETTINGS);
   RegisterTestFeature(other, std::move(spec));
 
-  RunTestSequence(InContext(other->window()->GetElementContext(),
-                            Steps(ShowPromo(), WaitForPromo(kTestIphFeature))));
+  RunTestSequence(InContext(other->window()->GetElementContext(), ShowPromo(),
+                            WaitForPromo(kTestIphFeature)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,

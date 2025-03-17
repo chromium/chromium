@@ -14,8 +14,8 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface_test_base.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/test/autofill_payments_test_utils.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
@@ -140,7 +141,8 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   PaymentsNetworkInterfaceTest() = default;
 
   PaymentsNetworkInterfaceTest(const PaymentsNetworkInterfaceTest&) = delete;
-  PaymentsNetworkInterfaceTest& operator=(const PaymentsNetworkInterfaceTest&) = delete;
+  PaymentsNetworkInterfaceTest& operator=(const PaymentsNetworkInterfaceTest&) =
+      delete;
 
   ~PaymentsNetworkInterfaceTest() override = default;
 
@@ -226,11 +228,31 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 
   void OnDidGetDetailsForCreateBnplPaymentInstrument(
       PaymentsRpcResult result,
-      std::u16string context_token,
+      std::string context_token,
       std::unique_ptr<base::Value::Dict> legal_message) {
     result_ = result;
-    context_token_ = base::UTF16ToUTF8(context_token);
+    context_token_ = std::move(context_token);
     legal_message_ = std::move(legal_message);
+  }
+
+  void OnDidCreateBnplPaymentInstrument(PaymentsRpcResult result,
+                                        std::string instrument_id) {
+    result_ = result;
+    instrument_id_ = std::move(instrument_id);
+  }
+
+  void OnDidGetBnplPaymentInstrumentForFetchingVcn(
+      PaymentsAutofillClient::PaymentsRpcResult result,
+      const BnplFetchVcnResponseDetails& response_details) {
+    result_ = result;
+    bnpl_vcn_response_details_ = std::move(response_details);
+  }
+
+  void OnDidGetBnplPaymentInstrumentForFetchingUrl(
+      PaymentsAutofillClient::PaymentsRpcResult result,
+      const BnplFetchUrlResponseDetails& response_details) {
+    result_ = result;
+    bnpl_url_response_details_ = std::move(response_details);
   }
 
  protected:
@@ -253,16 +275,17 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 
     request_details.card = options.use_only_non_legacy_id
                                ? test::GetMaskedServerCardWithNonLegacyId()
-                               : options.use_only_legacy_id
-                                     ? test::GetMaskedServerCardWithLegacyId()
-                                     : test::GetMaskedServerCard();
+                           : options.use_only_legacy_id
+                               ? test::GetMaskedServerCardWithLegacyId()
+                               : test::GetMaskedServerCard();
 
     request_details.risk_data = "some risk data";
     if (options.use_fido) {
       request_details.fido_assertion_info = base::Value::Dict();
     }
-    if (options.use_cvc)
+    if (options.use_cvc) {
       request_details.user_response.cvc = base::ASCIIToUTF16(options.cvc);
+    }
     if (options.virtual_card) {
       request_details.card.set_record_type(
           CreditCard::RecordType::kVirtualCard);
@@ -274,17 +297,20 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
                 {CardUnmaskChallengeOptionType::kCvc})[0];
       }
     }
-    if (options.set_context_token)
+    if (options.set_context_token) {
       request_details.context_token = "fake context token";
-    if (options.use_otp)
+    }
+    if (options.use_otp) {
       request_details.otp = base::ASCIIToUTF16(options.otp);
+    }
     if (options.card_info_retrieval) {
       request_details.card.set_card_info_retrieval_enrollment_state(
           CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
     }
     payments_network_interface_->UnmaskCard(
         request_details,
-        base::BindOnce(&PaymentsNetworkInterfaceTest::OnDidGetRealPan, GetWeakPtr()));
+        base::BindOnce(&PaymentsNetworkInterfaceTest::OnDidGetRealPan,
+                       GetWeakPtr()));
   }
 
   // If |opt_in| is set to true, then opts the user in to use FIDO
@@ -324,7 +350,8 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     request_details.profiles = BuildTestProfiles();
     payments_network_interface_->UploadCard(
         request_details,
-        base::BindOnce(&PaymentsNetworkInterfaceTest::OnDidUploadCard, GetWeakPtr()));
+        base::BindOnce(&PaymentsNetworkInterfaceTest::OnDidUploadCard,
+                       GetWeakPtr()));
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -361,11 +388,12 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 
     payments_network_interface_->SelectChallengeOption(
         request_details,
-        base::BindOnce(&PaymentsNetworkInterfaceTest::OnDidSelectChallengeOption,
-                       GetWeakPtr()));
+        base::BindOnce(
+            &PaymentsNetworkInterfaceTest::OnDidSelectChallengeOption,
+            GetWeakPtr()));
   }
 
-  void assertCvcIncludedInRequest(std::string cvc) {
+  void AssertCvcIncludedInRequest(std::string cvc) {
     EXPECT_TRUE(!GetUploadData().empty());
     // Verify that the encrypted_cvc and s7e_13_cvc parameters were both
     // included in the request.
@@ -376,7 +404,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
                 std::string::npos);
   }
 
-  void assertOtpIncludedInRequest(std::string otp) {
+  void AssertOtpIncludedInRequest(std::string otp) {
     EXPECT_TRUE(!GetUploadData().empty());
     // Verify that the otp and s7e_263_otp parameters were both included in the
     // request.
@@ -387,7 +415,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
                 std::string::npos);
   }
 
-  void assertCvcNotIncludedInRequest() {
+  void AssertCvcNotIncludedInRequest() {
     EXPECT_TRUE(!GetUploadData().empty());
     // Verify that the encrypted_cvc and s7e_13_cvc parameters were NOT included
     // in the request.
@@ -397,7 +425,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     EXPECT_TRUE(GetUploadData().find("&s7e_13_cvc=") == std::string::npos);
   }
 
-  void assertOtpNotIncludedInRequest() {
+  void AssertOtpNotIncludedInRequest() {
     EXPECT_TRUE(!GetUploadData().empty());
     // Verify that the otp and s7e_263_otp parameters were NOT included in the
     // request.
@@ -407,11 +435,11 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     EXPECT_TRUE(GetUploadData().find("&s7e_263_otp=") == std::string::npos);
   }
 
-  void assertIncludedInRequest(std::string field_name_or_value) {
+  void AssertIncludedInRequest(std::string field_name_or_value) {
     EXPECT_TRUE(GetUploadData().find(field_name_or_value) != std::string::npos);
   }
 
-  void assertNotIncludedInRequest(std::string field_name_or_value) {
+  void AssertNotIncludedInRequest(std::string field_name_or_value) {
     EXPECT_TRUE(GetUploadData().find(field_name_or_value) == std::string::npos);
   }
 
@@ -423,6 +451,16 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
                                     : nullptr;
   }
   void ResetUnmaskResponseDetails() { unmask_response_details_.reset(); }
+
+  const std::optional<BnplFetchVcnResponseDetails>& bnpl_vcn_response_details()
+      const {
+    return bnpl_vcn_response_details_;
+  }
+
+  const std::optional<BnplFetchUrlResponseDetails>& bnpl_url_response_details()
+      const {
+    return bnpl_url_response_details_;
+  }
 
   base::WeakPtr<PaymentsNetworkInterfaceTest> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -444,6 +482,9 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   // The opaque token used to chain consecutive payments requests together.
   std::string context_token_;
+  // Server generated instrument ID through the creation of a BNPL payment
+  // instrument.
+  std::string instrument_id_;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Credit cards to be upload saved during a local credit card migration call.
@@ -459,6 +500,8 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   std::optional<UnmaskDetails> unmask_details_;
   // The UnmaskResponseDetails retrieved from an UnmaskRequest.  Includes PAN.
   std::optional<UnmaskResponseDetails> unmask_response_details_;
+  std::optional<BnplFetchVcnResponseDetails> bnpl_vcn_response_details_;
+  std::optional<BnplFetchUrlResponseDetails> bnpl_url_response_details_;
   base::WeakPtrFactory<PaymentsNetworkInterfaceTest> weak_ptr_factory_{this};
 };
 
@@ -469,12 +512,13 @@ TEST_F(PaymentsNetworkInterfaceTest, GetUnmaskDetailsSuccess) {
                  "{ \"offer_fido_opt_in\": \"false\", "
                  "\"authentication_method\": \"CVC\" }");
   EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
-  EXPECT_EQ(false, unmask_details()->offer_fido_opt_in);
+  EXPECT_FALSE(unmask_details()->server_denotes_fido_eligible_but_not_opted_in);
   EXPECT_EQ(PaymentsAutofillClient::UnmaskAuthMethod::kCvc,
             unmask_details()->unmask_auth_method);
 }
 
-TEST_F(PaymentsNetworkInterfaceTest, GetUnmaskDetailsIncludesChromeUserContext) {
+TEST_F(PaymentsNetworkInterfaceTest,
+       GetUnmaskDetailsIncludesChromeUserContext) {
   StartGettingUnmaskDetails();
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");
@@ -509,7 +553,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessViaCVC) {
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"pan\": \"1234\" }");
 
-  assertCvcIncludedInRequest("111");
+  AssertCvcIncludedInRequest("111");
   EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("1234", unmask_response_details()->real_pan);
 }
@@ -520,7 +564,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessViaFIDO) {
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"pan\": \"1234\" }");
 
-  assertCvcNotIncludedInRequest();
+  AssertCvcNotIncludedInRequest();
   EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("1234", unmask_response_details()->real_pan);
 }
@@ -551,11 +595,11 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessWithVirtualCardCvcAuth) {
                  "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\",  "
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
-  assertCvcIncludedInRequest("222");
-  assertIncludedInRequest("cvc_challenge_option");
-  assertIncludedInRequest("challenge_id");
-  assertIncludedInRequest("cvc_length");
-  assertIncludedInRequest("cvc_position");
+  AssertCvcIncludedInRequest("222");
+  AssertIncludedInRequest("cvc_challenge_option");
+  AssertIncludedInRequest("challenge_id");
+  AssertIncludedInRequest("cvc_length");
+  AssertIncludedInRequest("cvc_position");
   EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details()->real_pan);
   EXPECT_EQ("999", unmask_response_details()->dcvv);
@@ -570,8 +614,8 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessWithVirtualCardFidoAuth) {
                  "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\",  "
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
-  assertCvcNotIncludedInRequest();
-  assertNotIncludedInRequest("cvc_challenge_option");
+  AssertCvcNotIncludedInRequest();
+  AssertNotIncludedInRequest("cvc_challenge_option");
   EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details()->real_pan);
   EXPECT_EQ("999", unmask_response_details()->dcvv);
@@ -587,9 +631,9 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedGreenPathResponse) {
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
   // Verify that Cvc/FIDO/OTP are not included in the request.
-  assertCvcNotIncludedInRequest();
-  assertOtpNotIncludedInRequest();
-  assertNotIncludedInRequest("cvc_challenge_option");
+  AssertCvcNotIncludedInRequest();
+  AssertOtpNotIncludedInRequest();
+  AssertNotIncludedInRequest("cvc_challenge_option");
   EXPECT_TRUE(GetUploadData().find("fido_assertion_info") == std::string::npos);
   // Only merchant_domain is included.
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
@@ -602,7 +646,8 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedGreenPathResponse) {
   EXPECT_TRUE(unmask_response_details()->card_unmask_challenge_options.empty());
 }
 
-TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedRedPathResponse_Error) {
+TEST_F(PaymentsNetworkInterfaceTest,
+       VirtualCardRiskBasedRedPathResponse_Error) {
   StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based());
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
@@ -666,7 +711,8 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedYellowPathResponse) {
   EXPECT_EQ(CvcPosition::kBackOfCard, challenge_option_3.cvc_position);
 }
 
-TEST_F(PaymentsNetworkInterfaceTest, VirtualCardCvcRetrieval_FlowStatusPresent) {
+TEST_F(PaymentsNetworkInterfaceTest,
+       VirtualCardCvcRetrieval_FlowStatusPresent) {
   StartUnmasking(
       CardUnmaskOptions().with_virtual_card_risk_based().with_cvc("123"));
   IssueOAuthToken();
@@ -719,9 +765,9 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedThenFido) {
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
   // Verify that Cvc/OTP are not included in the request.
-  assertCvcNotIncludedInRequest();
-  assertOtpNotIncludedInRequest();
-  assertNotIncludedInRequest("cvc_challenge_option");
+  AssertCvcNotIncludedInRequest();
+  AssertOtpNotIncludedInRequest();
+  AssertNotIncludedInRequest("cvc_challenge_option");
   // Verify the fido assertion and context token is included.
   EXPECT_TRUE(GetUploadData().find("fido_assertion_info") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
@@ -743,10 +789,10 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedThenOtpSuccess) {
                  "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\",  "
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
-  assertOtpIncludedInRequest(otp);
+  AssertOtpIncludedInRequest(otp);
   // Verify that Cvc/FIDO are not included in the request.
-  assertCvcNotIncludedInRequest();
-  assertNotIncludedInRequest("cvc_challenge_option");
+  AssertCvcNotIncludedInRequest();
+  AssertNotIncludedInRequest("cvc_challenge_option");
   EXPECT_TRUE(GetUploadData().find("fido_assertion_info") == std::string::npos);
   // Verify the context token is also included.
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
@@ -768,9 +814,9 @@ TEST_F(PaymentsNetworkInterfaceTest, ExpiredOtp) {
                  "{ \"context_token\": \"fake_context_token\", "
                  "\"flow_status\": \"FLOW_STATUS_EXPIRED_OTP\" }");
 
-  assertOtpIncludedInRequest(otp);
-  assertCvcNotIncludedInRequest();
-  assertNotIncludedInRequest("cvc_challenge_option");
+  AssertOtpIncludedInRequest(otp);
+  AssertCvcNotIncludedInRequest();
+  AssertNotIncludedInRequest("cvc_challenge_option");
   // Verify the context token is also included.
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
@@ -788,9 +834,9 @@ TEST_F(PaymentsNetworkInterfaceTest, IncorrectOtp) {
                  "{ \"context_token\": \"fake_context_token\", "
                  "\"flow_status\": \"FLOW_STATUS_INCORRECT_OTP\" }");
 
-  assertOtpIncludedInRequest(otp);
-  assertCvcNotIncludedInRequest();
-  assertNotIncludedInRequest("cvc_challenge_option");
+  AssertOtpIncludedInRequest(otp);
+  AssertCvcNotIncludedInRequest();
+  AssertNotIncludedInRequest("cvc_challenge_option");
   // Verify the context token is also included.
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
@@ -874,7 +920,8 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskResponseIncludesDeclineDetails) {
             "test_user_message_description");
 }
 
-TEST_F(PaymentsNetworkInterfaceTest, UnmaskResponseIncludesEmptyDeclineDetails) {
+TEST_F(PaymentsNetworkInterfaceTest,
+       UnmaskResponseIncludesEmptyDeclineDetails) {
   StartUnmasking(CardUnmaskOptions().with_virtual_card());
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
@@ -1111,7 +1158,8 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessInstrumentIdPresent) {
   EXPECT_EQ(upload_card_response_details_.instrument_id, 9223372036854775807);
 }
 
-TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessVirtualCardEnrollmentStatePresent) {
+TEST_F(PaymentsNetworkInterfaceTest,
+       UploadSuccessVirtualCardEnrollmentStatePresent) {
   bool oauth_token_issued = false;
   for (CreditCard::VirtualCardEnrollmentState virtual_card_enrollment_state :
        {CreditCard::VirtualCardEnrollmentState::kUnenrolledAndNotEligible,
@@ -1119,9 +1167,9 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessVirtualCardEnrollmentStatePres
         CreditCard::VirtualCardEnrollmentState::kEnrolled}) {
     StartUploading();
     // An OAuthToken needs to be issued to initiate the first UploadCard call
-    // from PaymentsNetworkInterfaceTest::StartUploading(), but only for the first call.
-    // All future calls will use the first OAuthToken. If multiple OAuthTokens
-    // are issued this test will time out.
+    // from PaymentsNetworkInterfaceTest::StartUploading(), but only for the
+    // first call. All future calls will use the first OAuthToken. If multiple
+    // OAuthTokens are issued this test will time out.
     if (!oauth_token_issued) {
       IssueOAuthToken();
       oauth_token_issued = true;
@@ -1315,8 +1363,8 @@ TEST_F(PaymentsNetworkInterfaceTest, ReauthNeeded) {
     StartUnmasking(CardUnmaskOptions());
     // NOTE: Don't issue an access token here: the issuing of an access token
     // first waits for the access token request to be received, but here there
-    // should be no access token request because PaymentsNetworkInterface should reuse the
-    // access token from the previous request.
+    // should be no access token request because PaymentsNetworkInterface should
+    // reuse the access token from the previous request.
     ReturnResponse(payments_network_interface_.get(), net::HTTP_UNAUTHORIZED,
                    "");
     // No response yet.
@@ -1368,7 +1416,8 @@ TEST_F(PaymentsNetworkInterfaceTest, VcnRetrievalPermanentFailure) {
   EXPECT_EQ(PaymentsRpcResult::kVcnRetrievalPermanentFailure, result_);
 }
 
-TEST_F(PaymentsNetworkInterfaceTest, UnmaskPermanentFailureWhenVcnMissingExpiration) {
+TEST_F(PaymentsNetworkInterfaceTest,
+       UnmaskPermanentFailureWhenVcnMissingExpiration) {
   StartUnmasking(CardUnmaskOptions().with_virtual_card());
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
@@ -1546,15 +1595,15 @@ TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionWithSmsOtpMethod) {
                  "{ \"context_token\": \"new context token\" }");
 
   EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
-  assertIncludedInRequest("context_token");
-  assertIncludedInRequest("external_customer_id");
-  assertIncludedInRequest("selected_idv_challenge_option");
-  assertIncludedInRequest("sms_otp_challenge_option");
+  AssertIncludedInRequest("context_token");
+  AssertIncludedInRequest("external_customer_id");
+  AssertIncludedInRequest("selected_idv_challenge_option");
+  AssertIncludedInRequest("sms_otp_challenge_option");
   // We should only set the challenge id. No need to send the masked phone
   // number.
-  assertIncludedInRequest("challenge_id");
-  assertIncludedInRequest("arbitrary id for sms otp");
-  assertNotIncludedInRequest("masked_phone_number");
+  AssertIncludedInRequest("challenge_id");
+  AssertIncludedInRequest("arbitrary id for sms otp");
+  AssertNotIncludedInRequest("masked_phone_number");
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionSuccess) {
@@ -1577,7 +1626,8 @@ TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionTemporaryFailure) {
   EXPECT_EQ(PaymentsRpcResult::kVcnRetrievalTryAgainFailure, result_);
 }
 
-TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionVcnFlowPermanentFailure) {
+TEST_F(PaymentsNetworkInterfaceTest,
+       SelectChallengeOptionVcnFlowPermanentFailure) {
   StartSelectingChallengeOption();
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
@@ -1587,7 +1637,8 @@ TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionVcnFlowPermanentFailur
   EXPECT_EQ(PaymentsRpcResult::kVcnRetrievalPermanentFailure, result_);
 }
 
-TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionResponseMissingContextToken) {
+TEST_F(PaymentsNetworkInterfaceTest,
+       SelectChallengeOptionResponseMissingContextToken) {
   StartSelectingChallengeOption();
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");
@@ -1685,9 +1736,9 @@ class UpdateVirtualCardEnrollmentTest
     request_details.instrument_id = 12345678;
     payments_network_interface_->UpdateVirtualCardEnrollment(
         request_details,
-        base::BindOnce(
-            &PaymentsNetworkInterfaceTest::OnDidGetUpdateVirtualCardEnrollmentResponse,
-            GetWeakPtr()));
+        base::BindOnce(&PaymentsNetworkInterfaceTest::
+                           OnDidGetUpdateVirtualCardEnrollmentResponse,
+                       GetWeakPtr()));
   }
 };
 
@@ -1762,8 +1813,9 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
 
   payments_network_interface_->GetVirtualCardEnrollmentDetails(
       request_details,
-      base::BindOnce(&PaymentsNetworkInterfaceTest::OnDidGetVirtualCardEnrollmentDetails,
-                     GetWeakPtr()));
+      base::BindOnce(
+          &PaymentsNetworkInterfaceTest::OnDidGetVirtualCardEnrollmentDetails,
+          GetWeakPtr()));
   IssueOAuthToken();
 
   // Ensures the PaymentsRpcResult is set correctly.
@@ -1810,28 +1862,29 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
   EXPECT_EQ(result, result_);
 }
 
-class GetDetailsForCreateBnplPaymentInstrumentTest
+class PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam
     : public PaymentsNetworkInterfaceTest,
       public ::testing::WithParamInterface<PaymentsRpcResult> {
  public:
-  GetDetailsForCreateBnplPaymentInstrumentTest() = default;
-  ~GetDetailsForCreateBnplPaymentInstrumentTest() override = default;
+  PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam() = default;
+  ~PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam() override = default;
 };
 
 // Initializes the parameterized test suite with all possible combinations of
 // PaymentsRpcResult.
 INSTANTIATE_TEST_SUITE_P(
     ,
-    GetDetailsForCreateBnplPaymentInstrumentTest,
+    PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
     testing::Values(PaymentsRpcResult::kSuccess,
                     PaymentsRpcResult::kTryAgainFailure,
                     PaymentsRpcResult::kPermanentFailure,
                     PaymentsRpcResult::kNetworkError,
                     PaymentsRpcResult::kClientSideTimeout));
 
-// Parameterized test that tests all combinations of server PaymentsRpcResult.
-TEST_P(GetDetailsForCreateBnplPaymentInstrumentTest,
-       GetDetailsForCreateBnplPaymentInstrumentTest_TestAllFlows) {
+// Test GetDetailsForCreateBnplPaymentInstrument() with all the different
+// PaymentsRpcResults.
+TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
+       GetDetailsForCreateBnplPaymentInstrument) {
   GetDetailsForCreateBnplPaymentInstrumentRequestDetails request_details;
   request_details.app_locale = "en-US";
   request_details.billing_customer_number = 555666777888;
@@ -1879,6 +1932,211 @@ TEST_P(GetDetailsForCreateBnplPaymentInstrumentTest,
   if (result == PaymentsRpcResult::kSuccess) {
     EXPECT_EQ(context_token, context_token_);
     EXPECT_NE(nullptr, legal_message_.get());
+  }
+}
+// Test CreateBnplPaymentInstrument() with all the different PaymentsRpcResults.
+TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
+       CreateBnplPaymentInstrument_TestAllFlows) {
+  CreateBnplPaymentInstrumentRequestDetails request_details;
+  request_details.app_locale = "en-US";
+  request_details.billing_customer_number = 555666777888;
+  request_details.context_token = "context_token";
+  request_details.risk_data = "wjhJLg";
+  std::string instrument_id = "instrument_id";
+
+  payments_network_interface_->CreateBnplPaymentInstrument(
+      request_details,
+      base::BindOnce(
+          &PaymentsNetworkInterfaceTest::OnDidCreateBnplPaymentInstrument,
+          GetWeakPtr()));
+  IssueOAuthToken();
+
+  // Ensures the PaymentsRpcResult is set correctly.
+  PaymentsRpcResult result = GetParam();
+  switch (result) {
+    case PaymentsRpcResult::kSuccess:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"buy_now_pay_later_info\": { \"instrument_id\": \"" +
+                         instrument_id + "\" } }");
+      break;
+    case PaymentsRpcResult::kTryAgainFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"INTERNAL\", "
+                     "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+      break;
+    case PaymentsRpcResult::kPermanentFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
+      break;
+    case PaymentsRpcResult::kNetworkError:
+      ReturnResponse(payments_network_interface_.get(),
+                     net::HTTP_REQUEST_TIMEOUT, "");
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
+      break;
+    case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+    case PaymentsRpcResult::kNone:
+      NOTREACHED();
+  }
+  EXPECT_EQ(result, result_);
+  if (result == PaymentsRpcResult::kSuccess) {
+    EXPECT_EQ(instrument_id, instrument_id_);
+  }
+}
+
+// Test GetBnplPaymentInstrumentForFetchingVcn() with all the different
+// PaymentsRpcResults.
+TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
+       GetBnplPaymentInstrumentForFetchingVcn) {
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details;
+  request_details.billing_customer_number = 555666777888;
+  request_details.instrument_id = "INSTRUMENT_ID";
+  request_details.risk_data = "RISK_DATA";
+  request_details.context_token = "CONTEXT_TOKEN";
+  request_details.redirect_url = GURL("http://redirect-url.test/");
+  request_details.issuer_id = "ISSUER_ID";
+
+  payments_network_interface_->GetBnplPaymentInstrumentForFetchingVcn(
+      request_details,
+      base::BindOnce(&PaymentsNetworkInterfaceTest::
+                         OnDidGetBnplPaymentInstrumentForFetchingVcn,
+                     GetWeakPtr()));
+
+  IssueOAuthToken();
+
+  // Ensures the PaymentsRpcResult is set correctly.
+  PaymentsRpcResult result = GetParam();
+  switch (result) {
+    case PaymentsRpcResult::kSuccess:
+      ReturnResponse(
+          payments_network_interface_.get(), net::HTTP_OK,
+          "{ \"buy_now_pay_later_info\": { \"get_vcn_response_info\": { "
+          "\"virtual_card_info\" : { \"pan\": \"1234\", \"cvv\": \"123\", "
+          "\"cardholder_name\": \"Akagi Shigeru\", \"expiration\": { "
+          "\"month\": 1, \"year\": 2025 } } } } }");
+      break;
+    case PaymentsRpcResult::kTryAgainFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"INTERNAL\", "
+                     "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+      break;
+    case PaymentsRpcResult::kPermanentFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
+      break;
+    case PaymentsRpcResult::kNetworkError:
+      ReturnResponse(payments_network_interface_.get(),
+                     net::HTTP_REQUEST_TIMEOUT, "");
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
+      break;
+    case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+    case PaymentsRpcResult::kNone:
+      NOTREACHED();
+  }
+
+  AssertIncludedInRequest(base::EscapeUrlEncodedData(
+      "\"external_customer_id\":\"555666777888\"", /*use_plus=*/true));
+  AssertIncludedInRequest(base::EscapeUrlEncodedData(
+      "\"instrument_id\":\"INSTRUMENT_ID\"", /*use_plus=*/true));
+  AssertIncludedInRequest(
+      base::EscapeUrlEncodedData("\"value\":\"RISK_DATA\"", /*use_plus=*/true));
+  AssertIncludedInRequest(base::EscapeUrlEncodedData(
+      "\"get_payment_instrument_context_token\":\"CONTEXT_TOKEN\"",
+      /*use_plus=*/true));
+  AssertIncludedInRequest(base::EscapeUrlEncodedData(
+      "\"redirect_response_url\":\"http://redirect-url.test/\"",
+      /*use_plus=*/true));
+  AssertIncludedInRequest(base::EscapeUrlEncodedData(
+      "\"issuer_id\":\"ISSUER_ID\"", /*use_plus=*/true));
+
+  EXPECT_EQ(result, result_);
+  if (result == PaymentsRpcResult::kSuccess) {
+    EXPECT_EQ(bnpl_vcn_response_details()->pan, "1234");
+    EXPECT_EQ(bnpl_vcn_response_details()->cvv, "123");
+    EXPECT_EQ(bnpl_vcn_response_details()->expiration_month, "1");
+    EXPECT_EQ(bnpl_vcn_response_details()->expiration_year, "2025");
+    EXPECT_EQ(bnpl_vcn_response_details()->cardholder_name, "Akagi Shigeru");
+  }
+}
+
+// Test GetBnplPaymentInstrumentForFetchingUrl() with all the different
+// PaymentsRpcResults.
+TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
+       GetBnplPaymentInstrumentForFetchingUrl) {
+  GetBnplPaymentInstrumentForFetchingUrlRequestDetails request_details;
+  request_details.billing_customer_number = 555666777888;
+  request_details.instrument_id = "INSTRUMENT_ID";
+  request_details.risk_data = "RISK_DATA";
+  request_details.merchant_domain = GURL("http://merchant-domain.test/");
+  request_details.total_amount = 1000000000;
+  request_details.currency = "CAD";
+
+  payments_network_interface_->GetBnplPaymentInstrumentForFetchingUrl(
+      request_details,
+      base::BindOnce(&PaymentsNetworkInterfaceTest::
+                         OnDidGetBnplPaymentInstrumentForFetchingUrl,
+                     GetWeakPtr()));
+
+  IssueOAuthToken();
+
+  // Ensures the PaymentsRpcResult is set correctly.
+  PaymentsRpcResult result = GetParam();
+  switch (result) {
+    case PaymentsRpcResult::kSuccess:
+      ReturnResponse(
+          payments_network_interface_.get(), net::HTTP_OK,
+          "{ \"buy_now_pay_later_info\": { "
+          "\"get_redirect_url_response_info\": "
+          "{ \"redirect_url\": \"http://redirect-url.test/\", "
+          "\"base_success_return_url\": \"http://success-url.test/\", "
+          "\"base_failure_return_url\": \"http://failure-url.test/\", "
+          "\"get_payment_instrument_context_token\": "
+          "\"CONTEXT_TOKEN\" } } }");
+      break;
+    case PaymentsRpcResult::kTryAgainFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"INTERNAL\", "
+                     "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+      break;
+    case PaymentsRpcResult::kPermanentFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
+      break;
+    case PaymentsRpcResult::kNetworkError:
+      ReturnResponse(payments_network_interface_.get(),
+                     net::HTTP_REQUEST_TIMEOUT, "");
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
+      break;
+    case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+    case PaymentsRpcResult::kNone:
+      NOTREACHED();
+  }
+
+  AssertIncludedInRequest("\"external_customer_id\":\"555666777888\"");
+  AssertIncludedInRequest("\"instrument_id\":\"INSTRUMENT_ID\"");
+  AssertIncludedInRequest("\"value\":\"RISK_DATA\"");
+  AssertIncludedInRequest(
+      "\"merchant_domain\":\"http://merchant-domain.test/\"");
+  AssertIncludedInRequest("\"amount_in_micros\":\"1000000000\"");
+  AssertIncludedInRequest("\"currency\":\"CAD\"");
+
+  EXPECT_EQ(result, result_);
+  if (result == PaymentsRpcResult::kSuccess) {
+    EXPECT_EQ(bnpl_url_response_details()->redirect_url,
+              GURL("http://redirect-url.test/"));
+    EXPECT_EQ(bnpl_url_response_details()->success_url_prefix,
+              GURL("http://success-url.test/"));
+    EXPECT_EQ(bnpl_url_response_details()->failure_url_prefix,
+              GURL("http://failure-url.test/"));
+    EXPECT_EQ(bnpl_url_response_details()->context_token, "CONTEXT_TOKEN");
   }
 }
 

@@ -182,6 +182,7 @@ struct PartitionOptions {
   // compression ratio of freed memory inside partially allocated pages (due to
   // fragmentation).
   EnableToggle eventually_zero_freed_memory = kDisabled;
+  EnableToggle fewer_memory_regions = kDisabled;
 
   struct {
     EnableToggle enabled = kDisabled;
@@ -261,9 +262,14 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     size_t in_slot_metadata_size = 0;
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool = false;
+    // Despite its name, `FreeFlags` for zapping is deleted and does not exist.
+    // This value is used for SchedulerLoopQuarantine.
+    // TODO(https://crbug.com/351974425): group this setting and quarantine
+    // setting in one place.
     bool zapping_by_free_flags = false;
     bool eventually_zero_freed_memory = false;
     bool scheduler_loop_quarantine = false;
+    bool fewer_memory_regions = false;
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     bool memory_tagging_enabled_ = false;
     bool use_random_memory_tagging_ = false;
@@ -374,7 +380,11 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   // Integrity check = ~reinterpret_cast<uintptr_t>(this).
   uintptr_t inverted_self = 0;
-  std::atomic<int> thread_caches_being_constructed_{0};
+
+  // A lock which is hold during thread cache construction.
+  // Any (de)allocation code path should not try to `Acquire()` this lock to
+  // prevent deadlocks. Instead, `TryAcquire()`.
+  internal::Lock thread_cache_construction_lock;
 
   size_t scheduler_loop_quarantine_branch_capacity_in_bytes = 0;
   internal::LightweightQuarantineRoot scheduler_loop_quarantine_root;
@@ -893,6 +903,14 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return GetSchedulerLoopQuarantineBranch();
   }
 
+  void SetSchedulerLoopQuarantineThreadLocalBranchCapacity(
+      size_t capacity_in_bytes) {
+    ThreadCache* thread_cache = this->EnsureThreadCache();
+    PA_CHECK(ThreadCache::IsValid(thread_cache));
+    thread_cache->GetSchedulerLoopQuarantineBranch().SetCapacityInBytes(
+        capacity_in_bytes);
+  }
+
   const internal::PartitionFreelistDispatcher* get_freelist_dispatcher() {
 #if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
     if (settings.use_pool_offset_freelists) {
@@ -1032,10 +1050,16 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE void RawFreeLocked(uintptr_t slot_start)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
   ThreadCache* MaybeInitThreadCache();
+  ThreadCache* ForceInitThreadCache();
 
   // May return an invalid thread cache.
   PA_ALWAYS_INLINE ThreadCache* GetOrCreateThreadCache();
   PA_ALWAYS_INLINE ThreadCache* GetThreadCache();
+  // Similar to `GetOrCreateThreadCache()`, but this creates a new thread cache
+  // with `ForceInitThreadCache()`. This can be slow since it acquires a lock,
+  // and hence with a risk of deadlock.
+  // Must NOT be used inside (de)allocation code path.
+  PA_ALWAYS_INLINE ThreadCache* EnsureThreadCache();
 
   PA_ALWAYS_INLINE internal::LightweightQuarantineBranch&
   GetSchedulerLoopQuarantineBranch();
@@ -1508,16 +1532,11 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   // cacheline ping-pong.
   PA_PREFETCH(slot_span);
 
-  // Further down, we may zap the memory, no point in doing it twice.  We may
-  // zap twice if kZap is enabled without kSchedulerLoopQuarantine. Make sure it
-  // does not happen. This is not a hard requirement: if this is deemed cheap
-  // enough, it can be relaxed, the static_assert() is here to make it a
-  // conscious decision.
-  static_assert(!ContainsFlags(flags, FreeFlags::kZap) ||
-                    ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine),
-                "kZap and kSchedulerLoopQuarantine should be used together to "
-                "avoid double zapping");
-  if constexpr (ContainsFlags(flags, FreeFlags::kZap)) {
+  // TODO(crbug.com/40287058): Collecting objects for
+  // `kSchedulerLoopQuarantineBranch` here means it "delays" other checks (BRP
+  // refcount, cookie, etc.)
+  // For better debuggability, we should do these checks before quarantining.
+  if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
     // No need to zap direct mapped allocations, as they are unmapped right
     // away. This also ensures that we don't needlessly memset() very large
     // allocations.
@@ -1526,12 +1545,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
       internal::SecureMemset(object, internal::kFreedByte,
                              GetSlotUsableSize(slot_span));
     }
-  }
-  // TODO(crbug.com/40287058): Collecting objects for
-  // `kSchedulerLoopQuarantineBranch` here means it "delays" other checks (BRP
-  // refcount, cookie, etc.)
-  // For better debuggability, we should do these checks before quarantining.
-  if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
+
     if (settings.scheduler_loop_quarantine) {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       // TODO(keishi): Add `[[likely]]` when brp is fully enabled as
@@ -2474,7 +2488,7 @@ void* PartitionRoot::ReallocInline(void* ptr,
   constexpr bool no_hooks = ContainsFlags(alloc_flags, AllocFlags::kNoHooks);
   const bool hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
   bool overridden = false;
-  size_t old_usable_size;
+  size_t old_usable_size = 0;
   if (!no_hooks && hooks_enabled) [[unlikely]] {
     overridden = PartitionAllocHooks::ReallocOverrideHookIfEnabled(
         &old_usable_size, ptr);
@@ -2516,6 +2530,21 @@ void* PartitionRoot::ReallocInline(void* ptr,
       }
     }
   }
+
+#if PA_BUILDFLAG(REALLOC_GROWTH_FACTOR_MITIGATION)
+  // Some nVidia drivers have a performance bug where they repeatedly realloc a
+  // buffer with a small 4144 byte increment instead of using a growth factor to
+  // amortize the cost of a memcpy. To work around this, we apply a growth
+  // factor to the new size to avoid this issue. This workaround is only
+  // intended to be used for Skia bots, and is not intended to be a general
+  // solution.
+  if (new_size > old_usable_size && new_size > 12 << 20) {
+    // 1.5x growth factor.
+    // Note that in case of integer overflow, the std::max ensures that the
+    // new_size is at least as large as the old_usable_size.
+    new_size = std::max(new_size, old_usable_size * 3 / 2);
+  }
+#endif
 
   // This realloc cannot be resized in-place. Sadness.
   void* ret = AllocInternal<alloc_flags>(
@@ -2578,6 +2607,17 @@ ThreadCache* PartitionRoot::GetThreadCache() {
     return ThreadCache::Get();
   }
   return nullptr;
+}
+
+ThreadCache* PartitionRoot::EnsureThreadCache() {
+  ThreadCache* thread_cache = nullptr;
+  if (settings.with_thread_cache) [[likely]] {
+    thread_cache = ThreadCache::Get();
+    if (!ThreadCache::IsValid(thread_cache)) [[unlikely]] {
+      thread_cache = ForceInitThreadCache();
+    }
+  }
+  return thread_cache;
 }
 
 // private.

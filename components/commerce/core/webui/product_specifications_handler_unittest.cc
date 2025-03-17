@@ -79,7 +79,14 @@ class MockDelegate : public ProductSpecificationsHandler::Delegate {
               ShowProductSpecificationsSetForUuid,
               (const base::Uuid& uuid, bool in_new_tab),
               (override));
+  MOCK_METHOD(
+      void,
+      ShowProductSpecificationsSetsForUuids,
+      (const std::vector<base::Uuid>& uuids,
+       const product_specifications::mojom::ShowSetDisposition disposition),
+      (override));
   MOCK_METHOD(void, ShowSyncSetupFlow, (), (override));
+  MOCK_METHOD(void, ShowComparePage, (bool in_new_tab), (override));
 };
 
 class MockHistoryService : public history::HistoryService {
@@ -282,6 +289,26 @@ TEST_F(ProductSpecificationsHandlerTest, TestGetComparisonTableUrlForUuid) {
                 .Then(run_loop.QuitClosure()));
 
   run_loop.Run();
+}
+
+TEST_F(ProductSpecificationsHandlerTest, TestShowComparePage) {
+  EXPECT_CALL(*delegate_, ShowComparePage(true)).Times(1);
+  handler_->ShowComparePage(true);
+}
+
+TEST_F(ProductSpecificationsHandlerTest,
+       TestShowProductSpecificationsSetsForUuids) {
+  base::Uuid uuid_one = base::Uuid::GenerateRandomV4();
+  base::Uuid uuid_two = base::Uuid::GenerateRandomV4();
+  const auto disposition =
+      product_specifications::mojom::ShowSetDisposition::kInNewTabs;
+
+  EXPECT_CALL(*delegate_,
+              ShowProductSpecificationsSetsForUuids(
+                  testing::ElementsAre(uuid_one, uuid_two), disposition))
+      .Times(1);
+  handler_->ShowProductSpecificationsSetsForUuids({uuid_one, uuid_two},
+                                                  disposition);
 }
 
 }  // namespace commerce

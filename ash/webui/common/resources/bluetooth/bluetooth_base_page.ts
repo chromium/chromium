@@ -18,7 +18,8 @@ import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './bluetooth_base_page.html.js';
-import {ButtonBarState, ButtonName, ButtonState} from './bluetooth_types.js';
+import type {ButtonBarState} from './bluetooth_types.js';
+import {ButtonName, ButtonState} from './bluetooth_types.js';
 
 const SettingsBluetoothBasePageElementBase = I18nMixin(PolymerElement);
 

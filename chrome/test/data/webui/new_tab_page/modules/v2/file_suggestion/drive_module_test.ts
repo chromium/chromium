@@ -15,6 +15,7 @@ import {installMock} from '../../../test_support.js';
 
 suite('DriveModuleV2', () => {
   let handler: TestMock<DriveSuggestionHandlerRemote>;
+  const iconUrl = 'https://example.com/application/vnd.google-apps.spreadsheet';
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -29,42 +30,42 @@ suite('DriveModuleV2', () => {
               justificationText: 'Edited last week',
               title: 'Foo',
               id: '123',
-              mimeType: 'application/vnd.google-apps.spreadsheet',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://foo.com'},
             },
             {
               justificationText: 'Edited yesterday',
               title: 'Bar',
               id: '132',
-              mimeType: 'application/vnd.google-apps.document',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://bar.com'},
             },
             {
               justificationText: 'Created today',
               title: 'Baz',
               id: '213',
-              mimeType: 'application/vnd.google-apps.presentation',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://baz.com'},
             },
             {
               justificationText: 'Created yesterday',
               title: 'Qux',
               id: '231',
-              mimeType: 'application/vnd.google-apps.presentation',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://qux.com'},
             },
             {
               justificationText: 'Edited last week',
               title: 'FooBar',
               id: '312',
-              mimeType: 'application/vnd.google-apps.spreadsheet',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://foo.com'},
             },
             {
               justificationText: 'Edited yesterday',
               title: 'BazQux',
               id: '321',
-              mimeType: 'application/vnd.google-apps.document',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://bar.com'},
             },
           ],
@@ -79,7 +80,7 @@ suite('DriveModuleV2', () => {
         await microtasksFinished();
         const fileSuggestion = module.$.fileSuggestion;
         const items =
-            Array.from(fileSuggestion.shadowRoot!.querySelectorAll('.file'));
+            Array.from(fileSuggestion.shadowRoot.querySelectorAll('.file'));
 
         assertEquals(6, items.length);
       });
@@ -100,7 +101,7 @@ suite('DriveModuleV2', () => {
           justificationText: 'Edited yesterday',
           title: 'Abc',
           id: '012',
-          mimeType: 'application/vnd.google-apps.presentation',
+          iconUrl: {url: iconUrl},
           itemUrl: {url: 'https://abc.com'},
         },
       ],
@@ -114,7 +115,7 @@ suite('DriveModuleV2', () => {
     assertFalse(!!$$(driveModule, 'ntp-info-dialog'));
 
     // Act.
-    const infoButton = driveModule.$.moduleHeaderElementV2.shadowRoot!
+    const infoButton = driveModule.$.moduleHeaderElementV2.shadowRoot
                            .querySelector<HTMLElement>('#info');
     assertTrue(!!infoButton);
     infoButton.click();
@@ -134,7 +135,7 @@ suite('DriveModuleV2', () => {
               justificationText: 'Edited yesterday',
               title: 'Abc',
               id: '012',
-              mimeType: 'application/vnd.google-apps.presentation',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://abc.com'},
             },
           ],
@@ -147,7 +148,7 @@ suite('DriveModuleV2', () => {
 
         // Act.
         const whenFired = eventToPromise('disable-module', driveModule);
-        const disableButton = driveModule.$.moduleHeaderElementV2.shadowRoot!
+        const disableButton = driveModule.$.moduleHeaderElementV2.shadowRoot
                                   .querySelector<HTMLElement>('#disable');
         assertTrue(!!disableButton);
         disableButton.click();
@@ -167,7 +168,7 @@ suite('DriveModuleV2', () => {
           justificationText: '',
           title: '',
           id: '',
-          mimeType: '',
+          iconUrl: {url: ''},
           itemUrl: {url: ''},
         },
       ],
@@ -181,7 +182,7 @@ suite('DriveModuleV2', () => {
 
     // Act.
     const whenFired = eventToPromise('dismiss-module-instance', moduleElement);
-    const dismissButton = moduleElement.$.moduleHeaderElementV2.shadowRoot!
+    const dismissButton = moduleElement.$.moduleHeaderElementV2.shadowRoot
                               .querySelector<HTMLElement>('#dismiss');
     assertTrue(!!dismissButton);
     dismissButton.click();
@@ -193,7 +194,7 @@ suite('DriveModuleV2', () => {
     assertEquals(1, handler.getCallCount('dismissModule'));
 
     // Act.
-    event.detail.restoreCallback!();
+    event.detail.restoreCallback();
 
     // Assert.
     assertEquals(1, handler.getCallCount('restoreModule'));
@@ -209,7 +210,7 @@ suite('DriveModuleV2', () => {
           justificationText: 'Edited yesterday',
           title: 'Abc',
           id: '012',
-          mimeType: 'application/vnd.google-apps.presentation',
+          iconUrl: {url: iconUrl},
           itemUrl: {url: 'https://abc.com'},
         },
       ],

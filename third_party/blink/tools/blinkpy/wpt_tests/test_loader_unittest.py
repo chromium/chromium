@@ -59,6 +59,7 @@ class TestLoaderTestCase(unittest.TestCase):
     @contextlib.contextmanager
     def _make_loader(self, **kwargs):
         port = self.host.port_factory.get('test-linux-trusty')
+        port.set_option_default('no_expectations', False)
         with self.fs.patch_builtins():
             manifest = load_and_update(
                 self.finder.path_from_wpt_tests(),

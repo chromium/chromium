@@ -194,10 +194,6 @@ void ParkableImageSegmentReader::UnlockData() {
   parkable_image_->UnlockData();
 }
 
-BASE_FEATURE(kUseParkableImageSegmentReader,
-             "UseParkableImageSegmentReader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 constexpr base::TimeDelta ParkableImageImpl::kParkingDelay;
 
 void ParkableImageImpl::Append(WTF::SharedBuffer* buffer, size_t offset) {
@@ -228,20 +224,6 @@ scoped_refptr<SharedBuffer> ParkableImageImpl::Data() {
   } while (it.Next());
 
   return shared_buffer;
-}
-
-scoped_refptr<SegmentReader> ParkableImageImpl::GetROBufferSegmentReader() {
-  base::AutoLock lock(lock_);
-  Unpark();
-  DCHECK(rw_buffer_);
-  // The locking and unlocking here is only needed to make sure ASAN unpoisons
-  // things correctly here.
-  LockData();
-  scoped_refptr<ROBuffer> ro_buffer(rw_buffer_->MakeROBufferSnapshot());
-  scoped_refptr<SegmentReader> segment_reader =
-      SegmentReader::CreateFromROBuffer(std::move(ro_buffer));
-  UnlockData();
-  return segment_reader;
 }
 
 bool ParkableImageImpl::CanParkNow() const {
@@ -542,12 +524,7 @@ bool ParkableImage::is_on_disk() const {
 scoped_refptr<SegmentReader> ParkableImage::MakeROSnapshot() {
   DCHECK(impl_);
   DCHECK_CALLED_ON_VALID_THREAD(impl_->thread_checker_);
-
-  if (base::FeatureList::IsEnabled(kUseParkableImageSegmentReader)) {
-    return CreateSegmentReader();
-  } else {
-    return impl_->GetROBufferSegmentReader();
-  }
+  return CreateSegmentReader();
 }
 
 void ParkableImage::Freeze() {

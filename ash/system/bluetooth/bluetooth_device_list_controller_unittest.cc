@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/bluetooth/bluetooth_device_list_controller_impl.h"
-
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
+#include "ash/system/bluetooth/bluetooth_device_list_controller_impl.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/bluetooth/fake_bluetooth_detailed_view.h"
 #include "ash/system/tray/tri_view.h"
@@ -17,6 +17,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -70,7 +71,7 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
     return device_properties;
   }
 
-  const std::u16string& GetSubHeaderText(const TriView* sub_header) {
+  std::u16string_view GetSubHeaderText(const TriView* sub_header) {
     EXPECT_TRUE(sub_header);
     EXPECT_EQ(1u, sub_header->children().at(1)->children().size());
     return static_cast<views::Label*>(
@@ -154,11 +155,10 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
  private:
   const TriView* FindSubHeaderWithText(const std::u16string& text) {
     for (const views::View* view : device_list()->children()) {
-      if (std::strcmp("TriView", view->GetClassName()))
-        continue;
-      const TriView* sub_header = static_cast<const TriView*>(view);
-      if (GetSubHeaderText(sub_header) == text)
+      if (const auto* sub_header = views::AsViewClass<TriView>(view);
+          sub_header && GetSubHeaderText(sub_header) == text) {
         return sub_header;
+      }
     }
     return nullptr;
   }

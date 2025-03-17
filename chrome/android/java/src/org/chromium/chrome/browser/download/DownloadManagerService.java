@@ -21,6 +21,7 @@ import android.util.Pair;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -40,6 +41,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueRequest;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueResponse;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -693,13 +695,19 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
             // Redirect the user to an internal media viewer.  The file path is necessary to show
             // the real file path to the user instead of a content:// download ID.
-            return MediaViewerUtils.getMediaViewerIntent(
-                    fileUri,
-                    contentUri,
-                    mimeType,
-                    /* allowExternalAppHandlers= */ !isAutomotive,
-                    /* allowShareAction= */ !isAutomotive,
-                    ContextUtils.getApplicationContext());
+            Intent intent =
+                    MediaViewerUtils.getMediaViewerIntent(
+                            fileUri,
+                            contentUri,
+                            mimeType,
+                            /* allowExternalAppHandlers= */ !isAutomotive,
+                            /* allowShareAction= */ !isAutomotive,
+                            ContextUtils.getApplicationContext());
+
+            intent.putExtra(
+                    CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING,
+                    ChromeFeatureList.sCCTEphemeralMediaViewerExperiment.isEnabled());
+            return intent;
         }
         return MediaViewerUtils.createViewIntentForUri(contentUri, mimeType, originalUrl, referrer);
     }

@@ -67,7 +67,6 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_host.h"
@@ -104,9 +103,6 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
 #if BUILDFLAG(IS_CHROMEOS)
       set_chromeos_user_(true),
 #endif
-      // TODO(crbug.com/40261741): Move this ScopedCurrentChannel down into
-      // tests that specifically require it.
-      current_channel_(version_info::Channel::UNKNOWN),
       override_prompt_for_external_extensions_(
           FeatureSwitch::prompt_for_external_extensions(),
           false),
@@ -220,7 +216,10 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 void ExtensionBrowserTest::SetUpOnMainThread() {
   observer_ =
-      std::make_unique<ChromeExtensionTestNotificationObserver>(browser());
+      browser()
+          ? std::make_unique<ChromeExtensionTestNotificationObserver>(browser())
+          : std::make_unique<ChromeExtensionTestNotificationObserver>(
+                profile());
   if (extension_service()->updater()) {
     extension_service()->updater()->SetExtensionCacheForTesting(
         test_extension_cache_.get());
@@ -294,8 +293,9 @@ const Extension* ExtensionBrowserTest::LoadExtension(
   return extension.get();
 }
 
-void ExtensionBrowserTest::DisableExtension(const std::string& extension_id,
-                                            int disable_reasons) {
+void ExtensionBrowserTest::DisableExtension(
+    const ExtensionId& extension_id,
+    const DisableReasonSet& disable_reasons) {
   extension_service()->DisableExtension(extension_id, disable_reasons);
 }
 
@@ -516,8 +516,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
       install_ui = std::make_unique<ExtensionInstallPrompt>(
           window_controller->GetActiveTab());
     }
-    installer =
-        CrxInstaller::Create(extension_service(), std::move(install_ui));
+    installer = CrxInstaller::Create(profile(), std::move(install_ui));
     installer->set_expected_id(id);
     installer->set_creation_flags(creation_flags);
     installer->set_install_source(install_source);
@@ -718,30 +717,6 @@ ExtensionHost* ExtensionBrowserTest::FindHostWithPath(ProcessManager* manager,
   return result_host;
 }
 
-base::Value ExtensionBrowserTest::ExecuteScriptInBackgroundPage(
-    const extensions::ExtensionId& extension_id,
-    const std::string& script,
-    browsertest_util::ScriptUserActivation script_user_activation) {
-  return browsertest_util::ExecuteScriptInBackgroundPage(
-      profile(), extension_id, script, script_user_activation);
-}
-
-std::string ExtensionBrowserTest::ExecuteScriptInBackgroundPageDeprecated(
-    const extensions::ExtensionId& extension_id,
-    const std::string& script,
-    browsertest_util::ScriptUserActivation script_user_activation) {
-  return browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
-      profile(), extension_id, script, script_user_activation);
-}
-
-bool ExtensionBrowserTest::ExecuteScriptInBackgroundPageNoWait(
-    const extensions::ExtensionId& extension_id,
-    const std::string& script,
-    browsertest_util::ScriptUserActivation script_user_activation) {
-  return browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      profile(), extension_id, script, script_user_activation);
-}
-
 content::ServiceWorkerContext* ExtensionBrowserTest::GetServiceWorkerContext() {
   return GetServiceWorkerContext(profile());
 }
@@ -757,7 +732,7 @@ WindowController* ExtensionBrowserTest::GetWindowController() {
   // TODO(b/361838438): Provide an implementation for the desktop android build.
   return nullptr;
 #else
-  return browser()->extension_window_controller();
+  return browser() ? browser()->extension_window_controller() : nullptr;
 #endif
 }
 

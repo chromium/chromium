@@ -5,29 +5,25 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CHROME_TYPOGRAPHY_H_
 #define CHROME_BROWSER_UI_VIEWS_CHROME_TYPOGRAPHY_H_
 
-#include "build/chromeos_buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // gn check complains on Linux Ozone.
 #include "ash/public/cpp/ash_typography.h"  // nogncheck
 #endif
 
 enum ChromeTextContext {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CHROME_TEXT_CONTEXT_START = ash::ASH_TEXT_CONTEXT_END,
 #else
   CHROME_TEXT_CONTEXT_START = views::style::VIEWS_TEXT_CONTEXT_END,
 #endif
 
-  // Headline text. Usually 20pt. Never multi-line.
-  CONTEXT_HEADLINE = CHROME_TEXT_CONTEXT_START,
-
   // Smaller version of CONTEXT_DIALOG_BODY_TEXT. Usually 12pt.
-  CONTEXT_DIALOG_BODY_TEXT_SMALL,
+  CONTEXT_DIALOG_BODY_TEXT_SMALL = CHROME_TEXT_CONTEXT_START,
 
   // Text of the page title in the tab hover card.
   CONTEXT_TAB_HOVER_CARD_TITLE,
@@ -85,7 +81,7 @@ enum ChromeTextContext {
 };
 
 enum ChromeTextStyle {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CHROME_TEXT_STYLE_START = ash::ASH_TEXT_STYLE_END,
 #else
   CHROME_TEXT_STYLE_START = views::style::VIEWS_TEXT_STYLE_END,

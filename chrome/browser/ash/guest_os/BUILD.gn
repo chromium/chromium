@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("guest_os") {
   sources = [
@@ -59,7 +59,6 @@ static_library("guest_os") {
 
   deps = [
     ":guest_os_diagnostics_mojom",
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/system_apps/public:system_web_app_type",
@@ -99,6 +98,7 @@ static_library("guest_os") {
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
     "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ash/components/drivefs",
+    "//chromeos/ash/experiences/arc",
     "//components/app_restore",
     "//components/crx_file",
     "//components/exo",
@@ -180,7 +180,6 @@ source_set("unit_tests") {
   deps = [
     ":guest_os",
     ":test_support",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
@@ -198,6 +197,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/component_updater/ash:test_support",
     "//components/prefs",
     "//content/test:test_support",

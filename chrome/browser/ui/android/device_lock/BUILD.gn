@@ -125,6 +125,7 @@ android_resources("java_resources") {
     "java/res/layout/missing_device_lock_view.xml",
     "java/res/values-night/colors.xml",
     "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",

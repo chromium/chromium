@@ -14,6 +14,10 @@
   cr-icon {
     flex-shrink: 0;
   }
+
+  cr-policy-pref-indicator {
+    margin-inline-end: 4px;
+  }
 </style>
 
 <template is="dom-if" if="[[!enableAiSettingsPageRefresh_]]" restamp>
@@ -67,31 +71,49 @@
 
 <template is="dom-if" if="[[enableAiSettingsPageRefresh_]]" restamp>
   <div class="settings-row first">
-    <cr-link-row label="$i18n{historySearchSettingLabel}"
-        on-click="onHistorySearchLinkoutClick_" external>
-      <div slot="sub-label">
-        <span id="linkoutText" hidden="[[isAnswersFeatureEnabled_]]">
-          $i18n{historySearchSettingSublabelV2}$i18n{sentenceEnd}
-        </span>
-        <span id="linkoutTextWithAnswers"
-            hidden="[[!isAnswersFeatureEnabled_]]">
-          $i18n{historySearchWithAnswersSettingSublabelV2}$i18n{sentenceEnd}
-        </span>
-        <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
-            aria-label="$i18n{historySearchLearnMoreA11yLabel}"
-            on-click="onLearnMoreClick_" target="_blank">
-          $i18n{learnMore}
-        </a>
+    <template is="dom-if" if="[[!isDisabledByPolicy_(enterprisePref_)]]"
+        restamp>
+      <cr-link-row label="$i18n{historySearchSettingLabel}"
+          on-click="onHistorySearchLinkoutClick_" external>
+        <div slot="sub-label">
+          <span id="linkoutText">[[toggleSubLabelV2_]]</span>
+          <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+              aria-label="$i18n{historySearchLearnMoreA11yLabel}"
+              aria-description="$i18n{opensInNewTab}"
+              on-click="onLearnMoreClick_" target="_blank">
+            $i18n{learnMore}
+          </a>
+        </div>
+      </cr-link-row>
+      <div class="separator"></div>
+    </template>
+    <template is="dom-if" if="[[isDisabledByPolicy_(enterprisePref_)]]" restamp>
+      <div class="cr-row first">
+        <div class="flex cr-padded-text">
+          <div id="historySearchLabel">$i18n{historySearchSettingLabel}</div>
+          <div class="secondary">
+            [[toggleSubLabelV2_]]
+            <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+                aria-label="$i18n{historySearchLearnMoreA11yLabel}"
+                aria-description="$i18n{opensInNewTab}"
+                on-click="onLearnMoreClick_" target="_blank">
+              $i18n{learnMore}
+            </a>
+          </div>
+        </div>
       </div>
-    </cr-link-row>
-    <div class="separator"></div>
+      <cr-policy-pref-indicator id="policyIndicator"
+            pref="[[enterprisePref_]]">
+      </cr-policy-pref-indicator>
+    </template>
     <settings-toggle-button aria-label="$i18n{historySearchSettingLabel}"
         learn-more-url="[[getLearnMoreUrl_(enterprisePref_)]]"
         learn-more-aria-label="$i18n{historySearchLearnMoreA11yLabel}"
         pref="{{prefs.optimization_guide.history_search_setting_state}}"
         numeric-unchecked-values="[[numericUncheckedValues_]]"
         numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
-        on-settings-boolean-control-change="onHistorySearchToggleChange_">
+        on-settings-boolean-control-change="onHistorySearchToggleChange_"
+        disabled="[[isDisabledByPolicy_(enterprisePref_)]]">
     </settings-toggle-button>
   </div>
   <div class="settings-columned-section">

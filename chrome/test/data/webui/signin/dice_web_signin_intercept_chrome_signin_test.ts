@@ -44,43 +44,43 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
 
   function checkImageUrl(elementId: string, expectedUrl: string) {
     assertTrue(isChildVisible(app, elementId));
-    const img = app.shadowRoot!.querySelector<HTMLImageElement>(elementId);
+    const img = app.shadowRoot.querySelector<HTMLImageElement>(elementId);
     assertTrue(img != null);
     assertEquals(expectedUrl, img.src);
   }
 
   function checkAltText(elementId: string, expectedAltText: string) {
-    const badge = app.shadowRoot!.querySelector<HTMLImageElement>(elementId);
+    const badge = app.shadowRoot.querySelector<HTMLImageElement>(elementId);
     assertTrue(badge != null);
     assertEquals(expectedAltText, badge.alt);
   }
 
   test('ClickAccept', function() {
     assertTrue(isChildVisible(app, '#accept-button'));
-    app.shadowRoot!.querySelector<CrButtonElement>('#accept-button')!.click();
+    app.shadowRoot.querySelector<CrButtonElement>('#accept-button')!.click();
     return browserProxy.whenCalled('accept');
   });
 
   test('ClickCancel', function() {
     assertTrue(isChildVisible(app, '#cancel-button'));
-    app.shadowRoot!.querySelector<CrButtonElement>('#cancel-button')!.click();
+    app.shadowRoot.querySelector<CrButtonElement>('#cancel-button')!.click();
     return browserProxy.whenCalled('cancel');
   });
 
   test('AppContentValues', async function() {
-    const titleElement = app.shadowRoot!.querySelector('#title')!;
+    const titleElement = app.shadowRoot.querySelector('#title')!;
     assertEquals(PARAMETERS.title, titleElement.textContent);
-    const subtitleElement = app.shadowRoot!.querySelector('#subtitle')!;
+    const subtitleElement = app.shadowRoot.querySelector('#subtitle')!;
     assertEquals(PARAMETERS.subtitle, subtitleElement.textContent);
-    const nameElement = app.shadowRoot!.querySelector('#name')!;
+    const nameElement = app.shadowRoot.querySelector('#name')!;
     assertEquals(PARAMETERS.fullName, nameElement.textContent);
-    const emailElement = app.shadowRoot!.querySelector('#email')!;
+    const emailElement = app.shadowRoot.querySelector('#email')!;
     assertEquals(PARAMETERS.email, emailElement.textContent);
-    const acceptButton = app.shadowRoot!.querySelector('#accept-button')!;
+    const acceptButton = app.shadowRoot.querySelector('#accept-button')!;
     assertEquals(
         app.i18n('chromeSigninAcceptText', PARAMETERS.givenName),
         acceptButton.textContent!.trim());
-    const cancelButton = app.shadowRoot!.querySelector('#cancel-button')!;
+    const cancelButton = app.shadowRoot.querySelector('#cancel-button')!;
     assertEquals(
         app.i18n('chromeSigninDeclineText'), cancelButton.textContent!.trim());
 

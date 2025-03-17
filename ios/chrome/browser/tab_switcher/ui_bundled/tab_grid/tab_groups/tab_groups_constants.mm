@@ -24,6 +24,9 @@ NSString* const kTabGroupOverflowMenuButtonIdentifier =
 NSString* const kTabGroupFacePileButtonIdentifier =
     @"kTabGroupFacePileButtonIdentifier";
 
+NSString* const kTabGroupRecentActivityIdentifier =
+    @"kTabGroupRecentActivityIdentifier";
+
 NSString* const kTabGroupsPanelIdentifier = @"kTabGroupsPanelIdentifier";
 
 NSString* const kTabGroupsPanelCellIdentifierPrefix =

@@ -99,8 +99,9 @@ class IOSThreadProfiler::WorkIdRecorder : public metrics::WorkIdRecorder {
 };
 
 IOSThreadProfiler::~IOSThreadProfiler() {
-  if (g_main_thread_instance == this)
+  if (g_main_thread_instance == this) {
     g_main_thread_instance = nullptr;
+  }
 }
 
 // static
@@ -109,8 +110,9 @@ IOSThreadProfiler::CreateAndStartOnMainThread() {
   DCHECK(!g_main_thread_instance);
   auto instance = base::WrapUnique(
       new IOSThreadProfiler(sampling_profiler::ProfilerThreadType::kMain));
-  if (!g_main_thread_instance)
+  if (!g_main_thread_instance) {
     g_main_thread_instance = instance.get();
+  }
   return instance;
 }
 
@@ -213,8 +215,9 @@ IOSThreadProfiler::IOSThreadProfiler(
               sampling_params.sampling_interval,
           kFractionOfExecutionTimeToSample, startup_profiling_completion_time);
 
-  if (owning_thread_task_runner_)
+  if (owning_thread_task_runner_) {
     ScheduleNextPeriodicCollection();
+  }
 }
 
 // static

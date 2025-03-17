@@ -36,17 +36,6 @@ class OSCryptLinuxTest : public testing::Test {
   void TearDown() override { OSCryptMockerLinux::TearDown(); }
 };
 
-TEST_F(OSCryptLinuxTest, VerifyV0) {
-  const std::string originaltext = "hello";
-  std::string ciphertext;
-  std::string decipheredtext;
-
-  OSCrypt::SetEncryptionPasswordForTesting(std::string());
-  ciphertext = originaltext;  // No encryption
-  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decipheredtext));
-  ASSERT_EQ(originaltext, decipheredtext);
-}
-
 TEST_F(OSCryptLinuxTest, VerifyV10) {
   const std::string originaltext = "hello";
   std::string ciphertext;

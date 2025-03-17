@@ -4,9 +4,10 @@
 
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
@@ -39,7 +40,7 @@ std::vector<UiCredential> SortCredentials(
   // 2) Prefer credentials that were used recently over others.
   //
   // Note: This ordering matches password_manager_util::FindBestMatches().
-  base::ranges::sort(result, std::greater<>{}, [](const UiCredential& cred) {
+  std::ranges::sort(result, std::greater<>{}, [](const UiCredential& cred) {
     return std::make_pair(-static_cast<int>(cred.match_type()),
                           cred.last_used());
   });
@@ -175,7 +176,7 @@ void TouchToFillController::OnCredentialSelected(
   }
 
   // Emit UMA if grouped affiliation match was available for the user.
-  if (base::ranges::find_if(credentials_, [](const UiCredential& login) {
+  if (std::ranges::find_if(credentials_, [](const UiCredential& login) {
         return login.match_type() ==
                password_manager_util::GetLoginMatchType::kGrouped;
       }) != credentials_.end()) {

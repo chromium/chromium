@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.media.ui;
 
 import org.chromium.build.annotations.IdentifierNameString;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.base.SplitCompatService;
 
 /** Exposes services from {@link ChromeMediaNotificationControllerDelegate} in the base module. */
+@NullMarked
 public class ChromeMediaNotificationControllerServices {
     /** See {@link ChromeMediaNotificationControllerDelegate$PlaybackListenerServiceImpl}. */
     public static class PlaybackListenerService extends SplitCompatService {
@@ -24,7 +26,7 @@ public class ChromeMediaNotificationControllerServices {
     public static class PresentationListenerService extends SplitCompatService {
         private static @IdentifierNameString String sImplClassName =
                 "org.chromium.chrome.browser.media.ui."
-                        + "ChromeMediaNotificationControllerDelegate$PresentationListenerServiceImpl";
+                    + "ChromeMediaNotificationControllerDelegate$PresentationListenerServiceImpl";
 
         public PresentationListenerService() {
             super(sImplClassName);

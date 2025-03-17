@@ -10,8 +10,6 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
-#include "third_party/blink/renderer/modules/webaudio/iir_filter_handler.h"
-#include "third_party/blink/renderer/modules/webaudio/iir_processor.h"
 #include "third_party/blink/renderer/platform/audio/iir_filter.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -183,9 +181,8 @@ void IIRFilterNode::Trace(Visitor* visitor) const {
   AudioNode::Trace(visitor);
 }
 
-IIRProcessor* IIRFilterNode::GetIIRFilterProcessor() const {
-  return static_cast<IIRProcessor*>(
-      static_cast<IIRFilterHandler&>(Handler()).Processor());
+IIRFilterHandler& IIRFilterNode::GetIIRFilterHandler() const {
+  return static_cast<IIRFilterHandler&>(Handler());
 }
 
 void IIRFilterNode::getFrequencyResponse(
@@ -227,7 +224,7 @@ void IIRFilterNode::getFrequencyResponse(
 
   // Nothing to do if the length is 0.
   if (frequency_hz_length_as_int > 0) {
-    GetIIRFilterProcessor()->GetFrequencyResponse(
+    GetIIRFilterHandler().GetFrequencyResponse(
         frequency_hz_length_as_int, frequency_hz->Data(), mag_response->Data(),
         phase_response->Data());
   }

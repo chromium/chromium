@@ -19,8 +19,6 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
-class NearbyShareProfileInfoProvider;
-
 // A fake implementation of NearbyShareCertificateManager, along with a fake
 // factory, to be used in tests.
 class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
@@ -43,12 +41,12 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
    private:
     // NearbyShareCertificateManagerImpl::Factory:
     std::unique_ptr<NearbyShareCertificateManager> CreateInstance(
+        std::string user_email,
+        const base::FilePath& profile_path,
+        PrefService* pref_service,
         NearbyShareLocalDeviceDataManager* local_device_data_manager,
         NearbyShareContactManager* contact_manager,
-        NearbyShareProfileInfoProvider* profile_info_provider,
-        PrefService* pref_service,
         leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
-        const base::FilePath& profile_path,
         NearbyShareClientFactory* client_factory,
         const base::Clock* clock) override;
 

@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader_impl.h"
 
+#include <numeric>
 #include <string>
 #include <utility>
 
@@ -18,6 +24,7 @@
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
+#include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -94,7 +101,24 @@ bool GetStyleSheet(const base::Value::Dict& dict,
 
 }  // namespace safe_html
 
-std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value) {
+std::string AsyncParamDataAsCSV(
+    const std::set<std::pair<std::string, std::string>>& param_data) {
+  if (param_data.empty()) {
+    return "";
+  }
+
+  std::string csv = std::accumulate(
+      param_data.cbegin(), param_data.cend(), std::string(),
+      [&](std::string acc, const std::pair<std::string, std::string>& param) {
+        return acc + "," + param.first + ":" + param.second;
+      });
+
+  // Strip preceding comma and return value.
+  return csv.substr(1);
+}
+
+std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value,
+                                              bool expect_async_bar_parts) {
   if (!value.is_dict()) {
     DVLOG(1) << "Parse error: top-level dictionary not found";
     return std::nullopt;
@@ -113,16 +137,19 @@ std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value) {
     language_code = *maybe_language;
   }
 
-  const base::Value::Dict* one_google_bar = update->FindDict("ogb");
+  OneGoogleBarData result;
+  result.language_code = language_code;
+
+  const base::Value::Dict* one_google_bar =
+      update->FindDict(expect_async_bar_parts ? "ogb_parts" : "ogb");
   if (!one_google_bar) {
     DVLOG(1) << "Parse error: no ogb";
     return std::nullopt;
   }
 
-  OneGoogleBarData result;
-  result.language_code = language_code;
-
-  if (!safe_html::GetHtml(*one_google_bar, "html", &result.bar_html)) {
+  if (!safe_html::GetHtml(*one_google_bar,
+                          expect_async_bar_parts ? "right_html" : "html",
+                          &result.bar_html)) {
     DVLOG(1) << "Parse error: no html";
     return std::nullopt;
   }
@@ -284,8 +311,9 @@ OneGoogleBarLoaderImpl::OneGoogleBarLoaderImpl(
     bool account_consistency_mirror_required)
     : url_loader_factory_(url_loader_factory),
       application_locale_(application_locale),
-      account_consistency_mirror_required_(
-          account_consistency_mirror_required) {}
+      account_consistency_mirror_required_(account_consistency_mirror_required),
+      async_bar_parts_(base::FeatureList::IsEnabled(
+          ntp_features::kNtpOneGoogleBarAsyncBarParts)) {}
 
 OneGoogleBarLoaderImpl::~OneGoogleBarLoaderImpl() = default;
 
@@ -329,17 +357,28 @@ GURL OneGoogleBarLoaderImpl::GetApiUrl() const {
     api_url = net::AppendQueryParameter(api_url, "hl", application_locale_);
   }
 
-  // Add the "async=" parameter. We can't use net::AppendQueryParameter for
-  // this because we need the ":" to remain unescaped.
-  GURL::Replacements replacements;
   std::string query = api_url.query();
   query += additional_query_params_;
+
   if (additional_query_params_.find("&async=") == std::string::npos) {
-    query += "&async=fixed:0";
+    // Add the "async=" parameter. We can't use net::AppendQueryParameter for
+    // this because we need the ":" to remain unescaped.
+    std::set<std::pair<std::string, std::string>> async_param_data;
+    async_param_data.emplace("fixed", "0");
+    if (async_bar_parts_) {
+      async_param_data.emplace("abp", "1");
+    }
+    if (!async_param_data.empty()) {
+      query += "&async=";
+      query += AsyncParamDataAsCSV(async_param_data);
+    }
   }
+
   if (query.at(0) == '&') {
     query = query.substr(1);
   }
+
+  GURL::Replacements replacements;
   replacements.SetQueryStr(query);
   return api_url.ReplaceComponents(replacements);
 }
@@ -380,7 +419,8 @@ void OneGoogleBarLoaderImpl::JsonParsed(
     return;
   }
 
-  std::optional<OneGoogleBarData> data = JsonToOGBData(*result);
+  std::optional<OneGoogleBarData> data =
+      JsonToOGBData(*result, async_bar_parts_);
   Respond(data.has_value() ? Status::OK : Status::FATAL_ERROR, data);
 }
 

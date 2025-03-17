@@ -52,6 +52,15 @@ export function getHtml(this: UserEducationInternalsElement) {
       <span id="errorMessage">${this.featurePromoErrorMessage_}</span>
     </cr-toast>
     <div id="content">
+      <div id="warning">
+        <h2>User Education Debug Page</h2>
+        <p>
+          <span class="blurb-warning">NOTICE: DEBUGGING PAGE ONLY!</span>
+          This page is not part of the intended Chrome experience. It is only
+          for testing User Education features and may cause Chrome to behave
+          in ways it was not designed to. Use at your own risk.
+        </p>
+      </div>
       <div id="iph">
         <a name="iph"></a>
         <h2>Feature Promos</h2>
@@ -97,30 +106,28 @@ export function getHtml(this: UserEducationInternalsElement) {
             </cr-button>
           </div>
         </if>
-        ${this.isWhatsNewV2_ ? html`
-            ${this.whatsNewModules_.length > 0 ? html`
-              <h3 class="whats-new-section">Modules</h3>` :
-              ''}
-            ${this.whatsNewModules_.map(item => html`
-              <user-education-whats-new-internals-card
-                  id="${item.moduleName}"
-                  ?hidden="${!this.whatsNewFilter_(item)}"
-                  .item="${item}"
-                  type="module"
-                  @clear-whats-new-data="${this.clearWhatsNewData_}">
-              </user-education-whats-new-internals-card>`)}
-            ${this.whatsNewEditions_.length > 0 ? html`
-              <h3 class="whats-new-section">Editions</h3>` :
-              ''}
-            ${this.whatsNewEditions_.map(item => html`
-              <user-education-whats-new-internals-card
-                  id="${item.editionName}"
-                  ?hidden="${!this.whatsNewFilter_(item)}"
-                  .item="${item}"
-                  type="edition"
-                  @clear-whats-new-data="${this.clearWhatsNewData_}">
-              </user-education-whats-new-internals-card>`)}` :
+        ${this.whatsNewModules_.length > 0 ? html`
+          <h3 class="whats-new-section">Modules</h3>` :
           ''}
+        ${this.whatsNewModules_.map(item => html`
+          <user-education-whats-new-internals-card
+              id="${item.moduleName}"
+              ?hidden="${!this.whatsNewFilter_(item)}"
+              .item="${item}"
+              type="module"
+              @clear-whats-new-data="${this.clearWhatsNewData_}">
+          </user-education-whats-new-internals-card>`)}
+        ${this.whatsNewEditions_.length > 0 ? html`
+          <h3 class="whats-new-section">Editions</h3>` :
+          ''}
+        ${this.whatsNewEditions_.map(item => html`
+          <user-education-whats-new-internals-card
+              id="${item.editionName}"
+              ?hidden="${!this.whatsNewFilter_(item)}"
+              .item="${item}"
+              type="edition"
+              @clear-whats-new-data="${this.clearWhatsNewData_}">
+          </user-education-whats-new-internals-card>`)}
       </div>
       <div id="advanced">
         <a name="advanced"></a>

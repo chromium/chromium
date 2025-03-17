@@ -15,6 +15,7 @@
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
@@ -40,8 +41,8 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
@@ -56,6 +57,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/test_renderer_host.h"
@@ -166,13 +169,13 @@ std::optional<autofill::FieldType> StringToFieldType(std::string_view str) {
 }
 
 // Command types to control and debug execution.
-// * The |kAbsoluteLimit| and |kRelativeLimit| commands indicate that
-//   execution shall not proceed if the next action's position is >= |param|
-//   or >= current_index + |param|, respectively.
-// * The |kSkipAction| command jumps |param| actions forward or backward.
-// * The |kShowAction| command prints the |param| previous (if < 0) or
+// * The `kAbsoluteLimit` and `kRelativeLimit` commands indicate that
+//   execution shall not proceed if the next action's position is >= `param`
+//   or >= current_index + `param`, respectively.
+// * The `kSkipAction` command jumps `param` actions forward or backward.
+// * The `kShowAction` command prints the `param` previous (if < 0) or
 //   upcoming (if > 0) actions.
-// * The |kWhereAmI| command prints the current execution position.
+// * The `kWhereAmI` command prints the current execution position.
 enum class ExecutionCommandType {
   kAbsoluteLimit,
   kRelativeLimit,
@@ -187,7 +190,7 @@ struct ExecutionCommand {
   int param = std::numeric_limits<int>::max();
 };
 
-// Blockingly reads the content of |command_file_path|, parses it into
+// Blockingly reads the content of `command_file_path`, parses it into
 // ExecutionCommands, and returns the result.
 std::vector<ExecutionCommand> ReadExecutionCommands(
     const base::FilePath& command_file_path) {
@@ -244,8 +247,8 @@ struct ExecutionState {
   bool pause_on_failure = false;
 };
 
-// Blockingly reads the commands from |command_file_path| and executes them.
-// Execution primarily means manipulation of the |execution_state|, particularly
+// Blockingly reads the commands from `command_file_path` and executes them.
+// Execution primarily means manipulation of the `execution_state`, particularly
 // `execution_state.limit`.
 ExecutionState ProcessCommands(ExecutionState execution_state,
                                const base::Value::List* action_list,
@@ -642,10 +645,12 @@ bool IFrameWaiter::FrameHasOrigin(const GURL& origin,
 WebPageReplayServerWrapper::WebPageReplayServerWrapper(
     const bool start_as_replay,
     int host_http_port,
-    int host_https_port)
+    int host_https_port,
+    std::vector<std::string> extra_args)
     : host_http_port_(host_http_port),
       host_https_port_(host_https_port),
-      start_as_replay_(start_as_replay) {}
+      start_as_replay_(start_as_replay),
+      extra_args_(std::move(extra_args)) {}
 
 WebPageReplayServerWrapper::~WebPageReplayServerWrapper() = default;
 
@@ -781,7 +786,13 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
 #elif BUILDFLAG(IS_MAC)
   base::FilePath wpr_executable_binary =
       base::FilePath(FILE_PATH_LITERAL("mac"))
+#if defined(ARCH_CPU_ARM64)
+          .AppendASCII("arm64")
+#elif defined(ARCH_CPU_X86_64)
           .AppendASCII("x86_64")
+#else
+#error Mac CPU arch is not supported.
+#endif
           .AppendASCII("wpr");
 #elif BUILDFLAG(IS_POSIX)
   base::FilePath wpr_executable_binary =
@@ -830,6 +841,10 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
       FilePathToUTF8(
           web_page_replay_support_file_dir.AppendASCII("ecdsa_key.pem").value())
           .c_str()));
+
+  for (const auto& arg : extra_args_) {
+    full_command.AppendArg(arg);
+  }
 
   for (const auto& arg : args)
     full_command.AppendArg(arg);
@@ -1015,6 +1030,26 @@ content::WebContents* TestRecipeReplayer::GetWebContents() {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
+namespace {
+// Runs the given closure if the `WebContent`'s main frame changes.
+class RenderFrameHostChangedObserver : public content::WebContentsObserver {
+ public:
+  RenderFrameHostChangedObserver(content::WebContents* wc,
+                                 base::OnceClosure closure)
+      : content::WebContentsObserver(wc), closure_(std::move(closure)) {}
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override {
+    changed_ = true;
+    std::move(closure_).Run();
+  }
+  bool changed() { return changed_; }
+
+ private:
+  base::OnceClosure closure_;
+  bool changed_ = false;
+};
+}  // namespace
+
 void TestRecipeReplayer::WaitTillPageIsIdle(
     base::TimeDelta continuous_paint_timeout) {
   // Loop continually while WebContents are waiting for response or loading.
@@ -1041,33 +1076,47 @@ void TestRecipeReplayer::WaitTillPageIsIdle(
     }
   }
   finished_load_time = base::TimeTicks::Now();
+  bool frame_changed = false;
   while (true) {
     // Now, rely on the render frame count to be the indicator of page activity.
     // Once all the frames are drawn, we're free to continue.
     content::RenderFrameSubmissionObserver frame_submission_observer(
         GetWebContents());
-    {
-      base::RunLoop heart_beat;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, heart_beat.QuitClosure(), wait_for_idle_loop_length);
-      heart_beat.Run();
-    }
-    if (frame_submission_observer.render_frame_count() == 0) {
-      // If the render r has stopped submitting frames
+    base::RunLoop heart_beat;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, heart_beat.QuitClosure(), wait_for_idle_loop_length);
+    // `frame_submission_observer` holds a reference to metadata from a frame
+    // that will be destroyed if a navigation occurs. We need to destroy the
+    // observer before the frame is destroyed to avoid a dangling raw
+    // pointer. See https://crbug.com/396232961.
+    RenderFrameHostChangedObserver frame_observer(GetWebContents(),
+                                                  heart_beat.QuitClosure());
+    heart_beat.Run();
+    if (frame_observer.changed()) {
+      VLOG(1) << "The render frame has changed.";
+      frame_changed = true;
+      break;
+    } else if (frame_submission_observer.render_frame_count() == 0) {
+      // If the renderer has stopped submitting frames
+      VLOG(1) << "The renderer has stopped submitting frames.";
       break;
     } else if ((base::TimeTicks::Now() - finished_load_time) >
                continuous_paint_timeout) {
-      // |continuous_paint_timeout| has expired since Chrome loaded the page.
+      // `continuous_paint_timeout` has expired since Chrome loaded the page.
       // During this period of time, Chrome has been continuously painting
       // the page. In this case, the page is probably idle, but a bug, a
       // blinking caret or a persistent animation is keeping the
-      // |render_frame_count| from reaching zero. Exit.
+      // `render_frame_count` from reaching zero. Exit.
       VLOG(1) << "Wait for render frame count timed out after "
               << continuous_paint_timeout.InSeconds()
               << " seconds with the frame count still at: "
               << frame_submission_observer.render_frame_count();
       break;
     }
+  }
+  // Start waiting on the new frame.
+  if (frame_changed) {
+    WaitTillPageIsIdle(continuous_paint_timeout);
   }
 }
 
@@ -1354,19 +1403,26 @@ bool TestRecipeReplayer::ExecuteAutofillAction(base::Value::Dict action) {
 bool TestRecipeReplayer::ExecuteClickAction(base::Value::Dict action) {
   std::string xpath;
   content::RenderFrameHost* frame;
-  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
+  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
     return false;
+  }
 
   VLOG(1) << "Left mouse clicking `" << xpath << "`.";
-  if (!ScrollElementIntoView(xpath, frame))
+  if (!ScrollElementIntoView(xpath, frame)) {
     return false;
+  }
   WaitTillPageIsIdle(scroll_wait_timeout);
+  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
+    return false;
+  }
 
   gfx::Rect rect;
-  if (!GetBoundingRectOfTargetElement(xpath, frame, &rect))
+  if (!GetBoundingRectOfTargetElement(xpath, frame, &rect)) {
     return false;
-  if (!SimulateLeftMouseClickAt(rect.CenterPoint(), frame))
+  }
+  if (!SimulateLeftMouseClickAt(rect.CenterPoint(), frame)) {
     return false;
+  }
 
   WaitTillPageIsIdle();
   return true;
@@ -1420,21 +1476,28 @@ bool TestRecipeReplayer::ExecuteCoolOffAction(base::Value::Dict action) {
 bool TestRecipeReplayer::ExecuteHoverAction(base::Value::Dict action) {
   std::string xpath;
   content::RenderFrameHost* frame;
-  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
+  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
     return false;
+  }
 
   VLOG(1) << "Hovering over `" << xpath << "`.";
 
-  if (!ScrollElementIntoView(xpath, frame))
+  if (!ScrollElementIntoView(xpath, frame)) {
     return false;
+  }
   WaitTillPageIsIdle(scroll_wait_timeout);
+  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
+    return false;
+  }
 
   gfx::Rect rect;
-  if (!GetBoundingRectOfTargetElement(xpath, frame, &rect))
+  if (!GetBoundingRectOfTargetElement(xpath, frame, &rect)) {
     return false;
+  }
 
-  if (!SimulateMouseHoverAt(frame, rect.CenterPoint()))
+  if (!SimulateMouseHoverAt(frame, rect.CenterPoint())) {
     return false;
+  }
 
   if (!WaitForVisualUpdate()) {
     ADD_FAILURE() << "The page did not respond to a mouse hover action!";
@@ -1784,13 +1847,11 @@ bool TestRecipeReplayer::ExecuteWaitForStateAction(base::Value::Dict action) {
   }
 
   content::RenderFrameHost* frame;
-  if (!GetTargetFrameFromAction(action, &frame))
-    return false;
-
   VLOG(1) << "Waiting for page to reach a state.";
 
   // Wait for all of the assertions to become true on the current page.
-  return WaitForStateChange(frame, state_assertions, default_action_timeout);
+  return WaitForStateChange(action, &frame, state_assertions,
+                            default_action_timeout);
 }
 
 bool TestRecipeReplayer::GetTargetHTMLElementXpathFromAction(
@@ -1903,26 +1964,28 @@ bool TestRecipeReplayer::ExtractFrameAndVerifyElement(
     bool set_focus,
     bool relaxed_visibility,
     bool ignore_failure) {
-  if (!GetTargetHTMLElementXpathFromAction(action, xpath))
+  if (!GetTargetHTMLElementXpathFromAction(action, xpath)) {
     return false;
+  }
 
   int visibility_enum_val;
   if (!GetTargetHTMLElementVisibilityEnumFromAction(action,
-                                                    &visibility_enum_val))
+                                                    &visibility_enum_val)) {
     return false;
-  if (!GetTargetFrameFromAction(action, frame))
-    return false;
+  }
 
   // If we're just validating we don't care about on_top-ness, as copied from
   // chrome/test/data/web_page_replay_go_helper_scripts/automation_helper.js
   // to TestRecipeReplayer::DomElementReadyState enum
   // So remove (DomElementReadyState::kReadyStateOnTop)
-  if (relaxed_visibility)
+  if (relaxed_visibility) {
     visibility_enum_val &= ~kReadyStateOnTop;
+  }
 
-  if (!WaitForElementToBeReady(*xpath, visibility_enum_val, *frame,
-                               ignore_failure))
+  if (!WaitForElementToBeReady(*xpath, visibility_enum_val, action, frame,
+                               ignore_failure)) {
     return false;
+  }
 
   if (set_focus) {
     std::vector<std::string> frame_path;
@@ -2005,25 +2068,33 @@ bool TestRecipeReplayer::GetIFrameOffsetFromIFramePath(
 bool TestRecipeReplayer::WaitForElementToBeReady(
     const std::string& xpath,
     const int visibility_enum_val,
-    content::RenderFrameHost* frame,
+    const base::Value::Dict& action,
+    content::RenderFrameHost** frame,
     bool ignore_failure) {
   std::vector<std::string> state_assertions;
   state_assertions.push_back(base::StringPrintf(
       "return automation_helper.isElementWithXpathReady(`%s`, %d);",
       xpath.c_str(), visibility_enum_val));
   return WaitForStateChange(
-      frame, state_assertions,
+      action, frame, state_assertions,
       ignore_failure ? click_fallback_timeout : default_action_timeout,
       ignore_failure);
 }
 
 bool TestRecipeReplayer::WaitForStateChange(
-    content::RenderFrameHost* frame,
+    const base::Value::Dict& action,
+    content::RenderFrameHost** frame,
     const std::vector<std::string>& state_assertions,
     const base::TimeDelta& timeout,
     bool ignore_failure) {
   base::TimeTicks start_time = base::TimeTicks::Now();
-  while (!AllAssertionsPassed(frame, state_assertions)) {
+  while (true) {
+    if (!GetTargetFrameFromAction(action, frame)) {
+      return false;
+    }
+    if (AllAssertionsPassed(*frame, state_assertions)) {
+      return true;
+    }
     if (base::TimeTicks::Now() - start_time > timeout) {
       if (!ignore_failure) {
         ADD_FAILURE() << "State change hasn't completed within timeout.";
@@ -2032,12 +2103,20 @@ bool TestRecipeReplayer::WaitForStateChange(
     }
     WaitTillPageIsIdle();
   }
-  return true;
 }
 
 bool TestRecipeReplayer::AllAssertionsPassed(
     const content::ToRenderFrameHost& frame,
     const std::vector<std::string>& assertions) {
+  // We may be dealing with a frame that is mid-/post-navigation. `EvalJs`
+  // will fail if the frame is e.g. unloading or in back/forward-cache. Don't
+  // even try unless the frame is active.
+  if (frame.render_frame_host()->GetLifecycleState() !=
+      content::RenderFrameHost::LifecycleState::kActive) {
+    VLOG(1) << "Frame not active, not testing assertions. "
+            << (int)frame.render_frame_host()->GetLifecycleState();
+    return false;
+  }
   for (const std::string& assertion : assertions) {
     if (!EvalJs(frame, base::StringPrintf("(function() {"
                                           "  try {"

@@ -9,6 +9,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * <p>
  * A RadioButton with a primary and descriptive text to the right, and an aux button at the end.
@@ -52,6 +54,7 @@ import android.widget.ImageButton;
  * </p>
  *
  */
+@NullMarked
 public class RadioButtonWithDescriptionAndAuxButton extends RadioButtonWithDescription {
     /**
      * Interface that will subscribe to aux button clicked event inside {@link
@@ -67,7 +70,10 @@ public class RadioButtonWithDescriptionAndAuxButton extends RadioButtonWithDescr
         void onAuxButtonClicked(int clickedButtonId);
     }
 
+    @SuppressWarnings("NullAway.Init")
     private OnAuxButtonClickedListener mListener;
+
+    @SuppressWarnings("NullAway.Init")
     private ImageButton mAuxButton;
 
     public RadioButtonWithDescriptionAndAuxButton(Context context, AttributeSet attrs) {

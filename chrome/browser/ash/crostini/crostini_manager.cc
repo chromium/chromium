@@ -23,11 +23,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
+#include "chrome/browser/ash/crostini/baguette_installer.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/crostini/crostini_metrics_service.h"
@@ -66,7 +68,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
-#include "chrome/browser/ash/scheduler_config/scheduler_configuration_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -82,6 +83,7 @@
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/scheduler_config/scheduler_configuration_manager.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -295,6 +297,8 @@ class CrostiniManager::CrostiniRestarter
   // Public function - Restart();
   void ContinueRestart();
   void LoadComponentFinished(CrostiniResult result);
+  void OnBaguetteLoaded(CrostiniResult result);
+
   void CreateDiskImageFinished(int64_t disk_size_bytes,
                                CrostiniResult result,
                                const base::FilePath& result_path);
@@ -304,6 +308,7 @@ class CrostiniManager::CrostiniRestarter
   void StartTerminaVmFinished(bool success);
   void SharePathsFinished(bool success, const std::string& failure_reason);
   void StartLxdFinished(CrostiniResult result);
+  void SetUpBaguetteUserFinished(CrostiniResult result);
   void CreateLxdContainerFinished(CrostiniResult result);
   void SetUpLxdContainerUserFinished(bool success);
   // Public function - StartLxdContainerFinished(CrostiniResult result);
@@ -594,6 +599,7 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
   // are finished. Because the session tracker update and this method are racing
   // on the same thread we do the update async once the session tracker is
   // ready.
+  // TODO(crbug.com/377377749): might still need to do this for baguette?
   if (container_id_ == DefaultContainerId()) {
     crostini_manager_->primary_counter_mount_subscription_ =
         guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
@@ -693,9 +699,17 @@ void CrostiniManager::CrostiniRestarter::ContinueRestart() {
   }
 
   StartStage(mojom::InstallerState::kInstallImageLoader);
-  crostini_manager_->InstallTermina(
-      base::BindOnce(&CrostiniRestarter::LoadComponentFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+    // TODO(crbug.com/377377749):  do we need to check for existence of any
+    // previous installs here, or has that already happened?
+    crostini_manager_->InstallBaguette(
+        base::BindOnce(&CrostiniRestarter::LoadComponentFinished,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    crostini_manager_->InstallTermina(
+        base::BindOnce(&CrostiniRestarter::LoadComponentFinished,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void CrostiniManager::CrostiniRestarter::LoadComponentFinished(
@@ -868,11 +882,19 @@ void CrostiniManager::CrostiniRestarter::SharePathsFinished(
   if (!success) {
     LOG(WARNING) << "Failed to share paths: " << failure_reason;
   }
-  StartStage(mojom::InstallerState::kStartLxd);
-  crostini_manager_->StartLxd(
-      container_id_.vm_name,
-      base::BindOnce(&CrostiniRestarter::StartLxdFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+    StartStage(mojom::InstallerState::kConfigureContainer);
+    crostini_manager_->SetUpBaguetteUser(
+        container_id_.vm_name, requests_[0].options.container_username,
+        base::BindOnce(&CrostiniRestarter::SetUpBaguetteUserFinished,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    StartStage(mojom::InstallerState::kStartLxd);
+    crostini_manager_->StartLxd(
+        container_id_.vm_name,
+        base::BindOnce(&CrostiniRestarter::StartLxdFinished,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void CrostiniManager::CrostiniRestarter::StartLxdFinished(
@@ -901,6 +923,16 @@ void CrostiniManager::CrostiniRestarter::StartLxdFinished(
       requests_[0].options.image_alias,
       base::BindOnce(&CrostiniRestarter::CreateLxdContainerFinished,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniManager::CrostiniRestarter::SetUpBaguetteUserFinished(
+    CrostiniResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (ReturnEarlyIfNeeded()) {
+    return;
+  }
+
+  FinishRestart(result);
 }
 
 void CrostiniManager::CrostiniRestarter::CreateLxdContainerFinished(
@@ -1425,6 +1457,39 @@ void CrostiniManager::MaybeUpdateCrostiniAfterChecks() {
   }
 }
 
+void CrostiniManager::InstallBaguette(CrostiniResultCallback callback) {
+  if (install_baguette_never_completes_for_testing_) {
+    LOG(ERROR)
+        << "Dropping InstallBaguette request. This is only used in tests.";
+    return;
+  }
+  baguette_installer_.Install(base::BindOnce(
+      [](CrostiniResultCallback callback,
+         BaguetteInstaller::InstallResult result) {
+        CrostiniResult res;
+        if (result == BaguetteInstaller::InstallResult::Success) {
+          res = CrostiniResult::SUCCESS;
+        } else if (result == BaguetteInstaller::InstallResult::Offline) {
+          LOG(ERROR) << "Installing Baguette failed: offline";
+          res = CrostiniResult::OFFLINE_WHEN_UPGRADE_REQUIRED;
+        } else if (result == BaguetteInstaller::InstallResult::Failure) {
+          LOG(ERROR) << "Installing Baguette failed";
+          res = CrostiniResult::LOAD_COMPONENT_FAILED;
+        } else if (result == BaguetteInstaller::InstallResult::NeedUpdate) {
+          LOG(ERROR) << "Installing Baguette failed: need update";
+          res = CrostiniResult::NEED_UPDATE;
+        } else if (result == BaguetteInstaller::InstallResult::Cancelled) {
+          LOG(ERROR) << "Installing Baguette failed: cancelled";
+          res = CrostiniResult::INSTALL_BAGUETTE_CANCELLED;
+        } else {
+          NOTREACHED()
+              << "Got unexpected value of BaguetteInstaller::InstallResult";
+        }
+        std::move(callback).Run(res);
+      },
+      std::move(callback)));
+}
+
 void CrostiniManager::InstallTermina(CrostiniResultCallback callback) {
   if (install_termina_never_completes_for_testing_) {
     LOG(ERROR)
@@ -1493,10 +1558,36 @@ void CrostiniManager::CreateDiskImage(
   // The logical size of the new disk image, in bytes.
   request.set_disk_size(std::move(disk_size_bytes));
 
-  GetConciergeClient()->CreateDiskImage(
-      std::move(request),
-      base::BindOnce(&CrostiniManager::OnCreateDiskImage,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+    request.set_copy_baguette_image(true);
+    auto cb = base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&CrostiniManager::OnCreateDiskImage,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+    // Blocking calls may not be made from the main thread, but dbus calls
+    // *MUST* be made from the main thread, so we have to get a bit creative
+    // with our function routing here.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()}, base::BindOnce([]() {
+          return base::File(base::FilePath(kBaguettePath),
+                            base::File::FLAG_OPEN | base::File::FLAG_READ);
+        }),
+        base::BindOnce(
+            [](vm_tools::concierge::CreateDiskImageRequest request,
+               chromeos::DBusMethodCallback<
+                   vm_tools::concierge::CreateDiskImageResponse> cb,
+               base::File source_disk) {
+              GetConciergeClient()->CreateDiskImageWithFd(
+                  base::ScopedFD(source_disk.TakePlatformFile()),
+                  std::move(request), std::move(cb));
+            },
+            std::move(request), std::move(cb)));
+  } else {
+    GetConciergeClient()->CreateDiskImage(
+        std::move(request),
+        base::BindOnce(&CrostiniManager::OnCreateDiskImage,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
 }
 
 void CrostiniManager::StartTerminaVm(std::string name,
@@ -1529,12 +1620,20 @@ void CrostiniManager::StartTerminaVm(std::string name,
   }
 
   vm_tools::concierge::StartVmRequest request;
-  std::optional<std::string> dlc_id = termina_installer_.GetDlcId();
-  if (dlc_id.has_value()) {
-    request.mutable_vm()->set_dlc_id(*dlc_id);
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+    request.mutable_vm()->set_tools_dlc_id(kToolsDlcName);
+    request.set_vm_type(
+        ::vm_tools::concierge::VmInfo_VmType::VmInfo_VmType_BAGUETTE);
+  } else {
+    std::optional<std::string> dlc_id = termina_installer_.GetDlcId();
+    if (dlc_id.has_value()) {
+      request.mutable_vm()->set_dlc_id(*dlc_id);
+    }
   }
   request.set_name(std::move(name));
-  request.set_start_termina(true);
+  if (!base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+    request.set_start_termina(true);
+  }
   request.set_owner_id(owner_id_);
   request.set_timeout(static_cast<uint32_t>(kStartVmTimeout.InSeconds()));
   if (base::FeatureList::IsEnabled(ash::features::kCrostiniGpuSupport)) {
@@ -1550,7 +1649,11 @@ void CrostiniManager::StartTerminaVm(std::string name,
 
   vm_tools::concierge::DiskImage* disk_image = request.add_disks();
   disk_image->set_path(std::move(disk_path_string));
-  disk_image->set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+    disk_image->set_image_type(vm_tools::concierge::DISK_IMAGE_RAW);
+  } else {
+    disk_image->set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
+  }
   disk_image->set_writable(true);
   disk_image->set_do_mount(false);
 
@@ -1643,6 +1746,36 @@ void CrostiniManager::StartLxd(std::string vm_name,
       base::BindOnce(&CrostiniManager::OnStartLxd,
                      weak_ptr_factory_.GetWeakPtr(), request.vm_name(),
                      std::move(callback)));
+}
+
+void CrostiniManager::SetUpBaguetteUser(
+    std::string vm_name,
+    std::optional<std::string> container_username,
+    CrostiniResultCallback callback) {
+  if (vm_name.empty()) {
+    LOG(ERROR) << "vm_name is required";
+    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
+    return;
+  }
+
+  std::string username =
+      container_username.value_or(DefaultContainerUserNameForProfile(profile_));
+  vm_tools::concierge::SetUpVmUserRequest request;
+  request.set_vm_name(vm_name);
+  request.set_owner_id(owner_id_);
+  request.set_username(username);
+  request.add_group_names("cdrom");
+  request.add_group_names("dialout");
+  request.add_group_names("floppy");
+  request.add_group_names("netdev");
+  request.add_group_names("sudo");
+  request.add_group_names("tss");
+  request.add_group_names("video");
+
+  GetConciergeClient()->SetUpVmUser(
+      std::move(request),
+      base::BindOnce(&CrostiniManager::OnSetUpBaguetteUser,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 namespace {
@@ -2518,6 +2651,7 @@ CrostiniManager::RestartId CrostiniManager::RestartCrostiniWithOptions(
   create_options.stop_after_lxd_available = options.stop_after_lxd_available;
 
   bool obsolete_create_options = true;
+  // TODO(crbug.com/377377749) dont need this for baguette?
   AddNewLxdContainerToPrefs(profile_, container_id);
   RegisterContainer(container_id);
   if (!RegisterCreateOptions(container_id, options)) {
@@ -3176,6 +3310,24 @@ void CrostiniManager::OnStartLxd(
   }
 }
 
+void CrostiniManager::OnSetUpBaguetteUser(
+    CrostiniResultCallback callback,
+    std::optional<vm_tools::concierge::SetUpVmUserResponse> response) {
+  if (!response) {
+    LOG(ERROR) << "Failed to set up user in vm. Empty response.";
+    std::move(callback).Run(CrostiniResult::CONTAINER_SETUP_FAILED);
+    return;
+  }
+
+  if (response->success()) {
+    std::move(callback).Run(CrostiniResult::SUCCESS);
+  } else {
+    LOG(ERROR) << "Failed to set up baguette user: "
+               << response->failure_reason();
+    std::move(callback).Run(CrostiniResult::CONTAINER_SETUP_FAILED);
+  }
+}
+
 void CrostiniManager::OnCreateLxdContainer(
     const guest_os::GuestId& container_id,
     CrostiniResultCallback callback,
@@ -3666,6 +3818,12 @@ void CrostiniManager::OnRemoveTermina(bool success) {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+    // container prefs seem to be wiped as some part of lxd container removal
+    // callbacks in the regular flow, so we must remove them manually here for
+    // baguette.
+    profile_->GetPrefs()->ClearPref(guest_os::prefs::kGuestOsContainers);
+  }
   profile_->GetPrefs()->SetBoolean(prefs::kCrostiniEnabled, false);
   profile_->GetPrefs()->ClearPref(prefs::kCrostiniLastDiskSize);
   guest_os::RemoveVmFromPrefs(profile_, kCrostiniDefaultVmType);

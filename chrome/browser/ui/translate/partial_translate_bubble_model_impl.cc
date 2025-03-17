@@ -12,10 +12,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
+#include "components/language_detection/core/constants.h"
 #include "components/translate/content/browser/partial_translate_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_ui_languages_manager.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_errors.h"
 
 namespace {
@@ -180,7 +180,7 @@ void PartialTranslateBubbleModelImpl::Translate(
 
   request.selection_encoding = web_contents->GetEncoding();
   std::string source_language_code = GetSourceLanguageCode();
-  if (source_language_code != translate::kUnknownLanguageCode) {
+  if (source_language_code != language_detection::kUnknownLanguageCode) {
     // |source_language_code| will be kUnknownLanguageCode if it was initially
     // returned by page language detection, or if the user explicitly selects
     // "Detected Language" in the language list. In such cases,

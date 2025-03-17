@@ -52,12 +52,18 @@ public class ChromeNullAwayLibraryModel implements LibraryModels {
                                 "getStringSet(java.lang.String,java.util.Set<java.lang.String>)"),
                         1)
                 .put(methodRef("android.content.Intent", "normalizeMimeType(java.lang.String)"), 0)
+                .put(methodRef("android.util.LongSparseArray", "get(long,E)"), 1)
+                .put(methodRef("android.util.SparseArray", "get(int,E)"), 1)
                 .build();
     }
 
     @Override
     public ImmutableSet<MethodRef> nullableReturns() {
-        return ImmutableSet.of();
+        return ImmutableSet.of(
+                methodRef("android.util.SparseArray", "get(int)"),
+                methodRef("android.util.LongSparseArray", "get(long)"),
+                methodRef("java.util.Map", "put(K, V)"),
+                methodRef("java.util.Map", "remove(java.lang.Object)"));
     }
 
     @Override

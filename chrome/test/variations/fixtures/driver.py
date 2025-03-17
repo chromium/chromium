@@ -45,8 +45,10 @@ def pytest_addoption(parser):
     help='Enable graphical window display on the emulator.')
 
   # Options for CrOS VMs.
+  # You can browse available boards here:
+  # https://cros-goldeneye.corp.google.com/chromeos/console/boards
   parser.addoption('--board',
-                   default='betty-pi-arc',
+                   default='betty',
                    help='The board name of the CrOS VM.')
 
 

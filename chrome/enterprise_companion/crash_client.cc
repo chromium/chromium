@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -27,6 +26,7 @@
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
+#include "chrome/enterprise_companion/flags.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "components/crash/core/common/crash_key.h"
@@ -42,9 +42,9 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include <algorithm>
 #include <iterator>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/wrapped_window_proc.h"
 
@@ -64,8 +64,6 @@ namespace enterprise_companion {
 namespace {
 
 constexpr char kNoRateLimitSwitch[] = "no-rate-limit";
-constexpr char kUsageStatsEnabledEnvVar[] = "GOOGLE_USAGE_STATS_ENABLED";
-constexpr char kUsageStatsEnabledEnvVarValueEnabled[] = "1";
 
 #if BUILDFLAG(IS_MAC)
 constexpr char kResetCrashHandlerPortSwitch[] =
@@ -74,19 +72,8 @@ constexpr char kResetCrashHandlerPortSwitch[] =
 
 // Determines if crash dump uploading should be enabled.
 bool ShouldEnableCrashUploads() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kEnableUsageStatsSwitch)) {
-    return true;
-  }
-
-  std::string env_usage_stats;
-  if (base::Environment::Create()->GetVar(kUsageStatsEnabledEnvVar,
-                                          &env_usage_stats) &&
-      env_usage_stats == kUsageStatsEnabledEnvVarValueEnabled) {
-    return true;
-  }
-
-  return false;
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kEnableUsageStatsSwitch);
 }
 
 std::vector<std::string> MakeCrashHandlerArgs() {
@@ -100,10 +87,9 @@ std::vector<std::string> MakeCrashHandlerArgs() {
   // which must be skipped.
 #if BUILDFLAG(IS_WIN)
   std::vector<std::string> args;
-  base::ranges::transform(
-      ++command_line.argv().begin(), command_line.argv().end(),
-      std::back_inserter(args),
-      [](const auto& arg) { return base::WideToUTF8(arg); });
+  std::ranges::transform(++command_line.argv().begin(),
+                         command_line.argv().end(), std::back_inserter(args),
+                         [](const auto& arg) { return base::WideToUTF8(arg); });
 
   return args;
 #else

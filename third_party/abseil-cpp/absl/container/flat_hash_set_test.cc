@@ -351,6 +351,38 @@ TEST(FlatHashSet, Equality) {
   }
 }
 
+class MoveOnlyInt {
+ public:
+  explicit MoveOnlyInt(int value) : value_(value) {}
+
+  MoveOnlyInt(const MoveOnlyInt& other) = delete;
+  MoveOnlyInt& operator=(const MoveOnlyInt& other) = delete;
+
+  MoveOnlyInt(MoveOnlyInt&& other) = default;
+  MoveOnlyInt& operator=(MoveOnlyInt&& other) = default;
+
+  bool operator==(const MoveOnlyInt& other) const {
+    return value_ == other.value_;
+  }
+  bool operator==(int other) const { return value_ == other; }
+
+ private:
+  template <typename H>
+  friend H AbslHashValue(H h, const MoveOnlyInt& m) {
+    return H::combine(std::move(h), m.value_);
+  }
+
+  int value_;
+};
+
+TEST(FlatHashSet, MoveOnlyKey) {
+  flat_hash_set<MoveOnlyInt> s;
+  s.insert(MoveOnlyInt(1));
+  s.insert(MoveOnlyInt(2));
+  s.insert(MoveOnlyInt(3));
+  EXPECT_THAT(s, UnorderedElementsAre(1, 2, 3));
+}
+
 }  // namespace
 }  // namespace container_internal
 ABSL_NAMESPACE_END

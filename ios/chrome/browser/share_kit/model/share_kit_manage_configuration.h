@@ -8,6 +8,8 @@
 #import <UIKit/UIKit.h>
 
 @protocol ApplicationCommands;
+enum class ShareKitFlowOutcome;
+class TabGroup;
 
 // Configuration object for managing a shared group.
 @interface ShareKitManageConfiguration : NSObject
@@ -18,11 +20,17 @@
 // The collaboration ID of the shared tab group.
 @property(nonatomic, copy) NSString* collabID;
 
+// Local tab group.
+@property(nonatomic, assign) const TabGroup* tabGroup;
+
+// The group image preview.
+@property(nonatomic, copy) UIImage* groupImage;
+
 // Application commands handler.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
 // Executed when the manage flow ended.
-@property(nonatomic, copy) void (^completionBlock)(BOOL succeeded);
+@property(nonatomic, copy) void (^completion)(ShareKitFlowOutcome outcome);
 
 @end
 

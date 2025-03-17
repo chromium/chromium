@@ -8,10 +8,10 @@
 
 #import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/model/snapshot_cover_view_controller.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
@@ -249,8 +249,14 @@ UIImage* LensOverlaySnapshotController::CropSnapshotToWindowSafeArea(
       (base_window_.bounds.size.height - viewportInsets.bottom) *
           snapshot.scale);
 
-  return [[UIImage alloc] initWithCGImage:CGImageCreateWithImageInRect(
-                                              snapshot.CGImage, croppingRect)];
+  CGImageRef imageRef =
+      CGImageCreateWithImageInRect(snapshot.CGImage, croppingRect);
+  UIImage* croppedImage = [[UIImage alloc] initWithCGImage:imageRef];
+
+  // We are responsible for releasing the `CGImageRef` after being consumed.
+  CGImageRelease(imageRef);
+
+  return croppedImage;
 }
 
 UIImage* LensOverlaySnapshotController::CaptureSnapshotOfBaseWindow() {

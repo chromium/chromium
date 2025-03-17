@@ -31,20 +31,6 @@ class ResourceManager;
 class UIResourceProvider;
 }  // namespace ui
 
-namespace jni_zero {
-template <>
-inline ScopedJavaLocalRef<jobject> ToJniType<int>(JNIEnv* env,
-                                                  const int& input) {
-  ScopedJavaLocalRef<jclass> integer_class =
-      base::android::GetClass(env, "java/lang/Integer");
-  jmethodID constructor =
-      base::android::MethodID::Get<base::android::MethodID::TYPE_INSTANCE>(
-          env, integer_class.obj(), "<init>", "(I)V");
-  return ScopedJavaLocalRef<jobject>(
-      env, env->NewObject(integer_class.obj(), constructor, input));
-}
-}  // namespace jni_zero
-
 namespace android {
 
 class SceneLayer;
@@ -114,6 +100,10 @@ class CompositorView : public content::CompositorClient,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& object,
       bool enabled);
+  void SetOverlayXrFullScreenMode(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& object,
+      bool enabled);
   void SetSceneLayer(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& object,
                      const base::android::JavaParamRef<jobject>& jscene_layer);
@@ -169,6 +159,7 @@ class CompositorView : public content::CompositorClient,
   int content_height_;
   bool overlay_video_mode_;
   bool overlay_immersive_ar_mode_;
+  bool overlay_xr_full_screen_mode_;
 
   base::WeakPtrFactory<CompositorView> weak_factory_{this};
 };

@@ -9,13 +9,11 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.view.MenuItem;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.After;
@@ -30,14 +28,18 @@ import org.mockito.Mockito;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelTest;
@@ -55,6 +57,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests functionality in BookmarkEditActivity. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@DisabledTest(message = "crbug.com/393436289")
 public class BookmarkEditTest {
     @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
@@ -357,13 +360,17 @@ public class BookmarkEditTest {
     }
 
     private static void startEditActivity(BookmarkId bookmarkId) {
-        Context context = ApplicationProvider.getApplicationContext();
-        Intent intent = new Intent(context, BookmarkEditActivity.class);
-        intent.putExtra(BookmarkEditActivity.INTENT_BOOKMARK_ID, bookmarkId.toString());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         sBookmarkEditActivity =
-                (BookmarkEditActivity)
-                        InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
+                ApplicationTestUtils.waitForActivityWithClass(
+                        BookmarkEditActivity.class,
+                        Stage.RESUMED,
+                        () -> {
+                            new BookmarkManagerOpenerImpl()
+                                    .startEditActivity(
+                                            ContextUtils.getApplicationContext(),
+                                            ProfileManager.getLastUsedRegularProfile(),
+                                            bookmarkId);
+                        });
     }
 
     private BookmarkId addFolder(BookmarkId parent, int index, String title)

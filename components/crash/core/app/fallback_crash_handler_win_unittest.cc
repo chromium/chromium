@@ -156,7 +156,7 @@ TEST_F(FallbackCrashHandlerWinTest, ParseCommandLine) {
   ASSERT_FALSE(handler.ParseCommandLine(cmd_line));
 
   cmd_line.AppendSwitchASCII(
-      "thread", base::NumberToString(base::PlatformThread::CurrentId()));
+      "thread", base::NumberToString(base::PlatformThread::CurrentId().raw()));
 
   // Should succeed with a fully populated command line.
   // Because of how handle ownership is guarded, we have to "disown" it before

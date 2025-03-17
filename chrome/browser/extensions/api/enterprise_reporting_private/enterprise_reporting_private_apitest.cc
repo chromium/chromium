@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_event_router.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -21,14 +22,17 @@
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/management/management_service.h"
+#include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -109,6 +113,8 @@ constexpr char kManifestTemplate[] = R"(
       "background": { "service_worker": "background.js" }
     })";
 
+constexpr char kTestUrl[] = "https://foo.bar";
+
 }  // namespace
 
 // This test class is to validate that the API is correctly unavailable on
@@ -119,21 +125,6 @@ constexpr char kManifestTemplate[] = R"(
 class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
  public:
   EnterpriseReportingPrivateApiTest() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    scoped_features_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-            extensions_features::
-                kApiEnterpriseReportingPrivateReportDataMaskingEvent,
-            enterprise_signals::features::kNewEvSignalsEnabled,
-        },
-        /*disabled_features=*/{});
-#else
-    scoped_features_.InitAndEnableFeature(
-        extensions_features::
-            kApiEnterpriseReportingPrivateReportDataMaskingEvent);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
 #if !BUILDFLAG(IS_CHROMEOS)
     browser_dm_token_storage_.SetClientId("client_id");
     browser_dm_token_storage_.SetEnrollmentToken("enrollment_token");
@@ -198,21 +189,11 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
   }
 
  protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
-
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&EnterpriseReportingPrivateApiTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    extensions::ExtensionApiTest::SetUpBrowserContextKeyedServices(context);
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-
     ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                                      &test_url_loader_factory_));
@@ -256,10 +237,6 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
       identity_test_env_profile_adaptor_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
-
-  base::CallbackListSubscription create_services_subscription_;
-
-  base::test::ScopedFeatureList scoped_features_;
 
 #if !BUILDFLAG(IS_CHROMEOS)
   policy::FakeBrowserDMTokenStorage browser_dm_token_storage_;
@@ -459,14 +436,6 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  constexpr char kThirdPartyBlockingEnabledType[] = "boolean";
-  constexpr char kCount[] = "18";
-#else
-  constexpr char kThirdPartyBlockingEnabledType[] = "undefined";
-  constexpr char kCount[] = "17";
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
   constexpr char kTest[] = R"(
     chrome.test.assertEq(
       'function',
@@ -474,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
     chrome.enterprise.reportingPrivate.getContextInfo((info) => {
       chrome.test.assertNoLastError();
 
-      chrome.test.assertEq(%s, Object.keys(info).length);
+      chrome.test.assertEq(17, Object.keys(info).length);
       chrome.test.assertTrue(info.browserAffiliationIds instanceof Array);
       chrome.test.assertTrue(info.profileAffiliationIds instanceof Array);
       chrome.test.assertTrue(info.onFileAttachedProviders instanceof Array);
@@ -491,14 +460,13 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
         (typeof info.passwordProtectionWarningTrigger, 'string');
       chrome.test.assertEq
         (typeof info.chromeRemoteDesktopAppBlocked, 'boolean');
-      chrome.test.assertEq(typeof info.thirdPartyBlockingEnabled,'%s');
       chrome.test.assertEq(typeof info.osFirewall, 'string');
       chrome.test.assertTrue(info.systemDnsServers instanceof Array);
       chrome.test.assertEq(typeof info.enterpriseProfileId, 'string');
 
       chrome.test.notifyPass();
     });)";
-  RunTest(base::StringPrintf(kTest, kCount, kThirdPartyBlockingEnabledType));
+  RunTest(kTest);
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetCertificate) {
@@ -537,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetAvInfo_Success) {
   )";
 
   AccountInfo account_info = SignIn("some-email@example.com");
-  RunTest(base::StringPrintf(kTest, account_info.gaia.c_str()));
+  RunTest(base::StringPrintf(kTest, account_info.gaia.ToString().c_str()));
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetHotfixes_Success) {
@@ -555,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetHotfixes_Success) {
   )";
 
   AccountInfo account_info = SignIn("some-email@example.com");
-  RunTest(base::StringPrintf(kTest, account_info.gaia.c_str()));
+  RunTest(base::StringPrintf(kTest, account_info.gaia.ToString().c_str()));
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
@@ -666,8 +634,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
   )";
 
   AccountInfo account_info = SignIn("some-email@example.com");
-  RunTest(base::StringPrintf(kTest, account_info.gaia.c_str(), kOptions.c_str(),
-                             kAssertions));
+  RunTest(base::StringPrintf(kTest, account_info.gaia.ToString().c_str(),
+                             kOptions.c_str(), kAssertions));
 }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -872,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
   base::ReplaceSubstringsAfterOffset(&escaped_file_path, 0U, "\\", "\\\\");
 
   AccountInfo account_info = SignIn("some-email@example.com");
-  RunTest(base::StringPrintf(kTest, account_info.gaia.c_str(),
+  RunTest(base::StringPrintf(kTest, account_info.gaia.ToString().c_str(),
                              escaped_file_path.c_str(), extra_items.c_str(),
                              kAssertions));
 }
@@ -949,7 +917,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
   )";
 
   AccountInfo account_info = SignIn("some-email@example.com");
-  RunTest(base::StringPrintf(kTest, account_info.gaia.c_str(),
+  RunTest(base::StringPrintf(kTest, account_info.gaia.ToString().c_str(),
                              extra_items.c_str(), kAssertions));
 }
 #endif  // BUILDFLAG(IS_MAC)
@@ -1173,6 +1141,135 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportDataMaskingEventTest,
       profile()->GetPrefs(), true, {"sensitiveDataEvent"}, {});
 
   RunTest(kTestJS);
+}
+
+class EnterpriseOnDataMaskingRulesTriggeredTest
+    : public EnterpriseReportingPrivateApiTest {
+ public:
+  EnterpriseOnDataMaskingRulesTriggeredTest() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_features_{
+      extensions_features::
+          kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered};
+};
+
+IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest,
+                       WithoutRules) {
+  static constexpr char kTestJS[] = R"(
+    chrome.test.runTests([
+      async function asyncAssertions() {
+        chrome.enterprise.reportingPrivate.onDataMaskingRulesTriggered.addListener(
+          rules => {
+            chrome.test.assertEq(rules, []);
+            chrome.test.succeed();
+          }
+        );
+      }
+    ]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      base::StringPrintf(kManifestTemplate, kAuthorizedManifestKey));
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kTestJS);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  EXPECT_TRUE(extension);
+
+  ResultCatcher result_catcher;
+
+  EnterpriseReportingPrivateEventRouterFactory::GetInstance()
+      ->GetForProfile(profile())
+      ->OnUrlFilteringVerdict(GURL(kTestUrl),
+                              safe_browsing::RTLookupResponse());
+
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest, WithRules) {
+  static constexpr char kTestJS[] = R"(
+    chrome.test.runTests([
+      async function asyncAssertions() {
+        chrome.enterprise.reportingPrivate.onDataMaskingRulesTriggered.addListener(
+          rules => {
+            chrome.test.assertEq(rules, [
+              {
+                'level':'mask_type_1',
+                'regex_pattern':'pattern_1',
+                'triggeredRuleInfo':{
+                  'matchedDetectors':[],
+                  'ruleId':'rule_id_1',
+                  'ruleName':'rule_name_1'
+                },
+                'url':'https://foo.bar/'
+              },
+              {
+                'level':'mask_type_2',
+                'regex_pattern':'pattern_2',
+                'triggeredRuleInfo':{
+                  'matchedDetectors':[],
+                  'ruleId':'rule_id_1',
+                  'ruleName':'rule_name_1'
+                },
+                'url':'https://foo.bar/'
+              },
+              {
+                'level':'mask_type_3',
+                'regex_pattern':'pattern_3',
+                'triggeredRuleInfo':{
+                  'matchedDetectors':[],
+                  'ruleId':'rule_id_2',
+                  'ruleName':'rule_name_2'
+                },
+                'url':'https://foo.bar/'
+              }]);
+            chrome.test.succeed();
+          }
+        );
+      }]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      base::StringPrintf(kManifestTemplate, kAuthorizedManifestKey));
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kTestJS);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  EXPECT_TRUE(extension);
+
+  ResultCatcher result_catcher;
+
+  safe_browsing::RTLookupResponse response;
+
+  auto* rule_1 =
+      response.add_threat_info()->mutable_matched_url_navigation_rule();
+  rule_1->set_rule_id("rule_id_1");
+  rule_1->set_rule_name("rule_name_1");
+
+  auto* data_masking_1 = rule_1->add_data_masking_actions();
+  data_masking_1->set_display_name("display_name_1");
+  data_masking_1->set_mask_type("mask_type_1");
+  data_masking_1->set_pattern("pattern_1");
+
+  auto* data_masking_2 = rule_1->add_data_masking_actions();
+  data_masking_2->set_display_name("display_name_2");
+  data_masking_2->set_mask_type("mask_type_2");
+  data_masking_2->set_pattern("pattern_2");
+
+  auto* rule_2 =
+      response.add_threat_info()->mutable_matched_url_navigation_rule();
+  rule_2->set_rule_id("rule_id_2");
+  rule_2->set_rule_name("rule_name_2");
+
+  auto* data_masking_3 = rule_2->add_data_masking_actions();
+  data_masking_3->set_display_name("display_name_3");
+  data_masking_3->set_mask_type("mask_type_3");
+  data_masking_3->set_pattern("pattern_3");
+
+  EnterpriseReportingPrivateEventRouterFactory::GetInstance()
+      ->GetForProfile(profile())
+      ->OnUrlFilteringVerdict(GURL(kTestUrl), response);
+
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 }  // namespace extensions

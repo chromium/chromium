@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsPairedBluetoothListItemElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsPairedBluetoothListItemElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -167,13 +167,13 @@ suite('<os-settings-paired-bluetooth-list-item>', () => {
         const leftBudBatteryPercentage = 19;
         const caseBatteryPercentage = 29;
         const rightBudBatteryPercentage = 39;
-        device.deviceProperties.batteryInfo!.leftBudInfo = {
+        device.deviceProperties.batteryInfo.leftBudInfo = {
           batteryPercentage: leftBudBatteryPercentage,
         };
-        device.deviceProperties.batteryInfo!.caseInfo = {
+        device.deviceProperties.batteryInfo.caseInfo = {
           batteryPercentage: caseBatteryPercentage,
         };
-        device.deviceProperties.batteryInfo!.rightBudInfo = {
+        device.deviceProperties.batteryInfo.rightBudInfo = {
           batteryPercentage: rightBudBatteryPercentage,
         };
         pairedBluetoothListItem.set('device', {...device});

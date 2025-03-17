@@ -53,8 +53,13 @@ class CORE_EXPORT HTMLPermissionElement final
   V8PermissionState initialPermissionStatus() const;
   V8PermissionState permissionStatus() const;
 
+  // The events `kDismiss` and `kResolve` will be deprecated and replaced by
+  // `kPromptaction` and `kPromptdismiss`. We will keep both for backward
+  // compability and will remove the old events in M138.
   DEFINE_ATTRIBUTE_EVENT_LISTENER(resolve, kResolve)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(dismiss, kDismiss)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(promptaction, kPromptaction)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(promptdismiss, kPromptdismiss)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(validationstatuschange,
                                   kValidationstatuschange)
 
@@ -97,54 +102,54 @@ class CORE_EXPORT HTMLPermissionElement final
   // to blink_unittests_v2 completes.
   friend class DeferredChecker;
   friend class RegistrationWaiter;
-  friend class HTMLPemissionElementIntersectionTest;
-  friend class HTMLPemissionElementLayoutChangeTest;
+  friend class HTMLPermissionElementIntersectionTest;
+  friend class HTMLPermissionElementLayoutChangeTest;
 
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementClickingEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementClickingEnabledTest,
                            UnclickableBeforeRegistered);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            IntersectionChanged);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            IntersectionChangedDisableEnableDisable);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            ClickingDisablePseudoClass);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            ContainerDivRotates);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            ContainerDivOpacity);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            ContainerDivClipPath);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            IntersectionVisibleOverlapsRecentAttachedInterval);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementFencedFrameTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementFencedFrameTest,
                            NotAllowedInFencedFrame);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementSimTest,
                            BlockedByMissingFrameAncestorsCSP);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementSimTest,
                            EnableClickingAfterDelay);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementSimTest,
                            FontSizeCanDisableElement);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementSimTest,
                            MovePEPCToAnotherDocument);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementLayoutChangeTest,
                            InvalidatePEPCAfterMove);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementLayoutChangeTest,
                            InvalidatePEPCAfterResize);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementLayoutChangeTest,
                            InvalidatePEPCAfterMoveContainer);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementLayoutChangeTest,
                            InvalidatePEPCAfterTransformContainer);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementLayoutChangeTest,
                            InvalidatePEPCLayoutInAnimationFrameCallback);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementDispatchValidationEventTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementDispatchValidationEventTest,
                            ChangeReasonRestartTimer);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementDispatchValidationEventTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementDispatchValidationEventTest,
                            DisableEnableClicking);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementDispatchValidationEventTest,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementDispatchValidationEventTest,
                            DisableEnableClickingDifferentReasons);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementTestBase,
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementTestBase,
                            SetPreciseLocationAttribute);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementTest, SetTypeAfterInsertedInto);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementTest, SetTypeAfterInsertedInto);
 
   enum class DisableReason {
     kUnknown,
@@ -152,11 +157,6 @@ class CORE_EXPORT HTMLPermissionElement final
     // This element is temporarily disabled for a short period
     // (`kDefaultDisableTimeout`) after being attached to the layout tree.
     kRecentlyAttachedToLayoutTree,
-
-    // This element is temporarily disabled for a short period
-    // (`kDefaultDisableTimeout`) after its intersection status changed from
-    // invisible to visible (observed by IntersectionObserver).
-    kIntersectionRecentlyFullyVisible,
 
     // This element is disabled because it is outside the bounds of the
     // viewport, or the element is clipped.
@@ -183,7 +183,7 @@ class CORE_EXPORT HTMLPermissionElement final
     kInvalidType = 0,
     kFailedOrHasNotBeenRegistered = 1,
     kRecentlyAttachedToLayoutTree = 2,
-    kIntersectionRecentlyFullyVisible = 3,
+    // kIntersectionRecentlyFullyVisible = 3,    Deprecated.
     kInvalidStyle = 4,
     kUntrustedEvent = 5,
     kIntersectionWithViewportChanged = 6,

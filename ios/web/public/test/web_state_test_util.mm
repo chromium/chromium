@@ -22,9 +22,9 @@
 #import "ios/web/web_state/web_state_impl.h"
 #import "url/gurl.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 namespace test {
@@ -171,7 +171,7 @@ std::unique_ptr<WebState> CreateUnrealizedWebStateWithItems(
     for (const PageInfo& info : items) {
       proto::NavigationItemStorage* item_storage =
           navigation_storage->add_items();
-      item_storage->set_virtual_url(info.url.spec());
+      item_storage->set_url(info.url.spec());
       item_storage->set_user_agent(storage.user_agent());
       item_storage->set_title(info.title);
     }

@@ -4,6 +4,8 @@
 
 #include "components/webauthn/android/mock_webauthn_cred_man_delegate.h"
 
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
+
 namespace webauthn {
 
 MockWebAuthnCredManDelegate::MockWebAuthnCredManDelegate()

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/linux_util.h"
 
 #include <dirent.h>
@@ -22,18 +27,18 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/strings/safe_sprintf.h"
+#include "base/strings/span_printf.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace base {
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 std::string GetKeyValueFromOSReleaseFile(const std::string& input,
                                          const char* key) {
   StringPairs key_value_pairs;
@@ -47,10 +52,11 @@ std::string GetKeyValueFromOSReleaseFile(const std::string& input,
       std::string pretty_name;
       ss << value_str;
       // Quoted with a single tick?
-      if (value_str[0] == '\'')
+      if (value_str[0] == '\'') {
         ss >> std::quoted(pretty_name, '\'');
-      else
+      } else {
         ss >> std::quoted(pretty_name);
+      }
 
       return pretty_name;
     }
@@ -63,13 +69,15 @@ bool ReadDistroFromOSReleaseFile(const char* file) {
   static const char kPrettyName[] = "PRETTY_NAME";
 
   std::string os_release_content;
-  if (!ReadFileToString(FilePath(file), &os_release_content))
+  if (!ReadFileToString(FilePath(file), &os_release_content)) {
     return false;
+  }
 
   std::string pretty_name =
       GetKeyValueFromOSReleaseFile(os_release_content, kPrettyName);
-  if (pretty_name.empty())
+  if (pretty_name.empty()) {
     return false;
+  }
 
   SetLinuxDistro(pretty_name);
   return true;
@@ -82,12 +90,13 @@ class DistroNameGetter {
     static const char* const kFilesToCheck[] = {"/etc/os-release",
                                                 "/usr/lib/os-release"};
     for (const char* file : kFilesToCheck) {
-      if (ReadDistroFromOSReleaseFile(file))
+      if (ReadDistroFromOSReleaseFile(file)) {
         return;
+      }
     }
   }
 };
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 bool GetThreadsFromProcessDir(const char* dir_path, std::vector<pid_t>* tids) {
   DirReaderPosix dir_reader(dir_path);
@@ -115,7 +124,7 @@ constexpr int kDistroSize = 128 + 1;
 // We use this static string to hold the Linux distro info. If we
 // crash, the crash handler code will send this in the crash dump.
 char g_linux_distro[kDistroSize] =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     "CrOS";
 #elif BUILDFLAG(IS_ANDROID)
     "Android";
@@ -131,15 +140,15 @@ char g_linux_distro[kDistroSize] =
 BASE_EXPORT std::string GetKeyValueFromOSReleaseFileForTesting(
     const std::string& input,
     const char* key) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   return GetKeyValueFromOSReleaseFile(input, key);
 #else
   return "";
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 std::string GetLinuxDistro() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // We do this check only once per process. If it fails, there's
   // little reason to believe it will work if we attempt to run it again.
   static DistroNameGetter distro_name_getter;
@@ -164,22 +173,26 @@ bool GetThreadsForCurrentProcess(std::vector<pid_t>* tids) {
   return GetThreadsFromProcessDir("/proc/self/task", tids);
 }
 
-pid_t FindThreadIDWithSyscall(pid_t pid, const std::string& expected_data,
+pid_t FindThreadIDWithSyscall(pid_t pid,
+                              const std::string& expected_data,
                               bool* syscall_supported) {
-  if (syscall_supported)
+  if (syscall_supported) {
     *syscall_supported = false;
+  }
 
   std::vector<pid_t> tids;
-  if (!GetThreadsForProcess(pid, &tids))
+  if (!GetThreadsForProcess(pid, &tids)) {
     return -1;
+  }
 
   std::vector<char> syscall_data(expected_data.size());
   for (pid_t tid : tids) {
     char buf[256];
-    snprintf(buf, sizeof(buf), "/proc/%d/task/%d/syscall", pid, tid);
+    base::SpanPrintf(buf, "/proc/%d/task/%d/syscall", pid, tid);
     ScopedFD fd(open(buf, O_RDONLY));
-    if (!fd.is_valid())
+    if (!fd.is_valid()) {
       continue;
+    }
 
     *syscall_supported = true;
     if (!ReadFromFD(fd.get(), syscall_data)) {
@@ -198,15 +211,17 @@ pid_t FindThreadID(pid_t pid, pid_t ns_tid, bool* ns_pid_supported) {
   *ns_pid_supported = false;
 
   std::vector<pid_t> tids;
-  if (!GetThreadsForProcess(pid, &tids))
+  if (!GetThreadsForProcess(pid, &tids)) {
     return -1;
+  }
 
   for (pid_t tid : tids) {
     char buf[256];
-    snprintf(buf, sizeof(buf), "/proc/%d/task/%d/status", pid, tid);
+    base::SpanPrintf(buf, "/proc/%d/task/%d/status", pid, tid);
     std::string status;
-    if (!ReadFileToString(FilePath(buf), &status))
+    if (!ReadFileToString(FilePath(buf), &status)) {
       return -1;
+    }
     StringTokenizer tokenizer(status, "\n");
     while (std::optional<std::string_view> token =
                tokenizer.GetNextTokenView()) {
@@ -222,8 +237,9 @@ pid_t FindThreadID(pid_t pid, pid_t ns_tid, bool* ns_pid_supported) {
       // The last value in the list is the PID in the namespace.
       if (StringToInt(split_value_str.back(), &value) && value == ns_tid) {
         // The second value in the list is the real PID.
-        if (StringToInt(split_value_str[1], &value))
+        if (StringToInt(split_value_str[1], &value)) {
           return value;
+        }
       }
       break;
     }

@@ -36,8 +36,9 @@ constexpr int kTooltipMaxLines = 3;
 // of the minimum dimension of its view's local bounds.
 class ThemedFullyRoundedRectBackground : public views::Background {
  public:
-  explicit ThemedFullyRoundedRectBackground(ui::ColorId color_id)
-      : color_id_(color_id) {}
+  explicit ThemedFullyRoundedRectBackground(ui::ColorId color_id) {
+    SetColor(color_id);
+  }
   ThemedFullyRoundedRectBackground(const ThemedFullyRoundedRectBackground&) =
       delete;
   ThemedFullyRoundedRectBackground& operator=(
@@ -46,7 +47,6 @@ class ThemedFullyRoundedRectBackground : public views::Background {
 
   // views::Background:
   void OnViewThemeChanged(views::View* view) override {
-    SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
     view->SchedulePaint();
   }
 
@@ -55,11 +55,11 @@ class ThemedFullyRoundedRectBackground : public views::Background {
     cc::PaintFlags paint;
     paint.setAntiAlias(true);
 
-    SkColor color = get_color();
+    SkColor resolved_color = color().ConvertToSkColor(view->GetColorProvider());
     if (!view->GetEnabled()) {
-      color = ColorUtil::GetDisabledColor(color);
+      resolved_color = ColorUtil::GetDisabledColor(resolved_color);
     }
-    paint.setColor(color);
+    paint.setColor(resolved_color);
 
     const gfx::Rect bounds = view->GetLocalBounds();
     // Set the rounded corner radius to the half of the minimum dimension of
@@ -68,10 +68,6 @@ class ThemedFullyRoundedRectBackground : public views::Background {
         std::min(bounds.width(), bounds.height()) / 2;
     canvas->DrawRoundRect(bounds, rounded_corner_radius, paint);
   }
-
- private:
-  // Color Id of the background.
-  const ui::ColorId color_id_;
 };
 
 // A `HighlightPathGenerator` that uses caller-supplied rounded rect corners.
@@ -217,7 +213,7 @@ std::unique_ptr<views::corewm::TooltipViewAura>
 StyleUtil::CreateAshStyleTooltipView() {
   auto tooltip_view = std::make_unique<views::corewm::TooltipViewAura>();
   // Apply ash style background, border, and font.
-  tooltip_view->SetBackground(views::CreateThemedRoundedRectBackground(
+  tooltip_view->SetBackground(views::CreateRoundedRectBackground(
       ui::kColorTooltipBackground, kTooltipRoundedCornerRadius));
   tooltip_view->SetBorder(views::CreateEmptyBorder(kTooltipBorderInset));
   tooltip_view->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(

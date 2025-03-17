@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/country_data.h"
@@ -69,6 +70,22 @@ TEST(AutofillCountryTest, CountryCodeForLocale) {
   // "es-419" isn't associated with a country. See base/l10n/l10n_util.cc
   // for details about this locale. Default to US.
   EXPECT_EQ("US", AutofillCountry::CountryCodeForLocale("es-419"));
+}
+
+// Test that the correct country code is retrieved from the app locale if no
+// geo ip country code could be retrieved.
+TEST(AutofillCountryTest, GetDefaultCountryCodeForNewAddressFromAppLocale) {
+  EXPECT_EQ("US", AutofillCountry::GetDefaultCountryCodeForNewAddress(
+                      GeoIpCountryCode(""), "en_US")
+                      .value());
+}
+
+// Test that the country code is is set as the geo ip country code,
+// and that it is not extracted from the app locale.
+TEST(AutofillCountryTest, GetDefaultCountryCodeForNewAddressFromGeoIp) {
+  EXPECT_EQ("DE", AutofillCountry::GetDefaultCountryCodeForNewAddress(
+                      GeoIpCountryCode("DE"), "en_US")
+                      .value());
 }
 
 // Test the address requirement methods for the US.

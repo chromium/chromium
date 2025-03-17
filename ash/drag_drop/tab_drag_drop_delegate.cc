@@ -22,7 +22,6 @@
 #include "ash/wm/wm_metrics.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"

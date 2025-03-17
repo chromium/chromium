@@ -72,7 +72,7 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
       base::OnceCallback<void(CacheStorageCacheHandle,
                               blink::mojom::CacheStorageError)>;
   using EnumerateCachesCallback =
-      base::OnceCallback<void(std::vector<std::string> cache_names)>;
+      base::OnceCallback<void(std::vector<std::u16string> cache_names)>;
 
   static const char kIndexFileName[];
 
@@ -118,12 +118,12 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   // of the cache. Once all handles to a cache are deleted the cache is deleted.
   // The cache will also be deleted in the CacheStorage's destructor so be sure
   // to check the handle's value before using it.
-  void OpenCache(const std::string& cache_name,
+  void OpenCache(const std::u16string& cache_name,
                  int64_t trace_id,
                  CacheAndErrorCallback callback);
 
   // Calls the callback with whether or not the cache exists.
-  void HasCache(const std::string& cache_name,
+  void HasCache(const std::u16string& cache_name,
                 int64_t trace_id,
                 BoolAndErrorCallback callback);
 
@@ -132,7 +132,7 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   // existing CacheStorageCacheHandle(s) to the cache will remain valid but
   // future CacheStorage operations won't be able to access the cache. The cache
   // isn't actually erased from disk until the last handle is dropped.
-  void DoomCache(const std::string& cache_name,
+  void DoomCache(const std::u16string& cache_name,
                  int64_t trace_id,
                  ErrorCallback callback);
 
@@ -140,7 +140,7 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   void EnumerateCaches(int64_t trace_id, EnumerateCachesCallback callback);
 
   // Calls match on the cache with the given |cache_name|.
-  void MatchCache(const std::string& cache_name,
+  void MatchCache(const std::u16string& cache_name,
                   blink::mojom::FetchAPIRequestPtr request,
                   blink::mojom::CacheQueryOptionsPtr match_options,
                   CacheStorageSchedulerPriority priority,
@@ -158,7 +158,7 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
                       CacheStorageCache::ResponseCallback callback);
 
   // Puts the request/response pair in the cache.
-  void WriteToCache(const std::string& cache_name,
+  void WriteToCache(const std::u16string& cache_name,
                     blink::mojom::FetchAPIRequestPtr request,
                     blink::mojom::FetchAPIResponsePtr response,
                     int64_t trace_id,
@@ -193,6 +193,10 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
     return static_cast<CacheStorage*>(handle.value());
   }
 
+  static std::u16string ConvertUTF16BytesStringToU16String(
+      const std::string& utf16_bytes,
+      bool correct_encoding);
+
  protected:
   // Virtual for testing
   virtual void CacheUnreferenced(CacheStorageCache* cache);
@@ -214,14 +218,14 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   class SimpleCacheLoader;
   struct CacheMatchResponse;
 
-  typedef std::map<std::string, std::unique_ptr<CacheStorageCache>> CacheMap;
+  typedef std::map<std::u16string, std::unique_ptr<CacheStorageCache>> CacheMap;
 
   // Generate a new padding key. For testing only and *not thread safe*.
   static void GenerateNewKeyForTesting();
 
   // Returns a CacheStorageCacheHandle for the given name if the name is known.
   // If the CacheStorageCache has been deleted, creates a new one.
-  CacheStorageCacheHandle GetLoadedCache(const std::string& cache_name);
+  CacheStorageCacheHandle GetLoadedCache(const std::u16string& cache_name);
 
   // Initializer and its callback are below.
   void LazyInit();
@@ -229,10 +233,10 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   void LazyInitDidLoadIndex(std::unique_ptr<CacheStorageIndex> index);
 
   // The Open and CreateCache callbacks are below.
-  void OpenCacheImpl(const std::string& cache_name,
+  void OpenCacheImpl(const std::u16string& cache_name,
                      int64_t trace_id,
                      CacheAndErrorCallback callback);
-  void CreateCacheDidCreateCache(const std::string& cache_name,
+  void CreateCacheDidCreateCache(const std::u16string& cache_name,
                                  int64_t trace_id,
                                  CacheAndErrorCallback callback,
                                  std::unique_ptr<CacheStorageCache> cache,
@@ -243,12 +247,12 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
                                 bool success);
 
   // The HasCache callbacks are below.
-  void HasCacheImpl(const std::string& cache_name,
+  void HasCacheImpl(const std::u16string& cache_name,
                     int64_t trace_id,
                     BoolAndErrorCallback callback);
 
   // The DeleteCache callbacks are below.
-  void DoomCacheImpl(const std::string& cache_name,
+  void DoomCacheImpl(const std::u16string& cache_name,
                      int64_t trace_id,
                      ErrorCallback callback);
   void DeleteCacheDidWriteIndex(CacheStorageCacheHandle cache_handle,
@@ -264,7 +268,7 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   void EnumerateCachesImpl(int64_t trace_id, EnumerateCachesCallback callback);
 
   // The MatchCache callbacks are below.
-  void MatchCacheImpl(const std::string& cache_name,
+  void MatchCacheImpl(const std::u16string& cache_name,
                       blink::mojom::FetchAPIRequestPtr request,
                       blink::mojom::CacheQueryOptionsPtr match_options,
                       CacheStorageSchedulerPriority priority,
@@ -294,7 +298,7 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
       CacheStorageCache::ResponseCallback callback);
 
   // WriteToCache callbacks.
-  void WriteToCacheImpl(const std::string& cache_name,
+  void WriteToCacheImpl(const std::u16string& cache_name,
                         blink::mojom::FetchAPIRequestPtr request,
                         blink::mojom::FetchAPIResponsePtr response,
                         int64_t trace_id,
@@ -308,7 +312,7 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
                               int64_t* accumulator,
                               int64_t size);
 
-  void NotifyCacheContentChanged(const std::string& cache_name);
+  void NotifyCacheContentChanged(const std::u16string& cache_name);
 
   void ScheduleWriteIndex();
   void WriteIndex(base::OnceCallback<void(bool)> callback);

@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.modaldialog;
 import android.text.TextUtils;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ModalDialogButtonSpec;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -17,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * This class is responsible for binding view properties from {@link ModalDialogProperties} to a
  * {@link ModalDialogView}.
  */
+@NullMarked
 public class ModalDialogViewBinder
         implements PropertyModelChangeProcessor.ViewBinder<
                 PropertyModel, ModalDialogView, PropertyKey> {
@@ -121,6 +123,13 @@ public class ModalDialogViewBinder
             view.setHorizontalMargin(model.get(ModalDialogProperties.HORIZONTAL_MARGIN));
         } else if (ModalDialogProperties.VERTICAL_MARGIN == propertyKey) {
             view.setVerticalMargin(model.get(ModalDialogProperties.VERTICAL_MARGIN));
+        } else if (ModalDialogProperties.PADDING == propertyKey) {
+            view.setPadding(model.get(ModalDialogProperties.PADDING));
+        } else if (ModalDialogProperties.BLOCK_INPUTS == propertyKey) {
+            view.blockInputs(model.get(ModalDialogProperties.BLOCK_INPUTS));
+        } else if (ModalDialogProperties.CHANGE_CUSTOM_VIEW_OR_BUTTONS == propertyKey) {
+            // Intentionally left empty since this is a property used for switching button group to
+            // default buttons, or switching custom view.
         } else {
             assert false : "Unhandled property detected in ModalDialogViewBinder!";
         }
@@ -135,7 +144,8 @@ public class ModalDialogViewBinder
      *     buttons configured with a text.
      */
     private static boolean checkFilterTouchConsistency(PropertyModel model) {
-        return !model.get(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY)
+        return canChangeCustomViewOrButtons(model)
+                || !model.get(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY)
                 || isAnyDefaultButtonWithTextConfigured(model)
                 || isButtongroupWithTextButtonsConfigured(model);
     }
@@ -151,6 +161,9 @@ public class ModalDialogViewBinder
      *     otherwise.
      */
     private static boolean checkFilledButtonConsistency(PropertyModel model) {
+        if (canChangeCustomViewOrButtons(model)) {
+            return true;
+        }
         int styles = model.get(ModalDialogProperties.BUTTON_STYLES);
         if (styles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE) {
             return !TextUtils.isEmpty(model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
@@ -173,15 +186,19 @@ public class ModalDialogViewBinder
         View customButtons = model.get(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW);
         ModalDialogProperties.ModalDialogButtonSpec[] buttonGroup =
                 model.get(ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST);
-        return styles == 0 || (customButtons == null && buttonGroup == null);
+        return styles == 0
+                || (customButtons == null && buttonGroup == null)
+                || canChangeCustomViewOrButtons(model);
     }
 
     /** Checks that default button configurations aren't mixed with button group configurations. */
     private static boolean checkDefaultButtonsNotCombinedWithButtonGroup(PropertyModel model) {
+        boolean buttonGroupCanSwitchToDefaultButtons = canChangeCustomViewOrButtons(model);
         boolean defaultButtonsConfigured = isAnyDefaultButtonWithTextConfigured(model);
         boolean buttonGroupConfigured = isButtongroupWithTextButtonsConfigured(model);
-        return (defaultButtonsConfigured ^ buttonGroupConfigured)
-                || (!defaultButtonsConfigured && !buttonGroupConfigured);
+        return buttonGroupCanSwitchToDefaultButtons
+                || !defaultButtonsConfigured
+                || !buttonGroupConfigured;
     }
 
     /**
@@ -190,7 +207,8 @@ public class ModalDialogViewBinder
      */
     private static boolean checkCustomViewScrollConsistency(PropertyModel model) {
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
-        return customView == null
+        return canChangeCustomViewOrButtons(model)
+                || customView == null
                 || model.get(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE)
                         != customView.isScrollContainer();
     }
@@ -211,5 +229,15 @@ public class ModalDialogViewBinder
     private static boolean isAnyDefaultButtonWithTextConfigured(PropertyModel model) {
         return !TextUtils.isEmpty(model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT))
                 || !TextUtils.isEmpty(model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+    }
+
+    /**
+     * Checks that the dialog can change its custom view or the button group can be switched to
+     * default buttons. There might be a brief time during the transition when both the button group
+     * and default buttons are present, and we should tolerate some above assertions.
+     */
+    private static boolean canChangeCustomViewOrButtons(PropertyModel model) {
+        return model.containsKey(ModalDialogProperties.CHANGE_CUSTOM_VIEW_OR_BUTTONS)
+                && model.get(ModalDialogProperties.CHANGE_CUSTOM_VIEW_OR_BUTTONS);
     }
 }

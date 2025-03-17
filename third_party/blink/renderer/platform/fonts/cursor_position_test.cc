@@ -32,7 +32,7 @@ class CursorPositionTest : public FontTestBase {
                  int end = -1) {
     FontDescription::VariantLigatures ligatures(
         FontDescription::kEnabledLigaturesState);
-    Font font = CreateTestFont(
+    Font* font = CreateTestFont(
         AtomicString("TestFont"),
         test::PlatformTestDataPath(font_path.find(font_name)->value), 100,
         &ligatures);
@@ -46,7 +46,7 @@ class CursorPositionTest : public FontTestBase {
     DCHECK_GE(end, -1);
     DCHECK_LE(end, static_cast<int>(text_run.length()));
     gfx::RectF rect =
-        font.SelectionRectForText(text_run, gfx::PointF(), 12, start, end);
+        font->SelectionRectForText(text_run, gfx::PointF(), 12, start, end);
     return rect.width();
   }
 
@@ -57,14 +57,14 @@ class CursorPositionTest : public FontTestBase {
                    bool partial) {
     FontDescription::VariantLigatures ligatures(
         FontDescription::kEnabledLigaturesState);
-    Font font = CreateTestFont(
+    Font* font = CreateTestFont(
         AtomicString("TestFont"),
         test::PlatformTestDataPath(font_path.find(font_name)->value), 100,
         &ligatures);
     TextRun text_run(text, ltr ? TextDirection::kLtr : TextDirection::kRtl,
                      false);
 
-    return font.OffsetForPosition(
+    return font->OffsetForPosition(
         text_run, position, partial ? kIncludePartialGlyphs : kOnlyFullGlyphs,
         BreakGlyphsOption(true));
   }

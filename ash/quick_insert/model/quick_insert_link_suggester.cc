@@ -4,11 +4,12 @@
 
 #include "ash/quick_insert/model/quick_insert_link_suggester.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/quick_insert/quick_insert_search_result.h"
 #include "base/barrier_callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
@@ -66,13 +67,13 @@ void QuickInsertLinkSuggester::OnGetBrowsingHistory(
     SuggestedLinksCallback callback,
     history::QueryResults results) {
   std::vector<history::URLResult> filtered_results;
-  base::ranges::copy_if(results, std::back_inserter(filtered_results),
-                        [](const history::URLResult result) {
-                          if (IsLinkLikelyPersonalized(result.url())) {
-                            return false;
-                          }
-                          return result.url().SchemeIsHTTPOrHTTPS();
-                        });
+  std::ranges::copy_if(results, std::back_inserter(filtered_results),
+                       [](const history::URLResult result) {
+                         if (IsLinkLikelyPersonalized(result.url())) {
+                           return false;
+                         }
+                         return result.url().SchemeIsHTTPOrHTTPS();
+                       });
 
   if (favicon_service) {
     favicon_query_trackers_ =

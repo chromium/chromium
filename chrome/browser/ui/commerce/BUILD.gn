@@ -6,6 +6,7 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("commerce") {
   sources = [
+    "add_to_comparison_table_sub_menu_model.h",
     "commerce_page_action_controller.h",
     "commerce_ui_tab_helper.h",
     "compare_sub_menu_model.h",
@@ -13,6 +14,7 @@ source_set("commerce") {
     "price_tracking_page_action_controller.h",
     "product_specifications_entry_point_controller.h",
     "product_specifications_page_action_controller.h",
+    "ui_utils.h",
   ]
   public_deps = [
     "//base",
@@ -35,6 +37,7 @@ source_set("commerce") {
 
 source_set("impl") {
   sources = [
+    "add_to_comparison_table_sub_menu_model.cc",
     "commerce_page_action_controller.cc",
     "commerce_ui_tab_helper.cc",
     "compare_sub_menu_model.cc",
@@ -42,6 +45,7 @@ source_set("impl") {
     "price_tracking_page_action_controller.cc",
     "product_specifications_entry_point_controller.cc",
     "product_specifications_page_action_controller.cc",
+    "ui_utils.cc",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -50,6 +54,8 @@ source_set("impl") {
     ":commerce",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/toasts:toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/common:constants",
     "//components/bookmarks/browser",
@@ -114,10 +120,14 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "product_specifications_entry_point_controller_browsertest.cc" ]
+  sources = [
+    "add_to_comparison_table_sub_menu_model_browsertest.cc",
+    "product_specifications_entry_point_controller_browsertest.cc",
+  ]
   deps = [
     ":commerce",
     "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/toasts:toasts",
     "//chrome/test:test_support",
     "//components/commerce/core:account_checker_test_support",
     "//components/commerce/core:shopping_service_test_support",

@@ -5,10 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_SUB_DATA_SOURCE_IMPL_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_SUB_DATA_SOURCE_IMPL_H_
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_consumer.h"
-
 #import <Foundation/Foundation.h>
+
 #import <set>
+
+#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_consumer.h"
 
 enum class BookmarkStorageType;
 

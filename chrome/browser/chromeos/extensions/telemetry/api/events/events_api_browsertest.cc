@@ -11,6 +11,7 @@
 
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,7 +20,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
@@ -30,30 +36,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service_factory.h"
-#include "chrome/browser/profiles/profile.h"         // nogncheck
-#include "chrome/browser/ui/browser_list.h"          // nogncheck
-#include "chrome/browser/ui/tabs/tab_strip_model.h"  // nogncheck
-#include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace chromeos {
 
 namespace {
 
 namespace crosapi = ::crosapi::mojom;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kKeyboardDiagnosticsUrl[] =
     "chrome://diagnostics?input&showDefaultKeyboardTester";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -62,7 +52,6 @@ class TelemetryExtensionEventsApiBrowserTest
  public:
   void SetUpOnMainThread() override {
     BaseTelemetryExtensionBrowserTest::SetUpOnMainThread();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_events_service_impl_ = new FakeEventsService();
     // SAFETY: We hand over ownership over the destruction of this pointer to
     // the first caller of `TelemetryEventsServiceAsh::Create`. The only
@@ -73,24 +62,10 @@ class TelemetryExtensionEventsApiBrowserTest
         std::unique_ptr<FakeEventsService>(fake_events_service_impl_));
     ash::TelemetryEventServiceAsh::Factory::SetForTesting(
         &fake_events_service_factory_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    fake_events_service_impl_ = std::make_unique<FakeEventsService>();
-    // Replace the production TelemetryEventsService with a fake for testing.
-    chromeos::LacrosService::Get()->InjectRemoteForTesting(
-        fake_events_service_impl_->BindNewPipeAndPassRemote());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   void TearDownOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_events_service_impl_ = nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Since one of tests opens browser window UI in Ash, it should close the
-    // UI so that it won't pollute other tests running against the shared Ash.
-    CloseAllAshBrowserWindows();
-#endif
     BaseTelemetryExtensionBrowserTest::TearDownOnMainThread();
   }
 
@@ -103,16 +78,11 @@ class TelemetryExtensionEventsApiBrowserTest
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // SAFETY: This pointer is owned in a unique_ptr by the EventManager. Since
   // the EventManager lives longer than this test, it is always safe to access
   // the fake in the test body.
   raw_ptr<FakeEventsService> fake_events_service_impl_;
   FakeEventsServiceFactory fake_events_service_factory_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<FakeEventsService> fake_events_service_impl_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 void TelemetryExtensionEventsApiBrowserTest::CheckIsEventSupported(
@@ -673,22 +643,10 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
       }
     ]);
   )");
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This test opens a browser window UI in Ash.
-  WaitUntilAtLeastOneAshBrowserWindowOpen();
-#endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp \
-  DISABLED_KeyboardDiagnosticEventOpensDiagnosticApp
-#else
-#define MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp \
-  KeyboardDiagnosticEventOpensDiagnosticApp
-#endif
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
-                       MAYBE_KeyboardDiagnosticEventOpensDiagnosticApp) {
+                       DISABLED_KeyboardDiagnosticEventOpensDiagnosticApp) {
   OpenAppUiAndMakeItSecure();
 
   GetFakeService()->SetOnSubscriptionChange(
@@ -745,12 +703,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
     ]);
   )");
 
-// If this is executed in Lacros we can stop the test here. If the above
-// call succeeded, a request for opening the diagnostics application was
-// sent to Ash. Since we only test Lacros, we stop the test here instead
-// of checking if Ash opened the UI correctly.
-// If we run in Ash however, we can check that the UI was correctly open.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Check that the UI was correctly open.
   bool is_diagnostic_app_open = false;
   for (Browser* target_browser : *BrowserList::GetInstance()) {
     TabStripModel* target_tab_strip = target_browser->tab_strip_model();
@@ -766,7 +719,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
   }
 
   EXPECT_TRUE(is_diagnostic_app_open);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,

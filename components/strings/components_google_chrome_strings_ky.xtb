@@ -10,8 +10,12 @@
 <translation id="2447485272386224171">Chrome серепчиси <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ачык ресурс долбоору жана башка <ph name="BEGIN_LINK_OSS" />ачык булак программасы<ph name="END_LINK_OSS" /> аркылуу түзүлдү.</translation>
 <translation id="2588322182880276190">Chrome логотиби</translation>
 <translation id="3444832043240812445"><ph name="BEGIN_LINK" />Кыйроолор жөнүндө кабар берүү мүмкүнчүлүгү иштетилгенде<ph name="END_LINK" />, бул бет акыркы кыйроолор жөнүндө маалыматты гана көрсөтөт.</translation>
+<translation id="3512634283363927263">Бул беттер Chromе иштеп чыгуучуларына арналган жана жигердүү түрдө иштетилип же сыналбашы мүмкүн. Аларды иштетүү үчүн <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> бөлүмүнө өтүп, мүчүлүштүктөрдү оңдоо беттерин иштетүү үчүн баскычты басып, бул бетке кайтып келиңиз.</translation>
 <translation id="3875312571075912821">Chrome'го коргоо системасында тармакка же антивирус параметрлерине кирүүгө
           уруксат бериңиз.</translation>
+<translation id="4949828774841497663">Төмөнкүгө өтүңүз Колдонмолор &gt; Тутумдун параметрлери &gt; Тармак, 
+          жигердүү тармакты тандап, Чоо-жайы... баскычын чыкылдатып, колдонулган проксилерди
+          тандоодон чыгарыңыз.</translation>
 <translation id="5005121315113832363">Бул баракты Chrome бөгөттөп койду</translation>
 <translation id="6011049234605203654">Төмөнкүгө өтүп:
           Chrome менюсу &gt;
@@ -39,9 +43,6 @@
           LAN параметрлери
           жана "LAN үчүн прокси сервер колдонулсун" параметрин алып салыңыз.</translation>
 <translation id="7230956101631259640">Коопсуз Chrome баракчасын карап жатасыз</translation>
-<translation id="8187289872471304532">Төмөнкүгө өтүңүз
-          Колдонмолор &gt; Системанын параметрлери &gt; Тармак &gt; Өркүндөтүлгөн &gt; Проксилер
-          жана тандалган бардык проксилерди тандоодон чыгарыңыз.</translation>
 <translation id="8232971017369963250">Chrome <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ачык ресурс долбоору аркылуу түзүлдү.</translation>
 <translation id="8279509328145658601">Chrome башка <ph name="BEGIN_LINK_OSS" />ачык ресурс программасы<ph name="END_LINK_OSS" /> аркылуу да жеткиликтүү.</translation>
 <translation id="8544217240017914508">Google Chrome төлөм ыкмаларын толтуруу параметрлерин өзгөртүүгө аракет кылууда.</translation>

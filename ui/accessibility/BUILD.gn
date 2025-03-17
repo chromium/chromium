@@ -108,6 +108,11 @@ component("ax_base") {
     ]
   }
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   public_deps = [
     ":ax_constants_mojo",
     ":ax_enums_mojo",
@@ -129,6 +134,12 @@ component("ax_base") {
 
   if (is_chromeos) {
     deps += [ "//ash/constants" ]
+  }
+
+  if (is_android) {
+    sources += [ "android/accessibility_features_map.cc" ]
+
+    deps += [ ":ax_base_jni_headers" ]
   }
 }
 
@@ -165,8 +176,6 @@ component("accessibility_internal") {
     "ax_hypertext.h",
     "ax_language_detection.cc",
     "ax_language_detection.h",
-    "ax_mode_observer.cc",
-    "ax_mode_observer.h",
     "ax_node.cc",
     "ax_node.h",
     "ax_node_position.cc",
@@ -205,6 +214,11 @@ component("accessibility_internal") {
     "null_ax_action_target.h",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   deps = [
     "//base",
     "//components/crash/core/common:crash_key",
@@ -235,6 +249,11 @@ if (is_android || is_chromeos) {
     sources = [
       "ax_assistant_structure.cc",
       "ax_assistant_structure.h",
+    ]
+
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
     ]
 
     deps = [ ":accessibility" ]
@@ -496,6 +515,10 @@ if (is_android) {
     srcjar_deps = [ ":java_features_srcjar" ]
   }
 
+  generate_jni("ax_base_jni_headers") {
+    sources = [ "android/java/src/org/chromium/ui/accessibility/AccessibilityFeaturesMap.java" ]
+  }
+
   generate_jni("ax_jni_headers") {
     sources = [
       "android/java/src/org/chromium/ui/accessibility/AccessibilityAutofillHelper.java",
@@ -511,6 +534,16 @@ if (is_android) {
     deps = [
       ":ax_jni_headers",
       "//base",
+    ]
+  }
+
+  android_library("accessibility_features_native_map_java") {
+    srcjar_deps = [ ":ax_base_jni_headers" ]
+
+    sources = [ "android/java/src/org/chromium/ui/accessibility/AccessibilityFeaturesMap.java" ]
+    deps = [
+      "//base:base_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 

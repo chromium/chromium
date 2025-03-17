@@ -30,12 +30,23 @@ void RecordFileDescripterLimiterOp(FileDescriptorLimiterOp op) {
 
 }  // namespace
 
+bool SimpleFileTracker::TrackedFiles::InLRUList() const {
+  // Either both should be set, or neither.
+  DCHECK((next() && previous()) || (!next() && !previous()));
+  return next();
+}
+
 SimpleFileTracker::SimpleFileTracker(int file_limit)
     : file_limit_(file_limit) {}
 
 SimpleFileTracker::~SimpleFileTracker() {
   DCHECK(lru_.empty());
   DCHECK(tracked_files_.empty());
+}
+void SimpleFileTracker::TrackedFiles::RemoveIfLinked() {
+  if (InLRUList()) {
+    RemoveFromList();
+  }
 }
 
 void SimpleFileTracker::Register(const SimpleSynchronousEntry* owner,
@@ -240,8 +251,7 @@ std::unique_ptr<base::File> SimpleFileTracker::PrepareClose(
     auto iter = tracked_files_.find(owners_files->key.entry_hash);
     for (auto i = iter->second.begin(); i != iter->second.end(); ++i) {
       if ((*i).get() == owners_files) {
-        if (owners_files->in_lru)
-          lru_.erase(owners_files->position_in_lru);
+        owners_files->RemoveIfLinked();
         iter->second.erase(i);
         break;
       }
@@ -256,32 +266,30 @@ std::unique_ptr<base::File> SimpleFileTracker::PrepareClose(
 
 void SimpleFileTracker::CloseFilesIfTooManyOpen(
     std::vector<std::unique_ptr<base::File>>* files_to_close) {
-  auto i = lru_.end();
-  while (open_files_ > file_limit_ && i != lru_.begin()) {
-    --i;  // Point to the actual entry.
-    TrackedFiles* tracked_files = *i;
-    DCHECK(tracked_files->in_lru);
+  TrackedFiles* node = lru_.tail()->value();
+  while (open_files_ > file_limit_ && node != lru_.end()) {
+    // Grab the previous node *before* we possibly remove |node| from the list.
+    TrackedFiles* previous = node->previous()->value();
+    DCHECK(node->InLRUList());
+    // Close TF_REGISTERED subfiles for this node.
     for (int j = 0; j < kSimpleEntryTotalFileCount; ++j) {
-      if (tracked_files->state[j] == TrackedFiles::TF_REGISTERED &&
-          tracked_files->files[j] != nullptr) {
-        files_to_close->push_back(std::move(tracked_files->files[j]));
+      if (node->state[j] == TrackedFiles::TF_REGISTERED &&
+          node->files[j] != nullptr) {
+        files_to_close->push_back(std::move(node->files[j]));
         --open_files_;
         RecordFileDescripterLimiterOp(FD_LIMIT_CLOSE_FILE);
       }
     }
 
-    if (!tracked_files->HasOpenFiles()) {
+    if (!node->HasOpenFiles()) {
       // If there is nothing here that can possibly be closed, remove this from
       // LRU for now so we don't have to rescan it next time we are here. If the
       // files get re-opened (in Acquire), it will get added back in.
-      DCHECK_EQ(*tracked_files->position_in_lru, tracked_files);
-      DCHECK(i == tracked_files->position_in_lru);
-      // Note that we're erasing at i, which would make it invalid, so go back
-      // one element ahead to we can decrement from that on next iteration.
-      ++i;
-      lru_.erase(tracked_files->position_in_lru);
-      tracked_files->in_lru = false;
+      DCHECK(node->InLRUList());
+      node->RemoveIfLinked();
     }
+    // Move to the previous item in the list
+    node = previous;
   }
 }
 
@@ -307,14 +315,17 @@ void SimpleFileTracker::ReopenFile(BackendFileOperations* file_operations,
 }
 
 void SimpleFileTracker::EnsureInFrontOfLRU(TrackedFiles* owners_files) {
-  if (!owners_files->in_lru) {
-    lru_.push_front(owners_files);
-    owners_files->position_in_lru = lru_.begin();
-    owners_files->in_lru = true;
-  } else if (owners_files->position_in_lru != lru_.begin()) {
-    lru_.splice(lru_.begin(), lru_, owners_files->position_in_lru);
+  if (lru_.head() == owners_files) {
+    return;
   }
-  DCHECK_EQ(*owners_files->position_in_lru, owners_files);
+  owners_files->RemoveIfLinked();
+  if (lru_.empty()) {
+    lru_.Append(owners_files);
+  } else {
+    auto* head = lru_.head()->value();
+    owners_files->InsertBefore(head);
+  }
+  DCHECK_EQ(lru_.head(), owners_files);
 }
 
 SimpleFileTracker::FileHandle::FileHandle() = default;

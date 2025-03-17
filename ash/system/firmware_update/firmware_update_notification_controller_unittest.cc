@@ -109,10 +109,10 @@ class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
 
   void SetUp() override {
     network_handler_test_helper_.RegisterPrefs(profile_prefs_.registry(),
-                                               local_state_.registry());
+                                               local_state()->registry());
 
     network_handler_test_helper_.InitializePrefs(&profile_prefs_,
-                                                 &local_state_);
+                                                 local_state());
     FwupdClient::InitializeFake();
     dbus_client_ = FwupdClient::Get();
     firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
@@ -158,7 +158,6 @@ class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
   raw_ptr<FwupdClient, DanglingUntriaged> dbus_client_ = nullptr;
   NetworkHandlerTestHelper network_handler_test_helper_;
   TestingPrefServiceSimple profile_prefs_;
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
   std::unique_ptr<FirmwareUpdateNotificationController>
       firmware_update_notification_controller_;
@@ -167,7 +166,7 @@ class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
 TEST_F(FirmwareUpdateStartupNotificationTest,
        StartupNotificationShownRegularUser) {
   // Notification should be shown at login.
-  SimulateUserLogin("user1@email.com");
+  SimulateUserLogin({"user1@email.com"});
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_TRUE(message_center()->FindVisibleNotificationById(
@@ -177,7 +176,7 @@ TEST_F(FirmwareUpdateStartupNotificationTest,
 TEST_F(FirmwareUpdateStartupNotificationTest,
        StartupNotificationShownGuestUser) {
   // Notification should not be shown at login if the user is a guest.
-  SimulateUserLogin("user1@email.com", user_manager::UserType::kGuest);
+  SimulateGuestLogin();
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(
@@ -186,7 +185,7 @@ TEST_F(FirmwareUpdateStartupNotificationTest,
 
 TEST_F(FirmwareUpdateStartupNotificationTest, StartupNotificationShownKiosk) {
   // Notification should not be shown at login if the user is in kiosk mode.
-  SimulateUserLogin("user1@email.com", user_manager::UserType::kKioskApp);
+  SimulateUserLogin({"user1@email.com", user_manager::UserType::kKioskApp});
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(
@@ -196,7 +195,7 @@ TEST_F(FirmwareUpdateStartupNotificationTest, StartupNotificationShownKiosk) {
 TEST_F(FirmwareUpdateStartupNotificationTest,
        StartupNotificationShownKioskPWA) {
   // Notification should not be shown at login if the user is in kiosk mode.
-  SimulateUserLogin("user1@email.com", user_manager::UserType::kWebKioskApp);
+  SimulateUserLogin({"user1@email.com", user_manager::UserType::kWebKioskApp});
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(

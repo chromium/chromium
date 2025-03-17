@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/cwv_back_forward_list_item_internal.h"
-
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web_view/internal/cwv_back_forward_list_item_internal.h"
 #import "net/base/apple/url_conversions.h"
 
 @implementation CWVBackForwardListItem

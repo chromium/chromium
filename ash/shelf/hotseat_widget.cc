@@ -589,7 +589,8 @@ void HotseatWidget::DelegateView::UpdateHighlightBorder(
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
           : views::HighlightBorder::Type::kHighlightBorderNoShadow;
 
-  if (GetBorder() && !update_corner_radius && border_type_ == border_type) {
+  if (translucent_background_->GetBorder() && !update_corner_radius &&
+      border_type_ == border_type) {
     return;
   }
 

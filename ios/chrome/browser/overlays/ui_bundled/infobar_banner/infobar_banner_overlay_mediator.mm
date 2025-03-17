@@ -36,11 +36,13 @@
 #pragma mark - Accessors
 
 - (void)setConsumer:(id<InfobarBannerConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
+  }
   _consumer = consumer;
-  if (_consumer)
+  if (_consumer) {
     [self configureConsumer];
+  }
 }
 
 #pragma mark - InfobarBannerDelegate

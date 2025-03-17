@@ -40,6 +40,12 @@ class HlsNetworkAccessImplUnittest : public testing::Test {
     network_access_ = std::make_unique<HlsNetworkAccessImpl>(std::move(dsp));
   }
 
+  void TearDown() override {
+    factory_ = nullptr;
+    network_access_.reset();
+    task_environment_.RunUntilIdle();
+  }
+
   std::optional<hls::types::ByteRange> ByteRangeFromTuple(
       std::optional<std::tuple<uint64_t, uint64_t>> tuple) {
     if (tuple.has_value()) {
@@ -72,10 +78,9 @@ class HlsNetworkAccessImplUnittest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<HlsNetworkAccessImpl> network_access_;
   raw_ptr<MockDataSourceFactory> factory_;
-  std::unique_ptr<HlsDataSourceProviderImpl> dsp_;
-  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(HlsNetworkAccessImplUnittest, TestReadSmallManifest) {

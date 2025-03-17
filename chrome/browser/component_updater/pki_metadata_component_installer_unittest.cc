@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 
 #include <vector>
@@ -80,16 +75,16 @@ const char kPinsetHostName[] = "example.test";
 const bool kPinsetIncludeSubdomains = true;
 
 // SHA256 SPKI hashes.
-const std::vector<uint8_t> kSpkiHash1 = {
+constexpr uint8_t kSpkiHash1[] = {
     0xec, 0x72, 0x29, 0x69, 0xcb, 0x64, 0x20, 0x0a, 0xb6, 0x63, 0x8f,
     0x68, 0xac, 0x53, 0x8e, 0x40, 0xab, 0xab, 0x5b, 0x19, 0xa6, 0x48,
     0x56, 0x61, 0x04, 0x2a, 0x10, 0x61, 0xc4, 0x61, 0x27, 0x76};
-const std::vector<uint8_t> kSpkiHash2 = {
+constexpr uint8_t kSpkiHash2[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-constexpr uint64_t kMaxSupportedCTCompatibilityVersion = 2;
+constexpr uint64_t kMaxSupportedCTCompatibilityVersion = 3;
 constexpr uint64_t kMaxSupportedKPCompatibilityVersion = 1;
 
 }  // namespace
@@ -199,10 +194,10 @@ class PKIMetadataComponentInstallerTest : public testing::Test {
       host_pin->set_include_subdomains(kPinsetIncludeSubdomains);
       auto* pinset = pinlist_.add_pinsets();
       pinset->set_name(kPinsetName);
-      std::string spki_bytes_as_string(kSpkiHash1.data(),
-                                       kSpkiHash1.data() + kSpkiHash1.size());
-      std::string bad_spki_bytes_as_string(
-          kSpkiHash2.data(), kSpkiHash2.data() + kSpkiHash2.size());
+      std::string spki_bytes_as_string(std::begin(kSpkiHash1),
+                                       std::end(kSpkiHash1));
+      std::string bad_spki_bytes_as_string(std::begin(kSpkiHash2),
+                                           std::end(kSpkiHash2));
       pinset->add_static_spki_hashes_sha256(spki_bytes_as_string);
       pinset->add_bad_static_spki_hashes_sha256(bad_spki_bytes_as_string);
     }
@@ -245,7 +240,8 @@ TEST_F(PKIMetadataComponentInstallerTest, TestProtoBytesConversion) {
        0x68, 0xac, 0x53, 0x8e, 0x40, 0xab, 0xab, 0x5b, 0x19, 0xa6, 0x48,
        0x56, 0x61, 0x04, 0x2a, 0x10, 0x61, 0xc4, 0x61, 0x27, 0x76}};
 
-  std::string bytes_as_string(&test_bytes[0][0], &test_bytes[0][0] + 32);
+  std::string bytes_as_string(std::begin(test_bytes[0]),
+                              std::end(test_bytes[0]));
   std::vector<std::string> repeated_bytes = {bytes_as_string};
 
   EXPECT_EQ(PKIMetadataComponentInstallerPolicy::BytesArrayFromProtoBytes(
@@ -330,8 +326,10 @@ TEST_F(PKIMetadataComponentInstallerTest,
   EXPECT_EQ(host_pins.size(), 1u);
 
   EXPECT_EQ(pinsets.at(0).name(), kPinsetName);
-  EXPECT_EQ(pinsets.at(0).static_spki_hashes().at(0), kSpkiHash1);
-  EXPECT_EQ(pinsets.at(0).bad_static_spki_hashes().at(0), kSpkiHash2);
+  EXPECT_THAT(pinsets.at(0).static_spki_hashes().at(0),
+              ::testing::ElementsAreArray(kSpkiHash1));
+  EXPECT_THAT(pinsets.at(0).bad_static_spki_hashes().at(0),
+              ::testing::ElementsAreArray(kSpkiHash2));
 
   EXPECT_EQ(host_pins.at(0).hostname_, kPinsetHostName);
   EXPECT_EQ(host_pins.at(0).pinset_name_, kPinsetName);

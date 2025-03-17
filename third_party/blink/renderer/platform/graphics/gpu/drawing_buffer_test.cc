@@ -47,7 +47,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "ui/gl/gpu_preference.h"
@@ -76,7 +75,7 @@ class DrawingBufferTest : public Test {
     Platform::GraphicsInfo graphics_info;
     graphics_info.using_gpu_compositing = true;
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), /*sii_provider_for_bitmap=*/nullptr, graphics_info,
+        std::move(provider), /*sii_provider_for_sw=*/nullptr, graphics_info,
         gl_, initial_size, DrawingBuffer::kPreserve, use_multisampling);
     CHECK(drawing_buffer_);
     SetAndSaveRestoreState(false);
@@ -377,7 +376,7 @@ class DrawingBufferImageChromiumTest : public DrawingBufferTest,
     Platform::GraphicsInfo graphics_info;
     graphics_info.using_gpu_compositing = true;
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), /*sii_provider_for_bitmap=*/nullptr, graphics_info,
+        std::move(provider), /*sii_provider_for_sw=*/nullptr, graphics_info,
         gl_, initial_size, DrawingBuffer::kPreserve, kDisableMultisampling);
     CHECK(drawing_buffer_);
     SetAndSaveRestoreState(true);
@@ -713,6 +712,43 @@ TEST_F(DrawingBufferTest,
       gl::GpuPreference::kHighPerformance);
   EXPECT_EQ(too_big_drawing_buffer, nullptr);
   drawing_buffer_->BeginDestruction();
+}
+
+TEST_F(DrawingBufferImageChromiumTest,
+       VerifyLowLatencyRenderingIsSetWhenDesynchronizedIsTrue) {
+  gfx::Size initial_size(kInitialWidth, kInitialHeight);
+  auto gl = std::make_unique<GLES2InterfaceForTests>();
+  auto provider =
+      std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
+
+  provider->GetMutableGpuFeatureInfo()
+      .status_values[gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
+      gpu::kGpuFeatureStatusEnabled;
+
+  GLES2InterfaceForTests* gl_ =
+      static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
+
+  Platform::GraphicsInfo graphics_info;
+  graphics_info.using_gpu_compositing = true;
+
+  scoped_refptr<DrawingBufferForTests> drawing_buffer =
+      DrawingBufferForTests::Create(
+          std::move(provider),
+          /*shared_image_interface_provider_for_sw=*/nullptr, graphics_info,
+          gl_, initial_size, DrawingBuffer::kPreserve, kDisableMultisampling,
+          /*desynchronized=*/true);
+
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+
+  EXPECT_FALSE(resource.is_low_latency_rendering);
+  EXPECT_TRUE(drawing_buffer->PrepareTransferableResource(&resource,
+                                                          &release_callback));
+  EXPECT_TRUE(resource.is_low_latency_rendering);
+
+  drawing_buffer->BeginDestruction();
+  drawing_buffer_->BeginDestruction();
+  testing::Mock::VerifyAndClearExpectations(gl_);
 }
 
 }  // namespace blink

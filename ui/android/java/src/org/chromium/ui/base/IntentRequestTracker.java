@@ -115,5 +115,5 @@ public interface IntentRequestTracker {
      * @param errorId The error ID used if the intent encounters an error.
      * @return int The request code for the intent.
      */
-    int showCancelableIntent(Intent intent, IntentCallback callback, Integer errorId);
+    int showCancelableIntent(Intent intent, IntentCallback callback, @Nullable Integer errorId);
 }

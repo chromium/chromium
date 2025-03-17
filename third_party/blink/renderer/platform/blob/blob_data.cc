@@ -39,7 +39,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/data_pipe_getter.mojom-blink.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
@@ -385,18 +384,6 @@ void BlobDataHandle::CloneBlobRemote(
   mojo::Remote<mojom::blink::Blob> blob(std::move(blob_remote_));
   blob->Clone(std::move(receiver));
   blob_remote_ = blob.Unbind();
-}
-
-mojo::PendingRemote<network::mojom::blink::DataPipeGetter>
-BlobDataHandle::AsDataPipeGetter() {
-  base::AutoLock locker(blob_remote_lock_);
-  if (!blob_remote_.is_valid())
-    return mojo::NullRemote();
-  mojo::PendingRemote<network::mojom::blink::DataPipeGetter> result;
-  mojo::Remote<mojom::blink::Blob> blob(std::move(blob_remote_));
-  blob->AsDataPipeGetter(result.InitWithNewPipeAndPassReceiver());
-  blob_remote_ = blob.Unbind();
-  return result;
 }
 
 void BlobDataHandle::ReadAll(

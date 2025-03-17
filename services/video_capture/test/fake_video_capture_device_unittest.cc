@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -191,7 +192,7 @@ TEST_F(FakeVideoCaptureDeviceTest, BuffersGetRetiredWhenDeviceIsStopped) {
   base::RunLoop wait_for_on_stopped_loop;
   EXPECT_CALL(video_frame_handler, DoOnBufferRetired(_))
       .WillRepeatedly(Invoke([&known_buffer_ids](int32_t buffer_id) {
-        auto iter = base::ranges::find(known_buffer_ids, buffer_id);
+        auto iter = std::ranges::find(known_buffer_ids, buffer_id);
         ASSERT_TRUE(iter != known_buffer_ids.end());
         known_buffer_ids.erase(iter);
       }));

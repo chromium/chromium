@@ -4,11 +4,12 @@
 
 import '../common/learn_mode_bridge.js';
 
+import {Features} from '/common/features.js';
 import {Flags} from '/common/flags.js';
-import {InstanceChecker} from '/common/instance_checker.js';
 import {LocalStorage} from '/common/local_storage.js';
+import {InstanceChecker} from '/common/mv2/instance_checker.js';
 
-import {BrailleKeyEvent} from '../common/braille/braille_key_types.js';
+import type {BrailleKeyEvent} from '../common/braille/braille_key_types.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {EarconId} from '../common/earcon_id.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
@@ -20,10 +21,11 @@ import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 import {JaPhoneticData} from '../third_party/tamachiyomi/ja_phonetic_data.js';
 import {JaPhoneticMap} from '../third_party/tamachiyomi/ja_phonetic_map.js';
 
-import {AbstractEarcons} from './abstract_earcons.js';
+import type {AbstractEarcons} from './abstract_earcons.js';
 import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {BrailleBackground} from './braille/braille_background.js';
 import {BrailleCommandHandler} from './braille/braille_command_handler.js';
+import {CaptionsHandler} from './captions_handler.js';
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxRange} from './chromevox_range.js';
 import {ChromeVoxState} from './chromevox_state.js';
@@ -89,6 +91,7 @@ export class Background extends ChromeVoxState {
 
   static async init(): Promise<void> {
     // Pre-initialization.
+    await Features.init();
     await Flags.init();
     await LocalStorage.init();
     await SettingsManager.init();
@@ -104,6 +107,7 @@ export class Background extends ChromeVoxState {
     AutoScrollHandler.init();
     BackgroundKeyboardHandler.init();
     BrailleCommandHandler.init();
+    CaptionsHandler.init();
     ClipboardHandler.init();
     CommandHandler.init();
     DownloadHandler.init();

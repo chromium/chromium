@@ -1,0 +1,198 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./shared_style_lit.css.js
+ * #include=cr-hidden-style-lit shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  outline: none;
+  pointer-events: none;
+}
+
+#main-container {
+  position: relative;
+}
+
+:host([is-card-end]) #main-container {
+  margin-bottom: var(--card-padding-between);
+}
+
+:host([is-card-start][is-card-end]) #main-container {
+  border-radius: var(--cr-card-border-radius);
+}
+
+#date-accessed {
+  display: none;
+}
+
+:host([is-card-start]) #date-accessed {
+  display: block;
+}
+
+#item-container {
+  align-items: center;
+  display: flex;
+  min-height: var(--item-height);
+  padding-inline-start: 14px;
+  pointer-events: auto;
+}
+
+:host([is-card-start]) #item-container {
+  padding-top: var(--card-first-last-item-padding);
+}
+
+:host([is-card-end]) #item-container {
+  padding-bottom: var(--card-first-last-item-padding);
+}
+
+#item-info {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+#title-and-domain {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  height: var(--item-height);
+  margin-inline-end: auto;
+  overflow: hidden;
+  /* Allows the link's focus outline to be shown completely. */
+  padding-inline-start: 5px;
+}
+
+#checkbox {
+  margin: 0 10px;
+}
+
+/* Styling the element before cr-checkbox is defined is necessary since
+    cr-checkbox is being lazy-loaded. */
+#checkbox:not(:defined) {
+  border: 2px solid var(--cr-secondary-text-color);
+  border-radius: 2px;
+  content: '';
+  display: block;
+  height: 12px;
+  width: 12px;
+}
+
+#time-accessed {
+  color: var(--history-item-time-color);
+  font-size: 12px;
+  margin-inline-start: 6px;
+  min-width: 96px;
+}
+
+#domain {
+  color: var(--cr-secondary-text-color);
+  font-size: 12px;
+  margin-inline-start: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#menu-button {
+  --cr-icon-button-margin-end: 20px;
+  --cr-icon-button-margin-start: 12px;
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
+}
+
+#bookmark-star {
+  --cr-icon-button-fill-color: var(--interactive-color);
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-margin-start: 12px;
+  --cr-icon-button-size: 32px;
+}
+
+#debug-container {
+  color: var(--history-item-time-color);
+  display: flex;
+  padding-inline-start: 22px;
+  pointer-events: auto;
+}
+
+.debug-info:not(:first-child) {
+  margin-inline-start: 15px;
+}
+
+#time-gap-separator {
+  border-inline-start: 1px solid #888;
+  height: 15px;
+  margin-inline-start: 77px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #time-gap-separator {
+    border-color: var(--google-grey-500);
+  }
+}
+
+#background-clip {
+  /* Prevent artifacts when zoomed by overlapping the next item. */
+  bottom: -0.4px;
+  clip: rect(auto 999px auto -5px); /* Clip the top and bottom edges. */
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: -1;
+}
+
+:host([is-card-end]) #background-clip {
+  bottom: 0;
+  clip: rect(auto 999px 500px -5px); /* Clip the top edge. */
+}
+
+:host([is-card-start]) #background-clip {
+  clip: auto;
+}
+
+#background {
+  background-color: var(--cr-card-background-color);
+  bottom: 0;
+  box-shadow: var(--cr-card-shadow);
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+:host(:not([is-card-start])) #background {
+  top: -5px; /* Draw the box shadow up the full edge of the background. */
+}
+
+:host([is-card-start]) #background {
+  border-radius: var(--cr-card-border-radius) var(--cr-card-border-radius) 0 0;
+}
+
+:host([is-card-end]) #background {
+  border-radius: 0 0 var(--cr-card-border-radius) var(--cr-card-border-radius);
+}
+
+:host([is-card-start][is-card-end]) #background {
+  border-radius: var(--cr-card-border-radius);
+}
+
+#options {
+  align-items: center;
+  display: flex;
+}
+
+/* Visually hide the label but still allow the screen reader to
+  pick it up. */
+cr-checkbox::part(label-container) {
+  clip: rect(0,0,0,0);
+  display: block;
+  position: fixed;
+}

@@ -24,8 +24,8 @@
   }
 
   const tests = [
-    { style: "conic-gradient(black)"                                       , computed: "none" },
-    { style: "conic-gradient(black 0%)"                                    , computed: "none" },
+    { style: "conic-gradient(black)"                                       , computed: "conic-gradient(rgb(0, 0, 0))" },
+    { style: "conic-gradient(black 0%)"                                    , computed: "conic-gradient(rgb(0, 0, 0) 0%)" },
     { style: "conic-gradient(black 0%, 25%)"                               , computed: "none" },
     { style: "conic-gradient(black 0px, white)"                            , computed: "none" },
     { style: "conic-gradient(black, , white)"                              , computed: "none" },

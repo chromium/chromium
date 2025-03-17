@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 # NOTE: This file is read by tools/oobe/generate_screen_template.py, which
 # is used to generate some of the "sources" entries.
@@ -224,10 +222,6 @@ static_library("screens") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:arc_features",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/session:arc_base_enums",
     "//ash/constants",
     "//ash/public/mojom:input_device_settings",
     "//ash/webui/connectivity_diagnostics",
@@ -249,7 +243,6 @@ static_library("screens") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/child_accounts",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/customization",
     "//chrome/browser/ash/device_sync",
     "//chrome/browser/ash/login",
@@ -294,6 +287,10 @@ static_library("screens") {
     "//chromeos/ash/components/quick_start",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/session:arc_base_enums",
     "//chromeos/ash/services/auth_factor_config",
     "//chromeos/ash/services/device_sync/public/cpp",
     "//chromeos/ash/services/multidevice_setup/public/cpp",
@@ -457,11 +454,6 @@ source_set("browser_tests") {
     ":screens",
     "//ash",
     "//ash:test_support",
-    "//ash/components/arc:arc_features",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/session",
-    "//ash/components/arc/session:arc_base_enums",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -477,8 +469,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
     "//chrome/browser/ash/child_accounts",
-    "//chrome/browser/ash/crosapi",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/drive:test_support",
     "//chrome/browser/ash/login:test_support",
@@ -526,6 +516,11 @@ source_set("browser_tests") {
     "//chromeos/ash/components/quick_start",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/arc/session:arc_base_enums",
     "//chromeos/ash/services/assistant:lib",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/assistant/public/proto",
@@ -594,8 +589,6 @@ source_set("unit_tests") {
     ":test_support",
     "//ash",
     "//ash:test_support",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -620,6 +613,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network/portal_detector:test_support",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/dbus/power",
     "//components/user_manager",
     "//content/test:test_support",

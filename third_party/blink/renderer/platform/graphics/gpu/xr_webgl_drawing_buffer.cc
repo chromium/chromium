@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -352,6 +353,10 @@ void XRWebGLDrawingBuffer::DoneWithSharedBuffer() {
   client->DrawingBufferClientRestoreFramebufferBinding();
 }
 
+GLuint XRWebGLDrawingBuffer::GetCurrentColorBufferTextureId() {
+  return back_color_buffer_->texture_id();
+}
+
 void XRWebGLDrawingBuffer::ClearBoundFramebuffer() {
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(
       drawing_buffer_->client());
@@ -651,19 +656,15 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
   viz::ReleaseCallback release_callback =
       base::BindOnce(&XRWebGLDrawingBuffer::NotifyMailboxReleased, buffer);
   exported_color_buffers_.insert(buffer);
-  const SkImageInfo sk_image_info =
-      SkImageInfo::MakeN32Premul(size_.width(), size_.height());
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       buffer->shared_image, buffer->produce_sync_token,
-      /* shared_image_texture_id = */ 0, sk_image_info,
+      /* shared_image_texture_id = */ 0, size_, GetN32FormatForCanvas(),
+      kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
       drawing_buffer_->ContextProviderWeakPtr(),
       base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
-      std::move(release_callback),
-      /*supports_display_compositing=*/true,
-      // CreateColorBuffer() never sets the SCANOUT usage bit.
-      /*is_overlay_candidate=*/false);
+      std::move(release_callback));
 }
 
 // static

@@ -700,6 +700,13 @@ public class WebsitePermissionsFetcherTest {
                         SITE_WILDCARD,
                         /* isEmbargoed= */ false,
                         SessionModel.DURABLE));
+        websitePreferenceBridge.addPermissionInfo(
+                new PermissionInfo(
+                        ContentSettingsType.LOCAL_NETWORK_ACCESS,
+                        ORIGIN,
+                        SITE_WILDCARD,
+                        /* isEmbargoed= */ false,
+                        SessionModel.DURABLE));
 
         // Add content setting exception types.
         // If the ContentSettingsType.MAX_VALUE value changes *and* a new value has been exposed on
@@ -707,7 +714,7 @@ public class WebsitePermissionsFetcherTest {
         // Otherwise, just update count in the assert.
         // TODO(https://b/332704817): Add test for Tracking Protection content setting after Android
         // integration.
-        assertEquals(115, ContentSettingsType.MAX_VALUE);
+        assertEquals(119, ContentSettingsType.MAX_VALUE);
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.COOKIES,
@@ -813,6 +820,13 @@ public class WebsitePermissionsFetcherTest {
                         ContentSettingValues.DEFAULT,
                         ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
+        websitePreferenceBridge.addContentSettingException(
+                new ContentSettingException(
+                        ContentSettingsType.LOCAL_NETWORK_ACCESS,
+                        ORIGIN,
+                        ContentSettingValues.DEFAULT,
+                        ProviderType.PREF_PROVIDER,
+                        /* isEmbargoed= */ false));
 
         int storageSize = 256;
         int sharedDictionarySize = 12345;
@@ -833,7 +847,7 @@ public class WebsitePermissionsFetcherTest {
                     .getBrowsingDataModel(any(Callback.class));
         } else {
             // Add storage info.
-            websitePreferenceBridge.addStorageInfo(new StorageInfo(ORIGIN, 0, storageSize));
+            websitePreferenceBridge.addStorageInfo(new StorageInfo(ORIGIN, storageSize));
 
             // Add local storage info.
             websitePreferenceBridge.addLocalStorageInfoMapEntry(
@@ -881,6 +895,8 @@ public class WebsitePermissionsFetcherTest {
                     Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.VR));
                     Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.HAND_TRACKING));
                     Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.AR));
+                    Assert.assertNotNull(
+                            site.getPermissionInfo(ContentSettingsType.LOCAL_NETWORK_ACCESS));
 
                     // Check content setting exception types.
                     assertEquals(
@@ -1297,7 +1313,7 @@ public class WebsitePermissionsFetcherTest {
         String chromiumOrigin = "https://chromium.org";
         int storageSize = 256;
         int sharedDictionarySize = 512;
-        StorageInfo fakeStorageInfo = new StorageInfo(ORIGIN, 0, storageSize);
+        StorageInfo fakeStorageInfo = new StorageInfo(ORIGIN, storageSize);
         LocalStorageInfo fakeLocalStorageInfo = new LocalStorageInfo(ORIGIN, storageSize, false);
         LocalStorageInfo fakeImportantLocalStorageInfo =
                 new LocalStorageInfo(chromiumOrigin, storageSize, true);

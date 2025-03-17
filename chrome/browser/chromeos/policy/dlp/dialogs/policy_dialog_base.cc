@@ -8,8 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/functional/callback_forward.h"
-#include "build/chromeos_buildflags.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,10 +24,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/style/color_provider.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace policy {
 
@@ -54,6 +50,7 @@ constexpr int kFaviconSize = 20;
 // Maximum height of the confidential content scrollable list.
 // This can hold seven rows.
 constexpr int kConfidentialContentListMaxHeight = 240;
+
 }  // namespace
 
 PolicyDialogBase::PolicyDialogBase() {
@@ -80,15 +77,10 @@ void PolicyDialogBase::SetupUpperPanel() {
 
   views::ImageView* managed_icon =
       upper_panel_->AddChildView(std::make_unique<views::ImageView>());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto color = ash::ColorProvider::Get()->GetContentLayerColor(
       ash::ColorProvider::ContentLayerType::kIconColorPrimary);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/40202228) Enable dynamic UI color & theme in lacros
-  auto color = SK_ColorGRAY;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  managed_icon->SetImage(gfx::CreateVectorIcon(vector_icons::kBusinessIcon,
-                                               kManagedIconSize, color));
+  managed_icon->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kBusinessIcon, color, kManagedIconSize));
 }
 
 views::Label* PolicyDialogBase::AddTitle(const std::u16string& title) {
@@ -98,11 +90,8 @@ views::Label* PolicyDialogBase::AddTitle(const std::u16string& title) {
       upper_panel_->AddChildView(std::make_unique<views::Label>(title));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetAllowCharacterBreak(true);
-// TODO(crbug.com/40202228) Enable dynamic UI color & theme in lacros
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   title_label->SetEnabledColor(ash::ColorProvider::Get()->GetContentLayerColor(
       ash::ColorProvider::ContentLayerType::kTextColorPrimary));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return title_label;
 }
 
@@ -114,12 +103,9 @@ views::Label* PolicyDialogBase::AddMessage(const std::u16string& message) {
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message_label->SetAllowCharacterBreak(true);
-// TODO(crbug.com/40202228) Enable dynamic UI color & theme in lacros
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   message_label->SetEnabledColor(
       ash::ColorProvider::Get()->GetContentLayerColor(
           ash::ColorProvider::ContentLayerType::kTextColorSecondary));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return message_label;
 }
 
@@ -149,7 +135,7 @@ void PolicyDialogBase::AddRowIcon(const gfx::ImageSkia& icon,
   views::ImageView* icon_view =
       row->AddChildView(std::make_unique<views::ImageView>());
   icon_view->SetImageSize(gfx::Size(kFaviconSize, kFaviconSize));
-  icon_view->SetImage(icon);
+  icon_view->SetImage(ui::ImageModel::FromImageSkia(icon));
 }
 
 views::Label* PolicyDialogBase::AddRowTitle(const std::u16string& title,
@@ -159,11 +145,8 @@ views::Label* PolicyDialogBase::AddRowTitle(const std::u16string& title,
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetAllowCharacterBreak(true);
-// TODO(crbug.com/40202228) Enable dynamic UI color & theme in lacros
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   label->SetEnabledColor(ash::ColorProvider::Get()->GetContentLayerColor(
       ash::ColorProvider::ContentLayerType::kTextColorSecondary));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return label;
 }
 

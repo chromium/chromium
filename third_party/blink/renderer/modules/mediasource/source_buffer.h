@@ -142,7 +142,8 @@ class SourceBuffer final : public EventTarget,
   const AtomicString& InterfaceName() const override;
 
   // WebSourceBufferClient interface
-  bool InitializationSegmentReceived(const WebVector<MediaTrackInfo>&) override;
+  bool InitializationSegmentReceived(
+      const std::vector<MediaTrackInfo>&) override;
   void NotifyParseWarning(const ParseWarning) override;
 
   void Trace(Visitor*) const override;
@@ -222,7 +223,7 @@ class SourceBuffer final : public EventTarget,
   // now to retain stable BackgroundVideoOptimization support with experimental
   // MSE-in-Workers.
   void AddPlaceholderCrossThreadTracks(
-      const WebVector<MediaTrackInfo>& new_tracks,
+      const std::vector<MediaTrackInfo>& new_tracks,
       scoped_refptr<MediaSourceAttachmentSupplement> attachment);
   void RemovePlaceholderCrossThreadTracks(
       scoped_refptr<MediaSourceAttachmentSupplement> attachment,

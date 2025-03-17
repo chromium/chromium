@@ -102,15 +102,17 @@ The builder `android-chrome-13-x64-wpt-android-specific` and
 `android-webview-13-x64-wpt-android-specific` builders run tests specified by
 the [`android.filter`](/third_party/blink/web_tests/TestLists/android.filter)
 file, which tests Android-specific behaviors. Developers can add additional
-tests to the list when necessary.
+tests to the list when necessary. A resource request might be
+needed depending on the case. See [below](#Run-more-tests-with-Chrome-Android-or-WebView)
+for details.
 
 To satisfy different testing requirements, WPT coverage in CQ/CI is partitioned
 between suites that target different `//content` embedders:
 
 Suite Name | Browser Under Test | Harness | Tests Run
 --- | --- | --- | ---
-`android_blink_wpt_tests` | `chrome_android` | `run_wpt_tests.py` | Tests listed in [`android.filter`](#running-tests-in-cqci).
-`webview_blink_wpt_tests` | `android_webview` | `run_wpt_tests.py` | Tests listed in [`android.filter`](#running-tests-in-cqci).
+`android_chrome_wpt_tests` | `chrome_android` | `run_wpt_tests.py` | Tests listed in [`android.filter`](#running-tests-in-cqci).
+`android_webview_wpt_tests` | `android_webview` | `run_wpt_tests.py` | Tests listed in [`android.filter`](#running-tests-in-cqci).
 
 ## Test expectations and Baselines
 
@@ -134,6 +136,20 @@ To update baselines:
   * For WebView: trigger `android-webview-13-x64-wpt-android-specific`
 2. Run [the rebaseline tool](./web_test_expectations.md#How-to-rebaseline) after
   the results are ready.
+
+## Run more tests with Chrome Android or WebView
+
+A resource request would be needed if running the additional tests increases the
+total test time by more than one minute. If this is the case, developers can use
+[the bot estimator](https://data.corp.google.com/sites/datasite_browser_infra/bot_estimator?p=task_type:%22test%22)
+to estimate the bots needed, then follow the steps at [go/i-need-hw](https://g3doc.corp.google.com/company/teams/chrome/ops/business/resources/resource-request-program.md?cl=head&polyglot=physical-hw#i-need-new-resources)
+to get the resources. The tests can be added to the filter file after the resource
+is deployed.
+
+Please make sure there is no unexpected failures on the related steps before using
+the bot estimator, as the bot will retry those tests and that will increase the
+total test time. For tests not intended to run with a target, e.g. WebView, you
+can skip the tests by adding "Skip" test expectations to [MobileTestExpectations](/third_party/blink/web_tests/MobileTestExpectations).
 
 ## Known Issues
 

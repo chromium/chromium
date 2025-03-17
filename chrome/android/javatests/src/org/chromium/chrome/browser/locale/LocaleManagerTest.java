@@ -96,8 +96,8 @@ public class LocaleManagerTest {
                     Assert.assertTrue(snackbarManager.isShowing());
                     Snackbar currentSnackbar = snackbarManager.getCurrentSnackbarForTesting();
                     Assert.assertEquals(
-                            currentSnackbar.getIdentifierForTesting(),
-                            Snackbar.UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION);
+                            Snackbar.UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION,
+                            currentSnackbar.getIdentifierForTesting());
                 });
     }
 
@@ -119,8 +119,8 @@ public class LocaleManagerTest {
                     Assert.assertTrue(snackbarManager.isShowing());
                     Snackbar currentSnackbar = snackbarManager.getCurrentSnackbarForTesting();
                     Assert.assertEquals(
-                            currentSnackbar.getIdentifierForTesting(),
-                            Snackbar.UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION);
+                            Snackbar.UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION,
+                            currentSnackbar.getIdentifierForTesting());
                 });
     }
 }

@@ -5,11 +5,6 @@
 #ifndef CHROME_BROWSER_LIFETIME_APPLICATION_LIFETIME_H_
 #define CHROME_BROWSER_LIFETIME_APPLICATION_LIFETIME_H_
 
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-
-class Browser;
-
 namespace chrome {
 
 // Starts a user initiated exit process. Called from Browser::Exit.

@@ -22,7 +22,6 @@
 #include "third_party/icu/source/common/unicode/schriter.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
-#include "third_party/icu/source/i18n/unicode/translit.h"
 #include "third_party/icu/source/i18n/unicode/uspoof.h"
 #include "url/url_features.h"
 
@@ -647,23 +646,6 @@ std::u16string IDNSpoofChecker::MaybeRemoveDiacritics(
   return skeleton_generator_
              ? skeleton_generator_->MaybeRemoveDiacritics(hostname)
              : hostname;
-}
-
-IDNA2008DeviationCharacter IDNSpoofChecker::GetDeviationCharacter(
-    std::u16string_view hostname) const {
-  if (hostname.find(u"\u00df") != std::u16string_view::npos) {
-    return IDNA2008DeviationCharacter::kEszett;
-  }
-  if (hostname.find(u"\u03c2") != std::u16string_view::npos) {
-    return IDNA2008DeviationCharacter::kGreekFinalSigma;
-  }
-  if (hostname.find(u"\u200d") != std::u16string_view::npos) {
-    return IDNA2008DeviationCharacter::kZeroWidthJoiner;
-  }
-  if (hostname.find(u"\u200c") != std::u16string_view::npos) {
-    return IDNA2008DeviationCharacter::kZeroWidthNonJoiner;
-  }
-  return IDNA2008DeviationCharacter::kNone;
 }
 
 void IDNSpoofChecker::SetAllowedUnicodeSet(UErrorCode* status) {

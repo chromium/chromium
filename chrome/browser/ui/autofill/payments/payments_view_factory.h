@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_PAYMENTS_VIEW_FACTORY_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_PAYMENTS_VIEW_FACTORY_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
@@ -18,14 +20,20 @@ class AutofillErrorDialogController;
 class AutofillErrorDialogView;
 class AutofillProgressDialogController;
 class AutofillProgressDialogView;
+class BnplTosController;
+class BnplTosView;
 class CardUnmaskAuthenticationSelectionDialogController;
 class CardUnmaskAuthenticationSelectionDialog;
 class CardUnmaskOtpInputDialogController;
 class CardUnmaskOtpInputDialogView;
+class SaveAndFillDialogController;
+class SaveAndFillDialogView;
 
 namespace payments {
 class PaymentsWindowUserConsentDialogController;
 class PaymentsWindowUserConsentDialog;
+class SelectBnplIssuerView;
+class SelectBnplIssuerDialogController;
 }  // namespace payments
 
 // Factory function for creating and showing the autofill progress dialog
@@ -34,7 +42,7 @@ class PaymentsWindowUserConsentDialog;
 // deletes it on dismissal, so no lifecycle management is needed. However, on
 // Android this is not the case, the view's implementation must delete itself
 // when dismissed.
-base::WeakPtr<AutofillProgressDialogView> CreateAndShowProgressDialog(
+std::unique_ptr<AutofillProgressDialogView> CreateAndShowProgressDialog(
     base::WeakPtr<AutofillProgressDialogController> controller,
     content::WebContents* web_contents);
 
@@ -69,6 +77,30 @@ CreateAndShowPaymentsWindowUserConsentDialog(
     content::WebContents* web_contents,
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback);
+
+// Factory function for creating and showing the BNPL Terms of Service.
+std::unique_ptr<BnplTosView> CreateAndShowBnplTos(
+    base::WeakPtr<BnplTosController> controller,
+    content::WebContents* web_contents);
+
+#if !BUILDFLAG(IS_ANDROID)
+// Factory function for creating the "Save and Fill" dialog. This dialog
+// is triggered when the user has no saved credit cards and clicks on the
+// "Save and Fill" suggestion in the credit card dropdown menu. It presents
+// a centered modal dialog where the user can conveniently save a new
+// credit card and simultaneously fill it into the form with a single click.
+base::WeakPtr<SaveAndFillDialogView> CreateAndShowSaveAndFillDialog(
+    base::WeakPtr<SaveAndFillDialogController> controller,
+    content::WebContents* web_contents);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Factory function for creating and showing the BNPL issuer selection dialog.
+// This dialog is triggered when the BNPL payment method has been selected and
+// the user needs to select an issuer.
+std::unique_ptr<payments::SelectBnplIssuerView>
+CreateAndShowBnplIssuerSelectionDialog(
+    base::WeakPtr<payments::SelectBnplIssuerDialogController> controller,
+    content::WebContents* web_contents);
 
 }  // namespace autofill
 

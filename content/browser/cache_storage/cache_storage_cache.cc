@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/cache_storage/cache_storage_cache.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -18,6 +14,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -26,10 +23,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -256,7 +253,7 @@ bool VaryMatches(const blink::FetchAPIRequestHeadersMap& request,
   if (response_type == network::mojom::FetchResponseType::kOpaque)
     return true;
 
-  auto vary_iter = base::ranges::find_if(
+  auto vary_iter = std::ranges::find_if(
       response, [](const ResponseHeaderMap::value_type& pair) {
         return base::CompareCaseInsensitiveASCII(pair.first, "vary") == 0;
       });
@@ -324,7 +321,7 @@ std::vector<std::string> FindDuplicateOperations(
   // If the entire list has entries with the same URL and different VARY
   // headers then this devolves into O(n^2).
   for (BatchOperation* const* outer = sorted.cbegin(); outer != sorted.cend();
-       ++outer) {
+       UNSAFE_TODO(++outer)) {
     const BatchOperation* outer_op = *outer;
 
     // Note, the spec checks CacheQueryOptions like ignoreSearch, etc, but
@@ -343,7 +340,7 @@ std::vector<std::string> FindDuplicateOperations(
     }
 
     for (BatchOperation* const* inner = std::next(outer);
-         inner != sorted.cend(); ++inner) {
+         inner != sorted.cend(); UNSAFE_TODO(++inner)) {
       const BatchOperation* inner_op = *inner;
       // Since the list is sorted we can stop looking at neighbors after
       // the first different URL.
@@ -446,7 +443,7 @@ blink::mojom::FetchAPIRequestPtr CreateRequest(
 
 blink::mojom::FetchAPIResponsePtr CreateResponse(
     const proto::CacheMetadata& metadata,
-    const std::string& cache_name) {
+    const std::u16string& cache_name) {
   // We no longer support Responses with only a single URL entry.  This field
   // was deprecated in M57.
   if (metadata.response().has_url())
@@ -504,7 +501,7 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
       padding, network::mojom::FetchResponseSource::kCacheStorage, headers,
       mime_type, request_method, /*blob=*/nullptr,
       blink::mojom::ServiceWorkerResponseError::kUnknown, response_time,
-      cache_name,
+      base::UTF16ToUTF8(cache_name),
       std::vector<std::string>(
           metadata.response().cors_exposed_header_names().begin(),
           metadata.response().cors_exposed_header_names().end()),
@@ -607,7 +604,7 @@ struct CacheStorageCache::BatchInfo {
 std::unique_ptr<CacheStorageCache> CacheStorageCache::CreateMemoryCache(
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner,
-    const std::string& cache_name,
+    const std::u16string& cache_name,
     CacheStorage* cache_storage,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
@@ -626,7 +623,7 @@ std::unique_ptr<CacheStorageCache> CacheStorageCache::CreateMemoryCache(
 std::unique_ptr<CacheStorageCache> CacheStorageCache::CreatePersistentCache(
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner,
-    const std::string& cache_name,
+    const std::u16string& cache_name,
     CacheStorage* cache_storage,
     const base::FilePath& path,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
@@ -1047,7 +1044,7 @@ void CacheStorageCache::SetSchedulerForTesting(
 CacheStorageCache::CacheStorageCache(
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner,
-    const std::string& cache_name,
+    const std::u16string& cache_name,
     const base::FilePath& path,
     CacheStorage* cache_storage,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,

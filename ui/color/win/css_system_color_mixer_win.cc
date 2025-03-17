@@ -27,6 +27,8 @@ void MapNativeColorsToCssSystemColors(ColorMixer& mixer, ColorProviderKey key) {
     mixer[kColorCssSystemScrollbar] = {kColorNativeScrollbar};
     mixer[kColorCssSystemWindow] = {kColorNativeWindow};
     mixer[kColorCssSystemWindowText] = {kColorNativeWindowText};
+    mixer[kColorCssSystemField] = {kColorCssSystemWindow};
+    mixer[kColorCssSystemFieldText] = {kColorCssSystemWindowText};
   }
 }
 

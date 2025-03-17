@@ -78,10 +78,22 @@ void WebDatabaseBackend::DBWriteTaskWrapper(
 void WebDatabaseBackend::ExecuteWriteTask(WebDatabaseService::WriteTask task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(init_complete_) << "Init must be complete before running a DB task.";
-  if (db_ && init_status_ == sql::INIT_OK) {
+  // The database is not opened or have been shutdown.
+  if (!db_) {
+    return;
+  }
+
+  auto transaction = database()->AcquireTransaction();
+  if (init_status_ == sql::INIT_OK) {
     WebDatabase::State state = std::move(task).Run(db_.get());
     if (state == WebDatabase::COMMIT_NEEDED) {
+      // Either commit the changes using the Commit(...) call or commit the
+      // changes via the scoped transaction. This is controlled through the
+      // Finch experiment 'SqlScopedTransactionWebDatabase'.
       Commit();
+      if (transaction) {
+        transaction->Commit();
+      }
     }
   }
 }

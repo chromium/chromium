@@ -75,6 +75,8 @@ std::u16string GetArrowName(BubbleBorder::Arrow arrow) {
   return u"INVALID";
 }
 
+}  // namespace
+
 class ExampleBubble : public BubbleDialogDelegateView {
   METADATA_HEADER(ExampleBubble, BubbleDialogDelegateView)
 
@@ -98,8 +100,6 @@ class ExampleBubble : public BubbleDialogDelegateView {
 
 BEGIN_METADATA(ExampleBubble)
 END_METADATA
-
-}  // namespace
 
 BubbleExample::BubbleExample() : ExampleBase("Bubble") {}
 
@@ -138,11 +138,9 @@ void BubbleExample::ShowBubble(raw_ptr<Button>* button,
     arrow = BubbleBorder::FLOAT;
   }
 
-  auto* provider = (*button)->GetColorProvider();
   // |bubble| will be destroyed by its widget when the widget is destroyed.
   auto bubble = std::make_unique<ExampleBubble>(*button, arrow);
-  bubble->set_color(
-      provider->GetColor(colors[(color_index++) % std::size(colors)]));
+  bubble->set_background_color(colors[(color_index++) % std::size(colors)]);
   bubble->set_shadow(shadow);
   if (persistent) {
     bubble->set_close_on_deactivate(false);

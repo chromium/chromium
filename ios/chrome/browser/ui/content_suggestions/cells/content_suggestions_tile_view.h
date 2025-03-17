@@ -12,9 +12,10 @@ enum class ContentSuggestionsTileType {
   kShortcuts,
 };
 
-// A generic Content Suggestions tile view. Provides a title label and an image container on a
-// squircle-shaped background. Concrete subclasses of this are used to display
-// most visited tiles and shortcut tiles on NTP and other places.
+// A generic Content Suggestions tile view. Provides a title label and an image
+// container on a squircle-shaped background. Concrete subclasses of this are
+// used to display most visited tiles and shortcut tiles on NTP and other
+// places.
 @interface ContentSuggestionsTileView : UIView <UIPointerInteractionDelegate>
 
 // Initializes view with tile `type` to allow for different layout
@@ -32,6 +33,9 @@ enum class ContentSuggestionsTileType {
 
 // The view displaying the background image (squircle) for the tile image.
 @property(nonatomic, strong, readonly) UIImageView* imageBackgroundView;
+
+// Whether the view is a part of the magic stack. Used in subclasses.
+@property(nonatomic, assign, readonly) BOOL inMagicStack;
 
 @end
 

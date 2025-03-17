@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 
 #include <cstdint>
@@ -189,8 +194,6 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
   void SetUpStorage() {
     storage_impl_ = std::make_unique<ServiceWorkerStorageControlImpl>(
         user_data_directory_.GetPath(),
-        /*database_task_runner=*/
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
         remote_.BindNewPipeAndPassReceiver());
   }
 

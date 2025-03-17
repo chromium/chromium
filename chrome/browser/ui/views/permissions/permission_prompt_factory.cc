@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
@@ -23,6 +23,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -78,7 +79,7 @@ bool ShouldIgnorePermissionRequest(
   }
 
   LocationBarView* location_bar = GetLocationBarView(browser);
-  bool cant_display_prompt = location_bar && location_bar->IsEditingOrEmpty();
+  bool can_display_prompt = !(location_bar && location_bar->IsEditingOrEmpty());
 
   LensOverlayController* lens_overlay_controller =
       browser->tab_strip_model()
@@ -88,13 +89,13 @@ bool ShouldIgnorePermissionRequest(
   // Don't show prompt if Lens Overlay is showing
   // TODO(b/331940245): Refactor to be decoupled from LensOverlayController
   if (lens_overlay_controller && lens_overlay_controller->IsOverlayShowing()) {
-    cant_display_prompt = true;
+    can_display_prompt = false;
   }
 
   permissions::PermissionUmaUtil::RecordPermissionPromptAttempt(
-      delegate->Requests(), cant_display_prompt);
+      delegate->Requests(), can_display_prompt);
 
-  return cant_display_prompt;
+  return !can_display_prompt;
 }
 
 bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
@@ -106,7 +107,7 @@ bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
 
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
       requests = delegate->Requests();
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
         return request
             ->GetRequestChipText(
@@ -125,7 +126,7 @@ bool ShouldCurrentRequestUseQuietChip(
     permissions::PermissionPrompt::Delegate* delegate) {
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
       requests = delegate->Requests();
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
         return request->request_type() ==
                    permissions::RequestType::kNotifications ||
@@ -134,44 +135,26 @@ bool ShouldCurrentRequestUseQuietChip(
       });
 }
 
-bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
-    permissions::PermissionPrompt::Delegate* delegate) {
-  if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
-    return false;
-  }
-
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      requests = delegate->Requests();
-  return base::ranges::all_of(
-      requests, [](permissions::PermissionRequest* request) {
-        return (request->request_type() ==
-                    permissions::RequestType::kCameraStream ||
-                request->request_type() ==
-                    permissions::RequestType::kGeolocation ||
-                request->request_type() ==
-                    permissions::RequestType::kMicStream) &&
-               request->IsEmbeddedPermissionElementInitiated();
-      });
-}
-
 bool ShouldCurrentRequestUseExclusiveAccessUI(
     permissions::PermissionPrompt::Delegate* delegate) {
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
       requests = delegate->Requests();
-  return base::ranges::all_of(
-      requests, [](permissions::PermissionRequest* request) {
-        return request->request_type() ==
-                   permissions::RequestType::kPointerLock ||
-               request->request_type() ==
-                   permissions::RequestType::kKeyboardLock;
-      });
+  return permissions::feature_params::kKeyboardLockPromptUIStyle.Get() &&
+         std::ranges::all_of(
+             requests, [](permissions::PermissionRequest* request) {
+               return request->request_type() ==
+                          permissions::RequestType::kPointerLock ||
+                      request->request_type() ==
+                          permissions::RequestType::kKeyboardLock;
+             });
 }
 
 std::unique_ptr<permissions::PermissionPrompt> CreatePwaPrompt(
     Browser* browser,
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
-  if (ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
+  if (permissions::PermissionUtil::
+          ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
     return std::make_unique<EmbeddedPermissionPrompt>(browser, web_contents,
                                                       delegate);
   } else if (delegate->ShouldCurrentRequestUseQuietUI()) {
@@ -192,7 +175,9 @@ std::unique_ptr<permissions::PermissionPrompt> CreateNormalPrompt(
   if (ShouldCurrentRequestUseExclusiveAccessUI(delegate)) {
     return std::make_unique<ExclusiveAccessPermissionPrompt>(
         browser, web_contents, delegate);
-  } else if (ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
+  } else if (permissions::PermissionUtil::
+                 ShouldCurrentRequestUsePermissionElementSecondaryUI(
+                     delegate)) {
     return std::make_unique<EmbeddedPermissionPrompt>(browser, web_contents,
                                                       delegate);
   } else if (ShouldUseChip(delegate) && IsLocationBarDisplayed(browser)) {
@@ -242,7 +227,6 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
     return nullptr;
   }
 
-  // Auto-ignore the permission request if a user is typing into location bar.
   if (ShouldIgnorePermissionRequest(web_contents, browser, delegate)) {
     return nullptr;
   }

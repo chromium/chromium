@@ -9,7 +9,7 @@ import {inferLabelFromNext} from '//components/autofill/ios/form_util/resources/
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import type * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {removeQueryAndReferenceFromURL} from '//ios/web/public/js_messaging/resources/utils.js';
+import {isTextField, removeQueryAndReferenceFromURL} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // This file provides methods used to fill forms in JavaScript.
 
@@ -368,7 +368,10 @@ function formOrFieldsetsToFormData(
  When called from the page world, the last generated token in the isolated world
  is returned.
  */
-function getChildFrameRemoteToken(frame: HTMLIFrameElement): string|null {
+function getChildFrameRemoteToken(frame: HTMLIFrameElement|null): string|null {
+  if (!frame) {
+    return null;
+  }
   // Either register a new token when in the isolated world or read the last
   // registered token from the page content world.
   return gCrWeb.remoteFrameRegistration?.registerChildFrame(frame) ??
@@ -408,8 +411,8 @@ function getChildFrameRemoteToken(frame: HTMLIFrameElement): string|null {
 gCrWeb.fill.webFormElementToFormData = function(
     frame: Window, formElement: HTMLFormElement,
     formControlElement: fillConstants.FormControlElement,
-    form: fillUtil.AutofillFormData,
-    field?: fillUtil.AutofillFormFieldData): boolean {
+    form: fillUtil.AutofillFormData, field?: fillUtil.AutofillFormFieldData,
+    extractChildFrames: boolean = true): boolean {
   if (!frame) {
     return false;
   }
@@ -435,10 +438,18 @@ gCrWeb.fill.webFormElementToFormData = function(
 
   const controlElements = gCrWeb.form.getFormControlElements(formElement);
 
-  const iframeElements =
-      gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
+  let iframeElements = extractChildFrames &&
+          gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
       gCrWeb.form.getIframeElements(formElement) :
       [];
+
+  // To avoid performance bottlenecks, do not keep child frames if their
+  // quantity exceeds the allowed threshold.
+  if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
+      gCrWeb.autofill_form_features
+          .isAutofillAcrossIframesThrottlingEnabled()) {
+    iframeElements = [];
+  }
 
   return formOrFieldsetsToFormData(
       formElement, formControlElement, /*fieldsets=*/[], controlElements,
@@ -494,6 +505,8 @@ gCrWeb.fill.webFormControlElementToFormField = function(
     field.role = fillConstants.ROLE_ATTRIBUTE_PRESENTATION;
   }
 
+  field.pattern_attribute = element.getAttribute('pattern') ?? '';
+
   field.placeholder_attribute = element.getAttribute('placeholder') || '';
   if (field.placeholder_attribute != null &&
     field.placeholder_attribute.length > fillConstants.MAX_DATA_LENGTH) {
@@ -521,7 +534,7 @@ gCrWeb.fill.webFormControlElementToFormField = function(
   }
 
   if (gCrWeb.fill.isAutofillableInputElement(element)) {
-    if (gCrWeb.fill.isTextInput(element)) {
+    if (isTextField(element)) {
       field.max_length = (element as HTMLInputElement).maxLength;
       if (field.max_length === -1) {
         // Take default value as defined by W3C.
@@ -552,16 +565,15 @@ gCrWeb.fill.webFormControlElementToFormField = function(
 /**
  * Returns a serialized version of |form| to send to the host on form
  * submission.
- * The result string is similar to the result of calling |extractForms| filtered
- * on |form| (that is why a list is returned).
  *
  * @param form The form to serialize.
  * @return a JSON encoded version of |form|
  */
-gCrWeb.fill.autofillSubmissionData = function(form: HTMLFormElement): string {
+gCrWeb.fill.autofillSubmissionData =
+    function(form: HTMLFormElement): fillUtil.AutofillFormData {
   const formData = new gCrWeb['common'].JSONSafeObject();
   gCrWeb['fill'].webFormElementToFormData(window, form, null, formData, null);
-  return gCrWeb.stringify([formData]);
+  return formData;
 };
 
 /**
@@ -654,8 +666,15 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   form.origin = removeQueryAndReferenceFromURL(frame.origin);
   form.action = '';
 
+  // To avoid performance bottlenecks, do not keep child frames if their
+  // quantity exceeds the allowed threshold.
+  if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
+      gCrWeb.autofill_form_features
+          .isAutofillAcrossIframesThrottlingEnabled()) {
+    iframeElements = [];
+  }
+
   if (!restrictUnownedFieldsToFormlessCheckout) {
-    // TODO(crbug.com/40266126): Pass iframe elements.
     return formOrFieldsetsToFormData(
         /*formElement=*/ null, /*formControlElement=*/ null, fieldsets,
         controlElements, /*iframeElements=*/ iframeElements, form);
@@ -673,7 +692,6 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   for (let index = 0; index < count; index++) {
     const keyword = keywords[index]!;
     if (title.includes(keyword) || path.includes(keyword)) {
-      // TODO(crbug.com/40266126): Pass iframe elements.
       return formOrFieldsetsToFormData(
           /* formElement= */ null, /* formControlElement= */ null, fieldsets,
           controlElements, /* iframeElements= */ iframeElements, form);

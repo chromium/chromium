@@ -380,12 +380,6 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // See https://crbug.com/1065572.
   base::OnceClosure pending_getframedata_;
 
-  mojom::VRStageParametersPtr stage_parameters_;
-  uint32_t stage_parameters_id_;
-
-  // Currently estimated floor height.
-  std::optional<float> floor_height_estimate_;
-
   // Touch-related data.
   // Android will report touch events via MotionEvent - see XrImmersiveOverlay
   // for details.

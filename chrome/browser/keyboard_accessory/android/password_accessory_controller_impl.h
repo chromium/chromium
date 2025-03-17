@@ -28,11 +28,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "ui/gfx/native_widget_types.h"
 
 class ManualFillingController;
 class AllPasswordsBottomSheetController;
-class Profile;
 
 namespace plus_addresses {
 class AllPlusAddressesBottomSheetController;
@@ -52,10 +50,6 @@ class PasswordAccessoryControllerImpl
   using PasswordDriverSupplierForFocusedFrame =
       base::RepeatingCallback<password_manager::PasswordManagerDriver*(
           content::WebContents*)>;
-  using ShowMigrationWarningCallback = base::RepeatingCallback<void(
-      gfx::NativeWindow,
-      Profile*,
-      password_manager::metrics_util::PasswordMigrationWarningTriggers)>;
 
   PasswordAccessoryControllerImpl(const PasswordAccessoryControllerImpl&) =
       delete;
@@ -105,7 +99,6 @@ class PasswordAccessoryControllerImpl
       PasswordDriverSupplierForFocusedFrame driver_supplier,
       std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
           grouped_credential_sheet_controller,
-      ShowMigrationWarningCallback show_migration_warning_callback,
       std::unique_ptr<PasswordAccessLossWarningBridge>
           access_loss_warning_bridge);
 
@@ -137,7 +130,6 @@ class PasswordAccessoryControllerImpl
       PasswordDriverSupplierForFocusedFrame driver_supplier,
       std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
           grouped_credential_sheet_controller,
-      ShowMigrationWarningCallback show_migration_warning_callback,
       std::unique_ptr<PasswordAccessLossWarningBridge>
           access_loss_warning_bridge);
 
@@ -311,10 +303,6 @@ class PasswordAccessoryControllerImpl
   // credential with the grouped match type.
   std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
       grouped_credential_sheet_controller_;
-
-  // Callback attempting to display the migration warning when invoked.
-  // Used to facilitate injecting a mock bridge in tests.
-  ShowMigrationWarningCallback show_migration_warning_callback_;
 
   // Bridge used for showing the password access loss warning sheet after
   // filling credentials.

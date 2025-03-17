@@ -398,7 +398,6 @@ PowerButton::PowerButton(UnifiedSystemTrayController* tray_controller)
   background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   auto* background_layer = background_view_->layer();
   background_layer->SetRoundedCornerRadius(kAllRoundedCorners);
-  background_layer->SetFillsBoundsOpaquely(false);
   background_layer->SetIsFastRoundedCorner(true);
 
   set_context_menu_controller(context_menu_.get());

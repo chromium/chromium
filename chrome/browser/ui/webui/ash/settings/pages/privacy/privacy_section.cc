@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -18,7 +17,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/auth/legacy_fingerprint_engine.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
@@ -38,6 +36,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -307,12 +306,6 @@ void AddChromeOsSecureDnsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
       {"secureDnsWithIdentifiersAndDomainConfigDescription",
        IDS_OS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_AND_DOMAIN_CONFIG_DESCRIPTION},
-      {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
-      {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
-      {"secureDnsDialogCancel",
-       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_CANCEL},
-      {"secureDnsDialogTurnOff",
-       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF},
       {"secureDnsAutomaticModeDescription",
        IDS_OS_SETTINGS_SECURE_DNS_AUTOMATIC_MODE_DESCRIPTION},
       {"secureDnsSecureDropdownModeNetworkDefaultDescription",
@@ -408,30 +401,29 @@ void PrivacySection::AddHandlers(content::WebUI* web_ui) {
 
 void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   webui::LocalizedString kLocalizedStrings[] = {
-      {"enableLogging", IDS_OS_SETTINGS_REVAMP_ENABLE_LOGGING_TOGGLE_TITLE},
-      {"enableLoggingDesc",
-       IDS_OS_SETTINGS_REVAMP_ENABLE_LOGGING_TOGGLE_DESCRIPTION},
+      {"enableLogging", IDS_OS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE},
+      {"enableLoggingDesc", IDS_OS_SETTINGS_ENABLE_LOGGING_TOGGLE_DESCRIPTION},
       {"enableContentProtectionAttestation",
        IDS_SETTINGS_ENABLE_CONTENT_PROTECTION_ATTESTATION},
       {"enableSuggestedContent",
-       IDS_OS_SETTINGS_REVAMP_ENABLE_SUGGESTED_CONTENT_TITLE},
+       IDS_OS_SETTINGS_ENABLE_SUGGESTED_CONTENT_TITLE},
       {"enableSuggestedContentDesc",
-       IDS_OS_SETTINGS_REVAMP_ENABLE_SUGGESTED_CONTENT_DESCRIPTION},
+       IDS_OS_SETTINGS_ENABLE_SUGGESTED_CONTENT_DESCRIPTION},
       {"peripheralDataAccessProtectionToggleTitle",
-       IDS_OS_SETTINGS_REVAMP_DATA_ACCESS_PROTECTION_TOGGLE_TITLE},
+       IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_TITLE},
       {"peripheralDataAccessProtectionToggleDescription",
-       IDS_OS_SETTINGS_REVAMP_DATA_ACCESS_PROTECTION_TOGGLE_DESCRIPTION},
+       IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_DESCRIPTION},
       {"peripheralDataAccessProtectionWarningTitle",
-       IDS_OS_SETTINGS_REVAMP_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_TITLE},
+       IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_TITLE},
       {"peripheralDataAccessProtectionWarningDescription",
-       IDS_OS_SETTINGS_REVAMP_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DESCRIPTION},
+       IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DESCRIPTION},
       {"peripheralDataAccessProtectionWarningSubDescription",
-       IDS_OS_SETTINGS_REVAMP_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_SUB_DESCRIPTION},
+       IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_SUB_DESCRIPTION},
       {"peripheralDataAccessProtectionCancelButton",
        IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_CANCEL_BUTTON_LABEL},
       {"peripheralDataAccessProtectionDisableButton",
-       IDS_OS_SETTINGS_REVAMP_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_ALLOW_BUTTON_LABEL},
-      {"privacyPageTitle", IDS_OS_SETTINGS_REVAMP_PRIVACY_TITLE},
+       IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_ALLOW_BUTTON_LABEL},
+      {"privacyPageTitle", IDS_OS_SETTINGS_PRIVACY_TITLE},
       {"privacyMenuItemDescription",
        IDS_OS_SETTINGS_PRIVACY_MENU_ITEM_DESCRIPTION},
       {"smartPrivacyTitle", IDS_OS_SETTINGS_SMART_PRIVACY_TITLE},
@@ -668,9 +660,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("showSecureDnsSetting", true);
   html_source->AddBoolean("showSecureDnsOsSettingLink", false);
-  html_source->AddBoolean(
-      "isDeprecateDnsDialogEnabled",
-      ash::features::IsOsSettingsDeprecateDnsDialogEnabled());
 
   ::settings::AddSecureDnsStrings(html_source);
   AddChromeOsSecureDnsStrings(html_source);
@@ -693,7 +682,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 }
 
 int PrivacySection::GetSectionNameMessageId() const {
-  return IDS_OS_SETTINGS_REVAMP_PRIVACY_TITLE;
+  return IDS_OS_SETTINGS_PRIVACY_TITLE;
 }
 
 mojom::Section PrivacySection::GetSection() const {

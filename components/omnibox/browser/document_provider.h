@@ -17,13 +17,16 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "url/gurl.h"
 
 class AutocompleteProviderListener;
+struct AutocompleteMatch;
 class AutocompleteProviderClient;
 
 namespace base {
@@ -97,6 +100,9 @@ class DocumentProvider : public AutocompleteProvider {
                          const int response_code,
                          std::unique_ptr<std::string> response_body);
 
+  // Resets the backoff state on DocumentSuggestionsService to false.
+  void ResetBackoffState();
+
   // The function updates |matches_| with data parsed from |json_data|.
   // The update is not performed if |json_data| is invalid.
   // Returns whether |matches_| changed.
@@ -146,9 +152,9 @@ class DocumentProvider : public AutocompleteProvider {
                                             const std::string& mimetype,
                                             const std::string& owner);
 
-  // Whether the server has instructed us to backoff for this session (in
-  // cases where the corpus is uninteresting).
-  bool backoff_for_session_;
+  // Whether the server has instructed us to backoff. Used when the backoff
+  // state is scoped to the current window/AutocompleteController.
+  bool backoff_for_this_instance_only_ = false;
 
   // Client for accessing TemplateUrlService, prefs, etc.
   raw_ptr<AutocompleteProviderClient> client_;
@@ -166,6 +172,9 @@ class DocumentProvider : public AutocompleteProvider {
   // remote request was sent. Used for histogram logging.
   base::TimeTicks time_request_sent_;
 
+  // Used to ensure that we don't send multiple requests in quick succession.
+  std::unique_ptr<AutocompleteProviderDebouncer> debouncer_;
+
   // Because the drive server is async and may intermittently provide a
   // particular suggestion for consecutive inputs, without caching, doc
   // suggestions flicker between drive format (title - date - doc_type) and URL
@@ -175,7 +184,8 @@ class DocumentProvider : public AutocompleteProvider {
   // affect which autocomplete results are displayed and their ranks.
   MatchesCache matches_cache_;
 
-  std::unique_ptr<AutocompleteProviderDebouncer> debouncer_;
+  // Used to schedule a reset of the backoff state.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // For callbacks that may be run after destruction. Must be declared last.
   base::WeakPtrFactory<DocumentProvider> weak_ptr_factory_{this};

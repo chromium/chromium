@@ -4,11 +4,11 @@
 
 #include "chrome/browser/content_settings/one_time_permission_provider.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 
 #include "base/power_monitor/power_monitor.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -100,19 +100,24 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
   // the pref provider handle the permission as usual.
   if (content_setting == CONTENT_SETTING_DEFAULT ||
       content_setting == CONTENT_SETTING_BLOCK) {
-    base::AutoLock lock(value_map_.GetLock());
-    auto* previous_one_time_grant = value_map_.GetValue(
-        primary_pattern.ToRepresentativeUrl(),
-        secondary_pattern.ToRepresentativeUrl(), content_settings_type);
+    {
+      base::AutoLock lock(value_map_.GetLock());
+      auto* previous_one_time_grant = value_map_.GetValue(
+          primary_pattern.ToRepresentativeUrl(),
+          secondary_pattern.ToRepresentativeUrl(), content_settings_type);
 
-    if (!previous_one_time_grant) {
-      // If there was no grant, it means that this content setting is
-      // already being handled by the pref provider.
-      return false;
+      if (!previous_one_time_grant) {
+        // If there was no grant, it means that this content setting is
+        // already being handled by the pref provider.
+        return false;
+      }
+
+      value_map_.DeleteValue(primary_pattern, secondary_pattern,
+                             content_settings_type);
     }
 
-    value_map_.DeleteValue(primary_pattern, secondary_pattern,
-                           content_settings_type);
+    NotifyObservers(primary_pattern, secondary_pattern, content_settings_type,
+                    nullptr);
 
     permissions::PermissionUmaUtil::RecordOneTimePermissionEvent(
         content_settings_type,
@@ -154,7 +159,8 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
   {
     base::AutoLock lock(value_map_.GetLock());
     value_map_.SetValue(primary_pattern, secondary_pattern,
-                        content_settings_type, std::move(value), metadata);
+                        content_settings_type, std::move(value),
+                        std::move(metadata));
   }
 
   NotifyObservers(primary_pattern, secondary_pattern, content_settings_type,

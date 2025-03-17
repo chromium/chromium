@@ -17,16 +17,6 @@
 #include "components/sync/service/sync_service.h"
 
 namespace browser_sync {
-namespace {
-
-bool IsSignedInExplicitly(PrefService* pref_service) {
-  CHECK(pref_service);
-
-  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-         pref_service->GetBoolean(prefs::kExplicitBrowserSignin);
-}
-
-}  // namespace
 
 AutofillWalletDataTypeController::AutofillWalletDataTypeController(
     syncer::DataType type,
@@ -36,7 +26,8 @@ AutofillWalletDataTypeController::AutofillWalletDataTypeController(
         delegate_for_transport_mode,
     PrefService* pref_service,
     syncer::SyncService* sync_service,
-    base::RepeatingCallback<void(bool)> on_load_models_with_transport_only_cb)
+    base::RepeatingCallback<void(bool, bool)>
+        on_load_models_with_transport_only_cb)
     : DataTypeController(type,
                          std::move(delegate_for_full_sync_mode),
                          std::move(delegate_for_transport_mode)),
@@ -64,7 +55,8 @@ void AutofillWalletDataTypeController::LoadModels(
     const ModelLoadCallback& model_load_callback) {
   if (configure_context.sync_mode == syncer::SyncMode::kTransportOnly) {
     on_load_models_with_transport_only_cb_.Run(
-        IsSignedInExplicitly(pref_service_));
+        pref_service_->GetBoolean(prefs::kExplicitBrowserSignin),
+        sync_service_->HasSyncConsent());
   }
   DataTypeController::LoadModels(configure_context, model_load_callback);
 }

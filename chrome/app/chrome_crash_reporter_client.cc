@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -38,14 +37,8 @@
 #include "chrome/common/chrome_descriptors.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_paths.h"
-#include "chromeos/startup/browser_params_proxy.h"  // nogncheck
-#include "chromeos/startup/startup.h"               // nogncheck
 #endif
 
 void ChromeCrashReporterClient::Create() {
@@ -74,7 +67,7 @@ void ChromeCrashReporterClient::Create() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 bool ChromeCrashReporterClient::ShouldPassCrashLoopBefore(
     const std::string& process_type) {
@@ -90,16 +83,6 @@ bool ChromeCrashReporterClient::ShouldPassCrashLoopBefore(
   return true;
 }
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// static
-bool ChromeCrashReporterClient::GetCollectStatsConsentFromAshDir() {
-  base::FilePath consent_dir;
-  CHECK(base::PathService::Get(chromeos::lacros_paths::ASH_DATA_DIR,
-                               &consent_dir));
-  return GoogleUpdateSettings::GetCollectStatsConsentFromDir(consent_dir);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 ChromeCrashReporterClient::ChromeCrashReporterClient() = default;
 
@@ -132,10 +115,8 @@ void ChromeCrashReporterClient::GetProductInfo(ProductInfo* product_info) {
 
 #if BUILDFLAG(IS_ANDROID)
   product_info->product_name = "Chrome_Android";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   product_info->product_name = "Chrome_ChromeOS";
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  product_info->product_name = "Chrome_Lacros";
 #elif BUILDFLAG(IS_LINUX)
 #if defined(ADDRESS_SANITIZER)
   product_info->product_name = "Chrome_Linux_ASan";
@@ -177,7 +158,7 @@ bool ChromeCrashReporterClient::GetCollectStatsConsent() {
   bool is_official_chrome_build = false;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool is_guest_session = base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kGuestSession);
   bool is_stable_channel =
@@ -189,7 +170,7 @@ bool ChromeCrashReporterClient::GetCollectStatsConsent() {
             << " so returning false";
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
   // TODO(jcivelli): we should not initialize the crash-reporter when it was not

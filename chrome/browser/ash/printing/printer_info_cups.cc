@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/printing/printer_info.h"
-
+#include <algorithm>
 #include <array>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
+#include "chrome/browser/ash/printing/printer_info.h"
 #include "chromeos/printing/cups_printer_status.h"
+#include "chromeos/printing/printer_configuration.h"
 #include "printing/backend/cups_jobs.h"
 #include "printing/printer_status.h"
 
@@ -33,7 +33,7 @@ struct QueryResult {
 
 // Returns true if any of the |ipp_versions| are greater than or equal to 2.0.
 bool AllowedIpp(const std::vector<base::Version>& ipp_versions) {
-  return base::ranges::any_of(ipp_versions, [](const base::Version& version) {
+  return std::ranges::any_of(ipp_versions, [](const base::Version& version) {
     return version.IsValid() && version.components()[0] >= 2;
   });
 }
@@ -46,7 +46,7 @@ bool SupportedMime(const std::string& mime_type) {
 // Returns true if |formats| contains one of the supported printer description
 // languages for an autoconf printer identified by MIME type.
 bool SupportsRequiredPDLS(const std::vector<std::string>& formats) {
-  return base::ranges::any_of(formats, &SupportedMime);
+  return std::ranges::any_of(formats, &SupportedMime);
 }
 
 // Returns true if |info| describes a printer for which we want to attempt
@@ -87,15 +87,17 @@ void OnPrinterQueried(ash::PrinterInfoCallback callback,
     std::move(callback).Run(result, ::printing::PrinterStatus(),
                             /*make_and_model=*/std::string(),
                             /*document_formats=*/{}, /*ipp_everywhere=*/false,
-                            chromeos::PrinterAuthenticationInfo{});
+                            chromeos::PrinterAuthenticationInfo{},
+                            chromeos::IppPrinterInfo{});
     return;
   }
-
-  std::move(callback).Run(result, printer_status, printer_info.make_and_model,
-                          printer_info.document_formats,
-                          IsAutoconf(printer_info),
-                          {.oauth_server = printer_info.oauth_server,
-                           .oauth_scope = printer_info.oauth_scope});
+  std::move(callback).Run(
+      result, printer_status, printer_info.make_and_model,
+      printer_info.document_formats, IsAutoconf(printer_info),
+      {.oauth_server = printer_info.oauth_server,
+       .oauth_scope = printer_info.oauth_scope},
+      {printer_info.document_formats, printer_info.document_format_default,
+       printer_info.document_format_preferred});
 }
 
 }  // namespace

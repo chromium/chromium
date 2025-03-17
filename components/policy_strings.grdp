@@ -52,6 +52,9 @@
   <message name="IDS_POLICY_DM_STATUS_INVALID_PACKAGED_DEVICE_FOR_KIOSK" desc="Message to show when the user tries to enroll a device with a packaged license into Kiosk.">
     This is a bundled device and can not be enrolled with Kiosk and Signage Upgrade.
   </message>
+  <message name="IDS_POLICY_DM_STATUS_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEDED" desc="Error message to show when the user tries to enroll a device but the initial enrollment limit for the organization unit has been reached.">
+    This device can't be enrolled right now because your organization unit has reached its initial enrollment limit. Contact your administrator for assistance.
+  </message>
   <message name="IDS_POLICY_DM_STATUS_SERVICE_DOMAIN_MISMATCH" desc="Message indicating this client cannot be registered with the specified domain.">
     Domain mismatch
   </message>
@@ -73,7 +76,7 @@
   <message name="IDS_POLICY_DM_STATUS_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL" desc="Message to show when the user tries to enroll a device with an ineligible enterprise account.">
     Can't enroll with enterprise account (enterprise account is not eligible).
   </message>
-  <message name="IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION" desc="Status text for a download item that was blocked by the organization.">
+  <message name="IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION" desc="Text to be shown to the user to inform them that an action they initiated was blocked by the organization.">
     Blocked by your organization
   </message>
   <message name="IDS_POLICY_VALIDATION_OK" desc="Message indicating successful policy validation.">
@@ -1287,6 +1290,12 @@ Additional details:
   </message>
   <message name="IDS_POLICY_NOT_SUPPORTED_AS_USER_POLICY_ON_IOS" desc="The text displayed in the status column when a policy is not supported as a user policy on ios.">
     This policy is not yet supported as a user policy on iOS.
+  </message>
+  <message name="IDS_POLICY_GEN_AI_DEFAULT_SETTINGS_CONTROL_MESSAGE" desc="Text listing all GenAI policies whose default behavior is controlled by GenAiDefaultSettings.">
+    This policy is controlling the default behavior of the following policies: <ph name="POLICIES">$1<ex>Policy1, Policy2</ex></ph>
+  </message>
+  <message name="IDS_POLICY_GEN_AI_DEFAULT_SETTINGS_NO_CONTROL_MESSAGE" desc="Text stating that no GenAI policies have their default behavior controlled by GenAiDefaultSettings.">
+    This policy is not controlling the default behavior of any other policies.
   </message>
   <message name="IDS_POLICY_SKYVAULT_DOWNLOAD_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the download flow.">
     Sign in to OneDrive to continue downloading

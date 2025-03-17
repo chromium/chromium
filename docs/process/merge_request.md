@@ -111,16 +111,26 @@ following information present and accurate:
 
 Once you've verified all the above, you're ready to request a merge! Simply
 update the issue's *Merge-Request* field with the milestone(s) you'd like to
-merge to.
+merge to. Within the next ~15 minutes, automation will create a new Merge
+Request issue, link it to the original (parent) issue, copy relevant metadata,
+and assign the issue to you.
+
+### Submitting the Merge Request
+
+Follow the instruction in the new Merge Request issue. You will be asked to
+update a number of custom fields (found in the issue's sidebar) and provide a
+rationale for the merge request. After you have updated and verified the
+request, you can submit the request for review by assigning the issue to
+*merges@chromium.org*.
 
 ## Monitoring merge requests
 
-After you've updated the *Merge-Request* field, automation will evaluate your
-request and may either approve it, reject it, or pass it along to a release
-manager for manual evaluation; see [here](#merge-request-triage) to learn more
-about this automation. If manual review is required, release managers strive to
-answer all merge requests within two business days, but extenuating
-circumstances may cause delays.
+After assigning the issue to *merges@chromium.org*, automation will evaluate
+your request and either approve it or pass it along to a release manager for
+manual evaluation; see [here](#merge-request-triage) to learn more about this
+automation. If manual review is required, release managers strive to answer all
+merge requests within two business days, but extenuating circumstances may cause
+delays.
 
 At this point, following along via bug comments sent by email will always keep
 you in the loop, but you can also use the following queries in the Issue Tracker
@@ -130,6 +140,13 @@ to track your merges:
     Merges that require your follow-up, either by landing the relevant merge (if
     approved) or determining whether or not a merge is actually required and if
     so, requesting it (if TBD)
+*   [Pending merges](https://g-issues.chromium.org/issues?q=assignee:me%20customfield1223087:Pending):
+    Merges that are pending review by automation and need additional action from
+    you. Frequently, issues remain in the state because developers have failed
+    to update the merge request issue with all required information, or the
+    request was not assigned to **merges@chromium.org**. Please follow the
+    instructions in the issue to complete the merge request, and reach out to
+    a release manager if you have any questions.
 *   [Requested
     merges](https://issues.chromium.org/issues?q=assignee:me%20(-customfield1223134:none%20%7C%20customfield1223087:Review)):
     Merges that are waiting for input from release managers or automation; feel
@@ -164,13 +181,14 @@ you don't merge your cherry-pick soon after approval, it will eventually be
 rejected for merge.
 
 **NOTE:**  Ensure you link to the bug that has merge approval for the relevant
-milestone (Using `Bug=<bug id>` in your commit description). Not linking to a
-bug that has approval can cause delay to your CL landing.
+milestone. Not linking to a bug that has approval can cause delay to your CL
+landing. If the merge request is for a single change, add `Fixed: <bug number>`
+to the change description. If the merge request is for multiple changes, add
+`Fixed: <bug number>` to the final change description, `Bug: <bug number>`
+to all other change descriptions.
 
 Once the cherry-pick has landed, a bot will update the *Merge* field with
-*Merged-###* label and remove *Approved-###* if the commit references the issue.
-If for some reason the commit did not reference the issue, manually update the
-*Merge* field with *Merged-### and remove *Approved-###*.
+*Merged-###* label. If `Fixed:` was used, the bug will be closed.
 
 ### Using Gerrit UI
 
@@ -233,34 +251,24 @@ merge request triage, and preventing missed merges.
 
 Given the additional complexity inherent in security merges, the security team
 has built custom automation to handle this flow end to end; simply mark any
-security issue as *Fixed* and Sheriffbot will evaluate applicable milestones,
+security issue as *Fixed* and Blintz will evaluate applicable milestones,
 determine if merges are required and automatically request them if need be.
 
 ### Merge request triage
 
-To reduce release manager toil, Sheriffbot performs the first pass review of all
+To reduce release manager toil, Blintz performs the first pass review of all
 merge requests; it may auto-approve the issue if it can detect the issue meets
 the right criteria for the current merge phase (e.g. a ReleaseBlock-Dev issue
-requesting a merge before beta promotion), and it may auto-reject the issue
-similarly (e.g. a P3 issue requesting a merge post-stable). If it cannot
-decide, it will pass the issue to a release manager for manual review.
+requesting a merge before beta promotion). If it cannot decide, it will pass the
+issue to a release manager for manual review.
 
-Generally, Sheriffbot takes action on merge requests only after one of the two
-conditions below are met:
-
-*   One or more changelists (via Gitwatcher) are present on the merge request
-    issue, and all changes have been landed for >= 24 hours
-*   No changelists are present on the merge request issue, and the merge request
-    label has been applied for >= 24 hours
-
-These conditions help ensure any relevant changelists have had sufficient
-runtime in our canary channel and thus are low risk for introducing a new
-regression onto our release branch.
+Blintz only takes action on merge requests when the merge request issue (not the
+original issue) is assigned to *merges@chromium.org*.
 
 ### Preventing missed merges
 
 To avoid the situation where a critical issue is present on a release branch
-but the fix isn't merged, Sheriffbot evaluates all release-blocking issues
+but the fix isn't merged, Blintz evaluates all release-blocking issues
 targeting a milestone that has already branched and updates the *Merge* field
 with *TBD-##* if the issue was marked as fixed after branch day but hasn't been
 merged. When this occurs, developers should evaluate the issue and either
@@ -287,15 +295,15 @@ through during its release cycle; this data is available via the Chromium Dash
 ### Merge states and labels
 
 The table below describes the different merge states applied via a bug's
-metadata fields. All merge states follow the form *[State]-###*, where ###
-corresponds to the applicable milestone. If multiple merges are required, these
-labels may appear multiple times on the same bug in different states (e.g. a
-merge request could have both *Approved-102* and *Rejected-103* at the same
-time).
+metadata fields. All merge states (except *Pending*) follow the form
+*[State]-###*, where ### corresponds to the applicable milestone. If multiple
+merges are required, these labels may appear multiple times on the same bug in
+different states.
 
 | Field | Value | Step Owner | Next Steps |
 | --- | --- | --- | --- |
 | Merge-Request | ### | Release manager | Automation will review and either approve / reject directly, or pass the review to a release manager for manual evaluation |
+| Merge | Pending | Issue owner | Issue owner should follow the instructions in the merge request and assign it to *merges@chromium.org* to begin review |
 | Merge | Review-### | Release manager | Release manager will evaluate and either approve, reject, or request additional information within two business days |
 | Merge | Approved-### | Issue owner | Issue owner should cherry-pick the fix to the appropriate release branch ASAP |
 | Merge | Merged-### | None | N/A; merge has already been landed, no further work required for given milestone |

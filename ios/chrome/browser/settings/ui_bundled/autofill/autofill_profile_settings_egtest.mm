@@ -7,14 +7,18 @@
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/common/features.h"
+#import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -31,7 +35,10 @@ using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
+using chrome_test_util::SettingsToolbarAddButton;
+using chrome_test_util::SettingsToolbarEditButton;
 using chrome_test_util::TabGridEditButton;
+using policy_test_utils::SetPolicy;
 
 namespace {
 
@@ -131,6 +138,11 @@ id<GREYMatcher> AddressesAndMoreNavBarTitle() {
       grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
 }
 
+// Matcher for the toolbar's done button.
+id<GREYMatcher> SettingsToolbarDoneButton() {
+  return grey_accessibilityID(kSettingsToolbarEditDoneButtonId);
+}
+
 }  // namespace
 
 // Various tests for the Autofill profiles section of the settings.
@@ -142,6 +154,20 @@ id<GREYMatcher> AddressesAndMoreNavBarTitle() {
 - (void)setUp {
   [super setUp];
   [AutofillAppInterface clearProfilesStore];
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+
+  if ([self isRunningTest:@selector(testBottomToolbarAddButtonVisibility)] ||
+      [self isRunningTest:@selector(testToggleToolbarAddButtonBySwitch)] ||
+      [self isRunningTest:@selector(testToggleToolbarAddButtonByPolicy)]) {
+    config.features_enabled.push_back(kAddAddressManually);
+    config.features_enabled.push_back(
+        kAutofillDynamicallyLoadsFieldsForAddressInput);
+  }
+
+  return config;
 }
 
 - (void)tearDownHelper {
@@ -298,6 +324,86 @@ id<GREYMatcher> AddressesAndMoreNavBarTitle() {
       assertWithMatcher:grey_notNil()];
 
   [self exitSettingsMenu];
+}
+
+// Checks that the toolbar "Add" button is only visible when the table view is
+// not in edit mode.
+- (void)testBottomToolbarAddButtonVisibility {
+  [AutofillAppInterface saveExampleProfile];
+  [self openAutofillProfilesSettings];
+
+  // Verify the "Add" button is initially visible.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Switch on edit mode.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
+      performAction:grey_tap()];
+
+  // Confirm that the "Add" button no longer exists.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      assertWithMatcher:grey_nil()];
+
+  // Switch off edit mode.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarDoneButton()]
+      performAction:grey_tap()];
+
+  // Verify the "Add" button is visible.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Checks that the toolbar "Add" button's enabled state changes based on the
+// "Autofill profiles" switch.
+- (void)testToggleToolbarAddButtonBySwitch {
+  [AutofillAppInterface saveExampleProfile];
+  [self openAutofillProfilesSettings];
+
+  // Toggle the "Autofill profiles" switch off.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kAutofillAddressSwitchViewId,
+                                   /*is_toggled_on=*/YES, /*is_enabled=*/YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  // Verify the "Add" button is disabled.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  // Toggle the "Autofill profiles" switch back on.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kAutofillAddressSwitchViewId,
+                                   /*is_toggled_on=*/NO, /*is_enabled=*/YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
+
+  // Verify the "Add" button is enabled.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      assertWithMatcher:grey_enabled()];
+}
+
+// Checks that the toolbar "Add" button's enabled state changes based on the
+// AutofillAddressEnabled Enterprise Policy.
+- (void)testToggleToolbarAddButtonByPolicy {
+  // Force the preference off via policy.
+  SetPolicy(false, policy::key::kAutofillAddressEnabled);
+
+  [self openAutofillProfilesSettings];
+
+  // Verify the "Add" button is disabled.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  [self exitSettingsMenu];
+
+  // Force the preference on via policy.
+  SetPolicy(true, policy::key::kAutofillAddressEnabled);
+
+  [self openAutofillProfilesSettings];
+
+  // Verify the "Add" button is enabled.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      assertWithMatcher:grey_enabled()];
 }
 
 // Checks that the Autofill profile switch can be toggled on/off and the list of
@@ -836,6 +942,54 @@ id<GREYMatcher> AddressesAndMoreNavBarTitle() {
 
   [[EarlGrey selectElementWithMatcher:accountProfileFooterMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
+  [SigninEarlGrey signOut];
+}
+
+// Tests that when a incomplete local profile migration to account is cancelled,
+// the edit is disabled.
+- (void)testEditOnCancelIncompleteProfileMigrateToAccount {
+  if ([AutofillAppInterface isDynamicallyLoadFieldsOnInputEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the fields "
+                           @"are loaded dynamically on input.");
+  }
+
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [AutofillAppInterface saveExampleProfile];
+
+  [self
+      openEditProfile:
+          [NSString
+              stringWithFormat:@"%@, %@", kProfileLabel,
+                               l10n_util::GetNSString(
+                                   IDS_IOS_LOCAL_ADDRESS_ACCESSIBILITY_LABEL)]];
+  // Switch on edit mode.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+
+  // Change text of city to empty.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
+                                   IDS_IOS_AUTOFILL_CITY)]
+      performAction:grey_replaceText(@"")];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Scroll to the bottom for ipad.
+    [self scrollDownWithMatcher:grey_accessibilityID(
+                                    kAutofillProfileEditTableViewId)];
+  }
+
+  [[EarlGrey selectElementWithMatcher:MigrateToAccountButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
   [SigninEarlGrey signOut];
 }
 

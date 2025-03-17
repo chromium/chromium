@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
@@ -38,8 +39,8 @@ void TrashBaseTest::SetUp() {
   // Create the profile and add it to the user manager for DriveFS.
   profile_ =
       std::make_unique<TestingProfile>(base::FilePath(temp_dir_.GetPath()));
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345");
+  AccountId account_id = AccountId::FromUserEmailGaiaId(
+      profile_->GetProfileUserName(), GaiaId("12345"));
   fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
       account_id, /*is_affiliated=*/false, user_manager::UserType::kRegular,
       profile_.get());

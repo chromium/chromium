@@ -6,9 +6,11 @@ package org.chromium.content.browser;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.Rect;
+import android.os.Build;
 
 import androidx.test.filters.MediumTest;
 
+import org.chromium.base.test.util.DisableIf;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -129,6 +131,7 @@ public class VideoFullscreenOrientationLockTest {
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.R, message = "http://crbug.com/40191495")
     public void testEnterExitFullscreenWithControlsButton() throws Exception {
         // Start playback to guarantee it's properly loaded.
         Assert.assertTrue(DOMUtils.isMediaPaused(mActivityTestRule.getWebContents(), VIDEO_ID));

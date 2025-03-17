@@ -7,12 +7,12 @@
  * details from the current document
  */
 
-import { sendWebKitMessage } from '//ios/web/public/js_messaging/resources/utils.js'
+import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 declare interface FaviconData {
-  rel: string,
-  href: string | undefined,
-  sizes?: string
+  rel: string;
+  href: string|undefined;
+  sizes?: string;
 }
 
 /**
@@ -21,20 +21,19 @@ declare interface FaviconData {
  * @return {FaviconData[]} An array of objects containing favicon data.
  */
 function getFavicons(): FaviconData[] {
-  let favicons: FaviconData[] = [];
-  let links = document.getElementsByTagName('link');
-  let linkCount = links.length;
-  for (var i = 0; i < linkCount; ++i) {
-    let link = links[i];
-    let rel = link?.rel.toLowerCase();
+  const favicons: FaviconData[] = [];
+  const links = document.getElementsByTagName('link');
+  const linkCount = links.length;
+  for (let i = 0; i < linkCount; ++i) {
+    const link = links[i];
+    const rel = link?.rel.toLowerCase();
 
     if (rel === 'shortcut icon' ||
         rel === 'icon' ||
         rel === 'apple-touch-icon' ||
         rel === 'apple-touch-icon-precomposed') {
-      let favicon: FaviconData =
-          {rel: rel, href: link?.href};
-      let size_value = link?.sizes?.value;
+      const favicon: FaviconData = {rel: rel, href: link?.href};
+      const size_value = link?.sizes?.value;
 
       if (size_value) {
         favicon.sizes = size_value;
@@ -45,8 +44,6 @@ function getFavicons(): FaviconData[] {
   return favicons;
 }
 
-function sendFaviconUrls(): void {
+export function sendFaviconUrls(): void {
   sendWebKitMessage('FaviconUrlsHandler', getFavicons());
 }
-
-export {sendFaviconUrls}

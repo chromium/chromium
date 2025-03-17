@@ -41,14 +41,6 @@ void AnsibleManagementTestHelper::SetUpAnsiblePlaybookPreference() {
                                     ansible_playbook_file_path);
 }
 
-void AnsibleManagementTestHelper::SetUpAnsibleInfra() {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kCrostiniAnsibleInfrastructure);
-
-  SetUpAnsiblePlaybookPreference();
-}
-
 void AnsibleManagementTestHelper::SetUpAnsibleInstallation(
     vm_tools::cicerone::InstallLinuxPackageResponse::Status status) {
   vm_tools::cicerone::InstallLinuxPackageResponse response;

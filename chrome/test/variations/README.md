@@ -6,8 +6,11 @@ works with Chrome on different platforms and channels.
 There are generally two ways to trigger tests here:
 
 1) CI/CQ runs: this currently uses committed seeds under test/data/variations;
-the test can switch to the latest daily built seeds once they are available
-here in this repo: https://chromium.googlesource.com/chromium-variations
+the test can switch to the latest daily built seeds in this repo:
+
+https://chrome-infra-packages.appspot.com/p/chromium/chrome/test/data/variations/cipd
+
+Which is brought into //components/variations/test_data/cipd via DEPS.
 
 2) Server seed changes: the seed changes will trigger a swarming test to
 execute tests using the seed with seed changes; this setup is to ensure any

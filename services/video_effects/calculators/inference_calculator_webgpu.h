@@ -5,8 +5,6 @@
 #ifndef SERVICES_VIDEO_EFFECTS_CALCULATORS_INFERENCE_CALCULATOR_WEBGPU_H_
 #define SERVICES_VIDEO_EFFECTS_CALCULATORS_INFERENCE_CALCULATOR_WEBGPU_H_
 
-#include <optional>
-
 #include "services/on_device_model/ml/chrome_ml_api.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/mediapipe/src/mediapipe/framework/calculator_base.h"
@@ -33,6 +31,14 @@ namespace video_effects {
 // 0) `mediapipe::GpuBuffer` with the output frame.
 class InferenceCalculatorWebGpu : public mediapipe::CalculatorBase {
  public:
+  static constexpr char kCalculatorName[] = "InferenceCalculatorWebGpu";
+
+  static constexpr char kStaticConfigInputSidePacketStreamTag[] =
+      "STATIC_CONFIG";
+  static constexpr char kRuntimeConfigInputStreamTag[] = "RUNTIME_CONFIG";
+  static constexpr char kInputTextureStreamTag[] = "TEXTURE_IN";
+  static constexpr char kOutputTextureStreamTag[] = "TEXTURE_OUT";
+
   InferenceCalculatorWebGpu();
   ~InferenceCalculatorWebGpu() override;
 

@@ -25,8 +25,7 @@ const WrapperTypeInfo frozen_array_wrapper_type_info_{
     kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     WrapperTypeInfo::kNoInternalFieldClassId,
-    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
-    WrapperTypeInfo::kCustomWrappableKind,
+    WrapperTypeInfo::kIdlOtherType,
 };
 
 }  // namespace

@@ -5,6 +5,7 @@
 package org.chromium.ui.base;
 
 import android.content.ClipData;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.SparseArray;
@@ -272,13 +273,17 @@ public class ViewAndroidDelegate {
             int dragObjRectHeight) {
         ViewGroup containerView = getContainerViewGroup();
         if (containerView == null || windowAndroid == null) return false;
+        Context context = windowAndroid.getContext().get();
+        if (context == null) {
+            return false;
+        }
 
         return getDragAndDropDelegate()
                 .startDragAndDrop(
                         containerView,
                         shadowImage,
                         dropData,
-                        windowAndroid.getContext().get(),
+                        context,
                         cursorOffsetX,
                         cursorOffsetY,
                         dragObjRectWidth,

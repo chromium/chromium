@@ -12,7 +12,6 @@ import android.animation.ValueAnimator;
 import androidx.annotation.ColorInt;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.function.Consumer;
 
@@ -34,7 +33,6 @@ public class ColorBlendAnimationFactory {
             @ColorInt int endColor,
             Consumer<Integer> onUpdate) {
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
-        animator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
         animator.setDuration(duration);
         animator.addUpdateListener(
                 animation -> {
@@ -66,7 +64,6 @@ public class ColorBlendAnimationFactory {
         @ColorInt int[] buffer = new int[startColors.length];
 
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
-        animator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
         animator.setDuration(duration);
         animator.addUpdateListener(
                 animation -> {

@@ -76,7 +76,7 @@ export class SyncDisabledConfirmationAppElement extends CrLitElement {
   /** @return Text of the consent description elements. */
   private getConsentDescription_(): string[] {
     const consentDescription =
-        Array.from(this.shadowRoot!.querySelectorAll('[consent-description]'))
+        Array.from(this.shadowRoot.querySelectorAll('[consent-description]'))
             .filter(element => element.clientWidth * element.clientHeight > 0)
             .map(element => element.innerHTML.trim());
     assert(consentDescription);

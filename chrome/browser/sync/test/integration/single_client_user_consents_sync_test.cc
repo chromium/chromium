@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest, ShouldSubmit) {
 }
 
 // ChromeOS does not support signing out of a primary account.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(
     SingleClientUserConsentsSyncTest,
     ShouldPreserveConsentsOnSignoutAndResubmitWhenReenabled) {
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(ExpectUserConsents({specifics}));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest,
                        ShouldPreserveConsentsLoggedBeforeSyncSetup) {
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest,
 
 // ChromeOS does not support late signin after profile creation, so the test
 // below does not apply, at least in the current form.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest,
                        ShouldSubmitIfSignedInAlthoughFullSyncNotEnabled) {
   // We avoid calling SetupSync(), because we don't want to turn on full sync,
@@ -213,6 +213,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest,
   specifics.set_account_id(GetAccountId().ToString());
   EXPECT_TRUE(ExpectUserConsents({specifics}));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

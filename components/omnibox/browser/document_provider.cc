@@ -26,7 +26,6 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -185,7 +184,7 @@ bool IsOwnedByUser(const std::string& user, const base::Value::Dict& result) {
   std::vector<const std::string*> owner_emails = ExtractResultList(
       result, "metadata.owner.emailAddresses", "emailAddress");
   const auto lower_user = base::i18n::ToLower(base::UTF8ToUTF16(user));
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       owner_emails,
       [&](const std::u16string& email) { return lower_user == email; },
       [&](const std::string* email) {
@@ -222,7 +221,7 @@ bool IsCompletelyMatchedInTitleOrOwner(const std::u16string& input,
     // It's possible `input` contained 'owner' as a word, as opposed to
     // 'owner:...' as an operator. Ignore this rare edge case for simplicity.
     if (input_word != u"owner" &&
-        base::ranges::none_of(
+        std::ranges::none_of(
             title_and_owner_words, [&](const std::u16string& title_word) {
               return base::StartsWith(title_word, input_word,
                                       base::CompareCase::INSENSITIVE_ASCII);
@@ -404,7 +403,11 @@ bool DocumentProvider::IsDocumentProviderAllowed(
   }
 
   // We haven't received a server backoff signal.
-  if (backoff_for_session_) {
+  bool should_backoff =
+      omnibox_feature_configs::DocumentProvider::Get().scope_backoff_to_profile
+          ? client_->GetDocumentSuggestionsService()->should_backoff()
+          : backoff_for_this_instance_only_;
+  if (should_backoff) {
     base::UmaHistogramEnumeration("Omnibox.DocumentSuggest.ProviderAllowed",
                                   DocumentProviderAllowedReason::kBackoff);
     return false;
@@ -562,12 +565,11 @@ void DocumentProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
 DocumentProvider::DocumentProvider(AutocompleteProviderClient* client,
                                    AutocompleteProviderListener* listener)
     : AutocompleteProvider(AutocompleteProvider::TYPE_DOCUMENT),
-      backoff_for_session_(false),
       client_(client),
-      matches_cache_(20) {
+      debouncer_(std::make_unique<AutocompleteProviderDebouncer>(true, 300)),
+      matches_cache_(20),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   AddListener(listener);
-
-  debouncer_ = std::make_unique<AutocompleteProviderDebouncer>(true, 300);
 }
 
 DocumentProvider::~DocumentProvider() = default;
@@ -601,7 +603,23 @@ void DocumentProvider::OnURLLoadComplete(
   // requests during the current session after receiving one.
   if (response_code == 400 || response_code == 401 || response_code == 403 ||
       response_code == 499) {
-    backoff_for_session_ = true;
+    bool scope_backoff_to_profile =
+        omnibox_feature_configs::DocumentProvider::Get()
+            .scope_backoff_to_profile;
+    if (scope_backoff_to_profile) {
+      client_->GetDocumentSuggestionsService()->set_should_backoff(true);
+      base::TimeDelta backoff_duration =
+          omnibox_feature_configs::DocumentProvider::Get().backoff_duration;
+      if (backoff_duration > base::TimeDelta()) {
+        task_runner_->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&DocumentProvider::ResetBackoffState,
+                           weak_ptr_factory_.GetWeakPtr()),
+            backoff_duration);
+      }
+    } else {
+      backoff_for_this_instance_only_ = true;
+    }
   }
 
   const bool results_updated =
@@ -612,6 +630,10 @@ void DocumentProvider::OnURLLoadComplete(
   loader_.reset();
   done_ = true;
   NotifyListeners(results_updated);
+}
+
+void DocumentProvider::ResetBackoffState() {
+  client_->GetDocumentSuggestionsService()->set_should_backoff(false);
 }
 
 bool DocumentProvider::UpdateResults(const std::string& json_data) {
@@ -838,7 +860,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
 }
 
 void DocumentProvider::CopyCachedMatchesToMatches() {
-  base::ranges::transform(
+  std::ranges::transform(
       matches_cache_, std::back_inserter(matches_),
       [this](auto match) {
         match.allowed_to_be_default_match = false;
@@ -854,7 +876,7 @@ void DocumentProvider::CopyCachedMatchesToMatches() {
 }
 
 void DocumentProvider::SetCachedMatchesScoresTo0() {
-  base::ranges::for_each(matches_cache_, [&](auto& cache_key_match_pair) {
+  std::ranges::for_each(matches_cache_, [&](auto& cache_key_match_pair) {
     cache_key_match_pair.second.relevance = 0;
   });
 }

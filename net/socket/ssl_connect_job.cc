@@ -6,6 +6,7 @@
 
 #include <cstdlib>
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -158,6 +159,16 @@ void SSLConnectJob::OnNeedsProxyAuth(
   // anything once credentials are provided.
   NotifyDelegateOfProxyAuth(response, auth_controller,
                             std::move(restart_with_auth_callback));
+}
+
+Error SSLConnectJob::OnDestinationDnsAliasesResolved(
+    const std::set<std::string>& aliases,
+    ConnectJob* job) {
+  // Resolved DNS aliases should only be handled for direct connections.
+  if (params_->GetConnectionType() != SSLSocketParams::DIRECT) {
+    return OK;
+  }
+  return HandleDnsAliasesResolved(aliases);
 }
 
 ConnectionAttempts SSLConnectJob::GetConnectionAttempts() const {
@@ -368,6 +379,12 @@ int SSLConnectJob::DoSSLConnect() {
     }
   }
 
+  net_log().AddEvent(NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT, [&] {
+    base::Value::Dict dict;
+    dict.Set("ech_enabled", ssl_client_context()->config().ech_enabled);
+    dict.Set("ech_config_list", NetLogBinaryValue(ssl_config.ech_config_list));
+    return dict;
+  });
   ssl_socket_ = client_socket_factory()->CreateSSLClientSocket(
       ssl_client_context(), std::move(nested_socket_), params_->host_and_port(),
       ssl_config);

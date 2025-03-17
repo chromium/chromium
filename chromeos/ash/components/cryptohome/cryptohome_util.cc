@@ -4,25 +4,18 @@
 
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 
-#include "base/notreached.h"
+#include <string>
+
+#include "components/account_id/account_id.h"
 
 namespace cryptohome {
 
 const std::string GetCryptohomeId(const AccountId& account_id) {
   switch (account_id.GetAccountType()) {
-    case AccountType::GOOGLE: {
+    case AccountType::UNKNOWN:
+    case AccountType::GOOGLE:
       return account_id.GetUserEmail();
-    }
-    case AccountType::ACTIVE_DIRECTORY: {
-      // Always use the account id key, authpolicyd relies on it!
-      return account_id.GetAccountIdKey();
-    }
-    case AccountType::UNKNOWN: {
-      return account_id.GetUserEmail();
-    }
   }
-
-  NOTREACHED();
 }
 
 }  // namespace cryptohome

@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.components.browser_ui.widget.text.VerticallyFixedEditText;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.util.Optional;
@@ -31,8 +32,7 @@ import java.util.Optional;
 public class AutocompleteEditText extends VerticallyFixedEditText
         implements AutocompleteEditTextModelBase.Delegate {
     private static final String TAG = "AutocompleteEdit";
-
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = OmniboxFeatures.sDiagInputConnection.getValue();
 
     private AutocompleteEditTextModelBase mModel;
     private boolean mIgnoreTextChangesForAutocomplete = true;

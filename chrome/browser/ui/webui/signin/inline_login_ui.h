@@ -13,7 +13,7 @@
 
 class InlineLoginUI;
 
-// Inline login UI is available on all platforms except Android and Lacros.
+// Inline login UI is available on all platforms except Android
 class InlineLoginUIConfig : public content::DefaultWebUIConfig<InlineLoginUI> {
  public:
   InlineLoginUIConfig()

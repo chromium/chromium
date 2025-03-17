@@ -107,7 +107,7 @@ public class BookmarkUiStateTest {
         Uri rootFolderUri =
                 BookmarkUiState.createFolderUrl(mBookmarkModel.getDefaultFolderViewLocation());
         assertTrue(rootFolderUri.toString().startsWith(UrlConstants.BOOKMARKS_FOLDER_URL));
-        assertEquals(rootFolderUri.getLastPathSegment(), "0");
+        assertEquals("0", rootFolderUri.getLastPathSegment());
 
         final long id = 5;
         BookmarkId normalFolderId = new BookmarkId(id, BookmarkType.NORMAL);

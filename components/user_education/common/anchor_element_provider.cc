@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace user_education {
@@ -37,9 +38,12 @@ AnchorElementProviderCommon& AnchorElementProviderCommon::operator=(
 AnchorElementProviderCommon::~AnchorElementProviderCommon() = default;
 
 ui::TrackedElement* AnchorElementProviderCommon::GetAnchorElement(
-    ui::ElementContext context) const {
+    ui::ElementContext context,
+    std::optional<int> index) const {
   CHECK(anchor_element_id_)
       << "Cannot call GetAnchorElement on default-constructed object.";
+  CHECK(!index.has_value())
+      << "Cannot specify an index for a default anchor element provider.";
 
   auto* const element_tracker = ui::ElementTracker::GetElementTracker();
   if (anchor_element_filter_) {
@@ -54,6 +58,10 @@ ui::TrackedElement* AnchorElementProviderCommon::GetAnchorElement(
                : element_tracker->GetFirstMatchingElement(anchor_element_id_,
                                                           context);
   }
+}
+
+int AnchorElementProviderCommon::GetNextValidIndex(int) const {
+  NOTREACHED() << "Should never call on default anchor element provider.";
 }
 
 }  // namespace user_education

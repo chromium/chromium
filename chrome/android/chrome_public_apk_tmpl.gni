@@ -151,7 +151,7 @@ template("chrome_common_apk_or_module_tmpl") {
                               invoker.include_32_bit_webview
     _include_primary_abi = !android_64bit_target_cpu || _is_64_bit_browser ||
                            _include_64_bit_webview
-    _include_secondary_abi = android_64bit_target_cpu &&
+    _include_secondary_abi = defined(android_app_secondary_abi) &&
                              (!_is_64_bit_browser || _include_32_bit_webview)
     if (_include_secondary_abi) {
       _secondary_out_dir =

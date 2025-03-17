@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package web_app.proto;
+package web_app.proto.os_state;
 
 // Store size and timestamp of an icon so that changes can be easily detected.
 message ShortcutIconData {
@@ -28,19 +28,14 @@ message ProtocolsHandled {
   repeated Protocol protocols = 1;
 }
 
-// Run on OS Login modes for web app.
-// See chrome/browser/web_applications/web_app_constants.h
-// for web_app::RunOnOsLoginMode definition, which this enum should be in sync
-// with.
-enum RunOnOsLoginMode {
-  RUN_ON_OS_LOGIN_MODE_UNSPECIFIED = 0;
-  NOT_RUN = 1;
-  WINDOWED = 2;
-  MINIMIZED = 3;
-}
-
 message RunOnOsLogin {
-  optional RunOnOsLoginMode run_on_os_login_mode = 1;
+  enum Mode {
+    MODE_UNSPECIFIED = 0;
+    MODE_NOT_RUN = 1;
+    MODE_WINDOWED = 2;
+    MODE_MINIMIZED = 3;
+  }
+  optional Mode run_on_os_login_mode = 1;
 }
 
 message ShortcutMenuInfo {
@@ -81,7 +76,7 @@ message FileHandling {
 // integration state, after any logic that would filter/modify/disable any of
 // the features. When stored in the database, this represents the expected OS
 // integration state for this app.
-message WebAppOsIntegrationState {
+message WebAppOsIntegration {
   reserved 2, 8;
   optional ShortcutDescription shortcut = 1;
   optional ProtocolsHandled protocols_handled = 3;
@@ -91,5 +86,5 @@ message WebAppOsIntegrationState {
   optional FileHandling file_handling = 7;
   // Add data states for other OS integration hooks here.
   // New fields added to this message must also be added to:
-  // OsStatesDebugValue() and GenerateRandomWebAppOsIntegrationState().
+  // OsStatesDebugValue() and GenerateRandomWebAppOsIntegration().
 }

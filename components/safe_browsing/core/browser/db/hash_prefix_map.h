@@ -154,7 +154,10 @@ class HashPrefixMap {
     FileInfo(const base::FilePath& store_path, PrefixSize size);
     ~FileInfo();
 
-    bool Initialize(const HashFile& hash_file);
+    // `initialize_after_write` will control some extra logging for
+    // investigating https://crbug.com/393395944.
+    // TODO(crbug.com/393395944): Remove `initialize_after_write`.
+    bool Initialize(const HashFile& hash_file, bool initialize_after_write);
     bool Finalize(HashFile* hash_file);
 
     HashPrefixesView GetView() const;

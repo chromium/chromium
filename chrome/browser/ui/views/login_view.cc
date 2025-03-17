@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/login_view.h"
 
 #include <memory>
+#include <string_view>
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -100,11 +101,11 @@ LoginView::~LoginView() {
   }
 }
 
-const std::u16string& LoginView::GetUsername() const {
+std::u16string_view LoginView::GetUsername() const {
   return username_field_->GetText();
 }
 
-const std::u16string& LoginView::GetPassword() const {
+std::u16string_view LoginView::GetPassword() const {
   return password_field_->GetText();
 }
 
@@ -112,8 +113,8 @@ views::View* LoginView::GetInitiallyFocusedView() {
   return username_field_;
 }
 
-void LoginView::OnAutofillDataAvailable(const std::u16string& username,
-                                        const std::u16string& password) {
+void LoginView::OnAutofillDataAvailable(std::u16string_view username,
+                                        std::u16string_view password) {
   if (username_field_->GetText().empty()) {
     username_field_->SetText(username);
     password_field_->SetText(password);
@@ -126,6 +127,6 @@ void LoginView::OnLoginModelDestroying() {
 }
 
 BEGIN_METADATA(LoginView)
-ADD_READONLY_PROPERTY_METADATA(std::u16string, Username)
-ADD_READONLY_PROPERTY_METADATA(std::u16string, Password)
+ADD_READONLY_PROPERTY_METADATA(std::u16string_view, Username)
+ADD_READONLY_PROPERTY_METADATA(std::u16string_view, Password)
 END_METADATA

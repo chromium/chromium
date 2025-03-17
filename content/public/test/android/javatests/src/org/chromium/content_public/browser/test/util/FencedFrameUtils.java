@@ -56,7 +56,7 @@ public class FencedFrameUtils {
                         @Override
                         public void didStopLoading(GURL url, boolean isKnownValid) {
                             latch.countDown();
-                            webContents.removeObserver(this);
+                            observe(null);
                         }
                     };
 

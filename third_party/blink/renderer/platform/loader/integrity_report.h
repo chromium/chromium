@@ -31,6 +31,8 @@ class PLATFORM_EXPORT IntegrityReport final {
 
   void SendReports(UseCounterAndConsoleLogger*) const;
 
+  const Vector<WebFeature>& UseCountersForTesting() const { return use_counts_; }
+
  private:
   Vector<WebFeature> use_counts_;
   Vector<String> messages_;

@@ -7,9 +7,12 @@
 
 use crate::group::Group;
 
-use std::collections::{BTreeMap, HashMap, HashSet};
-
+use anyhow::{Context, Result};
 use serde::Deserialize;
+use std::{
+    collections::{BTreeMap, HashMap, HashSet},
+    path::Path,
+};
 
 #[derive(Clone, Debug, Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
@@ -39,6 +42,12 @@ impl BuildConfig {
         let all: Option<&Vec<String>> = Some(entry_getter(&self.all_config));
         let per: Option<&Vec<String>> = self.per_crate_config.get(package_name).map(entry_getter);
         all.into_iter().chain(per).flatten().map(String::as_str).collect()
+    }
+
+    pub fn from_path(path: &Path) -> Result<Self> {
+        let context = || format!("Error reading `gnrt_config.toml` from `{}`", path.display());
+        let file_content = std::fs::read_to_string(path).with_context(context)?;
+        toml::de::from_str(&file_content).with_context(context)
     }
 }
 
@@ -85,7 +94,7 @@ pub struct ResolveConfig {
     /// sparingly; it does not affect Cargo's dependency resolution, so the
     /// output can easily be incorrect. This is primarily intended to work
     /// around bugs in `cargo metadata` output.
-    pub remove_crates: Vec<String>,
+    pub remove_crates: HashSet<String>,
 }
 
 /// Customizes GN output for a crate.

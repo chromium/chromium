@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
@@ -18,7 +19,9 @@
 #include "base/timer/mock_timer.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "net/base/backoff_entry.h"
+#include "net/base/cronet_buildflags.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_anonymization_key.h"
@@ -36,6 +39,12 @@ namespace {
 
 constexpr char kReportingUploadHeaderTypeHistogram[] =
     "Net.Reporting.UploadHeaderType";
+
+constexpr size_t kMaxReportBodySizeBytes = 1024;  // 1KB for testing
+
+constexpr std::string CreateStringWithLength(size_t size_bytes) {
+  return std::string(size_bytes, 'X');
+}
 
 }  // namespace
 
@@ -57,6 +66,16 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
     policy.endpoint_backoff_policy.entry_lifetime_ms = 0;
     policy.endpoint_backoff_policy.always_use_initial_delay = false;
     UsePolicy(policy);
+  }
+
+  void AddReportWithBody(const std::string& body) {
+    base::Value::Dict report_body;
+    report_body.Set("key", body);  // Use the provided body string
+
+    cache()->AddReport(std::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
+                       std::move(report_body), /*depth=*/0,
+                       /*queued=*/tick_clock()->NowTicks(), /*attempts=*/0,
+                       ReportingTargetType::kDeveloper);
   }
 
   void AddReport(const std::optional<base::UnguessableToken>& reporting_source,
@@ -125,6 +144,13 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
 
   void SendReports() { delivery_agent()->SendReportsForTesting(); }
 
+  bool AreReportsProcessed() {
+    std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+        cached_reports;
+    cache()->GetReports(&cached_reports);
+    return cached_reports.empty();
+  }
+
   base::test::ScopedFeatureList feature_list_;
 
   const GURL kUrl_ = GURL("https://origin/path");
@@ -163,6 +189,8 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
                                 ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kDocumentGroupKey_ =
       ReportingEndpointGroupKey(kGroupKey_, kDocumentReportingSource_);
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =
+      base::SingleThreadTaskRunner::GetCurrentDefault();
 };
 
 TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
@@ -1049,6 +1077,80 @@ TEST_F(ReportingDeliveryAgentTest, SendReportsForMultipleSources) {
   EXPECT_EQ(3u, cache()->GetReportCountWithStatusForTesting(
                     ReportingReport::Status::PENDING));
   ASSERT_EQ(2u, pending_uploads().size());
+}
+
+TEST_F(ReportingDeliveryAgentTest, SkipUploadForReportWithLargeBody) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kExcludeLargeBodyReports,
+      {{"max_report_body_size_kb",
+        base::NumberToString(kMaxReportBodySizeBytes / 1024)}});
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
+  AddReportWithBody(CreateStringWithLength(kMaxReportBodySizeBytes + 2));
+  // The SendReports method is automatically triggered upon the addition of the
+  // first report. The SerializeReports method is called internally within
+  // SendReports to handle the serialization process.
+  EXPECT_FALSE(AreReportsProcessed());
+  EXPECT_TRUE(base::test::RunUntil([&] { return AreReportsProcessed(); }));
+
+  histograms.ExpectBucketCount("Net.Reporting.ReportsCount", 1, 1);
+  if constexpr (BUILDFLAG(CRONET_BUILD)) {
+    // CRONET_BUILD does not support many tracing features.
+    // DictValue::EstimateMemoryUsage() is one of them, being always reported as
+    // 0. Hence, no reports are ever filtered due to being too big. Check for a
+    // different value, instead of disabling the tests, so that once
+    // CRONET_BUILD will support that, we will need to converge back to the same
+    // value.
+    histograms.ExpectBucketCount("Net.Reporting.FilteredReportsCount", 1, 1);
+  } else {
+    histograms.ExpectBucketCount("Net.Reporting.FilteredReportsCount", 1, 0);
+  }
+  // Verify that the cache is now empty (report should be removed after send,
+  // even if filtered)
+  EXPECT_TRUE(AreReportsProcessed());
+}
+
+TEST_F(ReportingDeliveryAgentTest, ExcludeLargeBodyReports) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kExcludeLargeBodyReports,
+      {{"max_report_body_size_kb",
+        base::NumberToString(kMaxReportBodySizeBytes / 1024)}});
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
+  UploadFirstReportAndStartTimer();
+  AddReportWithBody("X");
+  AddReportWithBody(
+      CreateStringWithLength(kMaxReportBodySizeBytes * 2));  // 2KB
+  // There should be two queued reports at this point.
+  EXPECT_EQ(2u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(0u, pending_uploads().size());
+
+  SendReports();
+
+  EXPECT_EQ(2u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+
+  // All pending reports should be batched into a single upload.
+  ASSERT_EQ(1u, pending_uploads().size());
+  pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
+  EXPECT_EQ(0u, pending_uploads().size());
+
+  // Successful upload should remove delivered reports.
+  EXPECT_TRUE(AreReportsProcessed());
+
+  EXPECT_EQ(histograms.GetTotalSum("Net.Reporting.ReportsCount"), 3);
+  // CRONET_BUILD does not support many tracing features.
+  // DictValue::EstimateMemoryUsage() is one of them, being always reported as
+  // 0. Hence, no reports are ever filtered due to being too big. Check for a
+  // different value, instead of disabling the tests, so that once CRONET_BUILD
+  // will support that, we will need to converge back to the same value.
+  EXPECT_EQ(histograms.GetTotalSum("Net.Reporting.FilteredReportsCount"),
+            BUILDFLAG(CRONET_BUILD) ? 3 : 2);
 }
 
 }  // namespace net

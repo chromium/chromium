@@ -36,6 +36,29 @@ std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
 ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
     const LcppStat& data);
 
+// Converts LcpElementLocatorStat to a list of (confidence, ElementLocator)
+// pairs. The result is ordered by confidence (the most confident one comes
+// first). If there is no data, it returns an empty vector.
+std::vector<std::pair<double, std::string>>
+ConvertLcpElementLocatorStatToConfidenceStringPairs(
+    const predictors::LcpElementLocatorStat& stat);
+
+// Converts LcppStringFrequencyStatData to a list of (confidence, element)
+// pairs. The result is ordered by confidence (the most confident one comes
+// first). If there is no data, it returns an empty vector.
+std::vector<std::pair<double, std::string>>
+ConvertLcppStringFrequencyStatDataToConfidenceStringPairs(
+    const LcppStringFrequencyStatData& data);
+
+// Returns LCP element locators in the past loads for a given `stat` that have
+// above `confidence_threshold`.  The returned LCP element locators are ordered
+// by descending confidence (the most confident one comes first). If there is no
+// data, it returns an empty vector.
+std::vector<std::string> PredictLcpElementLocators(
+    const predictors::LcpElementLocatorStat& stat,
+    const double confidence_threshold,
+    const double total_frequency_threshold);
+
 // Returns possible fonts from past loads for a given `stat`.
 // The returned urls are ordered by descending frequency (the most
 // frequent one comes first). If there is no data, it returns an empty
@@ -53,6 +76,11 @@ std::vector<GURL> PredictPreconnectableOrigins(const LcppStat& stat);
 // frequent one comes first). If there is no data, it returns an empty
 // vector.
 std::vector<GURL> PredictFetchedSubresourceUrls(const LcppStat& stat);
+
+std::vector<GURL> PredictFetchedSubresourceUrlsForTesting(
+    const LcppStat& stat,
+    const double confidence_threshold,
+    const double total_frequency_threshold);
 
 // Returns possible unused preload URLs from past loads for a given `stat`.
 // The returned URLs are ordered by descending frequency (the most

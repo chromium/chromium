@@ -112,7 +112,7 @@ NearbySharingServiceFactory::BuildServiceInstanceForBrowserContext(
 
   // GetForBrowserContext() must be called after the initialization of
   // Profile initialization, because the service depends on its preferences.
-  const auto* user =
+  auto* user =
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context);
   CHECK(user->is_profile_created());
 
@@ -121,7 +121,6 @@ NearbySharingServiceFactory::BuildServiceInstanceForBrowserContext(
   ash::nearby::NearbyProcessManager* process_manager =
       ash::nearby::NearbyProcessManagerFactory::GetForProfile(profile);
 
-  PrefService* pref_service = profile->GetPrefs();
   NotificationDisplayService* notification_display_service =
       NotificationDisplayServiceFactory::GetForProfile(profile);
 
@@ -133,7 +132,7 @@ NearbySharingServiceFactory::BuildServiceInstanceForBrowserContext(
       << __func__ << ": creating NearbySharingService for primary profile";
 
   return std::make_unique<NearbySharingServiceImpl>(
-      pref_service, notification_display_service, profile,
+      *user, profile, notification_display_service,
       std::move(nearby_connections_manager), process_manager,
       std::make_unique<PowerClientChromeos>(),
       std::make_unique<WifiNetworkConfigurationHandler>());

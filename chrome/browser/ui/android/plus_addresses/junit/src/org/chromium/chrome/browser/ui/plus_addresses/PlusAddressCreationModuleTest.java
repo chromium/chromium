@@ -139,8 +139,8 @@ public class PlusAddressCreationModuleTest {
         Button confirmButton = view.getContentView().findViewById(R.id.plus_address_confirm_button);
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
 
-        assertEquals(plusAddressLogo.getVisibility(), View.GONE);
-        assertEquals(plusAddressLoadingView.getVisibility(), View.VISIBLE);
+        assertEquals(View.GONE, plusAddressLogo.getVisibility());
+        assertEquals(View.VISIBLE, plusAddressLoadingView.getVisibility());
         assertFalse(refreshIcon.isEnabled());
         assertFalse(confirmButton.isEnabled());
         refreshIcon.performClick();
@@ -149,15 +149,15 @@ public class PlusAddressCreationModuleTest {
         // Confirmation button should become enabled after the first plus address is set.
         mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(plusAddressLogo.getVisibility(), View.VISIBLE);
-        assertEquals(plusAddressLoadingView.getVisibility(), View.GONE);
+        assertEquals(View.VISIBLE, plusAddressLogo.getVisibility());
+        assertEquals(View.GONE, plusAddressLoadingView.getVisibility());
         assertTrue(confirmButton.isEnabled());
         assertTrue(refreshIcon.isEnabled());
 
         // Refresh the plus address first time.
         refreshIcon.performClick();
-        assertEquals(plusAddressLogo.getVisibility(), View.GONE);
-        assertEquals(plusAddressLoadingView.getVisibility(), View.VISIBLE);
+        assertEquals(View.GONE, plusAddressLogo.getVisibility());
+        assertEquals(View.VISIBLE, plusAddressLoadingView.getVisibility());
         assertFalse(confirmButton.isEnabled());
         assertFalse(refreshIcon.isEnabled());
         verify(mBridge).onRefreshClicked();
@@ -193,10 +193,10 @@ public class PlusAddressCreationModuleTest {
         PlusAddressCreationBottomSheetContent view = openBottomSheet();
 
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, refreshIcon.getVisibility());
 
         mCoordinator.hideRefreshButton();
-        assertEquals(refreshIcon.getVisibility(), View.GONE);
+        assertEquals(View.GONE, refreshIcon.getVisibility());
     }
 
     @Test
@@ -233,18 +233,18 @@ public class PlusAddressCreationModuleTest {
                 view.getContentView().findViewById(R.id.plus_address_confirm_button);
         Button modalCancelButton =
                 view.getContentView().findViewById(R.id.plus_address_cancel_button);
-        assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
-        assertEquals(loadingView.getVisibility(), View.GONE);
-        assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
-        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, firstTimeNotice.getVisibility());
+        assertEquals(View.GONE, loadingView.getVisibility());
+        assertEquals(View.VISIBLE, modalConfirmButton.getVisibility());
+        assertEquals(View.VISIBLE, modalCancelButton.getVisibility());
 
         // Show the loading indicator and hide the buttons once we click the confirm button.
         modalConfirmButton.performClick();
         verify(mBridge).onConfirmRequested();
-        assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
-        assertEquals(modalConfirmButton.getVisibility(), View.GONE);
-        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
-        assertEquals(loadingView.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, firstTimeNotice.getVisibility());
+        assertEquals(View.GONE, modalConfirmButton.getVisibility());
+        assertEquals(View.VISIBLE, modalCancelButton.getVisibility());
+        assertEquals(View.VISIBLE, loadingView.getVisibility());
 
         // Hide the loading indicator and resurface the buttons if we show an error.
         mCoordinator.showError(ERROR_STATE);
@@ -253,8 +253,8 @@ public class PlusAddressCreationModuleTest {
                 view.getContentView().findViewById(R.id.plus_address_content);
         ViewGroup errorStateContainer =
                 view.getContentView().findViewById(R.id.plus_address_error_container);
-        assertEquals(normalStateContainer.getVisibility(), View.GONE);
-        assertEquals(errorStateContainer.getVisibility(), View.VISIBLE);
+        assertEquals(View.GONE, normalStateContainer.getVisibility());
+        assertEquals(View.VISIBLE, errorStateContainer.getVisibility());
     }
 
     @Test
@@ -272,18 +272,18 @@ public class PlusAddressCreationModuleTest {
                 view.getContentView().findViewById(R.id.plus_address_confirm_button);
         Button modalCancelButton =
                 view.getContentView().findViewById(R.id.plus_address_cancel_button);
-        assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
-        assertEquals(loadingView.getVisibility(), View.GONE);
-        assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
-        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, firstTimeNotice.getVisibility());
+        assertEquals(View.GONE, loadingView.getVisibility());
+        assertEquals(View.VISIBLE, modalConfirmButton.getVisibility());
+        assertEquals(View.VISIBLE, modalCancelButton.getVisibility());
 
         // Show the loading indicator and hide the buttons once we click the confirm button.
         modalConfirmButton.performClick();
         verify(mBridge).onConfirmRequested();
-        assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
-        assertEquals(modalConfirmButton.getVisibility(), View.GONE);
-        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
-        assertEquals(loadingView.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, firstTimeNotice.getVisibility());
+        assertEquals(View.GONE, modalConfirmButton.getVisibility());
+        assertEquals(View.VISIBLE, modalCancelButton.getVisibility());
+        assertEquals(View.VISIBLE, loadingView.getVisibility());
 
         modalCancelButton.performClick();
         verify(mBottomSheetController).hideContent(view, true);
@@ -319,18 +319,18 @@ public class PlusAddressCreationModuleTest {
                 view.getContentView().findViewById(R.id.plus_address_confirm_button);
         Button modalCancelButton =
                 view.getContentView().findViewById(R.id.plus_address_cancel_button);
-        assertEquals(firstTimeNotice.getVisibility(), View.GONE);
-        assertEquals(loadingView.getVisibility(), View.GONE);
-        assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
-        assertEquals(modalCancelButton.getVisibility(), View.GONE);
+        assertEquals(View.GONE, firstTimeNotice.getVisibility());
+        assertEquals(View.GONE, loadingView.getVisibility());
+        assertEquals(View.VISIBLE, modalConfirmButton.getVisibility());
+        assertEquals(View.GONE, modalCancelButton.getVisibility());
 
         // Show the loading indicator and hide the buttons once we click the confirm button.
         modalConfirmButton.performClick();
         verify(mBridge).onConfirmRequested();
-        assertEquals(firstTimeNotice.getVisibility(), View.GONE);
-        assertEquals(loadingView.getVisibility(), View.VISIBLE);
-        assertEquals(modalConfirmButton.getVisibility(), View.GONE);
-        assertEquals(modalCancelButton.getVisibility(), View.GONE);
+        assertEquals(View.GONE, firstTimeNotice.getVisibility());
+        assertEquals(View.VISIBLE, loadingView.getVisibility());
+        assertEquals(View.GONE, modalConfirmButton.getVisibility());
+        assertEquals(View.GONE, modalCancelButton.getVisibility());
         assertTrue(modalCancelButton.isEnabled());
 
         // Hide the loading indicator and resurface the buttons if we show an error.
@@ -340,8 +340,8 @@ public class PlusAddressCreationModuleTest {
                 view.getContentView().findViewById(R.id.plus_address_content);
         ViewGroup errorStateContainer =
                 view.getContentView().findViewById(R.id.plus_address_error_container);
-        assertEquals(normalStateContainer.getVisibility(), View.GONE);
-        assertEquals(errorStateContainer.getVisibility(), View.VISIBLE);
+        assertEquals(View.GONE, normalStateContainer.getVisibility());
+        assertEquals(View.VISIBLE, errorStateContainer.getVisibility());
     }
 
     private void verifyErrorScreenIsShown(
@@ -349,7 +349,7 @@ public class PlusAddressCreationModuleTest {
         ViewGroup errorStateContainer =
                 view.getContentView().findViewById(R.id.plus_address_error_container);
         assertNotNull(errorStateContainer);
-        assertEquals(errorStateContainer.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, errorStateContainer.getVisibility());
 
         TextView title = errorStateContainer.findViewById(R.id.plus_address_error_title);
         TextView description =
@@ -365,13 +365,13 @@ public class PlusAddressCreationModuleTest {
                         .replace("</b1>", "")
                         .replace("<b2>", "")
                         .replace("</b2>", "");
-        assertEquals(description.getText().toString(), expectedDescription);
+        assertEquals(expectedDescription, description.getText().toString());
         assertEquals(okButton.getText(), info.getOkText());
         if (info.getCancelText().isEmpty()) {
-            assertEquals(cancelButton.getVisibility(), View.GONE);
+            assertEquals(View.GONE, cancelButton.getVisibility());
         } else {
             assertEquals(cancelButton.getText(), info.getCancelText());
-            assertEquals(cancelButton.getVisibility(), View.VISIBLE);
+            assertEquals(View.VISIBLE, cancelButton.getVisibility());
         }
     }
 
@@ -380,8 +380,8 @@ public class PlusAddressCreationModuleTest {
                 view.getContentView().findViewById(R.id.plus_address_content);
         ViewGroup errorStateContainer =
                 view.getContentView().findViewById(R.id.plus_address_error_container);
-        assertEquals(normalStateContainer.getVisibility(), View.VISIBLE);
-        assertEquals(errorStateContainer.getVisibility(), View.GONE);
+        assertEquals(View.VISIBLE, normalStateContainer.getVisibility());
+        assertEquals(View.GONE, errorStateContainer.getVisibility());
 
         ImageView plusAddressLogo =
                 view.getContentView().findViewById(R.id.proposed_plus_address_logo);
@@ -394,16 +394,16 @@ public class PlusAddressCreationModuleTest {
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
         LoadingView loadingView =
                 view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
-        assertEquals(plusAddressLogo.getVisibility(), View.GONE);
-        assertEquals(plusAddressLoadingView.getVisibility(), View.VISIBLE);
+        assertEquals(View.GONE, plusAddressLogo.getVisibility());
+        assertEquals(View.VISIBLE, plusAddressLoadingView.getVisibility());
         assertFalse(confirmButton.isEnabled());
         assertTrue(cancelButton.isEnabled());
         assertEquals(
                 proposedPlusAddress.getText(),
                 FIRST_TIME_USAGE_INFO.getProposedPlusAddressPlaceholder());
-        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, refreshIcon.getVisibility());
         assertFalse(refreshIcon.isEnabled());
-        assertEquals(loadingView.getVisibility(), View.GONE);
+        assertEquals(View.GONE, loadingView.getVisibility());
     }
 
     private void verifyConfirmationLoadingStateIsShown(
@@ -412,8 +412,8 @@ public class PlusAddressCreationModuleTest {
                 view.getContentView().findViewById(R.id.plus_address_content);
         ViewGroup errorStateContainer =
                 view.getContentView().findViewById(R.id.plus_address_error_container);
-        assertEquals(normalStateContainer.getVisibility(), View.VISIBLE);
-        assertEquals(errorStateContainer.getVisibility(), View.GONE);
+        assertEquals(View.VISIBLE, normalStateContainer.getVisibility());
+        assertEquals(View.GONE, errorStateContainer.getVisibility());
 
         ImageView plusAddressLogo =
                 view.getContentView().findViewById(R.id.proposed_plus_address_logo);
@@ -426,14 +426,14 @@ public class PlusAddressCreationModuleTest {
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
         LoadingView loadingView =
                 view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
-        assertEquals(plusAddressLogo.getVisibility(), View.VISIBLE);
-        assertEquals(plusAddressLoadingView.getVisibility(), View.GONE);
-        assertEquals(confirmButton.getVisibility(), View.GONE);
-        assertEquals(cancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, plusAddressLogo.getVisibility());
+        assertEquals(View.GONE, plusAddressLoadingView.getVisibility());
+        assertEquals(View.GONE, confirmButton.getVisibility());
+        assertEquals(View.VISIBLE, cancelButton.getVisibility());
         assertEquals(proposedPlusAddressView.getText(), proposedPlusAddress);
-        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, refreshIcon.getVisibility());
         assertFalse(refreshIcon.isEnabled());
-        assertEquals(loadingView.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, loadingView.getVisibility());
     }
 
     private void verifyRetriableError(
@@ -592,9 +592,9 @@ public class PlusAddressCreationModuleTest {
                 view.getContentView().findViewById(R.id.plus_address_error_ok_button);
         Button errorCancelButton =
                 view.getContentView().findViewById(R.id.plus_address_error_cancel_button);
-        assertEquals(errorOkButton.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, errorOkButton.getVisibility());
         assertEquals(errorOkButton.getText(), createAffiliationError.getOkText());
-        assertEquals(errorCancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, errorCancelButton.getVisibility());
         assertEquals(errorCancelButton.getText(), createAffiliationError.getCancelText());
 
         errorOkButton.performClick();
@@ -625,9 +625,9 @@ public class PlusAddressCreationModuleTest {
                 view.getContentView().findViewById(R.id.plus_address_error_ok_button);
         Button errorCancelButton =
                 view.getContentView().findViewById(R.id.plus_address_error_cancel_button);
-        assertEquals(errorOkButton.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, errorOkButton.getVisibility());
         assertEquals(errorOkButton.getText(), createAffiliationError.getOkText());
-        assertEquals(errorCancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, errorCancelButton.getVisibility());
         assertEquals(errorCancelButton.getText(), createAffiliationError.getCancelText());
 
         errorCancelButton.performClick();

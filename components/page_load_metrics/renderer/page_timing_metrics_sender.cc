@@ -250,9 +250,11 @@ void PageTimingMetricsSender::UpdateResourceMetadata(
   it->second->SetIsMainFrameResource(is_main_frame_resource);
 }
 
-void PageTimingMetricsSender::SetUpSmoothnessReporting(
-    base::ReadOnlySharedMemoryRegion shared_memory) {
-  sender_->SetUpSmoothnessReporting(std::move(shared_memory));
+void PageTimingMetricsSender::SetUpUkmReporting(
+    base::ReadOnlySharedMemoryRegion shared_memory_smoothness,
+    base::ReadOnlySharedMemoryRegion shared_memory_dropped_frames) {
+  sender_->SetUpUkmReporting(std::move(shared_memory_smoothness),
+                             std::move(shared_memory_dropped_frames));
 }
 
 void PageTimingMetricsSender::Update(

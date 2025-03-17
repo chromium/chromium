@@ -26,6 +26,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/version_info/version_info.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace {
 int CurrentMilestone() {
@@ -42,7 +43,8 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
 
   TestingProfile* CreateRegularProfile() {
     constexpr char kEmail[] = "user@gmail.com";
-    LogIn(kEmail);
+    const GaiaId kFakeGaia("fakegaia");
+    LogIn(kEmail, kFakeGaia);
     auto* profile = CreateProfile(kEmail);
     // Set profile creation version, otherwise it defaults to 1.0.0.0.
     ChromeVersionService::SetVersion(

@@ -13,11 +13,15 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** The wrap class of native autofill::FormFieldDataAndroid. */
 @JNINamespace("autofill")
+@NullMarked
 public class FormFieldData {
     /**
      * Define the control types supported by android.view.autofill.AutofillValue.
@@ -52,7 +56,7 @@ public class FormFieldData {
     // The bounds in the viewport's coordinates
     private RectF mBounds;
     // The bounds in the container view's coordinates.
-    private RectF mBoundsInContainerViewCoordinates;
+    private @Nullable RectF mBoundsInContainerViewCoordinates;
 
     private boolean mIsChecked;
     private String mValue;
@@ -67,7 +71,7 @@ public class FormFieldData {
     private String mServerType;
     private String mComputedType;
     private String[] mServerPredictions;
-    private AutofillId mAutofillId;
+    private @Nullable AutofillId mAutofillId;
 
     private FormFieldData(
             String name,
@@ -144,6 +148,7 @@ public class FormFieldData {
     }
 
     public RectF getBoundsInContainerViewCoordinates() {
+        assert mBoundsInContainerViewCoordinates != null;
         return mBoundsInContainerViewCoordinates;
     }
 
@@ -233,7 +238,7 @@ public class FormFieldData {
         mAutofillId = id;
     }
 
-    public AutofillId getAutofillId() {
+    public @Nullable AutofillId getAutofillId() {
         return mAutofillId;
     }
 

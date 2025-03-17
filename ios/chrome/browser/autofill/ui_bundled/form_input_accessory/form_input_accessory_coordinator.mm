@@ -7,6 +7,7 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
@@ -378,8 +379,9 @@ bool CanReloadInputViews() {
 }
 
 // Starts the expanded manual fill coordinator and displays its view controller.
-- (void)startManualFillForDataType:(manual_fill::ManualFillDataType)dataType
-          invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
+- (void)startManualFillFromButton:(UIButton*)button
+                      forDataType:(manual_fill::ManualFillDataType)dataType
+         invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
   manual_fill::ManualFillDataType focusedFieldDataType = [ManualFillUtil
       manualFillDataTypeFromFillingProduct:
           [_formInputAccessoryMediator currentProviderMainFillingProduct]];
@@ -399,8 +401,12 @@ bool CanReloadInputViews() {
       expandedManualFillCoordinator;
   [expandedManualFillCoordinator start];
 
-  self.formInputViewController = expandedManualFillCoordinator.viewController;
-  [self maybeReloadInputViews];
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    [expandedManualFillCoordinator presentFromButton:button];
+  } else {
+    self.formInputViewController = expandedManualFillCoordinator.viewController;
+    [self maybeReloadInputViews];
+  }
 
   [self.childCoordinators addObject:expandedManualFillCoordinator];
 }
@@ -447,13 +453,6 @@ bool CanReloadInputViews() {
       kAutofillSuggestionHighlightDelay);
 }
 
-- (void)startManualFillForDataType:(manual_fill::ManualFillDataType)dataType {
-  // Currently only payment methods form input accessory may start manual fill
-  // directly.
-  CHECK_EQ(dataType, manual_fill::ManualFillDataType::kPaymentMethod);
-  [self startManualFillForDataType:dataType invokedOnObfuscatedField:NO];
-}
-
 #pragma mark - FormInputAccessoryViewControllerDelegate
 
 - (void)formInputAccessoryViewController:
@@ -496,15 +495,16 @@ bool CanReloadInputViews() {
                                  (manual_fill::ManualFillDataType)dataType {
   CHECK(IsKeyboardAccessoryUpgradeEnabled());
 
-  [self stopChildren];
   BOOL invokedOnObfuscatedField =
       [_formInputAccessoryMediator lastFocusedFieldWasObfuscated];
-  [self startManualFillForDataType:dataType
-          invokedOnObfuscatedField:invokedOnObfuscatedField];
 
-  // TODO(crbug.com/326265397): Hide the keyboard accessory and remove line
-  // below.
-  [self updateKeyboardAccessoryForManualFilling];
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    [self stopChildren];
+  }
+
+  [self startManualFillFromButton:manualFillButton
+                      forDataType:dataType
+         invokedOnObfuscatedField:invokedOnObfuscatedField];
 }
 
 - (void)formInputAccessoryViewController:
@@ -715,6 +715,12 @@ bool CanReloadInputViews() {
   [self reset];
 }
 
+// Called when the user has taken action to dismiss a popover.
+- (void)expandedManualFillCoordinatorDidDismissPopover:
+    (ExpandedManualFillCoordinator*)coordinator {
+  [self reset];
+}
+
 #pragma mark - SecurityAlertCommands
 
 - (void)presentSecurityWarningAlertWithText:(NSString*)body {
@@ -913,7 +919,6 @@ bool CanReloadInputViews() {
       [[BubbleViewControllerPresenter alloc]
                initWithText:text
                       title:nil
-                      image:nil
              arrowDirection:BubbleArrowDirectionDown
                   alignment:BubbleAlignmentTopOrLeading
                  bubbleType:BubbleViewTypeWithClose

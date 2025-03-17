@@ -6,10 +6,11 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -115,16 +116,14 @@ MimeTypesHandler* MimeTypesHandler::GetHandler(
     const extensions::Extension* extension) {
   MimeTypesHandlerInfo* info = static_cast<MimeTypesHandlerInfo*>(
       extension->GetManifestData(keys::kMimeTypesHandler));
-  if (info)
+  if (info) {
     return &info->handler_;
+  }
   return nullptr;
 }
 
-MimeTypesHandlerParser::MimeTypesHandlerParser() {
-}
-
-MimeTypesHandlerParser::~MimeTypesHandlerParser() {
-}
+MimeTypesHandlerParser::MimeTypesHandlerParser() = default;
+MimeTypesHandlerParser::~MimeTypesHandlerParser() = default;
 
 bool MimeTypesHandlerParser::Parse(extensions::Extension* extension,
                                    std::u16string* error) {

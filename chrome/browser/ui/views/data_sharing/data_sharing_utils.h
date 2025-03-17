@@ -27,12 +27,41 @@ inline std::string_view kQueryParamTabGroupTitle = "tab_group_title";
 inline std::string_view kFlowShare = "share";
 inline std::string_view kFlowJoin = "join";
 inline std::string_view kFlowManage = "manage";
+inline std::string_view kFlowDelete = "delete";
+inline std::string_view kFlowLeave = "leave";
+inline std::string_view kFlowClose = "close";
+
+enum FlowType {
+  kShare,
+  kJoin,
+  kManage,
+  kDelete,
+  kLeave,
+  kClose,
+  kMaxValue = kClose,
+};
+
+// Metadata used to determine the which WebUI we should return when
+// GenerateWebUIUrl is called,
+struct RequestInfo {
+ public:
+  RequestInfo(
+      std::variant<tab_groups::LocalTabGroupID, data_sharing::GroupToken> id,
+      FlowType type);
+  RequestInfo();
+  RequestInfo(const RequestInfo& other);
+  ~RequestInfo();
+
+  // The id of the request.
+  std::variant<tab_groups::LocalTabGroupID, data_sharing::GroupToken> id;
+
+  // The type of request.
+  FlowType type;
+};
 
 // `request_info` contains the info we want to pass into the loaded WebUI.
-std::optional<GURL> GenerateWebUIUrl(
-    std::variant<tab_groups::LocalTabGroupID, data_sharing::GroupToken>
-        request_info,
-    Profile* profile);
+std::optional<GURL> GenerateWebUIUrl(RequestInfo request_info,
+                                     Profile* profile);
 
 // Associate tab group with `group_id` returned by the Share flow WebUI, i.e.
 // make the tab group shared.

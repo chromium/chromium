@@ -2,13 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from './assert.js';
+
+function safeDecodeURIComponent(s: string): string {
+  try {
+    return window.decodeURIComponent(s);
+  } catch (_e) {
+    // If the string can't be decoded, return it verbatim.
+    return s;
+  }
+}
+
+function getCurrentPathname(): string {
+  return safeDecodeURIComponent(window.location.pathname);
+}
+
+function getCurrentHash(): string {
+  return safeDecodeURIComponent(window.location.hash.slice(1));
+}
+
 let instance: CrRouter|null = null;
 
 export class CrRouter extends EventTarget {
-  private path_: string = window.decodeURIComponent(window.location.pathname);
+  private path_: string = getCurrentPathname();
   private query_: string = window.location.search.slice(1);
-  private hash_: string =
-      window.decodeURIComponent(window.location.hash.slice(1));
+  private hash_: string = getCurrentHash();
 
   /**
    * If the user was on a URL for less than `dwellTime_` milliseconds, it
@@ -47,9 +65,8 @@ export class CrRouter extends EventTarget {
   }
 
   setHash(hash: string) {
-    this.hash_ = hash;
-    if (this.hash_ !==
-        window.decodeURIComponent(window.location.hash.substring(1))) {
+    this.hash_ = safeDecodeURIComponent(hash);
+    if (this.hash_ !== getCurrentHash()) {
       this.updateState_();
     }
   }
@@ -62,15 +79,16 @@ export class CrRouter extends EventTarget {
   }
 
   setPath(path: string) {
-    this.path_ = path;
-    if (this.path_ !== window.decodeURIComponent(window.location.pathname)) {
+    assert(path.startsWith('/'));
+    this.path_ = safeDecodeURIComponent(path);
+    if (this.path_ !== getCurrentPathname()) {
       this.updateState_();
     }
   }
 
   private hashChanged_() {
     const oldHash = this.hash_;
-    this.hash_ = window.decodeURIComponent(window.location.hash.substring(1));
+    this.hash_ = getCurrentHash();
     if (this.hash_ !== oldHash) {
       this.dispatchEvent(new CustomEvent(
           'cr-router-hash-changed',
@@ -84,7 +102,7 @@ export class CrRouter extends EventTarget {
     this.hashChanged_();
 
     const oldPath = this.path_;
-    this.path_ = window.decodeURIComponent(window.location.pathname);
+    this.path_ = getCurrentPathname();
     if (oldPath !== this.path_) {
       this.dispatchEvent(new CustomEvent(
           'cr-router-path-changed',

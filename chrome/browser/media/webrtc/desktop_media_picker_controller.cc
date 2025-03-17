@@ -70,7 +70,7 @@ void DesktopMediaPickerController::Show(
     auto* source_list = source_lists_[0].get();
     source_list->Update(
         base::BindOnce(&DesktopMediaPickerController::OnInitialMediaListFound,
-                       base::Unretained(this)));
+                       weak_factory_.GetWeakPtr()));
   } else {
     ShowPickerDialog();
   }

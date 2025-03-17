@@ -73,6 +73,7 @@ class POLICY_EXPORT DeviceManagementService {
   static constexpr int kRequestTooLarge = 413;
   static constexpr int kConsumerAccountWithPackagedLicense = 417;
   static constexpr int kInvalidPackagedDeviceForKiosk = 418;
+  static constexpr int kOrgUnitEnrollmentLimitExceeded = 419;
   static constexpr int kTooManyRequests = 429;
   static constexpr int kInternalServerError = 500;
   static constexpr int kServiceUnavailable = 503;
@@ -217,6 +218,7 @@ class POLICY_EXPORT DeviceManagementService {
       TYPE_TOKEN_BASED_DEVICE_REGISTRATION = 33,
       TYPE_UPLOAD_FM_REGISTRATION_TOKEN = 34,
       TYPE_POLICY_AGENT_REGISTRATION = 35,
+      TYPE_DETERMINE_PROMOTION_ELIGIBILITY = 36,
     };
 
     // The set of HTTP query parameters of the request.
@@ -239,6 +241,9 @@ class POLICY_EXPORT DeviceManagementService {
 
     // Gets the payload to send in requests.
     virtual std::string GetPayload() = 0;
+
+    // The content type of the payload.
+    virtual std::string GetContentType() = 0;
 
     // Returns the network annotation to assign to requests.
     virtual net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() = 0;
@@ -369,11 +374,13 @@ class POLICY_EXPORT JobConfigurationBase
       int response_code,
       const std::string& response_body) override;
   std::optional<base::TimeDelta> GetTimeoutDuration() override;
+  std::string GetContentType() override;
 
  protected:
   JobConfigurationBase(JobType type,
                        DMAuth auth_data,
                        std::optional<std::string> oauth_token,
+                       bool use_cookies,
                        scoped_refptr<network::SharedURLLoaderFactory> factory);
   ~JobConfigurationBase() override;
 
@@ -400,6 +407,11 @@ class POLICY_EXPORT JobConfigurationBase
   // OAuth token that will be passed as a query parameter. Both |auth_data_|
   // and |oauth_token_| can be specified for one request.
   std::optional<std::string> oauth_token_;
+
+  // Will allow using cookies as part of the request when true. Cookies can
+  // be used in combination with other auth models, the order of precedence
+  // will be determined server-side.
+  bool use_cookies_;
 
   // Query parameters for the network request.
   ParameterMap query_params_;

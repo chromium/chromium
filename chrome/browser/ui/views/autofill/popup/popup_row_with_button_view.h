@@ -35,10 +35,6 @@ class ButtonDelegate {
   virtual void OnMouseExitedButton() = 0;
 };
 
-namespace {
-class ButtonPlaceholder;
-}  // namespace
-
 // A class for a single selectable popup cell that also has a button.
 class PopupRowWithButtonView : public PopupRowView, public ButtonDelegate {
   METADATA_HEADER(PopupRowWithButtonView, PopupRowView)
@@ -114,7 +110,7 @@ class PopupRowWithButtonView : public PopupRowView, public ButtonDelegate {
   bool ShouldButtonBeVisible() const;
 
   raw_ptr<views::ImageButton> button_ = nullptr;
-  raw_ptr<ButtonPlaceholder> button_placeholder_ = nullptr;
+  raw_ptr<views::View> button_placeholder_ = nullptr;
 
   // Defines the part of the row that is currently highlighted and accepts
   // user input.

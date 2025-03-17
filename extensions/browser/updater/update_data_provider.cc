@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -114,17 +115,18 @@ void UpdateDataProvider::GetData(
         base::BindRepeating(&UpdateDataProvider::RunInstallCallback, this));
     if (!ExtensionsBrowserClient::Get()->IsExtensionEnabled(id,
                                                             browser_context_)) {
-      int disabled_reasons = extension_prefs->GetDisableReasons(id);
-      if (disabled_reasons == extensions::disable_reason::DISABLE_NONE ||
-          disabled_reasons >= extensions::disable_reason::DISABLE_REASON_LAST) {
+      DisableReasonSet disable_reasons = extension_prefs->GetDisableReasons(id);
+
+      if (disable_reasons.empty() ||
+          disable_reasons.contains(disable_reason::DISABLE_UNKNOWN)) {
         crx_component->disabled_reasons.push_back(0);
       }
-      for (int enum_value = 1;
-           enum_value < extensions::disable_reason::DISABLE_REASON_LAST;
-           enum_value <<= 1) {
-        if (disabled_reasons & enum_value) {
-          crx_component->disabled_reasons.push_back(enum_value);
-        }
+
+      // We are only interested in valid disable reasons from here.
+      disable_reasons.erase(disable_reason::DISABLE_UNKNOWN);
+
+      for (int reason : disable_reasons) {
+        crx_component->disabled_reasons.push_back(reason);
       }
     }
     crx_component->install_source = extension_data.is_corrupt_reinstall

@@ -69,6 +69,12 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
     std::optional<PointerId> pointer_id = std::nullopt;
 
     bool prevent_counting_as_interaction = false;
+
+    // Set to true when the event's processing time is fully nested under
+    // another event's processing time, e.g. some synthetic events are
+    // dispatched with the input events, beforeinput event's processing time is
+    // nested under keypress event.
+    bool is_processing_fully_nested_in_another_event = false;
   };
 
   static PerformanceEventTiming* Create(const AtomicString& event_type,
@@ -101,9 +107,9 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   void SetTarget(Node* target);
 
-  uint32_t interactionId() const;
+  uint64_t interactionId() const;
 
-  void SetInteractionId(uint32_t interaction_id);
+  void SetInteractionId(uint64_t interaction_id);
 
   bool HasKnownInteractionID() const;
 
@@ -146,7 +152,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   mutable DOMHighResTimeStamp processing_end_ = 0;
   bool cancelable_;
   WeakMember<Node> target_;
-  std::optional<uint32_t> interaction_id_ = std::nullopt;
+  std::optional<uint64_t> interaction_id_ = std::nullopt;
   uint32_t interaction_offset_ = 0;
 
   EventTimingReportingInfo reporting_info_;

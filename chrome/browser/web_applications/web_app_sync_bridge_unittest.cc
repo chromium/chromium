@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/sync/model/data_batch.h"
@@ -100,11 +101,11 @@ bool IsSyncDataEqualIfApplied(const WebApp& expected_app,
   // Remove OS integration state, as this is never applied with the sync system.
   WebApp expected_app_copy = WebApp(expected_app);
   expected_app_copy.SetCurrentOsIntegrationStates(
-      proto::WebAppOsIntegrationState());
+      proto::os_state::WebAppOsIntegration());
 
   WebApp app_applied_sync_data_copy = WebApp(*app_to_apply_sync_data);
   app_applied_sync_data_copy.SetCurrentOsIntegrationStates(
-      proto::WebAppOsIntegrationState());
+      proto::os_state::WebAppOsIntegration());
 
   // The same as what applies to OS integration state also applies to the
   // "user installed" installation source. So remove that as well.
@@ -213,7 +214,8 @@ void ConvertAppToEntityChange(const WebApp& app,
           app.app_id(), std::move(*CreateSyncEntityData(app)));
       break;
     case syncer::EntityChange::ACTION_DELETE:
-      entity_change = syncer::EntityChange::CreateDelete(app.app_id());
+      entity_change = syncer::EntityChange::CreateDelete(app.app_id(),
+                                                         syncer::EntityData());
       break;
   }
 
@@ -1146,6 +1148,7 @@ TEST_F(WebAppSyncBridgeTest,
         entity_data_app->AddSource(WebAppManagement::kPolicy);
         entity_data_app->SetName("Name");
         entity_data_app->SetDisplayMode(blink::mojom::DisplayMode::kStandalone);
+        entity_data_app->SetScope(GURL("https://example.com/"));
         entity_data_app->SetInstallState(
             proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
 
@@ -1300,11 +1303,7 @@ TEST_F(WebAppSyncBridgeTest, CanDeleteNonUserInstallableApps) {
   // This app should be uninstalled, since the `is_uninstalling` field is set.
   std::unique_ptr<WebApp> app1 =
       test::CreateWebApp(GURL("https://example.com/app1"));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  app1->AddSource(WebAppManagement::kPolicy);
-#else
   app1->AddSource(WebAppManagement::kSystem);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   app1->SetIsUninstalling(/*is_uninstalling=*/true);
   const webapps::AppId app_id1 = app1->app_id();
   system_apps.push_back(std::move(app1));
@@ -1312,11 +1311,7 @@ TEST_F(WebAppSyncBridgeTest, CanDeleteNonUserInstallableApps) {
   // This app will not be uninstalled.
   std::unique_ptr<WebApp> app2 =
       test::CreateWebApp(GURL("https://example.com/app2"));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  app2->AddSource(WebAppManagement::kPolicy);
-#else
   app2->AddSource(WebAppManagement::kSystem);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   const webapps::AppId app_id2 = app2->app_id();
   system_apps.push_back(std::move(app2));
 
@@ -1325,7 +1320,7 @@ TEST_F(WebAppSyncBridgeTest, CanDeleteNonUserInstallableApps) {
   database_factory().WriteRegistry(registry);
   StartWebAppProvider();
 
-  EXPECT_TRUE(registrar().IsNotInRegistrar(app_id1));
+  EXPECT_FALSE(registrar().IsInRegistrar(app_id1));
   EXPECT_EQ(proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
             registrar().GetInstallState(app_id2));
 }

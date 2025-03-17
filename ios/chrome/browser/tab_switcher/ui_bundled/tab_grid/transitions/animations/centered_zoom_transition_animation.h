@@ -9,15 +9,11 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/tab_grid_transition_animation.h"
 
-namespace {
-
 // The directions the animation can take.
 enum class CenteredZoomTransitionAnimationDirection {
   kContracting,
   kExpanding,
 };
-
-}  // namespace
 
 // The animation here creates a simple quick zoom effect -- the tab view
 // fades in/out as it expands/contracts. The zoom is not large (75% to 100%)

@@ -54,11 +54,6 @@ class FullStreamUIPolicy : public ActivityLogDatabasePolicy {
   // Delete everything in the database.
   void DeleteDatabase() override;
 
-  // Database table schema.
-  static const char* const kTableContentFields[];
-  static const char* const kTableFieldTypes[];
-  static const int kTableFieldCount;
-
  protected:
   // Only ever run by OnDatabaseClose() below; see the comments on the
   // ActivityDatabase class for an overall discussion of how cleanup works.

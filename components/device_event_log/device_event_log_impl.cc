@@ -9,6 +9,8 @@
 
 #include "components/device_event_log/device_event_log_impl.h"
 
+#include <algorithm>
+#include <array>
 #include <cmath>
 #include <list>
 #include <set>
@@ -22,7 +24,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -35,7 +36,8 @@ namespace device_event_log {
 
 namespace {
 
-const char* const kLogLevelName[] = {"Error", "User", "Event", "Debug"};
+const auto kLogLevelName =
+    std::to_array<const char*>({"Error", "User", "Event", "Debug"});
 
 const char kLogTypeNetworkDesc[] = "Network";
 const char kLogTypePowerDesc[] = "Power";
@@ -143,7 +145,8 @@ std::string LogEntryToString(const DeviceEventLogImpl::LogEntry& log_entry,
   if (show_type)
     line += GetLogTypeString(log_entry.log_type) + ": ";
   if (show_level) {
-    const char* kLevelDesc[] = {"ERROR", "USER", "EVENT", "DEBUG"};
+    auto kLevelDesc =
+        std::to_array<const char*>({"ERROR", "USER", "EVENT", "DEBUG"});
     line += std::string(kLevelDesc[log_entry.log_level]);
 #if BUILDFLAG(IS_POSIX)
     if (show_time == ShowTime::kUnix) {
@@ -452,9 +455,8 @@ void DeviceEventLogImpl::ClearAll() {
 }
 
 void DeviceEventLogImpl::Clear(const base::Time& begin, const base::Time& end) {
-  entries_.erase(
-      base::ranges::lower_bound(entries_, begin, {}, &LogEntry::time),
-      base::ranges::upper_bound(entries_, end, {}, &LogEntry::time));
+  entries_.erase(std::ranges::lower_bound(entries_, begin, {}, &LogEntry::time),
+                 std::ranges::upper_bound(entries_, end, {}, &LogEntry::time));
 }
 
 int DeviceEventLogImpl::GetCountByLevelForTesting(LogLevel level) {

@@ -19,15 +19,15 @@ source_set("init") {
     "ios_content_browser_client.h",
     "ios_content_main_runner.cc",
     "ios_content_main_runner.h",
-    "ios_main_delegate.cc",
     "ios_main_delegate.h",
+    "ios_main_delegate.mm",
     "ios_renderer_main_delegate.cc",
     "ios_renderer_main_delegate.h",
   ]
 
   deps = [
     "//build:blink_buildflags",
-    "//components/embedder_support:browser_util",
+    "//components/embedder_support:user_agent",
     "//components/embedder_support/origin_trials:origin_trials",
     "//components/js_injection/renderer",
     "//components/performance_manager:performance_manager",

@@ -8,6 +8,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 
 namespace ash::input_method {
 
@@ -19,25 +20,27 @@ EditorConsentStore::EditorConsentStore(PrefService* pref_service,
 
 EditorConsentStore::~EditorConsentStore() = default;
 
-ConsentStatus EditorConsentStore::GetConsentStatus() const {
-  return GetConsentStatusFromInteger(
+chromeos::editor_menu::EditorConsentStatus
+EditorConsentStore::GetConsentStatus() const {
+  return chromeos::editor_menu::GetConsentStatusFromInteger(
       pref_service_->GetInteger(prefs::kOrcaConsentStatus));
 }
 
-void EditorConsentStore::SetConsentStatus(ConsentStatus consent_status) {
+void EditorConsentStore::SetConsentStatus(
+    chromeos::editor_menu::EditorConsentStatus consent_status) {
   pref_service_->SetInteger(prefs::kOrcaConsentStatus,
                             base::to_underlying(consent_status));
 }
 
 void EditorConsentStore::ProcessConsentAction(ConsentAction consent_action) {
   if (consent_action == ConsentAction::kApprove) {
-    SetConsentStatus(ConsentStatus::kApproved);
+    SetConsentStatus(chromeos::editor_menu::EditorConsentStatus::kApproved);
     metrics_recorder_->LogEditorState(EditorStates::kApproveConsent);
     return;
   }
 
   if (consent_action == ConsentAction::kDecline) {
-    SetConsentStatus(ConsentStatus::kDeclined);
+    SetConsentStatus(chromeos::editor_menu::EditorConsentStatus::kDeclined);
     OverrideUserPref(/*new_pref_value=*/false);
     metrics_recorder_->LogEditorState(EditorStates::kDeclineConsent);
   }
@@ -51,12 +54,14 @@ void EditorConsentStore::ProcessPromoCardAction(
 }
 
 void EditorConsentStore::OnUserPrefChanged() {
-  ConsentStatus current_consent_status = GetConsentStatus();
+  chromeos::editor_menu::EditorConsentStatus current_consent_status =
+      GetConsentStatus();
   // If the user has previously (implicitly) declined the consent status and
   // now switches the toggle on, then reset the consent status.
   if (pref_service_->GetBoolean(ash::prefs::kOrcaEnabled) &&
-      current_consent_status == ConsentStatus::kDeclined) {
-    SetConsentStatus(ConsentStatus::kUnset);
+      current_consent_status ==
+          chromeos::editor_menu::EditorConsentStatus::kDeclined) {
+    SetConsentStatus(chromeos::editor_menu::EditorConsentStatus::kUnset);
   }
 }
 

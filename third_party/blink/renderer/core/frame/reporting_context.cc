@@ -59,7 +59,7 @@ ReportingContext::ReportingContext(ExecutionContext& context)
     : Supplement<ExecutionContext>(context),
       execution_context_(context),
       reporting_service_(&context),
-      receiver_(this, &context) {}
+      receivers_(this, &context) {}
 
 // static
 ReportingContext* ReportingContext::From(ExecutionContext* context) {
@@ -74,8 +74,7 @@ ReportingContext* ReportingContext::From(ExecutionContext* context) {
 
 void ReportingContext::Bind(
     mojo::PendingReceiver<mojom::blink::ReportingObserver> receiver) {
-  receiver_.reset();
-  receiver_.Bind(std::move(receiver),
+  receivers_.Add(std::move(receiver),
                  execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
 
@@ -127,7 +126,7 @@ void ReportingContext::Trace(Visitor* visitor) const {
   visitor->Trace(report_buffer_);
   visitor->Trace(execution_context_);
   visitor->Trace(reporting_service_);
-  visitor->Trace(receiver_);
+  visitor->Trace(receivers_);
   Supplement<ExecutionContext>::Trace(visitor);
 }
 
@@ -137,7 +136,8 @@ void ReportingContext::CountReport(Report* report) {
 
   if (type == ReportType::kDeprecation) {
     feature = WebFeature::kDeprecationReport;
-  } else if (type == ReportType::kPermissionsPolicyViolation) {
+  } else if (type == ReportType::kPermissionsPolicyViolation ||
+             type == ReportType::kPotentialPermissionsPolicyViolation) {
     feature = WebFeature::kFeaturePolicyReport;
   } else if (type == ReportType::kIntervention) {
     feature = WebFeature::kInterventionReport;
@@ -167,7 +167,7 @@ void ReportingContext::NotifyInternal(Report* report) {
   if (!report_buffer_.Contains(report->type())) {
     report_buffer_.insert(
         report->type(),
-        MakeGarbageCollected<HeapLinkedHashSet<Member<Report>>>());
+        MakeGarbageCollected<GCedHeapLinkedHashSet<Member<Report>>>());
   }
   report_buffer_.find(report->type())->value->insert(report);
 
@@ -187,6 +187,7 @@ void ReportingContext::SendToReportingAPI(Report* report,
   if (!(type == ReportType::kCSPViolation || type == ReportType::kCSPHash ||
         type == ReportType::kDeprecation ||
         type == ReportType::kPermissionsPolicyViolation ||
+        type == ReportType::kPotentialPermissionsPolicyViolation ||
         type == ReportType::kIntervention ||
         type == ReportType::kDocumentPolicyViolation)) {
     return;
@@ -230,6 +231,14 @@ void ReportingContext::SendToReportingAPI(Report* report,
     GetReportingService()->QueuePermissionsPolicyViolationReport(
         url, endpoint, body->featureId(), body->disposition(), body->message(),
         body->sourceFile(), line_number, column_number);
+  } else if (type == ReportType::kPotentialPermissionsPolicyViolation) {
+    // Send the potential permissions policy violation report.
+    const PermissionsPolicyViolationReportBody* body =
+        static_cast<PermissionsPolicyViolationReportBody*>(report->body());
+    GetReportingService()->QueuePotentialPermissionsPolicyViolationReport(
+        url, endpoint, body->featureId(), body->disposition(), body->message(),
+        body->allowAttribute(), body->srcAttribute(), body->sourceFile(),
+        line_number, column_number);
   } else if (type == ReportType::kIntervention) {
     // Send the intervention report.
     const InterventionReportBody* body =

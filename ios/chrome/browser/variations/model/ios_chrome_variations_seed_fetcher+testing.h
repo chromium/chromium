@@ -7,6 +7,8 @@
 
 #import <memory>
 
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher.h"
+
 namespace variations {
 struct SeedResponse;
 }  // namespace variations

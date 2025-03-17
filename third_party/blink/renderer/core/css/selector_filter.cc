@@ -99,10 +99,7 @@ inline void CollectDescendantSelectorIdentifierHashes(
       }
       break;
     case CSSSelector::kTag:
-      if (selector.TagQName().LocalName() !=
-          CSSSelector::UniversalSelectorAtom()) {
-        hashes.push_back(selector.TagQName().LocalName().Hash() * kTagNameSalt);
-      }
+      hashes.push_back(selector.TagQName().LocalName().Hash() * kTagNameSalt);
       break;
     case CSSSelector::kAttributeExact:
     case CSSSelector::kAttributeSet:

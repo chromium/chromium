@@ -13,6 +13,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 
 namespace history_embeddings {
 
@@ -132,44 +133,6 @@ struct SearchInfo {
   base::TimeDelta passage_scanning_time;
 };
 
-class Embedding {
- public:
-  explicit Embedding(std::vector<float> data);
-  Embedding(std::vector<float> data, size_t passage_word_count);
-  Embedding();
-  ~Embedding();
-  Embedding(const Embedding&);
-  Embedding& operator=(const Embedding&);
-  Embedding(Embedding&&);
-  Embedding& operator=(Embedding&&);
-  bool operator==(const Embedding&) const;
-
-  // The number of elements in the data vector.
-  size_t Dimensions() const;
-
-  // The length of the vector.
-  float Magnitude() const;
-
-  // Scale the vector to unit length.
-  void Normalize();
-
-  // Compares one embedding with another and returns a similarity measure.
-  float ScoreWith(const Embedding& other_embedding) const;
-
-  // Const accessor used for storage.
-  const std::vector<float>& GetData() const { return data_; }
-
-  // Used for search filtering of passages with low word count.
-  size_t GetPassageWordCount() const { return passage_word_count_; }
-  void SetPassageWordCount(size_t passage_word_count) {
-    passage_word_count_ = passage_word_count;
-  }
-
- private:
-  std::vector<float> data_;
-  size_t passage_word_count_ = 0;
-};
-
 struct UrlScore {
   float score;
   float word_match_score;
@@ -192,14 +155,14 @@ struct UrlData {
   // correspond to the embeddings 1:1 by index.
   UrlScore BestScoreWith(SearchInfo& search_info,
                          const SearchParams& search_params,
-                         const Embedding& query_embedding,
+                         const passage_embeddings::Embedding& query_embedding,
                          size_t search_minimum_word_count) const;
 
   history::URLID url_id;
   history::VisitID visit_id;
   base::Time visit_time;
   proto::PassagesValue passages;
-  std::vector<Embedding> embeddings;
+  std::vector<passage_embeddings::Embedding> embeddings;
 };
 
 // This base class decouples storage classes and inverts the dependency so that
@@ -235,7 +198,7 @@ class VectorDatabase {
   SearchInfo FindNearest(std::optional<base::Time> time_range_start,
                          size_t count,
                          const SearchParams& search_params,
-                         const Embedding& query_embedding,
+                         const passage_embeddings::Embedding& query_embedding,
                          base::RepeatingCallback<bool()> is_search_halted);
 };
 

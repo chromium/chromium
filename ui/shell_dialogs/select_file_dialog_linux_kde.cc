@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -413,10 +414,16 @@ void SelectFileDialogLinuxKde::GetKDialogCommandLine(
   }
   command_line->AppendSwitch(type);
   // The path should never be empty. If it is, set it to PWD.
-  if (path.empty())
-    command_line->AppendArgPath(base::FilePath("."));
-  else
+  auto pwd = base::FilePath(".");
+  if (path.empty()) {
+    command_line->AppendArgPath(pwd);
+  } else if (path.IsAbsolute()) {
     command_line->AppendArgPath(path);
+  } else {
+    // KDialog won't set the default name in the Name field for relative paths.
+    auto abs_path = base::MakeAbsoluteFilePathNoResolveSymbolicLinks(path);
+    command_line->AppendArgPath(abs_path.value_or(pwd));
+  }
   // Depending on the type of the operation we need, get the path to the
   // file/folder and set up mime type filters.
   if (file_operation)

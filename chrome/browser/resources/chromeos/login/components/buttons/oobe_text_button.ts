@@ -35,10 +35,10 @@ import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '../common_styles/oobe_common_styles.css.js';
 import '../oobe_vars/oobe_custom_vars.css.js';
 
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {getTemplate} from './oobe_text_button.html.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 
 import {OobeBaseButton} from './oobe_base_button.js';
+import {getTemplate} from './oobe_text_button.html.js';
 
 export class OobeTextButton extends OobeBaseButton {
   static get is() {

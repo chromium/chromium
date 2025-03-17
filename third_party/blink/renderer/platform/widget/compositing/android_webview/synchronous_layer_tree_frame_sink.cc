@@ -133,7 +133,6 @@ SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
     scoped_refptr<cc::RasterContextProviderWrapper>
         worker_context_provider_wrapper,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     uint32_t layer_tree_frame_sink_id,
     std::unique_ptr<viz::BeginFrameSource> synthetic_begin_frame_source,
     SynchronousCompositorRegistry* registry,
@@ -144,7 +143,6 @@ SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
     : cc::LayerTreeFrameSink(std::move(context_provider),
                              std::move(worker_context_provider_wrapper),
                              std::move(compositor_task_runner),
-                             gpu_memory_buffer_manager,
                              /*shared_image_interface=*/nullptr),
       layer_tree_frame_sink_id_(layer_tree_frame_sink_id),
       registry_(registry),
@@ -184,8 +182,7 @@ bool SynchronousLayerTreeFrameSink::BindToClient(
   // The SharedBitmapManager is null since software compositing is not supported
   // or used on Android.
   frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(
-      viz::FrameSinkManagerImpl::InitParams(
-          /*shared_bitmap_manager=*/nullptr));
+      viz::FrameSinkManagerImpl::InitParams());
 
   if (synthetic_begin_frame_source_) {
     client_->SetBeginFrameSource(synthetic_begin_frame_source_.get());
@@ -225,14 +222,12 @@ bool SynchronousLayerTreeFrameSink::BindToClient(
   // The gpu_memory_buffer_manager here is null as the Display is only used for
   // resourcesless software draws, where no resources are included in the frame
   // swapped from the compositor. So there is no need for it.
-  // The shared_bitmap_manager_ is provided for the Display to allocate
-  // resources.
   // TODO(crbug.com/692814): The Display never sends its resources out of
   // process so there is no reason for it to use a SharedBitmapManager.
   // The gpu::GpuTaskSchedulerHelper here is null as the OutputSurface is
   // software only and the overlay processor is a stub.
   display_ = std::make_unique<viz::Display>(
-      &shared_bitmap_manager_, /*shared_image_manager=*/nullptr,
+      /*shared_image_manager=*/nullptr,
       /*gpu_scheduler=*/nullptr, software_renderer_settings, &debug_settings_,
       kRootFrameSinkId, nullptr /* gpu::GpuTaskSchedulerHelper */,
       std::move(output_surface), std::move(overlay_processor),
@@ -425,20 +420,6 @@ void SynchronousLayerTreeFrameSink::DidNotProduceFrame(
   // submission of frame depends on DemandDraw calls.
 }
 
-void SynchronousLayerTreeFrameSink::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const viz::SharedBitmapId& id) {
-  // Webview does not use software compositing (other than resourceless draws,
-  // but this is called for software /resources/).
-  NOTREACHED();
-}
-
-void SynchronousLayerTreeFrameSink::DidDeleteSharedBitmap(
-    const viz::SharedBitmapId& id) {
-  // Webview does not use software compositing (other than resourceless draws,
-  // but this is called for software /resources/).
-  NOTREACHED();
-}
 
 void SynchronousLayerTreeFrameSink::Invalidate(bool needs_draw) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

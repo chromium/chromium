@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_view_controller.h"
 
+#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_calendar_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_freeform_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_tab_organization_view_controller.h"
@@ -28,13 +29,15 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _menuPages =
-        [NSArray arrayWithObjects:
-                     [[AIPrototypingFreeformViewController alloc]
-                         initForFeature:AIPrototypingFeature::kFreeform],
-                     [[AIPrototypingTabOrganizationViewController alloc]
-                         initForFeature:AIPrototypingFeature::kTabOrganization],
-                     nil];
+    _menuPages = [NSArray
+        arrayWithObjects:
+            [[AIPrototypingFreeformViewController alloc]
+                initForFeature:AIPrototypingFeature::kFreeform],
+            [[AIPrototypingTabOrganizationViewController alloc]
+                initForFeature:AIPrototypingFeature::kTabOrganization],
+            [[AIPrototypingCalendarViewController alloc]
+                initForFeature:AIPrototypingFeature::kEnhancedCalendar],
+            nil];
   }
   return self;
 }
@@ -71,6 +74,7 @@
   for (UIViewController<AIPrototypingViewControllerProtocol>* viewController in
            _menuPages) {
     if (viewController.feature == feature) {
+      [viewController enableSubmitButtons];
       [viewController updateResponseField:result];
       break;
     }

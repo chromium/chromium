@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("platform_keys") {
   sources = [
@@ -18,15 +18,14 @@ static_library("platform_keys") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/kcer",
     "//ash/constants:constants",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/kcer",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/chaps_util",
+    "//chromeos/ash/components/kcer",
     "//chromeos/ash/components/network",
     "//components/keyed_service/core",
     "//components/policy/core/common",
@@ -76,7 +75,6 @@ source_set("browser_tests") {
   deps = [
     ":platform_keys",
     ":test_support",
-    "//ash/components/kcer:chaps_proto",
     "//base",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/policy:test_support",
@@ -84,6 +82,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/ash/components/chaps_util:test_support",
+    "//chromeos/ash/components/kcer:chaps_proto",
     "//components/policy/core/common",
     "//crypto",
     "//net",

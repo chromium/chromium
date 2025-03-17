@@ -28,6 +28,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -705,8 +706,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     Value::List preferences;
     for (const char* key : kDriveRelatedPreferences) {
       // As of now, all preferences are boolean.
-      AppendKeyValue(preferences, key,
-                     prefs->GetBoolean(key) ? "true" : "false");
+      AppendKeyValue(preferences, key, base::ToString(prefs->GetBoolean(key)));
     }
 
     MaybeCallJavascript("updateDriveRelatedPreferences",

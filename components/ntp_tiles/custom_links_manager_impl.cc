@@ -4,6 +4,7 @@
 
 #include "components/ntp_tiles/custom_links_manager_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -11,7 +12,6 @@
 
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/deleted_tile_type.h"
 #include "components/ntp_tiles/metrics.h"
@@ -225,7 +225,7 @@ void CustomLinksManagerImpl::RemoveCustomLinksForPreinstalledApps() {
 
 std::vector<CustomLinksManager::Link>::iterator
 CustomLinksManagerImpl::FindLinkWithUrl(const GURL& url) {
-  return base::ranges::find(current_links_, url, &Link::url);
+  return std::ranges::find(current_links_, url, &Link::url);
 }
 
 base::CallbackListSubscription

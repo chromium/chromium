@@ -45,17 +45,14 @@ message TabData {
 message TabGroupData {
   // The sync ID of the corresponding SavedTabGroup.
   optional string sync_tab_group_id = 1;
+
+  // The title of the tab group.
+  optional string title = 2;
 }
 
 // Collaboration message related data.
 message CollaborationData {
-  // Store the triggering user name.
-  optional string triggering_user_name = 1;
-
-  // Store the affected user name.
-  // Only set for COLLABORATION_MEMBER_ADDED & COLLABORATION_MEMBER_REMOVED
-  // event.
-  optional string affected_user_name = 2;
+  reserved 1, 2;
 }
 
 message Message {

@@ -28,7 +28,7 @@ namespace enterprise_companion {
 
 namespace {
 #if BUILDFLAG(IS_WIN)
-constexpr char kCrashExe[] = "test_crashpad_embedder.exe";
+constexpr wchar_t kCrashExe[] = L"test_crashpad_embedder.exe";
 #else
 constexpr char kCrashExe[] = "test_crashpad_embedder";
 #endif
@@ -52,7 +52,7 @@ class CrashClientTest : public ::testing::Test {
   // dump in the provided database.
   void RunChildProcess() {
     base::FilePath test_exe =
-        base::PathService::CheckedGet(base::DIR_EXE).AppendASCII(kCrashExe);
+        base::PathService::CheckedGet(base::DIR_EXE).Append(kCrashExe);
     EXPECT_TRUE(base::PathExists(test_exe));
     base::CommandLine command_line = base::CommandLine(test_exe);
     command_line.AppendSwitchPath(kCrashDatabaseSwitch, database_.GetPath());

@@ -123,18 +123,18 @@ suite('PrivacyPage', function() {
   });
   // </if>
 
-  test('showClearBrowsingDataDialog', function() {
+  test('showDeleteBrowsingDataDialog', function() {
     assertFalse(!!page.shadowRoot!.querySelector(
-        'settings-clear-browsing-data-dialog'));
+        'settings-clear-browsing-data-dialog-v2'));
     page.$.clearBrowsingData.click();
     flush();
 
-    const dialog =
-        page.shadowRoot!.querySelector('settings-clear-browsing-data-dialog');
+    const dialog = page.shadowRoot!.querySelector(
+        'settings-clear-browsing-data-dialog-v2');
     assertTrue(!!dialog);
   });
 
-  test('cookiesLinkRowSublabel', async function() {
+  test('cookiesLinkRowSublabel', function() {
     page.set(
         'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
     const thirdPartyCookiesLinkRow =
@@ -521,6 +521,53 @@ suite(`TrackingProtectionSubpage`, function() {
     await flushTasks();
     assertEquals(
         routes.COOKIES, Router.getInstance().getCurrentRoute());
+  });
+});
+
+suite(`AllSitesSubpage`, function() {
+  let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    resetRouterForTesting();
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    page = document.createElement('settings-privacy-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  test('allSitesViewShowsAllSitesTitle', async function() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
+    await flushTasks();
+
+    const allSitesSubpage =
+        page.shadowRoot!.querySelector<PolymerElement>('#allSites');
+    assertTrue(!!allSitesSubpage);
+    assertEquals(
+        page.i18n('siteSettingsAllSites'),
+        allSitesSubpage.getAttribute('page-title'));
+  });
+
+  test('rwsFilterViewShowsRwsTitle', async function() {
+    const searchParams =
+        new URLSearchParams('searchSubpage=related:foobar.com');
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL, searchParams);
+    await flushTasks();
+
+    const allSitesSubpage =
+        page.shadowRoot!.querySelector<PolymerElement>('#allSites');
+    assertTrue(!!allSitesSubpage);
+    assertEquals(
+        loadTimeData.getStringF('allSitesRwsFilterViewTitle', 'foobar.com'),
+        allSitesSubpage.getAttribute('page-title'));
   });
 });
 
@@ -927,6 +974,7 @@ suite('NotificationPermissionReview', function() {
         SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
         oneElementMockData);
     await flushTasks();
+    assertFalse(isChildVisible(page, '#safetyHubEntryPoint'));
 
     // Set guest mode back to false.
     loadTimeData.overrideValues({isGuest: false});
@@ -1013,5 +1061,40 @@ suite('EnableWebBluetoothNewPermissionsBackend', function() {
     assertEquals(
         settingsSubpage.learnMoreUrl,
         'https://support.google.com/chrome?p=bluetooth&hl=en-US');
+  });
+});
+
+// TODO(crbug.com/397187800): Remove once kDbdRevampDesktop is launched.
+suite('DeleteBrowsingDataRevampDisabled', () => {
+  let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    loadTimeData.overrideValues({
+      enableDeleteBrowsingDataRevamp: false,
+    });
+    resetRouterForTesting();
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-privacy-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  test('showClearBrowsingDataDialog', function() {
+    assertFalse(!!page.shadowRoot!.querySelector(
+        'settings-clear-browsing-data-dialog'));
+    page.$.clearBrowsingData.click();
+    flush();
+
+    const dialog =
+        page.shadowRoot!.querySelector('settings-clear-browsing-data-dialog');
+    assertTrue(!!dialog);
   });
 });

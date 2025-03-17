@@ -26,14 +26,16 @@ ChromeHistoryEmbeddingsService::ChromeHistoryEmbeddingsService(
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-    std::unique_ptr<Embedder> embedder,
+    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
+    passage_embeddings::Embedder* embedder,
     std::unique_ptr<Answerer> answerer,
     std::unique_ptr<IntentClassifier> intent_classifier)
     : HistoryEmbeddingsService(g_browser_process->os_crypt_async(),
                                history_service,
                                page_content_annotations_service,
                                optimization_guide_decider,
-                               std::move(embedder),
+                               embedder_metadata_provider,
+                               embedder,
                                std::move(answerer),
                                std::move(intent_classifier)),
       profile_(profile) {}

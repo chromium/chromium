@@ -50,18 +50,15 @@
       "targets_spec_directory": "src/infra/config/generated/builders/ci/ios-catalyst/targets"
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 250
   },
@@ -82,5 +79,5 @@
     "chromium",
     "ios"
   ],
-  "xcode_build_version": "16b40"
+  "xcode_build_version": "16c5032a"
 }

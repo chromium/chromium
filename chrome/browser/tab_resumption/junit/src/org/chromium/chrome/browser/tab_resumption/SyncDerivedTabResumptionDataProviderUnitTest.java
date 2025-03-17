@@ -97,7 +97,7 @@ public class SyncDerivedTabResumptionDataProviderUnitTest extends TestSupport {
         plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
         fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
-                    Assert.assertEquals(result.strength, ResultStrength.TENTATIVE);
+                    Assert.assertEquals(ResultStrength.TENTATIVE, result.strength);
                     List<SuggestionEntry> suggestions = result.suggestions;
                     Assert.assertEquals(3, suggestions.size());
                     Assert.assertEquals(ENTRY1, suggestions.get(0));
@@ -113,7 +113,7 @@ public class SyncDerivedTabResumptionDataProviderUnitTest extends TestSupport {
         plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
         fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
-                    Assert.assertEquals(result.strength, ResultStrength.STABLE);
+                    Assert.assertEquals(ResultStrength.STABLE, result.strength);
                     List<SuggestionEntry> suggestions = result.suggestions;
                     Assert.assertEquals(2, suggestions.size());
                     Assert.assertEquals(ENTRY2, suggestions.get(0));
@@ -130,7 +130,7 @@ public class SyncDerivedTabResumptionDataProviderUnitTest extends TestSupport {
         plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY3)));
         fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
-                    Assert.assertEquals(result.strength, ResultStrength.STABLE);
+                    Assert.assertEquals(ResultStrength.STABLE, result.strength);
                     List<SuggestionEntry> suggestions = result.suggestions;
                     Assert.assertEquals(1, suggestions.size());
                     Assert.assertEquals(ENTRY3, suggestions.get(0));
@@ -143,7 +143,7 @@ public class SyncDerivedTabResumptionDataProviderUnitTest extends TestSupport {
         plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
         fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
-                    Assert.assertEquals(result.strength, ResultStrength.FORCED_NULL);
+                    Assert.assertEquals(ResultStrength.FORCED_NULL, result.strength);
                     List<SuggestionEntry> suggestions = result.suggestions;
                     Assert.assertNull(suggestions);
                 });
@@ -160,7 +160,7 @@ public class SyncDerivedTabResumptionDataProviderUnitTest extends TestSupport {
         plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
         fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
-                    Assert.assertEquals(result.strength, ResultStrength.TENTATIVE);
+                    Assert.assertEquals(ResultStrength.TENTATIVE, result.strength);
                     List<SuggestionEntry> suggestions = result.suggestions;
                     Assert.assertEquals(3, suggestions.size());
                     Assert.assertEquals(ENTRY1, suggestions.get(0));
@@ -189,7 +189,7 @@ public class SyncDerivedTabResumptionDataProviderUnitTest extends TestSupport {
         plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
         fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
-                    Assert.assertEquals(result.strength, ResultStrength.FORCED_NULL);
+                    Assert.assertEquals(ResultStrength.FORCED_NULL, result.strength);
                     List<SuggestionEntry> suggestions = result.suggestions;
                     Assert.assertNull(suggestions);
                 });
@@ -205,7 +205,7 @@ public class SyncDerivedTabResumptionDataProviderUnitTest extends TestSupport {
         plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
         fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
-                    Assert.assertEquals(result.strength, ResultStrength.FORCED_NULL);
+                    Assert.assertEquals(ResultStrength.FORCED_NULL, result.strength);
                     List<SuggestionEntry> suggestions = result.suggestions;
                     Assert.assertNull(suggestions);
                 });

@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">ထိလိုက်သည့်အခါ ဖြည့်ရန်အတွက် အထောက်အထားများ၏ စာရင်းကို မြင်ကွင်းအပြည့်ဖြင့်ထားသည်။</translation>
 <translation id="5591247451101092906">သိမ်းထားသည့် စကားဝှက် (သို့) လျှို့ဝှက်ကီး သုံးမလား။</translation>
 <translation id="5624120631404540903">စကားဝှက်များကို စီမံကွပ်ကဲရန်</translation>
+<translation id="592182999816790476"><ph name="USERNAME" /> အတွက် သိမ်းထားသည့် <ph name="WEBSITE" /> စကားဝှက်</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> အတွက် လျှို့ဝှက်ကီး။ သင့်ဖန်သားပြင်လော့ခ် သုံးပါ</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ဤဝဘ်ဆိုက်အတွက် စကားဝှက်အသစ်}other{ဤဝဘ်ဆိုက်အတွက် စကားဝှက်အသစ်များ}}</translation>
 <translation id="7286867818472074330">လျှို့ဝှက်ကီး ရွေးရန်</translation>

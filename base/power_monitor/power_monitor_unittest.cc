@@ -12,8 +12,7 @@
 #include "power_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 class PowerMonitorTest : public testing::Test {
  public:
@@ -56,8 +55,9 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   // Pretend we suspended.
   source().GenerateSuspendEvent();
   // Ensure all observers were notified of the event
-  for (const auto& index : observers)
+  for (const auto& index : observers) {
     EXPECT_EQ(index.suspends(), 1);
+  }
 
   // Send a second suspend notification.  This should be suppressed.
   source().GenerateSuspendEvent();
@@ -262,5 +262,4 @@ TEST_F(PowerMonitorTest, PowerStateReturnedFromAddObserver) {
   power_monitor->RemovePowerStateObserver(&observer2);
 }
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test

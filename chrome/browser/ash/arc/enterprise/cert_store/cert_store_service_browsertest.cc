@@ -11,27 +11,21 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service_factory.h"
-#include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
-#include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
@@ -49,11 +43,17 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
-#include "chrome/services/keymint/public/mojom/cert_store.mojom.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/keymaster/arc_keymaster_bridge.h"
+#include "chromeos/ash/experiences/arc/keymint/arc_keymint_bridge.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/services/keymaster/public/mojom/cert_store.mojom.h"
+#include "chromeos/ash/services/keymint/public/mojom/cert_store.mojom.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -298,7 +298,7 @@ bool IsSystemSlotAvailable(Profile* profile) {
 
 // Returns the number of corporate usage certs in |test_certs|.
 size_t CountCorporateUsage(const std::vector<TestCertData>& test_certs) {
-  return base::ranges::count_if(test_certs, &TestCertData::is_corporate_usage);
+  return std::ranges::count_if(test_certs, &TestCertData::is_corporate_usage);
 }
 
 // Deletes the given |cert| from |cert_db|.

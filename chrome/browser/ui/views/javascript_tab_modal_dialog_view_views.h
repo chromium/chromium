@@ -34,7 +34,7 @@ class JavaScriptTabModalDialogViewViews
       const JavaScriptTabModalDialogViewViews&) = delete;
   ~JavaScriptTabModalDialogViewViews() override;
 
-  // JavaScriptDialog:
+  // javascript_dialogs::TabModalDialogView:
   void CloseDialogWithoutCallback() override;
   std::u16string GetUserInput() override;
 

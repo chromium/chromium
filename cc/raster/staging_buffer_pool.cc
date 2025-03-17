@@ -4,13 +4,13 @@
 
 #include "cc/raster/staging_buffer_pool.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -258,7 +258,7 @@ std::unique_ptr<StagingBuffer> StagingBufferPool::AcquireStagingBuffer(
 
   // Find a staging buffer that allows us to perform partial raster if possible.
   if (use_partial_raster_ && previous_content_id) {
-    StagingBufferDeque::iterator it = base::ranges::find(
+    StagingBufferDeque::iterator it = std::ranges::find(
         free_buffers_, previous_content_id, &StagingBuffer::content_id);
     if (it != free_buffers_.end()) {
       staging_buffer = std::move(*it);
@@ -269,7 +269,7 @@ std::unique_ptr<StagingBuffer> StagingBufferPool::AcquireStagingBuffer(
 
   // Find staging buffer of correct size and format.
   if (!staging_buffer) {
-    StagingBufferDeque::iterator it = base::ranges::find_if(
+    StagingBufferDeque::iterator it = std::ranges::find_if(
         free_buffers_,
         [&size, format](const std::unique_ptr<StagingBuffer>& buffer) {
           return buffer->size == size && buffer->format == format;

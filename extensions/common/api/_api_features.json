@@ -240,6 +240,7 @@
         "chrome://assistant-optin/*",
         "chrome://extensions/*",
         "chrome://glic/*",
+        "chrome://glic-fre/*",
         "chrome://graduation/*",
         "chrome://home/*",
         "chrome://chrome-signin/*",
@@ -353,12 +354,14 @@
       "chrome://apps/*",
       "chrome://bookmarks/*",
       "chrome://bookmarks-side-panel.top-chrome/*",
+      "chrome://certificate-manager/*",
       "chrome://compare/*",
       "chrome://customize-chrome-side-panel.top-chrome/*",
       "chrome://shopping-insights-side-panel.top-chrome/*",
       "chrome://eche-app/*",
       "chrome://extensions/*",
       "chrome://file-manager/*",
+      "chrome://glic/*",
       "chrome://help-app/*",
       "chrome://history/*",
       "chrome://new-tab-page/*",
@@ -388,7 +391,8 @@
       "chrome-untrusted://media-app/*",
       "chrome-untrusted://mako/*",
       "chrome-untrusted://projector/*",
-      "chrome-untrusted://read-anything-side-panel.top-chrome/*"
+      "chrome-untrusted://read-anything-side-panel.top-chrome/*",
+      "chrome-untrusted://data-sharing/*"
     ]
   }],
   "metricsPrivateIndividualApis": {
@@ -794,7 +798,12 @@
   "userScripts": {
     "dependencies": [ "permission:userScripts" ],
     "contexts": [ "privileged_extension" ],
-    "developer_mode_only": true
+    // TODO(crbug.com/390138269): Remove developer mode only restriction once
+    // per extension toggle is launched.
+    "developer_mode_only": true,
+    // TODO(crbug.com/390138269): This condition is only respected when
+    // extensions_features::kUserScriptUserExtensionToggle is enabled.
+    "requires_delegated_availability_check": true
   },
   "userScripts.getWorldConfigurations": {
     "dependencies": [ "permission:userScripts" ],
@@ -807,6 +816,12 @@
     "contexts": [ "privileged_extension" ],
     "developer_mode_only": true,
     "feature_flag": "ApiUserScriptsMultipleWorlds"
+  },
+  "userScripts.execute": {
+    "dependencies": [ "permission:userScripts" ],
+    "contexts": [ "privileged_extension" ],
+    "developer_mode_only": true,
+    "feature_flag": "ApiUserScriptsExecute"
   },
   "virtualKeyboard": {
     "dependencies": ["permission:virtualKeyboard"],
@@ -833,8 +848,8 @@
       "chrome://add-supervision/*",
       "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
-      "chrome://discards/*",
       "chrome://glic/*",
+      "chrome://glic-fre/*",
       "chrome://graduation/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",
@@ -878,8 +893,8 @@
       "chrome://add-supervision/*",
       "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
-      "chrome://discards/*",
       "chrome://glic/*",
+      "chrome://glic-fre/*",
       "chrome://graduation/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",
@@ -921,7 +936,6 @@
       "chrome://add-supervision/*",
       "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
-      "chrome://discards/*",
       "chrome://glic/*",
       "chrome://graduation/*",
       "chrome://home/*",

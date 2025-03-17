@@ -11,8 +11,6 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_base.h"
 #include "chrome/browser/resource_coordinator/test_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/time.h"
-#include "chrome/browser/resource_coordinator/usage_clock.h"
-#include "content/public/browser/visibility.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,8 +30,6 @@ class MockLifecycleUnitObserver : public LifecycleUnitObserver {
                void(LifecycleUnit*,
                     LifecycleUnitState,
                     LifecycleUnitStateChangeReason));
-  MOCK_METHOD2(OnLifecycleUnitVisibilityChanged,
-               void(LifecycleUnit*, content::Visibility));
   MOCK_METHOD1(OnLifecycleUnitDestroyed, void(LifecycleUnit*));
 };
 
@@ -45,11 +41,9 @@ class LifecycleUnitBaseTest : public testing::Test {
  protected:
   LifecycleUnitBaseTest() {
     metrics::DesktopSessionDurationTracker::Initialize();
-    usage_clock_ = std::make_unique<UsageClock>();
   }
 
   ~LifecycleUnitBaseTest() override {
-    usage_clock_.reset();
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
   }
 
@@ -58,7 +52,6 @@ class LifecycleUnitBaseTest : public testing::Test {
   ScopedSetClocksForTesting scoped_set_clocks_for_testing_{&test_clock_,
                                                            &test_tick_clock_};
   testing::StrictMock<MockLifecycleUnitObserver> observer_;
-  std::unique_ptr<UsageClock> usage_clock_;
 };
 
 }  // namespace
@@ -123,78 +116,6 @@ TEST_F(LifecycleUnitBaseTest, DestroyNotifiesObservers) {
     EXPECT_CALL(observer_, OnLifecycleUnitDestroyed(&lifecycle_unit));
   }
   testing::Mock::VerifyAndClear(&observer_);
-}
-
-// Verify the initial GetWallTimeWhenHidden()/GetChromeUsageTimeWhenHidden() of
-// a visible LifecycleUnit.
-TEST_F(LifecycleUnitBaseTest, InitialLastActiveTimeForVisibleLifecycleUnit) {
-  TestLifecycleUnit lifecycle_unit(content::Visibility::VISIBLE,
-                                   usage_clock_.get());
-  EXPECT_EQ(base::TimeTicks::Max(), lifecycle_unit.GetWallTimeWhenHidden());
-  EXPECT_EQ(base::TimeDelta::Max(),
-            lifecycle_unit.GetChromeUsageTimeWhenHidden());
-}
-
-// Verify the initial GetWallTimeWhenHidden()/GetChromeUsageTimeWhenHidden() of
-// a hidden LifecycleUnit.
-TEST_F(LifecycleUnitBaseTest, InitialLastActiveTimeForHiddenLifecycleUnit) {
-  TestLifecycleUnit lifecycle_unit(content::Visibility::HIDDEN,
-                                   usage_clock_.get());
-  EXPECT_EQ(NowTicks(), lifecycle_unit.GetWallTimeWhenHidden());
-  EXPECT_EQ(usage_clock_->GetTotalUsageTime(),
-            lifecycle_unit.GetChromeUsageTimeWhenHidden());
-}
-
-// Verify that observers are notified when the visibility of the LifecyleUnit
-// changes. Verify that GetWallTimeWhenHidden()/GetChromeUsageTimeWhenHidden()
-// are updated properly.
-TEST_F(LifecycleUnitBaseTest, VisibilityChangeNotifiesObserversAndUpdatesTime) {
-  TestLifecycleUnit lifecycle_unit(content::Visibility::VISIBLE,
-                                   usage_clock_.get());
-  lifecycle_unit.AddObserver(&observer_);
-
-  // Observer is notified when the visibility changes.
-  test_tick_clock_.Advance(base::Minutes(1));
-  base::TimeTicks wall_time_when_hidden = NowTicks();
-  base::TimeDelta usage_time_when_hidden = usage_clock_->GetTotalUsageTime();
-  EXPECT_CALL(observer_, OnLifecycleUnitVisibilityChanged(
-                             &lifecycle_unit, content::Visibility::HIDDEN))
-      .WillOnce(testing::Invoke(
-          [&](LifecycleUnit* lifecycle_unit, content::Visibility visibility) {
-            EXPECT_EQ(wall_time_when_hidden,
-                      lifecycle_unit->GetWallTimeWhenHidden());
-            EXPECT_EQ(usage_time_when_hidden,
-                      lifecycle_unit->GetChromeUsageTimeWhenHidden());
-          }));
-  lifecycle_unit.OnLifecycleUnitVisibilityChanged(content::Visibility::HIDDEN);
-  testing::Mock::VerifyAndClear(&observer_);
-
-  test_tick_clock_.Advance(base::Minutes(1));
-  EXPECT_CALL(observer_, OnLifecycleUnitVisibilityChanged(
-                             &lifecycle_unit, content::Visibility::OCCLUDED))
-      .WillOnce(testing::Invoke(
-          [&](LifecycleUnit* lifecycle_unit, content::Visibility visibility) {
-            EXPECT_EQ(wall_time_when_hidden,
-                      lifecycle_unit->GetWallTimeWhenHidden());
-            EXPECT_EQ(usage_time_when_hidden,
-                      lifecycle_unit->GetChromeUsageTimeWhenHidden());
-          }));
-  lifecycle_unit.OnLifecycleUnitVisibilityChanged(
-      content::Visibility::OCCLUDED);
-  testing::Mock::VerifyAndClear(&observer_);
-
-  test_tick_clock_.Advance(base::Minutes(1));
-  EXPECT_CALL(observer_, OnLifecycleUnitVisibilityChanged(
-                             &lifecycle_unit, content::Visibility::VISIBLE))
-      .WillOnce(testing::Invoke([&](LifecycleUnit* lifecycle_unit,
-                                    content::Visibility visibility) {
-        EXPECT_TRUE(lifecycle_unit->GetWallTimeWhenHidden().is_max());
-        EXPECT_TRUE(lifecycle_unit->GetChromeUsageTimeWhenHidden().is_max());
-      }));
-  lifecycle_unit.OnLifecycleUnitVisibilityChanged(content::Visibility::VISIBLE);
-  testing::Mock::VerifyAndClear(&observer_);
-
-  lifecycle_unit.RemoveObserver(&observer_);
 }
 
 namespace {

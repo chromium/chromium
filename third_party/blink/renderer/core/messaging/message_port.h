@@ -28,6 +28,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_MESSAGING_MESSAGE_PORT_H_
 
 #include <memory>
+#include <vector>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
@@ -36,7 +38,6 @@
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -93,10 +94,10 @@ class CORE_EXPORT MessagePort : public EventTarget,
                                                      ExceptionState&);
 
   // Returns an empty array if the passed array is empty.
-  static MessagePortArray* EntanglePorts(ExecutionContext&,
-                                         Vector<MessagePortChannel>);
-  static MessagePortArray* EntanglePorts(ExecutionContext&,
-                                         WebVector<MessagePortChannel>);
+  static GCedMessagePortArray* EntanglePorts(ExecutionContext&,
+                                             Vector<MessagePortChannel>);
+  static GCedMessagePortArray* EntanglePorts(ExecutionContext&,
+                                             std::vector<MessagePortChannel>);
 
   bool Started() const { return started_; }
 

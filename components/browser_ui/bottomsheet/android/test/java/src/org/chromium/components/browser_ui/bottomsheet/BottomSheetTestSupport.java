@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -133,9 +134,14 @@ public class BottomSheetTestSupport {
                 () -> mController.hasSuppressionTokensForTesting());
     }
 
+    public void setEdgeToEdgeBottomInsetSupplier(Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
+        getBottomSheet().setEdgeToEdgeBottomInsetSupplierForTesting(edgeToEdgeBottomInsetSupplier);
+    }
+
     /**
      * Wait for the bottom sheet to enter the specified state. If the sheet is already in the
      * specified state, this method returns immediately.
+     *
      * @param controller The controller for the bottom sheet.
      * @param state The state to wait for.
      */

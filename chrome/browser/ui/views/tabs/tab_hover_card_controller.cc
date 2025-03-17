@@ -385,7 +385,7 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
 
   CreateHoverCard(target_tab_);
 
-  // For some reason, |target_tab_| can be rendered invalid before the next
+  // For some reason, `target_tab_` can be rendered invalid before the next
   // call. There may be an asynchronous operation buried deep within
   // CreateHoverCard() above. Regardless, the validity needs to be checked
   // before the next call.
@@ -545,7 +545,7 @@ void TabHoverCardController::UpdateCardContent(Tab* tab) {
 void TabHoverCardController::MaybeStartThumbnailObservation(
     Tab* tab,
     bool is_initial_show) {
-  // If the preview image feature is not enabled, |thumbnail_observer_| will be
+  // If the preview image feature is not enabled, `thumbnail_observer_` will be
   // null.
   if (!thumbnail_observer_) {
     return;
@@ -648,7 +648,7 @@ void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
     return;
   }
 
-  // If the preview image feature is not enabled, |thumbnail_observer_| will be
+  // If the preview image feature is not enabled, `thumbnail_observer_` will be
   // null.
   if (!thumbnail_observer_) {
     return;
@@ -682,7 +682,7 @@ void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
 }
 
 bool TabHoverCardController::ShouldShowImmediately(const Tab* tab) const {
-  // If less than |kShowWithoutDelayTimeBuffer| time has passed since the hover
+  // If less than `kShowWithoutDelayTimeBuffer` time has passed since the hover
   // card was last visible then it is shown immediately. This is to account for
   // if hover unintentionally leaves the tab strip.
   constexpr base::TimeDelta kShowWithoutDelayTimeBuffer =

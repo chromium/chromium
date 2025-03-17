@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/customization/customization_wallpaper_downloader.h"
+
 #include <stddef.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
@@ -11,13 +14,11 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/customization/customization_document.h"
-#include "chrome/browser/ash/customization/customization_wallpaper_downloader.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_test.h"
@@ -173,7 +174,7 @@ class CustomizationWallpaperDownloaderBrowserTest
     std::vector<uint8_t> oem_wallpaper = CreateJPEGImage(
         kWallpaperSize, kWallpaperSize, kCustomizedDefaultWallpaperColor);
     jpeg_data_.resize(oem_wallpaper.size());
-    base::ranges::copy(oem_wallpaper, jpeg_data_.begin());
+    std::ranges::copy(oem_wallpaper, jpeg_data_.begin());
 
     // Set up the test server.
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(

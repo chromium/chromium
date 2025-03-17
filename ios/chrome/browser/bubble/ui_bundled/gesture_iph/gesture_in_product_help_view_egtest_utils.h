@@ -9,6 +9,7 @@
 
 typedef NS_ENUM(NSInteger, GREYDirection);
 enum class IPHDismissalReasonType;
+struct AppLaunchConfiguration;
 
 // Simulates a recent first run.
 void MakeFirstRunRecent();
@@ -18,6 +19,12 @@ void ResetFirstRunRecency();
 
 // Relaunch the app as a Safari switcher with IPH demo mode for `feature`.
 void RelaunchWithIPHFeature(NSString* feature, BOOL safari_switcher);
+
+// Relaunch the app as a Safari switcher with IPH demo mode for `feature` with a
+// base `config`.
+void RelaunchConfigurationWithIPHFeature(AppLaunchConfiguration config,
+                                         NSString* feature,
+                                         BOOL safari_switcher);
 
 // Asserts that the gesture IPH appears within a reasonal wait time, and
 // dismisses it using `action`. Note that the caller does NOT need to guarantee

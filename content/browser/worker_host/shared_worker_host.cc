@@ -4,13 +4,13 @@
 
 #include "content/browser/worker_host/shared_worker_host.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
@@ -22,6 +22,7 @@
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/security/dip/document_isolation_policy_reporter.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/storage_partition_impl.h"
@@ -299,6 +300,15 @@ void SharedWorkerHost::Start(
         worker_client_security_state_->cross_origin_embedder_policy
             .report_only_reporting_endpoint,
         GetReportingSource(), GetNetworkAnonymizationKey());
+
+    // Create a DIP reporter with worker's policy.
+    dip_reporter_ = std::make_unique<DocumentIsolationPolicyReporter>(
+        storage_partition->GetWeakPtr(), result.final_response_url,
+        worker_client_security_state_->document_isolation_policy
+            .reporting_endpoint,
+        worker_client_security_state_->document_isolation_policy
+            .report_only_reporting_endpoint,
+        GetReportingSource(), GetNetworkAnonymizationKey());
   }
 
   auto options = blink::mojom::WorkerOptions::New(
@@ -344,13 +354,40 @@ void SharedWorkerHost::Start(
   blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info;
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_handle_->service_worker_client()) {
-    // TODO(crbug.com/41478971): Plumb the COEP reporter.
+    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+        coep_reporter;
+    if (coep_reporter_) {
+      coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
+    }
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter;
+    if (dip_reporter_) {
+      dip_reporter_->Clone(dip_reporter.InitWithNewPipeAndPassReceiver());
+    }
     std::tie(container_info, controller) =
         service_worker_handle_->scoped_service_worker_client()
             ->CommitResponseAndRelease(
                 /*rfh_id=*/std::nullopt,
                 std::move(result.policy_container_policies),
-                /*coep_reporter=*/{}, ukm_source_id());
+                std::move(coep_reporter), std::move(dip_reporter),
+                ukm_source_id());
+  }
+
+  mojo::PendingReceiver<blink::mojom::ReportingObserver>
+      coep_reporting_observer;
+  if (coep_reporter_) {
+    mojo::PendingRemote<blink::mojom::ReportingObserver> coep_reporting_remote;
+    coep_reporting_observer =
+        coep_reporting_remote.InitWithNewPipeAndPassReceiver();
+    coep_reporter_->BindObserver(std::move(coep_reporting_remote));
+  }
+
+  mojo::PendingReceiver<blink::mojom::ReportingObserver> dip_reporting_observer;
+  if (dip_reporter_) {
+    mojo::PendingRemote<blink::mojom::ReportingObserver> dip_reporting_remote;
+    dip_reporting_observer =
+        dip_reporting_remote.InitWithNewPipeAndPassReceiver();
+    dip_reporter_->BindObserver(std::move(dip_reporting_remote));
   }
 
   // Send the CreateSharedWorker message.
@@ -371,7 +408,8 @@ void SharedWorkerHost::Start(
       policy_container_host->CreatePolicyContainerForBlink(),
       receiver_.BindNewPipeAndPassRemote(), std::move(worker_receiver_),
       std::move(browser_interface_broker), ukm_source_id_,
-      instance_.DoesRequireCrossSiteRequestForCookies());
+      instance_.DoesRequireCrossSiteRequestForCookies(),
+      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
   if (service_worker_handle_->service_worker_client()) {
     service_worker_handle_->service_worker_client()->SetContainerReady();
   }
@@ -419,10 +457,15 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
   if (coep_reporter_) {
     coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
   }
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter;
+  if (dip_reporter_) {
+    dip_reporter_->Clone(dip_reporter.InitWithNewPipeAndPassReceiver());
+  }
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           GetProcessHost(), origin, GetStorageKey().ToPartialNetIsolationInfo(),
-          std::move(coep_reporter),
+          std::move(coep_reporter), std::move(dip_reporter),
           /*url_loader_network_observer=*/mojo::NullRemote(),
           /*devtools_observer=*/mojo::NullRemote(),
           mojo::Clone(worker_client_security_state_),
@@ -461,10 +504,16 @@ void SharedWorkerHost::BindCacheStorageInternal(
     coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
   }
 
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter;
+  if (dip_reporter_) {
+    dip_reporter_->Clone(dip_reporter.InitWithNewPipeAndPassReceiver());
+  }
+
   GetProcessHost()->BindCacheStorage(
       cross_origin_embedder_policy(), std::move(coep_reporter),
-      worker_client_security_state_->document_isolation_policy, bucket_locator,
-      std::move(receiver));
+      worker_client_security_state_->document_isolation_policy,
+      std::move(dip_reporter), bucket_locator, std::move(receiver));
 }
 
 void SharedWorkerHost::GetSandboxedFileSystemForBucket(
@@ -555,6 +604,8 @@ void SharedWorkerHost::CreateBlobUrlStoreProvider(
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       GetStorageKey(), instance().renderer_origin(),
       GetProcessHost()->GetDeprecatedID(), std::move(receiver),
+      !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
+          GetProcessHost()->GetBrowserContext())),
       storage::BlobURLValidityCheckBehavior::
           ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH);
 }
@@ -574,11 +625,11 @@ void SharedWorkerHost::BindPressureService(
   }
 
   // https://www.w3.org/TR/compute-pressure/#policy-control
-  if (base::ranges::any_of(GetRenderFrameIDsForWorker(), [](const auto& id) {
+  if (std::ranges::any_of(GetRenderFrameIDsForWorker(), [](const auto& id) {
         auto* render_frame_host = RenderFrameHostImpl::FromID(id);
         return render_frame_host &&
                !render_frame_host->IsFeatureEnabled(
-                   blink::mojom::PermissionsPolicyFeature::kComputePressure);
+                   network::mojom::PermissionsPolicyFeature::kComputePressure);
       })) {
     for (const auto& id : GetRenderFrameIDsForWorker()) {
       auto* rfh = RenderFrameHostImpl::FromID(id);
@@ -587,7 +638,7 @@ void SharedWorkerHost::BindPressureService(
       }
 
       if (rfh->IsFeatureEnabled(
-              blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
+              network::mojom::PermissionsPolicyFeature::kComputePressure)) {
         rfh->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kWarning,
             "This frame is connected to a Shared Worker that has requested "
@@ -774,7 +825,7 @@ void SharedWorkerHost::AddClient(
       RenderFrameHostImpl::FromID(client_render_frame_host_id);
   if (pressure_service_ && render_frame_host &&
       !render_frame_host->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
+          network::mojom::PermissionsPolicyFeature::kComputePressure)) {
     render_frame_host->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         "This frame is now connected to a Shared Worker using the Compute "

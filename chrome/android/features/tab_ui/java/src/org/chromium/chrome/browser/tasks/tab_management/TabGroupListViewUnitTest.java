@@ -20,7 +20,6 @@ import android.widget.TextView;
 import androidx.core.util.Consumer;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,7 +30,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -75,7 +73,6 @@ public class TabGroupListViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testEmptyStateVisible() {
         mPropertyModel.set(EMPTY_STATE_VISIBLE, true);
         assertEquals(View.VISIBLE, mEmptyStateContainer.getVisibility());
@@ -87,7 +84,6 @@ public class TabGroupListViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSyncEnabled() {
         mPropertyModel.set(SYNC_ENABLED, true);
         CharSequence enabledString = mEmptyStateSubheading.getText();

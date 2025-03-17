@@ -367,9 +367,9 @@ bool DisplayProfileInUseError(const base::FilePath& lock_path,
 #elif BUILDFLAG(IS_MAC)
   // On Mac, always usurp the lock.
   return true;
-#endif
-
+#else
   NOTREACHED();
+#endif
 }
 
 bool IsChromeProcess(pid_t pid) {

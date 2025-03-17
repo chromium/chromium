@@ -666,20 +666,6 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
     if (FAILED(hr))
       return E_FAIL;
 
-    if (attribute_id == UIA_AnnotationTypesAttributeId &&
-        current_value.Type() == VT_EMPTY) {
-      // This attribute UIA_AnnotationTypesAttributeId is different than others
-      // in the sense that its default value is null. When it gets queried for a
-      // text range that contains both a spelling error and other words without
-      // annotations, the returned value should solely be the spelling
-      // annotation, not the mixed attribute.
-      //
-      // Example: "The quik[spelling error] brown fox.". This text range
-      // contains only one annotation (quik) because the other segments would
-      // return VT_EMPTY.
-      continue;
-    }
-
     if (attribute_value.Type() == VT_EMPTY) {
       attribute_value = std::move(current_value);
     } else if (attribute_value != current_value) {
@@ -836,11 +822,17 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Move(TextUnit unit,
         succeeded_move = SUCCEEDED(hr) && end_units_moved == 1;
       }
 
-      // Because Windows ATs behave undesirably when the start and end endpoints
-      // are not in the same anchor (for character and word navigation), make
-      // sure to bring back the end endpoint to the end of the start's anchor.
+      // Character, word, and format moves must span the enclosing unit
+      // precisely. Sometimes, when the move operation moves the end position at
+      // the end of the anchor, it actually is located at the start of the next
+      // anchor. Expanding to the enclosing unit solves this issue by bringing
+      // the end position to the end of the previous anchor, as necessary.
+      // Without this, Windows ATs behave incorrectly because, when they fetch
+      // attributes within the specified range, it also queries the attributes
+      // of the next anchor that technically shouldn't be included in the range.
       if (start()->anchor_id() != end()->anchor_id() &&
-          (unit == TextUnit_Character || unit == TextUnit_Word)) {
+          (unit == TextUnit_Character || unit == TextUnit_Word ||
+           unit == TextUnit_Format)) {
         ExpandToEnclosingUnitImpl(unit);
       }
     }
@@ -898,8 +890,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnitImpl(
           MoveEndpointByCharacter(position_to_move, count, units_moved);
       break;
     case TextUnit_Format:
-      new_position = MoveEndpointByFormat(position_to_move, is_start_endpoint,
-                                          count, units_moved);
+      new_position = MoveEndpointByFormat(position_to_move, count, units_moved);
       break;
     case TextUnit_Word:
       new_position = MoveEndpointByWord(position_to_move, count, units_moved);
@@ -1377,14 +1368,11 @@ AXPlatformNodeTextRangeProviderWin::MoveEndpointByLine(
 AXPlatformNodeTextRangeProviderWin::AXPositionInstance
 AXPlatformNodeTextRangeProviderWin::MoveEndpointByFormat(
     const AXPositionInstance& endpoint,
-    const bool is_start_endpoint,
     const int count,
     int* units_moved) {
   return MoveEndpointByUnitHelper(std::move(endpoint),
-                                  is_start_endpoint
-                                      ? ax::mojom::TextBoundary::kFormatStart
-                                      : ax::mojom::TextBoundary::kFormatEnd,
-                                  count, units_moved);
+                                  ax::mojom::TextBoundary::kFormatStart, count,
+                                  units_moved);
 }
 
 AXPlatformNodeTextRangeProviderWin::AXPositionInstance

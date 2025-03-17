@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/common/credential_provider/ASPasswordCredentialIdentity+credential.h"
-
 #import "ios/chrome/common/credential_provider/credential.h"
 
 @implementation ASPasswordCredentialIdentity (Credential)

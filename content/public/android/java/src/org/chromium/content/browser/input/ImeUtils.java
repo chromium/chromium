@@ -18,12 +18,14 @@ import androidx.core.view.inputmethod.EditorInfoCompat;
 import org.chromium.base.ThreadUtils;
 import org.chromium.blink_public.web.WebTextInputFlags;
 import org.chromium.blink_public.web.WebTextInputMode;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.ime.TextInputAction;
 import org.chromium.ui.base.ime.TextInputType;
 
 import java.util.Locale;
 
 /** Utilities for IME such as computing outAttrs, and dumping object information. */
+@NullMarked
 public class ImeUtils {
     /**
      * Compute {@link EditorInfo} based on the given parameters. This is needed for

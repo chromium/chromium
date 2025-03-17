@@ -115,6 +115,11 @@ class MockAttributionManager : public AttributionManager {
                GlobalRenderFrameHostId),
               (override));
 
+  MOCK_METHOD(void,
+              UpdateLastNavigationTime,
+              (base::Time registration_time),
+              (override));
+
   void AddObserver(AttributionObserver*) override;
   void RemoveObserver(AttributionObserver*) override;
   AttributionDataHostManager* GetDataHostManager() override;

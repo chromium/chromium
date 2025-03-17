@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -50,6 +51,9 @@ public class TabListEditorActionProperties {
     public static final WritableObjectPropertyKey<Callback<List<Integer>>>
             ON_SELECTION_STATE_CHANGE = new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<Destroyable> DESTROYABLE =
+            new WritableObjectPropertyKey<>();
+
     /** Keys for the {@link TabListEditorAction}. */
     public static final PropertyKey[] ACTION_KEYS = {
         MENU_ITEM_ID,
@@ -67,7 +71,8 @@ public class TabListEditorActionProperties {
         ICON_TINT,
         ON_CLICK_LISTENER,
         SHOULD_DISMISS_MENU,
-        ON_SELECTION_STATE_CHANGE
+        ON_SELECTION_STATE_CHANGE,
+        DESTROYABLE
     };
 
     /** Keys for the {@link TabListEditorMenuItem}. */

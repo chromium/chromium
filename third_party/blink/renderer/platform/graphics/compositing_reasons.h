@@ -89,7 +89,7 @@ using CompositingReasons = uint64_t;
   V(Scrollbar)                                                                 \
   V(LinkHighlight)                                                             \
   V(DevToolsOverlay)                                                           \
-  V(ViewTransitionContent)
+  V(ViewTransitionContent)                                                     \
 
 class PLATFORM_EXPORT CompositingReason {
   DISALLOW_NEW();

@@ -10,16 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "content/public/browser/web_contents.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
 
@@ -63,24 +56,12 @@ class PrintPreviewWebcontentsManager
   void HandleDialogClosed(const base::UnguessableToken& token,
                           HandleDialogClosedCallback callback) override;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void ResetRemoteForTesting();
-  void BindPrintPreviewCrosDelegateForTesting(
-      mojo::PendingRemote<crosapi::mojom::PrintPreviewCrosDelegate>
-          pending_remote);
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   static void SetPrintPreviewCrosDelegateForTesting(
       crosapi::mojom::PrintPreviewCrosDelegate* delegate);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
   friend class MockPrintPreviewWebcontentsManager;
   friend class PrintPreviewWebContentsManagerBrowserTest;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  mojo::Remote<crosapi::mojom::PrintPreviewCrosDelegate> remote_;
-  mojo::Receiver<crosapi::mojom::PrintPreviewCrosClient> receiver_{this};
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   void OnRequestPrintPreviewCallback(bool success);
   void OnPrintPreviewDoneCallback(bool success);

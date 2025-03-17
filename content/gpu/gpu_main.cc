@@ -213,8 +213,6 @@ int GpuMain(MainFunctionParams parameters) {
   TRACE_EVENT0("gpu", "GpuMain");
   base::CurrentProcess::GetInstance().SetProcessType(
       base::CurrentProcessType::PROCESS_GPU);
-  base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
-      kTraceEventGpuProcessSortIndex);
 
   const base::CommandLine& command_line = *parameters.command_line;
 
@@ -249,6 +247,11 @@ int GpuMain(MainFunctionParams parameters) {
   // able to load a DLL.
   SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX |
                SEM_NOOPENFILEERRORBOX);
+
+  // Disable high resolution timer throttling to prevent the OS from degrading
+  // performance.
+  base::win::SetProcessTimerThrottleState(
+      base::GetCurrentProcessHandle(), base::win::ProcessPowerState::kDisabled);
 
   // COM is used by some Windows Media Foundation calls made on this thread and
   // must be MTA so we don't have to worry about pumping messages to handle

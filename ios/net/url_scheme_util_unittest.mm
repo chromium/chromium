@@ -7,17 +7,14 @@
 #import <Foundation/Foundation.h>
 
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 namespace net {
 
 const char* kSchemeTestData[] = {
-    "http://foo.com",
-    "https://foo.com",
-    "data:text/html;charset=utf-8,Hello",
-    "about:blank",
-    "chrome://settings",
+    "http://foo.com", "https://foo.com",   "data:text/html;charset=utf-8,Hello",
+    "about:blank",    "chrome://settings",
 };
 
 using URLSchemeUtilTest = PlatformTest;

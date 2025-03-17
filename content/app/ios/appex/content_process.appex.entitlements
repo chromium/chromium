@@ -4,8 +4,6 @@
 <dict>
 	<key>com.apple.developer.web-browser-engine.webcontent</key>
 	<true/>
-	<key>com.apple.security.get-task-allow</key>
-	<true/>
 	<key>com.apple.developer.cs.allow-jit</key>
 	<true/>
 </dict>

@@ -71,21 +71,18 @@ enterprise_management::RemoteCommand_Type ClearBrowsingDataJob::GetType()
 
 bool ClearBrowsingDataJob::ParseCommandPayload(
     const std::string& command_payload) {
-  std::optional<base::Value> root(base::JSONReader::Read(command_payload));
+  std::optional<base::Value::Dict> root =
+      base::JSONReader::ReadDict(command_payload);
   if (!root)
     return false;
 
-  if (!root->is_dict())
-    return false;
-  const base::Value::Dict& dict = root->GetDict();
-
-  if (!job_profile_picker_.ParseCommandPayload(dict)) {
+  if (!job_profile_picker_.ParseCommandPayload(*root)) {
     return false;
   }
 
   // Not specifying these fields is equivalent to setting them to false.
-  clear_cache_ = dict.FindBool(kClearCacheField).value_or(false);
-  clear_cookies_ = dict.FindBool(kClearCookiesField).value_or(false);
+  clear_cache_ = root->FindBool(kClearCacheField).value_or(false);
+  clear_cookies_ = root->FindBool(kClearCookiesField).value_or(false);
 
   return true;
 }

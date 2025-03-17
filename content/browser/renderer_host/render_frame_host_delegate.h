@@ -26,6 +26,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/javascript_dialog_type.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "media/mojo/services/media_metrics_provider.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -39,6 +40,7 @@
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -270,9 +272,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                            const std::u16string& title,
                            base::i18n::TextDirection title_direction) {}
 
-  // Update app title.
-  virtual void UpdateAppTitle(RenderFrameHostImpl* render_frame_host,
-                              const std::u16string& app_title) {}
+  // Update application title.
+  virtual void UpdateApplicationTitle(RenderFrameHostImpl* render_frame_host,
+                                      const std::u16string& application_title) {
+  }
 
   // The destination URL has changed and should be updated.
   virtual void UpdateTargetURL(RenderFrameHostImpl* render_frame_host,
@@ -288,8 +291,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // The render frame has requested access to media devices listed in
   // |request|, and the client should grant or deny that permission by
   // calling |callback|.
-  virtual void RequestMediaAccessPermission(const MediaStreamRequest& request,
-                                            MediaResponseCallback callback);
+  virtual void RequestMediaAccessPermission(
+      RenderFrameHostImpl* render_frame_host,
+      const MediaStreamRequest& request,
+      MediaResponseCallback callback);
 
   // Called when a renderer requests to select an audio output device.
   // |request| contains parameters for audio output device selection.
@@ -644,7 +649,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       const network::mojom::SharedDictionaryAccessDetails& details) {}
   virtual void OnDeviceBoundSessionAccessed(
       RenderFrameHostImpl* render_frame_host,
-      const net::device_bound_sessions::SessionKey& session) {}
+      const net::device_bound_sessions::SessionAccess& access) {}
 
   virtual void NotifyStorageAccessed(
       RenderFrameHostImpl* render_frame_host,
@@ -677,7 +682,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void SetWindowRect(const gfx::Rect& new_bounds) {}
 
   // The page's preferred size changed.
-  virtual void UpdateWindowPreferredSize(const gfx::Size& pref_size) {}
+  virtual void UpdateWindowPreferredSize(RenderFrameHostImpl* render_frame_host,
+                                         const gfx::Size& pref_size) {}
 
   // Returns the list of top-level RenderFrameHosts hosting active documents
   // that belong to the same browsing context group as `render_frame_host`.
@@ -721,8 +727,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                     const GURL& url,
                                     int error_code) {}
 
-  // Called by the primary main frame to close the current tab/window.
-  virtual void Close() {}
+  // Called by the main frame to close the current tab/window.
+  virtual void Close(RenderFrameHostImpl* render_frame_host) {}
 
   // True if the delegate is currently showing a JavaScript dialog.
   virtual bool IsJavaScriptDialogShowing() const;
@@ -734,7 +740,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Returns the base permissions policy that should be applied to the Isolated
   // Web App running in the given RenderFrameHostImpl. If std::nullopt is
   // returned the default non-isolated permissions policy will be applied.
-  virtual std::optional<blink::ParsedPermissionsPolicy>
+  virtual std::optional<network::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(RenderFrameHostImpl* source);
 
   // Updates the draggable regions defined by the app-region CSS property.
@@ -764,6 +770,13 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // Called when a first contentful paint happened in the primary main frame.
   virtual void OnFirstContentfulPaintInPrimaryMainFrame() {}
+
+  // Returns the top-level native window for the associated WebContents.
+  virtual gfx::NativeWindow GetOwnerNativeWindow();
+
+  // Gets the delegate reason for entering picture in picture automatically.
+  virtual media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason()
+      const;
 
  protected:
   virtual ~RenderFrameHostDelegate() = default;

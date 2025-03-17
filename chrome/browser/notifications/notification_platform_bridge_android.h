@@ -93,6 +93,15 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
       const base::android::JavaParamRef<jobject>& java_object,
       bool is_suspicious);
 
+  // Called by the Java implementation when the user decides they no longer want
+  // to receive warnings for suspicious notifications that come from `origin`.
+  void OnNotificationAlwaysAllowFromOrigin(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_object,
+      std::string& origin,
+      std::string& profile_id,
+      jboolean incognito);
+
   // NotificationPlatformBridge implementation.
   void Display(NotificationHandler::Type notification_type,
                Profile* profile,
@@ -112,6 +121,11 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
 
  private:
   void OnNotificationProcessed(const std::string& notification_id);
+
+  // Change user setting so that suspicious notifications from `url` are always
+  // sent to the user. Then, send a new notification from Chrome to the user
+  // informing them that their choice to "always allow" has been applied.
+  void AlwaysAllowNotifications(const GURL& url, Profile* profile);
 
   // Contains information necessary in order to enable closing notifications
   // that were not created by this instance of the manager. This list may not

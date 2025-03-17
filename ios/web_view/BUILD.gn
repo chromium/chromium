@@ -61,6 +61,7 @@ ios_web_view_public_headers = [
   "public/cwv_find_in_page_controller.h",
   "public/cwv_flags.h",
   "public/cwv_html_element.h",
+  "public/cwv_global_state.h",
   "public/cwv_identity.h",
   "public/cwv_leak_check_credential.h",
   "public/cwv_leak_check_service.h",
@@ -157,6 +158,7 @@ ios_web_view_sources = [
   "internal/cwv_find_in_page_controller_internal.h",
   "internal/cwv_flags.mm",
   "internal/cwv_flags_internal.h",
+  "internal/cwv_global_state_internal.h",
   "internal/cwv_html_element.mm",
   "internal/cwv_html_element_internal.h",
   "internal/cwv_lookalike_url_handler.mm",
@@ -187,7 +189,6 @@ ios_web_view_sources = [
   "internal/cwv_web_view_internal.h",
   "internal/cwv_x509_certificate.mm",
   "internal/cwv_x509_certificate_internal.h",
-  "internal/ios_global_state_web_view_configuration.mm",
   "internal/js_messaging/web_view_scripts_java_script_feature.h",
   "internal/js_messaging/web_view_scripts_java_script_feature.mm",
   "internal/language/web_view_accept_languages_service_factory.h",
@@ -290,7 +291,6 @@ ios_web_view_sources = [
   "internal/web_view_browser_state.mm",
   "internal/web_view_download_manager.h",
   "internal/web_view_download_manager.mm",
-  "internal/web_view_global_state_util.h",
   "internal/web_view_java_script_dialog_presenter.h",
   "internal/web_view_java_script_dialog_presenter.mm",
   "internal/web_view_message_handler_java_script_feature.h",
@@ -328,8 +328,6 @@ ios_web_view_deps = [
   "//components/browser_sync",
   "//components/component_updater",
   "//components/component_updater/installer_policies",
-  "//components/flags_ui",
-  "//components/flags_ui:switches",
   "//components/gcm_driver",
   "//components/history/core/common",
   "//components/image_fetcher/ios",
@@ -395,6 +393,8 @@ ios_web_view_deps = [
   "//components/version_info:version_string",
   "//components/web_resource",
   "//components/webdata_services",
+  "//components/webui/flags",
+  "//components/webui/flags:switches",
   "//google_apis",
   "//ios/components/credential_provider_extension:password_spec_fetcher",
   "//ios/components/credential_provider_extension:password_util",
@@ -414,7 +414,6 @@ ios_web_view_deps = [
   "//ios/web/navigation:wk_navigation_util",
   "//ios/web/public",
   "//ios/web/public/browsing_data",
-  "//ios/web/public/deprecated",
   "//ios/web/public/download",
   "//ios/web/public/find_in_page",
   "//ios/web/public/init",
@@ -476,7 +475,7 @@ ios_framework_bundle("web_view") {
   public_headers += ios_web_view_public_headers
 
   sources = ios_web_view_public_headers
-  sources += [ "internal/web_view_global_state_util.mm" ]
+  sources += [ "internal/cwv_global_state.mm" ]
 
   deps = [
     ":web_view_sources",
@@ -499,6 +498,10 @@ source_set("run_all_unittests") {
   ]
 }
 
+config("unittest_config") {
+  defines = [ "CWV_UNIT_TEST" ]
+}
+
 test("ios_web_view_unittests") {
   testonly = true
   sources = [
@@ -513,6 +516,7 @@ test("ios_web_view_unittests") {
     "internal/cwv_download_task_unittest.mm",
     "internal/cwv_favicon_unittest.mm",
     "internal/cwv_flags_unittest.mm",
+    "internal/cwv_global_state.mm",
     "internal/cwv_html_element_unittest.mm",
     "internal/cwv_lookalike_url_handler_unittest.mm",
     "internal/cwv_omnibox_input_unittest.mm",
@@ -541,9 +545,10 @@ test("ios_web_view_unittests") {
     "internal/translate/cwv_translation_controller_unittest.mm",
     "internal/translate/cwv_translation_language_unittest.mm",
     "internal/translate/cwv_translation_policy_unittest.mm",
-    "internal/web_view_global_state_util_stub.mm",
     "internal/web_view_web_client_unittest.mm",
   ]
+
+  configs += [ ":unittest_config" ]
 
   deps = [
     ":run_all_unittests",

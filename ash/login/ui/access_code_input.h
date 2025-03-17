@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/style/system_textfield.h"
 #include "base/memory/raw_ptr.h"
@@ -283,7 +284,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
   AccessibleInputField* ActiveField() const;
 
   // Returns text in the active input field.
-  const std::u16string& ActiveInput() const;
+  std::u16string_view ActiveInput() const;
 
   // To be called when access input code changes (digit is inserted, deleted or
   // updated). Passes true when code is complete (all digits have input value)

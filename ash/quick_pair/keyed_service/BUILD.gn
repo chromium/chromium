@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash,
-       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+assert(is_chromeos, "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
 
 # TODO(b/279954848): Convert this to a component build
 static_library("keyed_service") {
@@ -75,7 +72,6 @@ source_set("unit_tests") {
 
   sources = [
     "battery_update_message_handler_unittest.cc",
-    "fast_pair_bluetooth_config_delegate_unittest.cc",
     "quick_pair_mediator_unittest.cc",
     "quick_pair_metrics_logger_unittest.cc",
   ]

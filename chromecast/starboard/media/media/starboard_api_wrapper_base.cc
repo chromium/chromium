@@ -9,9 +9,12 @@
 #include <starboard/player.h>
 
 #include <cstring>
+#include <string>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "chromecast/starboard/chromecast/starboard_adapter/public/cast_starboard_api_adapter.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
@@ -25,6 +28,17 @@ namespace {
 // is created.
 SbDrmSystem g_drm_system = nullptr;
 
+// Helper function to convert a session ID to a string. Returns an empty string
+// if session_id is null or the size is invalid (<=0).
+std::string SessionIdToString(const void* session_id, int session_id_size) {
+  if (session_id && session_id_size > 0) {
+    return std::string(reinterpret_cast<const char*>(session_id),
+                       session_id_size);
+  }
+  return "";
+}
+
+// Called by starboard when a sample can be safely deallocated.
 void DeallocateSample(SbPlayer player,
                       void* context,
                       const void* sample_buffer) {
@@ -65,7 +79,8 @@ void OnPlayerError(SbPlayer player,
   const auto* handler =
       static_cast<const StarboardPlayerCallbackHandler*>(context);
   handler->player_error_fn(player, handler->context,
-                           static_cast<StarboardPlayerError>(error), message);
+                           static_cast<StarboardPlayerError>(error),
+                           std::string(message ? message : ""));
 }
 
 // Converts starboard's representation of a key ID to cast's version-agnostic
@@ -99,11 +114,23 @@ void OnUpdateRequest(SbDrmSystem drm_system,
                      const char* url) {
   const auto* handler =
       static_cast<const StarboardDrmSystemCallbackHandler*>(context);
+  std::vector<uint8_t> content_vec;
+  if (content && content_size > 0) {
+    // SAFETY: This function is a callback defined in a C API (starboard):
+    // https://github.com/youtube/cobalt/blob/31fef3564db8ecfe67fca0a7868c9bf44c14d151/starboard/drm.h#L150
+    // We have to assume that the caller (Starboard) passed the correct value
+    // for content_size.
+    const uint8_t* content_ptr = reinterpret_cast<const uint8_t*>(content);
+    UNSAFE_BUFFERS(content_vec.assign(content_ptr, content_ptr + content_size));
+  }
+
   handler->update_request_fn(drm_system, handler->context, ticket,
                              static_cast<StarboardDrmStatus>(status),
                              static_cast<StarboardDrmSessionRequestType>(type),
-                             error_message, session_id, session_id_size,
-                             content, content_size, url);
+                             std::string(error_message ? error_message : ""),
+                             SessionIdToString(session_id, session_id_size),
+                             std::move(content_vec),
+                             std::string(url ? url : ""));
 }
 
 // Called by starboard to notify cast that a session has been updated.
@@ -118,17 +145,22 @@ void OnSessionUpdated(SbDrmSystem drm_system,
       static_cast<const StarboardDrmSystemCallbackHandler*>(context);
   handler->session_updated_fn(drm_system, handler->context, ticket,
                               static_cast<StarboardDrmStatus>(status),
-                              error_message, session_id, session_id_size);
+                              std::string(error_message ? error_message : ""),
+                              SessionIdToString(session_id, session_id_size));
 }
 
 // Called by starboard to notify cast that key statuses have changed.
-void OnKeyStatusesChanged(SbDrmSystem drm_system,
-                          void* context,
-                          const void* session_id,
-                          int session_id_size,
-                          int number_of_keys,
-                          const SbDrmKeyId* key_ids,
-                          const SbDrmKeyStatus* key_statuses) {
+//
+// There is unsafe buffer usage here because the Starboard API passes us raw
+// ptrs and an int representing the number of elements in those arrays.
+UNSAFE_BUFFER_USAGE void OnKeyStatusesChanged(
+    SbDrmSystem drm_system,
+    void* context,
+    const void* session_id,
+    int session_id_size,
+    int number_of_keys,
+    const SbDrmKeyId* key_ids,
+    const SbDrmKeyStatus* key_statuses) {
   std::vector<StarboardDrmKeyId> internal_key_ids;
   std::vector<StarboardDrmKeyStatus> internal_key_statuses;
 
@@ -136,16 +168,23 @@ void OnKeyStatusesChanged(SbDrmSystem drm_system,
   internal_key_statuses.reserve(number_of_keys);
 
   for (int i = 0; i < number_of_keys; ++i) {
-    internal_key_ids.push_back(ToStarboardDrmKeyId(key_ids[i]));
+    // SAFETY: This function is a callback defined in a C API (starboard):
+    // https://github.com/youtube/cobalt/blob/31fef3564db8ecfe67fca0a7868c9bf44c14d151/starboard/drm.h#L194
+    // We have to assume that the caller (Starboard) passed the correct value
+    // for number_of_keys.
+    internal_key_ids.push_back(ToStarboardDrmKeyId(UNSAFE_BUFFERS(key_ids[i])));
+
+    // SAFETY: see above
     internal_key_statuses.push_back(
-        static_cast<StarboardDrmKeyStatus>(key_statuses[i]));
+        static_cast<StarboardDrmKeyStatus>(UNSAFE_BUFFERS(key_statuses[i])));
   }
 
   const auto* handler =
       static_cast<const StarboardDrmSystemCallbackHandler*>(context);
   handler->key_statuses_changed_fn(
-      drm_system, handler->context, session_id, session_id_size, number_of_keys,
-      internal_key_ids.data(), internal_key_statuses.data());
+      drm_system, handler->context,
+      SessionIdToString(session_id, session_id_size),
+      std::move(internal_key_ids), std::move(internal_key_statuses));
 }
 
 // Called by starboard when a server certificate has been updated.
@@ -158,7 +197,8 @@ void OnServerCertificateUpdated(SbDrmSystem drm_system,
       static_cast<const StarboardDrmSystemCallbackHandler*>(context);
   handler->server_certificate_updated_fn(
       drm_system, handler->context, ticket,
-      static_cast<StarboardDrmStatus>(status), error_message);
+      static_cast<StarboardDrmStatus>(status),
+      std::string(error_message ? error_message : ""));
 }
 
 // Called by starboard when a DRM session has closed.
@@ -168,8 +208,9 @@ void OnSessionClosed(SbDrmSystem drm_system,
                      int session_id_size) {
   const auto* handler =
       static_cast<const StarboardDrmSystemCallbackHandler*>(context);
-  handler->session_closed_fn(drm_system, handler->context, session_id,
-                             session_id_size);
+
+  handler->session_closed_fn(drm_system, handler->context,
+                             SessionIdToString(session_id, session_id_size));
 }
 
 }  // namespace
@@ -309,15 +350,14 @@ SbPlayerSampleInfo StarboardApiWrapperBase::ToSbPlayerSampleInfo(
   out_info.buffer_size = in_info.buffer_size;
   out_info.timestamp = in_info.timestamp;
 
-  side_data.reserve(in_info.side_data_count);
-  for (int i = 0; i < in_info.side_data_count; ++i) {
-    const StarboardSampleSideData& in_side_data = in_info.side_data[i];
+  side_data.reserve(in_info.side_data.size());
+  for (const StarboardSampleSideData& in_side_data : in_info.side_data) {
     SbPlayerSampleSideData out_side_data;
 
     out_side_data.type =
         static_cast<SbPlayerSampleSideDataType>(in_side_data.type);
-    out_side_data.data = in_side_data.data;
-    out_side_data.size = in_side_data.size;
+    out_side_data.data = in_side_data.data.data();
+    out_side_data.size = in_side_data.data.size();
 
     side_data.push_back(std::move(out_side_data));
   }
@@ -355,13 +395,11 @@ SbPlayerSampleInfo StarboardApiWrapperBase::ToSbPlayerSampleInfo(
            in_drm_info.identifier_size);
     drm_info.identifier_size = in_drm_info.identifier_size;
 
-    subsample_mappings.reserve(in_drm_info.subsample_count);
-    for (int i = 0; i < in_drm_info.subsample_count; ++i) {
+    subsample_mappings.reserve(in_drm_info.subsample_mapping.size());
+    for (const auto& in_mapping : in_drm_info.subsample_mapping) {
       SbDrmSubSampleMapping mapping;
-      mapping.clear_byte_count =
-          in_drm_info.subsample_mapping[i].clear_byte_count;
-      mapping.encrypted_byte_count =
-          in_drm_info.subsample_mapping[i].encrypted_byte_count;
+      mapping.clear_byte_count = in_mapping.clear_byte_count;
+      mapping.encrypted_byte_count = in_mapping.encrypted_byte_count;
       subsample_mappings.push_back(std::move(mapping));
     }
     drm_info.subsample_count = subsample_mappings.size();
@@ -375,22 +413,21 @@ SbPlayerSampleInfo StarboardApiWrapperBase::ToSbPlayerSampleInfo(
   return out_info;
 }
 
-void StarboardApiWrapperBase::WriteSample(void* player,
-                                          StarboardMediaType type,
-                                          StarboardSampleInfo* sample_infos,
-                                          int sample_infos_count) {
+void StarboardApiWrapperBase::WriteSample(
+    void* player,
+    StarboardMediaType type,
+    base::span<const StarboardSampleInfo> sample_infos) {
   std::vector<SbPlayerSampleInfo> samples;
   std::vector<std::vector<SbPlayerSampleSideData>> side_data;
   SbDrmSampleInfo drm_info;
   std::vector<SbDrmSubSampleMapping> subsample_mappings;
-  for (int i = 0; i < sample_infos_count; ++i) {
+  for (const StarboardSampleInfo& sample_info : sample_infos) {
     side_data.push_back({});
-    samples.push_back(ToSbPlayerSampleInfo(sample_infos[i], side_data.back(),
+    samples.push_back(ToSbPlayerSampleInfo(sample_info, side_data.back(),
                                            drm_info, subsample_mappings));
   }
   CallWriteSamples(static_cast<SbPlayer>(player),
-                   static_cast<SbMediaType>(type), samples.data(),
-                   sample_infos_count);
+                   static_cast<SbMediaType>(type), samples);
 }
 
 StarboardMediaSupportType StarboardApiWrapperBase::CanPlayMimeAndKeySystem(

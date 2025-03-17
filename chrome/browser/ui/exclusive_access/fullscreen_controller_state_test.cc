@@ -122,11 +122,11 @@ FullscreenControllerStateTest::FullscreenControllerStateTest() {
          sizeof(transition_table_data));
 
   // Verify that transition_table_ has been completely defined.
-  for (int source = 0; source < NUM_STATES; ++source) {
-    for (int event = 0; event < NUM_EVENTS; ++event) {
-      EXPECT_NE(transition_table_[source][event], STATE_INVALID);
-      EXPECT_GE(transition_table_[source][event], 0);
-      EXPECT_LT(transition_table_[source][event], NUM_STATES);
+  for (auto& source : transition_table_) {
+    for (auto& state : source) {
+      EXPECT_NE(state, STATE_INVALID);
+      EXPECT_GE(state, 0);
+      EXPECT_LT(state, NUM_STATES);
     }
   }
 

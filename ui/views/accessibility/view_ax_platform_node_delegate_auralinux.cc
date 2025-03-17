@@ -4,13 +4,13 @@
 
 #include "ui/views/accessibility/view_ax_platform_node_delegate_auralinux.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -122,7 +122,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
       window_observations_.RemoveObservation(window);
     }
 
-    auto iter = base::ranges::find(widgets_, widget);
+    auto iter = std::ranges::find(widgets_, widget);
     if (iter != widgets_.end()) {
       widgets_.erase(iter);
     }
@@ -139,7 +139,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
         continue;
       }
 
-      root_view->NotifyAccessibilityEvent(
+      root_view->NotifyAccessibilityEventDeprecated(
           ax::mojom::Event::kWindowVisibilityChanged, true);
     }
   }
@@ -188,18 +188,15 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
     data_.AddState(ax::mojom::State::kFocusable);
     ax_platform_node_ = ui::AXPlatformNode::Create(this);
     DCHECK(ax_platform_node_);
-    ui::AXPlatformNodeAuraLinux::SetApplication(ax_platform_node_);
+    ui::AXPlatformNodeAuraLinux::SetApplication(ax_platform_node_.get());
     ui::AXPlatformNodeAuraLinux::StaticInitialize();
   }
 
-  ~AuraLinuxApplication() override {
-    ax_platform_node_->Destroy();
-    ax_platform_node_ = nullptr;
-  }
+  ~AuraLinuxApplication() override = default;
 
   // TODO(nektar): Make this into a const pointer so that it can't be set
   // outside the class's constructor.
-  raw_ptr<ui::AXPlatformNode> ax_platform_node_;
+  ui::AXPlatformNode::Pointer ax_platform_node_;
   const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
   mutable ui::AXNodeData data_;
   std::vector<raw_ptr<Widget, VectorExperimental>> widgets_;
@@ -212,7 +209,8 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
 }  // namespace
 
 // static
-std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
+std::unique_ptr<ViewAccessibility>
+ViewAXPlatformNodeDelegate::CreatePlatformSpecific(View* view) {
   AuraLinuxApplication::GetInstance().RegisterWidget(view->GetWidget());
 
   auto result = std::make_unique<ViewAXPlatformNodeDelegateAuraLinux>(view);

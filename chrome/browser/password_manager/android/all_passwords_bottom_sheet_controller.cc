@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
-#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,7 +46,6 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     PasswordManagerClient* client,
     PasswordReuseDetectionManagerClient*
         password_reuse_detection_manager_client,
-    ShowMigrationWarningCallback show_migration_warning_callback,
     std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge)
     : view_(std::move(view)),
       web_contents_(web_contents),
@@ -59,8 +57,6 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
       client_(client),
       password_reuse_detection_manager_client_(
           password_reuse_detection_manager_client),
-      show_migration_warning_callback_(
-          std::move(show_migration_warning_callback)),
       access_loss_warning_bridge_(std::move(access_loss_warning_bridge)),
       plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
           web_contents_->GetBrowserContext())) {}
@@ -77,8 +73,6 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
       account_store_(account_store),
       dismissal_callback_(std::move(dismissal_callback)),
       focused_field_type_(focused_field_type),
-      show_migration_warning_callback_(
-          base::BindRepeating(&local_password_migration::ShowWarning)),
       access_loss_warning_bridge_(
           std::make_unique<PasswordAccessLossWarningBridgeImpl>()),
       plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
@@ -171,15 +165,6 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
     FillPassword(password);
   } else if (!requests_to_fill_password) {
     driver_->FillIntoFocusedField(is_password_field, username);
-  }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
-    show_migration_warning_callback_.Run(
-        web_contents_->GetTopLevelNativeWindow(),
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-        password_manager::metrics_util::PasswordMigrationWarningTriggers::
-            kAllPasswords);
   }
 
   TryToShowAccessLossWarningSheet();

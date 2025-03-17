@@ -68,6 +68,8 @@ SourceType ToProtobufSourceType(SourceIdType source_id_type) {
       return SourceType::EXTENSION_ID;
     case SourceIdType::NOTIFICATION_ID:
       return SourceType::NOTIFICATION_ID;
+    case SourceIdType::CDM_ID:
+      return SourceType::CDM_ID;
   }
 }
 

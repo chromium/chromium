@@ -215,7 +215,8 @@ void ApplyBlockElementCommand::FormatSelection(
     // `relocatable_end_of_next_paragraph` should be also updated along with
     // it.
     if (end_of_next_of_paragraph_to_move.IsNotNull() &&
-        end_of_next_of_paragraph_to_move.IsValidFor(GetDocument())) {
+        end_of_next_of_paragraph_to_move.IsValidFor(GetDocument()) &&
+        relocatable_end_of_next_paragraph->GetPosition().IsNotNull()) {
       DCHECK(RuntimeEnabledFeatures::
                  AdjustEndOfNextParagraphIfMovedParagraphIsUpdatedEnabled());
       relocatable_end_of_next_paragraph->SetPosition(

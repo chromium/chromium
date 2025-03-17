@@ -12,7 +12,7 @@
 namespace web {
 class FindInPageManager;
 class WebState;
-}
+}  // namespace web
 
 // Class which conforms to CRWFindInPageManagerDelegate protocol.
 @interface CRWFakeFindInPageManagerDelegate

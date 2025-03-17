@@ -145,6 +145,42 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
     QueueReport(url, endpoint, "permissions-policy-violation", std::move(body));
   }
 
+  void QueuePotentialPermissionsPolicyViolationReport(
+      const GURL& url,
+      const std::string& endpoint,
+      const std::string& policy_id,
+      const std::string& disposition,
+      const std::optional<std::string>& message,
+      const std::optional<std::string>& allow_attribute,
+      const std::optional<std::string>& src_attribute,
+      const std::optional<std::string>& source_file,
+      int line_number,
+      int column_number) override {
+    base::Value::Dict body;
+    body.Set("policyId", policy_id);
+    body.Set("disposition", disposition);
+    if (message) {
+      body.Set("message", *message);
+    }
+    if (allow_attribute) {
+      body.Set("allowAttribute", *allow_attribute);
+    }
+    if (src_attribute) {
+      body.Set("srcAttribute", *src_attribute);
+    }
+    if (source_file) {
+      body.Set("sourceFile", *source_file);
+    }
+    if (line_number) {
+      body.Set("lineNumber", line_number);
+    }
+    if (column_number) {
+      body.Set("columnNumber", column_number);
+    }
+    QueueReport(url, endpoint, "potential-permissions-policy-violation",
+                std::move(body));
+  }
+
   void QueueDocumentPolicyViolationReport(
       const GURL& url,
       const std::string& group,

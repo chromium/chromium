@@ -499,8 +499,8 @@ experimental domain Audits
   type AffectedRequest extends object
     properties
       # The unique request id.
-      Network.RequestId requestId
-      optional string url
+      optional Network.RequestId requestId
+      string url
 
   # Information about the frame affected by an inspector issue.
   type AffectedFrame extends object
@@ -691,6 +691,7 @@ experimental domain Audits
       kInlineViolation
       kEvalViolation
       kURLViolation
+      kSRIViolation
       kTrustedTypesSinkViolation
       kTrustedTypesPolicyViolation
       kWasmEvalViolation
@@ -800,6 +801,29 @@ experimental domain Audits
       WriteErrorTooLongIdField
       WriteErrorUnsupportedType
 
+  type SRIMessageSignatureError extends string
+    enum
+      MissingSignatureHeader
+      MissingSignatureInputHeader
+      InvalidSignatureHeader
+      InvalidSignatureInputHeader
+      SignatureHeaderValueIsNotByteSequence
+      SignatureHeaderValueIsParameterized
+      SignatureHeaderValueIsIncorrectLength
+      SignatureInputHeaderMissingLabel
+      SignatureInputHeaderValueNotInnerList
+      SignatureInputHeaderValueMissingComponents
+      SignatureInputHeaderInvalidComponentType
+      SignatureInputHeaderInvalidComponentName
+      SignatureInputHeaderInvalidHeaderComponentParameter
+      SignatureInputHeaderInvalidDerivedComponentParameter
+      SignatureInputHeaderKeyIdLength
+      SignatureInputHeaderInvalidParameter
+      SignatureInputHeaderMissingRequiredParameters
+      ValidationFailedSignatureExpired
+      ValidationFailedInvalidLength
+      ValidationFailedSignatureMismatch
+
   # Details for issues around "Attribution Reporting API" usage.
   # Explainer: https://github.com/WICG/attribution-reporting-api
   type AttributionReportingIssueDetails extends object
@@ -829,6 +853,11 @@ experimental domain Audits
   type SharedDictionaryIssueDetails extends object
     properties
       SharedDictionaryError sharedDictionaryError
+      AffectedRequest request
+
+  type SRIMessageSignatureIssueDetails extends object
+    properties
+      SRIMessageSignatureError error
       AffectedRequest request
 
   type GenericIssueErrorType extends string
@@ -949,6 +978,8 @@ experimental domain Audits
       InvalidFieldsSpecified
       RelyingPartyOriginIsOpaque
       TypeNotMatching
+      UiDismissedNoEmbargo
+      CorsError
 
   type FederatedAuthUserInfoRequestIssueDetails extends object
     properties
@@ -983,6 +1014,33 @@ experimental domain Audits
       # The failure message for the failed request.
       string failureMessage
       optional Network.RequestId requestId
+
+  type PartitioningBlobURLInfo extends string
+    enum
+      BlockedCrossPartitionFetching
+      EnforceNoopenerForNavigation
+
+  type PartitioningBlobURLIssueDetails extends object
+    properties
+      # The BlobURL that failed to load.
+      string url
+      # Additional information about the Partitioning Blob URL issue.
+      PartitioningBlobURLInfo partitioningBlobURLInfo
+
+  type SelectElementAccessibilityIssueReason extends string
+    enum
+      DisallowedSelectChild
+      DisallowedOptGroupChild
+      NonPhrasingContentOptionChild
+      InteractiveContentOptionChild
+      InteractiveContentLegendChild
+
+  # This issue warns about errors in the select element content model.
+  type SelectElementAccessibilityIssueDetails extends object
+    properties
+      DOM.BackendNodeId nodeId
+      SelectElementAccessibilityIssueReason selectElementAccessibilityIssueReason
+      boolean hasDisallowedAttributes
 
   type StyleSheetLoadingIssueReason extends string
     enum
@@ -1032,6 +1090,7 @@ experimental domain Audits
       CorsIssue
       AttributionReportingIssue
       QuirksModeIssue
+      PartitioningBlobURLIssue
       # Deprecated
       NavigatorUserAgentIssue
       GenericIssue
@@ -1044,6 +1103,8 @@ experimental domain Audits
       FederatedAuthUserInfoRequestIssue
       PropertyRuleIssue
       SharedDictionaryIssue
+      SelectElementAccessibilityIssue
+      SRIMessageSignatureIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -1060,6 +1121,7 @@ experimental domain Audits
       optional CorsIssueDetails corsIssueDetails
       optional AttributionReportingIssueDetails attributionReportingIssueDetails
       optional QuirksModeIssueDetails quirksModeIssueDetails
+      optional PartitioningBlobURLIssueDetails partitioningBlobURLIssueDetails
       deprecated optional NavigatorUserAgentIssueDetails navigatorUserAgentIssueDetails
       optional GenericIssueDetails genericIssueDetails
       optional DeprecationIssueDetails deprecationIssueDetails
@@ -1071,6 +1133,8 @@ experimental domain Audits
       optional PropertyRuleIssueDetails propertyRuleIssueDetails
       optional FederatedAuthUserInfoRequestIssueDetails federatedAuthUserInfoRequestIssueDetails
       optional SharedDictionaryIssueDetails sharedDictionaryIssueDetails
+      optional SelectElementAccessibilityIssueDetails selectElementAccessibilityIssueDetails
+      optional SRIMessageSignatureIssueDetails sriMessageSignatureIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.
@@ -1151,6 +1215,13 @@ experimental domain Extensions
       # Absolute file path.
       string path
     returns
+      # Extension id.
+      string id
+  # Uninstalls an unpacked extension (others not supported) from the profile.
+  # Available if the client is connected using the --remote-debugging-pipe flag
+  # and the --enable-unsafe-extension-debugging.
+  command uninstall
+    parameters
       # Extension id.
       string id
   # Gets data from extension storage in the given `storageArea`. If `keys` is
@@ -1410,6 +1481,7 @@ domain Browser
       idleDetection
       keyboardLock
       localFonts
+      localNetworkAccess
       midi
       midiSysex
       nfc
@@ -1668,6 +1740,25 @@ domain Browser
   command addPrivacySandboxEnrollmentOverride
     parameters
       string url
+
+  experimental type PrivacySandboxAPI extends string
+    enum
+      BiddingAndAuctionServices
+      TrustedKeyValue
+
+  # Configures encryption keys used with a given privacy sandbox API to talk
+  # to a trusted coordinator.  Since this is intended for test automation only,
+  # coordinatorOrigin must be a .test domain. No existing coordinator
+  # configuration for the origin may exist.
+  command addPrivacySandboxCoordinatorKeyConfig
+    parameters
+      PrivacySandboxAPI api
+      string coordinatorOrigin
+      string keyConfig
+      # BrowserContext to perform the action in. When omitted, default browser
+      # context is used.
+      optional BrowserContextID browserContextId
+
 
 # This domain exposes CSS read/write operations. All CSS objects (stylesheets, rules, and styles)
 # have an associated `id` used in subsequent operations on the related object. Each object type has
@@ -2181,6 +2272,51 @@ experimental domain CSS
       # Associated style declaration.
       CSSStyle style
 
+  # CSS function argument representation.
+  type CSSFunctionParameter extends object
+    properties
+      # The parameter name.
+      string name
+      # The parameter type.
+      string type
+
+  # CSS function conditional block representation.
+  type CSSFunctionConditionNode extends object
+    properties
+      # Media query for this conditional block. Only one type of condition should be set.
+      optional CSSMedia media
+      # Container query for this conditional block. Only one type of condition should be set.
+      optional CSSContainerQuery containerQueries
+      # @supports CSS at-rule condition. Only one type of condition should be set.
+      optional CSSSupports supports
+      # Block body.
+      array of CSSFunctionNode children
+      # The condition text.
+      string conditionText
+
+  # Section of the body of a CSS function rule.
+  type CSSFunctionNode extends object
+    properties
+      # A conditional block. If set, style should not be set.
+      optional CSSFunctionConditionNode condition
+      # Values set by this node. If set, condition should not be set.
+      optional CSSStyle style
+
+  # CSS function at-rule representation.
+  type CSSFunctionRule extends object
+    properties
+      # Name of the function.
+      Value name
+      # The css style sheet identifier (absent for user agent stylesheet and user-specified
+      # stylesheet rules) this rule came from.
+      optional StyleSheetId styleSheetId
+      # Parent stylesheet's origin.
+      StyleSheetOrigin origin
+      # List of parameters.
+      array of CSSFunctionParameter parameters
+      # Function body.
+      array of CSSFunctionNode children
+
   # CSS keyframe rule representation.
   type CSSKeyframeRule extends object
     properties
@@ -2235,6 +2371,11 @@ experimental domain CSS
     parameters
       # Identifier of the frame where "via-inspector" stylesheet should be created.
       Page.FrameId frameId
+      # If true, creates a new stylesheet for every call. If false,
+      # returns a stylesheet previously created by a call with force=false
+      # for the frame's document if it exists or creates a new stylesheet
+      # (default: false).
+      optional boolean force
     returns
       # Identifier of the created "via-inspector" stylesheet.
       StyleSheetId styleSheetId
@@ -2309,6 +2450,13 @@ experimental domain CSS
     returns
       array of string results
 
+  experimental command getLonghandProperties
+    parameters
+      string shorthandName
+      string value
+    returns
+      array of CSSProperty longhandProperties
+
   # Returns the styles defined inline (explicitly in the "style" attribute and implicitly, using DOM
   # attributes) for a DOM node identified by `nodeId`.
   command getInlineStylesForNode
@@ -2366,6 +2514,8 @@ experimental domain CSS
       optional CSSFontPaletteValuesRule cssFontPaletteValuesRule
       # Id of the first parent element that does not have display: contents.
       experimental optional DOM.NodeId parentLayoutNodeId
+      # A list of CSS at-function rules referenced by styles of this node.
+      experimental optional array of CSSFunctionRule cssFunctionRules
 
   # Returns all media queries parsed by the rendering engine.
   command getMediaQueries
@@ -3336,6 +3486,8 @@ domain DOM
         # Get the popover target for a given element. In this case, this given
         # element can only be an HTMLFormControlElement (<input>, <button>).
         PopoverTarget
+        # Get the interest target for a given element.
+        InterestTarget
     returns
       # NodeId of the element matching the queried relation.
       NodeId nodeId
@@ -4193,56 +4345,6 @@ experimental domain DOMStorage
     parameters
       StorageId storageId
 
-experimental domain Database
-
-  # Unique identifier of Database object.
-  type DatabaseId extends string
-
-  # Database object.
-  type Database extends object
-    properties
-      # Database ID.
-      DatabaseId id
-      # Database domain.
-      string domain
-      # Database name.
-      string name
-      # Database version.
-      string version
-
-  # Database error.
-  type Error extends object
-    properties
-      # Error message.
-      string message
-      # Error code.
-      integer code
-
-  # Disables database tracking, prevents database events from being sent to the client.
-  command disable
-
-  # Enables database tracking, database events will now be delivered to the client.
-  command enable
-
-  command executeSQL
-    parameters
-      DatabaseId databaseId
-      string query
-    returns
-      optional array of string columnNames
-      optional array of any values
-      optional Error sqlError
-
-  command getDatabaseTableNames
-    parameters
-      DatabaseId databaseId
-    returns
-      array of string tableNames
-
-  event addDatabase
-    parameters
-      Database database
-
 experimental domain DeviceOrientation
 
   # Clears the overridden Device Orientation.
@@ -4263,6 +4365,25 @@ domain Emulation
   depends on DOM
   depends on Page
   depends on Runtime
+
+  experimental type SafeAreaInsets extends object
+    properties
+      # Overrides safe-area-inset-top.
+      optional integer top
+      # Overrides safe-area-max-inset-top.
+      optional integer topMax
+      # Overrides safe-area-inset-left.
+      optional integer left
+      # Overrides safe-area-max-inset-left.
+      optional integer leftMax
+      # Overrides safe-area-inset-bottom.
+      optional integer bottom
+      # Overrides safe-area-max-inset-bottom.
+      optional integer bottomMax
+      # Overrides safe-area-inset-right.
+      optional integer right
+      # Overrides safe-area-max-inset-right.
+      optional integer rightMax
 
   # Screen orientation.
   type ScreenOrientation extends object
@@ -4433,6 +4554,12 @@ domain Emulation
       # RGBA of the default background color. If not specified, any existing override will be
       # cleared.
       optional DOM.RGBA color
+
+  # Overrides the values for env(safe-area-inset-*) and env(safe-area-max-inset-*). Unset values will cause the
+  # respective variables to be undefined, even if previously overridden.
+  experimental command setSafeAreaInsetsOverride
+    parameters
+      SafeAreaInsets insets
 
   # Overrides the values of device screen dimensions (window.screen.width, window.screen.height,
   # window.innerWidth, window.innerHeight, and "device-width"/"device-height"-related CSS media
@@ -6110,6 +6237,9 @@ domain Network
       # Request was a private network request and is denied by user permission.
       # https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
       PrivateNetworkAccessPermissionDenied
+      # Request was a local network request and is denied by user permission.
+      # https://github.com/explainers-by-googlers/local-network-access
+      LocalNetworkAccessPermissionDenied
 
   type CorsErrorStatus extends object
     properties
@@ -6520,6 +6650,8 @@ domain Network
       TopLevelStorageAccess
       # The cookie should have been blocked by 3PCD but is exempted by the first-party URL scheme.
       Scheme
+      # The cookie was included due to the 'allow-same-site-none-cookies' value being set in the sandboxing policy.
+      SameSiteNoneCookiesInSandbox
 
   # A cookie which was not stored from a response with the corresponding reason.
   experimental type BlockedSetCookieWithReason extends object
@@ -7292,6 +7424,60 @@ domain Network
       # Timestamp.
       MonotonicTime timestamp
 
+  experimental type DirectSocketDnsQueryType extends string
+    enum
+      ipv4
+      ipv6
+
+  experimental type DirectTCPSocketOptions extends object
+    properties
+      # TCP_NODELAY option
+      boolean noDelay
+      # Expected to be unsigned integer.
+      optional number keepAliveDelay
+      # Expected to be unsigned integer.
+      optional number sendBufferSize
+      # Expected to be unsigned integer.
+      optional number receiveBufferSize
+      optional DirectSocketDnsQueryType dnsQueryType
+
+
+  # Fired upon direct_socket.TCPSocket creation.
+  experimental event directTCPSocketCreated
+    parameters
+      RequestId identifier
+      string remoteAddr
+      # Unsigned int 16.
+      integer remotePort
+      DirectTCPSocketOptions options
+      MonotonicTime timestamp
+      optional Initiator initiator
+
+  # Fired when direct_socket.TCPSocket connection is opened.
+  experimental event directTCPSocketOpened
+    parameters
+      RequestId identifier
+      string remoteAddr
+      # Expected to be unsigned integer.
+      integer remotePort
+      MonotonicTime timestamp
+      optional string localAddr
+      # Expected to be unsigned integer.
+      optional integer localPort
+
+  # Fired when direct_socket.TCPSocket is aborted.
+  experimental event directTCPSocketAborted
+    parameters
+      RequestId identifier
+      string errorMessage
+      MonotonicTime timestamp
+
+  # Fired when direct_socket.TCPSocket is closed.
+  experimental event directTCPSocketClosed
+    parameters
+      RequestId identifier
+      MonotonicTime timestamp
+
   experimental type PrivateNetworkRequestPolicy extends string
     enum
       Allow
@@ -7299,6 +7485,8 @@ domain Network
       WarnFromInsecureToMorePrivate
       PreflightBlock
       PreflightWarn
+      PermissionBlock
+      PermissionWarn
 
   experimental type IPAddressSpace extends string
     enum
@@ -7411,6 +7599,7 @@ domain Network
         InternalError
         UnknownError
         FulfilledLocally
+        SiteIssuerLimit
       TrustTokenOperationType type
       RequestId requestId
       # Top level origin. The context in which the operation was attempted.
@@ -7620,6 +7809,19 @@ domain Network
       LoadNetworkResourceOptions options
     returns
       LoadNetworkResourcePageResult resource
+
+  # Sets Controls for third-party cookie access
+  # Page reload is required before the new cookie bahavior will be observed
+  experimental command setCookieControls
+    parameters
+      # Whether 3pc restriction is enabled.
+      boolean enableThirdPartyCookieRestriction
+
+      # Whether 3pc grace period exception should be enabled; false by default.
+      boolean disableThirdPartyCookieMetadata
+
+      # Whether 3pc heuristics exceptions should be enabled; false by default.
+      boolean disableThirdPartyCookieHeuristics
 
 # This domain provides various functionality related to drawing atop the inspected page.
 experimental domain Overlay
@@ -8184,7 +8386,7 @@ domain Page
       PerformanceProfile
 
   # All Permissions Policy features. This enum should match the one defined
-  # in third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5.
+  # in services/network/public/cpp/permissions_policy/permissions_policy_features.json5.
   experimental type PermissionsPolicyFeature extends string
     enum
       accelerometer
@@ -8208,6 +8410,7 @@ domain Page
       ch-ua
       ch-ua-arch
       ch-ua-bitness
+      ch-ua-high-entropy-values
       ch-ua-platform
       ch-ua-model
       ch-ua-mobile
@@ -8358,6 +8561,14 @@ domain Page
       OriginTrialStatus status
       array of OriginTrialTokenWithStatus tokensWithStatus
 
+  # Additional information about the frame document's security origin.
+  experimental type SecurityOriginDetails extends object
+    properties
+      # Indicates whether the frame document's security origin is one
+      # of the local hostnames (e.g. "localhost") or IP addresses (IPv4
+      # 127.0.0.0/8 or IPv6 ::1).
+      boolean isLocalhost
+
   # Information about the Frame on the page.
   type Frame extends object
     properties
@@ -8380,6 +8591,8 @@ domain Page
       experimental string domainAndRegistry
       # Frame document's security origin.
       string securityOrigin
+      # Additional details about the frame document's security origin.
+      experimental optional SecurityOriginDetails securityOriginDetails
       # Frame document's mimeType as determined by the browser.
       string mimeType
       # If the frame failed to load, this contains the URL that could not be loaded. Note that unlike url above, this URL may contain a fragment.
@@ -8749,6 +8962,10 @@ domain Page
 
   # Enables page domain notifications.
   command enable
+    parameters
+      # If true, the `Page.fileChooserOpened` event will be emitted regardless of the state set by
+      # `Page.setInterceptFileChooserDialog` command (default: false).
+      experimental optional boolean enableFileChooserOpenedEvent
 
   # The manifest of a webapp, see
   # https://www.w3.org/TR/appmanifest/#dfn-manifest.
@@ -9302,7 +9519,7 @@ domain Page
       autoReject
       autoOptOut
 
-# Sets the Secure Payment Confirmation transaction mode.
+  # Sets the Secure Payment Confirmation transaction mode.
   # https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode
   experimental command setSPCTransactionMode
     parameters
@@ -9331,6 +9548,10 @@ domain Page
   command setInterceptFileChooserDialog
     parameters
       boolean enabled
+      # If true, cancels the dialog by emitting relevant events (if any)
+      # in addition to not showing it if the interception is enabled
+      # (default: false).
+      experimental optional boolean cancel
 
   event domContentEventFired
     parameters
@@ -9403,6 +9624,34 @@ domain Page
       Frame frame
 
   experimental event frameResized
+
+  # Fired when a navigation starts. This event is fired for both
+  # renderer-initiated and browser-initiated navigations. For renderer-initiated
+  # navigations, the event is fired after `frameRequestedNavigation`.
+  # Navigation may still be cancelled after the event is issued. Multiple events
+  # can be fired for a single navigation, for example, when a same-document
+  # navigation becomes a cross-document navigation (such as in the case of a
+  # frameset).
+  experimental event frameStartedNavigating
+    parameters
+      # ID of the frame that is being navigated.
+      FrameId frameId
+      # The URL the navigation started with. The final URL can be different.
+      string url
+      # Loader identifier. Even though it is present in case of same-document
+      # navigation, the previously committed loaderId would not change unless
+      # the navigation changes from a same-document to a cross-document
+      # navigation.
+      Network.LoaderId loaderId
+      enum navigationType
+        reload
+        reloadBypassingCache
+        restore
+        restoreWithPost
+        historySameDocument
+        historyDifferentDocument
+        sameDocument
+        differentDocument
 
   # Fired when a renderer-initiated navigation is requested.
   # Navigation may still be cancelled after the event is issued.
@@ -9661,6 +9910,8 @@ domain Page
       EmbedderExtensionSentMessageToCachedFrame
       RequestedByWebViewClient
       PostMessageByWebViewClient
+      CacheControlNoStoreDeviceBoundSessionTerminated
+      CacheLimitPruned
 
   # Types of not restored reasons for back-forward cache.
   experimental type BackForwardCacheNotRestoredReasonType extends string
@@ -10222,7 +10473,6 @@ experimental domain Storage
   # Enum of possible storage types.
   type StorageType extends string
     enum
-      appcache
       cookies
       file_systems
       indexeddb
@@ -10996,6 +11246,21 @@ experimental domain Storage
     returns
       array of RelatedWebsiteSet sets
 
+  # Returns the list of URLs from a page and its embedded resources that match
+  # existing grace period URL pattern rules.
+  # https://developers.google.com/privacy-sandbox/cookies/temporary-exceptions/grace-period
+  experimental command getAffectedUrlsForThirdPartyCookieMetadata
+    parameters
+      # The URL of the page currently being visited.
+      string firstPartyUrl
+      # The list of embedded resource URLs from the page.
+      array of string thirdPartyUrls
+
+    returns
+      # Array of matching URLs. If there is a primary pattern match for the first-
+      # party URL, only the first-party URL is returned in the array.
+      array of string matchedUrls
+
 # The SystemInfo domain defines methods and events for querying low-level system information.
 experimental domain SystemInfo
 
@@ -11185,6 +11450,14 @@ domain Target
       string host
       integer port
 
+  # The state of the target window.
+  experimental type WindowState extends string
+    enum
+      normal
+      minimized
+      maximized
+      fullscreen
+
   # Activates (focuses) the target.
   command activateTarget
     parameters
@@ -11229,6 +11502,8 @@ domain Target
       TargetID targetId
       # Binding name, 'cdp' if not specified.
       optional string bindingName
+      # If true, inherits the current root session's permissions (default: false).
+      optional boolean inheritPermissions
 
   # Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than
   # one.
@@ -11258,19 +11533,26 @@ domain Target
     parameters
       # The initial URL the page will be navigated to. An empty string indicates about:blank.
       string url
-      # Frame width in DIP (headless chrome only).
+      # Frame left origin in DIP (requires newWindow to be true or headless shell).
+      experimental optional integer left
+      # Frame top origin in DIP (requires newWindow to be true or headless shell).
+      experimental optional integer top
+      # Frame width in DIP (requires newWindow to be true or headless shell).
       optional integer width
-      # Frame height in DIP (headless chrome only).
+      # Frame height in DIP (requires newWindow to be true or headless shell).
       optional integer height
+      # Frame window state (requires newWindow to be true or headless shell).
+      # Default is normal.
+      optional WindowState windowState
       # The browser context to create the page in.
       experimental optional Browser.BrowserContextID browserContextId
-      # Whether BeginFrames for this target will be controlled via DevTools (headless chrome only,
+      # Whether BeginFrames for this target will be controlled via DevTools (headless shell only,
       # not supported on MacOS yet, false by default).
       experimental optional boolean enableBeginFrameControl
-      # Whether to create a new Window or Tab (chrome-only, false by default).
+      # Whether to create a new Window or Tab (false by default, not supported by headless shell).
       optional boolean newWindow
-      # Whether to create the target in background or foreground (chrome-only,
-      # false by default).
+      # Whether to create the target in background or foreground (false by default, not supported
+      # by headless shell).
       optional boolean background
       # Whether to create the target of type "tab".
       experimental optional boolean forTab
@@ -12587,6 +12869,7 @@ experimental domain Preload
       OtherPrerenderedPageActivated
       V8OptimizerDisabled
       PrerenderFailedDuringPrefetch
+      BrowsingDataRemoved
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated
@@ -12637,6 +12920,9 @@ experimental domain Preload
       PrefetchNotEligibleSchemeIsNotHttps
       PrefetchNotEligibleUserHasCookies
       PrefetchNotEligibleUserHasServiceWorker
+      PrefetchNotEligibleUserHasServiceWorkerNoFetchHandler
+      PrefetchNotEligibleRedirectFromServiceWorker
+      PrefetchNotEligibleRedirectToServiceWorker
       PrefetchNotEligibleBatterySaverEnabled
       PrefetchNotEligiblePreloadingDisabled
       PrefetchNotFinishedInTime
@@ -12946,6 +13232,14 @@ experimental domain BluetoothEmulation
 
   # Enable the BluetoothEmulation domain.
   command enable
+    parameters
+      # State of the simulated central.
+      CentralState state
+      # If the simulated central supports low-energy.
+      boolean leSupported
+
+  # Set the state of the simulated central.
+  command setSimulatedCentralState
     parameters
       # State of the simulated central.
       CentralState state

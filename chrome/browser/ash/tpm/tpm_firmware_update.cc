@@ -27,7 +27,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
-#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 
 namespace ash {
@@ -256,15 +255,12 @@ void GetAvailableUpdateModes(
   } else {
     // Consumer device or still in OOBE.
     if (!InstallAttributes::Get()->IsDeviceLocked()) {
-      // Device in OOBE. If FRE is required, enterprise enrollment might still
-      // be pending, in which case TPM firmware updates are disallowed until
-      // FRE determines that the device is not remotely managed or it does get
-      // enrolled and the admin allows TPM firmware updates.
-      const auto requirement =
-          policy::AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-              system::StatisticsProvider::GetInstance());
-      if (requirement == policy::AutoEnrollmentTypeChecker::FRERequirement::
-                             kExplicitlyRequired) {
+      // Device in OOBE. If enrollment check is required, enterprise enrollment
+      // might still be pending, in which case TPM firmware updates are
+      // disallowed until enrollment state determination determines that the
+      // device is not remotely managed or it does get enrolled and the admin
+      // allows TPM firmware updates.
+      if (policy::AutoEnrollmentTypeChecker::IsEnabled()) {
         std::move(completion).Run(std::set<Mode>());
         return;
       }

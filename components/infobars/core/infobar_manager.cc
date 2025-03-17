@@ -4,11 +4,11 @@
 
 #include "components/infobars/core/infobar_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "build/branding_buildflags.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
@@ -34,7 +34,7 @@ bool DisableInfoBars() {
 
 // InfoBarManager::Observer ---------------------------------------------------
 
-InfoBarManager::Observer::~Observer() {}
+InfoBarManager::Observer::~Observer() = default;
 
 void InfoBarManager::Observer::OnInfoBarAdded(InfoBar* infobar) {}
 
@@ -95,7 +95,7 @@ InfoBar* InfoBarManager::ReplaceInfoBar(InfoBar* old_infobar,
     return nullptr;
   }
 
-  auto i = base::ranges::find(infobars_, old_infobar);
+  auto i = std::ranges::find(infobars_, old_infobar);
   CHECK(i != infobars_.end());
 
   InfoBar* new_infobar_ptr = new_infobar.release();
@@ -151,7 +151,7 @@ void InfoBarManager::OnNavigation(
 void InfoBarManager::RemoveInfoBarInternal(InfoBar* infobar, bool animate) {
   DCHECK(infobar);
 
-  auto i = base::ranges::find(infobars_, infobar);
+  auto i = std::ranges::find(infobars_, infobar);
   // TODO(crbug.com/): Temporarily a CHECK instead of a DCHECK CHECK() in order
   // to help diagnose suspected memory smashing caused by invalid call of this
   // method happening in production code on iOS.

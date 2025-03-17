@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_delegate.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_device_lister.h"
-#include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,8 +35,9 @@ class TestDnsSdRegistry : public DnsSdRegistry {
   }
 
   int GetServiceListenerCount(const std::string& service_type) {
-    if (service_data_map_.find(service_type) == service_data_map_.end())
+    if (service_data_map_.find(service_type) == service_data_map_.end()) {
       return 0;
+    }
 
     return service_data_map_[service_type]->GetListenerCount();
   }

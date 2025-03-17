@@ -6,6 +6,7 @@
 
 #import "base/metrics/histogram_macros.h"
 #import "components/ui_metrics/sadtab_metrics_types.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/chrome_coordinator+fullscreen_disabling.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -15,7 +16,6 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
-#import "ios/chrome/browser/ui/fullscreen/chrome_coordinator+fullscreen_disabling.h"
 #import "ios/chrome/browser/web/model/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h"
@@ -46,8 +46,9 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (_viewController)
+  if (_viewController) {
     return;
+  }
 
   if (self.repeatedFailure) {
     UMA_HISTOGRAM_ENUMERATION(ui_metrics::kSadTabFeedbackHistogramKey,
@@ -78,8 +79,9 @@
 }
 
 - (void)stop {
-  if (!_viewController)
+  if (!_viewController) {
     return;
+  }
 
   [self didStopFullscreenDisablingUI];
 
@@ -133,8 +135,9 @@
 - (void)sadTabTabHelper:(SadTabTabHelper*)tabHelper
     presentSadTabForWebState:(web::WebState*)webState
              repeatedFailure:(BOOL)repeatedFailure {
-  if (!webState->IsVisible())
+  if (!webState->IsVisible()) {
     return;
+  }
 
   self.repeatedFailure = repeatedFailure;
   [self start];

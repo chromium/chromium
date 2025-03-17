@@ -20,7 +20,7 @@ pathToHere = os.path.relpath(_HERE_DIR, _CWD)
 # exist. We can't alter the translation script, so work around it by
 # hardcoding this string, instead of checking in even more dummy files.
 EXPECTED_GRD_WITH_GRDP_FILES = '''<?xml version="1.0" encoding="UTF-8"?>
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/test_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>

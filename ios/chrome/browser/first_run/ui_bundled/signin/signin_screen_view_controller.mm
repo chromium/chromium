@@ -6,13 +6,13 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/shared/public/commands/tos_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
@@ -176,12 +176,25 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
     self.primaryActionString =
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE);
   }
+
   // Set secondary button.
   if (self.signinStatus == SigninScreenConsumerSigninStatusAvailable) {
-    self.secondaryActionString =
-        FRESignInSecondaryActionLabelUpdate()
-            ? l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT)
-            : l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
+    if (FRESignInSecondaryActionLabelUpdate()) {
+      std::string signinValue = kFRESignInSecondaryActionLabelUpdateParam.Get();
+      if (signinValue ==
+          kFRESignInSecondaryActionLabelUpdateParamStaySignedOut) {
+        self.secondaryActionString =
+            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT);
+      } else {
+        // Fallback action when no valid value is provided.
+        self.secondaryActionString =
+            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
+      }
+    } else {
+      // When the feature flag is disabled, default to the original string
+      self.secondaryActionString =
+          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
+    }
   }
 
   // Call super after setting up the strings and others, as required per super
@@ -276,13 +289,14 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
 - (void)setSelectedIdentityUserName:(NSString*)userName
                               email:(NSString*)email
                           givenName:(NSString*)givenName
-                             avatar:(UIImage*)avatar {
+                             avatar:(UIImage*)avatar
+                            managed:(BOOL)managed {
   DCHECK_NE(self.signinStatus, SigninScreenConsumerSigninStatusDisabled);
   DCHECK(email);
   DCHECK(avatar);
   self.personalizedButtonPrompt = givenName ? givenName : email;
   [self updateUIForIdentityAvailable:YES];
-  [self.identityControl setIdentityName:userName email:email];
+  [self.identityControl setIdentityName:userName email:email managed:managed];
   [self.identityControl setIdentityAvatar:avatar];
 }
 

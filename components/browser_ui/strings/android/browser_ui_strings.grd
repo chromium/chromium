@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <grit latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="values-af/browser_ui_strings.xml" lang="af" type="android" />
     <output filename="values-am/browser_ui_strings.xml" lang="am" type="android" />
@@ -338,6 +338,9 @@
       <message name="IDS_ACCESSIBILITY_TOOLBAR_MULTI_SELECT" desc="Accessibility announcement to inform users about more items selected.">
         <ph name="ITEM_COUNT">%1$s<ex>3</ex></ph> selected
       </message>
+      <message name="IDS_ACCESSIBILITY_TOOLBAR_EXIT_SELECT" desc="Accessibility announcement to inform users that they have just exited selection mode.">
+        Exited selection mode
+      </message>
       <message name="IDS_ACCESSIBILITY_CANCEL_SELECTION" desc="Content description for the cancel selection button that deselects the selected items in a selectable list view.">
         Cancel selection
       </message>
@@ -363,6 +366,9 @@
         This page is dangerous
       </message>
 
+      <message name="IDS_CONCAT_TWO_STRINGS_WITH_COMMA" desc="This string concatenates two other strings. In the English language, this particular concatenation is done via a comma and a whitespace in between the other strings. For example: '1 compromised password, 2 weak passwords'">
+        <ph name="TYPE_1">%1$s<ex>2 compromised passwords</ex></ph>, <ph name="TYPE_2">%2$s<ex>7 weak passwords</ex></ph>
+      </message>
       <message name="IDS_CONCAT_TWO_STRINGS_WITH_PERIODS" desc="This string concatenates two other strings. In the English language, this particular concatenation is done via a period and a whitespace after the first string, and a period after the second string. For example: '1 compromised password. 2 weak passwords.'">
         <ph name="TYPE_1">%1$s<ex>2 compromised passwords</ex></ph>. <ph name="TYPE_2">%2$s<ex>7 weak passwords</ex></ph>.
       </message>
@@ -1212,11 +1218,26 @@
       <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_SECOND_STEP" desc="The second step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
         Tap Apps  > Default apps
       </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_SECOND_STEP_ACCESSIBILITY" desc="Accessibility string that describes the second step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        Tap Apps then tap Default apps
+      </message>
       <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_THIRD_STEP" desc="The third step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
         Tap Browser app > Chrome
       </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_THIRD_STEP_ACCESSIBILITY" desc="Accessibility string that describes the third step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        Tap Browser app then tap Chrome
+      </message>
       <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_BUTTON" desc="The name of the button in the bottom sheet of the default browser section within the educational tip module on the NTP">
         Settings
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_ACCESSIBILITY_CLOSED" desc="Accessibility string that describes that the default browser bottom sheet has closed.">
+        Default browser bottom sheet closed
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the default browser bottom sheet.">
+        Default browser bottom sheet
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_ACCESSIBILITY_OPENED_FULL" desc="Accessibility string that describes that the default browser bottom sheet has fully opened.">
+        Default browser bottom sheet opened at full height
       </message>
 
       <!-- Safety Hub Magic Stack strings -->
@@ -1253,6 +1274,38 @@
       <!-- Action confirmation dialog strings -->
       <message name="IDS_CONFIRMATION_STOP_SHOWING" desc="Text next to a checkbox asking if confirmation should not be shown again. Used for various tab operations.">
         Don&apos;t ask again
+      </message>
+
+      <!-- New Tab Page Customization strings -->
+      <message name="IDS_NTP_CUSTOMIZATION_TITLE" desc="Title of the new tab page customization bottom sheet">
+        Customize your new tab page
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_SUBTITLE" desc="Subtitle of the new tab page customization bottom sheet">
+        Quickly get to what matters to you
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_SETTING_TITLE" desc="Open setting page for feed section customization when clicked">
+        Discover feed
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_SECTION_ON" desc="This texts show the feed section is visible at the new tab page">
+        On
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the new tab page customization main bottom sheet.">
+        Customize your new tab page bottom sheet
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes fully opening the new tab page customization main bottom sheet.">
+        Customize your new tab page bottom sheet opened at full height
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_CLOSED" desc="Accessibility string that describes closing the new tab page customization main bottom sheet">
+        Customize your new tab page bottom sheet closed
+      </message>
+
+      <!-- What's New page strings -->
+      <!-- TODO(crbug.com/390190615): Make the strings translateable. -->
+      <message name="IDS_WHATS_NEW_PAGE_TITLE" translateable="false" desc="Title of the what's new page.">
+        What&apos;s New
+      </message>
+      <message name="IDS_WHATS_NEW_PAGE_DESCRIPTION" translateable="false" desc="Description of the what's new page.">
+        What&apos;s New in Chrome
       </message>
     </messages>
   </release>

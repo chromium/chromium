@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/page/context_menu_provider.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
@@ -65,7 +66,7 @@ namespace blink {
 class FrontendMenuProvider final : public ContextMenuProvider {
  public:
   FrontendMenuProvider(DevToolsHost* devtools_host,
-                       WebVector<MenuItemInfo> items)
+                       std::vector<MenuItemInfo> items)
       : devtools_host_(devtools_host), items_(std::move(items)) {}
   ~FrontendMenuProvider() override {
     // Verify that this menu provider has been detached.
@@ -88,7 +89,7 @@ class FrontendMenuProvider final : public ContextMenuProvider {
     items_.clear();
   }
 
-  WebVector<MenuItemInfo> PopulateContextMenu() override {
+  std::vector<MenuItemInfo> PopulateContextMenu() override {
     return std::move(items_);
   }
 
@@ -101,7 +102,8 @@ class FrontendMenuProvider final : public ContextMenuProvider {
 
  private:
   Member<DevToolsHost> devtools_host_;
-  WebVector<MenuItemInfo> items_;
+  std::vector<MenuItemInfo> items_
+      ALLOW_DISCOURAGED_TYPE("Matches ContextMenuData");
 };
 
 DevToolsHost::DevToolsHost(InspectorFrontendClient* client,
@@ -171,25 +173,31 @@ String DevToolsHost::platform() const {
 void DevToolsHost::sendMessageToEmbedder(const String& message) {
   if (client_) {
     // Strictly convert, as we expect message to be serialized JSON.
-    auto value =
-        base::JSONReader::Read(message.Utf8(WTF::Utf8ConversionMode::kStrict));
-    if (!value || !value->is_dict()) {
+    auto value = base::JSONReader::ReadDict(
+        message.Utf8(WTF::Utf8ConversionMode::kStrict));
+    if (!value) {
       ScriptState* script_state = ToScriptStateForMainWorld(frontend_frame_);
       if (!script_state)
         return;
       V8ThrowException::ThrowTypeError(
           script_state->GetIsolate(),
-          value ? "Message to embedder must deserialize to a dictionary value"
-                : "Message to embedder couldn't be JSON-deserialized");
+          "Message to embedder couldn't be deserialized as a JSON object");
       return;
     }
-    client_->SendMessageToEmbedder(std::move(*value).TakeDict());
+    client_->SendMessageToEmbedder(std::move(*value));
   }
 }
 
 void DevToolsHost::sendMessageToEmbedder(base::Value::Dict message) {
   if (client_)
     client_->SendMessageToEmbedder(std::move(message));
+}
+
+static std::u16string GetLabel(const Member<ShowContextMenuItem> item) {
+  // '&' does not show up in context menus unless replaced by '&&'.
+  String label = item->getLabelOr(String()).Replace('&', "&&");
+  label.Ensure16Bit();
+  return std::u16string(label.Characters16(), label.length());
 }
 
 static std::vector<MenuItemInfo> PopulateContextMenuItems(
@@ -207,9 +215,7 @@ static std::vector<MenuItemInfo> PopulateContextMenuItems(
       item_info.enabled = true;
       item_info.action = DevToolsHost::kMaxContextMenuAction;
       item_info.sub_menu_items = PopulateContextMenuItems(item->subItems());
-      String label = item->getLabelOr(String());
-      label.Ensure16Bit();
-      item_info.label = std::u16string(label.Characters16(), label.length());
+      item_info.label = GetLabel(item);
     } else {
       if (!item->hasId() || item->id() >= DevToolsHost::kMaxContextMenuAction) {
         return std::vector<MenuItemInfo>();
@@ -220,9 +226,7 @@ static std::vector<MenuItemInfo> PopulateContextMenuItems(
       } else {
         item_info.type = MenuItemInfo::kOption;
       }
-      String label = item->getLabelOr(String());
-      label.Ensure16Bit();
-      item_info.label = std::u16string(label.Characters16(), label.length());
+      item_info.label = GetLabel(item);
       if (item->hasAccelerator()) {
         AcceleratorContainer accelerator;
         accelerator.key_code = item->accelerator()->keyCode();

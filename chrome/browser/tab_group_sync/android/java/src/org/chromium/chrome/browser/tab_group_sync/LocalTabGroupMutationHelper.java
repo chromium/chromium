@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import android.text.TextUtils;
+
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
@@ -79,7 +81,7 @@ public class LocalTabGroupMutationHelper {
         int rootId = rootTab.getId();
         updateTabGroupVisuals(tabGroup, rootId);
         if (tabs.size() == 1) {
-            mTabGroupModelFilter.createSingleTabGroup(rootTab, /* notify= */ false);
+            mTabGroupModelFilter.createSingleTabGroup(rootTab);
         } else {
             mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, rootTab, /* notify= */ false);
         }
@@ -221,17 +223,25 @@ public class LocalTabGroupMutationHelper {
      * the group has been closed and drop the mapping.
      *
      * @param tabGroupId The local ID of the tab group.
+     * @param closingSource The source of the tab closure.
      */
     public void closeTabGroup(LocalTabGroupId tabGroupId, @ClosingSource int closingSource) {
         LogUtils.log(TAG, "closeTabGroup " + tabGroupId);
         int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, tabGroupId);
         assert rootId != Tab.INVALID_TAB_ID;
 
+        SavedTabGroup group = mTabGroupSyncService.getGroup(tabGroupId);
+        boolean isCollaboration = group != null && !TextUtils.isEmpty(group.collaborationId);
+
         // Close the tabs.
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
         getTabModel()
                 .getTabRemover()
-                .forceCloseTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
+                .forceCloseTabs(
+                        TabClosureParams.closeTabs(tabs)
+                                .allowUndo(false)
+                                .saveToTabRestoreService(!isCollaboration)
+                                .build());
 
         // Remove mapping from service. Collect metrics before that.
         mTabGroupSyncService.removeLocalTabGroupMapping(tabGroupId, closingSource);

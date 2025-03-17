@@ -4,11 +4,11 @@
 
 #import "ios/net/cookies/system_cookie_store.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/logging.h"
+#import "base/logging.h"
 #import "ios/net/cookies/cookie_creation_time_manager.h"
-#include "ios/net/ios_net_buildflags.h"
+#import "ios/net/ios_net_buildflags.h"
 
 namespace net {
 
@@ -40,10 +40,12 @@ NSInteger SystemCookieStore::CompareCookies(NSHTTPCookie* cookie_a,
   // Compare path lengths first.
   NSUInteger path_length_a = cookie_a.path.length;
   NSUInteger path_length_b = cookie_b.path.length;
-  if (path_length_a < path_length_b)
+  if (path_length_a < path_length_b) {
     return NSOrderedDescending;
-  if (path_length_b < path_length_a)
+  }
+  if (path_length_b < path_length_a) {
     return NSOrderedAscending;
+  }
 
   // Compare creation times.
   CookieCreationTimeManager* manager =
@@ -52,10 +54,12 @@ NSInteger SystemCookieStore::CompareCookies(NSHTTPCookie* cookie_a,
   base::Time created_b = manager->GetCreationTime(cookie_b);
   DLOG_IF(ERROR, created_a.is_null() || created_b.is_null())
       << "Cookie without creation date";
-  if (created_a < created_b)
+  if (created_a < created_b) {
     return NSOrderedAscending;
-  if (created_a > created_b)
+  }
+  if (created_a > created_b) {
     return NSOrderedDescending;
+  }
 
   return NSOrderedSame;
 }

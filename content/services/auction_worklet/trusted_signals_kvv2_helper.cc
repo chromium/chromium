@@ -50,8 +50,8 @@ constexpr size_t kCborStringLengthSize = 4;   // bytes
 constexpr size_t kOhttpHeaderSize = 55;       // bytes
 constexpr char kTagInterestGroupName[] = "interestGroupNames";
 constexpr char kTagKey[] = "keys";
-constexpr char kTagRenderUrls[] = "renderUrls";
-constexpr char kTagAdComponentRenderUrls[] = "adComponentRenderUrls";
+constexpr char kTagRenderUrls[] = "renderURLs";
+constexpr char kTagAdComponentRenderUrls[] = "adComponentRenderURLs";
 
 using ResultOrError =
     base::expected<scoped_refptr<TrustedSignals::Result>, std::string>;
@@ -1006,9 +1006,9 @@ TrustedScoringSignalsKVv2RequestHelperBuilder::BuildMapForPartition(
   }
 
   cbor::Value::ArrayValue arguments;
-  arguments.emplace_back(MakeArgument("renderUrls", partition.render_urls));
+  arguments.emplace_back(MakeArgument("renderURLs", partition.render_urls));
   if (!partition.ad_component_render_urls.empty()) {
-    arguments.emplace_back(MakeArgument("adComponentRenderUrls",
+    arguments.emplace_back(MakeArgument("adComponentRenderURLs",
                                         partition.ad_component_render_urls));
   }
 

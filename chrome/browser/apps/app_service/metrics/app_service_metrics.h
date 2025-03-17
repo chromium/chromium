@@ -8,7 +8,7 @@
 #include <map>
 #include <string>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 
 namespace apps {
@@ -107,12 +107,12 @@ void RecordAppLaunch(const std::string& app_id,
 const std::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
     const std::string& app_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Converts a system web app ID to the corresponding `DefaultAppName`, or
 // nullopt if it doesn't match a known ID.
 const std::optional<apps::DefaultAppName> SystemWebAppIdToName(
     const std::string& app_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps
 

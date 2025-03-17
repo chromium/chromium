@@ -73,15 +73,13 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui, EcheAppManager* manager)
   auto* webui_allowlist = WebUIAllowlist::GetOrCreate(browser_context);
   const url::Origin untrusted_eche_app_origin =
       url::Origin::Create(GURL(kChromeUIEcheAppGuestURL));
-  for (const auto& permission : {
-           ContentSettingsType::COOKIES,
-           ContentSettingsType::JAVASCRIPT,
-           ContentSettingsType::IMAGES,
-           ContentSettingsType::SOUND,
-       }) {
-    webui_allowlist->RegisterAutoGrantedPermission(untrusted_eche_app_origin,
-                                                   permission);
-  }
+  webui_allowlist->RegisterAutoGrantedPermissions(
+      untrusted_eche_app_origin, {
+                                     ContentSettingsType::COOKIES,
+                                     ContentSettingsType::JAVASCRIPT,
+                                     ContentSettingsType::IMAGES,
+                                     ContentSettingsType::SOUND,
+                                 });
 
   // Set untrusted URL of Eche app in WebApp scope for allowing AutoPlay.
   auto* web_contents = web_ui->GetWebContents();

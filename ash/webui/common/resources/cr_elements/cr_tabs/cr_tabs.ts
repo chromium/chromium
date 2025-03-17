@@ -24,7 +24,8 @@
 import '../cr_hidden_style.css.js';
 import '../cr_shared_vars.css.js';
 
-import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_tabs.html.js';
 
@@ -104,11 +105,11 @@ export class CrTabsElement extends PolymerElement {
       return;
     }
 
-    const oldTabRect = tabs[oldSelected]!.getBoundingClientRect();
-    const newTabRect = tabs[newSelected]!.getBoundingClientRect();
+    const oldTabRect = tabs[oldSelected].getBoundingClientRect();
+    const newTabRect = tabs[newSelected].getBoundingClientRect();
 
     const newIndicator =
-        tabs[newSelected]!.querySelector<HTMLElement>('.tab-indicator')!;
+        tabs[newSelected].querySelector<HTMLElement>('.tab-indicator')!;
     newIndicator.classList.remove('expand', 'contract');
 
     // Make new indicator look like it is the old indicator.

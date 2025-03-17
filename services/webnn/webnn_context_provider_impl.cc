@@ -14,6 +14,7 @@
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/mojom/features.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -117,6 +118,10 @@ base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
 }
 
 bool ShouldCreateDmlContext(const mojom::CreateContextOptions& options) {
+  if (!base::FeatureList::IsEnabled(mojom::features::kWebNNDirectML)) {
+    return false;
+  }
+
   switch (options.device) {
     case mojom::CreateContextOptions::Device::kCpu:
       return false;
@@ -284,11 +289,11 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
-  // TODO: crbug.com/325612086 - Consider using supporting older Macs either
-  // with TFLite or a more restrictive implementation on CoreML.
   if (__builtin_available(macOS 14, *)) {
-    context_impl = new coreml::ContextImplCoreml(std::move(receiver), this,
-                                                 std::move(options));
+    if (base::FeatureList::IsEnabled(mojom::features::kWebNNCoreML)) {
+      context_impl = new coreml::ContextImplCoreml(std::move(receiver), this,
+                                                   std::move(options));
+    }
   }
 #endif  // BUILDFLAG(IS_MAC)
 

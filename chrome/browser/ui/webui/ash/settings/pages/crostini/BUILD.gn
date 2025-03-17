@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("crostini") {
   sources = [
@@ -31,7 +29,6 @@ static_library("crostini") {
   ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
@@ -47,6 +44,7 @@ static_library("crostini") {
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/common:constants",
+    "//chromeos/ash/experiences/arc",
     "//components/policy/core/common",
     "//content/public/browser",
     "//ui/base",

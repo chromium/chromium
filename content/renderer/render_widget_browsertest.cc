@@ -68,7 +68,7 @@ class RenderWidgetInitialSizeTest : public RenderWidgetTest {
  protected:
   blink::VisualProperties InitialVisualProperties() override {
     blink::VisualProperties initial_visual_properties;
-    initial_visual_properties.new_size = initial_size_;
+    initial_visual_properties.new_size_device_px = initial_size_;
     initial_visual_properties.compositor_viewport_pixel_rect =
         gfx::Rect(initial_size_);
     initial_visual_properties.local_surface_id =
@@ -188,19 +188,16 @@ TEST_F(RenderWidgetTest, CompositorIdHitTestAPIWithImplicitRootScroller) {
                 .GetScrollableContainerId());
 }
 
+// Composition range isn't used on Android and we don't update the range through
+// ImeCompositionRangeChanged.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(RenderWidgetTest, GetCompositionRangeValidComposition) {
-  // Composition range isn't used on Android and this feature stops the path
-  // that sends composition range info. Disable the feature so that the tests
-  // pass until the Android and non Android code paths are decoupled at which
-  // point the feature can be removed.
-  blink::WebRuntimeFeatures::EnableFeatureFromString("CursorAnchorInfoMojoPipe",
-                                                     false);
   LoadHTML(
       "<div contenteditable>EDITABLE</div>"
       "<script> document.querySelector('div').focus(); </script>");
   gfx::Range range = LastCompositionRange();
   EXPECT_FALSE(range.IsValid());
-  blink::WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
   DCHECK(GetInputMethodController());
   GetInputMethodController()->SetComposition("hello", empty_ime_text_spans,
                                              blink::WebRange(), 3, 3);
@@ -211,9 +208,6 @@ TEST_F(RenderWidgetTest, GetCompositionRangeValidComposition) {
 }
 
 TEST_F(RenderWidgetTest, GetCompositionRangeForSelection) {
-  // See comment in GetCompositionRangeValidComposition for explanation.
-  blink::WebRuntimeFeatures::EnableFeatureFromString("CursorAnchorInfoMojoPipe",
-                                                     false);
   LoadHTML(
       "<div>NOT EDITABLE</div>"
       "<script> document.execCommand('selectAll'); </script>");
@@ -223,9 +217,6 @@ TEST_F(RenderWidgetTest, GetCompositionRangeForSelection) {
 }
 
 TEST_F(RenderWidgetTest, GetCompositionRangeInvalid) {
-  // See comment in GetCompositionRangeValidComposition for explanation.
-  blink::WebRuntimeFeatures::EnableFeatureFromString("CursorAnchorInfoMojoPipe",
-                                                     false);
   LoadHTML("<div>NOT EDITABLE</div>");
   gfx::Range range = LastCompositionRange();
   // If this test ever starts failing, one likely outcome is that WebRange
@@ -233,6 +224,7 @@ TEST_F(RenderWidgetTest, GetCompositionRangeInvalid) {
   // values of start/end.
   EXPECT_FALSE(range.IsValid());
 }
+#endif
 
 // This test verifies that WebInputMethodController always exists as long as
 // there is a focused frame inside the page, but, IME events are only executed

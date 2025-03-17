@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/form_structure.h"
+#import "components/autofill/core/common/dense_set.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_form_internal.h"
-
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/common/dense_set.h"
 
 @implementation CWVAutofillForm
 

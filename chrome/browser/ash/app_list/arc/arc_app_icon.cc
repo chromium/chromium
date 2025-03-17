@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
@@ -16,9 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ref.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon_descriptor.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -752,17 +751,6 @@ void ArcAppIcon::UpdateImageSkia(
   image_skia.AddRepresentation(image_rep);
   image_skia.RemoveUnsupportedRepresentationsForScale(image_rep.scale());
 
-  // TODO(crbug.com/40131344): Track the adaptive icon load time in a separate
-  // UMA.
-  if (icon_loaded_count_++ < 5) {
-    base::UmaHistogramTimes(
-        "Arc.IconLoadFromFileTime.uncompressedFirst5",
-        base::Time::Now() - incomplete_scale_factors[scale_factor]);
-  } else {
-    base::UmaHistogramTimes(
-        "Arc.IconLoadFromFileTime.uncompressedOthers",
-        base::Time::Now() - incomplete_scale_factors[scale_factor]);
-  }
   incomplete_scale_factors.erase(scale_factor);
   observer_->OnIconUpdated(this);
 }
@@ -772,15 +760,6 @@ void ArcAppIcon::UpdateCompressed(ui::ResourceScaleFactor scale_factor,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   compressed_images_[scale_factor] = std::move(data);
 
-  if (icon_loaded_count_++ < 5) {
-    base::UmaHistogramTimes(
-        "Arc.IconLoadFromFileTime.compressedFirst5",
-        base::Time::Now() - incomplete_scale_factors_[scale_factor]);
-  } else {
-    base::UmaHistogramTimes(
-        "Arc.IconLoadFromFileTime.compressedOthers",
-        base::Time::Now() - incomplete_scale_factors_[scale_factor]);
-  }
   incomplete_scale_factors_.erase(scale_factor);
   observer_->OnIconUpdated(this);
 }
@@ -789,8 +768,8 @@ void ArcAppIcon::DiscardDecodeRequest(DecodeRequest* request,
                                       bool is_decode_success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto it = base::ranges::find(decode_requests_, request,
-                               &std::unique_ptr<DecodeRequest>::get);
+  auto it = std::ranges::find(decode_requests_, request,
+                              &std::unique_ptr<DecodeRequest>::get);
   DCHECK(it != decode_requests_.end());
   decode_requests_.erase(it);
 

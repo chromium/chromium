@@ -19,31 +19,12 @@ bool WebViewPasswordFeatureManager::IsGenerationEnabled() const {
   return true;
 }
 
-bool WebViewPasswordFeatureManager::IsOptedInForAccountStorage() const {
+bool WebViewPasswordFeatureManager::IsAccountStorageEnabled() const {
   // Although ios/web_view will only write to the account store, this should
   // still be controlled on a per user basis to ensure that the logged out user
-  // remains opted out.
-  return password_manager::features_util::IsOptedInForAccountStorage(
+  // remains with account storage disabled.
+  return password_manager::features_util::IsAccountStorageEnabled(
       pref_service_, sync_service_);
-}
-
-bool WebViewPasswordFeatureManager::ShouldShowAccountStorageOptIn() const {
-  return false;
-}
-
-bool WebViewPasswordFeatureManager::ShouldShowAccountStorageReSignin(
-    const GURL& current_page_url) const {
-  return false;
-}
-
-password_manager::PasswordForm::Store
-WebViewPasswordFeatureManager::GetDefaultPasswordStore() const {
-  // ios/web_view should never write to the profile password store.
-  return password_manager::PasswordForm::Store::kAccountStore;
-}
-
-bool WebViewPasswordFeatureManager::IsDefaultPasswordStoreSet() const {
-  return false;
 }
 
 password_manager::features_util::PasswordAccountStorageUsageLevel

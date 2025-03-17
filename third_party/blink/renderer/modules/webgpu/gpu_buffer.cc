@@ -386,15 +386,11 @@ void GPUBuffer::OnMapAsyncCallback(
       resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
                                        String::FromUTF8(message));
       break;
-    case wgpu::MapAsyncStatus::Error:
-      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
-                                       String::FromUTF8(message));
-      break;
     case wgpu::MapAsyncStatus::Aborted:
       resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
                                        String::FromUTF8(message));
       break;
-    case wgpu::MapAsyncStatus::Unknown:
+    case wgpu::MapAsyncStatus::Error:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                        String::FromUTF8(message));
       break;

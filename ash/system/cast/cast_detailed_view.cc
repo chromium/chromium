@@ -225,7 +225,7 @@ void CastDetailedView::AddAccessCodeCastButton(
   // image with an updated `ui::ImageModel`.
   add_access_code_device_->icon()->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kKeyboardIcon, cros_tokens::kCrosSysPrimary));
-  add_access_code_device_->text_label()->SetEnabledColorId(
+  add_access_code_device_->text_label()->SetEnabledColor(
       cros_tokens::kCrosSysPrimary);
 }
 

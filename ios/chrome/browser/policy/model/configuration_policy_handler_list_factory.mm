@@ -80,6 +80,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kPasswordManagerEnabled,
     password_manager::prefs::kCredentialsEnableService,
     base::Value::Type::BOOLEAN },
+  { policy::key::kPasswordManagerPasskeysEnabled,
+    password_manager::prefs::kCredentialsEnablePasskeys,
+    base::Value::Type::BOOLEAN },
   { policy::key::kPasswordSharingEnabled,
     password_manager::prefs::kPasswordSharingEnabled,
     base::Value::Type::BOOLEAN },
@@ -160,6 +163,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::INTEGER },
   { policy::key::kFilePickerChooseFromDriveSettings,
     prefs::kIosChooseFromDriveFilePickerPolicySettings,
+    base::Value::Type::INTEGER },
+  { policy::key::kProfileSeparationDataMigrationSettings,
+    prefs::kProfileSeparationDataMigrationSettings,
     base::Value::Type::INTEGER },
 };
 // clang-format on

@@ -5,8 +5,11 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_VIEW_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_variant.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/notification_view_base.h"
 
@@ -30,7 +33,8 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   NotificationView& operator=(const NotificationView&) = delete;
   ~NotificationView() override;
 
-  SkColor GetActionButtonColorForTesting(views::LabelButton* action_button);
+  const std::optional<ui::ColorVariant>& GetActionButtonColorForTesting(
+      views::LabelButton* action_button);
 
  private:
   friend class NotificationViewTest;

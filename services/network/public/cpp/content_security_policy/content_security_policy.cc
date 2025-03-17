@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 
+#include <algorithm>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -12,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -103,6 +103,10 @@ CSPDirectiveName ToCSPDirectiveName(std::string_view name) {
   if (base::EqualsCaseInsensitiveASCII(name, "report-uri")) {
     return CSPDirectiveName::ReportURI;
   }
+  if (base::EqualsCaseInsensitiveASCII(name, "require-sri-for") &&
+      base::FeatureList::IsEnabled(network::features::kCSPRequireSRIFor)) {
+    return CSPDirectiveName::RequireSRIFor;
+  }
   if (base::EqualsCaseInsensitiveASCII(name, "require-trusted-types-for")) {
     return CSPDirectiveName::RequireTrustedTypesFor;
   }
@@ -169,6 +173,7 @@ bool SupportedInReportOnly(CSPDirectiveName directive) {
     case CSPDirectiveName::ObjectSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
+    case CSPDirectiveName::RequireSRIFor:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::ScriptSrc:
     case CSPDirectiveName::ScriptSrcAttr:
@@ -205,6 +210,7 @@ bool SupportedInMeta(CSPDirectiveName directive) {
     case CSPDirectiveName::MediaSrc:
     case CSPDirectiveName::ObjectSrc:
     case CSPDirectiveName::ReportTo:
+    case CSPDirectiveName::RequireSRIFor:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::ScriptSrc:
     case CSPDirectiveName::ScriptSrcAttr:
@@ -252,6 +258,7 @@ const char* ErrorMessage(CSPDirectiveName directive) {
     case CSPDirectiveName::ObjectSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
+    case CSPDirectiveName::RequireSRIFor:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::Sandbox:
     case CSPDirectiveName::ScriptSrc:
@@ -443,7 +450,7 @@ bool ParseHost(std::string_view host, mojom::CSPSource* csp_source) {
   for (int i = 0; std::string_view piece : host_pieces) {
     // Only a trailing dot is allowed.
     if ((piece.empty() && i + 1 < std::ssize(host_pieces)) ||
-        !base::ranges::all_of(piece, [](auto c) {
+        !std::ranges::all_of(piece, [](auto c) {
           return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) || c == '-';
         })) {
       return false;
@@ -465,8 +472,8 @@ bool ParsePort(std::string_view port, mojom::CSPSource* csp_source) {
     return true;
   }
 
-  if (!base::ranges::all_of(port,
-                            base::IsAsciiDigit<std::string_view::value_type>)) {
+  if (!std::ranges::all_of(port,
+                           base::IsAsciiDigit<std::string_view::value_type>)) {
     return false;
   }
 
@@ -556,7 +563,8 @@ bool ParseHash(std::string_view expression, mojom::CSPHashSource* hash) {
       {"'sha512-", 8, mojom::IntegrityAlgorithm::kSha512},
       {"'sha-256-", 9, mojom::IntegrityAlgorithm::kSha256},
       {"'sha-384-", 9, mojom::IntegrityAlgorithm::kSha384},
-      {"'sha-512-", 9, mojom::IntegrityAlgorithm::kSha512}};
+      {"'sha-512-", 9, mojom::IntegrityAlgorithm::kSha512},
+      {"'ed25519-", 9, mojom::IntegrityAlgorithm::kEd25519}};
 
   for (auto item : SupportedPrefixes) {
     if (base::StartsWith(expression, item.prefix,
@@ -750,7 +758,7 @@ mojom::CSPSourceListPtr ParseSourceList(
   }
 
   if (contains_none &&
-      base::ranges::any_of(tokens, [](const auto& token) -> bool {
+      std::ranges::any_of(tokens, [](const auto& token) -> bool {
         return !base::EqualsCaseInsensitiveASCII(token, "'report-sample'") &&
                !base::EqualsCaseInsensitiveASCII(token, "'none'");
       })) {
@@ -763,6 +771,37 @@ mojom::CSPSourceListPtr ParseSourceList(
   }
 
   return directive;
+}
+
+// Parse the 'required-sri-for' directive.
+network::mojom::CSPRequireSRIFor ParseRequireSRIFor(
+    std::string_view value,
+    std::vector<std::string>& parsing_errors) {
+  network::mojom::CSPRequireSRIFor out = network::mojom::CSPRequireSRIFor::None;
+  for (const std::string_view expression : base::SplitStringPiece(
+           value, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
+    if (expression == "'script'") {
+      out = network::mojom::CSPRequireSRIFor::Script;
+    } else {
+      const char* hint = nullptr;
+      if (expression == "script" || expression == "scripts" ||
+          expression == "'scripts'") {
+        hint = " Did you mean 'script'?";
+      }
+
+      parsing_errors.emplace_back(
+          base::StringPrintf("Invalid expression in 'require-sri-for' "
+                             "Content Security Policy directive: %s.%s\n",
+                             expression, hint));
+    }
+  }
+  if (out == network::mojom::CSPRequireSRIFor::None) {
+    parsing_errors.emplace_back(base::StringPrintf(
+        "'require-sri-for' Content Security Policy "
+        "directive is empty; The directive has no effect.\n"));
+  }
+  return out;
 }
 
 // Parse the 'required-trusted-types-for' directive.
@@ -800,7 +839,7 @@ network::mojom::CSPRequireTrustedTypesFor ParseRequireTrustedTypesFor(
 // This implements tt-policy-name from
 // https://w3c.github.io/trusted-types/dist/spec/#trusted-types-csp-directive
 bool IsValidTrustedTypesPolicyName(std::string_view value) {
-  return base::ranges::all_of(value, [](char c) {
+  return std::ranges::all_of(value, [](char c) {
     return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) ||
            base::Contains("-#=_/@.%", c);
   });
@@ -971,7 +1010,7 @@ void AddContentSecurityPolicyFromHeader(
   out->self_origin = ComputeSelfOrigin(base_url);
 
   for (auto directive : directives) {
-    if (!base::ranges::all_of(directive.first, IsDirectiveNameCharacter)) {
+    if (!std::ranges::all_of(directive.first, IsDirectiveNameCharacter)) {
       out->parsing_errors.emplace_back(base::StringPrintf(
           "The Content-Security-Policy directive name '%s' contains one or "
           "more invalid characters. Only ASCII alphanumeric characters or "
@@ -999,7 +1038,7 @@ void AddContentSecurityPolicyFromHeader(
     }
     out->raw_directives[directive_name] = std::string(directive.second);
 
-    if (!base::ranges::all_of(directive.second, IsDirectiveValueCharacter)) {
+    if (!std::ranges::all_of(directive.second, IsDirectiveValueCharacter)) {
       out->parsing_errors.emplace_back(base::StringPrintf(
           "The value for the Content-Security-Policy directive '%s' contains "
           "one or more invalid characters. In a source expression, "
@@ -1077,6 +1116,10 @@ void AddContentSecurityPolicyFromHeader(
       case CSPDirectiveName::TreatAsPublicAddress:
         out->treat_as_public_address = true;
         WarnIfDirectiveValueNotEmpty(directive, out->parsing_errors);
+        break;
+      case CSPDirectiveName::RequireSRIFor:
+        out->require_sri_for =
+            ParseRequireSRIFor(directive.second, out->parsing_errors);
         break;
       case CSPDirectiveName::RequireTrustedTypesFor:
         out->require_trusted_types_for =
@@ -1226,6 +1269,7 @@ CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
     case CSPDirectiveName::FrameAncestors:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
+    case CSPDirectiveName::RequireSRIFor:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::Sandbox:
     case CSPDirectiveName::TreatAsPublicAddress:
@@ -1538,7 +1582,7 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
       CSPDirectiveName::FrameAncestors, CSPDirectiveName::FormAction,
       CSPDirectiveName::FencedFrameSrc};
 
-  return base::ranges::all_of(directives, [&](CSPDirectiveName directive) {
+  return std::ranges::all_of(directives, [&](CSPDirectiveName directive) {
     auto required = GetSourceList(directive, policy_a);
     if (!required.second)
       return true;
@@ -1594,6 +1638,8 @@ std::string ToString(CSPDirectiveName name) {
       return "object-src";
     case CSPDirectiveName::ReportURI:
       return "report-uri";
+    case CSPDirectiveName::RequireSRIFor:
+      return "require-sri-for";
     case CSPDirectiveName::RequireTrustedTypesFor:
       return "require-trusted-types-for";
     case CSPDirectiveName::Sandbox:

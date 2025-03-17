@@ -68,6 +68,10 @@ class TRACING_EXPORT EtwConsumer
                             size_t pointer_size,
                             base::span<const uint8_t> packet_data);
 
+  // Returns the size, in bytes, of a pointer-sized value in an event based on
+  // the `Flags` member of an event's `EVENT_HEADER`.
+  static size_t GetPointerSize(uint16_t event_header_flags);
+
   // Per-provider event handlers. `ProcessEventRecord` dispatches to these based
   // on the ProviderId in the record's EventHeader.
   void HandleProcessEvent(const EVENT_HEADER& header,

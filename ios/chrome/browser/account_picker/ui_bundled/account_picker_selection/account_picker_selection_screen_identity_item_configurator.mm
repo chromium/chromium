@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
 
-#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
 
 @implementation AccountPickerSelectionScreenIdentityItemConfigurator
 

@@ -567,7 +567,7 @@
     Open
   </message>
   <message name="IDS_COMPARE_CITATION_A11Y_LABEL" desc="The accessibility label for a citation in the compare feature's UI.">
-    Citation <ph name="CURRENT_CITATION">$1<ex>1</ex></ph> of <ph name="MAX_CITATIONS">$2<ex>3</ex></ph>, <ph name="PRODUCT_NAME">$3<ex>Laptop</ex></ph>, <ph name="URL">$4<ex>http://example.com</ex></ph>
+    Citation <ph name="CURRENT_CITATION">$1<ex>1</ex></ph> of <ph name="MAX_CITATIONS">$2<ex>3</ex></ph>, <ph name="PRODUCT_NAME">$3<ex>Laptop</ex></ph>, <ph name="URL">$4<ex>http://example.com</ex></ph>. <ph name="PAGE_TITLE">$5<ex>Review for Product</ex></ph>. <ph name="PAGE_PREVIEW">$6<ex>This is a brief summary of the page</ex></ph>.
   </message>
   <message name="IDS_COMPARE_DEFAULT_PAGE_TITLE" desc="The default page title for the tab compare feature.">
     Compare
@@ -685,6 +685,41 @@
   <message name="IDS_COMPARE_YOUR_COMPARISON_TABLES" desc="The header above the list of a user's existing comparison tables in the compare UI">
     Your comparison tables
   </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_TAB" desc="The label for the comparison table list dropdown menu item for opening a comparison table in a new tab.">
+    Open in new tab
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_WINDOW" desc="The label for the comparison table list dropdown menu item for opening a comparison table in a new window.">
+    Open in new window
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_ALL_WITH_COUNT" desc="The label for the comparison table list dropdown menu item for opening comparison table(s) in new tab(s).">
+    Open all (<ph name="ITEMS">$1<ex>3</ex></ph>)
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_ALL_IN_NEW_WINDOW_WITH_COUNT" desc="The label for the comparison table list dropdown menu item for opening comparison table(s) in a new window.">
+    Open all (<ph name="ITEMS">$1<ex>3</ex></ph>) in new window
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_RENAME" desc="The label for the comparison table list dropdown menu item for renaming a comparison table.">
+    Rename
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_DELETE" desc="The label for the comparison table list dropdown menu item for deleting a comparison table.">
+    Delete
+  </message>
+  <message name="IDS_COMPARE_NUM_ITEMS_SELECTED" desc="The number of selected items in the comparison table list when editing it.">
+    <ph name="ITEMS">$1<ex>3</ex></ph> selected
+  </message>
+  <message name="IDS_COMPARE_EDIT_MORE" desc="The tooltip for the menu button in the comparison table list bulk edit mode that shows more actions the user can take on selected comparison tables.">
+    More
+  </message>
+  <message name="IDS_COMPARE_TABLE_DELETION_TOAST_MESSAGE" desc="The message that shows when one or more comparison tables are deleted from the comparison table list.">
+    {COUNT, plural,
+      =1 {{COUNT} table deleted}
+      other {{COUNT} tables deleted}}
+  </message>
+  <message name="IDS_COMPARE_UNDO_TABLE_DELETION" desc="Label for the undo button displayed after deleting one or more comparison tables.">
+    Undo
+  </message>
+  <message name="IDS_COMPARE_DESCRIPTION_NOT_AVAILABLE" desc="The tooltip displayed when a description or value is not available for an attribute for a product.">
+    Not available
+  </message>
   <!-- For Compare Disclosure -->
   <message name="IDS_COMPARE_DISCLOSURE_TITLE" desc="The text for the title of the Compare first-run experience disclosure bubble.">
     Compare similar products side-by-side
@@ -729,6 +764,12 @@
       <message name="IDS_COMPARE_SHOW_ALL_COMPARISON_TABLES" desc="The label for the menu option for showing all of a user's existing comparison tables.">
         Show All Comparison Tables
       </message>
+      <message name="IDS_COMPARE_ADD_TAB_TO_COMPARISON_TABLE" desc="The label for the menu option for adding the current tab to a comparison table.">
+        Add Tab to Comparison Table
+      </message>
+      <message name="IDS_COMPARE_NEW_COMPARISON_TABLE" desc="The label for the menu option for adding the current tab to a new comparison table.">
+        New Comparison Table
+      </message>
     </then>
     <else>
       <message name="IDS_COMPARE_MENU_LABEL" desc="The label for the comparison tables submenu item under the bookmarks and lists app menu.">
@@ -736,6 +777,12 @@
       </message>
       <message name="IDS_COMPARE_SHOW_ALL_COMPARISON_TABLES" desc="The label for the menu option for showing all of a user's existing comparison tables.">
         Show all comparison tables
+      </message>
+      <message name="IDS_COMPARE_ADD_TAB_TO_COMPARISON_TABLE" desc="The label for the menu option for adding the current tab to a comparison table.">
+        Add tab to comparison table
+      </message>
+      <message name="IDS_COMPARE_NEW_COMPARISON_TABLE" desc="The label for the menu option for adding the current tab to a new comparison table.">
+        New comparison table
       </message>
     </else>
   </if> <!-- use_titlecase -->

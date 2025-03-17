@@ -225,7 +225,7 @@ KeyframeEffect::KeyframeEffect(Element* target,
     // animating pseudo elements. This requires using the DOM element that the
     // pseudo element originates from.
     target_element_ =
-        DynamicTo<PseudoElement>(target)->UltimateOriginatingElement();
+        &DynamicTo<PseudoElement>(target)->UltimateOriginatingElement();
     DCHECK(!target_element_->IsPseudoElement());
     target_pseudo_ = PseudoElement::PseudoElementNameForEvents(target);
   }
@@ -380,7 +380,7 @@ CompositorAnimations::FailureReasons
 KeyframeEffect::CheckCanStartAnimationOnCompositor(
     const PaintArtifactCompositor* paint_artifact_compositor,
     double animation_playback_rate,
-    PropertyHandleSet* unsupported_properties) const {
+    PropertyHandleSet* unsupported_properties_for_tracing) const {
   CompositorAnimations::FailureReasons reasons =
       CompositorAnimations::kNoFailure;
 
@@ -410,7 +410,7 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
     reasons |= CompositorAnimations::CheckCanStartAnimationOnCompositor(
         SpecifiedTiming(), NormalizedTiming(), *effect_target_, GetAnimation(),
         *Model(), paint_artifact_compositor, animation_playback_rate,
-        unsupported_properties);
+        unsupported_properties_for_tracing);
   }
 
   return reasons;
@@ -424,7 +424,7 @@ void KeyframeEffect::StartAnimationOnCompositor(
     CompositorAnimation* compositor_animation,
     bool is_monotonic_timeline,
     bool is_boundary_aligned) {
-  DCHECK(!HasActiveAnimationsOnCompositor());
+  DCHECK(compositor_keyframe_model_ids_.empty());
   // TODO(petermayo): Maybe we should recheck that we can start on the
   // compositor if we have the compositable IDs somewhere.
 
@@ -444,7 +444,10 @@ void KeyframeEffect::StartAnimationOnCompositor(
 }
 
 bool KeyframeEffect::HasActiveAnimationsOnCompositor() const {
-  return !compositor_keyframe_model_ids_.empty();
+  if (compositor_keyframe_model_ids_.empty()) {
+    return false;
+  }
+  return GetAnimation()->HasActiveAnimationsOnCompositor();
 }
 
 bool KeyframeEffect::HasActiveAnimationsOnCompositor(
@@ -455,12 +458,16 @@ bool KeyframeEffect::HasActiveAnimationsOnCompositor(
 
 bool KeyframeEffect::CancelAnimationOnCompositor(
     CompositorAnimation* compositor_animation) {
-  if (!HasActiveAnimationsOnCompositor())
+  if (compositor_keyframe_model_ids_.empty()) {
     return false;
+  }
+
   // Don't check effect_target_->GetLayoutObject(); we might be here because
   // it's *just* been set to null.
-  if (!effect_target_)
+  if (!effect_target_) {
     return false;
+  }
+
   DCHECK(Model());
   for (const auto& compositor_keyframe_model_id :
        compositor_keyframe_model_ids_) {
@@ -482,7 +489,7 @@ void KeyframeEffect::CancelIncompatibleAnimationsOnCompositor() {
 
 void KeyframeEffect::PauseAnimationForTestingOnCompositor(
     base::TimeDelta pause_time) {
-  DCHECK(HasActiveAnimationsOnCompositor());
+  DCHECK(!compositor_keyframe_model_ids_.empty());
   if (!effect_target_ || !effect_target_->GetLayoutObject())
     return;
   DCHECK(GetAnimation());
@@ -592,7 +599,8 @@ void KeyframeEffect::RestartRunningAnimationOnCompositor() {
   if (!animation->StartTimeInternal())
     return;
 
-  animation->RestartAnimationOnCompositor();
+  animation->RestartAnimationOnCompositor(
+      Animation::CompositorPendingReason::kPendingSafeRestart);
 }
 
 bool KeyframeEffect::IsIdentityOrTranslation() const {
@@ -774,8 +782,17 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
           return std::min(time_to_end, time_to_next_iteration);
         }
         return time_to_end;
+      } else {
+        const AnimationTimeDelta time_to_start =
+            std::max(local_time.value() - start_time, AnimationTimeDelta());
+        if (RequiresIterationEvents()) {
+          const AnimationTimeDelta reverse_time_to_next_iteration = std::max(
+              NormalizedTiming().iteration_duration - time_to_next_iteration,
+              AnimationTimeDelta());
+          return std::min(time_to_start, reverse_time_to_next_iteration);
+        }
+        return time_to_start;
       }
-      return {};
     case Timing::kPhaseAfter:
       DCHECK(TimingCalculations::GreaterThanOrEqualToWithinTimeTolerance(
           local_time.value(), after_time));
@@ -786,7 +803,7 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
         return end_time > local_time ? end_time - local_time.value()
                                      : AnimationTimeDelta::Max();
       }
-      return local_time.value() - after_time;
+      return std::max(local_time.value() - after_time, AnimationTimeDelta());
     default:
       NOTREACHED();
   }

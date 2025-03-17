@@ -5,6 +5,7 @@
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
@@ -68,7 +69,6 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
     : LayerTreeFrameSink(std::move(context_provider),
                          std::move(worker_context_provider_wrapper),
                          std::move(params->compositor_task_runner),
-                         params->gpu_memory_buffer_manager,
                          std::move(shared_image_interface)),
       use_direct_client_receiver_(params->use_direct_client_receiver),
       synthetic_begin_frame_source_(
@@ -160,7 +160,7 @@ void AsyncLayerTreeFrameSink::DetachFromClient() {
   client_->SetBeginFrameSource(nullptr);
   begin_frame_source_.reset();
   synthetic_begin_frame_source_.reset();
-  client_receiver_ = absl::monostate{};
+  client_receiver_ = std::monostate{};
   // `compositor_frame_sink_ptr_` points to either `compositor_frame_sink_` or
   // `compositor_frame_sink_associated_`, so it must be set to nullptr first.
   compositor_frame_sink_ptr_ = nullptr;
@@ -288,19 +288,6 @@ std::unique_ptr<LayerContext> AsyncLayerTreeFrameSink::CreateLayerContext(
   CHECK(compositor_frame_sink_ptr_);
   return std::make_unique<VizLayerContext>(*compositor_frame_sink_ptr_,
                                            host_impl);
-}
-
-void AsyncLayerTreeFrameSink::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const viz::SharedBitmapId& id) {
-  DCHECK(compositor_frame_sink_ptr_);
-  compositor_frame_sink_ptr_->DidAllocateSharedBitmap(std::move(region), id);
-}
-
-void AsyncLayerTreeFrameSink::DidDeleteSharedBitmap(
-    const viz::SharedBitmapId& id) {
-  DCHECK(compositor_frame_sink_ptr_);
-  compositor_frame_sink_ptr_->DidDeleteSharedBitmap(id);
 }
 
 void AsyncLayerTreeFrameSink::DidReceiveCompositorFrameAck(

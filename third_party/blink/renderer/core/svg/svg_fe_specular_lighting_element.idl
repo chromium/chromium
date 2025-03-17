@@ -28,12 +28,12 @@
 [
     Exposed=Window
 ] interface SVGFESpecularLightingElement : SVGElement {
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in1;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber surfaceScale;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber specularConstant;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber specularExponent;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber kernelUnitLengthX;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber kernelUnitLengthY;
+    readonly attribute SVGAnimatedString in1;
+    readonly attribute SVGAnimatedNumber surfaceScale;
+    readonly attribute SVGAnimatedNumber specularConstant;
+    readonly attribute SVGAnimatedNumber specularExponent;
+    readonly attribute SVGAnimatedNumber kernelUnitLengthX;
+    readonly attribute SVGAnimatedNumber kernelUnitLengthY;
 };
 
 SVGFESpecularLightingElement includes SVGFilterPrimitiveStandardAttributes;

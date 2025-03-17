@@ -17,12 +17,8 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
-#import "ios/chrome/browser/parcel_tracking/features.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service_factory.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_util.h"
@@ -65,11 +61,6 @@ void AnnotationsTabHelper::SetBaseViewController(
 void AnnotationsTabHelper::SetMiniMapCommands(
     id<MiniMapCommands> mini_map_handler) {
   mini_map_handler_ = mini_map_handler;
-}
-
-void AnnotationsTabHelper::SetParcelTrackingOptInCommands(
-    id<ParcelTrackingOptInCommands> parcel_tracking_handler) {
-  parcel_tracking_handler_ = parcel_tracking_handler;
 }
 
 void AnnotationsTabHelper::SetUnitConversionCommands(
@@ -217,26 +208,6 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
   if (main_frame && deferred) {
     std::vector<web::TextAnnotation> annotations(std::move(deferred.value()));
 
-    PrefService* prefs =
-        IsHomeCustomizationEnabled()
-            ? ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
-                  ->GetPrefs()
-            : GetApplicationContext()->GetLocalState();
-
-    if (IsIOSParcelTrackingEnabled() && !IsParcelTrackingDisabled(prefs)) {
-      parcel_number_tracker_.ProcessAnnotations(annotations);
-      // Show UI only if this is the currently active WebState.
-      if (parcel_number_tracker_.HasNewTrackingNumbers() &&
-          web_state_->IsVisible()) {
-        // Call asynchronously to allow the rest of the annotations to be
-        // decorated first.
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&AnnotationsTabHelper::MaybeShowParcelTrackingUI,
-                           weak_factory_.GetWeakPtr(),
-                           parcel_number_tracker_.GetNewTrackingNumbers()));
-      }
-    }
     if (base::FeatureList::IsEnabled(web::features::kEnableMeasurements)) {
       ProcessAnnotations(annotations);
     }
@@ -274,11 +245,6 @@ void AnnotationsTabHelper::ProcessAnnotations(
   }
   base::UmaHistogramCounts100("IOS.UnitConversion.DetectedMeasurements",
                               detected_measurements);
-}
-
-void AnnotationsTabHelper::MaybeShowParcelTrackingUI(
-    NSArray<CustomTextCheckingResult*>* parcels) {
-  [parcel_tracking_handler_ showTrackingForParcels:parcels];
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(AnnotationsTabHelper)

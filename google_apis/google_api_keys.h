@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "google_apis/buildflags.h"
 
 namespace version_info {
@@ -102,7 +101,7 @@ COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetSodaAPIKey();
 COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetHatsAPIKey();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Retrieves the Sharing API Key.
 COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetSharingAPIKey();
 

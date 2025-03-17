@@ -55,10 +55,6 @@ class LocalFontFaceSource final : public CSSFontFaceSource,
       const FontDescription&,
       const FontSelectionCapabilities&) override;
 
-  void ReportFontLookup(const FontDescription& font_description,
-                        const SimpleFontData* font_data,
-                        bool is_loading_fallback = false) override;
-
   class LocalFontHistograms {
     DISALLOW_NEW();
 

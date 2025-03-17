@@ -65,8 +65,7 @@ class ResourcedClientImpl : public ResourcedClient {
 
   void SetMemoryMargins(MemoryMargins margins) override;
 
-  void ReportBrowserProcesses(Component component,
-                              const std::vector<Process>& processes) override;
+  void ReportBrowserProcesses(const std::vector<Process>& processes) override;
 
   void SetProcessState(base::ProcessId process_id,
                        resource_manager::ProcessState state,
@@ -321,17 +320,10 @@ void ResourcedClientImpl::SetMemoryMargins(MemoryMargins margins) {
 }
 
 void ResourcedClientImpl::ReportBrowserProcesses(
-    Component component,
     const std::vector<Process>& processes) {
   resource_manager::ReportBrowserProcesses request;
 
-  if (component == ResourcedClient::Component::kAsh) {
-    request.set_browser_type(resource_manager::BrowserType::ASH);
-  } else if (component == ResourcedClient::Component::kLacros) {
-    request.set_browser_type(resource_manager::BrowserType::LACROS);
-  } else {
-    NOTREACHED();
-  }
+  request.set_browser_type(resource_manager::BrowserType::ASH);
 
   for (auto it = processes.begin(); it != processes.end(); ++it) {
     auto* process = request.add_processes();
@@ -381,7 +373,7 @@ void ResourcedClientImpl::SetThreadState(base::ProcessId process_id,
   dbus::MessageWriter writer(&method_call);
 
   writer.AppendUint32(process_id);
-  writer.AppendUint32(thread_id);
+  writer.AppendUint32(thread_id.raw());
   writer.AppendByte(static_cast<uint8_t>(state));
 
   proxy_->CallMethodWithErrorResponse(

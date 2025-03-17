@@ -20,7 +20,6 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
@@ -438,13 +437,30 @@ class PageSpecificContentSettings
   // This method is called when audio or video capturing is started or finished.
   void OnCapturingStateChanged(ContentSettingsType type, bool is_capturing);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // This method is called every time when device capabilities (currently, only
+  // Smart Cards) are used to communicate with a device. Because device
+  // connections can be long-lived, this method may be called multiple times
+  // during a connection.
+  void OnDeviceUsed(ContentSettingsType type);
+  // This is called when the last connection from this page to devices of `type`
+  // is closed.
+  void OnLastDeviceConnectionLost(ContentSettingsType type);
+#endif
+
   // Returns true if a page is currently using a feature gated behind `type`
   // permission. Returns false otherwise.
-  bool IsInUse(ContentSettingsType type) { return in_use_.contains(type); }
+  bool IsInUse(ContentSettingsType type) const;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // This is specific to the object based content settings (for now, just smart
+  // cards) - they should show for 15 more seconds after `IsInUse` turns false.
+  bool ShouldShowDeviceInUseIndicator(ContentSettingsType type) const;
+#endif
 
   // Returns a time of last usage of a feature gated behind `type` permission.
   // Returns base::Time() if `type` was not used in the last 24 hours.
-  const base::Time GetLastUsedTime(ContentSettingsType type);
+  const base::Time GetLastUsedTime(ContentSettingsType type) const;
 
   // This method is called when audio or video activity indicator is opened.
   void OnActivityIndicatorBubbleOpened(ContentSettingsType type);

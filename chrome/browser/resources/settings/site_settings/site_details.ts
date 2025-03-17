@@ -164,6 +164,12 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
       },
 
+      enablePermissionSiteSettingsRadioButton_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enablePermissionSiteSettingsRadioButton'),
+      },
+
       contentSettingsTypesEnum_: {
         type: Object,
         value: ContentSettingsTypes,
@@ -174,15 +180,19 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: ChooserType,
       },
 
-      enableKeyboardAndPointerLockPrompt_: {
+      enableKeyboardLockPrompt_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
+        value: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
       },
 
       enableWebAppInstallation_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
+      },
+
+      enableLocalNetworkAccessSetting_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
       },
     };
   }
@@ -203,10 +213,12 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private enableAutomaticFullscreenContentSetting_: boolean;
   private enableHandTrackingContentSetting_: boolean;
   private capturedSurfaceControlEnabled_: boolean;
+  private enablePermissionSiteSettingsRadioButton_: boolean;
   private enableWebAppInstallation_: boolean;
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();
-  private enableKeyboardAndPointerLockPrompt_: boolean;
+  private enableKeyboardLockPrompt_: boolean;
+  private enableLocalNetworkAccessSetting_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

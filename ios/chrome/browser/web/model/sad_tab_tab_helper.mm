@@ -13,11 +13,11 @@
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/utils/notification_observer_bridge.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/model/sad_tab_tab_helper_delegate.h"
@@ -196,8 +196,9 @@ void SadTabTabHelper::ReloadTab() {
 }
 
 void SadTabTabHelper::OnAppDidBecomeActive() {
-  if (!requires_reload_on_becoming_active_)
+  if (!requires_reload_on_becoming_active_) {
     return;
+  }
   if (web_state_->IsVisible()) {
     ReloadTab();
   } else {

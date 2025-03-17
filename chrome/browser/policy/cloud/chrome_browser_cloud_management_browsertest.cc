@@ -504,8 +504,7 @@ class ChromeBrowserCloudManagementEnrollmentTest
     observer_.SetShouldDisplayErrorMessage(should_display_error_message());
 
     if (!is_enrollment_token_valid() && should_display_error_message()) {
-      set_expected_exit_code(
-          chrome::RESULT_CODE_CLOUD_POLICY_ENROLLMENT_FAILED);
+      set_expected_exit_code(CHROME_RESULT_CODE_CLOUD_POLICY_ENROLLMENT_FAILED);
     }
   }
 

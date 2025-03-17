@@ -50,7 +50,7 @@ TEST(VideoLayerImplTest, Occlusion) {
       &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
-  video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
+  video_layer_impl->SetVisibleLayerRectForTesting(gfx::Rect(layer_size));
   CopyProperties(impl.root_layer(), video_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
@@ -310,9 +310,6 @@ TEST(VideoLayerImplTest, SoftwareVideoFrameGeneratesYUVQuad) {
   LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
-  gpu::MailboxHolder mailbox_holder;
-  mailbox_holder.mailbox.name[0] = 1;
-
   scoped_refptr<media::VideoFrame> video_frame = media::VideoFrame::CreateFrame(
       media::PIXEL_FORMAT_I420, gfx::Size(20, 10), gfx::Rect(20, 10),
       gfx::Size(20, 10), base::TimeDelta());
@@ -324,7 +321,7 @@ TEST(VideoLayerImplTest, SoftwareVideoFrameGeneratesYUVQuad) {
       &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
-  video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
+  video_layer_impl->SetVisibleLayerRectForTesting(gfx::Rect(layer_size));
   CopyProperties(impl.root_layer(), video_layer_impl);
 
   impl.CalcDrawProps(layer_size);
@@ -347,9 +344,6 @@ TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
   LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
-  gpu::MailboxHolder mailbox_holder;
-  mailbox_holder.mailbox.name[0] = 1;
-
   scoped_refptr<media::VideoFrame> video_frame = media::VideoFrame::CreateFrame(
       media::PIXEL_FORMAT_YUV420P10, gfx::Size(20, 10), gfx::Rect(20, 10),
       gfx::Size(20, 10), base::TimeDelta());
@@ -361,7 +355,7 @@ TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
       &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
-  video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
+  video_layer_impl->SetVisibleLayerRectForTesting(gfx::Rect(layer_size));
   CopyProperties(impl.root_layer(), video_layer_impl);
 
   impl.CalcDrawProps(layer_size);
@@ -401,7 +395,7 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
       &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
-  video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
+  video_layer_impl->SetVisibleLayerRectForTesting(gfx::Rect(layer_size));
   CopyProperties(impl.root_layer(), video_layer_impl);
   impl.CalcDrawProps(layer_size);
 
@@ -441,7 +435,7 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
       &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
-  video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
+  video_layer_impl->SetVisibleLayerRectForTesting(gfx::Rect(layer_size));
   CopyProperties(impl.root_layer(), video_layer_impl);
 
   impl.CalcDrawProps(layer_size);

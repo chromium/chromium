@@ -145,8 +145,8 @@ class DropDownCheckbox::MenuView : public views::View {
     menu_item_group_ =
         AddChildView(std::make_unique<CheckboxMenuOptionGroup>());
     UpdateMenuContent();
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        kMenuBackgroundColorId, kMenuRoundedCorners));
+    SetBackground(views::CreateRoundedRectBackground(kMenuBackgroundColorId,
+                                                     kMenuRoundedCorners));
     // Set border.
     SetBorder(std::make_unique<views::HighlightBorder>(
         kMenuRoundedCorners,
@@ -285,7 +285,7 @@ DropDownCheckbox::DropDownCheckbox(const std::u16string& title,
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                         *title_.get());
   title_->SetAutoColorReadabilityEnabled(false);
-  title_->SetEnabledColorId(kInactiveTitleAndIconColorId);
+  title_->SetEnabledColor(kInactiveTitleAndIconColorId);
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
@@ -452,14 +452,14 @@ void DropDownCheckbox::ShowDropDownMenu() {
   menu_->SetContentsView(std::move(menu_view));
   menu_->Show();
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       kDropDownCheckboxActiveColorId, kDropDownCheckboxRoundedCorners));
-  title_->SetEnabledColorId(kActiveTitleAndIconColorId);
+  title_->SetEnabledColor(kActiveTitleAndIconColorId);
   drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kDropDownArrowIcon, kActiveTitleAndIconColorId, kArrowIconSize));
 
   RequestFocus();
-  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kStateChanged, true);
 }
 
 void DropDownCheckbox::CloseDropDownMenu() {
@@ -468,10 +468,10 @@ void DropDownCheckbox::CloseDropDownMenu() {
 
   closed_time_ = base::TimeTicks::Now();
   SetBackground(nullptr);
-  title_->SetEnabledColorId(kInactiveTitleAndIconColorId);
+  title_->SetEnabledColor(kInactiveTitleAndIconColorId);
   drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kDropDownArrowIcon, kInactiveTitleAndIconColorId, kArrowIconSize));
-  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kStateChanged, true);
   OnPerformAction();
 }
 

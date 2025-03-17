@@ -51,6 +51,7 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -82,8 +83,7 @@ SuggestionFiltrationResult FilterSuggestions(
   SuggestionFiltrationResult result;
 
   std::u16string filter_lowercased = base::i18n::ToLower(*filter);
-  for (size_t i = 0; i < suggestions.size(); ++i) {
-    const Suggestion& suggestion = suggestions[i];
+  for (const Suggestion& suggestion : suggestions) {
     if (suggestion.filtration_policy ==
         Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter) {
       continue;
@@ -301,24 +301,12 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
   }
 }
 
-void AutofillPopupControllerImpl::PinView() {
-  is_view_pinned_ = true;
-}
-
 bool AutofillPopupControllerImpl::IsViewVisibilityAcceptingThresholdEnabled()
     const {
   return !disable_threshold_for_testing_;
 }
 
 void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
-  // If the reason for hiding is only stale data or a user interacting with
-  // native Chrome UI (kFocusChanged/kEndEditing), the popup might be kept open.
-  if (is_view_pinned_ && (reason == SuggestionHidingReason::kStaleData ||
-                          reason == SuggestionHidingReason::kFocusChanged ||
-                          reason == SuggestionHidingReason::kEndEditing)) {
-    return;  // Don't close the popup while waiting for an update.
-  }
-
   if ((reason == SuggestionHidingReason::kFocusChanged ||
        reason == SuggestionHidingReason::kEndEditing) &&
       view_ && view_->HasFocus()) {

@@ -43,10 +43,22 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   bool active() const { return active_; }
   AbortSignal* signal() const;
 
+  void RegisterNewObserver(ScriptState* script_state,
+                           ObservableInternalObserver*,
+                           SubscribeOptions*);
+
   void Trace(Visitor*) const override;
 
  private:
-  class CloseSubscriptionAlgorithm;
+  class ConsumerAbortSubscriptionAlgorithm;
+
+  // Called when the `AbortSignal` associated with one of the
+  // `internal_observers_` aborts its subscription. When the producer closes the
+  // subscription first, this method does nothing because it is guarded by an
+  // `active_` check.
+  void ConsumerUnsubscribe(ScriptState* script_state,
+                           ObservableInternalObserver* associated_observer,
+                           std::optional<ScriptValue> abort_reason);
 
   // This method is idempotent; it may be called more than once, re-entrantly,
   // which is safe, because it is guarded by an `active_` check. See the
@@ -55,9 +67,9 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   // The `abort_reason` parameter is an error value that serves as the abort
   // reason for when this method aborts `subscription_controller_`. It is
   // populated in two cases:
-  //   1. Consumer-initiated unsubscription: when `CloseSubscription()` is
-  //      called as a result of the downstream `AbortSignal` (passed in via
-  //      `SubscribeOptions` in the constructor) gets aborted.
+  //   1. Consumer-initiated unsubscription: when `ConsumerUnsubscribe()` is
+  //      called by the *last* consumer `AbortSignal`, then
+  //      `CloseSubscription()` is called with its abort reason.
   //   2. Producer-initiated unsubscription: when `Subscriber::error()` is
   //      called, `abort_reason` takes on the provided error value, so that the
   //      producer error is communicated through to `this`'s signal and any
@@ -65,9 +77,9 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   void CloseSubscription(ScriptState* script_state,
                          std::optional<ScriptValue> abort_reason);
 
-  // The `ObservableInternalObserver` class encapsulates algorithms to call when
-  // `this` produces values or actions that need to be pushed to the subscriber
-  // handlers.
+  // The list of `ObservableInternalObserver`s which encapsulate algorithms to
+  // call when `this` produces values or actions that need to be pushed to the
+  // subscriber handlers.
   //
   // https://wicg.github.io/observable/#subscriber-next-algorithm:
   // "Each Subscriber has a next algorithm, which is a next steps-or-null."
@@ -78,7 +90,17 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   // https://wicg.github.io/observable/#subscriber-complete-algorithm:
   // "Each Subscriber has a complete algorithm, which is a complete
   // steps-or-null."
-  Member<ObservableInternalObserver> internal_observer_;
+  HeapVector<Member<ObservableInternalObserver>> internal_observers_;
+  // This is a subset of `internal_observers_`; specifically, for each internal
+  // observer that has an associated `AbortSignal`, we own the `AbortSignal`'s
+  // algorithm handle in `consumer_abort_algorithms_` to keep the algorithm
+  // alive. Then when the abort algorithm finally runs, the algorithm tells
+  // `ConsumerAbortSubscription()` which observer it was associated, and we can
+  // clear the algorithm's handle from `consumer_abort_algorithms_`, since it no
+  // longer needs to be kept alive.
+  HeapHashMap<Member<ObservableInternalObserver>,
+              Member<AbortSignal::AlgorithmHandle>>
+      consumer_abort_algorithms_;
 
   // This starts out true, and becomes false only once `Subscriber::{complete(),
   // error()}` are called (just before the corresponding `Observer` callbacks
@@ -91,15 +113,12 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   //      called, they invoke `CloseSubscription()` directly, which aborts this
   //      controller.
   //   2. Consumer-initiated unsubscription: when the downstream `AbortSignal`
-  //      is aborted, the `CloseSubscriptionAlgorithm` runs, invoking
+  //      is aborted, the `ConsumerAbortSubscriptionAlgorithm` runs, invoking
   //      `CloseSubscription()`, which aborts this controller.
   //
   // This controller's signal is what `this` exposes as the `signal` WebIDL
   // attribute.
   Member<AbortController> subscription_controller_;
-
-  // Non-null before `CloseSubscription()` is called.
-  Member<AbortSignal::AlgorithmHandle> close_subscription_algorithm_handle_;
 
   HeapVector<Member<V8VoidFunction>> teardown_callbacks_;
 };

@@ -4,11 +4,13 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OsSettingsSubpageElement, SettingsBluetoothDeviceDetailSubpageElement, SettingsBluetoothTrueWirelessImagesElement} from 'chrome://os-settings/lazy_load.js';
-import {CrLinkRowElement, OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
+import type {OsSettingsSubpageElement, SettingsBluetoothDeviceDetailSubpageElement, SettingsBluetoothTrueWirelessImagesElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrLinkRowElement} from 'chrome://os-settings/os_settings.js';
+import {OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {AudioOutputCapability, BluetoothSystemProperties, DeviceBatteryInfo, DeviceConnectionState, DeviceType, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import type {BluetoothSystemProperties, DeviceBatteryInfo, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/chromeos/bluetooth/fake_bluetooth_config.js';
@@ -261,7 +263,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertNull(getTrueWirelessImages());
 
     // Try again with all 3 True Wireless images.
-    device.deviceProperties.imageInfo!.trueWirelessImages!.rightBudImageUrl =
+    device.deviceProperties.imageInfo.trueWirelessImages!.rightBudImageUrl =
         fakeUrl;
     bluetoothConfig.updatePairedDevice(device);
     await flushTasks();
@@ -408,7 +410,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
         await waitAfterNextRender(bluetoothDeviceDetailPage);
 
         // This is needed or other tests will fail.
-        // TODO(gordonseto): Figure out how to remove this.
+        // TODO(crbug.com/390256207): Figure out how to remove this.
         getChangeKeyboardSettings()!.click();
         await flushTasks();
       });
@@ -525,7 +527,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertTrue(!!getChangeKeyboardSettings());
 
     // This is needed or other tests will fail.
-    // TODO(gordonseto): Figure out how to remove this.
+    // TODO(crbug.com/390256207): Figure out how to remove this.
     getChangeKeyboardSettings()!.click();
     await flushTasks();
   });

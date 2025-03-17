@@ -4,11 +4,11 @@
 
 #include "components/browsing_data/core/browsing_data_policies_utils.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"

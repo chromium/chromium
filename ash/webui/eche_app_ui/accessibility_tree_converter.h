@@ -51,7 +51,7 @@ namespace ash::eche_app {
 
 // Converter to convert Android UI tree from proto to mojom format
 // https://crsrc.org/c/ash/webui/eche_app_ui/proto/accessibility_mojom.proto
-// https://crsrc.org/c/ash/components/arc/mojom/accessibility_helper.mojom
+// https://crsrc.org/c/chromeos/ash/experiences/arc/mojom/accessibility_helper.mojom
 class AccessibilityTreeConverter {
  public:
   AccessibilityTreeConverter();

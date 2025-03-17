@@ -565,6 +565,8 @@ def validate_local_ios_runtime(xcode_build_version, ios_version):
   """
   runtime_build = get_latest_runtime_build_cipd(xcode_build_version,
                                                 ios_version)
+  if runtime_build is None:
+    raise test_runner_errors.RuntimeBuildNotFoundError(ios_version)
   local_runtime = iossim_util.get_simulator_runtime_info_by_build(runtime_build)
   if not local_runtime:
     raise test_runner_errors.LocalRunRuntimeError(ios_version, runtime_build)
@@ -581,10 +583,19 @@ def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
     """
   if is_local_run():
     validate_local_xcode_install(xcode_build_version)
+    # Skip runtime validation if no ios_version is provided (indicating an
+    # on-device test run).
     if ios_version:
-      # skip runtime validation if no ios_version is provided (indicating an
-      # on-device test run)
-      validate_local_ios_runtime(xcode_build_version, ios_version)
+      try:
+        validate_local_ios_runtime(xcode_build_version, ios_version)
+      except test_runner_errors.RuntimeBuildNotFoundError as e:
+        # If we hit this exception, a runtime was not found in CIPD. This can
+        # happen when users do not have access to infra_internal, for example.
+        LOGGER.warning(
+            'Unable to find the iOS runtime build version of Xcode %s and iOS'
+            ' %s. CIPD is possibly not installed locally or the '
+            'CIPD infra_internal repository cannot be accessed.',
+            xcode_build_version, ios_version)
     return (True, False)
 
   try:

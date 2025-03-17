@@ -7,12 +7,14 @@ package org.chromium.components.browser_ui.site_settings;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSettingsType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Metrics recording functions for {@link ContentSettingsType.AUTO_DARK_WEB_CONTENT}. */
+@NullMarked
 public final class AutoDarkMetrics {
     /**
      * Source from which auto dark web content settings changed. This includes both changes to the

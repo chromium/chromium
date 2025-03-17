@@ -85,6 +85,16 @@ SourceLocation::SourceLocation(const String& url, int char_position)
       char_position_(char_position),
       script_id_(0) {}
 
+SourceLocation::SourceLocation(const String& url,
+                               int char_position,
+                               unsigned line_number,
+                               unsigned column_number)
+    : url_(url),
+      line_number_(line_number),
+      column_number_(column_number),
+      char_position_(char_position),
+      script_id_(0) {}
+
 SourceLocation::SourceLocation(
     const String& url,
     const String& function,
@@ -230,13 +240,15 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation() {
 std::unique_ptr<SourceLocation> CaptureSourceLocation(
     v8::Isolate* isolate,
     v8::Local<v8::Function> function) {
-  if (!function.IsEmpty())
+  if (!function.IsEmpty()) {
+    v8::Location location = function->GetScriptLocation();
     return std::make_unique<SourceLocation>(
         ToCoreStringWithUndefinedOrNullCheck(
             isolate, function->GetScriptOrigin().ResourceName()),
         ToCoreStringWithUndefinedOrNullCheck(isolate, function->GetName()),
-        function->GetScriptLineNumber() + 1,
-        function->GetScriptColumnNumber() + 1, nullptr, function->ScriptId());
+        location.GetLineNumber() + 1, location.GetColumnNumber() + 1, nullptr,
+        function->ScriptId());
+  }
   return std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr, 0);
 }
 

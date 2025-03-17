@@ -5,7 +5,9 @@
 #include "gpu/ipc/service/image_transport_surface.h"
 
 #include <android/native_window_jni.h>
+
 #include <utility>
+#include <variant>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -16,7 +18,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_egl_surface_control.h"
@@ -53,7 +54,7 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
   }
 
   scoped_refptr<gl::Presenter> presenter;
-  absl::visit(
+  std::visit(
       base::Overloaded{[&](gl::ScopedJavaSurface&& scoped_java_surface) {
                          gl::ScopedANativeWindow window(scoped_java_surface);
                          if (!window) {
@@ -103,13 +104,13 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
   // GpuSurfaceTracker/GpuSurfaceLookup
   auto surface_record =
       GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(surface_handle);
-  if (!absl::holds_alternative<gl::ScopedJavaSurface>(
+  if (!std::holds_alternative<gl::ScopedJavaSurface>(
           surface_record.surface_variant)) {
     LOG(WARNING) << "Expected Java Surface";
     return nullptr;
   }
   gl::ScopedJavaSurface& scoped_java_surface =
-      absl::get<gl::ScopedJavaSurface>(surface_record.surface_variant);
+      std::get<gl::ScopedJavaSurface>(surface_record.surface_variant);
   gl::ScopedANativeWindow window(scoped_java_surface);
 
   if (!window) {

@@ -44,8 +44,7 @@ class PLATFORM_EXPORT PendingLayer {
   void Trace(Visitor*) const;
 
   // Returns the offset/bounds for the final cc::Layer, rounded if needed.
-  gfx::Vector2dF LayerOffset() const;
-  gfx::Size LayerBounds() const;
+  std::pair<gfx::Vector2dF, gfx::Size> Bounds() const;
 
   const gfx::RectF& BoundsForTesting() const { return bounds_; }
 
@@ -69,6 +68,7 @@ class PLATFORM_EXPORT PendingLayer {
   cc::HitTestOpaqueness GetHitTestOpaqueness() const {
     return hit_test_opaqueness_;
   }
+  bool HasText() const { return has_text_; }
 
   void SetCompositingTypeToOverlap() {
     DCHECK_EQ(compositing_type_, kOther);
@@ -88,6 +88,7 @@ class PLATFORM_EXPORT PendingLayer {
   // Returns whether the merge is successful.
   bool Merge(const PendingLayer& guest,
              LCDTextPreference lcd_text_preference,
+             float device_pixel_ratio,
              IsCompositedScrollFunction);
 
   // Returns true if `guest` that could be upcasted with decomposited blend
@@ -153,8 +154,6 @@ class PLATFORM_EXPORT PendingLayer {
     return content_layer_client_.Get();
   }
 
-  void UpdateCcLayerHitTestOpaqueness() const;
-
   // For this PendingLayer, creates a composited layer or uses the existing
   // one in |old_pending_layer|, and updates the layer according to the current
   // contents and properties of this PendingLayer.
@@ -189,6 +188,7 @@ class PLATFORM_EXPORT PendingLayer {
 
   bool CanMerge(const PendingLayer& guest,
                 LCDTextPreference lcd_text_preference,
+                float device_pixel_ratio,
                 IsCompositedScrollFunction,
                 gfx::RectF& merged_bounds,
                 PropertyTreeState& merged_state,

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("quick_pair") {
   sources = [
@@ -24,7 +24,6 @@ static_library("quick_pair") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_app_constants",
     "//ash/constants",
     "//ash/quick_pair/feature_status_tracker",
     "//chrome/browser/apps/app_service",
@@ -32,6 +31,7 @@ static_library("quick_pair") {
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/pages/bluetooth",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
     "//components/cross_device/logging",
     "//components/image_fetcher/core",
     "//components/services/app_service/public/cpp:app_types",

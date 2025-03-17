@@ -76,27 +76,6 @@ source_set("impl") {
   }
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "browser_test_util.cc",
-    "browser_test_util.h",
-    "mock_optimization_guide_keyed_service.cc",
-    "mock_optimization_guide_keyed_service.h",
-  ]
-  deps = [
-    ":optimization_guide",
-    "//base",
-    "//chrome/browser",
-    "//chrome/browser/prefs",
-    "//chrome/test:test_support",
-    "//components/metrics:content",
-    "//components/optimization_guide/core",
-    "//components/prefs:test_support",
-    "//components/signin/public/identity_manager:test_support",
-  ]
-}
-
 if (!is_android) {
   source_set("browser_tests") {
     testonly = true
@@ -107,7 +86,6 @@ if (!is_android) {
     ]
     deps = [
       ":optimization_guide",
-      ":test_support",
       "//base/test:test_support",
       "//chrome/test:test_support",
       "//components/metrics_services_manager",

@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/enterprise/model/idle/action_runner_impl.h"
 
+#import <algorithm>
 #import <iterator>
 
 #import "base/functional/bind.h"
-#import "base/ranges/algorithm.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/enterprise/idle/metrics.h"
 #import "components/prefs/pref_service.h"
@@ -38,7 +38,7 @@ void ActionRunnerImpl::SetActionFactoryForTesting(
 
 ActionRunnerImpl::ActionQueue ActionRunnerImpl::GetActions() {
   std::vector<ActionType> actions;
-  base::ranges::transform(
+  std::ranges::transform(
       profile_->GetPrefs()->GetList(prefs::kIdleTimeoutActions),
       std::back_inserter(actions), [](const base::Value& action) {
         return static_cast<ActionType>(action.GetInt());

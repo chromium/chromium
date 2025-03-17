@@ -4,6 +4,7 @@
 
 #include "ash/quick_insert/views/quick_insert_list_item_container_view.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -12,7 +13,6 @@
 #include "ash/quick_insert/views/quick_insert_item_with_submenu_view.h"
 #include "ash/quick_insert/views/quick_insert_list_item_view.h"
 #include "ash/quick_insert/views/quick_insert_traversable_item_container.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"

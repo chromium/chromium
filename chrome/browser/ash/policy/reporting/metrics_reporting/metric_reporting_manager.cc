@@ -142,22 +142,19 @@ bool MetricReportingManager::Delegate::IsAppServiceAvailableForProfile(
 // static
 std::unique_ptr<MetricReportingManager> MetricReportingManager::Create(
     policy::ManagedSessionService* managed_session_service) {
-  return base::WrapUnique(new MetricReportingManager(
-      std::make_unique<Delegate>(), managed_session_service));
-}
-
-// static
-std::unique_ptr<MetricReportingManager>
-MetricReportingManager::CreateForTesting(
-    std::unique_ptr<Delegate> delegate,
-    policy::ManagedSessionService* managed_session_service) {
-  return base::WrapUnique(
-      new MetricReportingManager(std::move(delegate), managed_session_service));
+  auto manager = base::WrapUnique(
+      new MetricReportingManager(std::make_unique<Delegate>()));
+  manager->DelayedInit(managed_session_service);
+  return manager;
 }
 
 MetricReportingManager::~MetricReportingManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Shutdown();
+}
+
+MetricReportingManager::Delegate* MetricReportingManager::delegate() const {
+  return delegate_.get();
 }
 
 void MetricReportingManager::OnLogin(Profile* profile) {
@@ -243,9 +240,42 @@ MetricReportingManager::GetTelemetryCollectors(MetricEventType event_type) {
 }
 
 MetricReportingManager::MetricReportingManager(
-    std::unique_ptr<Delegate> delegate,
-    policy::ManagedSessionService* managed_session_service)
-    : delegate_(std::move(delegate)) {
+    std::unique_ptr<Delegate> delegate)
+    : delegate_(std::move(delegate)) {}
+
+void MetricReportingManager::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  website_usage_observer_.reset();
+  app_usage_observer_.reset();
+  // Reset the raw pointer for `fatal_crash_events_observer_` and
+  // `chrome_fatal_crash_events_observer_` before the actual class is destructed
+  // by `event_observer_managers_`.
+  fatal_crash_events_observer_ = nullptr;
+  chrome_fatal_crash_events_observer_ = nullptr;
+  event_observer_managers_.clear();
+  info_collectors_.clear();
+  telemetry_collectors_.clear();
+  network_bandwidth_collector_.reset();
+  samplers_.clear();
+  info_report_queue_.reset();
+  telemetry_report_queue_.reset();
+  user_telemetry_report_queue_.reset();
+  event_report_queue_.reset();
+  crash_event_report_queue_.reset();
+  chrome_crash_event_report_queue_.reset();
+  user_event_report_queue_.reset();
+  app_event_report_queue_.reset();
+  website_event_report_queue_.reset();
+  user_peripheral_events_and_telemetry_report_queue_.reset();
+  user_reporting_settings_.reset();
+
+  delegate_.reset();
+}
+
+void MetricReportingManager::DelayedInit(
+    policy::ManagedSessionService* managed_session_service) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (delegate_->IsDeprovisioned()) {
     return;
   }
@@ -271,50 +301,6 @@ MetricReportingManager::MetricReportingManager(
       Priority::FAST_BATCH,
       /*rate_limiter=*/nullptr, source_info);
 
-  DelayedInit();
-
-  if (managed_session_service) {
-    managed_session_observation_.Observe(managed_session_service);
-  }
-  if (::ash::DeviceSettingsService::IsInitialized()) {
-    device_settings_observation_.Observe(::ash::DeviceSettingsService::Get());
-  }
-}
-
-void MetricReportingManager::Shutdown() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  website_usage_observer_.reset();
-  app_usage_observer_.reset();
-  delegate_.reset();
-  // Reset the raw pointer for `fatal_crash_events_observer_` and
-  // `chrome_fatal_crash_events_observer_` before the actual class is destructed
-  // by `event_observer_managers_`.
-  fatal_crash_events_observer_ = nullptr;
-  chrome_fatal_crash_events_observer_ = nullptr;
-  event_observer_managers_.clear();
-  info_collectors_.clear();
-  telemetry_collectors_.clear();
-  network_bandwidth_collector_.reset();
-  samplers_.clear();
-  info_report_queue_.reset();
-  telemetry_report_queue_.reset();
-  user_telemetry_report_queue_.reset();
-  event_report_queue_.reset();
-  crash_event_report_queue_.reset();
-  chrome_crash_event_report_queue_.reset();
-  user_event_report_queue_.reset();
-  app_event_report_queue_.reset();
-  website_event_report_queue_.reset();
-  user_peripheral_events_and_telemetry_report_queue_.reset();
-  user_reporting_settings_.reset();
-}
-
-void MetricReportingManager::DelayedInit() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (delegate_->IsDeprovisioned()) {
-    return;
-  }
   // Info collectors init is delayed by default.
   CreateCrosHealthdInfoCollector(
       std::make_unique<CrosHealthdCpuSamplerHandler>(),
@@ -358,6 +344,13 @@ void MetricReportingManager::DelayedInit() {
 
   initial_upload_timer_.Start(FROM_HERE, GetUploadDelay(), this,
                               &MetricReportingManager::UploadTelemetry);
+
+  if (managed_session_service) {
+    managed_session_observation_.Observe(managed_session_service);
+  }
+  if (::ash::DeviceSettingsService::IsInitialized()) {
+    device_settings_observation_.Observe(::ash::DeviceSettingsService::Get());
+  }
 }
 
 void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
@@ -912,5 +905,4 @@ MetricReportingManager::fatal_crash_events_observer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return fatal_crash_events_observer_;
 }
-
 }  // namespace reporting

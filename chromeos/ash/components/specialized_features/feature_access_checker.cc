@@ -4,8 +4,11 @@
 
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
@@ -18,19 +21,31 @@ using enum FeatureAccessFailure;
 
 FeatureAccessConfig::FeatureAccessConfig() = default;
 FeatureAccessConfig::~FeatureAccessConfig() = default;
+FeatureAccessConfig::FeatureAccessConfig(const FeatureAccessConfig&) = default;
+FeatureAccessConfig& FeatureAccessConfig::operator=(
+    const FeatureAccessConfig&) = default;
+FeatureAccessConfig& FeatureAccessConfig::operator=(FeatureAccessConfig&&) =
+    default;
 
 FeatureAccessChecker::FeatureAccessChecker(
     FeatureAccessConfig config,
     PrefService* prefs,
     signin::IdentityManager* identity_manager,
-    variations::VariationsService* variations_service)
+    VariationsServiceCallback variations_service_callback)
     : config_(config),
       prefs_(prefs),
       identity_manager_(identity_manager),
-      variations_service_(variations_service) {}
+      variations_service_callback_(std::move(variations_service_callback)) {}
 
-FeatureAccessFailureSet FeatureAccessChecker::Check() {
+FeatureAccessChecker::FeatureAccessChecker() = default;
+
+FeatureAccessChecker::~FeatureAccessChecker() = default;
+
+FeatureAccessFailureSet FeatureAccessChecker::Check() const {
   FeatureAccessFailureSet failures;
+  if (config_.disabled_in_kiosk_mode && chromeos::IsKioskSession()) {
+    failures.Put(kDisabledInKioskModeCheckFailed);
+  }
 
   if (config_.settings_toggle_pref.has_value()) {
     // if prefs service is not set, we should assume that the feature is not
@@ -77,22 +92,26 @@ FeatureAccessFailureSet FeatureAccessChecker::Check() {
     }
   }
 
-  if (config_.requires_manta_account_capabilities) {
+  if (!config_.capability_callback.is_null()) {
     if (identity_manager_ == nullptr ||
-        identity_manager_
-                ->FindExtendedAccountInfoByAccountId(
-                    identity_manager_->GetPrimaryAccountId(
-                        signin::ConsentLevel::kSignin))
-                .capabilities.can_use_manta_service() !=
-            signin::Tribool::kTrue) {
-      failures.Put(kMantaAccountCapabilitiesCheckFailed);
+        (config_.capability_callback.Run(
+             identity_manager_
+                 ->FindExtendedAccountInfoByAccountId(
+                     identity_manager_->GetPrimaryAccountId(
+                         signin::ConsentLevel::kSignin))
+                 .capabilities) != signin::Tribool::kTrue)) {
+      failures.Put(kAccountCapabilitiesCheckFailed);
     }
   }
 
   if (!config_.country_codes.empty()) {
-    if (variations_service_ == nullptr ||
+    variations::VariationsService* variations_service =
+        variations_service_callback_.is_null()
+            ? nullptr
+            : variations_service_callback_.Run();
+    if (variations_service == nullptr ||
         !base::Contains(config_.country_codes,
-                        variations_service_->GetLatestCountry())) {
+                        variations_service->GetLatestCountry())) {
       failures.Put(kCountryCheckFailed);
     }
   }

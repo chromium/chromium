@@ -6,6 +6,7 @@
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTEXT_TEST_API_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "base/memory/raw_ptr.h"
@@ -75,7 +76,7 @@ class GameDashboardContextTestApi {
   FeatureTile* GetMainMenuToolbarTile();
   FeatureTile* GetMainMenuRecordGameTile();
   FeatureTile* GetMainMenuScreenshotTile();
-  const std::u16string& GetMainMenuScreenSizeSubtitle();
+  std::u16string_view GetMainMenuScreenSizeSubtitle();
   views::Button* GetMainMenuScreenSizeSettingsButton();
   views::Button* GetMainMenuGameControlsDetailsButton();
   PillButton* GetMainMenuGameControlsSetupButton();

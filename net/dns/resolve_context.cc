@@ -4,6 +4,7 @@
 
 #include "net/dns/resolve_context.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <limits>
 #include <utility>
@@ -19,7 +20,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -55,7 +55,7 @@ const size_t kRttBucketCount = 350;
 // Target percentile in the RTT histogram used for fallback period.
 const int kRttPercentile = 99;
 // Number of samples to seed the histogram with.
-const base::HistogramBase::Count kNumSeeds = 2;
+const base::HistogramBase::Count32 kNumSeeds = 2;
 
 DohProviderEntry::List FindDohProvidersMatchingServerConfig(
     DnsOverHttpsServerConfig server_config) {
@@ -98,7 +98,7 @@ class RttBuckets : public base::BucketRanges {
   RttBuckets() : base::BucketRanges(kRttBucketCount + 1) {
     base::Histogram::InitializeBucketRanges(
         1,
-        base::checked_cast<base::HistogramBase::Sample>(
+        base::checked_cast<base::HistogramBase::Sample32>(
             kRttMax.InMilliseconds()),
         this);
   }
@@ -114,7 +114,7 @@ static std::unique_ptr<base::SampleVector> GetRttHistogram(
   std::unique_ptr<base::SampleVector> histogram =
       std::make_unique<base::SampleVector>(GetRttBuckets());
   // Seed histogram with 2 samples at |rtt_estimate|.
-  histogram->Accumulate(base::checked_cast<base::HistogramBase::Sample>(
+  histogram->Accumulate(base::checked_cast<base::HistogramBase::Sample32>(
                             rtt_estimate.InMilliseconds()),
                         kNumSeeds);
   return histogram;
@@ -164,7 +164,7 @@ ResolveContext::ResolveContext(URLRequestContext* url_request_context,
       host_cache_(CreateHostCache(enable_caching)),
       host_resolver_cache_(
           CreateHostResolverCache(enable_caching, clock, tick_clock)),
-      isolation_info_(IsolationInfo::CreateTransient()) {
+      isolation_info_(IsolationInfo::CreateTransient(/*nonce=*/std::nullopt)) {
   max_fallback_period_ = GetMaxFallbackPeriod();
 }
 
@@ -206,8 +206,8 @@ size_t ResolveContext::NumAvailableDohServers(const DnsSession* session) const {
   if (!IsCurrentSession(session))
     return 0;
 
-  return base::ranges::count_if(doh_server_stats_,
-                                &ServerStatsToDohAvailability);
+  return std::ranges::count_if(doh_server_stats_,
+                               &ServerStatsToDohAvailability);
 }
 
 void ResolveContext::RecordServerFailure(size_t server_index,
@@ -295,7 +295,7 @@ void ResolveContext::RecordRtt(size_t server_index,
 
   // Histogram-based method.
   stats->rtt_histogram->Accumulate(
-      base::saturated_cast<base::HistogramBase::Sample>(rtt.InMilliseconds()),
+      base::saturated_cast<base::HistogramBase::Sample32>(rtt.InMilliseconds()),
       1);
 }
 
@@ -496,14 +496,14 @@ base::TimeDelta ResolveContext::NextFallbackPeriodHelper(
   if (initial_fallback_period_ > max_fallback_period_)
     return initial_fallback_period_;
 
-  static_assert(std::numeric_limits<base::HistogramBase::Count>::is_signed,
+  static_assert(std::numeric_limits<base::HistogramBase::Count32>::is_signed,
                 "histogram base count assumed to be signed");
 
   // Use fixed percentile of observed samples.
   const base::SampleVector& samples = *server_stats->rtt_histogram;
 
-  base::HistogramBase::Count total = samples.TotalCount();
-  base::HistogramBase::Count remaining_count = kRttPercentile * total / 100;
+  base::HistogramBase::Count32 total = samples.TotalCount();
+  base::HistogramBase::Count32 remaining_count = kRttPercentile * total / 100;
   size_t index = 0;
   while (remaining_count > 0 && index < GetRttBuckets()->size()) {
     remaining_count -= samples.GetCountAtIndex(index);

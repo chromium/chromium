@@ -87,7 +87,7 @@ enum class ManagePasswordsReferrer {
   kOmniboxPedalSuggestion = 20,
 
   // On Desktop, link clicked in the DefaultStoreChanged bubble.
-  kDefaultStoreChangedBubble = 21,
+  // Deprecated: kDefaultStoreChangedBubble = 21,
 
   // Corresponds to the manage password details bubble when clicking on the key
   // icon and navigating to the details view of a particular password.

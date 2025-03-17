@@ -6,14 +6,15 @@ package org.chromium.components.signin;
 
 import android.accounts.Account;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,6 +23,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 /** AccountUtils groups some static util methods for account. */
+@NullMarked
 public class AccountUtils {
     private static final Pattern AT_SYMBOL = Pattern.compile("@");
     private static final String GMAIL_COM = "gmail.com";
@@ -88,7 +90,7 @@ public class AccountUtils {
      * equals the given {@param accountGaiaId}; null if there is no match.
      */
     public static @Nullable CoreAccountInfo findCoreAccountInfoByGaiaId(
-            final List<CoreAccountInfo> coreAccountInfos, String accountGaiaId) {
+            final List<CoreAccountInfo> coreAccountInfos, GaiaId accountGaiaId) {
         for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
             if (coreAccountInfo.getGaiaId().equals(accountGaiaId)) {
                 return coreAccountInfo;
@@ -134,13 +136,44 @@ public class AccountUtils {
      *                 (whether it is a child one) is ready.
      */
     public static void checkChildAccountStatus(
-            @NonNull AccountManagerFacade accountManagerFacade,
-            @NonNull List<CoreAccountInfo> coreAccountInfos,
-            @NonNull ChildAccountStatusListener listener) {
+            AccountManagerFacade accountManagerFacade,
+            List<CoreAccountInfo> coreAccountInfos,
+            ChildAccountStatusListener listener) {
         if (coreAccountInfos.size() >= 1) {
             // If a child account is present then there can be only one, and it must be the first
             // account on the device.
             accountManagerFacade.checkChildAccountStatus(coreAccountInfos.get(0), listener);
+        } else {
+            listener.onStatusReady(false, null);
+        }
+    }
+
+    /**
+     * Checks the parental control subjectivity of the accounts on the device based on the list of
+     * (zero or more) provided {@param coreAccountInfos}.
+     *
+     * <p>If there are no coreAccountInfo subject to parental controls on the device, the listener
+     * will be invoked with isChild = false. If there is an account subject to parental controls on
+     * device, the listener will be called with that account and isChild = true. Note that it is not
+     * currently possible to have more than one account subject to parental controls on device.
+     *
+     * <p>It should be safe to invoke this method before the native library is initialized.
+     *
+     * @param accountManagerFacade The singleton instance of {@link AccountManagerFacade}.
+     * @param coreAccountInfos The list of {@link CoreAccountInfo} on device.
+     * @param listener The listener is called when the status of the account (whether it is subject
+     *     to parental controls) is ready.
+     */
+    public static void checkIsSubjectToParentalControls(
+            AccountManagerFacade accountManagerFacade,
+            List<CoreAccountInfo> coreAccountInfos,
+            ChildAccountStatusListener listener) {
+        if (coreAccountInfos.size() >= 1) {
+            // If an account subject to parental controls is present then there can be only one, and
+            // it must be the first
+            // account on the device.
+            accountManagerFacade.checkIsSubjectToParentalControls(
+                    coreAccountInfos.get(0), listener);
         } else {
             listener.onStatusReady(false, null);
         }

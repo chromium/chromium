@@ -149,7 +149,7 @@ class MediaKeySession final
                         size_t message_length) override;
   void OnSessionClosed(media::CdmSessionClosedReason reason) override;
   void OnSessionExpirationUpdate(double updated_expiry_time_in_ms) override;
-  void OnSessionKeysChange(const WebVector<WebEncryptedMediaKeyInformation>&,
+  void OnSessionKeysChange(const std::vector<WebEncryptedMediaKeyInformation>&,
                            bool has_additional_usable_key) override;
 
   Member<EventQueue> async_event_queue_;

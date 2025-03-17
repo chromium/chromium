@@ -10,6 +10,10 @@ namespace network::switches {
 // connection type.
 const char kForceEffectiveConnectionType[] = "force-effective-connection-type";
 
+// If set, the unload event cannot be disabled by default by Permissions-Policy.
+const char kForcePermissionPolicyUnloadDefaultEnabled[] =
+    "force-permission-policy-unload-default-enabled";
+
 // These mappings only apply to the host resolver.
 const char kHostResolverRules[] = "host-resolver-rules";
 
@@ -81,17 +85,17 @@ const char kUnsafelyTreatInsecureOriginAsSecure[] =
 const char kAdditionalTrustTokenKeyCommitments[] =
     "additional-private-state-token-key-commitments";
 
-// Allows the manual specification of a First-Party Set, as a comma-separated
-// list of origins. The first origin in the list is treated as the owner of the
-// set.
+// Allows the manual specification of a First-Party Set. The format is the same
+// as that of `--use-related-website-set`.
+//
 // DEPRECATED(crbug.com/1486689): This switch is under deprecation due to
 // renaming "First-Party Set" to "Related Website Set". Please use
 // `kUseRelatedWebsiteSet` instead.
 const char kUseFirstPartySet[] = "use-first-party-set";
 
-// Allows the manual specification of a Related Website Set, as a
-// comma-separated list of origins. The first origin in the list is treated as
-// the primary site of the set.
+// Allows the manual specification of a Related Website Set. The set should be
+// provided as a stringified JSON object, whose format matches the format of the
+// JSON in https://github.com/GoogleChrome/related-website-sets.
 const char kUseRelatedWebsiteSet[] = "use-related-website-set";
 
 // Specifies manual overrides to the IP endpoint -> IP address space mapping.
@@ -122,5 +126,8 @@ const char kIpAddressSpaceOverrides[] = "ip-address-space-overrides";
 // testing.
 const char kDisableSharedDictionaryStorageCleanupForTesting[] =
     "disable-shared-dictionary-storage-cleanup-for-testing";
+
+// The switch to ignore bad mojo message reports. Only for testing.
+const char kIgnoreBadMessageForTesting[] = "ignore-bad-message-for-testing";
 
 }  // namespace network::switches

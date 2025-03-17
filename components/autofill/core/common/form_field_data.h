@@ -351,6 +351,13 @@ class FormFieldData {
       std::optional<AutocompleteParsingResult> parsed_autocomplete) {
     parsed_autocomplete_ = std::move(parsed_autocomplete);
   }
+
+  // The value of the form control element's "pattern" attribute. The string
+  // comes from the renderer without any further validation. There are no
+  // guarantees about the format of the string.
+  const std::u16string& pattern() const { return pattern_; }
+  void set_pattern(std::u16string pattern) { pattern_ = std::move(pattern); }
+
   const std::u16string& placeholder() const { return placeholder_; }
   void set_placeholder(std::u16string placeholder) {
     placeholder_ = std::move(placeholder);
@@ -434,8 +441,7 @@ class FormFieldData {
   // overflows when doing arithmetic with FormFieldData::max_length.
   //
   // Changes to the default value also must be reflected in
-  // form_autofill_util.cc's GetMaxLength() and
-  // FormFieldData::has_no_max_length().
+  // form_autofill_util.cc's GetMaxLength().
   //
   // We use uint64_t instead of size_t because this struct is sent over IPC
   // which could span 32 & 64 bit processes. We chose uint64_t instead of
@@ -565,6 +571,7 @@ class FormFieldData {
   FormControlType form_control_type_ = FormControlType::kInputText;
   std::string autocomplete_attribute_;
   std::optional<AutocompleteParsingResult> parsed_autocomplete_;
+  std::u16string pattern_;
   std::u16string placeholder_;
   std::u16string css_classes_;
   std::u16string aria_label_;

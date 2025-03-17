@@ -24,6 +24,9 @@ mojom("mojom") {
   }
   if (chrome_root_store_supported) {
     enabled_features += [ "is_chrome_root_store_supported" ]
+    if (!is_chromeos) {
+      enabled_features += [ "is_platform_root_store_info_supported" ]
+    }
   }
 
   if (use_nss_certs) {

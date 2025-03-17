@@ -13,6 +13,7 @@
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/browser_sync/common_controller_builder.h"
 #import "components/history/core/browser/features.h"
+#import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -53,6 +54,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 #import "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
@@ -109,9 +111,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
   builder.SetIdentityManager(IdentityManagerFactory::GetForProfile(profile));
   builder.SetDataTypeStoreService(
       DataTypeStoreServiceFactory::GetForProfile(profile));
-  builder.SetPasskeyModel(syncer::IsWebauthnCredentialSyncEnabled()
-                              ? IOSPasskeyModelFactory::GetForProfile(profile)
-                              : nullptr);
+  builder.SetPasskeyModel(IOSPasskeyModelFactory::GetForProfile(profile));
   builder.SetPasswordReceiverService(
       IOSChromePasswordReceiverServiceFactory::GetForProfile(profile));
   builder.SetPasswordSenderService(
@@ -287,6 +287,20 @@ SyncServiceFactory::GetForProfileAsSyncServiceImplForTesting(
       profile, /*create*/ true);
 }
 
+// static
+std::vector<const syncer::SyncService*>
+SyncServiceFactory::GetAllSyncServices() {
+  std::vector<const syncer::SyncService*> sync_services;
+  for (ProfileIOS* profile :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    syncer::SyncService* sync_service = GetForProfileIfExists(profile);
+    if (sync_service != nullptr) {
+      sync_services.push_back(sync_service);
+    }
+  }
+  return sync_services;
+}
+
 SyncServiceFactory::SyncServiceFactory()
     : ProfileKeyedServiceFactoryIOS("SyncService") {
   // The SyncServiceImpl depends on various KeyedServices being around
@@ -311,9 +325,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(IOSChromePasswordReceiverServiceFactory::GetInstance());
   DependsOn(IOSChromePasswordSenderServiceFactory::GetInstance());
   DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());
-  if (syncer::IsWebauthnCredentialSyncEnabled()) {
-    DependsOn(IOSPasskeyModelFactory::GetInstance());
-  }
+  DependsOn(IOSPasskeyModelFactory::GetInstance());
   if (base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
     DependsOn(IOSSharingMessageBridgeFactory::GetInstance());

@@ -296,21 +296,6 @@ class FileSystemAccessObserverBrowserTestBase : public ContentBrowserTest {
   GURL test_url_;
 };
 
-class FileSystemAccessObserverDefaultBrowserTest
-    : public FileSystemAccessObserverBrowserTestBase {};
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverDefaultBrowserTest,
-                       DisabledByDefault) {
-  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
-
-  auto result =
-      EvalJs(shell(),
-             "(async () => {"
-             "const observer = new FileSystemObserver(() => {}); })()");
-  EXPECT_TRUE(result.error.find("not defined") != std::string::npos)
-      << result.error;
-}
-
 class FileSystemAccessObserveWithFlagBrowserTest
     : public FileSystemAccessObserverBrowserTestBase {
  public:
@@ -868,8 +853,18 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // On Linux or ChromeOS, the change type can be "modified" if the swap file is
+  // 'renamed' to observed file's name. On other occasions, this can be a 2 step
+  // process where we see a deleted event on the CrSwap file and then an
+  // "appeared" event on the observed file.
+  EXPECT_THAT(
+      *records.front().GetDict().FindString("type"),
+      testing::AnyOf(testing::StrEq("modified"), testing::StrEq("appeared")));
+#else
   EXPECT_THAT(*records.front().GetDict().FindString("type"),
               testing::StrEq("modified"));
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
@@ -1223,7 +1218,17 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records, testing::SizeIs(1));
   auto& record_dict = records.front().GetDict();
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // On Linux or ChromeOS, the change type can be "modified" if the swap file is
+  // 'renamed' to the target file's name. On other occasions, this can be a 2
+  // step process where we see a deleted event on the CrSwap file and then an
+  // "appeared" event on the target file.
+  EXPECT_THAT(
+      *record_dict.FindString("type"),
+      testing::AnyOf(testing::StrEq("modified"), testing::StrEq("appeared")));
+#else
   EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("modified"));
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
               testing::ElementsAre("file.txt"));
 }

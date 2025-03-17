@@ -228,6 +228,9 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
   switch (message.message_contents()) {
     case sync_pb::ClientToServerMessage::GET_UPDATES:
       last_getupdates_message_ = message;
+      for (Observer& observer : observers_) {
+        observer.OnWillGetUpdates(message);
+      }
       break;
     case sync_pb::ClientToServerMessage::COMMIT:
       last_commit_message_ = message;

@@ -126,7 +126,7 @@ class HostIndexedContentSettings {
   bool SetValue(const ContentSettingsPattern& primary_pattern,
                 const ContentSettingsPattern& secondary_pattern,
                 base::Value value,
-                const RuleMetaData& metadata);
+                RuleMetaData metadata);
 
   // Deletes the index entry for the given |primary_pattern|,
   // |secondary_pattern|, |content_type| tuple.

@@ -6,9 +6,11 @@
 
 #include <vector>
 
+#include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,6 +27,19 @@ using ::testing::Pointee;
 using ::testing::UnorderedElementsAre;
 
 using AmbientVideoAlbumsTest = AmbientAshTestBase;
+
+namespace {
+
+void SetJupiterCustomizationId() {
+  auto* fake_statistics_provider = static_cast<system::FakeStatisticsProvider*>(
+      system::StatisticsProvider::GetInstance());
+  fake_statistics_provider->ClearAllMachineStatistics();
+  fake_statistics_provider->SetMachineStatistic(
+      system::kCustomizationIdKey,
+      std::string(ash::kJupiterScreensaverCustomizationId));
+}
+
+}  // namespace
 
 TEST_F(AmbientVideoAlbumsTest, AppendAmbientVideoAlbums) {
   std::vector<mojom::AmbientModeAlbumPtr> albums;
@@ -48,11 +63,35 @@ TEST_F(AmbientVideoAlbumsTest, AppendAmbientVideoAlbums) {
                     Field(&mojom::AmbientModeAlbum::checked, IsFalse())))));
 }
 
+TEST_F(AmbientVideoAlbumsTest, AppendAmbientVideoAlbumsJupiter) {
+  SetJupiterCustomizationId();
+  std::vector<mojom::AmbientModeAlbumPtr> albums;
+  AppendAmbientVideoAlbums(AmbientVideo::kJupiter, albums);
+  EXPECT_THAT(
+      albums,
+      UnorderedElementsAre(
+          Pointee(AllOf(Field(&mojom::AmbientModeAlbum::id, Eq(kCloudsAlbumId)),
+                        Field(&mojom::AmbientModeAlbum::checked, IsFalse()))),
+          Pointee(
+              AllOf(Field(&mojom::AmbientModeAlbum::id, Eq(kNewMexicoAlbumId)),
+                    Field(&mojom::AmbientModeAlbum::checked, IsFalse()))),
+          Pointee(
+              AllOf(Field(&mojom::AmbientModeAlbum::id, Eq(kJupiterAlbumId)),
+                    Field(&mojom::AmbientModeAlbum::checked, IsTrue())))));
+}
+
 TEST_F(AmbientVideoAlbumsTest, FindAmbientVideoByAlbumId) {
   EXPECT_EQ(FindAmbientVideoByAlbumId(kCloudsAlbumId), AmbientVideo::kClouds);
   EXPECT_EQ(FindAmbientVideoByAlbumId(kNewMexicoAlbumId),
             AmbientVideo::kNewMexico);
   EXPECT_FALSE(FindAmbientVideoByAlbumId("UnknownAlbumId"));
+}
+
+TEST_F(AmbientVideoAlbumsTest, FindAmbientVideoByAlbumIdJupiter) {
+  EXPECT_FALSE(FindAmbientVideoByAlbumId(kJupiterAlbumId));
+
+  SetJupiterCustomizationId();
+  EXPECT_EQ(FindAmbientVideoByAlbumId(kJupiterAlbumId), AmbientVideo::kJupiter);
 }
 
 }  // namespace ash::personalization_app

@@ -7,19 +7,21 @@ package org.chromium.chrome.browser.device_reauth;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 
+@NullMarked
 class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegate {
     private long mNativeDeviceAuthenticator;
-    private DeviceAuthenticatorController mController;
+    private @Nullable DeviceAuthenticatorController mController;
 
     private DeviceAuthenticatorBridge(
             long nativeDeviceAuthenticator, @Nullable FragmentActivity activity) {

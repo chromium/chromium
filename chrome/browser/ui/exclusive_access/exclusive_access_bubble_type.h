@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "url/gurl.h"
+#include "url/origin.h"
 
 // Exclusive access bubble types that inform UI content for various states.
 // More comments about tab and browser fullscreen mode can be found in
@@ -39,8 +39,9 @@ enum ExclusiveAccessBubbleType {
 
 // Describes contents and traits of the exclusive access bubble.
 struct ExclusiveAccessBubbleParams {
-  // The URL with exclusive access; empty for browser or extension fullscreen.
-  GURL url;
+  // The origin with exclusive access; empty for browser or extension
+  // fullscreen.
+  url::Origin origin;
   // The type of bubble to show, which directly informs the text content.
   // Note: *_NONE and `has_download` means the current type should be kept.
   // TODO(msw): Use std::optional and nullopt to signify no type change.

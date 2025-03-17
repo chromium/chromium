@@ -19,9 +19,9 @@
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "components/language_detection/core/constants.h"
 #include "components/language_detection/core/language_detection_resolver.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h"
 
 namespace language_detection {
@@ -134,19 +134,15 @@ LanguageDetectionModel::LanguageDetectionModel()
 LanguageDetectionModel::~LanguageDetectionModel() = default;
 
 std::vector<Prediction> LanguageDetectionModel::Predict(
-    std::u16string_view contents,
-    bool truncate) const {
+    std::u16string_view contents) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT("browser", "LanguageDetectionModel::DetectTopLanguage");
   base::ElapsedTimer timer;
 
   CHECK(IsAvailable());
 
+  size_t convert_length = std::min(kModelTruncationLength, contents.length());
   std::string utf8_contents;
-  size_t convert_length =
-      truncate ? std::min(kModelTruncationLength, contents.length())
-               : contents.length();
-
   base::UTF16ToUTF8(contents.data(), convert_length, &utf8_contents);
 
   // TFLite expects all strings to be aligned to 4 bytes.
@@ -171,7 +167,7 @@ std::vector<Prediction> LanguageDetectionModel::Predict(
   base::UmaHistogramBoolean(
       "LanguageDetection.TFLiteModel.ClassifyText.Detected", detected);
   if (!detected) {
-    return {Prediction(translate::kUnknownLanguageCode, 0.0)};
+    return {Prediction(kUnknownLanguageCode, 0.0)};
   }
   std::vector<Prediction> predictions;
   predictions.reserve(status_or_categories.value().size());
@@ -199,6 +195,9 @@ std::vector<Prediction> LanguageDetectionModel::PredictWithScan(
   predictions.reserve(score_by_language.size());
   for (const auto& it : score_by_language) {
     predictions.emplace_back(it.first, it.second / count);
+  }
+  if (predictions.empty()) {
+    return {Prediction(kUnknownLanguageCode, 0.0)};
   }
   return predictions;
 }

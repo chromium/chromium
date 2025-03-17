@@ -8,6 +8,7 @@ import 'chrome://extensions/extensions.js';
 import type {ExtensionsSitePermissionsElement} from 'chrome://extensions/extensions.js';
 import {navigation, Page, Service} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -54,7 +55,7 @@ suite('SitePermissions', function() {
     await microtasksFinished();
 
     const sitePermissionLists =
-        element!.shadowRoot!.querySelectorAll<HTMLElement>(
+        element!.shadowRoot.querySelectorAll<CrLitElement>(
             'site-permissions-list');
     assertEquals(2, sitePermissionLists.length);
     const permittedSites = sitePermissionLists[0]!;
@@ -64,12 +65,12 @@ suite('SitePermissions', function() {
     // '#no-sites' messages is not visible.
     testVisible(permittedSites, '#no-sites', false);
     assertEquals(
-        2, permittedSites.shadowRoot!.querySelectorAll('.site-row').length);
+        2, permittedSites.shadowRoot.querySelectorAll('.site-row').length);
 
     // Test that the '#no-sites' message is visible for restricted sites.
-    testVisible(restrictedSites!, '#no-sites', true);
+    testVisible(restrictedSites, '#no-sites', true);
     assertEquals(
-        0, restrictedSites!.shadowRoot!.querySelectorAll('.site-row').length);
+        0, restrictedSites.shadowRoot.querySelectorAll('.site-row').length);
   });
 
   test('user site settings update when event is fired', async function() {
@@ -82,7 +83,7 @@ suite('SitePermissions', function() {
     await microtasksFinished();
 
     const sitePermissionLists =
-        element!.shadowRoot!.querySelectorAll<HTMLElement>(
+        element!.shadowRoot.querySelectorAll<CrLitElement>(
             'site-permissions-list');
     assertEquals(2, sitePermissionLists.length);
     const permittedSites = sitePermissionLists[0]!;
@@ -91,13 +92,13 @@ suite('SitePermissions', function() {
     // Test that the '#no-sites' message is visible for permitted sites.
     testVisible(permittedSites, '#no-sites', true);
     assertEquals(
-        0, permittedSites.shadowRoot!.querySelectorAll('.site-row').length);
+        0, permittedSites.shadowRoot.querySelectorAll('.site-row').length);
 
     // Test that there is one site visible for restricted sites, and the
     // '#no-sites' messages is not visible.
-    testVisible(restrictedSites!, '#no-sites', false);
+    testVisible(restrictedSites, '#no-sites', false);
     assertEquals(
-        1, restrictedSites!.shadowRoot!.querySelectorAll('.site-row').length);
+        1, restrictedSites.shadowRoot.querySelectorAll('.site-row').length);
   });
 
   test('clicking a link navigates to the all sites page', async () => {
@@ -128,7 +129,7 @@ suite('SitePermissions', function() {
 
         await microtasksFinished();
         const sitePermissionLists =
-            element!.shadowRoot!.querySelectorAll<HTMLElement>(
+            element!.shadowRoot.querySelectorAll<HTMLElement>(
                 'site-permissions-list');
 
         // Only the list of user restricted sites should be visible.

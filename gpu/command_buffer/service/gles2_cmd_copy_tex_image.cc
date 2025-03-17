@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "gpu/command_buffer/service/gles2_cmd_copy_tex_image.h"
 
@@ -197,9 +193,10 @@ void CopyTexImageResourceManager::DoCopyTexSubImageToLUMACompatibilityTexture(
 
   // Set the swizzle of the scratch texture so that the channels sample into the
   // correct emulated LUMA channels.
-  GLint swizzle[4] = {
+  std::array<GLint, 4> swizzle = {
       (luma_format == GL_ALPHA) ? GL_ALPHA : GL_RED,
-      (luma_format == GL_LUMINANCE_ALPHA) ? GL_ALPHA : GL_ZERO, GL_ZERO,
+      (luma_format == GL_LUMINANCE_ALPHA) ? GL_ALPHA : GL_ZERO,
+      GL_ZERO,
       GL_ZERO,
   };
   // ES doesn't support GL_TEXTURE_SWIZZLE_RGBA. We must set each swizzle

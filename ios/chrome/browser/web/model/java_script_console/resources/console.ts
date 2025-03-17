@@ -5,22 +5,25 @@
 // Scripts to allow page console.log() etc. output to be seen on the console
 // of the host application.
 
+/* eslint-disable no-console */
+
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
-declare type LogLevel = 'log' | 'debug' | 'info' | 'warn' | 'error';
+type LogLevel = 'log'|'debug'|'info'|'warn'|'error';
 
-function sendConsoleMessage(log_level: LogLevel, originalArgs: unknown[]) {
-  let message, slicedArgs = Array.prototype.slice.call(originalArgs);
+function sendConsoleMessage(logLevel: LogLevel, originalArgs: unknown[]) {
+  let message;
+  const slicedArgs = Array.prototype.slice.call(originalArgs);
   try {
     message = slicedArgs.join(' ');
   } catch (err) {
   }
   sendWebKitMessage('ConsoleMessageHandler', {
-    'sender_frame' : gCrWeb.message.getFrameId(),
-    'log_level' : log_level,
-    'message' : message,
-    'url': document.location.href
+    'sender_frame': gCrWeb.message.getFrameId(),
+    'log_level': logLevel,
+    'message': message,
+    'url': document.location.href,
   });
 }
 

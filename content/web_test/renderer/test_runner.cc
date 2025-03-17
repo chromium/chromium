@@ -2892,7 +2892,7 @@ SkBitmap TestRunner::PrintFrameToBitmap(blink::WebLocalFrame* frame) {
   uint32_t page_count = frame->PrintBegin(print_params, blink::WebNode());
 
   const printing::PageRanges& page_ranges = GetPrintingPageRanges(frame);
-  blink::WebVector<uint32_t> pages(
+  std::vector<uint32_t> pages(
       printing::PageNumber::GetPages(page_ranges, page_count));
   gfx::Size spool_size = frame->SpoolSizeInPixelsForTesting(pages);
 

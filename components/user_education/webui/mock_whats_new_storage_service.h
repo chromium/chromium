@@ -15,6 +15,7 @@ class MockWhatsNewStorageService : public whats_new::WhatsNewStorageService {
 
   MOCK_METHOD(const base::Value::List&, ReadModuleData, (), (const override));
   MOCK_METHOD(const base::Value::Dict&, ReadEditionData, (), (const, override));
+  MOCK_METHOD(std::optional<int>, ReadVersionData, (), (const, override));
   MOCK_METHOD(std::optional<int>,
               GetUsedVersion,
               (std::string_view edition_name),
@@ -28,8 +29,13 @@ class MockWhatsNewStorageService : public whats_new::WhatsNewStorageService {
               (std::string_view),
               (const, override));
   MOCK_METHOD(bool, IsUsedEdition, (std::string_view), (const, override));
+  MOCK_METHOD(bool,
+              WasVersionPageUsedForCurrentMilestone,
+              (),
+              (const, override));
   MOCK_METHOD(void, SetModuleEnabled, (std::string_view), (override));
   MOCK_METHOD(void, SetEditionUsed, (std::string_view), (override));
+  MOCK_METHOD(void, SetVersionUsed, (), (override));
   MOCK_METHOD(void, ClearModules, (std::set<std::string_view>), (override));
   MOCK_METHOD(void, ClearEditions, (std::set<std::string_view>), (override));
   MOCK_METHOD(void, Reset, (), (override));

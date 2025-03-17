@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_monitor.h"
 #include "content/public/browser/audio_service.h"
 #include "media/audio/audio_device_description.h"
@@ -18,7 +17,7 @@ namespace {
 // overwritten with |media::AudioDeviceDescription::kDefaultDeviceId|.
 void MaybeRemoveDefaultDevice(media::AudioDeviceDescriptions& descriptions) {
   // Determine which of the audio devices is the fallback "default" device.
-  auto default_device_it = base::ranges::find(
+  auto default_device_it = std::ranges::find(
       descriptions, media::AudioDeviceDescription::kDefaultDeviceId,
       &media::AudioDeviceDescription::unique_id);
 

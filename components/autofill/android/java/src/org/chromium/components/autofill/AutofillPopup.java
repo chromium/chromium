@@ -4,6 +4,8 @@
 
 package org.chromium.components.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
@@ -13,8 +15,8 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.AdapterView;
 import android.widget.PopupWindow;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.widget.RectProvider;
@@ -25,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 
 /** The Autofill suggestion popup that lists relevant suggestions. */
+@NullMarked
 public class AutofillPopup extends DropdownPopupWindow
         implements AdapterView.OnItemClickListener,
                 AdapterView.OnItemLongClickListener,
@@ -40,7 +43,7 @@ public class AutofillPopup extends DropdownPopupWindow
 
     private final Context mContext;
     private final AutofillDelegate mAutofillDelegate;
-    private List<AutofillSuggestion> mSuggestions;
+    @Nullable private List<AutofillSuggestion> mSuggestions;
 
     private final Runnable mClearAccessibilityFocusRunnable =
             new Runnable() {
@@ -122,7 +125,7 @@ public class AutofillPopup extends DropdownPopupWindow
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         AutofillDropdownAdapter adapter = (AutofillDropdownAdapter) parent.getAdapter();
-        int listIndex = mSuggestions.indexOf(adapter.getItem(position));
+        int listIndex = assumeNonNull(mSuggestions).indexOf(adapter.getItem(position));
         assert listIndex > -1;
         mAutofillDelegate.suggestionSelected(listIndex);
     }
@@ -130,10 +133,11 @@ public class AutofillPopup extends DropdownPopupWindow
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         AutofillDropdownAdapter adapter = (AutofillDropdownAdapter) parent.getAdapter();
-        AutofillSuggestion suggestion = (AutofillSuggestion) adapter.getItem(position);
+        AutofillSuggestion suggestion =
+                (AutofillSuggestion) assumeNonNull(adapter.getItem(position));
         if (!suggestion.isDeletable()) return false;
 
-        int listIndex = mSuggestions.indexOf(suggestion);
+        int listIndex = assumeNonNull(mSuggestions).indexOf(suggestion);
         assert listIndex > -1;
         mAutofillDelegate.deleteSuggestion(listIndex);
         return true;

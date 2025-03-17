@@ -56,6 +56,7 @@ class MockCompositor : public WindowAndroidCompositor {
   void OnUpdateRefreshRate(float refresh_rate) override {}
   void OnUpdateSupportedRefreshRates(
       const std::vector<float>& supported_refresh_rates) override {}
+  void OnAdaptiveRefreshRateInfoChanged() override {}
   std::unique_ptr<ui::CompositorLock> GetCompositorLock(
       base::TimeDelta timeout) override {
     return nullptr;

@@ -7,12 +7,12 @@
 
 #include "chrome/browser/ash/app_mode/consumer_kiosk_test_helper.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -90,7 +90,7 @@ void RemoveConsumerKioskChromeAppForTesting(KioskChromeAppManager& manager,
 
   // TODO(crbug.com/358022471) Stop using multiple Kiosk apps with the same ID.
   // Remove the first device local account with the given `chrome_app_id`.
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       device_local_accounts, [chrome_app_id](const auto& account) {
         return account.type == policy::DeviceLocalAccountType::kKioskApp &&
                account.kiosk_app_id == chrome_app_id;

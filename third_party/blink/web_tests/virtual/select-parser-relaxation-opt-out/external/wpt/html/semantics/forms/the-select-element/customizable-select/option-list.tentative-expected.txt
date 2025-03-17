@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] select's option list should not include descendants of options, hrs, or nested optgroups.
+  assert_equals: childSelect.length expected 3 but got 2
+Harness: the test ran to completion.
+

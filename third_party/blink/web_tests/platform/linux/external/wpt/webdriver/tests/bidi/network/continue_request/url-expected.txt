@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_navigation
-  AssertionError
-Harness: the test ran to completion.

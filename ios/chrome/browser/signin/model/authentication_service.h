@@ -135,13 +135,11 @@ class AuthenticationService : public KeyedService,
                                 signin_metrics::AccessPoint access_point);
 
   // Signs the authenticated user out of Chrome and clears the browsing
-  // data if the account is managed. If `force_clear_browsing_data` is true,
-  // clears the browsing data unconditionally.
+  // data if the account is managed.
   // Sync consent is automatically removed from all signed-out accounts.
   // `completion` is then executed asynchronously.
   // Virtual for testing.
   virtual void SignOut(signin_metrics::ProfileSignout signout_source,
-                       bool force_clear_browsing_data,
                        ProceduralBlock completion);
 
   // Returns whether there is a cached associated MDM error for `identity`.
@@ -158,17 +156,14 @@ class AuthenticationService : public KeyedService,
   // sync the accounts between the IdentityManager and the SSO library.
   void OnApplicationWillEnterForeground();
 
-  // Returns whether an account switch is in progress.
-  bool IsAccountSwitchInProgress();
-
-  // The account switch is considered to be in progress while the returned
-  // object exists. Can only be called when no switch is in progress. The
-  // returned object must be destroyed before this service is shut down.
-  base::ScopedClosureRunner DeclareAccountSwitchInProgress();
-
  private:
   friend class AuthenticationServiceTestBase;
   friend class FakeAuthenticationService;
+
+  // If the current profile is being opened for the first time, this performs
+  // any necessary first-time setup (notably, signing in the assigned managed
+  // account to a managed profile), and then marks the profile as initialized.
+  void PerformFirstTimeProfileInitializationIfNecessary();
 
   // Returns the cached MDM errors associated with `identity`. If the cache
   // is stale for `identity`, the entry might be removed.
@@ -207,7 +202,7 @@ class AuthenticationService : public KeyedService,
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // ChromeAccountManagerService::Observer implementation.
-  void OnIdentityListChanged() override;
+  void OnIdentitiesInProfileChanged() override;
   void OnRefreshTokenUpdated(id<SystemIdentity> identity) override;
   void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                   id<RefreshAccessTokenError> error) override;
@@ -243,9 +238,6 @@ class AuthenticationService : public KeyedService,
   base::ObserverList<AuthenticationServiceObserver, true> observer_list_;
   // Whether Initialize() has been called.
   bool initialized_ = false;
-
-  // Whether an account is currently switching.
-  bool account_switch_in_progress_ = false;
 
   // Whether the AuthenticationService is currently reloading credentials, used
   // to avoid an infinite reloading loop.

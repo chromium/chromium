@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "components/google/core/common/google_util.h"
@@ -92,17 +92,19 @@ bool RequestAdapter::HasHeader(const std::string& name) {
 }
 
 void RequestAdapter::RemoveRequestHeaderByName(const std::string& name) {
-  if (!base::Contains(*headers_to_remove_, name))
+  if (!base::Contains(*headers_to_remove_, name)) {
     headers_to_remove_->push_back(name);
+  }
 }
 
 void RequestAdapter::SetExtraHeaderByName(const std::string& name,
                                           const std::string& value) {
   modified_headers_->SetHeader(name, value);
 
-  auto it = base::ranges::find(*headers_to_remove_, name);
-  if (it != headers_to_remove_->end())
+  auto it = std::ranges::find(*headers_to_remove_, name);
+  if (it != headers_to_remove_->end()) {
     headers_to_remove_->erase(it);
+  }
 }
 
 std::string BuildMirrorRequestCookieIfPossible(

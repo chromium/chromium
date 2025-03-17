@@ -9,6 +9,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
+#import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_confirmation_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_selection_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_mediator_delegate.h"
@@ -61,6 +62,11 @@
   self.identityConfigurators = configurators;
 }
 
+- (void)displaySaveToPhotosSettingsUI {
+}
+- (void)hideSaveToPhotosSettingsUI {
+}
+
 @end
 
 // Fake delegate.
@@ -90,23 +96,54 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
                                 BuildIdentityManagerForTests));
     profile_ = std::move(builder).Build();
 
-    FakeSystemIdentityManager* system_identity_manager =
-        FakeSystemIdentityManager::FromSystemIdentityManager(
-            GetApplicationContext()->GetSystemIdentityManager());
     fake_identity_a_ = [FakeSystemIdentity fakeIdentity1];
-    system_identity_manager->AddIdentity(fake_identity_a_);
+    AddIdentity(fake_identity_a_, /*as_primary=*/true);
     fake_identity_b_ = [FakeSystemIdentity fakeIdentity2];
-    system_identity_manager->AddIdentity(fake_identity_b_);
-
-    signin::MakeAccountAvailable(
-        IdentityManagerFactory::GetForProfile(profile_.get()),
-        signin::AccountAvailabilityOptionsBuilder()
-            .AsPrimary(signin::ConsentLevel::kSignin)
-            .WithGaiaId(base::SysNSStringToUTF8(fake_identity_a_.gaiaID))
-            .Build(base::SysNSStringToUTF8(fake_identity_a_.userEmail)));
+    AddIdentity(fake_identity_b_, /*as_primary=*/false);
   }
 
   void TearDown() final { [mediator_ disconnect]; }
+
+  void AddIdentity(id<SystemIdentity> identity, bool as_primary) {
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentity(identity);
+
+    // Note: The (cross-platform) IdentityManager isn't fully hooked up to the
+    // (iOS-specific) SystemIdentityManager in this test, so update it
+    // separately.
+    // TODO(crbug.com/368409110): Improve the test plumbing so that this isn't
+    // necessary. This likely means either adding plumbing towards
+    // SystemIdentityManager to FakeProfileOAuth2TokenService, or alternatively
+    // using the real ProfileOAuth2TokenServiceIOSDelegate here.
+    auto options = signin::AccountAvailabilityOptionsBuilder().WithGaiaId(
+        GaiaId(identity.gaiaID));
+    if (as_primary) {
+      options = options.AsPrimary(signin::ConsentLevel::kSignin);
+    }
+    signin::MakeAccountAvailable(
+        IdentityManagerFactory::GetForProfile(profile_.get()),
+        options.Build(base::SysNSStringToUTF8(identity.userEmail)));
+  }
+
+  void ForgetIdentity(id<SystemIdentity> identity) {
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->ForgetIdentityFromOtherApplication(identity);
+
+    // Note: The (cross-platform) IdentityManager isn't fully hooked up to the
+    // (iOS-specific) SystemIdentityManager in this test, so update it
+    // separately.
+    // TODO(crbug.com/368409110): Improve the test plumbing so that this isn't
+    // necessary. This likely means either adding plumbing towards
+    // SystemIdentityManager to FakeProfileOAuth2TokenService, or alternatively
+    // using the real ProfileOAuth2TokenServiceIOSDelegate here.
+    signin::RemoveRefreshTokenForAccount(
+        IdentityManagerFactory::GetForProfile(profile_.get()),
+        CoreAccountId::FromGaiaId(GaiaId(identity.gaiaID)));
+  }
 
   // Creates a SaveToPhotosSettingsMediator with services from the test browser
   // state.
@@ -119,7 +156,9 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     mediator_ = [[SaveToPhotosSettingsMediator alloc]
         initWithAccountManagerService:account_manager_service
                           prefService:pref_service
-                      identityManager:identity_manager];
+                      identityManager:identity_manager
+                        photosService:PhotosServiceFactory::GetForProfile(
+                                          profile_.get())];
     return mediator_;
   }
 
@@ -129,8 +168,8 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
 
   // Checks that the identities given to the consumer, either through the
   // primary or secondary consumer interfaces, match an expected value
-  // `expected_presented_identity`. It does not test the values of
-  // `askEveryTimeSwitchOn` or `identityEnabled` in `fake_consumer`.
+  // `saved_identity`. It does not test the values of `askEveryTimeSwitchOn` or
+  // `identityEnabled` in `fake_consumer`.
   void CheckFakeConsumerIdentities(
       FakeSaveToPhotosSettingsConsumer* fake_consumer,
       id<SystemIdentity> saved_identity) {
@@ -274,39 +313,20 @@ TEST_F(SaveToPhotosSettingsMediatorTest,
   mediator.accountConfirmationConsumer = fake_consumer;
   mediator.accountSelectionConsumer = fake_consumer;
 
+  ASSERT_EQ(2U, fake_consumer.identityConfigurators.count);
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
   EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
 
-  FakeSystemIdentityManager* system_identity_manager =
-      FakeSystemIdentityManager::FromSystemIdentityManager(
-          GetApplicationContext()->GetSystemIdentityManager());
-  system_identity_manager->ForgetIdentityFromOtherApplication(fake_identity_b_);
+  ForgetIdentity(fake_identity_b_);
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
   EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
   EXPECT_EQ(1U, fake_consumer.identityConfigurators.count);
 
   fake_identity_b_ = [FakeSystemIdentity fakeIdentity3];
-  system_identity_manager->AddIdentity(fake_identity_b_);
+  AddIdentity(fake_identity_b_, /*as_primary=*/false);
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
   EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
   EXPECT_EQ(2U, fake_consumer.identityConfigurators.count);
-
-  [mediator disconnect];
-}
-
-// Tests that the mediator asks to hide Save to Photos settings if the user
-// signs out.
-TEST_F(SaveToPhotosSettingsMediatorTest, HidesSettingsIfUserSignsOut) {
-  SaveToPhotosSettingsMediator* mediator = CreateSaveToPhotosSettingsMediator();
-
-  FakeSaveToPhotosSettingsMediatorDelegate* fake_delegate =
-      [[FakeSaveToPhotosSettingsMediatorDelegate alloc] init];
-  mediator.delegate = fake_delegate;
-
-  signin::ClearPrimaryAccount(
-      IdentityManagerFactory::GetForProfile(profile_.get()));
-
-  EXPECT_TRUE(fake_delegate.hideSaveToPhotosSettingsCalled);
 
   [mediator disconnect];
 }

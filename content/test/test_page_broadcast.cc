@@ -44,8 +44,8 @@ void TestPageBroadcast::UpdateWebPreferences(
 void TestPageBroadcast::UpdateRendererPreferences(
     const blink::RendererPreferences& preferences) {}
 
-void TestPageBroadcast::SetHistoryOffsetAndLength(int32_t history_offset,
-                                                  int32_t history_length) {}
+void TestPageBroadcast::SetHistoryIndexAndLength(int32_t history_index,
+                                                 int32_t history_length) {}
 
 void TestPageBroadcast::SetPageBaseBackgroundColor(
     std::optional<SkColor> color) {}

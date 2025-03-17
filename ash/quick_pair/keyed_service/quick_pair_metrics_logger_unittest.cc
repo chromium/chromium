@@ -157,10 +157,7 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
  public:
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
-
-    TestSessionControllerClient* session_controller =
-        GetSessionControllerClient();
-    session_controller->Reset();
+    ClearLogin();
 
     // Inject our own PrefServices for each user which enables us to setup the
     // desks restore data before the user signs in.
@@ -169,11 +166,8 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
     RegisterUserProfilePrefs(user_prefs_->registry(), /*country=*/"",
                              /*for_test=*/true);
 
-    auto accountId = AccountId::FromUserEmail(kUserEmail);
-    session_controller->AddUserSession(kUserEmail,
-                                       user_manager::UserType::kRegular,
-                                       /*provide_pref_service=*/false);
-    session_controller->SetUserPrefService(accountId, std::move(user_prefs));
+    SimulateUserLogin({kUserEmail},
+                      /*account_id=*/std::nullopt, std::move(user_prefs));
 
     user_prefs_->registry()->RegisterBooleanPref(
         ash::prefs::kUserPairedWithFastPair,

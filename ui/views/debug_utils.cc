@@ -47,7 +47,7 @@ void PrintFocusHierarchyImp(const View* view,
 std::string PrintViewGraphImpl(const View* view) {
   std::string result;
 
-  const std::string class_name(view->GetClassName());
+  const std::string_view class_name = view->GetClassName();
   size_t base_name_index = class_name.find_last_of('/');
   if (base_name_index == std::string::npos) {
     base_name_index = 0;
@@ -60,7 +60,7 @@ std::string PrintViewGraphImpl(const View* view) {
   result.append(base::StringPrintf("%p", view));
   result.append(" [label=\"");
 
-  result.append(class_name.substr(base_name_index).c_str());
+  result.append(class_name.substr(base_name_index));
 
   result.append(base::StringPrintf(
       "\\n bounds: (%d, %d), (%dx%d)", view->bounds().x(), view->bounds().y(),

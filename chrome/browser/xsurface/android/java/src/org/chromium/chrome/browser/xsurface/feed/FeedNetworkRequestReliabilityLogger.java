@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.xsurface.feed;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Implemented internally.
  *
@@ -12,6 +14,7 @@ package org.chromium.chrome.browser.xsurface.feed;
  *
  * Obtain instances from FeedLaunchReliabilityLogger.getNetworkRequestReliabilityLogger2().
  */
+@NullMarked
 public interface FeedNetworkRequestReliabilityLogger {
     /**
      * Log before filling out and serializing a

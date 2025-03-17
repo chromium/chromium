@@ -98,9 +98,16 @@ void StorageAccessHandle::BindCaches(
     host.coep_reporter()->Clone(
         coep_reporter_remote.InitWithNewPipeAndPassReceiver());
   }
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter_remote;
+  if (host.dip_reporter()) {
+    host.dip_reporter()->Clone(
+        dip_reporter_remote.InitWithNewPipeAndPassReceiver());
+  }
   host.GetProcess()->BindCacheStorage(
       host.cross_origin_embedder_policy(), std::move(coep_reporter_remote),
       host.policy_container_host()->policies().document_isolation_policy,
+      std::move(dip_reporter_remote),
       storage::BucketLocator::ForDefaultBucket(
           blink::StorageKey::CreateFirstParty(host.GetStorageKey().origin())),
       std::move(receiver));
@@ -127,7 +134,6 @@ void StorageAccessHandle::Estimate(EstimateCallback callback) {
       ->GetBucketsForStorageKey(
           blink::StorageKey::CreateFirstParty(
               render_frame_host().GetStorageKey().origin()),
-          blink::mojom::StorageType::kTemporary,
           /*delete_expired=*/false,
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&StorageAccessHandle::EstimateImpl,
@@ -171,7 +177,8 @@ void StorageAccessHandle::BindBlobStorage(
                         render_frame_host().GetStorageKey().origin()),
                     render_frame_host().GetLastCommittedOrigin(),
                     render_frame_host().GetProcess()->GetDeprecatedID(),
-                    std::move(receiver), base::DoNothing());
+                    std::move(receiver), base::DoNothing(),
+                    /*partitioning_disabled_by_policy=*/false);
 }
 
 void StorageAccessHandle::BindBroadcastChannel(

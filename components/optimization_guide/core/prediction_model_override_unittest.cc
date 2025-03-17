@@ -4,9 +4,10 @@
 
 #include "components/optimization_guide/core/prediction_model_override.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"

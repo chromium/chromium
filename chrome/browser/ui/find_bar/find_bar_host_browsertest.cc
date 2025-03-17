@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -13,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -107,22 +107,23 @@ class FindInPageControllerTest : public InProcessBrowserTest {
     return GetFindBarWindowInfoForBrowser(browser(), position, fully_visible);
   }
 
-  std::u16string GetFindBarTextForBrowser(Browser* browser) {
+  std::u16string_view GetFindBarTextForBrowser(Browser* browser) {
     FindBar* find_bar = browser->GetFindBarController()->find_bar();
     return find_bar->GetFindText();
   }
 
-  std::u16string GetFindBarText() {
+  std::u16string_view GetFindBarText() {
     return GetFindBarTextForBrowser(browser());
   }
 
-  std::u16string GetFindBarMatchCountTextForBrowser(Browser* browser) {
-    const FindBarTesting* find_bar =
-        browser->GetFindBarController()->find_bar()->GetFindBarTesting();
-    return find_bar->GetMatchCountText();
+  std::u16string_view GetFindBarMatchCountTextForBrowser(Browser* browser) {
+    return browser->GetFindBarController()
+        ->find_bar()
+        ->GetFindBarTesting()
+        ->GetMatchCountText();
   }
 
-  std::u16string GetMatchCountText() {
+  std::u16string_view GetMatchCountText() {
     return GetFindBarMatchCountTextForBrowser(browser());
   }
 
@@ -319,8 +320,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FindInPageFormsTextAreas) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  for (size_t i = 0; i < urls.size(); ++i) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urls[i]));
+  for (const auto& url : urls) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_EQ(1,
               FindInPageASCII(web_contents, "cat", kFwd, kIgnoreCase, nullptr));
     EXPECT_EQ(0,
@@ -560,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, BigString) {
 
 // Search Back and Forward on a single occurrence.
 // TODO(crbug.com/40714133): Test is flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_SingleOccurrence DISABLED_SingleOccurrence
 #else
 #define MAYBE_SingleOccurrence SingleOccurrence
@@ -1469,15 +1470,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FitWindow) {
             popup->window()->GetBounds().width());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40230732): Flakily crashes on Lacros.
-#define MAYBE_FindMovesOnTabClose_Issue1343052 \
-  DISABLED_FindMovesOnTabClose_Issue1343052
-#else
-#define MAYBE_FindMovesOnTabClose_Issue1343052 FindMovesOnTabClose_Issue1343052
-#endif
 IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
-                       MAYBE_FindMovesOnTabClose_Issue1343052) {
+                       FindMovesOnTabClose_Issue1343052) {
   EnsureFindBoxOpen();
   content::RunAllPendingInMessageLoop();  // Needed on Linux.
 

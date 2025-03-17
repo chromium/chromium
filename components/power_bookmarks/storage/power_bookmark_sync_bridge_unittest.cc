@@ -188,7 +188,8 @@ TEST_F(PowerBookmarkSyncBridgeTest, ApplyIncrementalSyncChangesDelete) {
 
   syncer::EntityChangeList entity_changes;
   syncer::EntityData data;
-  entity_changes.push_back(syncer::EntityChange::CreateDelete(guid));
+  entity_changes.push_back(
+      syncer::EntityChange::CreateDelete(guid, syncer::EntityData()));
 
   ASSERT_FALSE(
       bridge_

@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuImageUploadState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="2025-05-04">
+    enum="BooleanWasted" expires_after="2025-07-06">
   <owner>vmpstr@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuRasterizationEnabled" enum="BooleanEnabled"
-    expires_after="2025-04-13">
+    expires_after="2025-08-24">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -124,9 +124,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true"
+<histogram
     name="Renderer4.ImageDecodeTaskDurationUs{ImageOrTaskType}.{DecodeType}"
-    units="microseconds" expires_after="2025-06-15">
+    units="microseconds" expires_after="2025-08-17">
   <owner>cblume@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <owner>sashamcintosh@chromium.org</owner>
@@ -166,16 +166,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Renderer4.InvalidationRegionApproximateRectCount"
-    units="rects" expires_after="M85">
-  <owner>wiltzius@chromium.org</owner>
-  <summary>
-    Number of rects inside of a PictureLayer's invalidation region per commit.
-  </summary>
-</histogram>
-
 <histogram name="Renderer4.MainThreadGestureScrollReason2"
-    enum="MainThreadScrollingReason2" expires_after="2025-05-11">
+    enum="MainThreadScrollingReason2" expires_after="2025-07-13">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -194,7 +186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.MainThreadWheelScrollReason2"
-    enum="MainThreadScrollingReason2" expires_after="2025-05-11">
+    enum="MainThreadScrollingReason2" expires_after="2025-07-13">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -213,17 +205,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer4.pixelCountCulled_Draw" units="NormalizedPixels"
-    expires_after="M85">
-  <owner>wiltzius@chromium.org</owner>
-  <summary>
-    Number of pixels that culling prevented being drawn to the screen, recorded
-    as 10 times the percentage of the viewport that these pixels cover. This is
-    collected once per frame while it is being drawn to the screen in the
-    compositor.
-  </summary>
-</histogram>
-
 <histogram name="Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes"
     units="microseconds" expires_after="2022-09-30">
   <owner>andrescj@chromium.org</owner>
@@ -239,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.Renderer.RasterTaskTotalDuration"
-    units="microseconds" expires_after="2025-05-25">
+    units="microseconds" expires_after="2025-07-27">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
   <summary>
@@ -254,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.ScrollingThread" enum="ScrollingThreadStatus"
-    expires_after="2025-04-13">
+    expires_after="2025-08-24">
 <!-- Name completed by histogram_suffixes name="ScrollSourceDevice" -->
 
   <owner>bokan@chromium.org</owner>
@@ -264,46 +245,6 @@ chromium-metrics-reviews@google.com.
     scroll is: handled unblocked on the compositor thread, handled on the
     compositor thread but blocked on main thread event listeners, or being
     handled on the main thread. Broken down by scroll device.
-  </summary>
-</histogram>
-
-<histogram name="Renderer4.SoftwareImageDecodeState"
-    enum="SoftwareImageDecodeState" expires_after="2025-05-04">
-  <owner>vmpstr@chromium.org</owner>
-  <owner>thiabaud@google.com</owner>
-  <summary>
-    Software image decode usage statistics. Images are decoded and locked prior
-    to raster; this indicates how that decode is used during tile management.
-    Warning: this histogram was expired from 2021-06-08 to 2022-05-20, and
-    2022-12-31 to 2023-01-09, and 2023-12-31 to 2024-01-30; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Renderer4.SoftwareImageDecodeState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="2024-12-31">
-  <owner>vmpstr@chromium.org</owner>
-  <owner>thiabaud@google.com</owner>
-  <summary>
-    Indication whether the first lock of an image decode was wasted (image was
-    not used). Images are decoded and locked prior to raster; this indicates
-    whether the decode was used or not during the first lock. Warning: this
-    histogram was expired from 2021-06-08 to 2022-05-20, and 2022-12-31 to
-    2023-01-09, and 2023-12-31 to 2024-01-30; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Renderer4.TextureCopyLatency" units="microseconds"
-    expires_after="M85">
-  <owner>reveman@chromium.org</owner>
-  <summary>
-    Time between the issue of a texture copy operation and detecting that it has
-    completed as measured by the GPU process.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
   </summary>
 </histogram>
 

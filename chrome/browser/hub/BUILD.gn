@@ -37,6 +37,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/PaneOrderController.java",
     "android/java/src/org/chromium/chrome/browser/hub/PresetHubLayoutAnimatorProvider.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/RoundedCornerAnimatorUtil.java",
     "android/java/src/org/chromium/chrome/browser/hub/ScrimController.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimationData.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimator.java",
@@ -140,5 +141,6 @@ android_library("unit_device_javatests") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_unit_device_javatests",
   ]
 }

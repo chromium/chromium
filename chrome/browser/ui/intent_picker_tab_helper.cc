@@ -16,7 +16,6 @@
 #include "chrome/browser/apps/intent_helper/intent_chip_display_prefs.h"
 #include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,7 +24,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -143,7 +146,7 @@ void IntentPickerTabHelper::MaybeShowIntentPickerIcon() {
   }
 
   intent_picker_delegate_->FindAllAppsForUrl(
-      web_contents()->GetLastCommittedURL(),
+      web_contents()->GetLastCommittedURL(), GetIntentPickerBubbleIconSize(),
       base::BindOnce(&IntentPickerTabHelper::MaybeShowIconForApps,
                      per_navigation_weak_factory_.GetWeakPtr()));
 }
@@ -156,7 +159,7 @@ void IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(const GURL& url) {
   }
 
   intent_picker_delegate_->FindAllAppsForUrl(
-      url,
+      url, GetIntentPickerBubbleIconSize(),
       base::BindOnce(&IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl,
                      per_navigation_weak_factory_.GetWeakPtr(), url));
 }
@@ -341,7 +344,14 @@ void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
   if (!browser) {
     return;
   }
-  browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);
+
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    tabs::TabInterface* tab_interface =
+        tabs::TabInterface::GetFromContents(&GetWebContents());
+    UpdatePageAction(tab_interface, should_show_icon);
+  } else {
+    browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);
+  }
 
   icon_resolved_ = true;
   if (icon_update_closure_for_testing_) {
@@ -472,15 +482,10 @@ void IntentPickerTabHelper::OnWebAppWillBeUninstalled(
     const webapps::AppId& app_id) {
   // WebAppTabHelper has an app_id but it is reset during
   // OnWebAppWillBeUninstalled so using FindAppWithUrlInScope.
-  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> local_app_id =
       registrar_->FindBestAppWithUrlInScope(
           web_contents()->GetLastCommittedURL(),
-          {
-              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-          });
+          web_app::WebAppFilter::InstalledInChrome());
   if (app_id == local_app_id) {
     ShowOrHideIcon(web_contents(), /*should_show_icon=*/false);
   }
@@ -488,6 +493,16 @@ void IntentPickerTabHelper::OnWebAppWillBeUninstalled(
 
 void IntentPickerTabHelper::OnWebAppInstallManagerDestroyed() {
   install_manager_observation_.Reset();
+}
+
+void IntentPickerTabHelper::UpdatePageAction(tabs::TabInterface* tab_interface,
+                                             bool show_icon) {
+  if (auto* const tab_features = tab_interface->GetTabFeatures()) {
+    if (auto* controller =
+            tab_features->intent_picker_view_page_action_controller()) {
+      controller->UpdatePageActionVisibility(show_icon);
+    }
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(IntentPickerTabHelper);

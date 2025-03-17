@@ -11,7 +11,7 @@
 
 class ProfileIOS;
 
-@interface HistoryMediator : NSObject<TableViewFaviconDataSource>
+@interface HistoryMediator : NSObject <TableViewFaviconDataSource>
 
 // The coordinator's profile.
 @property(nonatomic, assign) ProfileIOS* profile;

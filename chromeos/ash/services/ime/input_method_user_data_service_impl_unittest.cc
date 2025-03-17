@@ -445,5 +445,102 @@ TEST(InputMethodUserDataServiceTest, ExportJapaneseDictionary) {
   EXPECT_EQ(config_future.Get(), "reading1\tword1\t人名\ttext 1");
 }
 
+TEST(InputMethodUserDataServiceTest,
+     ClearJapanesePersonalizationDataConversion) {
+  chromeos_input::UserDataRequest request_pb;
+  request_pb.mutable_clear_personalization_data()->set_clear_conversion_history(
+      true);
+  request_pb.mutable_clear_personalization_data()->set_clear_suggestion_history(
+      false);
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(true);
+
+  auto c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest(EqualsProto(request_pb)))
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<mojom::StatusPtr> config_future;
+  service.ClearJapanesePersonalizationData(/*clear_conversion_history=*/true,
+                                           /*clear_suggestion_history=*/false,
+                                           config_future.GetCallback());
+
+  mojom::StatusPtr expected = mojom::Status::New();
+  expected->success = true;
+  EXPECT_EQ(config_future.Get(), expected);
+}
+
+TEST(InputMethodUserDataServiceTest,
+     ClearJapanesePersonalizationDataSuggestion) {
+  chromeos_input::UserDataRequest request_pb;
+  request_pb.mutable_clear_personalization_data()->set_clear_conversion_history(
+      false);
+  request_pb.mutable_clear_personalization_data()->set_clear_suggestion_history(
+      true);
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(true);
+
+  auto c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest(EqualsProto(request_pb)))
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<mojom::StatusPtr> config_future;
+  service.ClearJapanesePersonalizationData(/*clear_conversion_history=*/false,
+                                           /*clear_suggestion_history=*/true,
+                                           config_future.GetCallback());
+
+  mojom::StatusPtr expected = mojom::Status::New();
+  expected->success = true;
+  EXPECT_EQ(config_future.Get(), expected);
+}
+
+TEST(InputMethodUserDataServiceTest,
+     ClearJapanesePersonalizationDataSuggestionAndConversion) {
+  chromeos_input::UserDataRequest request_pb;
+  request_pb.mutable_clear_personalization_data()->set_clear_conversion_history(
+      true);
+  request_pb.mutable_clear_personalization_data()->set_clear_suggestion_history(
+      true);
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(true);
+
+  auto c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest(EqualsProto(request_pb)))
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<mojom::StatusPtr> config_future;
+  service.ClearJapanesePersonalizationData(/*clear_conversion_history=*/true,
+                                           /*clear_suggestion_history=*/true,
+                                           config_future.GetCallback());
+
+  mojom::StatusPtr expected = mojom::Status::New();
+  expected->success = true;
+  EXPECT_EQ(config_future.Get(), expected);
+}
+
+TEST(InputMethodUserDataServiceTest, ClearJapanesePersonalizationDataOnError) {
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(false);
+  response_pb.mutable_status()->set_reason("Unknown Error");
+
+  std::unique_ptr<MockCApi> c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest)
+      .Times(1)
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<mojom::StatusPtr> config_future;
+  service.ClearJapanesePersonalizationData(/*clear_conversion_history=*/true,
+                                           /*clear_suggestion_history=*/true,
+                                           config_future.GetCallback());
+
+  mojom::StatusPtr expected = mojom::Status::New();
+  expected->success = false;
+  expected->reason = "Unknown Error";
+  EXPECT_EQ(config_future.Get(), expected);
+}
+
 }  // namespace
 }  // namespace ash::ime

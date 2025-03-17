@@ -54,10 +54,6 @@ AbandonReason DiscardReasonToAbandonReason(
   }
 }
 
-bool IsEventAfter(base::TimeTicks event_time, base::TimeTicks time_to_compare) {
-  return !time_to_compare.is_null() && event_time > time_to_compare;
-}
-
 }  // namespace
 
 namespace internal {
@@ -110,12 +106,17 @@ const char kMilestoneNonRedirectResponseLoaderCallback[] =
     "NonRedirectResponseLoaderCallback";
 const char kMilestoneCommitSent[] = "CommitSent";
 const char kMilestoneCommitReceived[] = "CommitReceived";
+const char kMilestoneCommitReplySent[] = "CommitReplySent";
 const char kMilestoneDidCommit[] = "DidCommit";
 const char kMilestoneParseStart[] = "ParseStart";
 const char kFirstContentfulPaint[] = "FirstContentfulPaint";
 const char kDOMContentLoaded[] = "DOMContentLoaded";
 const char kLoadEventStarted[] = "LoadEventStarted";
 const char kLargestContentfulPaint[] = "LargestContentfulPaint";
+const char kMilestoneSecondRedirectedRequestStart[] =
+    "SecondRedirectedRequestStart";
+const char kMilestoneSecondRedirectResponseStart[] =
+    "SecondRedirectResponseStart";
 
 const char kAFTStart[] = "AFTStart";
 const char kAFTEnd[] = "AFTEnd";
@@ -149,7 +150,6 @@ const char* GetSuffixForAbandonedTime(base::TimeDelta request_failed_time) {
 
   return internal::kSuffixAbandonedTimeAbove2000;
 }
-
 }  // namespace internal
 
 std::string AbandonedPageLoadMetricsObserver::AbandonReasonToString(
@@ -211,6 +211,8 @@ std::string AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
       return internal::kMilestoneCommitSent;
     case NavigationMilestone::kCommitReceived:
       return internal::kMilestoneCommitReceived;
+    case NavigationMilestone::kCommitReplySent:
+      return internal::kMilestoneCommitReplySent;
     case NavigationMilestone::kDidCommit:
       return internal::kMilestoneDidCommit;
     case NavigationMilestone::kParseStart:
@@ -235,6 +237,10 @@ std::string AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
       return internal::kBodyChunkStart;
     case NavigationMilestone::kBodyChunkEnd:
       return internal::kBodyChunkEnd;
+    case NavigationMilestone::kSecondRedirectResponseStart:
+      return internal::kMilestoneSecondRedirectResponseStart;
+    case NavigationMilestone::kSecondRedirectedRequestStart:
+      return internal::kMilestoneSecondRedirectedRequestStart;
   }
 }
 
@@ -258,6 +264,10 @@ AbandonedPageLoadMetricsObserver::OnNavigationEvent(
 }
 
 bool AbandonedPageLoadMetricsObserver::IsAllowedToLogMetrics() const {
+  return true;
+}
+
+bool AbandonedPageLoadMetricsObserver::IsAllowedToLogUMA() const {
   return true;
 }
 
@@ -405,6 +415,23 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
     NavigationMilestone milestone,
     base::TimeTicks event_time,
     base::TimeTicks relative_start_time) {
+  if (IsAllowedToLogUMA()) {
+    LogUMAHistograms(abandon_reason, milestone, event_time,
+                     relative_start_time);
+  }
+
+  if (IsAllowedToLogUKM()) {
+    LogUKMHistograms(abandon_reason, milestone, event_time,
+                     relative_start_time);
+  }
+}
+
+void AbandonedPageLoadMetricsObserver::LogUMAHistograms(
+    AbandonReason abandon_reason,
+    NavigationMilestone milestone,
+    base::TimeTicks event_time,
+    base::TimeTicks relative_start_time) {
+  CHECK(IsAllowedToLogUMA());
   std::string base_suffix = GetHistogramSuffix(milestone, event_time);
   for (std::string additional_suffix : GetAdditionalSuffixes()) {
     std::string suffix = base::StrCat({base_suffix, additional_suffix});
@@ -454,104 +481,26 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
              suffix}),
         milestone);
   }
+}
 
-  if (!IsAllowedToLogUKM()) {
-    return;
-  }
-
+void AbandonedPageLoadMetricsObserver::LogUKMHistograms(
+    AbandonReason abandon_reason,
+    NavigationMilestone milestone,
+    base::TimeTicks event_time,
+    base::TimeTicks relative_start_time) {
+  CHECK(IsAllowedToLogUKM());
   ukm::SourceId source_id =
       ukm::ConvertToSourceId(navigation_id_, ukm::SourceIdType::NAVIGATION_ID);
+
   ukm::builders::AbandonedSRPNavigation builder(source_id);
-  builder.SetAbandonReason(static_cast<int>(abandon_reason));
-  builder.SetLastMilestoneBeforeAbandon(static_cast<int>(milestone));
+  LogUKMHistogramsForAbandonMetrics(builder, abandon_reason, milestone,
+                                    event_time, relative_start_time);
+  LogUKMHistogramsForMilestoneMetrics(builder, event_time);
 
-  builder.SetAbandonTimingFromNavigationStart(
-      (event_time - navigation_start_time_).InMilliseconds());
-  builder.SetAbandonTimingFromLastMilestone(
-      (event_time - relative_start_time).InMilliseconds());
-  if (IsEventAfter(event_time, first_backgrounded_timestamp_)) {
-    builder.SetPreviousBackgroundedTime(
-        (first_backgrounded_timestamp_ - navigation_start_time_)
-            .InMilliseconds());
-  }
-
-  if (IsEventAfter(event_time, first_hidden_timestamp_)) {
-    builder.SetPreviousHiddenTime(
-        (first_hidden_timestamp_ - navigation_start_time_).InMilliseconds());
-  }
-
-  if (IsEventAfter(event_time, renderer_process_init_time_)) {
-    builder.SetRendererProcessInitTime(
-        (renderer_process_init_time_ - navigation_start_time_)
-            .InMilliseconds());
-  }
-
-  if (IsEventAfter(event_time,
-                   latest_navigation_handle_timing_.loader_start_time)) {
-    builder.SetLoaderStartTime(
-        (latest_navigation_handle_timing_.loader_start_time -
-         navigation_start_time_)
-            .InMilliseconds());
-  }
-
-  if (latest_navigation_handle_timing_.first_loader_callback_time !=
-          latest_navigation_handle_timing_
-              .non_redirect_response_loader_callback_time &&
-      IsEventAfter(
-          event_time,
-          latest_navigation_handle_timing_.first_loader_callback_time)) {
-    builder.SetFirstRedirectResponseReceived(true);
-    if (IsEventAfter(
-            event_time,
-            latest_navigation_handle_timing_.first_request_start_time)) {
-      builder.SetFirstRedirectedRequestStartTime(
-          (latest_navigation_handle_timing_.first_request_start_time -
-           navigation_start_time_)
-              .InMilliseconds());
-    }
-  } else {
-    builder.SetFirstRedirectResponseReceived(false);
-  }
-
-  builder.SetNonRedirectResponseReceived(
-      !latest_navigation_handle_timing_
-           .non_redirect_response_loader_callback_time.is_null());
-  if (IsEventAfter(
-          event_time,
-          latest_navigation_handle_timing_.non_redirected_request_start_time)) {
-    builder.SetNonRedirectedRequestStartTime(
-        (latest_navigation_handle_timing_.non_redirected_request_start_time -
-         navigation_start_time_)
-            .InMilliseconds());
-  }
-
-  if (IsEventAfter(
-          event_time,
-          latest_navigation_handle_timing_.navigation_commit_sent_time)) {
-    builder.SetCommitSentTime(
-        (latest_navigation_handle_timing_.navigation_commit_sent_time -
-         navigation_start_time_)
-            .InMilliseconds());
-  }
-
-  if (IsEventAfter(
-          event_time,
-          latest_navigation_handle_timing_.navigation_commit_received_time)) {
-    builder.SetCommitReceivedTime(
-        (latest_navigation_handle_timing_.navigation_commit_received_time -
-         navigation_start_time_)
-            .InMilliseconds());
-  }
-
-  if (IsEventAfter(
-          event_time,
-          latest_navigation_handle_timing_.navigation_did_commit_time)) {
-    builder.SetDidCommitTime(
-        (latest_navigation_handle_timing_.navigation_did_commit_time -
-         navigation_start_time_)
-            .InMilliseconds());
-  }
-
+  // Add loading milestones specific to GWS.
+  // TODO(crbug.com/390216631): Move this logic to
+  // `GWSAbandonedPageLoadMetricsObserver` along with the other implementation
+  // so that we have consistent place to record the metrics.
   for (const auto& loading_milestone : loading_milestones_) {
     if (!IsEventAfter(event_time,
                       loading_milestone.second + navigation_start_time_)) {
@@ -559,21 +508,6 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
     }
     auto time = loading_milestone.second.InMilliseconds();
     switch (loading_milestone.first) {
-      case NavigationMilestone::kParseStart:
-        builder.SetParseStartTime(time);
-        break;
-      case NavigationMilestone::kFirstContentfulPaint:
-        builder.SetFirstContentfulPaintTime(time);
-        break;
-      case NavigationMilestone::kDOMContentLoaded:
-        builder.SetDOMContentLoadedTime(time);
-        break;
-      case NavigationMilestone::kLoadEventStarted:
-        builder.SetLoadEventStartedTime(time);
-        break;
-      case NavigationMilestone::kLargestContentfulPaint:
-        builder.SetLargestContentfulPaintTime(time);
-        break;
       case NavigationMilestone::kAFTStart:
         builder.SetAFTStartTime(time);
         break;
@@ -592,6 +526,11 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
       case NavigationMilestone::kBodyChunkEnd:
         builder.SetBodyChunkEndTime(time);
         break;
+      case NavigationMilestone::kParseStart:
+      case NavigationMilestone::kFirstContentfulPaint:
+      case NavigationMilestone::kDOMContentLoaded:
+      case NavigationMilestone::kLoadEventStarted:
+      case NavigationMilestone::kLargestContentfulPaint:
       case NavigationMilestone::kNavigationStart:
       case NavigationMilestone::kLoaderStart:
       case NavigationMilestone::kFirstRedirectedRequestStart:
@@ -602,7 +541,10 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
       case NavigationMilestone::kNonRedirectResponseLoaderCallback:
       case NavigationMilestone::kCommitSent:
       case NavigationMilestone::kCommitReceived:
+      case NavigationMilestone::kCommitReplySent:
       case NavigationMilestone::kDidCommit:
+      case NavigationMilestone::kSecondRedirectResponseStart:
+      case NavigationMilestone::kSecondRedirectedRequestStart:
         break;
     }
   }
@@ -618,8 +560,10 @@ void AbandonedPageLoadMetricsObserver::LogLoadingMilestone(
   if (loading_milestones_.contains(milestone)) {
     return;
   }
-  CHECK_GE(milestone, NavigationMilestone::kParseStart);
-  CHECK_LE(milestone, NavigationMilestone::kBodyChunkEnd);
+  // Check if we are within the loading milestone for Gws so that we can cover
+  // all the possible loading milestones.
+  CHECK_GE(milestone, NavigationMilestone::kFirstGwsEssentialLoadingEvent);
+  CHECK_LE(milestone, NavigationMilestone::kLastGwsEssentialLoadingEvent);
   LogMilestoneHistogram(milestone, time);
   loading_milestones_[milestone] = time;
 }
@@ -755,6 +699,10 @@ AbandonedPageLoadMetricsObserver::OnCommit(
                         navigation_handle->GetNavigationHandleTiming()
                             .navigation_commit_received_time,
                         navigation_start_time_);
+  LogMilestoneHistogram(NavigationMilestone::kCommitReplySent,
+                        navigation_handle->GetNavigationHandleTiming()
+                            .navigation_commit_reply_sent_time,
+                        navigation_start_time_);
   LogMilestoneHistogram(
       NavigationMilestone::kDidCommit,
       navigation_handle->GetNavigationHandleTiming().navigation_did_commit_time,
@@ -833,13 +781,13 @@ void AbandonedPageLoadMetricsObserver::FinalizeLCP() {
 }
 
 bool AbandonedPageLoadMetricsObserver::DidLogAllLoadingMilestones() const {
-  CHECK_EQ(NavigationMilestone::kBodyChunkEnd, NavigationMilestone::kMaxValue);
   // We've logged all loading milestones if the map contains all the loading
   // milestones. Since the keys are unique in the map, we only need to check if
   // we have amount of entries is the same as the amount of loading milestones.
   return loading_milestones_.size() ==
-         (static_cast<int>(NavigationMilestone::kBodyChunkEnd) -
-          static_cast<int>(NavigationMilestone::kParseStart) + 1);
+         (static_cast<int>(NavigationMilestone::kLastEssentialLoadingEvent) -
+          static_cast<int>(NavigationMilestone::kFirstEssentialLoadingEvent) +
+          1);
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy

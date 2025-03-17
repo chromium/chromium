@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -118,10 +119,14 @@ class ClientSideDetectionHost
   // pending callbacks that could show an interstitial, and check to see whether
   // we should classify the new URL. If a request to lock the keyboard or
   // pointer or vibrate the page has arrived, we will re-trigger classification.
+  // If a request to fullscreen the tab happens, check in preclassification
+  // check for allowlist matches for metric collection.
   void PrimaryPageChanged(content::Page& page) override;
   void KeyboardLockRequested() override;
   void PointerLockRequested() override;
   void VibrationRequested() override;
+  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
+                                     bool will_cause_resize) override;
 
   // permissions::PermissionRequestManager::Observer methods:
   void OnPromptAdded() override;
@@ -176,6 +181,15 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
       KeyboardLockClassificationTriggersCSPPPing);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      FullscreenApiCallChecksAllowlistInPreClassificationAndDoesNotProceedWithClassification);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      TwoFullscreenApiTriggersOnSamePageOnlyLogsOnePreclassificationCheck);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      TwoKeyboardLockRequestsOnSamePageOnlyLogsOnePreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostVibrateTest,
                            VibrationApiTriggersPreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostVibrateTest,
@@ -294,6 +308,10 @@ class ClientSideDetectionHost
   void set_high_confidence_allowlist_acceptance_rate_for_testing(
       float acceptance_rate);
 
+  void set_delegate_for_testing(std::unique_ptr<Delegate> delegate) {
+    delegate_ = std::move(delegate);
+  }
+
   // Check if CSD can get an access Token. Should be enabled only for ESB
   // users, who are signed in and not in incognito mode.
   bool CanGetAccessToken();
@@ -326,6 +344,11 @@ class ClientSideDetectionHost
       std::optional<bool> did_match_high_confidence_allowlist,
       std::optional<optimization_guide::proto::ScamDetectionResponse> response);
 
+  // Returns bool if for a |client_side_detection_Type|, the last URL is the
+  // same as the last committed URL on the RenderFrameHost.
+  bool HasDonePreclassificationCheckOnSameURL(
+      ClientSideDetectionType client_side_detection_type);
+
   // This pointer may be nullptr if client-side phishing detection is
   // disabled.
   base::WeakPtr<ClientSideDetectionService> csd_service_;
@@ -341,6 +364,11 @@ class ClientSideDetectionHost
   GURL current_url_;
   // The current outermost main frame's id.
   content::GlobalRenderFrameHostId current_outermost_main_frame_id_;
+
+  // The last URL that the fullscreen API was called. This is used because the
+  // DidToggleFullscreenModeForTab can be called for both entering and exiting
+  // fullscreen.
+  GURL last_fullscreen_url_;
 
   // Records the start time of when phishing detection started.
   base::TimeTicks phishing_detection_start_time_;
@@ -380,6 +408,11 @@ class ClientSideDetectionHost
   // Modified through tests only. Initial value is set to the const
   // kProbabilityForAcceptingHCAllowlistTrigger.
   float probability_for_accepting_hc_allowlist_trigger_;
+
+  // This map is used to track the last committed URL per
+  // ClientSideDetectionType. This is because for some ClientSideDetectionType,
+  // it can be triggered at a frequent basis per same URL.
+  base::flat_map<ClientSideDetectionType, GURL> last_committed_url_map_;
 
   base::ScopedObservation<AsyncCheckTracker, AsyncCheckTracker::Observer>
       async_check_observation_{this};

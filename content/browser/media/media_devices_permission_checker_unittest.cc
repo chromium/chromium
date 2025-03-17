@@ -14,9 +14,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/origin.h"
 
 using blink::mojom::MediaDeviceType;
@@ -50,14 +49,14 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
   // The header policy should only be set once on page load, so we refresh the
   // page to simulate that.
   void RefreshPageAndSetHeaderPolicy(
-      blink::mojom::PermissionsPolicyFeature feature,
+      network::mojom::PermissionsPolicyFeature feature,
       bool enabled) {
     auto navigation = NavigationSimulator::CreateBrowserInitiated(
         origin_.GetURL(), web_contents());
-    std::vector<blink::OriginWithPossibleWildcards> allowlist;
+    std::vector<network::OriginWithPossibleWildcards> allowlist;
     if (enabled) {
       allowlist.emplace_back(
-          *blink::OriginWithPossibleWildcards::FromOrigin(origin_));
+          *network::OriginWithPossibleWildcards::FromOrigin(origin_));
     }
     navigation->SetPermissionsPolicyHeader({{feature, allowlist,
                                              /*self_if_matches=*/std::nullopt,
@@ -109,13 +108,14 @@ TEST_F(MediaDevicesPermissionCheckerTest,
   EXPECT_TRUE(CheckPermission(MediaDeviceType::kMediaVideoInput));
 
   RefreshPageAndSetHeaderPolicy(
-      blink::mojom::PermissionsPolicyFeature::kMicrophone,
+      network::mojom::PermissionsPolicyFeature::kMicrophone,
       /*enabled=*/false);
   EXPECT_FALSE(CheckPermission(MediaDeviceType::kMediaAudioInput));
   EXPECT_TRUE(CheckPermission(MediaDeviceType::kMediaVideoInput));
 
-  RefreshPageAndSetHeaderPolicy(blink::mojom::PermissionsPolicyFeature::kCamera,
-                                /*enabled=*/false);
+  RefreshPageAndSetHeaderPolicy(
+      network::mojom::PermissionsPolicyFeature::kCamera,
+      /*enabled=*/false);
   EXPECT_TRUE(CheckPermission(MediaDeviceType::kMediaAudioInput));
   EXPECT_FALSE(CheckPermission(MediaDeviceType::kMediaVideoInput));
 }

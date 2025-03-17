@@ -4,6 +4,8 @@
 
 package org.chromium.ui.animation;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Interface for a custom {@link View} to implement that provides a signal to run some runnables
  * when the next layout of the view happens. See {@link RunOnNextLayoutDelegate} for a helper to
@@ -16,6 +18,7 @@ package org.chromium.ui.animation;
  * necessary to wait for layout (or manually measure) for this information to be ready to configure
  * the animation.
  */
+@NullMarked
 public interface RunOnNextLayout {
     /**
      * Queue a runnable on the next layout if there is one otherwise the runnable will be invoked

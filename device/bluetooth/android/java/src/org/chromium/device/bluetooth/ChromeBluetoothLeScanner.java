@@ -8,7 +8,6 @@ import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanSettings;
 
 import androidx.annotation.IntDef;
-import androidx.core.util.Preconditions;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
@@ -79,7 +78,7 @@ class ChromeBluetoothLeScanner {
      * @return {@code true} on success.
      */
     boolean startScan(long durationMillis, List<ScanFilter> scanFilters) {
-        Preconditions.checkState(mScanState == SCAN_STATE_STOPPED, "Scan already started.");
+        assert mScanState == SCAN_STATE_STOPPED;
         mScanCallback = new ScanCallback();
         mScanFilters = scanFilters;
 
@@ -95,8 +94,7 @@ class ChromeBluetoothLeScanner {
      * @return {@code true} on success.
      */
     boolean resumeScan(long durationMillis) {
-        Preconditions.checkState(
-                mScanState == SCAN_STATE_PAUSED, "Scan isn't paused. Scan state: " + mScanState);
+        assert mScanState == SCAN_STATE_PAUSED;
         assert mScanCallback != null;
         assert mScanFilters != null;
 

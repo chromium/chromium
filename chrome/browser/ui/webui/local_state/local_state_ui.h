@@ -6,18 +6,18 @@
 #define CHROME_BROWSER_UI_WEBUI_LOCAL_STATE_LOCAL_STATE_UI_H_
 
 #include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 
 class LocalStateUI;
 
 // WebUIConfig for chrome://local-state
-class LocalStateUIConfig : public content::DefaultWebUIConfig<LocalStateUI> {
+class LocalStateUIConfig
+    : public content::DefaultInternalWebUIConfig<LocalStateUI> {
  public:
   LocalStateUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUILocalStateHost) {}
+      : DefaultInternalWebUIConfig(chrome::kChromeUILocalStateHost) {}
 };
 
 // Controller for chrome://local-state/ page.

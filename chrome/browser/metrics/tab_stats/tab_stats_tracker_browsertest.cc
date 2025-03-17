@@ -13,8 +13,6 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -72,7 +70,6 @@ class TestTabStatsObserver : public TabStatsObserver {
 };
 
 using TabsStats = TabStatsDataStore::TabsStats;
-using TabLifecycleObserver = resource_coordinator::TabLifecycleObserver;
 
 void EnsureTabStatsMatchExpectations(const TabsStats& expected,
                                      const TabsStats& actual) {

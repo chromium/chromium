@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/policy_service.h"
 
@@ -32,9 +31,6 @@ class ProxyPolicyProvider;
 
 #if !BUILDFLAG(IS_CHROMEOS)
 class ChromeBrowserCloudManagementController;
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 class MachineLevelUserCloudPolicyManager;
 #endif
 
@@ -95,9 +91,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   void InitCloudManagementController(
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(chromium:1502062): MachineLevelUserCloudPolicyManager is CBCM's policy
   // provider. Refactor the code accordingly.
   MachineLevelUserCloudPolicyManager*
@@ -119,7 +113,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   // provider.
   void SetProxyPolicyProviderForTesting(
       ProxyPolicyProvider* proxy_policy_provider);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // BrowserPolicyConnector:
   // Command line switch only supports Dev and Canary channel, trunk and
@@ -154,9 +148,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   void MaybeCreateCloudPolicyManager(
       std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>*
           providers);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Invoked once it can be decided if cloud management is enabled. If enabled,
   // invoked with a MachineLevelUserCloudPolicyManager instance. Otherwise,
   // nullptr is passed on instead.
@@ -179,7 +171,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   // is created. Owned by the proxy policy provider.
   raw_ptr<MachineLevelUserCloudPolicyManager>
       machine_level_user_cloud_policy_manager_ = nullptr;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<android::PolicyCacheUpdater> policy_cache_updater_;

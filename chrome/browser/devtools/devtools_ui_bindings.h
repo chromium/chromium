@@ -15,23 +15,25 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/aida_client.h"
-#include "chrome/browser/devtools/device/devtools_android_bridge.h"
 #include "chrome/browser/devtools/devtools_embedder_message_dispatcher.h"
 #include "chrome/browser/devtools/devtools_file_helper.h"
+#include "chrome/browser/devtools/devtools_file_storage.h"
 #include "chrome/browser/devtools/devtools_file_system_indexer.h"
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
 #include "chrome/browser/devtools/devtools_settings.h"
 #include "chrome/browser/devtools/devtools_targets_ui.h"
 #include "chrome/browser/devtools/visual_logging.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/themes/theme_service_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_frontend_host.h"
 #include "ui/gfx/geometry/size.h"
 
-class DevToolsAndroidBridge;
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/themes/theme_service_observer.h"
+#endif
+
 class PortForwardingStatusSerializer;
 class Profile;
 
@@ -48,12 +50,15 @@ class ContentInfoBarManager;
 class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                            public DevToolsAndroidBridge::DeviceCountListener,
                            public content::DevToolsAgentHostClient,
-                           public DevToolsFileHelper::Delegate,
-                           public ThemeServiceObserver {
+#if !BUILDFLAG(IS_ANDROID)
+                           public ThemeServiceObserver,
+#endif
+                           public DevToolsFileHelper::Delegate {
  public:
   class Delegate {
    public:
     virtual ~Delegate() = default;
+    virtual content::WebContents* GetInspectedWebContents() = 0;
     virtual void ActivateWindow() = 0;
     virtual void CloseWindow() = 0;
     virtual void Inspect(scoped_refptr<content::DevToolsAgentHost> host) = 0;
@@ -116,8 +121,10 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void Detach();
   bool IsAttachedTo(content::DevToolsAgentHost* agent_host);
 
+#if !BUILDFLAG(IS_ANDROID)
   // ThemeServiceObserver implementation
   void OnThemeChanged() override;
+#endif
 
   static base::Value::Dict GetSyncInformationForProfile(Profile* profile);
 
@@ -158,6 +165,11 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RemoveFileSystem(const std::string& file_system_path) override;
   void UpgradeDraggedFileSystemPermissions(
       const std::string& file_system_url) override;
+  void ConnectAutomaticFileSystem(DispatchCallback callback,
+                                  const std::string& file_system_path,
+                                  const std::string& file_system_uuid,
+                                  bool add_if_missing) final;
+  void DisconnectAutomaticFileSystem(const std::string& file_system_path) final;
   void IndexPath(int index_request_id,
                  const std::string& file_system_path,
                  const std::string& excluded_folders) override;
@@ -193,6 +205,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                                  int boundary_value) override;
   void RecordPerformanceHistogram(const std::string& name,
                                   double duration) override;
+  void RecordPerformanceHistogramMedium(const std::string& name,
+                                        double duration) override;
   void RecordUserMetricsAction(const std::string& name) override;
   void RecordImpression(const ImpressionEvent& event) override;
   void RecordResize(const ResizeEvent& event) override;
@@ -201,9 +215,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RecordDrag(const DragEvent& event) override;
   void RecordChange(const ChangeEvent& event) override;
   void RecordKeyDown(const KeyDownEvent& event) override;
-  void SendJsonRequest(DispatchCallback callback,
-                       const std::string& browser_id,
-                       const std::string& url) override;
+  void RecordSettingAccess(const SettingAccessEvent& event) override;
   void RegisterPreference(const std::string& name,
                           const RegisterOptions& options) override;
   void GetPreferences(DispatchCallback callback) override;
@@ -249,9 +261,6 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void PrimaryPageChanged();
   void FrontendLoaded();
 
-  void JsonReceived(DispatchCallback callback,
-                    int result,
-                    const std::string& message);
   void DevicesDiscoveryConfigUpdated();
   void SendPortForwardingStatus(base::Value status);
 
@@ -268,6 +277,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void FileSavedAs(const std::string& url, const std::string& file_system_path);
   void CanceledFileSaveAs(const std::string& url);
   void AppendedTo(const std::string& url);
+  void ConnectAutomaticFileSystemDone(DispatchCallback callback, bool success);
   void IndexingTotalWorkCalculated(int request_id,
                                    const std::string& file_system_path,
                                    int total_work);
@@ -292,7 +302,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void OnAidaConversationResponse(
       DispatchCallback callback,
       int stream_id,
-      const std::string& request,
+      const std::string request,
       base::TimeDelta delay,
       absl::variant<network::ResourceRequest, std::string>
           resource_request_or_error,
@@ -317,12 +327,12 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   std::unique_ptr<FrontendWebContentsObserver> frontend_contents_observer_;
 
   raw_ptr<Profile> profile_;
-  raw_ptr<DevToolsAndroidBridge> android_bridge_;
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<Delegate> delegate_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::unique_ptr<content::DevToolsFrontendHost> frontend_host_;
-  std::unique_ptr<DevToolsFileHelper> file_helper_;
+  DevToolsFileStorage file_storage_;
+  DevToolsFileHelper file_helper_;
   scoped_refptr<DevToolsFileSystemIndexer> file_system_indexer_;
   typedef std::map<
       int,

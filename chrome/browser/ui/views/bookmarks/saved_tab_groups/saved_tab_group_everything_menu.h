@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_EVERYTHING_MENU_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_EVERYTHING_MENU_H_
 
-#include <map>
-
+#include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -17,11 +16,10 @@
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
-#include "ui/views/dialog_model_context_menu_controller.h"
-#include "url/gurl.h"
 
 namespace tab_groups {
 
+class STGTabsMenuModel;
 class TabGroupSyncService;
 
 // A menu that contains a "Create new tab group" item and all the saved tab
@@ -32,29 +30,6 @@ class STGEverythingMenu : public views::MenuDelegate,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateNewTabGroup);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabGroup);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOpenGroup);
-
-  // The action users can perform on a saved tab group's submenu.
-  struct Action {
-    enum class Type {
-      DEFAULT = -1,
-      OPEN_IN_BROWSER,
-      OPEN_OR_MOVE_TO_NEW_WINDOW,
-      PIN_OR_UNPIN_GROUP,
-      DELETE_GROUP,
-      OPEN_URL,
-    };
-
-    Action(Type type, std::variant<base::Uuid, GURL> element);
-    Action(const Action&);
-    ~Action();
-
-    Type type = Type::DEFAULT;
-
-    // The action needs either a Uuid (e.g. Open group in new window) or a Url
-    // (e.g. Open tab) to perform.
-    std::variant<base::Uuid, GURL> element;
-  };
 
   STGEverythingMenu(views::MenuButtonController* menu_button_controller,
                     Browser* browser);
@@ -91,6 +66,7 @@ class STGEverythingMenu : public views::MenuDelegate,
                        ui::mojom::MenuSourceType source_type) override;
 
  private:
+  class AppMenuSubMenuModelDelegate;
   friend class STGEverythingMenuUnitTest;
 
   int GenerateTabGroupCommandID(int idx_in_sorted_tab_groups);
@@ -141,36 +117,17 @@ class STGEverythingMenu : public views::MenuDelegate,
   // submenu. True for 3-dot menu.
   bool show_submenu_ = false;
 
-  // The submenu model of a saved tab group item in the Everything menu. Will be
-  // created at run time from the 3-dot menu.
-  std::unique_ptr<ui::SimpleMenuModel> submenu_model_;
-
-  // The convenient controller that runs a context menu for saved tab group menu
-  // items.
-  std::unique_ptr<views::DialogModelContextMenuController>
-      context_menu_controller_;
-
-  // Whether or not the "Open or Move to New Window" should be enabled.
-  bool should_enable_move_menu_item_ = true;
-
-  // The key is a submenu command id, i.e. one of the following:
-  //        Open Group
-  //        Open/Move to New Window
-  //        Pin/Unpin Group
-  //        Delete Group
-  //        Tab
-  // App menu is the delegate to be notified when a submenu item is invoked, it
-  // will then delegate to `this` to execute. See `AppMenu::ExecuteCommand`.
-  // `this` only gets a command id from AppMenu, so `this` needs to know which
-  // action should be performed. That is why this map exists.
-  std::map<int, Action> command_id_to_action_;
-
   // The command id that gets updated and assigned to tab groups and their
   // submenu items.
   int latest_tab_group_command_id_ = -1;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
-  std::unique_ptr<ui::SimpleMenuModel> model_;
+  std::unique_ptr<ui::SimpleMenuModel> groups_model_;
+
+  std::unique_ptr<views::MenuRunner> context_menu_runner_;
+  std::unique_ptr<STGTabsMenuModel> tabs_model_;
+  std::unique_ptr<AppMenuSubMenuModelDelegate> submenu_delegate_;
+
   raw_ptr<Browser> browser_;
   raw_ptr<views::Widget> widget_;
 };

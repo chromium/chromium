@@ -45,9 +45,24 @@ namespace extensions {
 
 namespace {
 
+// Maximum value for finished jobs we'd like to store to avoid missusage of
+// the API and potential OOMs.
+static constexpr size_t kMaximumFinishedJobs = 10000u;
+// The number of jobs to remove from the cache once the cache is full. We
+// remove these in batches so we don't have to immediately clear the cache
+// again.
+static constexpr size_t kNumOfJobsToRemove = 51u;
+
 constexpr char kInvalidPrinterIdError[] = "Invalid printer ID";
 constexpr char kNoActivePrintJobWithIdError[] =
     "No active print job with given ID";
+constexpr char kNoPrintJobWithIdError[] = "No print job with given ID";
+
+bool PrintJobReachedTerminalState(const api::printing::JobStatus& status) {
+  return status == api::printing::JobStatus::kPrinted ||
+         status == api::printing::JobStatus::kFailed ||
+         status == api::printing::JobStatus::kCanceled;
+}
 
 }  // namespace
 
@@ -172,18 +187,20 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
       base::BindOnce(std::move(callback), api::printing::SubmitJobStatus::kOk,
                      cups_id, std::nullopt));
 
-  DCHECK(!base::Contains(print_jobs_, cups_id));
-  print_jobs_[cups_id] = PrintJobInfo{printer_id, info.job_id, extension_id};
+  DCHECK(!base::Contains(in_progress_print_jobs_, cups_id));
+  constexpr api::printing::JobStatus job_status =
+      api::printing::JobStatus::kPending;
+  in_progress_print_jobs_[cups_id] =
+      PrintJobInfo{printer_id, info.job_id, extension_id, job_status};
 
   if (!extension_registry_->enabled_extensions().Contains(extension_id)) {
     return;
   }
 
-  auto event =
-      std::make_unique<Event>(events::PRINTING_ON_JOB_STATUS_CHANGED,
-                              api::printing::OnJobStatusChanged::kEventName,
-                              api::printing::OnJobStatusChanged::Create(
-                                  cups_id, api::printing::JobStatus::kPending));
+  auto event = std::make_unique<Event>(
+      events::PRINTING_ON_JOB_STATUS_CHANGED,
+      api::printing::OnJobStatusChanged::kEventName,
+      api::printing::OnJobStatusChanged::Create(cups_id, job_status));
   event_router_->DispatchEventToExtension(extension_id, std::move(event));
 }
 
@@ -192,11 +209,12 @@ std::optional<std::string> PrintingAPIHandler::CancelJob(
     const std::string& job_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto it = print_jobs_.find(job_id);
+  auto it = in_progress_print_jobs_.find(job_id);
 
   // If there was no print job with specified id sent by the extension return
   // an error.
-  if (it == print_jobs_.end() || it->second.extension_id != extension_id) {
+  if (it == in_progress_print_jobs_.end() ||
+      it->second.extension_id != extension_id) {
     return kNoActivePrintJobWithIdError;
   }
 
@@ -302,11 +320,46 @@ void PrintingAPIHandler::OnPrinterStatusRetrieved(
           /*error=*/std::nullopt));
 }
 
+void PrintingAPIHandler::MaybeEvictFinishedPrintJobs() {
+  if (finished_print_jobs_.size() <= kMaximumFinishedJobs) {
+    return;
+  }
+
+  DCHECK_EQ(kMaximumFinishedJobs + 1u, finished_jobs_order_.size());
+  DCHECK_EQ(finished_jobs_order_.size(), finished_print_jobs_.size());
+
+  size_t removed_jobs = 0;
+  while (finished_jobs_order_.size() > 0 &&
+         removed_jobs++ < kNumOfJobsToRemove) {
+    finished_print_jobs_.erase(finished_jobs_order_.front());
+    finished_jobs_order_.pop_front();
+  }
+}
+
 void PrintingAPIHandler::OnPrintJobUpdateDeprecated(
     const std::string& printer_id,
     unsigned int job_id,
     crosapi::mojom::PrintJobStatus status) {
   NOTREACHED();
+}
+
+base::expected<api::printing::JobStatus, std::string>
+PrintingAPIHandler::GetJobStatus(const std::string& extension_id,
+                                 const std::string& job_id) {
+  // First, search in inprogress jobs.
+  auto in_progress_job_it = in_progress_print_jobs_.find(job_id);
+  if (in_progress_job_it != in_progress_print_jobs_.end() &&
+      in_progress_job_it->second.extension_id == extension_id) {
+    return base::ok(in_progress_job_it->second.status);
+  }
+  // If not found, try finished jobs. See the declaration of these containers to
+  // get more information on their usages.
+  auto finished_job_it = finished_print_jobs_.find(job_id);
+  if (finished_job_it != finished_print_jobs_.end() &&
+      /*extension_id=*/finished_job_it->second.first == extension_id) {
+    return base::ok(/*status=*/finished_job_it->second.second);
+  }
+  return base::unexpected(kNoPrintJobWithIdError);
 }
 
 void PrintingAPIHandler::OnPrintJobUpdate(
@@ -315,12 +368,10 @@ void PrintingAPIHandler::OnPrintJobUpdate(
     crosapi::mojom::PrintJobUpdatePtr update) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool done = true;
   api::printing::JobStatus job_status;
   switch (update->status) {
     case crosapi::mojom::PrintJobStatus::kStarted:
       job_status = api::printing::JobStatus::kInProgress;
-      done = false;
       break;
     case crosapi::mojom::PrintJobStatus::kDone:
       job_status = api::printing::JobStatus::kPrinted;
@@ -336,11 +387,13 @@ void PrintingAPIHandler::OnPrintJobUpdate(
   }
 
   std::string cups_id = CreateUniqueId(printer_id, job_id);
-  auto it = print_jobs_.find(cups_id);
-  if (it == print_jobs_.end())
+  auto it = in_progress_print_jobs_.find(cups_id);
+  if (it == in_progress_print_jobs_.end()) {
     return;
-  const std::string& extension_id = it->second.extension_id;
+  }
+  it->second.status = job_status;
 
+  const std::string& extension_id = it->second.extension_id;
   if (extension_registry_->enabled_extensions().Contains(extension_id)) {
     auto event = std::make_unique<Event>(
         events::PRINTING_ON_JOB_STATUS_CHANGED,
@@ -349,8 +402,15 @@ void PrintingAPIHandler::OnPrintJobUpdate(
     event_router_->DispatchEventToExtension(extension_id, std::move(event));
   }
 
-  if (done)
-    print_jobs_.erase(it);
+  // Treat only those jobs finished, which are completed, failed, or cancelled.
+  if (PrintJobReachedTerminalState(it->second.status)) {
+    DCHECK(!finished_print_jobs_.contains(cups_id));
+    finished_print_jobs_[cups_id] =
+        std::make_pair(it->second.extension_id, it->second.status);
+    finished_jobs_order_.push_back(cups_id);
+    in_progress_print_jobs_.erase(it);
+    MaybeEvictFinishedPrintJobs();
+  }
 }
 
 template <>

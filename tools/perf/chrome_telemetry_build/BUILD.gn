@@ -9,29 +9,44 @@ if (is_android) {
   import("//build/config/android/config.gni")
   import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
 }
+is_remote_platform = is_android || is_fuchsia || is_chromeos
+if (is_remote_platform) {
+  import("//build/symlink.gni")
+}
 
 if (is_chromeos_device) {
   import("//build/config/chromeos/rules.gni")
 
   generate_runner_script("cros_update_wrapper") {
     generated_script = "$root_build_dir/bin/cros_update_wrapper"
-    if (is_chromeos_ash) {
-      deploy_chrome = true
-    } else {
-      deploy_lacros = true
-      skip_generating_board_args = true
-    }
+    deploy_chrome = true
+  }
+}
+
+if (is_remote_platform) {
+  # Create a symlink from root_build_dir -> clang_x64/trace_processor_shell so
+  # the stripped binary is actually included in the isolate.
+  binary_symlink("host_trace_processor_shell") {
+    binary_label = "//third_party/perfetto/src/trace_processor:trace_processor_shell($host_toolchain)"
+    output_name = "host_trace_processor_shell"
   }
 }
 
 group("telemetry_chrome_test") {
   testonly = true
 
-  data_deps = [
-    ":telemetry_chrome_test_without_chrome",
-    "//third_party/perfetto/src/trace_processor:trace_processor_shell",
-  ]
+  data_deps = [ ":telemetry_chrome_test_without_chrome" ]
   data = []
+
+  # Compile the host's version of trace_processor_shell for remote platforms.
+  if (is_remote_platform) {
+    data_deps += [
+      ":host_trace_processor_shell",
+      "//third_party/perfetto/src/trace_processor:trace_processor_shell($host_toolchain)",
+    ]
+  } else {
+    data_deps += [ "//third_party/perfetto/src/trace_processor:trace_processor_shell($default_toolchain)" ]
+  }
 
   if (!is_fuchsia && !is_android && !is_castos && !is_ios) {
     data_deps += [ "//chrome" ]
@@ -66,7 +81,7 @@ group("telemetry_chrome_test") {
     data_deps += [ ":cros_update_wrapper" ]
   }
 
-  if (is_chromeos_ash && is_chromeos_device) {
+  if (is_chromeos && is_chromeos_device) {
     data_deps += [
       "//:chromiumos_preflight",
       "//chromeos:cros_chrome_deploy",
@@ -91,9 +106,12 @@ group("telemetry_chrome_test") {
 if (is_android) {
   _bitness_if_needed = ""
   _webview_bitness_if_needed = ""
-  if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
+  if (defined(android_app_secondary_abi)) {
     _bitness_if_needed = "_64_32"
     _webview_bitness_if_needed = "_32_64"
+  } else if (android_64bit_target_cpu) {
+    _bitness_if_needed = "_64"
+    _webview_bitness_if_needed = "_64"
   }
   group("telemetry_chrome_test_android_chrome") {
     testonly = true
@@ -142,7 +160,7 @@ if (is_android) {
     ]
   }
 
-  if (android_64bit_target_cpu) {
+  if (defined(android_app_secondary_abi)) {
     group("telemetry_chrome_test_android_trichrome_chrome_64_32_bundle") {
       testonly = true
 

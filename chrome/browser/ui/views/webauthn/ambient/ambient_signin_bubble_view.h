@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AMBIENT_AMBIENT_SIGNIN_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AMBIENT_AMBIENT_SIGNIN_BUBBLE_VIEW_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <vector>
 

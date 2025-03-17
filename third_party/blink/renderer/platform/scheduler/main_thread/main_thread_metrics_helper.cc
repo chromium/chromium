@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_metrics_helper.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -125,8 +122,9 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
       metrics_subsampler_.ShouldSample(sampling_ratio_)) {
     base::TimeDelta elapsed =
         task_timing.start_time() - task.GetDesiredExecutionTime();
-    queueing_delay_histograms_[static_cast<size_t>(queue->GetQueuePriority())]
-        .CountMicroseconds(elapsed);
+    UNSAFE_TODO(queueing_delay_histograms_[static_cast<size_t>(
+                                               queue->GetQueuePriority())]
+                    .CountMicroseconds(elapsed));
   }
 }
 
@@ -136,6 +134,9 @@ void MainThreadMetricsHelper::RecordMainThreadTaskLoad(base::TimeTicks time,
   DCHECK_LE(load_percentage, 100);
 
   ReportLowThreadLoadForPageAlmostIdleSignal(load_percentage);
+
+  base::UmaHistogramPercentage("RendererScheduler.RendererMainThreadLoad6",
+                               load_percentage);
 }
 
 void MainThreadMetricsHelper::ReportLowThreadLoadForPageAlmostIdleSignal(

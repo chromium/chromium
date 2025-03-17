@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
+#include "media/filters/dav1d_video_decoder.h"
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -20,9 +27,9 @@
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
 #include "media/ffmpeg/ffmpeg_common.h"
-#include "media/filters/dav1d_video_decoder.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkData.h"
 
 using ::testing::_;
 
@@ -268,6 +275,20 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_12bitMono) {
   EXPECT_EQ(frame->data(VideoFrame::Plane::kU),
             frame->data(VideoFrame::Plane::kV));
   EXPECT_EQ("32115092dc00fbe86823b0b714a0f63e", GetVideoFrameHash(*frame));
+}
+
+TEST_F(Dav1dVideoDecoderTest, DecodeFrame_AgtmMetadata) {
+  Initialize();
+
+  // Simulate decoding a single frame.
+  EXPECT_TRUE(
+      DecodeSingleFrame(ReadTestDataFile("av1-I-frame-320x240-agtm")).is_ok());
+  ASSERT_EQ(1U, output_frames_.size());
+
+  const auto& frame = output_frames_.front();
+  ASSERT_TRUE(frame->hdr_metadata().has_value());
+  ASSERT_TRUE(frame->hdr_metadata()->agtm.has_value());
+  EXPECT_EQ(frame->hdr_metadata()->agtm->payload->size(), 99u);
 }
 
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify

@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
 import android.content.Context;
@@ -20,11 +21,11 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.PackageManagerUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.PermissionUtil;
@@ -39,6 +40,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A base class for dealing with website settings categories. */
+@NullMarked
 public class SiteSettingsCategory {
     @IntDef({
         Type.ALL_SITES,
@@ -151,6 +153,9 @@ public class SiteSettingsCategory {
         if (type == Type.DEVICE_LOCATION) return new LocationCategory(browserContextHandle);
         if (type == Type.NFC) return new NfcCategory(browserContextHandle);
         if (type == Type.NOTIFICATIONS) return new NotificationCategory(browserContextHandle);
+        if (type == Type.JAVASCRIPT_OPTIMIZER) {
+            return new JavascriptOptimizerCategory(browserContextHandle);
+        }
 
         final String permission;
         if (type == Type.CAMERA) {
@@ -160,8 +165,7 @@ public class SiteSettingsCategory {
         } else if (type == Type.AUGMENTED_REALITY) {
             permission = android.Manifest.permission.CAMERA;
         } else if (type == Type.HAND_TRACKING
-                && PackageManagerUtils.hasSystemFeature(
-                        PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME)) {
+                && PermissionUtil.handTrackingNeedsAdditionalPermissions()) {
             permission = PermissionUtil.ANDROID_PERMISSION_HAND_TRACKING;
         } else {
             permission = "";
@@ -169,7 +173,7 @@ public class SiteSettingsCategory {
         return new SiteSettingsCategory(browserContextHandle, type, permission);
     }
 
-    public static SiteSettingsCategory createFromContentSettingsType(
+    public static @Nullable SiteSettingsCategory createFromContentSettingsType(
             BrowserContextHandle browserContextHandle,
             @ContentSettingsType.EnumType int contentSettingsType) {
         assert contentSettingsType != -1;
@@ -182,7 +186,7 @@ public class SiteSettingsCategory {
         return null;
     }
 
-    public static SiteSettingsCategory createFromPreferenceKey(
+    public static @Nullable SiteSettingsCategory createFromPreferenceKey(
             BrowserContextHandle browserContextHandle, String preferenceKey) {
         assert Type.ALL_SITES == 0;
         for (@Type int i = Type.ALL_SITES; i < Type.NUM_ENTRIES; i++) {
@@ -392,7 +396,8 @@ public class SiteSettingsCategory {
         if (mCategory == Type.AUTOMATIC_DOWNLOADS
                 || mCategory == Type.BACKGROUND_SYNC
                 || mCategory == Type.JAVASCRIPT
-                || mCategory == Type.POPUPS) {
+                || mCategory == Type.POPUPS
+                || mCategory == Type.JAVASCRIPT_OPTIMIZER) {
             return WebsitePreferenceBridge.isContentSettingManaged(
                     getBrowserContextHandle(), getContentSettingsType());
         } else if (mCategory == Type.DEVICE_LOCATION
@@ -438,12 +443,14 @@ public class SiteSettingsCategory {
      *     for many permissions.
      * @param appName The name of the app to use in warning strings.
      */
-    public void configurePermissionIsOffPreferences(
+    public void configureWarningPreferences(
             Preference osWarning,
             Preference osWarningExtra,
             Context context,
             boolean specificCategory,
             String appName) {
+        assert showPermissionBlockedMessage(context);
+
         Intent perAppIntent = getIntentToEnableOsPerAppPermission(context);
         Intent globalIntent = getIntentToEnableOsGlobalPermission(context);
         String perAppMessage =
@@ -470,6 +477,7 @@ public class SiteSettingsCategory {
             osWarningExtra.setTitle(unsupportedMessage);
             osWarningExtra.setIcon(getDisabledInAndroidIcon(context));
         } else if (globalIntent != null) {
+            assumeNonNull(globalMessage);
             SpannableString messageWithLink =
                     SpanApplier.applySpans(
                             globalMessage, new SpanInfo("<link>", "</link>", linkSpan));
@@ -484,6 +492,9 @@ public class SiteSettingsCategory {
                     osWarningExtra.setIcon(transparent);
                 }
             }
+        } else if (globalMessage != null) {
+            osWarningExtra.setTitle(globalMessage);
+            osWarningExtra.setIcon(getDisabledInAndroidIcon(context));
         }
     }
 
@@ -512,8 +523,7 @@ public class SiteSettingsCategory {
     }
 
     /** Returns the message to display when permission is not supported. */
-    @Nullable
-    protected String getMessageIfNotSupported(Context context) {
+    protected @Nullable String getMessageIfNotSupported(Context context) {
         return null;
     }
 
@@ -540,6 +550,16 @@ public class SiteSettingsCategory {
         return permissionOnInAndroid(mAndroidPermission, context);
     }
 
+    /** Returns whether to disable the category toggle. */
+    protected boolean isToggleDisabled() {
+        return false;
+    }
+
+    /** Returns whether to show a warning message when the category is blocked. */
+    protected boolean shouldShowWarningWhenBlocked() {
+        return false;
+    }
+
     /**
      * Returns whether to show the 'permission blocked' message. Majority of the time, that is
      * warranted when the permission is either blocked per app or globally. But there are exceptions
@@ -554,7 +574,7 @@ public class SiteSettingsCategory {
      * already enabled. Android M and above provides two ways of doing this for some permissions,
      * most notably Location, one that is per-app and another that is global.
      */
-    private Intent getIntentToEnableOsPerAppPermission(Context context) {
+    private @Nullable Intent getIntentToEnableOsPerAppPermission(Context context) {
         if (enabledForChrome(context)) return null;
         return getAppInfoIntent(context);
     }
@@ -564,7 +584,7 @@ public class SiteSettingsCategory {
      * permission. Android M and above provides two ways of doing this for some permissions, most
      * notably Location, one that is per-app and another that is global.
      */
-    protected Intent getIntentToEnableOsGlobalPermission(Context context) {
+    protected @Nullable Intent getIntentToEnableOsGlobalPermission(Context context) {
         return null;
     }
 
@@ -595,7 +615,7 @@ public class SiteSettingsCategory {
     }
 
     /** Returns the message to display when per-app permission is blocked. */
-    protected String getMessageForEnablingOsGlobalPermission(Context context) {
+    protected @Nullable String getMessageForEnablingOsGlobalPermission(Context context) {
         return null;
     }
 

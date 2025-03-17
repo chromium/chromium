@@ -14,6 +14,15 @@
 
 namespace features {
 
+// Enables the Windows.Gaming.Input data fetcher.
+//
+// Note: This feature is used by the "never expire" flag
+// chrome://flags/#enable-windows-gaming-input-data-fetcher and should not be
+// removed. See crbug.com/40287784.
+BASE_FEATURE(kEnableWindowsGamingInputDataFetcher,
+             "EnableWindowsGamingInputDataFetcher",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables gamepad multitouch
 BASE_FEATURE(kEnableGamepadMultitouch,
              "EnableGamepadMultitouch",

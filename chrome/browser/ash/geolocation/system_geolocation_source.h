@@ -42,13 +42,15 @@ class SystemGeolocationSource : public device::SystemGeolocationSource,
   void OpenSystemPermissionSetting() override;
 
  private:
+  friend class SystemGeolocationSourceTests;
+
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   void OnPrefChanged(const std::string& pref_name);
 
   PermissionUpdateCallback permission_update_callback_;
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> primary_user_pref_change_registrar_;
   base::ScopedObservation<SessionController, SessionObserver> observer_{this};
 };
 

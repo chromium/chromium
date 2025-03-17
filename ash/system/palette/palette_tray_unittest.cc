@@ -553,7 +553,7 @@ TEST_F(PaletteTrayNoSessionTestWithInternalStylus,
   Shell::RootWindowControllerList controllers =
       Shell::GetAllRootWindowControllers();
   ASSERT_EQ(2u, controllers.size());
-  SimulateUserLogin("test@test.com");
+  SimulateUserLogin({"test@test.com"});
 
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kAshEnablePaletteOnAllDisplays);
@@ -640,7 +640,7 @@ class PaletteTrayTestMultiDisplay : public PaletteTrayTest {
     Shell::RootWindowControllerList controllers =
         Shell::GetAllRootWindowControllers();
     ASSERT_EQ(2u, controllers.size());
-    SimulateUserLogin("test@test.com");
+    SimulateUserLogin({"test@test.com"});
 
     palette_tray_ = controllers[0]->GetStatusAreaWidget()->palette_tray();
     palette_tray_external_ =

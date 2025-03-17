@@ -12,8 +12,6 @@
 namespace chromeos {
 
 // A class that provides an interface for accessing a probe service mojo remote.
-// Allows for multiple implementations depending on whether this is running in
-// Ash or LaCros.
 class RemoteProbeServiceStrategy {
  public:
   static RemoteProbeServiceStrategy* Get();
@@ -33,10 +31,7 @@ class RemoteProbeServiceStrategy {
  private:
   RemoteProbeServiceStrategy();
 
-  // Store the test service remote for Ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   mojo::Remote<crosapi::mojom::TelemetryProbeService> test_service_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace chromeos

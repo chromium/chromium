@@ -53,7 +53,7 @@ CdmStorageDatabase::CdmStorageDatabase(const base::FilePath& path)
       // bytes) and that we'll typically only be pulling one file at a time
       // (playback), specify a large page size to allow inner nodes can pack
       // many keys, to keep the index B-tree flat.
-      db_(sql::DatabaseOptions{.page_size = 32768, .cache_size = 8},
+      db_(sql::DatabaseOptions().set_page_size(32768).set_cache_size(8),
           /*tag=*/"CdmStorage") {
   // base::Unretained is safe because `db_` is owned by `this`
   db_.set_error_callback(base::BindRepeating(

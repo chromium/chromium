@@ -18,8 +18,7 @@ std::unique_ptr<lottie::Animation> GetLottieAnimationData(int animation_id);
 // Gets the playback config for the animation that maps to the provided
 // `animation_id`.
 std::optional<lottie::Animation::PlaybackConfig> GetLottiePlaybackConfig(
-    const cc::SkottieWrapper& skottie,
-    int animation_id);
+    const cc::SkottieWrapper& skottie);
 
 }  // namespace ash::birch_animation_utils
 

@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -53,6 +54,10 @@ enum AuthenticatorStatus {
   // ERROR_WITH_DOM_EXCEPTION_DETAILS indicates that the error will be
   // described in a `WebAuthnDOMExceptionDetails` structure.
   ERROR_WITH_DOM_EXCEPTION_DETAILS,
+
+  // IMMEDIATE_NOT_FOUND indicates that no immediate discoverable
+  // credentials are found for a `get()` request.
+  IMMEDIATE_NOT_FOUND,
 
   UNKNOWN_ERROR,
 };
@@ -109,9 +114,9 @@ struct SupplementalPubKeysResponse {
 
 // The `payment` extension response.
 struct AuthenticationExtensionsPaymentResponse {
-  // The signatures of the browser bound key corresponding to public keys in the
-  // payment portion of the clientDataJson.
-  array<array<uint8>> browser_bound_signatures;
+  // The signature of the browser bound key corresponding to the public key in
+  // the payment portion of the clientDataJson.
+  array<uint8> browser_bound_signature;
 };
 
 // The public key and attestation returned by Authenticator::MakeCredential.
@@ -362,12 +367,21 @@ struct SupplementalPubKeysRequest {
   array<string> attestation_formats;
 };
 
-// Parameters passed into calls to GetAssertion.
-struct PublicKeyCredentialRequestOptions {
-  // If true, indicates that this request should prioritize showing a UI only if
+enum Mediation {
+  MODAL,
+  // Indicates that this request should prioritize showing a UI only if
   // there are discoverable credentials available in this device's platform
   // authenticator.
-  bool is_conditional;
+  CONDITIONAL,
+  // Indicates that this request should fail with `NotFoundError` if there are
+  // no discoverable credentials available. Otherwise it should handle the
+  // request like a `MODAL` request.
+  IMMEDIATE,
+};
+
+// Parameters passed into calls to GetAssertion.
+struct PublicKeyCredentialRequestOptions {
+  Mediation mediation = Mediation.MODAL;
 
   // Aflag word corresponding to the flags in credential_type_flags.mojom,
   // representing the types of credentials that were indicated in the request.
@@ -452,6 +466,10 @@ struct AuthenticationExtensionsClientInputs {
   // If present, reflects the contents of the "supplementalPubKeys" extension.
   // https://github.com/w3c/webauthn/pull/1663
   SupplementalPubKeysRequest? supplemental_pub_keys;
+
+  // Parameters defining the type of browser bound keys that the relying party
+  // would accept.
+  array<PublicKeyCredentialParameters>? payment_browser_bound_key_parameters;
 };
 
 // https://w3c.github.io/webauthn/#enum-residentKeyRequirement
@@ -463,24 +481,24 @@ enum ResidentKeyRequirement {
 
 // https://w3c.github.io/webauthn/#enumdef-authenticatorattachment.
 enum AuthenticatorAttachment {
-    NO_PREFERENCE,
-    PLATFORM,
-    CROSS_PLATFORM,
+  NO_PREFERENCE,
+  PLATFORM,
+  CROSS_PLATFORM,
 };
 
 enum ProtectionPolicy {
-    // UNSPECIFIED means that no value was given at the Javascript level.
-    UNSPECIFIED,
-    NONE,
-    UV_OR_CRED_ID_REQUIRED,
-    UV_REQUIRED,
+  // UNSPECIFIED means that no value was given at the Javascript level.
+  UNSPECIFIED,
+  NONE,
+  UV_OR_CRED_ID_REQUIRED,
+  UV_REQUIRED,
 };
 
 // https://w3c.github.io/webauthn#enumdef-largeblobsupport
 enum LargeBlobSupport {
-    NOT_REQUESTED,
-    REQUIRED,
-    PREFERRED,
+  NOT_REQUESTED,
+  REQUIRED,
+  PREFERRED,
 };
 
 // See https://w3c.github.io/webauthn/#dictdef-authenticatorselectioncriteria.
@@ -580,6 +598,10 @@ struct PublicKeyCredentialCreationOptions {
   // https://github.com/w3c/webauthn/pull/1663
   SupplementalPubKeysRequest? supplemental_pub_keys;
 
+  // Parameters defining the type of browser bound keys that the relying party
+  // would accept.
+  array<PublicKeyCredentialParameters>? payment_browser_bound_key_parameters;
+
   // https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptionsjson-attestationformats
   array<string> attestation_formats;
 
@@ -647,6 +669,22 @@ struct WebAuthnClientCapability {
   bool supported;
 };
 
+// Describes a response for a publicKey credential request.
+// `credential` will be set if and only if status == SUCCESS.
+// `WebAuthnDOMExceptionDetails` will be set if and only if status ==
+// ERROR_WITH_DOM_EXCEPTION_DETAILS.
+struct GetAssertionResponse {
+  AuthenticatorStatus status;
+  GetAssertionAuthenticatorResponse? credential;
+  WebAuthnDOMExceptionDetails? dom_exception_details;
+};
+
+// `GetCredentialResponse` is the response for a `GetCredential` request.
+union GetCredentialResponse {
+  GetAssertionResponse get_assertion_response;
+  CredentialInfo password_response;
+};
+
 // Interface to direct authenticators to create or use a public key credential.
 interface Authenticator {
   // Gets the credential info for a new public key credential created by an
@@ -659,15 +697,13 @@ interface Authenticator {
           MakeCredentialAuthenticatorResponse? credential,
           WebAuthnDOMExceptionDetails? dom_exception_details);
 
-  // Uses an existing credential to produce an assertion for the given
-  // |PublicKeyCredentialRequestOptions|.
-  // |GetAssertionResponse| will be set if and only if status == SUCCESS.
-  // [WebAuthnDOMExceptionDetails] will be set if and only if
-  // status == ERROR_WITH_DOM_EXCEPTION_DETAILS.
-  GetAssertion(PublicKeyCredentialRequestOptions options)
-      => (AuthenticatorStatus status,
-          GetAssertionAuthenticatorResponse? credential,
-          WebAuthnDOMExceptionDetails? dom_exception_details);
+  // Uses an existing credential to produce a response for the given
+  // `PublicKeyCredentialRequestOptions`. If the
+  // `requested_credential_type_flags` has the password bit set, the response
+  // can be a `CredentialInfo` or `GetAssertionResponse`. Otherwise it will be
+  // always `GetAssertionResponse`.
+  GetCredential(PublicKeyCredentialRequestOptions options)
+      => (GetCredentialResponse response);
 
   // Returns true if the user platform provides an authenticator. Relying
   // Parties use this method to determine whether they can create a new

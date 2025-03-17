@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -82,7 +83,8 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
                                  public testing::Test {
  public:
   SpeechRecognizerImplTest()
-      : audio_capturer_source_(new testing::NiceMock<MockCapturerSource>()),
+      : audio_capturer_source_(
+            base::MakeRefCounted<testing::NiceMock<MockCapturerSource>>()),
         recognition_started_(false),
         recognition_ended_(false),
         result_received_(false),

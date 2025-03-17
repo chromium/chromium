@@ -8,12 +8,19 @@
  * optional properties (which may be null|undefined).
  */
 
-import {ApnProperties, ManagedApnList, ManagedBoolean, ManagedInt32, ManagedString, ManagedStringList} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {OncSource, PolicySource} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {CrPolicyIndicatorType} from '../cr_policy_indicator_behavior.js';
 
 import {OncMojo} from './onc_mojo.js';
+
+// Type aliases for js-webui to ts-webui migration
+/** @typedef {*} ApnProperties */
+/** @typedef {*} ManagedApnList */
+/** @typedef {*} ManagedBoolean */
+/** @typedef {*} ManagedInt32 */
+/** @typedef {*} ManagedString */
+/** @typedef {*} ManagedStringList */
 
 /** @polymerBehavior */
 export const CrPolicyNetworkBehaviorMojo = {

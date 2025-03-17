@@ -7,21 +7,22 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
-
-namespace base {
-class FilePath;
-}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -41,7 +42,7 @@ class RendererStartupHelper;
 // extensions for a BrowserContext. It uses the ExtensionRegistry to track
 // extension states. Other classes may query the ExtensionRegistry directly,
 // but eventually only ExtensionRegistrar will be able to make changes to it.
-class ExtensionRegistrar : public ProcessManagerObserver {
+class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
  public:
   // How to surface an extension load error, e.g. showing an error dialog. The
   // actual behavior is up to the embedder.
@@ -75,11 +76,40 @@ class ExtensionRegistrar : public ProcessManagerObserver {
     virtual void PostDeactivateExtension(
         scoped_refptr<const Extension> extension) = 0;
 
+    // Called before |extension| is uninstalled. Performs the operations
+    // necessary before |extension| is uninstalled.
+    virtual void PreUninstallExtension(
+        scoped_refptr<const Extension> extension) = 0;
+
+    // Called after |extension| is uninstalled. Performs the operations to
+    // clean up the extensions files, etc.
+    virtual void PostUninstallExtension(
+        scoped_refptr<const Extension> extension,
+        base::OnceClosure done_callback) = 0;
+
+    // Called after |extension| un-installation event has been notified to
+    // all observers.
+    virtual void PostNotifyUninstallExtension(
+        scoped_refptr<const Extension> extension) = 0;
+
     // Given an extension ID and/or path, loads that extension as a reload.
     virtual void LoadExtensionForReload(
         const ExtensionId& extension_id,
         const base::FilePath& path,
         LoadErrorBehavior load_error_behavior) = 0;
+
+    // Informs the user that an extension was disabled after upgrading to higher
+    // permissions. If |is_remote_install| is true, the extension was disabled
+    // because it was installed remotely.
+    virtual void ShowExtensionDisabledError(const Extension* extension,
+                                            bool is_remote_install) = 0;
+
+    // Finishes the deplayed installations if there are any delayed
+    // extensions ready to be installed.
+    virtual void FinishDelayedInstallationsIfAny() = 0;
+
+    // Returns true if |extension| can be added.
+    virtual bool CanAddExtension(const Extension* extension) = 0;
 
     // Returns true if the extension is allowed to be enabled or disabled,
     // respectively.
@@ -88,19 +118,35 @@ class ExtensionRegistrar : public ProcessManagerObserver {
 
     // Returns true if the extension should be blocked.
     virtual bool ShouldBlockExtension(const Extension* extension) = 0;
+
+    // Updates the `extension`s granted permissions lists to include all
+    // permissions in the `extensions`s manifest.
+    virtual void GrantActivePermissions(const Extension* extension) = 0;
   };
 
-  // The provided Delegate should outlive this object.
-  ExtensionRegistrar(content::BrowserContext* browser_context,
-                     Delegate* delegate);
+  explicit ExtensionRegistrar(content::BrowserContext* browser_context);
 
   ExtensionRegistrar(const ExtensionRegistrar&) = delete;
   ExtensionRegistrar& operator=(const ExtensionRegistrar&) = delete;
 
   ~ExtensionRegistrar() override;
 
+  // Returns the instance for the given |browser_context|.
+  static ExtensionRegistrar* Get(content::BrowserContext* browser_context);
+
+  // The provided `delegate` should outlive this object. May be called multiple
+  // times, for example to reset the delegate in tests.
+  void Init(Delegate* delegate,
+            bool extensions_enabled,
+            const base::FilePath& install_directory,
+            const base::FilePath& unpacked_install_directory);
+
+  // Returns a weak pointer to `this`.
+  base::WeakPtr<ExtensionRegistrar> GetWeakPtr();
+
+  // KeyedService overrides:
   // Called when the associated Profile is going to be destroyed.
-  void Shutdown();
+  void Shutdown() override;
 
   // Adds the extension to the ExtensionRegistry. The extension will be added to
   // the enabled, disabled, blocklisted or blocked set. If the extension is
@@ -113,7 +159,7 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   // Note: Extensions will not be removed from other sets (blocklisted or
   // blocked). ExtensionService handles that, since it also adds it to those
   // sets. TODO(michaelpg): Make ExtensionRegistrar the sole mutator of
-  // ExtensionRegsitry to simplify this usage.
+  // ExtensionRegistry to simplify this usage.
   void RemoveExtension(const ExtensionId& extension_id,
                        UnloadedExtensionReason reason);
 
@@ -124,16 +170,40 @@ class ExtensionRegistrar : public ProcessManagerObserver {
 
   // Marks |extension| as disabled and deactivates it. The ExtensionRegistry
   // retains a reference to it, so it can be enabled later.
-  void DisableExtension(const ExtensionId& extension_id, int disable_reasons);
+  void DisableExtension(const ExtensionId& extension_id,
+                        const DisableReasonSet& disable_reasons);
+
+  // Any code which needs to write unknown reasons should use the
+  // methods below, which operate on raw integers. This is needed for scenarios
+  // like Sync where unknown reasons can be synced from newer versions of the
+  // browser to older versions. The method above will trigger undefined behavior
+  // when unknown values are casted to DisableReason while constructing
+  // DisableReasonSet. Most code should use the method above. We want to limit
+  // the usage of the method below, so it is guarded by a passkey.
+  void DisableExtensionWithRawReasons(
+      ExtensionPrefs::DisableReasonRawManipulationPasskey,
+      const ExtensionId& extension_id,
+      base::flat_set<int> disable_reasons);
 
   // Same as `DisableExtension`, but assumes that the request to disable
   // `extension_id` originates from `source_extension` when evaluating whether
   // the extension can be disabled. Please see `ExtensionMayModifySettings`
   // for details.
-  void DisableExtensionWithSource(
-      const Extension* source_extension,
-      const std::string& extension_id,
-      disable_reason::DisableReason disable_reasons);
+  void DisableExtensionWithSource(const Extension* source_extension,
+                                  const ExtensionId& extension_id,
+                                  disable_reason::DisableReason disable_reason);
+
+  // Helper to get the disable reasons for an installed (or upgraded) extension.
+  // Returning an empty set indicates that we should enable this extension
+  // initially.
+  base::flat_set<int> GetDisableReasonsOnInstalled(const Extension* extension);
+
+  // Attempts to enable all disabled extensions which the only disabled reason
+  // is reloading.
+  void EnabledReloadableExtensions();
+
+  // Removes the specified component extension.
+  void RemoveComponentExtension(const std::string& extension_id);
 
   // Removes the disable reason and enable the extension if there are no disable
   // reasons left and is not blocked for another reason.
@@ -148,7 +218,78 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   void ReloadExtension(const ExtensionId extension_id,
                        LoadErrorBehavior load_error_behavior);
 
+  // Uninstalls the specified extension. Callers should only call this method
+  // with extensions that exist. |reason| lets the caller specify why the
+  // extension is uninstalled.
+  // Note: this method synchronously removes the extension from the
+  // set of installed extensions stored in the ExtensionRegistry, but will
+  // asynchronously remove site-related data and the files stored on disk.
+  // Returns true if an uninstall was successfully triggered; this can fail if
+  // the extension cannot be uninstalled (such as a policy force-installed
+  // extension).
+  // |done_callback| is synchronously invoked once the site-related data and the
+  // files stored on disk are removed. If such a callback is not needed, pass in
+  // a null callback (base::NullCallback()).
+  bool UninstallExtension(
+      const std::string& extension_id,
+      UninstallReason reason,
+      std::u16string* error,
+      base::OnceClosure done_callback = base::NullCallback());
+
+  // Uninstalls extensions that have been migrated to component extensions.
+  void UninstallMigratedExtensions(base::span<const char* const> migrated_ids);
+
+  // Finishes installing |extension| and notifying the observers.
+  void FinishInstallation(const Extension* extension);
+
   // TODO(michaelpg): Add methods for blocklisting and blocking extensions.
+
+  // Helper method to determine if an extension can be blocked.
+  bool CanBlockExtension(const Extension* extension) const;
+
+  // Puts all extensions in a blocked state: Unloading every extension, and
+  // preventing them from ever loading until UnblockAllExtensions is called.
+  // This state is stored in preferences, so persists until Chrome restarts.
+  //
+  // Component, external component and allowlisted policy installed extensions
+  // are exempt from being Blocked (see CanBlockExtension in .cc file).
+  void BlockAllExtensions();
+
+  // All blocked extensions are reverted to their previous state, and are
+  // reloaded. Newly added extensions are no longer automatically blocked.
+  void UnblockAllExtensions();
+
+  // Takes Safe Browsing and Omaha malware blocklist states into account and
+  // decides whether to remove the extension from the blocklist and reload it.
+  // Called when a blocklisted extension is removed from the Safe Browsing
+  // malware blocklist or Omaha malware blocklist. Also clears the acknowledged
+  // state if the extension is reloaded.
+  void OnBlocklistStateRemoved(const std::string& extension_id);
+
+  // Takes acknowledged malware blocklist state into account and decides whether
+  // to add the extension to the blocklist and unload it. Called when the
+  // extension is added to the Safe Browsing malware blocklist or the Omaha
+  // malware blocklist.
+  void OnBlocklistStateAdded(const std::string& extension_id);
+
+  // Takes Safe Browsing and Omaha blocklist states into account and decides
+  // whether to remove greylist disabled reason. Called when a greylisted
+  // state is removed from the Safe Browsing blocklist or Omaha blocklist. Also
+  // clears all acknowledged states if the greylist disabled reason is removed.
+  void OnGreylistStateRemoved(const std::string& extension_id);
+
+  // Takes acknowledged blocklist states into account and decides whether to
+  // disable the greylisted extension. Called when a new greylisted state is
+  // added to the Safe Browsing blocklist or Omaha blocklist.
+  void OnGreylistStateAdded(const std::string& extension_id,
+                            BitMapBlocklistState new_state);
+
+  // Simulates an extension being blocklisted for tests.
+  void BlocklistExtensionForTest(const std::string& extension_id);
+
+  // Simulates an extension being greylisted for tests.
+  void GreylistExtensionForTest(const std::string& extension_id,
+                                const BitMapBlocklistState& state);
 
   // Deactivates the extension, adding its id to the list of terminated
   // extensions.
@@ -167,6 +308,18 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   void DidCreateMainFrameForBackgroundPage(ExtensionHost* host);
 
   void OnUnpackedExtensionReloadFailed(const base::FilePath& path);
+
+  // Updates the `extension`s granted permissions lists to include all
+  // permissions in the `extension`s manifest and re-enables the
+  // extension.
+  void GrantPermissionsAndEnableExtension(const Extension& extension);
+
+  // Simple accessors.
+  bool extensions_enabled() const { return extensions_enabled_; }
+  const base::FilePath& install_directory() const { return install_directory_; }
+  const base::FilePath& unpacked_install_directory() const {
+    return unpacked_install_directory_;
+  }
 
  private:
   // Adds the extension to the appropriate registry set, based on ExtensionPrefs
@@ -203,10 +356,22 @@ class ExtensionRegistrar : public ProcessManagerObserver {
 
   const raw_ptr<content::BrowserContext> browser_context_;
 
-  // Delegate provided in the constructor. Should outlive this object.
-  const raw_ptr<Delegate> delegate_;
+  // Delegate provided by SetDelegate. Should outlive this object.
+  raw_ptr<Delegate> delegate_;
+
+  // Whether or not extensions are enabled.
+  bool extensions_enabled_ = true;
+
+  // The full path to the directory where extensions are installed.
+  base::FilePath install_directory_;
+
+  // The full path to the directory where unpacked (e.g. from .zip files)
+  // extensions are installed.
+  base::FilePath unpacked_install_directory_;
 
   // Keyed services we depend on. Cached here for repeated access.
+  // TODO(crbug.com/398014892): Figure out a way to break the dependency
+  // between ExtensionRegistrar and ExtensionSystem.
   raw_ptr<ExtensionSystem> extension_system_;
   const raw_ptr<ExtensionPrefs> extension_prefs_;
   const raw_ptr<ExtensionRegistry> registry_;

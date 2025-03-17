@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -14,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -31,6 +31,7 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
+#include "components/policy/core/common/policy_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -112,7 +113,7 @@ class UpdaterIPCTestCase : public testing::Test {
   ExpectUpdateStatesCallback() {
     std::vector<UpdateService::UpdateState> states = GetExampleUpdateStates();
     // For the convenience of using `back` and `pop_back` below.
-    base::ranges::reverse(states);
+    std::ranges::reverse(states);
     return base::BindRepeating(
         [](std::vector<UpdateService::UpdateState>& states,
            const UpdateService::UpdateState& state) {
@@ -169,7 +170,8 @@ class UpdaterIPCTestCase : public testing::Test {
                 (override));
     MOCK_METHOD(void,
                 FetchPolicies,
-                (base::OnceCallback<void(int)> callback),
+                (policy::PolicyFetchReason reason,
+                 base::OnceCallback<void(int)> callback),
                 (override));
     MOCK_METHOD(void,
                 RegisterApp,
@@ -271,7 +273,8 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
       });
 
   EXPECT_CALL(*mock_service, FetchPolicies)
-      .WillOnce([](base::OnceCallback<void(int)> callback) {
+      .WillOnce([](policy::PolicyFetchReason reason,
+                   base::OnceCallback<void(int)> callback) {
         std::move(callback).Run(42);
       });
 
@@ -401,7 +404,8 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
   }
   {
     base::RunLoop run_loop;
-    client_proxy->FetchPolicies(base::BindOnce([](int result) {
+    client_proxy->FetchPolicies(policy::PolicyFetchReason::kUnspecified,
+                                base::BindOnce([](int result) {
                                   EXPECT_EQ(result, 42);
                                 }).Then(run_loop.QuitClosure()));
     run_loop.Run();

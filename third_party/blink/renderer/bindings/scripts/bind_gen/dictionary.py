@@ -685,9 +685,9 @@ def make_trace_function(cg_context):
     body = func_def.body
 
     for member in cg_context.dictionary_own_members:
-        body.append(
-            TextNode("TraceIfNeeded<{}>::Trace(visitor, {});".format(
-                member.type_info.member_t, member.value_var)))
+        if not member.type_info.is_traceable:
+            continue
+        body.append(TextNode("visitor->Trace({});".format(member.value_var)))
     body.append(TextNode("${base_class_name}::Trace(visitor);"))
 
     return func_def.make_decl(override=True), func_def

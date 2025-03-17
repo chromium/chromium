@@ -32,7 +32,6 @@ import java.util.function.Supplier;
 /** The mediator which implements the logic to add, update and remove modules. */
 public class HomeModulesMediator {
     private static final int INVALID_INDEX = -1;
-    @VisibleForTesting static final int INVALID_FRESHNESS_SCORE = -1;
 
     /** Time to wait before rejecting any module response in milliseconds. */
     public static final long MODULE_FETCHING_TIMEOUT_MS = 5000L;
@@ -121,12 +120,27 @@ public class HomeModulesMediator {
     void onModuleViewCreated(@ModuleType int moduleType) {
         HomeModulesRankingHelper.notifyCardShown(
                 mProfileSupplier.get(), HomeModulesMetricsUtils.getModuleName(moduleType));
+
+        if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+            HomeModulesUtils.increaseImpressionCountBeforeInteraction(moduleType);
+        }
     }
 
     /** Called to notify that a module was clicked. */
     void onModuleClicked(@ModuleType int moduleType) {
         HomeModulesRankingHelper.notifyCardInteracted(
                 mProfileSupplier.get(), HomeModulesMetricsUtils.getModuleName(moduleType));
+
+        if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+            HomeModulesMetricsUtils.recordEducationalTipModuleImpressionCountBeforeInteraction(
+                    moduleType,
+                    mModuleDelegateHost.isHomeSurface(),
+                    HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType));
+
+            // Remove the shared preference key for impression count before interaction, as the
+            // educational tip card will no longer appear once the user interacts with it.
+            HomeModulesUtils.removeImpressionCountBeforeInteractionKey(moduleType);
+        }
     }
 
     private void buildModulesAndShow(
@@ -546,7 +560,8 @@ public class HomeModulesMediator {
     void onModuleConfigChanged(@ModuleType int moduleType, boolean isEnabled) {
         // The single tab module and the tab resumption modules are controlled by the same
         // preference key. Once it is turned on or off, both modules will be enabled or disabled.
-
+        // The educational tip modules are also controlled by the same preference key. Once it is
+        // turned on or off, all of the educational tip modules will be enabled or disabled.
         if (isEnabled) {
             // If the mEnabledModuleSet hasn't been initialized yet, skip here.
             if (mEnabledModuleSet != null) {
@@ -554,6 +569,8 @@ public class HomeModulesMediator {
                         || moduleType == ModuleType.TAB_RESUMPTION) {
                     mEnabledModuleSet.add(ModuleType.SINGLE_TAB);
                     mEnabledModuleSet.add(ModuleType.TAB_RESUMPTION);
+                } else if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+                    mEnabledModuleSet.addAll(HomeModulesUtils.getEducationalTipModuleList());
                 } else {
                     mEnabledModuleSet.add(moduleType);
                 }
@@ -565,6 +582,8 @@ public class HomeModulesMediator {
                         || moduleType == ModuleType.TAB_RESUMPTION) {
                     mEnabledModuleSet.remove(ModuleType.SINGLE_TAB);
                     mEnabledModuleSet.remove(ModuleType.TAB_RESUMPTION);
+                } else if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+                    mEnabledModuleSet.removeAll(HomeModulesUtils.getEducationalTipModuleList());
                 } else {
                     mEnabledModuleSet.remove(moduleType);
                 }
@@ -612,7 +631,7 @@ public class HomeModulesMediator {
                     /* canUpdateCacheForFutureRequests= */ true,
                     /* fallbackAllowed= */ true);
         } else {
-            return new PredictionOptions(/* on_demand= */ false);
+            return new PredictionOptions(/* onDemandExecution= */ false);
         }
     }
 

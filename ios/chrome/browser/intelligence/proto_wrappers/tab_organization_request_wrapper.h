@@ -8,11 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/functional/callback_forward.h"
-#import "components/optimization_guide/optimization_guide_buildflags.h"
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #import "components/optimization_guide/proto/features/tab_organization.pb.h"
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 class WebStateList;
 
@@ -20,8 +16,6 @@ class WebStateList;
 // `optimization_guide::proto::TabOrganizationRequest` proto which handles
 // populating all the necessary TabOrganizationRequest fields asynchronously.
 @interface TabOrganizationRequestWrapper : NSObject
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 // Initializer which takes everything needed to construct the TabOrganization
 // proto as arguments. Once all the async work is completed by calling
@@ -47,8 +41,6 @@ class WebStateList;
 // async work is complete. Relinquishes ownership of the TabOrganizationRequest
 // proto back to the handler of the callback.
 - (void)populateRequestFieldsAsync;
-
-#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 @end
 

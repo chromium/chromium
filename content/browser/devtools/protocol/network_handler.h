@@ -16,11 +16,13 @@
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/network.h"
+#include "content/browser/devtools/protocol/protocol.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
-#include "net/filter/source_stream.h"
+#include "net/cookies/cookie_setting_override.h"
+#include "net/filter/source_stream_type.h"
 #include "net/net_buildflags.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
 #include "services/network/public/mojom/http_raw_headers.mojom-forward.h"
@@ -214,11 +216,12 @@ class NetworkHandler : public DevToolsDomainHandler,
       bool is_download,
       network::mojom::URLLoaderFactoryOverride* intercepting_factory);
 
-  void ApplyOverrides(net::HttpRequestHeaders* headers,
-                      bool* skip_service_worker,
-                      bool* disable_cache,
-                      std::optional<std::vector<net::SourceStream::SourceType>>*
-                          accepted_stream_types);
+  void ApplyOverrides(
+      net::HttpRequestHeaders* headers,
+      bool* skip_service_worker,
+      bool* disable_cache,
+      std::optional<std::vector<net::SourceStreamType>>* accepted_stream_types);
+  void ApplyCookieControlsOverrides(net::CookieSettingOverrides& overrides);
   void PrefetchRequestWillBeSent(
       const std::string& request_id,
       const network::ResourceRequest& request,
@@ -336,6 +339,11 @@ class NetworkHandler : public DevToolsDomainHandler,
       std::unique_ptr<protocol::Network::LoadNetworkResourceOptions> options,
       std::unique_ptr<LoadNetworkResourceCallback> callback) override;
 
+  DispatchResponse SetCookieControls(
+      bool enable_third_party_cookie_restriction,
+      bool disable_third_party_cookie_metadata,
+      bool disable_third_party_cookie_heuristics) override;
+
   // Protocol builders.
   static String BuildPrivateNetworkRequestPolicy(
       network::mojom::PrivateNetworkRequestPolicy policy);
@@ -380,7 +388,11 @@ class NetworkHandler : public DevToolsDomainHandler,
   raw_ptr<BrowserContext> browser_context_;
   raw_ptr<StoragePartition> storage_partition_;
   raw_ptr<RenderFrameHostImpl> host_;
-  bool enabled_;
+  bool enabled_ = false;
+  bool enable_third_party_cookie_restriction_ = false;
+  bool disable_third_party_cookie_metadata_ = false;
+  bool disable_third_party_cookie_heuristics_ = false;
+
 #if BUILDFLAG(ENABLE_REPORTING)
   mojo::Receiver<network::mojom::ReportingApiObserver> reporting_receiver_;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
@@ -394,7 +406,7 @@ class NetworkHandler : public DevToolsDomainHandler,
            std::unique_ptr<LoadNetworkResourceCallback>,
            base::UniquePtrComparator>
       loaders_;
-  std::optional<std::set<net::SourceStream::SourceType>> accepted_stream_types_;
+  std::optional<std::set<net::SourceStreamType>> accepted_stream_types_;
   std::unordered_map<String, std::pair<String, bool>> received_body_data_;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
 };

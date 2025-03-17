@@ -177,6 +177,16 @@ MATCHER_P(EntityHasDisplayName, expected_display_name, "") {
          expected_display_name;
 }
 
+MATCHER_P(EntityHasHidden, expected_hidden, "") {
+  return arg.specifics().webauthn_credential().hidden() == expected_hidden;
+}
+
+MATCHER(EntityHasCurrentHiddenTime, "") {
+  base::Time hidden_time = base::Time::FromMillisecondsSinceUnixEpoch(
+      arg.specifics().webauthn_credential().hidden_time());
+  return (base::Time::Now() - hidden_time) < base::Seconds(5);
+}
+
 MATCHER_P(EntityHasLastUsedTime, expected_last_used_time, "") {
   return arg.specifics()
              .webauthn_credential()
@@ -189,10 +199,10 @@ MATCHER_P(PasskeySpecificsEq, expected, "") {
   return arg.sync_id() == expected.sync_id() &&
          arg.credential_id() == expected.credential_id() &&
          arg.rp_id() == expected.rp_id() &&
-         base::ranges::equal(arg.newly_shadowed_credential_ids().begin(),
-                             arg.newly_shadowed_credential_ids().end(),
-                             expected.newly_shadowed_credential_ids().begin(),
-                             expected.newly_shadowed_credential_ids().end()) &&
+         std::ranges::equal(arg.newly_shadowed_credential_ids().begin(),
+                            arg.newly_shadowed_credential_ids().end(),
+                            expected.newly_shadowed_credential_ids().begin(),
+                            expected.newly_shadowed_credential_ids().end()) &&
          arg.creation_time() == expected.creation_time() &&
          arg.user_name() == expected.user_name() &&
          arg.user_display_name() == expected.user_display_name() &&

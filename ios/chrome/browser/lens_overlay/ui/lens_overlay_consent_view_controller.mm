@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
@@ -21,28 +22,98 @@ NSString* const kLensUserEducationLightMode = @"lens_usered_lightmode";
 
 NSString* const kLensUserEducationDarkMode = @"lens_usered_darkmode";
 
-// The approximate height of the items that have a fixed height:
-// title,subtitle,learMoreLink and buttons.
-const CGFloat kDialogFixedItemsHeight = 280;
+NSString* const kLensOverlayOnboardingImageName =
+    @"lens_overlay_onboarding_illustration";
 
 // The height of the animation, as a percentage of the whole view minus the
 // fixed height items. By subtracting out the height of the items with a
 // fixed height, and sizing the animationa based on what is left we can
 // scale more accurately on larger and smaller screens.
-const CGFloat kAnimationHeightPercent = 0.70;
 
 // Pause button right padding.
 const CGFloat kPauseButtonRightPadding = 12;
 // Pause button bottom padding.
 const CGFloat kPauseButtonBottomPadding = 14;
+// The size of the onboarding illustration.
+const CGFloat kLensOverlayOnboardingIllustrationSize = 80;
+// The size of the onboarding symbols.
+const CGFloat kLensOverlayOnboaridingSymbolSize = 22;
+// The value that makes the Lottie animation loop indefinitely.
+const CGFloat kLottieInfiniteLoopFlag = -1;
+// The height of the invariant items of the dialog
+// (e.g. bottom action buttons, the padding).
+const CGFloat kDialogFixedItemsHeight = 160;
+
+// Whether to use the updated onboarding string.
+bool UseUpdatedStrings() {
+  auto treatment = GetLensOverlayOnboardingTreatment();
+  return treatment ==
+             LensOverlayOnboardingTreatment::kUpdatedOnboardingStrings ||
+         treatment == LensOverlayOnboardingTreatment::
+                          kUpdatedOnboardingStringsAndVisuals;
+}
+
+// Whether to use the updated onboarding graphics.
+bool UseUpdatedGraphics() {
+  return GetLensOverlayOnboardingTreatment() ==
+         LensOverlayOnboardingTreatment::kUpdatedOnboardingStringsAndVisuals;
+}
+
+NSString* TitleString() {
+  if (UseUpdatedStrings()) {
+    return l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_ONBOARDING_TITLE);
+  } else {
+    return l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_CONSENT_TITLE);
+  }
+}
+
+NSString* DescriptionString() {
+  if (UseUpdatedStrings()) {
+    return l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_ONBOARDING_DESCRIPTION);
+  } else {
+    return l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_CONSENT_DESCRIPTION);
+  }
+}
+
+NSString* PrimaryActionString() {
+  if (UseUpdatedStrings()) {
+    return l10n_util::GetNSString(
+        IDS_IOS_LENS_OVERLAY_ONBOARDING_BUTTON_SEARCH);
+  } else {
+    return l10n_util::GetNSString(
+        IDS_IOS_LENS_OVERLAY_CONSENT_ACCEPT_TERMS_BUTTON_TITLE);
+  }
+}
+
+NSString* SecondaryActionString() {
+  if (UseUpdatedStrings()) {
+    return l10n_util::GetNSString(
+        IDS_IOS_LENS_OVERLAY_ONBOARDING_BUTTON_CANCEL);
+  } else {
+    return l10n_util::GetNSString(
+        IDS_IOS_LENS_OVERLAY_CONSENT_DENY_TERMS_BUTTON_TITLE);
+  }
+}
+
+NSString* LearnMoreString() {
+  if (UseUpdatedStrings()) {
+    return l10n_util::GetNSString(
+        IDS_IOS_LENS_OVERLAY_ONBOARDING_LEARN_MORE_ACTION);
+  } else {
+    return l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_CONSENT_LEARN_MORE);
+  }
+}
 
 }  // namespace
+
+@interface LensOverlayConsentViewController () <UITextViewDelegate>
+@end
 
 @implementation LensOverlayConsentViewController {
   id<LottieAnimation> _animationViewWrapper;
   BOOL _isAnimationPlaying;
   UIButton* _animationPlayerButton;
-  UIView* _animationView;
+  UIStackView* _contentStack;
 }
 
 // Property tagged dynamic because it overrides super class delegate with and
@@ -60,31 +131,19 @@ const CGFloat kPauseButtonBottomPadding = 14;
   self.subtitleBottomMargin = 0;
   self.headerImageBottomMargin = 0;
 
-  UIStackView* contentStack = [self createContentStack];
-  [self.specificContentView addSubview:contentStack];
+  _contentStack = [self createContentStack];
+  [self.specificContentView addSubview:_contentStack];
 
-  self.primaryActionString = l10n_util::GetNSString(
-      IDS_IOS_LENS_OVERLAY_CONSENT_ACCEPT_TERMS_BUTTON_TITLE);
-  self.secondaryActionString = l10n_util::GetNSString(
-      IDS_IOS_LENS_OVERLAY_CONSENT_DENY_TERMS_BUTTON_TITLE);
+  self.primaryActionString = PrimaryActionString();
+  self.secondaryActionString = SecondaryActionString();
 
   [super viewDidLoad];
-
-  UILayoutGuide* contentLayoutGuide = [[UILayoutGuide alloc] init];
-  [self.view addLayoutGuide:contentLayoutGuide];
-
   [NSLayoutConstraint activateConstraints:@[
-    [contentLayoutGuide.heightAnchor
-        constraintEqualToAnchor:self.view.heightAnchor
-                       constant:-kDialogFixedItemsHeight],
-    [_animationView.heightAnchor
-        constraintEqualToAnchor:contentLayoutGuide.heightAnchor
-                     multiplier:kAnimationHeightPercent],
     [self.specificContentView.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:contentStack.heightAnchor],
+        constraintGreaterThanOrEqualToAnchor:_contentStack.heightAnchor],
   ]];
   AddSameConstraintsToSides(
-      contentStack, self.specificContentView,
+      _contentStack, self.specificContentView,
       LayoutSides::kTrailing | LayoutSides::kLeading | LayoutSides::kTop);
 }
 
@@ -97,27 +156,26 @@ const CGFloat kPauseButtonBottomPadding = 14;
 }
 
 - (CGSize)preferredContentSize {
+  [_contentStack layoutIfNeeded];
   CGFloat fittingWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width;
-  CGSize fittingSize =
-      CGSizeMake(fittingWidth, UILayoutFittingCompressedSize.height);
-  CGFloat height = [self.view systemLayoutSizeFittingSize:fittingSize].height;
-
-  return CGSizeMake(fittingWidth, height);
+  CGFloat presentedContentHeight = _contentStack.frame.size.height;
+  return CGSizeMake(fittingWidth,
+                    presentedContentHeight + kDialogFixedItemsHeight);
 }
 
 #pragma mark - Private
 
-- (UIStackView*)createContentStack {
+- (UIView*)createAnimationView {
   // Lottie animation.
   _animationViewWrapper =
       self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
           ? [self createAnimation:kLensUserEducationDarkMode]
           : [self createAnimation:kLensUserEducationLightMode];
 
-  _animationView = _animationViewWrapper.animationView;
+  UIView* animationView = _animationViewWrapper.animationView;
 
-  _animationView.translatesAutoresizingMaskIntoConstraints = NO;
-  _animationView.contentMode = UIViewContentModeScaleAspectFit;
+  animationView.translatesAutoresizingMaskIntoConstraints = NO;
+  animationView.contentMode = UIViewContentModeScaleAspectFit;
 
   _animationPlayerButton = [self newAnimationPlayerButton];
 
@@ -125,54 +183,155 @@ const CGFloat kPauseButtonBottomPadding = 14;
                              action:@selector(animationPlayerButtonTapped)
                    forControlEvents:UIControlEventTouchUpInside];
 
-  [_animationView addSubview:_animationPlayerButton];
-
+  [animationView addSubview:_animationPlayerButton];
   [NSLayoutConstraint activateConstraints:@[
     [_animationPlayerButton.rightAnchor
-        constraintEqualToAnchor:_animationView.rightAnchor
+        constraintEqualToAnchor:animationView.rightAnchor
                        constant:-kPauseButtonRightPadding],
     [_animationPlayerButton.bottomAnchor
-        constraintEqualToAnchor:_animationView.bottomAnchor
+        constraintEqualToAnchor:animationView.bottomAnchor
                        constant:-kPauseButtonBottomPadding]
   ]];
 
-  // Title/description labels.
-  UILabel* titleLabel = [self
-      createLabel:l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_CONSENT_TITLE)
-             font:GetFRETitleFont(UIFontTextStyleTitle2)
-            color:kTextPrimaryColor];
+  return animationView;
+}
 
-  UILabel* bodyLabel =
-      [self createLabel:l10n_util::GetNSString(
-                            IDS_IOS_LENS_OVERLAY_CONSENT_DESCRIPTION)
-                   font:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-                  color:kLensOverlayConsentDialogDescriptionColor];
+- (UIImageView*)createOnboardingImageView {
+  UIImageView* imageView = [[UIImageView alloc]
+      initWithImage:[UIImage imageNamed:kLensOverlayOnboardingImageName]];
+  imageView.translatesAutoresizingMaskIntoConstraints = NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [imageView.widthAnchor
+        constraintEqualToConstant:kLensOverlayOnboardingIllustrationSize],
+    [imageView.heightAnchor constraintEqualToAnchor:imageView.widthAnchor],
+  ]];
+
+  return imageView;
+}
+
+- (UIStackView*)createContentStack {
+  // Title/description labels.
+  UILabel* titleLabel = [self createLabel:TitleString()
+                                     font:GetFRETitleFont(UIFontTextStyleTitle2)
+                                    color:kTextPrimaryColor];
+
+  NSString* description = DescriptionString();
+  NSString* learnMore = LearnMoreString();
+
+  UIView* bodyText;
+  if (UseUpdatedStrings()) {
+    NSString* descriptionWithAction =
+        [NSString stringWithFormat:@"%@ %@", description, learnMore];
+    NSMutableAttributedString* attributedText =
+        [[NSMutableAttributedString alloc]
+            initWithString:descriptionWithAction
+                attributes:[self descriptionTextAttributes]];
+    // The URL in the text attribute is empty as the delegate is responsible for
+    // opening external links.
+    NSRange urlRange = NSMakeRange(description.length + 1, learnMore.length);
+    [attributedText addAttribute:NSLinkAttributeName
+                           value:[[NSURL alloc] init]
+                           range:urlRange];
+    bodyText = [self createTextViewWithAttributedString:attributedText];
+  } else {
+    bodyText =
+        [self createLabel:DescriptionString()
+                     font:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+                    color:kLensOverlayConsentDialogDescriptionColor];
+  }
 
   // Clear `titleText` and `subtitleText` so that PromoStyleViewController does
   // not use them to create alternate title and subtitle labels.
   self.titleText = nil;
   self.subtitleText = nil;
 
-  // Learn more link.
-  __weak __typeof(self) weakSelf = self;
-  UIButton* learnMoreLink =
-      [self plainButtonWithTitle:l10n_util::GetNSString(
-                                     IDS_IOS_LENS_OVERLAY_CONSENT_LEARN_MORE)
-                   actionHandler:^(UIAction* action) {
-                     [weakSelf.delegate didPressLearnMore];
-                   }];
+  UIStackView* stack;
+  if (UseUpdatedGraphics()) {
+    UIImageView* imageView = [self createOnboardingImageView];
+    stack = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ imageView, titleLabel, bodyText ]];
+  } else {
+    UIView* animationView = [self createAnimationView];
+    stack = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ animationView, titleLabel, bodyText ]];
+  }
 
-  UIStackView* stack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _animationView, titleLabel, bodyLabel, learnMoreLink
-  ]];
+  if (!UseUpdatedStrings()) {
+    __weak __typeof(self) weakSelf = self;
+    UIButton* learnMoreLink =
+        [self plainButtonWithTitle:learnMore
+                     actionHandler:^(UIAction* action) {
+                       [weakSelf.delegate didPressLearnMore];
+                     }];
+
+    [stack addArrangedSubview:learnMoreLink];
+  }
+
   stack.axis = UILayoutConstraintAxisVertical;
   stack.translatesAutoresizingMaskIntoConstraints = NO;
-  stack.alignment = UIStackViewAlignmentFill;
+  stack.alignment = UIStackViewAlignmentCenter;
   stack.spacing = 20;
   [stack setCustomSpacing:8 afterView:titleLabel];
-  [stack setCustomSpacing:8 afterView:bodyLabel];
+  [stack setCustomSpacing:8 afterView:bodyText];
 
   return stack;
+}
+
+#pragma mark - UITextViewDelegate
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  if (textItem.contentType == UITextItemContentTypeLink) {
+    [self.delegate didPressLearnMore];
+  }
+
+  return nil;
+}
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  [self.delegate didPressLearnMore];
+  // Prevent the system from executing the default URL open action.
+  return NO;
+}
+#endif
+
+- (void)textViewDidChangeSelection:(UITextView*)textView {
+  // Make the textView not selectable while allowing interactions with the
+  // embedded links.
+  textView.selectedTextRange = nil;
+}
+
+#pragma mark - private
+
+- (NSDictionary*)descriptionTextAttributes {
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+  paragraphStyle.alignment = NSTextAlignmentCenter;
+  NSDictionary* textAttributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody],
+    NSParagraphStyleAttributeName : paragraphStyle
+  };
+  return textAttributes;
+}
+
+- (UITextView*)createTextViewWithAttributedString:
+    (NSAttributedString*)attributedText {
+  UITextView* textView = [[UITextView alloc] init];
+  textView.delegate = self;
+  textView.attributedText = attributedText;
+  textView.editable = NO;
+  textView.adjustsFontForContentSizeCategory = YES;
+  textView.translatesAutoresizingMaskIntoConstraints = NO;
+  textView.scrollEnabled = NO;
+
+  return textView;
 }
 
 // Creates a label with the given  string, font, and color.
@@ -218,13 +377,13 @@ const CGFloat kPauseButtonBottomPadding = 14;
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
   UIImageSymbolConfiguration* symbolConfig = [UIImageSymbolConfiguration
-      configurationWithPointSize:22
+      configurationWithPointSize:kLensOverlayOnboaridingSymbolSize
                           weight:UIImageSymbolWeightRegular
                            scale:UIImageSymbolScaleMedium];
   [button setPreferredSymbolConfiguration:symbolConfig
                           forImageInState:UIControlStateNormal];
-
-  [button setImage:DefaultSymbolWithPointSize(kPauseButton, 22)
+  [button setImage:DefaultSymbolWithPointSize(kPauseButton,
+                                              kLensOverlayOnboaridingSymbolSize)
           forState:UIControlStateNormal];
   button.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
@@ -236,12 +395,15 @@ const CGFloat kPauseButtonBottomPadding = 14;
 
   if (_isAnimationPlaying) {
     [_animationPlayerButton
-        setImage:DefaultSymbolWithPointSize(kPauseButton, 22)
+        setImage:DefaultSymbolWithPointSize(kPauseButton,
+                                            kLensOverlayOnboaridingSymbolSize)
         forState:UIControlStateNormal];
     [_animationViewWrapper play];
   } else {
-    [_animationPlayerButton setImage:DefaultSymbolWithPointSize(kPlayButton, 22)
-                            forState:UIControlStateNormal];
+    [_animationPlayerButton
+        setImage:DefaultSymbolWithPointSize(kPlayButton,
+                                            kLensOverlayOnboaridingSymbolSize)
+        forState:UIControlStateNormal];
     [_animationViewWrapper pause];
   }
 }
@@ -251,7 +413,7 @@ const CGFloat kPauseButtonBottomPadding = 14;
   LottieAnimationConfiguration* config =
       [[LottieAnimationConfiguration alloc] init];
   config.animationName = animationAssetName;
-  config.loopAnimationCount = -1;  // Always loop.
+  config.loopAnimationCount = kLottieInfiniteLoopFlag;
   return ios::provider::GenerateLottieAnimation(config);
 }
 

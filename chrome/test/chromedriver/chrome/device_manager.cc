@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/chrome/device_manager.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/check.h"
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -33,7 +33,7 @@ Device::~Device() {
 
 // Only allow completely alpha exec names.
 bool IsValidExecName(const std::string& exec_name) {
-  return base::ranges::all_of(exec_name, &base::IsAsciiAlpha<char>);
+  return std::ranges::all_of(exec_name, &base::IsAsciiAlpha<char>);
 }
 
 Status Device::SetUp(const std::string& package,

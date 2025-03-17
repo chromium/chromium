@@ -458,7 +458,7 @@ class BLINK_EXPORT WebView {
 
   // History list ---------------------------------------------------------
   virtual void SetHistoryListFromNavigation(
-      int32_t history_offset,
+      int32_t history_index,
       std::optional<int32_t> history_length) = 0;
   virtual void IncreaseHistoryListFromNavigation() = 0;
 

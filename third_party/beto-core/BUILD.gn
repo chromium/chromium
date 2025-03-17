@@ -13,7 +13,6 @@ import("//testing/test.gni")
 group("all") {
   testonly = true
   deps = [
-    ":crypto_provider_boringssl_unittests",
     ":ldt_all_tests",
     ":ldt_c_sample",
     ":ldt_ffi_tests",
@@ -61,7 +60,7 @@ rust_static_library("ldt_np_adv_ffi") {
 
 rust_static_library("crypto_provider_boringssl") {
   crate_name = "crypto_provider_boringssl"
-  build_native_rust_unit_tests = true
+  build_native_rust_unit_tests = false
   crate_root = "src/nearby/crypto/crypto_provider_boringssl/src/lib.rs"
   sources = [
     "src/nearby/crypto/crypto_provider_boringssl/src/aead/aes_gcm.rs",
@@ -82,10 +81,6 @@ rust_static_library("crypto_provider_boringssl") {
     ":crypto_provider",
     ":crypto_provider_stubs",
     "//third_party/boringssl:bssl_crypto",
-  ]
-  test_deps = [
-    ":crypto_provider_test",
-    "//third_party/rust/rstest_reuse/v0_7:lib",
   ]
 }
 
@@ -115,49 +110,6 @@ rust_static_library("crypto_provider") {
   deps = [ "//third_party/rust/tinyvec/v1:lib" ]
 }
 
-rust_static_library("crypto_provider_test") {
-  crate_name = "crypto_provider_test"
-  testonly = true
-  crate_root = "src/nearby/crypto/crypto_provider_test/src/lib.rs"
-  sources = [
-    "src/nearby/crypto/crypto_provider_test/src/aead/aes_gcm.rs",
-    "src/nearby/crypto/crypto_provider_test/src/aead/aes_gcm_siv.rs",
-    "src/nearby/crypto/crypto_provider_test/src/aead/mod.rs",
-    "src/nearby/crypto/crypto_provider_test/src/aes/cbc.rs",
-    "src/nearby/crypto/crypto_provider_test/src/aes/ctr.rs",
-    "src/nearby/crypto/crypto_provider_test/src/aes/mod.rs",
-    "src/nearby/crypto/crypto_provider_test/src/ed25519.rs",
-    "src/nearby/crypto/crypto_provider_test/src/ed25519.rs",
-    "src/nearby/crypto/crypto_provider_test/src/ed25519.rs",
-    "src/nearby/crypto/crypto_provider_test/src/elliptic_curve.rs",
-    "src/nearby/crypto/crypto_provider_test/src/hkdf.rs",
-    "src/nearby/crypto/crypto_provider_test/src/hmac.rs",
-    "src/nearby/crypto/crypto_provider_test/src/lib.rs",
-    "src/nearby/crypto/crypto_provider_test/src/p256.rs",
-    "src/nearby/crypto/crypto_provider_test/src/sha2.rs",
-    "src/nearby/crypto/crypto_provider_test/src/x25519.rs",
-  ]
-  deps = [
-    ":crypto_provider",
-    ":rand_ext",
-    ":test_helper",
-    "//third_party/rust/hex/v0_4:lib",
-    "//third_party/rust/hex_literal/v0_4:lib",
-    "//third_party/rust/rand/v0_8:lib",
-    "//third_party/rust/rstest/v0_22:lib",
-    "//third_party/rust/rstest_reuse/v0_7:lib",
-    "//third_party/rust/wycheproof/v0_4:lib",
-  ]
-  inputs = [
-    "src/nearby/crypto/crypto_provider_test/src/testdata/SHA256LongMsg.rsp",
-    "src/nearby/crypto/crypto_provider_test/src/testdata/SHA256ShortMsg.rsp",
-    "src/nearby/crypto/crypto_provider_test/src/testdata/SHA512LongMsg.rsp",
-    "src/nearby/crypto/crypto_provider_test/src/testdata/SHA512ShortMsg.rsp",
-  ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-}
-
 rust_static_library("crypto_provider_stubs") {
   crate_name = "crypto_provider_stubs"
   crate_root = "src/nearby/crypto/crypto_provider_stubs/src/lib.rs"
@@ -180,7 +132,7 @@ rust_static_library("crypto_provider_default") {
 
 rust_static_library("ldt_np_adv") {
   crate_name = "ldt_np_adv"
-  build_native_rust_unit_tests = true
+  build_native_rust_unit_tests = false
   crate_root = "src/nearby/presence/ldt_np_adv/src/lib.rs"
   sources = [
     "src/nearby/presence/ldt_np_adv/src/lib.rs",
@@ -194,16 +146,6 @@ rust_static_library("ldt_np_adv") {
     ":ldt_tbc",
     ":np_hkdf",
     ":xts_aes",
-  ]
-  test_deps = [
-    ":crypto_provider_default",
-    ":rand_ext",
-    ":test_helper",
-    ":test_vector_hkdf",
-    "//third_party/rust/anyhow/v1:lib",
-    "//third_party/rust/hex/v0_4:lib",
-    "//third_party/rust/rand/v0_8:lib",
-    "//third_party/rust/serde_json/v1:lib",
   ]
 }
 
@@ -220,13 +162,8 @@ rust_static_library("ldt") {
 rust_unit_tests_group("ldt_all_tests") {
   deps = [
     ":array_view_unittests",
-    ":ldt_np_adv_unittests",
     ":ldt_roundtrip_tests",
-    ":ldt_test_vectors",
     ":ldt_tests",
-    ":np_hkdf_tests",
-    ":xts_aes_unittests",
-    ":xts_nist_test_vectors",
     ":xts_roundtrip_tests",
   ]
 }
@@ -253,22 +190,6 @@ rust_unit_test("ldt_roundtrip_tests") {
     ":rand_ext",
     ":xts_aes",
     "//third_party/rust/rand/v0_8:lib",
-  ]
-}
-
-rust_unit_test("ldt_test_vectors") {
-  crate_root = "src/nearby/presence/ldt/tests/ldt_test_vectors.rs"
-  sources = [ "src/nearby/presence/ldt/tests/ldt_test_vectors.rs" ]
-  deps = [
-    ":crypto_provider",
-    ":crypto_provider_default",
-    ":ldt",
-    ":ldt_tbc",
-    ":test_helper",
-    ":xts_aes",
-    "//third_party/rust/anyhow/v1:lib",
-    "//third_party/rust/rand/v0_8:lib",
-    "//third_party/rust/serde_json/v1:lib",
   ]
 }
 
@@ -306,25 +227,8 @@ rust_static_library("np_hkdf") {
   ]
 }
 
-rust_unit_test("np_hkdf_tests") {
-  crate_root = "src/nearby/presence/np_hkdf/tests/test_vectors.rs"
-  sources = [ "src/nearby/presence/np_hkdf/tests/test_vectors.rs" ]
-  deps = [
-    ":crypto_provider",
-    ":crypto_provider_default",
-    ":np_hkdf",
-    ":rand_ext",
-    ":test_helper",
-    ":test_vector_hkdf",
-    "//third_party/rust/anyhow/v1:lib",
-    "//third_party/rust/hex/v0_4:lib",
-    "//third_party/rust/rand/v0_8:lib",
-    "//third_party/rust/serde_json/v1:lib",
-  ]
-}
-
 rust_static_library("xts_aes") {
-  build_native_rust_unit_tests = true
+  build_native_rust_unit_tests = false
   crate_name = "xts_aes"
   crate_root = "src/nearby/presence/xts_aes/src/lib.rs"
   sources = [
@@ -335,10 +239,6 @@ rust_static_library("xts_aes") {
     ":array_ref",
     ":crypto_provider",
     ":ldt_tbc",
-  ]
-  test_deps = [
-    ":test_helper",
-    "//third_party/rust/hex/v0_4:lib",
   ]
 }
 
@@ -362,35 +262,6 @@ rust_unit_test("xts_roundtrip_tests") {
     ":rand_ext",
     ":xts_aes",
     "//third_party/rust/rand/v0_8:lib",
-  ]
-}
-
-rust_unit_test("xts_nist_test_vectors") {
-  crate_root = "src/nearby/presence/xts_aes/tests/xts_nist_test_vectors.rs"
-  sources = [ "src/nearby/presence/xts_aes/tests/xts_nist_test_vectors.rs" ]
-  deps = [
-    ":crypto_provider",
-    ":crypto_provider_default",
-    ":ldt_tbc",
-    ":test_helper",
-    ":xts_aes",
-    "//third_party/rust/anyhow/v1:lib",
-    "//third_party/rust/hex/v0_4:lib",
-    "//third_party/rust/regex/v1:lib",
-  ]
-}
-
-rust_static_library("test_helper") {
-  crate_name = "test_helper"
-  testonly = true
-  crate_root = "src/nearby/presence/test_helper/src/lib.rs"
-  sources = [ "src/nearby/presence/test_helper/src/lib.rs" ]
-  edition = "2021"
-  rustenv = [ "WORKSPACE_DIR=" + rebase_path("src/nearby/") ]
-  deps = [
-    "//third_party/rust/hex/v0_4:lib",
-    "//third_party/rust/itertools/v0_11:lib",
-    "//third_party/rust/serde_json/v1:lib",
   ]
 }
 

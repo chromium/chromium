@@ -11,11 +11,11 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
+#include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
-#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -27,19 +27,22 @@ class NavigationHandle;
 class WebContents;
 }  // namespace content
 
+namespace collaboration::messaging {
+struct ActivityLogItem;
+}  // namespace collaboration::messaging
+
 namespace tab_groups {
 
 class SavedTabGroupTab;
 class TabGroupSyncService;
 
+enum class GroupDeletionReason {
+  ClosedLastTab,
+  UngroupedLastTab,
+};
+
 class SavedTabGroupUtils {
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeleteGroupMenuItem);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoveGroupToNewWindowMenuItem);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleGroupPinStateMenuItem);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabsTitleItem);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTab);
-
   SavedTabGroupUtils() = delete;
   SavedTabGroupUtils(const SavedTabGroupUtils&) = delete;
   SavedTabGroupUtils& operator=(const SavedTabGroupUtils&) = delete;
@@ -62,6 +65,8 @@ class SavedTabGroupUtils {
                                 const base::Uuid& saved_group_guid);
   static void DeleteSavedGroup(const Browser* browser,
                                const base::Uuid& saved_group_guid);
+  static void LeaveSharedGroup(const Browser* browser,
+                               const base::Uuid& saved_group_guid);
 
   // Open the `url` to the end of `browser` tab strip as a new ungrouped tab.
   static void OpenUrlInNewUngroupedTab(Browser* browser, const GURL& url);
@@ -79,17 +84,11 @@ class SavedTabGroupUtils {
   // runs the callback if the dialog is not shown or it shows the dialog
   // and the callback is run asynchronously through the dialog.
   static void MaybeShowSavedTabGroupDeletionDialog(
-      Browser* browser,
-      DeletionDialogController::DialogType type,
+      const Browser* browser,
+      GroupDeletionReason reason,
       const std::vector<TabGroupId>& group_ids,
-      base::OnceCallback<void()> callback);
-
-  // Create the the context menu model for a saved tab group button or a saved
-  // tab group menu item in the Everything menu. `browser` is the one from
-  // which this method is invoked. `saved_guid` is the saved tab group's Uuid.
-  static std::unique_ptr<ui::DialogModel> CreateSavedTabGroupContextMenuModel(
-      Browser* browser,
-      const base::Uuid& saved_guid);
+      base::OnceCallback<void(DeletionDialogController::DeletionDialogTiming)>
+          callback);
 
   // Converts a webcontents into a SavedTabGroupTab.
   static SavedTabGroupTab CreateSavedTabGroupTabFromWebContents(
@@ -158,6 +157,34 @@ class SavedTabGroupUtils {
 
   // Returns true if shared tab groups are supported.
   static bool SupportsSharedTabGroups();
+
+  // Returns true if the user is the owner of the shared tab group.
+  static bool IsOwnerOfSharedTabGroup(Profile* profile,
+                                      const base::Uuid& sync_id);
+
+  // Returns a list of the members of the group if the group data exists in the
+  // collaboration service in that profile. returns empty in any case where data
+  // is missing or not accessible.
+  static std::vector<data_sharing::GroupMember> GetMembersOfSharedTabGroup(
+      Profile* profile,
+      const tab_groups::CollaborationId& collaboration_id);
+
+  // Returns the GroupId for this tab group's collaboration.
+  static std::optional<data_sharing::GroupId> GetDataSharingGroupId(
+      Profile* profile,
+      LocalTabGroupID group_id);
+
+  // Returns the Recent Activity Log for this tab group. Optionally, filter for
+  // the given tab.
+  static std::vector<collaboration::messaging::ActivityLogItem>
+  GetRecentActivity(Profile* profile,
+                    LocalTabGroupID group_id,
+                    std::optional<LocalTabID> tab_id = std::nullopt);
+
+  // Returns the tab with this id if contained in this group. The group
+  // must exist.
+  static tabs::TabInterface* GetGroupedTab(LocalTabGroupID group_id,
+                                           LocalTabID tab_id);
 };
 
 }  // namespace tab_groups

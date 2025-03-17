@@ -5,7 +5,9 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//read-anything-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
  * #scheme=relative
+ * #include=sp-shared-style-lit
  * #css_wrapper_metadata_end */
 
 cr-icon {
@@ -96,10 +98,6 @@ cr-action-menu::part(dialog) {
 }
 .item-invisible-true {
   color: transparent;
-}
-
-.menu-divider {
-  border-top: 1px solid var(--color-side-panel-dialog-divider);
 }
 
 .language-menu-button {

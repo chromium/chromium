@@ -47,8 +47,8 @@ message HttpHeaderListStorage {
 
 // Represents single navigation item.
 //
-// The referrer, display_state and http_request_headers are optional, the
-// other fields are required.
+// The `url`, `title`, `timestamp` and `user_agent` are required,
+// other fields are optional.
 message NavigationItemStorage {
   string url = 1;
   string virtual_url = 2;
@@ -57,6 +57,7 @@ message NavigationItemStorage {
   UserAgentType user_agent = 5;
   ReferrerStorage referrer = 6;
   HttpHeaderListStorage http_request_headers = 7;
+  bytes security_scoped_file_resource = 8;
 }
 
 // Represents the navigation history for a WebState, including the index of the

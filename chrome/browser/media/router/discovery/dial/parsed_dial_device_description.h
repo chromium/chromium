@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_DIAL_PARSED_DIAL_DEVICE_DESCRIPTION_H_
 
 #include <string>
+
 #include "url/gurl.h"
 
 namespace media_router {

@@ -14,10 +14,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -26,7 +27,6 @@
 #include "net/base/load_flags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/url_features.h"
 
 namespace policy {
 
@@ -177,35 +177,7 @@ TEST_F(URLBlocklistManagerTest, SingleUpdateForTwoPrefChanges) {
   EXPECT_EQ(1, blocklist_manager()->update_called());
 }
 
-// Non-special URLs behavior is affected by the
-// StandardCompliantNonSpecialSchemeURLParsing feature.
-// See https://crbug.com/40063064 for details.
-class URLBlocklistParamTest : public ::testing::Test,
-                              public ::testing::WithParamInterface<bool> {
- public:
-  URLBlocklistParamTest()
-      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
-    if (use_standard_compliant_non_special_scheme_url_parsing_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          url::kStandardCompliantNonSpecialSchemeURLParsing);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          url::kStandardCompliantNonSpecialSchemeURLParsing);
-    }
-  }
-
- protected:
-  bool use_standard_compliant_non_special_scheme_url_parsing() const {
-    return use_standard_compliant_non_special_scheme_url_parsing_;
-  }
-
- private:
-  bool use_standard_compliant_non_special_scheme_url_parsing_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(URLBlocklistParamTest, Filtering) {
+TEST_F(URLBlocklistManagerTest, Filtering) {
   URLBlocklist blocklist;
 
   // Block domain and all subdomains, for any filtered scheme.
@@ -213,13 +185,7 @@ TEST_P(URLBlocklistParamTest, Filtering) {
   EXPECT_TRUE(MatchesPattern("google.com", "http://google.com/"));
   EXPECT_TRUE(MatchesPattern("google.com", "http://google.com/whatever"));
   EXPECT_TRUE(MatchesPattern("google.com", "https://google.com/"));
-  if (use_standard_compliant_non_special_scheme_url_parsing()) {
-    // When the feature is enabled, the host part in non-special URLs can be
-    // recognized.
-    EXPECT_TRUE(MatchesPattern("google.com", "bogus://google.com/"));
-  } else {
-    EXPECT_FALSE(MatchesPattern("google.com", "bogus://google.com/"));
-  }
+  EXPECT_TRUE(MatchesPattern("google.com", "bogus://google.com/"));
   EXPECT_FALSE(MatchesPattern("google.com", "http://notgoogle.com/"));
   EXPECT_TRUE(MatchesPattern("google.com", "http://mail.google.com"));
   EXPECT_TRUE(MatchesPattern("google.com", "http://x.mail.google.com"));
@@ -361,6 +327,28 @@ TEST_P(URLBlocklistParamTest, Filtering) {
   blocklist.Allow(allowed);
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("devtools://something.com")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("https://something.com")));
+}
+
+TEST_F(URLBlocklistManagerTest, PolicyListLimit) {
+  URLBlocklist blocklist;
+  size_t url_filter_list_limit = kMaxUrlFiltersPerPolicy + 5;
+  base::Value::List url_filter_list;
+  for (size_t i = 0; i < url_filter_list_limit; ++i) {
+    url_filter_list.Append(base::StringPrintf("https://example-%d.com", i));
+  }
+
+  blocklist.Block(url_filter_list);
+  for (size_t i = 0; i < kMaxUrlFiltersPerPolicy; ++i) {
+    EXPECT_TRUE(blocklist.IsURLBlocked(GURL(url_filter_list[i].GetString())));
+  }
+  for (size_t i = kMaxUrlFiltersPerPolicy; i < url_filter_list_limit; ++i) {
+    EXPECT_FALSE(blocklist.IsURLBlocked(GURL(url_filter_list[i].GetString())));
+  }
+
+  blocklist.Allow(url_filter_list);
+  for (const base::Value& url : url_filter_list) {
+    EXPECT_FALSE(blocklist.IsURLBlocked(GURL(url.GetString())));
+  }
 }
 
 TEST_F(URLBlocklistManagerTest, QueryParameters) {
@@ -525,7 +513,7 @@ TEST_F(URLBlocklistManagerTest, BlockAllWithExceptions) {
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("https://very.safe/path")));
 }
 
-TEST_P(URLBlocklistParamTest, DefaultBlocklistExceptions) {
+TEST_F(URLBlocklistManagerTest, DefaultBlocklistExceptions) {
   URLBlocklist blocklist;
   base::Value::List blocked;
 
@@ -547,13 +535,7 @@ TEST_P(URLBlocklistParamTest, DefaultBlocklistExceptions) {
   // URLBlocklist code.
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("about:newtab")));
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome://newtab")));
-  if (use_standard_compliant_non_special_scheme_url_parsing()) {
-    // When the feature is enabled, the host part in non-special URLs can be
-    // recognized.
-    EXPECT_TRUE(blocklist.IsURLBlocked(GURL("about://newtab/")));
-  } else {
-    EXPECT_FALSE(blocklist.IsURLBlocked(GURL("about://newtab/")));
-  }
+  EXPECT_TRUE(blocklist.IsURLBlocked(GURL("about://newtab/")));
 #endif
 
   // Unless they are explicitly on the blocklist:
@@ -571,7 +553,7 @@ TEST_P(URLBlocklistParamTest, DefaultBlocklistExceptions) {
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome-native://ntp")));
 }
 
-TEST_P(URLBlocklistParamTest, BlocklistBasicCoverage) {
+TEST_F(URLBlocklistManagerTest, BlocklistBasicCoverage) {
   // Tests to cover the documentation from
   // http://www.chromium.org/administrators/url-blocklist-filter-format
 
@@ -609,19 +591,10 @@ TEST_P(URLBlocklistParamTest, BlocklistBasicCoverage) {
   // Some schemes are not matched when the scheme is omitted.
   EXPECT_FALSE(MatchesPattern("example.com", "about:example.com"));
   EXPECT_FALSE(MatchesPattern("example.com/*", "filesystem:///something"));
-  if (use_standard_compliant_non_special_scheme_url_parsing()) {
-    // When the feature is enabled, the host part in non-special URLs can be
-    // recognized.
-    EXPECT_TRUE(MatchesPattern("example.com", "about://example.com"));
-    EXPECT_TRUE(MatchesPattern("example.com", "custom://example.com"));
-    EXPECT_TRUE(MatchesPattern("example", "custom://example"));
-    EXPECT_TRUE(MatchesPattern("example.com", "gopher://example.com"));
-  } else {
-    EXPECT_FALSE(MatchesPattern("example.com", "about://example.com"));
-    EXPECT_FALSE(MatchesPattern("example.com", "about:example.com"));
-    EXPECT_FALSE(MatchesPattern("example", "custom://example"));
-    EXPECT_FALSE(MatchesPattern("example.com", "gopher://example.com"));
-  }
+  EXPECT_TRUE(MatchesPattern("example.com", "about://example.com"));
+  EXPECT_TRUE(MatchesPattern("example.com", "custom://example.com"));
+  EXPECT_TRUE(MatchesPattern("example", "custom://example"));
+  EXPECT_TRUE(MatchesPattern("example.com", "gopher://example.com"));
 
   // An optional '.' (dot) can prefix the host field to disable subdomain
   // matching, see below for details.
@@ -698,8 +671,6 @@ TEST_P(URLBlocklistParamTest, BlocklistBasicCoverage) {
   // Query is case sensitive.
   EXPECT_FALSE(MatchesPattern("host/path?Query=1", "http://host/path?query=1"));
 }
-
-INSTANTIATE_TEST_SUITE_P(All, URLBlocklistParamTest, ::testing::Bool());
 
 // Test for GetURLBlocklistState method.
 TEST_F(URLBlocklistManagerTest, UseBlocklistState) {

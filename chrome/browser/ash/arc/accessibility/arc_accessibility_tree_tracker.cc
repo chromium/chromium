@@ -11,12 +11,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/connection_observer.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
-#include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -32,6 +27,11 @@
 #include "chrome/browser/ash/arc/accessibility/arc_serialization_delegate.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/message_center/arc_notification_surface.h"
+#include "chromeos/ash/experiences/arc/message_center/arc_notification_surface_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/exo/input_method_surface.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
@@ -100,7 +100,7 @@ void UpdateTreeIdOfNotificationSurface(const std::string& notification_key,
   if (surface->IsAttached()) {
     // Dispatch ax::mojom::Event::kChildrenChanged to force AXNodeData of the
     // notification updated.
-    surface->GetAttachedHost()->NotifyAccessibilityEvent(
+    surface->GetAttachedHost()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kChildrenChanged, false);
   }
 }
@@ -679,7 +679,7 @@ void ArcAccessibilityTreeTracker::OnNotificationSurfaceAdded(
   // 1. ax_tree_id is set to the surface
   // 2. the surface is attached to the content view
   if (surface->IsAttached()) {
-    surface->GetAttachedHost()->NotifyAccessibilityEvent(
+    surface->GetAttachedHost()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kChildrenChanged, false);
   }
 }

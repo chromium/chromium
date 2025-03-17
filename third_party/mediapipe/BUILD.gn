@@ -65,6 +65,9 @@ config("mediapipe_internal_config") {
     # TODO(http://crbug.com/372293769): remove once upstream MediaPipe stops
     # relying on implicit `this` capture.
     "-Wno-deprecated-this-capture",
+
+    # TODO(https://crbug.com/393942204) StaticMap::map_lock_ sometimes unused?
+    "-Wno-unused-private-field",
   ]
 }
 
@@ -108,6 +111,7 @@ proto_library("mediapipe_proto") {
   sources = [
     "src/mediapipe/calculators/audio/mfcc_mel_calculators.proto",
     "src/mediapipe/calculators/audio/rational_factor_resample_calculator.proto",
+    "src/mediapipe/calculators/audio/resample_time_series_calculator.proto",
     "src/mediapipe/calculators/audio/spectrogram_calculator.proto",
     "src/mediapipe/calculators/audio/stabilized_log_calculator.proto",
     "src/mediapipe/calculators/audio/time_series_framer_calculator.proto",
@@ -123,6 +127,7 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/calculators/tflite/ssd_anchors_calculator.proto",
     "src/mediapipe/calculators/util/detection_label_id_to_text_calculator.proto",
     "src/mediapipe/calculators/util/non_max_suppression_calculator.proto",
+    "src/mediapipe/calculators/util/resource_provider_calculator.proto",
     "src/mediapipe/framework/calculator.proto",
     "src/mediapipe/framework/calculator_options.proto",
     "src/mediapipe/framework/deps/proto_descriptor.proto",
@@ -134,6 +139,8 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/framework/formats/matrix_data.proto",
     "src/mediapipe/framework/formats/object_detection/anchor.proto",
     "src/mediapipe/framework/formats/rect.proto",
+    "src/mediapipe/framework/formats/time_series_header.proto",
+    "src/mediapipe/framework/graph_runtime_info.proto",
     "src/mediapipe/framework/mediapipe_options.proto",
     "src/mediapipe/framework/packet_factory.proto",
     "src/mediapipe/framework/packet_generator.proto",
@@ -184,11 +191,64 @@ source_set("mediapipe_shims") {
   deps = [ "//third_party/abseil-cpp:absl" ]
 }
 
+# Start: Audio dependencies for audio calculators.
+source_set("com_google_audio_tools_portable") {
+  sources = [
+    "src/third_party/com_google_audio_tools/audio/dsp/portable/number_util.c",
+    "src/third_party/com_google_audio_tools/audio/dsp/portable/number_util.h",
+  ]
+  include_dirs = [ "src/third_party/com_google_audio_tools" ]
+}
+source_set("com_google_audio_tools") {
+  sources = [
+    "src/third_party/com_google_audio_tools/audio/dsp/bessel_functions.cc",
+    "src/third_party/com_google_audio_tools/audio/dsp/bessel_functions.h",
+    "src/third_party/com_google_audio_tools/audio/dsp/mfcc/dct.cc",
+    "src/third_party/com_google_audio_tools/audio/dsp/mfcc/dct.h",
+    "src/third_party/com_google_audio_tools/audio/dsp/mfcc/mel_filterbank.cc",
+    "src/third_party/com_google_audio_tools/audio/dsp/mfcc/mel_filterbank.h",
+    "src/third_party/com_google_audio_tools/audio/dsp/mfcc/mfcc.cc",
+    "src/third_party/com_google_audio_tools/audio/dsp/mfcc/mfcc.h",
+    "src/third_party/com_google_audio_tools/audio/dsp/number_util.cc",
+    "src/third_party/com_google_audio_tools/audio/dsp/number_util.h",
+    "src/third_party/com_google_audio_tools/audio/dsp/portable/rational_factor_resampler_kernel.c",
+    "src/third_party/com_google_audio_tools/audio/dsp/resampler_q.cc",
+    "src/third_party/com_google_audio_tools/audio/dsp/resampler_q.h",
+    "src/third_party/com_google_audio_tools/audio/dsp/spectrogram/spectrogram.cc",
+    "src/third_party/com_google_audio_tools/audio/dsp/spectrogram/spectrogram.h",
+    "src/third_party/com_google_audio_tools/audio/dsp/window_functions.cc",
+    "src/third_party/com_google_audio_tools/audio/dsp/window_functions.h",
+  ]
+  deps = [
+    ":com_google_audio_tools_portable",
+    ":mediapipe_shims",
+  ]
+  if (is_win) {
+    cflags = [ "-permissive" ]
+    defines = [ "_USE_MATH_DEFINES" ]
+  }
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+  include_dirs = [ "src/third_party/com_google_audio_tools" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":mediapipe_internal_config",
+    ":mediapipe_config",
+    "//third_party/eigen3:eigen_includes",
+  ]
+}
+
+# End: Audio dependencies for audio calculators.
+
 # These calculators are found at runtime and must be linked in, despite not
 # being explicitly referenced.
 # See src/docs/getting_started/troubleshooting.md
 tflite_source_set("mediapipe_tasks_always_link") {
   sources = [
+    "src/mediapipe/calculators/audio/mfcc_mel_calculators.cc",
+    "src/mediapipe/calculators/audio/resample_time_series_calculator.cc",
+    "src/mediapipe/calculators/audio/spectrogram_calculator.cc",
+    "src/mediapipe/calculators/audio/stabilized_log_calculator.cc",
     "src/mediapipe/calculators/tensor/bert_preprocessor_calculator.cc",
     "src/mediapipe/calculators/tensor/inference_calculator.cc",
     "src/mediapipe/calculators/tensor/inference_calculator_cpu.cc",
@@ -216,6 +276,8 @@ tflite_source_set("mediapipe_tasks_always_link") {
     "src/mediapipe/util/tflite/tflite_signature_reader.h",
     "src/mediapipe/util/tflite/utils.cc",
     "src/mediapipe/util/tflite/utils.h",
+    "src/mediapipe/util/time_series_util.cc",
+    "src/mediapipe/util/time_series_util.h",
   ]
 
   # TODO(b/283522287): Enable XNNPACK in MediaPipe on Windows. XNNPACK in TFLite is exposed through a C API and something is not working correctly in linking on Windows.
@@ -236,8 +298,9 @@ tflite_source_set("mediapipe_tasks_always_link") {
       "src/mediapipe/gpu/webgpu/image_to_tensor_converter_webgpu_texture.h",
     ]
   }
-
+  include_dirs = [ "src/third_party/com_google_audio_tools" ]
   deps = [
+    ":com_google_audio_tools",
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
     ":mediapipe_shims",
@@ -274,6 +337,8 @@ tflite_source_set("mediapipe_core_always_link") {
     "src/mediapipe/calculators/core/begin_item_loop_calculator.cc",
     "src/mediapipe/calculators/core/end_item_loop_calculator.cc",
     "src/mediapipe/calculators/core/pass_through_calculator.cc",
+    "src/mediapipe/calculators/util/resource_provider_calculator.cc",
+    "src/mediapipe/calculators/util/resource_provider_calculator.h",
     "src/mediapipe/framework/stream_handler/default_input_stream_handler.cc",
     "src/mediapipe/framework/stream_handler/default_input_stream_handler.h",
     "src/mediapipe/framework/stream_handler/in_order_output_stream_handler.cc",
@@ -343,9 +408,14 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/deps/file_path.cc",
     "src/mediapipe/framework/deps/file_path.h",
     "src/mediapipe/framework/deps/map_util.h",
+    "src/mediapipe/framework/deps/mlock_helpers.cc",
+    "src/mediapipe/framework/deps/mlock_helpers.h",
+    "src/mediapipe/framework/deps/mmapped_file.h",
     "src/mediapipe/framework/deps/monotonic_clock.cc",
     "src/mediapipe/framework/deps/monotonic_clock.h",
     "src/mediapipe/framework/deps/no_destructor.h",
+    "src/mediapipe/framework/deps/platform_strings.cc",
+    "src/mediapipe/framework/deps/platform_strings.h",
     "src/mediapipe/framework/deps/registration.cc",
     "src/mediapipe/framework/deps/registration.h",
     "src/mediapipe/framework/deps/registration_token.cc",
@@ -443,6 +513,10 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/timestamp.h",
     "src/mediapipe/framework/tool/fill_packet_set.cc",
     "src/mediapipe/framework/tool/fill_packet_set.h",
+    "src/mediapipe/framework/tool/graph_runtime_info_logger.cc",
+    "src/mediapipe/framework/tool/graph_runtime_info_logger.h",
+    "src/mediapipe/framework/tool/graph_runtime_info_utils.cc",
+    "src/mediapipe/framework/tool/graph_runtime_info_utils.h",
     "src/mediapipe/framework/tool/name_util.cc",
     "src/mediapipe/framework/tool/name_util.h",
     "src/mediapipe/framework/tool/options_field_util.cc",
@@ -476,6 +550,10 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/type_map.h",
     "src/mediapipe/framework/validated_graph_config.cc",
     "src/mediapipe/framework/validated_graph_config.h",
+    "src/mediapipe/framework/vlog_overrides.cc",
+    "src/mediapipe/framework/vlog_overrides.h",
+    "src/mediapipe/framework/vlog_utils.cc",
+    "src/mediapipe/framework/vlog_utils.h",
     "src/mediapipe/gpu/webgpu/webgpu_check.cc",
     "src/mediapipe/gpu/webgpu/webgpu_check.h",
     "src/mediapipe/util/cpu_util.cc",
@@ -489,6 +567,14 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/util/tflite/error_reporter.cc",
     "src/mediapipe/util/tflite/error_reporter.h",
   ]
+
+  if (!is_win) {
+    sources += [
+      "src/mediapipe/framework/formats/shared_fd.h",
+      "src/mediapipe/framework/formats/unique_fd.cc",
+      "src/mediapipe/framework/formats/unique_fd.h",
+    ]
+  }
 
   if (is_win) {
     sources += [ "src/mediapipe/util/resource_util_windows.cc" ]

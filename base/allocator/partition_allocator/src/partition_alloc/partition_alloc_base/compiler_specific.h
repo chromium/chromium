@@ -6,6 +6,7 @@
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_COMPILER_SPECIFIC_H_
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 
 // A wrapper around `__has_cpp_attribute()`, which is in C++20 and thus not yet
 // available for all targets PA supports (since PA's minimum C++ version is 17).
@@ -87,7 +88,7 @@
 //
 // Since `ALWAYS_INLINE` is performance-oriented but can hamper debugging,
 // ignore it in debug mode.
-#if defined(NDEBUG)
+#if !PA_BUILDFLAG(IS_DEBUG)
 #if PA_HAS_CPP_ATTRIBUTE(clang::always_inline)
 #define PA_ALWAYS_INLINE [[clang::always_inline]] inline
 #elif PA_HAS_CPP_ATTRIBUTE(gnu::always_inline)
@@ -95,7 +96,7 @@
 #elif defined(PA_COMPILER_MSVC)
 #define PA_ALWAYS_INLINE __forceinline
 #endif
-#endif
+#endif  // !PA_BUILDFLAG(IS_DEBUG)
 #if !defined(PA_ALWAYS_INLINE)
 #define PA_ALWAYS_INLINE inline
 #endif

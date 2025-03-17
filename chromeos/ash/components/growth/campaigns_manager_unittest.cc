@@ -204,6 +204,20 @@ inline constexpr char kValidMultiTargetings[] = R"([
     }
   ])";
 
+inline constexpr char kValidControlCampaign[] = R"(
+    {
+      "0": [
+        {
+          "id": 3,
+          %s
+          "studyId":1,
+          "targetings": [],
+          "payload": {}
+        }
+      ]
+    }
+)";
+
 inline constexpr char kCampaignsFileName[] = "campaigns.json";
 
 inline constexpr char kCampaignsExperimentTag[] = "exp_tag";
@@ -223,6 +237,9 @@ inline constexpr char kCampaignsComponentReadDurationHistogram[] =
 
 inline constexpr char kCampaignMatchDurationHistogram[] =
     "Ash.Growth.CampaignsManager.MatchDuration";
+
+inline constexpr char kGetCampaignBySlotAttemptHistogramName[] =
+    "Ash.Growth.CampaignsManager.GetCampaignBySlot.Attempt";
 
 inline constexpr char kGetCampaignBySlotHistogramName[] =
     "Ash.Growth.CampaignsManager.GetCampaignBySlot";
@@ -643,6 +660,11 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
 
   EXPECT_CALL(mock_client_,
               RegisterSyntheticFieldTrial("CrOSGrowthStudy1", "CampaignId3"));
+  // Verify that record impression events are not triggered for regular
+  // campaign.
+  EXPECT_CALL(mock_client_, RecordImpressionEvents(/*campaign_id=*/_,
+                                                   /*group_id=*/_))
+      .Times(0);
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 
@@ -658,6 +680,10 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
   histogram_tester.ExpectTotalCount(kCampaignsComponentReadDurationHistogram,
                                     1);
   histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 1);
+
+  histogram_tester.ExpectUniqueSample(kGetCampaignBySlotAttemptHistogramName,
+                                      Slot::kDemoModeApp,
+                                      /*expected_bucket_count=*/1);
 
   histogram_tester.ExpectUniqueSample(kGetCampaignBySlotHistogramName,
                                       Slot::kDemoModeApp,
@@ -716,9 +742,33 @@ TEST_F(CampaignsManagerTest, GetCampaignNoTargetingNotInDemoMode) {
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
-// TODO(b/302360652): After user prefs targeting is implemented, add test to
-// verify that campaign with user prefs related targeting is not selected when
-// user prefs are not available.
+// TODO(crbug.com/302360652): After user prefs targeting is implemented, add
+// test to verify that campaign with user prefs related targeting is not
+// selected when user prefs are not available.
+
+TEST_F(CampaignsManagerTest, GetControlCampaignNoGrouping) {
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidControlCampaign, ""));
+
+  EXPECT_CALL(mock_client_,
+              RegisterSyntheticFieldTrial("CrOSGrowthStudy1", "CampaignId3"));
+  EXPECT_CALL(mock_client_,
+              RecordImpressionEvents(/*campaign_id=*/testing::Eq(3),
+                                     testing::Eq(std::nullopt)));
+  campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp);
+}
+
+TEST_F(CampaignsManagerTest, GetControlCampaignWithGrouping) {
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidControlCampaign, R"("groupId": 0,)"));
+
+  EXPECT_CALL(mock_client_,
+              RegisterSyntheticFieldTrial("CrOSGrowthStudy1", "CampaignId3"));
+  EXPECT_CALL(mock_client_,
+              RecordImpressionEvents(/*campaign_id=*/testing::Eq(3),
+                                     /*group_id=*/testing::Eq(0)));
+  campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp);
+}
 
 TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotInDemoMode) {
   base::HistogramTester histogram_tester;
@@ -735,6 +785,9 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotInDemoMode) {
       base::StringPrintf(kValidCampaignsFileTemplate, kValidDemoModeTargeting));
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+  histogram_tester.ExpectUniqueSample(kGetCampaignBySlotAttemptHistogramName,
+                                      Slot::kDemoModeApp,
+                                      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(kGetCampaignBySlotHistogramName,
                                       Slot::kDemoModeApp,
                                       /*expected_bucket_count=*/0);
@@ -863,6 +916,49 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignAppVersionTargeting) {
       }
     }
 )"));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetDemoModeCampaignWithInvalidAppVersion) {
+  const base::Version empty_version;
+  MockDemoMode(
+      /*in_demo_mode=*/true,
+      /*cloud_gaming_device=*/true,
+      /*feature_aware_device=*/true,
+      /*store_id=*/"2",
+      /*retailer_id=*/"bby",
+      /*country=*/"US",
+      /*app_version=*/empty_version);
+
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidCampaignsFileTemplate, R"(
+    "demoMode": {
+      "appVersion": {
+        "min": "1.0.0.0",
+        "max": "1.0.0.1"
+      }
+    }
+  )"));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetDemoModeCampaignWithInvalidAppVersionAndNoTargeting) {
+  const base::Version empty_version;
+  MockDemoMode(
+      /*in_demo_mode=*/true,
+      /*cloud_gaming_device=*/true,
+      /*feature_aware_device=*/true,
+      /*store_id=*/"2",
+      /*retailer_id=*/"bby",
+      /*country=*/"US",
+      /*app_version=*/empty_version);
+
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidCampaignsFileTemplate, R"("demoMode": {})"));
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));

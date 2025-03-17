@@ -158,18 +158,18 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
   DCHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
 
   const PhysicalRect frame_rect(PhysicalLocation(), Size());
-  const bool bounds_changed = old_frame_rect != frame_rect;
-
-  SVGLayoutResult result;
-  if (bounds_changed) {
-    result.bounds_changed = true;
-  }
+  bool bounds_changed = old_frame_rect != frame_rect;
   if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
-    result.bounds_changed = true;
+    bounds_changed = true;
   }
+
+  const bool has_viewport_dependence =
+      To<SVGForeignObjectElement>(GetElement())->SelfHasRelativeLengths() ||
+      (transform_uses_reference_box_ &&
+       StyleRef().TransformBox() == ETransformBox::kViewBox);
 
   DCHECK(!needs_transform_update_);
-  return result;
+  return SVGLayoutResult(bounds_changed, has_viewport_dependence);
 }
 
 bool LayoutSVGForeignObject::UpdateAfterSVGLayout(

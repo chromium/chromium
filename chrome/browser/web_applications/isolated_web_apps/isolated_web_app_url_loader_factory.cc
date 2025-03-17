@@ -22,7 +22,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
@@ -39,6 +39,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -59,6 +60,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -233,14 +235,15 @@ FindIsolatedWebApp(WebAppProvider& provider,
   return *iwa;
 }
 
-class HeaderInjectionURLLoaderClient : public network::mojom::URLLoaderClient {
+class ForwardingURLLoaderClient : public network::mojom::URLLoaderClient {
  public:
-  explicit HeaderInjectionURLLoaderClient(
+  explicit ForwardingURLLoaderClient(
       mojo::PendingRemote<network::mojom::URLLoaderClient> url_loader_client)
       : url_loader_client_(std::move(url_loader_client)) {}
 
-  void set_csp_override(std::string_view csp_override) {
-    csp_override_ = csp_override;
+  network::mojom::URLLoaderClient* url_loader_client() {
+    CHECK(url_loader_client_.is_bound());
+    return url_loader_client_.get();
   }
 
  private:
@@ -248,39 +251,6 @@ class HeaderInjectionURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
     DCHECK(url_loader_client_.is_bound());
     url_loader_client_->OnReceiveEarlyHints(std::move(early_hints));
-  }
-
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head,
-      mojo::ScopedDataPipeConsumerHandle body,
-      std::optional<mojo_base::BigBuffer> cached_metadata) override {
-    DCHECK(url_loader_client_.is_bound());
-
-    scoped_refptr<net::HttpResponseHeaders> headers = response_head->headers;
-    size_t original_size = headers->raw_headers().size();
-
-    std::string csp_header =
-        csp_override_.has_value() ? csp_override_.value() : GetDefaultCsp();
-
-    // Apps could specify a more restrictive CSP than what we enforce, which we
-    // don't want to overwrite. We add our CSP here so that existing CSPs will
-    // still be enforced. Existing CO*P headers are replaced.
-    headers->AddHeader("Content-Security-Policy", csp_header);
-    headers->SetHeader("Cross-Origin-Opener-Policy", "same-origin");
-    headers->SetHeader("Cross-Origin-Embedder-Policy", "require-corp");
-    headers->SetHeader("Cross-Origin-Resource-Policy", "same-origin");
-
-    header_size_delta_ = headers->raw_headers().size() - original_size;
-
-    // The Network Service will have already parsed the headers for proxy-based
-    // IWAs, and navigation code will try to reuse the already parsed headers
-    // if they're available. However, we're modifying the headers so we want
-    // them to be re-parsed. This re-parsing requires an additional round-trip
-    // to the Network Service.
-    response_head->parsed_headers = nullptr;
-
-    url_loader_client_->OnReceiveResponse(
-        std::move(response_head), std::move(body), std::move(cached_metadata));
   }
 
   void OnReceiveRedirect(
@@ -304,14 +274,117 @@ class HeaderInjectionURLLoaderClient : public network::mojom::URLLoaderClient {
     url_loader_client_->OnTransferSizeUpdated(transfer_size_diff);
   }
 
-  void OnComplete(const network::URLLoaderCompletionStatus& status) override {
-    DCHECK(url_loader_client_.is_bound());
-    network::URLLoaderCompletionStatus adjusted_status = status;
-    adjusted_status.encoded_data_length += header_size_delta_;
-    url_loader_client_->OnComplete(adjusted_status);
+  mojo::Remote<network::mojom::URLLoaderClient> url_loader_client_;
+};
+
+// This URL loader client parses the headers propagated from the underlying
+// layer. This is necessary for service worker loading (which relies on
+// `response_head->parsed_headers` for deducing cross-origin isolation
+// correctly) and implies an additional hop via the network service.
+class HeaderParsingURLLoaderClient : public ForwardingURLLoaderClient {
+ public:
+  HeaderParsingURLLoaderClient(
+      const GURL& url,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> url_loader_client)
+      : ForwardingURLLoaderClient(std::move(url_loader_client)), url_(url) {}
+
+ private:
+  // network::mojom::URLLoaderClient:
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      std::optional<mojo_base::BigBuffer> cached_metadata) override {
+    defer_complete_ = true;
+
+    auto headers = response_head->headers;
+    content::GetNetworkService()->ParseHeaders(
+        url_, std::move(headers),
+        base::BindOnce(&HeaderParsingURLLoaderClient::RespondWithParsedHeaders,
+                       weak_factory_.GetWeakPtr(), std::move(response_head),
+                       std::move(body), std::move(cached_metadata)));
   }
 
-  mojo::Remote<network::mojom::URLLoaderClient> url_loader_client_;
+  void OnComplete(const network::URLLoaderCompletionStatus& status) override {
+    if (defer_complete_) {
+      deferred_completion_status_ = status;
+      return;
+    }
+    url_loader_client()->OnComplete(status);
+  }
+
+  void RespondWithParsedHeaders(
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      std::optional<mojo_base::BigBuffer> cached_metadata,
+      network::mojom::ParsedHeadersPtr parsed_headers) {
+    response_head->parsed_headers = std::move(parsed_headers);
+    url_loader_client()->OnReceiveResponse(
+        std::move(response_head), std::move(body), std::move(cached_metadata));
+
+    defer_complete_ = false;
+    if (deferred_completion_status_) {
+      url_loader_client()->OnComplete(std::move(*deferred_completion_status_));
+    }
+  }
+
+  const GURL url_;
+
+  // Set to true if the response has been received but not yet propagated to the
+  // next layer due to in-progress header parsing.
+  bool defer_complete_ = false;
+  std::optional<network::URLLoaderCompletionStatus> deferred_completion_status_;
+
+  base::WeakPtrFactory<HeaderParsingURLLoaderClient> weak_factory_{this};
+};
+
+class HeaderInjectionURLLoaderClient : public ForwardingURLLoaderClient {
+ public:
+  explicit HeaderInjectionURLLoaderClient(
+      mojo::PendingRemote<network::mojom::URLLoaderClient> url_loader_client)
+      : ForwardingURLLoaderClient(std::move(url_loader_client)) {}
+
+  void set_csp_override(std::string_view csp_override) {
+    csp_override_ = csp_override;
+  }
+
+ private:
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      std::optional<mojo_base::BigBuffer> cached_metadata) override {
+    scoped_refptr<net::HttpResponseHeaders> headers = response_head->headers;
+    size_t original_size = headers->raw_headers().size();
+
+    std::string csp_header =
+        csp_override_.has_value() ? csp_override_.value() : GetDefaultCsp();
+
+    // Apps could specify a more restrictive CSP than what we enforce, which
+    // we don't want to overwrite. We add our CSP here so that existing CSPs
+    // will still be enforced. Existing CO*P headers are replaced.
+    headers->AddHeader("Content-Security-Policy", csp_header);
+    headers->SetHeader("Cross-Origin-Opener-Policy", "same-origin");
+    headers->SetHeader("Cross-Origin-Embedder-Policy", "require-corp");
+    headers->SetHeader("Cross-Origin-Resource-Policy", "same-origin");
+
+    header_size_delta_ = headers->raw_headers().size() - original_size;
+
+    // The Network Service will have already parsed the headers for
+    // proxy-based IWAs, and navigation code will try to reuse the already
+    // parsed headers if they're available. However, we're modifying the
+    // headers so we want them to be re-parsed. This re-parsing requires an
+    // additional round-trip to the Network Service.
+    response_head->parsed_headers = nullptr;
+
+    url_loader_client()->OnReceiveResponse(
+        std::move(response_head), std::move(body), std::move(cached_metadata));
+  }
+
+  void OnComplete(const network::URLLoaderCompletionStatus& status) override {
+    network::URLLoaderCompletionStatus adjusted_status = status;
+    adjusted_status.encoded_data_length += header_size_delta_;
+    url_loader_client()->OnComplete(adjusted_status);
+  }
+
   std::optional<std::string> csp_override_ = std::nullopt;
   int header_size_delta_ = 0;
 };
@@ -437,8 +510,6 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
   }
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override {}
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
   mojo::Remote<network::mojom::URLLoaderClient> loader_client_;
   int64_t header_length_;
@@ -477,6 +548,28 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(resource_request.url.SchemeIs(chrome::kIsolatedAppScheme));
   DCHECK(resource_request.url.IsStandard());
+
+  if (resource_request.headers.GetHeader("Service-Worker") == "script") {
+    // Service worker script loading expects parsed headers in the response,
+    // whereas `HeaderInjectionURLLoaderClient` explicitly sets them to nullptr.
+    // This is fine for navigation requests which re-parse them at a higher
+    // layer, but for SW having `response_head->parsed_headers` be present is a
+    // must to deduce cross-origin isolation correctly.
+    mojo::PendingRemote<network::mojom::URLLoaderClient>
+        forwarding_loader_client;
+
+    auto receiving_end =
+        forwarding_loader_client.InitWithNewPipeAndPassReceiver();
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<HeaderParsingURLLoaderClient>(
+            resource_request.url,
+            std::exchange(original_loader_client,
+                          std::move(forwarding_loader_client))),
+        std::move(receiving_end));
+
+    // Now calls to `original_loader_client` will be routed through the new
+    // `HeaderParsingURLLoaderClient`.
+  }
 
   auto header_injection_client =
       std::make_unique<HeaderInjectionURLLoaderClient>(
@@ -613,22 +706,21 @@ void IsolatedWebAppURLLoaderFactory::HandleRequest(
     return;
   }
 
-  absl::visit(
-      base::Overloaded{
-          [&](const IwaSourceBundleWithMode& source) {
-            CHECK(!url_info.web_bundle_id().is_for_proxy_mode());
-            HandleSignedBundle(source.path(), source.dev_mode(),
-                               url_info.web_bundle_id(),
-                               std::move(loader_receiver), resource_request,
-                               std::move(loader_client));
-          },
-          [&](const IwaSourceProxy& source) {
-            CHECK(url_info.web_bundle_id().is_for_proxy_mode());
-            HandleProxy(url_info, source, std::move(loader_receiver),
-                        resource_request, std::move(loader_client),
-                        traffic_annotation);
-          }},
-      source.variant());
+  absl::visit(base::Overloaded{
+                  [&](const IwaSourceBundleWithMode& source) {
+                    CHECK(!url_info.web_bundle_id().is_for_proxy_mode());
+                    HandleSignedBundle(
+                        source.path(), source.dev_mode(),
+                        url_info.web_bundle_id(), std::move(loader_receiver),
+                        resource_request, std::move(loader_client));
+                  },
+                  [&](const IwaSourceProxy& source) {
+                    CHECK(url_info.web_bundle_id().is_for_proxy_mode());
+                    HandleProxy(url_info, source, std::move(loader_receiver),
+                                resource_request, std::move(loader_client),
+                                traffic_annotation);
+                  }},
+              source.variant());
 }
 
 void IsolatedWebAppURLLoaderFactory::OnProfileWillBeDestroyed(

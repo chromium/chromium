@@ -112,7 +112,7 @@ class SVGUseElement final : public SVGGraphicsElement,
       const QualifiedName& attribute_name) const override;
   void SynchronizeAllSVGAttributes() const override;
   void CollectExtraStyleForPresentationAttribute(
-      MutableCSSPropertyValueSet* style) override;
+      HeapVector<CSSPropertyValue, 8>& style) override;
 
   Member<SVGResourceDocumentContent> document_content_;
   Member<SVGResourceTarget> external_resource_target_;

@@ -78,7 +78,7 @@ class TestSystemWebAppManagerCreator {
   ~TestSystemWebAppManagerCreator();
 
  private:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context);
+  void SetUpBrowserContextKeyedServices(content::BrowserContext* context);
   std::unique_ptr<KeyedService> CreateSystemWebAppManager(
       content::BrowserContext* context);
 

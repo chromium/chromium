@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/gfx/ca_layer_result.h"
@@ -92,6 +94,14 @@ struct PresentationFeedback {
 #if BUILDFLAG(IS_APPLE)
   gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
 #endif
+
+  // A unique ID used by the graphics pipeline to trace each individual frame
+  // swap. This value is present only if the feedback is coming from/via
+  // viz::Display. It's set in viz::Display::DidReceivePresentationFeedback().
+  // It should only be used for performance tracing purposes. See also
+  // gpu::SwapBuffersCompleteParams.swap_trace_id and
+  // perfetto::protos::pbzero::ChromeTrackEvent.event_latency.display_trace_id.
+  std::optional<int64_t> display_trace_id;
 };
 
 inline bool operator==(const PresentationFeedback& lhs,
@@ -104,7 +114,8 @@ inline bool operator==(const PresentationFeedback& lhs,
 #if BUILDFLAG(IS_APPLE)
          lhs.ca_layer_error_code == rhs.ca_layer_error_code &&
 #endif
-         lhs.writes_done_timestamp == rhs.writes_done_timestamp;
+         lhs.writes_done_timestamp == rhs.writes_done_timestamp &&
+         lhs.display_trace_id == rhs.display_trace_id;
 }
 
 inline bool operator!=(const PresentationFeedback& lhs,

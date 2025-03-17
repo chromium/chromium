@@ -113,12 +113,13 @@ bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
 
 bool TrackingProtectionSettings::IsIpProtectionEnabled() const {
   return pref_service_->GetBoolean(prefs::kIpProtectionEnabled) &&
-         base::FeatureList::IsEnabled(kIpProtectionV1);
+         base::FeatureList::IsEnabled(kIpProtectionUx);
 }
 
 bool TrackingProtectionSettings::IsFpProtectionEnabled() const {
   return pref_service_->GetBoolean(prefs::kFingerprintingProtectionEnabled) &&
-         base::FeatureList::IsEnabled(kFingerprintingProtectionUx);
+         base::FeatureList::IsEnabled(kFingerprintingProtectionUx) &&
+         is_incognito_;
 }
 
 bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {

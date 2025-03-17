@@ -89,8 +89,9 @@
 }
 
 - (void)startAnimated:(BOOL)animated {
-  if (self.started)
+  if (self.started) {
     return;
+  }
   self.presentedViewController = [[UIViewController alloc] init];
   self.viewController.modalPresentationStyle = UIModalPresentationCustom;
   self.viewController.transitioningDelegate = self;
@@ -104,8 +105,9 @@
 }
 
 - (void)stopAnimated:(BOOL)animated {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
   [self.baseViewController
       dismissViewControllerAnimated:animated
                          completion:^{

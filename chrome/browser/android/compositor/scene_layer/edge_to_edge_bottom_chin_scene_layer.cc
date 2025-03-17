@@ -44,7 +44,6 @@ EdgeToEdgeBottomChinSceneLayer::EdgeToEdgeBottomChinSceneLayer(
   is_debugging_ = chrome::android::kEdgeToEdgeBottomChinDebugParam.Get();
   if (is_debugging_) {
     debug_layer_->SetIsDrawable(true);
-    debug_layer_->SetBackgroundColor(SkColors::kMagenta);
     debug_layer_->SetOpacity(0.5f);
     view_container_->AddChild(debug_layer_);
   }
@@ -59,6 +58,7 @@ void EdgeToEdgeBottomChinSceneLayer::UpdateEdgeToEdgeBottomChinLayer(
     jint color_argb,
     jint divider_color,
     jfloat y_offset,
+    jboolean has_constraint,
     const base::android::JavaParamRef<jobject>& joffset_tag) {
   view_container_->SetBounds(gfx::Size(container_width, container_height));
   view_container_->SetPosition(gfx::PointF(0, y_offset - container_height));
@@ -76,6 +76,8 @@ void EdgeToEdgeBottomChinSceneLayer::UpdateEdgeToEdgeBottomChinLayer(
 
   if (is_debugging_) {
     debug_layer_->SetBounds(gfx::Size(container_width / 2, container_height));
+    debug_layer_->SetBackgroundColor(has_constraint ? SkColors::kYellow
+                                                    : SkColors::kMagenta);
   }
 }
 
@@ -90,6 +92,8 @@ void EdgeToEdgeBottomChinSceneLayer::SetContentTree(
 
   if (!content_tree->layer()->parent() ||
       (content_tree->layer()->parent()->id() != layer_->id())) {
+    // The content tree changes. Remove all the children.
+    layer_->RemoveAllChildren();
     layer_->AddChild(content_tree->layer());
     layer_->AddChild(view_container_);
   }

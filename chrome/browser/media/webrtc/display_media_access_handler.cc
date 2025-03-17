@@ -23,10 +23,11 @@
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/common/pref_names.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -34,10 +35,10 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -52,15 +53,9 @@
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-#if defined(TOOLKIT_VIEWS)
-// If enabled, a capture request on the opener tab of a Picture in Picture
-// window will show up in the PiP window instead if the PiP window is active.
-// Otherwise, it will show up in the opener because that's where the capture
-// request originated.
-BASE_FEATURE(kDisplayCaptureUiInPipIfActive,
-             "DisplayCaptureUiInPipIfActive",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // defined(TOOLKIT_VIEWS)
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/user_interaction_observer.h"
+#endif
 
 namespace {
 
@@ -99,7 +94,7 @@ DisplayMediaAccessHandler::DisplayMediaAccessHandler(
 DisplayMediaAccessHandler::~DisplayMediaAccessHandler() = default;
 
 bool DisplayMediaAccessHandler::SupportsStreamType(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const blink::mojom::MediaStreamType stream_type,
     const extensions::Extension* extension) {
   return stream_type == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
@@ -141,6 +136,7 @@ void DisplayMediaAccessHandler::HandleRequest(
     return;
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // SafeBrowsing Delayed Warnings experiment can delay some SafeBrowsing
   // warnings until user interaction. If the current page has a delayed warning,
   // it'll have a user interaction observer attached. Show the warning
@@ -156,6 +152,7 @@ void DisplayMediaAccessHandler::HandleRequest(
     observer->OnDesktopCaptureRequest();
     return;
   }
+#endif
 
 #if BUILDFLAG(IS_MAC)
   // Do not allow picker UI to be shown on a page that isn't in the foreground
@@ -169,8 +166,7 @@ void DisplayMediaAccessHandler::HandleRequest(
   //
   // TODO(emircan): Remove this once Mac UI doesn't use a window.
   if (web_contents->GetVisibility() != content::Visibility::VISIBLE &&
-      !(base::FeatureList::IsEnabled(kDisplayCaptureUiInPipIfActive) &&
-        web_contents->HasPictureInPictureDocument()) &&
+      !web_contents->HasPictureInPictureDocument() &&
       request.request_type != blink::MEDIA_DEVICE_UPDATE) {
     LOG(ERROR) << "Do not allow getDisplayMedia() on a backgrounded page.";
     std::move(callback).Run(
@@ -207,7 +203,7 @@ void DisplayMediaAccessHandler::HandleRequest(
     // If the display-capture permissions-policy disallows capture, the render
     // process was not supposed to send this message.
     if (!rfh->IsFeatureEnabled(
-            blink::mojom::PermissionsPolicyFeature::kDisplayCapture)) {
+            network::mojom::PermissionsPolicyFeature::kDisplayCapture)) {
       bad_message::ReceivedBadMessage(
           rfh->GetProcess(), bad_message::BadMessageReason::
                                  RFH_DISPLAY_CAPTURE_PERMISSION_MISSING);
@@ -333,8 +329,14 @@ void DisplayMediaAccessHandler::BypassMediaSelectionDialog(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
-  CHECK_EQ(web_contents->GetLastCommittedURL().scheme(),
-           content::kChromeUIScheme);
+  if (web_contents->GetLastCommittedURL().scheme() !=
+      content::kChromeUIScheme) {
+    std::move(callback).Run(
+        blink::mojom::StreamDevicesSet(),
+        blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
+        /*ui=*/nullptr);
+    return;
+  }
 
   content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
                                    content::DesktopMediaID::kNullId,
@@ -417,34 +419,32 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
   // If `web_contents` is the opener of a Document Picture in Picture window,
   // and if the pip window currently has the focus, then show the request in the
   // pip window instead.
-  if (base::FeatureList::IsEnabled(kDisplayCaptureUiInPipIfActive)) {
-    if (content::WebContents* const child_web_contents =
-            web_contents->HasPictureInPictureDocument()
-                ? PictureInPictureWindowManager::GetInstance()
-                      ->GetChildWebContents()
-                : nullptr) {
-      // There should not be more than one pip window.  If `web_contents`
-      // believes that it is a document pip opener, then make sure that the
-      // window manager agrees with it.
-      CHECK_EQ(PictureInPictureWindowManager::GetInstance()->GetWebContents(),
-               web_contents);
+  if (content::WebContents* const child_web_contents =
+          web_contents->HasPictureInPictureDocument()
+              ? PictureInPictureWindowManager::GetInstance()
+                    ->GetChildWebContents()
+              : nullptr) {
+    // There should not be more than one pip window.  If `web_contents`
+    // believes that it is a document pip opener, then make sure that the
+    // window manager agrees with it.
+    CHECK_EQ(PictureInPictureWindowManager::GetInstance()->GetWebContents(),
+             web_contents);
 
-      // The media-picker prompt will be associated with the PiP window if the
-      // user's last interaction was with the PiP. (This heuristic could in the
-      // future be replaced with an explicit control surface exposed to the
-      // app.)
-      //
-      // Note that `RenderWidgetHostView::HasFocus()` does not work as expected
-      // on Mac; it always returns true.  The Widget's activation state is what
-      // tracks the state we care about.  It's not 100% accurate either as a
-      // proxy for "the user's last interaction", but it's good enough.
-      if (gfx::NativeWindow native_window =
-              child_web_contents->GetTopLevelNativeWindow()) {
-        if (auto* browser_view =
-                BrowserView::GetBrowserViewForNativeWindow(native_window)) {
-          if (browser_view->frame()->IsActive()) {
-            ui_web_contents = child_web_contents;
-          }
+    // The media-picker prompt will be associated with the PiP window if the
+    // user's last interaction was with the PiP. (This heuristic could in the
+    // future be replaced with an explicit control surface exposed to the
+    // app.)
+    //
+    // Note that `RenderWidgetHostView::HasFocus()` does not work as expected
+    // on Mac; it always returns true.  The Widget's activation state is what
+    // tracks the state we care about.  It's not 100% accurate either as a
+    // proxy for "the user's last interaction", but it's good enough.
+    if (gfx::NativeWindow native_window =
+            child_web_contents->GetTopLevelNativeWindow()) {
+      if (auto* browser_view =
+              BrowserView::GetBrowserViewForNativeWindow(native_window)) {
+        if (browser_view->frame()->IsActive()) {
+          ui_web_contents = child_web_contents;
         }
       }
     }
@@ -455,11 +455,6 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
       DesktopMediaList::Type::kWebContents, DesktopMediaList::Type::kWindow};
   if (!pending_request.request.exclude_monitor_type_surfaces) {
     media_types.push_back(DesktopMediaList::Type::kScreen);
-  }
-  if (pending_request.request.video_type ==
-      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
-    media_types.insert(media_types.begin(),
-                       DesktopMediaList::Type::kCurrentTab);
   }
 
   capture_policy::FilterMediaList(media_types, capture_level);

@@ -50,7 +50,7 @@ class CORE_EXPORT HTMLTableColElement final : public HTMLTablePartElement {
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   const CSSPropertyValueSet* AdditionalPresentationAttributeStyle() override;
 
   unsigned span_;

@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_GUEST_UI_H_
 #define ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_GUEST_UI_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -12,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service_manager.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -34,6 +36,9 @@ class MediaAppGuestUIDelegate {
   // Takes a WebUI and WebUIDataSource, and populates its load-time data.
   virtual void PopulateLoadTimeData(content::WebUI* web_ui,
                                     content::WebUIDataSource* source) = 0;
+  virtual std::unique_ptr<specialized_features::FeatureAccessChecker>
+  GetFeatureAccessChecker(specialized_features::FeatureAccessConfig config,
+                          content::WebUI* web_ui) const = 0;
   virtual PrefService* GetPrefService(content::WebUI* web_ui) = 0;
   virtual void CreateAndBindOcrUntrustedService(
       content::BrowserContext& context,
@@ -92,6 +97,7 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
   void IsMantisAvailable(IsMantisAvailableCallback callback) override;
   void CreateMantisUntrustedService(
       mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedPage> page,
+      const std::optional<base::Uuid>& dlc_uuid,
       CreateMantisUntrustedServiceCallback callback) override;
 
   void StartFontDataRequest(

@@ -26,7 +26,6 @@ source_set("command_ids") {
   sources = [ "chrome_command_ids.h" ]
   public_deps = [
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//services/screen_ai/buildflags",
   ]
   deps = [ "//ui/base:constants" ]
@@ -90,9 +89,11 @@ if (is_android) {
           android_bundle_locales_as_resources,
           [ "java/res/values-{{source_name_part}}/generated_resources.xml" ])
 
-  strings_java_resources = [ "java/res/values/${branding_path_product}_strings.xml" ] + process_file_template(
-                               android_bundle_locales_as_resources,
-                               [ "java/res/values-{{source_name_part}}/${branding_path_product}_strings.xml" ])
+  strings_java_resources =
+      [ "java/res/values/branded_strings.xml" ] +
+      process_file_template(
+          android_bundle_locales_as_resources,
+          [ "java/res/values-{{source_name_part}}/branded_strings.xml" ])
 }
 
 grit("generated_resources") {
@@ -125,10 +126,10 @@ grit("branded_strings") {
   source = "${branding_path_product}_strings.grd"
   defines = chrome_grit_defines
   output_dir = "$root_gen_dir/chrome"
-  outputs = [ "grit/branded_strings.h" ] +
-            process_file_template(
-                all_chrome_locales,
-                [ "${branding_path_product}_strings_{{source_name_part}}.pak" ])
+  outputs =
+      [ "grit/branded_strings.h" ] +
+      process_file_template(all_chrome_locales,
+                            [ "branded_strings_{{source_name_part}}.pak" ])
 
   if (is_android) {
     outputs += strings_java_resources
@@ -147,9 +148,9 @@ static_library("test_support") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser:buildflags",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/policy:path_parser",
     "//chrome/child",
     "//chrome/common",
@@ -157,13 +158,13 @@ static_library("test_support") {
     "//chrome/gpu",
     "//chrome/renderer",
     "//chrome/utility",
-    "//components/about_ui",
     "//components/crash/core/app",
     "//components/crash/core/app:test_support",
     "//components/devtools/devtools_pipe",
     "//components/memory_system",
     "//components/nacl/common:buildflags",
     "//components/startup_metric_utils",
+    "//components/webui/about",
     "//content/public/app",
     "//content/public/common",
     "//extensions/buildflags",
@@ -197,32 +198,17 @@ static_library("test_support") {
   }
 
   if (is_chromeos) {
-    deps += [ "//chromeos/dbus/constants" ]
-  }
-
-  if (is_chromeos_ash) {
     deps += [
-      "//ash/components/arc:arc_base_utils",
       "//ash/constants",
       "//chrome/browser/ash/boot_times_recorder",
       "//chrome/browser/ash/dbus",
       "//chrome/browser/ash/locale",
       "//chrome/browser/ash/schedqos",
-      "//chromeos",
-      "//chromeos/ash/components/memory:memory",
+      "//chromeos/ash/components/memory",
+      "//chromeos/ash/experiences/arc:arc_base_utils",
+      "//chromeos/dbus/constants",
     ]
     public_deps += [ "//ui/lottie" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/cpp:crosapi_constants",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/lacros:lacros_paths",
-      "//chromeos/lacros/dbus",
-      "//chromeos/startup",
-    ]
   }
 
   if (use_ozone) {

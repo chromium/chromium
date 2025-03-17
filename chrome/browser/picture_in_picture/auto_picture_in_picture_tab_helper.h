@@ -6,15 +6,18 @@
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_AUTO_PICTURE_IN_PICTURE_TAB_HELPER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/views/bubble/bubble_border.h"
 
 namespace permissions {
@@ -143,11 +146,26 @@ class AutoPictureInPictureTabHelper
   // any auto-pip window we have open, though there might also not be one.
   void OnTabBecameActive();
 
+  void set_clock_for_testing(const base::TickClock* testing_clock) {
+    clock_ = testing_clock;
+  }
+
+  void set_auto_pip_trigger_reason_for_testing(
+      media::PictureInPictureEventsInfo::AutoPipReason
+          auto_pip_trigger_reason) {
+    auto_pip_trigger_reason_ = auto_pip_trigger_reason;
+  }
+
+  media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipTriggerReason()
+      const;
+
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;
   FRIEND_TEST_ALL_PREFIXES(AutoPictureInPictureTabHelperBrowserTest,
                            CannotAutopipViaHttp);
+  FRIEND_TEST_ALL_PREFIXES(AutoPictureInPictureTabHelperBrowserTest,
+                           PromptResultNotRecorded);
   FRIEND_TEST_ALL_PREFIXES(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                            DoesNotDocumentAutopip_VideoInRemoteIFrame);
 
@@ -169,7 +187,7 @@ class AutoPictureInPictureTabHelper
 
   void MaybeStartOrStopObservingTabStrip();
 
-  bool IsEligibleForAutoPictureInPicture();
+  bool IsEligibleForAutoPictureInPicture(bool should_record_blocking_metrics);
 
   // Returns true if the tab:
   //   * Has audio focus
@@ -216,15 +234,45 @@ class AutoPictureInPictureTabHelper
   // returned. Otherwise, an empty optional is returned.
   std::optional<content::RenderFrameHost*> GetPrimaryMainRoutedFrame() const;
 
-  // Returns the histogram name corresponding to the reason for entering auto
-  // picture in picture. Use caution when modifying this method since the
-  // returned value is used for logging.
+  // Returns the page UKM SourceId associated with the primary main routed frame
+  // for the MediaSession, if it exists.
+  std::optional<ukm::SourceId> GetUkmSourceId() const;
+
+  // Returns the reason for entering auto picture in picture.
   //
   // Note that a media element can meet both, the "video conferencing" and
   // "media playback" conditions. If both conditions are met, this method will
-  // return the "video conferencing" histogram. On the other hand, if no
-  // conditions are met, an empty string will be returned.
-  std::string GetHistogramNameForReason() const;
+  // return
+  // "media::PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing". If
+  // no conditions are met,
+  // `Autmedia::PictureInPictureEventsInfo::AutoPipReasonPipReason::kUnknown`
+  // will be returned.
+  media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason() const;
+
+  // Accumulates the total time spent in picture in picture during the lifetime
+  // of `this`, separated by the reason for entering auto picture in picture:
+  // video conferencing or media playback.
+  //
+  // If `is_video_conferencing` is true, `total_pip_time` will be accumulated
+  // for video conferencing, otherwise the time will be accumulated for media
+  // playback.
+  void AccumulateTotalPipTimeForSession(const base::TimeDelta total_pip_time,
+                                        bool is_video_conferencing);
+
+  // Records the total time spent on a picture in picture window, regardless of
+  // the Picture-in-Picture window type (document vs video) and the reason for
+  // closing the window (UI interaction, returning back to opener tab, etc.).
+  //
+  // The resulting histogram is configured to allow analyzing closures that take
+  // place within a short period of time, to account for user reaction time
+  // (~273 ms).
+  void MaybeRecordPictureInPictureChanged(bool is_picture_in_picture);
+
+  // Records, if needed, the total accumulated picture in picture time,
+  // separated by the reason for entering auto picture in picture: video
+  // conferencing or media playback. This metric is recorded during the tab
+  // helper destruction.
+  void MaybeRecordTotalPipTimeForSession();
 
   // HostContentSettingsMap is tied to the Profile which outlives the
   // WebContents (which we're tied to), so this is safe.
@@ -303,6 +351,38 @@ class AutoPictureInPictureTabHelper
   // This is safe since the `MediaEngagementService` is tied to the Profile
   // which outlives the WebContents (which `this` is tied to).
   raw_ptr<MediaEngagementService> media_engagement_service_ = nullptr;
+
+  // Set to the current time when `this` calls the MediaSession
+  // `EnterAutoPictureInPicture` method.
+  std::optional<base::TimeTicks> current_enter_pip_time_ = std::nullopt;
+
+  // The total accumulated time spent in picture in picture due to video
+  // conferencing. The accumulated time does not differentiate between the
+  // different types of picture in picture windows (document vs video).
+  // Accumulated time is recorded during the destruction of `this`.
+  std::optional<base::TimeDelta>
+      total_video_conferencing_pip_time_for_session_ = std::nullopt;
+
+  // The total accumulated time spent in picture in picture due to media
+  // playback. The accumulated time does not differentiate between the different
+  // types of picture in picture windows (document vs video). Accumulated time
+  // is recorded during the destruction of `this`.
+  std::optional<base::TimeDelta> total_media_playback_pip_time_for_session_ =
+      std::nullopt;
+
+  // Clock used for metric related to the total time spent with a
+  // picture-in-picture window open.
+  raw_ptr<const base::TickClock> clock_;
+
+  // Stores the reason that triggered auto picture in picture. The value is
+  // updated as needed when entering/exiting picture in picture.
+  media::PictureInPictureEventsInfo::AutoPipReason auto_pip_trigger_reason_ =
+      media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+
+  // Set to true if auto picture in picture was blocked due to content setting
+  // or incognito, false otherwise. The value is used to prevent recording
+  // duplicate entries for blocking metrics.
+  bool blocked_due_to_content_setting_ = false;
 
   // WeakPtrFactory used only for requesting URL safety. This weak ptr factory
   // is invalidated during calls to `StopAndResetAsyncTasks`.

@@ -9,11 +9,13 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -1380,8 +1382,7 @@ TEST_F(PageSpecificContentSettingsTest, GetLastUsedReturnCorrectTimeTest) {
 TEST_F(PageSpecificContentSettingsTest, MediaBlockedIndicatorsDismissDelay) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatures(
-      {content_settings::features::kImprovedSemanticsActivityIndicators},
-      {content_settings::features::kLeftHandSideActivityIndicators});
+      {}, {content_settings::features::kLeftHandSideActivityIndicators});
 
   NavigateAndCommit(GURL("http://google.com"));
 
@@ -1421,9 +1422,6 @@ TEST_F(PageSpecificContentSettingsTest, MediaBlockedIndicatorsDismissDelay) {
 TEST_F(PageSpecificContentSettingsTest,
        MediaIndicatorsDoNotDismissIfOpenedDelay) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      content_settings::features::kImprovedSemanticsActivityIndicators);
-
   NavigateAndCommit(GURL("http://google.com"));
 
   PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
@@ -1513,6 +1511,41 @@ TEST_F(PageSpecificContentSettingsTest, MediaBlockedStateIsResetIfMediaUsed) {
   EXPECT_FALSE(pscs->GetMicrophoneCameraState().Has(
       PageSpecificContentSettings::kMicrophoneBlocked));
 }
+
+// The only currently implemented object-based type is for now ChromeOS only
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(PageSpecificContentSettingsTest, ObjectBasedInUseIndicator) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pscs, nullptr);
+
+  // Initially, no indicator should be visible and `IsInUse` should be false.
+  EXPECT_FALSE(pscs->ShouldShowDeviceInUseIndicator(
+      ContentSettingsType::SMART_CARD_GUARD));
+  EXPECT_FALSE(pscs->IsInUse(ContentSettingsType::SMART_CARD_GUARD));
+
+  // When the first connection is used, indicator should start appearing and
+  // `IsInUse` should return `true`.
+  pscs->OnDeviceUsed(ContentSettingsType::SMART_CARD_GUARD);
+  EXPECT_TRUE(pscs->ShouldShowDeviceInUseIndicator(
+      ContentSettingsType::SMART_CARD_GUARD));
+  EXPECT_TRUE(pscs->IsInUse(ContentSettingsType::SMART_CARD_GUARD));
+
+  // When the last connection closes, the indicator should still be visible
+  // initially, even though `IsInUse` should be false already...
+  pscs->OnLastDeviceConnectionLost(ContentSettingsType::SMART_CARD_GUARD);
+  EXPECT_TRUE(pscs->ShouldShowDeviceInUseIndicator(
+      ContentSettingsType::SMART_CARD_GUARD));
+  EXPECT_FALSE(pscs->IsInUse(ContentSettingsType::SMART_CARD_GUARD));
+
+  // ...but 15 seconds later it should disappear.
+  task_environment()->AdvanceClock(base::Seconds(15));
+  EXPECT_FALSE(pscs->ShouldShowDeviceInUseIndicator(
+      ContentSettingsType::SMART_CARD_GUARD));
+}
+#endif
 
 class PageSpecificContentSettingsIframeTest
     : public PageSpecificContentSettingsTest {

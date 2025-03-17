@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/fade_label_view.h"
 
+#include <string_view>
+
 #include "chrome/browser/ui/views/tabs/filename_elider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
@@ -77,13 +79,13 @@ FadeLabelView::FadeLabelView(int num_lines, int context, int text_style)
   fade_out_view_->SetPaintBackground(true);
 }
 
-std::u16string FadeLabelView::GetText() {
+std::u16string_view FadeLabelView::GetText() const {
   return primary_view_->GetText();
 }
 
-void FadeLabelView::SetEnabledColorId(ui::ColorId color) {
-  primary_view_->SetEnabledColorId(color);
-  fade_out_view_->SetEnabledColorId(color);
+void FadeLabelView::SetEnabledColor(ui::ColorId color) {
+  primary_view_->SetEnabledColor(color);
+  fade_out_view_->SetEnabledColor(color);
 }
 
 using FadeWrapper_Label_FadeLabelViewData =

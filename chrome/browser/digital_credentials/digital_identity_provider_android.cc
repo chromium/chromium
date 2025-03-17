@@ -27,6 +27,7 @@ using RequestStatusForMetrics =
     content::DigitalIdentityProvider::RequestStatusForMetrics;
 using DigitalIdentityInterstitialAbortCallback =
     content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
+using DigitalCredential = content::DigitalIdentityProvider::DigitalCredential;
 
 namespace {
 
@@ -110,17 +111,19 @@ void DigitalIdentityProviderAndroid::Create(content::WebContents* web_contents,
       origin.Serialize(), *request_str);
 }
 
-void DigitalIdentityProviderAndroid::OnReceive(JNIEnv* env,
-                                               jstring j_result,
-                                               jint j_status_for_metrics) {
-  if (callback_) {
-    std::string result = ConvertJavaStringToUTF8(env, j_result);
-
-    auto status_for_metrics =
-        static_cast<RequestStatusForMetrics>(j_status_for_metrics);
-    std::move(callback_).Run(
-        (status_for_metrics == RequestStatusForMetrics::kSuccess)
-            ? base::expected<std::string, RequestStatusForMetrics>(result)
-            : base::unexpected(status_for_metrics));
+void DigitalIdentityProviderAndroid::OnReceive(
+    JNIEnv* env,
+    std::optional<std::string> protocol,
+    std::string result,
+    jint j_status_for_metrics) {
+  if (!callback_) {
+    return;
   }
+  auto status_for_metrics =
+      static_cast<RequestStatusForMetrics>(j_status_for_metrics);
+  std::move(callback_).Run(
+      (status_for_metrics == RequestStatusForMetrics::kSuccess)
+          ? base::expected<DigitalCredential, RequestStatusForMetrics>(
+                DigitalCredential(std::move(protocol), std::move(result)))
+          : base::unexpected(status_for_metrics));
 }

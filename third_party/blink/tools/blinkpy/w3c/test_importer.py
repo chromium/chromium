@@ -48,7 +48,7 @@ from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_github import WPTGitHub
 from blinkpy.w3c.wpt_manifest import WPTManifest, BASE_MANIFEST_NAME
 from blinkpy.web_tests.models import typ_types
-from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.models.test_expectations import ParseError, TestExpectations
 from blinkpy.web_tests.port.base import Port
 
 # Settings for how often to check try job results and how long to wait.
@@ -266,21 +266,26 @@ class TestImporter:
         try_results = cl_status.try_job_results
 
         if try_results and self.git_cl.some_failed(try_results):
-            self.fetch_new_expectations_and_baselines()
-            # Skip slow and timeout tests so that presubmit check passes
-            port = self.host.port_factory.get()
-            if self.expectations_updater.skip_slow_timeout_tests(port):
-                path = port.path_to_generic_test_expectations_file()
-                self.project_git.add_list([path])
+            try:
+                self.fetch_new_expectations_and_baselines()
+                # Skip slow and timeout tests so that presubmit check passes
+                port = self.host.port_factory.get()
+                if self.expectations_updater.skip_slow_timeout_tests(port):
+                    path = port.path_to_generic_test_expectations_file()
+                    self.project_git.add_list([path])
 
-            self._generate_manifest()
-            message = 'Update test expectations and baselines.'
-            if self.project_git.has_working_directory_changes():
-                self._commit_changes(message)
-            # Even if we didn't commit anything here, we may still upload
-            # `TestExpectations`, which are committed earlier (before
-            # rebaselining).
-            self._upload_patchset(message)
+                self._generate_manifest()
+            except ParseError as e:
+                raise
+            finally:
+                message = 'Update test expectations and baselines.'
+                if self.project_git.has_working_directory_changes():
+                    self._commit_changes(message)
+                # Even if we didn't commit anything here, we may still upload
+                # `TestExpectations`, which are committed earlier (before
+                # rebaselining).
+                self._upload_patchset(message)
+
         return True
 
     def _trigger_try_jobs(self):
@@ -487,11 +492,12 @@ class TestImporter:
         self.project_git.commit_locally_with_message(commit_message)
 
     def _has_wpt_changes(self):
+        port = self.host.port_factory.get()
         changed_files = self.project_git.changed_files()
         test_roots = [
             self.fs.relpath(self.finder.path_from_web_tests(subdir),
                             self.finder.chromium_base())
-            for subdir in Port.WPT_DIRS
+            for subdir in port.wpt_dirs()
         ]
         for changed_file in changed_files:
             if any(changed_file.startswith(root) for root in test_roots):

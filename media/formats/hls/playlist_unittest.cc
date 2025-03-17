@@ -9,6 +9,7 @@
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/quirks.h"
 #include "media/formats/hls/tag_name.h"
 #include "media/formats/hls/types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -100,9 +101,15 @@ TEST(HlsPlaylistTest, IdentifyPlaylist) {
   error_test(ParseStatusCode::kPlaylistHasUnsupportedVersion,
              "#EXT-X-VERSION:11\n");
 
-  // Conflicting tag kinds should result in an error
-  error_test(ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag,
-             "#EXT-X-STREAM-INF\n#EXTINF\n");
+  // Conflicting tag kinds should result in an error.
+  if (HLSQuirks::AllowMediaTagsInMultivariantPlaylists()) {
+    ok_test(Playlist::kDefaultVersion, Playlist::Kind::kMultivariantPlaylist,
+            "#EXT-X-STREAM-INF\n#EXTINF\n");
+  } else {
+    error_test(ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag,
+               "#EXT-X-STREAM-INF\n#EXTINF\n");
+  }
+
   error_test(ParseStatusCode::kMediaPlaylistHasMultivariantPlaylistTag,
              "#EXTINF\n#EXT-X-STREAM-INF\n");
 

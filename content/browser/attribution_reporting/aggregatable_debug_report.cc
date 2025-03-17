@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/functional/function_ref.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
@@ -295,7 +295,7 @@ AggregatableDebugReport::AggregatableDebugReport(
           std::move(aggregation_coordinator_origin)),
       scheduled_report_time_(scheduled_report_time) {
   CHECK_LE(contributions_.size(), kMaxContributions);
-  CHECK(base::ranges::all_of(contributions_, [](const auto& contribution) {
+  CHECK(std::ranges::all_of(contributions_, [](const auto& contribution) {
     return attribution_reporting::IsAggregatableValueInRange(
         contribution.value);
   }));

@@ -71,8 +71,9 @@ void WebState::InterfaceBinder::BindInterface(
     mojo::GenericPendingReceiver receiver) {
   DCHECK(receiver.is_valid());
   auto it = callbacks_.find(*receiver.interface_name());
-  if (it != callbacks_.end())
+  if (it != callbacks_.end()) {
     it->second.Run(&receiver);
+  }
 
   GetWebClient()->BindInterfaceReceiverFromMainFrame(web_state_,
                                                      std::move(receiver));

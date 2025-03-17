@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_delta_serialization.h"
 #include "base/metrics/histogram_functions.h"
@@ -48,7 +49,8 @@ class HistogramFlattenerDeltaRecorder : public HistogramFlattener {
     CHECK(!Contains(recorded_delta_histogram_sum_, histogram.histogram_name()));
     // Keep pointer to snapshot for testing. This really isn't ideal but the
     // snapshot-manager keeps the snapshot alive until it's "forgotten".
-    recorded_delta_histogram_sum_[histogram.histogram_name()] = snapshot.sum();
+    InsertOrAssign(recorded_delta_histogram_sum_, histogram.histogram_name(),
+                   snapshot.sum());
   }
 
   void Reset() {
@@ -69,7 +71,7 @@ class HistogramFlattenerDeltaRecorder : public HistogramFlattener {
  private:
   std::vector<raw_ptr<const HistogramBase, VectorExperimental>>
       recorded_delta_histograms_;
-  std::map<std::string, int64_t> recorded_delta_histogram_sum_;
+  std::map<std::string, int64_t, std::less<>> recorded_delta_histogram_sum_;
 };
 
 class HistogramSnapshotManagerTest : public testing::Test {

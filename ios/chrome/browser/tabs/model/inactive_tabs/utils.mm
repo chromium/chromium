@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/tabs/model/inactive_tabs/utils.h"
 
+#import <algorithm>
+
 #import "base/metrics/histogram_functions.h"
-#import "base/ranges/algorithm.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
@@ -100,7 +102,7 @@ void MoveTabsAccordingToPolicy(Browser* source_browser,
   for (int index = 0; index < source_count; ++index) {
     web::WebState* web_state = source_list->GetWebStateAt(index);
     const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-    if (base::ranges::binary_search(target_ids, web_state_id)) {
+    if (std::ranges::binary_search(target_ids, web_state_id)) {
       indexes_closing.push_back(index);
       indexes_moving_or_closing.push_back(index);
       continue;
@@ -178,12 +180,12 @@ void MoveTabsAccordingToPolicy(Browser* source_browser,
   // WebStateList (this avoid having to update the indexes).
   for (int iter = 0; iter < source_count; ++iter) {
     const int index = source_count - iter - 1;
-    if (base::ranges::binary_search(indexes_closing, index)) {
+    if (std::ranges::binary_search(indexes_closing, index)) {
       source_list->CloseWebStateAt(index, WebStateList::CLOSE_NO_FLAGS);
       continue;
     }
 
-    if (base::ranges::binary_search(indexes_moving, index)) {
+    if (std::ranges::binary_search(indexes_moving, index)) {
       // Using `AtIndex` allows to insert all the moved tabs with a desired
       // location and `Activate` allows to activate the tab if needed (e.g. the
       // first moved tab from source when target has no active WebState).
@@ -202,29 +204,32 @@ void MoveTabsAccordingToPolicy(Browser* source_browser,
 
 void MoveTabsFromActiveToInactive(Browser* active_browser,
                                   Browser* inactive_browser) {
-  CHECK(IsInactiveTabsEnabled());
+  PrefService* prefs = active_browser->GetProfile()->GetPrefs();
+  CHECK(!IsInactiveTabsExplicitlyDisabledByUser(prefs));
   CHECK_NE(active_browser, inactive_browser);
 
   MoveTabsAccordingToPolicy(
       active_browser, inactive_browser,
-      MovePolicy::InactiveOnly(InactiveTabsTimeThreshold()),
+      MovePolicy::InactiveOnly(InactiveTabsTimeThreshold(prefs)),
       "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive");
 }
 
 void MoveTabsFromInactiveToActive(Browser* inactive_browser,
                                   Browser* active_browser) {
-  CHECK(IsInactiveTabsEnabled());
+  PrefService* prefs = active_browser->GetProfile()->GetPrefs();
+  CHECK(!IsInactiveTabsExplicitlyDisabledByUser(prefs));
   CHECK_NE(active_browser, inactive_browser);
 
   MoveTabsAccordingToPolicy(
       inactive_browser, active_browser,
-      MovePolicy::ActiveOnly(InactiveTabsTimeThreshold()),
+      MovePolicy::ActiveOnly(InactiveTabsTimeThreshold(prefs)),
       "Tabs.DroppedDuplicatesCountOnMigrateInactiveToActive");
 }
 
 void RestoreAllInactiveTabs(Browser* inactive_browser,
                             Browser* active_browser) {
-  CHECK(!IsInactiveTabsEnabled());
+  CHECK(IsInactiveTabsExplicitlyDisabledByUser(
+      active_browser->GetProfile()->GetPrefs()));
   CHECK_NE(active_browser, inactive_browser);
 
   // Record the number of tabs restored from the inactive browser after Inactive

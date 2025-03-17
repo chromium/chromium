@@ -121,8 +121,8 @@ void FedCmHandler::DidShowDialog() {
       std::unique_ptr<FedCm::Account> entry =
           FedCm::Account::Create()
               .SetAccountId(account->id)
-              .SetEmail(account->email)
-              .SetName(account->name)
+              .SetEmail(account->display_identifier)
+              .SetName(account->display_name)
               .SetGivenName(account->given_name)
               .SetPictureUrl(account->picture.spec())
               .SetIdpConfigUrl(

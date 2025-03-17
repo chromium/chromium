@@ -52,6 +52,7 @@
 #include "media/gpu/h264_rate_controller.h"
 #include "media/gpu/h264_ratectrl_rtc.h"
 #include "media/gpu/windows/av1_video_rate_control_wrapper.h"
+#include "media/gpu/windows/format_utils.h"
 #include "media/gpu/windows/h264_video_rate_control_wrapper.h"
 #include "media/gpu/windows/mf_video_encoder_shared_state.h"
 #include "media/gpu/windows/mf_video_encoder_switches.h"
@@ -208,6 +209,7 @@ struct MediaFoundationVideoEncodeAccelerator::PendingInput {
   gfx::ColorSpace color_space;
   ComMFSample input_sample;
   bool resolving_shared_image = false;
+  gpu::Mailbox shared_image_token;
 };
 
 class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
@@ -286,11 +288,12 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   bool is_supported_format = false;
   if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing)) {
     is_supported_format =
-        base::ranges::find(kSupportedPixelFormatsD3DVideoProcessing,
-                           config.input_format) != kSupportedPixelFormats.end();
+        std::ranges::find(kSupportedPixelFormatsD3DVideoProcessing,
+                          config.input_format) !=
+        kSupportedPixelFormatsD3DVideoProcessing.end();
   } else {
     is_supported_format =
-        base::ranges::find(kSupportedPixelFormats, config.input_format) !=
+        std::ranges::find(kSupportedPixelFormats, config.input_format) !=
         kSupportedPixelFormats.end();
   }
 
@@ -589,33 +592,12 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeMFT(
   encoder_needs_input_counter_ = 0;
 
   if (!base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing) ||
-      input_format_ == PIXEL_FORMAT_NV12) {
+      input_format_ == PIXEL_FORMAT_NV12 ||
+      input_format_ == PIXEL_FORMAT_I420) {
     return true;
   }
 
-  mf_video_processor_ =
-      std::make_unique<MediaFoundationVideoProcessorAccelerator>(
-          gpu_preferences_, workarounds_);
-  MediaFoundationVideoProcessorAccelerator::Config vp_config;
-  vp_config.input_format = input_format_;
-  vp_config.input_visible_size = input_visible_size_;
-  // Primaries information is provided per frame and will be
-  // attached to the corresponding IMFSample.  This color
-  // space information now serves as a default if frame
-  // primaries are unknown.
-  vp_config.input_color_space = gfx::ColorSpace::CreateREC709();
-  vp_config.output_format = VideoPixelFormat::PIXEL_FORMAT_NV12;
-  vp_config.output_visible_size = input_visible_size_;
-  vp_config.output_color_space = gfx::ColorSpace::CreateREC709();
-  if (dxgi_resource_mapping_required_) {
-    hr = mf_video_processor_->Initialize(vp_config, nullptr,
-                                         media_log_->Clone());
-  } else {
-    hr = mf_video_processor_->Initialize(vp_config, dxgi_device_manager_,
-                                         media_log_->Clone());
-  }
-
-  if (FAILED(hr)) {
+  if (!InitMFVideoProcessor()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
                        "Couldn't initialize MF video processor for color "
                        "format conversion"});
@@ -624,7 +606,7 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeMFT(
 
   MEDIA_LOG(INFO, media_log_)
       << "Using video processor to convert from " << input_format_
-      << " to encoder accepted " << vp_config.output_format;
+      << " to encoder accepted PIXEL_FORMAT_NV12";
 
   return true;
 }
@@ -639,8 +621,9 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
     scoped_refptr<VideoFrame> frame,
     const EncodeOptions& options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Avoid corruption triggered by consecutive key frames on Intel drivers.
+  // See also https://crbug.com/40069818 and https://crbug.com/378681055.
   if (codec_ == VideoCodec::kVP9 &&
-      workarounds_.avoid_consecutive_keyframes_for_vp9 &&
       last_frame_was_keyframe_request_ && options.key_frame) {
     // Force a fake frame in between two key frames that come in a row. The
     // MFVEA will discard the output of this frame, and the client will never
@@ -702,6 +685,7 @@ void MediaFoundationVideoEncodeAccelerator::QueueInput(
   if (!frame->VideoFrame::HasMappableGpuBuffer() && frame->HasSharedImage() &&
       command_buffer_helper_) {
     result.resolving_shared_image = true;
+    result.shared_image_token = frame->shared_image()->mailbox();
     pending_input_queue_.push_back(result);
     auto d3d_device = dxgi_device_manager_->GetDevice();
     if (!d3d_device) {
@@ -1076,6 +1060,15 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
   input_since_keyframe_count_ = 0;
   client_->RequireBitstreamBuffers(kNumInputBuffers, input_visible_size_,
                                    bitstream_buffer_size_);
+
+  if (mf_video_processor_) {
+    hr = mf_video_processor_->UpdateOutputSize(input_visible_size_);
+    if (FAILED(hr)) {
+      NotifyErrorStatus(
+          {EncoderStatus::Codes::kSystemAPICallError,
+           "Couldn't update Video processor output size: " + PrintHr(hr)});
+    }
+  }
 }
 
 void MediaFoundationVideoEncodeAccelerator::Destroy() {
@@ -1144,14 +1137,15 @@ MediaFoundationVideoEncodeAccelerator::GetCommandBufferHelperResult
 GetCommandBufferHelperOnGpuThread(
     base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
         get_command_buffer_helper_cb,
-    CHROME_LUID luid) {
+    CHROME_LUID luid,
+    bool use_shared_device) {
   MediaFoundationVideoEncodeAccelerator::GetCommandBufferHelperResult result;
   result.command_buffer_helper = get_command_buffer_helper_cb.Run();
   scoped_refptr<gpu::SharedContextState> shared_context_state =
       result.command_buffer_helper->GetSharedImageStub()
           ->shared_context_state();
 
-  if (shared_context_state->GetD3D11Device()) {
+  if (use_shared_device && shared_context_state->GetD3D11Device()) {
     DCHECK(
         IsMatchingDevice(luid, shared_context_state->GetD3D11Device().Get()));
     result.shared_d3d_device = shared_context_state->GetD3D11Device();
@@ -1173,12 +1167,22 @@ void MediaFoundationVideoEncodeAccelerator::SetCommandBufferHelperCB(
     return;
   }
 
+  // With GL/Ganesh, shared images will be copied out of GL textures into
+  // a shared D3D texture created on MFVEA's own D3D device.  (See
+  // GLTextureImageBacking::ProduceVideo).  It may be possible to
+  // optimize out this copy by extracting the backing ANGLE texture
+  // and synchronize access, but the copy works without invasive
+  // work in ANGLE and is much better than readback.
+  // With GraphiteDawn, MFVEA will use a shared D3D device and directly
+  // access textures, with D3DImageBacking handling synchronization.
   SetState(kAcquiringCommandBuffer);
   gpu_task_runner_ = gpu_task_runner;
   gpu_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GetCommandBufferHelperOnGpuThread,
-                     get_command_buffer_helper_cb, luid_),
+                     get_command_buffer_helper_cb, luid_,
+                     gpu_preferences_.gr_context_type ==
+                         gpu::GrContextType::kGraphiteDawn),
       base::BindOnce(&MediaFoundationVideoEncodeAccelerator::
                          OnCommandBufferHelperAvailable,
                      weak_ptr_));
@@ -1410,6 +1414,12 @@ void MediaFoundationVideoEncodeAccelerator::SetSWRateControl() {
       return;
     }
 
+    if (vendor_ == DriverVendor::kQualcomm) {
+      // Qualcomm H264 HMFT does not work with SW BRC.
+      // More info: https://crbug.com/390581539
+      return;
+    }
+
     // Check feature flag for the camera source.
     if (content_type_ == VideoEncodeAccelerator::Config::ContentType::kCamera &&
         !base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH264Camera)) {
@@ -1426,8 +1436,14 @@ void MediaFoundationVideoEncodeAccelerator::SetSWRateControl() {
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   if (codec_ == VideoCodec::kHEVC) {
-    // H264 SW BRC supports up to two temporal layers.
+    // H265 SW BRC supports up to two temporal layers.
     if (num_temporal_layers_ > 2) {
+      return;
+    }
+
+    if (vendor_ == DriverVendor::kQualcomm) {
+      // Qualcomm H265 HMFT does not work with SW BRC.
+      // More info: https://crbug.com/390581539
       return;
     }
 
@@ -1681,7 +1697,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     std::optional<uint8_t> quantizer;
     int temporal_id = 0;
     if (input.options.quantizer.has_value()) {
-      DCHECK_EQ(codec_, VideoCodec::kH264);
+      DCHECK(codec_ == VideoCodec::kH264 || codec_ == VideoCodec::kHEVC);
       quantizer = std::clamp(static_cast<int>(input.options.quantizer.value()),
                              1, kH26xMaxQp);
     } else if (rate_ctrl_ && !input.discard_output) {
@@ -1788,16 +1804,32 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
   bool is_supported_format;
   if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing)) {
     is_supported_format =
-        base::ranges::find(kSupportedPixelFormatsD3DVideoProcessing,
-                           frame->format()) != kSupportedPixelFormats.end();
+        std::ranges::find(kSupportedPixelFormatsD3DVideoProcessing,
+                          frame->format()) !=
+        kSupportedPixelFormatsD3DVideoProcessing.end();
   } else {
     is_supported_format =
-        base::ranges::find(kSupportedPixelFormats, frame->format()) !=
+        std::ranges::find(kSupportedPixelFormats, frame->format()) !=
         kSupportedPixelFormats.end();
   }
   if (!is_supported_format) {
     LOG(ERROR) << "Unsupported video frame format";
     return MF_E_INVALID_STREAM_DATA;
+  }
+
+  if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing) &&
+      frame->format() != input_format_) {
+    input_format_ = frame->format();
+    if (frame->format() == PIXEL_FORMAT_NV12 ||
+        frame->format() == PIXEL_FORMAT_I420) {
+      mf_video_processor_ = nullptr;
+    } else if (!mf_video_processor_) {
+      if (!InitMFVideoProcessor()) {
+        LOG(ERROR)
+            << "Failed to initialize video processor for color conversion";
+        return MF_E_INVALID_STREAM_DATA;
+      }
+    }
   }
 
   auto hr = input_sample->SetSampleTime(frame->timestamp().InMicroseconds() *
@@ -1891,6 +1923,61 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
                << static_cast<uint32_t>(status.code());
     return E_FAIL;
   }
+
+  if (!base::FeatureList::IsEnabled(kMediaFoundationSharedImageEncode)) {
+    return S_OK;
+  }
+
+  // Input may be mixed shared image textures and CPU frames.  Encoder
+  // MFTs generally expect consistency, either all CPU frames or
+  // all textures.  Create a texture for CPU frames so that if
+  // textures are supplied as input later, the encoder does not fail.
+  // The MFT will do this internally anyway for CPU frames, so this
+  // does not add any additional work.
+  if (dxgi_device_manager_ && !dxgi_resource_mapping_required_) {
+    D3D11_TEXTURE2D_DESC input_desc = {
+        .Width = static_cast<UINT>(input_visible_size_.width()),
+        .Height = static_cast<UINT>(input_visible_size_.height()),
+        .MipLevels = 1,
+        .ArraySize = 1,
+        .Format = VideoPixelFormatToDxgiFormat(kTargetPixelFormat),
+        .SampleDesc = {1, 0},
+        .Usage = D3D11_USAGE_DEFAULT,
+        .BindFlags = D3D11_BIND_VIDEO_ENCODER,
+        .CPUAccessFlags = 0,
+        .MiscFlags = 0};
+    D3D11_SUBRESOURCE_DATA init_data = {
+        .pSysMem = scoped_buffer.get(),
+        .SysMemPitch = static_cast<UINT>(dst_y_stride),
+        .SysMemSlicePitch = 0};
+    ComD3D11Texture2D input_texture;
+    hr = dxgi_device_manager_->GetDevice()->CreateTexture2D(
+        &input_desc, &init_data, &input_texture);
+    RETURN_ON_HR_FAILURE(hr, "Failed to create input texture for frame", hr);
+    if (vendor_ == DriverVendor::kNvidia) {
+      // When passing an initialized texture to the Nvidia MFT, it may not
+      // "see" the data unless the device is flushed.
+      ComD3D11DeviceContext device_context;
+      dxgi_device_manager_->GetDevice()->GetImmediateContext(&device_context);
+      device_context->Flush();
+    }
+    ComMFMediaBuffer input_texture_buffer;
+    hr = MFCreateDXGISurfaceBuffer(__uuidof(ID3D11Texture2D),
+                                   input_texture.Get(), 0, FALSE,
+                                   &input_texture_buffer);
+    RETURN_ON_HR_FAILURE(hr, "Failed to create DXGI surface buffer for frame",
+                         hr);
+    DWORD buffer_length = 0;
+    hr = input_texture_buffer->GetMaxLength(&buffer_length);
+    RETURN_ON_HR_FAILURE(hr, "Failed to get max buffer length", hr);
+    hr = input_texture_buffer->SetCurrentLength(buffer_length);
+    RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
+    hr = input_sample->RemoveAllBuffers();
+    RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
+    hr = input_sample->AddBuffer(input_texture_buffer.Get());
+    RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
+  }
+
   return S_OK;
 }
 
@@ -1918,14 +2005,13 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
       VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
     gfx::GpuMemoryBufferHandle buffer_handle =
         frame->GetGpuMemoryBufferHandle();
-    CHECK(!buffer_handle.is_null());
-    CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
 
     ComD3D11Device1 device1;
     hr = d3d_device.As(&device1);
     RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
-    hr = device1->OpenSharedResource1(buffer_handle.dxgi_handle.Get(),
-                                      IID_PPV_ARGS(&input_texture));
+    hr = device1->OpenSharedResource1(
+        buffer_handle.dxgi_handle().buffer_handle(),
+        IID_PPV_ARGS(&input_texture));
     RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
   } else if (frame->HasSharedImage()) {
     DCHECK(input_sample);
@@ -1988,9 +2074,20 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
 
   if (mf_video_processor_) {
     // This sample needs color space conversion
-    ComMFSample vp_input_sample = std::move(input_sample);
-    hr = mf_video_processor_->Convert(vp_input_sample.Get(), &input_sample);
+    ComMFSample vp_output_sample;
+    hr = mf_video_processor_->Convert(input_sample.Get(), frame->format(),
+                                      &vp_output_sample);
+    // input_sample is the sample that will be fed to the encoder, but
+    // its buffers are from the original color format.  Remove those
+    // buffers and replace them with the buffer that has been
+    // converted to the target color format.
     RETURN_ON_HR_FAILURE(hr, "Failed to convert input frame", hr);
+    hr = input_sample->RemoveAllBuffers();
+    RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
+    ComMFMediaBuffer vp_output_buffer;
+    hr = vp_output_sample->GetBufferByIndex(0, &vp_output_buffer);
+    RETURN_ON_HR_FAILURE(hr, "Failed to get output buffer from sample", hr);
+    hr = input_sample->AddBuffer(vp_output_buffer.Get());
   }
 
   return S_OK;
@@ -2012,14 +2109,20 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     // - MFVP will output a different texture that can be used
     //    as encoder input with no synchronization issues.
     HRESULT hr;
+    ComMFSample vp_output_sample;
     if (frame->HasSharedImage()) {
-      ComMFSample vp_input_sample = std::move(input_sample);
-      hr = mf_video_processor_->Convert(vp_input_sample.Get(), &input_sample);
+      hr = mf_video_processor_->Convert(input_sample.Get(), frame->format(),
+                                        &vp_output_sample);
     } else {
-      input_sample = nullptr;
-      hr = mf_video_processor_->Convert(frame, &input_sample);
+      hr = mf_video_processor_->Convert(frame, &vp_output_sample);
     }
     RETURN_ON_HR_FAILURE(hr, "Failed to convert input frame", hr);
+    hr = input_sample->RemoveAllBuffers();
+    RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
+    ComMFMediaBuffer vp_output_buffer;
+    hr = vp_output_sample->GetBufferByIndex(0, &vp_output_buffer);
+    RETURN_ON_HR_FAILURE(hr, "Failed to get output buffer from sample", hr);
+    hr = input_sample->AddBuffer(vp_output_buffer.Get());
     return S_OK;
   }
 
@@ -2031,8 +2134,6 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
       VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
     gfx::GpuMemoryBufferHandle buffer_handle =
         frame->GetGpuMemoryBufferHandle();
-    CHECK(!buffer_handle.is_null());
-    CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
 
     auto d3d_device = dxgi_device_manager_->GetDevice();
     if (!d3d_device) {
@@ -2044,8 +2145,9 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     hr = d3d_device.As(&device1);
     RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
 
-    hr = device1->OpenSharedResource1(buffer_handle.dxgi_handle.Get(),
-                                      IID_PPV_ARGS(&input_texture));
+    hr = device1->OpenSharedResource1(
+        buffer_handle.dxgi_handle().buffer_handle(),
+        IID_PPV_ARGS(&input_texture));
     RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
   } else if (frame->HasSharedImage()) {
     ComMFMediaBuffer texture_buffer;
@@ -2705,12 +2807,24 @@ void MediaFoundationVideoEncodeAccelerator::OnSharedImageSampleAvailable(
     return;
   }
 
-  DCHECK(!pending_input_queue_.empty());
-  auto& next_input = pending_input_queue_.front();
-  next_input.input_sample = sample;
-  next_input.resolving_shared_image = false;
+  // If the encoding client quickly supplies multiple shared texture
+  // frames, there could be multiple shared images being resolved at
+  // the same time.  This sample needs to be linked with the correct
+  // frame in the queue.  In some circumstances, the client may supply
+  // multiple VideoFrames backed by the same mailbox, so ensure a
+  // queued frame being resolved gets completed.
+  auto it = pending_input_queue_.begin();
+  for (; it != pending_input_queue_.end(); it++) {
+    if (it->shared_image_token == frame->shared_image()->mailbox() &&
+        it->resolving_shared_image) {
+      it->input_sample = sample;
+      it->resolving_shared_image = false;
+      break;
+    }
+  }
+  DCHECK(it != pending_input_queue_.end());
 
-  HRESULT hr = PopulateInputSampleBuffer(next_input, std::move(frame));
+  HRESULT hr = PopulateInputSampleBuffer(*it, std::move(frame));
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "Failed to populate input sample buffer"});
@@ -2720,6 +2834,32 @@ void MediaFoundationVideoEncodeAccelerator::OnSharedImageSampleAvailable(
   if (encoder_needs_input_counter_ > 0) {
     FeedInputs();
   }
+}
+
+bool MediaFoundationVideoEncodeAccelerator::InitMFVideoProcessor() {
+  mf_video_processor_ =
+      std::make_unique<MediaFoundationVideoProcessorAccelerator>(
+          gpu_preferences_, workarounds_);
+  bool initialized = false;
+  MediaFoundationVideoProcessorAccelerator::Config vp_config;
+  vp_config.input_format = input_format_;
+  vp_config.input_visible_size = input_visible_size_;
+  // Primaries information is provided per frame and will be
+  // attached to the corresponding IMFSample.  This color
+  // space information now serves as a default if frame
+  // primaries are unknown.
+  vp_config.input_color_space = gfx::ColorSpace::CreateREC709();
+  vp_config.output_format = VideoPixelFormat::PIXEL_FORMAT_NV12;
+  vp_config.output_visible_size = input_visible_size_;
+  vp_config.output_color_space = gfx::ColorSpace::CreateREC709();
+  if (dxgi_resource_mapping_required_) {
+    initialized = mf_video_processor_->Initialize(vp_config, nullptr,
+                                                  media_log_->Clone());
+  } else {
+    initialized = mf_video_processor_->Initialize(
+        vp_config, dxgi_device_manager_, media_log_->Clone());
+  }
+  return initialized;
 }
 
 HRESULT MediaFoundationVideoEncodeAccelerator::GetParameters(DWORD* pdwFlags,

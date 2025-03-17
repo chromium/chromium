@@ -54,7 +54,7 @@ generate_profile_test("generate_profile_android_trichrome_chrome_bundle") {
   suffix = "_android_trichrome_chrome_bundle"
 }
 
-if (android_64bit_target_cpu) {
+if (defined(android_app_secondary_abi)) {
   generate_profile_test(
       "generate_profile_android_trichrome_chrome_64_32_bundle") {
     browser_name = "android-trichrome-chrome-64-32-bundle"

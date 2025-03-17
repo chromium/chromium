@@ -160,10 +160,7 @@ export class SettingsToggleButtonElement extends
     if (this.controlDisabled()) {
       return;
     }
-
-    this.checked = !this.checked;
-    this.notifyChangedByUserInteraction();
-    this.fire_('change');
+    this.updateCheckedAndNotify_(!this.checked);
   }
 
   private onLearnMoreClick_(e: CustomEvent<boolean>) {
@@ -198,8 +195,16 @@ export class SettingsToggleButtonElement extends
   }
 
   private onChange_(e: CustomEvent<boolean>) {
-    this.checked = e.detail;
+    // Prevent cr-toggle's change event from propagating to the parent since
+    // this element fires its own 'change' event.
+    e.stopPropagation();
+    this.updateCheckedAndNotify_(e.detail);
+  }
+
+  private updateCheckedAndNotify_(checked: boolean) {
+    this.checked = checked;
     this.notifyChangedByUserInteraction();
+    this.fire_('change', this.checked);
   }
 }
 

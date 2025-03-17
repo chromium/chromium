@@ -5,6 +5,7 @@
 #include "ash/login/ui/access_code_input.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_textfield.h"
@@ -88,8 +89,8 @@ void FlexCodeInput::InsertDigit(int value) {
   DCHECK_LE(0, value);
   DCHECK_GE(9, value);
   if (code_field_->GetEnabled()) {
-    code_field_->SetText(code_field_->GetText() +
-                         base::NumberToString16(value));
+    code_field_->SetText(
+        base::StrCat({code_field_->GetText(), base::NumberToString16(value)}));
     on_input_change_.Run(true);
   }
 }
@@ -108,7 +109,7 @@ void FlexCodeInput::Backspace() {
 }
 
 std::optional<std::string> FlexCodeInput::GetCode() const {
-  std::u16string code = code_field_->GetText();
+  std::u16string_view code = code_field_->GetText();
   if (!code.length()) {
     return std::nullopt;
   }
@@ -258,7 +259,7 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
     field->SetFontList(views::Textfield::GetDefaultFontList().Derive(
         kAccessCodeFontSizeDeltaDp, gfx::Font::FontStyle::NORMAL,
         gfx::Font::Weight::NORMAL));
-    field->SetBorder(views::CreateThemedSolidSidedBorder(
+    field->SetBorder(views::CreateSolidSidedBorder(
         gfx::Insets::TLBR(0, 0, kAccessCodeInputFieldUnderlineThicknessDp, 0),
         text_color_id));
     field->SetGroup(kFixedLengthInputGroup);
@@ -267,7 +268,7 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
     // FixedLengthCodeInput object.
     field->GetViewAccessibility().set_propagate_focus_to_ancestor(true);
     input_fields_.push_back(field);
-    AddChildView(field);
+    AddChildViewRaw(field);
     layout->SetFlexForView(field, 1);
   }
   text_value_for_a11y_ = std::u16string(length, ' ');
@@ -294,7 +295,8 @@ void FixedLengthCodeInput::InsertDigit(int value) {
   bool was_last_field = IsLastFieldActive();
   ResetTextValueForA11y();
   FocusNextField();
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTextSelectionChanged,
+                                     true);
   on_input_change_.Run(was_last_field, GetCode().has_value());
 }
 
@@ -313,7 +315,8 @@ void FixedLengthCodeInput::Backspace() {
   ActiveField()->SetText(std::u16string());
   ResetTextValueForA11y();
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTextSelectionChanged,
+                                     true);
   on_input_change_.Run(IsLastFieldActive(), false /*complete*/);
 }
 
@@ -341,7 +344,7 @@ void FixedLengthCodeInput::SetInputColorId(ui::ColorId color_id) {
     field->SetTextColorId(color_id);
     // We don't update the underline color to red.
     if (color_id != error_color_id) {
-      field->SetBorder(views::CreateThemedSolidSidedBorder(
+      field->SetBorder(views::CreateSolidSidedBorder(
           gfx::Insets::TLBR(0, 0, kAccessCodeInputFieldUnderlineThicknessDp, 0),
           color_id));
     }
@@ -427,12 +430,14 @@ bool FixedLengthCodeInput::HandleKeyEvent(views::Textfield* sender,
     InsertDigit(key_code - ui::VKEY_NUMPAD0);
   } else if (key_code == ui::VKEY_LEFT && arrow_navigation_allowed_) {
     FocusPreviousField();
-    NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTextSelectionChanged,
+                                       true);
   } else if (key_code == ui::VKEY_RIGHT && arrow_navigation_allowed_) {
     // Do not allow to leave empty field when moving focus with arrow key.
     if (!ActiveInput().empty()) {
       FocusNextField();
-      NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+      NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kTextSelectionChanged, true);
     }
   } else if (key_code == ui::VKEY_BACK) {
     Backspace();
@@ -467,7 +472,8 @@ void FixedLengthCodeInput::ContentsChanged(views::Textfield* sender,
   bool was_last_field = IsLastFieldActive();
   ResetTextValueForA11y();
   FocusNextField();
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTextSelectionChanged,
+                                     true);
   on_input_change_.Run(was_last_field, GetCode().has_value());
 }
 
@@ -483,7 +489,8 @@ bool FixedLengthCodeInput::HandleMouseEvent(views::Textfield* sender,
     if (input_fields_[i] == sender) {
       active_input_index_ = i;
       RequestFocus();
-      NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+      NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kTextSelectionChanged, true);
       break;
     }
   }
@@ -503,7 +510,8 @@ bool FixedLengthCodeInput::HandleGestureEvent(
     if (input_fields_[i] == sender) {
       active_input_index_ = i;
       RequestFocus();
-      NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+      NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kTextSelectionChanged, true);
       break;
     }
   }
@@ -523,7 +531,7 @@ void FixedLengthCodeInput::SetReadOnly(bool read_only) {
   for (ash::AccessibleInputField* field : input_fields_) {
     field->SetReadOnly(read_only);
     field->SetBackground(nullptr);
-    field->SetBorder(views::CreateThemedSolidSidedBorder(
+    field->SetBorder(views::CreateSolidSidedBorder(
         gfx::Insets::TLBR(0, 0, kAccessCodeInputFieldUnderlineThicknessDp, 0),
         underline_color_id));
     field->SetCursorEnabled(!read_only);
@@ -594,7 +602,7 @@ AccessibleInputField* FixedLengthCodeInput::ActiveField() const {
   return input_fields_[active_input_index_];
 }
 
-const std::u16string& FixedLengthCodeInput::ActiveInput() const {
+std::u16string_view FixedLengthCodeInput::ActiveInput() const {
   return ActiveField()->GetText();
 }
 

@@ -206,6 +206,14 @@
   <message name="IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE_MID_SENTENCE" desc="The label used for the File System Access write site settings controls when used mid-sentence. The write permission determines whether sites are allowed to save to the original file that was selected by the user through the File System Access API.">
     file editing
   </message>
+
+  <message name="IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK_ACCESS" desc="The label used for the local network access site settings controls.">
+    Local network access
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK_ACCESS_MID_SENTENCE" desc="The label used for the local network access site settings controls when used mid-sentence.">
+    local network access
+  </message>
+
   <!-- Site Settings desktop-only -->
   <if expr="not is_android">
   <message name="IDS_SITE_SETTINGS_TYPE_FONT_ACCESS" desc="The label used for the local font access site settings controls.">
@@ -239,10 +247,10 @@
     insecure content
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_KEYBOARD_LOCK" desc="The label used for the keyboard lock site settings controls.">
-    Keyboard lock and use
+    Keyboard override
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_KEYBOARD_LOCK_MID_SENTENCE" desc="The label used for the keyboard lock site settings controls when used mid-sentence, e.g. 'Automatically blocked keyboard lock and use'.">
-    keyboard lock and use
+    keyboard override
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_PAYMENT_HANDLER" desc="The label used for the payment handler site settings controls.">
     Payment handlers

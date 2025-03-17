@@ -20,19 +20,6 @@ namespace content {
 
 namespace {
 
-FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
-                                                  const url::Origin& requester,
-                                                  const url::Origin& embedder) {
-  // Since FedCM methods are not supported in FencedFrames, we can know whether
-  // this is a main frame by calling GetParent().
-  if (!rfh.GetParent()) {
-    return FedCmRequesterFrameType::kMainFrame;
-  }
-  return webid::IsSameSite(requester, embedder)
-             ? FedCmRequesterFrameType::kSameSiteIframe
-             : FedCmRequesterFrameType::kCrossSiteIframe;
-}
-
 FedCmMetrics::NumAccounts ComputeNumMatchingAccounts(
     size_t accounts_remaining) {
   if (accounts_remaining == 0u) {
@@ -287,7 +274,9 @@ void FedCmMetrics::RecordRequestTokenStatus(
     const RpMode& rp_mode,
     std::optional<FedCmUseOtherAccountResult> use_other_account_result,
     std::optional<FedCmVerifyingDialogResult> verifying_dialog_result,
-    FedCmThirdPartyCookiesStatus tpc_status) {
+    FedCmThirdPartyCookiesStatus tpc_status,
+    const FedCmRequesterFrameType& requester_frame_type,
+    std::optional<bool> has_signin_account) {
   // The following check is to avoid double recording in the following scenario:
   // 1. The request has failed but we have not yet rejected the promise, e.g.
   // when the API is disabled. We record a metric immediately but only post a
@@ -324,6 +313,10 @@ void FedCmMetrics::RecordRequestTokenStatus(
       ukm_builder.SetVerifyingDialogResult(
           static_cast<int>(*verifying_dialog_result));
     }
+    ukm_builder.SetFrameType(static_cast<int>(requester_frame_type));
+    if (has_signin_account.has_value()) {
+      ukm_builder.SetHasSigninAccount(*has_signin_account);
+    }
     ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
@@ -352,6 +345,7 @@ void FedCmMetrics::RecordRequestTokenStatus(
   base::UmaHistogramEnumeration("Blink.FedCm.Status.MediationRequirement",
                                 requirement);
   base::UmaHistogramEnumeration("Blink.FedCm.RpMode", rp_mode);
+  base::UmaHistogramEnumeration("Blink.FedCm.FrameType", requester_frame_type);
   if (use_other_account_result.has_value()) {
     base::UmaHistogramEnumeration("Blink.FedCm.UseOtherAccountResult",
                                   *use_other_account_result);
@@ -359,6 +353,10 @@ void FedCmMetrics::RecordRequestTokenStatus(
   if (verifying_dialog_result.has_value()) {
     base::UmaHistogramEnumeration("Blink.FedCm.VerifyingDialogResult",
                                   *verifying_dialog_result);
+  }
+  if (has_signin_account.has_value()) {
+    base::UmaHistogramBoolean("Blink.FedCm.HasSigninAccount",
+                              *has_signin_account);
   }
   // Reset the `session_id_`. We expect no more metrics from this API call.
   session_id_ = -1;
@@ -574,14 +572,10 @@ void FedCmMetrics::RecordAccountsRequestSent(const GURL& provider_url) {
 void FedCmMetrics::RecordDisconnectMetrics(
     FedCmDisconnectStatus status,
     std::optional<base::TimeDelta> duration,
-    const RenderFrameHost& rfh,
-    const url::Origin& requester,
-    const url::Origin& embedder,
+    const FedCmRequesterFrameType& requester_frame_type,
     const GURL& provider_url,
     int disconnect_session_id) {
   DCHECK_GT(disconnect_session_id, 0);
-  FedCmRequesterFrameType requester_frame_type =
-      ComputeRequesterFrameType(rfh, requester, embedder);
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetStatus_Disconnect(static_cast<int>(status));
     ukm_builder.SetDisconnect_FrameType(static_cast<int>(requester_frame_type));
@@ -767,6 +761,30 @@ void FedCmMetrics::RecordMultipleRequestsFromDifferentIdPs(
                             from_different_idps);
 }
 
+void FedCmMetrics::RecordRpUrlHasPath(bool rp_url_has_path) {
+  DCHECK_GT(session_id_, 0);
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetRpUrlHasPath(rp_url_has_path);
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+}
+
+void FedCmMetrics::RecordAccountSelectionScrollPosition(
+    const gfx::Point& scroll_position) {
+  DCHECK_GT(session_id_, 0);
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetAccountSelectionScrollPosition(ukm::GetExponentialBucketMin(
+        scroll_position.y(), /*bucket_spacing=*/1.15));
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+}
+
 ukm::SourceId FedCmMetrics::GetOrCreateProviderSourceId(const GURL& provider) {
   auto it = provider_source_ids_.find(provider);
   if (it != provider_source_ids_.end()) {
@@ -779,21 +797,13 @@ ukm::SourceId FedCmMetrics::GetOrCreateProviderSourceId(const GURL& provider) {
   return source_id;
 }
 
-void RecordPreventSilentAccess(RenderFrameHost& rfh,
-                               const url::Origin& requester,
-                               const url::Origin& embedder) {
-  FedCmRequesterFrameType requester_frame_type =
-      ComputeRequesterFrameType(rfh, requester, embedder);
+void RecordPreventSilentAccess(
+    const FedCmRequesterFrameType& requester_frame_type,
+    int source_id) {
   base::UmaHistogramEnumeration("Blink.FedCm.PreventSilentAccessFrameType",
                                 requester_frame_type);
 
-  // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
-  // prerendering page. As FederatedAithRequest runs behind the
-  // BrowserInterfaceBinders, the service doesn't receive any request while
-  // prerendering, and the CHECK should always meet the condition.
-  CHECK(
-      !rfh.IsInLifecycleState(RenderFrameHost::LifecycleState::kPrerendering));
-  ukm::builders::Blink_FedCm ukm_builder(rfh.GetPageUkmSourceId());
+  ukm::builders::Blink_FedCm ukm_builder(source_id);
   ukm_builder.SetPreventSilentAccessFrameType(
       static_cast<int>(requester_frame_type));
   ukm_builder.Record(ukm::UkmRecorder::Get());

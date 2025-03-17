@@ -34,6 +34,11 @@ class AvatarFetcher {
   AvatarFetcher(const AvatarFetcher& other) = delete;
   AvatarFetcher& operator=(const AvatarFetcher& other) = delete;
 
+  // Performs a request for the avatar at the given URL. |callback| is
+  // triggered with the result of the request, whether the returned
+  // image is empty or not. It is expected that each platform performs
+  // its own logic for rendering a placeholder when the image is empty,
+  // due to the need for theme-aware colors.
   void Fetch(const GURL& avatar_url,
              int size,
              ImageCallback callback,

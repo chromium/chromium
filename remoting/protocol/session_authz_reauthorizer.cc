@@ -32,13 +32,13 @@ constexpr net::BackoffEntry::Policy kBackoffPolicy = {
     .always_use_initial_delay = false,
 };
 
-bool IsRetriableError(ProtobufHttpStatus::Code code) {
-  DCHECK_NE(code, ProtobufHttpStatus::Code::OK);
+bool IsRetriableError(HttpStatus::Code code) {
+  DCHECK_NE(code, HttpStatus::Code::OK);
   switch (code) {
-    case ProtobufHttpStatus::Code::ABORTED:
-    case ProtobufHttpStatus::Code::UNAVAILABLE:
-    case ProtobufHttpStatus::Code::NETWORK_ERROR:
-    case ProtobufHttpStatus::Code::UNKNOWN:
+    case HttpStatus::Code::ABORTED:
+    case HttpStatus::Code::UNAVAILABLE:
+    case HttpStatus::Code::NETWORK_ERROR:
+    case HttpStatus::Code::UNKNOWN:
       return true;
     default:
       return false;
@@ -83,16 +83,14 @@ void SessionAuthzReauthorizer::ScheduleNextReauth() {
 
 void SessionAuthzReauthorizer::Reauthorize() {
   HOST_LOG << "Reauthorizing session...";
-  internal::ReauthorizeHostRequestStruct request;
-  request.session_id = session_id_;
-  request.session_reauth_token = session_reauth_token_;
   service_client_->ReauthorizeHost(
-      request, base::BindOnce(&SessionAuthzReauthorizer::OnReauthorizeResult,
-                              base::Unretained(this)));
+      session_reauth_token_, session_id_,
+      base::BindOnce(&SessionAuthzReauthorizer::OnReauthorizeResult,
+                     base::Unretained(this)));
 }
 
 void SessionAuthzReauthorizer::OnReauthorizeResult(
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<internal::ReauthorizeHostResponseStruct> response) {
   if (!status.ok()) {
     LOG(ERROR) << "SessionAuthz reauthorization failed with error. Code: "

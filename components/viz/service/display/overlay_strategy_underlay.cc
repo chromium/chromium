@@ -63,8 +63,8 @@ void OverlayStrategyUnderlay::Propose(
     // If we are requiring an overlay, then we should not block it due to this
     // condition.
     if (!candidate.requires_overlay &&
-        candidate_factory.IsOccludedByFilteredQuad(
-            candidate, quad_list.begin(), it, render_pass_backdrop_filters)) {
+        OverlayCandidateFactory::IsOccludedByFilteredQuad(
+            **it, quad_list.begin(), it, render_pass_backdrop_filters)) {
       continue;
     }
 

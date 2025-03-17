@@ -218,7 +218,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
     ([
       ['tab.title', this.$.primaryText],
       ['hostname', this.$.secondaryText],
-      ['tabGroup.title', this.shadowRoot!.querySelector('#groupTitle')],
+      ['tabGroup.title', this.shadowRoot.querySelector('#groupTitle')],
     ] as Array<[string, HTMLElement | null]>)
         .forEach(([path, element]) => {
           if (element) {

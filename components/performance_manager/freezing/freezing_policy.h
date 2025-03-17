@@ -13,8 +13,10 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/freezing/cannot_freeze_reason.h"
@@ -82,6 +84,9 @@ class FreezingPolicy : public PageNodeObserver,
   std::set<std::string> GetCannotFreezeReasons(const PageNode* page_node);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(FreezingPolicyBatterySaverTest,
+                           RecordFreezingEligibilityUKMForPageStatic);
+
   // State of a browsing instance.
   struct BrowsingInstanceState {
     BrowsingInstanceState();
@@ -94,12 +99,18 @@ class FreezingPolicy : public PageNodeObserver,
     // but may contain an unbounded amount of pages connected via opener
     // relationship).
     base::flat_set<const PageNode*> pages;
-    // Whether a group of same-origin frames/workers associated with this
-    // browsing instance used a lot of CPU in background.
-    bool cpu_intensive_in_background = false;
-    // Whether a page associated with this browsing instance had a
-    // `CannotFreezeReason` at any time since the last CPU measurement.
-    bool had_cannot_freeze_reason_since_last_cpu_measurement = false;
+    // Highest CPU measurement for a group of same-origin frames/workers
+    // associated with this browsing instance, over the last measurement period.
+    // (1.0 = 100% of 1 core)
+    std::optional<double> highest_cpu_current_interval;
+    // Highest CPU measurement for a group of same-origin frames/workers
+    // associated within this browsing instance, over any past measurement
+    // period during which no `CannotFreezeReason` was applicable.
+    // (1.0 = 100% of 1 core)
+    double highest_cpu_any_interval_without_cannot_freeze_reason = 0.0;
+    // `CannotFreezeReason`s applicable to this browsing instance at any point
+    // since the last CPU measurement.
+    CannotFreezeReasonSet cannot_freeze_reasons_since_last_cpu_measurement;
     // First per-origin Private Memory Footprint measurement taken after this
     // browsing instance became frozen. Empty if not all pages in this browsing
     // instance are frozen.
@@ -126,9 +137,9 @@ class FreezingPolicy : public PageNodeObserver,
                                   bool add,
                                   CannotFreezeReason reason);
 
-  // Returns true iff a page associated with `browsing_instance_state` has a
-  // `CannotFreezeReason`.
-  static bool HasCannotFreezeReason(
+  // Returns the union of `CannotFreezeReason`s applicable to pages associated
+  // with `browsing_instance_state`.
+  static CannotFreezeReasonSet GetCannotFreezeReasons(
       const BrowsingInstanceState& browsing_instance_state);
 
   // GraphOwned implementation:
@@ -197,6 +208,28 @@ class FreezingPolicy : public PageNodeObserver,
   // `browser_context_id` changes.
   void OnOptOutPolicyChanged(std::string_view browser_context_id);
 
+  // Records freezing eligibility UKM for all pages.
+  void RecordFreezingEligibilityUKM();
+
+  // Records freezing eligibility UKM for a page. Virtual for testing.
+  virtual void RecordFreezingEligibilityUKMForPage(
+      ukm::SourceId source_id,
+      double highest_cpu_current_interval,
+      double highest_cpu_any_interval_without_cannot_freeze_reason,
+      CannotFreezeReasonSet cannot_freeze_reasons);
+
+  // Records freezing eligibility UKM for a page. Static implementation.
+  //
+  // Note: The virtual method RecordFreezingEligibilityUKMForPage() and the
+  // static method RecordFreezingEligibilityUKMForPageStatic() are separate to
+  // facilitate testing the code that produces the inputs for the UKM event and
+  // the code that records the UKM event based on these inputs separately.
+  static void RecordFreezingEligibilityUKMForPageStatic(
+      ukm::SourceId source_id,
+      double highest_cpu_current_interval,
+      double highest_cpu_any_interval_without_cannot_freeze_reason,
+      CannotFreezeReasonSet cannot_freeze_reasons);
+
   // Used to freeze pages.
   std::unique_ptr<Freezer> freezer_;
 
@@ -208,7 +241,7 @@ class FreezingPolicy : public PageNodeObserver,
 
   // State of each browsing instance.
   std::map<content::BrowsingInstanceId, BrowsingInstanceState>
-      browsing_instances_;
+      browsing_instance_states_;
 
   // Whether Battery Saver is currently active.
   bool is_battery_saver_active_ = false;
@@ -227,6 +260,9 @@ class FreezingPolicy : public PageNodeObserver,
   // belong to the same [browsing instance, origin] over an interval, based on
   // cumulative measurements from `resource_usage_query_`.
   resource_attribution::CPUProportionTracker cpu_proportion_tracker_;
+
+  // Used to subsample the emission of UKM events.
+  base::MetricsSubSampler metrics_subsampler_;
 
   base::WeakPtrFactory<FreezingPolicy> weak_factory_{this};
 };

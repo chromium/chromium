@@ -75,15 +75,13 @@ SyncAccountInfo DetermineAccountToUse(
 
 }  // namespace
 
-SyncAuthManager::SyncAuthManager(
-    signin::IdentityManager* identity_manager,
-    const AccountStateChangedCallback& account_state_changed,
-    const CredentialsChangedCallback& credentials_changed)
+SyncAuthManager::SyncAuthManager(signin::IdentityManager* identity_manager,
+                                 Delegate* delegate)
     : identity_manager_(identity_manager),
-      account_state_changed_callback_(account_state_changed),
-      credentials_changed_callback_(credentials_changed),
+      delegate_(delegate),
       request_access_token_backoff_(
           &kIgnoreFirstErrorRequestAccessTokenBackoffPolicy) {
+  CHECK(delegate_);
   // `identity_manager_` can be null if local Sync is enabled.
 }
 
@@ -259,7 +257,7 @@ void SyncAuthManager::InvalidateAccessToken() {
       signin::ScopeSet{GaiaConstants::kChromeSyncOAuth2Scope}, access_token_);
 
   access_token_.clear();
-  credentials_changed_callback_.Run();
+  delegate_->SyncAuthCredentialsChanged();
 }
 
 void SyncAuthManager::ClearAccessTokenAndRequest() {
@@ -330,14 +328,14 @@ void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
     // that's not going to happen in this case.
     SetLastAuthError(token_error);
 
-    credentials_changed_callback_.Run();
+    delegate_->SyncAuthCredentialsChanged();
   } else if (last_auth_error_ != GoogleServiceAuthError::AuthErrorNone()) {
     DCHECK(last_auth_error_.IsPersistentError());
     // Conversely, if we just exited the paused state, we need to reset the last
     // auth error and tell our client (i.e. the SyncService) so that it'll know
     // to resume syncing (if appropriate).
     SetLastAuthError(GoogleServiceAuthError::AuthErrorNone());
-    credentials_changed_callback_.Run();
+    delegate_->SyncAuthCredentialsChanged();
 
     // If we have an open connection to the server, then also get a new access
     // token now.
@@ -388,7 +386,7 @@ void SyncAuthManager::OnRefreshTokensLoaded() {
     // been called yet. However, this is the first time we can reliably tell the
     // user is signed out, exposed via IsActiveAccountInfoFullyLoaded(), so
     // let's treat it as account state change.
-    account_state_changed_callback_.Run();
+    delegate_->SyncAuthAccountStateChanged();
   }
 }
 
@@ -420,7 +418,7 @@ bool SyncAuthManager::UpdateSyncAccountIfNecessary() {
     // The `is_sync_consented` bit *has* changed, so update our state and
     // notify.
     sync_account_ = new_account;
-    account_state_changed_callback_.Run();
+    delegate_->SyncAuthAccountStateChanged();
     return true;
   }
 
@@ -432,7 +430,7 @@ bool SyncAuthManager::UpdateSyncAccountIfNecessary() {
     sync_account_ = SyncAccountInfo();
     // Let the client (SyncService) know of the removed account *before*
     // throwing away the access token, so it can do "unregister" tasks.
-    account_state_changed_callback_.Run();
+    delegate_->SyncAuthAccountStateChanged();
     // Also clear any pending request or auth errors we might have, since they
     // aren't meaningful anymore.
     partial_token_status_ = SyncTokenStatus();
@@ -444,7 +442,7 @@ bool SyncAuthManager::UpdateSyncAccountIfNecessary() {
   if (!new_account.account_info.account_id.empty()) {
     DCHECK_EQ(GoogleServiceAuthError::NONE, last_auth_error_.state());
     sync_account_ = new_account;
-    account_state_changed_callback_.Run();
+    delegate_->SyncAuthAccountStateChanged();
   }
 
   return true;
@@ -517,7 +515,7 @@ void SyncAuthManager::AccessTokenFetched(
     SetLastAuthError(error);
   }
 
-  credentials_changed_callback_.Run();
+  delegate_->SyncAuthCredentialsChanged();
 }
 
 void SyncAuthManager::SetLastAuthError(const GoogleServiceAuthError& error) {

@@ -35,26 +35,26 @@ class SendHeartbeatResponse;
 }  // namespace v1
 }  // namespace apis
 
+class HttpStatus;
 class OAuthTokenGetter;
-class ProtobufHttpStatus;
 
 // A service client that communicates with the directory service.
 class DirectoryServiceClient {
  public:
   using DeleteHostCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus&,
+      base::OnceCallback<void(const HttpStatus&,
                               std::unique_ptr<apis::v1::DeleteHostResponse>)>;
   using GetHostListCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus&,
+      base::OnceCallback<void(const HttpStatus&,
                               std::unique_ptr<apis::v1::GetHostListResponse>)>;
   using LegacyHeartbeatCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus&,
+      base::OnceCallback<void(const HttpStatus&,
                               std::unique_ptr<apis::v1::HeartbeatResponse>)>;
   using RegisterHostCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus&,
+      base::OnceCallback<void(const HttpStatus&,
                               std::unique_ptr<apis::v1::RegisterHostResponse>)>;
   using SendHeartbeatCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<apis::v1::SendHeartbeatResponse>)>;
 
   DirectoryServiceClient(

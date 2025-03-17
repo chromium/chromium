@@ -4,17 +4,20 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubCameraSubpage} from 'chrome://os-settings/lazy_load.js';
-import {appPermissionHandlerMojom, CrLinkRowElement, CrToggleElement, PrivacyHubSensorSubpageUserAction, Router, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import type {SettingsPrivacyHubCameraSubpage} from 'chrome://os-settings/lazy_load.js';
+import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {appPermissionHandlerMojom, CrLinkRowElement, CrToggleElement} from 'chrome://os-settings/os_settings.js';
+import {PrivacyHubSensorSubpageUserAction, Router, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeMediaDevices} from '../fake_media_devices.js';
-import {FakeMetricsPrivate} from '../fake_metrics_private.js';
+import type {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
 import {FakeAppPermissionHandler} from './fake_app_permission_handler.js';
 import {createApp, createFakeMetricsPrivate, getSystemServicePermissionText, getSystemServicesFromSubpage} from './privacy_hub_app_permission_test_util.js';
@@ -85,7 +88,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
         '#cameraListSection'));
   }
 
-  function getNoCameraTextElement(): HTMLDivElement|null {
+  function getNoCameraTextElement(): HTMLElement|null {
     return privacyHubCameraSubpage.shadowRoot!.querySelector('#noCameraText');
   }
 
@@ -133,7 +136,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
         privacyHubCameraSubpage.i18n(
             'privacyHubSensorNameWithBlockedSuffix', 'Fake Camera'),
         privacyHubCameraSubpage.shadowRoot!
-            .querySelector<HTMLDivElement>(
+            .querySelector<HTMLElement>(
                 '#cameraNameWithBlockedSuffix')!.innerText.trim());
   });
 
@@ -296,7 +299,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
     }
   });
 
-  function getNoAppHasAccessTextSection(): HTMLDivElement|null {
+  function getNoAppHasAccessTextSection(): HTMLElement|null {
     return privacyHubCameraSubpage.shadowRoot!.querySelector(
         '#noAppHasAccessText');
   }
@@ -387,8 +390,8 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
         '#managePermissionsInChromeRow');
   }
 
-  function getNoWebsiteHasAccessTextRow(): HTMLDivElement|null {
-    return privacyHubCameraSubpage.shadowRoot!.querySelector<HTMLDivElement>(
+  function getNoWebsiteHasAccessTextRow(): HTMLElement|null {
+    return privacyHubCameraSubpage.shadowRoot!.querySelector<HTMLElement>(
         '#noWebsiteHasAccessText');
   }
 

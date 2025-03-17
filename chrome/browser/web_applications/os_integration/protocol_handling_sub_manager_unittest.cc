@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -134,16 +133,17 @@ TEST_F(ProtocolHandlingConfigureTest, ConfigureOnlyProtocolHandler) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
-                testing::Eq(1));
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
+              testing::Eq(1));
 
-    const proto::ProtocolsHandled::Protocol& protocol_handler_state =
-        os_integration_state.protocols_handled().protocols(0);
+  const proto::os_state::ProtocolsHandled::Protocol& protocol_handler_state =
+      os_integration_state.protocols_handled().protocols(0);
 
-    ASSERT_THAT(protocol_handler_state.protocol(),
-                testing::Eq(protocol_handler.protocol));
-    ASSERT_THAT(protocol_handler_state.url(), testing::Eq(handler_url));
+  ASSERT_THAT(protocol_handler_state.protocol(),
+              testing::Eq(protocol_handler.protocol));
+  ASSERT_THAT(protocol_handler_state.url(), testing::Eq(handler_url));
 }
 
 TEST_F(ProtocolHandlingConfigureTest, UninstalledAppDoesNotConfigure) {
@@ -188,16 +188,17 @@ TEST_F(ProtocolHandlingConfigureTest, ConfigureProtocolHandlerDisallowed) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
-                testing::Eq(1));
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
+              testing::Eq(1));
 
-    const proto::ProtocolsHandled::Protocol& protocol_handler_state =
-        os_integration_state.protocols_handled().protocols(0);
+  const proto::os_state::ProtocolsHandled::Protocol& protocol_handler_state =
+      os_integration_state.protocols_handled().protocols(0);
 
-    ASSERT_THAT(protocol_handler_state.protocol(),
-                testing::Eq(protocol_handler2.protocol));
-    ASSERT_THAT(protocol_handler_state.url(), testing::Eq(handler_url2));
+  ASSERT_THAT(protocol_handler_state.protocol(),
+              testing::Eq(protocol_handler2.protocol));
+  ASSERT_THAT(protocol_handler_state.url(), testing::Eq(handler_url2));
 }
 
 // Synchronize and Execute tests from here onwards. Tests here should
@@ -221,13 +222,7 @@ class ProtocolHandlingExecuteTest : public ProtocolHandlingSubManagerTestBase {
   }
 #endif  // BUILDFLAG(IS_MAC)
 
-  bool AreProtocolsRegisteredWithOs() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-    return false;
-#else
-    return true;
-#endif
-  }
+  bool AreProtocolsRegisteredWithOs() { return !BUILDFLAG(IS_CHROMEOS); }
 };
 
 TEST_F(ProtocolHandlingExecuteTest, Register) {
@@ -242,16 +237,17 @@ TEST_F(ProtocolHandlingExecuteTest, Register) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
-                testing::Eq(1));
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
+              testing::Eq(1));
 
-    const proto::ProtocolsHandled::Protocol& protocol_handler_state =
-        os_integration_state.protocols_handled().protocols(0);
+  const proto::os_state::ProtocolsHandled::Protocol& protocol_handler_state =
+      os_integration_state.protocols_handled().protocols(0);
 
-    ASSERT_THAT(protocol_handler_state.protocol(),
-                testing::Eq(protocol_handler.protocol));
-    ASSERT_THAT(protocol_handler_state.url(), testing::Eq(handler_url));
+  ASSERT_THAT(protocol_handler_state.protocol(),
+              testing::Eq(protocol_handler.protocol));
+  ASSERT_THAT(protocol_handler_state.url(), testing::Eq(handler_url));
 
 #if BUILDFLAG(IS_MAC)
     EXPECT_THAT(GetAppShimRegisteredProtocolHandlers(app_id),
@@ -323,17 +319,18 @@ TEST_F(ProtocolHandlingExecuteTest, UpdateHandlers) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
 
-    ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
-                testing::Eq(1));
+  ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
+              testing::Eq(1));
 
-    const proto::ProtocolsHandled::Protocol& protocol_handler_state =
-        os_integration_state.protocols_handled().protocols(0);
+  const proto::os_state::ProtocolsHandled::Protocol& protocol_handler_state =
+      os_integration_state.protocols_handled().protocols(0);
 
-    ASSERT_THAT(protocol_handler_state.protocol(),
-                testing::Eq(protocol_handler_approved.protocol));
-    ASSERT_THAT(protocol_handler_state.url(), testing::Eq(handler_url1));
+  ASSERT_THAT(protocol_handler_state.protocol(),
+              testing::Eq(protocol_handler_approved.protocol));
+  ASSERT_THAT(protocol_handler_state.url(), testing::Eq(handler_url1));
 
 #if BUILDFLAG(IS_MAC)
     ASSERT_THAT(GetAppShimRegisteredProtocolHandlers(app_id),
@@ -383,17 +380,18 @@ TEST_F(ProtocolHandlingExecuteTest, DataEqualNoOp) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
 
-    ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
-                testing::Eq(1));
+  ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
+              testing::Eq(1));
 
-    const proto::ProtocolsHandled::Protocol& protocol_handler_state =
-        os_integration_state.protocols_handled().protocols(0);
+  const proto::os_state::ProtocolsHandled::Protocol& protocol_handler_state =
+      os_integration_state.protocols_handled().protocols(0);
 
-    ASSERT_THAT(protocol_handler_state.protocol(),
-                testing::Eq(protocol_handler.protocol));
-    ASSERT_THAT(protocol_handler_state.url(), testing::Eq(handler_url));
+  ASSERT_THAT(protocol_handler_state.protocol(),
+              testing::Eq(protocol_handler.protocol));
+  ASSERT_THAT(protocol_handler_state.url(), testing::Eq(handler_url));
 
 #if BUILDFLAG(IS_MAC)
     ASSERT_THAT(GetAppShimRegisteredProtocolHandlers(app_id),
@@ -417,10 +415,11 @@ TEST_F(ProtocolHandlingExecuteTest, MultipleSynchronizeEmptyData) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id1);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
 
-    ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
-                testing::Eq(0));
+  ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
+              testing::Eq(0));
 #if BUILDFLAG(IS_MAC)
     ASSERT_THAT(GetAppShimRegisteredProtocolHandlers(app_id1),
                 testing::IsEmpty());
@@ -507,7 +506,7 @@ TEST_F(ProtocolHandlingExecuteTest, ForceUnregisterAppNotInRegistry) {
             std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
             std::make_tuple(app_id, std::vector<std::string>())));
   }
-  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
 
   // This should have no affect.
   SynchronizeOsOptions options;

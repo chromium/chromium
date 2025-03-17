@@ -33,7 +33,6 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_switches.h"
@@ -180,15 +179,6 @@ class FFmpegDemuxerTest : public testing::Test {
   void InitializeDemuxerAndExpectPipelineStatus(
       media::PipelineStatus expected_pipeline_status) {
     InitializeDemuxerInternal(expected_pipeline_status, base::Time());
-  }
-
-  void SeekOnVideoTrackChangePassthrough(
-      base::TimeDelta time,
-      base::OnceCallback<void(const std::vector<DemuxerStream*>&)> cb,
-      const std::vector<DemuxerStream*>& streams) {
-    // The tests can't access private methods directly because gtest uses
-    // some magic macros that break the 'friend' declaration.
-    demuxer_->SeekOnVideoTrackChange(time, std::move(cb), streams);
   }
 
   MOCK_METHOD2(OnReadDoneCalled, void(int, int64_t));
@@ -1638,6 +1628,39 @@ TEST_F(FFmpegDemuxerTest, Read_Flac_192kHz_Mp4) {
                    192000, kSampleFormatS32);
 }
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+// Verifies that a mkv file without proper duration information doesn't just
+// assume durations are zero for all buffers.
+TEST_F(FFmpegDemuxerTest, Read_MissingDurations) {
+  CreateDemuxer("testsrc-no-durations-h264.mkv");
+  InitializeDemuxer();
+  auto* stream = GetStream(DemuxerStream::VIDEO);
+  ASSERT_NE(stream, nullptr);
+
+  auto VerifyBuffersHaveNoDuration = [&]() {
+    base::RunLoop loop;
+    stream->Read(1, base::BindLambdaForTesting(
+                        [&](DemuxerStream::Status status,
+                            DemuxerStream::DecoderBufferVector buffers) {
+                          ASSERT_EQ(status, DemuxerStream::kOk);
+                          ASSERT_EQ(buffers.size(), 1u);
+                          for (auto& buffer : buffers) {
+                            EXPECT_EQ(buffer->duration(), kNoTimestamp);
+                          }
+                          loop.QuitWhenIdle();
+                        }));
+    loop.Run();
+  };
+
+  VerifyBuffersHaveNoDuration();
+
+  // For this particular file, after a seek ffmpeg returns 1ms durations...
+  Seek(base::TimeDelta());
+
+  VerifyBuffersHaveNoDuration();
+}
+#endif
+
 // Verify that FFmpeg demuxer falls back to choosing disabled streams for
 // seeking if there's no suitable enabled stream found.
 TEST_F(FFmpegDemuxerTest, Seek_FallbackToDisabledVideoStream) {
@@ -1776,19 +1799,6 @@ TEST_F(FFmpegDemuxerTest, MultitrackMemoryUsage) {
   // With newly enabled demuxer streams the amount of memory used by the demuxer
   // is much higher.
   EXPECT_EQ(GetExpectedMemoryUsage(896, 156011), demuxer_->GetMemoryUsage());
-}
-
-TEST_F(FFmpegDemuxerTest, SeekOnVideoTrackChangeWontSeekIfEmpty) {
-  // We only care about video tracks.
-  CreateDemuxer("bear-320x240-video-only.webm");
-  InitializeDemuxer();
-  std::vector<DemuxerStream*> streams;
-  base::RunLoop loop;
-
-  SeekOnVideoTrackChangePassthrough(
-      base::TimeDelta(), base::BindOnce(QuitLoop, loop.QuitClosure()), streams);
-
-  loop.Run();
 }
 
 }  // namespace media

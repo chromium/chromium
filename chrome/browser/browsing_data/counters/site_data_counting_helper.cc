@@ -67,10 +67,7 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
   storage::QuotaManager* quota_manager = partition->GetQuotaManager();
   if (quota_manager) {
     // Count storage keys with filesystem, websql, indexeddb, serviceworkers,
-    // cachestorage, and medialicense using quota manager.
-    // TODO(crbug.com/40264778): For now, media licenses are part of the quota
-    // management system, but when dis-integrated, remove media license logic
-    // from quota logic.
+    // and cachestorage using quota manager.
     auto buckets_callback =
         base::BindRepeating(&SiteDataCountingHelper::GetQuotaBucketsCallback,
                             base::Unretained(this));
@@ -98,8 +95,6 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
     // is fixed.
   }
 
-// TODO(crbug.com/40272342): Add CdmStorageManager logic to count origins, and
-// add test to browsing_data_remover_browsertest.cc to test counting logic.
 #if BUILDFLAG(IS_ANDROID)
   // Count origins with media licenses on Android.
   tasks_ += 1;

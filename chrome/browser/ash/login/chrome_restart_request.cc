@@ -35,7 +35,6 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_switches.h"
@@ -52,6 +51,7 @@
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
 #include "media/media_buildflags.h"
+#include "mojo/core/embedder/features.h"
 #include "sandbox/policy/switches.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
@@ -136,7 +136,6 @@ void DeriveCommandLine(const GURL& start_url,
       ::switches::kRemoteDebuggingPort,
       ::switches::kRendererStartupDialog,
       ::switches::kSchedulerBoostUrgent,
-      ::switches::kSchedulerConfigurationDefault,
       ::switches::kTouchDevices,
       ::switches::kTouchEventFeatureDetection,
       ::switches::kTopChromeTouchUi,
@@ -158,6 +157,7 @@ void DeriveCommandLine(const GURL& start_url,
       ::switches::kEnableUnsafeWebGPU,
       ::switches::kEnableWebGPUDeveloperFeatures,
       ::switches::kOzonePlatform,
+      ::switches::kRenderNodeOverride,
       switches::kAshClearFastInkBuffer,
       switches::kAshConstrainPointerToRoot,
       switches::kAshDebugShortcuts,
@@ -169,6 +169,7 @@ void DeriveCommandLine(const GURL& start_url,
       switches::kAshTouchHud,
       switches::kAuraLegacyPowerButton,
       switches::kEnableDimShelf,
+      switches::kSchedulerConfigurationDefault,
       switches::kSupportsClamshellAutoRotation,
       switches::kShowTaps,
       blink::switches::kBlinkSettings,
@@ -218,11 +219,9 @@ void DeriveCommandLine(const GURL& start_url,
       switches::kDisableLoginAnimations,
       switches::kEnableArc,
       switches::kEnterpriseDisableArc,
-      switches::kEnterpriseEnableForcedReEnrollment,
       switches::kForceTabletPowerButton,
       switches::kFormFactor,
       switches::kHasChromeOSKeyboard,
-      ash::standalone_browser::kLacrosStabilitySwitch,
       switches::kLoginProfile,
       switches::kNaturalScrollDefault,
       switches::kOobeForceTabletFirstRun,
@@ -256,6 +255,7 @@ void DeriveFeatures(base::CommandLine* out_command_line) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
       &media::kPlatformHEVCDecoderSupport,
 #endif
+      &mojo::core::kMojoIpcz,
   };
   std::vector<std::string> enabled_features;
   std::vector<std::string> disabled_features;

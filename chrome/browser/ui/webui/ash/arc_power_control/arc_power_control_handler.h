@@ -10,13 +10,13 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/power.mojom.h"
-#include "ash/components/arc/power/arc_power_bridge.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/throttle/throttle_service.h"
+#include "chromeos/ash/experiences/arc/mojom/power.mojom.h"
+#include "chromeos/ash/experiences/arc/power/arc_power_bridge.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"

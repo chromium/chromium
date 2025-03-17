@@ -7,8 +7,10 @@
 
 #include <map>
 #include <optional>
+#include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -144,13 +146,10 @@ class ServiceWorkerTaskQueue
 
   struct SequencedContextId {
     ExtensionId extension_id;
-    raw_ptr<content::BrowserContext> browser_context;
+    std::string browser_context_id;
     base::UnguessableToken token;
 
-    bool operator<(const SequencedContextId& rhs) const {
-      return std::tie(extension_id, browser_context, token) <
-             std::tie(rhs.extension_id, rhs.browser_context, rhs.token);
-    }
+    auto operator<=>(const SequencedContextId& rhs) const = default;
   };
 
   // Browser process worker state of an activated extension.

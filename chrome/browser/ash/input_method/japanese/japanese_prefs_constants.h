@@ -9,87 +9,89 @@ namespace ash::input_method {
 
 // Japanese Prefs should be should be set only the nacl_mozc_jp, and shared
 // across both "nacl_mozc_jp" and "nacl_mozc_us"
-static constexpr std::string_view kJpPrefsEngineId = "nacl_mozc_jp";
+inline constexpr std::string_view kJpPrefsEngineId = "nacl_mozc_jp";
 
 // Top level option categories:
 // LINT.IfChange(JpOptionCategories)
-static constexpr std::string_view kJpPrefAutomaticallySwitchToHalfwidth =
+inline constexpr std::string_view kJpPrefAutomaticallySwitchToHalfwidth =
     "AutomaticallySwitchToHalfwidth";
-static constexpr std::string_view kJpPrefShiftKeyModeStyle =
+inline constexpr std::string_view kJpPrefShiftKeyModeStyle =
     "ShiftKeyModeStyle";
-static constexpr std::string_view kJpPrefUseInputHistory = "UseInputHistory";
-static constexpr std::string_view kJpPrefUseSystemDictionary =
+inline constexpr std::string_view kJpPrefUseInputHistory = "UseInputHistory";
+inline constexpr std::string_view kJpPrefUseSystemDictionary =
     "UseSystemDictionary";
-static constexpr std::string_view kJpPrefNumberOfSuggestions =
+inline constexpr std::string_view kJpPrefNumberOfSuggestions =
     "numberOfSuggestions";
-static constexpr std::string_view kJpPrefInputMode = "JapaneseInputMode";
-static constexpr std::string_view kJpPrefPunctuationStyle =
+inline constexpr std::string_view kJpPrefInputMode = "JapaneseInputMode";
+inline constexpr std::string_view kJpPrefPunctuationStyle =
     "JapanesePunctuationStyle";
-static constexpr std::string_view kJpPrefSymbolStyle = "JapaneseSymbolStyle";
-static constexpr std::string_view kJpPrefSpaceInputStyle =
+inline constexpr std::string_view kJpPrefSymbolStyle = "JapaneseSymbolStyle";
+inline constexpr std::string_view kJpPrefSpaceInputStyle =
     "JapaneseSpaceInputStyle";
-static constexpr std::string_view kJpPrefSelectionShortcut =
+inline constexpr std::string_view kJpPrefSelectionShortcut =
     "JapaneseSectionShortcut";
-static constexpr std::string_view kJpPrefKeymapStyle = "JapaneseKeymapStyle";
-static constexpr std::string_view kJpPrefDisablePersonalizedSuggestions =
+inline constexpr std::string_view kJpPrefKeymapStyle = "JapaneseKeymapStyle";
+inline constexpr std::string_view kJpPrefDisablePersonalizedSuggestions =
     "JapaneseDisableSuggestions";
-static constexpr std::string_view kJpPrefAutomaticallySendStatisticsToGoogle =
+// This option does not do anything, as all usage data uses UMA and adheres to
+// UMA settings.
+inline constexpr std::string_view kJpPrefAutomaticallySendStatisticsToGoogle =
     "AutomaticallySendStatisticsToGoogle";
 // LINT.ThenChange(/chrome/browser/resources/ash/settings/os_languages_page/input_method_util.ts:JpOptionCategories)
 // Options values for the above option categories:
 // LINT.IfChange(JpOptionValues)
-static constexpr std::string_view kJpPrefInputModeKana = "Kana";
-static constexpr std::string_view kJpPrefInputModeRomaji = "Romaji";
-static constexpr std::string_view kJpPrefPunctuationStyleKutenTouten =
+inline constexpr std::string_view kJpPrefInputModeKana = "Kana";
+inline constexpr std::string_view kJpPrefInputModeRomaji = "Romaji";
+inline constexpr std::string_view kJpPrefPunctuationStyleKutenTouten =
     "KutenTouten";
-static constexpr std::string_view kJpPrefPunctuationStyleCommaPeriod =
+inline constexpr std::string_view kJpPrefPunctuationStyleCommaPeriod =
     "CommaPeriod";
-static constexpr std::string_view kJpPrefPunctuationStyleKutenPeriod =
+inline constexpr std::string_view kJpPrefPunctuationStyleKutenPeriod =
     "KutenPeriod";
-static constexpr std::string_view kJpPrefPunctuationStyleCommaTouten =
+inline constexpr std::string_view kJpPrefPunctuationStyleCommaTouten =
     "CommaTouten";
-static constexpr std::string_view kJpPrefSymbolStyleCornerBracketMiddleDot =
+inline constexpr std::string_view kJpPrefSymbolStyleCornerBracketMiddleDot =
     "CornerBracketMiddleDot";
-static constexpr std::string_view kJpPrefSymbolStyleSquareBracketSlash =
+inline constexpr std::string_view kJpPrefSymbolStyleSquareBracketSlash =
     "SquareBracketSlash";
-static constexpr std::string_view kJpPrefSymbolStyleCornerBracketSlash =
+inline constexpr std::string_view kJpPrefSymbolStyleCornerBracketSlash =
     "CornerBracketSlash";
-static constexpr std::string_view kJpPrefSymbolStyleSquareBracketMiddleDot =
+inline constexpr std::string_view kJpPrefSymbolStyleSquareBracketMiddleDot =
     "SquareBracketMiddleDot";
-static constexpr std::string_view kJpPrefSpaceInputStyleInputMode = "InputMode";
-static constexpr std::string_view kJpPrefSpaceInputStyleFullwidth = "Fullwidth";
-static constexpr std::string_view kJpPrefSpaceInputStyleHalfwidth = "Halfwidth";
-static constexpr std::string_view kJpPrefSelectionShortcutNoShortcut =
+inline constexpr std::string_view kJpPrefSpaceInputStyleInputMode = "InputMode";
+inline constexpr std::string_view kJpPrefSpaceInputStyleFullwidth = "Fullwidth";
+inline constexpr std::string_view kJpPrefSpaceInputStyleHalfwidth = "Halfwidth";
+inline constexpr std::string_view kJpPrefSelectionShortcutNoShortcut =
     "NoShortcut";
-static constexpr std::string_view kJpPrefSelectionShortcutDigits123456789 =
+inline constexpr std::string_view kJpPrefSelectionShortcutDigits123456789 =
     "Digits123456789";
-static constexpr std::string_view kJpPrefSelectionShortcutAsdfghjkl =
+inline constexpr std::string_view kJpPrefSelectionShortcutAsdfghjkl =
     "ASDFGHJKL";
-static constexpr std::string_view kJpPrefKeymapStyleCustom = "Custom";
-static constexpr std::string_view kJpPrefKeymapStyleAtok = "Atok";
-static constexpr std::string_view kJpPrefKeymapStyleMsIme = "MsIme";
-static constexpr std::string_view kJpPrefKeymapStyleKotoeri = "Kotoeri";
-static constexpr std::string_view kJpPrefKeymapStyleMobile = "Mobile";
-static constexpr std::string_view kJpPrefKeymapStyleChromeOs = "ChromeOs";
-static constexpr std::string_view kJpPrefShiftKeyModeStyleOff = "Off";
-static constexpr std::string_view kJpPrefShiftKeyModeStyleAlphanumeric =
+inline constexpr std::string_view kJpPrefKeymapStyleCustom = "Custom";
+inline constexpr std::string_view kJpPrefKeymapStyleAtok = "Atok";
+inline constexpr std::string_view kJpPrefKeymapStyleMsIme = "MsIme";
+inline constexpr std::string_view kJpPrefKeymapStyleKotoeri = "Kotoeri";
+inline constexpr std::string_view kJpPrefKeymapStyleMobile = "Mobile";
+inline constexpr std::string_view kJpPrefKeymapStyleChromeOs = "ChromeOs";
+inline constexpr std::string_view kJpPrefShiftKeyModeStyleOff = "Off";
+inline constexpr std::string_view kJpPrefShiftKeyModeStyleAlphanumeric =
     "Alphanumeric";
-static constexpr std::string_view kJpPrefShiftKeyModeStyleKatakana = "Katakana";
+inline constexpr std::string_view kJpPrefShiftKeyModeStyleKatakana = "Katakana";
 // LINT.ThenChange(/chrome/browser/resources/ash/settings/os_languages_page/input_method_types.ts:JpOptionValues)
 
 // Pref key and values related to the "source of truth" for the options data.
 // These are not accessible via the OsSettings app and is only used as a way
 // to detect when configuration data needs to be copied over from one source to
 // another.
-static constexpr std::string_view kJpPrefMetadataOptionsSource =
+inline constexpr std::string_view kJpPrefMetadataOptionsSource =
     "Metadata-OptionsSource";
 // This is the special "legacy" configuration file that is used directly by the
 // extension on disk to set configurations.
-static constexpr std::string_view kJpPrefMetadataOptionsSourceLegacyConfig1Db =
+inline constexpr std::string_view kJpPrefMetadataOptionsSourceLegacyConfig1Db =
     "LegacyConfig1Db";
 // In SystemPK Japanese, the source of truth is the chromeos PrefService like
 // the rest of the IMEs.
-static constexpr std::string_view kJpPrefMetadataOptionsSourcePrefService =
+inline constexpr std::string_view kJpPrefMetadataOptionsSourcePrefService =
     "PrefService";
 
 // All the enums below correspond to UMA histograms enum values.

@@ -241,11 +241,10 @@ public class TabListEditorShareAction extends TabListEditorAction {
                                                     actionId);
                                             TabUiMetricsHelper.recordShareStateHistogram(
                                                     TabListEditorShareActionState.SUCCESS);
+                                            if (sIntentCallbackForTesting != null) {
+                                                sIntentCallbackForTesting.onResult(shareIntent);
+                                            }
                                         });
-
-                                if (sIntentCallbackForTesting != null) {
-                                    sIntentCallbackForTesting.onResult(shareIntent);
-                                }
                             });
                 });
     }

@@ -4,10 +4,10 @@
 
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "remoting/base/logging.h"
 #include "third_party/webrtc/modules/portal/scoped_glib.h"
 

@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -128,11 +129,12 @@ FieldClassificationModelEncoder::EncodeField(const AutofillField& field) const {
   output.emplace_back(cls_token());
 
   for (int feature : encoding_parameters_.features()) {
-    base::ranges::move(encode(feature), std::back_inserter(output));
+    std::ranges::move(encode(feature), std::back_inserter(output));
   }
 
   // Pad the remaining space, if any, with zeroes.
-  std::fill(output.end(), output.begin() + output.capacity(), TokenId(0u));
+  std::fill_n(std::back_inserter(output), output.capacity() - output.size(),
+              TokenId(0u));
 
   return output;
 }
@@ -169,11 +171,12 @@ FieldClassificationModelEncoder::EncodeFormFeatures(
   output.emplace_back(form_cls_token());
 
   for (int feature : encoding_parameters_.form_features()) {
-    base::ranges::move(encode(feature), std::back_inserter(output));
+    std::ranges::move(encode(feature), std::back_inserter(output));
   }
 
   // Pad the remaining space, if any, with zeroes.
-  std::fill(output.end(), output.begin() + output.capacity(), TokenId(0u));
+  std::fill_n(std::back_inserter(output), output.capacity() - output.size(),
+              TokenId(0u));
   return output;
 }
 
@@ -182,14 +185,20 @@ std::u16string FieldClassificationModelEncoder::StandardizeString(
   std::u16string standardized_input(input);
   if (encoding_parameters_.split_on_camel_case()) {
     std::string utf8_input = base::UTF16ToUTF8(standardized_input);
-    re2::RE2::GlobalReplace(&utf8_input, re2::RE2("([a-z])([A-Z])"), "\\1 \\2");
-    re2::RE2::GlobalReplace(&utf8_input, re2::RE2("([A-Z])([A-Z][a-z])"),
+
+    static base::NoDestructor<re2::RE2> kCamelCaseLowerUpperSplitRe(
+        "(\\p{Ll})(\\p{Lu})");
+    static base::NoDestructor<re2::RE2> kCamelCaseAcronymSplitRe(
+        "(\\p{Lu})(\\p{Lu}\\p{Ll})");
+    re2::RE2::GlobalReplace(&utf8_input, *kCamelCaseLowerUpperSplitRe,
                             "\\1 \\2");
+    re2::RE2::GlobalReplace(&utf8_input, *kCamelCaseAcronymSplitRe, "\\1 \\2");
+
     standardized_input = base::UTF8ToUTF16(utf8_input);
   }
 
   if (encoding_parameters_.lowercase()) {
-    standardized_input = base::ToLowerASCII(standardized_input);
+    standardized_input = base::i18n::ToLower(standardized_input);
   }
 
   base::ReplaceChars(

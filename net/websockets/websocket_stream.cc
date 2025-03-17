@@ -146,7 +146,9 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
     CHECK(!url_request_->cookie_setting_overrides().Has(
         CookieSettingOverride::kStorageAccessGrantEligible));
     if (cookie_util::ShouldAddInitialStorageAccessApiOverride(
-            url, storage_access_api_status, url_request_->initiator(),
+            url.SchemeIsWSOrWSS() ? ChangeWebSocketSchemeToHttpScheme(url)
+                                  : url,
+            storage_access_api_status, url_request_->initiator(),
             /*emit_metrics=*/true)) {
       url_request_->cookie_setting_overrides().Put(
           CookieSettingOverride::kStorageAccessGrantEligible);

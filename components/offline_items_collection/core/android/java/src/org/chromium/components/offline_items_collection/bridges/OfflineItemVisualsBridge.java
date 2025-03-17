@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.offline_items_collection.OfflineItemVisuals;
 
 /**
@@ -18,6 +19,7 @@ import org.chromium.components.offline_items_collection.OfflineItemVisuals;
  * {@link OfflineItemVisuals} instances.
  */
 @JNINamespace("offline_items_collection::android")
+@NullMarked
 public final class OfflineItemVisualsBridge {
     private OfflineItemVisualsBridge() {}
 

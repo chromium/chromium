@@ -8,14 +8,15 @@ import './edu_coexistence_button.js';
 import 'chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
+import type {AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
-import {EduCoexistenceButton} from './edu_coexistence_button.js';
-import {EduCoexistenceController, EduCoexistenceParams} from './edu_coexistence_controller.js';
+import type {EduCoexistenceButton} from './edu_coexistence_button.js';
+import type {EduCoexistenceParams} from './edu_coexistence_controller.js';
+import {EduCoexistenceController} from './edu_coexistence_controller.js';
 import {getTemplate} from './edu_coexistence_ui.html.js';
 
 export interface EduCoexistenceUi {
@@ -102,10 +103,6 @@ export class EduCoexistenceUi extends EduCoexistenceUiBase {
     }));
   }
 
-  private closeDialog() {
-    EduCoexistenceBrowserProxyImpl.getInstance().dialogClose();
-  }
-
   private loadAuthenticator(data: AuthParams) {
     // Set up the controller.
     this.controller.loadAuthenticator(data);
@@ -120,19 +117,19 @@ export class EduCoexistenceUi extends EduCoexistenceUiBase {
     e.stopPropagation();
     const backButton = this.shadowRoot!.querySelector<EduCoexistenceButton>(
         '#gaia-back-button')!;
-    if (backButton!.disabled) {
+    if (backButton.disabled) {
       // This is a safeguard against this method getting called somehow
       // despite the button being disabled.
       return;
     }
-    backButton!.disabled = true;
+    backButton.disabled = true;
 
     this.webview.back(() => {
       // Wait a full second after the callback fires before processing another
       // click on the back button.  This delay is needed because the callback
       // fires before the content finishes navigating to the previous page.
       setTimeout(() => {
-        backButton!.disabled = false;
+        backButton.disabled = false;
       }, 1000 /* 1 second */);
       this.webview.focus();
     });
@@ -170,7 +167,7 @@ export class EduCoexistenceUi extends EduCoexistenceUiBase {
       contentContainer.style.height = '100%';
     }
 
-    template!.updateButtonFooterVisibility(this.showGaiaButtons);
+    template.updateButtonFooterVisibility(this.showGaiaButtons);
   }
 }
 

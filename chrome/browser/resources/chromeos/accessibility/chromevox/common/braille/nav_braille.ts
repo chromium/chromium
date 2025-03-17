@@ -14,7 +14,8 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {SerializedSpannable, Spannable} from '../spannable.js';
+import type {SerializedSpannable} from '../spannable.js';
+import {Spannable} from '../spannable.js';
 
 /**
  * text The text of the object itself, including text from

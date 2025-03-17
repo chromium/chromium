@@ -7,13 +7,14 @@ package org.chromium.chrome.browser.tab;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -27,23 +28,24 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Tab is a visual/functional unit that encapsulates the content (not just web site content
- * from network but also other types of content such as NTP, navigation history, etc) and
- * presents it to users who perceive it as one of the 'pages' managed by Chrome.
+ * Tab is a visual/functional unit that encapsulates the content (not just web site content from
+ * network but also other types of content such as NTP, navigation history, etc) and presents it to
+ * users who perceive it as one of the 'pages' managed by Chrome.
  */
+@NullMarked
 public interface Tab extends TabLifecycle {
-    public static final int INVALID_TAB_ID = -1;
-    public static final long INVALID_TIMESTAMP = -1;
+    @TabId int INVALID_TAB_ID = -1;
+    long INVALID_TIMESTAMP = -1;
 
     @IntDef({TabLoadStatus.PAGE_LOAD_FAILED, TabLoadStatus.DEFAULT_PAGE_LOAD})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface TabLoadStatus {
+    @interface TabLoadStatus {
         int PAGE_LOAD_FAILED = 0;
         int DEFAULT_PAGE_LOAD = 1;
     }
 
     /** The result of the loadUrl. */
-    public static class LoadUrlResult {
+    class LoadUrlResult {
         /** Tab load status. */
         public final @TabLoadStatus int tabLoadStatus;
 
@@ -81,21 +83,18 @@ public interface Tab extends TabLifecycle {
     UserDataHost getUserDataHost();
 
     /** Returns the Profile this tab is associated with. */
-    @NonNull
     Profile getProfile();
 
     /**
      * @return The web contents associated with this tab.
      */
-    @Nullable
-    WebContents getWebContents();
+    @Nullable WebContents getWebContents();
 
     /**
      * @return The {@link Activity} {@link Context} if this {@link Tab} is attached to an
      *         {@link Activity}, otherwise the themed application context (e.g. hidden tab or
      *         browser action tab).
      */
-    @NonNull
     Context getContext();
 
     /**
@@ -128,13 +127,12 @@ public interface Tab extends TabLifecycle {
 
     /**
      * @return The {@link TabViewManager} that is responsible for managing custom {@link View}s
-     * shown on top of content in this Tab.
+     *     shown on top of content in this Tab.
      */
     TabViewManager getTabViewManager();
 
-    /**
-     * @return The id representing this tab.
-     */
+    /** Returns the id representing this tab. */
+    @TabId
     int getId();
 
     /**
@@ -184,21 +182,18 @@ public interface Tab extends TabLifecycle {
     void freezeNativePage();
 
     /**
-     * @return The reason the Tab was launched (from a link, external app, etc).
-     *         May change over time, for instance, to {@code FROM_RESTORE} during
-     *         tab restoration.
+     * @return The reason the Tab was launched (from a link, external app, etc). May change over
+     *     time, for instance, to {@code FROM_RESTORE} during tab restoration.
      */
     @TabLaunchType
     int getLaunchType();
 
-    /**
-     * @return The theme color for this tab.
-     */
+    /** Returns the theme color for this tab. */
+    @ColorInt
     int getThemeColor();
 
-    /**
-     * @return The background color for the current webpage.
-     */
+    /** Returns the background color for the current webpage. */
+    @ColorInt
     int getBackgroundColor();
 
     /**
@@ -348,22 +343,22 @@ public interface Tab extends TabLifecycle {
      */
     void setTimestampMillis(long timestampMillis);
 
-    /**
-     * @return parent identifier for the {@link Tab}
-     */
+    /** Returns the parent identifier for the {@link Tab}. */
+    @TabId
     int getParentId();
 
     /**
      * Set the parent identifier for the {@link Tab}. This method is only used as a temporary
      * workaround for invalid parent ids being present in the tab state file.
      */
-    void setParentId(int parentId);
+    void setParentId(@TabId int parentId);
 
     // TODO(crbug.com/41497290): deprecate RootId once TabGroupId has finished replacing it.
     /**
      * Returns the root identifier for the {@link Tab}. This method will be replaced by {@link
      * getTabGroupId()} as part of https://crbug.com/1523745.
      */
+    @TabId
     int getRootId();
 
     /**
@@ -372,14 +367,13 @@ public interface Tab extends TabLifecycle {
      *
      * @param rootId The root identifier to use.
      */
-    void setRootId(int rootId);
+    void setRootId(@TabId int rootId);
 
     /**
      * Returns the tab group ID of the {@link Tab} or null if not part of a group. Note that during
      * migration from root ID the TabGroupId may be null until tab state is initialized.
      */
-    @Nullable
-    Token getTabGroupId();
+    @Nullable Token getTabGroupId();
 
     /**
      * Sets the tab group ID of the {@link Tab}.

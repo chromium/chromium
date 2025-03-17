@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EmojiPickerApiProxy, EmojiSearch} from 'chrome://emoji-picker/emoji_picker.js';
+import type {EmojiSearch} from 'chrome://emoji-picker/emoji_picker.js';
+import {EmojiPickerApiProxy} from 'chrome://emoji-picker/emoji_picker.js';
 import {assertEquals, assertGT} from 'chrome://webui-test/chai_assert.js';
 
 import {initialiseEmojiPickerForTest, waitForCondition} from './emoji_picker_test_util.js';
@@ -10,8 +11,8 @@ import {TestEmojiPickerApiProxy} from './test_emoji_picker_api_proxy.js';
 
 suite('emoji-picker-load', () => {
   const testApiProxy = new TestEmojiPickerApiProxy();
-  testApiProxy.getInitialQuery = async () => {
-    return {query: 'a'};
+  testApiProxy.getInitialQuery = () => {
+    return Promise.resolve({query: 'a'});
   };
   EmojiPickerApiProxy.setInstance(testApiProxy);
 

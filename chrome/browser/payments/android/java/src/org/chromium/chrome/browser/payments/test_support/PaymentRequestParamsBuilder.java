@@ -173,11 +173,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     }
 
     @Override
-    public byte[][] getCertificateChain(WebContents webContents) {
-        return new byte[0][];
-    }
-
-    @Override
     public boolean isOriginAllowedToUseWebPaymentApis(GURL url) {
         return true;
     }

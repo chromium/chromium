@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
+#include "third_party/blink/renderer/modules/webaudio/wave_shaper_handler.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -38,7 +39,6 @@ class BaseAudioContext;
 class ExceptionState;
 class V8OverSampleType;
 class WaveShaperOptions;
-class WaveShaperProcessor;
 
 class WaveShaperNode final : public AudioNode {
   DEFINE_WRAPPERTYPEINFO();
@@ -54,7 +54,7 @@ class WaveShaperNode final : public AudioNode {
   // setCurve() is called on the main thread.
   void setCurve(NotShared<DOMFloat32Array>, ExceptionState&);
   void setCurve(const Vector<float>&, ExceptionState&);
-  NotShared<DOMFloat32Array> curve();
+  NotShared<DOMFloat32Array> curve() const;
 
   void setOversample(const V8OverSampleType&);
   V8OverSampleType oversample() const;
@@ -67,7 +67,7 @@ class WaveShaperNode final : public AudioNode {
   void SetCurveImpl(const float* curve_data,
                     size_t curve_length,
                     ExceptionState&);
-  WaveShaperProcessor* GetWaveShaperProcessor() const;
+  WaveShaperHandler& GetWaveShaperHandler() const;
 };
 
 }  // namespace blink

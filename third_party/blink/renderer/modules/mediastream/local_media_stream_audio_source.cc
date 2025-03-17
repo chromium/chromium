@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/audio/audio_source_parameters.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
@@ -35,7 +36,7 @@ LocalMediaStreamAudioSource::LocalMediaStreamAudioSource(
            << device.input.AsHumanReadableString()
            << " requested_buffer_size=" << requested_buffer_size
            << " enable_system_echo_cancellation="
-           << (enable_system_echo_cancellation ? "true" : "false") << ")"
+           << base::ToString(enable_system_echo_cancellation) << ")"
            << " system AEC available: "
            << (!!(device.input.effects() &
                   media::AudioParameters::ECHO_CANCELLER)

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "remoting/base/authentication_method.h"
@@ -19,6 +20,7 @@ class SharedURLLoaderFactory;
 namespace remoting {
 
 class OAuthTokenGetter;
+class InstanceIdentityTokenGetter;
 class SessionAuthzServiceClient;
 
 // SessionAuthzServiceClientFactory implementation that creates SessionAuthz
@@ -28,6 +30,7 @@ class CloudSessionAuthzServiceClientFactory
  public:
   CloudSessionAuthzServiceClientFactory(
       OAuthTokenGetter* oauth_token_getter,
+      InstanceIdentityTokenGetter* instance_identity_token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   CloudSessionAuthzServiceClientFactory(
@@ -42,6 +45,7 @@ class CloudSessionAuthzServiceClientFactory
   ~CloudSessionAuthzServiceClientFactory() override;
 
   const raw_ptr<OAuthTokenGetter> oauth_token_getter_;
+  const raw_ptr<InstanceIdentityTokenGetter> instance_identity_token_getter_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 

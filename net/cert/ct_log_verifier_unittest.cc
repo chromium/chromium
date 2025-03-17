@@ -96,7 +96,7 @@ struct ConsistencyProofTestVector {
 
 // A collection of consistency proofs between various sub-trees of the sample
 // tree.
-const auto kConsistencyProofs = std::to_array<ConsistencyProofTestVector>({
+constexpr auto kConsistencyProofs = std::to_array<ConsistencyProofTestVector>({
     // Empty consistency proof between trees of the same size (1).
     {1, 1, 0, {"", "", ""}},
     // Consistency proof between tree of size 1 and tree of size 8, with 3
@@ -135,7 +135,7 @@ struct AuditProofTestVector {
 
 // A collection of audit proofs for various leaves and sub-trees of the tree
 // defined by |kRootHashes|.
-const auto kAuditProofs = std::to_array<AuditProofTestVector>({
+constexpr auto kAuditProofs = std::to_array<AuditProofTestVector>({
     {0, 1, 0, {"", "", ""}},
     {0,
      8,

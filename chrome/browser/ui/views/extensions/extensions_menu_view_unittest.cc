@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -176,7 +176,7 @@ ExtensionMenuItemView* ExtensionsMenuViewUnitTest::GetExtensionMenuItemView(
   base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>> menu_items =
       extensions_menu()->extensions_menu_items_for_testing();
   auto iter =
-      base::ranges::find(menu_items, name, [](ExtensionMenuItemView* item) {
+      std::ranges::find(menu_items, name, [](ExtensionMenuItemView* item) {
         return base::UTF16ToUTF8(item->view_controller()->GetActionName());
       });
   return iter == menu_items.end() ? nullptr : *iter;
@@ -422,7 +422,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinButtonUserActionWithAccessibility) {
   InstallExtensionAndLayout("Test Extension");
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_NE(nullptr, menu_item);
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   constexpr char kPinButtonUserAction[] = "Extensions.Toolbar.PinButtonPressed";
 
   // Verify behavior before pin, after pin, and after unpin.

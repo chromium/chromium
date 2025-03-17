@@ -37,7 +37,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -531,13 +531,8 @@ TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsListItem) {
                        &QuickInsertSectionView::item_views_for_testing,
                        ElementsAre(AsView<QuickInsertListItemView>(Property(
                            &QuickInsertListItemView::GetPrimaryTextForTesting,
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
                            l10n_util::GetStringUTF16(
-                               IDS_PICKER_LOBSTER_SELECTION_LABEL)
-#else
-                           u"Lobster"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                               )))))))));
+                               IDS_LOBSTER_SELECTION_LABEL))))))))));
 }
 
 TEST_F(QuickInsertZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {

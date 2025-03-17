@@ -7,6 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
 
 namespace gpu {
 class ClientSharedImageInterface;
@@ -26,6 +27,16 @@ namespace video_effects {
 // happen.
 class GpuChannelHostProvider : public base::RefCounted<GpuChannelHostProvider> {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // The GPU context was lost.
+    virtual void OnContextLost(scoped_refptr<GpuChannelHostProvider>) = 0;
+
+    // Abandon ship! The GPU context has been lost multiple times and no further
+    // attempts will be made to re-establish a connection to the GPU.
+    virtual void OnPermanentError(scoped_refptr<GpuChannelHostProvider>) = 0;
+  };
+
   // Returns the context provider for WebGPU.
   virtual scoped_refptr<viz::ContextProviderCommandBuffer>
   GetWebGpuContextProvider() = 0;
@@ -37,6 +48,9 @@ class GpuChannelHostProvider : public base::RefCounted<GpuChannelHostProvider> {
   // Returns the SharedImageInterface.
   virtual scoped_refptr<gpu::ClientSharedImageInterface>
   GetSharedImageInterface() = 0;
+
+  virtual void AddObserver(Observer& observer) = 0;
+  virtual void RemoveObserver(Observer& observer) = 0;
 
  protected:
   virtual ~GpuChannelHostProvider() = default;

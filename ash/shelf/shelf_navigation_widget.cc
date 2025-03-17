@@ -44,6 +44,12 @@
 namespace ash {
 namespace {
 
+// `BoundsAnimator` drives the animation and the delegate itself does not.
+// Hence the animation delegate that is used by `BoundsAnimator` to notify
+// animation progress can just be `gfx::AnimationDelegate` and does not need to
+// be a `views::AnimationDelegateViews`.
+using BoundsAnimatorDelegate = gfx::AnimationDelegate;
+
 // The duration of the back button opacity animation.
 constexpr base::TimeDelta kButtonOpacityAnimationDuration =
     base::Milliseconds(50);
@@ -120,7 +126,7 @@ class AnimationObserverToHideView : public ui::ImplicitAnimationObserver {
 
 // Tracks the animation smoothness of a view's bounds animation using
 // ui::ThroughputTracker.
-class BoundsAnimationReporter : public gfx::AnimationDelegate {
+class BoundsAnimationReporter : public BoundsAnimatorDelegate {
  public:
   BoundsAnimationReporter(views::View* view,
                           metrics_util::ReportCallback report_callback)
@@ -134,7 +140,7 @@ class BoundsAnimationReporter : public gfx::AnimationDelegate {
       delete;
   ~BoundsAnimationReporter() override = default;
 
-  // gfx::AnimationDelegate:
+  // BoundsAnimatorDelegate overrides:
   void AnimationEnded(const gfx::Animation* animation) override {
     tracker_.Stop();
   }
@@ -307,13 +313,15 @@ ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
 
   // Ensure widgets are represented in accessibility.
   if (shelf->hotseat_widget()) {
-    shelf->hotseat_widget()->GetRootView()->NotifyAccessibilityEvent(
+    shelf->hotseat_widget()->GetRootView()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kChildrenChanged, true);
   }
 
   if (shelf->GetStatusAreaWidget()) {
-    shelf->GetStatusAreaWidget()->GetRootView()->NotifyAccessibilityEvent(
-        ax::mojom::Event::kChildrenChanged, true);
+    shelf->GetStatusAreaWidget()
+        ->GetRootView()
+        ->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                             true);
   }
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);

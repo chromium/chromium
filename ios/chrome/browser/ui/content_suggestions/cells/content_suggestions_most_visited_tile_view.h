@@ -7,9 +7,10 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_view.h"
 
-@protocol ContentSuggestionsMenuProvider;
+@protocol ContentSuggestionsMenuElementsProvider;
 @class ContentSuggestionsMostVisitedItem;
 @class FaviconView;
+@protocol MagicStackModuleContentViewDelegate;
 
 // NTP Tile representing a most visited website. Displays a favicon and a title.
 @interface ContentSuggestionsMostVisitedTileView
@@ -24,8 +25,9 @@
 // FaviconView displaying the favicon.
 @property(nonatomic, strong, readonly) FaviconView* faviconView;
 
-// Provider of menu configurations for this tile.
-@property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
+// Provider of menu actions for this tile.
+@property(nonatomic, weak) id<ContentSuggestionsMenuElementsProvider>
+    menuElementsProvider;
 
 // Tap gesture recognizer for this view.
 @property(nonatomic, strong) UITapGestureRecognizer* tapRecognizer;
@@ -33,6 +35,11 @@
 // Configuration for this view.
 @property(nonatomic, strong, readonly)
     ContentSuggestionsMostVisitedItem* config;
+
+// Delegate object to control the magic stack module. Should only be set when
+// the most visited tiles resides in the magic stack.
+@property(nonatomic, weak) id<MagicStackModuleContentViewDelegate>
+    magicStackModuleDelegate;
 
 @end
 

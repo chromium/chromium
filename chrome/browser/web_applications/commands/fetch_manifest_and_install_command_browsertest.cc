@@ -4,12 +4,13 @@
 
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -38,12 +39,43 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
+
+namespace {
+
+// Mock of a WebContentsDelegate that catches messages sent to the console.
+class WebContentsErrorDelegate : public content::WebContentsDelegate {
+ public:
+  WebContentsErrorDelegate() = default;
+
+  bool DidAddMessageToConsole(content::WebContents* source,
+                              blink::mojom::ConsoleMessageLevel log_level,
+                              const std::u16string& message,
+                              int32_t line_no,
+                              const std::u16string& source_id) override {
+    CHECK_EQ(source->GetDelegate(), this);
+
+    if (log_level == blink::mojom::ConsoleMessageLevel::kError) {
+      console_errors_.push_back(message);
+    }
+    return false;
+  }
+
+  bool NoConsoleErrors() { return console_errors_.empty(); }
+
+ private:
+  std::vector<std::u16string> console_errors_;
+};
+
+}  // namespace
 
 class FetchManifestAndInstallCommandTest : public WebAppBrowserTestBase {
  public:
@@ -53,6 +85,7 @@ class FetchManifestAndInstallCommandTest : public WebAppBrowserTestBase {
           mojom::UserDisplayMode::kStandalone) {
     return base::BindLambdaForTesting(
         [accept, user_display_mode](
+            base::WeakPtr<WebAppScreenshotFetcher>,
             content::WebContents* initiator_web_contents,
             std::unique_ptr<WebAppInstallInfo> web_app_info,
             WebAppInstallationAcceptanceCallback acceptance_callback) {
@@ -177,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
         EXPECT_EQ(
             code,
             webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
-        EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
+        EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
         loop.Quit();
       }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -199,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, InvalidManifest) {
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code,
                       webapps::InstallResultCode::kNotValidManifestForWebApp);
-            EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
+            EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
             loop.Quit();
           }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -221,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, UserDeclineInstall) {
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kUserInstallDeclined);
-            EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
+            EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
             loop.Quit();
           }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -244,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kWebContentsDestroyed);
-            EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
+            EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
             loop.Quit();
           }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -300,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   EXPECT_EQ(proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
             provider().registrar_unsafe().GetInstallState(app_id));
   EXPECT_EQ(provider().registrar_unsafe().GetAppUserDisplayMode(app_id).value(),
-            mojom::UserDisplayMode::kStandalone);
+            mojom::UserDisplayMode::kBrowser);
 
   EXPECT_FALSE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
 
@@ -506,11 +539,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                                              : "SVGIconNoIntrinsicSize";
                          });
 
-class FetchManifestAndInstallCommandUniversalInstallTest
-    : public FetchManifestAndInstallCommandTest {
- public:
-  ~FetchManifestAndInstallCommandUniversalInstallTest() override = default;
-};
+using FetchManifestAndInstallCommandUniversalInstallTest =
+    FetchManifestAndInstallCommandTest;
 
 IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandUniversalInstallTest,
                        NoManifest) {
@@ -541,6 +571,59 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandUniversalInstallTest,
   EXPECT_TRUE(os_integration->has_shortcut());
   // TODO(crbug.com/291778116): Add more checks once DIY apps are supported.
   EXPECT_TRUE(provider().registrar_unsafe().IsDiyApp(app_id));
+}
+
+// Test for crbug.com/381069204, where triggering an install command on
+// chrome://password-manager does not throw any console errors.
+using FetchManifestAndInstallTestNoConsoleErrors =
+    FetchManifestAndInstallCommandTest;
+IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallTestNoConsoleErrors,
+                       PasswordManager) {
+  std::unique_ptr<WebContentsErrorDelegate> delegate =
+      std::make_unique<WebContentsErrorDelegate>();
+  browser()->tab_strip_model()->GetActiveWebContents()->SetDelegate(
+      delegate.get());
+
+  GURL chrome_password_manager("chrome://password-manager/");
+  EXPECT_TRUE(
+      NavigateAndAwaitInstallabilityCheck(browser(), chrome_password_manager));
+
+  base::RunLoop loop;
+  provider().scheduler().FetchManifestAndInstall(
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+      CreateDialogCallback(),
+      base::BindLambdaForTesting(
+          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
+            EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+                      provider().registrar_unsafe().GetInstallState(app_id));
+            loop.Quit();
+          }),
+      FallbackBehavior::kCraftedManifestOnly);
+  loop.Run();
+
+  EXPECT_TRUE(delegate->NoConsoleErrors());
+}
+
+// Valid icon measures the `kSuccess` histogram for chrome urls. This can't
+// exist closer to `ManifestIconBrowserTest`, because the `shell()` does not
+// load chrome urls.
+IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallTestNoConsoleErrors,
+                       ChromeUrlHistograms) {
+  base::HistogramTester tester;
+  GURL password_manager("chrome://password-manager/");
+
+  // This involves loading and fetching the icons specified in the manifest, so
+  // histograms are automatically measured.
+  EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), password_manager));
+
+  tester.ExpectBucketCount("WebApp.ManifestIconDownloader.Result",
+                           content::ManifestIconDownloader::Result::kSuccess,
+                           1);
+  tester.ExpectBucketCount("WebApp.ManifestIconDownloader.ChromeUrl.Result",
+                           content::ManifestIconDownloader::Result::kSuccess,
+                           1);
 }
 
 }  // namespace web_app

@@ -1041,7 +1041,7 @@ viz::FrameSinkId ChromeClientImpl::GetFrameSinkId(LocalFrame* frame) {
 }
 
 void ChromeClientImpl::RequestDecode(LocalFrame* frame,
-                                     const PaintImage& image,
+                                     const cc::DrawImage& image,
                                      base::OnceCallback<void(bool)> callback) {
   FrameWidget* widget = frame->GetWidgetForLocalRoot();
   widget->RequestDecode(image, std::move(callback));
@@ -1155,6 +1155,19 @@ void ChromeClientImpl::StopDeferringCommits(
       ->StopDeferringCommits(trigger);
 }
 
+void ChromeClientImpl::SetShouldThrottleFrameRate(bool flag,
+                                                  LocalFrame& main_frame) {
+  DCHECK(main_frame.IsLocalRoot());
+  WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(main_frame);
+  WebFrameWidgetImpl* widget = web_frame->LocalRootFrameWidget();
+  // The widget can be null for web frames that are being replaced.
+  if (!widget) {
+    return;
+  }
+
+  widget->SetShouldThrottleFrameRate(flag);
+}
+
 void ChromeClientImpl::SetHasScrollEventHandlers(LocalFrame* frame,
                                                  bool has_event_handlers) {
   // |frame| might be null if called via
@@ -1260,8 +1273,9 @@ void ChromeClientImpl::HandleKeyboardEventOnTextField(
 void ChromeClientImpl::DidChangeValueInTextField(
     HTMLFormControlElement& element) {
   Document& doc = element.GetDocument();
-  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame()))
-    fill_client->TextFieldDidChange(WebFormControlElement(&element));
+  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame())) {
+    fill_client->TextFieldValueChanged(WebFormControlElement(&element));
+  }
 
   // Value changes caused by |document.execCommand| calls should not be
   // interpreted as a user action. See https://crbug.com/764760.
@@ -1326,8 +1340,9 @@ void ChromeClientImpl::TextFieldDataListChanged(HTMLInputElement& input) {
 void ChromeClientImpl::DidChangeSelectionInSelectControl(
     HTMLFormControlElement& element) {
   Document& doc = element.GetDocument();
-  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame()))
-    fill_client->SelectControlDidChange(WebFormControlElement(&element));
+  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame())) {
+    fill_client->SelectControlSelectionChanged(WebFormControlElement(&element));
+  }
 }
 
 void ChromeClientImpl::SelectFieldOptionsChanged(

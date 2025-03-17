@@ -13,7 +13,6 @@ template("webui_ts_library") {
                            "out_dir",
                            "composite",
                            "in_files",
-                           "definitions",
                            "tsconfig_base",
                            "path_mappings",
                            "manifest_excludes",
@@ -37,13 +36,20 @@ template("webui_ts_library") {
       visibility = invoker.visibility
     }
     extra_deps = []
+
+    deps = [ "//tools/typescript/definitions:build_ts" ]
     if (defined(invoker.deps)) {
-      deps = invoker.deps
+      deps += invoker.deps
       extra_deps += [ ":$path_mappings_target" ]
       path_mappings_file = "$target_gen_dir/$path_mappings_filename"
     }
     if (defined(invoker.extra_deps)) {
       extra_deps += invoker.extra_deps
+    }
+
+    definitions = [ "//tools/typescript/definitions/strings.d.ts" ]
+    if (defined(invoker.definitions)) {
+      definitions += invoker.definitions
     }
   }
 }

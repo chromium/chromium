@@ -1,6 +1,8 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//build/config/features.gni")
+import("//testing/test.gni")
 
 source_set("ip_protection_core_host_remote") {
   sources = [
@@ -50,6 +52,7 @@ source_set("ip_protection_core") {
     "//base",
     "//net",
   ]
+  deps = [ "//components/content_settings/core/common" ]
 }
 
 source_set("ip_protection_core_impl") {
@@ -59,17 +62,21 @@ source_set("ip_protection_core_impl") {
   ]
   public_deps = [
     ":ip_protection_core",
+    ":ip_protection_data_types",
+    ":ip_protection_probabilistic_reveal_token_manager",
+    ":ip_protection_proxy_config_manager",
+    ":ip_protection_token_manager",
+    ":masked_domain_list_manager",
+    ":probabilistic_reveal_token_registry",
     "//base",
     "//net",
   ]
   deps = [
-    ":ip_protection_data_types",
-    ":ip_protection_proxy_config_manager",
     ":ip_protection_proxy_config_manager_impl",
     ":ip_protection_telemetry",
-    ":ip_protection_token_manager",
     ":ip_protection_token_manager_impl",
-    ":masked_domain_list_manager",
+    "//components/content_settings/core/common",
+    "//services/network/public/cpp",
   ]
 }
 
@@ -78,13 +85,12 @@ source_set("ip_protection_core_impl_unittest") {
   sources = [ "ip_protection_core_impl_unittest.cc" ]
   deps = [
     ":ip_protection_core_impl",
-    ":ip_protection_data_types",
-    ":ip_protection_proxy_config_manager",
     ":ip_protection_proxy_config_manager_impl",
-    ":ip_protection_token_manager",
     "//base",
     "//base/test:test_support",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
     "//net",
+    "//services/network/public/cpp",
     "//testing/gtest",
   ]
 }
@@ -102,11 +108,9 @@ source_set("ip_protection_core_impl_mojo") {
   ]
   deps = [
     ":ip_protection_core_host_remote",
-    ":ip_protection_data_types",
-    ":ip_protection_proxy_config_manager",
+    ":ip_protection_probabilistic_reveal_token_mojo_fetcher",
     ":ip_protection_proxy_config_manager_impl",
     ":ip_protection_proxy_config_mojo_fetcher",
-    ":ip_protection_token_manager",
     ":ip_protection_token_manager_impl",
     ":ip_protection_token_mojo_fetcher",
     "//base",
@@ -134,7 +138,11 @@ source_set("ip_protection_data_types") {
     "ip_protection_data_types.cc",
     "ip_protection_data_types.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
+    "//third_party/boringssl",
+  ]
 }
 
 source_set("ip_protection_data_types_unittest") {
@@ -329,11 +337,13 @@ source_set("ip_protection_proxy_delegate_unittest") {
     ":masked_domain_list_manager",
     "//base",
     "//base/test:test_support",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
     "//net",
     "//net:gtest_util",
     "//net:test_support",
     "//net/traffic_annotation:test_support",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -463,6 +473,7 @@ source_set("masked_domain_list_manager") {
     "masked_domain_list_manager.h",
   ]
   public_deps = [
+    ":masked_domain_list",
     ":url_matcher_with_bypass",
     "//base",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
@@ -470,6 +481,7 @@ source_set("masked_domain_list_manager") {
     "//services/network/public/mojom",
   ]
   deps = [
+    ":ip_protection_data_types",
     ":ip_protection_telemetry",
     "//services/network/public/cpp",
   ]
@@ -489,6 +501,35 @@ source_set("masked_domain_list_manager_unittest") {
     "//testing/gmock",
     "//testing/gtest",
     "//url",
+  ]
+}
+
+source_set("masked_domain_list") {
+  sources = [
+    "masked_domain_list.cc",
+    "masked_domain_list.h",
+  ]
+  public_deps = [
+    "//components/ip_protection/common/flat:masked_domain_list",
+    "//third_party/flatbuffers",
+  ]
+  deps = [
+    ":ip_protection_data_types",
+    "//base",
+  ]
+}
+
+source_set("masked_domain_list_unittest") {
+  testonly = true
+  sources = [ "masked_domain_list_unittest.cc" ]
+  deps = [
+    ":masked_domain_list",
+    "//base",
+    "//base/test:test_support",
+    "//components/ip_protection/common/flat:masked_domain_list",
+    "//testing/gtest",
+    "//third_party/flatbuffers",
+    "//url:url",
   ]
 }
 
@@ -515,12 +556,17 @@ source_set("url_matcher_with_bypass") {
     "//net",
     "//url",
   ]
+  deps = [
+    ":ip_protection_data_types",
+    "//services/network/public/cpp",
+  ]
 }
 
 source_set("url_matcher_with_bypass_unittest") {
   testonly = true
   sources = [ "url_matcher_with_bypass_unittest.cc" ]
   deps = [
+    ":ip_protection_data_types",
     ":url_matcher_with_bypass",
     "//base",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
@@ -528,4 +574,245 @@ source_set("url_matcher_with_bypass_unittest") {
     "//testing/gtest",
     "//url",
   ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_direct_fetcher") {
+  sources = [
+    "ip_protection_probabilistic_reveal_token_direct_fetcher.cc",
+    "ip_protection_probabilistic_reveal_token_direct_fetcher.h",
+  ]
+  public_deps = [
+    ":ip_protection_probabilistic_reveal_token_fetcher",
+    "//base",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+  deps = [
+    ":ip_protection_probabilistic_reveal_token_crypter",
+    "//components/ip_protection:get_probabilistic_reveal_token_proto",
+    "//net",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_direct_fetcher_unittest") {
+  testonly = true
+  sources =
+      [ "ip_protection_probabilistic_reveal_token_direct_fetcher_unittest.cc" ]
+  deps = [
+    ":ip_protection_probabilistic_reveal_token_crypter",
+    ":ip_protection_probabilistic_reveal_token_direct_fetcher",
+    "//base",
+    "//base/test:test_support",
+    "//components/ip_protection:get_probabilistic_reveal_token_proto",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+  ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_mojo_fetcher") {
+  sources = [
+    "ip_protection_probabilistic_reveal_token_mojo_fetcher.cc",
+    "ip_protection_probabilistic_reveal_token_mojo_fetcher.h",
+  ]
+  public_deps = [
+    ":ip_protection_core_host_remote",
+    ":ip_protection_probabilistic_reveal_token_fetcher",
+  ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_mojo_fetcher_unittest") {
+  testonly = true
+  sources =
+      [ "ip_protection_probabilistic_reveal_token_mojo_fetcher_unittest.cc" ]
+  deps = [
+    ":ip_protection_probabilistic_reveal_token_mojo_fetcher",
+    "//base",
+    "//base/test:test_support",
+    "//components/ip_protection/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_fetcher") {
+  sources = [ "ip_protection_probabilistic_reveal_token_fetcher.h" ]
+  public_deps = [
+    ":ip_protection_data_types",
+    "//base",
+  ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_crypter") {
+  sources = [
+    "ip_protection_probabilistic_reveal_token_crypter.cc",
+    "ip_protection_probabilistic_reveal_token_crypter.h",
+  ]
+  public_deps = [
+    ":ip_protection_data_types",
+    "//third_party/abseil-cpp:absl",
+  ]
+  deps = [
+    "//base",
+    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+  ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_crypter_unittest") {
+  testonly = true
+  sources = [ "ip_protection_probabilistic_reveal_token_crypter_unittest.cc" ]
+  deps = [
+    ":ip_protection_probabilistic_reveal_token_crypter",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+  ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_manager") {
+  sources = [
+    "ip_protection_probabilistic_reveal_token_manager.cc",
+    "ip_protection_probabilistic_reveal_token_manager.h",
+  ]
+  public_deps = [
+    ":ip_protection_data_types",
+    ":ip_protection_probabilistic_reveal_token_fetcher",
+  ]
+  deps = [
+    ":ip_protection_probabilistic_reveal_token_crypter",
+    ":ip_protection_telemetry",
+    "//base",
+  ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_manager_unittest") {
+  testonly = true
+  sources = [ "ip_protection_probabilistic_reveal_token_manager_unittest.cc" ]
+  deps = [
+    ":ip_protection_probabilistic_reveal_token_crypter",
+    ":ip_protection_probabilistic_reveal_token_fetcher",
+    ":ip_protection_probabilistic_reveal_token_manager",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+  ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_data_storage") {
+  sources = [
+    "ip_protection_probabilistic_reveal_token_data_storage.cc",
+    "ip_protection_probabilistic_reveal_token_data_storage.h",
+  ]
+  public_deps = [
+    "//base",
+    "//sql",
+  ]
+  deps = [
+    ":ip_protection_probabilistic_reveal_token_fetcher",
+    "//third_party/sqlite",
+  ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_data_storage_unittest") {
+  testonly = true
+  sources =
+      [ "ip_protection_probabilistic_reveal_token_data_storage_unittest.cc" ]
+  deps = [
+    ":ip_protection_data_types",
+    ":ip_protection_probabilistic_reveal_token_data_storage",
+    ":ip_protection_probabilistic_reveal_token_fetcher",
+    ":tests_bundle_data",
+    "//base",
+    "//base/test:test_support",
+    "//sql",
+    "//sql:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+bundle_data("tests_bundle_data") {
+  visibility =
+      [ ":ip_protection_probabilistic_reveal_token_data_storage_unittest" ]
+  testonly = true
+  sources = [
+    "//components/test/data/ip_protection/probabilistic_reveal_tokens_v0.too_old.sql",
+    "//components/test/data/ip_protection/probabilistic_reveal_tokens_v1.sql",
+    "//components/test/data/ip_protection/probabilistic_reveal_tokens_v2.too_new.sql",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
+source_set("probabilistic_reveal_token_registry") {
+  sources = [
+    "probabilistic_reveal_token_registry.cc",
+    "probabilistic_reveal_token_registry.h",
+  ]
+  public_deps = [
+    "//base",
+    "//url",
+  ]
+  deps = [ "//net" ]
+}
+
+source_set("probabilistic_reveal_token_registry_unittest") {
+  testonly = true
+  sources = [ "probabilistic_reveal_token_registry_unittest.cc" ]
+  deps = [
+    ":probabilistic_reveal_token_registry",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+# //content is not supported on iOS.
+if (use_blink) {
+  source_set("ip_protection_status") {
+    sources = [
+      "ip_protection_status.cc",
+      "ip_protection_status.h",
+      "ip_protection_status_observer.h",
+    ]
+    deps = [
+      "//base",
+      "//content/public/common",
+      "//net",
+      "//third_party/blink/public:blink_headers",
+    ]
+    public_deps = [ "//content/public/browser" ]
+  }
+
+  source_set("ip_protection_status_unittest") {
+    testonly = true
+    sources = [ "ip_protection_status_unittest.cc" ]
+    deps = [
+      ":ip_protection_status",
+      "//base",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/blink/public:blink_headers",
+      "//url",
+    ]
+  }
 }

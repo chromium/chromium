@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/heap_profiling/json_exporter.h"
 
 #include <inttypes.h>
 
+#include <array>
 #include <map>
 #include <string>
 #include <unordered_map>
@@ -76,8 +72,8 @@ const char* StringForAllocatorType(uint32_t type) {
 // placeholder to allow the stack-viewing UI to be shown.
 base::Value::Dict BuildAllocatorsSummary(const AllocationMap& allocations) {
   // Aggregate stats for each allocator type.
-  size_t total_size[kAllocatorCount] = {};
-  size_t total_count[kAllocatorCount] = {};
+  std::array<size_t, kAllocatorCount> total_size = {};
+  std::array<size_t, kAllocatorCount> total_count = {};
   for (const auto& alloc_pair : allocations) {
     int index = static_cast<int>(alloc_pair.first.allocator);
     total_size[index] += alloc_pair.second.size;
@@ -303,10 +299,10 @@ base::Value::List BuildTypeNodes(const std::map<int, int>& type_to_string) {
 
 base::Value::Dict BuildAllocations(const AllocationMap& allocations,
                                    const AllocationToNodeId& alloc_to_node_id) {
-  base::Value::List counts[kAllocatorCount];
-  base::Value::List sizes[kAllocatorCount];
-  base::Value::List types[kAllocatorCount];
-  base::Value::List nodes[kAllocatorCount];
+  std::array<base::Value::List, kAllocatorCount> counts;
+  std::array<base::Value::List, kAllocatorCount> sizes;
+  std::array<base::Value::List, kAllocatorCount> types;
+  std::array<base::Value::List, kAllocatorCount> nodes;
 
   for (const auto& alloc : allocations) {
     int allocator = static_cast<int>(alloc.first.allocator);

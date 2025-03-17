@@ -15,7 +15,10 @@ import android.view.WindowInsets;
 import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Collection of methods computing various height dimensions that differ by OS build version. */
+@NullMarked
 public abstract class DimensionCompat {
     protected final Activity mActivity;
     protected final Runnable mPositionUpdater;
@@ -46,7 +49,7 @@ public abstract class DimensionCompat {
     public abstract @Px int getWindowWidth();
 
     /** Returns the status bar height */
-    public abstract @Px int getStatusbarHeight();
+    public abstract @Px int getStatusBarHeight();
 
     /** Returns the bottom navigation bar height */
     public abstract @Px int getNavbarHeight();
@@ -77,7 +80,7 @@ public abstract class DimensionCompat {
 
         @Override
         @Px
-        public int getStatusbarHeight() {
+        public int getStatusBarHeight() {
             return mActivity
                     .getWindowManager()
                     .getCurrentWindowMetrics()
@@ -152,7 +155,7 @@ public abstract class DimensionCompat {
         @Override
         @SuppressWarnings({"DiscouragedApi", "InternalInsetResource"})
         @Px
-        public int getStatusbarHeight() {
+        public int getStatusBarHeight() {
             int statusBarHeight = 0;
             final int statusBarHeightResourceId =
                     mActivity.getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -207,7 +210,7 @@ public abstract class DimensionCompat {
             // matter) doesn't have the top action bar. So getting the height of |content| is
             // enough.
             View contentFrame = mActivity.findViewById(android.R.id.content);
-            return contentFrame.getHeight() + getStatusbarHeight();
+            return contentFrame.getHeight() + getStatusBarHeight();
         }
 
         private int getAppUsableScreenHeightFromDisplay() {

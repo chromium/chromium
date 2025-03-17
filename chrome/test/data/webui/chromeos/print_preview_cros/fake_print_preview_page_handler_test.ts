@@ -50,7 +50,7 @@ suite('FakePrintPreviewPageHandler', () => {
   });
 
   // Verify the fake PrintPreviewPageHandler cancel increases counter.
-  test('cancel print preview can be sent', async () => {
+  test('cancel print preview can be sent', () => {
     assertEquals(0, printPreviewPageHandler.getCallCount('cancel'));
     printPreviewPageHandler.cancel();
     assertEquals(1, printPreviewPageHandler.getCallCount('cancel'));

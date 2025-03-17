@@ -77,6 +77,13 @@ BookmarkParentFolderChildren::Iterator::operator++() {
   return *this;
 }
 
+BookmarkParentFolderChildren::Iterator
+BookmarkParentFolderChildren::Iterator::operator+(int offset) const {
+  Iterator result = *this;
+  result.index_ += offset;
+  return result;
+}
+
 const BookmarkNode* BookmarkParentFolderChildren::Iterator::operator*() const {
   return (*parent_)[index_];
 }

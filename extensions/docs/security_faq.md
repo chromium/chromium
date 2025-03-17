@@ -447,6 +447,22 @@ field, and other binaries on a machine could launch the Native Messaging Host
 and communicate with it. Both of these are outside of Chrome's security model
 which [does not consider physically-local attacks to be security bugs][physically-local-attacks].
 
+### What is your stance on click-jacking using extensions?
+
+This depends on the attack. In general, these will *not* be considered security
+bugs due to the capabilities extensions have to control windows, including
+creating new windows and controlling windows' bounds and positions. This is core
+to a lot of extension functionality (like window / session managers), and, if
+you can control a window, you could always socially-engineer a user to click at
+a spot in the window right above another window, and then remove the
+socially-engineering window.
+
+We consider this acceptable because of the other controls and protections we
+have in place, including that the user has to install the extension and that
+extensions in the webstore undergo manual and automated review.
+
+Example: https://crbug.com/354625690.
+
 ### I've found a security bug in an extension. Is this a security bug in Chromium?
 
 This depends on the extension.
@@ -464,15 +480,11 @@ a bug in Chromium. However, they may be covered by the
 
 **Other Extensions:** A security bug in a third-party extension _would not_ be
 considered a security bug in Chromium. This is true even if the extension has
-sensitive and powerful permissions, which could leak user data  or allow
+sensitive and powerful permissions, which could leak user data or allow
 cross-site scripting attacks
 ([example](https://bugs.chromium.org/p/chromium/issues/detail?id=1213523)).
 Some third-party extensions may have their own vulnerability reward programs;
-please check with the extension developer. It may also be eligible for a reward
-through the Developer Data Protection Reward Program (though this typically
-targets abuse, rather than vulnerabilities); visit
-[this site](https://www.google.com/about/appsecurity/ddprp/) for more
-information.
+please check with the extension developer.
 
 [new-security-bug]: https://bugs.chromium.org/p/chromium/issues/entry?template=Security+Bug
 [physically-local-attacks]: https://chromium.googlesource.com/chromium/src/+/main/docs/security/faq.md#why-arent-physically_local-attacks-in-chromes-threat-model

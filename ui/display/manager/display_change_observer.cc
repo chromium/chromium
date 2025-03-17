@@ -10,6 +10,7 @@
 #include "ui/display/manager/display_change_observer.h"
 
 #include <algorithm>
+#include <cmath>
 #include <map>
 #include <set>
 #include <string>
@@ -57,10 +58,91 @@ struct DeviceScaleFactorDPIThreshold {
 
 // Update the list of zoom levels whenever a new device scale factor is added
 // here. See zoom level list in /ui/display/manager/util/display_manager_util.cc
-const DeviceScaleFactorDPIThreshold kThresholdTableForInternal[] = {
-    {310.f, kDsf_2_666}, {270.0f, 2.4f},  {230.0f, 2.0f}, {220.0f, kDsf_1_777},
-    {180.0f, 1.6f},      {150.0f, 1.25f}, {0.0f, 1.0f},
-};
+const std::array<DeviceScaleFactorDPIThreshold, 7>
+    kThresholdTableForLcdInternal{{
+        {310.f, kDsf_2_666},
+        {270.0f, 2.4f},
+        {230.0f, 2.0f},
+        {220.0f, kDsf_1_777},
+        {180.0f, 1.6f},
+        {150.0f, 1.25f},
+        {0.0f, 1.0f},
+    }};
+
+// Same as |kThresholdTableForLcdInternal|, but used for Oled displays with
+// |display::features::kOledScaleFactorEnabled| set.
+const std::array<DeviceScaleFactorDPIThreshold, 8>
+    kThresholdTableForOledInternal{{
+        {310.f, kDsf_2_666},
+        {270.0f, 2.4f},
+        {230.0f, 2.0f},
+        {220.0f, kDsf_1_777},
+        {180.0f, 1.6f},
+        {160.0f, kDsf_1_333},
+        {140.0f, 1.25f},
+        {0.0f, 1.0f},
+    }};
+
+// Return the diagonal length of the rect.
+float GetDiagonalLength(const gfx::Size& rect) {
+  return std::sqrt(std::pow(rect.width(), 2) + std::pow(rect.height(), 2));
+}
+
+// Only use if the ops-display-scale-factor feature flag is set to true and
+// physical size is valid. OPS stands for Open Pluggable Specification.
+float GetOpsDisplayScaleFactor(const gfx::Size& physical_size,
+                               const gfx::Size& size_in_pixels) {
+  // Common OPS displays are over 50 inches.
+  constexpr float kMinSizeForOps = 50.0f;
+  // The diagonal length of the display in inches.
+  const float diagonal_length = GetDiagonalLength(physical_size) / kInchInMm;
+  // Check against this number to not capture user using the device as
+  // ChromeBox.
+  if (diagonal_length < kMinSizeForOps) {
+    return 1.0f;
+  }
+
+  // These are the scale factors that will result in non-fractional logical
+  // pixels for 4k UHD (3840 x 2160) and 4k WUHD (5120 x 2160) displays.
+  // Note: List should be sorted.
+  constexpr float kScaleFactorsForOPSDisplay[] = {
+      1.0f, 1.25f, kDsf_1_333, 1.6f, kDsf_1_777, 2.0f, kDsf_2_666};
+
+  const float original_dpi =
+      GetDiagonalLength(size_in_pixels) / diagonal_length;
+  // Ideal scale factor to dpi ratio is 1.0f to 40pi. We try to find the closest
+  // valid display scale factor based on the target display's dpi.
+  const float ideal_scale_factor = original_dpi / 40.0f;
+  float closest_dsf = 1.0f;
+  float dsf_delta = std::abs(ideal_scale_factor - closest_dsf);
+  for (const float scale_factor : kScaleFactorsForOPSDisplay) {
+    const float delta = std::abs(ideal_scale_factor - scale_factor);
+    if (delta <= dsf_delta) {
+      // Check if the scaling will result in fractional pixels.
+      gfx::RectF f(size_in_pixels);
+      f.InvScale(scale_factor);
+      float int_part;
+      if (std::modf(f.width(), &int_part) == 0 &&
+          std::modf(f.height(), &int_part) == 0) {
+        closest_dsf = scale_factor;
+        dsf_delta = delta;
+      }
+
+    } else {
+      return closest_dsf;
+    }
+  }
+  return closest_dsf;
+}
+
+// External Display size is always set to 1.0 unless otherwise specified.
+float GetExternalDisplayScaleFactor(const gfx::Size& physical_size,
+                                    const gfx::Size& size_in_pixels) {
+  if (features::IsOpsDisplayScaleFactorEnabled()) {
+    return GetOpsDisplayScaleFactor(physical_size, size_in_pixels);
+  }
+  return 1.0f;
+}
 
 // Returns a list of display modes for the given |output| that doesn't exclude
 // any mode. The returned list is sorted by size, then by refresh rate, then by
@@ -69,10 +151,11 @@ ManagedDisplayInfo::ManagedDisplayModeList GetModeListWithAllRefreshRates(
     const DisplaySnapshot& output) {
   ManagedDisplayInfo::ManagedDisplayModeList display_mode_list;
   for (const auto& mode_info : output.modes()) {
-    display_mode_list.emplace_back(mode_info->size(), mode_info->refresh_rate(),
-                                   mode_info->is_interlaced(),
-                                   output.native_mode() == mode_info.get(),
-                                   1.0);
+    display_mode_list.emplace_back(
+        mode_info->size(), mode_info->refresh_rate(),
+        mode_info->is_interlaced(), output.native_mode() == mode_info.get(),
+        GetExternalDisplayScaleFactor(output.physical_size(),
+                                      mode_info->size()));
   }
 
   std::sort(
@@ -145,7 +228,8 @@ DisplayChangeObserver::GetExternalManagedDisplayModeList(
     ManagedDisplayMode display_mode(
         mode_info->size(), mode_info->refresh_rate(),
         mode_info->is_interlaced(), output.native_mode() == mode_info.get(),
-        1.0);
+        GetExternalDisplayScaleFactor(output.physical_size(),
+                                      mode_info->size()));
     if (display_mode.native())
       native_mode = display_mode;
 
@@ -270,12 +354,10 @@ float DisplayChangeObserver::FindDeviceScaleFactor(
     float dpi,
     const gfx::Size& size_in_pixels) {
   // Nocturne has special scale factor 3000/1332=2.252.. for the panel 3kx2k.
-  constexpr gfx::Size k225DisplaySizeHackNocturne(3000, 2000);
+  constexpr gfx::Size k225DisplaySizeHackNocturne = kNocturne;  // (3000, 2000);
   // Keep the Chell's scale factor 2.252 until we make decision.
-  constexpr gfx::Size k2DisplaySizeHackChell(3200, 1800);
-  constexpr gfx::Size k18DisplaySizeHackCoachZ(2160, 1440);
-  // Only change the OLED display scale factor for Xol device.
-  constexpr gfx::Size k12DisplaySizeHackXol(1920, 1080);
+  constexpr gfx::Size k2DisplaySizeHackChell = kQHD_PLUS;  // (3200, 1800);
+  constexpr gfx::Size k18DisplaySizeHackCoachZ = kLux;     // (2160, 1440);
 
   if (size_in_pixels == k225DisplaySizeHackNocturne) {
     return kDsf_2_252;
@@ -287,16 +369,22 @@ float DisplayChangeObserver::FindDeviceScaleFactor(
     return kDsf_1_8;
   }
 
-  if (display::features::IsOledScaleFactorEnabled() &&
-      size_in_pixels == k12DisplaySizeHackXol) {
-    return 1.2f;
-  }
-
-  for (size_t i = 0; i < std::size(kThresholdTableForInternal); ++i) {
-    if (dpi >= kThresholdTableForInternal[i].dpi) {
-      return kThresholdTableForInternal[i].device_scale_factor;
+  if (features::IsOledScaleFactorEnabled()) {
+    for (const DeviceScaleFactorDPIThreshold& threshold :
+         kThresholdTableForOledInternal) {
+      if (dpi >= threshold.dpi) {
+        return threshold.device_scale_factor;
+      }
+    }
+  } else {
+    for (const DeviceScaleFactorDPIThreshold& threshold :
+         kThresholdTableForLcdInternal) {
+      if (dpi >= threshold.dpi) {
+        return threshold.device_scale_factor;
+      }
     }
   }
+
   return 1.0f;
 }
 
@@ -428,9 +516,12 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfoInternal(
     const DisplayMode* native_mode = snapshot->native_mode();
     native = *mode_info == *native_mode;
 
-    // External display scale factor is always 1.
     CHECK(snapshot->type() != DISPLAY_CONNECTION_TYPE_INTERNAL);
-    device_scale_factor = 1.0f;
+    device_scale_factor =
+        IsDisplaySizeValid(snapshot->physical_size())
+            ? GetExternalDisplayScaleFactor(snapshot->physical_size(),
+                                            mode_info->size())
+            : 1.0f;
   }
   std::string name = (snapshot->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
                          ? l10n_util::GetStringUTF8(IDS_DISPLAY_NAME_INTERNAL)
@@ -442,8 +533,7 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfoInternal(
 
   gfx::RoundedCornersF panel_radii;
 
-  if (display::features::IsRoundedDisplayEnabled() &&
-      snapshot->type() == display::DISPLAY_CONNECTION_TYPE_INTERNAL) {
+  if (snapshot->type() == display::DISPLAY_CONNECTION_TYPE_INTERNAL) {
     panel_radii = internal_panel_radii_.value_or(gfx::RoundedCornersF());
   }
 

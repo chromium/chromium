@@ -7,8 +7,6 @@
 
 #include "base/functional/callback_forward.h"
 
-class Browser;
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(ChromeSignoutConfirmationChoice)
@@ -20,6 +18,13 @@ enum class ChromeSignoutConfirmationChoice {
   kMaxValue = kCancelSignoutAndReauth,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ChromeSignoutConfirmationChoice)
+
+// Represents a callback made when a user accepts or cancels the signout
+// confirmation prompt.
+// Contains a `ChromeSignoutConfirmationChoice` and a boolean indicating if
+// account extensions should be uninstalled on signout.
+using SignoutConfirmationCallback =
+    base::OnceCallback<void(ChromeSignoutConfirmationChoice, bool)>;
 
 enum class ChromeSignoutConfirmationPromptVariant {
   // The user does not have unsynced data.
@@ -38,10 +43,8 @@ enum class ChromeSignoutConfirmationPromptVariant {
   kProfileWithParentalControls,
 };
 
-// Factory function to create and show the Chrome signout confirmation prompt.
-void ShowChromeSignoutConfirmationPrompt(
-    Browser& browser,
+void RecordChromeSignoutConfirmationPromptMetrics(
     ChromeSignoutConfirmationPromptVariant variant,
-    base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback);
+    ChromeSignoutConfirmationChoice choice);
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_CHROME_SIGNOUT_CONFIRMATION_PROMPT_H_

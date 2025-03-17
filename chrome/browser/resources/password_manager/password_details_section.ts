@@ -13,7 +13,7 @@ import './user_utils_mixin.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_details_section.html.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
@@ -45,7 +45,6 @@ export class PasswordDetailsSectionElement extends
     return {
       selectedGroup_: {
         type: Object,
-        observer: 'maybeRegisterPasswordSharingHelpBubble_',
       },
     };
   }
@@ -192,7 +191,11 @@ export class PasswordDetailsSectionElement extends
    * if no, navigate back to Passwords page.
    */
   private refreshGroupInfo_(groups: chrome.passwordsPrivate.CredentialGroup[]) {
-    assert(this.selectedGroup_);
+    if (!this.selectedGroup_) {
+      // It's possible refresh was triggered during page opening or closure when
+      // `selectedGroup_` is not set. In this case do nothing.
+      return;
+    }
     const currentIds = this.selectedGroup_.entries.map(entry => entry.id);
     let matchingGroup = groups.filter(
         group => group.entries.some(entry => currentIds.includes(entry.id)))[0];
@@ -230,15 +233,11 @@ export class PasswordDetailsSectionElement extends
         .catch(this.navigateBack_);
   }
 
-  private maybeRegisterPasswordSharingHelpBubble_() {
-    afterNextRender(this, () => {
-      if (this.selectedGroup_?.entries[0]?.isPasskey) {
-        return;
-      }
-
-      this.shadowRoot!.querySelector('password-details-card')
-          ?.maybeRegisterSharingHelpBubble();
-    });
+  /*
+   * Only register the first card to show the Password Sharing Help Bubble.
+   */
+  private shouldRegisterSharingPromo_(index: number) {
+    return index === 0;
   }
 }
 

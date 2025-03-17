@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/components/arc/mojom/app.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 
 namespace views {
 class Widget;

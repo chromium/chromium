@@ -16,11 +16,13 @@ import './modules/module_descriptors.js';
 import 'chrome://resources/cr_components/most_visited/most_visited.js';
 
 export {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
+export {FooterElement} from './footer.js';
 export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
 export {LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} from './lens_upload_dialog.js';
 export {MiddleSlotPromoElement, PromoDismissAction} from './middle_slot_promo.js';
 export {MobilePromoElement} from './mobile_promo.js';
 export {InfoDialogElement} from './modules/info_dialog.js';
+export {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connector.js';
 export {InitializeModuleCallback, Module, ModuleDescriptor} from './modules/module_descriptor.js';
 export {counterfactualLoad} from './modules/module_descriptors.js';
 export {ModuleHeaderElement} from './modules/module_header.js';
@@ -42,7 +44,8 @@ export {dummyV2Descriptor, ModuleElement as DummyModuleElement} from './modules/
 export {DriveModuleElement as DriveModuleV2Element, driveModuleV2Descriptor} from './modules/v2/file_suggestion/drive_module.js';
 export {FileProxy} from './modules/v2/file_suggestion/file_module_proxy.js';
 export {FileSuggestionElement} from './modules/v2/file_suggestion/file_suggestion.js';
-export {sharepointModuleDescriptor, SharepointModuleElement} from './modules/v2/file_suggestion/sharepoint_module.js';
+export {microsoftFilesModuleDescriptor, MicrosoftFilesModuleElement} from './modules/v2/file_suggestion/microsoft_files_module.js';
+export {MicrosoftFilesProxyImpl} from './modules/v2/file_suggestion/microsoft_files_proxy.js';
 export {ModuleHeaderElement as ModuleHeaderElementV2} from './modules/v2/module_header.js';
 export {DisableModuleEvent, DismissModuleElementEvent, DismissModuleInstanceEvent, MODULE_CUSTOMIZE_ELEMENT_ID, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
 export {ModuleElement as MostRelevantTabResumptionModuleElement, mostRelevantTabResumptionDescriptor} from './modules/v2/most_relevant_tab_resumption/module.js';

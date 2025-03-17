@@ -334,7 +334,7 @@ public class AddToHomescreenDialogViewTest {
         Assert.assertEquals(2, mDismissCallback.getCallCount());
         Assert.assertNotNull(mModalDialogManager.getDismissedDialogModel());
         Assert.assertEquals(
-                mModalDialogManager.getDismissalCause(), DialogDismissalCause.ACTION_ON_CONTENT);
+                DialogDismissalCause.ACTION_ON_CONTENT, mModalDialogManager.getDismissalCause());
     }
 
     /** Tests whether the callback for dismissal functions correctly. */

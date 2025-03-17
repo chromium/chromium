@@ -135,7 +135,7 @@ TEST_F(FcmConnectionEstablisherTest, TestEstablishConnection) {
 
   int last_retry_bucket_count = histogram_tester.GetBucketCount(
       "AndroidSms.FcmMessageDispatchRetry",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           FcmConnectionEstablisher::MessageType::kStart));
 
   int retry_count = 0;

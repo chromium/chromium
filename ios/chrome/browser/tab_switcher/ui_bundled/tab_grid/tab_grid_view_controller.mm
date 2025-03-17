@@ -56,7 +56,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_top_toolbar.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -1812,7 +1811,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)didTapInactiveTabsButtonInGridViewController:
     (BaseGridViewController*)gridViewController {
-  CHECK(IsInactiveTabsEnabled());
   if (self.currentPage != TabGridPageRegularTabs) {
     return;
   }
@@ -1842,6 +1840,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)gridViewControllerDropSessionDidExit:
     (BaseGridViewController*)gridViewController {
   [self.mutator dragAndDropSessionEnded];
+}
+
+- (void)didTapButtonInActivitySummary:
+    (BaseGridViewController*)gridViewController {
+  NOTREACHED();
 }
 
 #pragma mark - TabGridToolbarsMainTabGridDelegate
@@ -1977,10 +1980,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // menu.
   return @[
     UIKeyCommand.cr_openNewRegularTab,
-    // TODO(crbug.com/40246790): Move it to the menu builder once we have the
-    // strings.
-    UIKeyCommand.cr_select2,
-    UIKeyCommand.cr_select3,
   ];
 }
 
@@ -1996,6 +1995,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return [self
         canPerformOpenNewTabActionForDestinationPage:TabGridPageIncognitoTabs];
   }
+  if (sel_isEqual(action, @selector(keyCommand_select1)) ||
+      sel_isEqual(action, @selector(keyCommand_select2)) ||
+      sel_isEqual(action, @selector(keyCommand_select3))) {
+    return _viewVisible;
+  }
   return [super canPerformAction:action withSender:sender];
 }
 
@@ -2003,10 +2007,20 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (command.action == @selector(keyCommand_find)) {
     command.discoverabilityTitle =
         l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_SEARCH_TABS);
-  } else {
-    // TODO(crbug.com/40246790): Add string for change pane's functions.
-    return [super validateCommand:command];
   }
+  if (command.action == @selector(keyCommand_select1)) {
+    command.discoverabilityTitle = l10n_util::GetNSStringWithFixup(
+        IDS_IOS_KEYBOARD_GO_TO_INCOGNITO_TAB_GRID);
+  }
+  if (command.action == @selector(keyCommand_select2)) {
+    command.discoverabilityTitle = l10n_util::GetNSStringWithFixup(
+        IDS_IOS_KEYBOARD_GO_TO_REGULAR_TAB_GRID);
+  }
+  if (command.action == @selector(keyCommand_select3)) {
+    command.discoverabilityTitle =
+        l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_GO_TO_REMOTE_TAB_GRID);
+  }
+  [super validateCommand:command];
 }
 
 - (void)keyCommand_openNewTab {
@@ -2039,9 +2053,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)keyCommand_select3 {
-  base::RecordAction(
-      base::UserMetricsAction("MobileKeyCommandGoToRemoteTabGrid"));
-  [self setCurrentPageAndPageControl:TabGridPageRemoteTabs animated:YES];
+  if (IsTabGroupSyncEnabled()) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileKeyCommandGoToTabGroupsPanel"));
+    [self setCurrentPageAndPageControl:TabGridPageTabGroups animated:YES];
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("MobileKeyCommandGoToRemoteTabGrid"));
+    [self setCurrentPageAndPageControl:TabGridPageRemoteTabs animated:YES];
+  }
 }
 
 // Returns `YES` if should use compact layout.

@@ -19,6 +19,7 @@
 #include "extensions/browser/extension_icon_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -40,6 +41,13 @@ namespace extensions {
 // Event router class for events related to the omnibox API.
 class ExtensionOmniboxEventRouter {
  public:
+  static constexpr size_t kMaxSuggestionActions = 7;
+  static constexpr char kMaxSuggestionActionsExceededError[] =
+      "Found suggest result with %d action, which exceeds the limit of %d "
+      "actions per suggestion.";
+  static constexpr char kActionsRequireDirectInputPermissionError[] =
+      "Actions in suggest results require omnibox.directInput permission.";
+
   ExtensionOmniboxEventRouter(const ExtensionOmniboxEventRouter&) = delete;
   ExtensionOmniboxEventRouter& operator=(const ExtensionOmniboxEventRouter&) =
       delete;
@@ -71,6 +79,12 @@ class ExtensionOmniboxEventRouter {
   static void OnDeleteSuggestion(Profile* profile,
                                  const ExtensionId& extension_id,
                                  const std::string& suggestion_text);
+
+  // The user has clicked an action of an extension omnibox suggestion result.
+  static void OnActionExecuted(Profile* profile,
+                               const ExtensionId& extension_id,
+                               const std::string& action_name,
+                               const std::string& content);
 };
 
 class OmniboxSendSuggestionsFunction : public ExtensionFunction {
@@ -97,7 +111,8 @@ class OmniboxSendSuggestionsFunction : public ExtensionFunction {
 };
 
 class OmniboxAPI : public BrowserContextKeyedAPI,
-                   public ExtensionRegistryObserver {
+                   public ExtensionRegistryObserver,
+                   public PermissionsManager::Observer {
  public:
   explicit OmniboxAPI(content::BrowserContext* context);
 
@@ -133,6 +148,12 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
+  // PermissionsManager::Observer:
+  void OnExtensionPermissionsUpdated(
+      const Extension& extension,
+      const PermissionSet& permissions,
+      PermissionsManager::UpdateReason reason) override;
+
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {
     return "OmniboxAPI";
@@ -150,6 +171,11 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
   // Listen to extension load, unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+
+  // Permissions observer to listen to `omnibox.directInput` permission changes.
+  base::ScopedObservation<extensions::PermissionsManager,
+                          extensions::PermissionsManager::Observer>
+      permissions_manager_observation_{this};
 
   // Keeps track of favicon-sized omnibox icons for extensions.
   ExtensionIconManager omnibox_icon_manager_;

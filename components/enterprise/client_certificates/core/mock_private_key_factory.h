@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_MOCK_PRIVATE_KEY_FACTORY_H_
 
 #include "base/functional/callback.h"
+#include "base/values.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_factory.h"
 #include "components/enterprise/client_certificates/proto/client_certificates_database.pb.h"
@@ -26,6 +27,10 @@ class MockPrivateKeyFactory : public PrivateKeyFactory {
               LoadPrivateKey,
               (const client_certificates_pb::PrivateKey&,
                PrivateKeyFactory::PrivateKeyCallback),
+              (override));
+  MOCK_METHOD(void,
+              LoadPrivateKeyFromDict,
+              (const base::Value::Dict&, PrivateKeyFactory::PrivateKeyCallback),
               (override));
 };
 

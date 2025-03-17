@@ -59,8 +59,7 @@
 #include "base/trace_event/trace_log.h"  // nogncheck
 #endif                                   // BUILDFLAG(ENABLE_BASE_TRACING)
 
-namespace base {
-namespace test {
+namespace base::test {
 
 namespace {
 
@@ -1089,5 +1088,4 @@ void TaskEnvironment::TestTaskTracker::AssertFlushForTestingAllowed() {
          "under it should thus never FlushForTesting().";
 }
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test

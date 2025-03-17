@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.download;
 
 import org.chromium.build.annotations.IdentifierNameString;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.base.SplitCompatService;
 
 /** See {@link DownloadForegroundServiceImpl}. */
+@NullMarked
 public class DownloadForegroundService extends SplitCompatService {
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.download.DownloadForegroundServiceImpl";

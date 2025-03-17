@@ -214,8 +214,12 @@ class NET_EXPORT SpdySessionPool
       const ServiceEndpoint& service_endpoint,
       const std::set<std::string>& dns_aliases);
 
-  // Returns true if there is an available session for |key|.
-  bool HasAvailableSession(const SpdySessionKey& key, bool is_websocket) const;
+  // Returns true if there is an available session for `key`. Otherwise, if
+  // there is a session to pool to based on IP address, returns true if
+  // `enable_ip_based_pooling` is true. Otherwise returns false.
+  bool HasAvailableSession(const SpdySessionKey& key,
+                           bool enable_ip_based_pooling,
+                           bool is_websocket) const;
 
   // Just like FindAvailableSession.
   //

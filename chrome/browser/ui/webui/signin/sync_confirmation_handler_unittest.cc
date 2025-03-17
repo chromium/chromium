@@ -20,7 +20,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -94,9 +93,7 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
   SyncConfirmationHandlerTest()
       : BrowserWithTestWindowTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        did_user_explicitly_interact_(false),
-        on_sync_confirmation_ui_closed_called_(false),
-        sync_confirmation_ui_closed_result_(LoginUIService::ABORT_SYNC),
+
         web_ui_(new content::TestWebUI) {}
 
   SyncConfirmationHandlerTest(const SyncConfirmationHandlerTest&) = delete;
@@ -219,10 +216,10 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
   }
 
  protected:
-  bool did_user_explicitly_interact_;
-  bool on_sync_confirmation_ui_closed_called_;
+  bool did_user_explicitly_interact_ = false;
+  bool on_sync_confirmation_ui_closed_called_ = false;
   LoginUIService::SyncConfirmationUIClosedResult
-      sync_confirmation_ui_closed_result_;
+      sync_confirmation_ui_closed_result_ = LoginUIService::ABORT_SYNC;
   // Holds information for the account currently logged in.
   AccountInfo account_info_;
   base::HistogramTester histogram_tester_;

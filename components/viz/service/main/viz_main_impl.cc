@@ -80,9 +80,9 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
   // Null hypothesis finch testing. This code has no functional purpose.
   // See: crbug.com/354724066
   if (base::FeatureList::IsEnabled(features::kVizNullHypothesis)) {
-    LOG(WARNING) << "VizNullHypothesis is enabled (not a warning)";
+    VLOG(1) << "VizNullHypothesis is enabled (not a warning)";
   } else {
-    LOG(WARNING) << "VizNullHypothesis is disabled (not a warning)";
+    VLOG(1) << "VizNullHypothesis is disabled (not a warning)";
   }
   // TODO(crbug.com/41252481): Remove this when Mus Window Server and GPU are
   // split into separate processes. Until then this is necessary to be able to
@@ -124,8 +124,6 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
 #if BUILDFLAG(SKIA_USE_DAWN)
   init_params.dawn_context_provider = gpu_init_->TakeDawnContextProvider();
 #endif
-  init_params.exit_callback =
-      base::BindOnce(&VizMainImpl::ExitProcess, base::Unretained(this));
 
   init_params.vulkan_implementation = gpu_init_->vulkan_implementation();
   gpu_service_ = std::make_unique<GpuServiceImpl>(

@@ -26,7 +26,7 @@ SecurityInterstitialPage::SecurityInterstitialPage(
     content::WebContents* web_contents,
     const GURL& request_url,
     std::unique_ptr<SecurityInterstitialControllerClient> controller)
-    : web_contents_(web_contents),
+    : web_contents_(web_contents->GetWeakPtr()),
       request_url_(request_url),
       create_view_(true),
       on_show_extended_reporting_pref_value_(false),
@@ -45,7 +45,7 @@ SecurityInterstitialPage::~SecurityInterstitialPage() {
 }
 
 content::WebContents* SecurityInterstitialPage::web_contents() const {
-  return web_contents_;
+  return &*web_contents_;
 }
 
 GURL SecurityInterstitialPage::request_url() const {

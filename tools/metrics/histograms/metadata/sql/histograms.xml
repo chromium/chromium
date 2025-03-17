@@ -30,6 +30,8 @@ chromium-metrics-reviews@google.com.
   <variant name="BackgroundRequestQueue" summary="BackgroundRequestQueue"/>
   <variant name="BrowsingTopics" summary="BrowsingTopics"/>
   <variant name="CdmStorage" summary="CdmStorage"/>
+  <variant name="CollaborationMessageStorage"
+      summary="CollaborationMessageStorage"/>
   <variant name="Conversions" summary="Conversions"/>
   <variant name="Cookie" summary="Cookie"/>
   <variant name="DatabaseTracker" summary="DatabaseTracker"/>
@@ -45,6 +47,8 @@ chromium-metrics-reviews@google.com.
   <variant name="HistoryInMemoryDB" summary="HistoryInMemoryDB"/>
   <variant name="InterestGroups" summary="InterestGroups"/>
   <variant name="InterestGroupStorage" summary="InterestGroupStorage"/>
+  <variant name="IpProtectionProbabilisticRevealTokens"
+      summary="IpProtectionProbabilisticRevealTokens"/>
   <variant name="KAnonymityService" summary="KAnonymityService"/>
   <variant name="LocalTraces" summary="LocalTraces"/>
   <variant name="MediaDeviceSalts" summary="MediaDeviceSalts"/>
@@ -53,6 +57,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OptOutBlacklist" summary="OptOutBlacklist"/>
   <variant name="Passwords" summary="Passwords"/>
   <variant name="PermissionAuditingLogs" summary="PermissionAuditingLogs"/>
+  <variant name="PersistentCache" summary="PersistentCache"/>
   <variant name="PowerBookmarks" summary="PowerBookmarks"/>
   <variant name="Predictor" summary="Predictor"/>
   <variant name="PrivateAggregation" summary="PrivateAggregation"/>
@@ -74,6 +79,17 @@ chromium-metrics-reviews@google.com.
   <variant name="UserNotes" summary="UserNotes"/>
   <variant name="Web" summary="Web"/>
 </variants>
+
+<histogram name="Sql.Database.Open.FailureReason.{DatabaseTag}"
+    enum="OpenDatabaseFailedReason" expires_after="2025-12-03">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the fine-grained reason for a failure in Database::Open. Recorded
+    once per failure to open the {DatabaseTag} database.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
 
 <histogram name="Sql.Database.Open.FirstAttempt.Error.{DatabaseTag}"
     enum="SqliteResultCode" expires_after="2025-12-03">
@@ -108,6 +124,19 @@ chromium-metrics-reviews@google.com.
     {DatabaseTag} database.
 
     Only reported for clients with high-resolution clocks.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Database.Success.SqliteOpenAttempts.{DatabaseTag}"
+    units="count" expires_after="2025-11-15">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Records the total number of calls to sqlite3_open_v2 made to successfully
+    open the database. A value of one means that the first attempt succeeded.
+    Any other value indicates that one or more retries were needed. Recorded
+    once for each successful open of a database.
   </summary>
   <token key="DatabaseTag" variants="DatabaseTag"/>
 </histogram>
@@ -201,7 +230,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Statement.{DatabaseTag}.VMSteps" units="count"
-    expires_after="2025-04-13">
+    expires_after="2025-08-24">
   <owner>etienneb@chromium.org</owner>
   <owner>estade@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -213,7 +242,7 @@ chromium-metrics-reviews@google.com.
   <token key="DatabaseTag" variants="DatabaseTag"/>
 </histogram>
 
-<histogram name="Sql.vfs.SyncTime" units="ms" expires_after="2025-04-13">
+<histogram name="Sql.vfs.SyncTime" units="ms" expires_after="2025-08-24">
   <owner>etienneb@chromium.org</owner>
   <owner>estade@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>

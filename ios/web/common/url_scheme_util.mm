@@ -18,8 +18,9 @@ bool UrlHasWebScheme(const GURL& url) {
 
 bool UrlHasWebScheme(NSURL* url) {
   NSString* scheme = [url scheme];
-  if (![scheme length])
+  if (![scheme length]) {
     return false;
+  }
 
   // Use the GURL implementation, but with a scheme-only URL to avoid
   // unnecessary parsing in GURL construction.

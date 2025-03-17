@@ -86,6 +86,7 @@ include_rules = [
     "+services/network/public/cpp/features.h",
     "+services/network/public/cpp/header_util.h",
     "+services/network/public/cpp/is_potentially_trustworthy.h",
+    "+services/network/public/cpp/ip_address_space_util.h",
     "+services/network/public/cpp/request_destination.h",
     "+services/network/public/cpp/request_mode.h",
     "+services/network/public/cpp/resource_request.h",
@@ -136,13 +137,6 @@ include_rules = [
     "+ui/gfx/selection_bound.h",
     "+ui/strings/grit/ax_strings.h",
     "-web",
-    # We do not want any new dependencies into core/exported until we resolve
-    # controller layer.
-    "!third_party/blink/renderer/core/exported",
-    # We do not want any new dependencies on Web(Local|Remote)FrameBase.h until
-    # we resolve the control layer.
-    "!third_party/blink/renderer/core/frame/web_local_frame_impl.h",
-    "!third_party/blink/renderer/core/frame/web_remote_frame_impl.h",
 ]
 
 specific_include_rules = {

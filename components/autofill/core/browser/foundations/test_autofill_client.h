@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -52,8 +53,13 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/mock_translate_driver.h"
@@ -132,6 +138,10 @@ class TestAutofillClientTemplate : public T {
       test_personal_data_manager_ = std::make_unique<TestPersonalDataManager>();
     }
     return *test_personal_data_manager_.get();
+  }
+
+  EntityDataManager* GetEntityDataManager() override {
+    return entity_data_manager_.get();
   }
 
   MockAutofillOptimizationGuide* GetAutofillOptimizationGuide() const override {
@@ -284,11 +294,13 @@ class TestAutofillClientTemplate : public T {
   void UpdateAutofillDataListValues(
       base::span<const SelectOption> options) override {}
 
-  base::span<const Suggestion> GetAutofillSuggestions() const override {
-    return {};
+  void SetAutofillSuggestions(std::vector<Suggestion> suggestions) {
+    suggestions_ = std::move(suggestions);
   }
 
-  void PinAutofillSuggestions() override {}
+  base::span<const Suggestion> GetAutofillSuggestions() const override {
+    return suggestions_;
+  }
 
   void UpdateAutofillSuggestions(
       const std::vector<Suggestion>& suggestions,
@@ -438,6 +450,47 @@ class TestAutofillClientTemplate : public T {
     }
   }
 
+  // Sets up prefs and identity state to simulate an opted-in AutofillAI user.
+  void SetUpPrefsAndIdentityForAutofillAi() {
+    SetAutofillProfileEnabled(true);
+    // TODO(crbug.com/397881703): Remove feature guards once the pref is
+    // migrated to a GAIA-keyed dictionary.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    GetPrefs()->SetBoolean(prefs::kAutofillPredictionImprovementsEnabled, true);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+    GetPrefs()->registry()->RegisterIntegerPref(
+        optimization_guide::prefs::
+            kAutofillPredictionImprovementsEnterprisePolicyAllowed,
+        base::to_underlying(optimization_guide::model_execution::prefs::
+                                ModelExecutionEnterprisePolicyValue::kAllow),
+        PrefRegistry::LOSSY_PREF);
+
+    AccountInfo account_info =
+        identity_test_environment().MakePrimaryAccountAvailable(
+            "foo@gmail.com", signin::ConsentLevel::kSignin);
+    SetCanUseModelExecutionFeatures(true);
+    SetVariationConfigCountryCode(GeoIpCountryCode("US"));
+  }
+
+  // Updates whether the currently signed in primary account can use model
+  // execution features. CHECKs that there is a primary account.
+  void SetCanUseModelExecutionFeatures(bool can_use_model_execution) {
+    AccountInfo account_info = GetIdentityManager()->FindExtendedAccountInfo(
+        GetIdentityManager()->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin));
+    CHECK(!account_info.account_id.empty());
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_can_use_model_execution_features(can_use_model_execution);
+    signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);
+  }
+
+  void set_entity_data_manager(
+      std::unique_ptr<EntityDataManager> entity_data_manager) {
+    entity_data_manager_ = std::move(entity_data_manager);
+  }
+
   void set_payments_autofill_client(
       std::unique_ptr<payments::TestPaymentsAutofillClient> payments_client) {
     payments_autofill_client_ = std::move(payments_client);
@@ -556,6 +609,7 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
 
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
+  std::unique_ptr<EntityDataManager> entity_data_manager_;
   // The below objects must be destroyed before `TestPersonalDataManager`
   // because they keep a reference to it.
   std::unique_ptr<payments::TestPaymentsAutofillClient>
@@ -593,6 +647,8 @@ class TestAutofillClientTemplate : public T {
   std::vector<AutofillProfile> test_addresses_;
 
   std::vector<std::string> migration_card_selection_;
+
+  std::vector<Suggestion> suggestions_;
 
   // A mock translate driver which provides the language state.
   translate::testing::MockTranslateDriver mock_translate_driver_;

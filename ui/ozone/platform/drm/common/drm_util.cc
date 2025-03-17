@@ -17,6 +17,7 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -29,7 +30,6 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -93,8 +93,8 @@ std::pair<uint32_t /* best_crtc */, uint32_t /* connected_crtc */> GetCrtcs(
           IsCrtcInUse(resources->crtcs[j], displays))
         continue;
 
-      int supported_planes = base::ranges::count_if(
-          planes, [crtc_bit](const ScopedDrmPlanePtr& p) {
+      int supported_planes =
+          std::ranges::count_if(planes, [crtc_bit](const ScopedDrmPlanePtr& p) {
             return p->possible_crtcs & crtc_bit;
           });
       if (supported_planes > most_crtc_planes ||
@@ -549,6 +549,18 @@ ScopedDrmPropertyPtr FindDrmProperty(const DrmWrapper& drm,
   return nullptr;
 }
 
+bool GetConnectorPropertyValue(const drmModeConnector* const connector,
+                               const uint32_t prop_id,
+                               uint64_t* const prop_value) {
+  for (int i = 0; i < connector->count_props; i++) {
+    if (connector->props[i] == prop_id) {
+      *prop_value = connector->prop_values[i];
+      return true;
+    }
+  }
+  return false;
+}
+
 bool HasColorCorrectionMatrix(const DrmWrapper& drm, drmModeCrtc* crtc) {
   ScopedDrmObjectPropertyPtr crtc_props =
       drm.GetObjectProperties(crtc->crtc_id, DRM_MODE_OBJECT_CRTC);
@@ -716,7 +728,7 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
 
     ScopedDrmCrtcPtr crtc = drm.GetCrtc(best_crtc);
     auto connector_iter =
-        base::ranges::find(connectors, c, &ScopedDrmConnectorPtr::get);
+        std::ranges::find(connectors, c, &ScopedDrmConnectorPtr::get);
     CHECK(connector_iter != connectors.end(), base::NotFatalUntil::M130);
     // |connectors.size()| <= 256, so |index| should be between 0-255.
     const uint8_t index = connector_iter - connectors.begin();

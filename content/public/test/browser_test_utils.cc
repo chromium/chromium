@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <set>
 #include <string_view>
@@ -27,7 +28,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/process/kill.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/pattern.h"
@@ -111,6 +111,7 @@
 #include "net/filter/gzip_header.h"
 #include "net/filter/gzip_source_stream.h"
 #include "net/filter/mock_source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -428,17 +429,6 @@ class TestNavigationManagerThrottle : public NavigationThrottle {
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
-bool HasGzipHeader(const base::RefCountedMemory& maybe_gzipped) {
-  net::GZipHeader header;
-  net::GZipHeader::Status header_status = net::GZipHeader::INCOMPLETE_HEADER;
-  const char* header_end = nullptr;
-  while (header_status == net::GZipHeader::INCOMPLETE_HEADER) {
-    auto chars = base::as_chars(base::span(maybe_gzipped));
-    header_status = header.ReadMore(chars.data(), chars.size(), &header_end);
-  }
-  return header_status == net::GZipHeader::COMPLETE_HEADER;
-}
-
 void AppendGzippedResource(const base::RefCountedMemory& encoded,
                            std::string* to_append) {
   auto source_stream = std::make_unique<net::MockSourceStream>();
@@ -450,7 +440,7 @@ void AppendGzippedResource(const base::RefCountedMemory& encoded,
   source_stream->AddReadResult(end.data(), end.size(), net::OK,
                                net::MockSourceStream::SYNC);
   std::unique_ptr<net::GzipSourceStream> filter = net::GzipSourceStream::Create(
-      std::move(source_stream), net::SourceStream::TYPE_GZIP);
+      std::move(source_stream), net::SourceStreamType::kGzip);
   scoped_refptr<net::IOBufferWithSize> dest_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(4096);
   while (true) {
@@ -1424,6 +1414,12 @@ void BoundingBoxUpdateWaiter::Wait() {
 }
 #endif
 
+double GetPendingZoomLevel(RenderWidgetHost* render_widget_host) {
+  auto* rwhi = static_cast<RenderWidgetHostImpl*>(render_widget_host);
+  return WebContentsImpl::FromRenderWidgetHostImpl(rwhi)->GetPendingZoomLevel(
+      rwhi);
+}
+
 void SimulateKeyPress(WebContents* web_contents,
                       ui::DomKey key,
                       ui::DomCode code,
@@ -2001,8 +1997,8 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
 std::vector<WebContents*> GetAllWebContents() {
   std::vector<WebContentsImpl*> all_wci = WebContentsImpl::GetAllWebContents();
   std::vector<WebContents*> all_wc;
-  base::ranges::transform(all_wci, std::back_inserter(all_wc),
-                          [](WebContentsImpl* wc) { return wc; });
+  std::ranges::transform(all_wci, std::back_inserter(all_wc),
+                         [](WebContentsImpl* wc) { return wc; });
 
   return all_wc;
 }
@@ -2015,7 +2011,7 @@ bool ExecuteWebUIResourceTest(WebContents* web_contents) {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
           IDR_ASH_WEBUI_COMMON_WEBUI_RESOURCE_TEST_JS);
 
-  if (HasGzipHeader(*bytes)) {
+  if (net::GZipHeader::HasGZipHeader(base::span(*bytes))) {
     AppendGzippedResource(*bytes, &script);
   } else {
     auto chars = base::as_chars(base::span(*bytes));
@@ -4510,6 +4506,11 @@ base::CallbackListSubscription RegisterWebContentsCreationCallback(
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void SetConditionalFocusWindowForTesting(base::TimeDelta window) {
+  content::MediaStreamManager::GetInstance()
+      ->SetConditionalFocusWindowForTesting(window);
+}
+
 void SetCapturedSurfaceControllerFactoryForTesting(
     base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(
         GlobalRenderFrameHostId,

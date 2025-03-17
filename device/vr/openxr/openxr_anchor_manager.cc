@@ -37,22 +37,19 @@ void OpenXrAnchorManager::AddCreateAnchorRequest(
 
 device::mojom::XRAnchorsDataPtr OpenXrAnchorManager::ProcessAnchorsForFrame(
     OpenXrApiWrapper* openxr,
-    const mojom::VRStageParametersPtr& current_stage_parameters,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state,
     XrTime predicted_display_time) {
-  ProcessCreateAnchorRequests(openxr, current_stage_parameters, input_state);
+  ProcessCreateAnchorRequests(openxr, input_state);
   return GetCurrentAnchorsData(predicted_display_time);
 }
 
 void OpenXrAnchorManager::ProcessCreateAnchorRequests(
     OpenXrApiWrapper* openxr,
-    const mojom::VRStageParametersPtr& current_stage_parameters,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
   for (auto& request : create_anchor_requests_) {
     std::optional<XrLocation> anchor_location =
         GetXrLocationFromNativeOriginInformation(
-            openxr, current_stage_parameters,
-            request.GetNativeOriginInformation(),
+            openxr, request.GetNativeOriginInformation(),
             request.GetNativeOriginFromAnchor(), input_state);
     if (!anchor_location.has_value()) {
       request.TakeCallback().Run(device::mojom::CreateAnchorResult::FAILURE, 0);
@@ -142,7 +139,6 @@ mojom::XRAnchorsDataPtr OpenXrAnchorManager::GetCurrentAnchorsData(
 std::optional<OpenXrAnchorManager::XrLocation>
 OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
     OpenXrApiWrapper* openxr,
-    const mojom::VRStageParametersPtr& current_stage_parameters,
     const mojom::XRNativeOriginInformation& native_origin_information,
     const gfx::Transform& native_origin_from_anchor,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) const {
@@ -152,8 +148,7 @@ OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
       // created relative to input sources
       return std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kReferenceSpaceType:
-      return GetXrLocationFromReferenceSpace(openxr, current_stage_parameters,
-                                             native_origin_information,
+      return GetXrLocationFromReferenceSpace(openxr, native_origin_information,
                                              native_origin_from_anchor);
     // TODO: Look into plane data
     case mojom::XRNativeOriginInformation::Tag::kPlaneId:
@@ -171,33 +166,11 @@ OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
 std::optional<OpenXrAnchorManager::XrLocation>
 OpenXrAnchorManager::GetXrLocationFromReferenceSpace(
     OpenXrApiWrapper* openxr,
-    const mojom::VRStageParametersPtr& current_stage_parameters,
     const mojom::XRNativeOriginInformation& native_origin_information,
     const gfx::Transform& native_origin_from_anchor) const {
-  // LocalFloor doesn't have a direct backing XrSpace, it's synthesized based on
-  // the local XrSpace and some computed information about "stage space", so we
-  // have to adjust the supplied native_origin_from_anchor to local_from_anchor.
-  auto type = native_origin_information.get_reference_space_type();
-  if (type == device::mojom::XRReferenceSpaceType::kLocalFloor) {
-    if (!current_stage_parameters) {
-      return std::nullopt;
-    }
-    // local_from_mojo is currently identity.
-    gfx::Transform local_from_mojo;
-    // Because we're told that the native origin is local_floor,
-    // native_origin_from_anchor is floor_from_anchor.
-    const auto& floor_from_anchor = native_origin_from_anchor;
-    // We need to generate local_from_anchor to use the local reference space.
-    gfx::Transform local_from_anchor =
-        local_from_mojo * current_stage_parameters->mojo_from_floor *
-        floor_from_anchor;
-    return XrLocation{
-        GfxTransformToXrPose(local_from_anchor),
-        openxr->GetReferenceSpace(device::mojom::XRReferenceSpaceType::kLocal)};
-  }
-
   return XrLocation{GfxTransformToXrPose(native_origin_from_anchor),
-                    openxr->GetReferenceSpace(type)};
+                    openxr->GetReferenceSpace(
+                        native_origin_information.get_reference_space_type())};
 }
 
 }  // namespace device

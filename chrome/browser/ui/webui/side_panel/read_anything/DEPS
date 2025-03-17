@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/common/read_anything",
+  "+components/language_detection/core",
 ]
 
 specific_include_rules = {

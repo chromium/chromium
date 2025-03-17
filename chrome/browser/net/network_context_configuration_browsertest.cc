@@ -279,7 +279,7 @@ class NetworkContextConfigurationBrowserTest
       incognito_ = CreateIncognitoBrowser();
     SimulateNetworkServiceCrashIfNecessary();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // On ChromeOS the connection type comes from a fake Shill service, which
     // is configured with a fake ethernet connection asynchronously. Wait for
     // the connection type to be available to avoid getting notified of the
@@ -1190,10 +1190,19 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, PRE_Hsts) {
   GURL::Replacements replacements;
   replacements.SetSchemeStr("http");
   GURL start_url = exected_ssl_url.ReplaceComponents(replacements);
+  url::Origin origin = url::Origin::Create(start_url);
 
   request = std::make_unique<network::ResourceRequest>();
   request->url = start_url;
   request->load_flags = net::LOAD_ONLY_FROM_CACHE;
+  // Have this request simulate a main frame request. This is necessary when
+  // kHstsTopLevelNavigationsOnly is enabled.
+  request->site_for_cookies = net::SiteForCookies::FromOrigin(origin);
+  request->update_first_party_url_on_redirect = true;
+  request->trusted_params.emplace();
+  request->trusted_params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+      net::SiteForCookies::FromOrigin(origin));
 
   content::SimpleURLLoaderTestHelper simple_loader_helper2;
   simple_loader = network::SimpleURLLoader::Create(
@@ -1230,6 +1239,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Hsts) {
   std::string file_data;
   ASSERT_TRUE(ReadFileToString(save_url_file_path, &file_data));
   GURL start_url = GURL(file_data);
+  url::Origin origin = url::Origin::Create(start_url);
 
   // Unfortunately, loading HSTS information is loaded asynchronously from
   // disk, so there's no way to guarantee it has loaded by the time a
@@ -1240,6 +1250,14 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Hsts) {
         std::make_unique<network::ResourceRequest>();
     request->url = start_url;
     request->load_flags = net::LOAD_ONLY_FROM_CACHE;
+    // Have this request simulate a main frame request. This is necessary when
+    // kHstsTopLevelNavigationsOnly is enabled.
+    request->site_for_cookies = net::SiteForCookies::FromOrigin(origin);
+    request->update_first_party_url_on_redirect = true;
+    request->trusted_params.emplace();
+    request->trusted_params->isolation_info = net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+        net::SiteForCookies::FromOrigin(origin));
 
     content::SimpleURLLoaderTestHelper simple_loader_helper;
     std::unique_ptr<network::SimpleURLLoader> simple_loader =

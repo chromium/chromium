@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] :has-slotted does not match or querySelector when there are no assigned nodes
+  assert_false: slot element should not match :has-slotted expected false got true
+[FAIL] :has-slotted does not match or querySelector when there are no assigned nodes (flattened)
+  assert_false: slot element should not match :has-slotted expected false got true
+[FAIL] :has-slotted does not when child nodes are replaced (flattened)
+  assert_false: slot element should not match :has-slotted after empty expected false got true
+Harness: the test ran to completion.
+

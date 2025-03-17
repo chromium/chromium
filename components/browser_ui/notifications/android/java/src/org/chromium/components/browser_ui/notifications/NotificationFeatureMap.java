@@ -8,9 +8,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /** Java accessor for base::Features listed in native */
 @JNINamespace("browser_ui")
+@NullMarked
 public final class NotificationFeatureMap extends FeatureMap {
     public static final String CACHE_NOTIIFICATIONS_ENABLED = "CacheNotificationsEnabled";
 

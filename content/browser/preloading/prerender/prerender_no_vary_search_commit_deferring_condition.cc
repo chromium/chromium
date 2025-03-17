@@ -4,13 +4,15 @@
 
 #include "content/browser/preloading/prerender/prerender_no_vary_search_commit_deferring_condition.h"
 
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -36,11 +38,6 @@ PrerenderNoVarySearchCommitDeferringCondition::MaybeCreate(
     NavigationRequest& navigation_request,
     NavigationType navigation_type,
     std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id) {
-  // Don't create if No-Vary-Search support for prerender is not enabled.
-  if (!base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch)) {
-    return nullptr;
-  }
-
   // Don't create if this navigation is not for prerender page activation.
   if (navigation_type != NavigationType::kPrerenderedPageActivation) {
     return nullptr;
@@ -48,6 +45,19 @@ PrerenderNoVarySearchCommitDeferringCondition::MaybeCreate(
 
   return base::WrapUnique(new PrerenderNoVarySearchCommitDeferringCondition(
       navigation_request, candidate_prerender_frame_tree_node_id.value()));
+}
+
+// static
+void PrerenderNoVarySearchCommitDeferringCondition::OnUrlUpdated(
+    base::TimeTicks defer_start_time,
+    std::string histogram_suffix,
+    base::OnceClosure resume) {
+  // Resume the prerender activation.
+  base::TimeDelta time_delta = base::TimeTicks::Now() - defer_start_time;
+  base::UmaHistogramTimes(
+      "Navigation.Prerender.NoVarySearchCommitDeferTime" + histogram_suffix,
+      time_delta);
+  std::move(resume).Run();
 }
 
 PrerenderNoVarySearchCommitDeferringCondition::
@@ -60,7 +70,6 @@ PrerenderNoVarySearchCommitDeferringCondition::
     : CommitDeferringCondition(navigation_request),
       candidate_prerender_frame_tree_node_id_(
           candidate_prerender_frame_tree_node_id) {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch));
   CHECK(candidate_prerender_frame_tree_node_id_);
 }
 
@@ -108,7 +117,12 @@ PrerenderNoVarySearchCommitDeferringCondition::WillCommitNavigation(
             .IsSameOriginWith(GetNavigationHandle().GetURL()));
   prerender_host.GetPrerenderedMainFrameHost()
       ->GetAssociatedLocalFrame()
-      ->UpdatePrerenderURL(GetNavigationHandle().GetURL(), std::move(resume));
+      ->UpdatePrerenderURL(
+          GetNavigationHandle().GetURL(),
+          base::BindOnce(
+              PrerenderNoVarySearchCommitDeferringCondition::OnUrlUpdated,
+              base::TimeTicks::Now(), prerender_host.GetHistogramSuffix(),
+              std::move(resume)));
   // Defer the prerender activation until the ongoing prerender main frame
   // changes the URL.
   return Result::kDefer;

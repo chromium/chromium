@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './history_embeddings_promo.html.js';
+import {getCss} from './history_embeddings_promo.css.js';
+import {getHtml} from './history_embeddings_promo.html.js';
 
 // Key used in localStorage to determine if this promo has been shown. Any value
 // is considered truthy.
@@ -22,6 +21,12 @@ export const HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY: string =
 export const HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY: string =
     'history-embeddings-answers-promo';
 
+function getPromoShownKey() {
+  return loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers') ?
+      HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY :
+      HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY;
+}
+
 export interface HistoryEmbeddingsPromoElement {
   $: {
     close: HTMLElement,
@@ -29,42 +34,33 @@ export interface HistoryEmbeddingsPromoElement {
   };
 }
 
-export class HistoryEmbeddingsPromoElement extends PolymerElement {
+export class HistoryEmbeddingsPromoElement extends CrLitElement {
   static get is() {
     return 'history-embeddings-promo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      isAnswersEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers'),
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      shown_: {
-        type: Boolean,
-        value: () => {
-          const key =
-              loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers') ?
-              HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY :
-              HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY;
-          return !(window.localStorage.getItem(key));
-        },
-      },
+  static override get properties() {
+    return {
+      isAnswersEnabled_: {type: Boolean},
+      shown_: {type: Boolean},
     };
   }
 
-  private shown_: boolean;
+  protected isAnswersEnabled_: boolean =
+      loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers');
+  protected shown_: boolean =
+      !(window.localStorage.getItem(getPromoShownKey()));
 
-  private onCloseClick_() {
-    const key = loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers') ?
-        HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY :
-        HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY;
-    window.localStorage.setItem(key, true.toString());
+  protected onCloseClick_() {
+    window.localStorage.setItem(getPromoShownKey(), true.toString());
     this.shown_ = false;
   }
 }

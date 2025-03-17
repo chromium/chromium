@@ -1,0 +1,11 @@
+diff --git a/.gitignore b/.gitignore
+index 5daf9c20e7903..5766401460e4c 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -216,3 +216,6 @@ compile_commands.json
+ 
+ # Ignore Bzlmod lock file until it is more stable
+ MODULE.bazel.lock
++
++# Chromium: this directory contains some large files that we don't use.
++compatibility/

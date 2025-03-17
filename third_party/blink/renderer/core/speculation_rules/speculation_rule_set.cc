@@ -311,24 +311,26 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   std::optional<mojom::blink::SpeculationTargetHint> target_hint;
 
   // If input["target_hint"] exists:
-  JSONValue* target_hint_value = input->Get("target_hint");
-  if (target_hint_value) {
-    // If input["target_hint"] is not a valid browsing context name or keyword,
-    // then return null.
-    // Set targetHint to input["target_hint"].
-    String target_hint_str;
-    if (!target_hint_value->AsString(&target_hint_str)) {
-      SetParseErrorMessage(out_error, "\"target_hint\" must be a string.");
-      return nullptr;
+
+  if (RuntimeEnabledFeatures::SpeculationRulesTargetHintEnabled(context)) {
+    JSONValue* target_hint_value = input->Get("target_hint");
+    if (target_hint_value) {
+      // If input["target_hint"] is not a valid browsing context name or
+      // keyword, then return null. Set targetHint to input["target_hint"].
+      String target_hint_str;
+      if (!target_hint_value->AsString(&target_hint_str)) {
+        SetParseErrorMessage(out_error, "\"target_hint\" must be a string.");
+        return nullptr;
+      }
+      if (!IsValidBrowsingContextNameOrKeyword(target_hint_str)) {
+        SetParseErrorMessage(out_error,
+                             "A rule has an invalid \"target_hint\": \"" +
+                                 target_hint_str + "\".");
+        return nullptr;
+      }
+      target_hint =
+          SpeculationRuleSet::SpeculationTargetHintFromString(target_hint_str);
     }
-    if (!IsValidBrowsingContextNameOrKeyword(target_hint_str)) {
-      SetParseErrorMessage(out_error,
-                           "A rule has an invalid \"target_hint\": \"" +
-                               target_hint_str + "\".");
-      return nullptr;
-    }
-    target_hint =
-        SpeculationRuleSet::SpeculationTargetHintFromString(target_hint_str);
   }
 
   // Let referrerPolicy be the empty string.

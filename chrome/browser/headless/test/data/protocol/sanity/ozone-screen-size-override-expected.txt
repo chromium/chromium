@@ -1,0 +1,2 @@
+Tests Ozone screen size override.
+Screen size: 1234x5678

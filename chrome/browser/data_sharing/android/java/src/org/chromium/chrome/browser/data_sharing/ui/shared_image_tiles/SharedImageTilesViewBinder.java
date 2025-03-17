@@ -4,32 +4,30 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
-import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.COLOR_STYLE;
 import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.ICON_TILES;
 import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.IS_LOADING;
 import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.REMAINING_TILES;
-import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.TYPE;
+import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.VIEW_CONFIG;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for SharedImageTiles component. */
+@NullMarked
 class SharedImageTilesViewBinder {
 
     public static void bind(
             PropertyModel model, SharedImageTilesView view, PropertyKey propertyKey) {
         if (IS_LOADING == propertyKey) {
             // TODO(b/324909919): Set loading state for shared_image_tiles view.
-        } else if (COLOR_STYLE == propertyKey) {
-            view.setColorStyle(model.get(COLOR_STYLE));
-        } else if (TYPE == propertyKey) {
-            view.setType(model.get(TYPE));
+        } else if (VIEW_CONFIG == propertyKey) {
+            view.applyConfig(model.get(VIEW_CONFIG));
         } else if (ICON_TILES == propertyKey) {
             view.resetIconTiles(model.get(ICON_TILES));
 
             // Re-style the component.
-            view.setType(model.get(TYPE));
-            view.setColorStyle(model.get(COLOR_STYLE));
+            view.applyConfig(model.get(VIEW_CONFIG));
         } else if (REMAINING_TILES == propertyKey) {
             if (model.get(REMAINING_TILES) > 0) {
                 view.showCountTile(model.get(REMAINING_TILES));

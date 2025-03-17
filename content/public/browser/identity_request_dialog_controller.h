@@ -13,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
 #include "content/public/browser/identity_request_account.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -26,18 +25,27 @@ class WebContents;
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.webid
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogDisclosureField
-enum class IdentityRequestDialogDisclosureField { kName, kEmail, kPicture };
+enum class IdentityRequestDialogDisclosureField {
+  kName,
+  kEmail,
+  kPicture,
+  kPhoneNumber,
+  kUsername
+};
 
 struct CONTENT_EXPORT ClientMetadata {
   ClientMetadata(const GURL& terms_of_service_url,
                  const GURL& privacy_policy_url,
-                 const GURL& brand_icon_url);
+                 const GURL& brand_icon_url,
+                 const gfx::Image& brand_decoded_icon);
   ClientMetadata(const ClientMetadata& other);
   ~ClientMetadata();
 
   GURL terms_of_service_url;
   GURL privacy_policy_url;
   GURL brand_icon_url;
+  // This will be an empty image if the fetching never happened or if it failed.
+  gfx::Image brand_decoded_icon;
 };
 
 struct CONTENT_EXPORT IdentityCredentialTokenError {
@@ -69,6 +77,8 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   // Whether this IdP has any filtered out account. This is reset to false each
   // time the accounts dialog is shown and recomputed then.
   bool has_filtered_out_account{false};
+  // This will be an empty image if fetching failed.
+  gfx::Image brand_decoded_icon;
 };
 
 class CONTENT_EXPORT IdentityProviderData

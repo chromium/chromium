@@ -28,9 +28,8 @@
 
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
 
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
-#include "third_party/blink/renderer/core/layout/layout_replaced.h"
-#include "third_party/blink/renderer/core/layout/list/layout_list_marker_image.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 
 namespace blink {
@@ -70,24 +69,7 @@ scoped_refptr<Image> LayoutImageResourceStyleImage::GetImage(
                                 layout_object_->StyleRef(), size);
 }
 
-gfx::SizeF LayoutImageResourceStyleImage::ImageSize(float multiplier) const {
-  // TODO(davve): Find out the correct default object size in this context.
-  auto* list_marker = DynamicTo<LayoutListMarkerImage>(layout_object_.Get());
-  gfx::SizeF default_size = list_marker
-                                ? list_marker->DefaultSize()
-                                : gfx::SizeF(LayoutReplaced::kDefaultWidth,
-                                             LayoutReplaced::kDefaultHeight);
-  return ConcreteObjectSize(multiplier, default_size);
-}
-
-gfx::SizeF LayoutImageResourceStyleImage::ConcreteObjectSize(
-    float multiplier,
-    const gfx::SizeF& default_object_size) const {
-  return style_image_->ImageSize(multiplier, default_object_size,
-                                 ImageOrientation());
-}
-
-IntrinsicSizingInfo LayoutImageResourceStyleImage::GetNaturalDimensions(
+NaturalSizingInfo LayoutImageResourceStyleImage::GetNaturalDimensions(
     float multiplier) const {
   // Always respect the orientation of opaque origin images to avoid leaking
   // image data. Otherwise pull orientation from the layout object's style.

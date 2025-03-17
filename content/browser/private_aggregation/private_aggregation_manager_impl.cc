@@ -5,7 +5,9 @@
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -35,6 +37,7 @@
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
+#include "content/browser/private_aggregation/private_aggregation_pending_contributions.h"
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/private_aggregation_data_model.h"
@@ -108,18 +111,19 @@ PrivateAggregationManagerImpl::~PrivateAggregationManagerImpl() = default;
 bool PrivateAggregationManagerImpl::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
-    PrivateAggregationCallerApi api_for_budgeting,
+    PrivateAggregationCallerApi caller_api,
     std::optional<std::string> context_id,
     std::optional<base::TimeDelta> timeout,
     std::optional<url::Origin> aggregation_coordinator_origin,
     size_t filtering_id_max_bytes,
+    std::optional<size_t> max_contributions,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   return host_->BindNewReceiver(
-      std::move(worklet_origin), std::move(top_frame_origin), api_for_budgeting,
+      std::move(worklet_origin), std::move(top_frame_origin), caller_api,
       std::move(context_id), std::move(timeout),
       std::move(aggregation_coordinator_origin), filtering_id_max_bytes,
-      std::move(pending_receiver));
+      std::move(max_contributions), std::move(pending_receiver));
 }
 
 void PrivateAggregationManagerImpl::ClearBudgetData(
@@ -139,10 +143,12 @@ bool PrivateAggregationManagerImpl::IsDebugModeAllowed(
 
 void PrivateAggregationManagerImpl::OnReportRequestDetailsReceivedFromHost(
     PrivateAggregationHost::ReportRequestGenerator report_request_generator,
-    std::vector<blink::mojom::AggregatableReportHistogramContribution>
-        contributions,
+    PrivateAggregationPendingContributions::Wrapper contributions_wrapper,
     PrivateAggregationBudgetKey budget_key,
     PrivateAggregationHost::NullReportBehavior null_report_behavior) {
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      contributions = std::move(contributions_wrapper.GetContributionsVector());
+
   base::CheckedNumeric<int> budget_needed = std::accumulate(
       contributions.begin(), contributions.end(),
       /*init=*/base::CheckedNumeric<int>(0), /*op=*/
@@ -150,11 +156,11 @@ void PrivateAggregationManagerImpl::OnReportRequestDetailsReceivedFromHost(
          const blink::mojom::AggregatableReportHistogramContribution&
              contribution) { return running_sum + contribution.value; });
 
-  PrivateAggregationCallerApi api_for_budgeting = budget_key.api();
+  PrivateAggregationCallerApi caller_api = budget_key.caller_api();
 
   if (!budget_needed.IsValid()) {
     OnConsumeBudgetReturned(std::move(report_request_generator),
-                            std::move(contributions), api_for_budgeting,
+                            std::move(contributions), caller_api,
                             null_report_behavior,
                             PrivateAggregationBudgeter::RequestResult::
                                 kRequestedMoreThanTotalBudget);
@@ -165,13 +171,13 @@ void PrivateAggregationManagerImpl::OnReportRequestDetailsReceivedFromHost(
   if (budget_needed.ValueOrDie() == 0) {
     RecordManagerResultHistogram(RequestResult::kSentWithoutContributions);
     OnContributionsFinalized(std::move(report_request_generator),
-                             std::move(contributions), api_for_budgeting);
+                             std::move(contributions), caller_api);
     return;
   }
 
   CHECK(!contributions.empty());
   int minimum_value_for_metrics =
-      base::ranges::min(
+      std::ranges::min(
           contributions, /*comp=*/{}, /*proj=*/
           &blink::mojom::AggregatableReportHistogramContribution::value)
           .value;
@@ -183,7 +189,7 @@ void PrivateAggregationManagerImpl::OnReportRequestDetailsReceivedFromHost(
       base::BindOnce(
           &PrivateAggregationManagerImpl::OnConsumeBudgetReturned,
           base::Unretained(this), std::move(report_request_generator),
-          std::move(contributions), api_for_budgeting, null_report_behavior));
+          std::move(contributions), caller_api, null_report_behavior));
 }
 
 AggregationService* PrivateAggregationManagerImpl::GetAggregationService() {
@@ -195,7 +201,7 @@ void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
     PrivateAggregationHost::ReportRequestGenerator report_request_generator,
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions,
-    PrivateAggregationCallerApi api_for_budgeting,
+    PrivateAggregationCallerApi caller_api,
     PrivateAggregationHost::NullReportBehavior null_report_behavior,
     PrivateAggregationBudgeter::RequestResult request_result) {
   RecordBudgeterResultHistogram(request_result);
@@ -219,14 +225,14 @@ void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
   }
 
   OnContributionsFinalized(std::move(report_request_generator),
-                           std::move(contributions), api_for_budgeting);
+                           std::move(contributions), caller_api);
 }
 
 void PrivateAggregationManagerImpl::OnContributionsFinalized(
     PrivateAggregationHost::ReportRequestGenerator report_request_generator,
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions,
-    PrivateAggregationCallerApi api_for_budgeting) {
+    PrivateAggregationCallerApi caller_api) {
   AggregationService* aggregation_service = GetAggregationService();
   if (!aggregation_service) {
     return;
@@ -241,7 +247,7 @@ void PrivateAggregationManagerImpl::OnContributionsFinalized(
       AggregatableReportSharedInfo::DebugMode::kEnabled) {
     std::string immediate_debug_reporting_path =
         private_aggregation::GetReportingPath(
-            api_for_budgeting,
+            caller_api,
             /*is_immediate_debug_report=*/true);
 
     std::optional<AggregatableReportRequest> debug_request =
@@ -279,7 +285,7 @@ void PrivateAggregationManagerImpl::OnBudgeterGetAllDataKeysReturned(
   aggregation_service->GetPendingReportReportingOrigins(base::BindOnce(
       [](base::OnceCallback<void(std::set<DataKey>)> callback,
          std::set<DataKey> all_keys, std::set<url::Origin> pending_origins) {
-        base::ranges::transform(
+        std::ranges::transform(
             std::make_move_iterator(pending_origins.begin()),
             std::make_move_iterator(pending_origins.end()),
             std::inserter(all_keys, all_keys.begin()), [](url::Origin elem) {

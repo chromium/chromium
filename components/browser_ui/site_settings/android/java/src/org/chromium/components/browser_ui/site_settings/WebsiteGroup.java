@@ -4,6 +4,9 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
@@ -16,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Represents a group of Websites that either share the same eTLD+1 or are embedded on it. */
+@NullMarked
 public class WebsiteGroup implements WebsiteEntry {
     // The common eTLD+1.
     private final String mDomainAndRegistry;
@@ -26,7 +30,7 @@ public class WebsiteGroup implements WebsiteEntry {
     // Total number of cookies associated with the websites.
     private final int mCookiesCount;
     // Related Website Sets info relative to the eTLD+1.
-    private RwsCookieInfo mRwsInfo;
+    private @Nullable RwsCookieInfo mRwsInfo;
 
     /**
      * Groups the websites by eTLD+1.
@@ -118,20 +122,21 @@ public class WebsiteGroup implements WebsiteEntry {
 
     /** {@inheritDoc} */
     @Override
+    @EnsuresNonNullIf({"mRwsInfo"})
     public boolean isPartOfRws() {
-        return getRwsInfo() != null;
+        return mRwsInfo != null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public String getRwsOwner() {
-        return isPartOfRws() ? getRwsInfo().getOwner() : null;
+    public @Nullable String getRwsOwner() {
+        return isPartOfRws() ? mRwsInfo.getOwner() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public int getRwsSize() {
-        return isPartOfRws() ? getRwsInfo().getMembersCount() : 0;
+        return isPartOfRws() ? mRwsInfo.getMembersCount() : 0;
     }
 
     /**
@@ -151,7 +156,7 @@ public class WebsiteGroup implements WebsiteEntry {
         return true;
     }
 
-    public RwsCookieInfo getRwsInfo() {
+    public @Nullable RwsCookieInfo getRwsInfo() {
         return mRwsInfo;
     }
 

@@ -15,14 +15,14 @@ class TestStackView : public views::View {
  public:
   class Observer {
    public:
-    Observer() : view_deleted_(false) {}
+    Observer() = default;
 
     void OnViewBeingDeleted() { view_deleted_ = true; }
 
     bool view_deleted() { return view_deleted_; }
 
    private:
-    bool view_deleted_;
+    bool view_deleted_ = false;
   };
 
   TestStackView() = default;

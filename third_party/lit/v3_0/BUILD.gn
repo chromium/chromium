@@ -4,6 +4,7 @@
 
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/generate_code_cache.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
 import("//ui/webui/webui_features.gni")
@@ -16,7 +17,7 @@ ts_library("build_ts") {
     # Polymer) for new WebUI code, see [1] and [2]
     #
     # [1] https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Lit
-    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md
+    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/webui_using_lit.md
     #
     # Explicitly tracking targets that can depend on third_party/lit is still
     # useful to audit UIs that depend on Lit, and to prevent adding Lit as a
@@ -26,6 +27,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/about_sys:build_ts",
     "//chrome/browser/resources/app_home:build_ts",
     "//chrome/browser/resources/app_settings:build_ts",
+    "//chrome/browser/resources/bookmarks:build_ts",
     "//chrome/browser/resources/browser_switch:build_ts",
     "//chrome/browser/resources/certificate_viewer:build_ts",
     "//chrome/browser/resources/commerce/product_specifications:build_ts",
@@ -34,8 +36,10 @@ ts_library("build_ts") {
     "//chrome/browser/resources/extensions:build_ts",
     "//chrome/browser/resources/family_link_user_internals:build_ts",
     "//chrome/browser/resources/feedback:build_ts",
+    "//chrome/browser/resources/history:build_ts",
     "//chrome/browser/resources/intro:build_ts",
     "//chrome/browser/resources/key_value_pair_viewer_shared:build_ts",
+    "//chrome/browser/resources/lens/overlay:build_ts",
     "//chrome/browser/resources/management:build_ts",
     "//chrome/browser/resources/media_router/cast_feedback:build_ts",
     "//chrome/browser/resources/new_tab_page:build_ts",
@@ -57,13 +61,19 @@ ts_library("build_ts") {
     "//chrome/browser/resources/signin:build_ts",
     "//chrome/browser/resources/signin/batch_upload:build_ts",
     "//chrome/browser/resources/signin/profile_picker:build_ts",
+    "//chrome/browser/resources/signin/signout_confirmation:build_ts",
     "//chrome/browser/resources/tab_search:build_ts",
     "//chrome/browser/resources/user_education_internals:build_ts",
     "//chrome/browser/resources/webui_gallery:build_ts",
     "//chrome/browser/resources/whats_new:build_ts",
     "//chrome/test/data/pdf:build_ts",
     "//chrome/test/data/webui/app_home:build_ts",
+    "//chrome/test/data/webui/app_settings:build_ts",
+    "//chrome/test/data/webui/bookmarks:build_ts",
+    "//chrome/test/data/webui/commerce/product_specifications:build_ts",
     "//chrome/test/data/webui/cr_components:build_ts",
+    "//chrome/test/data/webui/cr_components/cr_shortcut_input:build_ts",
+    "//chrome/test/data/webui/cr_components/custom_help_bubble:build_ts",
     "//chrome/test/data/webui/cr_components/help_bubble:build_ts",
     "//chrome/test/data/webui/cr_components/history_clusters:build_ts",
     "//chrome/test/data/webui/cr_elements:build_ts",
@@ -72,19 +82,22 @@ ts_library("build_ts") {
     "//chrome/test/data/webui/privacy_sandbox/internals/private_state_tokens:build_ts",
     "//chrome/test/data/webui/privacy_sandbox/internals/related_website_sets:build_ts",
     "//chrome/test/data/webui/signin:build_ts",
+    "//chrome/test/data/webui/signin/signout_confirmation:build_ts",
     "//chrome/test/data/webui/tab_search:build_ts",
-    "//components/chrome_urls_ui/resources:build_ts",
     "//components/commerce/core/internals/resources:build_ts",
     "//components/download/resources/download_internals:build_ts",
-    "//components/flags_ui/resources:build_ts",
     "//components/neterror/resources:build_ts",
     "//components/ntp_tiles/webui/resources:build_ts",
     "//components/signin/core/browser/resources:build_ts",
     "//components/sync/service/resources:build_ts",
+    "//components/webui/chrome_urls/resources:build_ts",
+    "//components/webui/flags/resources:build_ts",
     "//content/browser/resources/indexed_db:build_ts",
     "//content/browser/resources/service_worker:build_ts",
     "//content/browser/resources/traces_internals:build_ts",
+    "//ios/chrome/app/resources/profile_internals:build_ts",
     "//ui/webui/resources/cr_components/certificate_manager:build_ts",
+    "//ui/webui/resources/cr_components/cr_shortcut_input:build_ts",
     "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
@@ -96,6 +109,7 @@ ts_library("build_ts") {
     "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
   ]
+  tsconfig_base = "tsconfig_base.json"
   composite = true
   in_files = [
     "lit.ts",
@@ -198,8 +212,11 @@ minify_js("build_min_js") {
     # Expose target to //components/neterror only, which needs to include the
     # Lit bundle in its own bundle unlike WebUIs that exclude it and therefore
     # don't need to depend on this target.
-    "//components/neterror/resources:bundle_js",
+    "//components/neterror/resources:bundle_js_internal",
   ]
+  if (enable_webui_generate_code_cache) {
+    visibility += [ ":build_code_cache" ]
+  }
   deps = [ ":build_bundle" ]
   in_folder = "$target_gen_dir/bundled"
   in_files = [ "lit.rollup.js" ]
@@ -213,4 +230,23 @@ generate_grd("build_grdp") {
   resource_path_prefix = "lit/v3_0"
   manifest_files = [ "${target_gen_dir}/build_min_js_manifest.json" ]
   deps = [ ":build_min_js" ]
+}
+
+if (enable_webui_generate_code_cache) {
+  generate_code_cache("build_code_cache") {
+    in_folder = "$target_gen_dir/minified"
+    in_files = [ "lit.rollup.js" ]
+    out_folder = "$target_gen_dir/code_cache"
+    out_manifest = "$target_gen_dir/build_code_cache_manifest.json"
+
+    deps = [ ":build_min_js" ]
+  }
+
+  generate_grd("build_code_cache_grdp") {
+    grd_prefix = "lit_v3_0_code_cache"
+    out_grd = "$target_gen_dir/code_cache_resources.grdp"
+    resource_path_prefix = "lit/v3_0"
+    manifest_files = [ "${target_gen_dir}/build_code_cache_manifest.json" ]
+    deps = [ ":build_code_cache" ]
+  }
 }

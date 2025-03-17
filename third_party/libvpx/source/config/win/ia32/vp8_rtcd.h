@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2024 The WebM project authors. All Rights Reserved.
+ *  Copyright (c) 2025 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
  *  that can be found in the LICENSE file in the root of the source
@@ -134,11 +134,7 @@ void vp8_copy32xn_sse3(const unsigned char* src_ptr,
                        unsigned char* dst_ptr,
                        int dst_stride,
                        int height);
-RTCD_EXTERN void (*vp8_copy32xn)(const unsigned char* src_ptr,
-                                 int src_stride,
-                                 unsigned char* dst_ptr,
-                                 int dst_stride,
-                                 int height);
+#define vp8_copy32xn vp8_copy32xn_sse3
 
 void vp8_copy_mem16x16_c(unsigned char* src,
                          int src_stride,
@@ -585,9 +581,6 @@ static void setup_rtcd_internal(void) {
   vp8_bilinear_predict8x8 = vp8_bilinear_predict8x8_sse2;
   if (flags & HAS_SSSE3)
     vp8_bilinear_predict8x8 = vp8_bilinear_predict8x8_ssse3;
-  vp8_copy32xn = vp8_copy32xn_sse2;
-  if (flags & HAS_SSE3)
-    vp8_copy32xn = vp8_copy32xn_sse3;
   vp8_fast_quantize_b = vp8_fast_quantize_b_sse2;
   if (flags & HAS_SSSE3)
     vp8_fast_quantize_b = vp8_fast_quantize_b_ssse3;

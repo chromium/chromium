@@ -12,7 +12,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -43,9 +46,10 @@ class MetricsServiceClient;
 // * Guest User: Disabled when the Guest ToS screen is accepted.
 // * Managed User: Disabled during when the Consolidated Consent Screen is
 // skipped due to managed user.
-class CrOSPreConsentMetricsManager {
+class CrOSPreConsentMetricsManager
+    : public policy::CloudPolicyStore::Observer {
  public:
-  ~CrOSPreConsentMetricsManager();
+  ~CrOSPreConsentMetricsManager() override;
 
   // Enables pre-consent metrics. This will force metrics to be enabled and
   // metrics will be uploaded.
@@ -82,6 +86,10 @@ class CrOSPreConsentMetricsManager {
  private:
   CrOSPreConsentMetricsManager();
 
+  // policy::CloudPolicyStore::Observer interface:
+  void OnStoreError(policy::CloudPolicyStore* store) override;
+  void OnStoreLoaded(policy::CloudPolicyStore* store) override;
+
   // Flag for whether this functionality is enabled.
   bool is_enabled_ = false;
 
@@ -92,6 +100,11 @@ class CrOSPreConsentMetricsManager {
 
   // A path used to test the Disable functionality.
   std::optional<base::FilePath> completed_path_for_testing_;
+
+
+  base::ScopedObservation<policy::DeviceCloudPolicyStoreAsh,
+                          CrOSPreConsentMetricsManager>
+      cloud_policy_store_observation_{this};
 };
 
 }  // namespace metrics

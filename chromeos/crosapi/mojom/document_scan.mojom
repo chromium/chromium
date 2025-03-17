@@ -472,19 +472,7 @@ interface DocumentScan {
   // Returns the names of all available, de-duplicated scanners.
   GetScannerNames@0() => (array<string> scanner_names);
 
-  // Performs a simple scan of the first page with a given scanner name. There
-  // are no settings and the actual scanner settings will be hard coded to use
-  // color mode.
-  //
-  // Returns the failure mode (which may be `kNoFailure` on success) and the
-  // data for the first page. The callback that receives `scan_data` must check
-  // it is non-null, in addition to checking `failure_mode`, in order to
-  // determine if the call succeeded.
-  //
-  // This API is intentionally designed this way for backwards compatibility
-  // with the documentScan.scan API that exists as of this writing.
-  ScanFirstPage@1(string scanner_name)
-      => (ScanFailureMode failure_mode, string? scan_data);
+  // Deprecated@1 (crbug.com/317056194)
 
   // Returns a list of `ScannerInfo` structs from all available scanners that
   // match the criteria provided in `filter`.

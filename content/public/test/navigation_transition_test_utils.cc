@@ -39,17 +39,19 @@ size_t NavigationTransitionTestUtils::WaitForScreenshotCompressed(
 }
 
 ScopedScreenshotCapturedObserverForTesting::
-    ScopedScreenshotCapturedObserverForTesting(int expected_nav_entry_index) {
+    ScopedScreenshotCapturedObserverForTesting(int expected_nav_entry_index,
+                                               bool expected_requested) {
   NavigationTransitionTestUtils::SetNavScreenshotCallbackForTesting(
       base::BindRepeating(
           [](base::RepeatingClosure callback, int expected_nav_entry_index,
-             int nav_entry_index, const SkBitmap& bitmap, bool requested,
-             SkBitmap& out_override) {
+             bool expected_requested, int nav_entry_index,
+             const SkBitmap& bitmap, bool requested, SkBitmap& out_override) {
             CHECK_EQ(nav_entry_index, expected_nav_entry_index);
-            CHECK(requested);
+            CHECK_EQ(requested, expected_requested);
             std::move(callback).Run();
           },
-          run_loop_.QuitClosure(), expected_nav_entry_index));
+          run_loop_.QuitClosure(), expected_nav_entry_index,
+          expected_requested));
 }
 
 ScopedScreenshotCapturedObserverForTesting::

@@ -7,9 +7,22 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
+
+bool ShouldSampleDebugReport() {
+  // TODO(crbug.com/391877228): Set its value based on cookie settings.
+  bool for_debugging_only_sampling = false;
+
+  // Overwrite `for_debugging_only_sampling` to true, for testing purpose.
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeDoSampleDebugReportForTesting)) {
+    for_debugging_only_sampling = true;
+  }
+  return for_debugging_only_sampling;
+}
 
 std::optional<base::Time> GetSampleDebugReportStartingFrom() {
   if (blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get() !=
@@ -30,10 +43,9 @@ base::Time CeilToNearestNextHour(base::TimeDelta delta) {
       delta.CeilToMultiple(base::Hours(1)));
 }
 
-bool IsInDebugReportLockout(
-    const std::optional<base::Time>& last_report_sent_time,
-    const base::Time now) {
-  if (!last_report_sent_time.has_value()) {
+bool IsInDebugReportLockout(const std::optional<DebugReportLockout>& lockout,
+                            const base::Time now) {
+  if (!lockout.has_value()) {
     return false;
   }
   base::Time filtering_starting_from = base::Time::FromDeltaSinceWindowsEpoch(
@@ -41,10 +53,8 @@ bool IsInDebugReportLockout(
           .CeilToMultiple(base::Hours(1)));
 
   bool is_lockout_before_filtering_starting =
-      *last_report_sent_time < filtering_starting_from;
-  bool is_in_lockout = *last_report_sent_time +
-                           blink::features::kFledgeDebugReportLockout.Get() >=
-                       now;
+      lockout->starting_time < filtering_starting_from;
+  bool is_in_lockout = lockout->starting_time + lockout->duration >= now;
   return !is_lockout_before_filtering_starting && is_in_lockout;
 }
 

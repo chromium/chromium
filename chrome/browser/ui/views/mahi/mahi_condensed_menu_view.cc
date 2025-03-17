@@ -56,8 +56,6 @@ class MahiCondensedMenuButton : public views::LabelButton {
     SetImageModel(views::Button::ButtonState::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(
                       kMahiSparkIcon, ui::kColorSysOnSurface, kButtonIconSize));
-    SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP));
     SetImageLabelSpacing(kButtonIconLabelSpacing);
     SetBorder(views::CreateEmptyBorder(kButtonBorderInsets));
     SetInstallFocusRingOnFocus(false);
@@ -94,7 +92,7 @@ class MahiCondensedMenuButton : public views::LabelButton {
 
   void SetBackgroundHighlighted(bool background_highlighted) {
     if (background_highlighted) {
-      SetBackground(views::CreateThemedRoundedRectBackground(
+      SetBackground(views::CreateRoundedRectBackground(
           ui::kColorMenuItemBackgroundHighlighted,
           views::LayoutProvider::Get()->GetCornerRadiusMetric(
               views::ShapeContextTokens::kMenuRadius)));
@@ -118,8 +116,8 @@ MahiCondensedMenuView::MahiCondensedMenuView()
   view_shadow_->SetRoundedCornerRadius(corner_radius);
 
   SetUseDefaultFillLayout(true);
-  SetBackground(views::CreateThemedRoundedRectBackground(ui::kColorSysSurface,
-                                                         corner_radius));
+  SetBackground(
+      views::CreateRoundedRectBackground(ui::kColorSysSurface, corner_radius));
 
   menu_button_ = AddChildView(std::make_unique<MahiCondensedMenuButton>());
 }

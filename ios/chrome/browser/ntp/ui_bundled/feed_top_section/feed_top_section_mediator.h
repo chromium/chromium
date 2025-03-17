@@ -6,7 +6,8 @@
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_FEED_TOP_SECTION_FEED_TOP_SECTION_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
+
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_view_controller_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/notifications_promo_view_constants.h"

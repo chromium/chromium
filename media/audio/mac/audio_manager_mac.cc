@@ -9,6 +9,7 @@
 
 #include "media/audio/mac/audio_manager_mac.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -26,7 +27,6 @@
 #include "base/memory/free_deleter.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -49,10 +49,6 @@
 #include "media/base/media_switches.h"
 
 namespace media {
-
-BASE_FEATURE(kMonitorOutputSampleRateChangesMac,
-             "MonitorOutputSampleRateChangesMac",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Maximum number of output streams that can be open simultaneously.
 static const int kMaxOutputStreams = 50;
@@ -788,8 +784,7 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
         base::BindPostTaskToCurrentDefault(
             base::BindRepeating(&AudioManagerMac::HandleDeviceChanges,
                                 weak_ptr_factory_.GetWeakPtr())),
-        /*monitor_sample_rate_changes=*/
-        base::FeatureList::IsEnabled(kMonitorOutputSampleRateChangesMac),
+        /*monitor_sample_rate_changes=*/true,
         /*monitor_default_input=*/false,
         /*monitor_addition_removal=*/false,
         /*monitor_sources=*/false);

@@ -12,7 +12,7 @@
 namespace ash::assistant {
 
 /*static*/
-constexpr const char* FakeServiceContext::kGaiaId;
+constexpr GaiaId::Literal FakeServiceContext::kGaiaId;
 
 FakeServiceContext::FakeServiceContext() = default;
 

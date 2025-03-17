@@ -20,7 +20,7 @@
   </queries>  # DIFF-ANCHOR: ac70d2a8
   <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
   <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
-  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34"/>
+  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35"/>
   <application>
     <activity  # DIFF-ANCHOR: 28dc9019
         android:name="com.google.ar.core.InstallActivity"
@@ -36,6 +36,18 @@
         android:label="@string/title_activity_qr_code_capture"
         android:theme="@style/Theme.AppCompat.NoActionBar">
     </activity>  # DIFF-ANCHOR: ce279235
+    <activity  # DIFF-ANCHOR: f181e7f6
+        android:name="org.chromium.chrome.browser.AutofillOptionsLauncher"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+      <intent-filter>  # DIFF-ANCHOR: 175a3a0f
+        <action android:name="android.intent.action.APPLICATION_PREFERENCES"/>
+        <category android:name="android.intent.category.APP_BROWSER"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.PREFERENCE"/>
+      </intent-filter>  # DIFF-ANCHOR: 175a3a0f
+    </activity>  # DIFF-ANCHOR: f181e7f6
     <activity  # DIFF-ANCHOR: 93d41352
         android:name="org.chromium.chrome.browser.BrowserRestartActivity"
         android:excludeFromRecents="true"
@@ -365,12 +377,6 @@
         android:exported="false"
         android:theme="@style/Theme.Chromium.SigninAndHistorySyncActivity">
     </activity>  # DIFF-ANCHOR: d4d45613
-    <activity  # DIFF-ANCHOR: fbf1ba15
-        android:name="org.chromium.chrome.browser.signin.SyncConsentActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
-        android:exported="false"
-        android:theme="@style/Theme.Chromium.DialogWhenLarge">
-    </activity>  # DIFF-ANCHOR: fbf1ba15
     <activity  # DIFF-ANCHOR: d2967c86
         android:name="org.chromium.chrome.browser.site_settings.ManageSpaceActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
@@ -746,13 +752,15 @@
     <receiver  # DIFF-ANCHOR: df76237f
         android:name="org.chromium.chrome.browser.notifications.NotificationServiceImpl$Receiver"
         android:exported="false">
-      <intent-filter>  # DIFF-ANCHOR: 1c1c5ed8
+      <intent-filter>  # DIFF-ANCHOR: 16383087
+        <action android:name="org.chromium.chrome.browser.notifications.ALWAYS_ALLOW"/>
         <action android:name="org.chromium.chrome.browser.notifications.CLICK_NOTIFICATION"/>
         <action android:name="org.chromium.chrome.browser.notifications.CLOSE_NOTIFICATION"/>
         <action android:name="org.chromium.chrome.browser.notifications.COMMIT_UNSUBSCRIBE"/>
         <action android:name="org.chromium.chrome.browser.notifications.PRE_UNSUBSCRIBE"/>
+        <action android:name="org.chromium.chrome.browser.notifications.SHOW_ORIGINAL_NOTIFICATION"/>
         <action android:name="org.chromium.chrome.browser.notifications.UNDO_UNSUBSCRIBE"/>
-      </intent-filter>  # DIFF-ANCHOR: 1c1c5ed8
+      </intent-filter>  # DIFF-ANCHOR: 16383087
     </receiver>  # DIFF-ANCHOR: df76237f
     <receiver  # DIFF-ANCHOR: a9b53579
         android:name="org.chromium.chrome.browser.notifications.channels.LocaleChangedBroadcastReceiver"

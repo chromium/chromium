@@ -144,10 +144,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         type: Boolean,
       },
 
-      showHfpMicSr: {
-        type: Boolean,
-      },
-
       showSpatialAudio: {
         type: Boolean,
       },
@@ -162,7 +158,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   protected isAllowAGCEnabled: boolean;
   protected showAllowAGC: boolean;
   protected isHfpMicSrEnabled: boolean;
-  protected showHfpMicSr: boolean;
+  protected isHfpMicSrSupported: boolean;
   protected showSpatialAudio: boolean;
 
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
@@ -180,7 +176,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   private startupSoundEnabled_: boolean;
   private batteryStatus_: BatteryStatus|undefined;
   private powerSoundsHidden_: boolean;
-  private isHfpMicSrSupported_: boolean;
   private voiceIsolationEffectModePrefValues_: {[key: string]: number};
 
   constructor() {
@@ -236,11 +231,8 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     this.outputVolume_ = this.audioSystemProperties_.outputVolumePercent;
     this.isHfpMicSrEnabled =
         (activeInputDevice?.hfpMicSrState === AudioEffectState.kEnabled);
-    this.isHfpMicSrSupported_ = activeInputDevice !== undefined &&
+    this.isHfpMicSrSupported = activeInputDevice !== undefined &&
         activeInputDevice?.hfpMicSrState !== AudioEffectState.kNotSupported;
-    this.showHfpMicSr =
-        (this.isHfpMicSrSupported_ &&
-         loadTimeData.getBoolean('enableAudioHfpMicSRToggle'));
 
     const activeOutputDevice = this.audioSystemProperties_.outputDevices.find(
         (device: AudioDevice) => device.isActive);

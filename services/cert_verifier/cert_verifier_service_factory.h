@@ -76,8 +76,10 @@ class CertVerifierServiceFactoryImpl
   // version of Chrome.
   void GetChromeRootStoreInfo(GetChromeRootStoreInfoCallback callback) override;
 
+#if !BUILDFLAG(IS_CHROMEOS)
   void GetPlatformRootStoreInfo(
       GetPlatformRootStoreInfoCallback callback) override;
+#endif
 #endif
   void UpdateNetworkTime(base::Time system_time,
                          base::TimeTicks system_ticks,

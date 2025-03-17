@@ -9,13 +9,16 @@
 
 #include "base/android/build_info.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/password_manager/android/mock_password_checkup_launcher_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -220,4 +223,120 @@ TEST_F(CredentialLeakControllerAndroidTest, NoDirectInteraction) {
 
   CheckUkmMetricsExpectations(test_ukm_recorder, LeakDialogType::kChange,
                               LeakDialogDismissalReason::kNoDirectInteraction);
+}
+
+// The following tests are specific to the login DB deprecation.
+TEST_F(CredentialLeakControllerAndroidTest,
+       LeakTypeResetToChangeIfLoginDbDeprecationNotReady) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kLoginDbDeprecationAndroid);
+
+  // The export state is only valid for users who are not enrolled in UPM.
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kUpmUnmigratedPasswordsExported, false);
+
+  std::unique_ptr<MockPasswordCheckupLauncherHelper> mock_launcher =
+      std::make_unique<MockPasswordCheckupLauncherHelper>();
+  MockPasswordCheckupLauncherHelper* weak_mock_launcher = mock_launcher.get();
+
+  // Setting `isReused` to true will normally cause the leak type to be
+  // `kCheckup`.
+  CredentialLeakControllerAndroid* controller =
+      MakeController(profile(), std::move(mock_launcher), IsSaved(false),
+                     IsReused(true), IsSyncing(false),
+                     /* account_email_ = */ "");
+
+  // Expect that despite the original leak being of type `kCheckup` the positive
+  // button is not the "Check" one.
+  EXPECT_CALL(
+      *weak_mock_launcher,
+      LaunchCheckupOnDevice(
+          _, profile(), _,
+          password_manager::PasswordCheckReferrerAndroid::kLeakDialog, _))
+      .Times(0);
+  controller->OnAcceptDialog();
+}
+
+TEST_F(CredentialLeakControllerAndroidTest,
+       LeakTypeNotResetIfPasswordsExported) {
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Automotive only uses the base leak type and doesn't display the
+    // "Check passwords" button.
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kLoginDbDeprecationAndroid);
+
+  // The export state is only valid for users who are not enrolled in UPM.
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kUpmUnmigratedPasswordsExported, true);
+
+  std::unique_ptr<MockPasswordCheckupLauncherHelper> mock_launcher =
+      std::make_unique<MockPasswordCheckupLauncherHelper>();
+  MockPasswordCheckupLauncherHelper* weak_mock_launcher = mock_launcher.get();
+
+  // Setting `isReused` to true will normally cause the leak type to be
+  // `kCheckup`.
+  CredentialLeakControllerAndroid* controller =
+      MakeController(profile(), std::move(mock_launcher), IsSaved(false),
+                     IsReused(true), IsSyncing(false),
+                     /* account_email_ = */ "");
+
+  // Expect that despite the original leak being of type `kCheckup` the positive
+  // button is not the "Check" one.
+  EXPECT_CALL(
+      *weak_mock_launcher,
+      LaunchCheckupOnDevice(
+          _, profile(), _,
+          password_manager::PasswordCheckReferrerAndroid::kLeakDialog, _))
+      .Times(1);
+  controller->OnAcceptDialog();
+}
+
+TEST_F(CredentialLeakControllerAndroidTest,
+       LeakTypeNotResetIfUPMAlreadyActive) {
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Automotive only uses the base leak type and doesn't display the
+    // "Check passwords" button.
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kLoginDbDeprecationAndroid);
+
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kUpmUnmigratedPasswordsExported, false);
+
+  std::unique_ptr<MockPasswordCheckupLauncherHelper> mock_launcher =
+      std::make_unique<MockPasswordCheckupLauncherHelper>();
+  MockPasswordCheckupLauncherHelper* weak_mock_launcher = mock_launcher.get();
+
+  // Setting `isReused` to true will cause the leak type to be `kCheckup`.
+  CredentialLeakControllerAndroid* controller =
+      MakeController(profile(), std::move(mock_launcher), IsSaved(false),
+                     IsReused(true), IsSyncing(false),
+                     /* account_email_ = */ "");
+
+  // Check that the checkup option is presented to the user if UPM is active.
+  EXPECT_CALL(
+      *weak_mock_launcher,
+      LaunchCheckupOnDevice(
+          _, profile(), _,
+          password_manager::PasswordCheckReferrerAndroid::kLeakDialog, _))
+      .Times(1);
+  controller->OnAcceptDialog();
 }

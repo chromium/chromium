@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, height=device-height">
+  <script>
+    const colors = {
+      red: '#FF0000',
+      green: '#00FF00',
+      blue: '#0000FF'
+    }
+    navigation.addEventListener("navigate", ev => {
+      ev.intercept({
+        handler: async () => {
+          var url = new URL(ev.destination.url);
+          var color = colors[url.hash.substring(1)];
+          if (!color) {
+            color = colors.red;
+          }
+          var style = `height: 100vh; background-color: ${color};`
+          document.querySelector("#content").setAttribute("style", style);
+        }
+      });
+    });
+  </script>
+</head>
+<body style="border: 0; margin: 0; padding: 0; overflow:hidden;">
+  <div id="content" style="height: 100vh; background-color:#FF0000;"></div>
+</body>
+</html>

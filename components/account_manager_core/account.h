@@ -20,8 +20,7 @@ enum class AccountType : int {
   // Gaia account (aka Google account) - including enterprise and consumer
   // accounts.
   kGaia = 1,
-  // Microsoft Active Directory accounts.
-  kActiveDirectory = 2,
+  // Value 2 was used for the deprecated `kActiveDirectory` account type.
 };
 
 // Uniquely identifies an account.
@@ -34,9 +33,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountKey {
   // `id` cannot be empty.
   AccountKey(const std::string& id, AccountType type);
 
-  // |id| is obfuscated GAIA id for |AccountType::kGaia|, and cannot be empty.
-  // |id| is object GUID (|AccountId::GetObjGuid|) for
-  // |AccountType::kActiveDirectory|.
+  // `id` is obfuscated GAIA id for `AccountType::kGaia`, and cannot be empty.
   const std::string& id() const { return id_; }
   AccountType account_type() const { return account_type_; }
 

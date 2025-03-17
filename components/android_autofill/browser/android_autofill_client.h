@@ -89,6 +89,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   autofill::AutofillCrowdsourcingManager& GetCrowdsourcingManager() final;
   autofill::VotesUploader& GetVotesUploader() override;
   autofill::PersonalDataManager& GetPersonalDataManager() final;
+  autofill::EntityDataManager* GetEntityDataManager() override;
   autofill::SingleFieldFillRouter& GetSingleFieldFillRouter() final;
   autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;
   PrefService* GetPrefs() final;
@@ -116,7 +117,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
       base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) final;
   void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) final;
-  void PinAutofillSuggestions() final;
   void HideAutofillSuggestions(autofill::SuggestionHidingReason reason) final;
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;

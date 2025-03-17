@@ -14,12 +14,14 @@
 #include <initguid.h>
 #include <shobjidl.h>
 #include <tchar.h>
+#include <winternl.h>
 
 #include <aclapi.h>
 #include <cfgmgr32.h>
 #include <inspectable.h>
 #include <lm.h>
 #include <mdmregistration.h>
+#include <ntstatus.h>
 #include <powrprof.h>
 #include <propkey.h>
 #include <psapi.h>
@@ -46,7 +48,12 @@
 #include <utility>
 
 #include "base/base_switches.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
+#include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -94,13 +101,16 @@ bool SetPropVariantValueForPropertyStore(
   DCHECK(property_store);
 
   HRESULT result = property_store->SetValue(property_key, property_value.get());
-  if (result == S_OK)
+  if (result == S_OK) {
     result = property_store->Commit();
-  if (SUCCEEDED(result))
+  }
+  if (SUCCEEDED(result)) {
     return true;
+  }
 #if DCHECK_IS_ON()
-  if (HRESULT_FACILITY(result) == FACILITY_WIN32)
+  if (HRESULT_FACILITY(result) == FACILITY_WIN32) {
     ::SetLastError(HRESULT_CODE(result));
+  }
   // See third_party/perl/c/i686-w64-mingw32/include/propkey.h for GUID and
   // PID definitions.
   DPLOG(ERROR) << "Failed to set property with GUID "
@@ -126,8 +136,9 @@ POWER_PLATFORM_ROLE GetPlatformRole() {
 // available (i.e., prior to Windows 10 1703) or fails, returns false.
 // https://docs.microsoft.com/en-us/windows/desktop/hidpi/dpi-awareness-context
 bool EnablePerMonitorV2() {
-  if (!IsUser32AndGdi32Available())
+  if (!IsUser32AndGdi32Available()) {
     return false;
+  }
 
   static const auto set_process_dpi_awareness_context_func =
       reinterpret_cast<decltype(&::SetProcessDpiAwarenessContext)>(
@@ -157,8 +168,9 @@ bool* GetRegisteredWithManagementStateStorage() {
 
     ScopedNativeLibrary library(
         FilePath(FILE_PATH_LITERAL("MDMRegistration.dll")));
-    if (!library.is_valid())
+    if (!library.is_valid()) {
       return false;
+    }
 
     using IsDeviceRegisteredWithManagementFunction =
         decltype(&::IsDeviceRegisteredWithManagement);
@@ -166,8 +178,9 @@ bool* GetRegisteredWithManagementStateStorage() {
         is_device_registered_with_management_function =
             reinterpret_cast<IsDeviceRegisteredWithManagementFunction>(
                 library.GetFunctionPointer("IsDeviceRegisteredWithManagement"));
-    if (!is_device_registered_with_management_function)
+    if (!is_device_registered_with_management_function) {
       return false;
+    }
 
     BOOL is_managed = FALSE;
     HRESULT hr =
@@ -189,14 +202,16 @@ bool* GetAzureADJoinStateStorage() {
 
     ScopedNativeLibrary netapi32(
         base::LoadSystemLibrary(FILE_PATH_LITERAL("netapi32.dll")));
-    if (!netapi32.is_valid())
+    if (!netapi32.is_valid()) {
       return false;
+    }
 
     const auto net_get_aad_join_information_function =
         reinterpret_cast<decltype(&::NetGetAadJoinInformation)>(
             netapi32.GetFunctionPointer("NetGetAadJoinInformation"));
-    if (!net_get_aad_join_information_function)
+    if (!net_get_aad_join_information_function) {
       return false;
+    }
 
     const auto net_free_aad_join_information_function =
         reinterpret_cast<decltype(&::NetFreeAadJoinInformation)>(
@@ -222,8 +237,9 @@ NativeLibrary PinUser32Internal(NativeLibraryLoadError* error) {
   static NativeLibraryLoadError load_error;
   static const NativeLibrary user32_module =
       PinSystemLibrary(FILE_PATH_LITERAL("user32.dll"), &load_error);
-  if (!user32_module && error)
+  if (!user32_module && error) {
     error->code = load_error.code;
+  }
   return user32_module;
 }
 
@@ -343,6 +359,74 @@ bool IsWindows11TabletMode() {
   return QueryDeviceConvertibility() &&
          IsDeviceUsedAsATablet(/*reason=*/nullptr) &&
          IsValidTabletDisplayConfig();
+}
+
+// Helper for getting the process power throttling state.
+ProcessPowerState GetProcessPowerThrottlingState(HANDLE process, ULONG flag) {
+  // Get the current explicitly set state of the process power throttling.
+  PROCESS_POWER_THROTTLING_STATE power_throttling{
+      .Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION};
+
+  if (!::GetProcessInformation(process, ProcessPowerThrottling,
+                               &power_throttling, sizeof(power_throttling))) {
+    return ProcessPowerState::kUnset;
+  }
+
+  if (power_throttling.ControlMask & flag) {
+    if (power_throttling.StateMask & flag) {
+      return ProcessPowerState::kEnabled;
+    }
+    return ProcessPowerState::kDisabled;
+  }
+  return ProcessPowerState::kUnset;
+}
+
+// Helper for setting the process power throttling state.
+bool SetProcessPowerThrottlingState(HANDLE process,
+                                    ULONG flag,
+                                    ProcessPowerState state) {
+  // Process power throttling is a Windows 11 feature, but before 22H2
+  // there was no way to query the current state using GetProcessInformation.
+  // Getting the current state is needed in Process::GetPriority to determine
+  // the process priority accurately, so calls to set the state are blocked
+  // before that release.
+  if (GetVersion() < Version::WIN11_22H2) {
+    return false;
+  }
+
+  PROCESS_POWER_THROTTLING_STATE power_throttling{
+      .Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION};
+
+  // Get the current state of the process power throttling so we do not clobber
+  // other previously set flags.
+  if (!::GetProcessInformation(process, ProcessPowerThrottling,
+                               &power_throttling, sizeof(power_throttling))) {
+    return false;
+  }
+
+  switch (state) {
+    case ProcessPowerState::kUnset:
+      // Clear the specified flag.  This results in the OS determining the
+      // throttling state.
+      power_throttling.ControlMask &= ~flag;
+      power_throttling.StateMask &= ~flag;
+      break;
+
+    case ProcessPowerState::kDisabled:
+      // Explicitly disable the specified flag.
+      power_throttling.ControlMask |= flag;
+      power_throttling.StateMask &= ~flag;
+      break;
+
+    case ProcessPowerState::kEnabled:
+      // Explicitly enable the specified flag.
+      power_throttling.ControlMask |= flag;
+      power_throttling.StateMask |= flag;
+      break;
+  }
+
+  return ::SetProcessInformation(process, ProcessPowerThrottling,
+                                 &power_throttling, sizeof(power_throttling));
 }
 
 }  // namespace
@@ -608,11 +692,13 @@ static bool g_crash_on_process_detach = false;
 
 bool GetUserSidString(std::wstring* user_sid) {
   std::optional<AccessToken> token = AccessToken::FromCurrentProcess();
-  if (!token)
+  if (!token) {
     return false;
+  }
   std::optional<std::wstring> sid_string = token->User().ToSddlString();
-  if (!sid_string)
+  if (!sid_string) {
     return false;
+  }
   *user_sid = *sid_string;
   return true;
 }
@@ -765,6 +851,22 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
     }
   }
 
+  // If the device is not supporting rotation, it's unlikely to be a tablet,
+  // a convertible or a detachable.
+  // See
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/dn629263(v=vs.85).aspx
+  using GetAutoRotationStateType = decltype(GetAutoRotationState)*;
+  static const auto get_auto_rotation_state_func =
+      reinterpret_cast<GetAutoRotationStateType>(
+          GetUser32FunctionPointer("GetAutoRotationState"));
+  if (get_auto_rotation_state_func) {
+    AR_STATE rotation_state = AR_ENABLED;
+    if (get_auto_rotation_state_func(&rotation_state) &&
+        (rotation_state & (AR_NOT_SUPPORTED | AR_LAPTOP | AR_NOSENSOR)) != 0) {
+      return ret.value_or(false);
+    }
+  }
+
   // PlatformRoleSlate was added in Windows 8+.
   POWER_PLATFORM_ROLE role = GetPlatformRole();
   bool is_tablet = false;
@@ -797,8 +899,9 @@ bool IsDeviceRegisteredWithManagement() {
   // GetRegisteredWithManagementStateStorage() can be true for devices running
   // the Home sku, however the Home sku does not allow for management of the web
   // browser. As such, we automatically exclude devices running the Home sku.
-  if (OSInfo::GetInstance()->version_type() == SUITE_HOME)
+  if (OSInfo::GetInstance()->version_type() == SUITE_HOME) {
     return false;
+  }
   return *GetRegisteredWithManagementStateStorage();
 }
 
@@ -879,12 +982,14 @@ void DisableFlicks(HWND hwnd) {
 }
 
 void EnableHighDPISupport() {
-  if (!IsUser32AndGdi32Available())
+  if (!IsUser32AndGdi32Available()) {
     return;
+  }
 
   // Enable per-monitor V2 if it is available (Win10 1703 or later).
-  if (EnablePerMonitorV2())
+  if (EnablePerMonitorV2()) {
     return;
+  }
 
   // Fall back to per-monitor DPI for older versions of Win10.
   PROCESS_DPI_AWARENESS process_dpi_awareness = PROCESS_PER_MONITOR_DPI_AWARE;
@@ -918,8 +1023,9 @@ bool PinUser32(NativeLibraryLoadError* error) {
 void* GetUser32FunctionPointer(const char* function_name,
                                NativeLibraryLoadError* error) {
   NativeLibrary user32_module = PinUser32Internal(error);
-  if (user32_module)
+  if (user32_module) {
     return GetFunctionPointerFromNativeLibrary(user32_module, function_name);
+  }
   return nullptr;
 }
 
@@ -970,8 +1076,9 @@ bool RegisterPointerDeviceNotifications(HWND hwnd,
 
 bool IsRunningUnderDesktopName(std::wstring_view desktop_name) {
   HDESK thread_desktop = ::GetThreadDesktop(::GetCurrentThreadId());
-  if (!thread_desktop)
+  if (!thread_desktop) {
     return false;
+  }
 
   std::wstring current_desktop_name = GetWindowObjectName(thread_desktop);
   return EqualsCaseInsensitiveASCII(AsStringPiece16(current_desktop_name),
@@ -982,19 +1089,22 @@ bool IsRunningUnderDesktopName(std::wstring_view desktop_name) {
 // See:
 // https://docs.microsoft.com/en-us/windows/desktop/TermServ/detecting-the-terminal-services-environment
 bool IsCurrentSessionRemote() {
-  if (::GetSystemMetrics(SM_REMOTESESSION))
+  if (::GetSystemMetrics(SM_REMOTESESSION)) {
     return true;
+  }
 
   DWORD current_session_id = 0;
 
-  if (!::ProcessIdToSessionId(::GetCurrentProcessId(), &current_session_id))
+  if (!::ProcessIdToSessionId(::GetCurrentProcessId(), &current_session_id)) {
     return false;
+  }
 
   static constexpr wchar_t kRdpSettingsKeyName[] =
       L"SYSTEM\\CurrentControlSet\\Control\\Terminal Server";
   RegKey key(HKEY_LOCAL_MACHINE, kRdpSettingsKeyName, KEY_READ);
-  if (!key.Valid())
+  if (!key.Valid()) {
     return false;
+  }
 
   static constexpr wchar_t kGlassSessionIdValueName[] = L"GlassSessionId";
   DWORD glass_session_id = 0;
@@ -1027,6 +1137,76 @@ std::optional<std::wstring> ExpandEnvironmentVariables(wcstring_view str) {
   }
 
   return std::nullopt;
+}
+
+expected<std::wstring, NTSTATUS> GetObjectTypeName(HANDLE handle) {
+  if (!HandleTraits::IsHandleValid(handle)) {
+    return unexpected(STATUS_INVALID_HANDLE);
+  }
+
+  // The buffer must be large enough to hold the type info struct plus the type
+  // string and its terminator. Allocate a buffer large enough to hold a type
+  // name of 31 characters. This is far larger than the 13 chars needed for
+  // "WindowStation".
+  static constexpr size_t kMaxTypeNameLength = 31;
+  static constexpr size_t kBufferSize =
+      sizeof(PUBLIC_OBJECT_TYPE_INFORMATION) +
+      (kMaxTypeNameLength + 1) * sizeof(wchar_t);
+  auto buffer = HeapArray<uint8_t>::Uninit(kBufferSize);
+  auto* type_info =
+      reinterpret_cast<PUBLIC_OBJECT_TYPE_INFORMATION*>(buffer.data());
+  ULONG type_info_length = 0;
+  if (auto status =
+          ::NtQueryObject(handle, ObjectTypeInformation, type_info,
+                          static_cast<ULONG>(buffer.size()), &type_info_length);
+      status != STATUS_SUCCESS) {
+    if (status == STATUS_INFO_LENGTH_MISMATCH) {
+      // The call should never fail due to lack of space in the buffer as per
+      // calculations above. Report the required size in this case so that the
+      // calculations can be revised.
+      SCOPED_CRASH_KEY_NUMBER("NtQueryObject", "type_info_length",
+                              type_info_length);
+      debug::DumpWithoutCrashing();  // https://crbug.com/40071993.
+    }
+    return unexpected(status);
+  }
+  return std::wstring(type_info->TypeName.Buffer,
+                      type_info->TypeName.Length / sizeof(wchar_t));
+}
+
+expected<ScopedHandle, NTSTATUS> TakeHandleOfType(
+    HANDLE handle,
+    std::wstring_view object_type_name) {
+  auto type_name = GetObjectTypeName(handle);
+  if (!type_name.has_value()) {
+    // `handle` is invalid. Return the error to the caller.
+    return unexpected(type_name.error());
+  }
+  // Crash if `handle` is an unexpected type. This represents a dangerous
+  // type confusion condition that should never happen.
+  base::debug::Alias(&handle);
+  CHECK_EQ(*type_name, object_type_name);
+  return ScopedHandle(handle);  // Ownership of `handle` goes to the caller.
+}
+
+ProcessPowerState GetProcessEcoQoSState(HANDLE process) {
+  return GetProcessPowerThrottlingState(
+      process, PROCESS_POWER_THROTTLING_EXECUTION_SPEED);
+}
+
+ProcessPowerState GetProcessTimerThrottleState(HANDLE process) {
+  return GetProcessPowerThrottlingState(
+      process, PROCESS_POWER_THROTTLING_IGNORE_TIMER_RESOLUTION);
+}
+
+bool SetProcessEcoQoSState(HANDLE process, ProcessPowerState state) {
+  return SetProcessPowerThrottlingState(
+      process, PROCESS_POWER_THROTTLING_EXECUTION_SPEED, state);
+}
+
+bool SetProcessTimerThrottleState(HANDLE process, ProcessPowerState state) {
+  return SetProcessPowerThrottlingState(
+      process, PROCESS_POWER_THROTTLING_IGNORE_TIMER_RESOLUTION, state);
 }
 
 ScopedDomainStateForTesting::ScopedDomainStateForTesting(bool state)

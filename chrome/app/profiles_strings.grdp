@@ -86,15 +86,12 @@
   <message name="IDS_PROFILES_DICE_SIGNIN_BUTTON" desc="Button in the profile user menu to sign in and turn on Sync.">
     Turn on sync...
   </message>
-  <message name="IDS_EXTENSIONS_EXPLICIT_SIGNIN_BUTTON_WITH_ACCOUNT_AWARENESS" desc="Button in the profile user menu to explicitly sign in for the current user">
-    Continue as <ph name="USERNAME">$1<ex>Bob</ex></ph>
+  <message name="IDS_EXTENSIONS_EXPLICIT_SIGNIN_BUTTON" desc="Button in the profile user menu to explicitly sign in.">
+    Sign in
   </message>
 
   <message name="IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON" desc="Button in the profile menu to sign in on Chrome and turn on Sync for a specific web account that is signed in only on the web.">
     Continue as <ph name="ACCOUNT_NAME">$1<ex>John</ex></ph>
-  </message>
-  <message name="IDS_PROFILES_DICE_NOT_SYNCING_TITLE" desc="Title of the sync promo account card in the user menu.">
-    Sync is off
   </message>
   <message name="IDS_PROFILES_DICE_SIGNIN_FIRST_ACCOUNT_BUTTON" desc="Button to sign in and turn on Sync for a specific web account.">
     Sync as <ph name="ACCOUNT_FULL_NAME">$1<ex>John Doe</ex></ph>
@@ -105,14 +102,11 @@
   <message name="IDS_PROFILES_DICE_SYNC_DISABLED_TITLE" desc="Title of the profile user menu when sync is disabled.">
     Sync disabled
   </message>
+  <message name="IDS_PROFILES_DASHER_FEATURE_DISABLED_TITLE" desc="Description of the profile user menu when certain features are disabled for Dasherless profile.">
+    This isn't a Google Account. Items you save to Chrome won't be available on other devices.
+  </message>
    <message name="IDS_PROFILES_DICE_SYNC_PAUSED_TITLE" desc="Title of the profile user menu when sync is paused.">
     Sync is paused
-  </message>
-  <message name="IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON" desc="Button in the profile menu to close all windows of the current profile. This is not used for zero windows.">
-    {0, plural,
-    =1 {Close # window}
-    other {Close # windows}
-    }
   </message>
   <message name="IDS_PROFILES_SIGNIN_PROMO" desc="Text describing the benefits of signing in.">
     Sign in to get your bookmarks, history, passwords, and other settings on all your devices.
@@ -139,10 +133,22 @@
   <message name="IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_SEPARATOR" desc="The user name and profile name are separated by a symbol, in this case bullet •, with a white space before it and a white space after it. If the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
     <ph name="USER_NAME">$1<ex>John</ex></ph> • <ph name="PROFILE_NAME">$2<ex>Work</ex></ph>
   </message>
+  <message name="IDS_PROFILE_MENU_PROFILE_MANAGED_HEADER" desc="Disclaimer indicating that the profile is managed">
+    This profile is managed
+  </message>
+  <message name="IDS_GUEST_PROFILE_MENU_CLOSE_X_WINDOWS_BUTTON" desc="The text of the button offering to close all guest windows. The number in ICU syntax represents the number of open guest windows, but it is not used in the English text and can be used to choose singular/plural in translation to other languages, if needed.[ICU Syntax]">
+    {0, plural,
+      =1 {Close Guest}
+      other {Close Guest (# windows)}
+    }
+  </message>
+  <message name="IDS_INCOGNITO_PROFILE_MENU_CLOSE_X_WINDOWS_BUTTON" desc="The text of the button offering to close all Incognito windows.">
+    {0, plural,
+      =1 {Close Incognito}
+      other {Close Incognito (# windows)}
+    }
+  </message>
   <if expr="not use_titlecase">
-    <message name="IDS_PROFILES_LIST_PROFILES_TITLE" desc="Title in the profile menu for the list of 'other profiles'.">
-      Other profiles
-    </message>
     <message name="IDS_PROFILES_PROFILE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to manage accounts for a profile.">
       Your accounts
     </message>
@@ -175,9 +181,6 @@
     </message>
   </if>
   <if expr="use_titlecase">
-    <message name="IDS_PROFILES_LIST_PROFILES_TITLE" desc="Title in the profile menu for the list of 'other profiles'.">
-      Other Profiles
-    </message>
     <message name="IDS_PROFILES_PROFILE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to manage accounts for a profile.">
       Your Accounts
     </message>
@@ -226,9 +229,6 @@
   </message>
   <message name="IDS_LEGACY_DEFAULT_PROFILE_NAME" desc="The legacy default name given to a new profile.">
     Default Profile
-  </message>
-  <message name="IDS_NUMBERED_PROFILE_NAME" desc="The name given to a newly created profile. Displayed in wrench menu and settings UI.">
-    User <ph name="VALUE">$1<ex>1</ex></ph>
   </message>
   <message name="IDS_NEW_NUMBERED_PROFILE_NAME" desc="The name given to a newly created profile. Displayed in wrench menu and settings UI using the --new-profile-management flag.">
     Person <ph name="VALUE">$1<ex>1</ex></ph>
@@ -528,7 +528,7 @@
         Sign out
       </message>
     </if>
-    <if expr="chromeos_ash">
+    <if expr="is_chromeos">
       <message name="IDS_LAUNCH_APP_BUTTON" desc="Text shown on the button that launches kiosk app from ChromeOS login UI">
         Launch app
       </message>
@@ -547,7 +547,7 @@
     </if>
   </if>
 
-  <if expr="not chromeos_ash and not is_android">
+  <if expr="not is_chromeos and not is_android">
     <!-- Profile Customization Web UI -->
     <message name="IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL" desc="Text for the Done button on the profile customization bubble">
       Done
@@ -629,17 +629,26 @@
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX" desc="Label of the checkbox on the enterprise profile welcome screen that allows a user to link existing data to the new profile. The label informs the user that a profile will be created.">
       Add existing browsing data to managed profile
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TITLE" desc="Title of the dialog disclaiming information about the profile they are about to create.">
-      About this profile
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SCHOOL_TITLE" desc="Title of the dialog disclaiming information about the school profile they are about to create.">
+      About school profiles
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_WORK_TITLE" desc="Title of the dialog disclaiming information about the work profile they are about to create.">
+      About work profiles
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE" desc="Title of the dialog disclaiming information about the profile they are about to create.">
       Set up a new profile
     </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TURN_SYNC_ON_TITLE" desc="Title the dialog disclaiming information about the profile they are about to create, this is shown when the user was already signed into a profile.">
+      This profile will now be managed
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TURN_SYNC_ON_SUBTITLE" desc="Subtitle the dialog disclaiming information about the profile they are about to create, this is shown when the user was already signed into a profile.">
+      Your organization, <ph name="ACCOUNT_MANAGER">$1<ex>example.com</ex></ph>, will be able to view some information, including
+    </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SUBTITLE" desc="Subtitle of the dialog disclaiming information about the profile they are about to create.">
-      This profile is managed by your organization, which can view some information, including
+      Your profile is managed by your organization, which can view some information, including
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_KNOWN_DOMAIN_SUBTITLE" desc="Subtitle of the dialog disclaiming information about the profile they are about to create.">
-      This profile is managed by <ph name="PROFILE_MANAGER">$1<ex>example.com</ex></ph>, which can view some information, including
+      Your profile is managed by <ph name="PROFILE_MANAGER">$1<ex>example.com</ex></ph>, which can view some information, including
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_TITLE" desc="Title of a section disclaiming to the user what their organization can do with their profile information.">
       Profile information
@@ -648,7 +657,10 @@
       Device information
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_DEVICE_INFORMATION_DETAILS" desc="Paragraph section disclaiming to the user what their organization can do with their device information.">
-      To make sure this device can be used safely, your organization can see information about its operating system, browser, and settings, and what software is installed on the device.
+      To make sure this device can be used safely, your organization can see information about its operating system, browser, and settings, and what software is installed on the device
+    </message>
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_BACK" desc="Label for the 'back' button to return to the previous screen.">
+      Back
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_PROCESSING_SUBTITLE" desc="Subtitle of a section telling the user that a work profile is being created for them.">
       Setting up your profile ...
@@ -677,32 +689,89 @@
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
       You can try again or contact your administrator for help
     </message>
-    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_NO_SIGNIN_TITLE" desc="Title of a section telling the user that there was an error while creating their work profile.">
+      Work profile setup is disabled by your organization
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_NO_SIGNIN_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
+      Contact your administrator for more information
+    </message>
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
       Sign in to get your passwords and more on all your devices
     </message>
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_SCHOOL_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile for school.">
+      Set up a school profile to save and use your passwords and more in your account
+    </message>
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_WORK_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile for work.">
+      Set up a work profile to save and use your passwords and more in your account
+    </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_WORK_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the work profile they will create or keep it separate.">
-      Keep existing browsing data separate from your work profile?
+      Do you want to create a new profile for work?
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_SCHOOL_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the school profile they will create or keep it separate.">
-      Keep existing browsing data separate from your school profile?
+      Do you want to create a new profile for school?
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TURN_SYNC_ON_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the managed profile they will create or keep it separate, this is shown when the user was already signed into a profile.">
+      What would you like to do with your existing profile data?
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_CONSUMER_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the new profile they will create or keep it separate.">
       Keep existing browsing data separate from this new profile?
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
-      Yes, keep it separate (recommended)
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_SCHOOL_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep my data separate from school (recommended)
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_NOT_RECOMMENDED" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
-      Yes, keep it separate
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_WORK_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep my data separate from work (recommended)
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created personal profile.">
-      Your existing browsing data will remain in the existing profile. This new profile will not contain any previous browsing data.
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TURN_SYNC_ON_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile, this is shown when the user was already signed into a profile.">
+      Create a new profile for work and keep my existing data separate
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created work profile.">
-      No, move it into this new profile
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_SCHOOL_NOT_RECOMMENDED" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep my data separate from school
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_WORK_NOT_RECOMMENDED" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep my data separate from work
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created managed profile.">
+      Data that is saved only on this device will remain in the existing profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_TURN_SYNC_ON_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created managed profile, this is shown when the user was already signed into a profile.">
+      Data that is saved only on this device will remain in the existing profile. It will not sync to <ph name="EMAIL">$1<ex>example.com</ex></ph>
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WORK_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created work profile.">
+      No, continue to work in this profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_SCHOOL_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created school profile.">
+      No, continue to use for school in this profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_TURN_SYNC_ON_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created managed profile, this is shown when the user was already signed into a profile">
+      Continue to sync with this profile and merge the data
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
-      This includes bookmarks, extensions and your browsing history of sites.
+      Your organization will be able to see and manage any existing browsing data, such as passwords and more
+    </message>
+    <message name="IDS_BROWSING_HISTORY_COUNT" desc="Text describing the number of browsing history entries">
+      {BROWSING_HISTORY_COUNT, plural,
+        =1 {your browsing history of # site}
+        other {your browsing history of # sites}}
+    </message>
+    <message name="IDS_BOOKMARKS_COUNT" desc="Text describing the number of bookmarks">
+      {EXTENSIONS_COUNT, plural,
+        =1 {# bookmark}
+        other {# bookmarks}}
+    </message>
+    <message name="IDS_EXTENSIONS_COUNT" desc="Text describing the number of extensions">
+      {BOOKMARKS_COUNT, plural,
+        =1 {# extension}
+        other {# extensions}}
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_THREE_COUNTS_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
+      You currently have <ph name="NUMBERED_ITEM_1">$1<ex>10 bookmarks</ex></ph>, <ph name="NUMBERED_ITEM_2">$2<ex>10 extensions</ex></ph>, <ph name="NUMBERED_ITEM_3">$3<ex>your browsing history of 5 sites</ex></ph>, and more. Your organization will be able to see and manage this data
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_TWO_COUNTS_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
+      You currently have <ph name="NUMBERED_ITEM_1">$1<ex>10 bookmarks</ex></ph>, <ph name="NUMBERED_ITEM_2">$2<ex>10 extensions</ex></ph>, and more. Your organization will be able to see and manage this data
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_ONE_COUNT_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
+      You currently have <ph name="NUMBERED_ITEM">$1<ex>10 bookmarks</ex></ph>, and more. Your organization will be able to see and manage this data
     </message>
 
     <!-- Supervised user profile signin IPH -->
@@ -890,10 +959,6 @@
       desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. The headline is followed by the body text 'Save your bookmarks, passwords, and more with sync'. The tone should be informative.">
       Back up data
     </message>
-    <message name="IDS_FRE_BACKUP_CARD_DESCRIPTION"
-      desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'passwords' as the plural version of https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=281e09e1 . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
-      Save your bookmarks, passwords and more with sync
-    </message>
     <message name="IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION"
       desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
       Save your bookmarks and more with sync
@@ -990,6 +1055,9 @@
       other {Addresses ({SELECTED_ITEMS})}
       }
     </message>
+    <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_THEMES_WITH_DESCRIPTION" desc="Title of the Themes section in the Batch Upload dialog. It contains a fixed title in addition to its only item title description. This dialog appears when the user clicks on an informational message about items saved only to their device. The title of the dialog is ‘Save items in account’. This section title also acts as the item being selected (the section toggle dictates the state of the selection) since Themes will always have one item.">
+      Theme: <ph name="THEME_NAME">$1<ex>Green color</ex></ph>
+    </message>
     <message name="IDS_BATCH_UPLOAD_SAVE_TO_ACCOUNT_OK_BUTTON_LABEL" desc="Text of the button that triggers the saving of the selected items in the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items only saved to their device. The title of the dialog is ‘Save items in account’. The list of items has three sections: Passwords, Bookmarks, and Addresses. When pressing the button, selected items are moved to the account storage (Saved in account) and the dialog is then closed. The tone should be motivating.">
       Save in account
     </message>
@@ -1007,6 +1075,20 @@
     </message>
     <message name="IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_NONE" desc="Text read by the screen reader when focusing the toggle button of a section in the Batch Upload dialog and that toggle is turned on. Notifies that the action on the toggle would select no items in this section.">
       Select none
+    </message>
+
+    <!-- Signout Confirmation Dialog Desktop -->
+    <message name="IDS_SIGNOUT_CONFIRMATION_EXTENSIONS_SECTION_TITLE" desc="Title of the Extensions section in the Signout Confirmation dialog which allows users to remove extensions linked to their account when signing out.">
+      {ACCOUNT_EXTENSIONS_COUNT, plural,
+      =1 {Remove 1 extension and the data it's saved on this device}
+      other {Remove {ACCOUNT_EXTENSIONS_COUNT} extensions and the data they've saved on this device}
+      }
+    </message>
+    <message name="IDS_SIGNOUT_CONFIRMATION_EXTENSIONS_SECTION_TOOLTIP" desc="Mouse over tooltip for the Extensions section in the Signout Confirmation dialog which allows users to remove extensions linked to their account when signing out.">
+      {ACCOUNT_EXTENSIONS_COUNT, plural,
+      =1 {This extension is saved in your Google Account, but any data it’s saved only on this device may be deleted}
+      other {These extensions are saved in your Google Account, but any data they've saved only on this device may be deleted}
+      }
     </message>
   </if>
 </grit-part>

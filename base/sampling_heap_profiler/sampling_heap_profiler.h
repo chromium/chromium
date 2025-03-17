@@ -51,7 +51,6 @@ class BASE_EXPORT SamplingHeapProfiler
    private:
     friend class SamplingHeapProfiler;
 
-
     uint32_t ordinal;
   };
 

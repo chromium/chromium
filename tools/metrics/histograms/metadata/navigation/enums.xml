@@ -223,6 +223,10 @@ chromium-metrics-reviews@google.com.
   <int value="66" label="WebView injected message listener"/>
   <int value="67" label="WebView safe browsing allowlist changed"/>
   <int value="68" label="WebView added document start javascript"/>
+  <int value="69"
+      label="CacheControlNoStore is present and Device Bound Session
+             terminated"/>
+  <int value="70" label="Cache limit pruned"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/back_forward_cache.h:NotRestoredReason) -->
@@ -348,9 +352,26 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kCrashedSubframe"/>
 </enum>
 
+<!-- LINT.IfChange(NavigationRequestSchemeType) -->
+
+<enum name="NavigationRequestSchemeType">
+  <int value="0" label="Other"/>
+  <int value="1" label="Chrome UI"/>
+  <int value="2" label="Chrome Native"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/navigation_transitions/back_forward_transition_animator.cc:NavigationRequestSchemeType) -->
+
 <enum name="NavigationRequiresDedicatedProcess">
   <int value="0" label="Does not require dedicated process"/>
   <int value="1" label="Requires dedicated process"/>
+</enum>
+
+<enum name="NavigationStartAdjustmentType">
+  <int value="0" label="No adjustment made"/>
+  <int value="1" label="Legacy PostTask without BeforeUnload"/>
+  <int value="2" label="BeforeUnload handlers without dialog"/>
+  <int value="3" label="BeforeUnload dialog shown"/>
 </enum>
 
 <enum name="NavigationSuddenTerminationDisabler">
@@ -446,6 +467,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Browser not embedding a valid LocalSurfaceID"/>
   <int value="17" label="Not capture non primary main frames"/>
   <int value="18" label="Captured Empty Bitmap From Embedder"/>
+  <int value="19" label="Forward transition animation not supported"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/navigation_transitions/navigation_transition_data.h:CacheHitOrMissReason)-->
@@ -479,19 +501,6 @@ chromium-metrics-reviews@google.com.
       label="Not explicitly requested and origin-keyed (with
              OriginAgentCluster-by-default)"/>
 </enum>
-
-<!-- LINT.IfChange(PolicyBlocklistRequestThrottleAction) -->
-
-<enum name="PolicyBlocklistRequestThrottleAction">
-  <int value="0" label="No request call"/>
-  <int value="1" label="Proceed w/o defer"/>
-  <int value="2" label="Block w/o defer"/>
-  <int value="3" label="Defer"/>
-  <int value="4" label="Defer and proceed"/>
-  <int value="5" label="Defer and block"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/policy/content/policy_blocklist_navigation_throttle.h:RequestThrottleAction) -->
 
 <enum name="PrerenderActivationHeaderMismatchType">
   <int value="-2073835455"

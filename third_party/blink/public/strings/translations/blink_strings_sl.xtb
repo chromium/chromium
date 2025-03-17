@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">Vnesite veljavno vrednost. Najbližji veljavni vrednosti sta <ph name="VALID_VALUE_LOW" /> in <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4664250907885839816">Del po »<ph name="ATSIGN" />« ne sme vsebovati znaka »<ph name="INVALIDCHARACTER" />«.</translation>
+<translation id="4703271465972936359">Zvočni posnetki</translation>
 <translation id="4718048029184481307">Predvajanje v načinu slike v sliki</translation>
 <translation id="4812940957355064477">Vnesite številko.</translation>
 <translation id="4975562563186953947">Št. izbranih: <ph name="SELECTED_COUNT" /></translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">Predvajanje</translation>
 <translation id="5630795885300617244">Dvakrat se dotaknite levo ali desno, da preskočite 10 s</translation>
 <translation id="57838592816432529">Izklopi zvok</translation>
+<translation id="5868587040512539609">Videoposnetki</translation>
 <translation id="588258955323874662">Celozaslonsko</translation>
 <translation id="5888666972993069672">Predvajanje v napravi <ph name="DEVICE_FRIENDLY_NAME" /></translation>
 <translation id="5939518447894949180">Ponastavi</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">Oblikovanje za večjo berljivost</translation>
 <translation id="6550675742724504774">Možnosti</translation>
 <translation id="6643016212128521049">Izbriši</translation>
+<translation id="6661136971638885481">Posnetek št. <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Drugo ...</translation>
 <translation id="6709093583001123835">Vrednost mora biti <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Slaba kakovost predvajanja</translation>

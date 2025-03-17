@@ -159,7 +159,11 @@ void Unpack::UnpWriteBuf20()
   {
     UnpIO->UnpWrite(&Window[WrPtr],-(int)WrPtr & MaxWinMask);
     UnpIO->UnpWrite(Window,UnpPtr);
-    UnpAllBuf=true;
+    
+    // 2024.12.24: Before 7.10 we set "UnpAllBuf=true" here. It was needed for
+    // Pack::PrepareSolidAppend(). Since both UnpAllBuf and FirstWinDone
+    // variables indicate the same thing and we set FirstWinDone in other place
+    // anyway, we replaced UnpAllBuf with FirstWinDone and removed this code.
   }
   else
     UnpIO->UnpWrite(&Window[WrPtr],UnpPtr-WrPtr);

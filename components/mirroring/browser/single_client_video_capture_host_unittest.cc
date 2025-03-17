@@ -22,8 +22,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::InvokeWithoutArgs;
 using media::VideoFrameReceiver;
+using ::testing::InvokeWithoutArgs;
 
 namespace mirroring {
 
@@ -85,7 +85,9 @@ class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
       Callbacks* callbacks,
       base::OnceClosure done_cb,
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor) override {
+          video_effects_processor,
+      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+          readonly_video_effects_manager) override {
     if (!params.IsValid()) {
       callbacks->OnDeviceLaunchFailed(
           media::VideoCaptureError::
@@ -170,16 +172,18 @@ class MockVideoCaptureObserver final
   MOCK_METHOD1(OnStateChangedCall, void(media::mojom::VideoCaptureState state));
   MOCK_METHOD1(OnVideoCaptureErrorCall, void(media::VideoCaptureError error));
   void OnStateChanged(media::mojom::VideoCaptureResultPtr result) override {
-    if (result->which() == media::mojom::VideoCaptureResult::Tag::kState)
+    if (result->which() == media::mojom::VideoCaptureResult::Tag::kState) {
       OnStateChangedCall(result->get_state());
-    else
+    } else {
       OnVideoCaptureErrorCall(result->get_error_code());
+    }
   }
 
   void Start(bool valid_params) {
     VideoCaptureParams params = VideoCaptureParams();
-    if (!valid_params)
+    if (!valid_params) {
       params.requested_format.frame_rate = std::numeric_limits<float>::max();
+    }
 
     host_->Start(device_id_, session_id_, params,
                  receiver_.BindNewPipeAndPassRemote());

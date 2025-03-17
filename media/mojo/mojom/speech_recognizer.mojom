@@ -10,6 +10,15 @@ import "media/mojo/mojom/speech_recognition_grammar.mojom";
 import "media/mojo/mojom/speech_recognition_result.mojom";
 import "media/mojo/mojom/speech_recognition_recognition_context.mojom";
 
+// Next MinVersion: 2
+
+enum AvailabilityStatus {
+  kUnavailable,
+  kDownloadable,
+  kDownloading,
+  kAvailable,
+};
+
 // Created by the renderer and sent to the browser to start a speech recognition
 // session.
 struct StartSpeechRecognitionRequestParams {
@@ -70,9 +79,10 @@ interface SpeechRecognizer {
 // lives in
 // the browser process.
 interface OnDeviceSpeechRecognition {
-  // Returns whether on-device speech recognition is available for a given
-  // language. Takes in a BCP 47 language tag (e.g. "en-US").
-  OnDeviceWebSpeechAvailable(string language) => (bool available);
+  // Returns the availability status for whether on-device speech recognition
+  // is available for a given language. Takes in a BCP 47 language tag (e.g.
+  // "en-US").
+  OnDeviceWebSpeechAvailable(string language) => (AvailabilityStatus status);
 
   // Returns whether on-device speech recognition installation was successfully
   // initiated for the given language.  Takes in a BCP 47 language tag (e.g.
@@ -94,6 +104,11 @@ interface SpeechRecognitionSession {
   // Requests the speech recognition service to stop audio capture for the
   // associated session.
   StopCapture@1();
+
+  // Requests the speech recognition service to update the recognition context.
+  [MinVersion=1]
+  UpdateRecognitionContext@2(
+      SpeechRecognitionRecognitionContext recognition_context);
 };
 
 // API for the browser process to communicate speech recognition related updates

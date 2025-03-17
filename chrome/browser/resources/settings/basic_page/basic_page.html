@@ -43,6 +43,14 @@
         <template is="dom-if"
             if="[[showExperimentalAdvancedPage_(pageVisibility.ai)]]"
             restamp>
+<if expr="enable_glic">
+          <template is="dom-if" if="[[showGlicSection_]]" restamp>
+            <settings-section page-title="$i18n{glicSectionTitle}"
+                nest-under-section="ai" section="glicSection">
+              <settings-glic-page prefs="{{prefs}}"></settings-glic-page>
+            </settings-section>
+          </template>
+</if>
           <settings-section page-title="[[aiPageTitle_]]" section="ai">
             <settings-ai-page prefs="{{prefs}}"></settings-ai-page>
           </settings-section>
@@ -64,8 +72,7 @@
         <!--  TODO(crbug.com/40267370): Add a test to basic_page_test.ts
         to check that settings-safety-hub-entry-point is not visible
         in the guest mode. -->
-        <template is="dom-if"
-            if="[[showSafetyHubEntryPointPage_(pageVisibility.safetyHub)]]"
+        <template is="dom-if" if="[[showPage_(pageVisibility.safetyHub)]]"
             restamp>
           <settings-section page-title="$i18n{safetyHub}"
               section="safetyHubEntryPoint" nest-under-section="privacy"
@@ -82,20 +89,6 @@
             </settings-privacy-page>
           </settings-section>
         </template>
-<if expr="enable_glic">
-        <template is="dom-if" if="[[showGlicPage_(pageVisibility.glic)]]"
-            restamp>
-          <settings-section page-title="$i18n{glicPreferencesSection}"
-              section="glic">
-            <settings-glic-page prefs="{{prefs}}"></settings-glic-page>
-          </settings-section>
-          <settings-section page-title="$i18n{glicDataSection}"
-              section="glicData" nest-under-section="glic">
-            <settings-glic-data-page prefs="{{prefs}}">
-            </settings-glic-data-page>
-          </settings-section>
-        </template>
-</if>
         <template is="dom-if"
             if="[[showPage_(pageVisibility.performance)]]"
             restamp>

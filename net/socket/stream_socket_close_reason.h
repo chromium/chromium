@@ -24,7 +24,8 @@ enum class StreamSocketCloseReason {
   kQuicSessionCreated = 6,
   kUsingExistingSpdySession = 7,
   kUsingExistingQuicSession = 8,
-  kMaxValue = kUsingExistingQuicSession,
+  kAbort = 9,
+  kMaxValue = kAbort,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:StreamSocketCloseReason)
 

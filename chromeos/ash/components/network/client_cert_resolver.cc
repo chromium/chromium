@@ -13,6 +13,7 @@
 #include <certt.h>  // for (SECCertUsageEnum) certUsageAnyCA
 #include <pk11pub.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -23,7 +24,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
@@ -266,6 +266,10 @@ struct MatchCertWithCertConfig {
 // Lookup the issuer certificate of |cert|. If it is available, return the PEM
 // encoding of that certificate. Otherwise return the empty string.
 std::string GetPEMEncodedIssuer(CERTCertificate* cert) {
+  // TODO(https://crbug.com/40554868): remove dependency on NSS and lookup the
+  // issuer directly from NetworkCertLoader's authority_certs(). (Currently
+  // this magically works because NetworkCertLoader stores the certs as NSS
+  // CERTCertificate objects so CERT_FindCertIssuer will find them implicitly.)
   net::ScopedCERTCertificate issuer_handle(
       CERT_FindCertIssuer(cert, PR_Now(), certUsageAnyCA));
   if (!issuer_handle) {
@@ -400,7 +404,7 @@ std::vector<NetworkAndMatchingCert> FindCertificateMatches(
                 ::onc::ONC_SOURCE_DEVICE_POLICY
             ? &device_wide_client_cert_and_issuers
             : &all_client_cert_and_issuers;
-    auto cert_it = base::ranges::find_if(
+    auto cert_it = std::ranges::find_if(
         *client_certs,
         MatchCertWithCertConfig(network_and_cert_config.cert_config));
     if (cert_it == client_certs->end()) {
@@ -509,7 +513,7 @@ bool ClientCertResolver::ResolveClientCertificateSync(
 
   // Search for a certificate matching the pattern, reference or
   // ProvisioningProfileId.
-  std::vector<CertAndIssuer>::iterator cert_it = base::ranges::find_if(
+  std::vector<CertAndIssuer>::iterator cert_it = std::ranges::find_if(
       client_cert_and_issuers, MatchCertWithCertConfig(client_cert_config));
 
   if (cert_it == client_cert_and_issuers.end()) {
@@ -645,10 +649,19 @@ void ClientCertResolver::ResolveNetworks(
 
     ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
     std::string userhash;
+
+    // crbug.com/362668527: |ClientCertResolver| is responsible for finding the
+    // correct certificate for the network and setting it using
+    // |ManagedNetworkConfigurationHandler::SetResolvedClientCertificate|.
+    // Here it cannot use the kWithRuntimeValues policy because the certificate
+    // pattern there is already replaced with a certificate (or an empty value).
+    // The kOriginal policy cannot be used here because it still contains the
+    // unexpanded placeholders.
     const base::Value::Dict* policy =
         managed_network_config_handler_->FindPolicyByGuidAndProfile(
             network->guid(), network->profile_path(),
-            ManagedNetworkConfigurationHandler::PolicyType::kOriginal,
+            ManagedNetworkConfigurationHandler::PolicyType::
+                kWithVariablesExpanded,
             &onc_source, &userhash);
 
     if (!policy) {

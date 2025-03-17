@@ -20,14 +20,9 @@
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/crosapi/mojom/web_kiosk_service.mojom-shared.h"
-#include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/origin.h"
-
-using crosapi::mojom::WebKioskInstaller;
-using crosapi::mojom::WebKioskInstallState;
 
 namespace ash {
 
@@ -54,7 +49,6 @@ void WebKioskAppServiceLauncher::Initialize() {
   // set the complete url as override url.
   app_service_launcher().SetLaunchUrl(GetCurrentApp()->install_url());
 
-  // TODO(crbug.com/372848158): Move to base class if it works for IWAs.
   profile()->GetExtensionSpecialStoragePolicy()->AddOriginWithUnlimitedStorage(
       url::Origin::Create(GetCurrentApp()->install_url()));
 }
@@ -93,7 +87,7 @@ void WebKioskAppServiceLauncher::CheckAppInstallState() {
   auto [state, app_id] = chromeos::GetKioskWebAppInstallState(
       CHECK_DEREF(profile()), GetCurrentApp()->install_url());
 
-  if (state != WebKioskInstallState::kInstalled ||
+  if (state != chromeos::WebKioskInstallState::kInstalled ||
       !profile()->GetPrefs()->GetBoolean(::prefs::kKioskWebAppOfflineEnabled)) {
     delegate_->InitializeNetwork();
     return;

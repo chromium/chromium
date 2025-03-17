@@ -93,7 +93,8 @@ found in the LICENSE file.
             <ViewStub
                 android:id="@+id/tab_card_label_stub"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/tab_card_label_height"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/tab_card_label_height"
                 android:layout_marginBottom="11dp"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"

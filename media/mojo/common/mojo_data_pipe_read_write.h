@@ -76,13 +76,13 @@ class MojoDataPipeWriter {
   ~MojoDataPipeWriter();
 
   using DoneCB = base::OnceCallback<void(bool)>;
-  // Writes |num_bytes| data from |buffer| into the mojo data pipe. When the
+  // Writes data from |buffer| into the mojo data pipe. When the
   // operation completes, |done_cb| is called and indicates whether the writing
   // succeeded. This is not allowed to be called when another writing is
   // ongoing. |buffer| needs to be valid for reading during the entire writing
-  // process. |done_cb| will be called immediately if |num_bytes| is zero or
-  // the data pipe is closed without doing anything.
-  void Write(const uint8_t* buffer, uint32_t num_bytes, DoneCB done_cb);
+  // process. |done_cb| will be called immediately if the size of |bytes| is
+  // zero or the data pipe is closed without doing anything.
+  void Write(base::span<const uint8_t> buffer, DoneCB done_cb);
 
   bool IsPipeValid() const;
 

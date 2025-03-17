@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConsta
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -37,13 +39,13 @@ import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubLayoutAnimationListener;
 import org.chromium.chrome.browser.hub.HubLayoutAnimatorProvider;
-import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneHubController;
@@ -54,8 +56,8 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -84,6 +86,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             new ObservableSupplierImpl<>();
     protected final UserEducationHelper mUserEducationHelper;
     protected final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    protected final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final ObservableSupplierImpl<Boolean> mIsVisibleSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
@@ -157,6 +160,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param userEducationHelper Used for showing IPHs.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
+     * @param compositorViewHolderSupplier Supplier to the {@link CompositorViewHolder} instance.
      */
     TabSwitcherPaneBase(
             @NonNull Context context,
@@ -164,7 +168,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             boolean isIncognito,
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull UserEducationHelper userEducationHelper,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @NonNull ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier) {
         mFactory = factory;
         mIsIncognito = isIncognito;
 
@@ -175,6 +180,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
         mOnToolbarAlphaChange = onToolbarAlphaChange;
         mUserEducationHelper = userEducationHelper;
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        mCompositorViewHolderSupplier = compositorViewHolderSupplier;
     }
 
     @Override
@@ -264,15 +270,15 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     public @NonNull HubLayoutAnimatorProvider createShowHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
-        int tabId = getCurrentTabId();
-        if (getTabListMode() == TabListMode.LIST || tabId == Tab.INVALID_TAB_ID) {
+        @Nullable Tab tab = getCurrentTab();
+        if (getTabListMode() == TabListMode.LIST || tab == null || SysUtils.isLowEndDevice()) {
             return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                     hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
 
         @ColorInt int backgroundColor = getAnimationBackgroundColor();
         SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier =
-                requestAnimationData(hubContainerView, /* isShrink= */ true, tabId);
+                requestAnimationData(hubContainerView, /* isShrink= */ true, tab);
         return ShrinkExpandHubLayoutAnimationFactory.createShrinkTabAnimatorProvider(
                 hubContainerView,
                 animationDataSupplier,
@@ -285,15 +291,15 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     public @NonNull HubLayoutAnimatorProvider createHideHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
-        int tabId = getCurrentTabId();
-        if (getTabListMode() == TabListMode.LIST || tabId == Tab.INVALID_TAB_ID) {
+        Tab tab = getCurrentTab();
+        if (getTabListMode() == TabListMode.LIST || tab == null || SysUtils.isLowEndDevice()) {
             return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                     hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
 
         @ColorInt int backgroundColor = getAnimationBackgroundColor();
         SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier =
-                requestAnimationData(hubContainerView, /* isShrink= */ false, tabId);
+                requestAnimationData(hubContainerView, /* isShrink= */ false, tab);
         return ShrinkExpandHubLayoutAnimationFactory.createExpandTabAnimatorProvider(
                 hubContainerView,
                 animationDataSupplier,
@@ -313,7 +319,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     }
 
     private SyncOneshotSupplier<ShrinkExpandAnimationData> requestAnimationData(
-            @NonNull HubContainerView hubContainerView, boolean isShrink, int tabId) {
+            @NonNull HubContainerView hubContainerView, boolean isShrink, @NonNull Tab tab) {
         SyncOneshotSupplierImpl<ShrinkExpandAnimationData> animationDataSupplier =
                 new SyncOneshotSupplierImpl<>();
         @Nullable TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
@@ -341,41 +347,48 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             finalBottomCornerRadius = 0;
         }
 
+        int tabId = tab.getId();
+        boolean isTopToolbar = ToolbarPositionController.shouldShowToolbarOnTop(tab);
+
         Runnable provideAnimationData =
                 () -> {
                     Rect hubRect = new Rect();
                     hubContainerView.getGlobalVisibleRect(hubRect);
                     Rect initialRect;
                     Rect finalRect;
+                    Rect viewportRect = new Rect();
 
-                    Rect recyclerViewRect = coordinator.getRecyclerViewRect();
-                    if (EdgeToEdgeUtils.isEnabled()) {
-                        // Extend the recyclerViewRect to include the bottom nav bar area on
-                        // edge-to-edge to align the animation with the start / end state.
-                        Rect rootViewRect = new Rect();
-                        mRootView.getRootView().getGlobalVisibleRect(rootViewRect);
-                        recyclerViewRect.bottom = rootViewRect.bottom;
+                    CompositorViewHolder viewHolder = mCompositorViewHolderSupplier.get();
+                    RectF viewportRectf = new RectF();
+                    viewHolder.getVisibleViewport(viewportRectf);
+                    viewportRectf.round(viewportRect);
+                    if (!isTopToolbar) {
+                        // TODO(crubug.com/390714662): This is a temporary fix and should be removed
+                        // once the fade-in and fade-out behavior of the bottom toolbar is
+                        // implemented.
+                        // When the bottom toolbar is visible, the tab's view must extend all the
+                        // way to the bottom to prevent the tab switcher from being visible behind
+                        // it during animations.
+                        RectF windowViewportRectf = new RectF();
+                        Rect windowViewportRect = new Rect();
+                        viewHolder.getWindowViewport(windowViewportRectf);
+                        windowViewportRectf.round(windowViewportRect);
+                        viewportRect.bottom = windowViewportRect.bottom;
                     }
 
                     int leftOffset = 0;
-                    int searchBoxHeight =
-                            OmniboxFeatures.sAndroidHubSearch.isEnabled()
-                                    ? HubUtils.getSearchBoxHeight(
-                                            hubContainerView,
-                                            R.id.hub_toolbar,
-                                            R.id.toolbar_action_container)
-                                    : 0;
-                    // Account for the hub's search box container height.
-                    recyclerViewRect.offset(0, -searchBoxHeight);
-                    recyclerViewRect.bottom += searchBoxHeight;
+                    int initialTopOffset = 0;
+                    int finalTopOffset = 0;
                     if (isShrink) {
-                        initialRect = recyclerViewRect;
+                        initialRect = viewportRect;
                         finalRect = coordinator.getTabThumbnailRect(tabId);
                         leftOffset = initialRect.left;
+                        finalTopOffset = hubRect.top;
                     } else {
                         initialRect = coordinator.getTabThumbnailRect(tabId);
-                        finalRect = recyclerViewRect;
+                        finalRect = viewportRect;
                         leftOffset = finalRect.left;
+                        initialTopOffset = hubRect.top;
                     }
 
                     boolean useFallbackAnimation = false;
@@ -384,10 +397,10 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                         useFallbackAnimation = true;
                     }
                     // Ignore left offset and just ensure the width is correct. See crbug/1502437.
-                    initialRect.offset(-leftOffset, -hubRect.top);
-                    finalRect.offset(-leftOffset, -hubRect.top);
+                    initialRect.offset(-leftOffset, -initialTopOffset);
+                    finalRect.offset(-leftOffset, -finalTopOffset);
                     animationDataSupplier.set(
-                            new ShrinkExpandAnimationData(
+                            ShrinkExpandAnimationData.createHubShrinkExpandAnimationData(
                                     initialRect,
                                     finalRect,
                                     initialTopCornerRadius,
@@ -395,6 +408,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                                     finalTopCornerRadius,
                                     finalBottomCornerRadius,
                                     coordinator.getThumbnailSize(),
+                                    isTopToolbar,
                                     useFallbackAnimation));
                 };
         coordinator.waitForLayoutWithTab(tabId, provideAnimationData);
@@ -512,8 +526,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
      */
     protected abstract void showAllTabs();
 
-    /** Returns the current selected tab ID. */
-    protected abstract int getCurrentTabId();
+    /** Returns the current selected tab. */
+    protected abstract @Nullable Tab getCurrentTab();
 
     /** Returns whether to eagerly create the coordinator in the {@link LoadHint.WARM} state. */
     protected abstract boolean shouldEagerlyCreateCoordinator();

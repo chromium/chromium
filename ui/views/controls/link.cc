@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
@@ -52,7 +53,7 @@ SkColor Link::GetColor() const {
     return color_provider->GetColor(ui::kColorLinkForegroundDisabled);
   }
 
-  if (requested_enabled_color_.has_value()) {
+  if (requested_enabled_color_) {
     return requested_enabled_color_.value();
   }
 
@@ -188,7 +189,7 @@ void Link::SetFontList(const gfx::FontList& font_list) {
   RecalculateFont();
 }
 
-void Link::SetText(const std::u16string& text) {
+void Link::SetText(std::u16string_view text) {
   Label::SetText(text);
   // Prevent invisible links from being announced by screen reader.
   GetViewAccessibility().SetIsIgnored(text.empty());
@@ -200,8 +201,11 @@ void Link::OnThemeChanged() {
   Label::SetEnabledColor(GetColor());
 }
 
-void Link::SetEnabledColor(SkColor color) {
-  requested_enabled_color_ = color;
+void Link::SetEnabledColor(ui::ColorVariant color) {
+  if (color.GetSkColor()) {
+    requested_enabled_color_ = color.GetSkColor().value();
+  }
+
   if (GetWidget()) {
     Label::SetEnabledColor(GetColor());
   }

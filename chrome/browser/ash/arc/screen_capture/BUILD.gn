@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("screen_capture") {
   sources = [
@@ -18,11 +18,11 @@ static_library("screen_capture") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser/ash/notifications",
     "//chrome/common",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/keyed_service/core",
     "//components/viz/common",
     "//content/public/browser",

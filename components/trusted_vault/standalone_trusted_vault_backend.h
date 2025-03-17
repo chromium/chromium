@@ -12,13 +12,13 @@
 #include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
+#include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -75,7 +75,7 @@ class StandaloneTrustedVaultBackend
   // downloading, etc.) will be disabled.
   StandaloneTrustedVaultBackend(
       SecurityDomainId security_domain_id,
-      const base::FilePath& file_path,
+      std::unique_ptr<StandaloneTrustedVaultStorage> storage,
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<TrustedVaultConnection> connection);
   StandaloneTrustedVaultBackend(const StandaloneTrustedVaultBackend& other) =
@@ -89,8 +89,7 @@ class StandaloneTrustedVaultBackend
           degraded_recoverability_state) override;
   void OnDegradedRecoverabilityChanged() override;
 
-  // Restores state saved in |file_path_|, should be called before using the
-  // object.
+  // Restores state saved on disk, should be called before using the object.
   void ReadDataFromDisk();
 
   // Populates vault keys corresponding to |account_info| into |callback|. If
@@ -101,7 +100,7 @@ class StandaloneTrustedVaultBackend
   void FetchKeys(const CoreAccountInfo& account_info,
                  FetchKeysCallback callback);
 
-  // Replaces keys for given |gaia_id| both in memory and in |file_path_|.
+  // Replaces keys for given |gaia_id| both in memory and on disk.
   void StoreKeys(const GaiaId& gaia_id,
                  const std::vector<std::vector<uint8_t>>& keys,
                  int last_key_version);
@@ -167,11 +166,6 @@ class StandaloneTrustedVaultBackend
 
   ~StandaloneTrustedVaultBackend() override;
 
-  // Finds the per-user vault in |data_| for |gaia_id|. Returns null if not
-  // found.
-  trusted_vault_pb::LocalTrustedVaultPerUser* FindUserVault(
-      const GaiaId& gaia_id);
-
   // Attempts to register device in case it's not yet registered and currently
   // available local data is sufficient to do it. For the cases where
   // registration is desirable (i.e. feature toggle enabled and user signed in),
@@ -185,7 +179,7 @@ class StandaloneTrustedVaultBackend
   void MaybeProcessPendingTrustedRecoveryMethod();
 
   // Called when device registration for |gaia_id| is completed (either
-  // successfully or not). |data_| must contain LocalTrustedVaultPerUser for
+  // successfully or not). |storage_| must contain LocalTrustedVaultPerUser for
   // given |gaia_id|.
   void OnDeviceRegistered(TrustedVaultRegistrationStatus status,
                           int key_version_unused);
@@ -223,11 +217,11 @@ class StandaloneTrustedVaultBackend
   // for deletion due to accounts in cookie jar changes.
   void RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
 
-  void WriteDataToDisk();
+  void WriteDataToDiskAndNotify();
 
   const SecurityDomainId security_domain_id_;
 
-  const base::FilePath file_path_;
+  const std::unique_ptr<StandaloneTrustedVaultStorage> storage_;
 
   const std::unique_ptr<Delegate> delegate_;
 
@@ -238,8 +232,6 @@ class StandaloneTrustedVaultBackend
   // kTrustedVaultServiceURLSwitch is not valid, consider making it non-nullable
   // even in this case and clean up related logic.
   const std::unique_ptr<TrustedVaultConnection> connection_;
-
-  trusted_vault_pb::LocalTrustedVault data_;
 
   // Only current |primary_account_| can be used for communication with trusted
   // vault server.

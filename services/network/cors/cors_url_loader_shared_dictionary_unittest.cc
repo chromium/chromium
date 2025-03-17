@@ -289,9 +289,9 @@ TEST_F(CorsURLLoaderSharedDictionaryTest, SameOriginUrlNavigateModeRequest) {
   RunUntilComplete();
   EXPECT_EQ(net::OK, client().completion_status().error_code);
 
-  // The response of Navigation mode request should not be stored to the
+  // The response of Navigation mode request should be stored to the
   // dictionary storage.
-  CheckDictionaryInStorage(/*expect_exists=*/false);
+  CheckDictionaryInStorage(/*expect_exists=*/true);
 }
 
 TEST_F(CorsURLLoaderSharedDictionaryTest,

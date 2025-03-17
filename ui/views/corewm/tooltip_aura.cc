@@ -30,6 +30,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/tooltip_observer.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace {
 
 // Max visual tooltip width. If a tooltip is greater than this width, it will
@@ -42,6 +46,20 @@ bool CanUseTranslucentTooltipWidget() {
   return false;
 #else
   return true;
+#endif
+}
+
+bool ShouldIgnoreScreenBounds() {
+#if BUILDFLAG(IS_OZONE)
+  // Some platforms, such as Wayland, disallow client applications to manipulate
+  // global screen coordinates, requiring popups to be positioned relative to
+  // their parent windows and partially handled at display server side. See
+  // comment in ozone_platform_wayland.cc.
+  return !ui::OzonePlatform::GetInstance()
+              ->GetPlatformProperties()
+              .supports_global_screen_coordinates;
+#else
+  return false;
 #endif
 }
 
@@ -141,6 +159,12 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
   // TODO(msisov): handle RTL.
   anchor->anchor_rect =
       gfx::Rect(anchor_point, {kCursorOffsetX, kCursorOffsetY});
+
+  // In platforms such as Wayland, screen bounds constraints are handled by the
+  // windowing system instead, using anchor parameters set above.
+  if (ShouldIgnoreScreenBounds()) {
+    return tooltip_rect;
+  }
 
   display::Screen* screen = display::Screen::GetScreen();
   gfx::Rect display_bounds(
@@ -242,7 +266,7 @@ void TooltipAura::Show() {
   if (widget_) {
     widget_->Show();
 
-    widget_->GetTooltipView()->NotifyAccessibilityEvent(
+    widget_->GetTooltipView()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kTooltipOpened, true);
 
     // Add distance between `tooltip_window_` and its toplevel window to bounds
@@ -272,7 +296,7 @@ void TooltipAura::Hide() {
     // guarantees we never show outdated information.
     // TODO(http://crbug.com/998280): Figure out why the old content is
     // displayed despite the size change.
-    widget_->GetTooltipView()->NotifyAccessibilityEvent(
+    widget_->GetTooltipView()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kTooltipClosed, true);
 
     // TODO(crbug.com/40246673): Use `tooltip_window_` instead of its toplevel

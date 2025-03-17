@@ -85,8 +85,9 @@
                                               completion:^{
                                                 sceneState.QRScannerVisible =
                                                     NO;
-                                                if (completion)
+                                                if (completion) {
                                                   completion();
+                                                }
                                               }];
   self.viewController = nil;
 }

@@ -4,8 +4,8 @@
 
 import {$, getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {DeviceData} from './audio.mojom-webui.js';
-import {DeviceMap} from './device_page.js';
+import type {DeviceData} from './audio.mojom-webui.js';
+import type {DeviceMap} from './device_page.js';
 
 export class DeviceTable extends HTMLTableElement {
   private tbody: HTMLTableSectionElement;

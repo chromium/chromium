@@ -24,6 +24,7 @@ public interface SigninAndHistorySyncActivityLauncher {
     @IntDef({
         SigninAccessPoint.RECENT_TABS,
         SigninAccessPoint.BOOKMARK_MANAGER,
+        SigninAccessPoint.HISTORY_PAGE,
         SigninAccessPoint.NTP_FEED_TOP_PROMO,
         SigninAccessPoint.NTP_FEED_BOTTOM_PROMO,
         SigninAccessPoint.SAFETY_CHECK,
@@ -33,6 +34,7 @@ public interface SigninAndHistorySyncActivityLauncher {
         SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO,
         SigninAccessPoint.SEND_TAB_TO_SELF_PROMO,
         SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION,
+        SigninAccessPoint.COLLABORATION_TAB_GROUP,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface AccessPoint {}

@@ -10,16 +10,18 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
-#include "components/autofill/core/browser/data_model/bnpl_issuer.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
-#include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
-#include "components/autofill/core/browser/data_model/ewallet.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -60,6 +62,11 @@ bool operator==(const FormDataPredictions& a, const FormDataPredictions& b);
 
 // Common utilities shared amongst Autofill tests.
 namespace test {
+
+inline constexpr base::Time kJanuary2017 =
+    base::Time::FromSecondsSinceUnixEpoch(1484505871);
+inline constexpr base::Time kJune2017 =
+    base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 // A compound data type that contains the type, the value and the verification
 // status for a form group entry (an AutofillProfile).
@@ -212,6 +219,11 @@ std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
 // One getter for each benefit type.
 CreditCardFlatRateBenefit GetActiveCreditCardFlatRateBenefit();
 CreditCardCategoryBenefit GetActiveCreditCardCategoryBenefit();
+CreditCardCategoryBenefit CreateCreditCardCategoryBenefit(
+    CreditCardBenefitBase::BenefitId benefit_id,
+    CreditCardBenefitBase::LinkedCardInstrumentId linked_card_instrument_id,
+    CreditCardCategoryBenefit::BenefitCategory benefit_category,
+    std::u16string benefit_description);
 CreditCardMerchantBenefit GetActiveCreditCardMerchantBenefit();
 
 // Returns a set of merchant origin webpages used for a merchant credit card
@@ -264,6 +276,14 @@ void SetProfileInfo(AutofillProfile* profile,
                     bool finalize = true,
                     VerificationStatus status = VerificationStatus::kObserved);
 
+void SetProfileInfo(AutofillProfile* profile,
+                    const char* first_name,
+                    const char* middle_name,
+                    const char* last_name,
+                    const char* country,
+                    bool finalize = true,
+                    VerificationStatus status = VerificationStatus::kObserved);
+
 void SetProfileInfoWithGuid(AutofillProfile* profile,
                             const char* guid,
                             const char* first_name,
@@ -305,6 +325,38 @@ CreditCard CreateCreditCardWithInfo(const char* name_on_card,
 // cards.
 void SetServerCreditCards(PaymentsAutofillTable* table,
                           const std::vector<CreditCard>& cards);
+
+struct PassportEntityOptions {
+  const char16_t* name = u"Pippi Långstrump";
+  const char16_t* number = u"123";
+  const char16_t* country = u"Sweden";
+  const char16_t* expiry_date = u"2019-08-30";
+  const char16_t* issue_date = u"2010-09-01";
+  std::string_view guid = "00000000-0000-4000-8000-000000000000";
+  std::string_view nickname = "Passie";
+  base::Time date_modified = kJune2017;
+};
+
+// Creates a test passport instance with the values from `options`.
+// Attributes whose value in `options` is `nullptr` are left absent.
+// `options.date_modified` is rounded to seconds so that writing and reading the
+// entity from the database obtains the original entity (the resolution of
+// base::Time in the database is seconds).
+EntityInstance GetPassportEntityInstance(PassportEntityOptions options = {});
+
+struct DriversLicenseOptions {
+  const char16_t* name = u"Knecht Ruprecht";
+  const char16_t* region = u"California";
+  const char16_t* number = u"12312345";
+  const char16_t* expiration_date = u"01/12/2019";
+  const char16_t* issue_date = u"01/01/2010";
+  std::string_view guid = "00000000-0000-4000-8000-100000000000";
+  std::string_view nickname = "License";
+  base::Time date_modified = kJune2017;
+};
+
+EntityInstance GetDriversLicenseEntityInstance(
+    DriversLicenseOptions options = {});
 
 // Adds `possible_types` at the end of `possible_field_types`.
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
@@ -411,8 +463,11 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
     uint64_t min_price_in_micros,
     uint64_t max_price_in_micros);
 
-// Returns a BNPL issuer with fake data.
-BnplIssuer GetTestBnplIssuer();
+// Returns a linked BNPL issuer with fake data.
+BnplIssuer GetTestLinkedBnplIssuer();
+
+// Returns an unlinked BNPL issuer with fake data.
+BnplIssuer GetTestUnlinkedBnplIssuer();
 
 // Returns a payment instrument creation option with a BNPL issuer filled with
 // fake data using `id` as the `PaymentInstrumentCreationOption.id`.

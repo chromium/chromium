@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/invalidation/rule_invalidation_data_visitor.h"
 
+#include "base/auto_reset.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
@@ -15,6 +17,7 @@ namespace {
 bool SupportsInvalidation(CSSSelector::MatchType match) {
   switch (match) {
     case CSSSelector::kTag:
+    case CSSSelector::kUniversalTag:
     case CSSSelector::kId:
     case CSSSelector::kClass:
     case CSSSelector::kAttributeExact:
@@ -173,6 +176,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoActiveViewTransition:
     case CSSSelector::kPseudoActiveViewTransitionType:
+    case CSSSelector::kPseudoHasInterest:
     case CSSSelector::kPseudoHasSlotted:
       return true;
     case CSSSelector::kPseudoUnknown:
@@ -646,8 +650,7 @@ void RuleInvalidationDataVisitor<VisitorType>::
   features.has_features_for_rule_set_invalidation |=
       selector.IsIdClassOrAttributeSelector();
 
-  if (selector.Match() == CSSSelector::kTag &&
-      selector.TagQName().LocalName() != CSSSelector::UniversalSelectorAtom()) {
+  if (selector.Match() == CSSSelector::kTag) {
     features.NarrowToTag(selector.TagQName().LocalName());
     return;
   }
@@ -928,10 +931,13 @@ void RuleInvalidationDataVisitor<VisitorType>::
         // TODO(futhark): We can extract the features from the current compound
         // to optimize this.
         SetWholeSubtreeInvalid(invalidation_set);
-        AddFeaturesToInvalidationSet(
+        InvalidationSetType* sibling_descendant_set =
             EnsureSiblingDescendantInvalidationSet(
-                To<SiblingInvalidationSet>(invalidation_set)),
-            descendant_features);
+                To<SiblingInvalidationSet>(invalidation_set));
+        if (sibling_descendant_set != nullptr) {
+          AddFeaturesToInvalidationSet(sibling_descendant_set,
+                                       descendant_features);
+        }
         return;
       } else {
         AddFeaturesToInvalidationSet(invalidation_set, descendant_features);
@@ -951,9 +957,12 @@ void RuleInvalidationDataVisitor<VisitorType>::
         SetInvalidatesNth(sibling_invalidation_set);
       }
     } else {
-      AddFeaturesToInvalidationSet(
-          EnsureSiblingDescendantInvalidationSet(sibling_invalidation_set),
-          descendant_features);
+      InvalidationSetType* sibling_descendant_set =
+          EnsureSiblingDescendantInvalidationSet(sibling_invalidation_set);
+      if (sibling_descendant_set != nullptr) {
+        AddFeaturesToInvalidationSet(sibling_descendant_set,
+                                     descendant_features);
+      }
     }
     return;
   }
@@ -1057,16 +1066,21 @@ void RuleInvalidationDataVisitor<VisitorType>::
         const InvalidationSetFeatures& descendant_features) {
   SiblingInvalidationSetType* universal_set =
       EnsureUniversalSiblingInvalidationSet();
-  AddFeaturesToInvalidationSet(universal_set, sibling_features);
-  UpdateMaxDirectAdjacentSelectors(
-      universal_set, sibling_features.max_direct_adjacent_selectors);
+  if (universal_set != nullptr) {
+    AddFeaturesToInvalidationSet(universal_set, sibling_features);
+    UpdateMaxDirectAdjacentSelectors(
+        universal_set, sibling_features.max_direct_adjacent_selectors);
 
-  if (&sibling_features == &descendant_features) {
-    SetInvalidatesSelf(universal_set);
-  } else {
-    AddFeaturesToInvalidationSet(
-        EnsureSiblingDescendantInvalidationSet(universal_set),
-        descendant_features);
+    if (&sibling_features == &descendant_features) {
+      SetInvalidatesSelf(universal_set);
+    } else {
+      InvalidationSetType* sibling_descendant_set =
+          EnsureSiblingDescendantInvalidationSet(universal_set);
+      if (sibling_descendant_set != nullptr) {
+        AddFeaturesToInvalidationSet(sibling_descendant_set,
+                                     descendant_features);
+      }
+    }
   }
 }
 
@@ -1107,8 +1121,7 @@ bool RuleInvalidationDataVisitor<VisitorType>::
     }
     return true;
   }
-  if (selector.Match() == CSSSelector::kTag &&
-      selector.TagQName().LocalName() != CSSSelector::UniversalSelectorAtom()) {
+  if (selector.Match() == CSSSelector::kTag) {
     if constexpr (is_builder()) {
       rule_invalidation_data_.tag_names_in_has_argument.insert(
           selector.TagQName().LocalName());
@@ -1265,6 +1278,9 @@ void RuleInvalidationDataVisitor<VisitorType>::
 template <RuleInvalidationDataVisitorType VisitorType>
 struct RuleInvalidationDataVisitor<VisitorType>::
     AddFeaturesToInvalidationSetsForLogicalCombinationInHasContext {
+  STACK_ALLOCATED();
+
+ public:
   bool needs_skip_adding_features;
   bool needs_update_features;
   const CSSSelector* last_compound_in_adjacent_chain;
@@ -1422,7 +1438,23 @@ void RuleInvalidationDataVisitor<VisitorType>::
       combinator = CSSSelector::kIndirectAdjacent;
       break;
     default:
-      NOTREACHED();
+      // Implicit combinators for pseudo elements (kUAShadow, kShadowSlot,
+      // kShadowPart) cannot be inside :has() because pseudo elements are
+      // not allowed inside :has().
+      // Combinators for relative relations (kRelativeDescendant,
+      // kRelativeChild, kRelativeDirectAdjacent, kRelativeIndirectAdjacent)
+      // cannot be inside :has() because :has() is not allowed inside :has().
+      //
+      // In simple cases (e.g. ':has(::part(foo))', ':has(:has(foo))'),
+      // selector parser treats the :has() as invalid at parsing time.
+      //
+      // But nesting can bypass the parsing time validation:
+      // (e.g. '::part(foo) {:has(&) {}}' -> both '::part(foo)' and ':has(&)'
+      //  are valid selectors, but the :has() will not match any element)
+      //
+      // To avoid assertion for the nesting case, just return here instead
+      // of NOTREACHED().
+      return;
   }
 
   UpdateFeaturesFromCombinator(combinator, last_compound_in_adjacent_chain,
@@ -1655,6 +1687,7 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoSelectorFragmentAnchor:
       case CSSSelector::kPseudoActiveViewTransition:
       case CSSSelector::kPseudoActiveViewTransitionType:
+      case CSSSelector::kPseudoHasInterest:
       case CSSSelector::kPseudoHasSlotted:
         return EnsurePseudoInvalidationSet(selector.GetPseudoType(), type,
                                            position, in_nth_child);

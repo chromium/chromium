@@ -1,8 +1,11 @@
 include_rules = [
-  "+ash/public/cpp",
   "+components/exo",
   "+ui/aura",
   "+ui/wm/public",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to //ash.
+  # Resolve it.
+  "+ash/public/cpp/shell_window_ids.h",
 ]
 
 specific_include_rules = {

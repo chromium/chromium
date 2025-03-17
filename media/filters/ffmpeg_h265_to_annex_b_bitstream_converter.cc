@@ -38,7 +38,7 @@ bool FFmpegH265ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
     if (!stream_codec_parameters_->extradata ||
         stream_codec_parameters_->extradata_size <= 0) {
       DVLOG(1) << "HEVCDecoderConfiguration not found, no extra codec data";
-      return false;
+      return true;
     }
 
     hevc_config_ = std::make_unique<mp4::HEVCDecoderConfigurationRecord>();

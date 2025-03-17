@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -25,6 +26,8 @@ class TabGroup {
     static final int INVALID_POSITION_IN_GROUP = -1;
 
     private final LinkedHashSet<Integer> mTabIds = new LinkedHashSet<>();
+    // Remove this once crbug.com/394394717 is fixed.
+    private final HashSet<Integer> mRemovedTabIds = new HashSet<>();
 
     private int mLastShownTabId = Tab.INVALID_TAB_ID;
 
@@ -57,6 +60,7 @@ class TabGroup {
             if (nextIdToShow != Tab.INVALID_TAB_ID) setLastShownTabId(nextIdToShow);
         }
         mTabIds.remove(tabId);
+        mRemovedTabIds.add(tabId);
     }
 
     /**
@@ -95,7 +99,13 @@ class TabGroup {
 
     /** Sets the tab ID that was last selected from the group. */
     void setLastShownTabId(int tabId) {
-        assert mTabIds.contains(tabId);
+        assert mTabIds.contains(tabId)
+                : "TabId was seen before: "
+                        + mRemovedTabIds.contains(tabId)
+                        + ", TabId is invalid: "
+                        + (tabId == Tab.INVALID_TAB_ID)
+                        + ", group size:"
+                        + size();
         mLastShownTabId = tabId;
     }
 

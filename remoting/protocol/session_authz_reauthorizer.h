@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/session_authz_service_client.h"
 
 namespace remoting {
@@ -51,7 +51,7 @@ class SessionAuthzReauthorizer {
   void ScheduleNextReauth();
   void Reauthorize();
   void OnReauthorizeResult(
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<internal::ReauthorizeHostResponseStruct> response);
   void NotifyReauthorizationFailed();
 

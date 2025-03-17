@@ -4,9 +4,9 @@
 
 #import "ios/web_view/public/cwv_navigation_type.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 #import "ios/web_view/internal/cwv_navigation_type_internal.h"
 
 CWVNavigationType CWVNavigationTypeFromPageTransition(

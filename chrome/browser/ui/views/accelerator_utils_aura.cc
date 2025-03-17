@@ -4,19 +4,18 @@
 
 #include <stddef.h>
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/accelerators/accelerator.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/accelerators.h"
 #endif
 
 namespace chrome {
 
 bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   for (const ash::AcceleratorData& accel_data : ash::kAcceleratorData) {
     if (accel_data.keycode == accelerator.key_code() &&
         accel_data.modifiers == accelerator.modifiers()) {

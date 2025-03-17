@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.HINT_TEXT;
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.HINT_TEXT_COLOR;
+import static org.chromium.chrome.browser.omnibox.UrlBarProperties.IS_IN_CCT;
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.SELECT_ALL_ON_FOCUS;
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.TEXT_COLOR;
 
@@ -190,5 +191,13 @@ public class UrlBarViewBinderUnitTest {
         mModel.set(HINT_TEXT, R.string.hub_search_empty_hint_incognito);
         Assert.assertEquals(
                 mActivity.getString(R.string.hub_search_empty_hint_incognito), mUrlBar.getHint());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetIsInCct() {
+        Assert.assertFalse(mUrlBar.getIsInCctForTesting());
+        mModel.set(IS_IN_CCT, true);
+        Assert.assertTrue(mUrlBar.getIsInCctForTesting());
     }
 }

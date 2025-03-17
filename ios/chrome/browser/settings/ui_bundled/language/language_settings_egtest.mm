@@ -9,7 +9,6 @@
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "ios/chrome/browser/settings/ui_bundled/language/language_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/language/language_settings_ui_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -23,6 +22,7 @@
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::SettingsMenuBackButton;
+using chrome_test_util::SettingsToolbarEditButton;
 using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TableViewSwitchCell;
 using chrome_test_util::TurnTableViewSwitchOn;
@@ -124,11 +124,6 @@ id<GREYMatcher> ElementIsSelected(BOOL selected) {
 id<GREYMatcher> LanguageEntryDeleteButton() {
   return grey_allOf(grey_accessibilityLabel(@"Delete"),
                     grey_sufficientlyVisible(), nil);
-}
-
-// Matcher for the toolbar's edit button.
-id<GREYMatcher> SettingToolbarEditButton() {
-  return grey_accessibilityID(kSettingsToolbarEditButtonId);
 }
 
 }  // namespace
@@ -489,7 +484,7 @@ id<GREYMatcher> SettingToolbarEditButton() {
   [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
 
   // Switch on edit mode.
-  [[EarlGrey selectElementWithMatcher:SettingToolbarEditButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
       performAction:grey_tap()];
 
   // Verify that the Add Language button is disabled.

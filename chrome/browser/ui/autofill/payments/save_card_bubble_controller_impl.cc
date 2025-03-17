@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"

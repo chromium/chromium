@@ -16,11 +16,9 @@ import org.chromium.net.test.FailurePhase;
 @JNINamespace("cronet")
 public final class MockUrlRequestJobFactory {
     private final long mInterceptorHandle;
-    private final CronetTestUtil.NetworkThreadTestConnector mNetworkThreadTestConnector;
 
     /** Sets up URL interceptors. */
     public MockUrlRequestJobFactory(CronetEngine cronetEngine) {
-        mNetworkThreadTestConnector = new CronetTestUtil.NetworkThreadTestConnector(cronetEngine);
 
         mInterceptorHandle =
                 MockUrlRequestJobFactoryJni.get()
@@ -32,7 +30,6 @@ public final class MockUrlRequestJobFactory {
     /** Remove URL Interceptors. */
     public void shutdown() {
         MockUrlRequestJobFactoryJni.get().removeUrlInterceptorJobFactory(mInterceptorHandle);
-        mNetworkThreadTestConnector.shutdown();
     }
 
     /**

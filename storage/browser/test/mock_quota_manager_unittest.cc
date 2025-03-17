@@ -84,23 +84,6 @@ class MockQuotaManagerTest : public testing::Test {
     return result;
   }
 
-  QuotaErrorOr<BucketInfo> GetOrCreateBucketDeprecated(
-      const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
-      const std::string& bucket_name) {
-    QuotaErrorOr<BucketInfo> result;
-    base::RunLoop run_loop;
-    BucketInitParams params(storage_key, bucket_name);
-    manager_->GetOrCreateBucketDeprecated(
-        params, type,
-        base::BindLambdaForTesting([&](QuotaErrorOr<BucketInfo> bucket) {
-          result = std::move(bucket);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return result;
-  }
-
   QuotaErrorOr<BucketInfo> GetBucket(const blink::StorageKey& storage_key,
                                      const std::string& bucket_name,
                                      blink::mojom::StorageType type) {
@@ -159,12 +142,11 @@ class MockQuotaManagerTest : public testing::Test {
   }
 
   void CheckUsageAndQuota(const blink::StorageKey& storage_key,
-                          StorageType type,
                           const int64_t expected_usage,
                           const int64_t expected_quota) {
     base::test::TestFuture<blink::mojom::QuotaStatusCode, int64_t, int64_t>
         future;
-    manager()->GetUsageAndQuota(storage_key, type, future.GetCallback());
+    manager()->GetUsageAndQuota(storage_key, kTemporary, future.GetCallback());
 
     blink::mojom::QuotaStatusCode status = future.Get<0>();
     int64_t usage = future.Get<1>();
@@ -485,58 +467,35 @@ TEST_F(MockQuotaManagerTest, QuotaAndUsage) {
       StorageKey::CreateFromStringForTesting("http://host2:1/");
 
   ASSERT_OK_AND_ASSIGN(BucketInfo result,
-                       GetOrCreateBucketDeprecated(storage_key1, kTemporary,
-                                                   kDefaultBucketName));
-  const BucketLocator storage_key1_temp_default_bucket =
-      result.ToBucketLocator();
+                       GetOrCreateBucket(storage_key1, kDefaultBucketName));
+  const BucketLocator storage_key1_default_bucket = result.ToBucketLocator();
 
-  ASSERT_OK_AND_ASSIGN(result, GetOrCreateBucketDeprecated(
-                                   storage_key1, kTemporary, "non-default"));
-  const BucketLocator storage_key1_temp_named_bucket = result.ToBucketLocator();
-
-  ASSERT_OK_AND_ASSIGN(
-      result,
-      GetOrCreateBucketDeprecated(storage_key1, kSyncable, kDefaultBucketName));
-  const BucketLocator storage_key1_sync_default_bucket =
-      result.ToBucketLocator();
+  ASSERT_OK_AND_ASSIGN(result, GetOrCreateBucket(storage_key1, "non-default"));
+  const BucketLocator storage_key1_named_bucket = result.ToBucketLocator();
 
   ASSERT_OK_AND_ASSIGN(result,
-                       GetOrCreateBucketDeprecated(storage_key2, kTemporary,
-                                                   kDefaultBucketName));
-  const BucketLocator storage_key2_temp_default_bucket =
-      result.ToBucketLocator();
+                       GetOrCreateBucket(storage_key2, kDefaultBucketName));
+  const BucketLocator storage_key2_default_bucket = result.ToBucketLocator();
 
-  SCOPED_TRACE(
-      "Checking default usage and quota for storage_key1 (kTemporary)");
-  CheckUsageAndQuota(storage_key1, kTemporary, 0,
-                     std::numeric_limits<int64_t>::max());
+  SCOPED_TRACE("Checking default usage and quota for storage_key1");
+  CheckUsageAndQuota(storage_key1, 0, std::numeric_limits<int64_t>::max());
 
-  manager()->SetQuota(storage_key1, kTemporary, 1000);
+  manager()->SetQuota(storage_key1, 1000);
   // Add usages in different buckets for the same storage key so that we can
   // ensure that these get added together correctly.
-  manager()->UpdateUsage(storage_key1_temp_default_bucket, 10);
-  manager()->UpdateUsage(storage_key1_temp_named_bucket, 100);
-
-  // Set a quota for the same storage key using a different type to test that
-  // these quotas don't affect one another.
-  manager()->SetQuota(storage_key1, kSyncable, 2000);
-  // Add usages for buckets tied to the same storage key but using a different
-  // type to test that these don't affect one another.
-  manager()->UpdateUsage(storage_key1_sync_default_bucket, 20);
+  manager()->UpdateUsage(storage_key1_default_bucket, 10);
+  manager()->UpdateUsage(storage_key1_named_bucket, 100);
 
   // Set a quota and add usage for a different storage key to test that this
   // doesn't affect the quota and usage of the other storage key.
-  manager()->SetQuota(storage_key2, kTemporary, 3000);
-  manager()->UpdateUsage(storage_key2_temp_default_bucket, 30);
+  manager()->SetQuota(storage_key2, 3000);
+  manager()->UpdateUsage(storage_key2_default_bucket, 30);
 
-  SCOPED_TRACE("Checking usage and quota for storage_key1 (kTemporary)");
-  CheckUsageAndQuota(storage_key1, kTemporary, 110, 1000);
+  SCOPED_TRACE("Checking usage and quota for storage_key1");
+  CheckUsageAndQuota(storage_key1, 110, 1000);
 
-  SCOPED_TRACE("Checking usage and quota for storage_key1 (kSyncable)");
-  CheckUsageAndQuota(storage_key1, kSyncable, 20, 2000);
-
-  SCOPED_TRACE("Checking usage and quota for storage_key2 (kTemporary)");
-  CheckUsageAndQuota(storage_key2, kTemporary, 30, 3000);
+  SCOPED_TRACE("Checking usage and quota for storage_key2");
+  CheckUsageAndQuota(storage_key2, 30, 3000);
 }
 
 }  // namespace storage

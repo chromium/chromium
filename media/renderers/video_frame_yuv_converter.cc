@@ -76,7 +76,8 @@ bool IsPixelFormatSupportedForYuvSharedImageConversion(
 void ConvertYuvVideoFrameToRgbSharedImage(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
-    const gpu::MailboxHolder& dest_mailbox_holder,
+    const gpu::Mailbox& dest_mailbox,
+    const gpu::SyncToken& dest_sync_token,
     bool use_visible_rect,
     VideoFrameSharedImageCache* shared_image_cache) {
   CHECK(video_frame);
@@ -98,7 +99,7 @@ void ConvertYuvVideoFrameToRgbSharedImage(
 
   auto* ri = raster_context_provider->RasterInterface();
   DCHECK(ri);
-  ri->WaitSyncTokenCHROMIUM(dest_mailbox_holder.sync_token.GetConstData());
+  ri->WaitSyncTokenCHROMIUM(dest_sync_token.GetConstData());
 
   auto source_rect = use_visible_rect ? video_frame->visible_rect()
                                       : gfx::Rect(video_frame->coded_size());
@@ -129,8 +130,8 @@ void ConvertYuvVideoFrameToRgbSharedImage(
   // For pure software pixel upload path with video frame that does not have
   // textures.
   auto [src_shared_image, si_sync_token, status] =
-      shared_image_cache->GetSharedImage(video_frame, raster_context_provider,
-                                         src_usage);
+      shared_image_cache->GetOrCreateSharedImage(
+          video_frame, raster_context_provider, src_usage);
   CHECK(src_shared_image);
   if (status == VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
     // Since the video frame id matches, no need to upload pixels or copy shared
@@ -169,9 +170,9 @@ void ConvertYuvVideoFrameToRgbSharedImage(
       SkYUVAPixmaps::FromExternalPixmaps(yuva_info, pixmaps);
   ri->WritePixelsYUV(src_shared_image->mailbox(), yuv_pixmap);
 
-  ri->CopySharedImage(src_shared_image->mailbox(), dest_mailbox_holder.mailbox,
-                      0, 0, source_rect.x(), source_rect.y(),
-                      source_rect.width(), source_rect.height());
+  ri->CopySharedImage(src_shared_image->mailbox(), dest_mailbox, 0, 0,
+                      source_rect.x(), source_rect.y(), source_rect.width(),
+                      source_rect.height());
 
   gpu::SyncToken ri_sync_token;
   ri->GenUnverifiedSyncTokenCHROMIUM(ri_sync_token.GetData());

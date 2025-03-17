@@ -35,6 +35,10 @@ bool PasskeyChangeQuotaTracker::CanMakeChange(const url::Origin& origin) {
   return GetOrAllocateQuota(origin).HasTokensAvailable();
 }
 
+void PasskeyChangeQuotaTracker::ResetForTesting() {
+  quota_per_rp_.clear();
+}
+
 PasskeyChangeQuotaTracker::PasskeyChangeQuotaTracker() = default;
 
 syncer::CommitQuota& PasskeyChangeQuotaTracker::GetOrAllocateQuota(

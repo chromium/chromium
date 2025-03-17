@@ -7,10 +7,10 @@
 
 #include "base/types/pass_key.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
-#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -67,7 +67,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // This method validates the input and output MLNamedTensors against the
   // graph's input and output resources info and then executes the compiled
   // platform graph.
-  void Dispatch(ScopedMLTrace scoped_trace,
+  void Dispatch(webnn::ScopedTrace scoped_trace,
                 const MLNamedTensors& inputs,
                 const MLNamedTensors& outputs,
                 ExceptionState& exception_state);

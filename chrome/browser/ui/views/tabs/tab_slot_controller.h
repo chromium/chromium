@@ -9,8 +9,10 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
@@ -55,19 +57,19 @@ class TabSlotController {
 
   virtual const ui::ListSelectionModel& GetSelectionModel() const = 0;
 
-  // Returns the tab at |index|.
+  // Returns the tab at `index`.
   virtual Tab* tab_at(int index) const = 0;
 
-  // Selects the tab. |event| is the event that causes |tab| to be selected.
+  // Selects the tab. `event` is the event that causes `tab` to be selected.
   virtual void SelectTab(Tab* tab, const ui::Event& event) = 0;
 
-  // Extends the selection from the anchor to |tab|.
+  // Extends the selection from the anchor to `tab`.
   virtual void ExtendSelectionTo(Tab* tab) = 0;
 
-  // Toggles whether |tab| is selected.
+  // Toggles whether `tab` is selected.
   virtual void ToggleSelected(Tab* tab) = 0;
 
-  // Adds the selection from the anchor to |tab|.
+  // Adds the selection from the anchor to `tab`.
   virtual void AddSelectionFromAnchorTo(Tab* tab) = 0;
 
   // Closes the tab.
@@ -95,9 +97,12 @@ class TabSlotController {
   // Switches the collapsed state of a tab group. Returns false if the state was
   // not successfully switched.
   virtual void ToggleTabGroupCollapsedState(
-      const tab_groups::TabGroupId group,
-      ToggleTabGroupCollapsedStateOrigin origin =
-          ToggleTabGroupCollapsedStateOrigin::kMenuAction) = 0;
+      tab_groups::TabGroupId group,
+      ToggleTabGroupCollapsedStateOrigin origin) = 0;
+  void ToggleTabGroupCollapsedState(tab_groups::TabGroupId group) {
+    ToggleTabGroupCollapsedState(
+        group, ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+  }
 
   // Notify this controller of a bubble opening/closing in the tabstrip.
   virtual void NotifyTabstripBubbleOpened() = 0;
@@ -108,19 +113,17 @@ class TabSlotController {
                                      const gfx::Point& p,
                                      ui::mojom::MenuSourceType source_type) = 0;
 
-  // Returns whether |tab| is the active tab. The active tab is the one whose
+  // Returns whether `tab` is the active tab. The active tab is the one whose
   // content is shown in the browser.
   virtual bool IsActiveTab(const Tab* tab) const = 0;
 
-  // Returns whether |tab| is selected.
+  // Returns whether `tab` is selected.
   virtual bool IsTabSelected(const Tab* tab) const = 0;
 
-  // Returns whether |tab| is pinned.
+  // Returns whether `tab` is pinned.
   virtual bool IsTabPinned(const Tab* tab) const = 0;
 
-  virtual TabGroup* GetTabGroup(const tab_groups::TabGroupId& id) const = 0;
-
-  // Returns whether |tab| is the first in the model.
+  // Returns whether `tab` is the first in the model.
   virtual bool IsTabFirst(const Tab* tab) const = 0;
 
   // Returns true if any tab or one of its children has focus.
@@ -128,9 +131,6 @@ class TabSlotController {
 
   // Returns true if The tab should have a compacted leading edge.
   virtual bool ShouldCompactLeadingEdge() const = 0;
-
-  // Returns the index of tab in the model
-  virtual std::optional<int> GetModelIndexOf(const TabSlotView* view) const = 0;
 
   // Potentially starts a drag for the specified Tab.
   virtual void MaybeStartDrag(
@@ -152,22 +152,34 @@ class TabSlotController {
   // or null if there is no tab that contains the specified point.
   virtual Tab* GetTabAt(const gfx::Point& point) = 0;
 
-  // Returns the tab at offset |offset| from the current tab in the model order.
+  // Returns the tab at offset `offset` from the current tab in the model order.
   // Returns nullptr if that offset does not result in a valid model index.
-  virtual const Tab* GetAdjacentTab(const Tab* tab, int offset) = 0;
+  virtual Tab* GetAdjacentTab(const Tab* tab, int offset) = 0;
 
-  // Invoked when a mouse event occurs on |source|.
+  // Returns the split tab adjacent to the provided tab. Returns nullptr if
+  // `tab` is not a split tab.
+  virtual Tab* GetAdjacentSplitTab(const Tab* tab) = 0;
+
+  // Invoked when a mouse event occurs on `source`.
   virtual void OnMouseEventInTab(views::View* source,
                                  const ui::MouseEvent& event) = 0;
 
   // Updates hover-card content, anchoring and visibility based on what tab is
-  // hovered and whether the card should be shown. Providing a nullptr for |tab|
-  // will cause the tab hover card to be hidden. |update_type| is used to decide
+  // hovered and whether the card should be shown. Providing a nullptr for `tab`
+  // will cause the tab hover card to be hidden. `update_type` is used to decide
   // how the show, hide, or update will be processed.
   virtual void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) = 0;
 
   // Returns true if the hover card is showing for the given tab.
   virtual bool HoverCardIsShowingForTab(Tab* tab) = 0;
+
+  // Updates the hover effect for all affected tabs when a hover happens on
+  // `tab`.
+  virtual void ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) = 0;
+
+  // Hides the hover effect for all affected tabs when a hover happens on
+  // `tab`.
+  virtual void HideHover(Tab* tab, TabStyle::HideHoverStyle style) = 0;
 
   // Returns the background offset used by inactive tabs to match the frame
   // image.
@@ -201,7 +213,7 @@ class TabSlotController {
   // Returns the accessible tab name for this tab.
   virtual std::u16string GetAccessibleTabName(const Tab* tab) const = 0;
 
-  // Returns opacity for hover effect on a tab with |range_parameter| between
+  // Returns opacity for hover effect on a tab with `range_parameter` between
   // 0 and 1, where 0 gives the minimum opacity suitable for wider tabs and 1
   // gives maximum opacity suitable for narrower tabs.
   virtual float GetHoverOpacityForTab(float range_parameter) const = 0;
@@ -209,26 +221,29 @@ class TabSlotController {
   // Returns opacity for use on tab hover radial highlight.
   virtual float GetHoverOpacityForRadialHighlight() const = 0;
 
-  // Returns the displayed title of the given |group|.
+  // Returns TabGroup of the given `group`.
+  virtual TabGroup* GetTabGroup(const tab_groups::TabGroupId& id) const = 0;
+
+  // Returns the displayed title of the given `group`.
   virtual std::u16string GetGroupTitle(
       const tab_groups::TabGroupId& group) const = 0;
 
-  // Returns the string describing the contents of the given |group|.
+  // Returns the string describing the contents of the given `group`.
   virtual std::u16string GetGroupContentString(
       const tab_groups::TabGroupId& group) const = 0;
 
-  // Returns the color ID of the given |group|.
+  // Returns the color ID of the given `group`.
   virtual tab_groups::TabGroupColorId GetGroupColorId(
       const tab_groups::TabGroupId& group) const = 0;
 
-  // Returns the |group| collapsed state. Returns false if the group does not
+  // Returns the `group` collapsed state. Returns false if the group does not
   // exist or is not collapsed.
   // NOTE: This method signature is duplicated in TabContainerController; the
   // methods are intended to have equivalent semantics so they can share an
   // implementation.
   virtual bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const = 0;
 
-  // Returns the actual painted color of the given |group|, which depends on the
+  // Returns the actual painted color of the given `group`, which depends on the
   // current theme.
   virtual SkColor GetPaintedGroupColor(
       const tab_groups::TabGroupColorId& color_id) const = 0;

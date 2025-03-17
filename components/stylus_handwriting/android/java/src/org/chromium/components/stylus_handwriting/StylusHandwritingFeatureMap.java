@@ -9,9 +9,11 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /** Java accessor for state of Stylus Handwriting feature flags. */
 @JNINamespace("stylus_handwriting::android")
+@NullMarked
 public class StylusHandwritingFeatureMap extends FeatureMap {
 
     public static final String CACHE_STYLUS_SETTINGS = "CacheStylusSettings";

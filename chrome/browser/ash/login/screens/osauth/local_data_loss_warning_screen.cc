@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -23,7 +24,6 @@
 #include "chromeos/ash/components/login/auth/mount_performer.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
-#include "components/crash/core/app/crashpad.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user_manager.h"
 
@@ -35,7 +35,7 @@ bool isOwner(const AccountId& account_id) {
 
   if (!user) {
     LOG(ERROR) << "Could not find user for owner check";
-    crash_reporter::DumpWithoutCrashing();
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 

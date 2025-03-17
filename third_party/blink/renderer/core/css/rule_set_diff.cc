@@ -37,6 +37,7 @@ RuleSet* RuleSetDiff::CreateDiffRuleset() const {
   RuleSet* ruleset = MakeGarbageCollected<RuleSet>();
   ruleset->AddFilteredRulesFromOtherSet(*old_ruleset_, changed_rules_);
   ruleset->AddFilteredRulesFromOtherSet(*new_ruleset_, changed_rules_);
+  ruleset->CompactRulesIfNeeded();
   return ruleset;
 }
 

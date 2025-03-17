@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {ConsentStatus, DspHotwordState, GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl, SettingsGoogleAssistantSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {ControlledButtonElement, CrLinkRowElement, CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {GoogleAssistantBrowserProxy, SettingsGoogleAssistantSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {ConsentStatus, DspHotwordState, GoogleAssistantBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {ControlledButtonElement, CrLinkRowElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -5,6 +5,8 @@
 #ifndef ASH_LOGIN_UI_LOGIN_USER_VIEW_H_
 #define ASH_LOGIN_UI_LOGIN_USER_VIEW_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_base_bubble_view.h"
 #include "ash/login/ui/login_display_style.h"
@@ -36,7 +38,7 @@ class ASH_EXPORT LoginUserView : public views::View,
 
     LoginDisplayStyle display_style() const;
 
-    const std::u16string& displayed_name() const;
+    std::u16string_view displayed_name() const;
 
     views::View* user_label() const;
     views::View* tap_button() const;

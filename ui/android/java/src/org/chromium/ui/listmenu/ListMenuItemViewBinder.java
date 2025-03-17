@@ -16,7 +16,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -24,19 +23,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 
 /**
- * Class responsible for binding the model of the ListMenuItem and the view.
- * Each item is expected to have at the bare minimum a title (TITLE_ID, or TITLE)
- * or an icon (START_ICON_ID, START_ICON_DRAWABLE). All other properties while recommended,
- * are optional.
+ * Class responsible for binding the model of the ListMenuItem and the view. Each item is expected
+ * to have at the bare minimum a title (TITLE_ID, or TITLE) or an icon (START_ICON_ID,
+ * START_ICON_DRAWABLE). All other properties while recommended, are optional.
  *
- * As for when a list item contains an icon, it is expected that it either has a start icon
- * OR an end icon, not both.
+ * <p>As for when a list item contains an icon, it is expected that it either has a start icon OR an
+ * end icon, not both.
  */
 @NullMarked
 public class ListMenuItemViewBinder {
-    @NullUnmarked
-    public static void binder(
-            PropertyModel model, @Nullable View view, @Nullable PropertyKey propertyKey) {
+    public static void binder(PropertyModel model, View view, PropertyKey propertyKey) {
         TextView textView = view.findViewById(R.id.menu_item_text);
         ImageView startIcon = view.findViewById(R.id.menu_item_icon);
         ImageView endIcon = view.findViewById(R.id.menu_item_end_icon);

@@ -15,7 +15,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/stl_util.h"
@@ -28,13 +28,13 @@
 
 namespace {
 
-blink::mojom::PermissionsPolicyFeature GetPermissionsPolicyFeature(
+network::mojom::PermissionsPolicyFeature GetPermissionsPolicyFeature(
     ContentSettingsType type) {
   if (type == ContentSettingsType::MEDIASTREAM_MIC)
-    return blink::mojom::PermissionsPolicyFeature::kMicrophone;
+    return network::mojom::PermissionsPolicyFeature::kMicrophone;
 
   DCHECK_EQ(ContentSettingsType::MEDIASTREAM_CAMERA, type);
-  return blink::mojom::PermissionsPolicyFeature::kCamera;
+  return network::mojom::PermissionsPolicyFeature::kCamera;
 }
 
 }  // namespace
@@ -180,6 +180,17 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
   // Otherwise, the user granted permission to use `content_settings_type_`, so
   // now we need to check if we need to prompt for Android system permissions.
   std::vector<ContentSettingsType> permission_type = {content_settings_type_};
+
+  // For PEPC-initiated permission requests we never need to handle android
+  // permissions, so we can shortcut to calling NotifyPermissionSet directly.
+  const permissions::PermissionRequest* request = FindPermissionRequest(id);
+  if (request && request->IsEmbeddedPermissionElementInitiated()) {
+    PermissionContextBase::NotifyPermissionSet(
+        id, requesting_origin, embedding_origin, std::move(callback), persist,
+        content_setting, is_one_time, is_final_decision);
+    return;
+  }
+
   permissions::PermissionRepromptState reprompt_state =
       permissions::ShouldRepromptUserForPermissions(web_contents,
                                                     permission_type);

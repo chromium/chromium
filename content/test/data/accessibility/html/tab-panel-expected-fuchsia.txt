@@ -1,0 +1,16 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN focusable selected label='First Tab' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='First Tab'
+++++++++++UNKNOWN label='First Tab'
+++++++UNKNOWN focusable label='Second Tab' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Second Tab'
+++++++++++UNKNOWN label='Second Tab'
+++++++UNKNOWN focusable label='Third Tab' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Third Tab'
+++++++++++UNKNOWN label='Third Tab'
+++++++UNKNOWN focusable label='First Tab'
+++++++++PARAGRAPH
+++++++++++STATIC_TEXT label='Content for the first panel, this should be read.'
+++++++++++++UNKNOWN label='Content for the first panel, this should be read.'

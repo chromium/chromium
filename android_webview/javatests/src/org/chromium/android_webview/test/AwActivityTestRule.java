@@ -6,10 +6,10 @@ package org.chromium.android_webview.test;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.AndroidRuntimeException;
 import android.util.Base64;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
@@ -66,8 +66,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
 
     private static final Pattern MAYBE_QUOTED_STRING = Pattern.compile("^(\"?)(.*)\\1$");
 
-    private static boolean sBrowserProcessStarted;
-
     /** An interface to call onCreateWindow(AwContents). */
     public interface OnCreateWindowHandler {
         /** This will be called when a new window pops up from the current webview. */
@@ -76,8 +74,13 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
 
     private Description mCurrentTestDescription;
 
-    // The browser context needs to be a process-wide singleton.
-    private AwBrowserContext mBrowserContext;
+    /**
+     * The browser context needs to be a process-wide singleton.
+     *
+     * <p>Don't use directly for inner usages, use {@link #getAwBrowserContext()} instead as it
+     * makes sure that this instance is not null.
+     */
+    private static AwBrowserContext sBrowserContext;
 
     private List<WeakReference<AwContents>> mAwContentsDestroyedInTearDown = new ArrayList<>();
 
@@ -101,13 +104,14 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     @Override
     protected void before() throws Throwable {
         super.before();
-        if (needsAwBrowserContextCreated()) {
-            createAwBrowserContext();
+        if (needsNativeInitialized()) {
+            // The Activity must be launched in order to load native code
+            launchActivity();
         }
         if (needsBrowserProcessStarted()) {
             startBrowserProcess();
         } else {
-            assert !sBrowserProcessStarted
+            assert sBrowserContext == null
                     : "needsBrowserProcessStarted false and @Batch are incompatible";
         }
     }
@@ -160,31 +164,27 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         return launchActivity(getLaunchIntent());
     }
 
-    public AwBrowserContext createAwBrowserContextOnUiThread() {
-        // Native pointer is initialized later in startBrowserProcess if needed.
-        return new AwBrowserContext(0);
-    }
-
     public TestDependencyFactory createTestDependencyFactory() {
         return new TestDependencyFactory();
     }
 
     /**
-     * Override this to return false if the test doesn't want to create an
-     * AwBrowserContext automatically.
+     * Override this to return false if the test doesn't want the browser startup sequence to be run
+     * automatically.
+     *
+     * @return Whether the instrumentation test requires the browser process to already be started.
      */
-    public boolean needsAwBrowserContextCreated() {
+    public boolean needsBrowserProcessStarted() {
         return true;
     }
 
     /**
-     * Override this to return false if the test doesn't want the browser
-     * startup sequence to be run automatically.
+     * Override this to return false if the test doesn't want native to be initialized by default
+     * before running the tests.
      *
-     * @return Whether the instrumentation test requires the browser process to
-     *         already be started.
+     * @return Whether the instrumentation test requires the native to be initialized by default.
      */
-    public boolean needsBrowserProcessStarted() {
+    public boolean needsNativeInitialized() {
         return true;
     }
 
@@ -194,15 +194,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      */
     public boolean needsAwContentsCleanup() {
         return true;
-    }
-
-    public void createAwBrowserContext() {
-        if (mBrowserContext != null) {
-            throw new AndroidRuntimeException("There should only be one browser context.");
-        }
-        launchActivity(); // The Activity must be launched in order to load native code
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mBrowserContext = createAwBrowserContextOnUiThread());
     }
 
     public void startBrowserProcess() {
@@ -216,21 +207,14 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     private void doStartBrowserProcess(boolean useVulkan) {
         // The Activity must be launched in order for proper webview statics to be setup.
         launchActivity();
-        if (!sBrowserProcessStarted) {
-            sBrowserProcessStarted = true;
+        if (sBrowserContext == null) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         AwTestContainerView.installDrawFnFunctionTable(useVulkan);
                         AwBrowserProcess.configureChildProcessLauncherForTesting();
                         AwBrowserProcess.start();
+                        sBrowserContext = AwBrowserContext.getDefault();
                     });
-        }
-        if (mBrowserContext != null) {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () ->
-                            mBrowserContext.setNativePointer(
-                                    AwBrowserContext.getDefault()
-                                            .getNativeBrowserContextPointer()));
         }
     }
 
@@ -475,8 +459,21 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         return testContainerView;
     }
 
+    /**
+     * The BrowserContext (profile) singleton for this test rule. It will start the BrowserProcess
+     * if it hasn't already started.
+     *
+     * @return AwBrowserContext instance for this test rule.
+     */
+    @NonNull
     public AwBrowserContext getAwBrowserContext() {
-        return mBrowserContext;
+        assert needsBrowserProcessStarted()
+                : "Starting browser process is a necessary step to use BrowserContext";
+        if (sBrowserContext == null) {
+            throw new IllegalStateException(
+                    "BrowserProcess isn't started yet, start it to access BrowserContext.");
+        }
+        return sBrowserContext;
     }
 
     public AwTestContainerView createDetachedAwTestContainerView(
@@ -501,7 +498,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         if (mMaybeMutateAwSettings != null) mMaybeMutateAwSettings.accept(awSettings);
         AwContents awContents =
                 testDependencyFactory.createAwContents(
-                        mBrowserContext,
+                        sBrowserContext,
                         testContainerView,
                         testContainerView.getContext(),
                         testContainerView.getInternalAccessDelegate(),
@@ -846,7 +843,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         public AwSettings createAwSettings(Context context, boolean supportsLegacyQuirks) {
             return new AwSettings(
                     context,
-                    /* isAccessFromFileURLsGrantedByDefault= */ false,
+                    /* isAccessFromFileUrlsGrantedByDefault= */ false,
                     supportsLegacyQuirks,
                     /* allowEmptyDocumentPersistence= */ false,
                     /* allowGeolocationOnInsecureOrigins= */ true,

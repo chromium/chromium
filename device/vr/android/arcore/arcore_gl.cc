@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/vr/android/arcore/arcore_gl.h"
 
 #include <algorithm>
@@ -646,6 +641,7 @@ void ArCoreGl::GetFrameData(
 
   have_camera_image_ = true;
   mojom::XRFrameDataPtr frame_data = mojom::XRFrameData::New();
+  frame_data->render_info = mojom::XRRenderInfo::New();
 
   if (recalculate_uvs_and_projection_) {
     // Now that ARCore's Update() is complete, we can get the UV transform
@@ -660,9 +656,9 @@ void ArCoreGl::GetFrameData(
       GetCameraImageSize(arcore_->GetUncroppedCameraImageSize(), uv_transform_);
   DCHECK(!camera_image_size_.IsEmpty());
 
-  frame_data->frame_id = webxr_->StartFrameAnimating();
-  DVLOG(3) << __func__ << " frame=" << frame_data->frame_id;
-  TRACE_EVENT1("gpu", __func__, "frame", frame_data->frame_id);
+  frame_data->render_info->frame_id = webxr_->StartFrameAnimating();
+  DVLOG(3) << __func__ << " frame=" << frame_data->render_info->frame_id;
+  TRACE_EVENT1("gpu", __func__, "frame", frame_data->render_info->frame_id);
 
   WebXrFrame* xrframe = webxr_->GetAnimatingFrame();
 
@@ -699,27 +695,12 @@ void ArCoreGl::GetFrameData(
     frame_data->camera_image_size = camera_image_size_;
   }
 
-  // Check if floor height estimate has changed.
-  float new_floor_height_estimate = arcore_->GetEstimatedFloorHeight();
-  if (!floor_height_estimate_ ||
-      *floor_height_estimate_ != new_floor_height_estimate) {
-    floor_height_estimate_ = new_floor_height_estimate;
-
-    if (!stage_parameters_) {
-      stage_parameters_ = mojom::VRStageParameters::New();
-    }
-    stage_parameters_->mojo_from_floor = gfx::Transform();
-    stage_parameters_->mojo_from_floor.Translate3d(
-        0, (-1 * *floor_height_estimate_), 0);
-
-    stage_parameters_id_++;
-  }
-
-  // Only send updates to the stage parameters if the session's stage parameters
-  // id is different.
-  frame_data->stage_parameters_id = stage_parameters_id_;
-  if (!options || options->stage_parameters_id != stage_parameters_id_) {
-    frame_data->stage_parameters = stage_parameters_.Clone();
+  if (IsFeatureEnabled(
+          device::mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR)) {
+    gfx::Transform mojo_from_floor = gfx::Transform();
+    mojo_from_floor.Translate3d(0, (-1 * arcore_->GetEstimatedFloorHeight()),
+                                0);
+    frame_data->mojo_from_floor = std::move(mojo_from_floor);
   }
 
   // Set up a shared buffer for the renderer to draw into, it'll be sent
@@ -748,8 +729,8 @@ void ArCoreGl::GetFrameData(
     view_.mojo_from_view = vr_utils::VrPoseToTransform(pose.get());
   }
 
-  frame_data->views.push_back(view_.Clone());
-  frame_data->mojo_from_viewer = std::move(pose);
+  frame_data->render_info->views.push_back(view_.Clone());
+  frame_data->render_info->mojo_from_viewer = std::move(pose);
   frame_data->time_delta = now - base::TimeTicks();
   if (rendering_time_ratio_ > 0) {
     frame_data->rendering_time_ratio = rendering_time_ratio_;
@@ -1446,20 +1427,22 @@ void ArCoreGl::ProcessFrame(
   // we didn't get a shutdown triggered in the meantime.
   if (pending_shutdown_)
     return;
-  DVLOG(3) << __func__ << " frame=" << frame_data->frame_id << ", pose valid? "
-           << (frame_data->mojo_from_viewer ? true : false);
+  DVLOG(3) << __func__ << " frame=" << frame_data->render_info->frame_id
+           << ", pose valid? "
+           << (frame_data->render_info->mojo_from_viewer ? true : false);
 
   DCHECK(IsOnGlThread());
   DCHECK(is_initialized_);
 
-  if (frame_data->mojo_from_viewer) {
-    DCHECK(frame_data->mojo_from_viewer->position);
-    DCHECK(frame_data->mojo_from_viewer->orientation);
+  if (frame_data->render_info->mojo_from_viewer) {
+    DCHECK(frame_data->render_info->mojo_from_viewer->position);
+    DCHECK(frame_data->render_info->mojo_from_viewer->orientation);
 
     frame_data->input_state = GetInputSourceStates();
 
-    device::Pose mojo_from_viewer(*frame_data->mojo_from_viewer->position,
-                                  *frame_data->mojo_from_viewer->orientation);
+    device::Pose mojo_from_viewer(
+        *frame_data->render_info->mojo_from_viewer->position,
+        *frame_data->render_info->mojo_from_viewer->orientation);
 
     // Get results for hit test subscriptions.
     frame_data->hit_test_subscription_results =
@@ -1490,8 +1473,8 @@ void ArCoreGl::ProcessFrame(
 
   if (IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
     // We only return a single view.
-    CHECK(frame_data->views.size() > 0);
-    frame_data->views[0]->depth_data = arcore_->GetDepthData();
+    CHECK(frame_data->render_info->views.size() > 0);
+    frame_data->render_info->views[0]->depth_data = arcore_->GetDepthData();
   }
 
   if (IsFeatureEnabled(device::mojom::XRSessionFeature::IMAGE_TRACKING)) {

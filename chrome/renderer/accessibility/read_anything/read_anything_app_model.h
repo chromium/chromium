@@ -13,7 +13,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
-#include "chrome/common/read_anything/read_anything_constants.h"
+#include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_event_generator.h"
@@ -41,10 +41,17 @@ class ReadAnythingAppModel {
     virtual void OnTreeRemoved(ui::AXTree* tree) = 0;
   };
 
-  ReadAnythingAppModel();
-  ~ReadAnythingAppModel();
-  ReadAnythingAppModel(const ReadAnythingAppModel& other) = delete;
-  ReadAnythingAppModel& operator=(const ReadAnythingAppModel&) = delete;
+  // Enum for logging when we show the empty state.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ReadAnythingEmptyState)
+  enum class EmptyState {
+    kShown = 0,
+    kShownWithSelectionAfter = 1,
+    kMaxValue = kShownWithSelectionAfter,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingEmptyState)
 
   struct AXTreeInfo {
     explicit AXTreeInfo(std::unique_ptr<ui::AXTreeManager> other);
@@ -79,6 +86,14 @@ class ReadAnythingAppModel {
     // is added.
   };
 
+  static constexpr char kEmptyStateHistogramName[] =
+      "Accessibility.ReadAnything.EmptyState";
+
+  ReadAnythingAppModel();
+  ~ReadAnythingAppModel();
+  ReadAnythingAppModel(const ReadAnythingAppModel& other) = delete;
+  ReadAnythingAppModel& operator=(const ReadAnythingAppModel&) = delete;
+
   bool requires_distillation() const { return requires_distillation_; }
   void set_requires_distillation(bool value) { requires_distillation_ = value; }
   bool requires_post_process_selection() const {
@@ -111,13 +126,14 @@ class ReadAnythingAppModel {
 
   void SetBaseLanguageCode(const std::string& code);
 
-  std::vector<std::string> GetSupportedFonts();
+  const std::vector<std::string>& supported_fonts() const {
+    return supported_fonts_;
+  }
 
   // Theme
   const std::string& font_name() const { return font_name_; }
   void set_font_name(const std::string& font) { font_name_ = font; }
   float font_size() const { return font_size_; }
-  void set_font_size(float font_size) { font_size_ = font_size; }
   bool links_enabled() const { return links_enabled_; }
   bool images_enabled() const { return images_enabled_; }
   int letter_spacing() const { return letter_spacing_; }
@@ -144,12 +160,11 @@ class ReadAnythingAppModel {
   // The following methods are used for the screen2x data collection pipeline.
   // They all have CHECKs to ensure that the DataCollectionModeForScreen2x
   // feature flag is enabled.
-  bool ScreenAIServiceReadyForDataColletion() const;
-  void SetScreenAIServiceReadyForDataColletion(bool value);
+  bool ScreenAIServiceReadyForDataCollection() const;
+  void SetScreenAIServiceReadyForDataCollection();
   bool PageFinishedLoadingForDataCollection() const;
-  void SetPageFinishedLoadingForDataCollection(bool value);
   void SetDataCollectionForScreen2xCallback(
-      base::RepeatingCallback<void()> callback);
+      base::OnceCallback<void()> callback);
 
   bool page_finished_loading() const { return page_finished_loading_; }
   void set_page_finished_loading(bool value) { page_finished_loading_ = value; }
@@ -182,6 +197,14 @@ class ReadAnythingAppModel {
   bool IsDocs() const;
 
   ui::AXNode* GetAXNode(const ui::AXNodeID& ax_node_id) const;
+
+  // Inserts `id` into `non_ignored_ids` if it corresponds to a node that should
+  // not be ignored during content distillation. Nodes may be ignored for
+  // various reasons, such as being synthetic markers of some type or (some
+  // kinds of) interactive elements.
+  void InsertIdIfNotIgnored(ui::AXNodeID id,
+                            std::set<ui::AXNodeID>& non_ignored_ids);
+
   bool NodeIsContentNode(const ui::AXNodeID& ax_node_id) const;
   void OnSettingsRestoredFromPrefs(
       read_anything::mojom::LineSpacing line_spacing,
@@ -240,8 +263,7 @@ class ReadAnythingAppModel {
   double GetLetterSpacingValue(
       read_anything::mojom::LetterSpacing letter_spacing) const;
 
-  void IncreaseTextSize();
-  void DecreaseTextSize();
+  void AdjustTextSize(int increment);
   void ResetTextSize();
   void ToggleLinksEnabled();
   void ToggleImagesEnabled();
@@ -256,9 +278,7 @@ class ReadAnythingAppModel {
  private:
   void EraseTree(const ui::AXTreeID& tree_id);
 
-  void InsertDisplayNode(const ui::AXNodeID& node);
   void ResetSelection();
-  void InsertSelectionNode(const ui::AXNodeID& node);
   void UpdateSelection();
   void ComputeSelectionNodeIds();
   bool IsCurrentSelectionEmpty();
@@ -283,6 +303,11 @@ class ReadAnythingAppModel {
   // callback from the ReadAnythingAppController. This should only be called
   // when the DataCollectionModeForScreen2x feature is enabled.
   void MaybeRunDataCollectionForScreen2xCallback();
+
+  void OnPageLoadTimerTriggered();
+  void OnTreeChangeTimerTriggered();
+
+  void SetFontSize(double font_size, int increment = 0);
 
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>
@@ -335,11 +360,16 @@ class ReadAnythingAppModel {
   bool redraw_required_ = false;
   ui::AXNodeID last_expanded_node_id_ = ui::kInvalidAXNodeID;
 
+  // Cached set of fonts that support `base_language_code_`, updated whenever
+  // that is changed.
+  std::vector<std::string> supported_fonts_ =
+      GetSupportedFonts(base_language_code_);
+
   // Theme information.
-  std::string font_name_ = string_constants::kReadAnythingPlaceholderFontName;
-  float font_size_ = kReadAnythingDefaultFontScale;
-  bool links_enabled_ = kReadAnythingDefaultLinksEnabled;
-  bool images_enabled_ = kReadAnythingDefaultImagesEnabled;
+  std::string font_name_ = supported_fonts_.front();
+  float font_size_;
+  bool links_enabled_ = true;
+  bool images_enabled_ = false;
   int letter_spacing_ = (int)read_anything::mojom::LetterSpacing::kDefaultValue;
   int line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;
   int color_theme_ = (int)read_anything::mojom::Colors::kDefaultValue;
@@ -359,17 +389,16 @@ class ReadAnythingAppModel {
   // webpage. We record the result of the distill() call for this entire
   // webpage, so we only make the call once the webpage finished loading and
   // screen ai has loaded.
-  bool ScreenAIServiceReadyForDataColletion_ = false;
-  bool PageFinishedLoadingForDataCollection_ = false;
+  bool screen_ai_service_ready_for_data_collection_ = false;
+  bool waiting_for_page_load_completion_timer_trigger_ = true;
+  bool waiting_for_tree_change_timer_trigger_ = true;
   base::OneShotTimer timer_since_page_load_for_data_collection_;
   base::RetainingOneShotTimer timer_since_tree_changed_for_data_collection_;
-  base::RepeatingCallback<void()> data_collection_for_screen2x_callback_;
+  base::OnceCallback<void()> data_collection_for_screen2x_callback_;
 
   // Whether the webpage has finished loading or not.
   bool page_finished_loading_ = false;
 
-  // Maps fonts to whether the current base_language_code_ supports that font.
-  std::map<std::string_view, bool> supported_fonts_;
   // If the page language can't be determined by the model, we can check the
   // AX tree to see if it has that information, but the ax tree is created
   // asynchronously from the language determination so we need to keep track of

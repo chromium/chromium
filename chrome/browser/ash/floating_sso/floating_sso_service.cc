@@ -165,6 +165,14 @@ void FloatingSsoService::RunWhenCookiesAreReady(base::OnceClosure callback) {
   }
 }
 
+void FloatingSsoService::RunWhenCookiesAreReadyOnFirstSync(
+    base::OnceClosure callback) {
+  // base::Unretained() is safe since `bridge_` is owned by `this`.
+  bridge_->SetOnMergeFullSyncDataCallback(
+      base::BindOnce(&FloatingSsoService::RunWhenCookiesAreReady,
+                     base::Unretained(this), std::move(callback)));
+}
+
 void FloatingSsoService::MarkToNotOverride(const net::CanonicalCookie& cookie) {
   std::optional<std::string> storage_key = SerializedKey(cookie);
   if (storage_key) {

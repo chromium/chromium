@@ -174,7 +174,7 @@ export class CrTooltipElement extends CrLitElement {
 
     if (!!this.textContent && this.textContent.trim() === '') {
       const children =
-          this.shadowRoot!.querySelector('slot')!.assignedElements();
+          this.shadowRoot.querySelector('slot')!.assignedElements();
       const hasNonEmptyChild = Array.from(children).some(
           (el: Element) => !!el.textContent && el.textContent.trim() !== '');
       if (!hasNonEmptyChild) {

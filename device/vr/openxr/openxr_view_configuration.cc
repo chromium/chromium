@@ -6,10 +6,10 @@
 
 #include "device/vr/openxr/openxr_view_configuration.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "base/check_op.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -163,10 +163,10 @@ void OpenXrViewConfiguration::SetProperties(
   uint32_t size = properties.size();
   properties_.clear();
   properties_.reserve(size);
-  base::ranges::transform(properties, std::back_inserter(properties_),
-                          [size](const XrViewConfigurationView& view) {
-                            return OpenXrViewProperties(view, size);
-                          });
+  std::ranges::transform(properties, std::back_inserter(properties_),
+                         [size](const XrViewConfigurationView& view) {
+                           return OpenXrViewProperties(view, size);
+                         });
 }
 
 const std::vector<XrView>& OpenXrViewConfiguration::Views() const {
@@ -196,10 +196,9 @@ bool OpenXrViewConfiguration::CanEnableAntiAliasing() const {
   //
   // To ease the workload on low end devices, we disable anti-aliasing when the
   // max sample count is 1.
-  return base::ranges::all_of(properties_,
-                              [](const OpenXrViewProperties& view) {
-                                return view.MaxSwapchainSampleCount() > 1;
-                              });
+  return std::ranges::all_of(properties_, [](const OpenXrViewProperties& view) {
+    return view.MaxSwapchainSampleCount() > 1;
+  });
 }
 
 OpenXrLayers::OpenXrLayers(XrSpace space,

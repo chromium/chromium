@@ -97,6 +97,11 @@ class RendererStartupHelper : public KeyedService,
   // Sends a message to all renderers to update the developer mode.
   void OnDeveloperModeChanged(bool in_developer_mode);
 
+  // Sends a message to all renderers to update user scripts API allowed state
+  // for an extension.
+  void OnUserScriptsAllowedChanged(const ExtensionId& extension_id,
+                                   bool allowed);
+
   // Sets properties for the user script world of the given `world_id` for
   // the given `extension` in all applicable renderers.
   void SetUserScriptWorldProperties(const Extension& extension,
@@ -117,6 +122,9 @@ class RendererStartupHelper : public KeyedService,
   static void BindForRenderer(
       int process_id,
       mojo::PendingAssociatedReceiver<mojom::RendererHost> receiver);
+
+  // Flushes any pending Mojo calls for all tracked render processes.
+  void FlushAllForTesting();
 
  protected:
   // Provide ability for tests to override.

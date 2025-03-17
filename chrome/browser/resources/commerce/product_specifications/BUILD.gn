@@ -14,27 +14,24 @@ build_webui("build") {
     "product_specifications.html",
   ]
 
-  # Files holding a Polymer element definition and have an equivalent .html file.
-  web_component_files = [
-    "app.ts",
-    "header.ts",
-    "header_menu.ts",
-    "new_column_selector.ts",
-    "product_selection_menu.ts",
-    "product_selector.ts",
-    "table.ts",
-  ]
-
   css_files = [
+    "app.css",
     "buying_options_section.css",
     "comparison_table_list.css",
     "comparison_table_list_item.css",
     "description_citation.css",
     "description_section.css",
     "disclosure/app.css",
+    "empty_section.css",
+    "header.css",
+    "header_menu.css",
     "horizontal_carousel.css",
     "loading_state.css",
+    "new_column_selector.css",
+    "product_selection_menu.css",
+    "product_selector.css",
     "shared_vars.css",
+    "table.css",
   ]
 
   mojo_files_deps =
@@ -46,6 +43,8 @@ build_webui("build") {
   ]
 
   non_web_component_files = [
+    "app.html.ts",
+    "app.ts",
     "buying_options_section.html.ts",
     "buying_options_section.ts",
     "comparison_table_list.html.ts",
@@ -59,11 +58,25 @@ build_webui("build") {
     "disclosure/app.html.ts",
     "disclosure/app.ts",
     "drag_and_drop_manager.ts",
+    "empty_section.html.ts",
+    "empty_section.ts",
+    "header.html.ts",
+    "header.ts",
+    "header_menu.html.ts",
+    "header_menu.ts",
     "horizontal_carousel.html.ts",
     "horizontal_carousel.ts",
     "loading_state.html.ts",
     "loading_state.ts",
+    "new_column_selector.html.ts",
+    "new_column_selector.ts",
+    "product_selection_menu.html.ts",
+    "product_selection_menu.ts",
+    "product_selector.html.ts",
+    "product_selector.ts",
     "router.ts",
+    "table.html.ts",
+    "table.ts",
     "utils.ts",
     "window_proxy.ts",
   ]
@@ -83,7 +96,6 @@ build_webui("build") {
                            target_gen_dir) ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/commerce:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",

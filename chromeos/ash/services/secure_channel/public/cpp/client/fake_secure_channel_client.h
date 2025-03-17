@@ -5,13 +5,13 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_SECURE_CHANNEL_CLIENT_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_SECURE_CHANNEL_CLIENT_H_
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
@@ -107,18 +107,18 @@ class FakeSecureChannelClient : public SecureChannelClient {
   std::vector<ConnectionRequestArguments*>
   last_initiate_connection_request_arguments_list() {
     std::vector<ConnectionRequestArguments*> arguments_list_raw_;
-    base::ranges::transform(last_initiate_connection_request_arguments_list_,
-                            std::back_inserter(arguments_list_raw_),
-                            &std::unique_ptr<ConnectionRequestArguments>::get);
+    std::ranges::transform(last_initiate_connection_request_arguments_list_,
+                           std::back_inserter(arguments_list_raw_),
+                           &std::unique_ptr<ConnectionRequestArguments>::get);
     return arguments_list_raw_;
   }
 
   std::vector<ConnectionRequestArguments*>
   last_listen_for_connection_request_arguments_list() {
     std::vector<ConnectionRequestArguments*> arguments_list_raw_;
-    base::ranges::transform(last_listen_for_connection_request_arguments_list_,
-                            std::back_inserter(arguments_list_raw_),
-                            &std::unique_ptr<ConnectionRequestArguments>::get);
+    std::ranges::transform(last_listen_for_connection_request_arguments_list_,
+                           std::back_inserter(arguments_list_raw_),
+                           &std::unique_ptr<ConnectionRequestArguments>::get);
     return arguments_list_raw_;
   }
 

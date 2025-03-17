@@ -4,8 +4,12 @@
 
 package org.chromium.components.webauthn;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Barrier class is responsible for waiting the completion of Fido2 and/or Android Credential
@@ -16,6 +20,7 @@ import org.chromium.blink.mojom.AuthenticatorStatus;
  * with error code 1 and Android Credential Manager fails with error code 2, the resulting error
  * code is 1.
  */
+@NullMarked
 public class Barrier {
     private enum Status {
         NONE,
@@ -34,8 +39,8 @@ public class Barrier {
     }
 
     private Callback<Integer> mErrorCallback;
-    private Runnable mFido2ApiRunnable;
-    private Runnable mCredManRunnable;
+    @Nullable private Runnable mFido2ApiRunnable;
+    @Nullable private Runnable mCredManRunnable;
     private Status mFido2ApiStatus;
     private Status mCredManStatus;
     private int mFido2ApiError;
@@ -71,6 +76,7 @@ public class Barrier {
             onBarrierComplete.run();
         } else if (mFido2ApiStatus == Status.SUCCESS) {
             onBarrierComplete.run();
+            assumeNonNull(mFido2ApiRunnable);
             mFido2ApiRunnable.run();
         } else if (mFido2ApiStatus == Status.WAITING) {
             mCredManRunnable = onBarrierComplete;
@@ -84,6 +90,7 @@ public class Barrier {
         if (mFido2ApiStatus == Status.FAILURE) {
             mErrorCallback.onResult(mFido2ApiError);
         } else if (mFido2ApiStatus == Status.SUCCESS) {
+            assumeNonNull(mFido2ApiRunnable);
             mFido2ApiRunnable.run();
         } else if (mFido2ApiStatus == Status.WAITING) {
             mCredManStatus = Status.FAILURE;
@@ -96,6 +103,7 @@ public class Barrier {
         if (mCredManStatus == Status.FAILURE) {
             onBarrierComplete.run();
         } else if (mCredManStatus == Status.SUCCESS) {
+            assumeNonNull(mCredManRunnable);
             mCredManRunnable.run();
             onBarrierComplete.run();
         } else if (mCredManStatus == Status.WAITING) {
@@ -110,6 +118,7 @@ public class Barrier {
         if (mCredManStatus == Status.FAILURE) {
             mErrorCallback.onResult(error);
         } else if (mCredManStatus == Status.SUCCESS) {
+            assumeNonNull(mCredManRunnable);
             mCredManRunnable.run();
         } else if (mCredManStatus == Status.WAITING) {
             mFido2ApiError = error;

@@ -17,7 +17,6 @@
 #include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
@@ -107,12 +106,11 @@ class CrashesDOMHandler : public WebUIMessageHandler {
   void HandleRequestSingleCrashUpload(const base::Value::List& args);
 
   scoped_refptr<UploadList> upload_list_;
-  bool list_available_;
-  bool first_load_;
+  bool list_available_ = false;
+  bool first_load_ = true;
 };
 
-CrashesDOMHandler::CrashesDOMHandler()
-    : list_available_(false), first_load_(true) {
+CrashesDOMHandler::CrashesDOMHandler() {
   upload_list_ = CreateCrashUploadList();
 }
 

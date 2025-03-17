@@ -4,10 +4,13 @@
 
 package org.chromium.components.browser_ui.widget.dragreorder;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Responsible for keeping track of the drag state (whether drag is enabled, and if so, whether drag
  * is active).
  */
+@NullMarked
 public interface DragStateDelegate {
     /**
      * Gets whether drag is enabled. If true, the UI may enter a state where items can be dragged,

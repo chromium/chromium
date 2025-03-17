@@ -131,6 +131,44 @@ TEST_F(AutofillErrorDialogControllerImplTest, CardInfoRetrievalPermanentError) {
                 IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL));
 }
 
+// Test to verify the title, description and button label for autofill error
+// dialog for temporary failure in a BNPL flow.
+TEST_F(AutofillErrorDialogControllerImplTest, BnplTemporaryError) {
+  AutofillErrorDialogContext context =
+      AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+          /*is_permanent_error=*/false);
+
+  ShowPrompt(context);
+
+  EXPECT_EQ(controller()->GetTitle(),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE));
+  EXPECT_EQ(
+      controller()->GetDescription(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_TEMPORARY_ERROR_DESCRIPTION));
+  EXPECT_EQ(controller()->GetButtonLabel(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL));
+}
+
+// Test to verify the title, description and button label for autofill error
+// dialog for permanent failure in a BNPL flow.
+TEST_F(AutofillErrorDialogControllerImplTest, BnplPermanentError) {
+  AutofillErrorDialogContext context =
+      AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+          /*is_permanent_error=*/true);
+
+  ShowPrompt(context);
+
+  EXPECT_EQ(controller()->GetTitle(),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE));
+  EXPECT_EQ(
+      controller()->GetDescription(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PERMANENT_ERROR_DESCRIPTION));
+  EXPECT_EQ(controller()->GetButtonLabel(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL));
+}
+
 // Param of the AutofillErrorDialogControllerImplTest:
 // -- bool server_did_return_decline_details;
 class AutofillErrorDialogControllerImplParameterizedTest

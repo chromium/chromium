@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/base/crash/breakpad.h"
+#include "remoting/base/crash/breakpad_win.h"
 
 #include <windows.h>
 
@@ -27,40 +27,6 @@
 
 namespace remoting {
 
-namespace {
-
-// Minidump with stacks, PEB, TEBs and unloaded module list.
-const MINIDUMP_TYPE kMinidumpType = static_cast<MINIDUMP_TYPE>(
-    MiniDumpWithProcessThreadData | MiniDumpWithUnloadedModules);
-
-class BreakpadWin {
- public:
-  BreakpadWin();
-
-  BreakpadWin(const BreakpadWin&) = delete;
-  BreakpadWin& operator=(const BreakpadWin&) = delete;
-
-  ~BreakpadWin() = delete;
-
-  static BreakpadWin& GetInstance();
-
-  BreakpadHelper& helper() { return helper_; }
-
-  void Initialize(std::optional<std::string> server_pipe_handle);
-
- private:
-  // Crashes the process after generating a dump for the provided exception.
-  // Note that the crash reporter should be initialized before calling this
-  // function for it to do anything.
-  static int OnWindowProcedureException(EXCEPTION_POINTERS* exinfo);
-
-  // Breakpad exception handler.
-  std::unique_ptr<google_breakpad::ExceptionHandler> breakpad_;
-
-  // Shared logic for handling exceptions and minidump processing.
-  BreakpadHelper helper_;
-};
-
 bool FilterCallback(void* context,
                     EXCEPTION_POINTERS* exinfo,
                     MDRawAssertionInfo* assertion) {
@@ -81,8 +47,7 @@ bool MinidumpCallback(const wchar_t* dump_path,
 
 BreakpadWin::BreakpadWin() = default;
 
-void BreakpadWin::Initialize(
-    std::optional<std::string> server_pipe_handle = std::nullopt) {
+void BreakpadWin::Initialize(std::optional<std::string> server_pipe_handle) {
   // Initialize should only be called once.
   CHECK(!breakpad_);
 
@@ -147,18 +112,6 @@ int BreakpadWin::OnWindowProcedureException(EXCEPTION_POINTERS* exinfo) {
                      exinfo->ExceptionRecord->ExceptionCode);
   }
   return EXCEPTION_CONTINUE_SEARCH;
-}
-
-}  // namespace
-
-void InitializeCrashReporting() {
-  // Touch the object to make sure it is initialized.
-  BreakpadWin::GetInstance().Initialize();
-}
-
-void InitializeOopCrashClient(const std::string& server_pipe_handle) {
-  // Touch the object to make sure it is initialized.
-  BreakpadWin::GetInstance().Initialize(server_pipe_handle);
 }
 
 }  // namespace remoting

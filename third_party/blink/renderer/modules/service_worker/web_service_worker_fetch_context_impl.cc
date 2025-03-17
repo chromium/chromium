@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/modules/service_worker/web_service_worker_fetch_context_impl.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,7 +21,6 @@
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 #include "third_party/blink/renderer/platform/accept_languages_watcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
-#include "third_party/blink/renderer/platform/loader/internet_disconnected_url_loader.h"
 
 namespace blink {
 
@@ -43,7 +43,7 @@ WebServiceWorkerFetchContext::Create(
     CrossVariantMojoReceiver<
         mojom::blink::SubresourceLoaderUpdaterInterfaceBase>
         pending_subresource_loader_updater,
-    const WebVector<WebString>& web_cors_exempt_header_list,
+    const std::vector<WebString>& web_cors_exempt_header_list,
     const bool is_third_party_context) {
   base::UmaHistogramCounts100(
       "ServiceWorker.CorsExemptHeaderListSize",
@@ -51,9 +51,9 @@ WebServiceWorkerFetchContext::Create(
 
   Vector<String> cors_exempt_header_list(
       base::checked_cast<wtf_size_t>(web_cors_exempt_header_list.size()));
-  base::ranges::transform(web_cors_exempt_header_list,
-                          cors_exempt_header_list.begin(),
-                          &WebString::operator WTF::String);
+  std::ranges::transform(web_cors_exempt_header_list,
+                         cors_exempt_header_list.begin(),
+                         &WebString::operator WTF::String);
   return base::MakeRefCounted<WebServiceWorkerFetchContextImpl>(
       renderer_preferences, KURL(worker_script_url.GetString()),
       std::move(pending_url_loader_factory),
@@ -118,9 +118,6 @@ void WebServiceWorkerFetchContextImpl::InitializeOnWorkerThread(
           std::move(pending_url_loader_factory_)),
       cors_exempt_header_list_, terminate_sync_load_event_);
 
-  internet_disconnected_url_loader_factory_ =
-      std::make_unique<InternetDisconnectedURLLoaderFactory>();
-
   if (pending_script_loader_factory_) {
     web_script_loader_factory_ = std::make_unique<URLLoaderFactory>(
         network::SharedURLLoaderFactory::Create(
@@ -132,8 +129,6 @@ void WebServiceWorkerFetchContextImpl::InitializeOnWorkerThread(
 }
 
 URLLoaderFactory* WebServiceWorkerFetchContextImpl::GetURLLoaderFactory() {
-  if (is_offline_mode_)
-    return internet_disconnected_url_loader_factory_.get();
   return url_loader_factory_.get();
 }
 
@@ -166,7 +161,7 @@ void WebServiceWorkerFetchContextImpl::FinalizeRequest(WebURLRequest& request) {
   }
 }
 
-WebVector<std::unique_ptr<URLLoaderThrottle>>
+std::vector<std::unique_ptr<URLLoaderThrottle>>
 WebServiceWorkerFetchContextImpl::CreateThrottles(
     const network::ResourceRequest& request) {
   const bool needs_to_skip_throttling =
@@ -238,10 +233,6 @@ void WebServiceWorkerFetchContextImpl::NotifyUpdate(
 
 WebString WebServiceWorkerFetchContextImpl::GetAcceptLanguages() const {
   return WebString::FromUTF8(renderer_preferences_.accept_languages);
-}
-
-void WebServiceWorkerFetchContextImpl::SetIsOfflineMode(bool is_offline_mode) {
-  is_offline_mode_ = is_offline_mode;
 }
 
 }  // namespace blink

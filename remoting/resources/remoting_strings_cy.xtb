@@ -28,6 +28,7 @@ Os yw '<ph name="SERVICE_SCRIPT_NAME" />' eisoes wedi'i dicio, dad-diciwch ef a 
 <translation id="2329392777730037872">Nid oedd modd agor <ph name="URL" /> ar y cleient.</translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2366718077645204424">Methu â chyrraedd y gwesteiwr. Mae'n debyg bod hyn oherwydd ffurfweddiad y rhwydwaith rydych yn ei ddefnyddio.</translation>
+<translation id="242591256144136845">Hawlfraint 2025 Google LLC. Cedwir Pob Hawl.</translation>
 <translation id="2504109125669302160">Rhoi caniatâd 'Hygyrchedd' i <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Wedi cysylltu â <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Hoffech chi rannu'r cyfrifiadur hwn er mwyn i ddefnyddiwr arall ei weld a'i reoli?</translation>
@@ -133,6 +134,7 @@ Os yw '<ph name="SERVICE_SCRIPT_NAME" />' eisoes wedi'i dicio, dad-diciwch ef a 
 <translation id="7067321367069083429">Mae'r sgrîn yn gweithredu fel sgrîn gyffwrdd</translation>
 <translation id="7116737094673640201">Croeso i Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Ceisio eto</translation>
+<translation id="7298392173540380852">Hawlfraint 2025 The Chromium Authors. Cedwir Pob Hawl.</translation>
 <translation id="7312846573060934304">Mae'r gwesteiwr all-lein.</translation>
 <translation id="7319983568955948908">Stopio Rhannu</translation>
 <translation id="7359298090707901886">Ni ellir defnyddio'r porwr a ddewiswyd i agor URL ar y peiriant lleol.</translation>
@@ -149,7 +151,6 @@ Os yw '<ph name="SERVICE_SCRIPT_NAME" />' eisoes wedi'i dicio, dad-diciwch ef a 
 <translation id="7693372326588366043">Ail-lwytho'r rhestr o westeion</translation>
 <translation id="7714222945760997814">Adrodd am hwn</translation>
 <translation id="7868137160098754906">Rhowch eich PIN ar gyfer y cyfrifiadur o bell.</translation>
-<translation id="7881455334687220899">Hawlfraint 2024 The Chromium Authors. Cedwir Pob Hawl.</translation>
 <translation id="7895403300744144251">Nid yw polisïau diogelwch ar y cyfrifiadur o bell yn caniatáu cysylltiadau o'ch cyfrif.</translation>
 <translation id="7936528439960309876">Docio i'r Dde</translation>
 <translation id="7970576581263377361">Wedi methu â dilysu. Mewngofnodwch i Chromium eto.</translation>
@@ -181,7 +182,6 @@ Os yw '<ph name="SERVICE_SCRIPT_NAME" />' eisoes wedi'i dicio, dad-diciwch ef a 
 <translation id="8747048596626351634">Gwnaeth y sesiwn dorri neu fethu â dechrau. Os yw ~/.chrome-remote-desktop-session yn bodoli ar y cyfrifiadur o bell, gwnewch yn siŵr ei fod yn cychwyn proses blaendir hirhoedlog megis amgylchedd bwrdd gwaith neu reolwr ffenestri.</translation>
 <translation id="8804164990146287819">Polisi Preifatrwydd</translation>
 <translation id="8906511416443321782">Mae angen mynediad meicroffon i dynnu sain a'i ffrydio i'r cleient Chrome Remote Desktop.</translation>
-<translation id="9042277333359847053">Hawlfraint 2024 Google LLC. Cedwir Pob Hawl.</translation>
 <translation id="9111855907838866522">Rydych wedi'ch cysylltu â'ch dyfais o bell. I agor y ddewislen, tapiwch y sgrîn gyda phedwar bys.</translation>
 <translation id="9126115402994542723">Peidio â gofyn am PIN eto wrth gysylltu â'r gwesteiwr hwn o'r ddyfais hon.</translation>
 <translation id="916856682307586697">Lansio'r XSession diofyn</translation>

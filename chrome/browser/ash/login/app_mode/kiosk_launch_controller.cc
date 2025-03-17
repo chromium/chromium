@@ -51,8 +51,6 @@
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -115,8 +113,8 @@ void RecordKioskLaunchDuration(KioskAppType type, base::TimeDelta duration) {
       base::UmaHistogramLongTimes("Kiosk.LaunchDuration.Web", duration);
       break;
     case KioskAppType::kIsolatedWebApp:
-      // TODO(crbug.com/361019026): add a separate uma value for IWA.
-      NOTIMPLEMENTED();
+      base::UmaHistogramLongTimes("Kiosk.LaunchDuration.IsolatedWebApp",
+                                  duration);
       break;
   }
 }

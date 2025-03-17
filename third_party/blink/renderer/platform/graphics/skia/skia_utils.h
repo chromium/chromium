@@ -37,19 +37,14 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/notreached.h"
-#include "cc/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/graphics/image.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkScalar.h"
 
@@ -69,14 +64,6 @@ enum {
 
 bool PLATFORM_EXPORT IsValidImageSize(const gfx::Size&);
 
-SkBlendMode PLATFORM_EXPORT
-    WebCoreCompositeToSkiaComposite(CompositeOperator,
-                                    BlendMode = BlendMode::kNormal);
-SkBlendMode PLATFORM_EXPORT WebCoreBlendModeToSkBlendMode(BlendMode);
-
-std::pair<CompositeOperator, BlendMode> PLATFORM_EXPORT
-CompositeAndBlendOpsFromSkBlendMode(SkBlendMode sk_blend_mode);
-
 // Multiply a color's alpha channel by an additional alpha factor where
 // alpha is in the range [0, 1].
 SkColor PLATFORM_EXPORT ScaleAlpha(SkColor, float);
@@ -85,41 +72,23 @@ bool PLATFORM_EXPORT
 ApproximatelyEqualSkColorSpaces(sk_sp<SkColorSpace> src_color_space,
                                 sk_sp<SkColorSpace> dst_color_space);
 
-// Skia has problems when passed infinite, etc floats, filter them to 0.
-inline SkScalar WebCoreFloatToSkScalar(float f) {
-  return SkFloatToScalar(std::isfinite(f) ? f : 0);
+// Temporary utility while converting canvas code to use gfx::ColorSpace.
+// TODO(crbug.com/371227617): Remove this once conversion is complete.
+inline gfx::ColorSpace SkColorSpaceToGfxColorSpace(
+    sk_sp<SkColorSpace> sk_color_space) {
+  return sk_color_space ? gfx::ColorSpace(*sk_color_space)
+                        : gfx::ColorSpace::CreateSRGB();
 }
 
-inline SkScalar WebCoreDoubleToSkScalar(double d) {
-  return SkDoubleToScalar(std::isfinite(d) ? d : 0);
+// Temporary utility while converting canvas code to use SharedImageFormat.
+// TODO(crbug.com/391903236): Determine best long-term plan once canvas code is
+// completely converted to SharedImageFormat (i.e., crbug.com/371227617 is
+// resolved).
+inline viz::SharedImageFormat GetN32FormatForCanvas() {
+  return kN32_SkColorType == kRGBA_8888_SkColorType
+             ? viz::SinglePlaneFormat::kRGBA_8888
+             : viz::SinglePlaneFormat::kBGRA_8888;
 }
-
-inline bool WebCoreFloatNearlyEqual(float a, float b) {
-  return SkScalarNearlyEqual(WebCoreFloatToSkScalar(a),
-                             WebCoreFloatToSkScalar(b));
-}
-
-inline SkPathFillType WebCoreWindRuleToSkFillType(WindRule rule) {
-  return static_cast<SkPathFillType>(rule);
-}
-
-inline WindRule SkFillTypeToWindRule(SkPathFillType fill_type) {
-  switch (fill_type) {
-    case SkPathFillType::kWinding:
-    case SkPathFillType::kEvenOdd:
-      return static_cast<WindRule>(fill_type);
-    default:
-      NOTREACHED();
-  }
-}
-
-inline SkPoint FloatPointToSkPoint(const gfx::PointF& point) {
-  return SkPoint::Make(WebCoreFloatToSkScalar(point.x()),
-                       WebCoreFloatToSkScalar(point.y()));
-}
-
-SkMatrix PLATFORM_EXPORT AffineTransformToSkMatrix(const AffineTransform&);
-SkM44 PLATFORM_EXPORT AffineTransformToSkM44(const AffineTransform&);
 
 bool NearlyIntegral(float value);
 
@@ -141,23 +110,6 @@ inline float BlurRadiusToStdDev(float radius) {
   // https://www.w3.org/TR/css-backgrounds-3/#shadow-blur
   // https://html.spec.whatwg.org/C/#when-shadows-are-drawn
   return radius * 0.5f;
-}
-
-void PLATFORM_EXPORT DrawPlatformFocusRing(const SkRRect&,
-                                           cc::PaintCanvas*,
-                                           SkColor4f,
-                                           float width);
-void PLATFORM_EXPORT DrawPlatformFocusRing(const SkPath&,
-                                           cc::PaintCanvas*,
-                                           SkColor4f,
-                                           float width,
-                                           float corner_radius);
-
-inline SkCanvas::SrcRectConstraint WebCoreClampingModeToSkiaRectConstraint(
-    Image::ImageClampingMode clamp_mode) {
-  return clamp_mode == Image::kClampImageToSourceRect
-             ? SkCanvas::kStrict_SrcRectConstraint
-             : SkCanvas::kFast_SrcRectConstraint;
 }
 
 // Attempts to allocate an SkData on the PartitionAlloc buffer partition.

@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -29,7 +28,7 @@
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/test/views/chrome_test_views_delegate.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_views_delegate.h"
 #include "base/scoped_observation.h"
@@ -48,16 +47,13 @@
 #endif
 
 class GURL;
-
-namespace chromeos {
-class ScopedLacrosServiceTestHelper;
-}  // namespace chromeos
+class GaiaId;
 
 namespace content {
 class NavigationController;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace crosapi {
 class CrosapiManager;
 }
@@ -171,7 +167,7 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
     return std::move(window_);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::AshTestHelper* ash_test_helper() { return &ash_test_helper_; }
   user_manager::FakeUserManager* user_manager() { return user_manager_.Get(); }
 #endif
@@ -241,7 +237,7 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
 
 #if defined(TOOLKIT_VIEWS)
   views::TestViewsDelegate* test_views_delegate() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return test_views_delegate_.get();
 #else
     return views_test_helper_->test_views_delegate();
@@ -251,10 +247,8 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Logs in an User as `email`.
-  virtual void LogIn(const std::string& email);
-#endif
+  virtual void LogIn(std::string_view email, const GaiaId& gaia_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Handles the post-process for the newly created Profile.
   // Expected to be called on customizing CreateProfile for ash.
   virtual void OnUserProfileCreated(const std::string& email, Profile* profile);
@@ -280,12 +274,13 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   // We need to create a MessageLoop, otherwise a bunch of things fails.
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::ScopedLacrosServiceTestHelper>
-      lacros_service_test_helper_;
-#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  ash::TestSessionControllerClient* GetSessionControllerClient();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // A template method (in Design Pattern) that execute post profile creation
+  // steps.
+  void PostUserProfileCreation(const std::string& email, Profile* profile);
+
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       user_manager_;
@@ -306,7 +301,7 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   std::unique_ptr<BrowserWindow> window_;  // Usually a TestBrowserWindow.
   std::unique_ptr<Browser> browser_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::AshTestHelper ash_test_helper_;
   std::unique_ptr<views::TestViewsDelegate> test_views_delegate_ =
       std::make_unique<ChromeTestViewsDelegate<ash::AshTestViewsDelegate>>();

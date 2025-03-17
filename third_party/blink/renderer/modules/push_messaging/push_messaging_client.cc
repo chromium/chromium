@@ -61,8 +61,8 @@ void PushMessagingClient::Subscribe(
     ServiceWorkerRegistration* service_worker_registration,
     PushSubscriptionOptions* options,
     bool user_gesture,
-    std::unique_ptr<PushSubscriptionCallbacks> callbacks) {
-  DCHECK(callbacks);
+    ScriptPromiseResolver<PushSubscription>* resolver) {
+  DCHECK(resolver);
 
   mojom::blink::PushSubscriptionOptionsPtr options_ptr =
       mojo::ConvertTo<mojom::blink::PushSubscriptionOptionsPtr>(options);
@@ -75,10 +75,10 @@ void PushMessagingClient::Subscribe(
     manifest_manager->RequestManifest(WTF::BindOnce(
         &PushMessagingClient::DidGetManifest, WrapPersistent(this),
         WrapPersistent(service_worker_registration), std::move(options_ptr),
-        user_gesture, std::move(callbacks)));
+        user_gesture, WrapPersistent(resolver)));
   } else {
     DoSubscribe(service_worker_registration, std::move(options_ptr),
-                user_gesture, std::move(callbacks));
+                user_gesture, WrapPersistent(resolver));
   }
 }
 
@@ -91,7 +91,7 @@ void PushMessagingClient::DidGetManifest(
     ServiceWorkerRegistration* service_worker_registration,
     mojom::blink::PushSubscriptionOptionsPtr options,
     bool user_gesture,
-    std::unique_ptr<PushSubscriptionCallbacks> callbacks,
+    ScriptPromiseResolver<PushSubscription>* resolver,
     mojom::blink::ManifestRequestResult result,
     const KURL& manifest_url,
     mojom::blink::ManifestPtr manifest) {
@@ -100,7 +100,7 @@ void PushMessagingClient::DidGetManifest(
   if (manifest_url.IsEmpty() || manifest == mojom::blink::Manifest::New() ||
       result != mojom::blink::ManifestRequestResult::kSuccess) {
     DidSubscribe(
-        service_worker_registration, std::move(callbacks),
+        service_worker_registration, resolver,
         mojom::blink::PushRegistrationStatus::MANIFEST_EMPTY_OR_MISSING,
         nullptr /* subscription */);
     return;
@@ -114,18 +114,18 @@ void PushMessagingClient::DidGetManifest(
   }
 
   DoSubscribe(service_worker_registration, std::move(options), user_gesture,
-              std::move(callbacks));
+              resolver);
 }
 
 void PushMessagingClient::DoSubscribe(
     ServiceWorkerRegistration* service_worker_registration,
     mojom::blink::PushSubscriptionOptionsPtr options,
     bool user_gesture,
-    std::unique_ptr<PushSubscriptionCallbacks> callbacks) {
-  DCHECK(callbacks);
+    ScriptPromiseResolver<PushSubscription>* resolver) {
+  DCHECK(resolver);
 
   if (options->application_server_key.empty()) {
-    DidSubscribe(service_worker_registration, std::move(callbacks),
+    DidSubscribe(service_worker_registration, resolver,
                  mojom::blink::PushRegistrationStatus::NO_SENDER_ID,
                  nullptr /* subscription */);
     return;
@@ -136,15 +136,15 @@ void PushMessagingClient::DoSubscribe(
       user_gesture,
       WTF::BindOnce(&PushMessagingClient::DidSubscribe, WrapPersistent(this),
                     WrapPersistent(service_worker_registration),
-                    std::move(callbacks)));
+                    WrapPersistent(resolver)));
 }
 
 void PushMessagingClient::DidSubscribe(
     ServiceWorkerRegistration* service_worker_registration,
-    std::unique_ptr<PushSubscriptionCallbacks> callbacks,
+    ScriptPromiseResolver<PushSubscription>* resolver,
     mojom::blink::PushRegistrationStatus status,
     mojom::blink::PushSubscriptionPtr subscription) {
-  DCHECK(callbacks);
+  DCHECK(resolver);
 
   if (status ==
           mojom::blink::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE ||
@@ -153,10 +153,10 @@ void PushMessagingClient::DidSubscribe(
       status == mojom::blink::PushRegistrationStatus::SUCCESS_FROM_CACHE) {
     DCHECK(subscription);
 
-    callbacks->OnSuccess(PushSubscription::Create(std::move(subscription),
-                                                  service_worker_registration));
+    resolver->Resolve(PushSubscription::Create(std::move(subscription),
+                                               service_worker_registration));
   } else {
-    callbacks->OnError(PushError::CreateException(
+    resolver->Reject(PushError::CreateException(
         PushRegistrationStatusToPushErrorType(status),
         PushRegistrationStatusToString(status)));
   }

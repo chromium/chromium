@@ -36,20 +36,8 @@ bool EasySelectorChecker::IsEasy(const CSSSelector* selector) {
       continue;
     }
     switch (selector->Match()) {
-      case CSSSelector::kTag: {
-        const QualifiedName& tag_q_name = selector->TagQName();
-        if (tag_q_name == AnyQName() ||
-            tag_q_name.LocalName() == CSSSelector::UniversalSelectorAtom()) {
-          // We don't support the universal selector, to avoid checking
-          // for it when doing tag matching (most selectors are not
-          // the universal selector). Note that in if we are in the
-          // universal bucket, and it's a true universal match
-          // (not just universal local name), we'd most likely hit
-          // IsCoveredByBucketing() above.
-          return false;
-        }
-        break;
-      }
+      case CSSSelector::kTag:
+      case CSSSelector::kUniversalTag:
       case CSSSelector::kId:
       case CSSSelector::kClass:
         break;
@@ -169,6 +157,11 @@ bool EasySelectorChecker::MatchOne(const CSSSelector* selector,
         return false;
       }
     }
+    case CSSSelector::kUniversalTag: {
+      const QualifiedName& tag_q_name = selector->TagQName();
+      return element->namespaceURI() == tag_q_name.NamespaceURI() ||
+             tag_q_name.NamespaceURI() == g_star_atom;
+    }
     case CSSSelector::kClass:
       return element->HasClass() &&
              element->ClassNames().Contains(selector->Value());
@@ -208,9 +201,28 @@ bool EasySelectorChecker::AttributeMatches(const Element& element,
                                            const AtomicString& value,
                                            bool case_insensitive) {
   element.SynchronizeAttribute(attr.LocalName());
+
+#if !DCHECK_IS_ON()
+  // In non-debug builds, we test the Bloom filter here and exit early
+  // if the attribute could not exist on the element. For non-debug builds,
+  // we go through the entire normal operation but verify that the Bloom
+  // filter would not erroneously reject a match.
+  if (!element.CouldHaveAttribute(attr)) {
+    return false;
+  }
+#endif
+
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
     if (AttributeItemHasName(attribute_item, element, attr)) {
+#if DCHECK_IS_ON()
+      // NOTE: Even if the value doesn't match, we want to check that the
+      // attribute name was properly found.
+      DCHECK(element.CouldHaveAttribute(attr))
+          << element << " should have contained attribute " << attr
+          << ", Bloom bits on element are "
+          << element.AttributeBloomFilterForDebug();
+#endif
       return attribute_item.Value() == value ||
              (case_insensitive &&
               EqualIgnoringASCIICase(attribute_item.Value(), value));

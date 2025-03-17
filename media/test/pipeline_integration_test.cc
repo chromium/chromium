@@ -214,8 +214,7 @@ class KeyProvidingApp : public FakeEncryptedMedia::AppBase {
     EXPECT_TRUE(LookupKey(key_ids[0], &key));
 
     // Update the session with the key ID and key.
-    std::string jwk = GenerateJWKSet(key.data(), key.size(), key_ids[0].data(),
-                                     key_ids[0].size());
+    std::string jwk = GenerateJWKSet(key, key_ids[0]);
     decryptor->UpdateSession(session_id,
                              std::vector<uint8_t>(jwk.begin(), jwk.end()),
                              CreatePromise(RESOLVED));
@@ -570,8 +569,8 @@ class MSEChangeTypeTest
     source.AppendAtTime(
         file_one_end_time,
         file_two.append_bytes == kAppendWholeFile
-            ? file_two_contents->AsSpan()
-            : file_two_contents->AsSpan().first(file_two.append_bytes));
+            ? *file_two_contents
+            : (*file_two_contents).first(file_two.append_bytes));
     source.EndOfStream();
     ranges = pipeline_->GetBufferedTimeRanges();
     EXPECT_EQ(1u, ranges.size());
@@ -981,6 +980,21 @@ TEST_F(PipelineIntegrationTest, SwitchVideoTrackDuringPlayback) {
   // disable TrackId=1 and enable TrackId=2.
   OnSelectedVideoTrackChanged(MediaTrack::Id("2"));
   ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(TimestampMs(200)));
+  Stop();
+}
+
+TEST_F(PipelineIntegrationTest, MixSeekAndTrackSwitch) {
+  // We need something with multiple tracks.
+  ASSERT_EQ(PIPELINE_OK, Start("multitrack-3video-2audio.webm", kNoClockless));
+  Pause();
+  Seek(base::Seconds(8));
+  Play();
+  OnSelectedVideoTrackChanged(MediaTrack::Id("3"));
+  OnSelectedVideoTrackChanged(MediaTrack::Id("1"));
+  OnEnabledAudioTracksChanged({MediaTrack::Id("5")});
+  Seek(base::Seconds(0));
+  Play();
+  ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(TimestampMs(100)));
   Stop();
 }
 
@@ -1484,7 +1498,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_AV1_WebM) {
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(kNewSize)).Times(1);
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-av1-640x480.webm");
-  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->AsSpan());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), *second_file);
   source.EndOfStream();
 
   Play();
@@ -1511,7 +1525,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_WebM) {
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(kNewSize)).Times(1);
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-640x360.webm");
-  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->AsSpan());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), *second_file);
   source.EndOfStream();
 
   Play();
@@ -1544,8 +1558,7 @@ TEST_F(PipelineIntegrationTest, MSE_AudioConfigChange_WebM) {
 
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-320x240-audio-only-48khz.webm");
-  ASSERT_TRUE(source.AppendAtTime(base::Seconds(kAppendTimeSec),
-                                  second_file->AsSpan()));
+  ASSERT_TRUE(source.AppendAtTime(base::Seconds(kAppendTimeSec), *second_file));
   source.EndOfStream();
 
   Play();
@@ -1604,7 +1617,7 @@ TEST_F(PipelineIntegrationTest, MSE_FillUpBuffer) {
     // Ask MediaSource to evict buffered data if buffering limit has been
     // reached (the data will be evicted from the front of the buffered range).
     source.EvictCodedFrames(media_time, file->size());
-    source.AppendAtTime(media_time, file->AsSpan());
+    source.AppendAtTime(media_time, *file);
     task_environment_.RunUntilIdle();
 
     buffered_ranges = pipeline_->GetBufferedTimeRanges();
@@ -1661,7 +1674,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_Encrypted_WebM) {
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-640x360-av_enc-av.webm");
 
-  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->AsSpan());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), *second_file);
   source.EndOfStream();
 
   Play();
@@ -1690,7 +1703,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_ClearThenEncrypted_WebM) {
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-640x360-av_enc-av.webm");
 
-  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->AsSpan());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), *second_file);
   source.EndOfStream();
 
   Play();
@@ -1722,7 +1735,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_EncryptedThenClear_WebM) {
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-640x360.webm");
 
-  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->AsSpan());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), *second_file);
   source.EndOfStream();
 
   Play();
@@ -1979,7 +1992,7 @@ TEST_F(PipelineIntegrationTest, MSE_MP3_TimestampOffset) {
 
   scoped_refptr<DecoderBuffer> second_file = ReadTestDataFile("sfx.mp3");
   source.AppendAtTimeWithWindow(append_time, append_time + mp3_preroll_duration,
-                                kInfiniteDuration, second_file->AsSpan());
+                                kInfiniteDuration, *second_file);
   source.EndOfStream();
 
   Play();
@@ -2037,7 +2050,7 @@ TEST_F(PipelineIntegrationTest, MSE_ADTS_TimestampOffset) {
   scoped_refptr<DecoderBuffer> second_file = ReadTestDataFile("sfx.adts");
   source.AppendAtTimeWithWindow(append_time,
                                 append_time + adts_preroll_duration,
-                                kInfiniteDuration, second_file->AsSpan());
+                                kInfiniteDuration, *second_file);
   source.EndOfStream();
 
   Play();
@@ -2190,7 +2203,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_MP4) {
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(kNewSize)).Times(1);
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-1280x720-av_frag.mp4");
-  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->AsSpan());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), *second_file);
   source.EndOfStream();
 
   Play();
@@ -2225,7 +2238,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_Encrypted_MP4_CENC_VideoOnly) {
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(kNewSize)).Times(1);
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-1280x720-v_frag-cenc.mp4");
-  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->AsSpan());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), *second_file);
   source.EndOfStream();
 
   Play();
@@ -2251,7 +2264,7 @@ TEST_F(PipelineIntegrationTest,
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(gfx::Size(1280, 720))).Times(1);
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-1280x720-v_frag-cenc-key_rotation.mp4");
-  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->AsSpan());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), *second_file);
   source.EndOfStream();
 
   Play();
@@ -2277,7 +2290,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_ClearThenEncrypted_MP4_CENC) {
       ReadTestDataFile("bear-1280x720-v_frag-cenc.mp4");
   source.set_expected_append_result(
       TestMediaSource::ExpectedAppendResult::kFailure);
-  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->AsSpan());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), *second_file);
 
   source.EndOfStream();
 
@@ -2304,7 +2317,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_EncryptedThenClear_MP4_CENC) {
 
   source.set_expected_append_result(
       TestMediaSource::ExpectedAppendResult::kFailure);
-  source.AppendAtTime(base::Seconds(kAppendTimeSec), second_file->AsSpan());
+  source.AppendAtTime(base::Seconds(kAppendTimeSec), *second_file);
 
   source.EndOfStream();
 

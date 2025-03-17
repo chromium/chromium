@@ -10,7 +10,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -30,7 +30,7 @@
 
 namespace policy {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 using ::ash::AccessibilityManager;
 using ::ash::MagnificationManager;
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, ColorCorrectionEnabled) {
   accessibility_manager->SetColorCorrectionEnabled(false);
   EXPECT_TRUE(accessibility_manager->IsColorCorrectionEnabled());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 // Tests that the UiAutomationProviderEnabled policy is respected when set, and

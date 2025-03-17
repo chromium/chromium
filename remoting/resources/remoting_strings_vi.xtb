@@ -28,6 +28,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="2329392777730037872">Không mở được <ph name="URL" /> trên ứng dụng.</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2366718077645204424">Không thể kết nối với máy chủ. Điều này có thể do cấu hình của mạng bạn đang sử dụng.</translation>
+<translation id="242591256144136845">Bản quyền 2025 Google LLC. Bảo lưu mọi quyền.</translation>
 <translation id="2504109125669302160">Cấp quyền 'Hỗ trợ tiếp cận' cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Đã kết nối với <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Bạn có muốn chia sẻ máy tính này cho một người dùng khác xem và kiểm soát không?</translation>
@@ -133,6 +134,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="7067321367069083429">Màn hình đóng vai trò như màn hình cảm ứng</translation>
 <translation id="7116737094673640201">Chào mừng bạn đến với Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Thử lại</translation>
+<translation id="7298392173540380852">Bản quyền 2025 The Chromium Authors. Bảo lưu mọi quyền.</translation>
 <translation id="7312846573060934304">Máy chủ đang ngoại tuyến.</translation>
 <translation id="7319983568955948908">Ngừng chia sẻ</translation>
 <translation id="7359298090707901886">Không thể dùng trình duyệt đã chọn để mở URL trên máy cục bộ.</translation>
@@ -149,7 +151,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="7693372326588366043">Làm mới danh sách máy chủ</translation>
 <translation id="7714222945760997814">Báo cáo nội dung này</translation>
 <translation id="7868137160098754906">Hãy nhập mã PIN của bạn cho máy tính từ xa.</translation>
-<translation id="7881455334687220899">Bản quyền 2024 The Chromium Authors. Bảo lưu mọi quyền.</translation>
 <translation id="7895403300744144251">Chính sách quyền riêng tư trên máy tính từ xa không cho phép các kết nối từ tài khoản của bạn.</translation>
 <translation id="7936528439960309876">Gắn vào bên phải</translation>
 <translation id="7970576581263377361">Xác thực bị lỗi. Vui lòng đăng nhập lại vào Chromium.</translation>
@@ -181,7 +182,6 @@ Nếu đã đánh dấu vào hộp '<ph name="SERVICE_SCRIPT_NAME" />', hãy b�
 <translation id="8747048596626351634">Phiên bị lỗi hoặc không bắt đầu được. Nếu đã có ~/.chrome-remote-desktop-session trên máy tính từ xa, hãy đảm bảo rằng phiên này bắt đầu chạy một quy trình ở nền trước trong thời gian dài, chẳng hạn như môi trường máy tính để bàn hoặc trình quản lý cửa sổ.</translation>
 <translation id="8804164990146287819">Chính sách quyền riêng tư</translation>
 <translation id="8906511416443321782">Bạn cần phải cho phép sử dụng micrô để ghi âm và truyền đến ứng dụng Chrome Remote Desktop.</translation>
-<translation id="9042277333359847053">Bản quyền 2024 Google LLC. Bảo lưu mọi quyền.</translation>
 <translation id="9111855907838866522">Bạn đã kết nối với thiết bị từ xa. Để mở menu, vui lòng nhấn vào màn hình bằng 4 ngón tay.</translation>
 <translation id="9126115402994542723">Không yêu cầu lại mã PIN khi kết nối với máy chủ này từ thiết bị này.</translation>
 <translation id="916856682307586697">Chạy XSession mặc định</translation>

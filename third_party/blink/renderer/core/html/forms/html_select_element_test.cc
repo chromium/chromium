@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -15,9 +17,12 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/select_type.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -25,6 +30,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -940,12 +946,141 @@ TEST_F(HTMLSelectElementTest,
     </style>
 
     <select id="target">
-      <input>
+      <details>details</details>
     </select>
   )HTML");
 
   auto* select = To<HTMLSelectElement>(GetElementById("target"));
   ASSERT_TRUE(select->IsInDialogMode());
+}
+
+namespace {
+VectorOf<HTMLOptionElement> OptionListToVector(HTMLSelectElement* select) {
+  VectorOf<HTMLOptionElement> options;
+  for (auto& option : select->GetOptionList()) {
+    options.push_back(option);
+  }
+  return options;
+}
+
+VectorOf<HTMLOptionElement> OptionCollectionToVector(
+    HTMLSelectElement* select) {
+  VectorOf<HTMLOptionElement> options;
+  for (Element* option : *select->options()) {
+    options.push_back(To<HTMLOptionElement>(option));
+  }
+  return options;
+}
+
+template <typename T>
+T* CreateElement(Document& document, const String& id) {
+  T* element = MakeGarbageCollected<T>(document);
+  element->SetIdAttribute(AtomicString(id));
+  return element;
+}
+}  // namespace
+
+// Structure:
+// <select id=parent_select>
+//   <select id=child_select>
+//     <option id=option>
+//       (ignored) option, hr, optgroup
+//     <hr id=hr>
+//       (ignored) option, hr, optgroup
+//     <optgroup id=optgroup>
+//       <option id=optgroup_option>
+//       <optgroup id=nested_optgroup>
+//         (ignored) option, hr, optgroup
+//     <div id=div>
+//       <option id=div_option>
+//       <hr id=div_hr>
+//       <optgroup id=div_optgroup>
+TEST_F(HTMLSelectElementTest, ListItemsNesting) {
+  Document& document = GetDocument();
+
+  auto* parent_select =
+      CreateElement<HTMLSelectElement>(document, "parent_select");
+  document.body()->appendChild(parent_select);
+  auto* child_select =
+      CreateElement<HTMLSelectElement>(document, "child_select");
+  parent_select->appendChild(child_select);
+
+  VectorOf<HTMLElement> list_items;
+  VectorOf<HTMLOptionElement> options;
+
+  auto check_selects = [&parent_select, &child_select, &list_items,
+                        &options]() {
+    VectorOf<HTMLElement> empty_list_items;
+    VectorOf<HTMLOptionElement> empty_options;
+    EXPECT_EQ(OptionListToVector(parent_select), empty_options);
+    EXPECT_EQ(OptionCollectionToVector(parent_select), empty_options);
+    EXPECT_EQ(parent_select->GetListItems(), empty_list_items);
+    EXPECT_EQ(OptionListToVector(child_select), options);
+    EXPECT_EQ(OptionCollectionToVector(child_select), options);
+    EXPECT_EQ(child_select->GetListItems(), list_items);
+  };
+
+  auto add_ignored_list_items = [&check_selects,
+                                 &document](HTMLElement* container) {
+    container->appendChild(MakeGarbageCollected<HTMLOptionElement>(document));
+    check_selects();
+    container->appendChild(MakeGarbageCollected<HTMLOptGroupElement>(document));
+    check_selects();
+    container->appendChild(MakeGarbageCollected<HTMLHRElement>(document));
+    check_selects();
+  };
+
+  auto* option = CreateElement<HTMLOptionElement>(document, "option");
+  child_select->appendChild(option);
+  list_items.push_back(option);
+  options.push_back(option);
+  check_selects();
+  add_ignored_list_items(option);
+
+  auto* hr = CreateElement<HTMLHRElement>(document, "hr");
+  child_select->appendChild(hr);
+  list_items.push_back(hr);
+  check_selects();
+  add_ignored_list_items(hr);
+
+  auto* optgroup = CreateElement<HTMLOptGroupElement>(document, "optgroup");
+  child_select->appendChild(optgroup);
+  list_items.push_back(optgroup);
+  check_selects();
+
+  auto* optgroup_option =
+      CreateElement<HTMLOptionElement>(document, "optgroup_option");
+  optgroup->appendChild(optgroup_option);
+  list_items.push_back(optgroup_option);
+  options.push_back(optgroup_option);
+  check_selects();
+
+  auto* nested_optgroup =
+      CreateElement<HTMLOptGroupElement>(document, "nested_optgroup");
+  optgroup->appendChild(nested_optgroup);
+  check_selects();
+  add_ignored_list_items(nested_optgroup);
+
+  auto* div = CreateElement<HTMLDivElement>(document, "div");
+  child_select->appendChild(div);
+  check_selects();
+
+  auto* div_option = CreateElement<HTMLOptionElement>(document, "div_option");
+  div->appendChild(div_option);
+  list_items.push_back(div_option);
+  options.push_back(div_option);
+  check_selects();
+
+  auto* div_hr = CreateElement<HTMLHRElement>(document, "div_hr");
+  div->appendChild(div_hr);
+  list_items.push_back(div_hr);
+  check_selects();
+
+  auto* div_optgroup =
+      CreateElement<HTMLOptGroupElement>(document, "div_optgroup");
+  div->appendChild(div_optgroup);
+  list_items.push_back(div_optgroup);
+  check_selects();
 }
 
 class HTMLSelectElementSimTest : public SimTest {};
@@ -1069,5 +1204,30 @@ TEST_F(HTMLSelectElementSimTest, DialogModeBaseSelectNestedButton) {
 
   ASSERT_FALSE(select->IsInDialogMode());
 }
+
+class HTMLSelectElementUATest : public HTMLSelectElementTest,
+                                public testing::WithParamInterface<bool>,
+                                public ScopedCSSLogicalOverflowForTest {
+ public:
+  HTMLSelectElementUATest() : ScopedCSSLogicalOverflowForTest(GetParam()) {}
+};
+
+TEST_P(HTMLSelectElementUATest, OverflowStyle) {
+  CSSDefaultStyleSheets::Instance().PrepareForLeakDetection();
+  SetHtmlInnerHTML(R"HTML(
+    <select id="target" multiple></select>
+  )HTML");
+
+  HTMLSelectElement* select = To<HTMLSelectElement>(GetElementById("target"));
+  if (select->UsesMenuList()) {
+    // The UA styles won't apply when the menu list rendering is delegated.
+    return;
+  }
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_EQ(select->ComputedStyleRef().OverflowX(), EOverflow::kHidden);
+  EXPECT_EQ(select->ComputedStyleRef().OverflowY(), EOverflow::kScroll);
+}
+
+INSTANTIATE_TEST_SUITE_P(All, HTMLSelectElementUATest, ::testing::Bool());
 
 }  // namespace blink

@@ -1,5 +1,6 @@
 {
   "gn_args": {
+    "enable_backup_ref_ptr_instance_tracer": true,
     "is_component_build": true,
     "is_debug": true,
     "symbol_level": 1,

@@ -110,8 +110,9 @@ WatchTimeReporter::WatchTimeReporter(
   power_component_ = CreatePowerComponent();
   if (!is_background_) {
     controls_component_ = CreateControlsComponent();
-    if (properties_->has_video)
+    if (properties_->has_video || properties_->has_audio) {
       display_type_component_ = CreateDisplayTypeComponent();
+    }
   }
 
   // If this is a sub-reporter we're done.
@@ -300,8 +301,12 @@ void WatchTimeReporter::OnDisplayTypeFullscreen() {
   OnDisplayTypeChanged(DisplayType::kFullscreen);
 }
 
-void WatchTimeReporter::OnDisplayTypePictureInPicture() {
-  OnDisplayTypeChanged(DisplayType::kPictureInPicture);
+void WatchTimeReporter::OnDisplayTypeVideoPictureInPicture() {
+  OnDisplayTypeChanged(DisplayType::kVideoPictureInPicture);
+}
+
+void WatchTimeReporter::OnDisplayTypeDocumentPictureInPicture() {
+  OnDisplayTypeChanged(DisplayType::kDocumentPictureInPicture);
 }
 
 void WatchTimeReporter::UpdateSecondaryProperties(
@@ -548,8 +553,9 @@ void WatchTimeReporter::UpdateWatchTime() {
   std::vector<media::WatchTimeKey> keys_to_finalize;
   if (power_component_->NeedsFinalize())
     power_component_->Finalize(&keys_to_finalize);
-  if (display_type_component_ && display_type_component_->NeedsFinalize())
+  if (display_type_component_ && display_type_component_->NeedsFinalize()) {
     display_type_component_->Finalize(&keys_to_finalize);
+  }
   if (controls_component_ && controls_component_->NeedsFinalize())
     controls_component_->Finalize(&keys_to_finalize);
 
@@ -668,19 +674,30 @@ media::WatchTimeKey WatchTimeReporter::GetControlsKey(
 #undef FOREGROUND_KEY
 
 #define DISPLAY_TYPE_KEY(key)                                    \
-  (properties_->has_audio                                        \
+  ((properties_->has_audio && properties_->has_video)            \
        ? (is_muted_ ? media::WatchTimeKey::kAudioVideoMuted##key \
                     : media::WatchTimeKey::kAudioVideo##key)     \
-       : media::WatchTimeKey::kVideo##key)
+   : properties_->has_audio ? media::WatchTimeKey::kAudio##key   \
+                            : media::WatchTimeKey::kVideo##key)
 
 std::unique_ptr<WatchTimeComponent<DisplayType>>
 WatchTimeReporter::CreateDisplayTypeComponent() {
-  DCHECK(properties_->has_video);
+  DCHECK(properties_->has_video || properties_->has_audio);
   DCHECK(!is_background_);
 
   std::vector<media::WatchTimeKey> keys_to_finalize{
       DISPLAY_TYPE_KEY(DisplayInline), DISPLAY_TYPE_KEY(DisplayFullscreen),
       DISPLAY_TYPE_KEY(DisplayPictureInPicture)};
+
+  if (properties_->has_audio && properties_->has_video) {
+    keys_to_finalize.emplace_back(
+        media::WatchTimeKey::kAudioVideoAutoPipMediaPlayback);
+  }
+
+  if (properties_->has_audio && !properties_->has_video) {
+    keys_to_finalize.emplace_back(
+        media::WatchTimeKey::kAudioAutoPipMediaPlayback);
+  }
 
   return std::make_unique<WatchTimeComponent<DisplayType>>(
       DisplayType::kInline, std::move(keys_to_finalize),
@@ -696,7 +713,8 @@ media::WatchTimeKey WatchTimeReporter::GetDisplayTypeKey(
       return DISPLAY_TYPE_KEY(DisplayInline);
     case DisplayType::kFullscreen:
       return DISPLAY_TYPE_KEY(DisplayFullscreen);
-    case DisplayType::kPictureInPicture:
+    case DisplayType::kVideoPictureInPicture:
+    case DisplayType::kDocumentPictureInPicture:
       return DISPLAY_TYPE_KEY(DisplayPictureInPicture);
   }
 }

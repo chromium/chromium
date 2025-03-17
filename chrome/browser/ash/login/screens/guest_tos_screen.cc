@@ -7,10 +7,12 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -93,6 +95,13 @@ void GuestTosScreen::OnUserAction(const base::Value::List& args) {
 }
 
 void GuestTosScreen::OnAccept(bool enable_usage_stats) {
+  // Disable pre-consent metrics for guest as guest has expressed consent. This
+  // is critical as crash_reportor is depending on the disable operation of
+  // CrOSPreConsentMetricsManager to end pre-consent stage.
+  if (metrics::CrOSPreConsentMetricsManager::Get()) {
+    metrics::CrOSPreConsentMetricsManager::Get()->Disable();
+  }
+
   // TODO(crbug/1298249): Add browser tests to ensure that the feature is
   // working.
   PrefService* local_state = g_browser_process->local_state();

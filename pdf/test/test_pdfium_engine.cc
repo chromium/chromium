@@ -5,12 +5,11 @@
 #include "pdf/test/test_pdfium_engine.h"
 
 #include <stdint.h>
-#include <string.h>
 
 #include <iterator>
 #include <vector>
 
-#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/values.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_metadata.h"
@@ -54,9 +53,8 @@ uint32_t TestPDFiumEngine::GetLoadedByteSize() {
   return sizeof(kLoadedData);
 }
 
-bool TestPDFiumEngine::ReadLoadedBytes(uint32_t length, void* buffer) {
-  DCHECK_LE(length, GetLoadedByteSize());
-  memcpy(buffer, kLoadedData, length);
+bool TestPDFiumEngine::ReadLoadedBytes(base::span<uint8_t> buffer) {
+  buffer.copy_from(base::span(kLoadedData).first(buffer.size()));
   return true;
 }
 

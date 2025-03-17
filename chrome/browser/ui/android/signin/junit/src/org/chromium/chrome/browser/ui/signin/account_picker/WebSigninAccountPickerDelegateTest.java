@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -25,12 +24,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -39,9 +41,9 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.signin.base.GoogleServiceAuthError.State;
+import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -51,6 +53,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 /** This class tests the {@link WebSigninAccountPickerDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
+@EnableFeatures(SigninFeatures.DEFER_WEB_SIGNIN_TRACKER_CREATION)
 public class WebSigninAccountPickerDelegateTest {
     private static final String CONTINUE_URL = "https://test-continue-url.com";
     private static final String TEST_EMAIL = "test.account@gmail.com";
@@ -83,7 +86,10 @@ public class WebSigninAccountPickerDelegateTest {
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
-    @Captor private ArgumentCaptor<WebSigninBridge.Listener> mWebSigninBridgeListenerCaptor;
+    @Captor private ArgumentCaptor<SigninManager.SignInCallback> mSigninCallbackCaptor;
+
+    @Captor
+    private ArgumentCaptor<Callback<@WebSigninTrackerResult Integer>> mWebSigninCallbackCaptor;
 
     private WebSigninAccountPickerDelegate mDelegate;
 
@@ -115,17 +121,17 @@ public class WebSigninAccountPickerDelegateTest {
     @Test
     public void testSignInSucceeded() {
         mDelegate.signIn(mCoreAccountInfo, mAccountPickerBottomSheetMediatorMock);
-        InOrder calledInOrder = inOrder(mWebSigninBridgeFactoryMock, mSigninManagerMock);
-        calledInOrder
-                .verify(mWebSigninBridgeFactoryMock)
-                .create(
-                        eq(mProfileMock),
+        verify(mSigninManagerMock)
+                .signin(
                         eq(mCoreAccountInfo),
-                        mWebSigninBridgeListenerCaptor.capture());
-        calledInOrder
-                .verify(mSigninManagerMock)
-                .signin(eq(mCoreAccountInfo), eq(SigninAccessPoint.WEB_SIGNIN), any());
-        mWebSigninBridgeListenerCaptor.getValue().onSigninSucceeded();
+                        eq(SigninAccessPoint.WEB_SIGNIN),
+                        mSigninCallbackCaptor.capture());
+        mSigninCallbackCaptor.getValue().onSignInComplete();
+
+        verify(mWebSigninBridgeFactoryMock)
+                .create(eq(mProfileMock), eq(mCoreAccountInfo), mWebSigninCallbackCaptor.capture());
+        mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
+
         verify(mTabMock).loadUrl(mLoadUrlParamsCaptor.capture());
         LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
         Assert.assertEquals("Continue url does not match!", CONTINUE_URL, loadUrlParams.getUrl());
@@ -133,17 +139,19 @@ public class WebSigninAccountPickerDelegateTest {
 
     @Test
     public void testSignInAborted() {
-        doAnswer(
-                        invocation -> {
-                            SigninManager.SignInCallback callback = invocation.getArgument(2);
-                            callback.onSignInAborted();
-                            return null;
-                        })
-                .when(mSigninManagerMock)
-                .signin(eq(mCoreAccountInfo), eq(SigninAccessPoint.WEB_SIGNIN), any());
+        // Remove `create` stubbing, as it will never be called.
+        Mockito.reset(mWebSigninBridgeFactoryMock);
+
         mDelegate.signIn(mCoreAccountInfo, mAccountPickerBottomSheetMediatorMock);
+        verify(mSigninManagerMock)
+                .signin(
+                        eq(mCoreAccountInfo),
+                        eq(SigninAccessPoint.WEB_SIGNIN),
+                        mSigninCallbackCaptor.capture());
+        mSigninCallbackCaptor.getValue().onSignInAborted();
 
         verify(mAccountPickerBottomSheetMediatorMock).switchToTryAgainView();
+        verify(mWebSigninBridgeFactoryMock, never()).create(any(), any(), any());
     }
 
     @Test
@@ -161,55 +169,60 @@ public class WebSigninAccountPickerDelegateTest {
                         mSigninManagerMock,
                         mWebSigninBridgeFactoryMock,
                         mSigninManagerMock);
-        calledInOrder.verify(mWebSigninBridgeMock).destroy();
         calledInOrder.verify(mSigninManagerMock).signOut(anyInt());
+        calledInOrder
+                .verify(mSigninManagerMock)
+                .signin(
+                        eq(mCoreAccountInfo),
+                        eq(SigninAccessPoint.WEB_SIGNIN),
+                        mSigninCallbackCaptor.capture());
+        mSigninCallbackCaptor.getValue().onSignInComplete();
         calledInOrder
                 .verify(mWebSigninBridgeFactoryMock)
                 .create(eq(mProfileMock), eq(mCoreAccountInfo), any());
-        calledInOrder
-                .verify(mSigninManagerMock)
-                .signin(eq(mCoreAccountInfo), eq(SigninAccessPoint.WEB_SIGNIN), any());
     }
 
     @Test
     public void testSignInFailedWithConnectionError() {
-        GoogleServiceAuthError error = new GoogleServiceAuthError(State.CONNECTION_FAILED);
         mDelegate.signIn(mCoreAccountInfo, mAccountPickerBottomSheetMediatorMock);
-        verify(mWebSigninBridgeFactoryMock)
-                .create(
-                        eq(mProfileMock),
+        verify(mSigninManagerMock)
+                .signin(
                         eq(mCoreAccountInfo),
-                        mWebSigninBridgeListenerCaptor.capture());
-        mWebSigninBridgeListenerCaptor.getValue().onSigninFailed(error);
+                        eq(SigninAccessPoint.WEB_SIGNIN),
+                        mSigninCallbackCaptor.capture());
+        mSigninCallbackCaptor.getValue().onSignInComplete();
+        verify(mWebSigninBridgeFactoryMock)
+                .create(eq(mProfileMock), eq(mCoreAccountInfo), mWebSigninCallbackCaptor.capture());
+        mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.OTHER_ERROR);
         verify(mAccountPickerBottomSheetMediatorMock).switchToTryAgainView();
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN,
                         SigninAccessPoint.WEB_SIGNIN);
 
-        // WebSigninBridge should be kept alive in case cookies are taking longer to
-        // generate than usual
-        verify(mWebSigninBridgeMock, never()).destroy();
+        // WebSigninBridge should be destroyed after the sign-in result is known.
+        verify(mWebSigninBridgeMock).destroy();
     }
 
     @Test
     public void testSignInFailedWithGaiaError() {
-        GoogleServiceAuthError error = new GoogleServiceAuthError(State.INVALID_GAIA_CREDENTIALS);
         mDelegate.signIn(mCoreAccountInfo, mAccountPickerBottomSheetMediatorMock);
-        verify(mWebSigninBridgeFactoryMock)
-                .create(
-                        eq(mProfileMock),
+        verify(mSigninManagerMock)
+                .signin(
                         eq(mCoreAccountInfo),
-                        mWebSigninBridgeListenerCaptor.capture());
-        mWebSigninBridgeListenerCaptor.getValue().onSigninFailed(error);
+                        eq(SigninAccessPoint.WEB_SIGNIN),
+                        mSigninCallbackCaptor.capture());
+        mSigninCallbackCaptor.getValue().onSignInComplete();
+        verify(mWebSigninBridgeFactoryMock)
+                .create(eq(mProfileMock), eq(mCoreAccountInfo), mWebSigninCallbackCaptor.capture());
+        mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.AUTH_ERROR);
         verify(mAccountPickerBottomSheetMediatorMock).switchToAuthErrorView();
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.AUTH_ERROR_SHOWN,
                         SigninAccessPoint.WEB_SIGNIN);
 
-        // WebSigninBridge should be kept alive in case cookies are taking longer to
-        // generate than usual
-        verify(mWebSigninBridgeMock, never()).destroy();
+        // WebSigninBridge should be destroyed after the sign-in result is known.
+        verify(mWebSigninBridgeMock).destroy();
     }
 }

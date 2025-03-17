@@ -4,12 +4,16 @@
 
 package org.chromium.components.ukm;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
@@ -22,10 +26,11 @@ import java.util.List;
  * event in tools/metrics/ukm/ukm.xml.
  */
 @JNINamespace("metrics")
+@NullMarked
 public class UkmRecorder {
     private WebContents mWebContents;
     private String mEventName;
-    private List<Metric> mMetrics;
+    private @Nullable List<Metric> mMetrics;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static class Metric {
@@ -68,6 +73,7 @@ public class UkmRecorder {
             assert false;
             return;
         }
+        assumeNonNull(mMetrics);
         Metric[] metricsArray = mMetrics.toArray(new Metric[mMetrics.size()]);
         UkmRecorderJni.get().recordEventWithMultipleMetrics(mWebContents, mEventName, metricsArray);
     }

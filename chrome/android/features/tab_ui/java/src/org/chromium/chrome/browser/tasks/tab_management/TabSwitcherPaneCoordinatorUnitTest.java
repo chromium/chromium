@@ -28,7 +28,6 @@ import android.view.ViewStub;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -74,11 +73,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
@@ -112,7 +110,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabContentManager mTabContentManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock private ScrimCoordinator mScrimCoordinator;
+    @Mock private ScrimManager mScrimManager;
     @Mock private DataSharingService mDataSharingService;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabSwitcherMessageManager mMessageManager;
@@ -207,7 +205,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         mTabGroupModelFilterSupplier,
                         mTabContentManager,
                         mBrowserControlsStateProvider,
-                        mScrimCoordinator,
+                        mScrimManager,
                         mModalDialogManager,
                         mBottomSheetController,
                         mDataSharingTabManager,
@@ -261,7 +259,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowTabListEditor() {
         ObservableSupplier<Boolean> handlesBackPressSupplier =
                 mCoordinator.getHandleBackPressChangedSupplier();
@@ -279,7 +276,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetInitialScrollIndexOffset() {
         int index = 8;
         when(mTabGroupModelFilter.index()).thenReturn(index);
@@ -294,7 +290,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRequestAccessibilityFocusOnCurrentTab() {
         int index = 2;
         when(mTabGroupModelFilter.index()).thenReturn(index);
@@ -309,7 +304,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({ChromeFeatureList.DATA_SHARING})
     public void testTabGridDialogVisibilitySupplier() {
 
@@ -326,7 +320,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCustomViewManager() {
         TabSwitcherCustomViewManager.Delegate customViewManagerDelegate =
                 mCoordinator.getTabSwitcherCustomViewManagerDelegate();
@@ -353,7 +346,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowTab() {
         int tabId = 1;
         MockTab tab = MockTab.createAndInitialize(tabId, mProfile);
@@ -404,7 +396,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.DATA_SHARING})
     public void testOpenInvitationModal() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
@@ -454,7 +445,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetTabSwitcherContentSensitivity() {
         PropertyModel containerViewModel = mCoordinator.getContainerViewModelForTesting();
         assertFalse(containerViewModel.get(IS_CONTENT_SENSITIVE));

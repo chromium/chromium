@@ -42,7 +42,7 @@ void FileSystemObservationCollection::AddObservation(
   if (!observation_map_.Contains(observer)) {
     observation_map_.insert(
         observer,
-        MakeGarbageCollected<HeapHashSet<Member<FileSystemObservation>>>());
+        MakeGarbageCollected<GCedHeapHashSet<Member<FileSystemObservation>>>());
   }
   observation_map_.at(observer)->insert(
       MakeGarbageCollected<FileSystemObservation>(

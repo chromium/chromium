@@ -16,7 +16,7 @@ found in the LICENSE file.
         <item name="android:navigationBarDividerColor">@macro/bottom_system_nav_divider_color</item>
         <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>
     </style>
-    <style name="Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge">
+    <style name="Base.V27.Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge">
         <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
         <item name="android:navigationBarDividerColor">@macro/bottom_system_nav_divider_color</item>
         <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>

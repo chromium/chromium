@@ -87,12 +87,6 @@ class SavedTabGroupKeyedServiceUnitTest : public BrowserWithTestWindowTest {
   // Returns the sync id of the group that was added.
   base::Uuid EnforceGroupSaved(tab_groups::SavedTabGroup group) {
     const LocalTabGroupID local_id = group.local_group_id().value();
-
-    if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
-      // the group must be manually saved.
-      service()->SaveGroup(local_id);
-    }
-
     return service()->proxy()->GetGroup(local_id).value().saved_guid();
   }
 
@@ -176,13 +170,6 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   auto& group_listener_map =
       service()->listener()->GetLocalTabGroupListenerMapForTesting();
 
-  if (!IsTabGroupsSaveV2Enabled()) {
-    // Expect that the group isn't being listened to yet.
-    EXPECT_EQ(0u, group_listener_map.count(group_id));
-
-    service()->SaveGroup(group_id);
-  }
-
   // Now the group should be listened to.
   EXPECT_EQ(1u, group_listener_map.count(group_id));
 
@@ -233,10 +220,6 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, PauseResumeTracking) {
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({1});
 
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->SaveGroup(group_id);
-  }
-
   base::Uuid saved_group_id = service()->model()->Get(group_id)->saved_guid();
 
   // We should be listening to one group and one tab in that group.
@@ -259,8 +242,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, PauseResumeTracking) {
       browser_1->tab_strip_model()->group_model()->ContainsTabGroup(group_id));
 
   // Recreate the local group and add the tab to it (same browser is fine).
-  browser_1->tab_strip_model()->group_model()->AddTabGroup(group_id,
-                                                           visual_data);
+  browser_1->tab_strip_model()->AddTabGroup(group_id, visual_data);
   browser_1->tab_strip_model()->InsertDetachedTabAt(
       1, std::move(detached_tab), AddTabTypes::ADD_NONE, group_id);
 
@@ -286,9 +268,6 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, ResumeTrackingValidatesConsistency) {
   ASSERT_EQ(2, browser_1->tab_strip_model()->count());
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0, 1});
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->SaveGroup(group_id);
-  }
   base::Uuid saved_group_id = service()->model()->Get(group_id)->saved_guid();
 
   // Reordering during paused tracking is okay.
@@ -412,124 +391,6 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   // saved tab group is activated. Ensure the first tab in the saved group is
   // activated.
   EXPECT_EQ(0, browser_1->tab_strip_model()->active_index());
-}
-
-TEST_F(SavedTabGroupKeyedServiceUnitTest,
-       RestoredGroupWithoutSavedGuidIsDiscarded) {
-  if (IsTabGroupsSaveV2Enabled()) {
-    GTEST_SKIP() << "N/A for V2 (all groups are saved)";
-  }
-
-  Browser* browser_1 = AddBrowser();
-  ASSERT_EQ(0, browser_1->tab_strip_model()->count());
-
-  // Add 2 tabs to the browser.
-  AddTabToBrowser(browser_1, 0);
-  ASSERT_EQ(1, browser_1->tab_strip_model()->count());
-
-  const tab_groups::TabGroupId tab_group_id_1 =
-      browser_1->tab_strip_model()->AddToNewGroup({0});
-  const base::Uuid guid_1 = base::Uuid::GenerateRandomV4();
-
-  service()->ConnectRestoredGroupToSaveId(guid_1, tab_group_id_1);
-
-  // Notify the KeyedService that the SavedTabGroupModel has loaded all local
-  // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
-  service()->model()->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
-
-  // Expect calling ConnectRestoredGroupToSaveId before the model is loaded does
-  // not link non-existent saved groups.
-  EXPECT_FALSE(service()->model()->Contains(tab_group_id_1));
-  EXPECT_FALSE(service()->model()->Contains(guid_1));
-
-  // Expect calling StoreLocalSavedId after the model is loaded does not link
-  // non-existent saved groups.
-  service()->ConnectRestoredGroupToSaveId(guid_1, tab_group_id_1);
-  EXPECT_FALSE(service()->model()->Contains(tab_group_id_1));
-  EXPECT_FALSE(service()->model()->Contains(guid_1));
-}
-
-TEST_F(SavedTabGroupKeyedServiceUnitTest,
-       KeyedServiceLinksTabIdsToGuidsWhenModelIsLoaded) {
-  if (IsTabGroupsSaveV2Enabled()) {
-    GTEST_SKIP() << "N/A for V2 (all groups are saved)";
-  }
-
-  Browser* browser_1 = AddBrowser();
-  ASSERT_EQ(0, browser_1->tab_strip_model()->count());
-
-  // Add 4 tabs to the browser.
-  for (size_t i = 0; i < 4; ++i) {
-    AddTabToBrowser(browser_1, 0);
-  }
-
-  ASSERT_EQ(4, browser_1->tab_strip_model()->count());
-
-  const tab_groups::TabGroupId tab_group_id_1 =
-      tab_groups::TabGroupId::GenerateNew();
-  browser_1->tab_strip_model()->AddToGroupForRestore({0}, tab_group_id_1);
-  const tab_groups::TabGroupId tab_group_id_2 =
-      tab_groups::TabGroupId::GenerateNew();
-  browser_1->tab_strip_model()->AddToGroupForRestore({1, 2}, tab_group_id_2);
-  const tab_groups::TabGroupId tab_group_id_3 =
-      tab_groups::TabGroupId::GenerateNew();
-  browser_1->tab_strip_model()->AddToGroupForRestore({3}, tab_group_id_3);
-
-  const base::Uuid guid_1 = base::Uuid::GenerateRandomV4();
-  const base::Uuid guid_2 = base::Uuid::GenerateRandomV4();
-
-  // Store the guid to tab_group_id association in the keyed service. We should
-  // expect at the end of the test, `tab_group_id_3` has no association with the
-  // SavedTabGroupModel at all.
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->ConnectRestoredGroupToSaveId(guid_1, tab_group_id_1);
-    service()->ConnectRestoredGroupToSaveId(guid_2, tab_group_id_2);
-  }
-
-  // Populate the SavedTabGroupModel with some test data to simulate the browser
-  // loading in persisted data on startup.
-  std::vector<SavedTabGroupTab> group_1_tabs = {SavedTabGroupTab(
-      GURL(chrome::kChromeUINewTabURL), u"New Tab", guid_1, /*position=*/0)};
-  std::vector<SavedTabGroupTab> group_2_tabs = {
-      SavedTabGroupTab(GURL(chrome::kChromeUINewTabURL), u"New Tab", guid_2,
-                       /*position=*/0),
-      SavedTabGroupTab(GURL(chrome::kChromeUINewTabURL), u"New Tab", guid_2,
-                       /*position=*/1)};
-
-  SavedTabGroup saved_group_1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
-                              std::move(group_1_tabs), std::nullopt, guid_1);
-  SavedTabGroup saved_group_2(u"Group 2", tab_groups::TabGroupColorId::kRed,
-                              std::move(group_2_tabs), std::nullopt, guid_2);
-  service()->model()->AddedLocally(saved_group_1);
-  service()->model()->AddedLocally(saved_group_2);
-
-  // Notify the KeyedService that the SavedTabGroupModel has loaded all local
-  // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
-  service()->model()->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
-
-  // Retrieve the 2 saved groups from the model.
-  SavedTabGroupModel* model = service()->model();
-  const SavedTabGroup* retrieved_saved_group_1 = model->Get(guid_1);
-  const SavedTabGroup* retrieved_saved_group_2 = model->Get(guid_2);
-
-  // Verify saved group 1 and 2 have the correct tab group id.
-  ASSERT_TRUE(retrieved_saved_group_1);
-  ASSERT_TRUE(retrieved_saved_group_1->local_group_id().has_value());
-  EXPECT_EQ(tab_group_id_1, retrieved_saved_group_1->local_group_id().value());
-
-  ASSERT_TRUE(retrieved_saved_group_2);
-  ASSERT_TRUE(retrieved_saved_group_2->local_group_id().has_value());
-  EXPECT_EQ(tab_group_id_2, retrieved_saved_group_2->local_group_id().value());
-
-  // Expect the model can locate tab group ids for group 1 and 2 but not
-  // group 3.
-  EXPECT_TRUE(model->Contains(tab_group_id_1));
-  EXPECT_TRUE(model->Contains(tab_group_id_2));
-  if (IsTabGroupsSaveV2Enabled()) {
-    EXPECT_TRUE(model->Contains(tab_group_id_3));
-  } else {
-    EXPECT_FALSE(model->Contains(tab_group_id_3));
-  }
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
@@ -773,10 +634,6 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, RemoveTabFromSyncRemovesLocalTab) {
   AddTabToBrowser(browser, 1);
   const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0, 1});
 
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->SaveGroup(group_id);
-  }
-
   const SavedTabGroup* const saved_group = service()->model()->Get(group_id);
 
   // Remove one tab from the saved group.
@@ -788,35 +645,6 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, RemoveTabFromSyncRemovesLocalTab) {
   EXPECT_EQ(1, tabstrip->count());
   EXPECT_EQ(
       1u, tabstrip->group_model()->GetTabGroup(group_id)->ListTabs().length());
-}
-
-TEST_F(SavedTabGroupKeyedServiceUnitTest,
-       RemoveLastTabFromSyncRemovesLocalTabAndLocalGroup) {
-  Browser* const browser = AddBrowser();
-  TabStripModel* const tabstrip = browser->tab_strip_model();
-
-  auto sync_id = AddGroupFromLocal(browser);
-  auto local_id = LocalIDFromSyncID(sync_id);
-
-  const SavedTabGroup* const saved_group = service()->model()->Get(sync_id);
-  // Add an extra tab so closing the grouped tab doesn't close the browser.
-  AddTabToBrowser(browser, 1);
-
-  // Remove the only tab from the saved group.
-  service()->model()->RemoveTabFromGroupFromSync(
-      saved_group->saved_guid(),
-      saved_group->saved_tabs().at(0).saved_tab_guid());
-
-  if (IsTabGroupsSaveV2Enabled()) {
-    // The tab was deleted.
-    EXPECT_EQ(1, tabstrip->count());
-  } else {
-    // The local tab in the group should still be in the tabstrip but no longer
-    // in the group.
-    EXPECT_EQ(2, tabstrip->count());
-  }
-  // The local group should also have been closed, since it's now empty.
-  EXPECT_FALSE(tabstrip->group_model()->ContainsTabGroup(local_id));
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
@@ -836,14 +664,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   // The local group should have been closed.
   EXPECT_FALSE(tabstrip->group_model()->ContainsTabGroup(group_id));
 
-  if (IsTabGroupsSaveV2Enabled()) {
-    // The tab was deleted.
-    EXPECT_EQ(1, tabstrip->count());
-  } else {
-    // The local tab in the group should still be in the tabstrip but no longer
-    // in the group.
-    EXPECT_EQ(2, tabstrip->count());
-  }
+  // The tab was deleted.
+  EXPECT_EQ(1, tabstrip->count());
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
@@ -855,9 +677,6 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   AddTabToBrowser(browser, 0);
   AddTabToBrowser(browser, 1);
   const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0, 1});
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->SaveGroup(group_id);
-  }
 
   const SavedTabGroup* group = service()->model()->Get(group_id);
   LocalTabID first_tab_id = tabstrip->GetTabAtIndex(0)->GetHandle().raw_value();
@@ -893,10 +712,6 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, ReorderTabFromSyncReordersLocalTab) {
   AddTabToBrowser(browser, 1);
   const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0, 1});
 
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->SaveGroup(group_id);
-  }
-
   const base::Uuid saved_group_id =
       service()->model()->Get(group_id)->saved_guid();
 
@@ -912,9 +727,6 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   tabs::TabInterface* tab_0 = AddTabToBrowser(browser, 0);
   tabs::TabInterface* tab_1 = AddTabToBrowser(browser, 1);
   const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0, 1});
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->SaveGroup(group_id);
-  }
 
   const SavedTabGroup* group = service()->model()->Get(group_id);
 
@@ -954,8 +766,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
                                       ->ListTabs();
   EXPECT_EQ(2u, grouped_tabs.length());
   for (auto index = grouped_tabs.start(); index < grouped_tabs.end(); ++index) {
-    EXPECT_TRUE(IsURLValidForSavedTabGroups(
-        tabstrip->GetWebContentsAt(index)->GetURL()));
+    EXPECT_EQ(tabstrip->GetWebContentsAt(index)->GetURL(),
+              GURL(chrome::kChromeUINewTabURL));
   }
 }
 
@@ -980,33 +792,27 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   EXPECT_NE(tabstrip->GetWebContentsAt(0)->GetURL(), url);
 }
 
-// Local
-// Creation of Bad tab is NTP
-// Navigation of Bad tab doesnt update
-
-TEST_F(SavedTabGroupKeyedServiceUnitTest, AddedBadTabIsNTPInstead) {
+// Tests that unsupported tab URL is saved.
+TEST_F(SavedTabGroupKeyedServiceUnitTest, UnsupportedTabURLSaved) {
   Browser* browser_1 = AddBrowser();
+  GURL url("file://1");
 
   // Create a saved tab group with one tab.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
   tabs::TabInterface* added_tab = AddTabToBrowser(browser_1, 0);
   added_tab->GetContents()->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(GURL("file://1")));
+      content::NavigationController::LoadURLParams(url));
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0});
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->SaveGroup(group_id);
-  }
 
   const SavedTabGroup* const saved_group = service()->model()->Get(group_id);
 
-  // The SavedTabGroups should be at the new tab page instead of the settings
-  // page.
-  EXPECT_EQ(saved_group->saved_tabs().at(0).url(), chrome::kChromeUINewTabURL);
+  // The URL should be saved into the tab group.
+  EXPECT_EQ(saved_group->saved_tabs().at(0).url(), url);
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
-       TabLocalNavigationToBadURLDoesntUpdateModel) {
+       TabLocalNavigationToBadURLUpdateModel) {
   Browser* browser_1 = AddBrowser();
 
   // Create a saved tab group with one good tab.
@@ -1020,17 +826,14 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0});
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->SaveGroup(group_id);
-  }
 
   const SavedTabGroup* const saved_group = service()->model()->Get(group_id);
 
   // Navigate to a bad tab.
   tester->NavigateAndCommit(bad_gurl);
 
-  // The SavedTabGroupTab should still be at the good URL not the bad one.
-  EXPECT_EQ(saved_group->saved_tabs().at(0).url(), good_gurl);
+  // The SavedTabGroupTab should be changed to the bad one.
+  EXPECT_EQ(saved_group->saved_tabs().at(0).url(), bad_gurl);
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
@@ -1048,9 +851,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   tester->NavigateAndCommit(good_url);
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0});
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->SaveGroup(group_id);
-  }
+
   const SavedTabGroup* const saved_group = service()->model()->Get(group_id);
 
   content::RenderFrameHost* render_frame_host =
@@ -1082,12 +883,6 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, SaveGroupIsPinned) {
   const tab_groups::TabGroupId tab_group_id_3 =
       browser->tab_strip_model()->AddToNewGroup({2});
 
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->SaveGroup(tab_group_id_1, /*is_pinned=*/true);
-    service()->SaveGroup(tab_group_id_2, /*is_pinned=*/true);
-    service()->SaveGroup(tab_group_id_3, /*is_pinned=*/true);
-  }
-
   auto saved_tab_groups = service()->model()->saved_tab_groups();
 
   // Pinning reverses the saving order.
@@ -1096,24 +891,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, SaveGroupIsPinned) {
   ASSERT_EQ(tab_group_id_1, saved_tab_groups[2].local_group_id());
 }
 
-// Tests TabGroupsSaveV2 specific interactions. In this mode, all tab groups are
-// saved by default (the only exception is incognito and guest mode).
-class SavedTabGroupKeyedServiceUnitTestV2
-    : public SavedTabGroupKeyedServiceUnitTest {
- public:
-  SavedTabGroupKeyedServiceUnitTestV2() {
-    feature_list_.InitAndEnableFeature(tab_groups::kTabGroupsSaveV2);
-  }
-  SavedTabGroupKeyedServiceUnitTestV2(
-      const SavedTabGroupKeyedServiceUnitTestV2&) = delete;
-  SavedTabGroupKeyedServiceUnitTestV2& operator=(
-      const SavedTabGroupKeyedServiceUnitTestV2&) = delete;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(SavedTabGroupKeyedServiceUnitTestV2, LastTabRemoveFromSyncClosesGroup) {
+TEST_F(SavedTabGroupKeyedServiceUnitTest,
+       LastTabRemoveFromSyncDoesNotCloseGroupAndCreatesPendingNTP) {
   Browser* browser = AddBrowser();
 
   tab_groups::SavedTabGroupKeyedService* service =
@@ -1136,13 +915,14 @@ TEST_F(SavedTabGroupKeyedServiceUnitTestV2, LastTabRemoveFromSyncClosesGroup) {
       saved_group->saved_tabs().at(0).saved_tab_guid());
 
   // The group should have closed along with all of its tabs.
-  EXPECT_EQ(1, tab_strip_model->count());
+  EXPECT_EQ(2, tab_strip_model->count());
   // The local group should also have been closed, since it's now empty.
-  EXPECT_FALSE(tab_strip_model->group_model()->ContainsTabGroup(group_id));
+  EXPECT_TRUE(tab_strip_model->group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(1u, saved_group->saved_tabs().size());
+  EXPECT_TRUE(saved_group->saved_tabs()[0].is_pending_ntp());
 }
 
-TEST_F(SavedTabGroupKeyedServiceUnitTestV2,
-       GroupRemovedFromSyncClosesOpenGroup) {
+TEST_F(SavedTabGroupKeyedServiceUnitTest, GroupRemovedFromSyncClosesOpenGroup) {
   Browser* browser = AddBrowser();
 
   tab_groups::SavedTabGroupKeyedService* service =
@@ -1175,10 +955,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, CreateTabStateOnSyncNavigations) {
 
   // Create a saved tab group with one tab.
   AddTabToBrowser(browser, 0);
-  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0});
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->SaveGroup(group_id);
-  }
+  tabstrip->AddToNewGroup({0});
+
   const GURL url = GURL("https://www.example.com");
   const GURL url2 = GURL("https://www.example2.com");
 
@@ -1210,10 +988,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, TabStateClearedOnUserInput) {
 
   // Create a saved tab group with one tab.
   AddTabToBrowser(browser, 0);
-  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0});
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->SaveGroup(group_id);
-  }
+  tabstrip->AddToNewGroup({0});
+
   const GURL url = GURL("https://www.example.com");
 
   // Simulate a sync navigation on the tab.
@@ -1238,10 +1014,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Create a saved tab group with one tab.
   AddTabToBrowser(browser, 0);
-  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0});
-  if (!IsTabGroupsSaveV2Enabled()) {
-    service()->SaveGroup(group_id);
-  }
+  tabstrip->AddToNewGroup({0});
+
   const GURL url = GURL("https://www.example.com");
   const GURL url2 = GURL("https://www.example2.com");
 

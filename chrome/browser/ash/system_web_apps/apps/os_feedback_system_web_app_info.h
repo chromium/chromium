@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
@@ -49,12 +49,5 @@ class OSFeedbackAppDelegate : public ash::SystemWebAppDelegate {
 
   base::WeakPtrFactory<OSFeedbackAppDelegate> weak_ptr_factory_{this};
 };
-
-// Returns a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForOSFeedbackSystemWebApp();
-
-// Returns the default bounds.
-gfx::Rect GetDefaultBoundsForOSFeedbackApp(Browser*);
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_OS_FEEDBACK_SYSTEM_WEB_APP_INFO_H_

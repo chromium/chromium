@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_manifest_constants.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
 namespace {
@@ -146,7 +143,6 @@ TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
   EXPECT_TRUE(extension->install_warnings().empty());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
        ChromeOSSystemExtensionDevIsEnabled) {
   auto scoped_info =
@@ -162,7 +158,6 @@ TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
   EXPECT_TRUE(extension->is_chromeos_system_extension());
   EXPECT_TRUE(extension->install_warnings().empty());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 }  // namespace chromeos

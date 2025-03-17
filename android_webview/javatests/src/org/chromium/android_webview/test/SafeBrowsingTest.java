@@ -52,6 +52,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.safe_browsing.SafeBrowsingApiHandler;
@@ -67,21 +68,12 @@ import java.util.Arrays;
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@DoNotBatch(reason = "setSafeBrowsingHandler() should be only called once per process.")
 public class SafeBrowsingTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
     public SafeBrowsingTest(AwSettingsMutation param) {
-        mActivityTestRule =
-                new AwActivityTestRule(param.getMutation()) {
-                    /**
-                     * Creates a special BrowserContext that has a safebrowsing api handler which always says
-                     * sites are malicious
-                     */
-                    @Override
-                    public AwBrowserContext createAwBrowserContextOnUiThread() {
-                        return new MockAwBrowserContext();
-                    }
-                };
+        mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
 
     private SafeBrowsingContentsClient mContentsClient;
@@ -192,16 +184,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         @Override
         public boolean canUseGms() {
             return true;
-        }
-    }
-
-    /**
-     * A fake AwBrowserContext which loads the MockSafeBrowsingApiHandler instead of the real one.
-     */
-    private static class MockAwBrowserContext extends AwBrowserContext {
-        public MockAwBrowserContext() {
-            super(0);
-            SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
         }
     }
 
@@ -344,6 +326,12 @@ public class SafeBrowsingTest extends AwParameterizedTest {
 
         // Some tests need to inject JavaScript.
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+
+        // Load the MockSafeBrowsingApiHandler instead of the real one.
+        // TODO(crbug.com/394290281): Consider moving to @BeforeClass as this should be called once
+        // per
+        // process.
+        SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
     }
 
     private void loadGreenPage() throws Exception {

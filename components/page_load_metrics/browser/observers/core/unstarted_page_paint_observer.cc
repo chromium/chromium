@@ -9,7 +9,7 @@
 namespace internal {
 
 const char kPageLoadUnstartedPagePaint[] =
-    "PageLoad.Clients.NavigationToFirstContentfulPaint.Timeout2";
+    "PageLoad.Clients.NavigationToFirstContentfulPaint.Timeout3";
 
 }  // namespace internal
 
@@ -27,7 +27,10 @@ UnstartedPagePaintObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
-  StartUnstartedPagePaintTimer();
+  // Start unstarted page paint timer only if it is visible.
+  if (started_in_foreground) {
+    StartUnstartedPagePaintTimer();
+  }
 
   return CONTINUE_OBSERVING;
 }

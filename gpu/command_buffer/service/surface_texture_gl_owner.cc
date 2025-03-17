@@ -102,22 +102,25 @@ gl::ScopedJavaSurface SurfaceTextureGLOwner::CreateJavaSurface() const {
   return gl::ScopedJavaSurface(surface_texture_.get());
 }
 
-void SurfaceTextureGLOwner::UpdateTexImage() {
+bool SurfaceTextureGLOwner::UpdateTexImage(bool discard) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (surface_texture_) {
-    // UpdateTexImage bounds texture to the SurfaceTexture context, so make it
-    // current.
-    auto scoped_make_current = MakeCurrentIfNeeded(this);
-    if (scoped_make_current && !scoped_make_current->IsContextCurrent())
-      return;
-
-    // UpdateTexImage might change gl binding and we never should alter gl
-    // binding without updating state tracking, which we can't do here, so
-    // restore previous after we done.
-    gl::ScopedRestoreTexture scoped_restore_texture(gl::g_current_gl_context,
-                                                    GL_TEXTURE_EXTERNAL_OES);
-    surface_texture_->UpdateTexImage();
+  if (!surface_texture_) {
+    return false;
   }
+  // UpdateTexImage bounds texture to the SurfaceTexture context, so make it
+  // current.
+  auto scoped_make_current = MakeCurrentIfNeeded(this);
+  if (scoped_make_current && !scoped_make_current->IsContextCurrent()) {
+    return false;
+  }
+
+  // UpdateTexImage might change gl binding and we never should alter gl
+  // binding without updating state tracking, which we can't do here, so
+  // restore previous after we done.
+  gl::ScopedRestoreTexture scoped_restore_texture(gl::g_current_gl_context,
+                                                  GL_TEXTURE_EXTERNAL_OES);
+  surface_texture_->UpdateTexImage();
+  return true;
 }
 
 void SurfaceTextureGLOwner::ReleaseBackBuffers() {

@@ -12,15 +12,18 @@
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
+#include "content/services/auction_worklet/private_model_training_bindings.h"
 #include "content/services/auction_worklet/real_time_reporting_bindings.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/register_ad_macro_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
+#include "content/services/auction_worklet/report_win_browser_signals_lazy_filler.h"
 #include "content/services/auction_worklet/seller_lazy_filler.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/set_priority_bindings.h"
 #include "content/services/auction_worklet/set_priority_signals_override_bindings.h"
 #include "content/services/auction_worklet/shared_storage_bindings.h"
+#include "content/services/auction_worklet/text_conversion_helpers.h"
 #include "v8/include/v8-context.h"
 
 namespace auction_worklet {
@@ -76,11 +79,19 @@ void ContextRecycler::AddRegisterAdMacroBindings() {
   AddBindings(register_ad_macro_bindings_.get());
 }
 
-void ContextRecycler::AddReportBindings() {
+void ContextRecycler::AddReportBindings(
+    bool queue_report_aggregate_win_allowed) {
   DCHECK(!report_bindings_);
-  report_bindings_ =
-      std::make_unique<ReportBindings>(v8_helper_, v8_logger_.get());
+  report_bindings_ = std::make_unique<ReportBindings>(
+      v8_helper_, v8_logger_.get(), queue_report_aggregate_win_allowed);
   AddBindings(report_bindings_.get());
+}
+
+void ContextRecycler::AddPrivateModelTrainingBindings() {
+  DCHECK(!private_model_training_bindings_);
+  private_model_training_bindings_ =
+      std::make_unique<PrivateModelTrainingBindings>(v8_helper_);
+  AddBindings(private_model_training_bindings_.get());
 }
 
 void ContextRecycler::AddSetBidBindings() {
@@ -106,6 +117,13 @@ void ContextRecycler::AddSharedStorageBindings(
   AddBindings(shared_storage_bindings_.get());
 }
 
+void ContextRecycler::AddTextConversionHelpers() {
+  DCHECK(!text_conversion_helpers_);
+  text_conversion_helpers_ =
+      std::make_unique<TextConversionHelpers>(v8_helper_);
+  AddBindings(text_conversion_helpers_.get());
+}
+
 void ContextRecycler::AddInterestGroupLazyFiller() {
   DCHECK(!interest_group_lazy_filler_);
   interest_group_lazy_filler_ =
@@ -123,6 +141,12 @@ void ContextRecycler::AddSellerBrowserSignalsLazyFiller() {
   seller_browser_signals_lazy_filler_ =
       std::make_unique<SellerBrowserSignalsLazyFiller>(v8_helper_,
                                                        v8_logger_.get());
+}
+
+void ContextRecycler::AddReportWinBrowserSignalsLazyFiller() {
+  DCHECK(!report_win_browser_signals_lazy_filler_);
+  report_win_browser_signals_lazy_filler_ =
+      std::make_unique<ReportWinBrowserSignalsLazyFiller>(v8_helper_);
 }
 
 void ContextRecycler::EnsureAuctionConfigLazyFillers(size_t required) {
@@ -166,14 +190,20 @@ v8::Local<v8::Context> ContextRecycler::GetContext() {
 }
 
 void ContextRecycler::ResetForReuse() {
-  for (Bindings* bindings : bindings_list_)
+  for (Bindings* bindings : bindings_list_) {
     bindings->Reset();
-  if (bidding_browser_signals_lazy_filler_)
+  }
+  if (bidding_browser_signals_lazy_filler_) {
     bidding_browser_signals_lazy_filler_->Reset();
-  if (interest_group_lazy_filler_)
+  }
+  if (interest_group_lazy_filler_) {
     interest_group_lazy_filler_->Reset();
+  }
   if (seller_browser_signals_lazy_filler_) {
     seller_browser_signals_lazy_filler_->Reset();
+  }
+  if (report_win_browser_signals_lazy_filler_) {
+    report_win_browser_signals_lazy_filler_->Reset();
   }
   for (const auto& auction_config_lazy_filler : auction_config_lazy_fillers_) {
     auction_config_lazy_filler->Reset();

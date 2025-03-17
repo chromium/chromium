@@ -37,7 +37,7 @@ const int kMinVisibleHeight = 30;
 // Minimum width of the visible part of a window.
 const int kMinVisibleWidth = 30;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // This specifies the minimum percentage of a window's dimension (either width
 // or height) that must remain visible with the display area.
 constexpr float kMinVisibleRatio = 0.3f;
@@ -404,13 +404,13 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
   // `kMinVisibleRatio` of width and height is visible on ChromeOS.
   int min_visible_width = kMinVisibleWidth;
   int min_visible_height = kMinVisibleHeight;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   min_visible_width = std::max(
       min_visible_width, base::ClampRound(bounds->width() * kMinVisibleRatio));
   min_visible_height =
       std::max(min_visible_height,
                base::ClampRound(bounds->height() * kMinVisibleRatio));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   const int min_y = work_area.y() + min_visible_height - bounds->height();
   const int min_x = work_area.x() + min_visible_width - bounds->width();
   const int max_y = work_area.bottom() - min_visible_height;

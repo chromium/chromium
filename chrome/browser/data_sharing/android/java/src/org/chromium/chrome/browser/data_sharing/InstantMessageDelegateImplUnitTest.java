@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,6 +70,7 @@ import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SyncedGroupTestHelper;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -80,6 +82,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
+import java.util.UUID;
 
 /** Unit tests for {@link InstantMessageDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -88,6 +91,7 @@ public class InstantMessageDelegateImplUnitTest {
     private static final int TAB_ID = 1;
     private static final String TAB_TITLE = "Tab Title";
     private static final String TAB_GROUP_TITLE = "Group Title";
+    private static final int TAB_COUNT_IN_GROUP = 13;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -136,12 +140,15 @@ public class InstantMessageDelegateImplUnitTest {
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mManagedMessageDispatcher);
 
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
-        when(mTabGroupModelFilter.getRootIdFromStableId(TAB_GROUP_ID)).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         mSyncedGroupTestHelper = new SyncedGroupTestHelper(mTabGroupSyncService);
-        mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1, TAB_GROUP_ID);
+        SavedTabGroup group = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1, TAB_GROUP_ID);
+        group.savedTabs = SyncedGroupTestHelper.tabsFromCount(TAB_COUNT_IN_GROUP);
+        group.collaborationId = COLLABORATION_ID1;
 
         mDelegate =
                 new InstantMessageDelegateImpl(
@@ -174,17 +181,16 @@ public class InstantMessageDelegateImplUnitTest {
     public void testDisplayInstantaneousMessage_NotAttached() {
         mDelegate.detachWindow(mWindowAndroid);
         mDelegate.displayInstantaneousMessage(
-                newInstantMessage(CollaborationEvent.TAB_REMOVED), mSuccessCallback);
+                Arrays.asList(newInstantMessage(CollaborationEvent.TAB_REMOVED)), mSuccessCallback);
         verify(mManagedMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
         verify(mSuccessCallback).onResult(false);
     }
 
     @Test
     public void testDisplayInstantaneousMessage_NotInTabModel() {
-        when(mTabGroupModelFilter.getRootIdFromStableId(TAB_GROUP_ID))
-                .thenReturn(Tab.INVALID_TAB_ID);
+        when(mTabGroupModelFilter.tabGroupExists(any())).thenReturn(false);
         mDelegate.displayInstantaneousMessage(
-                newInstantMessage(CollaborationEvent.TAB_REMOVED), mSuccessCallback);
+                Arrays.asList(newInstantMessage(CollaborationEvent.TAB_REMOVED)), mSuccessCallback);
         verify(mManagedMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
         verify(mSuccessCallback).onResult(false);
     }
@@ -192,7 +198,7 @@ public class InstantMessageDelegateImplUnitTest {
     @Test
     public void testTabRemoved() {
         mDelegate.displayInstantaneousMessage(
-                newInstantMessage(CollaborationEvent.TAB_REMOVED), mSuccessCallback);
+                Arrays.asList(newInstantMessage(CollaborationEvent.TAB_REMOVED)), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
@@ -220,7 +226,7 @@ public class InstantMessageDelegateImplUnitTest {
     public void testTabRemoved_NullUrl() {
         InstantMessage message = newInstantMessage(CollaborationEvent.TAB_REMOVED);
         message.attribution.tabMetadata.lastKnownUrl = null;
-        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+        mDelegate.displayInstantaneousMessage(Arrays.asList(message), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
@@ -238,7 +244,7 @@ public class InstantMessageDelegateImplUnitTest {
     @Test
     public void testTabNavigated() {
         mDelegate.displayInstantaneousMessage(
-                newInstantMessage(CollaborationEvent.TAB_UPDATED), mSuccessCallback);
+                Arrays.asList(newInstantMessage(CollaborationEvent.TAB_UPDATED)), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
@@ -260,10 +266,38 @@ public class InstantMessageDelegateImplUnitTest {
     }
 
     @Test
+    public void testTabNavigated_doubleShow() {
+        mDelegate.displayInstantaneousMessage(
+                Arrays.asList(newInstantMessage(CollaborationEvent.TAB_UPDATED)), mSuccessCallback);
+
+        verify(mManagedMessageDispatcher)
+                .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        PropertyModel propertyModel = mPropertyModelCaptor.getValue();
+
+        verify(mSuccessCallback, never()).onResult(anyBoolean());
+
+        // Initial show, should trigger the success callback.
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
+        verify(mSuccessCallback).onResult(true);
+
+        // See crbug.com/393023075, it seems message dispatching will re-trigger visibly.
+        // Chrome is backgrounded.
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(false);
+        // Chrome is foregrounded.
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
+
+        // Message stops showing naturally
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(false);
+
+        // Callback should still only have been invoked once.
+        verify(mSuccessCallback, times(1)).onResult(anyBoolean());
+    }
+
+    @Test
     public void testCollaborationMemberAdded() {
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
         message.attribution.collaborationId = COLLABORATION_ID1;
-        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+        mDelegate.displayInstantaneousMessage(Arrays.asList(message), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
@@ -280,14 +314,14 @@ public class InstantMessageDelegateImplUnitTest {
         Supplier<Integer> action = propertyModel.get(ON_PRIMARY_ACTION);
         assertNotNull(action);
         assertEquals(DISMISS_IMMEDIATELY, action.get().intValue());
-        verify(mDataSharingTabManager).showManageSharing(any(), any());
+        verify(mDataSharingTabManager).createOrManageFlow(any(), any(), any(), any());
     }
 
     @Test
     public void testCollaborationMemberAdded_NullCollaborationId() {
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
         message.attribution.collaborationId = null;
-        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+        mDelegate.displayInstantaneousMessage(Arrays.asList(message), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
@@ -295,16 +329,15 @@ public class InstantMessageDelegateImplUnitTest {
         Supplier<Integer> action = propertyModel.get(ON_PRIMARY_ACTION);
         assertNotNull(action);
         assertEquals(DISMISS_IMMEDIATELY, action.get().intValue());
-        verify(mDataSharingTabManager, never()).showManageSharing(any(), any());
+        verify(mDataSharingTabManager, never()).createOrManageFlow(any(), any(), any(), any());
     }
 
     @Test
     public void testCollaborationMemberAdded_FallbackTitle() {
-        when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(TAB_ID);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(13);
+        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(TAB_COUNT_IN_GROUP);
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
         message.attribution.tabGroupMetadata.lastKnownTitle = "";
-        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+        mDelegate.displayInstantaneousMessage(Arrays.asList(message), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
@@ -313,7 +346,7 @@ public class InstantMessageDelegateImplUnitTest {
         assertEquals(MessageIdentifier.COLLABORATION_MEMBER_ADDED, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(GIVEN_NAME1));
-        assertTrue(title.contains(Integer.toString(13)));
+        assertTrue(title.contains(Integer.toString(TAB_COUNT_IN_GROUP)));
 
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
         verify(mSuccessCallback).onResult(true);
@@ -322,7 +355,8 @@ public class InstantMessageDelegateImplUnitTest {
     @Test
     public void testCollaborationRemoved() {
         mDelegate.displayInstantaneousMessage(
-                newInstantMessage(CollaborationEvent.COLLABORATION_REMOVED), mSuccessCallback);
+                Arrays.asList(newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED)),
+                mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
@@ -337,12 +371,15 @@ public class InstantMessageDelegateImplUnitTest {
     }
 
     @Test
-    public void testCollaborationRemoved_FallbackTitle() {
-        when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(TAB_ID);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(13);
-        InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_REMOVED);
-        message.attribution.tabGroupMetadata.lastKnownTitle = "";
-        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+    public void testCollaborationRemovedNullTitle() {
+        // Remove the group from the sync service, since it's being deleted. This will make fetching
+        // the title difficult.
+        reset(mTabGroupSyncService);
+        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(1);
+
+        InstantMessage message = newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED);
+        message.attribution.tabGroupMetadata.lastKnownTitle = null;
+        mDelegate.displayInstantaneousMessage(Arrays.asList(message), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
@@ -350,7 +387,27 @@ public class InstantMessageDelegateImplUnitTest {
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.COLLABORATION_REMOVED, messageIdentifier);
         String title = propertyModel.get(TITLE);
-        assertTrue(title.contains(Integer.toString(13)));
+        assertTrue(title.contains("1 tab"));
+
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
+        verify(mSuccessCallback).onResult(true);
+    }
+
+    @Test
+    public void testCollaborationRemoved_FallbackTitle() {
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(any())).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(TAB_COUNT_IN_GROUP);
+        InstantMessage message = newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED);
+        message.attribution.tabGroupMetadata.lastKnownTitle = "";
+        mDelegate.displayInstantaneousMessage(Arrays.asList(message), mSuccessCallback);
+
+        verify(mManagedMessageDispatcher)
+                .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        PropertyModel propertyModel = mPropertyModelCaptor.getValue();
+        @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
+        assertEquals(MessageIdentifier.COLLABORATION_REMOVED, messageIdentifier);
+        String title = propertyModel.get(TITLE);
+        assertTrue(title.contains(Integer.toString(TAB_COUNT_IN_GROUP)));
 
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
         verify(mSuccessCallback).onResult(true);
@@ -360,11 +417,12 @@ public class InstantMessageDelegateImplUnitTest {
     public void testSystemNotification() {
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
         message.level = InstantNotificationLevel.SYSTEM;
+        message.attribution.id = UUID.fromString("00000000-0000-0000-0000-000000000009").toString();
 
-        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+        mDelegate.displayInstantaneousMessage(Arrays.asList(message), mSuccessCallback);
 
         verify(mDataSharingNotificationManager)
-                .showOtherJoinedNotification(any(), eq(SYNC_GROUP_ID1));
+                .showOtherJoinedNotification(any(), eq(SYNC_GROUP_ID1), eq(9));
         verify(mSuccessCallback).onResult(true);
     }
 }

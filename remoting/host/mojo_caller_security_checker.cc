@@ -39,13 +39,13 @@ namespace {
 
 #if BUILDFLAG(IS_LINUX)
 constexpr auto kAllowedCallerProgramNames =
-    base::MakeFixedFlatSet<base::FilePath::StringPieceType>({
+    base::MakeFixedFlatSet<base::FilePath::StringViewType>({
         "remote-open-url",
         "remote-webauthn",
     });
 #elif BUILDFLAG(IS_WIN)
 constexpr auto kAllowedCallerProgramNames =
-    base::MakeFixedFlatSet<base::FilePath::StringPieceType>({
+    base::MakeFixedFlatSet<base::FilePath::StringViewType>({
         L"remote_open_url.exe",
         L"remote_webauthn.exe",
         L"remote_security_key.exe",

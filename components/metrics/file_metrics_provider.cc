@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string_view>
 #include <vector>
@@ -65,7 +66,7 @@ struct SourceOptions {
 // Opening a file typically requires at least these flags.
 constexpr int STD_OPEN = base::File::FLAG_OPEN | base::File::FLAG_READ;
 
-constexpr SourceOptions kSourceOptions[] = {
+constexpr auto kSourceOptions = std::to_array<SourceOptions>({
     // SOURCE_HISTOGRAMS_ATOMIC_FILE
     {
         // Ensure that no other process reads this at the same time.
@@ -89,7 +90,7 @@ constexpr SourceOptions kSourceOptions[] = {
         base::MemoryMappedFile::READ_WRITE,
         false,
     },
-};
+});
 
 void DeleteFileWhenPossible(const base::FilePath& path) {
   // Open (with delete) and then immediately close the file by going out of
@@ -762,7 +763,7 @@ void FileMetricsProvider::AppendToSamplesCountPref(
 
 // static
 size_t FileMetricsProvider::CollectFileMetadataFromSource(SourceInfo* source) {
-  base::HistogramBase::Count samples_count = 0;
+  base::HistogramBase::Count32 samples_count = 0;
   base::PersistentHistogramAllocator::Iterator it{source->allocator.get()};
   std::unique_ptr<base::HistogramBase> histogram;
   while ((histogram = it.GetNext()) != nullptr) {

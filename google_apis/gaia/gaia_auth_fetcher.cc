@@ -50,20 +50,21 @@ constexpr char kJsonContentType[] = "application/json;charset=UTF-8";
 
 std::unique_ptr<const GaiaAuthConsumer::ClientOAuthResult>
 ExtractOAuth2TokenPairResponse(const std::string& data) {
-  std::optional<base::Value> value = base::JSONReader::Read(data);
-  if (!value || !value->is_dict())
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(data);
+  if (!dict) {
     return nullptr;
-  base::Value::Dict& dict = value->GetDict();
+  }
 
-  std::string* refresh_token = dict.FindString("refresh_token");
-  std::string* access_token = dict.FindString("access_token");
-  std::optional<int> expires_in_secs = dict.FindInt("expires_in");
-  if (!refresh_token || !access_token || !expires_in_secs.has_value())
+  std::string* refresh_token = dict->FindString("refresh_token");
+  std::string* access_token = dict->FindString("access_token");
+  std::optional<int> expires_in_secs = dict->FindInt("expires_in");
+  if (!refresh_token || !access_token || !expires_in_secs) {
     return nullptr;
+  }
 
   // Extract ID token when obtaining refresh token. Do not fail if absent,
   // but log to keep track.
-  std::string* id_token = dict.FindString("id_token");
+  std::string* id_token = dict->FindString("id_token");
   if (!id_token)
     LOG(ERROR) << "Missing ID token on refresh token fetch response.";
   gaia::TokenServiceFlags service_flags =
@@ -71,14 +72,14 @@ ExtractOAuth2TokenPairResponse(const std::string& data) {
 
   bool is_bound_to_key = false;
   // If present, indicates special rules of how the token must be used.
-  std::string* refresh_token_type = dict.FindString("refresh_token_type");
+  std::string* refresh_token_type = dict->FindString("refresh_token_type");
   if (refresh_token_type &&
       base::EqualsCaseInsensitiveASCII(*refresh_token_type, "bound_to_key")) {
     is_bound_to_key = true;
   }
 
   return std::make_unique<const GaiaAuthConsumer::ClientOAuthResult>(
-      *refresh_token, *access_token, expires_in_secs.value(),
+      *refresh_token, *access_token, *expires_in_secs,
       service_flags.is_child_account,
       service_flags.is_under_advanced_protection, is_bound_to_key);
 }
@@ -93,12 +94,12 @@ GetTokenRevocationStatusFromResponseData(const std::string& data,
   if (response_code == net::HTTP_INTERNAL_SERVER_ERROR)
     return GaiaAuthConsumer::TokenRevocationStatus::kServerError;
 
-  std::optional<base::Value> value = base::JSONReader::Read(data);
-  if (!value || !value->is_dict())
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(data);
+  if (!dict) {
     return GaiaAuthConsumer::TokenRevocationStatus::kUnknownError;
-  base::Value::Dict& dict = value->GetDict();
+  }
 
-  std::string* error = dict.FindString("error");
+  std::string* error = dict->FindString("error");
   if (!error)
     return GaiaAuthConsumer::TokenRevocationStatus::kUnknownError;
 
@@ -111,12 +112,7 @@ GetTokenRevocationStatusFromResponseData(const std::string& data,
 }
 
 base::Value::Dict ParseJSONDict(const std::string& data) {
-  base::Value::Dict response_dict;
-  std::optional<base::Value> message_value = base::JSONReader::Read(data);
-  if (message_value && message_value->is_dict()) {
-    response_dict.Merge(std::move(message_value->GetDict()));
-  }
-  return response_dict;
+  return base::JSONReader::ReadDict(data).value_or(base::Value::Dict());
 }
 
 GaiaAuthConsumer::ReAuthProofTokenStatus ErrorMessageToReAuthProofTokenStatus(
@@ -190,6 +186,9 @@ std::string GaiaSource::ToString() {
       // Even though this string refers to an old name from the Chromium POV, it
       // should not be changed as it is passed server-side.
       source_string = "ChromiumSigninManager";
+      break;
+    case Type::kChromeGlic:
+      source_string = "ChromiumGlic";
       break;
   }
 
@@ -593,7 +592,7 @@ void GaiaAuthFetcher::StartLogOut() {
 
 void GaiaAuthFetcher::StartCreateReAuthProofTokenForParent(
     const std::string& child_oauth_access_token,
-    const std::string& parent_obfuscated_gaia_id,
+    const GaiaId& parent_obfuscated_gaia_id,
     const std::string& parent_credential) {
   // Create the post body.
   base::Value::Dict post_body_value;
@@ -644,7 +643,8 @@ void GaiaAuthFetcher::StartCreateReAuthProofTokenForParent(
 
   // Create the ReAuth URL.
   GURL reauth_url = GaiaUrls::GetInstance()->reauth_api_url().Resolve(
-      parent_obfuscated_gaia_id + "/reauthProofTokens?delegationType=unicorn");
+      parent_obfuscated_gaia_id.ToString() +
+      "/reauthProofTokens?delegationType=unicorn");
   DCHECK(reauth_url.is_valid());
 
   // Start the request.

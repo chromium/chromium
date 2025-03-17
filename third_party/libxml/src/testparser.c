@@ -128,6 +128,57 @@ testCFileIO(void) {
     return err;
 }
 
+#ifdef LIBXML_VALID_ENABLED
+static void
+testSwitchDtdExtSubset(void *vctxt, const xmlChar *name ATTRIBUTE_UNUSED,
+                       const xmlChar *externalId ATTRIBUTE_UNUSED,
+                       const xmlChar *systemId ATTRIBUTE_UNUSED) {
+    xmlParserCtxtPtr ctxt = vctxt;
+
+    ctxt->myDoc->extSubset = ctxt->_private;
+}
+
+static int
+testSwitchDtd(void) {
+    const char dtdContent[] =
+        "<!ENTITY test '<elem1/><elem2/>'>\n";
+    const char docContent[] =
+        "<!DOCTYPE doc SYSTEM 'entities.dtd'>\n"
+        "<doc>&test;</doc>\n";
+    xmlParserInputBufferPtr input;
+    xmlParserCtxtPtr ctxt;
+    xmlDtdPtr dtd;
+    xmlDocPtr doc;
+    xmlEntityPtr ent;
+    int err = 0;
+
+    input = xmlParserInputBufferCreateStatic(dtdContent,
+                                             sizeof(dtdContent) - 1,
+                                             XML_CHAR_ENCODING_NONE);
+    dtd = xmlIOParseDTD(NULL, input, XML_CHAR_ENCODING_NONE);
+
+    ctxt = xmlNewParserCtxt();
+    ctxt->_private = dtd;
+    ctxt->sax->externalSubset = testSwitchDtdExtSubset;
+    doc = xmlCtxtReadMemory(ctxt, docContent, sizeof(docContent) - 1, NULL,
+                            NULL, XML_PARSE_NOENT | XML_PARSE_DTDLOAD);
+    xmlFreeParserCtxt(ctxt);
+
+    ent = xmlGetDocEntity(doc, BAD_CAST "test");
+    if (ent->children->doc != NULL) {
+        fprintf(stderr, "Entity content should have NULL doc\n");
+        err = 1;
+    }
+
+    /* Free doc before DTD */
+    doc->extSubset = NULL;
+    xmlFreeDoc(doc);
+    xmlFreeDtd(dtd);
+
+    return err;
+}
+#endif /* LIBXML_VALID_ENABLED */
+
 #ifdef LIBXML_OUTPUT_ENABLED
 static xmlChar *
 dumpNodeList(xmlNodePtr list) {
@@ -283,6 +334,36 @@ testHugeEncodedChunk(void) {
 
     xmlParseChunk(ctxt, (char *) chunk, xmlStrlen(chunk), 0);
     xmlParseChunk(ctxt, NULL, 0, 1);
+
+    err = ctxt->wellFormed ? 0 : 1;
+    xmlFreeDoc(ctxt->myDoc);
+    xmlFreeParserCtxt(ctxt);
+    xmlFree(chunk);
+
+    /*
+     * Test the push parser with
+     *
+     * - a single call to xmlParseChunk,
+     * - a non-UTF8 encoding,
+     * - a chunk larger then MINLEN (4000 bytes).
+     *
+     * This verifies that the whole buffer is processed in the initial
+     * charset conversion.
+     */
+    buf = xmlBufferCreate();
+    xmlBufferCat(buf,
+            BAD_CAST "<?xml version='1.0' encoding='ISO-8859-1'?>\n");
+    xmlBufferCat(buf, BAD_CAST "<doc>");
+    /* 20,000 characters */
+    for (i = 0; i < 2000; i++)
+        xmlBufferCat(buf, BAD_CAST "0123456789");
+    xmlBufferCat(buf, BAD_CAST "</doc>");
+    chunk = xmlBufferDetach(buf);
+    xmlBufferFree(buf);
+
+    ctxt = xmlCreatePushParserCtxt(NULL, NULL, NULL, 0, NULL);
+
+    xmlParseChunk(ctxt, (char *) chunk, xmlStrlen(chunk), 1);
 
     err = ctxt->wellFormed ? 0 : 1;
     xmlFreeDoc(ctxt->myDoc);
@@ -761,6 +842,9 @@ main(void) {
     err |= testUnsupportedEncoding();
     err |= testNodeGetContent();
     err |= testCFileIO();
+#ifdef LIBXML_VALID_ENABLED
+    err |= testSwitchDtd();
+#endif
 #ifdef LIBXML_OUTPUT_ENABLED
     err |= testCtxtParseContent();
 #endif

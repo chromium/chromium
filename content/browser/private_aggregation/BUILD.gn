@@ -43,6 +43,9 @@ mojom("mojo_bindings") {
 group("for_content_tests") {
   visibility = [ "//content/test/*" ]
   if (!is_component_build) {
-    public_deps = [ ":mojo_bindings" ]
+    public_deps = [
+      ":mojo_bindings",
+      "proto:private_aggregation_budgets_proto",
+    ]
   }
 }

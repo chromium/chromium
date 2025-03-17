@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ForeignSession, ForeignSessionTab, ForeignSessionWindow, HistoryAppElement, HistoryEntry, HistoryQuery} from 'chrome://history/history.js';
+import type {ForeignSession, ForeignSessionTab, ForeignSessionWindow, HistoryAppElement} from 'chrome://history/history.js';
+import type {HistoryEntry, HistoryQuery} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {middleOfNode} from 'chrome://webui-test/mouse_mock_interactions.js';
@@ -34,6 +35,7 @@ export function createHistoryEntry(
     dateRelativeDay: d.toISOString().split('T')[0]!,
     dateShort: '',
     dateTimeOfDay: d.getUTCHours() + ':' + d.getUTCMinutes(),
+    debug: null,
     deviceName: '',
     deviceType: '',
     domain: domain,
@@ -92,7 +94,7 @@ export function waitForEvent(
 
   return new Promise<void>(function(resolve) {
     const listener = function(e: Event) {
-      if (!predicate!(e)) {
+      if (!predicate(e)) {
         return;
       }
 

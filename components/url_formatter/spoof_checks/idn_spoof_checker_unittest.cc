@@ -49,8 +49,7 @@ struct IDNTestCase {
   const Result expected_result;
 };
 
-// These cases MUST be generated with the script
-// tools/security/idn_test_case_generator.py.
+// These cases MUST be generated with the script idn_test_case_generator.py.
 // See documentation there: you can either run it from the command line or call
 // the make_case function directly from the Python shell (which may be easier
 // for entering Unicode text).
@@ -1146,7 +1145,7 @@ const IDNTestCase kIdnCases[] = {
 
     // New test cases go ↑↑ above.
 
-    // /!\ WARNING: You MUST use tools/security/idn_test_case_generator.py to
+    // /!\ WARNING: You MUST use the script idn_test_case_generator.py to
     // generate new test cases, as specified by the comment at the top of this
     // test list. Why must you use that python script?
     // 1. It is easy to get things wrong. There were several hand-crafted
@@ -1605,29 +1604,6 @@ TEST(IDNSpoofCheckerNoFixtureTest, MaybeRemoveDiacritics) {
   EXPECT_EQ(u"नागरी́.com", diacritics_not_removed);
   EXPECT_EQ(IDNSpoofChecker::Result::kDangerousPattern,
             non_lgc_result.spoof_check_result);
-}
-
-TEST(IDNSpoofCheckerNoFixtureTest, GetDeviationCharacter) {
-  IDNSpoofChecker checker;
-  EXPECT_EQ(IDNA2008DeviationCharacter::kNone,
-            checker.GetDeviationCharacter(u"example.com"));
-  // These test cases are from
-  // https://www.unicode.org/reports/tr46/tr46-27.html#Table_Deviation_Characters.
-  // faß.de:
-  EXPECT_EQ(IDNA2008DeviationCharacter::kEszett,
-            checker.GetDeviationCharacter(u"fa\u00df.de"));
-  // βόλος.com:
-  EXPECT_EQ(
-      IDNA2008DeviationCharacter::kGreekFinalSigma,
-      checker.GetDeviationCharacter(u"\u03b2\u03cc\u03bb\u03bf\u03c2.com"));
-  // ශ්‍රී.com:
-  EXPECT_EQ(
-      IDNA2008DeviationCharacter::kZeroWidthJoiner,
-      checker.GetDeviationCharacter(u"\u0dc1\u0dca\u200d\u0dbb\u0dd3.com"));
-  // نامه<ZWNJ>ای.com:
-  EXPECT_EQ(IDNA2008DeviationCharacter::kZeroWidthNonJoiner,
-            checker.GetDeviationCharacter(
-                u"\u0646\u0627\u0645\u0647\u200c\u0627\u06cc.com"));
 }
 
 }  // namespace url_formatter

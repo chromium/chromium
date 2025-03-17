@@ -18,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "net/base/net_errors.h"
@@ -202,35 +203,35 @@ class OAuth2MintTokenFlowTest : public testing::Test {
   const network::mojom::URLResponseHeadPtr head_200_;
 
   void CreateFlow(OAuth2MintTokenFlow::Mode mode) {
-    return CreateFlow(&delegate_, mode, false, "", "", "");
+    return CreateFlow(&delegate_, mode, false, "", GaiaId(), "");
   }
 
   void CreateFlowWithEnableGranularPermissions(
       const bool enable_granular_permissions) {
     return CreateFlow(&delegate_, OAuth2MintTokenFlow::MODE_ISSUE_ADVICE,
-                      enable_granular_permissions, "", "", "");
+                      enable_granular_permissions, "", GaiaId(), "");
   }
 
   void CreateFlowWithDeviceId(const std::string& device_id) {
     return CreateFlow(&delegate_, OAuth2MintTokenFlow::MODE_ISSUE_ADVICE, false,
-                      device_id, "", "");
+                      device_id, GaiaId(), "");
   }
 
-  void CreateFlowWithSelectedUserId(const std::string& selected_user_id) {
+  void CreateFlowWithSelectedUserId(const GaiaId& selected_user_id) {
     return CreateFlow(&delegate_, OAuth2MintTokenFlow::MODE_ISSUE_ADVICE, false,
                       "", selected_user_id, "");
   }
 
   void CreateFlowWithConsentResult(const std::string& consent_result) {
     return CreateFlow(&delegate_, OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE,
-                      false, "", "", consent_result);
+                      false, "", GaiaId(), consent_result);
   }
 
   void CreateFlow(MockDelegate* delegate,
                   OAuth2MintTokenFlow::Mode mode,
                   const bool enable_granular_permissions,
                   const std::string& device_id,
-                  const std::string& selected_user_id,
+                  const GaiaId& selected_user_id,
                   const std::string& consent_result) {
     const std::string_view kExtensionId = "ext1";
     flow_ = std::make_unique<MockMintTokenFlow>(
@@ -371,7 +372,7 @@ TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyMintTokenWithDeviceId) {
 }
 
 TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyMintTokenWithSelectedUserId) {
-  CreateFlowWithSelectedUserId("user_id1");
+  CreateFlowWithSelectedUserId(GaiaId("user_id1"));
   std::string body = flow_->CreateApiCallBody();
   std::string expected_body(
       "force=false"
@@ -720,7 +721,7 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallFailure_TokenBindingChallenge) {
 TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallFailure_NullDelegate) {
   network::mojom::URLResponseHead head;
   CreateFlow(nullptr, OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE, false, "",
-             "", "");
+             GaiaId(), "");
   ProcessApiCallFailure(net::ERR_FAILED, &head, nullptr);
   histogram_tester_.ExpectUniqueSample(
       kOAuth2MintTokenApiCallResultHistogram,

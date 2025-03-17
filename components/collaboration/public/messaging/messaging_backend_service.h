@@ -45,13 +45,15 @@ class MessagingBackendService : public KeyedService,
     using SuccessCallback = base::OnceCallback<void(bool)>;
 
     // Invoked when the frontend needs to display an instant message.
-    // When a decision has been made whether it can be displayed or not, invoke
-    // `success_callback` with `true` if it was displayed, and `false`
-    // otherwise. This enables the backend to either:
+    // If `messages` contains more than one message, then it means that they are
+    // of the same type and are meant to be aggregated to be shown as a
+    // single message in the UI. When a decision has been made whether it
+    // can be displayed or not, invoke `success_callback` with `true` if it was
+    // displayed, and `false` otherwise. This enables the backend to either:
     // *   Success: Clear the message from internal storage.
     // *   Failure: Prepare the message to be redelivered at a later time.
     virtual void DisplayInstantaneousMessage(
-        InstantMessage message,
+        const std::vector<InstantMessage>& messages,
         SuccessCallback success_callback) = 0;
   };
 
@@ -87,6 +89,28 @@ class MessagingBackendService : public KeyedService,
   // UI. Will return an empty list if the service has not been initialized.
   virtual std::vector<ActivityLogItem> GetActivityLog(
       const ActivityLogQueryParams& params) = 0;
+
+  // Invoked to clear all dirty messages for a tab group. Meant to be invoked
+  // from the activity card which when dismissed clears out all the individual
+  // tab messages. Doesn't apply to instant messages.
+  virtual void ClearDirtyTabMessagesForGroup(
+      const data_sharing::GroupId& collaboration_group_id) = 0;
+
+  // Invoked to clear a given persistent message. This will clear the specified
+  // dirty bit on the message entry of the database. If std::nullopt is passed,
+  // all dirty bits of that message will be cleared.
+  virtual void ClearPersistentMessage(
+      const base::Uuid& message_id,
+      std::optional<PersistentNotificationType> type) = 0;
+
+  // Deprecated. Do not use. Use ClearPersistentMessage instead.
+  // Invoked to remove a list of given messages from the backend storage.
+  virtual void RemoveMessages(const std::vector<base::Uuid>& message_ids) = 0;
+
+  // Testing-only API for setting activity log.
+  virtual void AddActivityLogForTesting(
+      data_sharing::GroupId collaboration_id,
+      const std::vector<ActivityLogItem>& activity_log) = 0;
 };
 
 }  // namespace collaboration::messaging

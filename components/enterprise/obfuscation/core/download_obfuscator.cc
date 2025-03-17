@@ -16,7 +16,8 @@ base::expected<int64_t, Error> CalculateDeobfuscationOverheadImpl(
     size_t total_size,
     ReadFunc read_func) {
   if (total_size < kHeaderSize + kChunkSizePrefixSize) {
-    return base::unexpected(Error::kDeobfuscationFailed);
+    return RecordAndReturn<int64_t>(
+        base::unexpected(Error::kDeobfuscationFailed));
   }
   size_t offset = kHeaderSize;
   int num_chunks = 0;
@@ -24,7 +25,8 @@ base::expected<int64_t, Error> CalculateDeobfuscationOverheadImpl(
     // Read the chunk size prefix.
     auto size_data_result = read_func(offset, kChunkSizePrefixSize);
     if (!size_data_result.has_value()) {
-      return base::unexpected(Error::kDeobfuscationFailed);
+      return RecordAndReturn<int64_t>(
+          base::unexpected(Error::kDeobfuscationFailed));
     }
     offset += kChunkSizePrefixSize;
 
@@ -32,7 +34,7 @@ base::expected<int64_t, Error> CalculateDeobfuscationOverheadImpl(
     auto chunk_size = enterprise_obfuscation::GetObfuscatedChunkSize(
         size_data_result.value());
     if (!chunk_size.has_value()) {
-      return base::unexpected(chunk_size.error());
+      return RecordAndReturn<int64_t>(base::unexpected(chunk_size.error()));
     }
     offset += chunk_size.value();
     num_chunks++;
@@ -67,7 +69,8 @@ base::expected<std::vector<uint8_t>, Error> DownloadObfuscator::ObfuscateChunk(
   if (chunk_counter_ == 0) {
     auto header = CreateHeader(&derived_key_, &nonce_prefix_);
     if (!header.has_value()) {
-      return base::unexpected(header.error());
+      return RecordAndReturn<std::vector<uint8_t>>(
+          base::unexpected(header.error()));
     }
     result = std::move(header.value());
   }
@@ -75,7 +78,8 @@ base::expected<std::vector<uint8_t>, Error> DownloadObfuscator::ObfuscateChunk(
   auto obfuscated_chunk = ObfuscateDataChunk(data, derived_key_, nonce_prefix_,
                                              chunk_counter_++, is_last_chunk);
   if (!obfuscated_chunk.has_value()) {
-    return base::unexpected(obfuscated_chunk.error());
+    return RecordAndReturn<std::vector<uint8_t>>(
+        base::unexpected(obfuscated_chunk.error()));
   }
 
   result.insert(result.end(), obfuscated_chunk->begin(),
@@ -94,7 +98,8 @@ DownloadObfuscator::GetNextDeobfuscatedChunk(
     auto deobfuscated_result =
         DeobfuscateChunk(obfuscated_data, next_chunk_offset_);
     if (!deobfuscated_result.has_value()) {
-      return base::unexpected(deobfuscated_result.error());
+      return RecordAndReturn<base::span<const uint8_t>>(
+          base::unexpected(deobfuscated_result.error()));
     }
     deobfuscated_chunk_ = std::move(deobfuscated_result.value());
     deobfuscated_chunk_position_ = 0;
@@ -158,7 +163,8 @@ DownloadObfuscator::CalculateDeobfuscationOverhead(
       [&data](size_t offset,
               size_t size) -> base::expected<base::span<const uint8_t>, Error> {
         if (offset + size > data.size()) {
-          return base::unexpected(Error::kDeobfuscationFailed);
+          return RecordAndReturn<base::span<const uint8_t>>(
+              base::unexpected(Error::kDeobfuscationFailed));
         }
         return data.subspan(offset, size);
       });
@@ -173,12 +179,14 @@ DownloadObfuscator::CalculateDeobfuscationOverhead(base::File& file) {
       [&file, &size_buffer](size_t offset, size_t size)
           -> base::expected<base::span<const uint8_t>, Error> {
         if (!file.Seek(base::File::FROM_BEGIN, offset)) {
-          return base::unexpected(Error::kDeobfuscationFailed);
+          return RecordAndReturn<base::span<const uint8_t>>(
+              base::unexpected(Error::kDeobfuscationFailed));
         }
         std::optional<size_t> bytes_read =
             file.ReadAtCurrentPos(base::as_writable_byte_span(size_buffer));
         if (!bytes_read.has_value() || *bytes_read != size) {
-          return base::unexpected(Error::kDeobfuscationFailed);
+          return RecordAndReturn<base::span<const uint8_t>>(
+              base::unexpected(Error::kDeobfuscationFailed));
         }
         return base::as_byte_span(size_buffer);
       });

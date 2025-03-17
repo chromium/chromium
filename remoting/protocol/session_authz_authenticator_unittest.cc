@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <tuple>
 
 #include "base/functional/bind.h"
@@ -19,8 +20,8 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "net/http/http_status_code.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/mock_session_authz_service_client.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/session_authz_service_client.h"
 #include "remoting/base/session_policies.h"
@@ -40,11 +41,12 @@ using testing::_;
 using testing::ByMove;
 using testing::Return;
 
-constexpr char kFakeHostToken[] = "fake_host_token";
-constexpr char kFakeSessionId[] = "fake_session_id";
-constexpr char kFakeSessionToken[] = "fake_session_token";
-constexpr char kFakeSharedSecret[] = "fake_shared_secret";
-constexpr char kFakeSessionReauthToken[] = "fake_session_reauth_token";
+constexpr std::string_view kFakeHostToken = "fake_host_token";
+constexpr std::string_view kFakeSessionId = "fake_session_id";
+constexpr std::string_view kFakeSessionToken = "fake_session_token";
+constexpr std::string_view kFakeSharedSecret = "fake_shared_secret";
+constexpr std::string_view kFakeSessionReauthToken =
+    "fake_session_reauth_token";
 constexpr base::TimeDelta kFakeSessionReauthTokenLifetime = base::Minutes(5);
 constexpr int kMessageSize = 100;
 constexpr int kMessages = 1;
@@ -53,13 +55,12 @@ auto RespondGenerateHostToken() {
   auto response = std::make_unique<internal::GenerateHostTokenResponseStruct>();
   response->host_token = kFakeHostToken;
   response->session_id = kFakeSessionId;
-  return base::test::RunOnceCallback<0>(ProtobufHttpStatus::OK(),
-                                        std::move(response));
+  return base::test::RunOnceCallback<0>(HttpStatus::OK(), std::move(response));
 }
 
 auto RespondVerifySessionToken(
-    const std::string& session_id = kFakeSessionId,
-    const std::string& shared_secret = kFakeSharedSecret,
+    std::string_view session_id = kFakeSessionId,
+    std::string_view shared_secret = kFakeSharedSecret,
     const std::optional<SessionPolicies>& session_policies = std::nullopt) {
   auto response =
       std::make_unique<internal::VerifySessionTokenResponseStruct>();
@@ -68,8 +69,7 @@ auto RespondVerifySessionToken(
   response->session_policies = session_policies;
   response->session_reauth_token = kFakeSessionReauthToken;
   response->session_reauth_token_lifetime = kFakeSessionReauthTokenLifetime;
-  return base::test::RunOnceCallback<1>(ProtobufHttpStatus::OK(),
-                                        std::move(response));
+  return base::test::RunOnceCallback<1>(HttpStatus::OK(), std::move(response));
 }
 
 class FakeClientAuthenticator : public Authenticator {
@@ -175,8 +175,8 @@ void FakeClientAuthenticator::ProcessMessage(
           message->TextNamed(SessionAuthzAuthenticator::kHostTokenTag);
       ASSERT_FALSE(host_token_.empty());
       session_authz_state_ = SessionAuthzState::READY_TO_SEND_SESSION_TOKEN;
-      underlying_ = create_base_authenticator_callback_.Run(kFakeSharedSecret,
-                                                            MESSAGE_READY);
+      underlying_ = create_base_authenticator_callback_.Run(
+          std::string(kFakeSharedSecret), MESSAGE_READY);
       std::move(resume_callback).Run();
       return;
     case SessionAuthzState::AUTHORIZED:
@@ -205,7 +205,7 @@ FakeClientAuthenticator::GetNextMessage() {
     jingle_xmpp::XmlElement* session_token_element =
         new jingle_xmpp::XmlElement(
             SessionAuthzAuthenticator::kSessionTokenTag);
-    session_token_element->SetBodyText(kFakeSessionToken);
+    session_token_element->SetBodyText(std::string(kFakeSessionToken));
     message->AddElement(session_token_element);
     session_authz_state_ = SessionAuthzState::AUTHORIZED;
   }
@@ -278,11 +278,7 @@ void SessionAuthzAuthenticatorTest::StartAuthExchange() {
 TEST_F(SessionAuthzAuthenticatorTest, SuccessfulAuth) {
   EXPECT_CALL(*mock_service_client_, GenerateHostToken(_))
       .WillOnce(RespondGenerateHostToken());
-  internal::VerifySessionTokenRequestStruct
-      expected_verify_session_token_request;
-  expected_verify_session_token_request.session_token = kFakeSessionToken;
-  EXPECT_CALL(*mock_service_client_,
-              VerifySessionToken(expected_verify_session_token_request, _))
+  EXPECT_CALL(*mock_service_client_, VerifySessionToken(kFakeSessionToken, _))
       .WillOnce(RespondVerifySessionToken());
 
   StartAuthExchange();
@@ -347,8 +343,7 @@ TEST_F(SessionAuthzAuthenticatorTest, GenerateHostToken_RpcError_Rejected) {
   EXPECT_CALL(mock_resume_callback, Run()).Times(1);
 
   std::move(generate_host_token_callback)
-      .Run(ProtobufHttpStatus(ProtobufHttpStatus::Code::PERMISSION_DENIED,
-                              "Permission denied"),
+      .Run(HttpStatus(HttpStatus::Code::PERMISSION_DENIED, "Permission denied"),
            nullptr);
   ASSERT_EQ(host_->state(), Authenticator::REJECTED);
   ASSERT_EQ(host_->rejection_reason(),
@@ -366,8 +361,7 @@ TEST_F(SessionAuthzAuthenticatorTest, VerifySessionToken_RpcError_Rejected) {
   StartAuthExchange();
   ASSERT_EQ(host_->state(), Authenticator::PROCESSING_MESSAGE);
   std::move(verify_session_token_callback)
-      .Run(ProtobufHttpStatus(ProtobufHttpStatus::Code::PERMISSION_DENIED,
-                              "Permission denied"),
+      .Run(HttpStatus(HttpStatus::Code::PERMISSION_DENIED, "Permission denied"),
            nullptr);
   ASSERT_EQ(host_->state(), Authenticator::REJECTED);
   ASSERT_EQ(host_->rejection_reason(),
@@ -431,12 +425,10 @@ TEST_F(SessionAuthzAuthenticatorTest, ReauthorizationFailed_Rejected) {
   ASSERT_EQ(host_->state(), Authenticator::ACCEPTED);
   ASSERT_EQ(client_->state(), Authenticator::ACCEPTED);
 
-  internal::ReauthorizeHostRequestStruct request;
-  request.session_id = kFakeSessionId;
-  request.session_reauth_token = kFakeSessionReauthToken;
-  EXPECT_CALL(*mock_service_client_, ReauthorizeHost(request, _))
-      .WillOnce(base::test::RunOnceCallback<1>(
-          ProtobufHttpStatus(net::HttpStatusCode::HTTP_FORBIDDEN), nullptr));
+  EXPECT_CALL(*mock_service_client_,
+              ReauthorizeHost(kFakeSessionReauthToken, kFakeSessionId, _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          HttpStatus(net::HttpStatusCode::HTTP_FORBIDDEN), nullptr));
   EXPECT_CALL(state_change_after_accepted_callback, Run());
 
   task_environment_.FastForwardBy(kFakeSessionReauthTokenLifetime);

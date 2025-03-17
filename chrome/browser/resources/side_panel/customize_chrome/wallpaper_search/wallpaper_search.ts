@@ -17,7 +17,6 @@ import 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dia
 
 import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import type {ThemeHueSliderDialogElement} from 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
-import type {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
@@ -351,7 +350,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     }
   }
 
-  private async fetchDescriptors_() {
+  private fetchDescriptors_() {
     this.wallpaperSearchHandler_.getDescriptors().then(({descriptors}) => {
       if (descriptors) {
         // Order the descriptors so they appear alphabetically in all languages.
@@ -441,7 +440,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   protected getInspirationDescriptorsCheckedStatus_(
       groupDescriptors: InspirationDescriptors): string {
     const groupDescriptorColor = groupDescriptors.color?.name !== undefined ?
-        descriptorDNameToHex(groupDescriptors.color!.name) :
+        descriptorDNameToHex(groupDescriptors.color.name) :
         undefined;
     return (groupDescriptors.subject?.key || null) ===
                 this.selectedDescriptorA_ &&
@@ -689,7 +688,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       return;
     }
 
-    const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
+    const announcer = getAnnouncerInstance();
     recordCustomizeChromeAction(
         CustomizeChromeAction.WALLPAPER_SEARCH_PROMPT_SUBMITTED);
 
@@ -702,7 +701,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.results_ = [];
     announcer.announce(this.i18n('wallpaperSearchLoadingA11yMessage'));
     const descriptors: ResultDescriptors = {
-      subject: this.selectedDescriptorA_!,
+      subject: this.selectedDescriptorA_,
       style: this.selectedDescriptorB_ ?? null,
       mood: this.selectedDescriptorC_ ?? null,
       color: this.selectedDescriptorD_ ?? null,
@@ -758,14 +757,14 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     if (this.status_ === WallpaperSearchStatus.kOk) {
       this.$.wallpaperSearch.focus();
     } else {
-      const error = this.shadowRoot!.querySelector<HTMLElement>('#error');
+      const error = this.shadowRoot.querySelector<HTMLElement>('#error');
       assert(error);
       error.focus();
     }
   }
 
   private selectDescriptorsFromInspirationGroup_(group: InspirationGroup) {
-    const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
+    const announcer = getAnnouncerInstance();
     const groupDescriptors = group.descriptors;
     this.selectedDescriptorA_ = groupDescriptors.subject?.key || null;
     this.selectedDescriptorB_ = groupDescriptors.style?.key || null;

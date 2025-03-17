@@ -13,7 +13,7 @@ source_set("accessory") {
     ":constants",
     "//base",
     "//base:i18n",
-    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/model/omnibox_position",
     "//ios/chrome/browser/presenters/ui_bundled",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/image",

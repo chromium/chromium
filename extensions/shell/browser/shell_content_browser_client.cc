@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/guest_view/common/guest_view.mojom.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
@@ -26,7 +27,6 @@
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/user_agent.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
@@ -128,9 +128,9 @@ bool ShellContentBrowserClient::ShouldUseProcessPerSite(
     content::BrowserContext* browser_context,
     const GURL& site_url) {
   // This ensures that all render views created for a single app will use the
-  // same render process (see content::SiteInstance::GetProcess). Otherwise the
-  // default behavior of ContentBrowserClient will lead to separate render
-  // processes for the background page and each app window view.
+  // same render process (see content::SiteInstance::GetOrCreateProcess).
+  // Otherwise the default behavior of ContentBrowserClient will lead to
+  // separate render processes for the background page and each app window view.
   return true;
 }
 
@@ -388,7 +388,7 @@ ShellContentBrowserClient::GetSandboxedStorageServiceDataDirectory() {
 std::string ShellContentBrowserClient::GetUserAgent() {
   // Must contain a user agent string for version sniffing. For example,
   // pluginless WebRTC Hangouts checks the Chrome version number.
-  return content::BuildUserAgentFromProduct("Chrome/" PRODUCT_VERSION);
+  return embedder_support::GetUserAgent();
 }
 
 std::unique_ptr<ShellBrowserMainParts>

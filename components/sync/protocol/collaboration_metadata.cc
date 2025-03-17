@@ -23,6 +23,7 @@ CollaborationMetadata::CollaborationMetadata(CollaborationMetadata&& other) =
     default;
 CollaborationMetadata& CollaborationMetadata::operator=(
     CollaborationMetadata&& other) = default;
+CollaborationMetadata::~CollaborationMetadata() = default;
 
 // static
 CollaborationMetadata CollaborationMetadata::FromRemoteProto(
@@ -32,7 +33,7 @@ CollaborationMetadata CollaborationMetadata::FromRemoteProto(
           remote_proto.creation_attribution().obfuscated_gaia_id()),
       /*last_updated_by=*/
       GaiaId(remote_proto.last_update_attribution().obfuscated_gaia_id()),
-      /*collaboration_id=*/remote_proto.collaboration_id());
+      CollaborationId(remote_proto.collaboration_id()));
 }
 
 // static
@@ -43,17 +44,16 @@ CollaborationMetadata CollaborationMetadata::FromLocalProto(
           local_proto.creation_attribution().obfuscated_gaia_id()),
       /*last_updated_by=*/
       GaiaId(local_proto.last_update_attribution().obfuscated_gaia_id()),
-      /*collaboration_id=*/local_proto.collaboration_id());
+      CollaborationId(local_proto.collaboration_id()));
 }
 
 // static
 CollaborationMetadata CollaborationMetadata::ForLocalChange(
     const GaiaId& changed_by,
-    std::string_view collaboration_id) {
+    const CollaborationId& collaboration_id) {
   return CollaborationMetadata(
       /*created_by=*/changed_by,
-      /*last_updated_by=*/changed_by,
-      /*collaboration_id=*/std::string(collaboration_id));
+      /*last_updated_by=*/changed_by, collaboration_id);
 }
 
 sync_pb::SyncEntity::CollaborationMetadata
@@ -67,7 +67,7 @@ CollaborationMetadata::ToRemoteProto() const {
     remote_proto.mutable_last_update_attribution()->set_obfuscated_gaia_id(
         last_updated_by_.ToString());
   }
-  remote_proto.set_collaboration_id(collaboration_id_);
+  remote_proto.set_collaboration_id(collaboration_id_.value());
   return remote_proto;
 }
 
@@ -82,7 +82,7 @@ CollaborationMetadata::ToLocalProto() const {
     local_proto.mutable_last_update_attribution()->set_obfuscated_gaia_id(
         last_updated_by_.ToString());
   }
-  local_proto.set_collaboration_id(collaboration_id_);
+  local_proto.set_collaboration_id(collaboration_id_.value());
   return local_proto;
 }
 
@@ -90,22 +90,22 @@ size_t CollaborationMetadata::EstimateMemoryUsage() const {
   using base::trace_event::EstimateMemoryUsage;
   return EstimateMemoryUsage(created_by_.ToString()) +
          EstimateMemoryUsage(last_updated_by_.ToString()) +
-         EstimateMemoryUsage(collaboration_id_);
+         EstimateMemoryUsage(collaboration_id_.value());
 }
 
 CollaborationMetadata::CollaborationMetadata(GaiaId created_by,
                                              GaiaId last_updated_by,
-                                             std::string collaboration_id)
+                                             CollaborationId collaboration_id)
     : created_by_(std::move(created_by)),
       last_updated_by_(std::move(last_updated_by)),
       collaboration_id_(std::move(collaboration_id)) {}
 
 void PrintTo(const CollaborationMetadata& collaboration_metadata,
              std::ostream* os) {
-  *os << "{ collaboration_id: '" << collaboration_metadata.collaboration_id()
-      << "', created_by: '" << collaboration_metadata.created_by()
-      << "', last_updated_by: '" << collaboration_metadata.last_updated_by()
-      << "'}";
+  *os << "{ collaboration_id: '"
+      << collaboration_metadata.collaboration_id().value() << "', created_by: '"
+      << collaboration_metadata.created_by() << "', last_updated_by: '"
+      << collaboration_metadata.last_updated_by() << "'}";
 }
 
 }  // namespace syncer

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
@@ -62,6 +63,12 @@ class MemorySaverIphUiTest : public InteractiveFeaturePromoTest {
     AddDescriptionPrefix(steps, "TriggerMemorySaverPromo()");
     return steps;
   }
+
+ private:
+  // Pretend to have 1GB of memory, to ensure the memory saver promo will
+  // show.
+  base::test::ScopedAmountOfPhysicalMemoryOverride
+      scoped_amount_of_physical_memory_override_{1024};
 };
 
 // Check that the memory saver mode in-product help promo is shown when

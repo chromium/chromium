@@ -6,25 +6,26 @@ package org.chromium.components.image_fetcher;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.BitmapCache;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
 /** ImageFetcher implementation with an in-memory cache. Can also be configured to use a disk cache. */
+@NullMarked
 public class InMemoryCachedImageFetcher extends ImageFetcher {
     public static final int DEFAULT_CACHE_SIZE = 20 * ConversionUtils.BYTES_PER_MEGABYTE; // 20mb
     private static final float PORTION_OF_AVAILABLE_MEMORY = 1.f / 8.f;
 
     // Will do the work if the image isn't cached in memory.
-    private ImageFetcher mImageFetcher;
-    private BitmapCache mBitmapCache;
+    private @Nullable ImageFetcher mImageFetcher;
+    private @Nullable BitmapCache mBitmapCache;
     private @ImageFetcherConfig int mConfig;
 
     /**
@@ -32,12 +33,10 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
      *
      * @param referencePool Pool used to discard references when under memory pressure.
      * @param cacheSize The cache size to use (in bytes), may be smaller depending on the device's
-     *         memory.
+     *     memory.
      */
     InMemoryCachedImageFetcher(
-            @NonNull ImageFetcher imageFetcher,
-            @NonNull DiscardableReferencePool referencePool,
-            int cacheSize) {
+            ImageFetcher imageFetcher, DiscardableReferencePool referencePool, int cacheSize) {
         this(
                 imageFetcher,
                 new BitmapCache(
@@ -51,8 +50,7 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
      * @param bitmapCache The cached where bitmaps will be stored in memory.
      *         memory.
      */
-    InMemoryCachedImageFetcher(
-            @NonNull ImageFetcher imageFetcher, @NonNull BitmapCache bitmapCache) {
+    InMemoryCachedImageFetcher(ImageFetcher imageFetcher, BitmapCache bitmapCache) {
         super(imageFetcher);
         mBitmapCache = bitmapCache;
         mImageFetcher = imageFetcher;
@@ -87,13 +85,13 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
     }
 
     @Override
-    public void fetchGif(final Params params, Callback<BaseGifImage> callback) {
+    public void fetchGif(final Params params, Callback<@Nullable BaseGifImage> callback) {
         assert mBitmapCache != null && mImageFetcher != null : "fetchGif called after destroy";
         mImageFetcher.fetchGif(params, callback);
     }
 
     @Override
-    public void fetchImage(final Params params, Callback<Bitmap> callback) {
+    public void fetchImage(final Params params, Callback<@Nullable Bitmap> callback) {
         assert mBitmapCache != null && mImageFetcher != null : "fetchImage called after destroy";
         Bitmap cachedBitmap =
                 tryToGetBitmap(params.url, params.shouldResize, params.width, params.height);
@@ -140,6 +138,7 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
      * @return The Bitmap stored in memory or null.
      */
     @VisibleForTesting
+    @Nullable
     Bitmap tryToGetBitmap(String url, boolean wasResized, int desiredWidth, int desiredHeight) {
         if (mBitmapCache == null) return null;
 

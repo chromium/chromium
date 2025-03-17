@@ -15,16 +15,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/schemeful_site.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/shared_storage.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "third_party/blink/public/mojom/locks/lock_manager.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
@@ -38,6 +40,7 @@ class SimpleURLLoader;
 namespace content {
 
 class BrowserContext;
+class RenderFrameHostImpl;
 class RenderProcessHost;
 class SharedStorageDocumentServiceImpl;
 class SharedStorageURLLoaderFactoryProxy;
@@ -79,9 +82,11 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       SharedStorageDocumentServiceImpl& document_service,
       const url::Origin& frame_origin,
       const url::Origin& data_origin,
+      blink::mojom::SharedStorageDataOriginType data_origin_type,
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       blink::mojom::SharedStorageWorkletCreationMethod creation_method,
+      int worklet_id,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -98,6 +103,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       blink::CloneableMessage serialized_data,
       bool keep_alive_after_operation,
       blink::mojom::PrivateAggregationConfigPtr private_aggregation_config,
+      bool resolve_to_config,
       const std::u16string& saved_query_name,
       SelectURLCallback callback) override;
   void Run(const std::string& name,
@@ -350,8 +356,19 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // bool is updated with each call to `run()` or `selectURL()`.
   bool keep_alive_after_operation_ = true;
 
+  // Whether navigator.locks has been invoked for this worklet.
+  bool navigator_locks_invoked_ = false;
+
   // Timer for starting and ending the keep-alive phase.
   base::OneShotTimer keep_alive_timer_;
+
+  // Source ID of the page that spawned the worklet.
+  ukm::SourceId source_id_;
+
+  // A monotonically increasing ID assigned to each SharedStorageWorkletHost.
+  // TODO(crbug.com/401011862): Use this ID in DevTools reporting for Shared
+  // Storage.
+  int worklet_id_ = 0;
 
   // Time when worklet host is constructed.
   base::TimeTicks creation_time_;

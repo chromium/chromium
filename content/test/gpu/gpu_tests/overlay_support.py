@@ -412,6 +412,13 @@ OVERLAY_CONFIGS = {
                     supported_codecs=[
                         ZeroCopyCodec.H264,
                         ZeroCopyCodec.VP9])),
+        0x7480: BasicDirectCompositionConfig()\
+                .WithHardwareNV12Support(supported_rotations=[
+                    VideoRotation.ROT180])\
+                .WithZeroCopyConfig(ZeroCopyConfig(
+                    supports_scaled_video=True,
+                    supported_codecs=[
+                        ZeroCopyCodec.H264])),
         0x6613:
         BasicDirectCompositionConfig(),
         0x699f:

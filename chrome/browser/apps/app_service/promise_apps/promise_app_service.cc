@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "ash/components/arc/arc_features.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_package_install_priority_handler.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"

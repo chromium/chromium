@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "chrome/renderer/media/webrtc_logging_agent_impl.h"
@@ -22,12 +21,12 @@
 #include "components/spellcheck/renderer/spellcheck.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/allocator/buildflags.h"
 #if defined(ARCH_CPU_X86_64)
 #include "chrome/renderer/performance_manager/mechanisms/userspace_swap_impl_chromeos.h"
 #endif  // defined(ARCH_CPU_X86_64)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/renderer/font_prewarmer.h"
@@ -68,7 +67,7 @@ void ExposeChromeRendererInterfacesToBrowser(
       base::BindRepeating(&BindWebRTCLoggingAgent, client),
       base::SequencedTaskRunner::GetCurrentDefault());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #if defined(ARCH_CPU_X86_64)
   if (performance_manager::mechanism::UserspaceSwapImpl::
           PlatformSupportsUserspaceSwap()) {
@@ -79,7 +78,7 @@ void ExposeChromeRendererInterfacesToBrowser(
   }
 #endif  // defined(ARCH_CPU_X86_64)
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   binders->Add<spellcheck::mojom::SpellChecker>(

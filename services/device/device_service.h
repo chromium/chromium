@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/geolocation/geolocation_provider.h"
@@ -24,7 +23,6 @@
 #include "services/device/public/mojom/device_service.mojom.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
-#include "services/device/public/mojom/geolocation_config.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
@@ -54,7 +52,7 @@
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "services/device/media_transfer_protocol/mtp_device_manager.h"
 #endif
 
@@ -75,11 +73,14 @@ namespace device {
 
 #if !BUILDFLAG(IS_ANDROID)
 class HidManagerImpl;
-class SerialPortManagerImpl;
 #endif
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 class PressureManagerImpl;
+#endif
+
+#if defined(IS_SERIAL_ENABLED_PLATFORM)
+class SerialPortManagerImpl;
 #endif
 
 class DeviceService;
@@ -159,12 +160,16 @@ class DeviceService : public mojom::DeviceService {
   static void OverrideNFCProviderBinderForTesting(NFCProviderBinder binder);
 #endif
 
+  // Supports global override of UsbDeviceManager binding within the service.
+  using UsbDeviceManagerBinder = base::RepeatingCallback<void(
+      mojo::PendingReceiver<mojom::UsbDeviceManager>)>;
+  static void OverrideUsbDeviceManagerBinderForTesting(
+      UsbDeviceManagerBinder binder);
+
  private:
   // mojom::DeviceService implementation:
   void BindFingerprint(
       mojo::PendingReceiver<mojom::Fingerprint> receiver) override;
-  void BindGeolocationConfig(
-      mojo::PendingReceiver<mojom::GeolocationConfig> receiver) override;
   void BindGeolocationContext(
       mojo::PendingReceiver<mojom::GeolocationContext> receiver) override;
   void BindGeolocationControl(
@@ -199,7 +204,7 @@ class DeviceService : public mojom::DeviceService {
       mojo::PendingReceiver<mojom::HidManager> receiver) override;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void BindMtpManager(
       mojo::PendingReceiver<mojom::MtpManager> receiver) override;
 #endif
@@ -275,7 +280,7 @@ class DeviceService : public mojom::DeviceService {
   base::SequenceBound<SerialPortManagerImpl> serial_port_manager_;
 #endif  // defined(IS_SERIAL_ENABLED_PLATFORM)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<MtpDeviceManager> mtp_device_manager_;
 #endif
 };

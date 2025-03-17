@@ -135,8 +135,8 @@ class AnchorPositionScrollData
   struct AdjustmentData {
     DISALLOW_NEW();
 
-    // The anchor object used when calculating this data.
-    Member<const LayoutObject> anchor_object;
+    // The anchor element used when calculating this data.
+    Member<const Element> anchor_element;
 
     // Compositor element ids of the ancestor scroll adjustment containers
     // (see the class documentation) of some element (anchor), up to the
@@ -171,7 +171,7 @@ class AnchorPositionScrollData
 
     bool has_chained_anchor = false;
 
-    void Trace(Visitor* visitor) const { visitor->Trace(anchor_object); }
+    void Trace(Visitor* visitor) const { visitor->Trace(anchor_element); }
 
     PhysicalOffset TotalOffset() const {
       return accumulated_adjustment + anchored_element_container_scroll_offset;

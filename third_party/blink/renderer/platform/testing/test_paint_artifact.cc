@@ -65,14 +65,15 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(const gfx::Rect& bounds,
   return RectDrawing(NewClient(), bounds, color);
 }
 
-TestPaintArtifact& TestPaintArtifact::ForeignLayer(
+TestPaintArtifact& TestPaintArtifact::ForeignLayerChunk(
     scoped_refptr<cc::Layer> layer,
-    const gfx::Point& offset) {
+    const gfx::Point& origin) {
   DEFINE_STATIC_DISPLAY_ITEM_CLIENT(client, "ForeignLayer");
+  Chunk().Bounds(gfx::Rect(origin, layer->bounds()));
   paint_artifact_->GetDisplayItemList()
       .AllocateAndConstruct<ForeignLayerDisplayItem>(
           client->Id(), DisplayItem::kForeignLayerFirst, std::move(layer),
-          offset, RasterEffectOutset::kNone,
+          origin, RasterEffectOutset::kNone,
           client->GetPaintInvalidationReason());
   paint_artifact_->RecordDebugInfo(client->Id(), client->DebugName(),
                                    client->OwnerNodeId());
@@ -228,7 +229,7 @@ FakeDisplayItemClient& TestPaintArtifact::Client(wtf_size_t i) const {
 void TestPaintArtifact::DidAddDisplayItem() {
   auto& chunk = paint_artifact_->GetPaintChunks().back();
   DCHECK_EQ(chunk.end_index, paint_artifact_->GetDisplayItemList().size() - 1);
-  const auto& item = paint_artifact_->GetDisplayItemList().back();
+  const auto& item = UNSAFE_TODO(paint_artifact_->GetDisplayItemList().back());
   chunk.bounds.Union(item.VisualRect());
   if (item.DrawsContent()) {
     chunk.drawable_bounds.Union(item.VisualRect());

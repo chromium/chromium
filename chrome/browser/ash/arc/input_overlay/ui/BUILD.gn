@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("ui") {
   sources = [
@@ -53,7 +53,6 @@ static_library("ui") {
   deps = [
     "//ash",
     "//ash/app_list",
-    "//ash/components/arc",
     "//ash/public/cpp",
     "//ash/style",
     "//base",
@@ -64,6 +63,7 @@ static_library("ui") {
     "//chrome/browser/ash/arc/input_overlay/db/proto",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/resources:component_extension_resources",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/strings:strings_grit",
     "//ui/base",
     "//ui/chromeos",

@@ -374,17 +374,20 @@ TEST_F(TraceReportDatabaseTest, GetNextReportPendingUpload) {
 
 TEST_F(TraceReportDatabaseTest, UploadCountSince) {
   const base::Time now = base::Time::Now();
-  EXPECT_EQ(
-      0u, trace_report_.UploadCountSince("test_scenario", now - base::Days(2)));
+  EXPECT_EQ(0u, trace_report_.UploadCountSince("test_scenario", "test_rule",
+                                               now - base::Days(2)));
 
   // Create Report for the local traces database.
   NewTraceReport new_report = MakeNewTraceReport(now - base::Days(1));
   ASSERT_TRUE(trace_report_.AddTrace(new_report));
 
-  EXPECT_EQ(
-      1u, trace_report_.UploadCountSince("test_scenario", now - base::Days(2)));
-  EXPECT_EQ(0u, trace_report_.UploadCountSince("test_scenario", now));
-  EXPECT_EQ(0u, trace_report_.UploadCountSince("test_scenario2",
+  EXPECT_EQ(1u, trace_report_.UploadCountSince("test_scenario", "test_rule",
+                                               now - base::Days(2)));
+  EXPECT_EQ(0u,
+            trace_report_.UploadCountSince("test_scenario", "test_rule", now));
+  EXPECT_EQ(0u, trace_report_.UploadCountSince("test_scenario2", "test_rule",
+                                               now - base::Days(2)));
+  EXPECT_EQ(0u, trace_report_.UploadCountSince("test_scenario", "test_rule2",
                                                now - base::Days(2)));
 }
 

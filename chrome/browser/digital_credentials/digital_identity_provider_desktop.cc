@@ -8,7 +8,6 @@
 
 #include "base/containers/span.h"
 #include "base/functional/overloaded.h"
-#include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
@@ -21,7 +20,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/qr_code_generator/bitmap_generator.h"
-#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "content/public/browser/digital_identity_provider.h"
@@ -221,11 +219,7 @@ void DigitalIdentityProviderDesktop::OnCableEvent(
 void DigitalIdentityProviderDesktop::OnFinished(
     base::expected<Response, Error> result) {
   if (result.has_value()) {
-    std::string encoded_result =
-        base::WriteJsonWithOptions(result.value().value(),
-                                   base::JSONWriter::OPTIONS_PRETTY_PRINT)
-            .value_or("");
-    std::move(callback_).Run(std::move(encoded_result));
+    std::move(callback_).Run(std::move(result.value().value()));
     return;
   }
 
@@ -270,10 +264,8 @@ void DigitalIdentityProviderDesktop::ShowQrCodeDialog(
     const std::string& qr_url) {
   std::u16string dialog_title =
       l10n_util::GetStringUTF16(IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE);
-  std::u16string dialog_body = l10n_util::GetStringFUTF16(
-      IDS_WEB_DIGITAL_CREDENTIALS_QR_BODY,
-      url_formatter::FormatOriginForSecurityDisplay(
-          rp_origin_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  std::u16string dialog_body =
+      l10n_util::GetStringUTF16(IDS_WEB_DIGITAL_CREDENTIALS_QR_BODY);
   EnsureDialogCreated()->TryShow(
       /*accept_button=*/std::nullopt, base::OnceClosure(),
       ui::DialogModel::Button::Params(),

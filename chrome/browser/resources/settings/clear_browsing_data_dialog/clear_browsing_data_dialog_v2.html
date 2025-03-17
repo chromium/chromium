@@ -1,0 +1,15 @@
+<style include="settings-shared"></style>
+
+<cr-dialog id="deleteBrowsingDataDialog" close-text="$i18n{close}"
+    show-on-attach ignore-popstate ignore-enter-key>
+  <div slot="title">$i18n{clearBrowsingData}</div>
+  <div slot="body"></div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" autofocus on-click="onCancelClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onClearBrowsingDataClick_">
+      $i18n{clearData}
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -79,6 +79,8 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
 
     virtual RequestPriority priority() const = 0;
 
+    virtual bool IsHappyEyeballsV3Enabled() const = 0;
+
     virtual void AddTransactionTimeQueued(base::TimeDelta time_queued) = 0;
 
    protected:

@@ -1051,17 +1051,17 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       SQLitePersistentSharedDictionaryStore::Error::kInvalidSql);
 }
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
-// MakeFileUnwritable() doesn't cause the failure on Fuchsia and Windows. So
-// disabling the test on Fuchsia and Windows.
+#if !BUILDFLAG(IS_FUCHSIA)
+// MakeFileUnwritable() doesn't cause the failure on Fuchsia. So disabling the
+// test on Fuchsia.
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
        RegisterDictionaryErrorSqlExecutionFailure) {
   CreateStore();
   ClearAllDictionaries();
   DestroyStore();
   MakeFileUnwritable();
-  RunRegisterDictionaryFailureTest(
-      SQLitePersistentSharedDictionaryStore::Error::kFailedToExecuteSql);
+  RunRegisterDictionaryFailureTest(SQLitePersistentSharedDictionaryStore::
+                                       Error::kFailedToInitializeDatabase);
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
@@ -1684,17 +1684,17 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   CheckStoreRecovered();
 }
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
-// MakeFileUnwritable() doesn't cause the failure on Fuchsia and Windows. So
-// disabling the test on Fuchsia and Windows.
+#if !BUILDFLAG(IS_FUCHSIA)
+// MakeFileUnwritable() doesn't cause the failure on Fuchsia. So disabling the
+// test on Fuchsia.
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
        ClearAllDictionariesErrorSqlExecutionFailure) {
   CreateStore();
   ClearAllDictionaries();
   DestroyStore();
   MakeFileUnwritable();
-  RunClearAllDictionariesFailureTest(
-      SQLitePersistentSharedDictionaryStore::Error::kFailedToSetTotalDictSize);
+  RunClearAllDictionariesFailureTest(SQLitePersistentSharedDictionaryStore::
+                                         Error::kFailedToInitializeDatabase);
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
@@ -1742,18 +1742,18 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       SQLitePersistentSharedDictionaryStore::Error::kInvalidSql);
 }
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
-// MakeFileUnwritable() doesn't cause the failure on Fuchsia and Windows. So
-// disabling the test on Fuchsia and Windows.
+#if !BUILDFLAG(IS_FUCHSIA)
+// MakeFileUnwritable() doesn't cause the failure on Fuchsia. So disabling the
+// test on Fuchsia.
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
        ClearDictionariesErrorSqlExecutionFailure) {
   CreateStore();
   RegisterDictionary(isolation_key_, dictionary_info_);
   DestroyStore();
   MakeFileUnwritable();
-  RunClearDictionariesFailureTest(
-      base::RepeatingCallback<bool(const GURL&)>(),
-      SQLitePersistentSharedDictionaryStore::Error::kFailedToExecuteSql);
+  RunClearDictionariesFailureTest(base::RepeatingCallback<bool(const GURL&)>(),
+                                  SQLitePersistentSharedDictionaryStore::Error::
+                                      kFailedToInitializeDatabase);
 }
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
@@ -1764,7 +1764,8 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   MakeFileUnwritable();
   RunClearDictionariesFailureTest(
       base::BindRepeating([](const GURL&) { return true; }),
-      SQLitePersistentSharedDictionaryStore::Error::kFailedToExecuteSql);
+      SQLitePersistentSharedDictionaryStore::Error::
+          kFailedToInitializeDatabase);
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
@@ -1939,9 +1940,9 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       SQLitePersistentSharedDictionaryStore::Error::kInvalidSql);
 }
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
-// MakeFileUnwritable() doesn't cause the failure on Fuchsia and Windows. So
-// disabling the test on Fuchsia and Windows.
+#if !BUILDFLAG(IS_FUCHSIA)
+// MakeFileUnwritable() doesn't cause the failure on Fuchsia. So disabling the
+// test on Fuchsia.
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
        ProcessEvictionErrorSqlExecutionFailure) {
   CreateStore();
@@ -1949,8 +1950,8 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   DestroyStore();
   MakeFileUnwritable();
 
-  RunProcessEvictionFailureTest(
-      SQLitePersistentSharedDictionaryStore::Error::kFailedToExecuteSql);
+  RunProcessEvictionFailureTest(SQLitePersistentSharedDictionaryStore::Error::
+                                    kFailedToInitializeDatabase);
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
@@ -2074,9 +2075,9 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
                                     /*last_fetch_time=*/base::Time::Now()));
 }
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
-// MakeFileUnwritable() doesn't cause the failure on Fuchsia and Windows. So
-// disabling the test on Fuchsia and Windows.
+#if !BUILDFLAG(IS_FUCHSIA)
+// MakeFileUnwritable() doesn't cause the failure on Fuchsia. So disabling the
+// test on Fuchsia.
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
        UpdateDictionaryLastFetchTimeErrorSqlExecutionFailure) {
   CreateStore();
@@ -2085,10 +2086,11 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   DestroyStore();
   MakeFileUnwritable();
   CreateStore();
-  EXPECT_EQ(SQLitePersistentSharedDictionaryStore::Error::kFailedToExecuteSql,
-            UpdateDictionaryLastFetchTime(
-                register_dictionary_result.primary_key_in_database(),
-                /*last_fetch_time=*/base::Time::Now()));
+  EXPECT_EQ(
+      SQLitePersistentSharedDictionaryStore::Error::kFailedToInitializeDatabase,
+      UpdateDictionaryLastFetchTime(
+          register_dictionary_result.primary_key_in_database(),
+          /*last_fetch_time=*/base::Time::Now()));
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 

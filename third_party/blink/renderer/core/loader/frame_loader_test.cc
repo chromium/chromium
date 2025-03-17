@@ -259,7 +259,7 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
       WebPolicyContainerPolicies{
           network::mojom::CrossOriginEmbedderPolicyValue::kNone,
           network::mojom::ReferrerPolicy::kAlways,
-          WebVector<WebContentSecurityPolicy>(),
+          std::vector<WebContentSecurityPolicy>(),
       },
       mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
   LocalFrame* local_frame =
@@ -274,8 +274,8 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
                 /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone,
                 network::mojom::blink::IPAddressSpace::kUnknown,
                 /*can_navigate_top_without_user_gesture=*/true,
-                /*allow_cross_origin_isolation_under_initial_empty_document=*/
-                false),
+                /*allow_cross_origin_isolation=*/false,
+                /*cross_origin_isolation_enabled_by_dip=*/false),
             local_frame->DomWindow()->GetPolicyContainer()->GetPolicies());
 }
 

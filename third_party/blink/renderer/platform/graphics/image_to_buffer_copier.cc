@@ -35,11 +35,20 @@ bool ImageToBufferCopier::EnsureDestImage(const gfx::Size& size) {
 
     dest_image_size_ = size;
 
+    viz::SharedImageFormat color_buffer_format =
+        viz::SinglePlaneFormat::kRGBA_8888;
+#if BUILDFLAG(IS_MAC)
+    // For Mac, explicitly specify BGRA instead of RGBA so that IOSurface
+    // format matches shared image format. This is necessary for Graphite where
+    // IOSurfaces are always used to allow sharing between ANGLE and Dawn.
+    color_buffer_format = viz::SinglePlaneFormat::kBGRA_8888;
+#endif  // BUILDFLAG(IS_MAC)
+
     // We copy the contents of the source image into the destination SharedImage
     // via GL, followed by giving out the destination SharedImage's native
     // buffer handle to eventually be read by the display compositor.
     dest_shared_image_ = sii_->CreateSharedImage(
-        {viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
+        {color_buffer_format, size, gfx::ColorSpace(),
          gpu::SHARED_IMAGE_USAGE_GLES2_WRITE, "ImageToBufferCopier"},
         gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT);
     CHECK(dest_shared_image_);

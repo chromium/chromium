@@ -6,6 +6,7 @@
 
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_endpoint_metadata.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_group.h"
@@ -78,6 +79,15 @@ ResolveErrorInfo FakeServiceEndpointRequest::GetResolveErrorInfo() {
   return resolve_error_info_;
 }
 
+const HostCache::EntryStaleness* FakeServiceEndpointRequest::GetStaleInfo()
+    const {
+  return nullptr;
+}
+
+bool FakeServiceEndpointRequest::IsStaleWhileRefresing() const {
+  return false;
+}
+
 void FakeServiceEndpointRequest::ChangeRequestPriority(
     RequestPriority priority) {
   priority_ = priority;
@@ -127,6 +137,10 @@ FakeServiceEndpointResolver::CreateServiceEndpointRequest(
   requests_.pop_front();
   request->set_priority(parameters.initial_priority);
   return request;
+}
+
+bool FakeServiceEndpointResolver::IsHappyEyeballsV3Enabled() const {
+  return base::FeatureList::IsEnabled(features::kHappyEyeballsV3);
 }
 
 ServiceEndpointBuilder::ServiceEndpointBuilder() = default;
@@ -207,11 +221,17 @@ int FakeStreamSocket::Connect(CompletionOnceCallback callback) {
 }
 
 bool FakeStreamSocket::IsConnected() const {
+  if (is_connected_override_.has_value()) {
+    return *is_connected_override_;
+  }
+  if (disconnect_after_is_connected_call_) {
+    is_connected_override_ = false;
+  }
   return connected_;
 }
 
 bool FakeStreamSocket::IsConnectedAndIdle() const {
-  return connected_ && is_idle_;
+  return IsConnected() && is_idle_;
 }
 
 bool FakeStreamSocket::WasEverUsed() const {
@@ -225,6 +245,12 @@ bool FakeStreamSocket::GetSSLInfo(SSLInfo* ssl_info) {
   }
 
   return false;
+}
+
+void FakeStreamSocket::DisconnectAfterIsConnectedCall() {
+  connected_ = true;
+  is_connected_override_ = std::nullopt;
+  disconnect_after_is_connected_call_ = true;
 }
 
 StreamKeyBuilder& StreamKeyBuilder::from_key(const HttpStreamKey& key) {
@@ -247,6 +273,12 @@ HttpStreamKey GroupIdToHttpStreamKey(
                        SocketTag(), group_id.network_anonymization_key(),
                        group_id.secure_dns_policy(),
                        group_id.disable_cert_network_fetches());
+}
+
+void WaitForAttemptManagerComplete(HttpStreamPool::Group& group) {
+  base::RunLoop run_loop;
+  group.SetOnAttemptManagerCompleteCallbackForTesting(run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 TestJobDelegate::TestJobDelegate(std::optional<HttpStreamKey> stream_key) {
@@ -322,5 +354,10 @@ void TestJobDelegate::OnCertificateError(HttpStreamPool::Job* job,
 
 void TestJobDelegate::OnNeedsClientAuth(HttpStreamPool::Job* job,
                                         SSLCertRequestInfo* cert_info) {}
+
+void TestJobDelegate::OnPreconnectComplete(HttpStreamPool::Job* job,
+                                           int status) {
+  SetResult(status);
+}
 
 }  // namespace net

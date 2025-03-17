@@ -48,7 +48,7 @@ InterpolableNumber::InterpolableNumber(const CSSPrimitiveValue& value) {
 double InterpolableNumber::Value(
     const CSSLengthResolver& length_resolver) const {
   if (IsDoubleValue()) {
-    return value_.Value() *
+    return value_ *
            CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(unit_type_);
   }
   std::optional<double> result =
@@ -66,7 +66,7 @@ void InterpolableNumber::SetExpression(
 
 void InterpolableNumber::SetDouble(double value, UnitType unit_type) {
   type_ = Type::kDouble;
-  value_.Set(value);
+  value_ = value;
   unit_type_ = unit_type;
 }
 
@@ -74,14 +74,14 @@ const CSSMathExpressionNode& InterpolableNumber::AsExpression() const {
   if (IsExpression()) {
     return *expression_;
   }
-  return *NumberNode(value_.Value(), unit_type_);
+  return *NumberNode(value_, unit_type_);
 }
 
 bool InterpolableNumber::Equals(const InterpolableValue& other) const {
   const auto& other_number = To<InterpolableNumber>(other);
   if (IsDoubleValue() && other_number.IsDoubleValue() &&
       unit_type_ == other_number.unit_type_) {
-    return value_.Value() == To<InterpolableNumber>(other).value_.Value();
+    return value_ == To<InterpolableNumber>(other).value_;
   }
   return AsExpression() == other_number.AsExpression();
 }
@@ -97,20 +97,21 @@ bool InterpolableList::Equals(const InterpolableValue& other) const {
   return true;
 }
 
-double InlinedInterpolableDouble::Interpolate(double to,
-                                              const double progress) const {
-  if (progress == 0 || value_ == to) {
-    return value_;
-  } else if (progress == 1) {
-    return to;
-  } else {
-    return value_ * (1 - progress) + to * progress;
-  }
-}
-
 void InterpolableNumber::AssertCanInterpolateWith(
     const InterpolableValue& other) const {
   DCHECK(other.IsNumber());
+}
+
+double InterpolableNumber::Interpolate(double from,
+                                       double to,
+                                       double progress) {
+  if (progress == 0 || from == to) {
+    return from;
+  } else if (progress == 1) {
+    return to;
+  } else {
+    return from * (1 - progress) + to * progress;
+  }
 }
 
 void InterpolableNumber::Interpolate(const InterpolableValue& to,
@@ -120,7 +121,7 @@ void InterpolableNumber::Interpolate(const InterpolableValue& to,
   auto& result_number = To<InterpolableNumber>(result);
   if (IsDoubleValue() && to_number.IsDoubleValue() &&
       unit_type_ == to_number.unit_type_) {
-    result_number.SetDouble(value_.Interpolate(to_number.Value(), progress),
+    result_number.SetDouble(Interpolate(value_, to_number.Value(), progress),
                             unit_type_);
     return;
   }
@@ -175,7 +176,7 @@ InterpolableList* InterpolableList::RawCloneAndZero() const {
 
 void InterpolableNumber::Scale(double scale) {
   if (IsDoubleValue()) {
-    value_.Scale(scale);
+    value_ *= scale;
     return;
   }
   SetExpression(
@@ -188,7 +189,7 @@ void InterpolableNumber::Scale(const InterpolableNumber& other) {
       (unit_type_ == CSSPrimitiveValue::UnitType::kNumber ||
        other.unit_type_ == CSSPrimitiveValue::UnitType::kNumber)) {
     SetDouble(
-        value_.Value() * other.Value(),
+        value_ * other.value_,
         (unit_type_ == CSSPrimitiveValue::UnitType::kNumber ? other.unit_type_
                                                             : unit_type_));
     return;
@@ -207,7 +208,7 @@ void InterpolableNumber::Add(const InterpolableValue& other) {
   const auto& other_number = To<InterpolableNumber>(other);
   if (IsDoubleValue() && other_number.IsDoubleValue() &&
       unit_type_ == other_number.unit_type_) {
-    value_.Add(other_number.value_.Value());
+    value_ += other_number.value_;
     return;
   }
   CSSMathExpressionNode* result =

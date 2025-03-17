@@ -14,6 +14,8 @@ namespace events {
 //  the end of the list, just prior to ENUM_BOUNDARY.
 //
 // Long version: See extension_function_histogram_value.h
+//
+// LINT.IfChange(HistogramValue)
 enum HistogramValue {
   UNKNOWN = 0,
 
@@ -264,7 +266,7 @@ enum HistogramValue {
   SYNC_FILE_SYSTEM_ON_FILE_STATUS_CHANGED = 243,
   SYNC_FILE_SYSTEM_ON_SERVICE_STATUS_CHANGED = 244,
   SYSTEM_DISPLAY_ON_DISPLAY_CHANGED = 245,
-  SYSTEM_INDICATOR_ON_CLICKED = 246,
+  DELETED_SYSTEM_INDICATOR_ON_CLICKED = 246,
   SYSTEM_PRIVATE_ON_BRIGHTNESS_CHANGED = 247,
   SYSTEM_PRIVATE_ON_SCREEN_UNLOCKED = 248,
   SYSTEM_PRIVATE_ON_VOLUME_CHANGED = 249,
@@ -582,10 +584,15 @@ enum HistogramValue {
   TTS_ENGINE_ON_INSTALL_LANGUAGE_REQUEST = 560,
   TTS_ENGINE_ON_LANGUAGE_STATUS_REQUEST = 561,
   TTS_ENGINE_ON_UNINSTALL_LANGUAGE_REQUEST = 562,
+  PDF_VIEWER_PRIVATE_ON_SHOULD_UPDATE_VIEWPORT = 563,
+  OMNIBOX_ON_ACTION_EXECUTED = 564,
+  AUTOFILL_PRIVATE_ON_ENTITY_INSTANCES_CHANGED = 565,
+  ENTERPRISE_REPORTING_PRIVATE_ON_DATA_MASKING_RULES_TRIGGERED = 566,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/extensions/enums.xml:ExtensionEvents)
 
 }  // namespace events
 }  // namespace extensions

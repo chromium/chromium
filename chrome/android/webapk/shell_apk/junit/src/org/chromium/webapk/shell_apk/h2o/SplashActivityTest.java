@@ -107,7 +107,7 @@ public final class SplashActivityTest {
 
         Bundle metadata = new Bundle();
         metadata.putString(WebApkMetaDataKeys.START_URL, "https://pwa.rocks/");
-        metadata.putBoolean(WebApkMetaDataKeys.IS_NEW_STYLE_WEBAPK, true);
+        metadata.putBoolean(WebApkMetaDataKeys.IS_ARC_CHROMEOS, false);
         WebApkTestHelper.registerWebApkWithMetaData(appContext.getPackageName(), metadata, null);
 
         // Install browser.

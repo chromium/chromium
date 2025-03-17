@@ -261,7 +261,7 @@ class WebUsbServiceImplBaseTest : public testing::Test {
 
     if (type == kCreateForFrame) {
       ASSERT_EQ(
-          web_contents_->IsCapabilityActive(WebContents::CapabilityType::kUSB),
+          web_contents_->IsCapabilityActive(WebContentsCapabilityType::kUSB),
           expected_state);
     } else if (type == kCreateForServiceWorker) {
       ASSERT_EQ(worker_version_->GetExternalRequestCountForTest(),
@@ -318,11 +318,11 @@ TEST_P(WebUsbServiceImplTest, OpenAndCloseDevice) {
   CheckIsConnected(service_creation_type, false);
 
   EXPECT_CALL(web_contents_observer,
-              OnCapabilityTypesChanged(WebContents::CapabilityType::kUSB, true))
+              OnCapabilityTypesChanged(WebContentsCapabilityType::kUSB, true))
       .Times(service_creation_type == kCreateForFrame ? 1 : 0)
       .WillOnce(Invoke([&]() {
         EXPECT_TRUE(
-            contents()->IsCapabilityActive(WebContents::CapabilityType::kUSB));
+            contents()->IsCapabilityActive(WebContentsCapabilityType::kUSB));
       }));
   EXPECT_CALL(mock_device, Open)
       .WillOnce(RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
@@ -331,13 +331,12 @@ TEST_P(WebUsbServiceImplTest, OpenAndCloseDevice) {
   EXPECT_TRUE(open_future.Get()->is_success());
   CheckIsConnected(service_creation_type, true);
 
-  EXPECT_CALL(
-      web_contents_observer,
-      OnCapabilityTypesChanged(WebContents::CapabilityType::kUSB, false))
+  EXPECT_CALL(web_contents_observer,
+              OnCapabilityTypesChanged(WebContentsCapabilityType::kUSB, false))
       .Times(service_creation_type == kCreateForFrame ? 1 : 0)
       .WillOnce(Invoke([&]() {
         EXPECT_FALSE(
-            contents()->IsCapabilityActive(WebContents::CapabilityType::kUSB));
+            contents()->IsCapabilityActive(WebContentsCapabilityType::kUSB));
       }));
   EXPECT_CALL(mock_device, Close).WillOnce(RunOnceClosure<0>());
   base::RunLoop run_loop;
@@ -366,11 +365,11 @@ TEST_P(WebUsbServiceImplTest, OpenAndDisconnectDevice) {
   CheckIsConnected(service_creation_type, false);
 
   EXPECT_CALL(web_contents_observer,
-              OnCapabilityTypesChanged(WebContents::CapabilityType::kUSB, true))
+              OnCapabilityTypesChanged(WebContentsCapabilityType::kUSB, true))
       .Times(service_creation_type == kCreateForFrame ? 1 : 0)
       .WillOnce(Invoke([&]() {
         EXPECT_TRUE(
-            contents()->IsCapabilityActive(WebContents::CapabilityType::kUSB));
+            contents()->IsCapabilityActive(WebContentsCapabilityType::kUSB));
       }));
   EXPECT_CALL(mock_device, Open)
       .WillOnce(RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
@@ -381,13 +380,12 @@ TEST_P(WebUsbServiceImplTest, OpenAndDisconnectDevice) {
 
   base::RunLoop loop;
   EXPECT_CALL(mock_device, Close).WillOnce([&]() { loop.Quit(); });
-  EXPECT_CALL(
-      web_contents_observer,
-      OnCapabilityTypesChanged(WebContents::CapabilityType::kUSB, false))
+  EXPECT_CALL(web_contents_observer,
+              OnCapabilityTypesChanged(WebContentsCapabilityType::kUSB, false))
       .Times(service_creation_type == kCreateForFrame ? 1 : 0)
       .WillOnce(Invoke([&]() {
         EXPECT_FALSE(
-            contents()->IsCapabilityActive(WebContents::CapabilityType::kUSB));
+            contents()->IsCapabilityActive(WebContentsCapabilityType::kUSB));
       }));
   DisconnectDevice(fake_device_info);
   loop.Run();
@@ -426,10 +424,10 @@ TEST_F(WebUsbServiceImplFrameTest, OpenAndNavigateCrossOrigin) {
   CheckIsConnected(service_creation_type, false);
 
   EXPECT_CALL(web_contents_observer,
-              OnCapabilityTypesChanged(WebContents::CapabilityType::kUSB, true))
+              OnCapabilityTypesChanged(WebContentsCapabilityType::kUSB, true))
       .WillOnce(Invoke([&]() {
         EXPECT_TRUE(
-            contents()->IsCapabilityActive(WebContents::CapabilityType::kUSB));
+            contents()->IsCapabilityActive(WebContentsCapabilityType::kUSB));
       }));
   EXPECT_CALL(mock_device, Open)
       .WillOnce(RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
@@ -440,12 +438,11 @@ TEST_F(WebUsbServiceImplFrameTest, OpenAndNavigateCrossOrigin) {
 
   base::RunLoop loop;
   EXPECT_CALL(mock_device, Close).WillOnce([&]() { loop.Quit(); });
-  EXPECT_CALL(
-      web_contents_observer,
-      OnCapabilityTypesChanged(WebContents::CapabilityType::kUSB, false))
+  EXPECT_CALL(web_contents_observer,
+              OnCapabilityTypesChanged(WebContentsCapabilityType::kUSB, false))
       .WillOnce(Invoke([&]() {
         EXPECT_FALSE(
-            contents()->IsCapabilityActive(WebContents::CapabilityType::kUSB));
+            contents()->IsCapabilityActive(WebContentsCapabilityType::kUSB));
       }));
   contents()->NavigateAndCommit(GURL(kCrossOriginTestUrl));
   loop.Run();
@@ -503,7 +500,7 @@ TEST_F(WebUsbServiceImplFrameTest, RejectOpaqueOriginEmbeddedFrame) {
       RenderFrameHostTester::For(web_contents->GetPrimaryMainFrame())
           ->AppendChildWithPolicy(
               "embedded_frame",
-              {{blink::mojom::PermissionsPolicyFeature::kUsb,
+              {{network::mojom::PermissionsPolicyFeature::kUsb,
                 /*allowed_origins=*/{},
                 /*self_if_matches=*/url::Origin::Create(kEmbeddedUrl),
                 /*matches_all_origins=*/false, /*matches_opaque_src=*/true}});

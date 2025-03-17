@@ -2,11 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/args.gni")
-import("//build/config/chromeos/ui_mode.gni")
-import("//chromeos/features.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("cros_safety") {
   sources = [
@@ -15,11 +11,11 @@ static_library("cros_safety") {
   ]
   deps = [
     ":cloud_safety_session",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
     "//base",
     "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/services/cros_safety/public/mojom",
     "//components/manta:manta",
     "//components/user_manager:user_manager",

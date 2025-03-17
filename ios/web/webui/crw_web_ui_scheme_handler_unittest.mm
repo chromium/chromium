@@ -60,8 +60,9 @@ const char kChromeScheme[] = "chrome";
 #pragma mark - test utils
 
 - (BOOL)responseHasMimetype:(NSString*)mimeType {
-  if (![self.response isKindOfClass:NSHTTPURLResponse.class])
+  if (![self.response isKindOfClass:NSHTTPURLResponse.class]) {
     return NO;
+  }
   NSHTTPURLResponse* httpResponse =
       static_cast<NSHTTPURLResponse*>(self.response);
   return
@@ -74,10 +75,12 @@ namespace web {
 namespace {
 class FakeWebUIIOSControllerFactory : public WebUIIOSControllerFactory {
   NSInteger GetErrorCodeForWebUIURL(const GURL& url) const override {
-    if (!url.SchemeIs(kTestWebUIScheme) && !url.SchemeIs(kChromeScheme))
+    if (!url.SchemeIs(kTestWebUIScheme) && !url.SchemeIs(kChromeScheme)) {
       return NSURLErrorUnsupportedURL;
-    if (url.host() == kOfflineHost)
+    }
+    if (url.host() == kOfflineHost) {
       return NSURLErrorNotConnectedToInternet;
+    }
     return 0;
   }
 

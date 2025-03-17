@@ -47,7 +47,7 @@ NSString* const kSmartAppBannerKey = @"safarisab";
 
 // TODO(crbug.com/40725595): When swift is supported move WidgetKit constants to
 // a file where they can be shared with the extension. Currently these are also
-// declared as URLs in ios/c/widget_kit_extension/widget_constants.swift.
+// declared as URLs in ios/c/widget_kit_extension/widget_urls.swift.
 //
 // Scheme used by the widget extension actions. It's important that this scheme
 // is never defined as Custom URL Scheme for Chrome so only the widgets can use
@@ -235,8 +235,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                                   AppLaunchSource::X_CALLBACK);
     // TODO(crbug.com/41004788): Temporary fix.
     NSString* action = [completeURL path];
-    // Currently only "open" and "extension-command" are supported.
-    // Other actions are being considered (see b/6914153).
+    // Currently only "open" and "app-group-command" are supported.
     if ([action
             isEqualToString:
                 [NSString
@@ -311,8 +310,9 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     replacements.SetSchemeStr(kChromeUIScheme);
     replacements.SetHostStr(host);
     GURL externalURL = parsedURL.ReplaceComponents(replacements);
-    if (!externalURL.is_valid())
+    if (!externalURL.is_valid()) {
       return nil;
+    }
     return [[ChromeAppStartupParameters alloc]
          initWithExternalURL:externalURL
            declaredSourceApp:appID
@@ -343,10 +343,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
       base::RecordAction(base::UserMetricsAction("MobileFirstPartyViewIntent"));
 
       GURL::Replacements replaceScheme;
-      if (useHttps)
+      if (useHttps) {
         replaceScheme.SetSchemeStr(url::kHttpsScheme);
-      else
+      } else {
         replaceScheme.SetSchemeStr(url::kHttpScheme);
+      }
       externalURL = parsedURL.ReplaceComponents(replaceScheme);
       openedViaSpecificScheme = YES;
     }
@@ -360,8 +361,9 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
       LogOpenHTTPURLFromExternalURL();
     }
 
-    if (!externalURL.is_valid())
+    if (!externalURL.is_valid()) {
       return nil;
+    }
     ChromeAppStartupParameters* params = [[ChromeAppStartupParameters alloc]
          initWithExternalURL:externalURL
            declaredSourceApp:appID
@@ -516,8 +518,9 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   // open url request and replay it later.
   NSTimeInterval delay = [[NSDate date] timeIntervalSinceDate:commandTime];
   UMA_HISTOGRAM_COUNTS_100(kApplicationGroupCommandDelay, delay);
-  if (delay > kAppGroupTriggersVoiceSearchTimeout)
+  if (delay > kAppGroupTriggersVoiceSearchTimeout) {
     return nil;
+  }
   return [ChromeAppStartupParameters
       startupParametersForCommand:command
                  withExternalText:externalText
@@ -582,11 +585,13 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 
   if ([command isEqualToString:base::SysUTF8ToNSString(
                                    app_group::kChromeAppGroupOpenURLCommand)]) {
-    if (!externalText || ![externalText isKindOfClass:[NSString class]])
+    if (!externalText || ![externalText isKindOfClass:[NSString class]]) {
       return nil;
+    }
     GURL externalGURL(base::SysNSStringToUTF8(externalText));
-    if (!externalGURL.is_valid() || !externalGURL.SchemeIsHTTPOrHTTPS())
+    if (!externalGURL.is_valid() || !externalGURL.SchemeIsHTTPOrHTTPS()) {
       return nil;
+    }
     params = [[ChromeAppStartupParameters alloc]
          initWithExternalURL:externalGURL
            declaredSourceApp:appID
@@ -784,17 +789,21 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 
 - (MobileSessionCallerApp)callerApp {
   if ([_secureSourceApp
-          isEqualToString:app_group::kOpenCommandSourceTodayExtension])
+          isEqualToString:app_group::kOpenCommandSourceTodayExtension]) {
     return CALLER_APP_GOOGLE_CHROME_TODAY_EXTENSION;
+  }
   if ([_secureSourceApp
-          isEqualToString:app_group::kOpenCommandSourceSearchExtension])
+          isEqualToString:app_group::kOpenCommandSourceSearchExtension]) {
     return CALLER_APP_GOOGLE_CHROME_SEARCH_EXTENSION;
+  }
   if ([_secureSourceApp
-          isEqualToString:app_group::kOpenCommandSourceContentExtension])
+          isEqualToString:app_group::kOpenCommandSourceContentExtension]) {
     return CALLER_APP_GOOGLE_CHROME_CONTENT_EXTENSION;
+  }
   if ([_secureSourceApp
-          isEqualToString:app_group::kOpenCommandSourceShareExtension])
+          isEqualToString:app_group::kOpenCommandSourceShareExtension]) {
     return CALLER_APP_GOOGLE_CHROME_SHARE_EXTENSION;
+  }
   if ([_secureSourceApp
           isEqualToString:app_group::kOpenCommandSourceOpenExtension]) {
     return CALLER_APP_GOOGLE_CHROME_OPEN_EXTENSION;
@@ -815,26 +824,36 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
           isEqualToString:[base::apple::FrameworkBundle() bundleIdentifier]]) {
     return CALLER_APP_GOOGLE_CHROME;
   }
-  if ([_declaredSourceApp isEqualToString:@"com.google.GoogleMobile"])
+  if ([_declaredSourceApp isEqualToString:@"com.google.GoogleMobile"]) {
     return CALLER_APP_GOOGLE_SEARCH;
-  if ([_declaredSourceApp isEqualToString:@"com.google.Gmail"])
+  }
+  if ([_declaredSourceApp isEqualToString:@"com.google.Gmail"]) {
     return CALLER_APP_GOOGLE_GMAIL;
-  if ([_declaredSourceApp isEqualToString:@"com.google.GooglePlus"])
+  }
+  if ([_declaredSourceApp isEqualToString:@"com.google.GooglePlus"]) {
     return CALLER_APP_GOOGLE_PLUS;
-  if ([_declaredSourceApp isEqualToString:@"com.google.Drive"])
+  }
+  if ([_declaredSourceApp isEqualToString:@"com.google.Drive"]) {
     return CALLER_APP_GOOGLE_DRIVE;
-  if ([_declaredSourceApp isEqualToString:@"com.google.b612"])
+  }
+  if ([_declaredSourceApp isEqualToString:@"com.google.b612"]) {
     return CALLER_APP_GOOGLE_EARTH;
-  if ([_declaredSourceApp isEqualToString:@"com.google.ios.youtube"])
+  }
+  if ([_declaredSourceApp isEqualToString:@"com.google.ios.youtube"]) {
     return CALLER_APP_GOOGLE_YOUTUBE;
-  if ([_declaredSourceApp isEqualToString:@"com.google.Maps"])
+  }
+  if ([_declaredSourceApp isEqualToString:@"com.google.Maps"]) {
     return CALLER_APP_GOOGLE_MAPS;
-  if ([_declaredSourceApp hasPrefix:@"com.google."])
+  }
+  if ([_declaredSourceApp hasPrefix:@"com.google."]) {
     return CALLER_APP_GOOGLE_OTHER;
-  if ([_declaredSourceApp isEqualToString:@"com.apple.mobilesafari"])
+  }
+  if ([_declaredSourceApp isEqualToString:@"com.apple.mobilesafari"]) {
     return CALLER_APP_APPLE_MOBILESAFARI;
-  if ([_declaredSourceApp hasPrefix:@"com.apple."])
+  }
+  if ([_declaredSourceApp hasPrefix:@"com.apple."]) {
     return CALLER_APP_APPLE_OTHER;
+  }
 
   return CALLER_APP_OTHER;
 }
@@ -846,12 +865,14 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 
   NSString* query = base::SysUTF8ToNSString(self.completeURL.query());
   // Takes care of degenerated case of no QUERY_STRING.
-  if (![query length])
+  if (![query length]) {
     return first_run::LAUNCH_BY_MOBILESAFARI;
+  }
   // Look for `kSmartAppBannerKey` anywhere within the query string.
   NSRange found = [query rangeOfString:kSmartAppBannerKey];
-  if (found.location == NSNotFound)
+  if (found.location == NSNotFound) {
     return first_run::LAUNCH_BY_MOBILESAFARI;
+  }
   // `kSmartAppBannerKey` can be at the beginning or end of the query
   // string and may also be optionally followed by a equal sign and a value.
   // For now, just look for the presence of the key and ignore the value.
@@ -859,13 +880,15 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     // There are characters following the found location.
     unichar charAfter =
         [query characterAtIndex:(found.location + found.length)];
-    if (charAfter != '&' && charAfter != '=')
+    if (charAfter != '&' && charAfter != '=') {
       return first_run::LAUNCH_BY_MOBILESAFARI;
+    }
   }
   if (found.location > 0) {
     unichar charBefore = [query characterAtIndex:(found.location - 1)];
-    if (charBefore != '&')
+    if (charBefore != '&') {
       return first_run::LAUNCH_BY_MOBILESAFARI;
+    }
   }
   return first_run::LAUNCH_BY_SMARTAPPBANNER;
 }

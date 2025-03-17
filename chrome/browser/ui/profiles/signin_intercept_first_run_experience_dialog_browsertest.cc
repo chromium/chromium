@@ -198,8 +198,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
   }
 
   void ExpectSigninHistogramsRecorded() {
-    const auto access_point = signin_metrics::AccessPoint::
-        ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE;
+    const auto access_point =
+        signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience;
     histogram_tester_.ExpectUniqueSample("Signin.SigninStartedAccessPoint",
                                          access_point, 1);
     histogram_tester_.ExpectUniqueSample("Signin.SigninCompletedAccessPoint",

@@ -19,7 +19,6 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 import {CrContainerShadowMixinLit} from 'chrome://resources/cr_elements/cr_container_shadow_mixin_lit.js';
 import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -81,7 +80,6 @@ export class UserEducationInternalsElement extends
   }
 
   filter: string = '';
-  protected isWhatsNewV2_: boolean = loadTimeData.getBoolean('isWhatsNewV2');
   protected tutorials_: FeaturePromoDemoPageInfo[] = [];
   protected featurePromos_: FeaturePromoDemoPageInfo[] = [];
   protected newBadges_: FeaturePromoDemoPageInfo[] = [];
@@ -110,7 +108,7 @@ export class UserEducationInternalsElement extends
     // dynamically created, we have to wait until after the element is
     // populated to register the anchor element.
     if (changedProperties.has('featurePromos_')) {
-      if (this.shadowRoot!.querySelector('#IPH_WebUiHelpBubbleTest')) {
+      if (this.shadowRoot.querySelector('#IPH_WebUiHelpBubbleTest')) {
         this.registerHelpBubble(
             'kWebUIIPHDemoElementIdentifier',
             ['#IPH_WebUiHelpBubbleTest', '#launch']);
@@ -137,14 +135,13 @@ export class UserEducationInternalsElement extends
       this.newBadges_ = newBadges;
     });
 
-    if (this.isWhatsNewV2_) {
-      this.handler_.getWhatsNewModules().then(({whatsNewModules}) => {
-        this.whatsNewModules_ = whatsNewModules;
-      });
-      this.handler_.getWhatsNewEditions().then(({whatsNewEditions}) => {
-        this.whatsNewEditions_ = whatsNewEditions;
-      });
-    }
+    this.handler_.getWhatsNewModules().then(({whatsNewModules}) => {
+      this.whatsNewModules_ = whatsNewModules;
+    });
+
+    this.handler_.getWhatsNewEditions().then(({whatsNewEditions}) => {
+      this.whatsNewEditions_ = whatsNewEditions;
+    });
   }
 
   protected onSearchChanged_(e: CustomEvent<string>) {
@@ -227,9 +224,6 @@ export class UserEducationInternalsElement extends
   }
 
   protected clearWhatsNewData_() {
-    if (!this.isWhatsNewV2_) {
-      return;
-    }
     this.featurePromoErrorMessage_ = '';
 
     this.handler_.clearWhatsNewData().then(({errorMessage}) => {

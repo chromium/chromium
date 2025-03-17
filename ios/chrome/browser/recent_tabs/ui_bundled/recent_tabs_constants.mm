@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h"
 
-NSString* const kCollapsedSectionsKey = @"ChromeRecentTabsCollapsedSections";
 NSString* const kRecentTabsTableViewControllerAccessibilityIdentifier =
     @"recent_tabs_view_controller";
 NSString* const kRecentTabsShowFullHistoryCellAccessibilityIdentifier =

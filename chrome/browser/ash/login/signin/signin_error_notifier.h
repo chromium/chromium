@@ -99,7 +99,11 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   // A non-owning pointer.
   const raw_ptr<account_manager::AccountManager> account_manager_;
 
-  const std::unique_ptr<TokenHandleUtil> token_handle_util_;
+  // A non-owning pointer to the global `TokenHandleStore` instance.
+  // Instances of this class are guaranteed to outlive the global
+  // `TokenHandleStore` instance which is created early, prior to profile
+  // loading, and never destroyed.
+  raw_ptr<TokenHandleStore> token_handle_store_;
   const std::unique_ptr<TokenHandleFetcher> token_handle_fetcher_;
 
   // Used to keep track of the message center notifications.

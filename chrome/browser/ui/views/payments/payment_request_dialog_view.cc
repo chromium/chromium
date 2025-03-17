@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/views/payments/profile_list_view_controller.h"
 #include "chrome/browser/ui/views/payments/shipping_address_editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/shipping_option_view_controller.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/payments/content/payment_request.h"
 #include "components/strings/grit/components_strings.h"
@@ -570,7 +570,7 @@ void PaymentRequestDialogView::SetupSpinnerOverlay() {
   // The throbber overlay has to have a solid white background to hide whatever
   // would be under it.
   throbber_overlay_->SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorDialogBackground));
+      views::CreateSolidBackground(ui::kColorDialogBackground));
 
   views::BoxLayout* layout =
       throbber_overlay_->SetLayoutManager(std::make_unique<views::BoxLayout>(

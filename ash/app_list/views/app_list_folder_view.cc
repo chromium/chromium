@@ -38,7 +38,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -384,7 +383,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
   void OnTopIconAnimationsComplete(TopIconAnimationView* view) override {
     // Clean up the transitional view for which the animation completes.
     view->RemoveObserver(this);
-    auto to_delete = base::ranges::find(top_icon_views_, view);
+    auto to_delete = std::ranges::find(top_icon_views_, view);
     DCHECK(to_delete != top_icon_views_.end());
     top_icon_views_.erase(to_delete);
 
@@ -682,7 +681,7 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
   background_view_->SetBackground(
-      views::CreateThemedSolidBackground(background_color_id));
+      views::CreateSolidBackground(background_color_id));
   background_view_->SetVisible(false);
 
   animating_background_ = AddChildView(std::make_unique<views::View>());
@@ -692,7 +691,6 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
         ColorProvider::kBackgroundBlurSigma);
     animating_background_->layer()->SetBackdropFilterQuality(
         ColorProvider::kBackgroundBlurQuality);
-    animating_background_->layer()->SetFillsBoundsOpaquely(false);
   }
 
   animating_background_->SetVisible(false);
@@ -832,8 +830,6 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
   shown_ = show;
   UpdateExpandedCollapsedAccessibleState();
   if (show) {
-    // TODO(crbug.com/325137417): Investigate whether this line is necessary. It
-    // probably isn't.
     GetViewAccessibility().SetName(
         folder_item_view_->GetViewAccessibility().GetCachedName(),
         ax::mojom::NameFrom::kAttribute);

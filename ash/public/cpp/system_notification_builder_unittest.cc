@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
 
@@ -24,7 +25,7 @@ TEST(SystemNotificationBuilderTest, TrivialSetters) {
   EXPECT_EQ(notification.display_source(), u"");
   EXPECT_FALSE(notification.origin_url().is_valid());
   EXPECT_EQ(notification.delegate(), nullptr);
-  EXPECT_EQ(&notification.vector_small_image(), &gfx::kNoneIcon);
+  EXPECT_EQ(&notification.vector_small_image(), &gfx::VectorIcon::EmptyIcon());
   EXPECT_EQ(notification.rich_notification_data().progress, 0);
   EXPECT_EQ(notification.system_notification_warning_level(),
             message_center::SystemNotificationWarningLevel::NORMAL);

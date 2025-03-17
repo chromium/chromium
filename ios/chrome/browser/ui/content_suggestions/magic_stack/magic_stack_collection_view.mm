@@ -55,6 +55,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   // The most recently selected MagicStack module's page index.
   NSUInteger _magicStackPage;
   BOOL _hasSeenEphemeralCard;
+  NSLayoutConstraint* _heightConstraint;
 }
 
 - (void)loadView {
@@ -63,9 +64,20 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   [self populateWithPlaceholders];
 
   self.view = _collectionView;
-  [NSLayoutConstraint
-      activateConstraints:@[ [_collectionView.heightAnchor
-                              constraintEqualToConstant:kModuleMaxHeight] ]];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateCardHeightOnTraitChange)];
+  }
+}
+
+- (void)viewDidLoad {
+  _heightConstraint = [_collectionView.heightAnchor
+      constraintEqualToConstant:GetMagicStackHeight(self.view)];
+
+  [NSLayoutConstraint activateConstraints:@[ _heightConstraint ]];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -91,6 +103,20 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
                       completion:nil];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    [self updateCardHeightOnTraitChange];
+  }
+}
+#endif
+
 #pragma mark - Public
 
 - (void)moduleWidthDidUpdate {
@@ -108,7 +134,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 - (void)populateItems:(NSArray<MagicStackModule*>*)items {
   if ([items count] > 0) {
     MagicStackModule* card = items[0];
-    LogTopModuleImpressionForType(card.type);
+    [self.audience logTopModuleImpressionForType:card.type];
     if ([self isCardEphemeral:card]) {
       _hasSeenEphemeralCard = YES;
       [self.audience logEphemeralCardVisibility:card.type];
@@ -124,7 +150,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 
 - (void)insertItem:(MagicStackModule*)item atIndex:(NSUInteger)index {
   if (index == 0) {
-    LogTopModuleImpressionForType(item.type);
+    [self.audience logTopModuleImpressionForType:item.type];
     if ([self isCardEphemeral:item]) {
       _hasSeenEphemeralCard = YES;
       [self.audience logEphemeralCardVisibility:item.type];
@@ -194,6 +220,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 }
 
 - (void)removeItem:(MagicStackModule*)item
+           animate:(BOOL)animate
     withCompletion:(ProceduralBlock)completion {
   NSIndexPath* existingItemIndexPath =
       [self.diffableDataSource indexPathForItemIdentifier:item];
@@ -208,7 +235,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
     MagicStackSnapshot* snapshot = [weakSelf.diffableDataSource snapshot];
     [snapshot deleteItemsWithIdentifiers:@[ item ]];
     [weakSelf.diffableDataSource applySnapshot:snapshot
-                          animatingDifferences:YES
+                          animatingDifferences:animate
                                     completion:completion];
   };
 
@@ -217,7 +244,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
       (MagicStackModuleCollectionViewCell*)[_collectionView
           cellForItemAtIndexPath:existingItemIndexPath];
 
-  if (!cell) {
+  if (!cell || !animate) {
     deleteItemFromDataSource();
     return;
   }
@@ -482,10 +509,19 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
     case ContentSuggestionsModuleType::kSetUpListAddressBar:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
+    case ContentSuggestionsModuleType::kShopCard:
     case ContentSuggestionsModuleType::kPlaceholder:
     case ContentSuggestionsModuleType::kInvalid:
       return NO;
   }
+}
+
+// Resizes the Magic Stack card height.
+- (void)updateCardHeightOnTraitChange {
+  _heightConstraint.constant = GetMagicStackHeight(self.view);
+
+  [_magicStackCollectionViewLayoutConfigurator
+          .magicStackCompositionalLayout invalidateLayout];
 }
 
 @end

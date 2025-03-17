@@ -385,3 +385,24 @@
 # TODO(crbug.com/381917887): This test has been failing since
 # https://crrev.com/c/6038336.
 -SharedPasswordControllerTest.PasswordManagerIsNotifiedAboutModelPredictions
+
+# TODO(crbug.com/388135869): This test has been failing since
+# https://crrev.com/c/6143155.
+-LocalStorageImplStaleDeletionTest.StaleStorageAreaDeletion
+-LocalStorageImplTest.Basic
+-LocalStorageImplTest.DeleteStorageNotifiesWrapper
+-LocalStorageImplTest.DeleteStorageWithPendingWrites
+-LocalStorageImplTest.DeleteStorageWithoutConnection
+-LocalStorageImplTest.GetStorageUsage_Data
+-LocalStorageImplTest.MetaDataClearedOnDelete
+-LocalStorageImplTest.OpeningWrappersPurgesInactiveWrappers
+-LocalStorageImplTest.ShutdownClearsData
+-LocalStorageImplTest.StorageKeysAreIndependent
+-LocalStorageImplTest.WrapperOutlivesMojoConnection
+-LocalStorageImplTest.MetaDataClearedOnDeleteAll
+
+# TODO(crbug.com/395384787): This test has been failing since
+# https://crrev.com/c/6185554.
+-MlEmbedderTest.EmbedderRunningStatus
+-MlEmbedderTest.ReturnsEmbeddings
+-MlEmbedderTest.ReturnsExecutionFailure

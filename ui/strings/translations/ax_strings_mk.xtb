@@ -18,6 +18,7 @@
 <translation id="1650423536718072820">цитат</translation>
 <translation id="1681022320378710418">тековно време</translation>
 <translation id="1727839386348365796">Пипета</translation>
+<translation id="1771761307086386028">Лизгај надесно</translation>
 <translation id="1787192514241997742">вкупно време: <ph name="REMAINING_TIME" /></translation>
 <translation id="1821985195704844674">мрежа на дрвото</translation>
 <translation id="1822429046913737220">претпладне/попладне</translation>
@@ -65,11 +66,11 @@
 <translation id="3670698553867754311">избирач на седмица</translation>
 <translation id="3706100364254443312">прекинувач</translation>
 <translation id="3808586225841795776">термин</translation>
-<translation id="3914173277599553213">Потребно</translation>
 <translation id="3920932319529768807">заклучок</translation>
 <translation id="3924558731517983934">апликација</translation>
 <translation id="3944740393230681990">пролог</translation>
 <translation id="3960700977367013758">лента за лизгање</translation>
+<translation id="4021716437419160885">Оди надолу</translation>
 <translation id="4103419683916926126">Милисекунди</translation>
 <translation id="4151657705144244502">графика</translation>
 <translation id="4160057747563657758">телефон</translation>
@@ -85,6 +86,7 @@
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668956016107839909">прилог</translation>
 <translation id="4698212723196775569">код</translation>
+<translation id="4710792130811321440">прикажи го менито за избор на аудиозапис</translation>
 <translation id="4742539557769756338">корица</translation>
 <translation id="4748357248530471599">префрли од исечокот на екранот во цел екран</translation>
 <translation id="4757246831282535685">табла со картички</translation>
@@ -96,6 +98,7 @@
 <translation id="492244087561876220">коментар</translation>
 <translation id="4924138096460353083">Неодредено</translation>
 <translation id="4950364064308314478">Прикажи го избирачот за локален датум и време</translation>
+<translation id="495046168593986294">Оди нагоре</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" />, избрано</translation>
 <translation id="5022314756875057021">група редови</translation>
 <translation id="5034860022980953847">индикатор за напредокот</translation>
@@ -133,6 +136,7 @@
 <translation id="5987525920412732405">копче за приспособување</translation>
 <translation id="6011459053400940133">лизгач за јачина на звук</translation>
 <translation id="6015796118275082299">Година</translation>
+<translation id="602001110135236999">Лизгај налево</translation>
 <translation id="6023896073578205740">поле со список</translation>
 <translation id="6119846243427417423">активирај</translation>
 <translation id="6150588977291308318">библиографија</translation>
@@ -163,6 +167,7 @@
 <translation id="6845533974506654842">притисни</translation>
 <translation id="6885760532393684712">директориум</translation>
 <translation id="689129560213475294">отпечаток</translation>
+<translation id="6919089238568236262">прикажи го менито за избор на видеозапис</translation>
 <translation id="6934078000481955284">цитат на блок</translation>
 <translation id="693476918119313863">заглавие</translation>
 <translation id="6941933287844615239">преземи аудиовизуелни содржини</translation>

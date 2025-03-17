@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "base/uuid.h"
-#include "base/values.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
@@ -27,6 +26,10 @@
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 class GURL;
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace content {
 
@@ -176,7 +179,7 @@ class CONTENT_EXPORT AttributionReport {
   // Returns the URL to which the report will be sent.
   GURL ReportURL(bool debug = false) const;
 
-  base::Value::Dict ReportBody() const;
+  base::DictValue ReportBody() const;
 
   const AttributionInfo& attribution_info() const { return attribution_info_; }
 

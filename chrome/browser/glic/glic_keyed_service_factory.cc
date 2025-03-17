@@ -5,6 +5,8 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "extensions/browser/api/declarative/rules_registry_service.h"
 
 namespace glic {
 
@@ -12,7 +14,8 @@ namespace glic {
 GlicKeyedService* GlicKeyedServiceFactory::GetGlicKeyedService(
     content::BrowserContext* browser_context) {
   return static_cast<GlicKeyedService*>(
-      GetInstance()->GetServiceForBrowserContext(browser_context, true));
+      GetInstance()->GetServiceForBrowserContext(browser_context,
+                                                 /*create=*/false));
 }
 
 // static
@@ -23,19 +26,23 @@ GlicKeyedServiceFactory* GlicKeyedServiceFactory::GetInstance() {
 
 GlicKeyedServiceFactory::GlicKeyedServiceFactory()
     : ProfileKeyedServiceFactory("GlicKeyedService",
-                                 ProfileSelections::BuildForRegularProfile()) {}
+                                 ProfileSelections::BuildForRegularProfile()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 GlicKeyedServiceFactory::~GlicKeyedServiceFactory() = default;
 
 bool GlicKeyedServiceFactory::ServiceIsCreatedWithBrowserContext() const {
-  return false;
+  return true;
 }
 
 std::unique_ptr<KeyedService>
 GlicKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<GlicKeyedService>(context,
-                                            GlicProfileManager::GetInstance());
+  Profile* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<GlicKeyedService>(
+      profile, IdentityManagerFactory::GetForProfile(profile),
+      GlicProfileManager::GetInstance());
 }
 
 }  // namespace glic

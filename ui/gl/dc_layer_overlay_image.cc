@@ -20,9 +20,10 @@ DCLayerOverlayImage::DCLayerOverlayImage(
       d3d11_video_texture_(std::move(d3d11_video_texture)),
       texture_array_slice_(array_slice) {}
 
-DCLayerOverlayImage::DCLayerOverlayImage(const gfx::Size& size,
-                                         const uint8_t* shm_video_pixmap,
-                                         size_t pixmap_stride)
+DCLayerOverlayImage::DCLayerOverlayImage(
+    const gfx::Size& size,
+    base::span<const uint8_t> shm_video_pixmap,
+    size_t pixmap_stride)
     : type_(DCLayerOverlayType::kShMemPixmap),
       size_(size),
       shm_video_pixmap_(shm_video_pixmap),

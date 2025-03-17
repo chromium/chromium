@@ -12,10 +12,14 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/collaboration/test_support/mock_collaboration_service.h"
+#import "components/collaboration/test_support/mock_messaging_backend_service.h"
+#import "components/data_sharing/public/features.h"
+#import "components/data_sharing/test_support/mock_data_sharing_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
@@ -32,6 +36,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_consumer.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/fake_tab_collection_consumer.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -40,8 +45,16 @@
 
 using tab_groups::SavedTabGroup;
 using tab_groups::SavedTabGroupTab;
+using testing::_;
+using testing::Return;
 
-using ::testing::Return;
+@interface TestTabGroupMediator
+    : TabGroupMediator <MessagingBackendServiceObserving,
+                        TabGroupSyncServiceObserverDelegate>
+@end
+
+@implementation TestTabGroupMediator
+@end
 
 namespace {
 
@@ -67,10 +80,18 @@ std::vector<SavedTabGroupTab> SavedTabGroupTabsFromTabs(
 class TabGroupMediatorTest : public GridMediatorTestClass {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({kTabGroupsIPad, kModernTabStrip},
-                                          {});
+    scoped_feature_list_.InitWithFeatures(
+        {kTabGroupsIPad, kModernTabStrip, kTabGroupSync,
+         data_sharing::features::kDataSharingFeature},
+        {});
 
     GridMediatorTestClass::SetUp();
+
+    if (!IsTabGroupInGridEnabled()) {
+      // Disabled on iPadOS 16.
+      return;
+    }
+
     WebStateList* web_state_list = browser_->GetWebStateList();
     CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
     builder_ =
@@ -87,6 +108,8 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
         std::make_unique<TestShareKitService>(nullptr, nullptr, nullptr);
     collaboration_service_ =
         std::make_unique<collaboration::MockCollaborationService>();
+    data_sharing_service_ = std::make_unique<
+        ::testing::NiceMock<data_sharing::MockDataSharingService>>();
 
     base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
     std::vector<SavedTabGroupTab> saved_tabs = SavedTabGroupTabsFromTabs(
@@ -99,16 +122,17 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
 
     EXPECT_CALL(*collaboration_service_, GetServiceStatus()).Times(1);
 
-    mediator_ = [[TabGroupMediator alloc]
+    mediator_ = [[TestTabGroupMediator alloc]
         initWithWebStateList:browser_->GetWebStateList()
          tabGroupSyncService:tab_group_sync_service_.get()
              shareKitService:share_kit_service_.get()
         collaborationService:collaboration_service_.get()
+          dataSharingService:data_sharing_service_.get()
                     tabGroup:tab_group_->GetWeakPtr()
                     consumer:tab_group_consumer_
                 gridConsumer:consumer_
                   modeHolder:mode_holder_
-            messagingService:nil];
+            messagingService:&messaging_backend_];
     mediator_.browser = browser_.get();
   }
 
@@ -125,7 +149,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
   }
 
  protected:
-  TabGroupMediator* mediator_;
+  TestTabGroupMediator* mediator_;
   id<TabGroupConsumer> tab_group_consumer_;
   raw_ptr<const TabGroup> tab_group_;
   std::unique_ptr<WebStateListBuilderFromDescription> builder_;
@@ -133,13 +157,19 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
   std::unique_ptr<ShareKitService> share_kit_service_;
   std::unique_ptr<collaboration::MockCollaborationService>
       collaboration_service_;
+  std::unique_ptr<data_sharing::MockDataSharingService> data_sharing_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   TabGridModeHolder* mode_holder_;
+  collaboration::messaging::MockMessagingBackendService messaging_backend_;
 };
 
 // Tests dropping a local tab (e.g. drag from same window) in the grid.
 TEST_F(TabGroupMediatorTest, DropLocalTab) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   WebStateList* web_state_list = browser_->GetWebStateList();
 
   web::WebStateID web_state_id =
@@ -161,6 +191,10 @@ TEST_F(TabGroupMediatorTest, DropLocalTab) {
 
 // Tests dropping tabs from the grid to a tab group.
 TEST_F(TabGroupMediatorTest, DropFromTabGrid) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   WebStateList* web_state_list = browser_->GetWebStateList();
 
   // Drop "F" before "A".
@@ -191,6 +225,10 @@ TEST_F(TabGroupMediatorTest, DropFromTabGrid) {
 // Tests dropping a tab from another browser (e.g. drag from another window) in
 // the grid.
 TEST_F(TabGroupMediatorTest, DropCrossWindowTab) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   auto other_browser = std::make_unique<TestBrowser>(
       profile_.get(), scene_state_,
       std::make_unique<BrowserWebStateListDelegate>(profile_.get()));
@@ -226,6 +264,10 @@ TEST_F(TabGroupMediatorTest, DropCrossWindowTab) {
 
 // Tests dropping an interal URL (e.g. drag from omnibox) in the grid.
 TEST_F(TabGroupMediatorTest, DropInternalURL) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   WebStateList* web_state_list = browser_->GetWebStateList();
   ASSERT_EQ(6, web_state_list->count());
 
@@ -249,6 +291,10 @@ TEST_F(TabGroupMediatorTest, DropInternalURL) {
 
 // Tests dropping an external URL in the grid.
 TEST_F(TabGroupMediatorTest, DropExternalURL) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   WebStateList* web_state_list = browser_->GetWebStateList();
   ASSERT_EQ(6, web_state_list->count());
 
@@ -273,6 +319,10 @@ TEST_F(TabGroupMediatorTest, DropExternalURL) {
 
 // Tests that deleting a group works.
 TEST_F(TabGroupMediatorTest, DeleteGroup) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   WebStateList* web_state_list = browser_->GetWebStateList();
   ASSERT_EQ(6, web_state_list->count());
   EXPECT_EQ(1u, web_state_list->GetGroups().size());
@@ -284,6 +334,10 @@ TEST_F(TabGroupMediatorTest, DeleteGroup) {
 
 // Tests that ungrouping a group works.
 TEST_F(TabGroupMediatorTest, Ungroup) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   WebStateList* web_state_list = browser_->GetWebStateList();
   ASSERT_EQ(6, web_state_list->count());
   EXPECT_EQ(1u, web_state_list->GetGroups().size());
@@ -296,6 +350,10 @@ TEST_F(TabGroupMediatorTest, Ungroup) {
 // Tests that closing tabs in a group that is not captured by the current
 // mediator removes the group.
 TEST_F(TabGroupMediatorTest, CreateAnotherGroupAndCloseTabs) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   WebStateList* web_state_list = browser_->GetWebStateList();
   ASSERT_EQ(6, web_state_list->count());
   EXPECT_EQ(1u, web_state_list->GetGroups().size());
@@ -315,7 +373,10 @@ TEST_F(TabGroupMediatorTest, CreateAnotherGroupAndCloseTabs) {
 // Tests that CollaborationIDChangedForGroup does not update facePile UI when
 // the group id does not match.
 TEST_F(TabGroupMediatorTest, CollaborationIDChangedForInvalidGroup) {
-  OCMReject([tab_group_consumer_ setGroupShared:OCMOCK_ANY]);
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   OCMReject([tab_group_consumer_ setFacePileViewController:OCMOCK_ANY]);
 
   SavedTabGroup other_saved_group(
@@ -324,7 +385,8 @@ TEST_F(TabGroupMediatorTest, CollaborationIDChangedForInvalidGroup) {
       tab_groups::TabGroupId::GenerateNew());
   tab_group_sync_service_->AddGroup(other_saved_group);
   tab_group_sync_service_->MakeTabGroupShared(
-      other_saved_group.local_group_id().value(), "collaboration");
+      other_saved_group.local_group_id().value(), "collaboration",
+      tab_groups::TabGroupSyncService::TabGroupSharingCallback());
 
   EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
 }
@@ -332,13 +394,110 @@ TEST_F(TabGroupMediatorTest, CollaborationIDChangedForInvalidGroup) {
 // Tests that CollaborationIDChangedForGroup correctly updates the facePile UI
 // when the group is shared.
 TEST_F(TabGroupMediatorTest, CollaborationIDChangedForGroupShared) {
-  OCMExpect([tab_group_consumer_ setGroupShared:YES]);
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   OCMExpect([tab_group_consumer_ setFacePileViewController:OCMOCK_ANY]);
 
   const SavedTabGroup saved_group =
       tab_group_sync_service_->GetGroup(tab_group_->tab_group_id()).value();
   tab_group_sync_service_->MakeTabGroupShared(
-      saved_group.local_group_id().value(), "collaboration");
+      saved_group.local_group_id().value(), "collaboration",
+      tab_groups::TabGroupSyncService::TabGroupSharingCallback());
 
+  EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
+}
+
+// Tests that the text in the activity summary is updated when the messaging
+// backend service is initialized.
+TEST_F(TabGroupMediatorTest, UpdateActivitySummaryTextAfterStartup) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
+  OCMExpect([tab_group_consumer_ setActivitySummaryCellText:OCMOCK_ANY]);
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::WebState* web_state = web_state_list->GetWebStateAt(0);
+
+  // Create a fake message.
+  collaboration::messaging::PersistentMessage message;
+  collaboration::messaging::TabMessageMetadata metadata;
+  metadata.local_tab_id =
+      std::make_optional(web_state->GetUniqueIdentifier().identifier());
+  message.type =
+      collaboration::messaging::PersistentNotificationType::DIRTY_TAB;
+  message.attribution.tab_metadata = std::make_optional(metadata);
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
+  ON_CALL(messaging_backend_, GetMessages(_))
+      .WillByDefault(Return(std::vector{message}));
+
+  // Fake the initialization of the service.
+  [mediator_ onMessagingBackendServiceInitialized];
+
+  // Expect that `-setActivitySummaryCellText:` is called to update the text in
+  // the activity summary.
+  EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
+}
+
+// Tests that the text in the activity summary is updated when the API to
+// disaply the UI is called.
+TEST_F(TabGroupMediatorTest, UpdateActivitySummaryTextAfterDisplayAPICalled) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
+  OCMExpect([tab_group_consumer_ setActivitySummaryCellText:OCMOCK_ANY]);
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::WebState* web_state = web_state_list->GetWebStateAt(0);
+
+  // Create a fake message.
+  collaboration::messaging::PersistentMessage message;
+  collaboration::messaging::TabMessageMetadata metadata;
+  metadata.local_tab_id =
+      std::make_optional(web_state->GetUniqueIdentifier().identifier());
+  message.type =
+      collaboration::messaging::PersistentNotificationType::DIRTY_TAB;
+  message.attribution.tab_metadata = std::make_optional(metadata);
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
+
+  // Fake the update of the service.
+  [mediator_ displayPersistentMessage:message];
+
+  // Expect that `-setActivitySummaryCellText:` is called to update the text in
+  // the activity summary.
+  EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
+}
+
+// Tests that the text in the activity summary is NOT updated when the ID in the
+// message doesn't match with any displayed items.
+TEST_F(TabGroupMediatorTest, DoNotUpdateActivitySummaryTextWithUnmatchedID) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
+  OCMExpect([tab_group_consumer_ setActivitySummaryCellText:nil]);
+
+  // Create a fake message.
+  collaboration::messaging::PersistentMessage message;
+  collaboration::messaging::TabMessageMetadata metadata;
+  // Set a new unique ID so that it shouldn't match with any items.
+  metadata.local_tab_id =
+      std::make_optional(web::WebStateID::NewUnique().identifier());
+  message.type =
+      collaboration::messaging::PersistentNotificationType::DIRTY_TAB;
+  message.attribution.tab_metadata = std::make_optional(metadata);
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
+
+  // Fake the update of the service.
+  [mediator_ displayPersistentMessage:message];
+
+  // Expect that `-setActivitySummaryCellText:` is called with `nil` because the
+  // ID in the message doesn't match with any items in the web state list.
   EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
 }

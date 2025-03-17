@@ -40,6 +40,8 @@ source_set("common") {
     "feature_promo/impl/precondition_data.h",
     "feature_promo/impl/precondition_list_provider.cc",
     "feature_promo/impl/precondition_list_provider.h",
+    "help_bubble/custom_help_bubble.cc",
+    "help_bubble/custom_help_bubble.h",
     "help_bubble/help_bubble.cc",
     "help_bubble/help_bubble.h",
     "help_bubble/help_bubble_factory.h",

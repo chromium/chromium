@@ -1,0 +1,66 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is a copy of the request and response protos from
+// google/internal/chrome/reporting/v1/chrome_reporting_entity.proto
+// Any modifications to this file should be kept in sync with the original to
+// maintain wire-format of requests.
+
+syntax = "proto3";
+
+package chrome.cros.reporting.proto;
+
+import "components/enterprise/common/proto/google3_protos.proto";
+import "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Request to upload one or more events.
+message UploadEventsRequest {
+  reserved 1, 2;
+
+  // Required. Event(s) being uploaded
+  repeated Event events = 3;
+
+  // Describes the device sending the event.
+  // If upload event by encrypted reporting pipeline, this field should not be
+  // set in the proto, this should be get from UploadEncryptedRecordRequest.
+  Device device = 4;
+
+  // Optional. Describes the Chrome browser sending the event.
+  Browser browser = 5;
+
+  // Optional. Describes the Chrome browser profile sending the event.
+  Profile profile = 6;
+
+  // Reserved for setting custom events features per request.
+  repeated google3_protos.Any extensions = 100;
+}
+
+// Response from UploadEventsRequest
+message UploadEventsResponse {
+  // Successfully uploaded events (UUIDs are assigned if none was provided
+  // in the request).
+  repeated string uploaded_event_ids = 1;
+
+  // Reasons why event(s) failed to upload (if any). These errors should be
+  // retried by the client.
+  repeated UploadFailure failed_uploads = 2;
+
+  // Reasons why event(s) failed to upload (if any). These errors are permanent
+  // and will continue to occur for the given event.
+  repeated UploadFailure permanent_failed_uploads = 3;
+}
+
+// Description of why uploading one event failed
+message UploadFailure {
+  // `Event`.id (UUIDs are assigned if none was provided in the request).
+  string event_id = 1;
+
+  // Canonical code indicating the response status
+  google3_protos.Code status = 2;
+
+  // Failure reason message
+  string error_message = 3;
+}

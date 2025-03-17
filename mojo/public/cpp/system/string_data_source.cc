@@ -32,18 +32,13 @@ uint64_t StringDataSource::GetLength() const {
 DataPipeProducer::DataSource::ReadResult StringDataSource::Read(
     uint64_t offset,
     base::span<char> buffer) {
-  ReadResult result;
-  if (offset <= data_view_.size()) {
-    size_t readable_size = data_view_.size() - offset;
-    size_t writable_size = buffer.size();
-    size_t copyable_size = std::min(readable_size, writable_size);
-    for (size_t copied_size = 0; copied_size < copyable_size; ++copied_size)
-      buffer[copied_size] = data_view_[offset + copied_size];
-    result.bytes_read = copyable_size;
-  } else {
-    NOTREACHED();
-  }
-  return result;
+  CHECK(offset <= data_view_.size());
+  size_t copyable_size = std::min(
+      base::checked_cast<size_t>(data_view_.size() - offset), buffer.size());
+  buffer.first(copyable_size)
+      .copy_from_nonoverlapping(data_view_.subspan(
+          base::checked_cast<size_t>(offset), copyable_size));
+  return ReadResult{.bytes_read = copyable_size, .result = MOJO_RESULT_OK};
 }
 
 }  // namespace mojo

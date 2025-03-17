@@ -279,7 +279,11 @@ if (!({{compare_expr(field.wrapper_pointer_name, field.name + "_expr", "o_" + fi
   {% endif %}
 {% endfor %}
 {% for field in group.fields if field.is_inherited -%}
-  {{boolean_and()}}{{getter_expression(field)}} == o.{{getter_expression(field)}}
+  {% if field.wrapper_pointer_name %}
+    {{boolean_and()}}base::ValuesEquivalent({{getter_expression(field)}}, o.{{getter_expression(field)}})
+  {% else %}
+    {{boolean_and()}}{{getter_expression(field)}} == o.{{getter_expression(field)}}
+  {% endif %}
 {% endfor %}
 {% endmacro %}
 

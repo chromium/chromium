@@ -19,8 +19,12 @@ otherwise, or other more subtle forms of abuse.
 Traditionally, web browsers try to maintain a line of death between trustworthy
 browser chrome and untrustworthy web content. Trustworthy browser UI should
 appear above the line of death, or at least be anchored to or overlap it.
-[This blog post](https://textslashplain.com/2017/01/14/the-line-of-death/) contains
-an excellent overview of this concept, including some of its shortcomings.
+[This blog post](https://textslashplain.com/2017/01/14/the-line-of-death/)
+contains an excellent overview of this concept, including some of its
+shortcomings. Our research also shows that this concept is not well understood
+by users. The position of a given piece of UI is less important than other
+factors, such as familiarity and visual cues (for example, the presence of logos
+or account names).
 
 Maintaining an understandable and consistent distinction between browser UI and
 web content is more of an art than a science. If you are building a new browser
@@ -100,8 +104,8 @@ particular location (e.g., by convincing them to play a game that incentivizes
 them to click in a specific location), and at the last minute they remove the
 occluding UI and the click falls through to the `victim.com` frame, causing the
 user to take some unintentional action on `victim.com`. Keyjacking is a similar
-attack except the user's keypress rather than click falls through to the occluded
-UI. This category of attack is also sometimes called "UI redressing".
+attack except the user's keypress rather than click falls through to the
+occluded UI. This category of attack is also sometimes called "UI redressing".
 
 Clickjacking is mostly under control on the web, but it hasn't been
 systematically tackled for browser UI, and many browser UI surfaces are
@@ -137,15 +141,16 @@ location.
 If multiple clicks/gestures aren't feasible, consider introducing a short delay
 between when the browser UI is shown and the call-to-action activates. For
 example, if the user must click a button to grant a permission, introduce a
-delay before the button becomes active once the permission prompt is
-shown. Chrome uses short and long delays in various UI:
+delay before the button becomes active once the permission prompt is shown.
+Chrome uses short and long delays in various UI:
 
-- For large security-sensitive browser surfaces like interstitials, three
-seconds is typically considered a delay that is long enough to let the user
-notice that the UI is showing without being too disruptive to the typical user
-experience.
+-   For large security-sensitive browser surfaces like interstitials, three
+    seconds is typically considered a delay that is long enough to let the user
+    notice that the UI is showing without being too disruptive to the typical
+    user experience.
 
-- For smaller UI surfaces such as dialog boxes, a shorter delay like 500ms can
-be more practical. [`InputEventActivationProtector`](
-ui/views/input_event_activation_protector.h) is a helper class that ignores UI
-events that happen within 500ms of the sensitive UI being displayed.
+-   For smaller UI surfaces such as dialog boxes, a shorter delay like 500ms can
+    be more practical.
+    [`InputEventActivationProtector`](ui/views/input_event_activation_protector.h)
+    is a helper class that ignores UI events that happen within 500ms of the
+    sensitive UI being displayed.

@@ -72,7 +72,7 @@ class TextureLayerImpl;
 namespace base::internal {
 class DelayTimerBase;
 class JobTaskSource;
-}
+}  // namespace base::internal
 namespace base::test {
 struct RawPtrCountingImplForTest;
 }
@@ -1254,6 +1254,34 @@ struct pointer_traits<::raw_ptr<T, Traits>> {
     return p.get();
   }
 };
+
+#if PA_BUILDFLAG(ASSERT_CPP_20)
+// Mark `raw_ptr<T>` and `T*` as having a common reference type (the type to
+// which both can be converted or bound) of `T*`. This makes them satisfy
+// `std::equality_comparable`, which allows usage like:
+// ```
+//   std::vector<raw_ptr<T>> v;
+//   T* e;
+//   auto it = std::ranges::find(v, e);
+// ```
+// Without this, the `find()` call above would fail to compile with a cryptic
+// error about being unable to invoke `std::ranges::equal_to()`.
+template <typename T,
+          base::RawPtrTraits Traits,
+          template <typename> typename TQ,
+          template <typename> typename UQ>
+struct basic_common_reference<raw_ptr<T, Traits>, T*, TQ, UQ> {
+  using type = T*;
+};
+
+template <typename T,
+          base::RawPtrTraits Traits,
+          template <typename> typename TQ,
+          template <typename> typename UQ>
+struct basic_common_reference<T*, raw_ptr<T, Traits>, TQ, UQ> {
+  using type = T*;
+};
+#endif  // PA_BUILDFLAG(ASSERT_CPP_20)
 
 }  // namespace std
 

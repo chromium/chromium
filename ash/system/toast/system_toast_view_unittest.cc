@@ -15,6 +15,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -73,7 +74,7 @@ TEST_F(SystemToastViewTest, WithLeadingIcon) {
       widget->SetContentsView(std::make_unique<SystemToastView>(
           /*text=*/kTestText, SystemToastView::ButtonType::kNone,
           /*button_text=*/std::u16string(),
-          /*button_icon=*/&gfx::kNoneIcon,
+          /*button_icon=*/&gfx::VectorIcon::EmptyIcon(),
           /*button_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
 
   // Test that the appropriate toast elements were created.

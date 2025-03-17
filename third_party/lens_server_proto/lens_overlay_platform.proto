@@ -11,4 +11,5 @@ package lens;
 enum Platform {
   PLATFORM_UNSPECIFIED = 0;
   WEB = 3;
+  LENS_OVERLAY = 6;
 }

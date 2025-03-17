@@ -31,7 +31,7 @@
 // the 'static_spki_hashes' and 'bad_static_spki_hashes' fields in 'pinsets'
 // refer to, and the timestamp at which the pins list was last updated.
 //
-// Last updated: 2024-12-23 12:57 UTC
+// Last updated: 2025-03-16 12:54 UTC
 //
 {
   "pinsets": [
@@ -117,6 +117,11 @@
       "pins": "google"
     },
     {
+      "name": "partner.android.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
       "name": "plus.sandbox.google.com",
       "include_subdomains": true,
       "pins": "google"
@@ -183,6 +188,11 @@
     },
     {
       "name": "contributor.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "crossmediapanel.com",
       "include_subdomains": true,
       "pins": "google"
     },
@@ -273,6 +283,11 @@
     },
     {
       "name": "meet.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "mfg-inspector.com",
       "include_subdomains": true,
       "pins": "google"
     },
@@ -702,6 +717,11 @@
       "pins": "google"
     },
     {
+      "name": "google.al",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
       "name": "google.am",
       "include_subdomains": true,
       "pins": "google"
@@ -762,6 +782,11 @@
       "pins": "google"
     },
     {
+      "name": "google.bt",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
       "name": "google.by",
       "include_subdomains": true,
       "pins": "google"
@@ -773,6 +798,11 @@
     },
     {
       "name": "google.cat",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.eus",
       "include_subdomains": true,
       "pins": "google"
     },
@@ -1077,6 +1107,11 @@
       "pins": "google"
     },
     {
+      "name": "google.com.mm",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
       "name": "google.com.mt",
       "include_subdomains": true,
       "pins": "google"
@@ -1133,6 +1168,11 @@
     },
     {
       "name": "google.com.pe",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.pg",
       "include_subdomains": true,
       "pins": "google"
     },
@@ -1703,6 +1743,11 @@
     },
     {
       "name": "google.so",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.sr",
       "include_subdomains": true,
       "pins": "google"
     },

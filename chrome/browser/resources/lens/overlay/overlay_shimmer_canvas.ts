@@ -477,8 +477,9 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     const centerX = e.detail.left + e.detail.width / 2;
     const centerY = e.detail.top + e.detail.height / 2;
 
-    // Ignore invalid regions if not translate mode.
+    // Ignore invalid regions if not translate mode or searchbox.
     if (e.detail.requester !== ShimmerControlRequester.TRANSLATE &&
+        e.detail.requester !== ShimmerControlRequester.SEARCHBOX &&
         (centerX <= 0 || centerY <= 0)) {
       return;
     }
@@ -493,6 +494,11 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
         this.shimmerControllerStack.sort();
       }
       this.previousPostSelection = e.detail;
+    }
+
+    // Save the cursor position in case we need to move the shimmer back to it.
+    if (e.detail.requester === ShimmerControlRequester.CURSOR) {
+      this.cursorCenter = {x: centerX * 100, y: centerY * 100};
     }
 
     this.focusRegion(
@@ -527,14 +533,33 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
           centerX, centerY, this.previousPostSelection.width,
           this.previousPostSelection.height,
           this.previousPostSelection.requester);
+    } else if (newCurrentController === ShimmerControlRequester.CURSOR) {
+      // Target the shimmer back to the cursor.
+      this.focusRegion(
+          this.cursorCenter.x / 100, this.cursorCenter.y / 100, 0, 0,
+          newCurrentController);
     } else if (newCurrentController === ShimmerControlRequester.NONE) {
+      if (controllerBeforeUnfocus === ShimmerControlRequester.SEARCHBOX) {
+        // The shimmer should never face back to the steady state. This can
+        // happen if the searchbox is unfocused prior to a cursor focus event
+        // being received. In this case, manually fade out the cursor to 0,0
+        // so the shimmer does not transition to the steady state.
+        // TODO(crbug.com/402183580): This is a bandaid fix for an LE arm. Not
+        // transitioning to the steady state has become a requirement that this
+        // shimmer controller was not originally designed for. This controller
+        // should be redesigned in the future to support this and other more
+        // complex use cases.
+        this.setTransitionState(ShimmerState.TRANSITION_FADE_OUT_TO_CURSOR);
+        this.focusRegion(0, 0, 0, 0, ShimmerControlRequester.CURSOR);
+        return;
+      }
       this.setTransitionState(ShimmerState.TRANSITION_TO_STEADY_STATE);
     }
   }
 
   // Focuses the shimmer on a specific region of the screen. The inputted values
   // should be percentage values between 0-1 representing the region to focus.
-  private async focusRegion(
+  private focusRegion(
       centerX: number, centerY: number, width: number, height: number,
       requester: ShimmerControlRequester) {
     const currentShimmerController = this.getCurrentShimmerController();
@@ -706,7 +731,7 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     }
 
     // Update the sparkles position to use across the circles.
-    this.sparklesPattern!.setTransform(new DOMMatrixReadOnly().translate(
+    this.sparklesPattern.setTransform(new DOMMatrixReadOnly().translate(
         this.sparklesOffset, this.sparklesOffset));
 
     this.context.save();

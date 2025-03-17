@@ -154,7 +154,7 @@ bool SqliteDatabaseTransaction::Commit() {
 
 PowerBookmarkDatabaseImpl::PowerBookmarkDatabaseImpl(
     const base::FilePath& database_dir)
-    : db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 128},
+    : db_(sql::DatabaseOptions().set_page_size(4096).set_cache_size(128),
           /*tag=*/"PowerBookmarks"),
       database_path_(database_dir.Append(kDatabaseName)) {
   sync_db_ =

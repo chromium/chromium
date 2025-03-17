@@ -1271,6 +1271,10 @@ def main(argv):
   parser.add_option('--version-name', help='Version name for this APK.')
   parser.add_option('--version-code', help='Version code for this APK.')
 
+  # dist_jar options
+  parser.add_option('--use-interface-jars', action='store_true')
+  parser.add_option('--direct-deps-only', action='store_true')
+
   options, args = parser.parse_args(argv)
 
   if args:
@@ -2103,14 +2107,21 @@ def main(argv):
     if options.tested_apk_config:
       deps_info['device_classpath_extended'] = device_classpath_extended
 
-  if options.type in ('android_apk', 'dist_jar'):
-    all_interface_jars = []
-    if options.interface_jar_path:
-      all_interface_jars.append(options.interface_jar_path)
-    all_interface_jars.extend(c['interface_jar_path'] for c in all_library_deps)
+  if options.type == 'dist_jar':
+    if options.direct_deps_only:
+      if options.use_interface_jars:
+        dist_jars = config['javac']['interface_classpath']
+      else:
+        dist_jars = sorted(c['device_jar_path']
+                           for c in classpath_direct_library_deps)
+    else:
+      if options.use_interface_jars:
+        dist_jars = [c['interface_jar_path'] for c in all_library_deps]
+      else:
+        dist_jars = deps_info['device_classpath']
 
     config['dist_jar'] = {
-      'all_interface_jars': all_interface_jars,
+        'jars': dist_jars,
     }
 
   if is_apk_or_module_target:

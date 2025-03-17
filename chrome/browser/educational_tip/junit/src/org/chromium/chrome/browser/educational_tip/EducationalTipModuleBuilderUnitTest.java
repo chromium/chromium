@@ -13,9 +13,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
-
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -71,11 +68,9 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private TabModel mIncognitoModel;
 
     private EducationalTipModuleBuilder mModuleBuilder;
-    private Context mContext;
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
         when(mProfileSupplier.hasValue()).thenReturn(true);
         when(mProfileSupplier.get()).thenReturn(mProfile);
@@ -97,8 +92,7 @@ public class EducationalTipModuleBuilderUnitTest {
         when(mIncognitoModel.getCount()).thenReturn(0);
 
         mModuleBuilder =
-                new EducationalTipModuleBuilder(
-                        ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate);
+                new EducationalTipModuleBuilder(ModuleType.QUICK_DELETE_PROMO, mActionDelegate);
     }
 
     @Test
@@ -130,8 +124,55 @@ public class EducationalTipModuleBuilderUnitTest {
         ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
         ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER
     })
+    @DisableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD})
+    public void testBuildEducationalTipDefaultBrowserModule_NotEligible() {
+        EducationalTipModuleBuilder moduleBuilderForDefaultBrowser =
+                new EducationalTipModuleBuilder(ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate);
+
+        assertFalse(moduleBuilderForDefaultBrowser.build(mModuleDelegate, mBuildCallback));
+        verify(mBuildCallback, never()).onResult(any(ModuleProvider.class));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER
+    })
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
+    public void testBuildEducationalTipTabGroupSyncModule_NotEligible() {
+        EducationalTipModuleBuilder moduleBuilderForTabGroupSync =
+                new EducationalTipModuleBuilder(ModuleType.TAB_GROUP_SYNC_PROMO, mActionDelegate);
+
+        assertFalse(moduleBuilderForTabGroupSync.build(mModuleDelegate, mBuildCallback));
+        verify(mBuildCallback, never()).onResult(any(ModuleProvider.class));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+    })
+    public void testBuildEducationalTipTabGroupSyncModule_Eligible() {
+        EducationalTipModuleBuilder moduleBuilderForTabGroupSync =
+                new EducationalTipModuleBuilder(ModuleType.TAB_GROUP_SYNC_PROMO, mActionDelegate);
+
+        assertTrue(moduleBuilderForTabGroupSync.build(mModuleDelegate, mBuildCallback));
+        verify(mBuildCallback).onResult(any(ModuleProvider.class));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER
+    })
     public void testCreateInputContext() {
-        InputContext inputContextForTest = mModuleBuilder.createInputContext();
+        EducationalTipModuleBuilder moduleBuilderForDefaultBrowserPromo =
+                new EducationalTipModuleBuilder(ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate);
+        InputContext inputContextForTest = moduleBuilderForDefaultBrowserPromo.createInputContext();
         assertNotNull(
                 inputContextForTest.getEntryForTesting(
                         "should_show_non_role_manager_default_browser_promo"));
@@ -142,7 +183,7 @@ public class EducationalTipModuleBuilderUnitTest {
         assertNull(inputContextForTest.getEntryForTesting("number_of_tabs"));
 
         EducationalTipModuleBuilder moduleBuilderForTabGroupPromo =
-                new EducationalTipModuleBuilder(ModuleType.TAB_GROUPS, mActionDelegate);
+                new EducationalTipModuleBuilder(ModuleType.TAB_GROUP_PROMO, mActionDelegate);
         inputContextForTest = moduleBuilderForTabGroupPromo.createInputContext();
         assertNull(
                 inputContextForTest.getEntryForTesting(

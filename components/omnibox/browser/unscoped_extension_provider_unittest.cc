@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/mock_unscoped_extension_provider_delegate.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -32,25 +33,6 @@ using base::ASCIIToUTF16;
 using ::testing::_;
 
 class UnscopedExtensionProviderTest : public testing::Test {
- public:
-  class MockUnscopedExtensionProviderDelegate
-      : public UnscopedExtensionProviderDelegate {
-   public:
-    MockUnscopedExtensionProviderDelegate() = default;
-    MockUnscopedExtensionProviderDelegate(
-        const MockUnscopedExtensionProviderDelegate&) = delete;
-    MockUnscopedExtensionProviderDelegate& operator=(
-        const MockUnscopedExtensionProviderDelegate&) = delete;
-
-    ~MockUnscopedExtensionProviderDelegate() override = default;
-
-    MOCK_METHOD(bool,
-                Start,
-                (const AutocompleteInput&, bool, std::set<std::string>),
-                (override));
-    MOCK_METHOD(void, IncrementRequestId, (), (override));
-  };
-
  protected:
   UnscopedExtensionProviderTest() = default;
   void SetUp() override;
@@ -87,7 +69,7 @@ TEST_F(UnscopedExtensionProviderTest, RunsAndIncrementsRequestIdWithChanges) {
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   input.set_omit_asynchronous_matches(false);
 
-  EXPECT_CALL(*mock_delegate, IncrementRequestId);
+  EXPECT_CALL(*mock_delegate, Stop);
   EXPECT_CALL(*mock_delegate, Start);
 
   InitProvider(std::move(mock_delegate));
@@ -95,7 +77,7 @@ TEST_F(UnscopedExtensionProviderTest, RunsAndIncrementsRequestIdWithChanges) {
 }
 
 TEST_F(UnscopedExtensionProviderTest,
-       RunsAndMaintainsRequestIdWithMinimalChanges) {
+       DoesNotRunAndMaintainsRequestIdWithMinimalChanges) {
   std::unique_ptr<MockUnscopedExtensionProviderDelegate> mock_delegate =
       std::make_unique<MockUnscopedExtensionProviderDelegate>();
   client_->GetTemplateURLService()->AddToUnscopedModeExtensionIds("id");
@@ -104,8 +86,8 @@ TEST_F(UnscopedExtensionProviderTest,
                           TestSchemeClassifier());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
 
-  EXPECT_CALL(*mock_delegate, IncrementRequestId).Times(0);
-  EXPECT_CALL(*mock_delegate, Start);
+  EXPECT_CALL(*mock_delegate, Stop);
+  EXPECT_CALL(*mock_delegate, Start).Times(0);
 
   InitProvider(std::move(mock_delegate));
   extension_provider_->Start(input, /*minimal_changes=*/true);
@@ -122,7 +104,7 @@ TEST_F(UnscopedExtensionProviderTest,
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   input.set_omit_asynchronous_matches(true);
 
-  EXPECT_CALL(*mock_delegate, IncrementRequestId).Times(0);
+  EXPECT_CALL(*mock_delegate, Stop);
   EXPECT_CALL(*mock_delegate, Start).Times(0);
 
   InitProvider(std::move(mock_delegate));
@@ -138,7 +120,7 @@ TEST_F(UnscopedExtensionProviderTest, DoesNotRunOnFocus) {
                           TestSchemeClassifier());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
-  EXPECT_CALL(*mock_delegate, IncrementRequestId).Times(0);
+  EXPECT_CALL(*mock_delegate, Stop);
   EXPECT_CALL(*mock_delegate, Start).Times(0);
 
   InitProvider(std::move(mock_delegate));
@@ -152,7 +134,7 @@ TEST_F(UnscopedExtensionProviderTest, DoesNotRunWithNoUnscopedExtensions) {
                           TestSchemeClassifier());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
 
-  EXPECT_CALL(*mock_delegate, IncrementRequestId).Times(0);
+  EXPECT_CALL(*mock_delegate, Stop);
   EXPECT_CALL(*mock_delegate, Start).Times(0);
 
   InitProvider(std::move(mock_delegate));

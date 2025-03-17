@@ -17,6 +17,8 @@ found in the LICENSE file.
     <item type="id" name="tab_list_editor_bookmark_menu_item" />
     <item type="id" name="tab_list_editor_close_menu_item" />
     <item type="id" name="tab_list_editor_group_menu_item" />
+    <item type="id" name="tab_list_editor_add_tab_to_group_menu_item" />
+    <item type="id" name="tab_list_editor_new_group_menu_item" />
     <item type="id" name="tab_list_editor_ungroup_menu_item" />
     <item type="id" name="tab_list_editor_selection_menu_item" />
     <item type="id" name="tab_list_editor_share_menu_item" />

@@ -15,10 +15,11 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_suggestion_icon_util.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
@@ -89,6 +90,11 @@ using base::UserMetricsAction;
   return self;
 }
 
+- (void)setThumbnailImage:(UIImage*)image {
+  [self.consumer setThumbnailImage:image];
+  [self.omniboxTextController onThumbnailSet:image != nil];
+}
+
 #pragma mark - Setters
 
 - (void)setConsumer:(id<OmniboxConsumer>)consumer {
@@ -143,6 +149,21 @@ using base::UserMetricsAction;
   [self updateConsumerEmptyTextImage];
 }
 
+#pragma mark - OmniboxMutator
+
+- (void)removeThumbnail {
+  base::RecordAction(UserMetricsAction("Mobile.OmniboxThumbnail.Deleted"));
+  // Update the UI.
+  [self.consumer setThumbnailImage:nil];
+  [self.omniboxTextController onUserRemoveThumbnail];
+}
+
+- (void)removeAdditionalText {
+  [self.omniboxTextController onUserRemoveAdditionalText];
+}
+
+#pragma mark - OmniboxTextControllerDelegate
+
 #pragma mark - PopupMatchPreviewDelegate
 
 - (void)setPreviewSuggestion:(id<AutocompleteSuggestion>)suggestion
@@ -151,7 +172,7 @@ using base::UserMetricsAction;
   // receive the suggestion as inline autocomplete through OmniboxViewIOS.
   if (!isFirstUpdate) {
     // Remove additional text when previewing suggestions.
-    [self.consumer updateAdditionalText:nil];
+    [self.omniboxTextController setAdditionalText:u""];
     [self.consumer updateText:suggestion.omniboxPreviewText];
   }
 

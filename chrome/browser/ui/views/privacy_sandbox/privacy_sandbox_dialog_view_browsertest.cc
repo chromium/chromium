@@ -88,9 +88,7 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
 };
 
 #if !BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/371487612): Re-enable this tests.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
-                       DISABLED_InvokeUi_Consent) {
+IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Consent) {
   base::WaitableEvent shown_waiter;
   base::WaitableEvent closed_waiter;
 
@@ -111,9 +109,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
   closed_waiter.TimedWait(kMaxWaitTime);
 }
 
-// TODO(crbug.com/371487612): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
-                       DISABLED_InvokeUi_Notice) {
+IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Notice) {
   base::WaitableEvent shown_waiter;
   base::WaitableEvent closed_waiter;
 
@@ -163,8 +159,11 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementBrowserTest
     : public PrivacySandboxDialogViewBrowserTest {
  public:
   PrivacySandboxDialogViewAdsApiUxEnhancementBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements);
+    scoped_feature_list_.InitWithFeatures(
+        // Enabled Features
+        {privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements},
+        // Disabled Features
+        {privacy_sandbox::kPrivacySandboxAdTopicsContentParity});
   }
 
  private:
@@ -191,6 +190,9 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewAdsApiUxEnhancementBrowserTest,
   shown_waiter.TimedWait(kMaxWaitTime);
   closed_waiter.TimedWait(kMaxWaitTime);
 }
+
+// TODO(crbug.com/396446633): Add pixel tests for other dialogs with ads api ux
+// enhancements and ad topics content parity.
 
 class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
     : public PrivacySandboxDialogViewBrowserTest {
@@ -277,7 +279,7 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest
         {privacy_sandbox::kPrivacySandboxPrivacyPolicy,
          privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements},
         // Disabled Features
-        {});
+        {privacy_sandbox::kPrivacySandboxAdTopicsContentParity});
   }
 
   std::string GetPrivacyPolicyLinkElementId() override {

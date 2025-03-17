@@ -50,7 +50,8 @@ MediaMetricsProvider::MediaMetricsProvider(
     learning::FeatureValue origin,
     VideoDecodePerfHistory::SaveCallback save_cb,
     GetLearningSessionCallback learning_session_cb,
-    IsShuttingDownCallback is_shutting_down_cb)
+    IsShuttingDownCallback is_shutting_down_cb,
+    PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb)
     : player_id_(g_player_id++),
       is_top_frame_(is_top_frame == FrameStatus::kTopFrame),
       source_id_(source_id),
@@ -58,6 +59,7 @@ MediaMetricsProvider::MediaMetricsProvider(
       save_cb_(std::move(save_cb)),
       learning_session_cb_(std::move(learning_session_cb)),
       is_shutting_down_cb_(std::move(is_shutting_down_cb)),
+      auto_pip_reason_cb_(std::move(auto_pip_reason_cb)),
       uma_info_(is_incognito == BrowsingMode::kIncognito) {}
 
 MediaMetricsProvider::~MediaMetricsProvider() {
@@ -202,12 +204,13 @@ void MediaMetricsProvider::Create(
     VideoDecodePerfHistory::SaveCallback save_cb,
     GetLearningSessionCallback learning_session_cb,
     IsShuttingDownCallback is_shutting_down_cb,
+    PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb,
     mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<MediaMetricsProvider>(
           is_incognito, is_top_frame, source_id, origin, std::move(save_cb),
-          std::move(learning_session_cb),
-          std::move(is_shutting_down_cb)),
+          std::move(learning_session_cb), std::move(is_shutting_down_cb),
+          std::move(auto_pip_reason_cb)),
       std::move(receiver));
 }
 
@@ -348,10 +351,10 @@ void MediaMetricsProvider::AcquireWatchTimeRecorder(
     return;
   }
 
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<WatchTimeRecorder>(std::move(properties), source_id_,
-                                          is_top_frame_, player_id_),
-      std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(std::make_unique<WatchTimeRecorder>(
+                                  auto_pip_reason_cb_, std::move(properties),
+                                  source_id_, is_top_frame_, player_id_),
+                              std::move(receiver));
 }
 
 void MediaMetricsProvider::AcquireVideoDecodeStatsRecorder(

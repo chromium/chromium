@@ -325,7 +325,7 @@ void Me2MeNativeMessagingHostTest::SetUp() {
       base::BindOnce(&Me2MeNativeMessagingHostTest::ExitTest,
                      base::Unretained(this)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   test_url_loader_factory_ = new network::TestSharedURLLoaderFactory();
 #endif
 
@@ -441,16 +441,16 @@ Me2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
       return std::nullopt;
     }
 
-    std::optional<base::Value> message = base::JSONReader::Read(message_json);
-    if (!message || !message->is_dict()) {
+    std::optional<base::Value::Dict> message =
+        base::JSONReader::ReadDict(message_json);
+    if (!message) {
       return std::nullopt;
     }
 
-    base::Value::Dict& result = message->GetDict();
-    const std::string* type = result.FindString("type");
+    const std::string* type = message->FindString("type");
     // If this is a debug message log, ignore it, otherwise return it.
     if (!type || *type != LogMessageHandler::kDebugMessageTypeName) {
-      return std::move(result);
+      return std::move(*message);
     }
   }
 }

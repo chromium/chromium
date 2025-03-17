@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -29,7 +30,6 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "ui/accessibility/ax_mode.h"
@@ -155,8 +155,8 @@ class CONTENT_EXPORT RenderFrameObserver
   virtual void DidChangeScrollOffset() {}
   virtual void WillSubmitForm(const blink::WebFormElement& form) {}
   virtual void DidMatchCSS(
-      const blink::WebVector<blink::WebString>& newly_matching_selectors,
-      const blink::WebVector<blink::WebString>& stopped_matching_selectors) {}
+      const std::vector<blink::WebString>& newly_matching_selectors,
+      const std::vector<blink::WebString>& stopped_matching_selectors) {}
 
   // Called when the RenderFrame creates a FencedFrame and provides the
   // RemoteFrameToken to identify the `blink::RemoteFrame` to the inner
@@ -370,11 +370,12 @@ class CONTENT_EXPORT RenderFrameObserver
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle* handle);
 
-  // The smoothness metrics is shared over shared-memory. The interested
-  // observer should invalidate |shared_memory| (by std::move()'ing it), and
-  // return true. All other observers should return false (default).
-  virtual bool SetUpSmoothnessReporting(
-      base::ReadOnlySharedMemoryRegion& shared_memory);
+  // The smoothness and dropped frames metrics is shared over shared-memory. The
+  // interested observer should invalidate |shared_memory| (by std::move()'ing
+  // it), and return true. All other observers should return false (default).
+  virtual bool SetUpUkmReporting(
+      base::ReadOnlySharedMemoryRegion& shared_memory_smoothness,
+      base::ReadOnlySharedMemoryRegion& shared_memory_dropped_frames);
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // IPC::Listener implementation.

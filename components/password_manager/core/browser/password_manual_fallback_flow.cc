@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_manual_fallback_flow.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/check.h"
@@ -11,8 +12,8 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/aliases.h"
@@ -56,7 +57,7 @@ std::optional<password_manager::PasswordForm> GetCorrespondingPasswordForm(
     const SavedPasswordsPresenter& presenter) {
   const std::vector<CredentialUIEntry>& credential_ui_entries =
       presenter.GetSavedCredentials();
-  const auto& found_credential_it = base::ranges::find_if(
+  const auto& found_credential_it = std::ranges::find_if(
       credential_ui_entries, [&payload](const CredentialUIEntry& ui_entry) {
         return ui_entry.username == payload.username &&
                ui_entry.password == payload.password &&
@@ -72,7 +73,7 @@ std::optional<password_manager::PasswordForm> GetCorrespondingPasswordForm(
   const std::vector<PasswordForm> forms =
       presenter.GetCorrespondingPasswordForms(*found_credential_it);
   const std::vector<PasswordForm>::const_iterator& found_form_it =
-      base::ranges::find_if(forms, [&payload](const PasswordForm& form) {
+      std::ranges::find_if(forms, [&payload](const PasswordForm& form) {
         return form.signon_realm == payload.signon_realm;
       });
   CHECK(found_form_it != forms.end());

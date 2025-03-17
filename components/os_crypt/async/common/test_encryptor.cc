@@ -8,14 +8,19 @@
 
 namespace os_crypt_async {
 
-TestEncryptor::TestEncryptor(KeyRing keys,
-                             const std::string& provider_for_encryption)
-    : Encryptor(std::move(keys), provider_for_encryption) {}
+TestEncryptor::TestEncryptor(
+    KeyRing keys,
+    const std::string& provider_for_encryption,
+    const std::string& provider_for_os_crypt_sync_compatible_encryption)
+    : Encryptor(std::move(keys),
+                provider_for_encryption,
+                provider_for_os_crypt_sync_compatible_encryption) {}
 
 TestEncryptor TestEncryptor::Clone(Option option) const {
   auto cloned = Encryptor::Clone(option);
-  return TestEncryptor(std::move(cloned.keys_),
-                       cloned.provider_for_encryption_);
+  return TestEncryptor(
+      std::move(cloned.keys_), cloned.provider_for_encryption_,
+      cloned.provider_for_os_crypt_sync_compatible_encryption_);
 }
 
 bool TestEncryptor::IsEncryptionAvailable() const {

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <ostream>
 #include <set>
@@ -21,12 +22,10 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/persistent_memory_allocator.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -46,7 +45,7 @@ BASE_FEATURE(kFeatureOffByDefault,
 std::string SortFeatureListString(const std::string& feature_list) {
   std::vector<std::string_view> features =
       FeatureList::SplitFeatureListString(feature_list);
-  ranges::sort(features);
+  std::ranges::sort(features);
   return JoinString(features, ",");
 }
 
@@ -553,9 +552,8 @@ TEST_F(FeatureListTest, GetFeatureOverrides) {
   feature_list->RegisterExtraFeatureOverrides(std::move(overrides));
 
   FieldTrial* trial = FieldTrialList::CreateFieldTrial("Trial", "Group");
-  feature_list->RegisterFieldTrialOverride(kFeatureOffByDefaultName,
-                                           FeatureList::OVERRIDE_ENABLE_FEATURE,
-                                           trial);
+  feature_list->RegisterFieldTrialOverride(
+      kFeatureOffByDefaultName, FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
 
   test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
@@ -665,8 +663,9 @@ TEST_F(FeatureListTest, UninitializedInstance_IsEnabledReturnsFalse) {
   EXPECT_EQ(nullptr, FeatureList::GetInstance());
   EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOffByDefault));
 
-  if (original_feature_list)
+  if (original_feature_list) {
     FeatureList::RestoreInstanceForTesting(std::move(original_feature_list));
+  }
 }
 
 TEST_F(FeatureListTest, StoreAndRetrieveFeaturesFromSharedMemory) {
@@ -994,8 +993,8 @@ TEST(TestFeatureVisitor, FeatureHasParams) {
   base::test::ScopedFeatureList initialized_feature_list;
 
   initialized_feature_list.InitFromCommandLine(
-      /*enabled_features=*/"TestFeature<foo.bar:k1/v1/k2/v2",
-      /*disabled_features=*/"");
+      /*enable_features=*/"TestFeature<foo.bar:k1/v1/k2/v2",
+      /*disable_features=*/"");
 
   TestFeatureVisitor visitor;
   base::FeatureList::VisitFeaturesAndParams(visitor);

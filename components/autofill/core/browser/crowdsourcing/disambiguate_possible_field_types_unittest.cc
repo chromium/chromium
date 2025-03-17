@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -56,7 +57,7 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
     DisambiguatePossibleFieldTypes(form_structure);
 
     std::vector<FieldTypeSet> disambiguated_possible_field_types;
-    base::ranges::transform(
+    std::ranges::transform(
         form_structure.fields(),
         std::back_inserter(disambiguated_possible_field_types),
         [](const std::unique_ptr<AutofillField>& field) {

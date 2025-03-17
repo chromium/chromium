@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("enterprise") {
   sources = [
@@ -13,9 +13,9 @@ static_library("enterprise") {
   ]
 
   deps = [
-    "//ash/components/arc",
     "//base",
     "//chrome/browser/ash/arc:arc_util",
+    "//chromeos/ash/experiences/arc",
   ]
 }
 
@@ -26,8 +26,6 @@ source_set("unit_tests") {
 
   deps = [
     ":enterprise",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/arc/enterprise/cert_store:unit_tests",
@@ -36,6 +34,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/session_manager/core",
     "//components/user_manager",
     "//content/test:test_support",

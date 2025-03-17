@@ -17,17 +17,14 @@ export function getHtml(this: AutoTabGroupsResultsElement) {
         .tabs="${item.tabs}"
         first-new-tab-index="${item.firstNewTabIndex}"
         organization-id="${item.organizationId}"
-        ?multi-tab-organization="${this.multiTabOrganization}"
         ?show-reject="${this.hasMultipleOrganizations_()}">
       </auto-tab-groups-group>
     `)}
   </div>
-  ${this.multiTabOrganization ? html`
-    <auto-tab-groups-results-actions show-clear
-        ?multiple-organizations="${this.hasMultipleOrganizations_()}"
-        @create-group-click="${this.onCreateAllGroupsClick_}">
-    </auto-tab-groups-results-actions>
-  ` : ''}
+  <auto-tab-groups-results-actions show-clear
+      ?multiple-organizations="${this.hasMultipleOrganizations_()}"
+      @create-group-click="${this.onCreateAllGroupsClick_}">
+  </auto-tab-groups-results-actions>
   <div class="feedback" role="toolbar" @keydown="${this.onFeedbackKeyDown_}">
     <div class="button-row">
       <div class="auto-tab-groups-body">

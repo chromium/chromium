@@ -4,11 +4,12 @@
 
 #include "components/search_engines/template_url_fetcher.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -135,7 +136,7 @@ TemplateURLFetcher::RequestDelegate::RequestDelegate(
   resource_request->resource_type =
       /* blink::mojom::ResourceType::kSubResource */ 6;
   resource_request->destination = network::mojom::RequestDestination::kEmpty;
-  resource_request->load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
+  resource_request->site_for_cookies = net::SiteForCookies::FromUrl(osdd_url);
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
   simple_url_loader_->SetAllowHttpErrorResults(true);
@@ -278,8 +279,8 @@ void TemplateURLFetcher::ScheduleDownload(
 }
 
 void TemplateURLFetcher::RequestCompleted(RequestDelegate* request) {
-  auto i = base::ranges::find(requests_, request,
-                              &std::unique_ptr<RequestDelegate>::get);
+  auto i = std::ranges::find(requests_, request,
+                             &std::unique_ptr<RequestDelegate>::get);
   CHECK(i != requests_.end(), base::NotFatalUntil::M130);
   requests_.erase(i);
 }

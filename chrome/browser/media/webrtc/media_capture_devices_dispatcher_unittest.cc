@@ -25,7 +25,7 @@ class MockMediaAccessHandler : public MediaAccessHandler {
       const blink::mojom::MediaStreamType supported_type)
       : supported_type_(supported_type) {}
 
-  bool SupportsStreamType(content::WebContents* web_contents,
+  bool SupportsStreamType(content::RenderFrameHost* render_frame_host,
                           const blink::mojom::MediaStreamType type,
                           const extensions::Extension* extension) override {
     return supported_type_ == type;

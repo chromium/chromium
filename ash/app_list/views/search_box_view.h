@@ -93,7 +93,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Overridden from SearchBoxViewBase:
   void UpdateSearchTextfieldAccessibleActiveDescendantId() override;
   void UpdateKeyboardVisibility() override;
-  void HandleQueryChange(const std::u16string& query,
+  void HandleQueryChange(std::u16string_view query,
                          bool initiated_by_user) override;
   void UpdatePlaceholderTextStyle() override;
   void UpdateSearchBoxBorder() override;
@@ -114,11 +114,11 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void AddedToWidget() override;
 
   // LauncherSearchIphView::Delegate:
-  void RunLauncherSearchQuery(const std::u16string& query) override;
+  void RunLauncherSearchQuery(std::u16string_view query) override;
   void OpenAssistantPage() override;
 
   // AssistantViewDelegateObserver:
-  void OnLauncherSearchChipPressed(const std::u16string& query) override;
+  void OnLauncherSearchChipPressed(std::u16string_view query) override;
 
   // Shows the category filter menu that allows users to enable/disable specific
   // search categories.
@@ -161,7 +161,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void ClearAutocompleteText();
 
   // Updates the search box with |new_query| and starts a new search.
-  void UpdateQuery(const std::u16string& new_query);
+  void UpdateQuery(std::u16string_view new_query);
 
   // Moves the focus back to search box and find a search result to select.
   void EnterSearchResultSelection(const ui::KeyEvent& event);
@@ -210,6 +210,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Called when the assistant button within the search box gets pressed.
   void AssistantButtonPressed();
 
+  // Called when the assistant new entry point button within the search box gets
+  // pressed.
+  void AssistantNewEntryPointButtonPressed();
+
   // Called when the sunfish launcher button within the search box gets pressed.
   void SunfishButtonPressed();
 
@@ -256,7 +260,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Overridden from SearchBoxModelObserver:
   void SearchEngineChanged() override;
   void ShowAssistantChanged() override;
-  void ShowSunfishChanged() override;
+  void ShowAssistantNewEntryPointChanged() override;
+  // Updates the visibility and the icon of the Sunfish-session button.
+  void SunfishButtonVisibilityChanged() override;
 
   // Updates the visibility of an IPH view.
   // If `can_show_iph` is false, delete the IPH view if it is visible.
@@ -273,7 +279,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void UpdateAccessibleValue();
 
   // Updates the search box's text value.
-  void SetText(const std::u16string& text);
+  void SetText(std::u16string_view text);
 
   // Builds the menu model for the category filter menu. This returns a vector
   // of AppListSearchControlCategory that is shown in the filter menu.

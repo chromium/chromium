@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -71,18 +71,7 @@ std::u16string_view GetChipLabel(const views::View* chip) {
 using EditorMenuViewTest = ChromeViewsTestBase;
 
 class EditorMenuViewI18nEnabledTest : public EditorMenuViewTest {
- public:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kOrca,
-                              chromeos::features::kFeatureManagementOrca,
-                              chromeos::features::kOrcaUseL10nStrings},
-        /*disabled_features=*/{});
-    EditorMenuViewTest::SetUp();
-  }
 
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(EditorMenuViewTest, CreatesChips) {
@@ -150,21 +139,15 @@ TEST_F(EditorMenuViewTest, TabKeyMovesFocus) {
       views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
   editor_menu_view->RequestFocus();
 
-  // Settings button should be focused.
-  EXPECT_TRUE(views::IsViewClass<views::ImageButton>(
-      editor_menu_view->GetFocusManager()->GetFocusedView()));
-
-  // Press tab, focus should move to first chip.
-  ui::test::EventGenerator generator(
-      GetContext(), editor_menu_widget->GetNativeWindow()->GetRootWindow());
-  generator.PressAndReleaseKey(ui::VKEY_TAB);
-
+  // First chip should be focused.
   ASSERT_TRUE(views::IsViewClass<EditorMenuChipView>(
       editor_menu_view->GetFocusManager()->GetFocusedView()));
   EXPECT_EQ(GetChipLabel(editor_menu_view->GetFocusManager()->GetFocusedView()),
             queries[0].name);
 
   // Press tab a few more times, focus should move to the last chip.
+  ui::test::EventGenerator generator(
+      GetContext(), editor_menu_widget->GetNativeWindow()->GetRootWindow());
   generator.PressAndReleaseKey(ui::VKEY_TAB);
   generator.PressAndReleaseKey(ui::VKEY_TAB);
   generator.PressAndReleaseKey(ui::VKEY_TAB);
@@ -313,7 +296,7 @@ TEST_F(EditorMenuViewTest, AccessibleProperties) {
   editor_menu_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            u"Rewrite");
+            u"Refine");
 
   // Write Editor Mode
   editor_menu_widget =

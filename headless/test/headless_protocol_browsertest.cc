@@ -356,9 +356,21 @@ HEADLESS_PROTOCOL_TEST(ShowDirectoryPickerNoCrash,
 HEADLESS_PROTOCOL_TEST(ShowFilePickerInterception,
                        "sanity/show-file-picker-interception.js")
 
+// The `change-window-*.js` tests cover DevTools methods, while `window-*.js`
+// cover `window.*` JS APIs.
 HEADLESS_PROTOCOL_TEST(ChangeWindowSize, "sanity/change-window-size.js")
 HEADLESS_PROTOCOL_TEST(ChangeWindowState, "sanity/change-window-state.js")
 HEADLESS_PROTOCOL_TEST(WindowOuterSize, "sanity/window-outer-size.js")
+HEADLESS_PROTOCOL_TEST(WindowResizeTo, "sanity/window-resize-to.js")
+
+// https://crbug.com/378531862
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CreateTargetPosition DISABLED_CreateTargetPosition
+#else
+#define MAYBE_CreateTargetPosition CreateTargetPosition
+#endif
+HEADLESS_PROTOCOL_TEST(MAYBE_CreateTargetPosition,
+                       "sanity/create-target-position.js")
 
 HEADLESS_PROTOCOL_TEST(WindowSizeOnStart, "sanity/window-size-on-start.js")
 
@@ -372,6 +384,11 @@ HEADLESS_PROTOCOL_TEST(GrantPermissions, "sanity/grant_permissions.js")
 
 #if !defined(HEADLESS_USE_EMBEDDED_RESOURCES)
 HEADLESS_PROTOCOL_TEST(AutoHyphenation, "sanity/auto-hyphenation.js")
+#endif
+
+// Web Bluetooth is still experimental on Linux.
+#if !BUILDFLAG(IS_LINUX)
+HEADLESS_PROTOCOL_TEST(Bluetooth, "emulation/bluetooth.js")
 #endif
 
 class HeadlessProtocolBrowserTestWithKnownPermission
@@ -624,6 +641,16 @@ HEADLESS_PROTOCOL_TEST_P(HeadlessProtocolBrowserTestSitePerProcess,
                          SitePerProcess,
                          "sanity/site-per-process.js")
 
+// The test brlow requires beginFrameControl which is currently not supported
+// on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IOCommandAfterInput DISABLED_IOCommandAfterInput
+#else
+#define MAYBE_IOCommandAfterInput IOCommandAfterInput
+#endif
+HEADLESS_PROTOCOL_TEST(MAYBE_IOCommandAfterInput,
+                       "input/io-command-after-input.js")
+
 #define HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(              \
     TEST_NAME, SCRIPT_NAME, COMMAND_LINE_EXTRAS)                      \
                                                                       \
@@ -650,9 +677,20 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "--screen-info={devicePixelRatio=3.0}")
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    ScreenWorkArea,
+    "sanity/screen-work-area.js",
+    "--screen-info={ workAreaLeft=100 workAreaRight=100"
+    " workAreaTop=100 workAreaBottom=100 }")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     ScreenSizeOrientation,
     "sanity/screen-size-orientation.js",
     "--screen-info={600x800}")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    ScreenRotationAngle,
+    "sanity/screen-rotation-angle.js",
+    "--screen-info={rotation=180}")
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     ScreenOrientationLockNaturalLandscape,
@@ -679,40 +717,39 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "sanity/request-fullscreen.js",
     "--screen-info={ 800x600 } --window-size=400,200")
 
-// https://crbug.com/380313546
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_WindowOpenOnSecondaryScreen DISABLED_WindowOpenOnSecondaryScreen
-#define MAYBE_RequestFullscreenOnSecondaryScreen \
-  DISABLED_RequestFullscreenOnSecondaryScreen
-#define MAYBE_ScreenRotationSecondaryScreen \
-  DISABLED_ScreenRotationSecondaryScreen
-#define MAYBE_MoveWindowBetweenScreens DISABLED_MoveWindowBetweenScreens
-#else
-#define MAYBE_WindowOpenOnSecondaryScreen WindowOpenOnSecondaryScreen
-#define MAYBE_RequestFullscreenOnSecondaryScreen \
-  RequestFullscreenOnSecondaryScreen
-#define MAYBE_ScreenRotationSecondaryScreen ScreenRotationSecondaryScreen
-#define MAYBE_MoveWindowBetweenScreens MoveWindowBetweenScreens
-#endif
-
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    MAYBE_WindowOpenOnSecondaryScreen,
+    WindowOpenOnSecondaryScreen,
     "sanity/window-open-on-secondary-screen.js",
     "--screen-info={ label='1st screen' }{ label='2nd screen' }")
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    MAYBE_RequestFullscreenOnSecondaryScreen,
+    RequestFullscreenOnSecondaryScreen,
     "sanity/request-fullscreen-on-secondary-screen.js",
     "--screen-info={ label='1st screen' }{ 600x800 label='2nd screen' }")
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    MAYBE_ScreenRotationSecondaryScreen,
+    ScreenRotationSecondaryScreen,
     "sanity/screen-rotation-secondary-screen.js",
     "--screen-info={ label='1st screen' }{ 600x800 label='2nd screen' }")
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    MAYBE_MoveWindowBetweenScreens,
+    MoveWindowBetweenScreens,
     "sanity/move-window-between-screens.js",
     "--screen-info={label='#1'}{label='#2'}{0,600 label='#3'}{label='#4'}")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    CreateTargetSecondaryScreen,
+    "sanity/create-target-secondary-screen.js",
+    "--screen-info={label='#1'}{label='#2'}")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    CreateTargetWindowState,
+    "sanity/create-target-window-state.js",
+    "--screen-info={1600x1200}")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MultipleScreenDetails,
+    "sanity/multiple-screen-details.js",
+    "--screen-info={label='#1'}{600x800 label='#2'}")
 
 }  // namespace headless

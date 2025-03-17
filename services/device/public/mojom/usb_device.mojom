@@ -8,8 +8,9 @@ import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
-// USB interface classes.
+// USB interface classes from https://www.usb.org/defined-class-codes
 const uint8 kUsbAudioClass = 0x01;
+const uint8 kUsbCommClass = 0x02;
 const uint8 kUsbHidClass = 0x03;
 const uint8 kUsbMassStorageClass = 0x08;
 const uint8 kUsbSmartCardClass = 0x0B;

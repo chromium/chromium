@@ -48,18 +48,24 @@ public final class CastCrashUploader {
     private final String mApplicationFeedback;
     private final Runnable mQueueAllCrashDumpUploadsRunnable = () -> checkForCrashDumps();
 
-    public CastCrashUploader(ScheduledExecutorService executorService,
-            ElidedLogcatProvider logcatProvider, String crashDumpPath, String crashReportPath,
-            String uuid, String applicationFeedback, boolean uploadCrashToStaging) {
+    public CastCrashUploader(
+            ScheduledExecutorService executorService,
+            ElidedLogcatProvider logcatProvider,
+            String crashDumpPath,
+            String crashReportPath,
+            String uuid,
+            String applicationFeedback,
+            boolean uploadCrashToStaging) {
         mExecutorService = executorService;
         mLogcatProvider = logcatProvider;
         mCrashDumpPath = crashDumpPath;
         mCrashReportPath = crashReportPath;
         mUuid = uuid;
         mApplicationFeedback = applicationFeedback;
-        mCrashReportUploadUrl = uploadCrashToStaging
-                ? "https://clients2.google.com/cr/staging_report"
-                : "https://clients2.google.com/cr/report";
+        mCrashReportUploadUrl =
+                uploadCrashToStaging
+                        ? "https://clients2.google.com/cr/staging_report"
+                        : "https://clients2.google.com/cr/report";
     }
 
     @SuppressWarnings("FutureReturnValueIgnored")
@@ -137,8 +143,9 @@ public final class CastCrashUploader {
                 logHeader.append("Content-Type: text/plain\n\n");
                 logHeader.append(log);
                 logHeader.append("\n");
-                InputStream logHeaderStream = new ByteArrayInputStream(
-                        logHeader.toString().getBytes(Charset.forName("UTF-8")));
+                InputStream logHeaderStream =
+                        new ByteArrayInputStream(
+                                logHeader.toString().getBytes(Charset.forName("UTF-8")));
                 // Upload: prepend the log file for uploading
                 uploadCrashDumpStream =
                         new SequenceInputStream(logHeaderStream, uploadCrashDumpStream);
@@ -153,10 +160,11 @@ public final class CastCrashUploader {
                 uuidBuilder.append("Content-Type: text/plain\n\n");
                 uuidBuilder.append(mUuid);
                 uuidBuilder.append("\n");
-                uploadCrashDumpStream = new SequenceInputStream(
-                        new ByteArrayInputStream(
-                                uuidBuilder.toString().getBytes(Charset.forName("UTF-8"))),
-                        uploadCrashDumpStream);
+                uploadCrashDumpStream =
+                        new SequenceInputStream(
+                                new ByteArrayInputStream(
+                                        uuidBuilder.toString().getBytes(Charset.forName("UTF-8"))),
+                                uploadCrashDumpStream);
             } else {
                 Log.d(TAG, "No UUID");
             }
@@ -168,12 +176,13 @@ public final class CastCrashUploader {
                 feedbackHeader.append("\n");
                 feedbackHeader.append(
                         "Content-Disposition: form-data; name=\"application_feedback.txt\";"
-                            + " filename=\"application.txt\"\n");
+                                + " filename=\"application.txt\"\n");
                 feedbackHeader.append("Content-Type: text/plain\n\n");
                 feedbackHeader.append(mApplicationFeedback);
                 feedbackHeader.append("\n");
-                InputStream feedbackHeaderStream = new ByteArrayInputStream(
-                        feedbackHeader.toString().getBytes(Charset.forName("UTF-8")));
+                InputStream feedbackHeaderStream =
+                        new ByteArrayInputStream(
+                                feedbackHeader.toString().getBytes(Charset.forName("UTF-8")));
                 // Upload: prepend the log file for uploading
                 uploadCrashDumpStream =
                         new SequenceInputStream(feedbackHeaderStream, uploadCrashDumpStream);
@@ -198,10 +207,16 @@ public final class CastCrashUploader {
                 if (responseCode == HttpURLConnection.HTTP_OK
                         || responseCode == HttpURLConnection.HTTP_CREATED
                         || responseCode == HttpURLConnection.HTTP_ACCEPTED) {
-                    Log.i(TAG, "Successfully uploaded to %s, report ID: %s", mCrashReportUploadUrl,
+                    Log.i(
+                            TAG,
+                            "Successfully uploaded to %s, report ID: %s",
+                            mCrashReportUploadUrl,
                             responseLine);
                 } else {
-                    Log.e(TAG, "Failed response (%d): %s", responseCode,
+                    Log.e(
+                            TAG,
+                            "Failed response (%d): %s",
+                            responseCode,
                             connection.getResponseMessage());
 
                     // 400 Bad Request is returned if the dump file is malformed. If request

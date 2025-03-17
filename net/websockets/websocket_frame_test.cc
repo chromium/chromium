@@ -20,7 +20,6 @@
 
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
-#include "base/ranges/algorithm.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -48,6 +48,9 @@ mojom("mojom") {
   ]
 
   enabled_features = []
+  if (use_blink) {
+    enabled_features += [ "use_blink" ]
+  }
   if (ozone_platform_x11) {
     enabled_features += [ "enable_x11_params" ]
   }
@@ -72,10 +75,14 @@ mojom("mojom") {
           cpp = "::gfx::BufferPlane"
         },
         {
+          # TODO(crbug.com/40584691): Note that this is typemapped to the same
+          # type as the gfx.mojom.GpuMemoryBufferPlatformHandle *union*. This
+          # is intentional since the C++ GpuMemoryBufferHandle type is is a
+          # hybrid union+struct today. This can be cleaned up once the
+          # associated bug is fixed.
           mojom = "gfx.mojom.GpuMemoryBufferHandle"
           cpp = "::gfx::GpuMemoryBufferHandle"
           move_only = true
-          nullable_is_same_type = true
         },
         {
           mojom = "gfx.mojom.GpuMemoryBufferId"
@@ -383,8 +390,29 @@ mojom("native_handle_types") {
   shared_cpp_typemap = {
     types = [
       {
+        mojom = "gfx.mojom.AHardwareBufferHandle"
+        cpp = "::base::android::ScopedHardwareBufferHandle"
+        move_only = true
+      },
+      {
+        mojom = "gfx.mojom.DXGIHandle"
+        cpp = "::gfx::DXGIHandle"
+        move_only = true
+      },
+      {
         mojom = "gfx.mojom.DXGIHandleToken"
         cpp = "::gfx::DXGIHandleToken"
+      },
+      {
+        # TODO(crbug.com/40584691): Note that this is typemapped to the same
+        # type as the gfx.mojom.GpuMemoryBufferHandle *struct*. This is
+        # intentional since the C++ GpuMemoryBufferHandle type is is a hybrid
+        # union+struct today. This can be cleaned up once the associated bug is
+        # fixed.
+        mojom = "gfx.mojom.GpuMemoryBufferPlatformHandle"
+        cpp = "::gfx::GpuMemoryBufferHandle"
+        move_only = true
+        nullable_is_same_type = true
       },
       {
         mojom = "gfx.mojom.NativePixmapHandle"
@@ -417,6 +445,11 @@ if (is_win) {
 mojom("test_interfaces") {
   sources = [ "traits_test_service.mojom" ]
 
+  enabled_features = []
+  if (use_blink) {
+    enabled_features += [ "use_blink" ]
+  }
+
   public_deps = [ ":mojom" ]
 }
 
@@ -433,6 +466,11 @@ component("native_handle_types_mojom_traits") {
     "//base",
     "//mojo/public/mojom/base",
     "//ui/gfx",
+  ]
+
+  frameworks = [
+    "CoreFoundation.framework",
+    "IOSurface.framework",
   ]
 }
 
@@ -466,6 +504,10 @@ mojom("hdr_metadata") {
           cpp = "::gfx::HdrMetadataExtendedRange"
         },
         {
+          mojom = "gfx.mojom.HdrMetadataAgtm"
+          cpp = "::gfx::HdrMetadataAgtm"
+        },
+        {
           mojom = "gfx.mojom.HDRMetadata"
           cpp = "::gfx::HDRMetadata"
         },
@@ -496,14 +538,11 @@ component("shared_mojom_traits") {
   public_deps = [
     ":mojom_shared",
     ":native_handle_types",
+    "//build:blink_buildflags",
     "//ui/gfx",
   ]
   deps = [
     "//skia/public/mojom",
     "//ui/base:ozone_buildflags",
-  ]
-  frameworks = [
-    "CoreFoundation.framework",
-    "IOSurface.framework",
   ]
 }

@@ -25,12 +25,14 @@
 #include "components/input/input_router_impl.h"
 #include "components/input/render_input_router.h"
 #include "components/input/render_widget_host_view_input.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/browser/renderer_host/display_feature.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/widget_type.h"
@@ -78,6 +80,8 @@ class WebContentsAccessibility;
 class DelegatedFrameHost;
 class SyntheticGestureTarget;
 
+using CopyOutputIpcPriority = viz::CopyOutputRequest::IpcPriority;
+
 // Basic implementation shared by concrete RenderWidgetHostView subclasses.
 class CONTENT_EXPORT RenderWidgetHostViewBase
     : public RenderWidgetHostView,
@@ -121,6 +125,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   bool IsKeyboardLocked() override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
   gfx::Size GetVisibleViewportSize() override;
+  gfx::Size GetVisibleViewportSizeDevicePx() override;
   void SetInsets(const gfx::Insets& insets) override;
   bool IsSurfaceAvailableForCopy() override;
   void CopyFromSurface(
@@ -165,6 +170,14 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
       base::OnceCallback<void(const SkBitmap&)> callback);
+
+#if BUILDFLAG(IS_ANDROID)
+  virtual void CopyFromExactSurfaceWithIpcPriority(
+      const gfx::Rect& src_rect,
+      const gfx::Size& output_size,
+      base::OnceCallback<void(const SkBitmap&)> callback,
+      CopyOutputIpcPriority ipc_priority);
+#endif
 
   // For HiDPI capture mode, allow applying a render scale multiplier
   // which modifies the effective device scale factor. Use a scale
@@ -236,6 +249,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // The requested size of the renderer. May differ from GetViewBounds().size()
   // when the view requires additional throttling.
   virtual gfx::Size GetRequestedRendererSize();
+  virtual gfx::Size GetRequestedRendererSizeDevicePx();
 
   // Returns the current capture sequence number.
   virtual uint32_t GetCaptureSequenceNumber() const;
@@ -324,8 +338,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // line bounds, or both.
   virtual void ImeCompositionRangeChanged(
       const gfx::Range& range,
-      const std::optional<std::vector<gfx::Rect>>& character_bounds,
-      const std::optional<std::vector<gfx::Rect>>& line_bounds);
+      const std::optional<std::vector<gfx::Rect>>& character_bounds);
 
   //----------------------------------------------------------------------------
   // The following pure virtual methods are implemented by derived classes.
@@ -409,6 +422,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // unloaded and stored in the BFCache.
   virtual void DidEnterBackForwardCache() {}
 
+  // Perform some tasks after the page is activated or evicted from BFCache.
+  virtual void ActivatedOrEvictedFromBackForwardCache() {}
+
   // Called by WebContentsImpl to notify the view about a change in visibility
   // of context menu. The view can then perform platform specific tasks and
   // changes.
@@ -423,6 +439,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // This only returns non-null on root view on Android.
   virtual TouchSelectionControllerInputObserver*
   GetTouchSelectionControllerInputObserver();
+
+  virtual RenderWidgetHost::InputEventObserver*
+  GetInputTransferHandlerObserver();
 
   virtual void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) = 0;

@@ -49,4 +49,30 @@ class SupportLibServiceWorkerControllerAdapter implements ServiceWorkerControlle
                                             ServiceWorkerClientBoundaryInterface.class, client)));
         }
     }
+
+    @Override
+    public void setAsyncInterceptRequestCallback(
+            /* AsyncShouldInterceptRequestCallback */ InvocationHandler callback) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX."
+                                + "SERVICE_WORKER_SET_ASYNC_SHOULD_INTERCEPT_REQUEST")) {
+            recordApiCall(ApiCall.SERVICE_WORKER_SET_ASYNC_SHOULD_INTERCEPT_REQUEST);
+            mAwServiceWorkerController.setAsyncShouldInterceptRequestCallback(
+                    // service workers do not need to know which instance of a WebView caused
+                    // a request to occur. Serviceworker requests are global to all requests.
+                    new AsyncShouldInterceptRequestCallbackAdapter(null, callback));
+        }
+    }
+
+    @Override
+    public void clearAsyncInterceptRequestCallback() {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX."
+                                + "SERVICE_WORKER_CLEAR_ASYNC_SHOULD_INTERCEPT_REQUEST")) {
+            recordApiCall(ApiCall.SERVICE_WORKER_CLEAR_ASYNC_SHOULD_INTERCEPT_REQUEST);
+            mAwServiceWorkerController.clearAsyncShouldInterceptRequestCallback();
+        }
+    }
 }

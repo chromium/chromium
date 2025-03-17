@@ -572,10 +572,7 @@ class TabImpl implements Tab {
     public boolean isThemingAllowed() {
         // Do not apply the theme color if there are any security issues on the page.
         int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(getWebContents());
-        boolean hasSecurityIssue =
-                securityLevel == ConnectionSecurityLevel.DANGEROUS
-                        || securityLevel
-                                == ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT;
+        boolean hasSecurityIssue = securityLevel == ConnectionSecurityLevel.DANGEROUS;
         // If chrome is showing an error page, allow theming so the system UI can match the page.
         // This is considered acceptable since chrome is in control of the error page. Otherwise, if
         // the page has a security issue, disable theming.
@@ -1019,21 +1016,6 @@ class TabImpl implements Tab {
     public final void hide(@TabHidingType int type) {
         try {
             TraceEvent.begin("Tab.hide");
-
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList
-                            .ANDROID_DISCONNECT_FILE_CHOOSER_ON_TAB_DEACTIVATE_KILL_SWITCH)) {
-                WebContents webContents = getWebContents();
-                // File select related dialogs typical does not have indication on which origin or
-                // tab made the request. So to avoid security issues from user confusion, if a tab
-                // changes makes this no longer the active tab, then disconnect any file select
-                // dialogs. Notably only want to do this for tab change, but not (as an example)
-                // for hiding the activity.
-                if (type == TabHidingType.CHANGED_TABS && webContents != null) {
-                    webContents.disconnectFileSelectListenerIfAny();
-                }
-            }
-
             if (isHidden()) return;
             mIsHidden = true;
             updateInteractableState();
@@ -1447,6 +1429,7 @@ class TabImpl implements Tab {
                     // Navigating back to native pages.
                     mNativePageSmoothTransitionDelegate.start(
                             () -> {
+                                if (isDestroyed()) return;
                                 getWebContents().onContentForNavigationEntryShown();
                                 notifyContentChanged();
                             });

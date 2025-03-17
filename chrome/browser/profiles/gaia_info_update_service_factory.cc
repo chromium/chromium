@@ -49,7 +49,7 @@ GAIAInfoUpdateServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;  // Some tests don't have a profile manager.
 
   return std::make_unique<GAIAInfoUpdateService>(
-      IdentityManagerFactory::GetForProfile(profile),
+      profile, IdentityManagerFactory::GetForProfile(profile),
       &g_browser_process->profile_manager()->GetProfileAttributesStorage(),
       *profile->GetPrefs(), profile->GetPath());
 }

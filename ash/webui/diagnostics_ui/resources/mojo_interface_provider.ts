@@ -4,10 +4,14 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {InputDataProvider, InputDataProviderInterface} from './input_data_provider.mojom-webui.js';
-import {NetworkHealthProvider, NetworkHealthProviderInterface} from './network_health_provider.mojom-webui.js';
-import {SystemDataProvider, SystemDataProviderInterface} from './system_data_provider.mojom-webui.js';
-import {SystemRoutineController, SystemRoutineControllerInterface} from './system_routine_controller.mojom-webui.js';
+import type {InputDataProviderInterface} from './input_data_provider.mojom-webui.js';
+import {InputDataProvider} from './input_data_provider.mojom-webui.js';
+import type {NetworkHealthProviderInterface} from './network_health_provider.mojom-webui.js';
+import {NetworkHealthProvider} from './network_health_provider.mojom-webui.js';
+import type {SystemDataProviderInterface} from './system_data_provider.mojom-webui.js';
+import {SystemDataProvider} from './system_data_provider.mojom-webui.js';
+import type {SystemRoutineControllerInterface} from './system_routine_controller.mojom-webui.js';
+import {SystemRoutineController} from './system_routine_controller.mojom-webui.js';
 
 /**
  * @fileoverview

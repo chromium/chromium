@@ -1,6 +1,6 @@
 file://chrome/browser/chromeos/extensions/OWNERS
 
-per-file default_app*=tsergeant@chromium.org
+per-file default_app*=alancutter@chromium.org
 
 # DeviceLocalAccount reviewers.
 per-file device_local_account*=file://chromeos/ash/components/policy/OWNERS

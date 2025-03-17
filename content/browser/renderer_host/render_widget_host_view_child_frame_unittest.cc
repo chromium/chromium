@@ -324,7 +324,8 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
 
     EXPECT_EQ(compositor_viewport_pixel_rect,
               sent_visual_properties.compositor_viewport_pixel_rect);
-    EXPECT_EQ(rect_in_local_root.size(), sent_visual_properties.new_size);
+    EXPECT_EQ(rect_in_local_root.size(),
+              sent_visual_properties.new_size_device_px);
     EXPECT_EQ(local_surface_id, sent_visual_properties.local_surface_id);
     EXPECT_EQ(123u, sent_visual_properties.capture_sequence_number);
     EXPECT_EQ(1u, sent_visual_properties.root_widget_viewport_segments.size());

@@ -6,9 +6,9 @@
 
 #include <string>
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {

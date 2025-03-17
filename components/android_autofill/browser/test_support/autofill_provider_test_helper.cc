@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <iterator>
 #include <string>
 
 #include "base/android/jni_array.h"
 #include "base/base64.h"
-#include "base/ranges/algorithm.h"
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -135,7 +135,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
         if (form_field_data.id_attribute() == field_ids[i]) {
           std::vector<FieldType> field_types;
           field_types.reserve(raw_field_types[i].size());
-          base::ranges::transform(
+          std::ranges::transform(
               raw_field_types[i], std::back_inserter(field_types),
               [](int type) -> FieldType { return FieldType(type); });
           autofill::test::AddFieldPredictionsToForm(

@@ -171,6 +171,21 @@ def convert_swarming(swarming: dict[str, typing.Any]) -> Value:
   return value_builder
 
 
+def convert_skylab(skylab: dict[str, typing.Any]) -> Value:
+  """Convert a skylab dict to a targets.skylab call."""
+  value_builder = CallValueBuilder('targets.skylab')
+
+  for key, value in skylab.items():
+    match key:
+      case 'cros_cbx' | 'shards' | 'timeout_sec':
+        value_builder[key] = convert_direct(value)
+
+      case _:
+        raise Exception(f'unhandled key in skylab: "{key}"')
+
+  return value_builder
+
+
 class ValueBuilder(abc.ABC):
   """An object that potentially builds a value for starlark output.
 

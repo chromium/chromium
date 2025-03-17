@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/vector_icon_utils.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -22,16 +23,7 @@ namespace ui {
 VectorIconModel::VectorIconModel() = default;
 
 VectorIconModel::VectorIconModel(const gfx::VectorIcon& vector_icon,
-                                 ColorId color_id,
-                                 int icon_size,
-                                 const gfx::VectorIcon* badge_icon)
-    : vector_icon_(&vector_icon),
-      icon_size_(icon_size),
-      color_(color_id),
-      badge_icon_(badge_icon) {}
-
-VectorIconModel::VectorIconModel(const gfx::VectorIcon& vector_icon,
-                                 SkColor color,
+                                 ui::ColorVariant color,
                                  int icon_size,
                                  const gfx::VectorIcon* badge_icon)
     : vector_icon_(&vector_icon),
@@ -73,18 +65,7 @@ ImageModel& ImageModel::operator=(ImageModel&&) = default;
 
 // static
 ImageModel ImageModel::FromVectorIcon(const gfx::VectorIcon& vector_icon,
-                                      ColorId color_id,
-                                      int icon_size,
-                                      const gfx::VectorIcon* badge_icon) {
-  if (!icon_size)
-    icon_size = gfx::GetDefaultSizeOfVectorIcon(vector_icon);
-  return ImageModel(
-      VectorIconModel(vector_icon, color_id, icon_size, badge_icon));
-}
-
-// static
-ImageModel ImageModel::FromVectorIcon(const gfx::VectorIcon& vector_icon,
-                                      SkColor color,
+                                      ui::ColorVariant color,
                                       int icon_size,
                                       const gfx::VectorIcon* badge_icon) {
   if (!icon_size)

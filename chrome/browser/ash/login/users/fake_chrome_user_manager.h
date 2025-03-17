@@ -12,18 +12,18 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager_impl.h"
 
-static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
+static_assert(BUILDFLAG(IS_CHROMEOS), "For ChromeOS only");
 
 class Profile;
 
 namespace ash {
 
+// DEPRECATED: please use UserManagerImpl with TestHelper.
 // Fake chrome user manager with a barebones implementation. Users can be added
 // and set as logged in, and those users can be returned.
 class FakeChromeUserManager : public user_manager::UserManagerImpl {
@@ -69,7 +69,6 @@ class FakeChromeUserManager : public user_manager::UserManagerImpl {
   void SimulateUserProfileLoad(const AccountId& account_id);
 
   // user_manager::UserManager override.
-  const user_manager::UserList& GetUsers() const override;
   user_manager::UserList GetUsersAllowedForMultiUserSignIn() const override;
   const user_manager::UserList& GetLoggedInUsers() const override;
   const user_manager::UserList& GetLRULoggedInUsers() const override;
@@ -79,13 +78,13 @@ class FakeChromeUserManager : public user_manager::UserManagerImpl {
                     const std::string& user_id_hash,
                     bool browser_restart,
                     bool is_child) override;
+  bool EnsureUser(const AccountId& account_id,
+                  user_manager::UserType user_type,
+                  bool is_ephemeral) override;
   void SwitchActiveUser(const AccountId& account_id) override;
   void SwitchToLastActiveUser() override;
   void OnSessionStarted() override;
   bool IsKnownUser(const AccountId& account_id) const override;
-  const user_manager::User* FindUser(
-      const AccountId& account_id) const override;
-  user_manager::User* FindUserAndModify(const AccountId& account_id) override;
   const user_manager::User* GetActiveUser() const override;
   user_manager::User* GetActiveUser() override;
   const user_manager::User* GetPrimaryUser() const override;
@@ -125,13 +124,6 @@ class FakeChromeUserManager : public user_manager::UserManagerImpl {
       const AccountId& account_id) const override;
   // Just make it public for tests.
   using UserManagerImpl::SetOwnerId;
-
-  // UserManager:
-  void SetUserAffiliated(const AccountId& account_id,
-                         bool is_affiliated) override;
-  // TODO(b/278643115): merged into SetUserAffiliated.
-  void SetUserAffiliationForTesting(const AccountId& account_id,
-                                    bool is_affliated);
 
   // Just make it public for tests.
   using UserManagerImpl::SetEphemeralModeConfig;

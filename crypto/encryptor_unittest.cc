@@ -21,17 +21,20 @@
 #include "crypto/symmetric_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TEST(EncryptorTest, EncryptDecrypt) {
-  std::unique_ptr<crypto::SymmetricKey> key(
-      crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-          crypto::SymmetricKey::AES, "password", "saltiest", 1000, 256));
-  EXPECT_TRUE(key.get());
+// PBKDF2-HMAC-SHA1("password", "saltiest", 1000 iterations)
+constexpr auto kTestKey = std::to_array<uint8_t>({
+    0xd9, 0xb7, 0x6d, 0x65, 0x3b, 0x0b, 0x25, 0xd7, 0xa8, 0xce, 0xed,
+    0xba, 0x98, 0xee, 0xe5, 0x09, 0x53, 0x2a, 0xa7, 0x84, 0xe4, 0x44,
+    0x72, 0x30, 0x03, 0x99, 0x34, 0x51, 0xa9, 0x8a, 0x74, 0x53,
+});
 
+TEST(EncryptorTest, EncryptDecrypt) {
   crypto::Encryptor encryptor;
   // The IV must be exactly as long as the cipher block size.
   std::string iv("the iv: 16 bytes");
   EXPECT_EQ(16U, iv.size());
-  EXPECT_TRUE(encryptor.Init(key.get(), crypto::Encryptor::CBC, iv));
+  crypto::SymmetricKey key(kTestKey);
+  EXPECT_TRUE(encryptor.Init(&key, crypto::Encryptor::CBC, iv));
 
   std::string plaintext("this is the plaintext");
   std::string ciphertext;
@@ -54,36 +57,42 @@ TEST(EncryptorTest, EncryptDecrypt) {
 }
 
 TEST(EncryptorTest, DecryptWrongKey) {
-  std::unique_ptr<crypto::SymmetricKey> key(
-      crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-          crypto::SymmetricKey::AES, "password", "saltiest", 1000, 256));
-  EXPECT_TRUE(key.get());
+  crypto::SymmetricKey key(kTestKey);
 
   // A wrong key that can be detected by implementations that validate every
   // byte in the padding.
-  std::unique_ptr<crypto::SymmetricKey> wrong_key(
-      crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-          crypto::SymmetricKey::AES, "wrongword", "sweetest", 1000, 256));
-  EXPECT_TRUE(wrong_key.get());
+  // PBKDF2-HMAC-SHA1("wrongword", "sweetest", 1000 iterations)
+  constexpr auto kWrongKey = std::to_array<uint8_t>({
+      0x88, 0xea, 0x6c, 0x27, 0xbd, 0xcc, 0x56, 0xde, 0x31, 0xb6, 0x68,
+      0x85, 0x61, 0x5a, 0xd8, 0xdb, 0xe4, 0x82, 0xfc, 0xa9, 0xfa, 0x5b,
+      0x1b, 0xb1, 0x4f, 0x31, 0xb9, 0xe3, 0x04, 0xd4, 0x67, 0x58,
+  });
+  crypto::SymmetricKey wrong_key(kWrongKey);
 
   // A wrong key that can't be detected by any implementation.  The password
   // "wrongword;" would also work.
-  std::unique_ptr<crypto::SymmetricKey> wrong_key2(
-      crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-          crypto::SymmetricKey::AES, "wrongword+", "sweetest", 1000, 256));
-  EXPECT_TRUE(wrong_key2.get());
+  // PBKDF2-HMAC-SHA1("wrongword+", "sweetest", 1000 iterations)
+  constexpr auto kWrongKey2 = std::to_array<uint8_t>({
+      0x3b, 0x5c, 0x1e, 0x70, 0x7f, 0x31, 0xbf, 0x8e, 0xc8, 0x45, 0xd3,
+      0x04, 0x20, 0xa4, 0x21, 0xfb, 0xd2, 0x21, 0x11, 0x44, 0x7b, 0xca,
+      0x48, 0xf5, 0xeb, 0xf4, 0xd7, 0xca, 0xa8, 0x18, 0xfc, 0x37,
+  });
+  crypto::SymmetricKey wrong_key2(kWrongKey2);
 
   // A wrong key that can be detected by all implementations.
-  std::unique_ptr<crypto::SymmetricKey> wrong_key3(
-      crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-          crypto::SymmetricKey::AES, "wrongwordx", "sweetest", 1000, 256));
-  EXPECT_TRUE(wrong_key3.get());
+  // PBKDF2-HMAC-SHA1("wrongwordx", "sweetest", 1000 iterations)
+  constexpr auto kWrongKey3 = std::to_array<uint8_t>({
+      0x37, 0xde, 0x34, 0x4b, 0x76, 0xf2, 0x52, 0x3e, 0xde, 0xd0, 0x4b,
+      0xc9, 0x5a, 0x83, 0x51, 0xc0, 0x5a, 0xf5, 0x37, 0xfa, 0xce, 0x7d,
+      0x51, 0xa8, 0xd8, 0xae, 0xfc, 0x1c, 0x0b, 0xb7, 0xe9, 0x3f,
+  });
+  crypto::SymmetricKey wrong_key3(kWrongKey3);
 
   crypto::Encryptor encryptor;
   // The IV must be exactly as long as the cipher block size.
   std::string iv("the iv: 16 bytes");
   EXPECT_EQ(16U, iv.size());
-  EXPECT_TRUE(encryptor.Init(key.get(), crypto::Encryptor::CBC, iv));
+  EXPECT_TRUE(encryptor.Init(&key, crypto::Encryptor::CBC, iv));
 
   std::string plaintext("this is the plaintext");
   std::string ciphertext;
@@ -110,20 +119,20 @@ TEST(EncryptorTest, DecryptWrongKey) {
   // Encryptor::Decrypt() will still return true.  This is the case for NSS
   // (crbug.com/124434).
   crypto::Encryptor decryptor;
-  EXPECT_TRUE(decryptor.Init(wrong_key.get(), crypto::Encryptor::CBC, iv));
+  EXPECT_TRUE(decryptor.Init(&wrong_key, crypto::Encryptor::CBC, iv));
   EXPECT_FALSE(decryptor.Decrypt(ciphertext, &decrypted));
 
   // This demonstrates that not all wrong keys can be detected by padding
   // error. This wrong key causes the last padding byte to be 1, which is
   // a valid padding block of length 1.
   crypto::Encryptor decryptor2;
-  EXPECT_TRUE(decryptor2.Init(wrong_key2.get(), crypto::Encryptor::CBC, iv));
+  EXPECT_TRUE(decryptor2.Init(&wrong_key2, crypto::Encryptor::CBC, iv));
   EXPECT_TRUE(decryptor2.Decrypt(ciphertext, &decrypted));
 
   // This wrong key causes the last padding byte to be 253, which should be
   // rejected by all implementations.
   crypto::Encryptor decryptor3;
-  EXPECT_TRUE(decryptor3.Init(wrong_key3.get(), crypto::Encryptor::CBC, iv));
+  EXPECT_TRUE(decryptor3.Init(&wrong_key3, crypto::Encryptor::CBC, iv));
   EXPECT_FALSE(decryptor3.Decrypt(ciphertext, &decrypted));
 }
 

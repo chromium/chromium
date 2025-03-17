@@ -14,6 +14,7 @@
 
 namespace gfx {
 class ImageSkia;
+struct VectorIcon;
 }
 
 namespace message_center {
@@ -33,6 +34,7 @@ class StatusIcon {
 
   // Sets the image associated with this status icon.
   virtual void SetImage(const gfx::ImageSkia& image) = 0;
+  virtual void SetIcon(const gfx::VectorIcon& icon);
 
   // Sets the hover text for this status icon. This is also used as the label
   // for the menu item which is created as a replacement for the status icon
@@ -81,7 +83,13 @@ class StatusIcon {
   // secondary click, and dispatch the click event on left click.
   virtual void SetOpenMenuWithSecondaryClick(
       bool open_menu_with_secondary_click);
+
+  // Use template property on the status icon image so that it changes color
+  // based on contrast with the wallpaper.
+  virtual void SetImageTemplate(bool is_template);
 #endif
+
+  StatusIconMenuModel* GetContextMenuForTesting();
 
  protected:
   // Invoked after a call to SetContextMenu() to let the platform-specific

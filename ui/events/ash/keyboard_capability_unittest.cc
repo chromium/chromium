@@ -6,6 +6,7 @@
 
 #include <linux/input-event-codes.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -15,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -714,6 +714,24 @@ TEST_P(KeyboardCapabilityTest, TestHasSettingsKey) {
   EXPECT_TRUE(keyboard_capability_->HasSettingsKey(external_keyboard));
 }
 
+TEST_P(KeyboardCapabilityTest, TestHasCameraAccessKey) {
+  KeyboardDevice internal_keyboard(
+      /*id=*/1, /*type=*/InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"Keyboard1");
+  internal_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard,
+                                          kKbdTopRowLayout1Tag);
+  EXPECT_FALSE(keyboard_capability_->HasCameraAccessKey(internal_keyboard));
+
+  KeyboardDevice external_keyboard(
+      /*id=*/2, /*type=*/InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard2");
+  external_keyboard.sys_path = base::FilePath("path2");
+  fake_keyboard_manager_->AddFakeKeyboard(external_keyboard,
+                                          kKbdTopRowLayoutUnspecified);
+  EXPECT_TRUE(keyboard_capability_->HasCameraAccessKey(external_keyboard));
+}
+
 class ModifierKeyTest : public KeyboardCapabilityTestBase,
                         public testing::WithParamInterface<
                             std::tuple<DeviceCapabilities,
@@ -766,8 +784,8 @@ TEST_P(ModifierKeyTest, TestGetModifierKeys) {
       kDeviceId1, capabilities, device_type, top_row_layout);
   auto modifier_keys = keyboard_capability_->GetModifierKeys(test_keyboard);
 
-  base::ranges::sort(expected_modifier_keys);
-  base::ranges::sort(modifier_keys);
+  std::ranges::sort(expected_modifier_keys);
+  std::ranges::sort(modifier_keys);
   EXPECT_EQ(expected_modifier_keys, modifier_keys);
 }
 
@@ -787,8 +805,8 @@ TEST_P(KeyboardCapabilityTest, TestGetModifierKeysForSplitModifierKeyboard) {
       mojom::ModifierKey::kMeta,       mojom::ModifierKey::kEscape,
       mojom::ModifierKey::kAlt,        mojom::ModifierKey::kFunction,
       mojom::ModifierKey::kQuickInsert};
-  base::ranges::sort(expected_modifier_keys);
-  base::ranges::sort(modifier_keys);
+  std::ranges::sort(expected_modifier_keys);
+  std::ranges::sort(modifier_keys);
   EXPECT_EQ(expected_modifier_keys, modifier_keys);
 }
 
@@ -805,8 +823,8 @@ TEST_P(KeyboardCapabilityTest, TestGetModifierKeysForEveKeyboard) {
       mojom::ModifierKey::kBackspace, mojom::ModifierKey::kControl,
       mojom::ModifierKey::kMeta,      mojom::ModifierKey::kEscape,
       mojom::ModifierKey::kAlt,       mojom::ModifierKey::kAssistant};
-  base::ranges::sort(expected_modifier_keys);
-  base::ranges::sort(modifier_keys);
+  std::ranges::sort(expected_modifier_keys);
+  std::ranges::sort(modifier_keys);
   EXPECT_EQ(expected_modifier_keys, modifier_keys);
 }
 

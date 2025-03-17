@@ -38,8 +38,6 @@ std::string GetTimestampString() {
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
-const gfx::VectorIcon kEmptyIcon;
-
 }  // namespace
 
 NearbyShareDelegateImpl::NearbyShareDelegateImpl(
@@ -136,9 +134,9 @@ void NearbyShareDelegateImpl::SetNearbyShareSettingsForTest(
 }
 
 // In Quick Share v1, not used.
-// In Quick Share v2, Quick Share should always be 'enabled', though visibility
-// may be set to Hidden.
-void NearbyShareDelegateImpl::OnEnabledChanged(bool enabled) {}
+void NearbyShareDelegateImpl::OnEnabledChanged(bool enabled) {
+  nearby_share_controller_->NearbyShareEnabledChanged(enabled);
+}
 
 void NearbyShareDelegateImpl::OnFastInitiationNotificationStateChanged(
     ::nearby_share::mojom::FastInitiationNotificationState state) {}
@@ -245,7 +243,7 @@ const gfx::VectorIcon& NearbyShareDelegateImpl::GetIcon(bool on_icon) const {
     return on_icon ? kNearbyShareInternalIcon : kNearbyShareInternalOffIcon;
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return kEmptyIcon;
+  return gfx::VectorIcon::EmptyIcon();
 }
 
 std::u16string NearbyShareDelegateImpl::GetPlaceholderFeatureName() const {

@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/superellipse.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -151,7 +152,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForFontPalette(const ComputedStyle&);
   static CSSValue* SpecifiedValueForGridTrackSize(const GridTrackSize&,
                                                   const ComputedStyle&);
-  static CSSValue* ValueForGridAutoTrackList(GridTrackSizingDirection,
+  static CSSValue* ValueForGridAutoTrackList(const NGGridTrackList&,
                                              const LayoutObject*,
                                              const ComputedStyle&);
   static CSSValue* ValueForGridTrackList(GridTrackSizingDirection,
@@ -179,12 +180,11 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationFillMode(Timing::FillMode);
   static CSSValue* ValueForAnimationIterationCount(double iteration_count);
   static CSSValue* ValueForAnimationPlayState(EAnimPlayState);
-  static CSSValue* ValueForAnimationRangeStart(
-      const std::optional<TimelineOffset>&,
-      const ComputedStyle&);
-  static CSSValue* ValueForAnimationRangeEnd(
-      const std::optional<TimelineOffset>&,
-      const ComputedStyle&);
+  static CSSValue* ValueForAnimationRangeList(
+      const Vector<std::optional<TimelineOffset>>& range_list,
+      const CSSAnimationData* animation_data,
+      const ComputedStyle& style,
+      const Length& default_offset);
   static CSSValue* ValueForAnimationTimingFunction(
       const scoped_refptr<TimingFunction>&);
   static CSSValue* ValueForAnimationTimeline(const StyleTimeline&);
@@ -197,6 +197,10 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationFillModeList(const CSSAnimationData*);
   static CSSValue* ValueForAnimationIterationCountList(const CSSAnimationData*);
   static CSSValue* ValueForAnimationPlayStateList(const CSSAnimationData*);
+  static CSSValue* ValueForAnimationRange(
+      const std::optional<TimelineOffset>& offset,
+      const ComputedStyle& style,
+      const Length& default_offset);
   static CSSValue* ValueForAnimationRangeStartList(const CSSAnimationData*,
                                                    const ComputedStyle&);
   static CSSValue* ValueForAnimationRangeEndList(const CSSAnimationData*,
@@ -210,10 +214,27 @@ class CORE_EXPORT ComputedStyleUtils {
                                                    TimelineAxis,
                                                    std::optional<TimelineInset>,
                                                    const ComputedStyle&);
+  static CSSValue* ValueForAnimationTriggerRangeStartList(
+      const CSSAnimationData* animation_data,
+      const ComputedStyle& style);
+  static CSSValue* ValueForAnimationTriggerRangeEndList(
+      const CSSAnimationData* animation_data,
+      const ComputedStyle& style);
+  static CSSValue* ValueForAnimationTriggerExitRangeStartList(
+      const CSSAnimationData* animation_data,
+      const ComputedStyle& style);
+  static CSSValue* ValueForAnimationTriggerExitRangeEndList(
+      const CSSAnimationData* animation_data,
+      const ComputedStyle& style);
+  static CSSValue* ValueForAnimationTriggerType(const EAnimationTriggerType);
+  static CSSValue* ValueForAnimationTriggerTypeList(const CSSAnimationData*);
+  static CSSValue* ValueForAnimationTriggerTimelineList(
+      const CSSAnimationData*);
   static CSSValueList* ValuesForBorderRadiusCorner(const LengthSize&,
                                                    const ComputedStyle&);
   static CSSValue* ValueForBorderRadiusCorner(const LengthSize&,
                                               const ComputedStyle&);
+  static CSSValue* ValueForCornerShape(const Superellipse&);
 
   // Serializes a gfx::Transform into a matrix() or matrix3d() transform
   // function value. If force_matrix3d is true, it will always give a matrix3d
@@ -260,6 +281,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                  ShapeValue*,
                                  CSSValuePhase value_phase);
   static CSSValueList* ValueForBorderRadiusShorthand(const ComputedStyle&);
+  static CSSValueList* ValueForCornerShapeShorthand(const ComputedStyle&);
   static CSSValue* StrokeDashArrayToCSSValueList(const SVGDashArray&,
                                                  const ComputedStyle&);
   static const CSSValue* ValueForSVGPaint(const SVGPaint&,
@@ -343,6 +365,11 @@ class CORE_EXPORT ComputedStyleUtils {
                                                const LayoutObject*,
                                                bool allow_visited_style,
                                                CSSValuePhase value_phase);
+  static CSSValue* ValuesForInterestTargetDelayShorthand(
+      const ComputedStyle&,
+      const LayoutObject*,
+      bool allow_visited_style,
+      CSSValuePhase value_phase);
   static CSSValue* ValuesForFontVariantProperty(const ComputedStyle&,
                                                 const LayoutObject*,
                                                 bool allow_visited_style,

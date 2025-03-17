@@ -87,7 +87,7 @@ class NotificationChannelsProviderAndroid
   // UserModifiableProvider methods.
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool incognito,
+      bool off_the_record,
       const content_settings::PartitionKey& partition_key) const override;
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,

@@ -115,15 +115,15 @@ static bool ParticipatesInSizing(const StyleImage& image) {
 }
 
 // https://drafts.csswg.org/css-images-4/#cross-fade-sizing
-IntrinsicSizingInfo StyleCrossfadeImage::GetNaturalSizingInfo(
+NaturalSizingInfo StyleCrossfadeImage::GetNaturalSizingInfo(
     float multiplier,
     RespectImageOrientationEnum respect_orientation) const {
   if (AnyImageIsNone()) {
-    return IntrinsicSizingInfo::None();
+    return NaturalSizingInfo::None();
   }
 
   // TODO(fs): Consider `respect_orientation`?
-  Vector<IntrinsicSizingInfo> sizing_info;
+  Vector<NaturalSizingInfo> sizing_info;
   for (StyleImage* image : images_) {
     if (ParticipatesInSizing(*image)) {
       sizing_info.push_back(
@@ -133,7 +133,7 @@ IntrinsicSizingInfo StyleCrossfadeImage::GetNaturalSizingInfo(
 
   // Degenerate cases.
   if (sizing_info.empty()) {
-    return IntrinsicSizingInfo::None();
+    return NaturalSizingInfo::None();
   } else if (sizing_info.size() == 1) {
     return sizing_info[0];
   }
@@ -142,7 +142,7 @@ IntrinsicSizingInfo StyleCrossfadeImage::GetNaturalSizingInfo(
   const bool all_equal = std::ranges::all_of(
       base::span(sizing_info).subspan(1u),
       [first_sizing_info{sizing_info[0]}](
-          const IntrinsicSizingInfo& sizing_info) {
+          const NaturalSizingInfo& sizing_info) {
         return sizing_info.size == first_sizing_info.size &&
                sizing_info.aspect_ratio == first_sizing_info.aspect_ratio &&
                sizing_info.has_width == first_sizing_info.has_width &&
@@ -152,7 +152,7 @@ IntrinsicSizingInfo StyleCrossfadeImage::GetNaturalSizingInfo(
     return sizing_info[0];
   }
 
-  IntrinsicSizingInfo result_sizing_info;
+  NaturalSizingInfo result_sizing_info;
   result_sizing_info.size = gfx::SizeF(0.0f, 0.0f);
   result_sizing_info.has_width = false;
   result_sizing_info.has_height = false;

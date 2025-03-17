@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -143,6 +144,11 @@ class SaveToPhotosMediatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_manage_storage_alert_handler_
                      forProtocol:@protocol(ManageStorageAlertCommands)];
+    mock_google_one_handler_ =
+        OCMStrictProtocolMock(@protocol(GoogleOneCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_google_one_handler_
+                     forProtocol:@protocol(GoogleOneCommands)];
 
     mock_application_ = OCMClassMock([UIApplication class]);
     OCMStub([mock_application_ sharedApplication]).andReturn(mock_application_);
@@ -177,7 +183,8 @@ class SaveToPhotosMediatorTest : public PlatformTest {
             accountManagerService:account_manager_service
                   identityManager:identity_manager
         manageStorageAlertHandler:mock_manage_storage_alert_handler_
-               applicationHandler:mock_application_handler_];
+               applicationHandler:mock_application_handler_
+                 googleOneHandler:mock_google_one_handler_];
   }
 
   // Sign-in with a fake account.
@@ -209,6 +216,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
   id mock_application_handler_;
   id mock_manage_storage_alert_handler_;
+  id mock_google_one_handler_;
 };
 
 // Tests that the mediator attempts to fetch the image data when started.

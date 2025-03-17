@@ -212,6 +212,20 @@ To put this into an example, let‘s say you have a commit for feature A
 and this is in the process of being reviewed on Gerrit.  Now let’s say
 you want to start more work based on it before it lands on main.
 
+Gerrit has the concept of a “relation chain”. For our example above, we want to
+create a relation chain where the feature A change is the parent of the feature
+B change. Once we create the relation chain, the Gerrit review view for change B
+will show the diff vs. change A, rather than vs. the main branch.
+
+To create a relation chain, upload a change that has an upstream branch
+associated with the parent CL. The steps to do so are slightly different when
+you own the parent change vs. when someone else owns the parent change.
+
+#### When you own the parent change
+
+Using the example of features A and B above, if you own the change for feature A
+and you want to upload a dependent change for feature B:
+
 ```
 git checkout featureA
 git checkout -b featureB
@@ -222,10 +236,33 @@ git commit
 git cl upload
 ```
 
-In Gerrit, there would then be a “relation chain” shown where the
-feature A change is the parent of the feature B change.  If A
-introduces a new file which B changes, the review for B will only show
-the diff from A.
+#### When someone else owns the parent change
+
+If someone else owns the change for feature A:
+
+```
+# First, open the change for feature A in Gerrit -> "Download patch" -> copy and
+# run "Branch" command. Then, starting from the branch that command created:
+git cl patch --force <parent-CL-number>
+git checkout -b featureB
+git branch --set-upstream-to change-<parent-CL-number>
+# ... edit some files
+# ... git add ...
+git commit
+git cl upload
+```
+
+Note that, after running `git cl patch --force <parent-CL-number>`, if you
+upload changes from branch `change-<parent-CL-number>`, you will upload a new
+patchset to the original author's change.
+
+If the other author uploads a new patchset to the change your change depends on,
+you can update your local copy of their change by running:
+
+```
+git checkout change-<parent-CL-number>
+git fetch origin [sha hash for latest patchset] && git reset --hard FETCH_HEAD
+```
 
 ## Code review {#code-review}
 
@@ -322,6 +359,38 @@ comments. These should be addressed and responded to, or at least acknowledged
 with the ACK button to resolve them. If you cannot resolve all comments an
 override is provided through an "Unresolved-Comment-Reason:" stanza in your
 commit message.
+
+### Code Review Votes
+
+Submitting a CL requires different approvals depending on whether the author
+[is a committer][becoming-a-committer] and on the affected files.
+
+There are two types of approvals:
+* Code-Review approvals. These are CL-wide and can be granted by any committer
+  (other than the author themselves). Committers need one Code-Review +1
+  approval; non-committers require two separate Code-Review +1 approvals.
+* Code-Owners approvals. Files have different owners, which are specified in the
+  `OWNERS` files. Every file requires either an owner to +1 the CL or for the
+  author to be an OWNER of the file.
+
+#### Copying Votes to New Patch Sets
+
+When a new patch set is uploaded, approvals may be removed (in order to prevent
+someone from landing significantly different unreviewed code after getting
+approval in a previous patch set).
+
+Approvals may be copied between patch sets in some situations.
+* Code-Review approvals will be copied between patch sets if:
+  * It is a trivial rebase (as detected by Gerrit),
+  * It is a commit message change, or
+  * The author is a committer *and* the list of modified files has not changed
+    (for non-committers, any code change will result in loss of Code-Review
+    approvals).
+* Code-Owners approvals are *always* copied between patch sets (even if the
+  reviewer's +1 is no longer shown in Gerrit).
+
+If a patch set loses its approvals, these will need to be re-added before the
+patch set can be committed (one +1 for committers, two +1s for non-committers).
 
 ## Running automated tests
 
@@ -565,6 +634,7 @@ formats.
     given commit diverged from main.
 
 [//]: # (the reference link section should be alphabetically sorted)
+[becoming-a-committer]: https://www.chromium.org/getting-involved/become-a-committer/
 [checkout-and-build]: https://chromium.googlesource.com/chromium/src/+/main/docs/#checking-out-and-building
 [chrome-dd-review-process]: http://go/chrome-dd-review-process
 [chromium-design-docs]: https://groups.google.com/a/chromium.org/forum/#!forum/chromium-design-docs

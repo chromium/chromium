@@ -137,7 +137,7 @@ base::HeapArray<uint8_t> DecoderBufferToByteArray(
   const size_t decoder_buffer_size =
       decoder_buffer.end_of_stream() ? 0 : decoder_buffer.size();
   const size_t size = kPayloadVersionFieldSize + kProtoBufferHeaderSize +
-                      decoder_buffer_message.ByteSize() +
+                      decoder_buffer_message.ByteSizeLong() +
                       kDataBufferHeaderSize + decoder_buffer_size;
   const auto message_cached_size =
       // GetCachedSize() is only valid after ByteSize() is called above.

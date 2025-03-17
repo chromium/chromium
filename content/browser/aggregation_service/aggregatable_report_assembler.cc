@@ -4,6 +4,7 @@
 
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -16,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_key_fetcher.h"
@@ -111,7 +111,7 @@ AggregatableReportAssembler::CreateForTesting(
 void AggregatableReportAssembler::AssembleReport(
     AggregatableReportRequest report_request,
     AssemblyCallback callback) {
-  CHECK(base::ranges::is_sorted(report_request.processing_urls()));
+  CHECK(std::ranges::is_sorted(report_request.processing_urls()));
   const size_t num_processing_urls = report_request.processing_urls().size();
   CHECK(AggregatableReport::IsNumberOfProcessingUrlsValid(
       num_processing_urls, report_request.payload_contents().aggregation_mode));

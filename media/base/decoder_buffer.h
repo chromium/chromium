@@ -23,6 +23,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "media/base/decoder_buffer_side_data.h"
 #include "media/base/decrypt_config.h"
@@ -39,6 +40,8 @@ namespace media {
 class MEDIA_EXPORT DecoderBuffer
     : public base::RefCountedThreadSafe<DecoderBuffer> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // ExternalMemory wraps a class owning a buffer and expose the data interface
   // through Span(). This class is derived by a class that owns the class owning
   // the buffer owner class.
@@ -72,6 +75,17 @@ class MEDIA_EXPORT DecoderBuffer
   // FromArray constructor instead asking for a writable DecoderBuffer.
   explicit DecoderBuffer(size_t size);
 
+  // Allocates a buffer with a copy of `data` in it. `is_key_frame_` will
+  // default to false.
+  DecoderBuffer(base::PassKey<DecoderBuffer>, base::span<const uint8_t> data);
+  DecoderBuffer(base::PassKey<DecoderBuffer>, base::HeapArray<uint8_t> data);
+  DecoderBuffer(base::PassKey<DecoderBuffer>,
+                std::unique_ptr<ExternalMemory> external_memory);
+  enum class DecoderBufferType { kNormal, kEndOfStream };
+  using ConfigVariant = DecoderBufferSideData::ConfigVariant;
+  DecoderBuffer(base::PassKey<DecoderBuffer>,
+                DecoderBufferType decoder_buffer_type,
+                std::optional<ConfigVariant> next_config);
   DecoderBuffer(const DecoderBuffer&) = delete;
   DecoderBuffer& operator=(const DecoderBuffer&) = delete;
 
@@ -119,7 +133,6 @@ class MEDIA_EXPORT DecoderBuffer
   //
   // Calling any method other than end_of_stream() or next_config() on the
   // resulting buffer is disallowed.
-  using ConfigVariant = DecoderBufferSideData::ConfigVariant;
   static scoped_refptr<DecoderBuffer> CreateEOSBuffer(
       std::optional<ConfigVariant> next_config = std::nullopt);
 
@@ -164,10 +177,6 @@ class MEDIA_EXPORT DecoderBuffer
     return data_.data();
   }
 
-  // TODO(crbug.com/373790934): This is unnecessary; this type can be implicitly
-  // converted to a span<const uint8_t>.
-  base::span<const uint8_t> AsSpan() const;
-
   // The number of bytes in the buffer.
   size_t size() const {
     DCHECK(!end_of_stream());
@@ -202,6 +211,14 @@ class MEDIA_EXPORT DecoderBuffer
   }
   auto end() const {
     return external_memory_ ? external_memory_->Span().end() : data_.end();
+  }
+  auto first(size_t count) const {
+    return external_memory_ ? external_memory_->Span().first(count)
+                            : data_.first(count);
+  }
+  auto subspan(size_t offset, size_t count) const {
+    return external_memory_ ? external_memory_->Span().subspan(offset, count)
+                            : data_.subspan(offset, count);
   }
 
   // TODO(crbug.com/365814210): Change the return type to std::optional.
@@ -280,20 +297,15 @@ class MEDIA_EXPORT DecoderBuffer
 
  protected:
   friend class base::RefCountedThreadSafe<DecoderBuffer>;
-  enum class DecoderBufferType { kNormal, kEndOfStream };
+  virtual ~DecoderBuffer();
 
-  // Allocates a buffer with a copy of |data| in it. |is_key_frame_| will
+  // Allocates a buffer with a copy of `data` in it. `is_key_frame_` will
   // default to false.
   explicit DecoderBuffer(base::span<const uint8_t> data);
-
   explicit DecoderBuffer(base::HeapArray<uint8_t> data);
-
   explicit DecoderBuffer(std::unique_ptr<ExternalMemory> external_memory);
-
   DecoderBuffer(DecoderBufferType decoder_buffer_type,
                 std::optional<ConfigVariant> next_config);
-
-  virtual ~DecoderBuffer();
 
   // Encoded data, if it is stored on the heap.
   const base::HeapArray<uint8_t> data_;

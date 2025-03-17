@@ -26,8 +26,8 @@ namespace {
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ActionInSuggestUmaType
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. The values should remain
-// synchronized with the enum AutocompleteMatchType in
-// //tools/metrics/histograms/enums.xml.
+// synchronized with the enum ActionInSuggestType in
+// //tools/metrics/histograms/metadata/omnibox/enums.xml.
 enum class ActionInSuggestUmaType {
   kUnknown = 0,
   kCall,

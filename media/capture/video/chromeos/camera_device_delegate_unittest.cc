@@ -23,6 +23,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/viz/test/test_context_provider.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/camera_hal_delegate.h"
@@ -30,7 +31,6 @@
 #include "media/capture/video/chromeos/mock_vendor_tag_ops.h"
 #include "media/capture/video/chromeos/mock_video_capture_client.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
-#include "media/capture/video/mock_gpu_memory_buffer_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -167,8 +167,9 @@ class CameraDeviceDelegateTest : public ::testing::Test {
   CameraDeviceDelegateTest& operator=(const CameraDeviceDelegateTest&) = delete;
 
   void SetUp() override {
-    VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
-        &mock_gpu_memory_buffer_manager_);
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+    VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(test_sii_);
     camera_hal_delegate_ = std::make_unique<CameraHalDelegate>(ui_task_runner_);
     if (!camera_hal_delegate_->Init()) {
       LOG(ERROR) << "Failed to initialize CameraHalDelegate";
@@ -184,6 +185,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
 
   void TearDown() override {
     VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(nullptr);
+    VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(nullptr);
     camera_device_delegate_.reset();
     camera_hal_delegate_.reset();
     task_environment_.RunUntilIdle();
@@ -427,39 +429,28 @@ class CameraDeviceDelegateTest : public ::testing::Test {
         .WillOnce(
             Invoke(this, &CameraDeviceDelegateTest::ConfigureFakeStreams));
 
-    EXPECT_CALL(mock_gpu_memory_buffer_manager_,
-                CreateGpuMemoryBuffer(
-                    _, gfx::BufferFormat::YUV_420_BIPLANAR,
-                    gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-                    gpu::kNullSurfaceHandle, nullptr))
-        .Times(1)
-        .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
-                             CreateFakeGpuMemoryBuffer));
-    EXPECT_CALL(
-        mock_gpu_memory_buffer_manager_,
-        CreateGpuMemoryBuffer(_, gfx::BufferFormat::R_8,
-                              gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
-                              gpu::kNullSurfaceHandle, nullptr))
-        .Times(AtMost(1))
-        .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
-                             CreateFakeGpuMemoryBuffer));
-    EXPECT_CALL(mock_gpu_memory_buffer_manager_,
-                CreateGpuMemoryBuffer(
+    EXPECT_CALL(*test_sii_,
+                DoCreateSharedImage(
+                    _, viz::MultiPlaneFormat::kNV12, gpu::kNullSurfaceHandle,
+                    gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE))
+        .Times(1);
+    EXPECT_CALL(*test_sii_,
+                DoCreateSharedImage(
+                    _, viz::SinglePlaneFormat::kR_8, gpu::kNullSurfaceHandle,
+                    gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE))
+        .Times(AtMost(1));
+    EXPECT_CALL(*test_sii_,
+                DoCreateSharedImage(
                     gfx::Size(kDefaultWidth, kDefaultHeight),
-                    gfx::BufferFormat::YUV_420_BIPLANAR,
-                    gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-                    gpu::kNullSurfaceHandle, nullptr))
-        .Times(1)
-        .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
-                             CreateFakeGpuMemoryBuffer));
-    EXPECT_CALL(mock_gpu_memory_buffer_manager_,
-                CreateGpuMemoryBuffer(
-                    gfx::Size(kJpegMaxBufferSize, 1), gfx::BufferFormat::R_8,
-                    gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
-                    gpu::kNullSurfaceHandle, nullptr))
-        .Times(AtMost(1))
-        .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
-                             CreateFakeGpuMemoryBuffer));
+                    viz::MultiPlaneFormat::kNV12, gpu::kNullSurfaceHandle,
+                    gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE))
+        .Times(1);
+    EXPECT_CALL(*test_sii_,
+                DoCreateSharedImage(
+                    gfx::Size(kJpegMaxBufferSize, 1),
+                    viz::SinglePlaneFormat::kR_8, gpu::kNullSurfaceHandle,
+                    gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE))
+        .Times(AtMost(1));
   }
 
   void SetUpExpectationUntilCapturing(
@@ -553,7 +544,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
 
   testing::StrictMock<unittest_internal::MockCameraModule> mock_camera_module_;
   testing::NiceMock<unittest_internal::MockVendorTagOps> mock_vendor_tag_ops_;
-  unittest_internal::MockGpuMemoryBufferManager mock_gpu_memory_buffer_manager_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 
   testing::StrictMock<MockCameraDevice> mock_camera_device_;
   mojo::Receiver<cros::mojom::Camera3DeviceOps> mock_camera_device_receiver_;

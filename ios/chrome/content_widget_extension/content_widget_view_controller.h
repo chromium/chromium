@@ -8,7 +8,7 @@
 #import <NotificationCenter/NotificationCenter.h>
 #import <UIKit/UIKit.h>
 
-@interface ContentWidgetViewController : UIViewController<NCWidgetProviding>
+@interface ContentWidgetViewController : UIViewController <NCWidgetProviding>
 @end
 
 #endif  // IOS_CHROME_CONTENT_WIDGET_EXTENSION_CONTENT_WIDGET_VIEW_CONTROLLER_H_

@@ -47,7 +47,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -1272,7 +1271,8 @@ void AppsGridView::SetSelectedItemByIndex(const GridIndex& index) {
   EnsureViewVisible(index);
   selected_view_ = new_selection;
   selected_view_->SchedulePaint();
-  selected_view_->NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+  selected_view_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus,
+                                                     true);
   if (selected_view_->HasNotificationBadge()) {
     a11y_announcer_->AnnounceItemNotificationBadge(
         selected_view_->title()->GetText());
@@ -1906,10 +1906,10 @@ void AppsGridView::HandleKeyboardFoldering(ui::KeyboardCode key_code) {
     return;
   }
 
-  const std::u16string moving_view_title = selected_view_->title()->GetText();
+  const std::u16string moving_view_title(selected_view_->title()->GetText());
   AppListItemView* target_view =
       GetViewDisplayedAtSlotOnCurrentPage(target_index.slot);
-  const std::u16string target_view_title = target_view->title()->GetText();
+  const std::u16string target_view_title(target_view->title()->GetText());
   const bool target_view_is_folder = target_view->is_folder();
 
   std::string folder_id;
@@ -2583,8 +2583,9 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
   // Schedule a layout, since the grid items may need their bounds updated.
   ScheduleLayout(initial_grid_size);
 
-  items_container_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                             /*send_native_event=*/true);
+  items_container_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kChildrenChanged,
+      /*send_native_event=*/true);
 
   // Attempt to animate the transition from a promise app into an actual app
   if (item->GetMetadata()->app_status == AppStatus::kReady) {
@@ -2639,8 +2640,9 @@ void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
   // Schedule a layout, since the grid items may need their bounds updated.
   ScheduleLayout(initial_grid_size);
 
-  items_container_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                             /*send_native_event=*/true);
+  items_container_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kChildrenChanged,
+      /*send_native_event=*/true);
 }
 
 void AppsGridView::MaybeDuplicatePromiseAppForRemoval(
@@ -2699,8 +2701,8 @@ void AppsGridView::OnListItemMoved(size_t from_index,
   size_t from_model_index = GetModelIndexOfItem(item);
   view_model_.Move(from_model_index, to_index);
   items_container_->ReorderChildView(view_model_.view_at(to_index), to_index);
-  items_container_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                             true /* send_native_event */);
+  items_container_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kChildrenChanged, true /* send_native_event */);
 
   // If model update is in progress, paging should be updated when the operation
   // that caused the model update completes.
@@ -2877,7 +2879,7 @@ AppListItemView* AppsGridView::GetViewDisplayedAtSlotOnCurrentPage(
   tile_rect.Offset(CalculateTransitionOffset(GetSelectedPage()));
 
   const auto& entries = view_model_.entries();
-  const auto iter = base::ranges::find_if(entries, [&](const auto& entry) {
+  const auto iter = std::ranges::find_if(entries, [&](const auto& entry) {
     return entry.view->bounds() == tile_rect && entry.view.get() != drag_view_;
   });
   return iter == entries.end() ? nullptr
@@ -3056,7 +3058,7 @@ bool AppsGridView::IsValidIndex(const GridIndex& index) const {
 
 size_t AppsGridView::GetModelIndexOfItem(const AppListItem* item) const {
   const auto& entries = view_model_.entries();
-  const auto iter = base::ranges::find(entries, item, [](const auto& entry) {
+  const auto iter = std::ranges::find(entries, item, [](const auto& entry) {
     return static_cast<AppListItemView*>(entry.view)->item();
   });
   return static_cast<size_t>(std::distance(entries.begin(), iter));

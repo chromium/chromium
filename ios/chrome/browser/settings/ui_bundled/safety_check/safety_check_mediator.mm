@@ -13,8 +13,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "base/version.h"
+#import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
-#import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -23,6 +23,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/version_info/version_info.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -353,7 +354,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       notificationsOptInItem.text =
           push_notification_settings::
                   GetMobileNotificationPermissionStatusForClient(
-                      PushNotificationClientId::kSafetyCheck, "")
+                      PushNotificationClientId::kSafetyCheck, GaiaId())
               ? GetNSString(
                     IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_OFF_NOTIFICATIONS_ELLIPSIS)
               : GetNSString(
@@ -774,8 +775,8 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
 // Computes whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return password_manager::sync_util::GetAccountForSaving(self.userPrefService,
-                                                          self.syncService) &&
+  return password_manager::features_util::IsAccountStorageEnabled(
+             self.userPrefService, self.syncService) &&
          !self.syncService->GetUserSettings()->IsEncryptEverythingEnabled();
 }
 

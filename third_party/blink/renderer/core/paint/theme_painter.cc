@@ -115,7 +115,7 @@ bool ThemePainter::Paint(const LayoutObject& o,
                         WebFeature::kCSSValueAppearanceButtonForOtherButtons);
     }
     //  'button' for input[type=color], of which default appearance is
-    // 'square-button', is not deprecated.
+    // 'square-button', is not deprecated or for ::scroll-button.
   }
 
   // Call the appropriate paint method based off the appearance value.

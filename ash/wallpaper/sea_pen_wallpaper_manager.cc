@@ -4,6 +4,8 @@
 
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 
+#include <algorithm>
+#include <functional>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -30,7 +32,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -66,15 +67,15 @@ std::vector<uint32_t> GetImageIdsImpl(const base::FilePath& directory) {
     jpg_paths_with_timestamp.emplace_back(jpg_path, info.GetLastModifiedTime());
   }
 
-  base::ranges::sort(jpg_paths_with_timestamp, base::ranges::greater(),
-                     &std::pair<base::FilePath, base::Time>::second);
+  std::ranges::sort(jpg_paths_with_timestamp, std::ranges::greater(),
+                    &std::pair<base::FilePath, base::Time>::second);
 
   std::vector<base::FilePath> jpg_paths;
   jpg_paths.reserve(jpg_paths_with_timestamp.size());
 
-  base::ranges::transform(jpg_paths_with_timestamp,
-                          std::back_inserter(jpg_paths),
-                          &std::pair<base::FilePath, base::Time>::first);
+  std::ranges::transform(jpg_paths_with_timestamp,
+                         std::back_inserter(jpg_paths),
+                         &std::pair<base::FilePath, base::Time>::first);
 
   return GetIdsFromFilePaths(jpg_paths);
 }

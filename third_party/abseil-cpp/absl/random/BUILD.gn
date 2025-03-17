@@ -9,9 +9,9 @@ absl_source_set("random") {
   deps = [
     ":distributions",
     ":seed_sequences",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/random/internal:nonsecure_base",
     "//third_party/abseil-cpp/absl/random/internal:pcg_engine",
-    "//third_party/abseil-cpp/absl/random/internal:pool_urbg",
     "//third_party/abseil-cpp/absl/random/internal:randen_engine",
   ]
 }
@@ -54,7 +54,10 @@ absl_source_set("distributions") {
 absl_source_set("seed_gen_exception") {
   public = [ "seed_gen_exception.h" ]
   sources = [ "seed_gen_exception.cc" ]
-  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+  ]
 }
 
 absl_source_set("seed_sequences") {
@@ -64,7 +67,7 @@ absl_source_set("seed_sequences") {
     ":seed_gen_exception",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:nullability",
-    "//third_party/abseil-cpp/absl/random/internal:pool_urbg",
+    "//third_party/abseil-cpp/absl/random/internal:entropy_pool",
     "//third_party/abseil-cpp/absl/random/internal:salted_seed_seq",
     "//third_party/abseil-cpp/absl/random/internal:seed_material",
     "//third_party/abseil-cpp/absl/strings:string_view",

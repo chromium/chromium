@@ -64,7 +64,9 @@ struct ModelExecutorImpl::ExecutionState {
   SegmentId segment_id = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
   proto::ModelSource model_source = proto::ModelSource::DEFAULT_MODEL_SOURCE;
   int64_t model_version = 0;
-  raw_ptr<ModelProvider> model_provider = nullptr;
+  // TODO(crbug.com/388510833): dangling when executing
+  // ShouldReportDegradedTrustedVaultRecoverabilityUponResolvedAuthError test.
+  raw_ptr<ModelProvider, DanglingUntriaged> model_provider = nullptr;
   bool record_metrics_for_default = false;
   ModelExecutionCallback callback;
   ModelProvider::Request input_tensor;
@@ -181,8 +183,9 @@ void ModelExecutorImpl::ExecuteModel(std::unique_ptr<ExecutionState> state) {
       ModelExecutionTraceEvent("ModelExecutorImpl::ExecuteModel", *state);
   if (VLOG_IS_ON(1)) {
     std::stringstream log_input;
-    for (unsigned i = 0; i < state->input_tensor.size(); ++i)
+    for (unsigned i = 0; i < state->input_tensor.size(); ++i) {
       log_input << " feature " << i << ": " << state->input_tensor[i];
+    }
     VLOG(1) << "Segmentation model input: " << log_input.str()
             << " for segment " << proto::SegmentId_Name(state->segment_id);
   }
@@ -229,7 +232,6 @@ void ModelExecutorImpl::OnModelExecutionComplete(
               ModelExecutionStatus::kSkippedModelNotReady));
       return;
     }
-
 
     const proto::SegmentationModelMetadata& model_metadata =
         latest_info->model_metadata();

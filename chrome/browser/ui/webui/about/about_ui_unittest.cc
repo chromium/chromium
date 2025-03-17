@@ -28,7 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/file_manager/url_constants.h"
 #include "ash/webui/sanitize_ui/url_constants.h"
 #include "base/files/scoped_temp_dir.h"
@@ -40,7 +40,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "third_party/zlib/google/compression_utils.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -76,7 +76,7 @@ class TestDataReceiver {
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Base class for ChromeOS offline terms tests.
 class ChromeOSTermsTest : public testing::Test {
  public:
@@ -262,7 +262,7 @@ TEST_F(ChromeOSCreditsTest, Neither) {
   EXPECT_FALSE(data_receiver.data().empty());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Test config class, to add to the WebUIConfigMap for testing.
 class TestWebUIConfig : public content::WebUIConfig {
@@ -335,7 +335,7 @@ TEST_F(ChromeURLsTest, ContainsConfigURLs) {
   content::ScopedWebUIConfigRegistration config_untrusted_disabled(
       std::make_unique<TestWebUIConfig>(content::kChromeUIUntrustedScheme,
                                         "dogs", false));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Redirect the files, and sanitize config because they assume an Ash Shell
   // exists in IsWebUIEnabled(), and the shell does not exist in unit tests.
   content::ScopedWebUIConfigRegistration replace_files_app(
@@ -345,7 +345,7 @@ TEST_F(ChromeURLsTest, ContainsConfigURLs) {
   content::ScopedWebUIConfigRegistration replace_sanitize_app(
       std::make_unique<TestWebUIConfig>(content::kChromeUIScheme,
                                         ash::kChromeUISanitizeAppHost, true));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   TestDataReceiver chrome_urls_data_receiver;
   StartRequest("", &chrome_urls_data_receiver);

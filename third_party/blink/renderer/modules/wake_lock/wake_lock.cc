@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock.h"
 
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -93,7 +88,7 @@ ScriptPromise<WakeLockSentinel> WakeLock::request(
   // but we can perform FP checks in workers in Blink]
   if (type == V8WakeLockType::Enum::kScreen &&
       !context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kScreenWakeLock,
+          network::mojom::PermissionsPolicyFeature::kScreenWakeLock,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Access to Screen Wake Lock features is "
@@ -225,7 +220,7 @@ void WakeLock::DidReceivePermissionResponse(
   }
   // Steps 8.3.2 to 8.3.5 are described in AcquireWakeLock() and related
   // functions.
-  WakeLockManager* manager = managers_[static_cast<size_t>(type)];
+  WakeLockManager* manager = UNSAFE_TODO(managers_[static_cast<size_t>(type)]);
   DCHECK(manager);
   manager->AcquireWakeLock(resolver);
 }

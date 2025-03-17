@@ -122,7 +122,7 @@ message ModelInfo {
 
 // The scenarios for which the optimization guide has models for.
 enum OptimizationTarget {
-  reserved 14, 56;
+  reserved 14;
 
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Should only be applied when the page load is predicted to be painful.
@@ -238,8 +238,14 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT = 54;
   // Target for scam detection feature config.
   OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SCAM_DETECTION = 55;
+  // Target for Permissions AI feature config.
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PERMISSIONS_AI = 56;
   // Target for assessing embedding model performance.
   OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER = 57;
+  // Target for segmentation: FedCM user.
+  OPTIMIZATION_TARGET_SEGMENTATION_FEDCM_USER = 58;
+  // Target for Writing Assistance APIs (Writer and Rewriter).
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API = 59;
 }
 
 // The model engine versions that can be used to do model inference.
@@ -294,6 +300,8 @@ enum ModelEngineVersion {
   MODEL_ENGINE_VERSION_TFLITE_2_17 = 17;
   // A model using only operations that are supported by 2.18.
   MODEL_ENGINE_VERSION_TFLITE_2_18 = 18;
+  // A model using only operations that are supported by 2.20.0.
+  MODEL_ENGINE_VERSION_TFLITE_2_20_0 = 19;
 }
 
 // The set of parameters that the server can use to vary the served model for

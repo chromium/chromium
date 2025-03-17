@@ -15,10 +15,6 @@
 
 namespace performance_manager::features {
 
-// If enabled, the PM runs on the main (UI) thread *and* tasks posted to the PM
-// TaskRunner from the main (UI) thread run synchronously.
-BASE_DECLARE_FEATURE(kRunOnMainThreadSync);
-
 #if !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX)
@@ -65,68 +61,10 @@ BASE_DECLARE_FEATURE(kPerformanceControlsBatterySaverOptOutSurvey);
 extern const base::FeatureParam<base::TimeDelta>
     kPerformanceControlsBatterySurveyLookback;
 
-// Round 3 Performance Controls features
-
-// This enables the performance detection backend.
-BASE_DECLARE_FEATURE(kPerformanceIntervention);
-
-// This enables the performance intervention UI
-BASE_DECLARE_FEATURE(kPerformanceInterventionUI);
-
 // This enables performance intervention to run in demo mode. While in demo
 // mode, performance intervention will ignore rate throttling and CPU thresholds
 // to make it easier to trigger performance intervention for testing purposes.
 BASE_DECLARE_FEATURE(kPerformanceInterventionDemoMode);
-
-bool ShouldUsePerformanceInterventionBackend();
-
-// This represents the version number for the string displayed on the
-// Performance Intervention Dialog.
-extern const base::FeatureParam<int> kInterventionDialogStringVersion;
-
-// This represents whether we should show the performance intervention
-// UI when the suggested tabs to take action on include tabs from a
-// profile that is different from the last active browser.
-extern const base::FeatureParam<bool> kInterventionShowMixedProfileSuggestions;
-
-#if BUILDFLAG(IS_WIN)
-// Prefetch the main browser DLL when a new node is added to the PM graph
-// and no prefetch has been done within a reasonable timeframe.
-BASE_DECLARE_FEATURE(kPrefetchVirtualMemoryPolicy);
-#endif
-
-// This represents the duration that the performance intervention button
-// should remain in the toolbar after the user dismisses the intervention
-// dialog without taking the suggested action.
-extern const base::FeatureParam<base::TimeDelta> kInterventionButtonTimeout;
-
-// This represents the duration that CPU must be over the threshold before
-// a notification is triggered.
-extern const base::FeatureParam<base::TimeDelta> kCPUTimeOverThreshold;
-
-// Frequency to sample for cpu usage to ensure that the user is experiencing
-// consistent cpu issues before surfacing a notification
-extern const base::FeatureParam<base::TimeDelta> kCPUSampleFrequency;
-
-// If the system CPU consistently exceeds these percent thresholds, then
-// the CPU health will be classified as the threshold it is exceeding
-extern const base::FeatureParam<int> kCPUDegradedHealthPercentageThreshold;
-extern const base::FeatureParam<int> kCPUUnhealthyPercentageThreshold;
-
-// Maximum number of tabs to be actionable
-extern const base::FeatureParam<int> kCPUMaxActionableTabs;
-
-// Minimum percentage to improve CPU health for a tab to be actionable
-extern const base::FeatureParam<int> kMinimumActionableTabCPUPercentage;
-
-// This represents the duration that Memory must be over the threshold before
-// a notification is triggered.
-extern const base::FeatureParam<base::TimeDelta> kMemoryTimeOverThreshold;
-
-// If available Memory percent and bytes are both under the specified thresholds
-// then we will trigger a notification.
-extern const base::FeatureParam<int> kMemoryFreePercentThreshold;
-extern const base::FeatureParam<int> kMemoryFreeBytesThreshold;
 
 #endif
 
@@ -134,7 +72,9 @@ BASE_DECLARE_FEATURE(kPMProcessPriorityPolicy);
 
 extern const base::FeatureParam<bool> kInheritParentPriority;
 
-extern const base::FeatureParam<bool> kDownvoteAdFrames;
+extern const base::FeatureParam<bool> kRenderedOutOfViewIsNotVisible;
+
+extern const base::FeatureParam<bool> kNonSpareRendererHighInitialPriority;
 
 BASE_DECLARE_FEATURE(kPMLoadingPageVoter);
 
@@ -192,6 +132,9 @@ BASE_DECLARE_FEATURE(kFreezingOnBatterySaverForTesting);
 // tab discarding.
 BASE_DECLARE_FEATURE(kFreezingFollowsDiscardOptOut);
 
+// When enabled, the freezing eligibility UKM event may be recorded.
+BASE_DECLARE_FEATURE(kRecordFreezingEligibilityUKM);
+
 // When enabled, Resource Attribution measurements will include contexts for
 // individual origins.
 BASE_DECLARE_FEATURE(kResourceAttributionIncludeOrigins);
@@ -206,6 +149,10 @@ BASE_DECLARE_FEATURE(kUnimportantFramesPriority);
 // When enabled, the begin frame rate of visible unimportant frames would be
 // reduced to half of normal frame rate.
 BASE_DECLARE_FEATURE(kThrottleUnimportantFrameRate);
+
+// When enabled, keep the default search engine render process host alive
+// (crbug.com/365958798).
+BASE_DECLARE_FEATURE(kKeepDefaultSearchEngineRendererAlive);
 
 }  // namespace performance_manager::features
 

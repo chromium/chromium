@@ -14,9 +14,11 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
@@ -197,6 +199,15 @@ void TestPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
   mandatory_reauth_opt_in_prompt_was_shown_ = true;
 }
 
+BnplManager* TestPaymentsAutofillClient::GetPaymentsBnplManager() {
+  if (!bnpl_manager_) {
+    bnpl_manager_ = std::make_unique<BnplManager>(
+        &static_cast<TestAutofillClient&>(client_.get()));
+  }
+
+  return bnpl_manager_.get();
+}
+
 MockIbanManager* TestPaymentsAutofillClient::GetIbanManager() {
   if (!mock_iban_manager_) {
     mock_iban_manager_ = std::make_unique<testing::NiceMock<MockIbanManager>>(
@@ -251,6 +262,10 @@ TestPaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return mock_payments_mandatory_reauth_manager_.get();
 }
 
+PaymentsDataManager& TestPaymentsAutofillClient::GetPaymentsDataManager() {
+  return client_->GetPersonalDataManager().payments_data_manager();
+}
+
 bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {
   return mandatory_reauth_opt_in_prompt_was_shown_;
 }
@@ -267,6 +282,23 @@ void TestPaymentsAutofillClient::set_virtual_card_enrollment_manager(
 void TestPaymentsAutofillClient::set_otp_authenticator(
     std::unique_ptr<CreditCardOtpAuthenticator> authenticator) {
   otp_authenticator_ = std::move(authenticator);
+}
+
+void TestPaymentsAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
+    const std::vector<CardUnmaskChallengeOption>& challenge_options,
+    base::OnceCallback<void(const std::string&)>
+        confirm_unmask_challenge_option_callback,
+    base::OnceClosure cancel_unmasking_closure) {
+  unmask_authenticator_selection_dialog_shown_ = true;
+}
+
+MockBnplManager& TestPaymentsAutofillClient::CreateOrGetMockBnplManager() {
+  if (!bnpl_manager_) {
+    bnpl_manager_ = std::make_unique<testing::NiceMock<MockBnplManager>>(
+        &static_cast<TestAutofillClient&>(client_.get()));
+  }
+
+  return static_cast<MockBnplManager&>(*bnpl_manager_.get());
 }
 
 #if BUILDFLAG(IS_ANDROID)

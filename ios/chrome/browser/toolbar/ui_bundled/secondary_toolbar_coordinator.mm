@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_coordinator.h"
 
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -17,7 +18,6 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_view_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 
 @interface SecondaryToolbarCoordinator ()
 @property(nonatomic, strong) SecondaryToolbarViewController* viewController;
@@ -32,21 +32,21 @@
 #pragma mark - AdaptiveToolbarCoordinator
 
 - (void)start {
+  Browser* browser = self.browser;
+
   _secondaryToolbarMediator = [[SecondaryToolbarMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()];
+      initWithWebStateList:browser->GetWebStateList()];
 
   self.viewController = [[SecondaryToolbarViewController alloc] init];
   self.viewController.buttonFactory =
       [self buttonFactoryWithType:ToolbarType::kSecondary];
   self.viewController.omniboxCommandsHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
-  self.viewController.popupMenuCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), PopupMenuCommands);
-  self.viewController.layoutGuideCenter =
-      LayoutGuideCenterForBrowser(self.browser);
+      HandlerForProtocol(browser->GetCommandDispatcher(), OmniboxCommands);
+  self.viewController.popupMenuCommandsHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), PopupMenuCommands);
+  self.viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
   self.viewController.keyboardStateProvider = _secondaryToolbarMediator;
-  FullscreenController* controller =
-      FullscreenController::FromBrowser(self.browser);
+  FullscreenController* controller = FullscreenController::FromBrowser(browser);
   self.viewController.fullscreenController = controller;
   self.viewController.toolbarHeightDelegate = self.toolbarHeightDelegate;
 

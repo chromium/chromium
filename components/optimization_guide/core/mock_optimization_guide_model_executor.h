@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -54,10 +55,12 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
   // This should be called *before* other ON_CALL statements.
   void Delegate(OptimizationGuideModelExecutor::Session* impl);
 
+  MOCK_METHOD(on_device_model::mojom::Session&, GetSession, (), (override));
   MOCK_METHOD(const optimization_guide::TokenLimits&,
               GetTokenLimits,
               (),
               (const, override));
+  MOCK_METHOD(void, SetInput, (MultimodalMessage request));
   MOCK_METHOD(void,
               AddContext,
               (const google::protobuf::MessageLite& request_metadata));
@@ -76,11 +79,11 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
                OptimizationGuideModelSizeInTokenCallback callback));
   MOCK_METHOD(void,
               GetExecutionInputSizeInTokens,
-              (const google::protobuf::MessageLite& request_metadata,
+              (MultimodalMessageReadView request_metadata,
                OptimizationGuideModelSizeInTokenCallback callback));
   MOCK_METHOD(void,
               GetContextSizeInTokens,
-              (const google::protobuf::MessageLite& request_metadata,
+              (MultimodalMessageReadView request_metadata,
                OptimizationGuideModelSizeInTokenCallback callback));
   MOCK_METHOD(const optimization_guide::SamplingParams,
               GetSamplingParams,
@@ -90,6 +93,7 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
               GetOnDeviceFeatureMetadata,
               (),
               (const override));
+  MOCK_METHOD(std::unique_ptr<Session>, Clone, (), (override));
 };
 
 }  // namespace optimization_guide

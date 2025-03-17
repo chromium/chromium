@@ -5,7 +5,7 @@
 #ifndef CC_TEST_FAKE_LAYER_TREE_HOST_IMPL_CLIENT_H_
 #define CC_TEST_FAKE_LAYER_TREE_HOST_IMPL_CLIENT_H_
 
-#include "cc/trees/layer_tree_host_impl.h"
+#include "cc/trees/layer_tree_host_impl_client.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace viz {
@@ -25,8 +25,7 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
   void NotifyReadyToDraw() override;
   void SetNeedsRedrawOnImplThread() override {}
   void SetNeedsOneBeginImplFrameOnImplThread() override {}
-  void SetNeedsUpdateDisplayTreeOnImplThread() override {}
-  void SetNeedsCommitOnImplThread() override {}
+  void SetNeedsCommitOnImplThread(bool urgent) override {}
   void SetNeedsPrepareTilesOnImplThread() override {}
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override {}
   void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override {}

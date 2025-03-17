@@ -6,9 +6,9 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("searchbox") {
   sources = [
-    "contextual_searchbox_handler.cc",
-    "contextual_searchbox_handler.h",
     "lens_searchbox_client.h",
+    "lens_searchbox_handler.cc",
+    "lens_searchbox_handler.h",
     "realbox_handler.cc",
     "realbox_handler.h",
     "searchbox_handler.cc",
@@ -31,7 +31,6 @@ source_set("searchbox") {
   ]
   deps = [
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",

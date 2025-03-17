@@ -17,9 +17,12 @@
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
@@ -34,13 +37,16 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -146,6 +152,9 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
 
  protected:
   std::unique_ptr<TestInstallManagerObserver> install_manager_observer_;
+
+ private:
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(WebAppInstallFinalizerUnitTest, BasicInstallSucceeds) {
@@ -527,16 +536,54 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
                                            integrity_block_data)));
 }
 
+TEST_F(WebAppInstallFinalizerUnitTest,
+       PopUpContentSettingsGrantedForForceInstalledIwa) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+          .BuildBundle();
+
+  const web_app::IsolatedWebAppUrlInfo url_info =
+      app->InstallWithSource(
+             profile(),
+             &web_app::IsolatedWebAppInstallSource::FromExternalPolicy)
+          .value();
+
+  HostContentSettingsMap* const host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
+            host_content_settings_map->GetContentSetting(
+                url_info.origin().GetURL(), url_info.origin().GetURL(),
+                ContentSettingsType::POPUPS));
+}
+
+TEST_F(WebAppInstallFinalizerUnitTest, PopUpContentSettingsNotGrantedForIwa) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+          .BuildBundle();
+  app->TrustSigningKey();
+  const web_app::IsolatedWebAppUrlInfo url_info =
+      app->InstallChecked(profile());
+
+  HostContentSettingsMap* const host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_BLOCK,
+            host_content_settings_map->GetContentSetting(
+                url_info.origin().GetURL(), url_info.origin().GetURL(),
+                ContentSettingsType::POPUPS));
+}
+
 TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsApproved) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
+  GURL start_url("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
-  ScopeExtensionInfo scope_extension =
-      ScopeExtensionInfo(url::Origin::Create(GURL("https://foo.example")),
-                         /*has_origin_wildcard=*/true);
+  auto scope_extension =
+      ScopeExtensionInfo::CreateForScope(start_url,
+                                         /*has_origin_wildcard=*/true);
   CHECK(!scope_extension.origin.opaque());
   info->scope_extensions = {scope_extension};
 
@@ -558,15 +605,15 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsApproved) {
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsDenied) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
+  GURL start_url("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
-  ScopeExtensionInfo scope_extension =
-      ScopeExtensionInfo(url::Origin::Create(GURL("https://foo.example")),
-                         /*has_origin_wildcard=*/true);
+  auto scope_extension =
+      ScopeExtensionInfo::CreateForScope(start_url,
+                                         /*has_origin_wildcard=*/true);
   info->scope_extensions = {scope_extension};
 
   // Set data such that scope_extension will not be returned in validated data.
@@ -584,4 +631,68 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsDenied) {
   EXPECT_EQ(ScopeExtensions(), installed_app->validated_scope_extensions());
 }
 
+class WebAppInstallFinalizerUnitTestQueriesAndFragments
+    : public WebAppInstallFinalizerUnitTest,
+      public testing::WithParamInterface<std::tuple<std::string, std::string>> {
+ public:
+  WebAppInstallFinalizerUnitTestQueriesAndFragments() = default;
+  WebAppInstallFinalizerUnitTestQueriesAndFragments(
+      const WebAppInstallFinalizerUnitTestQueriesAndFragments&) = delete;
+  WebAppInstallFinalizerUnitTestQueriesAndFragments& operator=(
+      const WebAppInstallFinalizerUnitTestQueriesAndFragments&) = delete;
+  ~WebAppInstallFinalizerUnitTestQueriesAndFragments() override = default;
+};
+
+TEST_P(WebAppInstallFinalizerUnitTestQueriesAndFragments,
+       ValidateOriginAssociationsDropQueriesAndFragments) {
+  std::string start_url_str, expected_sanitized_start_url_str;
+  std::tie(start_url_str, expected_sanitized_start_url_str) = GetParam();
+  GURL start_url(start_url_str);
+  GURL expected_sanitized_start_url(expected_sanitized_start_url_str);
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = u"Foo Title";
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+
+  auto scope_extension =
+      ScopeExtensionInfo::CreateForScope(start_url,
+                                         /*has_origin_wildcard=*/true);
+  CHECK(!scope_extension.origin.opaque());
+  info->scope_extensions = {scope_extension};
+
+  // Set data such that scope_extension will be returned in validated data.
+  std::map<ScopeExtensionInfo, ScopeExtensionInfo> data = {
+      {scope_extension, scope_extension}};
+  static_cast<FakeWebAppOriginAssociationManager&>(
+      provider().origin_association_manager())
+      .SetData(data);
+
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
+  EXPECT_EQ(installed_app->install_state(),
+            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  EXPECT_EQ(ScopeExtensions({scope_extension}),
+            installed_app->validated_scope_extensions());
+  for (const auto& scope_ext_info :
+       installed_app->validated_scope_extensions()) {
+    ASSERT_EQ(expected_sanitized_start_url, scope_ext_info.scope);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    WebAppInstallFinalizerUnitTestQueriesAndFragments,
+    testing::Values(
+        std::tuple<std::string, std::string>("https://foo.example/path",
+                                             "https://foo.example/path"),
+        std::tuple<std::string, std::string>(
+            "https://foo.example/search?q=querystring",
+            "https://foo.example/search"),
+        std::tuple<std::string, std::string>("https://foo.example/#hello",
+                                             "https://foo.example"),
+        std::tuple<std::string, std::string>(
+            "https://foo.example/search?q=querystring#hello",
+            "https://foo.example/search")));
 }  // namespace web_app

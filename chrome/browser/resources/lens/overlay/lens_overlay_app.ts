@@ -35,6 +35,7 @@ import type {OverlayTheme} from './lens.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_utils.js';
+import {PageContentType} from './page_content_type.mojom-webui.js';
 import {PerformanceTracker} from './performance_tracker.js';
 import {handleEscapeSearchbox, onSearchboxKeydown} from './searchbox_utils.js';
 import type {SelectionOverlayElement} from './selection_overlay.js';
@@ -57,7 +58,7 @@ export interface LensOverlayAppElement {
     selectionOverlay: SelectionOverlayElement,
     toast: CrToastElement,
     translateButton: TranslateButtonElement,
-    translateButtonContainer: HTMLDivElement,
+    translateButtonContainer: HTMLElement,
   };
 }
 
@@ -142,9 +143,16 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       },
       showGhostLoader: {
         type: Boolean,
-        computed: `computeShowGhostLoader(isSearchboxFocused,
-            suppressGhostLoader)`,
+        computed: `computeShowGhostLoader(
+                isSearchboxFocused,
+                autocompleteRequestStarted,
+                showErrorState,
+                suppressGhostLoader)`,
         reflectToAttribute: true,
+      },
+      placeholderText: {
+        type: String,
+        computed: `computePlaceholderText(pageContentType)`,
       },
       showErrorState: {
         type: Boolean,
@@ -164,6 +172,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   suppressGhostLoader: boolean;
   // Whether the ghost loader should show its error state.
   showErrorState: boolean;
+  // Whether this is an in flight request to autocomplete.
+  private autocompleteRequestStarted: boolean = false;
   // Whether the translate button is enabled.
   private isTranslateButtonEnabled: boolean;
   // Whether the image has finished rendering.
@@ -195,9 +205,17 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private isLensOverlayContextualSearchboxEnabled: boolean;
   // Whether the contextual searchbox is visible to the user.
   private isLensOverlayContextualSearchboxVisible: boolean = false;
+  // Whether the contextual searchbox should be auto-focused when the overlay is
+  // first opened.
+  private autoFocusSearchbox: boolean =
+      loadTimeData.getValue('autoFocusSearchbox');
   private toastMessage: string = '';
+  // What the current page content type is.
+  private pageContentType: PageContentType = PageContentType.kUnknown;
   // Whether to show the ghost loader.
   private showGhostLoader: boolean;
+  // What the placeholder text should be.
+  private placeholderText: string;
   // Whether the translate language pickers are open.
   private areLanguagePickersOpen: boolean = false;
 
@@ -240,6 +258,10 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         this.isClosing = true;
         this.performanceTracker.endSession();
       }),
+      callbackRouter.suppressGhostLoader.addListener(
+          this.suppressGhostLoader_.bind(this)),
+      callbackRouter.pageContentTypeChanged.addListener(
+          this.onPageContentTypeChanged.bind(this)),
     ];
     this.eventTracker_.add(
         document, 'set-cursor-tooltip', (e: CustomEvent<CursorTooltipData>) => {
@@ -276,7 +298,14 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       }
     });
     this.eventTracker_.add(
+        document, 'query-autocomplete',
+        this.handleQueryAutocomplete.bind(this));
+    this.eventTracker_.add(
         document, 'pointermove', this.updateCursorPosition.bind(this));
+    this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
+      this.suppressGhostLoader = false;
+      this.showErrorState = false;
+    });
 
     this.performanceTracker.startSession();
   }
@@ -333,6 +362,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.searchboxBoundingClientRectObserver.observe(this.$.selectionOverlay);
   }
 
+  // Called when the searchbox requests autocomplete suggestions.
+  private handleQueryAutocomplete() {
+    this.autocompleteRequestStarted = true;
+  }
+
   private focusShimmerOnSearchbox() {
     const suggestionsContainer = this.$.searchbox.getSuggestionsElement();
     const areSuggestionsShowing =
@@ -367,8 +401,18 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         ShimmerControlRequester.SEARCHBOX);
   }
 
-  private handleSearchboxBlurred() {
+  private handleSearchboxBlurred(event: FocusEvent) {
+    // Ignore the blurred event if focus left one child element to enter another
+    // child element.
+    if (event.relatedTarget instanceof Node &&
+        this.$.searchboxContainer.contains(event.relatedTarget)) {
+      // TODO(380467089): This workaround wouldn't be needed if the ghost loader
+      // was part of the searchbox element. Remove this workaround once they are
+      // combined.
+      return;
+    }
     this.isSearchboxFocused = false;
+    this.autocompleteRequestStarted = false;
     this.showErrorState = false;
     this.$.translateButtonContainer.classList.add('searchbox-unfocused');
 
@@ -426,7 +470,28 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private computeShowGhostLoader(): boolean {
-    return this.isSearchboxFocused && !this.suppressGhostLoader;
+    if (this.suppressGhostLoader) {
+      return false;
+    }
+    // Show the ghost loader if there is focus on the searchbox, and there is
+    // autcomplete is loading or if autocomplete failed.
+    return this.isSearchboxFocused &&
+        (this.autocompleteRequestStarted || this.showErrorState);
+  }
+
+  private computePlaceholderText(): string {
+    return this.pageContentType === PageContentType.kPdf ?
+        this.i18n('searchBoxHintPdf') :
+        this.i18n('searchBoxHintDefault');
+  }
+
+  private suppressGhostLoader_() {
+    // If tab is foregrounded don't show ghost loader.
+    this.suppressGhostLoader = true;
+  }
+
+  private onPageContentTypeChanged(newPageContentType: PageContentType) {
+    this.pageContentType = newPageContentType;
   }
 
   private onMoreOptionsButtonClick() {
@@ -489,6 +554,18 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private onInitialFlashAnimationEnd() {
     this.initialFlashAnimationHasEnded = true;
     this.$.initialGradient.setScrimVisible();
+    // The searchbox is not focusable until the animation has ended.
+    if (this.autoFocusSearchbox &&
+        this.isLensOverlayContextualSearchboxVisible) {
+      this.focusSearchbox();
+      this.$.searchbox.queryAutocomplete();
+    }
+  }
+
+  private focusSearchbox() {
+    this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
+        ?.shadowRoot!.querySelector<HTMLElement>('input')
+        ?.focus();
   }
 
   private computeShouldFadeOutButtons(): boolean {
@@ -549,6 +626,12 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     const g = parseInt(hex.substring(3, 5), 16);
     const b = parseInt(hex.substring(5, 7), 16);
     return `${r}, ${g}, ${b}`;
+  }
+
+  private getSearchboxAriaDescription(): string {
+    // Get the the text from the ghost loader to add to the searchbox aria
+    // description.
+    return this.$.searchboxGhostLoader.getText();
   }
 
   setSearchboxFocusForTesting(isFocused: boolean) {

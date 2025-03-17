@@ -40,10 +40,6 @@
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "ui/ozone/platform/wayland/host/wayland_async_cursor.h"
-#endif
-
 namespace wl {
 
 struct WaylandOverlayConfig;
@@ -54,6 +50,7 @@ namespace ui {
 
 class BitmapCursor;
 class OSExchangeData;
+class WaylandAsyncCursor;
 class WaylandBubble;
 class WaylandConnection;
 class WaylandSubsurface;
@@ -259,9 +256,7 @@ class WaylandWindow : public PlatformWindow,
     bool is_activated = false;
     bool is_minimized = false;
     bool is_suspended = false;
-#if BUILDFLAG(IS_LINUX)
     WindowTiledEdges tiled_edges;
-#endif
 
     // Dumps the values of the states into a string.
     std::string ToString() const;
@@ -484,6 +479,10 @@ class WaylandWindow : public PlatformWindow,
     return !in_flight_requests_.empty();
   }
 
+  // When surface roles are destroyed with in-flight requests, these serials
+  // become invalid. Clear them so we do not get "wrong configure serial" error.
+  void ClearInFlightRequestsSerial();
+
   // PendingConfigureState describes the content of a configure sent from the
   // wayland server.
   struct PendingConfigureState {
@@ -533,10 +532,8 @@ class WaylandWindow : public PlatformWindow,
 
   void UpdateCursorShape(scoped_refptr<BitmapCursor> cursor);
 
-#if BUILDFLAG(IS_LINUX)
   void OnCursorLoaded(scoped_refptr<WaylandAsyncCursor> cursor,
                       scoped_refptr<BitmapCursor> bitmap_cursor);
-#endif
 
   // StateRequest describes a State that we are applying to the window, and the
   // metadata about that State, such as what serial number to use for ack (if it
@@ -603,13 +600,8 @@ class WaylandWindow : public PlatformWindow,
   // the subsurface arrangement are played back by WaylandFrameManager.
   base::LinkedList<WaylandSubsurface> subsurface_stack_committed_;
 
-#if BUILDFLAG(IS_LINUX)
   // The current asynchronously loaded cursor (Linux specific).
   scoped_refptr<WaylandAsyncCursor> async_cursor_;
-#else
-  // The current cursor bitmap (immutable).
-  scoped_refptr<BitmapCursor> cursor_;
-#endif
 
   bool has_touch_focus_ = false;
 

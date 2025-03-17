@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/graph/worker_node_impl.h"
 
+#include "base/scoped_observation.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -23,6 +24,19 @@ namespace {
 class WorkerNodeImplTest : public GraphTestHarness {
  public:
  protected:
+};
+
+class MockObserver : public MockWorkerNodeObserver {
+ public:
+  explicit MockObserver(Graph* graph = nullptr) {
+    // If a `graph` is passed, automatically start observing it.
+    if (graph) {
+      scoped_observation_.Observe(graph);
+    }
+  }
+
+ private:
+  base::ScopedObservation<Graph, WorkerNodeObserver> scoped_observation_{this};
 };
 
 using ::testing::_;
@@ -223,9 +237,9 @@ TEST_F(WorkerNodeImplTest, PriorityAndReason) {
 TEST_F(WorkerNodeImplTest, ObserverWorks) {
   auto process = CreateNode<ProcessNodeImpl>();
 
-  MockWorkerNodeObserver head_obs;
-  MockWorkerNodeObserver obs;
-  MockWorkerNodeObserver tail_obs;
+  MockObserver head_obs;
+  MockObserver obs;
+  MockObserver tail_obs;
   graph()->AddWorkerNodeObserver(&head_obs);
   graph()->AddWorkerNodeObserver(&obs);
   graph()->AddWorkerNodeObserver(&tail_obs);
@@ -282,8 +296,7 @@ TEST_F(WorkerNodeImplTest, ObserverWorks) {
 TEST_F(WorkerNodeImplTest, Observer_AddWorkerNodes) {
   InSequence s;
 
-  MockWorkerNodeObserver obs;
-  graph()->AddWorkerNodeObserver(&obs);
+  MockObserver obs(graph());
 
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
@@ -373,8 +386,6 @@ TEST_F(WorkerNodeImplTest, Observer_AddWorkerNodes) {
   service_worker.reset();
   shared_worker.reset();
   dedicated_worker.reset();
-
-  graph()->RemoveWorkerNodeObserver(&obs);
 }
 
 // Same as the ClientsOfServiceWorkers test, but the graph is verified through
@@ -382,8 +393,7 @@ TEST_F(WorkerNodeImplTest, Observer_AddWorkerNodes) {
 TEST_F(WorkerNodeImplTest, Observer_ClientsOfServiceWorkers) {
   InSequence s;
 
-  MockWorkerNodeObserver obs;
-  graph()->AddWorkerNodeObserver(&obs);
+  MockObserver obs(graph());
 
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
@@ -443,15 +453,12 @@ TEST_F(WorkerNodeImplTest, Observer_ClientsOfServiceWorkers) {
   service_worker.reset();
   shared_worker.reset();
   dedicated_worker.reset();
-
-  graph()->RemoveWorkerNodeObserver(&obs);
 }
 
 TEST_F(WorkerNodeImplTest, Observer_OnFinalResponseURLDetermined) {
   InSequence s;
 
-  MockWorkerNodeObserver obs;
-  graph()->AddWorkerNodeObserver(&obs);
+  MockObserver obs(graph());
 
   auto process = CreateNode<ProcessNodeImpl>();
 
@@ -465,14 +472,15 @@ TEST_F(WorkerNodeImplTest, Observer_OnFinalResponseURLDetermined) {
   EXPECT_CALL(obs, OnFinalResponseURLDetermined(worker.get()));
   worker->OnFinalResponseURLDetermined(GURL("testurl.com"));
 
-  graph()->RemoveWorkerNodeObserver(&obs);
+  // `worker` goes out of scope before observer.
+  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(worker.get()));
+  EXPECT_CALL(obs, OnWorkerNodeRemoved(worker.get(), _));
 }
 
 TEST_F(WorkerNodeImplTest, Observer_OnPriorityAndReasonChanged) {
   InSequence s;
 
-  MockWorkerNodeObserver obs;
-  graph()->AddWorkerNodeObserver(&obs);
+  MockObserver obs(graph());
 
   auto process = CreateNode<ProcessNodeImpl>();
 
@@ -487,7 +495,9 @@ TEST_F(WorkerNodeImplTest, Observer_OnPriorityAndReasonChanged) {
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(worker.get(), _));
   worker->SetPriorityAndReason(kPriorityAndReason);
 
-  graph()->RemoveWorkerNodeObserver(&obs);
+  // `worker` goes out of scope before observer.
+  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(worker.get()));
+  EXPECT_CALL(obs, OnWorkerNodeRemoved(worker.get(), _));
 }
 
 }  // namespace performance_manager

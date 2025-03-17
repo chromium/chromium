@@ -1,3 +1,6 @@
 sideyilmaz@chromium.org
 msramek@chromium.org
 tov@chromium.org
+
+per-file disruptive_notification_permissions_manager*=olesiamarukhno@google.com
+per-file disruptive_notification_permissions_manager*=antoniosartori@chromium.org

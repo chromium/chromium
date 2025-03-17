@@ -46,10 +46,12 @@ class SupervisedUserWebContentHandlerImpl
   ~SupervisedUserWebContentHandlerImpl() override;
 
   // ChromeSupervisedUserWebContentHandlerBase implementation:
-  void RequestLocalApproval(const GURL& url,
-                            const std::u16string& child_display_name,
-                            const supervised_user::UrlFormatter& url_formatter,
-                            ApprovalRequestInitiatedCallback callback) override;
+  void RequestLocalApproval(
+      const GURL& url,
+      const std::u16string& child_display_name,
+      const supervised_user::UrlFormatter& url_formatter,
+      const supervised_user::FilteringBehaviorReason& filtering_behavior_reason,
+      ApprovalRequestInitiatedCallback callback) override;
 
  private:
   void OnLocalApprovalRequestCompleted(

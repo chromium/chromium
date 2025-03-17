@@ -42,6 +42,7 @@ struct TestSearchAggregator {
   const char* search_url;
   const char* suggest_url;
   const char* icon_url;
+  const bool require_shortcut;
   // If not-zero, the ID of the error message expected in the policy error map.
   const int expected_error_msg_id;
 };
@@ -53,6 +54,15 @@ TestSearchAggregator kValidTestSearchAggregator = {
     .search_url = "https://work.com/{searchTerms}",
     .suggest_url = "https://work.com/suggest",
     .icon_url = "https://work.com/favicon.ico",
+};
+
+TestSearchAggregator kValidTestSearchAggregatorWithRequireShortcutTrue = {
+    .name = "work name",
+    .shortcut = "work",
+    .search_url = "https://work.com/{searchTerms}",
+    .suggest_url = "https://work.com/suggest",
+    .icon_url = "https://work.com/favicon.ico",
+    .require_shortcut = true,
 };
 
 TestSearchAggregator kValidTestSearchAggregatorNoIcon = {
@@ -207,6 +217,8 @@ base::Value::Dict GeneratePolicyEntry(TestSearchAggregator test_case) {
                      test_case.shortcut, &entry);
   SetFieldIfNotEmpty(SearchAggregatorPolicyHandler::kSuggestUrl,
                      test_case.suggest_url, &entry);
+  entry.Set(SearchAggregatorPolicyHandler::kRequireShortcut,
+            test_case.require_shortcut);
   return entry;
 }
 
@@ -342,6 +354,57 @@ TEST(SearchAggregatorPolicyHandlerTest, Valid) {
       ElementsAre(
           IsNonFeaturedSearchAggregatorEntry(kValidTestSearchAggregator),
           IsFeaturedSearchAggregatorEntry(kValidTestSearchAggregator)));
+
+  // Expect the `require_shortcut` pref to be false by default.
+  bool requireShortcut;
+  ASSERT_TRUE(prefs.GetBoolean(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName,
+      &requireShortcut));
+  EXPECT_EQ(requireShortcut, false);
+}
+
+TEST(SearchAggregatorPolicyHandlerTest, ValidWithRequireShortcutTrue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
+  SearchAggregatorPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  base::Value::Dict entry =
+      GeneratePolicyEntry(kValidTestSearchAggregatorWithRequireShortcutTrue);
+  policies.Set(key::kEnterpriseSearchAggregatorSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(entry)),
+               nullptr);
+
+  PolicyErrorMap errors;
+  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_TRUE(errors.empty());
+
+  PrefValueMap prefs;
+  handler.ApplyPolicySettings(policies, &prefs);
+  base::Value* providers = nullptr;
+  ASSERT_TRUE(prefs.GetValue(
+      EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
+      &providers));
+  ASSERT_NE(providers, nullptr);
+  ASSERT_TRUE(providers->is_list());
+  EXPECT_THAT(
+      providers->GetList(),
+      ElementsAre(IsNonFeaturedSearchAggregatorEntry(
+                      kValidTestSearchAggregatorWithRequireShortcutTrue),
+                  IsFeaturedSearchAggregatorEntry(
+                      kValidTestSearchAggregatorWithRequireShortcutTrue)));
+
+  bool requireShortcut;
+  ASSERT_TRUE(prefs.GetBoolean(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName,
+      &requireShortcut));
+  EXPECT_EQ(requireShortcut, true);
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, Valid_NoIcon) {

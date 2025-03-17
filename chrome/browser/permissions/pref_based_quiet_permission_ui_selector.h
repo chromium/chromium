@@ -34,7 +34,8 @@ class PrefBasedQuietPermissionUiSelector
       const PrefBasedQuietPermissionUiSelector&) = delete;
 
   // NotificationPermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
+  void SelectUiToUse(content::WebContents* web_contents,
+                     permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override;
 
   void Cancel() override;

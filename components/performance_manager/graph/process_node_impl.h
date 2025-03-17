@@ -60,13 +60,15 @@ class ProcessNodeImpl
       public TypedNodeBase<ProcessNodeImpl, ProcessNode, ProcessNodeObserver>,
       public mojom::ProcessCoordinationUnit,
       public mojom::ChildProcessCoordinationUnit,
-      public SupportsNodeInlineData<ProcessPriorityAggregatorData,
-                                    FrozenData,
-                                    PerformanceScenarioMemoryData,
-                                    resource_attribution::CPUMeasurementData,
-                                    LoadingScenarioCounts,
-                                    // Keep this last to avoid merge conflicts.
-                                    NodeAttachedDataStorage> {
+      public SupportsNodeInlineData<
+          ProcessPriorityAggregatorData,
+          FrozenData,
+          PerformanceScenarioData,
+          resource_attribution::CPUMeasurementData,
+          resource_attribution::SharedCPUTimeResultData,
+          LoadingScenarioCounts,
+          // Keep this last to avoid merge conflicts.
+          NodeAttachedDataStorage> {
  public:
   using PassKey = base::PassKey<ProcessNodeImpl>;
 
@@ -179,7 +181,6 @@ class ProcessNodeImpl
 
   void OnAllFramesInProcessFrozenForTesting() { OnAllFramesInProcessFrozen(); }
 
-  base::WeakPtr<ProcessNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<ProcessNodeImpl> GetWeakPtr();
 
   static PassKey CreatePassKeyForTesting() { return PassKey(); }
@@ -271,7 +272,6 @@ class ProcessNodeImpl
 
   NodeSet worker_nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtr<ProcessNodeImpl> weak_this_;
   base::WeakPtrFactory<ProcessNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };

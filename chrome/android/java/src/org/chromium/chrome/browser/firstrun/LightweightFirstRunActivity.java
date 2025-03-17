@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.method.LinkMovementMethod;
@@ -82,15 +81,7 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
                 new FirstRunFlowSequencer(
                         getProfileProviderSupplier(), getChildAccountStatusSupplier()) {
                     @Override
-                    public void onFlowIsKnown(Bundle freProperties) {
-                        if (freProperties == null) {
-                            completeFirstRunExperience();
-                            return;
-                        }
-
-                        boolean isChild =
-                                freProperties.getBoolean(
-                                        SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
+                    public void onFlowIsKnown(boolean isChild) {
                         initializeViews(isChild);
                     }
                 };

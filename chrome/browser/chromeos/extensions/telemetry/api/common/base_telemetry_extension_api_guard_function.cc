@@ -41,15 +41,6 @@ void BaseTelemetryExtensionApiGuardFunction::OnCanAccessApi(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!IsCrosApiAvailable()) {
-    const std::string not_implemented_error = "Not implemented.";
-    Respond(Error(base::StringPrintf("API chrome.%s failed. %s", name(),
-                                     not_implemented_error.c_str())));
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   RunIfAllowed();
 }
 

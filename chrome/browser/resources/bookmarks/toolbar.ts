@@ -5,7 +5,6 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import './shared_style.css.js';
 import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
@@ -14,124 +13,134 @@ import type {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/c
 import type {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {setSearchTerm} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {Command, MenuSource} from './constants.js';
-import {StoreClientMixin} from './store_client_mixin.js';
-import {getTemplate} from './toolbar.html.js';
+import {StoreClientMixinLit} from './store_client_mixin_lit.js';
+import {getCss} from './toolbar.css.js';
+import {getHtml} from './toolbar.html.js';
+import type {BookmarksPageState} from './types.js';
 
-const BookmarksToolbarElementBase = StoreClientMixin(PolymerElement);
+const BookmarksToolbarElementBase = StoreClientMixinLit(CrLitElement);
 
 export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
   static get is() {
     return 'bookmarks-toolbar';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      sidebarWidth: {
-        type: String,
-        observer: 'onSidebarWidthChanged_',
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      showSelectionOverlay: {
-        type: Boolean,
-        computed: 'shouldShowSelectionOverlay_(selectedItems_, globalCanEdit_)',
-        readOnly: true,
-      },
+  static override get properties() {
+    return {
+      sidebarWidth: {type: String},
+      showSelectionOverlay: {type: Boolean},
 
       narrow_: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      searchTerm_: {
-        type: String,
-        observer: 'onSearchTermChanged_',
-      },
-
-      selectedItems_: Object,
-
-      globalCanEdit_: Boolean,
+      searchTerm_: {type: String},
+      selectedItems_: {type: Object},
+      globalCanEdit_: {type: Boolean},
     };
   }
 
-  sidebarWidth: string;
-  showSelectionOverlay: boolean;
-  private narrow_: boolean;
-  private searchTerm_: string;
-  private selectedItems_: Set<string>;
-  private globalCanEdit_: boolean;
+  sidebarWidth: string = '';
+  showSelectionOverlay: boolean = false;
+  protected narrow_: boolean = false;
+  private searchTerm_: string = '';
+  private selectedItems_: Set<string> = new Set();
+  private globalCanEdit_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
-    this.watch('searchTerm_', state => state.search.term);
-    this.watch('selectedItems_', state => state.selection.items);
-    this.watch('globalCanEdit_', state => state.prefs.canEdit);
     this.updateFromStore();
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('selectedItems_') ||
+        changedPrivateProperties.has('globalCanEdit_')) {
+      this.showSelectionOverlay =
+          this.selectedItems_.size > 1 && this.globalCanEdit_;
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('sidebarWidth')) {
+      this.style.setProperty('--sidebar-width', this.sidebarWidth);
+    }
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('searchTerm_')) {
+      // Note: searchField getter accesses the DOM.
+      this.searchField.setValue(this.searchTerm_ || '');
+    }
+  }
+
+  override onStateChanged(state: BookmarksPageState) {
+    this.searchTerm_ = state.search.term;
+    this.selectedItems_ = state.selection.items;
+    this.globalCanEdit_ = state.prefs.canEdit;
+  }
+
   get searchField(): CrToolbarSearchFieldElement {
-    return this.shadowRoot!.querySelector<CrToolbarElement>('cr-toolbar')!
-        .getSearchField();
+    return this.shadowRoot.querySelector<CrToolbarElement>(
+                              'cr-toolbar')!.getSearchField();
   }
 
-  private onMenuButtonOpenClick_(e: Event) {
-    this.dispatchEvent(new CustomEvent('open-command-menu', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        targetElement: e.target,
-        source: MenuSource.TOOLBAR,
-      },
-    }));
+  protected onMenuButtonOpenClick_(e: Event) {
+    this.fire('open-command-menu', {
+      targetElement: e.target,
+      source: MenuSource.TOOLBAR,
+    });
   }
 
-  private onDeleteSelectionClick_() {
+  protected onDeleteSelectionClick_() {
     const selection = this.selectedItems_;
     const commandManager = BookmarksCommandManagerElement.getInstance();
     assert(commandManager.canExecute(Command.DELETE, selection));
     commandManager.handle(Command.DELETE, selection);
   }
 
-  private onClearSelectionClick_() {
+  protected onClearSelectionClick_() {
     const commandManager = BookmarksCommandManagerElement.getInstance();
     assert(
         commandManager.canExecute(Command.DESELECT_ALL, this.selectedItems_));
     commandManager.handle(Command.DESELECT_ALL, this.selectedItems_);
   }
 
-  private onSearchChanged_(e: CustomEvent<string>) {
+  protected onSearchChanged_(e: CustomEvent<string>) {
     if (e.detail !== this.searchTerm_) {
       this.dispatch(setSearchTerm(e.detail));
     }
   }
 
-  private onSidebarWidthChanged_() {
-    this.style.setProperty('--sidebar-width', this.sidebarWidth);
+  protected onNarrowChanged_(e: CustomEvent<{value: boolean}>) {
+    this.narrow_ = e.detail.value;
   }
 
-  private onSearchTermChanged_() {
-    this.searchField.setValue(this.searchTerm_ || '');
-  }
-
-  private shouldShowSelectionOverlay_(): boolean {
-    return this.selectedItems_.size > 1 && this.globalCanEdit_;
-  }
-
-  private canDeleteSelection_(): boolean {
+  protected canDeleteSelection_(): boolean {
     return this.showSelectionOverlay &&
         BookmarksCommandManagerElement.getInstance().canExecute(
             Command.DELETE, this.selectedItems_);
   }
 
-  private getItemsSelectedString_(): string {
+  protected getItemsSelectedString_(): string {
     return loadTimeData.getStringF('itemsSelected', this.selectedItems_.size);
   }
 }

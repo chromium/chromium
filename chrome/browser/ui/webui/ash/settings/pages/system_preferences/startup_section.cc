@@ -31,7 +31,8 @@ const std::vector<SearchConcept>& GetAppRestoreSearchConcepts(
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kRestoreAppsAndPages},
-       {IDS_OS_SETTINGS_TAG_ON_STARTUP, SearchConcept::kAltTagEnd}},
+       {IDS_OS_SETTINGS_TAG_ON_STARTUP, IDS_OS_SETTINGS_TAG_WELCOME_RECAP,
+        SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }

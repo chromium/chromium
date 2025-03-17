@@ -73,11 +73,11 @@ namespace ash::personalization_app {
 namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 constexpr char kFakeTestEmail2[] = "anotherfakeemail@personalization";
-constexpr char kTestGaiaId2[] = "9876543210";
+constexpr GaiaId::Literal kTestGaiaId2("9876543210");
 constexpr char kGooglerEmail[] = "user@google.com";
-constexpr char kGooglerGaiaId[] = "123459876";
+constexpr GaiaId::Literal kGooglerGaiaId("123459876");
 constexpr char kDemoModeEmail[] = "demo-public-account@example.com";
 
 constexpr uint32_t kSeaPenId1 = 111;
@@ -113,15 +113,15 @@ std::string RepeatToSize(std::string_view repeat,
 }
 
 AccountId GetTestAccountId() {
-  return AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kTestGaiaId));
+  return AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
 }
 
 AccountId GetTestAccountId2() {
-  return AccountId::FromUserEmailGaiaId(kFakeTestEmail2, GaiaId(kTestGaiaId2));
+  return AccountId::FromUserEmailGaiaId(kFakeTestEmail2, kTestGaiaId2);
 }
 
 AccountId GetGooglerAccountId() {
-  return AccountId::FromUserEmailGaiaId(kGooglerEmail, GaiaId(kGooglerGaiaId));
+  return AccountId::FromUserEmailGaiaId(kGooglerEmail, kGooglerGaiaId);
 }
 
 AccountId GetDemoModeAccountId() {
@@ -935,6 +935,27 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   EXPECT_FALSE(should_show_dialog_future.Take());
 }
 
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       ShouldShowSeaPenFreeformIntroductionDialog) {
+  SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
+  test_wallpaper_controller()->ClearCounts();
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kSeaPen}, {});
+
+  base::test::TestFuture<bool> should_show_dialog_future;
+  sea_pen_provider_remote()->ShouldShowSeaPenFreeformIntroductionDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return true before the dialog is closed.
+  EXPECT_TRUE(should_show_dialog_future.Take());
+
+  sea_pen_provider_remote()->HandleSeaPenFreeformIntroductionDialogClosed();
+
+  sea_pen_provider_remote()->ShouldShowSeaPenFreeformIntroductionDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return false after the dialog is closed.
+  EXPECT_FALSE(should_show_dialog_future.Take());
+}
+
 TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Guest) {
   SetUpProfileForTesting("guest", user_manager::GuestAccountId(),
                          user_manager::UserType::kGuest);
@@ -945,13 +966,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Child) {
   SetUpProfileForTesting("child", GetTestAccountId(),
                          user_manager::UserType::kChild);
   ASSERT_FALSE(sea_pen_provider()->IsEligibleForSeaPen());
-}
-
-TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Googler) {
-  // Managed Googlers can still access SeaPen.
-  SetUpProfileForTesting(kGooglerEmail, GetGooglerAccountId());
-  profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  ASSERT_TRUE(sea_pen_provider()->IsEligibleForSeaPen());
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Managed) {

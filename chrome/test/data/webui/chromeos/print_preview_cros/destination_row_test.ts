@@ -6,8 +6,8 @@ import 'chrome://os-print/js/destination_row_controller.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
 import {DestinationRowElement} from 'chrome://os-print/js/destination_row.js';
-import {DestinationRowController} from 'chrome://os-print/js/destination_row_controller.js';
-import {Destination} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
+import type {DestinationRowController} from 'chrome://os-print/js/destination_row_controller.js';
+import type {Destination} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -23,8 +23,8 @@ suite('DestinationRow', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     resetDataManagersAndProviders();
-    element = document.createElement(DestinationRowElement.is) as
-        DestinationRowElement;
+    element = document.createElement(DestinationRowElement.is);
+    DestinationRowElement;
     element.destination = PDF_DESTINATION;
     assertTrue(!!element);
     document.body.append(element);
@@ -42,7 +42,7 @@ suite('DestinationRow', () => {
     const textElement: HTMLElement =
         strictQuery<HTMLElement>(selector, element.shadowRoot, HTMLElement);
     assert(textElement.textContent);
-    return textElement.textContent!.trim();
+    return textElement.textContent.trim();
   }
 
   // Verify the element can be rendered.

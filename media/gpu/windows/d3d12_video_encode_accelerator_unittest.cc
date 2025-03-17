@@ -5,12 +5,15 @@
 #include "media/gpu/windows/d3d12_video_encode_accelerator.h"
 
 #include "base/test/task_environment.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/media_util.h"
 #include "media/base/win/d3d12_mocks.h"
 #include "media/base/win/d3d12_video_mocks.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 using media::SetComPointeeAndReturnOk;
 using testing::_;
@@ -46,6 +49,7 @@ class MockVideoEncoderDelegate : public D3D12VideoEncodeDelegate {
 
   MOCK_METHOD1(Initialize, EncoderStatus(VideoEncodeAccelerator::Config));
   MOCK_METHOD(size_t, GetMaxNumOfRefFrames, (), (const override));
+  MOCK_METHOD(bool, SupportsRateControlReconfiguration, (), (const override));
   MOCK_METHOD5(
       Encode,
       EncoderStatus::Or<EncodeResult>(Microsoft::WRL::ComPtr<ID3D12Resource>,
@@ -99,28 +103,6 @@ class MockVideoEncoderDelegateFactory
   }
 };
 
-class MockGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
- public:
-  ~MockGpuMemoryBuffer() override = default;
-
-  MOCK_METHOD(bool, Map, ());
-  MOCK_METHOD(void*, memory, (size_t));
-  MOCK_METHOD(void, Unmap, ());
-  MOCK_METHOD(gfx::Size, GetSize, (), (const));
-  MOCK_METHOD(gfx::BufferFormat, GetFormat, (), (const));
-  MOCK_METHOD(int, stride, (size_t plane), (const));
-  MOCK_METHOD(gfx::GpuMemoryBufferId, GetId, (), (const));
-  MOCK_METHOD(gfx::GpuMemoryBufferType, GetType, (), (const));
-  MOCK_METHOD(gfx::GpuMemoryBufferHandle, CloneHandle, (), (const));
-  MOCK_METHOD(void,
-              OnMemoryDump,
-              (base::trace_event::ProcessMemoryDump*,
-               const base::trace_event::MemoryAllocatorDumpGuid&,
-               uint64_t,
-               int),
-              (const));
-};
-
 }  // namespace
 
 class D3D12VideoEncodeAcceleratorTest : public testing::Test {
@@ -144,8 +126,9 @@ class D3D12VideoEncodeAcceleratorTest : public testing::Test {
         new D3D12VideoEncodeAccelerator(mock_device_));
     client_ = std::make_unique<NiceMock<MockVideoEncodeAcceleratorClient>>();
     static_cast<D3D12VideoEncodeAccelerator*>(video_encode_accelerator_.get())
-        ->encoder_factory_ =
-        std::make_unique<MockVideoEncoderDelegateFactory>();
+        ->SetEncoderFactoryForTesting(
+            std::make_unique<MockVideoEncoderDelegateFactory>());
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   }
 
   VideoEncodeAccelerator::Config SupportedProfileToConfig(
@@ -159,45 +142,48 @@ class D3D12VideoEncodeAcceleratorTest : public testing::Test {
   }
 
   scoped_refptr<VideoFrame> CreateTestVideoFrame() {
-    auto mock_gpu_memory_buffer =
-        std::make_unique<NiceMock<MockGpuMemoryBuffer>>();
-    ON_CALL(*mock_gpu_memory_buffer, GetSize())
-        .WillByDefault(Return(kSupportedSize));
-    ON_CALL(*mock_gpu_memory_buffer, GetFormat())
-        .WillByDefault(Return(gfx::BufferFormat::YUV_420_BIPLANAR));
-    ON_CALL(*mock_gpu_memory_buffer, GetType())
-        .WillByDefault(Return(gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE));
-    return VideoFrame::WrapExternalGpuMemoryBuffer(
-        gfx::Rect(kSupportedSize), kSupportedSize,
-        std::move(mock_gpu_memory_buffer), base::TimeDelta{});
+    gfx::GpuMemoryBufferHandle fake_handle;
+    fake_handle.type = gfx::DXGI_SHARED_HANDLE;
+    fake_handle.set_dxgi_handle(gfx::DXGIHandle::CreateFakeForTest());
+
+    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    auto shared_image = test_sii_->CreateSharedImage(
+        {viz::MultiPlaneFormat::kNV12, kSupportedSize, gfx::ColorSpace(),
+         gpu::SharedImageUsageSet(si_usage), "D3D12VideoEncodeAcceleratorTest"},
+        gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
+        std::move(fake_handle));
+    return media::VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+        base::NullCallback(), gfx::Rect(kSupportedSize), kSupportedSize,
+        base::TimeDelta{});
   }
 
-  void WaitForEncoderTasksToComplete() {
+  void WaitForEncoderTasksToComplete() const {
     base::RunLoop run_loop;
     auto* d3d12_video_encode_accelerator =
         static_cast<D3D12VideoEncodeAccelerator*>(
             video_encode_accelerator_.get());
-    d3d12_video_encode_accelerator->encoder_task_runner_->PostTask(
+    d3d12_video_encode_accelerator->GetEncoderTaskRunnerForTesting()->PostTask(
         FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 
-  void CheckInputFramesQueueAndBitstreamBuffersAreEitherEmpty() {
+  void CheckInputFramesQueueAndBitstreamBuffersAreEitherEmpty() const {
     auto* d3d12_video_encode_accelerator =
         static_cast<D3D12VideoEncodeAccelerator*>(
             video_encode_accelerator_.get());
     base::RunLoop run_loop;
-    d3d12_video_encode_accelerator->encoder_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](const D3D12VideoEncodeAccelerator* encoder,
-                          base::OnceClosure quit_closure) {
-                         DCHECK_CALLED_ON_VALID_SEQUENCE(
-                             encoder->encoder_sequence_checker_);
-                         EXPECT_TRUE(encoder->input_frames_queue_.empty() ||
-                                     encoder->bitstream_buffers_.empty());
-                         std::move(quit_closure).Run();
-                       },
-                       d3d12_video_encode_accelerator, run_loop.QuitClosure()));
+    d3d12_video_encode_accelerator->GetEncoderTaskRunnerForTesting()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](const D3D12VideoEncodeAccelerator* encoder,
+               base::OnceClosure quit_closure) {
+              EXPECT_TRUE(encoder->GetInputFramesQueueSizeForTesting() == 0 ||
+                          encoder->GetBitstreamBuffersSizeForTesting() == 0);
+              std::move(quit_closure).Run();
+            },
+            d3d12_video_encode_accelerator, run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -209,6 +195,7 @@ class D3D12VideoEncodeAcceleratorTest : public testing::Test {
   Microsoft::WRL::ComPtr<D3D12ResourceMock> mock_resource_;
   std::unique_ptr<VideoEncodeAccelerator> video_encode_accelerator_;
   std::unique_ptr<MockVideoEncodeAcceleratorClient> client_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 TEST_F(D3D12VideoEncodeAcceleratorTest, SupportedProfilesCanBeInitialized) {

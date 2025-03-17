@@ -332,8 +332,8 @@ void UserScript::Unpickle(const base::Pickle& pickle,
   CHECK(iter->ReadBool(&match_all_frames_));
   int match_origin_as_fallback_int = 0;
   CHECK(iter->ReadInt(&match_origin_as_fallback_int));
-  match_origin_as_fallback_ =
-      static_cast<MatchOriginAsFallbackBehavior>(match_origin_as_fallback_int);
+  match_origin_as_fallback_ = static_cast<mojom::MatchOriginAsFallbackBehavior>(
+      match_origin_as_fallback_int);
   CHECK(iter->ReadBool(&incognito_enabled_));
 
   // Read the execution world.

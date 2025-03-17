@@ -65,7 +65,8 @@ void SolidColorLayerImpl::AppendSolidQuads(
                force_anti_aliasing_off);
 }
 
-void SolidColorLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
+void SolidColorLayerImpl::AppendQuads(const AppendQuadsContext& context,
+                                      viz::CompositorRenderPass* render_pass,
                                       AppendQuadsData* append_quads_data) {
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();

@@ -12,7 +12,7 @@
 
 namespace blink {
 
-InlineItemResult::InlineItemResult(const InlineItem* item,
+InlineItemResult::InlineItemResult(const InlineItem& item,
                                    unsigned index,
                                    const TextOffsetRange& text_offset,
                                    bool break_anywhere_if_overflow,
@@ -60,6 +60,7 @@ void InlineItemResult::CheckConsistency(bool allow_null_shape_result) const {
 #endif
 
 void InlineItemResult::Trace(Visitor* visitor) const {
+  visitor->Trace(item);
   visitor->Trace(shape_result);
   visitor->Trace(hyphen);
   visitor->Trace(layout_result);

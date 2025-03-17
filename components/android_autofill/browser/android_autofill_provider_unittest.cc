@@ -115,33 +115,17 @@ auto SaveSessionId(SessionId* session_id) {
   };
 }
 
-FormData CreateTestBasicForm() {
+FormData CreateTestLoginForm() {
   FormData form;
   form.set_renderer_id(test::MakeFormRendererId());
+  form.set_name(u"login_form");
   form.set_url(GURL("https://foo.com/form.html"));
   form.set_action(GURL("https://foo.com/submit.html"));
   form.set_main_frame_origin(url::Origin::Create(form.url()));
-  return form;
-}
-
-FormData CreateTestLoginForm() {
-  FormData form = CreateTestBasicForm();
-  form.set_name(u"login_form");
   form.set_fields(
       {CreateTestFormField(/*label=*/"Username", /*name=*/"username",
                            /*value=*/"", FormControlType::kInputText),
        CreateTestFormField(/*label=*/"Password", /*name=*/"password",
-                           /*value=*/"", FormControlType::kInputPassword)});
-  return form;
-}
-
-FormData CreateTestChangePasswordForm() {
-  FormData form = CreateTestBasicForm();
-  form.set_name(u"change_password_form");
-  form.set_fields(
-      {CreateTestFormField(/*label=*/"Password", /*name=*/"password1",
-                           /*value=*/"", FormControlType::kInputPassword),
-       CreateTestFormField(/*label=*/"Password", /*name=*/"password2",
                            /*value=*/"", FormControlType::kInputPassword)});
   return form;
 }
@@ -186,7 +170,7 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
     gfx::Rect caret_bounds(gfx::Point(p.x(), p.y()), gfx::Size(0, 10));
     OnAskForValuesToFillImpl(
         form, field.global_id(), caret_bounds,
-        AutofillSuggestionTriggerSource::kTextFieldDidChange);
+        AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   }
 
   void SimulateOnFocusOnFormField(const FormData& form,
@@ -199,9 +183,10 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
     OnFormSubmittedImpl(form, source);
   }
 
-  void SimulateOnTextFieldDidChange(const FormData& form,
-                                    const FormFieldData& field) {
-    OnTextFieldDidChangeImpl(form, field.global_id(), base::TimeTicks::Now());
+  void SimulateOnTextFieldValueChanged(const FormData& form,
+                                       const FormFieldData& field) {
+    OnTextFieldValueChangedImpl(form, field.global_id(),
+                                base::TimeTicks::Now());
   }
 
   void SimulateOnTextFieldDidScroll(const FormData& form,
@@ -553,7 +538,7 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnSameForm) {
 
 // Tests that value changes in the form of the Autofill session are propagated
 // to Java and to the state that `AndroidAutofillProvider` keeps.
-TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChange) {
+TEST_F(AndroidAutofillProviderTest, OnTextFieldValueChanged) {
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
@@ -566,8 +551,8 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChange) {
   EXPECT_CALL(provider_bridge(),
               OnFormFieldDidChange(EqualsFieldInfo(/*index=*/1)));
   test_api(form).field(1).set_value(form.fields()[1].value() + u"x");
-  android_autofill_manager().SimulateOnTextFieldDidChange(form,
-                                                          form.fields()[1]);
+  android_autofill_manager().SimulateOnTextFieldValueChanged(form,
+                                                             form.fields()[1]);
   // The `FormDataAndroid` object owned by the provider is also updated.
   ASSERT_TRUE(test_api(autofill_provider()).form());
   EXPECT_EQ(test_api(autofill_provider()).form()->form().fields()[1].value(),
@@ -576,7 +561,7 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChange) {
 
 // Tests that value changes in a form that is not part of the current Autofill
 // session are ignored.
-TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChangeInUnrelatedForm) {
+TEST_F(AndroidAutofillProviderTest, OnTextFieldValueChangedInUnrelatedForm) {
   FormData form1 = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   FormData form2 = CreateFormDataForFrame(
@@ -591,8 +576,8 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChangeInUnrelatedForm) {
   // Simulate a value change in a different form.
   EXPECT_CALL(provider_bridge(), OnFormFieldDidChange).Times(0);
   test_api(form2).field(1).set_value(form2.fields()[1].value() + u"x");
-  android_autofill_manager().SimulateOnTextFieldDidChange(form2,
-                                                          form2.fields()[1]);
+  android_autofill_manager().SimulateOnTextFieldValueChanged(form2,
+                                                             form2.fields()[1]);
 }
 
 // Tests that scrolling events in the form of the Autofill session are
@@ -728,8 +713,8 @@ TEST_F(AndroidAutofillProviderTest,
   ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
 
   auto has_field_type = [](FieldType field_type) {
-    return Pointee(Property(&FormFieldDataAndroid::field_types,
-                            Eq(AutofillType(field_type))));
+    return Pointee(
+        Property(&FormFieldDataAndroid::field_types, Eq(field_type)));
   };
   EXPECT_CALL(provider_bridge(),
               SendPrefillRequest(EqualsFormDataWithFields(
@@ -1303,61 +1288,6 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
   // before.
   EXPECT_NE(cache_session_id, pw_form_second_session_id);
   EXPECT_NE(pi_form_session_id, pw_form_second_session_id);
-}
-
-// Tests that the prefill request is sent for a Change Password form.
-TEST_F(AndroidAutofillProviderPrefillRequestTest,
-       PrefillRequestSentForChangePasswordForm) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
-    GTEST_SKIP();
-  }
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAndroidAutofillPrefillRequestsForChangePassword);
-
-  FormData form = CreateFormDataForFrame(CreateTestChangePasswordForm(),
-                                         main_frame_token());
-  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
-  ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
-
-  EXPECT_CALL(provider_bridge(), SendPrefillRequest(EqualsFormData(form)));
-  android_autofill_manager().SimulatePropagateAutofillPredictions(
-      form.global_id());
-}
-
-// Tests that starting an autofill session for a change password form works.
-TEST_F(AndroidAutofillProviderPrefillRequestTest,
-       SessionStartForChangePasswordForm) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
-    GTEST_SKIP();
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAndroidAutofillPrefillRequestsForChangePassword);
-
-  FormData form = CreateFormDataForFrame(CreateTestChangePasswordForm(),
-                                         main_frame_token());
-  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
-  ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
-
-  // Upon receiving server predictions a prefill request should be sent.
-  SessionId cache_session_id = SessionId(0);
-  EXPECT_CALL(provider_bridge(), SendPrefillRequest(EqualsFormData(form)))
-      .WillOnce(SaveSessionId(&cache_session_id));
-  android_autofill_manager().SimulatePropagateAutofillPredictions(
-      form.global_id());
-  Mock::VerifyAndClearExpectations(&provider_bridge());
-
-  EXPECT_CALL(
-      provider_bridge(),
-      StartAutofillSession(EqualsFormDataWithSessionId(form, cache_session_id),
-                           EqualsFieldInfo(/*index=*/0),
-                           /*has_server_predictions=*/true));
-  android_autofill_manager().SimulateOnAskForValuesToFill(
-      form, form.fields().front());
 }
 
 // Tests that metrics are emitted when the bottom sheet is shown.

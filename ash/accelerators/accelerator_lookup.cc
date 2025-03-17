@@ -4,6 +4,7 @@
 
 #include "ash/accelerators/accelerator_lookup.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -11,7 +12,6 @@
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/types/optional_ref.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -102,7 +102,7 @@ AcceleratorLookup::GetAvailableAcceleratorsForAction(uint32_t action) const {
     std::vector<ui::Accelerator> aliased_accelerators =
         alias_converter_.CreateAcceleratorAlias(accelerator);
 
-    base::ranges::transform(
+    std::ranges::transform(
         aliased_accelerators, std::back_inserter(details),
         [](const ui::Accelerator& aliased_accelerator) {
           return AcceleratorDetails{

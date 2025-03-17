@@ -14,210 +14,213 @@ namespace signin_metrics {
 namespace {
 
 const AccessPoint kAccessPointsThatSupportUserAction[] = {
-    AccessPoint::ACCESS_POINT_START_PAGE,
-    AccessPoint::ACCESS_POINT_NTP_LINK,
-    AccessPoint::ACCESS_POINT_MENU,
-    AccessPoint::ACCESS_POINT_SETTINGS,
-    AccessPoint::ACCESS_POINT_SUPERVISED_USER,
-    AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
-    AccessPoint::ACCESS_POINT_EXTENSIONS,
-    AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
-    AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER,
-    AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
-    AccessPoint::ACCESS_POINT_USER_MANAGER,
-    AccessPoint::ACCESS_POINT_DEVICES_PAGE,
-    AccessPoint::ACCESS_POINT_SIGNIN_PROMO,
-    AccessPoint::ACCESS_POINT_RECENT_TABS,
-    AccessPoint::ACCESS_POINT_UNKNOWN,
-    AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
-    AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN,
-    AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR,
-    AccessPoint::ACCESS_POINT_TAB_SWITCHER,
-    AccessPoint::ACCESS_POINT_MACHINE_LOGON,
-    AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS,
-    AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO,
-    AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO,
-    AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO,
-    AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO,
-    AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW,
-    AccessPoint::ACCESS_POINT_READING_LIST,
-    AccessPoint::ACCESS_POINT_SET_UP_LIST,
-    AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
-    AccessPoint::ACCESS_POINT_TAB_ORGANIZATION,
-    AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE,
-    AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO,
-    AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS,
-    AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE,
+    AccessPoint::kStartPage,
+    AccessPoint::kNtpLink,
+    AccessPoint::kMenu,
+    AccessPoint::kSettings,
+    AccessPoint::kSupervisedUser,
+    AccessPoint::kExtensionInstallBubble,
+    AccessPoint::kExtensions,
+    AccessPoint::kBookmarkBubble,
+    AccessPoint::kBookmarkManager,
+    AccessPoint::kAvatarBubbleSignIn,
+    AccessPoint::kUserManager,
+    AccessPoint::kDevicesPage,
+    AccessPoint::kSigninPromo,
+    AccessPoint::kRecentTabs,
+    AccessPoint::kUnknown,
+    AccessPoint::kPasswordBubble,
+    AccessPoint::kAutofillDropdown,
+    AccessPoint::kResigninInfobar,
+    AccessPoint::kTabSwitcher,
+    AccessPoint::kMachineLogon,
+    AccessPoint::kGoogleServicesSettings,
+    AccessPoint::kNtpFeedTopPromo,
+    AccessPoint::kPostDeviceRestoreSigninPromo,
+    AccessPoint::kNtpFeedCardMenuPromo,
+    AccessPoint::kNtpFeedBottomPromo,
+    AccessPoint::kCreatorFeedFollow,
+    AccessPoint::kReadingList,
+    AccessPoint::kSetUpList,
+    AccessPoint::kChromeSigninInterceptBubble,
+    AccessPoint::kTabOrganization,
+    AccessPoint::kNotificationsOptInScreenContentToggle,
+    AccessPoint::kAvatarBubbleSignInWithSyncPromo,
+    AccessPoint::kProductSpecifications,
+    AccessPoint::kAddressBubble,
+    AccessPoint::kGlicLaunchButton,
 };
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
-    AccessPoint::ACCESS_POINT_START_PAGE,
-    AccessPoint::ACCESS_POINT_NTP_LINK,
-    AccessPoint::ACCESS_POINT_MENU,
-    AccessPoint::ACCESS_POINT_SETTINGS,
-    AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
-    AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
-    AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER,
-    AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
-    AccessPoint::ACCESS_POINT_DEVICES_PAGE,
-    AccessPoint::ACCESS_POINT_SIGNIN_PROMO,
-    AccessPoint::ACCESS_POINT_RECENT_TABS,
-    AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
-    AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN,
-    AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR,
-    AccessPoint::ACCESS_POINT_TAB_SWITCHER,
-    AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO,
-    AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO,
-    AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO,
-    AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO,
-    AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW,
-    AccessPoint::ACCESS_POINT_READING_LIST,
-    AccessPoint::ACCESS_POINT_SET_UP_LIST,
-    AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
-    AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE,
-    AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE,
+    AccessPoint::kStartPage,
+    AccessPoint::kNtpLink,
+    AccessPoint::kMenu,
+    AccessPoint::kSettings,
+    AccessPoint::kExtensionInstallBubble,
+    AccessPoint::kBookmarkBubble,
+    AccessPoint::kBookmarkManager,
+    AccessPoint::kAvatarBubbleSignIn,
+    AccessPoint::kDevicesPage,
+    AccessPoint::kSigninPromo,
+    AccessPoint::kRecentTabs,
+    AccessPoint::kPasswordBubble,
+    AccessPoint::kAutofillDropdown,
+    AccessPoint::kResigninInfobar,
+    AccessPoint::kTabSwitcher,
+    AccessPoint::kNtpFeedTopPromo,
+    AccessPoint::kPostDeviceRestoreSigninPromo,
+    AccessPoint::kNtpFeedCardMenuPromo,
+    AccessPoint::kNtpFeedBottomPromo,
+    AccessPoint::kCreatorFeedFollow,
+    AccessPoint::kReadingList,
+    AccessPoint::kSetUpList,
+    AccessPoint::kChromeSigninInterceptBubble,
+    AccessPoint::kNotificationsOptInScreenContentToggle,
+    AccessPoint::kAddressBubble,
 };
 
 class SigninMetricsTest : public ::testing::Test {
  public:
   static std::string GetAccessPointDescription(AccessPoint access_point) {
     switch (access_point) {
-      case AccessPoint::ACCESS_POINT_START_PAGE:
+      case AccessPoint::kStartPage:
         return "StartPage";
-      case AccessPoint::ACCESS_POINT_NTP_LINK:
+      case AccessPoint::kNtpLink:
         return "NTP";
-      case AccessPoint::ACCESS_POINT_MENU:
+      case AccessPoint::kMenu:
         return "Menu";
-      case AccessPoint::ACCESS_POINT_SETTINGS:
+      case AccessPoint::kSettings:
         return "Settings";
-      case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
+      case AccessPoint::kSupervisedUser:
         return "SupervisedUser";
-      case AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
+      case AccessPoint::kExtensionInstallBubble:
         return "ExtensionInstallBubble";
-      case AccessPoint::ACCESS_POINT_EXTENSIONS:
+      case AccessPoint::kExtensions:
         return "Extensions";
-      case AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
+      case AccessPoint::kBookmarkBubble:
         return "BookmarkBubble";
-      case AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
+      case AccessPoint::kBookmarkManager:
         return "BookmarkManager";
-      case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+      case AccessPoint::kAvatarBubbleSignIn:
         return "AvatarBubbleSignin";
-      case AccessPoint::ACCESS_POINT_USER_MANAGER:
+      case AccessPoint::kUserManager:
         return "UserManager";
-      case AccessPoint::ACCESS_POINT_DEVICES_PAGE:
+      case AccessPoint::kDevicesPage:
         return "DevicesPage";
-      case AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
+      case AccessPoint::kSigninPromo:
         return "SigninPromo";
-      case AccessPoint::ACCESS_POINT_RECENT_TABS:
+      case AccessPoint::kRecentTabs:
         return "RecentTabs";
-      case AccessPoint::ACCESS_POINT_UNKNOWN:
+      case AccessPoint::kUnknown:
         return "UnknownAccessPoint";
-      case AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
+      case AccessPoint::kPasswordBubble:
         return "PasswordBubble";
-      case AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
+      case AccessPoint::kAutofillDropdown:
         return "AutofillDropdown";
-      case AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
+      case AccessPoint::kResigninInfobar:
         return "ReSigninInfobar";
-      case AccessPoint::ACCESS_POINT_TAB_SWITCHER:
+      case AccessPoint::kTabSwitcher:
         return "TabSwitcher";
-      case AccessPoint::ACCESS_POINT_MACHINE_LOGON:
+      case AccessPoint::kMachineLogon:
         return "MachineLogon";
-      case AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
+      case AccessPoint::kGoogleServicesSettings:
         return "GoogleServicesSettings";
-      case AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
+      case AccessPoint::kSyncErrorCard:
         return "SyncErrorCard";
-      case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
+      case AccessPoint::kForcedSignin:
         return "ForcedSignin";
-      case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
+      case AccessPoint::kAccountRenamed:
         return "AccountRenamed";
-      case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+      case AccessPoint::kWebSignin:
         return "WebSignIn";
-      case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
+      case AccessPoint::kSafetyCheck:
         return "SafetyCheck";
-      case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+      case AccessPoint::kKaleidoscope:
         return "Kaleidoscope";
-      case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
+      case AccessPoint::kEnterpriseSignoutCoordinator:
         return "EnterpriseSignoutResignSheet";
-      case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
+      case AccessPoint::kSigninInterceptFirstRunExperience:
         return "SigninInterceptFirstRunExperience";
-      case AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
+      case AccessPoint::kSendTabToSelfPromo:
         return "SendTabToSelfPromo";
-      case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+      case AccessPoint::kNtpFeedTopPromo:
         return "NTPFeedTopPromo";
-      case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
+      case AccessPoint::kSettingsSyncOffRow:
         return "SettingsSyncOffRow";
-      case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+      case AccessPoint::kPostDeviceRestoreSigninPromo:
         return "PostDeviceRestoreSigninPromo";
-      case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
+      case AccessPoint::kPostDeviceRestoreBackgroundSignin:
         return "PostDeviceRestoreBackgroundSignin";
-      case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+      case AccessPoint::kNtpSignedOutIcon:
         return "NTPSignedOutIcon";
-      case AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+      case AccessPoint::kNtpFeedCardMenuPromo:
         return "NTPFeedCardMenuSigninPromo";
-      case AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
+      case AccessPoint::kNtpFeedBottomPromo:
         return "NTPFeedBottomSigninPromo";
-      case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
+      case AccessPoint::kDesktopSigninManager:
         return "DesktopSigninManager";
-      case AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
+      case AccessPoint::kForYouFre:
         return "ForYouFre";
-      case AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
+      case AccessPoint::kCreatorFeedFollow:
         return "CreatorFeedFollow";
-      case AccessPoint::ACCESS_POINT_READING_LIST:
+      case AccessPoint::kReadingList:
         return "ReadingList";
-      case AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
+      case AccessPoint::kReauthInfoBar:
         return "ReauthInfoBar";
-      case AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
+      case AccessPoint::kAccountConsistencyService:
         return "AccountConsistencyService";
-      case AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+      case AccessPoint::kSearchCompanion:
         return "SearchCompanion";
-      case AccessPoint::ACCESS_POINT_SET_UP_LIST:
+      case AccessPoint::kSetUpList:
         return "SetUpList";
-      case AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
+      case AccessPoint::kPasswordMigrationWarningAndroid:
         return "PasswordMigrationWarning";
-      case AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
+      case AccessPoint::kSaveToDriveIos:
         return "SaveToDrive";
-      case AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
+      case AccessPoint::kSaveToPhotosIos:
         return "SaveToPhotos";
-      case AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
+      case AccessPoint::kChromeSigninInterceptBubble:
         return "ChromeSigninInterceptBubble";
-      case AccessPoint::ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
+      case AccessPoint::kRestorePrimaryAccountOnProfileLoad:
         return "RestorePrimaryAccountinfoOnProfileLoad";
-      case AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+      case AccessPoint::kTabOrganization:
         return "TabOrganization";
-      case AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
+      case AccessPoint::kTipsNotification:
         return "TipsNotification";
-      case AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
+      case AccessPoint::kNotificationsOptInScreenContentToggle:
         return "NotificationsOptInScreenContentToggle";
-      case AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
+      case AccessPoint::kSigninChoiceRemembered:
         return "SigninChoiceRemembered";
-      case AccessPoint::ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
+      case AccessPoint::kProfileMenuSignoutConfirmationPrompt:
         return "ProfileMenuSignoutConfirmationPrompt";
-      case AccessPoint::ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
+      case AccessPoint::kSettingsSignoutConfirmationPrompt:
         return "SettingsSignoutConfirmationPrompt";
-      case AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
+      case AccessPoint::kNtpIdentityDisc:
         return "NtpIdentityDisc";
-      case AccessPoint::ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
+      case AccessPoint::kOidcRedirectionInterception:
         return "OidcRedirectionInterception";
-      case AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+      case AccessPoint::kWebauthnModalDialog:
         return "WebAuthnModalDialog";
-      case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
+      case AccessPoint::kAvatarBubbleSignInWithSyncPromo:
         return "AvatarBubbleSigninWithSyncPromo";
-      case AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
+      case AccessPoint::kAccountMenu:
         return "AccountMenu";
-      case AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
+      case AccessPoint::kAccountMenuFailedSwitch:
         return "AccountMenuFailedSwitch";
-      case AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
+      case AccessPoint::kProductSpecifications:
         return "ProductSpecifications";
-      case AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+      case AccessPoint::kAddressBubble:
         return "AddressBubble";
-      case AccessPoint::ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
+      case AccessPoint::kCctAccountMismatchNotification:
         return "CctAccountMismatchNotification";
-      case AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
+      case AccessPoint::kDriveFilePickerIos:
         return "DriveFilePickerIOS";
-      case AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
+      case AccessPoint::kCollaborationTabGroup:
         return "ShareGroupCollaboration";
-      case AccessPoint::ACCESS_POINT_MAX:
-        NOTREACHED();
+      case AccessPoint::kGlicLaunchButton:
+        return "GlicLaunchButton";
+      case AccessPoint::kHistoryPage:
+        return "HistoryPage";
     }
   }
 };

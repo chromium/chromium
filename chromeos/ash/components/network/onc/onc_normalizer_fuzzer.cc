@@ -18,15 +18,16 @@ namespace ash::onc {
 
 // Fuzzer for methods of the `Normalizer` class.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+  std::optional<base::Value::Dict> parsed_json = base::JSONReader::ReadDict(
       std::string_view(reinterpret_cast<const char*>(data), size));
-  if (!parsed_json || !parsed_json->is_dict())
+  if (!parsed_json) {
     return 0;
+  }
 
   for (bool remove_recommended_fields : {false, true}) {
     Normalizer normalizer(remove_recommended_fields);
     normalizer.NormalizeObject(&chromeos::onc::kNetworkConfigurationSignature,
-                               parsed_json->GetDict());
+                               *parsed_json);
   }
 
   return 0;

@@ -7,10 +7,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
-#import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
+#import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -142,8 +142,7 @@ void SearchBookmarksForText(NSString* search_text) {
 
 // Tests that the managed bookmarks folder does not exist when the policy data
 // is empty.
-// Flaky. TODO(crbug.com/40721889): Re-enable.
-- (void)DISABLED_testEmptyManagedBookmarks {
+- (void)testEmptyManagedBookmarks {
   [BookmarkEarlGreyUI openBookmarks];
 
   [BookmarkEarlGreyUI verifyEmptyState];
@@ -338,9 +337,7 @@ void SearchBookmarksForText(NSString* search_text) {
 }
 
 // Tests long presses on managed bookmark items in search results.
-// TODO(crbug.com/40684788): Long press unexpectedly triggers a tap (only in
-// earl grey tests).
-- (void)DISABLED_testLongPressOnSearchResults {
+- (void)testLongPressOnSearchResults {
   [BookmarkEarlGreyUI openBookmarks];
   SearchBookmarksForText(@"URL\n");
 

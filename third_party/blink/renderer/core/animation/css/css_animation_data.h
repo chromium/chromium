@@ -59,6 +59,25 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   const Vector<EffectModel::CompositeOperation>& CompositionList() const {
     return composition_list_;
   }
+  const Vector<EAnimationTriggerType>& TriggerTypeList() const {
+    return trigger_type_list_;
+  }
+  const Vector<StyleTimeline>& TriggerTimelineList() const {
+    return trigger_timeline_list_;
+  }
+  const Vector<std::optional<TimelineOffset>>& TriggerRangeStartList() const {
+    return trigger_range_start_list_;
+  }
+  const Vector<std::optional<TimelineOffset>>& TriggerRangeEndList() const {
+    return trigger_range_end_list_;
+  }
+  const Vector<std::optional<TimelineOffset>>& TriggerExitRangeStartList()
+      const {
+    return trigger_exit_range_start_list_;
+  }
+  const Vector<std::optional<TimelineOffset>>& TriggerExitRangeEndList() const {
+    return trigger_exit_range_end_list_;
+  }
 
   EffectModel::CompositeOperation GetComposition(size_t animation_index) const {
     if (!composition_list_.size()) {
@@ -74,6 +93,12 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<Timing::PlaybackDirection>& DirectionList() { return direction_list_; }
   Vector<Timing::FillMode>& FillModeList() { return fill_mode_list_; }
   Vector<EAnimPlayState>& PlayStateList() { return play_state_list_; }
+  Vector<EAnimationTriggerType>& TriggerTypeList() {
+    return trigger_type_list_;
+  }
+  Vector<StyleTimeline>& TriggerTimelineList() {
+    return trigger_timeline_list_;
+  }
 
   Vector<std::optional<TimelineOffset>>& RangeStartList() {
     return range_start_list_;
@@ -83,6 +108,19 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   }
   Vector<EffectModel::CompositeOperation>& CompositionList() {
     return composition_list_;
+  }
+
+  Vector<std::optional<TimelineOffset>>& TriggerRangeStartList() {
+    return trigger_range_start_list_;
+  }
+  Vector<std::optional<TimelineOffset>>& TriggerRangeEndList() {
+    return trigger_range_end_list_;
+  }
+  Vector<std::optional<TimelineOffset>>& TriggerExitRangeStartList() {
+    return trigger_exit_range_start_list_;
+  }
+  Vector<std::optional<TimelineOffset>>& TriggerExitRangeEndList() {
+    return trigger_exit_range_end_list_;
   }
 
   bool HasSingleInitialTimeline() const {
@@ -116,6 +154,22 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   static EffectModel::CompositeOperation InitialComposition() {
     return EffectModel::CompositeOperation::kCompositeReplace;
   }
+  static const StyleTimeline& InitialTriggerTimeline();
+  static EAnimationTriggerType InitialTriggerType() {
+    return EAnimationTriggerType::kOnce;
+  }
+  static std::optional<TimelineOffset> InitialTriggerRangeStart() {
+    return std::nullopt;
+  }
+  static std::optional<TimelineOffset> InitialTriggerRangeEnd() {
+    return std::nullopt;
+  }
+  static std::optional<TimelineOffset> InitialTriggerExitRangeStart() {
+    return std::nullopt;
+  }
+  static std::optional<TimelineOffset> InitialTriggerExitRangeEnd() {
+    return std::nullopt;
+  }
 
  private:
   Vector<AtomicString> name_list_;
@@ -127,6 +181,12 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<Timing::FillMode> fill_mode_list_;
   Vector<EAnimPlayState> play_state_list_;
   Vector<EffectModel::CompositeOperation> composition_list_;
+  Vector<EAnimationTriggerType> trigger_type_list_;
+  Vector<StyleTimeline> trigger_timeline_list_;
+  Vector<std::optional<TimelineOffset>> trigger_range_start_list_;
+  Vector<std::optional<TimelineOffset>> trigger_range_end_list_;
+  Vector<std::optional<TimelineOffset>> trigger_exit_range_start_list_;
+  Vector<std::optional<TimelineOffset>> trigger_exit_range_end_list_;
 };
 
 }  // namespace blink

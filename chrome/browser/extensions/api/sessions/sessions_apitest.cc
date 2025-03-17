@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -50,6 +47,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -64,10 +62,10 @@ namespace {
 const char kTestCacheGuid[] = "TestCacheGuid";
 // Fake session tabs (used to construct arbitrary device info) and tab IDs
 // (used to construct arbitrary tab info) to use in all tests.
-const char* const kSessionTags[] = {"tag0", "tag1", "tag2", "tag3", "tag4"};
-const SessionID::id_type kTabIDs[] = {5, 10, 13, 17};
-const int kActiveTabIndex = 2;
-const int kActiveTabId = kTabIDs[kActiveTabIndex];
+constexpr std::array kSessionTags = {"tag0", "tag1", "tag2", "tag3", "tag4"};
+constexpr auto kTabIDs = std::to_array<SessionID::id_type>({5, 10, 13, 17});
+constexpr int kActiveTabIndex = 2;
+constexpr int kActiveTabId = kTabIDs[kActiveTabIndex];
 void BuildSessionSpecifics(const std::string& tag,
                            sync_pb::SessionSpecifics* meta) {
   meta->set_session_tag(tag);
@@ -200,7 +198,8 @@ void ExtensionSessionsTest::CreateSessionModels() {
   syncer::DataTypeActivationRequest request;
   request.error_handler = base::DoNothing();
   request.cache_guid = kTestCacheGuid;
-  request.authenticated_account_id = CoreAccountId::FromGaiaId("SomeAccountId");
+  request.authenticated_account_id =
+      CoreAccountId::FromGaiaId(GaiaId("SomeAccountId"));
 
   sync_sessions::SessionSyncService* service =
       SessionSyncServiceFactory::GetForProfile(browser()->profile());
@@ -219,8 +218,7 @@ void ExtensionSessionsTest::CreateSessionModels() {
     // Fill an instance of session specifics with a foreign session's data.
     sync_pb::EntitySpecifics header_entity;
     BuildSessionSpecifics(kSessionTags[index], header_entity.mutable_session());
-    std::vector<SessionID::id_type> tab_list(kTabIDs,
-                                             kTabIDs + std::size(kTabIDs));
+    std::vector<SessionID::id_type> tab_list = base::ToVector(kTabIDs);
     BuildWindowSpecifics(index, tab_list, header_entity.mutable_session());
     std::vector<sync_pb::SessionSpecifics> tabs(tab_list.size());
     for (size_t i = 0; i < tab_list.size(); ++i) {

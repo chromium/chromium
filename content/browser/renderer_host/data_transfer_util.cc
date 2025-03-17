@@ -70,6 +70,9 @@ std::vector<blink::mojom::DataTransferFilePtr> FileInfosToDataTransferFiles(
     base::FilePath display_name = !file_info.display_name.empty()
                                       ? file_info.display_name
                                       : entry_path.BaseName();
+    if (entry_path.empty() || display_name.empty()) {
+      continue;
+    }
     file_system_access_manager->CreateFileSystemAccessDataTransferToken(
         content::PathInfo(path_type, entry_path, display_name.AsUTF8Unsafe()),
         child_id, pending_token.InitWithNewPipeAndPassReceiver());

@@ -50,7 +50,7 @@ class ScopedInstallDanglingRawPtrChecks {
     std::string mode = "crash";
     std::string type = "all";
   };
-  ScopedInstallDanglingRawPtrChecks(ConstructorParams params) {
+  explicit ScopedInstallDanglingRawPtrChecks(ConstructorParams params) {
     enabled_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPartitionAllocDanglingPtr,
           {{"mode", params.mode}, {"type", params.type}}}},

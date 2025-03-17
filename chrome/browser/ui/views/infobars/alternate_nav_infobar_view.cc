@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
 #include "ui/base/window_open_disposition.h"
@@ -61,7 +62,8 @@ void AlternateNavInfoBarView::ElideLabels(Labels* labels, int available_width) {
   if (last_label_width < last_label->GetMinimumSize().width()) {
     last_label_width = 0;
     if (!labels->empty()) {
-      labels->back()->SetText(labels->back()->GetText() + gfx::kEllipsisUTF16);
+      labels->back()->SetText(
+          base::StrCat({labels->back()->GetText(), gfx::kEllipsisUTF16}));
     }
   }
   last_label->SetSize(gfx::Size(last_label_width, last_label->height()));

@@ -108,6 +108,7 @@ suite('SiteSettingsPage', function() {
     // This test verifies the pre-3PCD label.
     loadTimeData.overrideValues({
       is3pcdCookieSettingsRedesignEnabled: false,
+      isAlwaysBlock3pcsIncognitoEnabled: false,
     });
     setupPage();
     const cookiesLinkRow = getCookiesLinkRow();
@@ -174,7 +175,22 @@ suite('SiteSettingsPage', function() {
 
     page.set(
         'prefs.profile.cookie_controls_mode.value',
+        CookieControlsMode.BLOCK_THIRD_PARTY);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelDisabled'),
+        cookiesLinkRow.subLabel);
+
+    page.set(
+        'prefs.profile.cookie_controls_mode.value',
         CookieControlsMode.INCOGNITO_ONLY);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelEnabled'),
+        cookiesLinkRow.subLabel);
+
+    page.set(
+        'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('thirdPartyCookiesLinkRowSublabelEnabled'),
@@ -280,11 +296,6 @@ suite('SiteSettingsPage', function() {
       '#automatic-fullscreen'));
   });
 
-  // TODO(crbug.com/40267370): Remove after SafetyHub is launched.
-  test('UnusedSitePermissionsControlToggleExists', function() {
-    assertTrue(isChildVisible(page, '#unusedSitePermissionsRevocationToggle'));
-  });
-
   test('UnusedSitePermissionsControlToggleUpdatesPrefs', function() {
     const unusedSitePermissionsRevocationToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -377,29 +388,5 @@ suite('UnusedSitePermissionsReview', function() {
     loadTimeData.overrideValues({
       isGuest: false,
     });
-  });
-});
-
-// TODO(crbug.com/40267370): Remove after SafetyHub is launched.
-suite('SafetyHubDisabled', function() {
-  let page: SettingsSiteSettingsPageElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableSafetyHub: false,
-    });
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-site-settings-page');
-    document.body.appendChild(page);
-    flush();
-  });
-
-  test('NoUnusedSitePermissionsControlToggle', function() {
-    assertFalse(
-        Boolean(page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#unusedSitePermissionsRevocationToggle')));
   });
 });

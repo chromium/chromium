@@ -100,13 +100,15 @@ extern NSString* const
 // - The background color is set to grey.
 // If `closeButtonSymbol` is nil, the close button will use the default text.
 // Otherwise, it will use closeButtonSymbol as the image instead.
+// `isTabletFormFactor` modifies the appearance of the manual fill button.
 - (void)setUpWithLeadingView:(UIView*)leadingView
             navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate
               manualFillSymbol:(UIImage*)manualFillSymbol
       passwordManualFillSymbol:(UIImage*)passwordManualFillSymbol
     creditCardManualFillSymbol:(UIImage*)creditCardManualFillSymbol
        addressManualFillSymbol:(UIImage*)addressManualFillSymbol
-             closeButtonSymbol:(UIImage*)closeButtonSymbol;
+             closeButtonSymbol:(UIImage*)closeButtonSymbol
+            isTabletFormFactor:(BOOL)isTabletFormFactor;
 
 // Sets up the view with the given `leadingView`. Navigation controls are
 // replaced with `customTrailingView`.
@@ -118,6 +120,10 @@ extern NSString* const
 // edge of the input accessory view for the collapsed bottom omnibox
 // (crbug.com/1490601).
 - (void)setOmniboxTypingShieldHeight:(CGFloat)typingShieldHeight;
+
+// Sets whether the UI is in compact mode, so that the keyboard accessory can
+// adapt to the compact size class if necessary.
+- (void)setIsCompact:(BOOL)isCompact;
 
 @end
 

@@ -103,6 +103,7 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
+
   void AddedToWidget() override;
 
  private:

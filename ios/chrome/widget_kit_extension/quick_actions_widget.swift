@@ -10,22 +10,16 @@ struct ConfigureQuickActionsWidgetEntry: TimelineEntry {
   let date: Date
   let useLens: Bool
   let useColorLensAndVoiceIcons: Bool
+  let isPreview: Bool
+  let avatar: Image?
+  let gaiaID: String?
 }
 
 struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
   func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
-    ConfigureQuickActionsWidgetEntry(date: Date(), useLens: false, useColorLensAndVoiceIcons: false)
-  }
-
-  func shouldUseColorLensAndVoiceIcons() -> Bool {
-    // On iOS 15, color icons are not supported in widget, always return false
-    // as no icon would be displayed.
-    // On iOS 16, color icons are displayed in monochrome, so still present
-    // the monochrome icon as it may be better adapted.
-    if #available(iOS 17, *) {
-      return shouldUseLens()
-    }
-    return false
+    ConfigureQuickActionsWidgetEntry(
+      date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true, avatar: nil,
+      gaiaID: nil)
   }
 
   func getSnapshot(
@@ -35,7 +29,10 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
     let entry = ConfigureQuickActionsWidgetEntry(
       date: Date(),
       useLens: shouldUseLens(),
-      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
+      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+      isPreview: context.isPreview,
+      avatar: nil,
+      gaiaID: nil
     )
     completion(entry)
   }
@@ -47,7 +44,10 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
     let entry = ConfigureQuickActionsWidgetEntry(
       date: Date(),
       useLens: shouldUseLens(),
-      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
+      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+      isPreview: context.isPreview,
+      avatar: nil,
+      gaiaID: nil
     )
     let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
     let timeline: Timeline = Timeline(entries: entries, policy: .never)
@@ -110,26 +110,23 @@ struct QuickActionsWidget: Widget {
 
     func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
       ConfigureQuickActionsWidgetEntry(
-        date: Date(), useLens: false, useColorLensAndVoiceIcons: false)
-    }
-
-    func shouldUseColorLensAndVoiceIcons() -> Bool {
-      guard shouldUseLens() else { return false }
-
-      let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
-      let useColorLensAndVoiceIcons: Bool =
-        sharedDefaults.bool(
-          forKey: WidgetConstants.QuickActionsWidget.enableColorLensAndVoiceIconsInWidgetKey)
-      return useColorLensAndVoiceIcons
+        date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true,
+        avatar: nil, gaiaID: nil
+      )
     }
 
     func snapshot(for configuration: SelectProfileIntent, in context: Context) async
       -> ConfigureQuickActionsWidgetEntry
     {
+      let avatar: Image? = configuration.avatar()
+      let gaiaID: String? = configuration.gaia()
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),
         useLens: shouldUseLens(),
-        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
+        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+        isPreview: context.isPreview,
+        avatar: avatar,
+        gaiaID: gaiaID
       )
       return entry
     }
@@ -137,10 +134,15 @@ struct QuickActionsWidget: Widget {
     func timeline(for configuration: SelectProfileIntent, in context: Context) async -> Timeline<
       ConfigureQuickActionsWidgetEntry
     > {
+      let avatar: Image? = configuration.avatar()
+      let gaiaID: String? = configuration.gaia()
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),
         useLens: shouldUseLens(),
-        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
+        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+        isPreview: context.isPreview,
+        avatar: avatar,
+        gaiaID: gaiaID
       )
       let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
       let timeline: Timeline = Timeline(entries: entries, policy: .never)
@@ -157,6 +159,17 @@ func shouldUseLens() -> Bool {
     && sharedDefaults.bool(
       forKey: WidgetConstants.QuickActionsWidget.enableLensInWidgetKey)
   return useLens
+}
+
+func shouldUseColorLensAndVoiceIcons() -> Bool {
+  // On iOS 15, color icons are not supported in widget, always return false
+  // as no icon would be displayed.
+  // On iOS 16, color icons are displayed in monochrome, so still present
+  // the monochrome icon as it may be better adapted.
+  if #available(iOS 17, *) {
+    return shouldUseLens()
+  }
+  return false
 }
 
 struct QuickActionsWidgetEntryView: View {
@@ -186,7 +199,10 @@ struct QuickActionsWidgetEntryView: View {
       ZStack {
         VStack {
           Spacer()
-          Link(destination: WidgetConstants.QuickActionsWidget.searchUrl) {
+          Link(
+            destination: destinationURL(
+              url: WidgetConstants.QuickActionsWidget.searchUrl, gaia: entry.gaiaID)
+          ) {
             ZStack {
               RoundedRectangle(cornerRadius: 26)
                 .frame(height: 52)
@@ -203,6 +219,9 @@ struct QuickActionsWidgetEntryView: View {
                   .font(.subheadline)
                   .foregroundColor(Color("widget_text_color"))
                 Spacer()
+                #if IOS_ENABLE_WIDGETS_FOR_MIM
+                  Avatar(entry: entry)
+                #endif
               }
             }
             .frame(minWidth: 0, maxWidth: .infinity)
@@ -226,14 +245,18 @@ struct QuickActionsWidgetEntryView: View {
           // Show interactive buttons if the widget is fully loaded, and show
           // the custom placeholder otherwise.
           if redactionReasons.isEmpty {
-            Link(destination: WidgetConstants.QuickActionsWidget.incognitoUrl) {
+            Link(
+              destination: destinationURL(
+                url: WidgetConstants.QuickActionsWidget.incognitoUrl, gaia: entry.gaiaID)
+            ) {
               symbolWithName(symbolName: "widget_incognito_icon", system: false)
                 .frame(minWidth: 0, maxWidth: .infinity)
             }
             .accessibility(label: Text(incognitoA11yLabel))
             Separator(height: separatorHeight)
             Link(
-              destination: WidgetConstants.QuickActionsWidget.voiceSearchUrl
+              destination: destinationURL(
+                url: WidgetConstants.QuickActionsWidget.voiceSearchUrl, gaia: entry.gaiaID)
             ) {
               symbolWithName(symbolName: "widget_voice_icon", system: false)
                 .symbolRenderingMode(
@@ -245,7 +268,10 @@ struct QuickActionsWidgetEntryView: View {
             .accessibility(label: Text(voiceSearchA11yLabel))
             Separator(height: separatorHeight)
             if entry.useLens {
-              Link(destination: WidgetConstants.QuickActionsWidget.lensUrl) {
+              Link(
+                destination: destinationURL(
+                  url: WidgetConstants.QuickActionsWidget.lensUrl, gaia: entry.gaiaID)
+              ) {
                 symbolWithName(symbolName: "widget_lens_icon", system: false)
                   .symbolRenderingMode(
                     (colorScheme == .light && entry.useColorLensAndVoiceIcons)
@@ -255,7 +281,10 @@ struct QuickActionsWidgetEntryView: View {
               }
               .accessibility(label: Text(lensA11yLabel))
             } else {
-              Link(destination: WidgetConstants.QuickActionsWidget.qrCodeUrl) {
+              Link(
+                destination: destinationURL(
+                  url: WidgetConstants.QuickActionsWidget.qrCodeUrl, gaia: entry.gaiaID)
+              ) {
                 symbolWithName(symbolName: "qrcode", system: true)
                   .frame(minWidth: 0, maxWidth: .infinity)
               }
@@ -295,5 +324,26 @@ struct ButtonPlaceholder: View {
         .foregroundColor(Color("widget_text_color"))
         .opacity(0.3)
     }.frame(minWidth: 0, maxWidth: .infinity)
+  }
+}
+
+struct Avatar: View {
+  var entry: ConfigureQuickActionsWidgetEntry
+  var body: some View {
+    if entry.isPreview {
+      Circle()
+        .foregroundColor(Color("widget_text_color"))
+        .opacity(0.2)
+        .frame(width: 35, height: 35)
+        .padding(.trailing, 8)
+    } else if let avatar = entry.avatar {
+      avatar
+        .resizable()
+        .clipShape(Circle())
+        .unredacted()
+        .scaledToFill()
+        .frame(width: 35, height: 35)
+        .padding(.trailing, 8)
+    }
   }
 }

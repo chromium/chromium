@@ -10,6 +10,8 @@ namespace content {
 
 IdentityRequestAccount::IdentityRequestAccount(
     const std::string& id,
+    const std::string& display_identifier,
+    const std::string& display_name,
     const std::string& email,
     const std::string& name,
     const std::string& given_name,
@@ -21,6 +23,8 @@ IdentityRequestAccount::IdentityRequestAccount(
     LoginState browser_trusted_login_state,
     std::optional<base::Time> last_used_timestamp)
     : id{id},
+      display_identifier{display_identifier},
+      display_name{display_name},
       email{email},
       name{name},
       given_name{given_name},

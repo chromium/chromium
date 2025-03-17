@@ -31,6 +31,7 @@
 #include "net/filter/brotli_source_stream.h"
 #include "net/filter/filter_source_stream.h"
 #include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/filter/zstd_source_stream.h"
 #include "net/http/http_request_info.h"
 #include "net/http/structured_headers.h"
@@ -47,7 +48,7 @@ namespace {
 class ProxyingSourceStream : public SourceStream {
  public:
   explicit ProxyingSourceStream(HttpTransaction* transaction)
-      : SourceStream(SourceStream::TYPE_NONE), transaction_(transaction) {}
+      : SourceStream(SourceStreamType::kNone), transaction_(transaction) {}
 
   ProxyingSourceStream(const ProxyingSourceStream&) = delete;
   ProxyingSourceStream& operator=(const ProxyingSourceStream&) = delete;

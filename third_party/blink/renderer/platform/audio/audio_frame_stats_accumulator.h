@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class PLATFORM_EXPORT AudioFrameStatsAccumulator {
+class PLATFORM_EXPORT AudioFrameStatsAccumulator final {
  public:
   AudioFrameStatsAccumulator() = default;
   AudioFrameStatsAccumulator(const AudioFrameStatsAccumulator&) = delete;

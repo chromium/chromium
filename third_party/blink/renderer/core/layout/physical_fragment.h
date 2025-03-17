@@ -816,6 +816,11 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   Member<OofData> oof_data_;
 };
 
+template <>
+struct ThreadingTrait<PhysicalFragment> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
+};
+
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const PhysicalFragment*);
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const PhysicalFragment&);
 

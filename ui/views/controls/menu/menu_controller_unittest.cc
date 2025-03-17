@@ -4,6 +4,7 @@
 
 #include "ui/views/controls/menu/menu_controller.h"
 
+#include <algorithm>
 #include <functional>
 #include <type_traits>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
@@ -2325,9 +2325,8 @@ TEST_P(MenuControllerTest, TestSubmenuFitsOnScreen) {
   menu_controller()->set_use_ash_system_ui_layout(true);
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   const std::vector<MenuItemView*> menu_items = submenu->GetMenuItems();
-  base::ranges::for_each(base::span(menu_items).subspan<1>(), [&](auto* item) {
-    menu_item()->RemoveMenuItem(item);
-  });
+  std::ranges::for_each(base::span(menu_items).subspan<1>(),
+                        [&](auto* item) { menu_item()->RemoveMenuItem(item); });
   MenuItemView* const sub_item = submenu->GetMenuItemAt(0);
   sub_item->AppendMenuItem(11, u"Subitem.One");
 
@@ -3182,7 +3181,7 @@ TEST_F(MenuControllerTest, AccessibilityDoDefaultCallsAccept) {
 // Test that the kSelectedChildrenChanged event is emitted on
 // the root menu item when the selected menu item changes.
 TEST_F(MenuControllerTest, AccessibilityEmitsSelectChildrenChanged) {
-  const test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  const test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   menu_controller()->Run(owner(), nullptr, menu_item(), gfx::Rect(),
                          MenuAnchorPosition::kTopLeft);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged), 0);
@@ -3196,7 +3195,7 @@ TEST_F(MenuControllerTest, AccessibilityEmitsSelectChildrenChanged) {
 }
 
 TEST_F(MenuControllerTest, AccessibilityEmitsMenuOpenedClosedEvents) {
-  const test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  const test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kMenuStart));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kMenuEnd));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart));
@@ -3406,6 +3405,39 @@ TEST_F(MenuControllerTest, MenuHostHasCorrectZOrderLevel) {
 
   // Ensure that the menu host has the correct z order level.
   EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow, host->GetZOrderLevel());
+}
+
+// Tests that updating an empty menu's children, while the "empty item"
+// placeholder is selected correctly transfers selection to the parent.
+TEST_F(MenuControllerTest, RemoveEmptyMenuMenuItemWhileSelected) {
+  views::MenuItemView* const root_menu = menu_item();
+  OpenMenu(root_menu);
+
+  // Remove all items.
+  root_menu->RemoveAllMenuItems();
+  root_menu->ChildrenChanged();
+  SubmenuView* const submenu = root_menu->GetSubmenu();
+  ASSERT_TRUE(submenu);
+
+  // The menu should only have an empty-menu menu item as a placeholder.
+  ASSERT_EQ(1u, submenu->children().size());
+  auto* const empty_child =
+      AsViewClass<EmptyMenuMenuItem>(submenu->children()[0]);
+  ASSERT_NE(empty_child, nullptr);
+  menu_controller()->SelectItemAndOpenSubmenu(empty_child);
+  ASSERT_TRUE(empty_child->IsSelected());
+
+  // Adding a new item will remove the empty-menu menu item.
+  // Selection should be transferred gracefully.
+  views::MenuItemView* const item = root_menu->AppendMenuItem(1, u"item 1");
+  item->SetVisible(true);
+  root_menu->ChildrenChanged();
+
+  // The parent should be selected and the remaining view should be the added
+  // menu item.
+  EXPECT_TRUE(root_menu->IsSelected());
+  ASSERT_EQ(1u, submenu->children().size());
+  EXPECT_EQ(item, submenu->children()[0]);
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -23,10 +23,6 @@ export function isSecondaryUser(): boolean {
   return loadTimeData.getBoolean('isSecondaryUser');
 }
 
-export function isRevampWayfindingEnabled(): boolean {
-  return loadTimeData.getBoolean('isRevampWayfindingEnabled');
-}
-
 // Apps page
 export function androidAppsVisible(): boolean {
   return loadTimeData.getBoolean('androidAppsVisible');
@@ -117,6 +113,10 @@ export function isLobsterSettingsToggleVisible(): boolean {
 
 export function isSunfishSettingsToggleVisible(): boolean {
   return loadTimeData.getBoolean('isSunfishSettingsToggleVisible');
+}
+
+export function isScannerSettingsToggleVisible(): boolean {
+  return loadTimeData.getBoolean('isScannerSettingsToggleVisible');
 }
 
 // System preferences page

@@ -149,9 +149,11 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsConstantGradientValue() const {
     return class_type_ == kConstantGradientClass;
   }
+  bool IsProgressValue() const { return class_type_ == kProgressClass; }
   bool IsReflectValue() const { return class_type_ == kReflectClass; }
   bool IsShadowValue() const { return class_type_ == kShadowClass; }
   bool IsStringValue() const { return class_type_ == kStringClass; }
+  bool IsSuperellipseValue() const { return class_type_ == kSuperellipseClass; }
   bool IsURIValue() const { return class_type_ == kURIClass; }
   bool IsLinearTimingFunctionValue() const {
     return class_type_ == kLinearTimingFunctionClass;
@@ -302,6 +304,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kCubicBezierTimingFunctionClass,
     kStepsTimingFunctionClass,
 
+    kProgressClass,
+
     // Other class types.
     kBorderImageSliceClass,
     kDynamicRangeLimitMixClass,
@@ -343,6 +347,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kImageSetTypeClass,
 
     kRepeatStyleClass,
+
+    kSuperellipseClass,
 
     // List class types must appear after ValueListClass.
     kValueListClass,

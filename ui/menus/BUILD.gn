@@ -58,6 +58,7 @@ source_set("unit_tests") {
     ":menus",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/color",
     "//ui/gfx",
     "//ui/gfx:test_support",
   ]
@@ -68,9 +69,5 @@ source_set("unit_tests") {
       "//ui/base:test_support",
       "//ui/events:test_support",
     ]
-  }
-
-  if (use_blink) {
-    deps += [ "//ui/color" ]
   }
 }

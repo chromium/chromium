@@ -22,6 +22,7 @@ source_set("test_support") {
     "service_environment.cc",
   ]
   deps = [
+    "//chrome/common:non_code_constants",
     "//chrome/install_static:install_static_util",
     "//chrome/installer/util:work_item",
     "//chrome/windows_services/service_program:constants",

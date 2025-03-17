@@ -1,0 +1,18 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_VECTOR_ICONS_VECTOR_ICONS_UNITTEST_H_
+#define COMPONENTS_VECTOR_ICONS_VECTOR_ICONS_UNITTEST_H_
+
+// Define a macro to stamp out the test cases. We do this via a dynamically
+// generated header vs generating the cc file directly so that the cc file can
+// live in the repo and can provide a test location to infra that needs it.
+
+#define VECTOR_ICON_TEST_CASES \
+TEMPLATE_PLACEHOLDER
+
+#else
+#error This file should not be included more than once.
+#endif  // COMPONENTS_VECTOR_ICONS_VECTOR_ICONS_UNITTEST_H_
+

@@ -4,8 +4,10 @@
 
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 
+#include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <sys/stat.h>
 
 #include <map>
 #include <memory>
@@ -19,6 +21,7 @@
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -26,9 +29,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/suspend_unmount_manager.h"
@@ -70,6 +76,164 @@ std::string FormatFileSystemTypeToString(FormatFileSystemType filesystem) {
       return "ntfs";
   }
   NOTREACHED() << "Unknown filesystem type " << static_cast<int>(filesystem);
+}
+
+// Fixes permissions along the given path if it is actually a local file path
+// designating a file under ~/MyFiles. Does nothing if the given path is not an
+// absolute local path designating a file under ~/MyFiles (like e.g. a URL-like
+// string). This is a best effort attempt to ensure that the ChromeOS archive
+// mounting daemons can access the archive files to mount.
+void FixPermissions(const std::string_view path) {
+  const base::ScopedBlockingCall guard(FROM_HERE,
+                                       base::BlockingType::MAY_BLOCK);
+
+  // Is path an absolute local path?
+  if (!path.starts_with('/')) {
+    // Not an absolute local path. Might be a URL-like string.
+    return;
+  }
+
+  // Is path in ~/MyFiles?
+  std::vector<std::string> parts = base::FilePath(path).GetComponents();
+  if (!(parts.size() > 5 && parts[0] == "/" && parts[1] == "home" &&
+        parts[2] == "chronos" && parts[3].starts_with("u-") &&
+        parts[4] == "MyFiles" && !parts[5].empty())) {
+    // Not in ~/MyFiles.
+    return;
+  }
+
+  // Path is in ~/MyFiles. Keep the last part for the end.
+  const std::string file_name = std::move(parts.back());
+  parts.pop_back();
+
+  // Pre-allocate the bytes of this path to avoid multiple memory allocations.
+  std::string path_so_far;
+  path_so_far.reserve(path.size());
+
+  // Don't check the permissions on the first 5 levels of directories (that is
+  // up to ~/MyFiles). Just get a file descriptor to ~/MyFiles. Using openat
+  // with O_DIRECTORY ensures that the considered item is really a directory and
+  // that no race condition could possibly affect the next steps.
+  base::StrAppend(&path_so_far,
+                  {"/", parts[1], "/", parts[2], "/", parts[3], "/", parts[4]});
+  base::ScopedFD fd(
+      HANDLE_EINTR(open(path_so_far.c_str(), O_DIRECTORY | O_PATH)));
+  if (!fd.is_valid()) {
+    PLOG(ERROR) << "Cannot open " << path_so_far;
+    return;
+  }
+
+  // GID for `chronos-access`.
+  const gid_t chronos_access = 1001;
+
+  // Check the permissions of all the directories from that point on (i.e. under
+  // ~/MyFiles).
+  for (size_t i = 5; i < parts.size(); ++i) {
+    const std::string& dir_name = parts[i];
+    if (dir_name.empty() || dir_name == "." || dir_name == "..") {
+      LOG(ERROR) << "Invalid directory name " << dir_name;
+      return;
+    }
+
+    // Get a file descriptor to the directory. Using openat with O_DIRECTORY
+    // ensures that the item is really a directory and that no race condition
+    // could possibly affect the next steps.
+    base::StrAppend(&path_so_far, {"/", dir_name});
+    fd.reset(
+        HANDLE_EINTR(openat(fd.get(), dir_name.c_str(), O_DIRECTORY | O_PATH)));
+    if (!fd.is_valid()) {
+      PLOG(ERROR) << "Cannot open " << path_so_far;
+      return;
+    }
+
+    // Get the current permissions of the directory.
+    struct stat z;
+    if (fstatat(fd.get(), "", &z, AT_EMPTY_PATH) < 0) {
+      PLOG(ERROR) << "Cannot stat " << path_so_far;
+      continue;
+    }
+
+    // Since openat was called with O_DIRECTORY, the item should really be a
+    // directory.
+    DCHECK(S_ISDIR(z.st_mode)) << " Not a directory: " << path_so_far;
+
+    // We want the directory to be traversable by a member of the chronos-access
+    // group. So, if its GID is chronos-access, then it needs to be at least
+    // group-traversable (S_IXGRP access bit), otherwise it also needs to be
+    // world-traversable (S_IXOTH access bit).
+    const mode_t mode = z.st_mode & 07777;
+    mode_t want = S_IXUSR | S_IXGRP;
+    if (z.st_gid != chronos_access) {
+      want |= S_IXOTH;
+    }
+
+    // Does the directory have the necessary permissions?
+    if ((mode & want) == want) {
+      // The directory already has the right permissions.
+      continue;
+    }
+
+    // Adjust the permissions as necessary.
+    if (fchmodat(fd.get(), "", mode | want, AT_EMPTY_PATH) < 0) {
+      PLOG(ERROR) << "Cannot change permissions of " << path_so_far;
+      continue;
+    }
+
+    VLOG(1) << "Changed permissions of " << path_so_far;
+  }
+
+  // Finished checking the directories.
+  // Check the last part of the path, which should be a file name.
+  if (file_name.empty() || file_name == "." || file_name == "..") {
+    LOG(ERROR) << "Invalid file name " << file_name;
+    return;
+  }
+
+  // Get a file descriptor to the file. Using openat ensures that no race
+  // condition could possibly affect the next steps.
+  base::StrAppend(&path_so_far, {"/", file_name});
+  fd.reset(HANDLE_EINTR(openat(fd.get(), file_name.c_str(), O_PATH)));
+  if (!fd.is_valid()) {
+    PLOG(ERROR) << "Cannot open " << path_so_far;
+    return;
+  }
+
+  // Get the current permissions of the file.
+  struct stat z;
+  if (fstatat(fd.get(), "", &z, AT_EMPTY_PATH) < 0) {
+    PLOG(ERROR) << "Cannot stat " << path_so_far;
+    return;
+  }
+
+  // Is the item a regular file?
+  if (!S_ISREG(z.st_mode)) {
+    LOG(ERROR) << "Item " << path_so_far << " is not a regular file";
+    return;
+  }
+
+  // We want the file to be readable by a member of the chronos-access group.
+  // So, if its GID is chronos-access, then it needs to be at least
+  // group-readable (S_IRGRP access bit), otherwise it also needs to be
+  // world-readable (S_IROTH access bit).
+  const mode_t mode = z.st_mode & 07777;
+  mode_t want = S_IRUSR | S_IRGRP;
+  if (z.st_gid != chronos_access) {
+    want |= S_IROTH;
+  }
+
+  // Does the file have the necessary permissions?
+  if ((mode & want) == want) {
+    // The file already has the right permissions.
+    return;
+  }
+
+  // Adjust the permissions as necessary.
+  if (fchmodat(fd.get(), "", mode | want, AT_EMPTY_PATH) < 0) {
+    PLOG(ERROR) << "Cannot change permissions of " << path_so_far;
+    return;
+  }
+
+  VLOG(1) << "Changed permissions of " << path_so_far;
 }
 
 // The DiskMountManager implementation.
@@ -130,6 +294,22 @@ class DiskMountManagerImpl : public DiskMountManager,
       return;
     }
 
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&FixPermissions, source_path),
+        base::BindOnce(&DiskMountManagerImpl::MountAfterFixingPermissions,
+                       weak_ptr_factory_.GetWeakPtr(), source_path,
+                       source_format, mount_label, mount_options, type,
+                       access_mode));
+  }
+
+  void MountAfterFixingPermissions(
+      const std::string& source_path,
+      const std::string& source_format,
+      const std::string& mount_label,
+      const std::vector<std::string>& mount_options,
+      const MountType type,
+      const MountAccessMode access_mode) {
     VLOG(1) << "Mounting '" << source_path << "'...";
     cros_disks_client_->Mount(
         source_path, source_format, mount_label, mount_options, access_mode,
@@ -169,21 +349,6 @@ class DiskMountManagerImpl : public DiskMountManager,
                                 BindOnce(&DiskMountManagerImpl::OnUnmountPath,
                                          weak_ptr_factory_.GetWeakPtr(),
                                          std::move(callback), mount_path));
-  }
-
-  void RemountAllRemovableDrives(MountAccessMode mode) override {
-    // TODO(yamaguchi): Retry for tentative remount failures. crbug.com/661455
-    for (const auto& disk : disks_) {
-      DCHECK(disk);
-      if (disk->is_read_only_hardware()) {
-        // Read-only devices can be mounted in RO mode only. No need to remount.
-        continue;
-      }
-      if (!disk->is_mounted()) {
-        continue;
-      }
-      RemountRemovableDrive(*disk, mode);
-    }
   }
 
   // DiskMountManager override.
@@ -356,7 +521,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // DiskMountManager override.
   const Disk* FindDiskBySourcePath(
-      const std::string& source_path) const override {
+      std::string_view source_path) const override {
     const Disks::const_iterator it = disks_.find(source_path);
     return it == disks_.end() ? nullptr : it->get();
   }
@@ -423,7 +588,17 @@ class DiskMountManagerImpl : public DiskMountManager,
     OnMountCompleted({source_path, {}, type, MountError::kInternalError});
   }
 
-  void RemountRemovableDrive(const Disk& disk, MountAccessMode access_mode) {
+  void RemountRemovableDrive(const Disk& disk,
+                             MountAccessMode access_mode) override {
+    // TODO(yamaguchi): Retry for tentative remount failures. crbug.com/661455
+    if (disk.is_read_only_hardware()) {
+      // Read-only devices can be mounted in RO mode only. No need to remount.
+      return;
+    }
+    if (!disk.is_mounted()) {
+      return;
+    }
+
     const std::string& mount_path = disk.mount_path();
     MountPoints::const_iterator mount_point = mount_points_.find(mount_path);
     if (mount_point == mount_points_.end()) {

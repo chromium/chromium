@@ -32,6 +32,10 @@ MATCHER_P2(HasSpecificsSavedTab, title, url, "") {
   return arg.tab().title() == title && arg.tab().url() == url;
 }
 
+MATCHER_P2(HasSavedGroupMetadata, title, color, "") {
+  return arg.title() == title && arg.color() == color;
+}
+
 // Checks that a tab or group with a particular uuid exists in the service.
 class SavedTabOrGroupExistsChecker : public StatusChangeChecker,
                                      public TabGroupSyncService::Observer {

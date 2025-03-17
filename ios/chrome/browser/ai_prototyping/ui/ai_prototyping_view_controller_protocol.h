@@ -24,6 +24,9 @@ enum class AIPrototypingFeature : NSInteger;
 // Updates the page's response field with `response`.
 - (void)updateResponseField:(NSString*)response;
 
+// Enable submit buttons, and style them accordingly.
+- (void)enableSubmitButtons;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UI_AI_PROTOTYPING_VIEW_CONTROLLER_PROTOCOL_H_

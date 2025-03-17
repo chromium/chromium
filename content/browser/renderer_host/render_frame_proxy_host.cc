@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/lazy_instance.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
@@ -973,8 +974,15 @@ void RenderFrameProxyHost::AdvanceFocus(
     source_rfh->DeactivateFocusSourceUserActivation();
   }
 
-  target_rfh->AdvanceFocus(focus_type, source_proxy);
-  target_rfh->delegate()->OnAdvanceFocus(source_rfh);
+  if (!target_rfh->IsRenderFrameLive()) {
+    // Do not advance focus if target renderer is gone and continue
+    // focus traversal in the source frame.
+    source_rfh->AdvanceFocus(focus_type, this);
+    source_rfh->delegate()->OnAdvanceFocus(target_rfh);
+  } else {
+    target_rfh->AdvanceFocus(focus_type, source_proxy);
+    target_rfh->delegate()->OnAdvanceFocus(source_rfh);
+  }
 }
 
 bool RenderFrameProxyHost::IsInertForTesting() {

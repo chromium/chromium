@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -33,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link TabGroupTitleUtils}. */
@@ -42,6 +42,8 @@ public class TabGroupTitleUtilsUnitTest {
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
 
     private static final int TAB_ID = 456;
+    private static final int ROOT_ID = 12;
+    private static final Token TAB_GROUP_ID = new Token(34789L, 3784L);
     private static final String TAB_TITLE = "Tab";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -131,17 +133,23 @@ public class TabGroupTitleUtilsUnitTest {
     @Test
     public void testGetDisplayableTitle_Explicit() {
         String title = "t1";
-        when(mTabGroupModelFilter.getTabGroupTitle(anyInt())).thenReturn(title);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(ROOT_ID);
+        when(mTabGroupModelFilter.getTabGroupTitle(ROOT_ID)).thenReturn(title);
         assertEquals(
-                title, TabGroupTitleUtils.getDisplayableTitle(mContext, mTabGroupModelFilter, 12));
+                title,
+                TabGroupTitleUtils.getDisplayableTitle(
+                        mContext, mTabGroupModelFilter, TAB_GROUP_ID));
     }
 
     @Test
     public void testGetDisplayableTitle_Fallback() {
         int tabCount = 4567;
-        when(mTabGroupModelFilter.getTabGroupTitle(anyInt())).thenReturn("");
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(tabCount);
-        String title = TabGroupTitleUtils.getDisplayableTitle(mContext, mTabGroupModelFilter, 12);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(ROOT_ID);
+        when(mTabGroupModelFilter.getTabGroupTitle(ROOT_ID)).thenReturn("");
+        when(mTabGroupModelFilter.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(tabCount);
+        String title =
+                TabGroupTitleUtils.getDisplayableTitle(
+                        mContext, mTabGroupModelFilter, TAB_GROUP_ID);
         assertTrue(title.contains(String.valueOf(tabCount)));
     }
 }

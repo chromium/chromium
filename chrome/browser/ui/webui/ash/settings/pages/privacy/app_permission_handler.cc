@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/app_permission_handler.h"
 
+#include <algorithm>
+
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/eche_app/app_id.h"
@@ -29,7 +30,7 @@ bool IsPermissionTypeRelevant(const apps::PermissionPtr& permission) {
 }
 
 bool HasRelevantPermission(const apps::AppUpdate& update) {
-  return base::ranges::any_of(update.Permissions(), &IsPermissionTypeRelevant);
+  return std::ranges::any_of(update.Permissions(), &IsPermissionTypeRelevant);
 }
 
 app_permission::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {

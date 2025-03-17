@@ -121,7 +121,7 @@ void PresentationController::OnDefaultPresentationStarted(
     return;
   }
 
-  auto* connection = ControllerPresentationConnection::Take(
+  auto* connection = ControllerPresentationConnection::Create(
       this, *result->presentation_info, presentation_->defaultRequest());
   // TODO(btolsch): Convert this and similar calls to just use InterfacePtrInfo
   // instead of constructing an InterfacePtr every time we have
@@ -132,8 +132,8 @@ void PresentationController::OnDefaultPresentationStarted(
 
 ControllerPresentationConnection*
 PresentationController::FindExistingConnection(
-    const blink::WebVector<blink::WebURL>& presentation_urls,
-    const blink::WebString& presentation_id) {
+    const std::vector<blink::WebURL>& presentation_urls,
+    const WebString& presentation_id) {
   for (const auto& connection : connections_) {
     for (const auto& presentation_url : presentation_urls) {
       if (connection->GetState() !=

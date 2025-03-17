@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/page/drag_image.h"
 #include "third_party/blink/renderer/core/page/drag_state.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -162,9 +163,6 @@ static DocumentFragment* DocumentFragmentFromDragData(
     DragSourceType& drag_source_type,
     bool is_richly_editable_position) {
   DCHECK(drag_data);
-  CHECK(is_richly_editable_position ||
-        RuntimeEnabledFeatures::
-            DropUrlAsPlainTextInPlainTextOnlyEditablePositionEnabled());
   drag_source_type = DragSourceType::kHTMLSource;
 
   Document& document = context->OwnerDocument();
@@ -223,6 +221,12 @@ void DragController::DragEnded() {
   drag_initiator_ = nullptr;
   did_initiate_drag_ = false;
   page_->GetDragCaret().Clear();
+  // When dragging occurs, the mousedown event is triggered, causing the caret's
+  // blinking state to be suspended. Therefore, it is necessary to reset the
+  // blinking state after dragging.
+  if (auto* focused_frame = page_->GetFocusController().FocusedFrame()) {
+    focused_frame->Selection().SetCaretBlinkingSuspended(false);
+  }
 }
 
 void DragController::DragExited(DragData* drag_data, LocalFrame& local_root) {
@@ -661,10 +665,6 @@ bool DragController::ConcludeEditDrag(DragData* drag_data) {
 
   if (drag_is_move || is_richly_editable_position) {
     DragSourceType drag_source_type = DragSourceType::kHTMLSource;
-    if (!RuntimeEnabledFeatures::
-            DropUrlAsPlainTextInPlainTextOnlyEditablePositionEnabled()) {
-      is_richly_editable_position = true;
-    }
     DocumentFragment* fragment = DocumentFragmentFromDragData(
         drag_data, inner_frame, range, true, drag_source_type,
         is_richly_editable_position);
@@ -1091,8 +1091,9 @@ bool CanDragImage(const Element& element) {
     return false;
   const ImageResourceContent* image_content = layout_image->CachedImage();
   if (!image_content || image_content->ErrorOccurred() ||
-      image_content->GetImage()->IsNull())
+      !image_content->HasImage()) {
     return false;
+  }
   scoped_refptr<const SharedBuffer> buffer = image_content->ResourceBuffer();
   if (!buffer || !buffer->size())
     return false;

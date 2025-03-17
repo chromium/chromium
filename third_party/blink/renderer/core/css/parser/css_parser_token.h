@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_TOKEN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_TOKEN_H_
 
@@ -73,8 +78,6 @@ enum HashTokenType {
 };
 
 class CORE_EXPORT CSSParserToken {
-  USING_FAST_MALLOC(CSSParserToken);
-
  public:
   enum BlockType {
     kNotBlock,
@@ -272,7 +275,7 @@ class CORE_EXPORT CSSParserToken {
   unsigned value_is_8bit_ : 1;
 
   // These are free bits. You may take from them if you need.
-  unsigned padding_ : 12;
+  [[maybe_unused]] unsigned padding_ : 12;
 
   unsigned value_length_;
   union {

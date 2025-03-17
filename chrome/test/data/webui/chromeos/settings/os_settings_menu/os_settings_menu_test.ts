@@ -8,8 +8,10 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {Account, AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {createPageAvailabilityForTesting, createRouterForTesting, DevicePageBrowserProxyImpl, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, MultiDeviceBrowserProxyImpl, MultiDevicePageContentData, MultiDeviceSettingsMode, OsSettingsMenuElement, OsSettingsMenuItemElement, Router, routesMojom, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import type {Account} from 'chrome://os-settings/lazy_load.js';
+import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {MultiDevicePageContentData, OsSettingsMenuElement, OsSettingsMenuItemElement} from 'chrome://os-settings/os_settings.js';
+import {createPageAvailabilityForTesting, createRouterForTesting, DevicePageBrowserProxyImpl, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, MultiDeviceBrowserProxyImpl, MultiDeviceSettingsMode, Router, routesMojom, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
@@ -810,19 +812,19 @@ suite('<os-settings-menu>', () => {
 
     function getCellularDeviceStateProps(): OncMojo.DeviceStateProperties {
       return {
-        ipv4Address: undefined,
-        ipv6Address: undefined,
-        imei: undefined,
-        macAddress: undefined,
+        ipv4Address: null,
+        ipv6Address: null,
+        imei: null,
+        macAddress: null,
         scanning: false,
-        simLockStatus: undefined,
-        simInfos: undefined,
+        simLockStatus: null,
+        simInfos: null,
         inhibitReason: InhibitReason.kNotInhibited,
         simAbsent: false,
         deviceState: DeviceStateType.kDisabled,
         type: NetworkType.kCellular,
         managedNetworkAvailable: false,
-        serial: undefined,
+        serial: null,
         isCarrierLocked: false,
         isFlashing: false,
       };

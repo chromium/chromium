@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 
 #include <algorithm>
@@ -497,10 +492,13 @@ int ServiceWorkerCacheWriter::DoReadDataForCompareDone(int result) {
   DCHECK(data_to_read_);
   DCHECK(data_to_write_);
 
+  const size_t result_as_size = base::checked_cast<size_t>(result);
+
   // Compare the data from the ServiceWorker script cache to the data from the
   // network.
-  if (!std::equal(data_to_read_->data(), data_to_read_->data() + result,
-                  data_to_write_->data() + compare_offset_)) {
+  if (!std::ranges::equal(
+          data_to_read_->span().first(result_as_size),
+          data_to_write_->span().subspan(compare_offset_, result_as_size))) {
     // Data mismatched. This method already validated that all the bytes through
     // |bytes_compared_| were identical, so copy the first |bytes_compared_|
     // over, then start writing network data back after the changed point.
@@ -743,9 +741,9 @@ class ServiceWorkerCacheWriter::DataPipeReader {
 
  private:
   void ReadInternal(MojoResult) {
-    MojoResult result = data_->ReadData(
-        MOJO_READ_DATA_FLAG_NONE, buffer_->span().first(num_bytes_to_read_),
-        num_bytes_to_read_);
+    MojoResult result =
+        data_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                        buffer_->first(num_bytes_to_read_), num_bytes_to_read_);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       watcher_.ArmOrNotify();
       return;
@@ -868,8 +866,7 @@ int ServiceWorkerCacheWriter::WriteDataToResponseWriter(
     checksum_->Update(data->data(), length);
   }
 
-  mojo_base::BigBuffer big_buffer(
-      base::as_bytes(base::span(data->data(), length)));
+  mojo_base::BigBuffer big_buffer(base::as_bytes(data->span().first(length)));
   writer_->WriteData(
       std::move(big_buffer),
       base::BindOnce(&AsyncOnlyCompletionCallbackAdaptor::WrappedCallback,

@@ -56,6 +56,10 @@
   [self startSafeMode:sceneState];
 }
 
+- (void)sceneStateDidDisableUI:(SceneState*)sceneState {
+  [self stopSafeMode];
+}
+
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
@@ -93,9 +97,7 @@
 }
 
 - (void)stopSafeMode {
-  if (_safeModeBlocker) {
-    _safeModeBlocker.reset();
-  }
+  _safeModeBlocker.reset();
   self.safeModeCoordinator = nil;
 }
 

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ARC_DEMO_MODE_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_ASH_ARC_ARC_DEMO_MODE_DELEGATE_IMPL_H_
 
-#include "ash/components/arc/session/arc_client_adapter.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "chromeos/ash/experiences/arc/session/arc_client_adapter.h"
 
 namespace arc {
 

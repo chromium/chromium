@@ -19,7 +19,7 @@
                 "config": "arm64_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "arm64_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -52,7 +52,7 @@
                 "apply_configs": [
                   "download_xr_test_apks"
                 ],
-                "config": "android",
+                "config": "arm64_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -82,18 +82,15 @@
       "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-android-s23-64/targets"
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 150
   },

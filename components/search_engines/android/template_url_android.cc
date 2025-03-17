@@ -38,7 +38,7 @@ jboolean JNI_TemplateUrl_IsPrepopulatedOrDefaultProviderByPolicy(
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return template_url->prepopulate_id() > 0 ||
          template_url->CreatedByPolicy() ||
-         template_url->created_from_play_api();
+         template_url->CreatedByRegulatoryProgram();
 }
 
 jlong JNI_TemplateUrl_GetLastVisitedTime(JNIEnv* env, jlong template_url_ptr) {

@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountUtils;
@@ -56,8 +57,8 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onProfileAvailable(Profile profile) {
+        super.onProfileAvailable(profile);
         mFrameLayout = new FrameLayout(this);
         setContentView(mFrameLayout);
         mWindowAndroid =
@@ -80,11 +81,10 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
                         ? AccountUtils.createAccountFromName(selectedAccountName)
                         : null;
 
-        assert getProfileProvider().getOriginalProfile() != null;
+        assert profile != null;
         ReauthenticatorBridge reauthenticatorBridge =
                 requireDeviceLockReauthentication
-                        ? DeviceLockCoordinator.createDeviceLockAuthenticatorBridge(
-                                this, getProfileProvider().getOriginalProfile())
+                        ? DeviceLockCoordinator.createDeviceLockAuthenticatorBridge(this, profile)
                         : null;
         mDeviceLockCoordinator =
                 new DeviceLockCoordinator(

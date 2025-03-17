@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
@@ -44,7 +43,9 @@ namespace {
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     content::BrowserContext* context) {
 #if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  if (!password_manager_android_util::IsInternalBackendPresent()) {
+
+  password_manager_android_util::PasswordManagerUtilBridge util_bridge;
+  if (!util_bridge.IsInternalBackendPresent()) {
     LOG(ERROR)
         << "Password store is not supported: use_login_database_as_backend is "
            "false when Chrome's internal backend is not present. Please, set "
@@ -58,10 +59,6 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 
   DCHECK(!profile->IsOffTheRecord());
 
-  std::unique_ptr<password_manager::PasswordAffiliationSourceAdapter>
-      password_affiliation_adapter = std::make_unique<
-          password_manager::PasswordAffiliationSourceAdapter>();
-
   scoped_refptr<PasswordStore> ps;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_OZONE)
@@ -72,8 +69,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
           : nullptr;
 
   ps = new password_manager::PasswordStore(CreateProfilePasswordStoreBackend(
-      profile->GetPath(), profile->GetPrefs(), *password_affiliation_adapter,
-      os_crypt_async));
+      profile->GetPath(), profile->GetPrefs(), os_crypt_async));
 #else
   NOTIMPLEMENTED();
 #endif
@@ -99,14 +95,20 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
       password_manager::kProfileStore, profile->GetPrefs(), base::Seconds(60),
       network_context_getter);
 
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<password_manager::PasswordAffiliationSourceAdapter>
+      password_affiliation_adapter = std::make_unique<
+          password_manager::PasswordAffiliationSourceAdapter>();
   password_affiliation_adapter->RegisterPasswordStore(ps.get());
   affiliation_service->RegisterSource(std::move(password_affiliation_adapter));
-#if BUILDFLAG(IS_ANDROID)
-  CHECK(password_manager_android_util::IsInternalBackendPresent());
+#endif
+
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+  CHECK(util_bridge.IsInternalBackendPresent());
   password_manager::LoginDbDeprecationRunner* login_db_deprecation_runner =
       LoginDbDeprecationRunnerFactory::GetForProfile(profile);
   if (login_db_deprecation_runner) {
-    login_db_deprecation_runner->StartExport(ps);
+    login_db_deprecation_runner->StartExportWithDelay(ps);
   }
 #endif
   DelayReportingPasswordStoreMetrics(profile);

@@ -77,6 +77,14 @@ class NET_EXPORT CookieStore {
       std::optional<CookieAccessResult> cookie_access_result =
           std::nullopt) = 0;
 
+  // Set the cookie on the cookie store. This is unsafe because it doesn't do
+  // any of the usual inclusion checks and will always insert the cookie, This
+  // should be used for testing only. Use this only if SetCanonicalCookieAsync
+  // does not fit your testing requirements.
+  virtual void SetUnsafeCanonicalCookieForTestAsync(
+      std::unique_ptr<CanonicalCookie> cookie,
+      SetCookiesCallback callback) = 0;
+
   // Obtains a CookieList for the given |url| and |options|. The returned
   // cookies are passed into |callback|, ordered by longest path, then earliest
   // creation date.

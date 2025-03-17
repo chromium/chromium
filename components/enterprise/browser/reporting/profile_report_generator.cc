@@ -43,12 +43,14 @@ void ProfileReportGenerator::SetExtensionsEnabledCallback(
   extensions_enabled_callback_ = std::move(callback);
 }
 
-std::unique_ptr<em::ChromeUserProfileInfo>
-ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
-                                      const std::string& name,
-                                      ReportType report_type) {
+void ProfileReportGenerator::MaybeGenerate(
+    const base::FilePath& path,
+    ReportType report_type,
+    base::OnceCallback<void(std::unique_ptr<em::ChromeUserProfileInfo>)>
+        callback) {
   if (!delegate_->Init(path)) {
-    return nullptr;
+    std::move(callback).Run(nullptr);
+    return;
   }
 
   report_ = std::make_unique<em::ChromeUserProfileInfo>();
@@ -64,10 +66,10 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
       NOTREACHED();
   }
 
-  report_->set_name(name);
   report_->set_is_detail_available(true);
 
   delegate_->GetSigninUserInfo(report_.get());
+  delegate_->GetProfileName(report_.get());
 
 #if !BUILDFLAG(IS_CHROMEOS)
   delegate_->GetAffiliationInfo(report_.get());
@@ -80,6 +82,7 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
 
   if (is_machine_scope_) {
     delegate_->GetExtensionRequest(report_.get());
+    delegate_->GetProfileId(report_.get());
   }
 
   if (policies_enabled_) {
@@ -99,7 +102,7 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
     }
   }
 
-  return std::move(report_);
+  std::move(callback).Run(std::move(report_));
 }
 
 void ProfileReportGenerator::GetChromePolicyInfo() {

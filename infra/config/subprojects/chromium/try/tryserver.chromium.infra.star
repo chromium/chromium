@@ -4,7 +4,7 @@
 """Definitions of builders in the tryserver.chromium.infra builder group."""
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "siso")
+load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/html.star", "linkify")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -63,6 +63,23 @@ try_.builder(
     properties = {
         "$build/chromium_3pp": {
             "platform": "mac-amd64",
+            "package_prefix": "chromium_3pp",
+            "gclient_config": "chromium",
+        },
+    },
+)
+
+try_.builder(
+    name = "3pp-mac-arm64-packager",
+    description_html = "chromium 3pp packager on Mac ARM64 platform.",
+    executable = "recipe:chromium_3pp",
+    builderless = True,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    contact_team_email = "clank-engprod@google.com",
+    properties = {
+        "$build/chromium_3pp": {
+            "platform": "mac-arm64",
             "package_prefix": "chromium_3pp",
             "gclient_config": "chromium",
         },

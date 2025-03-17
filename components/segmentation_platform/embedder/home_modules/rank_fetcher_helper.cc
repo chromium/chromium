@@ -173,6 +173,7 @@ void RankFetcherHelper::MergeResultsAndRunCallback(
 
   ClassificationResult result(PredictionStatus::kSucceeded);
   result.ordered_labels = std::move(merged_labels);
+  VLOG(1) << "Home modules segmentation result " << result.ToDebugString();
   std::move(callback).Run(result);
 }
 

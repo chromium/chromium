@@ -67,7 +67,8 @@ void SetDragImage(const GURL& url,
                   const std::u16string& title,
                   const gfx::ImageSkia& icon,
                   const gfx::Point* press_pt,
-                  ui::OSExchangeData* data) {
+                  ui::OSExchangeData* data,
+                  std::optional<int> icon_label_spacing_override) {
   // Create a widget to render the drag image for us.
   ScopedWidget drag_widget(std::make_unique<views::Widget>());
   views::Widget::InitParams params(
@@ -85,8 +86,8 @@ void SetDragImage(const GURL& url,
           title.empty() ? base::UTF8ToUTF16(url.spec()) : title));
   button->SetTextSubpixelRenderingEnabled(false);
   const ui::ColorProvider* color_provider = drag_widget->GetColorProvider();
-  button->SetTextColorId(views::Button::STATE_NORMAL,
-                         ui::kColorTextfieldForeground);
+  button->SetTextColor(views::Button::STATE_NORMAL,
+                       ui::kColorTextfieldForeground);
 
   SkColor bg_color = color_provider->GetColor(ui::kColorTextfieldBackground);
   if (views::Widget::IsWindowCompositingSupported()) {
@@ -104,7 +105,9 @@ void SetDragImage(const GURL& url,
     button->SetImageModel(views::Button::STATE_NORMAL,
                           ui::ImageModel::FromImageSkia(icon));
   }
-
+  if (icon_label_spacing_override.has_value()) {
+    button->SetImageLabelSpacing(icon_label_spacing_override.value());
+  }
   gfx::Size size(button->GetPreferredSize({}));
   // drag_widget's size must be set to show the drag image in RTL.
   // However, on Windows, calling Widget::SetSize() resets

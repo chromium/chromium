@@ -113,20 +113,15 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
         LinearLayoutManager layoutManager = (LinearLayoutManager) parent.getLayoutManager();
         int activePosition = layoutManager.findFirstVisibleItemPosition();
         int dotHighlightPosition = activePosition;
-        assert activePosition != RecyclerView.NO_POSITION;
+        if (activePosition == RecyclerView.NO_POSITION) {
+            assertWithMessage(parent, activePosition, itemCount);
+            return;
+        }
 
         final View activeChild = layoutManager.findViewByPosition(activePosition);
         // It is possible that the activeChild is null, see b/363959953.
         if (activeChild == null) {
-            StringBuilder message =
-                    new StringBuilder("The activePosition of the RecyclerView is :");
-            message.append(activePosition);
-            message.append(", the original item count is :");
-            message.append(itemCount);
-            message.append(", the current item count is:");
-            message.append(parent.getAdapter().getItemCount());
-
-            assert false : message.toString();
+            assertWithMessage(parent, activePosition, itemCount);
             return;
         }
 
@@ -145,6 +140,17 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
         // animation when scrolling.
         boolean showDot = isMultiItemPerScreen() ? true : left == 0;
         drawHighlights(canvas, indicatorStartX, indicatorPosY, dotHighlightPosition, showDot);
+    }
+
+    private void assertWithMessage(RecyclerView parent, int activePosition, int itemCount) {
+        StringBuilder message = new StringBuilder("The activePosition of the RecyclerView is :");
+        message.append(activePosition);
+        message.append(", the original item count is :");
+        message.append(itemCount);
+        message.append(", the current item count is:");
+        message.append(parent.getAdapter().getItemCount());
+
+        assert false : message.toString();
     }
 
     /** Draws the inactive indicator dots. */

@@ -5,12 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_COORDINATOR_H_
 
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol PasswordSettingsCoordinatorDelegate;
 
 // This coordinator presents settings related to the Password Manager.
-@interface PasswordSettingsCoordinator : ChromeCoordinator
+@interface PasswordSettingsCoordinator
+    : ChromeCoordinator <PasswordSettingsPresentationDelegate>
 
 // Delegate.
 @property(nonatomic, weak) id<PasswordSettingsCoordinatorDelegate> delegate;

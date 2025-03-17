@@ -43,6 +43,8 @@ const char kDisableGpuProcessForDX12InfoCollection[] =
 
 const char kEnableUnsafeWebGPU[] = "enable-unsafe-webgpu";
 
+const char kForceHighPerformanceGPU[] = "force-high-performance-gpu";
+
 // Enables WebGPU developer features which are not generally exposed to the web
 // platform.
 const char kEnableWebGPUDeveloperFeatures[] =

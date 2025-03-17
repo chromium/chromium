@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -33,9 +32,9 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -124,7 +123,6 @@ public class ContextMenuRenderTest {
                     NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
                     mListItems.clear();
                 });
-        FeatureList.setTestValues(null);
     }
 
     @Test
@@ -137,7 +135,7 @@ public class ContextMenuRenderTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @CommandLineFlags.Add(ChromeSwitches.FORCE_CONTEXT_MENU_POPUP)
+    @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testContextMenuViewWithLink_Popup() throws IOException {
         doTestContextMenuViewWithLink("context_menu_with_link_popup");
     }
@@ -152,7 +150,7 @@ public class ContextMenuRenderTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @CommandLineFlags.Add(ChromeSwitches.FORCE_CONTEXT_MENU_POPUP)
+    @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testContextMenuViewWithImageLink_Popup() throws IOException {
         doTestContextMenuViewWithImageLink("context_menu_with_image_link_popup");
     }

@@ -9,10 +9,10 @@
 #import "base/time/time.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/data_type.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -99,6 +99,10 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 // Tests that signing into an account with tab groups shows them in Tab Grid and
 // Tab Groups panel.
 - (void)testSignInWithGroupsAddsToTabGridAndTabGroupPanel {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Sign in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
@@ -189,6 +193,10 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 // Tests that signing out keeps groups created before syncing and deletes groups
 // created since.
 - (void)testSignOutKeepsPreviousGroupDeletesNewGroup {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [ChromeEarlGreyUI openTabGrid];
 
   // Switch over to the third panel and delete existing saved groups.
@@ -249,6 +257,10 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 // Tests that stopping syncing tabs keeps groups created before syncing and
 // deletes groups created since.
 - (void)testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   [ChromeEarlGreyUI openTabGrid];
 
   // Switch over to the third panel and delete existing saved groups.
@@ -309,6 +321,10 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 
 // Tests that tab groups don't get reopened after signing out and back in
 - (void)testSignOutAndBackInDoesNotReopenGroups {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   // Ensure that there are no tab groups initially.
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]

@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/document_isolation_policy.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
@@ -175,6 +176,11 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
 
   // The URL of this context.
   virtual const GURL& url() const = 0;
+  // The url to use for access check, the same url as the one used for scope
+  // match. This is needed for srcdoc iframes where url() is "about:srcdoc" and
+  // url_for_access_check() is the parent client's URL that matches the service
+  // worker's origin.
+  virtual const GURL& url_for_access_check() const = 0;
 
   // Calls ContentBrowserClient::AllowServiceWorker(). Returns true if content
   // settings allows service workers to run at |scope|. If this container is for
@@ -244,6 +250,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
       const PolicyContainerPolicies& policy_container_policies,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter,
       ukm::SourceId ukm_source_id);
 
   ~ServiceWorkerContainerHostForClient() override;
@@ -304,6 +312,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   const base::WeakPtr<ServiceWorkerContextCore>& context() const override;
   base::WeakPtr<ServiceWorkerContainerHost> AsWeakPtr() override;
   const GURL& url() const override;
+  const GURL& url_for_access_check() const override;
   bool AllowServiceWorker(const GURL& scope, const GURL& script_url) override;
   void DispatchExtendableMessageEvent(
       scoped_refptr<ServiceWorkerVersion> version,
@@ -430,6 +439,10 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_;
 
+  // An endpoint connected to the DocumentIsolationPolicy reporter. A clone of
+  // this connection is passed to the service worker. Bound on response commit.
+  mojo::Remote<network::mojom::DocumentIsolationPolicyReporter> dip_reporter_;
+
   base::WeakPtrFactory<ServiceWorkerContainerHostForClient> weak_ptr_factory_{
       this};
 };
@@ -470,6 +483,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForServiceWorker final
   const base::WeakPtr<ServiceWorkerContextCore>& context() const override;
   base::WeakPtr<ServiceWorkerContainerHost> AsWeakPtr() override;
   const GURL& url() const override;
+  const GURL& url_for_access_check() const override;
   bool AllowServiceWorker(const GURL& scope, const GURL& script_url) override;
   void DispatchExtendableMessageEvent(
       scoped_refptr<ServiceWorkerVersion> version,

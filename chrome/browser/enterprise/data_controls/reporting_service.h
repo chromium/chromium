@@ -78,7 +78,7 @@ class ReportingService : public ReportingServiceBase {
       const content::ClipboardMetadata& metadata,
       const Verdict& verdict,
       const std::string& trigger,
-      safe_browsing::EventResult event_result);
+      enterprise_connectors::EventResult event_result);
 
   // `profile_` is initialized with the browser_context passed in the
   // constructor.

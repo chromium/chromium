@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_SYSTEM_DISPLAY_DISPLAY_INFO_PROVIDER_WIN_H_
 #define CHROME_BROWSER_EXTENSIONS_SYSTEM_DISPLAY_DISPLAY_INFO_PROVIDER_WIN_H_
 
-#include "extensions/browser/api/system_display/display_info_provider.h"
+#include "extensions/browser/display_info_provider_base.h"
 
 namespace extensions {
 
-class DisplayInfoProviderWin : public DisplayInfoProvider {
+class DisplayInfoProviderWin : public DisplayInfoProviderBase {
  public:
   DisplayInfoProviderWin();
 

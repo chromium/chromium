@@ -57,13 +57,13 @@ std::unique_ptr<KeyedService> DesktopProfileSessionDurationsServiceFactory::
         content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-// On Ash and Lacros IsGuestSession and IsRegularProfile() are not mutually
-// exclusive, which breaks `ProfileKeyedServiceFactory` logic. THerefore the
+// On ChromeOS, IsGuestSession and IsRegularProfile() are not mutually
+// exclusive, which breaks `ProfileKeyedServiceFactory` logic. Therefore the
 // below check is still needed despite the proper filter already set.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (profile->IsGuestSession())
     return nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   DCHECK(!profile->IsSystemProfile());
   DCHECK(!profile->IsGuestSession());

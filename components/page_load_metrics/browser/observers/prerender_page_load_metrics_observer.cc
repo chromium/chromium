@@ -5,6 +5,7 @@
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -28,7 +29,7 @@ void RecordShiftedTimeHistogram(const std::string& histogram_name,
   // Generated with Histogram::InitializeBucketRanges. Firstly generate an array
   // by `Histogram::InitializeBucketRanges(0, 60000, ranges)`, and then expand
   // the array to two sides of the axis of 60000.
-  static const std::vector<int> ranges = {
+  static const int ranges[] = {
       0,     11600, 20957, 28505, 34594, 39506, 43468, 46664,  49242, 51322,
       53000, 54353, 55445, 56326, 57036, 57609, 58071, 58444,  58745, 58988,
       59184, 59342, 59469, 59572, 59655, 59722, 59776, 59819,  59854, 59882,
@@ -39,10 +40,9 @@ void RecordShiftedTimeHistogram(const std::string& histogram_name,
       60146, 60181, 60224, 60278, 60345, 60428, 60531, 60658,  60816, 61012,
       61255, 61556, 61929, 62391, 62964, 63674, 64555, 65647,  67000, 68678,
       70758, 73336, 76532, 80494, 85406, 91495, 99043, 108400, 120000};
-  static const std::vector<base::HistogramBase::Sample> samples =
-      base::CustomHistogram::ArrayToCustomEnumRanges(ranges);
   base::HistogramBase* time_histogram = base::CustomHistogram::FactoryGet(
-      histogram_name, samples, base::HistogramBase::kUmaTargetedHistogramFlag);
+      histogram_name, base::CustomHistogram::ArrayToCustomEnumRanges(ranges),
+      base::HistogramBase::kUmaTargetedHistogramFlag);
   time_histogram->Add(time.InMilliseconds());
 }
 
@@ -79,6 +79,10 @@ const char
     kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration[] =
         "PageLoad.InteractiveTiming.UserInteractionLatency."
         "HighPercentile2.MaxEventDuration.Prerender";
+const char
+    kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDurationIncognito
+        [] = "PageLoad.InteractiveTiming.UserInteractionLatency."
+             "HighPercentile2.MaxEventDuration.Prerender.Incognito";
 const char kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration[] =
     "PageLoad.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration."
     "Prerender";
@@ -89,11 +93,15 @@ const char kPageLoadPrerenderActivatedPageLoaderStatus[] =
 
 // Lead time brought by prerender
 const char kDomContentLoadedToActivation[] =
-    "PageLoad.Internal.Prerender2.DomContentLoadedToActivation2";
+    "PageLoad.Internal.Prerender2.DomContentLoadedToActivation3";
+const char kMainResourceParseStartToActivation[] =
+    "PageLoad.Internal.Prerender2.MainResourceParseStartToActivation";
 
 }  // namespace internal
 
-PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver() = default;
+PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver(
+    bool is_incognito)
+    : is_incognito_(is_incognito) {}
 PrerenderPageLoadMetricsObserver::~PrerenderPageLoadMetricsObserver() = default;
 
 enum PrerenderPageLoadMetricsObserver::PaintingTimeType : uint8_t {
@@ -284,17 +292,28 @@ void PrerenderPageLoadMetricsObserver::MaybeRecordDocumentLoadMetrics(
   // If the event is not set, treat it's timestamp as infinite and then clamp it
   // to the lower bound of the histogram, which indicates that the event is
   // never fired.
+  base::TimeDelta main_resource_parse_start =
+      main_frame_timing.parse_timing->parse_start.value_or(
+          upper_bound + navigation_to_activation_time_.value());
   base::TimeDelta dom_content_loaded_event_start =
       main_frame_timing.document_timing->dom_content_loaded_event_start
           .value_or(upper_bound + navigation_to_activation_time_.value());
+
   // Shift the duration by the upper bound because UMA cannot handle negative
   // values.
-  base::TimeDelta shifted_duration = navigation_to_activation_time_.value() -
-                                     dom_content_loaded_event_start +
-                                     upper_bound;
-  RecordShiftedTimeHistogram(
-      AppendSuffix(internal::kDomContentLoadedToActivation), shifted_duration);
+  base::TimeDelta shifted_main_resource_parse_start_duration =
+      navigation_to_activation_time_.value() - main_resource_parse_start +
+      upper_bound;
+  base::TimeDelta shifted_dom_content_loaded_event_start_duration =
+      navigation_to_activation_time_.value() - dom_content_loaded_event_start +
+      upper_bound;
 
+  RecordShiftedTimeHistogram(
+      AppendSuffix(internal::kDomContentLoadedToActivation),
+      shifted_dom_content_loaded_event_start_duration);
+  RecordShiftedTimeHistogram(
+      AppendSuffix(internal::kMainResourceParseStartToActivation),
+      shifted_main_resource_parse_start_duration);
   // TODO(crbug.com/40240492): Add more metrics to track the loading progress on
   // the renderer side, e.g., loaded the blocking resources, etc.
 }
@@ -406,6 +425,15 @@ void PrerenderPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
           kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration,
       high_percentile2_max_event_duration, base::Milliseconds(1),
       base::Seconds(60), 50);
+
+  if (is_incognito_) {
+    UmaHistogramCustomTimes(
+        internal::
+            kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDurationIncognito,
+        high_percentile2_max_event_duration, base::Milliseconds(1),
+        base::Seconds(60), 50);
+  }
+
   base::UmaHistogramCounts1000(
       internal::kHistogramPrerenderNumInteractions,
       responsiveness_metrics_normalization.num_user_interactions());

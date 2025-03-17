@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "url/gurl.h"
 
@@ -61,8 +61,31 @@ class PaymentsWindowManager {
     std::optional<CreditCard> card;
   };
 
+  // The current status inside the BNPL pop-up.
+  enum class BnplPopupStatus {
+    // The user successfully finished the flow inside of the pop-up.
+    kSuccess = 0,
+    // The user failed the flow inside of the pop-up.
+    kFailure = 1,
+    // The user has not yet finished the flow inside of the pop-up.
+    kNotFinished = 2,
+  };
+
+  // The result of the BNPL flow, which will be sent to the caller that
+  // initiated the flow.
+  enum class BnplFlowResult {
+    // The BNPL flow was successful.
+    kSuccess = 0,
+    // The BNPL flow failed.
+    kFailure = 1,
+    // The user closed the pop-up which ended the BNPL flow.
+    kUserClosed = 2,
+  };
+
   using OnVcn3dsAuthenticationCompleteCallback =
       base::OnceCallback<void(Vcn3dsAuthenticationResponse)>;
+
+  using OnBnplPopupClosedCallback = base::OnceCallback<void(BnplFlowResult)>;
 
   // The contextual data required for the VCN 3DS flow.
   struct Vcn3dsContext {
@@ -91,11 +114,42 @@ class PaymentsWindowManager {
     bool user_consent_already_given = false;
   };
 
+  // The contextual data required for the BNPL flow.
+  struct BnplContext {
+    BnplContext();
+    BnplContext(BnplContext&&);
+    BnplContext& operator=(BnplContext&&);
+    ~BnplContext();
+
+    // The starting location of the BNPL flow, which is an initial URL to
+    // open inside of the pop-up.
+    GURL initial_url;
+    // The URL prefix that denotes the user successfully finished the flow
+    // inside of the pop-up. This parameter will be used to match against each
+    // URL navigation inside of the pop-up, and if the window manager observes
+    // `success_url_prefix` inside of the pop-up, it will close the pop-up
+    // automatically.
+    GURL success_url_prefix;
+    // The URL prefix that denotes the user failed the flow inside of the
+    // pop-up. This parameter will be used to match against each URL navigation
+    // inside of the pop-up, and if the window manager observes the
+    // `failure_url_prefix` inside of the pop-up, it will close the pop-up
+    // automatically.
+    GURL failure_url_prefix;
+    // The callback to run to notify the caller that the flow inside of the
+    // pop-up was finished, with the result.
+    OnBnplPopupClosedCallback completion_callback;
+  };
+
   virtual ~PaymentsWindowManager() = default;
 
   // Initiates the VCN 3DS auth flow. All fields in `context` must be valid and
   // non-empty.
   virtual void InitVcn3dsAuthentication(Vcn3dsContext context) = 0;
+
+  // Initiates the BNPL flow. All fields in `context` must be valid and
+  // non-empty.
+  virtual void InitBnplFlow(BnplContext context) = 0;
 };
 
 }  // namespace autofill::payments

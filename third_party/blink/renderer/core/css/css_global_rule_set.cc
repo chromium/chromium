@@ -51,6 +51,7 @@ void CSSGlobalRuleSet::UpdateDocumentRulesSelectorsRuleSet(Document& document) {
         selector, /*parent_rule=*/nullptr, *medium, kRuleHasNoSpecialState,
         /*within_mixin=*/false);
   }
+  document_rules_selectors_rule_set_->CompactRulesIfNeeded();
 }
 
 void CSSGlobalRuleSet::Update(Document& document) {

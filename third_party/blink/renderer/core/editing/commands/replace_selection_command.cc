@@ -454,10 +454,9 @@ ReplaceSelectionCommand::ReplaceSelectionCommand(
 String ReplaceSelectionCommand::TextDataForInputEvent() const {
   // As per spec https://www.w3.org/TR/input-events-1/#overview
   // input event data should be set for certain input types.
-  if (RuntimeEnabledFeatures::NonNullInputEventDataForTextAreaEnabled() &&
-      (input_type_ == InputEvent::InputType::kInsertFromDrop ||
-       input_type_ == InputEvent::InputType::kInsertFromPaste ||
-       input_type_ == InputEvent::InputType::kInsertReplacementText)) {
+  if (input_type_ == InputEvent::InputType::kInsertFromDrop ||
+      input_type_ == InputEvent::InputType::kInsertFromPaste ||
+      input_type_ == InputEvent::InputType::kInsertReplacementText) {
     return input_event_data_;
   }
   return g_null_atom;
@@ -911,18 +910,8 @@ static bool FollowBlockElementStyle(const Node* node) {
   // TODO(https://crbug.com/352038138): Investigate preserving styles within
   // pre elements in block merge scenarios.
       element->HasTagName(html_names::kPreTag);
-  if (RuntimeEnabledFeatures::
-          PreserveFollowingBlockStylesDuringBlockMergeEnabled()) {
-    return should_follow_block_element_style;
-  } else {
-    return should_follow_block_element_style ||
-           element->HasTagName(html_names::kH1Tag) ||
-           element->HasTagName(html_names::kH2Tag) ||
-           element->HasTagName(html_names::kH3Tag) ||
-           element->HasTagName(html_names::kH4Tag) ||
-           element->HasTagName(html_names::kH5Tag) ||
-           element->HasTagName(html_names::kH6Tag);
-  }
+
+  return should_follow_block_element_style;
 }
 
 // Remove style spans before insertion if they are unnecessary.  It's faster
@@ -1023,10 +1012,16 @@ void ReplaceSelectionCommand::MergeEndIfNeeded(EditingState* editing_state) {
     start_of_paragraph_to_move = CreateVisiblePosition(
         start_of_paragraph_to_move.ToPositionWithAffinity());
   }
-
-  MoveParagraph(start_of_paragraph_to_move,
-                EndOfParagraph(start_of_paragraph_to_move), destination,
-                editing_state);
+  if (RuntimeEnabledFeatures::AllowSkippingEditingBoundaryToMergeEndEnabled()) {
+    MoveParagraph(
+        start_of_paragraph_to_move,
+        EndOfParagraph(start_of_paragraph_to_move, kCanSkipOverEditingBoundary),
+        destination, editing_state);
+  } else {
+    MoveParagraph(start_of_paragraph_to_move,
+                  EndOfParagraph(start_of_paragraph_to_move), destination,
+                  editing_state);
+  }
   if (editing_state->IsAborted())
     return;
 
@@ -1262,10 +1257,6 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
     return;
 
   Position insertion_pos = EndingVisibleSelection().Start();
-  Position placeholder;
-  if (RuntimeEnabledFeatures::RemoveCollapsedPlaceholderEnabled()) {
-    placeholder = ComputePlaceholderToCollapseAt(insertion_pos);
-  }
 
   // We don't want any of the pasted content to end up nested in a Mail
   // blockquote, so first break out of any surrounding Mail blockquotes. Unless
@@ -1296,6 +1287,8 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
   PrepareWhitespaceAtPositionForSplit(insertion_pos);
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+
+  Position placeholder = ComputePlaceholderToCollapseAt(insertion_pos);
 
   // If the downstream node has been removed there's no point in continuing.
   if (!MostForwardCaretPosition(insertion_pos).AnchorNode())
@@ -1392,7 +1385,14 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
           split_start = insertion_pos.ComputeContainerNode();
         Node* node_to_split_to =
             SplitTreeToNode(split_start, element_to_split_to->parentNode());
-        insertion_pos = Position::InParentBeforeNode(*node_to_split_to);
+        if (RuntimeEnabledFeatures::
+                ComputeInsertionPositionBasedOnAnchorTypeEnabled() &&
+            (insertion_pos.IsAfterChildren() ||
+             insertion_pos.IsAfterAnchor())) {
+          insertion_pos = Position::InParentAfterNode(*node_to_split_to);
+        } else {
+          insertion_pos = Position::InParentBeforeNode(*node_to_split_to);
+        }
       }
     }
   }
@@ -1509,8 +1509,15 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
   }
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+
+  bool is_root_display_inline = false;
+  if (RuntimeEnabledFeatures::RemovePlaceholderBRForDisplayInlineEnabled()) {
+    is_root_display_inline =
+        current_root && current_root->GetComputedStyle() &&
+        current_root->GetComputedStyle()->IsDisplayInlineType();
+  }
   if (end_br &&
-      (plain_text_fragment ||
+      (plain_text_fragment || is_root_display_inline ||
        (ShouldRemoveEndBR(end_br, original_vis_pos_before_end_br) &&
         !(fragment.HasInterchangeNewlineAtEnd() && selection_is_plain_text)))) {
     ContainerNode* parent = end_br->parentNode();
@@ -2123,10 +2130,8 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
       !fragment.FirstChild()->IsTextNode())
     return false;
 
-  if (RuntimeEnabledFeatures::NonNullInputEventDataForTextAreaEnabled()) {
-    // Save the text to set event data for input events.
-    input_event_data_ = To<Text>(fragment.FirstChild())->data();
-  }
+  // Save the text to set event data for input events.
+  input_event_data_ = To<Text>(fragment.FirstChild())->data();
 
   // FIXME: Would be nice to handle smart replace in the fast path.
   if (smart_replace_ || fragment.HasInterchangeNewlineAtStart() ||

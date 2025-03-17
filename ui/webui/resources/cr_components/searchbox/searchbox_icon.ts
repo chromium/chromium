@@ -137,18 +137,18 @@ export class SearchboxIconElement extends PolymerElement {
     };
   }
 
-  backgroundImage: string;
-  defaultIcon: string;
-  hasIconContainerBackground: boolean;
-  inSearchbox: boolean;
-  isAnswer: boolean;
-  isWeatherAnswer: boolean;
-  maskImage: string;
-  match: AutocompleteMatch;
-  private iconStyle_: string;
-  private imageSrc_: string;
-  private imageLoading_: boolean;
-  private isLensSearchbox_: boolean;
+  declare backgroundImage: string;
+  declare defaultIcon: string;
+  declare hasIconContainerBackground: boolean;
+  declare inSearchbox: boolean;
+  declare isAnswer: boolean;
+  declare isWeatherAnswer: boolean;
+  declare maskImage: string;
+  declare match: AutocompleteMatch;
+  declare private iconStyle_: string;
+  declare private imageSrc_: string;
+  declare private imageLoading_: boolean;
+  declare private isLensSearchbox_: boolean;
 
   //============================================================================
   // Helpers

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "ui/gfx/geometry/rect.h"
@@ -83,7 +82,6 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
   uint32_t GetTextureIdForTest() { return wire_texture_id_; }
   uint32_t GetTextureGenerationForTest() { return wire_texture_generation_; }
   const wgpu::Device& GetDeviceForTest() { return device_; }
-  const gpu::Mailbox& GetMailbox() { return shared_image_->mailbox(); }
 
  private:
   WebGPUMailboxTexture(

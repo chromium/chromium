@@ -17,12 +17,25 @@ var startTest = function() {
 window.onAppCommand = function(command) {
   LOG('onAppCommand: ' + command);
   switch (command) {
-    case 'create-guest':
-      var webview = document.createElement('webview');
+    case 'create-guest': {
+      let webview = document.createElement('webview');
       webview.src = 'data:text/html,<body>Guest</body>';
       document.body.appendChild(webview);
       chrome.test.sendMessage('WebViewTest.PASSED');
       break;
+    }
+    case 'create-guest-and-stall-attachment': {
+      let webview = document.createElement('webview');
+      webview.src = 'data:text/html,<body>Guest</body>';
+      document.body.appendChild(webview);
+      chrome.test.sendMessage('WebViewTest.PASSED');
+      // By spinning forever here, we prevent `webview` from completing the
+      // attachment process. The C++ side will test that we can shutdown safely
+      // in this case.
+      while (true) {
+      }
+      break;
+    }
     default:
       failTest();
       break;

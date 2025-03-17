@@ -41,7 +41,6 @@
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
@@ -53,6 +52,7 @@
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "components/viz/test/fake_surface_observer.h"
 #include "components/viz/test/stub_surface_client.h"
+#include "components/viz/test/test_shared_image_interface_provider.h"
 #include "components/viz/test/test_surface_id_allocator.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -475,18 +475,21 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
   }
 
  protected:
-  ServerSharedBitmapManager shared_bitmap_manager_;
+  gpu::SharedImageInterface* shared_image_interface() {
+    return shared_image_interface_provider_.GetSharedImageInterface();
+  }
+
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
   gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
 
-  FrameSinkManagerImpl manager_{
-      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
-  DisplayResourceProviderSoftware resource_provider_{
-      &shared_bitmap_manager_, &shared_image_manager_, &gpu_scheduler_};
+  FrameSinkManagerImpl manager_{FrameSinkManagerImpl::InitParams()};
+  DisplayResourceProviderSoftware resource_provider_{&shared_image_manager_,
+                                                     &gpu_scheduler_};
   FakeSurfaceObserver observer_{manager_.surface_manager(), false};
   FakeCompositorFrameSinkClient fake_client_;
   std::unique_ptr<CompositorFrameSinkSupport> root_sink_;
+  TestSharedImageInterfaceProvider shared_image_interface_provider_;
   SurfaceAggregator aggregator_;
 };
 
@@ -674,7 +677,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SimpleFrame) {
 // Tests that SharedElement quads are skipped during aggregation.
 TEST_F(SurfaceAggregatorValidSurfaceTest, SharedElementQuad) {
   ViewTransitionElementResourceId vt_resource_id(blink::ViewTransitionToken(),
-                                                 1);
+                                                 1, false);
 
   CompositorFrame frame =
       CompositorFrameBuilder()
@@ -1480,10 +1483,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, LayerIds) {
     ASSERT_EQ(1u, frame.render_pass_list.size());
     auto* render_pass = frame.render_pass_list.back().get();
 
-    uint32_t root_surface_namespace =
+    const gfx::OverlayLayerId::NamespaceId root_surface_namespace =
         aggregator_.GetLatestFrameData(root_surface_id_)
             ->GetClientNamespaceId();
-    uint32_t child_surface_namespace =
+    const gfx::OverlayLayerId::NamespaceId child_surface_namespace =
         aggregator_.GetLatestFrameData(child_surface_id)
             ->GetClientNamespaceId();
 
@@ -1523,10 +1526,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, LayerIds) {
     auto* child_pass = frame.render_pass_list.at(0).get();
     auto* root_pass = frame.render_pass_list.at(1).get();
 
-    uint32_t root_surface_namespace =
+    const gfx::OverlayLayerId::NamespaceId root_surface_namespace =
         aggregator_.GetLatestFrameData(root_surface_id_)
             ->GetClientNamespaceId();
-    uint32_t child_surface_namespace =
+    const gfx::OverlayLayerId::NamespaceId child_surface_namespace =
         aggregator_.GetLatestFrameData(child_surface_id)
             ->GetClientNamespaceId();
 
@@ -5798,7 +5801,8 @@ class SurfaceAggregatorWithResourcesTest : public SurfaceAggregatorTest {
 CompositorFrame BuildCompositorFrameWithResources(
     const std::vector<ResourceId>& resource_ids,
     bool valid,
-    SurfaceId child_id) {
+    SurfaceId child_id,
+    gpu::SharedImageInterface* shared_image_interface) {
   CompositorFrame frame = MakeEmptyCompositorFrame();
   auto pass = CompositorRenderPass::Create();
   pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(0, 0, 20, 20), gfx::Rect(),
@@ -5813,9 +5817,17 @@ CompositorFrame BuildCompositorFrameWithResources(
   }
 
   for (ResourceId resource_id : resource_ids) {
-    auto resource = TransferableResource::MakeSoftwareSharedBitmap(
-        SharedBitmap::GenerateId(), gpu::SyncToken(), gfx::Size(1, 1),
-        SinglePlaneFormat::kRGBA_8888);
+    auto shared_image =
+        shared_image_interface->CreateSharedImageForSoftwareCompositor(
+            {SinglePlaneFormat::kBGRA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
+             gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+             "SurfaceAggregatorWithResourcesTest"});
+    auto sync_token = shared_image_interface->GenVerifiedSyncToken();
+    auto resource = TransferableResource::MakeSoftwareSharedImage(
+        shared_image, sync_token, gfx::Size(1, 1),
+        SinglePlaneFormat::kBGRA_8888,
+        TransferableResource::ResourceSource::kTileRasterTask);
+
     resource.id = resource_id;
     if (!valid) {
       // ResourceProvider is software, so only software resources are valid. Do
@@ -5849,8 +5861,10 @@ void SubmitCompositorFrameWithResources(
     bool valid,
     SurfaceId child_id,
     CompositorFrameSinkSupport* support,
-    SurfaceId surface_id) {
-  auto frame = BuildCompositorFrameWithResources(resource_ids, valid, child_id);
+    SurfaceId surface_id,
+    gpu::SharedImageInterface* shared_image_interface) {
+  auto frame = BuildCompositorFrameWithResources(resource_ids, valid, child_id,
+                                                 shared_image_interface);
   support->SubmitCompositorFrame(surface_id.local_surface_id(),
                                  std::move(frame));
 }
@@ -5862,7 +5876,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TakeResourcesOneSurface) {
   std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
                                  ResourceId(13)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(), root_sink_.get(),
-                                     surface_id);
+                                     surface_id, shared_image_interface());
 
   auto frame = AggregateFrame(surface_id);
 
@@ -5870,7 +5884,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TakeResourcesOneSurface) {
   EXPECT_TRUE(fake_client_.returned_resources().empty());
 
   SubmitCompositorFrameWithResources({}, true, SurfaceId(), root_sink_.get(),
-                                     surface_id);
+                                     surface_id, shared_image_interface());
 
   frame = AggregateFrame(surface_id);
 
@@ -5895,7 +5909,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, ReturnResourcesAsSurfacesChange) {
   std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
                                  ResourceId(13)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(), root_sink_.get(),
-                                     surface_id1);
+                                     surface_id1, shared_image_interface());
 
   auto frame = AggregateFrame(surface_id1);
 
@@ -5905,7 +5919,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, ReturnResourcesAsSurfacesChange) {
   // Submitting a CompositorFrame to |surface_id2| should cause the surface
   // associated with |surface_id1| to get garbage collected.
   SubmitCompositorFrameWithResources({}, true, SurfaceId(), root_sink_.get(),
-                                     surface_id2);
+                                     surface_id2, shared_image_interface());
   manager_.surface_manager()->GarbageCollectSurfaces();
 
   frame = AggregateFrame(surface_id2);
@@ -5941,7 +5955,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TakeInvalidResources) {
   EXPECT_TRUE(fake_client_.returned_resources().empty());
 
   SubmitCompositorFrameWithResources({}, true, SurfaceId(), root_sink_.get(),
-                                     surface_id);
+                                     surface_id, shared_image_interface());
   ASSERT_EQ(1u, fake_client_.returned_resources().size());
   EXPECT_EQ(ResourceId(11u), fake_client_.returned_resources()[0].id);
 }
@@ -5961,16 +5975,16 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TwoSurfaces) {
   std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
                                  ResourceId(13)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support1.get(),
-                                     surface1_id);
+                                     surface1_id, shared_image_interface());
   std::vector<ResourceId> ids2 = {ResourceId(14), ResourceId(15),
                                   ResourceId(16)};
   SubmitCompositorFrameWithResources(ids2, true, SurfaceId(), support2.get(),
-                                     surface2_id);
+                                     surface2_id, shared_image_interface());
 
   auto frame = AggregateFrame(surface1_id);
 
   SubmitCompositorFrameWithResources({}, true, SurfaceId(), support1.get(),
-                                     surface1_id);
+                                     surface1_id, shared_image_interface());
 
   // Nothing should be available to be returned yet.
   EXPECT_TRUE(client.returned_resources().empty());
@@ -6002,17 +6016,20 @@ TEST_F(SurfaceAggregatorWithResourcesTest, InvalidChildSurface) {
   std::vector<ResourceId> ids = {ResourceId(14), ResourceId(15),
                                  ResourceId(16)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(),
-                                     child_support.get(), child_surface_id);
+                                     child_support.get(), child_surface_id,
+                                     shared_image_interface());
 
   std::vector<ResourceId> ids2 = {ResourceId(17), ResourceId(18),
                                   ResourceId(19)};
   SubmitCompositorFrameWithResources(ids2, false, child_surface_id,
-                                     middle_support.get(), middle_surface_id);
+                                     middle_support.get(), middle_surface_id,
+                                     shared_image_interface());
 
   std::vector<ResourceId> ids3 = {ResourceId(20), ResourceId(21),
                                   ResourceId(22)};
   SubmitCompositorFrameWithResources(ids3, true, middle_surface_id,
-                                     root_sink_.get(), root_surface_id);
+                                     root_sink_.get(), root_surface_id,
+                                     shared_image_interface());
 
   auto frame = AggregateFrame(root_surface_id);
 
@@ -6021,7 +6038,8 @@ TEST_F(SurfaceAggregatorWithResourcesTest, InvalidChildSurface) {
   EXPECT_EQ(1u, pass_list->back()->shared_quad_state_list.size());
   EXPECT_EQ(3u, pass_list->back()->quad_list.size());
   SubmitCompositorFrameWithResources(ids2, true, child_surface_id,
-                                     middle_support.get(), middle_surface_id);
+                                     middle_support.get(), middle_surface_id,
+                                     shared_image_interface());
 
   frame = AggregateFrame(root_surface_id);
 
@@ -6046,7 +6064,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, SecureOutputTexture) {
   std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
                                  ResourceId(13)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support1.get(),
-                                     surface1_id);
+                                     surface1_id, shared_image_interface());
 
   auto frame = AggregateFrame(surface1_id);
 
@@ -6115,7 +6133,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, OverrideChildPaintFlags) {
 
   std::vector<ResourceId> ids = {ResourceId(11)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support1.get(),
-                                     surface1_id);
+                                     surface1_id, shared_image_interface());
 
   auto frame = AggregateFrame(surface1_id);
 

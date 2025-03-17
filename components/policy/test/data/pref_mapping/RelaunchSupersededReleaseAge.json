@@ -1,0 +1,23 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RelaunchSupersededReleaseAge": 7
+        },
+        "prefs": {
+          "browser.relaunch_superseded_release_age": {
+            "location": "local_state",
+            "value": 7
+          }
+        }
+      }
+    ]
+  }
+]

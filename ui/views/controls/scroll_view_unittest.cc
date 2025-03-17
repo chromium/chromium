@@ -2556,7 +2556,7 @@ TEST_P(WidgetScrollViewTestRTLAndLayers, ScrollOffsetWithoutLayers) {
     SCOPED_TRACE(testing::Message("Nesting = ") << i);
     View* child = new View;
     child->SetBoundsRect(kCellRect);
-    deepest_view->AddChildView(child);
+    deepest_view->AddChildViewRaw(child);
     deepest_view = child;
 
     // Add a view in one quadrant. Scrolling just this view should only scroll
@@ -2565,7 +2565,7 @@ TEST_P(WidgetScrollViewTestRTLAndLayers, ScrollOffsetWithoutLayers) {
     // scroll bars, the scroll offset needs to go "a bit more".
     View* partial_view = new View;
     partial_view->SetSize(gfx::Size(kCellWidth / 3, kCellHeight / 3));
-    deepest_view->AddChildView(partial_view);
+    deepest_view->AddChildViewRaw(partial_view);
     partial_view->ScrollViewToVisible();
     int x_offset_in_cell = kCellWidth - partial_view->width();
     if (!scroll_view->horizontal_scroll_bar()->OverlapsContent()) {

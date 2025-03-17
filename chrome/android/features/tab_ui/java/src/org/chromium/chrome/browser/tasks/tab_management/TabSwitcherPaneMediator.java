@@ -290,9 +290,6 @@ public class TabSwitcherPaneMediator
                 "Tabs.GridTabSwitcher.ScrollToTabById.HasTab", hasTab);
         if (!hasTab) return;
 
-        if (filter.isTabInTabGroup(tab)) {
-            tab = tabModel.getTabById(tab.getRootId());
-        }
         int index = filter.indexOf(tab);
         scrollToTab(mTabIndexLookup.getNthTabIndexInModel(index));
     }
@@ -397,7 +394,7 @@ public class TabSwitcherPaneMediator
         return false;
     }
 
-    private TabListEditorController getTabListEditorController() {
+    TabListEditorController getTabListEditorController() {
         return mTabListEditorControllerSupplier == null
                 ? null
                 : mTabListEditorControllerSupplier.get();

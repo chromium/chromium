@@ -44,6 +44,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
@@ -210,11 +211,11 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                     (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         }
 
-        // For testing.
-        @NullUnmarked
+        @VisibleForTesting
+        @SuppressWarnings("NullAway")
         ConnectivityManagerDelegate() {
+            // Tests must mock all methods.
             mConnectivityManager = null;
-            // All the methods below should be overridden.
         }
 
         /**
@@ -248,11 +249,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             return networkInfo;
         }
 
-        /**
-         * Returns connection type and status information about the current
-         * default network.
-         */
-        NetworkState getNetworkState(WifiManagerDelegate wifiManagerDelegate) {
+        /** Returns connection type and status information about the current default network. */
+        NetworkState getNetworkState(@Nullable WifiManagerDelegate wifiManagerDelegate) {
             Network network = null;
             NetworkInfo networkInfo;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -267,7 +265,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             }
 
             if (network != null) {
-                final NetworkCapabilities capabilities = getNetworkCapabilities(network);
+                final NetworkCapabilitiesWrapper capabilities = getNetworkCapabilities(network);
                 boolean isMetered =
                         (capabilities != null
                                 && !capabilities.hasCapability(
@@ -313,7 +311,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                         networkInfo.getType(),
                         networkInfo.getSubtype(),
                         false,
-                        wifiManagerDelegate.getWifiSsid(),
+                        assumeNonNull(wifiManagerDelegate).getWifiSsid(),
                         false,
                         "");
             }
@@ -403,17 +401,18 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         }
 
         /**
-         * Return the NetworkCapabilities for {@code network}, or {@code null} if they cannot
-         * be retrieved (e.g. {@code network} has disconnected).
+         * Return the NetworkCapabilities for {@code network}, or {@code null} if they cannot be
+         * retrieved (e.g. {@code network} has disconnected).
          */
         @VisibleForTesting
-        protected @Nullable NetworkCapabilities getNetworkCapabilities(Network network) {
+        protected @Nullable NetworkCapabilitiesWrapper getNetworkCapabilities(Network network) {
             final int retryCount = 2;
             for (int i = 0; i < retryCount; ++i) {
                 // This try-catch is a workaround for https://crbug.com/1218536. We ignore
                 // the exception intentionally.
                 try {
-                    return mConnectivityManager.getNetworkCapabilities(network);
+                    return new NetworkCapabilitiesWrapper(
+                            mConnectivityManager.getNetworkCapabilities(network));
                 } catch (SecurityException e) {
                     // Do nothing.
                 }
@@ -547,10 +546,10 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             mContext = context;
         }
 
-        // For testing.
-        @NullUnmarked
+        @VisibleForTesting
+        @SuppressWarnings("NullAway")
         WifiManagerDelegate() {
-            // All the methods below should be overridden.
+            // Tests must mock all methods.
             mContext = null;
         }
 
@@ -645,7 +644,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     @RequiresApi(Build.VERSION_CODES.P)
     private class AndroidRDefaultNetworkCallback extends NetworkCallback {
         @Nullable LinkProperties mLinkProperties;
-        @Nullable NetworkCapabilities mNetworkCapabilities;
+        @Nullable NetworkCapabilitiesWrapper mNetworkCapabilities;
 
         @Override
         public void onAvailable(Network network) {
@@ -681,7 +680,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         @Override
         public void onCapabilitiesChanged(
                 Network network, NetworkCapabilities networkCapabilities) {
-            mNetworkCapabilities = networkCapabilities;
+            mNetworkCapabilities = new NetworkCapabilitiesWrapper(networkCapabilities);
             if (mRegistered && mLinkProperties != null && mNetworkCapabilities != null) {
                 connectionTypeChangedTo(getNetworkState(network));
             }
@@ -755,7 +754,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                 mVpnInPlace = null;
                 // If the filtered list of networks contains just a VPN, then that VPN is in place.
                 if (networks.length == 1) {
-                    final NetworkCapabilities capabilities =
+                    final NetworkCapabilitiesWrapper capabilities =
                             mConnectivityManagerDelegate.getNetworkCapabilities(networks[0]);
                     if (capabilities != null && capabilities.hasTransport(TRANSPORT_VPN)) {
                         mVpnInPlace = networks[0];
@@ -777,13 +776,13 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
          * Should changes to connected network {@code network} be ignored?
          *
          * @param network Network to possibly consider ignoring changes to.
-         * @param capabilities {@code NetworkCapabilities} for {@code network} if known, otherwise
-         *     {@code null}.
+         * @param capabilities {@code NetworkCapabilitiesWrapper} for {@code network} if known,
+         *     otherwise {@code null}.
          * @return {@code true} when either: {@code network} is an inaccessible VPN, or has already
          *     disconnected.
          */
         private boolean ignoreConnectedInaccessibleVpn(
-                Network network, @Nullable NetworkCapabilities capabilities) {
+                Network network, @Nullable NetworkCapabilitiesWrapper capabilities) {
             // Ignore inaccessible VPNs as they don't apply to Chrome.
             return capabilities == null
                     || (capabilities.hasTransport(TRANSPORT_VPN)
@@ -792,12 +791,13 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
 
         /**
          * Should changes to connected network {@code network} be ignored?
+         *
          * @param network Network to possible consider ignoring changes to.
-         * @param capabilities {@code NetworkCapabilities} for {@code network} if known, otherwise
-         *         {@code null}.
+         * @param capabilities {@code NetworkCapabilitiesWrapper} for {@code network} if known,
+         *     otherwise {@code null}.
          */
         private boolean ignoreConnectedNetwork(
-                Network network, @Nullable NetworkCapabilities capabilities) {
+                Network network, @Nullable NetworkCapabilitiesWrapper capabilities) {
             return ignoreNetworkDueToVpn(network)
                     || ignoreConnectedInaccessibleVpn(network, capabilities);
         }
@@ -805,7 +805,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         @Override
         public void onAvailable(Network network) {
             try (TraceEvent e = TraceEvent.scoped("NetworkChangeNotifierCallback::onAvailable")) {
-                NetworkCapabilities capabilities =
+                NetworkCapabilitiesWrapper capabilities =
                         mConnectivityManagerDelegate.getNetworkCapabilities(network);
                 if (ignoreConnectedNetwork(network, capabilities)) {
                     return;
@@ -844,7 +844,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                 Network network, NetworkCapabilities networkCapabilities) {
             try (TraceEvent e =
                     TraceEvent.scoped("NetworkChangeNotifierCallback::onCapabilitiesChanged")) {
-                if (ignoreConnectedNetwork(network, networkCapabilities)) {
+                if (ignoreConnectedNetwork(
+                        network, new NetworkCapabilitiesWrapper(networkCapabilities))) {
                     return;
                 }
                 // A capabilities change may indicate the ConnectionType has changed,
@@ -864,7 +865,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         @Override
         public void onLosing(Network network, int maxMsToLive) {
             try (TraceEvent e = TraceEvent.scoped("NetworkChangeNotifierCallback::onLosing")) {
-                final NetworkCapabilities capabilities =
+                final NetworkCapabilitiesWrapper capabilities =
                         mConnectivityManagerDelegate.getNetworkCapabilities(network);
                 if (ignoreConnectedNetwork(network, capabilities)) {
                     return;
@@ -965,8 +966,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     // mConnectivityManagerDelegates and mWifiManagerDelegate are only non-final for testing.
     private ConnectivityManagerDelegate mConnectivityManagerDelegate;
 
-    @SuppressWarnings("NullAway.Init")
-    private WifiManagerDelegate mWifiManagerDelegate;
+    private @Nullable WifiManagerDelegate mWifiManagerDelegate;
 
     // mNetworkCallback and mNetworkRequest are only non-null in Android L and above.
     // mNetworkCallback will be null if ConnectivityManager.registerNetworkCallback() ever fails.
@@ -974,7 +974,6 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     private NetworkRequest mNetworkRequest;
     private boolean mRegistered;
 
-    @SuppressWarnings("NullAway.Init")
     private NetworkState mNetworkState;
 
     // When a BroadcastReceiver is registered for a sticky broadcast that has been sent out at
@@ -1242,6 +1241,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
      * TODO(crbug.com/40936429): migrate external callers to getCurrentNetworkState() and make this
      * method private (to be called only when updates are received from the system.)
      */
+    @EnsuresNonNull("mNetworkState")
     public void updateCurrentNetworkState() {
         try (ScopedSysTraceEvent event =
                 ScopedSysTraceEvent.scoped(
@@ -1272,7 +1272,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             if (network.equals(ignoreNetwork)) {
                 continue;
             }
-            final NetworkCapabilities capabilities =
+            final NetworkCapabilitiesWrapper capabilities =
                     connectivityManagerDelegate.getNetworkCapabilities(network);
             if (capabilities == null || !capabilities.hasCapability(NET_CAPABILITY_INTERNET)) {
                 continue;
@@ -1308,8 +1308,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     public long[] getNetworksAndTypes() {
         try (ScopedSysTraceEvent event =
                 ScopedSysTraceEvent.scoped("NetworkChangeNotifierAutoDetect.getNetworksAndTypes")) {
-            final Network networks[] = getAllNetworksFiltered(mConnectivityManagerDelegate, null);
-            final long networksAndTypes[] = new long[networks.length * 2];
+            final Network[] networks = getAllNetworksFiltered(mConnectivityManagerDelegate, null);
+            final long[] networksAndTypes = new long[networks.length * 2];
             int index = 0;
             for (Network network : networks) {
                 networksAndTypes[index++] = networkToNetId(network);

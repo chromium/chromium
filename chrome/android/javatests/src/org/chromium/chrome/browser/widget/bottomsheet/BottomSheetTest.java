@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -231,14 +232,16 @@ public class BottomSheetTest {
                 mTestRule.getActivity().getRootUiCoordinatorForTesting().getToolbarManager();
         showContent(mHighPriorityContent, SheetState.HALF);
 
-        runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(true, 0));
+        runOnUiThreadBlocking(
+                () -> toolbarManager.setUrlBarFocus(true, OmniboxFocusReason.OMNIBOX_TAP));
 
         assertEquals(
                 "The bottom sheet should be hidden.",
                 SheetState.HIDDEN,
                 mSheetController.getSheetState());
 
-        runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(false, 0));
+        runOnUiThreadBlocking(
+                () -> toolbarManager.setUrlBarFocus(false, OmniboxFocusReason.OMNIBOX_TAP));
 
         assertNotEquals(
                 "The bottom sheet should not be hidden.",
@@ -365,6 +368,7 @@ public class BottomSheetTest {
     public void testAdditionalBottomOffset() {
         final int height = 300;
         final int margin = 100;
+        final int edgeToEdgeInset = 50;
 
         runOnUiThreadBlocking(
                 () -> {
@@ -395,11 +399,19 @@ public class BottomSheetTest {
         assertEquals(height, mSheetController.getCurrentOffset());
 
         // Change bottom margin; the margin and height should change.
-        runOnUiThreadBlocking(() -> mTestSupport.setBottomMargin(margin));
+        runOnUiThreadBlocking(
+                () -> {
+                    mTestSupport.setEdgeToEdgeBottomInsetSupplier(() -> edgeToEdgeInset);
+                    mTestSupport.setBottomMargin(margin);
+                });
 
         CriteriaHelper.pollUiThread(
                 () ->
-                        ((MarginLayoutParams) mTestSupport.getSheetContainer().getLayoutParams())
+                        mTestSupport.getSheetContainer().getPaddingBottom() == 0
+                                && ((MarginLayoutParams)
+                                                        mTestSupport
+                                                                .getSheetContainer()
+                                                                .getLayoutParams())
                                                 .bottomMargin
                                         == margin
                                 && !mTestSupport.getSheetContainer().isLayoutRequested());

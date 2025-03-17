@@ -163,6 +163,7 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
   void TearDown() override;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
       nullptr;
   raw_ptr<extensions::PermissionsManager, DanglingUntriaged>

@@ -47,7 +47,7 @@ void PresentationTimeCallbackBuffer::RegisterMainThreadCallbacks(
   // Splice the given `callbacks` onto the vector of existing callbacks.
   auto& sink = GetOrMakeRegistration(frame_token).main_callbacks;
   sink.reserve(sink.size() + callbacks.size());
-  base::ranges::move(callbacks, std::back_inserter(sink));
+  std::ranges::move(callbacks, std::back_inserter(sink));
 }
 
 void PresentationTimeCallbackBuffer::RegisterMainThreadSuccessfulCallbacks(
@@ -60,7 +60,7 @@ void PresentationTimeCallbackBuffer::RegisterMainThreadSuccessfulCallbacks(
   // Splice the given `callbacks` onto the vector of existing callbacks.
   auto& sink = GetOrMakeRegistration(frame_token).main_successful_callbacks;
   sink.reserve(sink.size() + callbacks.size());
-  base::ranges::move(callbacks, std::back_inserter(sink));
+  std::ranges::move(callbacks, std::back_inserter(sink));
 }
 
 void PresentationTimeCallbackBuffer::
@@ -74,7 +74,7 @@ void PresentationTimeCallbackBuffer::
   std::vector<SuccessfulCallback>& sink =
       GetOrMakeRegistration(frame_token).compositor_successful_callbacks;
   sink.reserve(sink.size() + callbacks.size());
-  base::ranges::move(callbacks, std::back_inserter(sink));
+  std::ranges::move(callbacks, std::back_inserter(sink));
 }
 
 PresentationTimeCallbackBuffer::PendingCallbacks::PendingCallbacks() = default;
@@ -99,8 +99,8 @@ PresentationTimeCallbackBuffer::PopPendingCallbacks(uint32_t frame_token,
 
     // Presentation time callbacks should be run whether presentation was
     // successful or not.
-    base::ranges::move(info->main_callbacks,
-                       std::back_inserter(result.main_callbacks));
+    std::ranges::move(info->main_callbacks,
+                      std::back_inserter(result.main_callbacks));
     info->main_callbacks.clear();
 
     const bool should_keep_info =
@@ -112,9 +112,9 @@ PresentationTimeCallbackBuffer::PopPendingCallbacks(uint32_t frame_token,
     } else {
       // Successful presentation time callbacks should only be run when the
       // presentation was successful.
-      base::ranges::move(info->main_successful_callbacks,
-                         std::back_inserter(result.main_successful_callbacks));
-      base::ranges::move(
+      std::ranges::move(info->main_successful_callbacks,
+                        std::back_inserter(result.main_successful_callbacks));
+      std::ranges::move(
           info->compositor_successful_callbacks,
           std::back_inserter(result.compositor_successful_callbacks));
       info = frame_token_infos_.erase(info);

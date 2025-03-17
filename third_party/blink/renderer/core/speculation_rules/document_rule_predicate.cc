@@ -35,7 +35,7 @@ class Conjunction : public DocumentRulePredicate {
   ~Conjunction() override = default;
 
   bool Matches(const HTMLAnchorElementBase& el) const override {
-    return base::ranges::all_of(clauses_, [&](DocumentRulePredicate* clause) {
+    return std::ranges::all_of(clauses_, [&](DocumentRulePredicate* clause) {
       return clause->Matches(el);
     });
   }
@@ -85,7 +85,7 @@ class Disjunction : public DocumentRulePredicate {
   ~Disjunction() override = default;
 
   bool Matches(const HTMLAnchorElementBase& el) const override {
-    return base::ranges::any_of(clauses_, [&](DocumentRulePredicate* clause) {
+    return std::ranges::any_of(clauses_, [&](DocumentRulePredicate* clause) {
       return clause->Matches(el);
     });
   }
@@ -236,8 +236,8 @@ class CSSSelectorPredicate : public DocumentRulePredicate {
     const ComputedStyle* computed_style = link.GetComputedStyle();
     DCHECK(computed_style);
     DCHECK(!DisplayLockUtilities::LockedAncestorPreventingStyle(link));
-    const Persistent<HeapHashSet<WeakMember<StyleRule>>>& matched_selectors =
-        computed_style->DocumentRulesSelectors();
+    const Persistent<GCedHeapHashSet<WeakMember<StyleRule>>>&
+        matched_selectors = computed_style->DocumentRulesSelectors();
     if (!matched_selectors) {
       return false;
     }

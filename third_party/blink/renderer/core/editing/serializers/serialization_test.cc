@@ -138,4 +138,22 @@ TEST_F(SerializationTest, SVGForeignObjectCrash) {
   EXPECT_TRUE(strictly_processed_fragment);
 }
 
+// Regression test for https://crbug.com/40840595
+TEST_F(SerializationTest, CSSFontFaceLoadCrash) {
+  const String markup =
+      "<style>"
+      "  @font-face {"
+      "    font-family: \"custom-font\";"
+      "    src: "
+      "url(\"https://mdn.github.io/css-examples/web-fonts/VeraSeBd.ttf\");"
+      "  }"
+      "  </style>"
+      "<span style=\"font-family: custom-font\">lorem ipsum</span>";
+  const String sanitized_markup = CreateStrictlyProcessedMarkupWithContext(
+      GetDocument(), markup, 0, markup.length(), KURL());
+  // This is a crash test. We don't verify the content of the strictly processed
+  // markup as it is not interesting.
+  EXPECT_TRUE(sanitized_markup);
+}
+
 }  // namespace blink

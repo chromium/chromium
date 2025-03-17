@@ -15,9 +15,9 @@
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
 
+using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ClearBrowsingDataCell;
 using chrome_test_util::ClearBrowsingDataView;
-using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
 using web::test::HttpServer;
@@ -56,9 +56,8 @@ id<GREYMatcher> TileWithText(NSString* text) {
 - (void)testTopSitesTileAfterLoadURLAndColdStart {
   std::map<GURL, std::string> responses;
   GURL URL = web::test::HttpServer::MakeUrl("http://simple_tile.html");
-  responses[URL] =
-      "<head><title>title1</title></head>"
-      "<body>You are here.</body>";
+  responses[URL] = "<head><title>title1</title></head>"
+                   "<body>You are here.</body>";
   web::test::SetUpSimpleHttpServer(responses);
 
   // Clear history and verify that the tile does not exist.
@@ -96,13 +95,11 @@ id<GREYMatcher> TileWithText(NSString* text) {
       destinationURL, net::HTTP_MOVED_PERMANENTLY);
 
   // Add titles to both responses, which is what will show up on the NTP.
-  responses[firstRedirectURL].body =
-      "<head><title>title1</title></head>"
-      "<body>Should redirect away.</body>";
+  responses[firstRedirectURL].body = "<head><title>title1</title></head>"
+                                     "<body>Should redirect away.</body>";
 
-  const char kFinalPageContent[] =
-      "<head><title>title2</title></head>"
-      "<body>redirect complete</body>";
+  const char kFinalPageContent[] = "<head><title>title2</title></head>"
+                                   "<body>redirect complete</body>";
   responses[destinationURL] =
       HtmlResponseProviderImpl::GetSimpleResponse(kFinalPageContent);
   std::unique_ptr<web::DataResponseProvider> provider(

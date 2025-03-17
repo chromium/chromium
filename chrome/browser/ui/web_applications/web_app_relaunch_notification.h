@@ -17,7 +17,7 @@ namespace web_app {
 
 enum class AppRelaunchState;
 
-constexpr int kSecondsToShowNotificationPostAppRelaunch = 2;
+inline constexpr int kSecondsToShowNotificationPostAppRelaunch = 2;
 
 void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
                             const webapps::AppId& final_app_id,

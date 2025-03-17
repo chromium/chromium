@@ -3084,7 +3084,7 @@ message ReduceLayerParams {
    *     .. math:: \text{max}(x_i)
    *
    * ``MIN``
-   *     Minumum of all elements
+   *     Minimum of all elements
    *
    *     .. math:: \text{min}(x_i)
    *
@@ -6066,7 +6066,8 @@ message NonMaximumSuppressionLayerParams {
  *     f(x) = \begin{cases}
  *               \text{min}(\text{beta},x) \;\; \text{if} \;\; x \geq 0\\
  *               \text{min}(\text{beta} ,\text{alpha}\cdot x) \;\; \text{if}
- * \;\; x<0 \end{cases}
+ * \;\; x<0
+ *            \end{cases}
  *
  * Output shape is same as the input.
  *

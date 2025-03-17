@@ -11,6 +11,8 @@ import android.util.SparseBooleanArray;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 
 import java.util.List;
@@ -22,8 +24,9 @@ import java.util.List;
  * browser tasks have {@link ChromeTabbedActivity} at the bottom of the stack and other activities
  * on top of it. Their state is tracked to keep the multi-instance state up to date.
  */
+@NullMarked
 public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListener {
-    private static MultiInstanceState sInstance;
+    private static @Nullable MultiInstanceState sInstance;
 
     /** Observer used to notify multi-instance state change. **/
     public interface MultiInstanceStateObserver {
@@ -125,7 +128,7 @@ public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListe
         sInstance = null;
     }
 
-    public static MultiInstanceState getInstanceForTesting() {
+    public static @Nullable MultiInstanceState getInstanceForTesting() {
         return sInstance;
     }
 }

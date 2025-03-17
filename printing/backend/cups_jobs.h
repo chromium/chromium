@@ -83,6 +83,14 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterInfo {
   // MIME types for supported formats.
   std::vector<std::string> document_formats;
 
+  // document-format-default
+  // MIME type for default format.
+  std::string document_format_default;
+
+  // document-format-preferred
+  // MIME type for preferred format.
+  std::string document_format_preferred;
+
   // ipp-versions-supported
   // A collection of supported IPP protocol versions.
   std::vector<base::Version> ipp_versions;

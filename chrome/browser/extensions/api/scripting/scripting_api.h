@@ -20,17 +20,6 @@
 
 namespace extensions {
 
-// A simple helper struct to represent a read file (either CSS or JS) to be
-// injected.
-struct InjectedFileSource {
-  InjectedFileSource(std::string file_name, std::unique_ptr<std::string> data);
-  InjectedFileSource(InjectedFileSource&&);
-  ~InjectedFileSource();
-
-  std::string file_name;
-  std::unique_ptr<std::string> data;
-};
-
 class ScriptingExecuteScriptFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("scripting.executeScript", SCRIPTING_EXECUTESCRIPT)
@@ -48,7 +37,7 @@ class ScriptingExecuteScriptFunction : public ExtensionFunction {
   ~ScriptingExecuteScriptFunction() override;
 
   // Called when the resource files to be injected has been loaded.
-  void DidLoadResources(std::vector<InjectedFileSource> file_sources,
+  void DidLoadResources(std::vector<scripting::InjectedFileSource> file_sources,
                         std::optional<std::string> load_error);
 
   // Triggers the execution of `sources` in the appropriate context.
@@ -77,7 +66,7 @@ class ScriptingInsertCSSFunction : public ExtensionFunction {
   ~ScriptingInsertCSSFunction() override;
 
   // Called when the resource files to be injected has been loaded.
-  void DidLoadResources(std::vector<InjectedFileSource> file_sources,
+  void DidLoadResources(std::vector<scripting::InjectedFileSource> file_sources,
                         std::optional<std::string> load_error);
 
   // Triggers the execution of `sources` in the appropriate context.

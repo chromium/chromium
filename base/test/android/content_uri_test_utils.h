@@ -23,6 +23,12 @@ std::optional<FilePath> GetContentUriFromCacheDirFilePath(const FilePath& path);
 std::optional<FilePath> GetInMemoryContentUriFromCacheDirFilePath(
     const FilePath& path);
 
+// Returns a DocumentFile Document URI for the specified file which must be
+// under the cache dir, else returns std::nullopt. This mimics how a
+// DocumentsProvider will work with ACTION_OPEN_DOCUMENT.
+std::optional<FilePath> GetInMemoryContentDocumentUriFromCacheDirFilePath(
+    const FilePath& path);
+
 // Returns a DocumentFile Tree URI for the specified directory which must be
 // under the cache dir, else returns std::nullopt. This mimics how a
 // DocumentsProvider will work with ACTION_OPEN_DOCUMENT_TREE.

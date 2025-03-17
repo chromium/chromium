@@ -56,8 +56,9 @@ namespace {
 NO_INSTRUMENT_STACK_ALIGN int NonDelayedLooperCallback(int fd,
                                                        int events,
                                                        void* data) {
-  if (events & ALOOPER_EVENT_HANGUP)
+  if (events & ALOOPER_EVENT_HANGUP) {
     return 0;
+  }
 
   DCHECK(events & ALOOPER_EVENT_INPUT);
   MessagePumpAndroid* pump = reinterpret_cast<MessagePumpAndroid*>(data);
@@ -68,8 +69,9 @@ NO_INSTRUMENT_STACK_ALIGN int NonDelayedLooperCallback(int fd,
 NO_INSTRUMENT_STACK_ALIGN int DelayedLooperCallback(int fd,
                                                     int events,
                                                     void* data) {
-  if (events & ALOOPER_EVENT_HANGUP)
+  if (events & ALOOPER_EVENT_HANGUP) {
     return 0;
+  }
 
   DCHECK(events & ALOOPER_EVENT_INPUT);
   MessagePumpAndroid* pump = reinterpret_cast<MessagePumpAndroid*>(data);
@@ -360,13 +362,15 @@ void MessagePumpAndroid::OnDelayedLooperCallback() {
   // callbacks. Check here, and if there's already an exception, just skip this
   // iteration without clearing the fd. If the exception ends up being non-fatal
   // then we'll just get called again on the next polling iteration.
-  if (base::android::HasException(env_))
+  if (base::android::HasException(env_)) {
     return;
+  }
 
   // ALooper_pollOnce may call this after Quit() if OnNonDelayedLooperCallback()
   // resulted in Quit() in the same round.
-  if (ShouldQuit())
+  if (ShouldQuit()) {
     return;
+  }
 
   // Clear the fd.
   uint64_t value;
@@ -390,8 +394,9 @@ void MessagePumpAndroid::DoDelayedLooperWork() {
 
   Delegate::NextWorkInfo next_work_info = delegate_->DoWork();
 
-  if (ShouldQuit())
+  if (ShouldQuit()) {
     return;
+  }
 
   if (next_work_info.is_immediate()) {
     ScheduleWork();
@@ -399,8 +404,9 @@ void MessagePumpAndroid::DoDelayedLooperWork() {
   }
 
   delegate_->DoIdleWork();
-  if (!next_work_info.delayed_run_time.is_max())
+  if (!next_work_info.delayed_run_time.is_max()) {
     ScheduleDelayedWork(next_work_info);
+  }
 }
 
 void MessagePumpAndroid::OnNonDelayedLooperCallback() {
@@ -410,13 +416,15 @@ void MessagePumpAndroid::OnNonDelayedLooperCallback() {
   // callbacks. Check here, and if there's already an exception, just skip this
   // iteration without clearing the fd. If the exception ends up being non-fatal
   // then we'll just get called again on the next polling iteration.
-  if (base::android::HasException(env_))
+  if (base::android::HasException(env_)) {
     return;
+  }
 
   // ALooper_pollOnce may call this after Quit() if OnDelayedLooperCallback()
   // resulted in Quit() in the same round.
-  if (ShouldQuit())
+  if (ShouldQuit()) {
     return;
+  }
 
   // We're about to process all the work requested by ScheduleWork().
   // MessagePump users are expected to do their best not to invoke
@@ -441,19 +449,11 @@ void MessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
   // Runs all application tasks scheduled to run.
   Delegate::NextWorkInfo next_work_info;
   do {
-    if (ShouldQuit())
-      return;
-
-    next_work_info = delegate_->DoWork();
-
-    // If we are prioritizing native, and the next work would normally run
-    // immediately, skip the next work and let the native work items have a
-    // chance to run. This is useful when user input is waiting for native to
-    // have a chance to run.
-    if (next_work_info.is_immediate() && next_work_info.yield_to_native) {
-      ScheduleWork();
+    if (ShouldQuit()) {
       return;
     }
+
+    next_work_info = delegate_->DoWork();
 
     // As an optimization, yield to the Looper when input events are waiting to
     // be handled. In some cases input events can remain undetected. Such "input
@@ -471,8 +471,9 @@ void MessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
   // Do not resignal |non_delayed_fd_| if we're quitting (this pump doesn't
   // allow nesting so needing to resume in an outer loop is not an issue
   // either).
-  if (ShouldQuit())
+  if (ShouldQuit()) {
     return;
+  }
 
   // Under the fast to sleep feature, `do_idle_work` is ignored, and the pump
   // will always "sleep" after finishing all its work items.
@@ -539,8 +540,9 @@ void MessagePumpAndroid::Attach(Delegate* delegate) {
 }
 
 void MessagePumpAndroid::Quit() {
-  if (quit_)
+  if (quit_) {
     return;
+  }
 
   quit_ = true;
 
@@ -590,15 +592,17 @@ void MessagePumpAndroid::OnReturnFromLooper() {
   }
   auto& checker = InputHintChecker::GetInstance();
   if (checker.is_after_input_yield()) {
-    InputHintChecker::RecordInputHintResult(InputHintResult::kBackToNative);
+    InputHintChecker::GetInstance().RecordInputHintResult(
+        InputHintResult::kBackToNative);
   }
   checker.set_is_after_input_yield(false);
 }
 
 void MessagePumpAndroid::ScheduleDelayedWork(
     const Delegate::NextWorkInfo& next_work_info) {
-  if (ShouldQuit())
+  if (ShouldQuit()) {
     return;
+  }
 
   if (delayed_scheduled_time_ &&
       *delayed_scheduled_time_ == next_work_info.delayed_run_time) {

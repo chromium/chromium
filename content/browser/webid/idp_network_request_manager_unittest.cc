@@ -9,6 +9,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -24,6 +25,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
@@ -127,7 +129,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   void AddResponse(const GURL& url,
                    net::HttpStatusCode http_status,
                    const std::string& mime_type,
-                   const std::string& content) {
+                   const std::string& content,
+                   bool cors_error = false) {
     auto head = network::mojom::URLResponseHead::New();
     std::string raw_header = "HTTP/1.1 " + base::NumberToString(http_status) +
                              " " + net::GetHttpReasonPhrase(http_status) +
@@ -135,8 +138,12 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
                              "Content-type: " +
                              mime_type + "\n\n";
     head->headers = net::HttpResponseHeaders::TryToCreate(raw_header);
-    test_url_loader_factory().AddResponse(url, std::move(head), content,
-                                          network::URLLoaderCompletionStatus());
+    test_url_loader_factory().AddResponse(
+        url, std::move(head), content,
+        cors_error
+            ? network::URLLoaderCompletionStatus(network::CorsErrorStatus(
+                  network::mojom::CorsError::kMissingAllowOriginHeader))
+            : network::URLLoaderCompletionStatus());
   }
 
   std::tuple<FetchStatus, IdpNetworkRequestManager::WellKnown>
@@ -241,9 +248,10 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
       const std::string& mime_type = "application/json",
       const char* response = R"({"token": "token"})",
       bool idp_blindness = false,
-      const char* token_endpoint_str = kTestTokenEndpoint) {
+      const char* token_endpoint_str = kTestTokenEndpoint,
+      bool cors_error = false) {
     GURL token_endpoint{token_endpoint_str};
-    AddResponse(token_endpoint, http_status, mime_type, response);
+    AddResponse(token_endpoint, http_status, mime_type, response, cors_error);
 
     FetchStatus fetch_status;
     TokenResult token_result;
@@ -597,7 +605,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountUnicode) {
         SendAccountsRequestAndWaitForResponse(accounts_json.c_str());
 
     EXPECT_EQ(1UL, accounts.size());
-    EXPECT_EQ(test_value, accounts[0]->name);
+    EXPECT_EQ(test_value, accounts[0]->display_name);
   }
 }
 
@@ -1346,6 +1354,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequest) {
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
   ASSERT_EQ("token", token_result.token);
+  ASSERT_EQ(false, fetch_status.cors_error);
 }
 
 // Tests the ID assertion request implementation when CORS is enforced on the
@@ -1381,6 +1390,22 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestWithCORS) {
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
   ASSERT_EQ("token", token_result.token);
+  ASSERT_EQ(false, fetch_status.cors_error);
+}
+
+// Tests the ID assertion request implementation when CORS is enforced on the
+// endpoint and server responds with CORS Error
+TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestWithCORSError) {
+  FetchStatus fetch_status;
+  TokenResult token_result;
+  std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
+      "account", "request", net::HTTP_FORBIDDEN, "application/json",
+      R"({"token": ""})", false, kTestTokenEndpoint, true);
+
+  EXPECT_EQ(ParseStatus::kNoResponseError, fetch_status.parse_status);
+  EXPECT_EQ(net::ERR_FAILED, fetch_status.response_code);
+  ASSERT_EQ("", token_result.token);
+  ASSERT_EQ(true, fetch_status.cors_error);
 }
 
 // Tests the client metadata implementation.

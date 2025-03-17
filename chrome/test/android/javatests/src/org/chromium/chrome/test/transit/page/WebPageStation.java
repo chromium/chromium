@@ -77,6 +77,40 @@ public class WebPageStation extends PageStation {
             // in the tab switcher and it is not completely occluded.
             elements.declareView(URL_BAR, ViewElement.unscopedOption());
         }
+
+        // Make sure that the new tab page is not considered a WebPageStation
+        List<String> prohibitedUrls = List.of("chrome://newtab", "chrome-native://newtab");
+        elements.declareEnterCondition(
+                new PageUrlDoesNotMatchCondition(prohibitedUrls, mPageLoadedSupplier));
+    }
+
+    /** Condition to check the page url does not match any of the prohibited urls. */
+    public static class PageUrlDoesNotMatchCondition extends Condition {
+        private final List<String> mProhibitedUrls;
+        private final Supplier<Tab> mLoadedTabSupplier;
+
+        public PageUrlDoesNotMatchCondition(
+                List<String> prohibitedUrls, Supplier<Tab> loadedTabSupplier) {
+            super(/* isRunOnUiThread= */ true);
+            mProhibitedUrls = prohibitedUrls;
+            mLoadedTabSupplier = dependOnSupplier(loadedTabSupplier, "LoadedTab");
+        }
+
+        @Override
+        protected ConditionStatus checkWithSuppliers() throws Exception {
+            String url = mLoadedTabSupplier.get().getUrl().getSpec();
+            for (String prohibitedUrl : mProhibitedUrls) {
+                if (url.contains(prohibitedUrl)) {
+                    return notFulfilled("URL: \"%s\"", url);
+                }
+            }
+            return fulfilled("URL: \"%s\"", url);
+        }
+
+        @Override
+        public String buildDescription() {
+            return String.format("URL is not any of: %s", String.join(", ", mProhibitedUrls));
+        }
     }
 
     /** Opens the web page app menu by pressing the toolbar "..." button */

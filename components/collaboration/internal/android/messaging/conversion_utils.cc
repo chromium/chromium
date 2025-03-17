@@ -52,6 +52,10 @@ ScopedJavaLocalRef<jobject> MessageAttributionToJava(
   ScopedJavaLocalRef<jobject> j_local_tab_group_id = nullptr;
   ScopedJavaLocalRef<jstring> j_sync_tab_group_id = nullptr;
   ScopedJavaLocalRef<jstring> j_last_known_tab_group_title = nullptr;
+
+  ScopedJavaLocalRef<jstring> j_id =
+      OptionalUuidToLowercaseJavaString(env, attribution.id);
+
   jint j_last_known_tab_group_color = -1;
   if (attribution.tab_group_metadata.has_value()) {
     j_local_tab_group_id =
@@ -96,10 +100,11 @@ ScopedJavaLocalRef<jobject> MessageAttributionToJava(
   }
 
   return Java_ConversionUtils_createAttributionFrom(
-      env, j_collaboration_id, j_local_tab_group_id, j_sync_tab_group_id,
+      env, j_id, j_collaboration_id, j_local_tab_group_id, j_sync_tab_group_id,
       j_last_known_tab_group_title, j_last_known_tab_group_color,
       j_local_tab_id, j_sync_tab_id, j_last_known_tab_title,
-      j_last_known_tab_url, j_affected_user, j_triggering_user);
+      j_last_known_tab_url, j_affected_user, attribution.affected_user_is_self,
+      j_triggering_user, attribution.triggering_user_is_self);
 }
 
 // Helper method to provide a consistent way to create a PersistentMessage
@@ -116,6 +121,22 @@ ScopedJavaLocalRef<jobject> CreatePersistentMessageAndMaybeAddToListHelper(
 
   return jmessage;
 }
+
+// Helper method to provide a consistent way to create a InstantMessage
+// across multiple entry points.
+ScopedJavaLocalRef<jobject> CreateInstantMessageAndMaybeAddToListHelper(
+    JNIEnv* env,
+    ScopedJavaLocalRef<jobject> jlist,
+    const InstantMessage& message) {
+  ScopedJavaLocalRef<jobject> jmessage =
+      Java_ConversionUtils_createInstantMessageAndMaybeAddToList(
+          env, jlist, MessageAttributionToJava(env, message.attribution),
+          static_cast<int>(message.collaboration_event),
+          static_cast<int>(message.level), static_cast<int>(message.type));
+
+  return jmessage;
+}
+
 }  // namespace
 
 ScopedJavaLocalRef<jobject> PersistentMessageToJava(
@@ -146,6 +167,19 @@ ScopedJavaLocalRef<jobject> InstantMessageToJava(
       static_cast<int>(message.level), static_cast<int>(message.type));
 }
 
+ScopedJavaLocalRef<jobject> InstantMessagesToJava(
+    JNIEnv* env,
+    const std::vector<InstantMessage>& messages) {
+  ScopedJavaLocalRef<jobject> jlist =
+      Java_ConversionUtils_createInstantMessageList(env);
+
+  for (const auto& message : messages) {
+    CreateInstantMessageAndMaybeAddToListHelper(env, jlist, message);
+  }
+
+  return jlist;
+}
+
 ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(
     JNIEnv* env,
     const std::vector<ActivityLogItem>& activity_log_items) {
@@ -155,10 +189,9 @@ ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(
   for (const auto& activity_log_item : activity_log_items) {
     Java_ConversionUtils_createActivityLogItemAndMaybeAddToList(
         env, jlist, static_cast<int>(activity_log_item.collaboration_event),
-        ConvertUTF8ToJavaString(env, activity_log_item.user_display_name),
-        activity_log_item.user_is_self,
-        ConvertUTF16ToJavaString(env, activity_log_item.description),
-        activity_log_item.time_delta.InMilliseconds(),
+        ConvertUTF16ToJavaString(env, activity_log_item.title_text),
+        ConvertUTF16ToJavaString(env, activity_log_item.description_text),
+        ConvertUTF16ToJavaString(env, activity_log_item.time_delta_text),
         activity_log_item.show_favicon,
         static_cast<int>(activity_log_item.action),
         MessageAttributionToJava(env, activity_log_item.activity_metadata));

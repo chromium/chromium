@@ -188,7 +188,8 @@ def AddComputedData(module):
       interface.version = max(interface.version,
                               method.param_struct.versions[-1].version)
 
-      if method.response_parameters is not None:
+      if method.response_parameters is not None or \
+         method.result_response is not None:
         method.response_param_struct = _GetResponseStructFromMethod(method)
         if interface.stable:
           method.response_param_struct.attributes[mojom.ATTRIBUTE_STABLE] = True
@@ -218,6 +219,13 @@ def AddComputedData(module):
     """Converts a method's response_parameters into the fields of a struct."""
     params_class = "%s_%s_ResponseParams" % (method.interface.mojom_name,
                                              method.mojom_name)
+    if method.response_parameters is not None:
+      return _GetResponseStructForParamList(method, params_class)
+    if method.result_response is not None:
+      return _GetResponseStructForResultResponse(method, params_class)
+    raise Exception('method should only be called for methods with response')
+
+  def _GetResponseStructForParamList(method, params_class):
     struct = mojom.Struct(params_class,
                           module=method.interface.module,
                           attributes={})
@@ -227,6 +235,30 @@ def AddComputedData(module):
           param.kind,
           param.ordinal,
           attributes=param.attributes)
+    _AddStructComputedData(False, struct)
+    return struct
+
+  def _GetResponseStructForResultResponse(method, params_class):
+    struct = mojom.Struct(params_class,
+                          module=method.interface.module,
+                          attributes={})
+    result = method.interface.module.AddUnion(f"{params_class}_Result")
+    result.AddField(
+        'success',
+        method.result_response.success_kind,
+        0,
+    )
+    result.AddField(
+        'failure',
+        method.result_response.failure_kind,
+        1,
+    )
+
+    struct.AddField(
+        'result',
+        result,
+        0,
+    )
     _AddStructComputedData(False, struct)
     return struct
 

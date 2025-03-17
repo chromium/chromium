@@ -16,9 +16,9 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider.h"
-#include "gpu/GLES2/gl2extchromium.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gl/gl_bindings.h"
 
 namespace viz {
 
@@ -253,9 +253,7 @@ class CALayerOverlayProcessorInternal {
       case DrawQuad::Material::kTextureContent: {
         const TextureDrawQuad* texture_draw_quad =
             TextureDrawQuad::MaterialCast(quad);
-        // Stream video and video frame counts as a yuv draw quad.
-        if (texture_draw_quad->is_stream_video ||
-            texture_draw_quad->is_video_frame) {
+        if (texture_draw_quad->is_video_frame) {
           yuv_draw_quad_count += 1;
         }
         return FromTextureQuad(resource_provider, texture_draw_quad,

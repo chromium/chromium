@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/script_processor_handler.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -26,7 +22,6 @@
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/script_processor_node.h"
-#include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -42,16 +37,14 @@ ScriptProcessorHandler::ScriptProcessorHandler(
     uint32_t number_of_output_channels,
     const HeapVector<Member<AudioBuffer>>& input_buffers,
     const HeapVector<Member<AudioBuffer>>& output_buffers)
-    : AudioHandler(kNodeTypeScriptProcessor, node, sample_rate),
+    : AudioHandler(NodeType::kNodeTypeScriptProcessor, node, sample_rate),
       buffer_size_(buffer_size),
       number_of_input_channels_(number_of_input_channels),
       number_of_output_channels_(number_of_output_channels),
       internal_input_bus_(AudioBus::Create(
           number_of_input_channels,
           node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
-          false)),
-      allow_denormal_in_processing_(base::FeatureList::IsEnabled(
-          features::kWebAudioAllowDenormalInProcessing)) {
+          false)) {
   DCHECK_GE(buffer_size_,
             node.context()->GetDeferredTaskHandler().RenderQuantumFrames());
   DCHECK_LE(number_of_input_channels, BaseAudioContext::MaxNumberOfChannels());
@@ -112,7 +105,7 @@ void ScriptProcessorHandler::Initialize() {
   AudioHandler::Initialize();
 }
 
-void ScriptProcessorHandler::ProcessInternal(uint32_t frames_to_process) {
+void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
   TRACE_EVENT_BEGIN0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                      "ScriptProcessorHandler::Process");
 
@@ -184,8 +177,9 @@ void ScriptProcessorHandler::ProcessInternal(uint32_t frames_to_process) {
     for (uint32_t i = 0; i < number_of_input_channels; ++i) {
       internal_input_bus_->SetChannelMemory(
           i,
-          static_cast<float*>(shared_input_buffer->channels()[i].Data()) +
-              buffer_read_write_index_,
+          UNSAFE_TODO(
+              static_cast<float*>(shared_input_buffer->channels()[i].Data()) +
+              buffer_read_write_index_),
           frames_to_process);
     }
 
@@ -195,9 +189,9 @@ void ScriptProcessorHandler::ProcessInternal(uint32_t frames_to_process) {
 
     for (uint32_t i = 0; i < number_of_output_channels; ++i) {
       float* destination = output_bus->Channel(i)->MutableData();
-      const float* source =
+      const float* source = UNSAFE_TODO(
           static_cast<float*>(shared_output_buffer->channels()[i].Data()) +
-          buffer_read_write_index_;
+          buffer_read_write_index_);
       memcpy(destination, source, sizeof(float) * frames_to_process);
     }
   }
@@ -239,15 +233,6 @@ void ScriptProcessorHandler::ProcessInternal(uint32_t frames_to_process) {
 
   TRACE_EVENT_END0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                    "ScriptProcessorHandler::Process");
-}
-
-void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
-  if (allow_denormal_in_processing_) {
-    DenormalEnabler denormal_enabler;
-    ProcessInternal(frames_to_process);
-  } else {
-    ProcessInternal(frames_to_process);
-  }
 }
 
 void ScriptProcessorHandler::FireProcessEvent(uint32_t double_buffer_index) {

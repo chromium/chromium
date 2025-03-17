@@ -187,15 +187,14 @@ void HttpExchange::OnURLLoaderCompleted(
     return;
   }
 
-  // Checks if response body (payload) exists. It cannot be empty since we
-  // expect a JSON object.
+  // Checks if response body (payload) exists.
   if (!response_body || response_body->empty()) {
     error_msg_ = "Missing payload.";
     std::move(callback).Run(StatusCode::kInvalidResponse);
     return;
   }
 
-  // Checks if the payload of the response contains a JSON object.
+  // Checks if the payload contains a JSON dictionary.
   std::string mime_type;
   std::string charset;
   url_loader_->ResponseInfo()->headers->GetMimeTypeAndCharset(&mime_type,
@@ -210,18 +209,13 @@ void HttpExchange::OnURLLoaderCompleted(
     std::move(callback).Run(StatusCode::kInvalidResponse);
     return;
   }
-  auto parsed = base::JSONReader::Read(*response_body);
+  auto parsed = base::JSONReader::ReadDict(*response_body);
   if (!parsed) {
     error_msg_ = "Cannot parse JSON payload.";
     std::move(callback).Run(StatusCode::kInvalidResponse);
     return;
   }
-  if (!parsed->is_dict()) {
-    error_msg_ = "JSON payload is not a dictionary.";
-    std::move(callback).Run(StatusCode::kInvalidResponse);
-    return;
-  }
-  content_ = std::move(parsed).value().TakeDict();
+  content_ = std::move(parsed).value();
 
   // Exits if success.
   if (http_status == success_http_status) {

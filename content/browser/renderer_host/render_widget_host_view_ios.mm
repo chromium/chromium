@@ -24,6 +24,7 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -85,21 +86,18 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
       gesture_provider_(
           ui::GetGestureProviderConfig(
               ui::GestureProviderConfigType::CURRENT_PLATFORM,
-              content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput})),
+              GetUIThreadTaskRunner({BrowserTaskType::kUserInput})),
           this) {
   ui_view_ = std::make_unique<UIViewHolder>();
   ui_view_->view_ =
       [[RenderWidgetUIView alloc] initWithWidget:weak_factory_.GetWeakPtr()];
-
-  display_tree_ =
-      std::make_unique<ui::DisplayCALayerTree>([ui_view_->view_ layer]);
 
   auto* screen = display::Screen::GetScreen();
   screen_infos_ =
       screen->GetScreenInfosNearestDisplay(screen->GetPrimaryDisplay().id());
 
   browser_compositor_ = std::make_unique<BrowserCompositorIOS>(
-      (uint64_t)(__bridge void*)ui_view_->view_, this, host()->is_hidden(),
+      [ui_view_->view_ viewHandle], this, host()->is_hidden(),
       host()->GetFrameSinkId());
 
   if (IsTesting()) {
@@ -406,10 +404,7 @@ void RenderWidgetHostViewIOS::OnSynchronizedDisplayPropertiesChanged(
 }
 
 void RenderWidgetHostViewIOS::UpdateCALayerTree(
-    const gfx::CALayerParams& ca_layer_params) {
-  DCHECK(display_tree_);
-  display_tree_->UpdateCALayerTree(ca_layer_params);
-}
+    const gfx::CALayerParams& ca_layer_params) {}
 
 void RenderWidgetHostViewIOS::OnOldViewDidNavigatePreCommit() {
   CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
@@ -436,6 +431,10 @@ void RenderWidgetHostViewIOS::DidEnterBackForwardCache() {
   //
   // Called after to prevent prematurely evict the BFCached surface.
   host()->ForceFirstFrameAfterNavigationTimeout();
+}
+
+void RenderWidgetHostViewIOS::ActivatedOrEvictedFromBackForwardCache() {
+  browser_compositor_->ActivatedOrEvictedFromBackForwardCache();
 }
 
 void RenderWidgetHostViewIOS::DidNavigate() {
@@ -701,7 +700,6 @@ RenderWidgetHostImpl* RenderWidgetHostViewIOS::GetActiveWidget() {
 
 void RenderWidgetHostViewIOS::OnFirstResponderChanged() {
   bool is_first_responder = [ui_view_->view_ isFirstResponder] ||
-                            [[ui_view_->view_ textInput] isFirstResponder] ||
                             (IsTesting() && is_getting_focus_);
 
   if (is_first_responder_ == is_first_responder) {
@@ -721,15 +719,14 @@ void RenderWidgetHostViewIOS::OnUpdateTextInputStateCalled(
     RenderWidgetHostViewBase* updated_view,
     bool did_update_state) {
   if (text_input_manager->GetActiveWidget()) {
-    [[ui_view_->view_ textInput]
+    [ui_view_->view_
         onUpdateTextInputState:*text_input_manager->GetTextInputState()
                     withBounds:[ui_view_->view_ bounds]];
   } else {
     // If there are no active widgets, the TextInputState.type should be
     // reported as none.
-    [[ui_view_->view_ textInput]
-        onUpdateTextInputState:ui::mojom::TextInputState()
-                    withBounds:[ui_view_->view_ bounds]];
+    [ui_view_->view_ onUpdateTextInputState:ui::mojom::TextInputState()
+                                 withBounds:[ui_view_->view_ bounds]];
   }
 }
 
@@ -740,8 +737,8 @@ void RenderWidgetHostViewIOS::OnTextSelectionChanged(
   const TextInputManager::TextSelection* selection =
       text_input_manager->GetTextSelection(updated_view);
   if (selection && selection->selected_text().length()) {
-    [ui_view_->view_.textInteraction refreshKeyboardUI];
-    [ui_view_->view_.textInteraction textSelectionDisplayInteraction]
+    [[ui_view_->view_ textInteraction] refreshKeyboardUI];
+    [[ui_view_->view_ textInteraction] textSelectionDisplayInteraction]
         .activated = YES;
 
     // This seems like a bug. BETextInput always sets the
@@ -749,7 +746,7 @@ void RenderWidgetHostViewIOS::OnTextSelectionChanged(
     // the entire web content to be transformed down for some reason. Instead,
     // scale it down here with a very naive implementation.
     UITextSelectionDisplayInteraction* textSelectionDisplayInteraction =
-        ui_view_->view_.textInteraction.textSelectionDisplayInteraction;
+        [ui_view_->view_ textInteraction].textSelectionDisplayInteraction;
     NSArray<UIView<UITextSelectionHandleView>*>* handleViews =
         textSelectionDisplayInteraction.handleViews;
 
@@ -763,14 +760,14 @@ void RenderWidgetHostViewIOS::OnTextSelectionChanged(
     handleViews[1].subviews[1].layer.transform =
         CATransform3DMakeScale(shrink, shrink, 1);
   } else {
-    [ui_view_->view_.textInteraction textSelectionDisplayInteraction]
+    [[ui_view_->view_ textInteraction] textSelectionDisplayInteraction]
         .activated = NO;
   }
 }
 void RenderWidgetHostViewIOS::OnSelectionBoundsChanged(
     TextInputManager* text_input_manager,
     RenderWidgetHostViewBase* updated_view) {
-  [ui_view_->view_.textInteraction
+  [[ui_view_->view_ textInteraction]
           .textSelectionDisplayInteraction setNeedsSelectionUpdate];
 }
 
@@ -887,6 +884,42 @@ void RenderWidgetHostViewIOS::ContentInsetChanged() {
   if (!is_scrolling_) {
     host()->SynchronizeVisualProperties();
   }
+}
+
+void RenderWidgetHostViewIOS::DeleteSurroundingText(int before, int after) {
+  if (auto* widget_host = GetActiveWidget()) {
+    auto* input_handler = widget_host->GetFrameWidgetInputHandler();
+    if (!input_handler) {
+      return;
+    }
+    input_handler->DeleteSurroundingTextInCodePoints(before, after);
+  }
+}
+
+blink::mojom::FrameWidgetInputHandler*
+RenderWidgetHostViewIOS::GetFrameWidgetInputHandlerForFocusedWidget() {
+  auto* focused_widget = GetFocusedWidget();
+  if (!focused_widget) {
+    return nullptr;
+  }
+  return focused_widget->GetFrameWidgetInputHandler();
+}
+
+void RenderWidgetHostViewIOS::StartAutoscrollForSelectionToPoint(
+    const gfx::PointF& point) {
+  auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
+  if (!input_handler) {
+    return;
+  }
+  input_handler->StartAutoscrollForSelectionToPoint(point);
+}
+
+void RenderWidgetHostViewIOS::StopAutoscroll() {
+  auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
+  if (!input_handler) {
+    return;
+  }
+  input_handler->StopAutoscroll();
 }
 
 gfx::Size RenderWidgetHostViewIOS::GetCompositorViewportPixelSize() {

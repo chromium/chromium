@@ -68,6 +68,11 @@
 // The image. May be updated after the view is loaded.
 @property(nonatomic, strong) UIImage* image;
 
+// Color used for the image frame background when using
+// `imageEnclosedWithShadowAndBadge` or `imageEnclosedWithShadowWithoutBadge`.
+// Defaults to `kBackgroundColor`. Must be set before the view is loaded.
+@property(nonatomic, strong) UIColor* imageBackgroundColor;
+
 // When set, this value will be set as the accessibility label for the image
 // view.
 @property(nonatomic, copy) NSString* imageViewAccessibilityLabel;

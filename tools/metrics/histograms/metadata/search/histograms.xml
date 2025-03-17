@@ -28,8 +28,44 @@ chromium-metrics-reviews@google.com.
   <variant name=".Tabs" summary="Tabs"/>
 </variants>
 
+<variants name="AuxiliarySearchEntryType">
+  <variant name="CustomTabs" summary="CustomTabs"/>
+  <variant name="Tabs" summary="Tabs"/>
+  <variant name="TopSites" summary="MostVisitedSites"/>
+</variants>
+
+<variants name="AuxiliarySearchQueryType">
+  <variant name="Favicons" summary="Favicons"/>
+  <variant name="History" summary="Tabs and CCTs"/>
+  <variant name="Tabs" summary="Tabs"/>
+</variants>
+
+<variants name="ContextualSearchQuickActionCategory">
+  <variant name=".Address" summary=""/>
+  <variant name=".Email" summary=""/>
+  <variant name=".Event" summary=""/>
+  <variant name=".None" summary=""/>
+  <variant name=".Phone" summary=""/>
+  <variant name=".Website" summary=""/>
+</variants>
+
+<variants name="ExternalAppType">
+  <variant name="PixelLauncher" summary="Pixel launcher app"/>
+  <variant name="ThirdPartyLauncher" summary="Third party launcher app"/>
+</variants>
+
+<variants name="SearchEnginePromoDeviceType">
+  <variant name=".ExistingDevice" summary=""/>
+  <variant name=".NewDevice" summary=""/>
+</variants>
+
+<variants name="TileUiSurface">
+  <variant name="NTP." summary="Query tiles section on the new tab page"/>
+  <variant name="Omnibox." summary="Query tiles suggestion on omnibox"/>
+</variants>
+
 <histogram name="Search.Ambient.Query" enum="AmbientSearchEntryPoint"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>juanmojica@google.com</owner>
   <owner>schechter@google.com</owner>
   <owner>stanfield@google.com</owner>
@@ -54,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.DeleteTime{AuxiliarySearchDataType}"
-    units="ms" expires_after="M140">
+    units="ms" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>Time taken for deleting contents from the auxiliary search.</summary>
@@ -63,7 +99,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Search.AuxiliarySearch.DeletionFailure{AuxiliarySearchDataType}"
-    units="count" expires_after="M140">
+    units="count" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -74,7 +110,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Search.AuxiliarySearch.DeletionRequestStatus{AuxiliarySearchDataType}"
-    enum="AuxiliarySearchRequestStatus" expires_after="M140">
+    enum="AuxiliarySearchRequestStatus" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -86,15 +122,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.DonateTime" units="ms"
-    expires_after="2025-05-04">
+    expires_after="2025-09-07">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>Time taken for donating contents to the auxiliary search.</summary>
 </histogram>
 
 <histogram
+    name="Search.AuxiliarySearch.DonationCount.{AuxiliarySearchEntryType}"
+    units="count" expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the count of contents which are sent to the auxiliary search. The
+    histogram is logged when Chrome is paused and a set of data are donated to
+    the auxiliary search. Android-only.
+  </summary>
+  <token key="AuxiliarySearchEntryType" variants="AuxiliarySearchEntryType"/>
+</histogram>
+
+<histogram
     name="Search.AuxiliarySearch.DonationFailure{AuxiliarySearchDataType}"
-    units="count" expires_after="M140">
+    units="count" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -114,16 +164,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.AuxiliarySearch.DonationSent{AuxiliarySearchDataType}"
-    units="count" expires_after="2025-05-04">
-  <owner>gangwu@chromium.org</owner>
-  <owner>chrome-mobile-search@google.com</owner>
-  <summary>
-    Records the count of contents which are sent to the auxiliary search.
-  </summary>
-  <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
-</histogram>
-
 <histogram name="Search.AuxiliarySearch.Favicon.FirstDonateCount" units="Count"
     expires_after="2025-09-15">
   <owner>hanxi@chromium.org</owner>
@@ -134,6 +174,21 @@ chromium-metrics-reviews@google.com.
     The histogram is logged when Chrome is paused and a small set of favicon
     fetching is completed for the auxiliary search. Android-only.
   </summary>
+</histogram>
+
+<histogram
+    name="Search.AuxiliarySearch.LaunchedFromExternalApp.{ExternalAppType}.{AuxiliarySearchEntryType}"
+    enum="EntryClickedPosition" expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the type and the position of a donated data when it is clicked by
+    users from the external app. The histogram is logged when Chrome is launched
+    via an View Intent from the external app. Android only.
+  </summary>
+  <token key="ExternalAppType" variants="ExternalAppType"/>
+  <token key="AuxiliarySearchEntryType" variants="AuxiliarySearchEntryType"/>
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.Module.ClickInfo" enum="ClickInfo"
@@ -148,20 +203,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.AuxiliarySearch.QueryTime.Favicons" units="ms"
-    expires_after="2025-09-15">
+<histogram name="Search.AuxiliarySearch.QueryTime.{AuxiliarySearchQueryType}"
+    units="ms" expires_after="2025-09-15">
   <owner>hanxi@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>
   <owner>clank-start@google.com</owner>
-  <summary>Time taken for query favicons for the auxiliary search.</summary>
-</histogram>
-
-<histogram name="Search.AuxiliarySearch.QueryTime{AuxiliarySearchDataType}"
-    units="ms" expires_after="2025-09-15">
-  <owner>gangwu@chromium.org</owner>
-  <owner>chrome-mobile-search@google.com</owner>
-  <summary>Time taken for query contents for the auxiliary search.</summary>
-  <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
+  <summary>
+    Records the time taken for query contents for the auxiliary search. The
+    histogram is logged when Chrome is on paused and the query of a set of data
+    is completed for the auxiliary search. Android only.
+  </summary>
+  <token key="AuxiliarySearchQueryType" variants="AuxiliarySearchQueryType"/>
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.Schedule.DelayTime" units="ms"
@@ -237,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceDebug.ScrollStateWithMoreButtonClick"
-    enum="SearchEngineChoiceScrollState" expires_after="2025-04-13">
+    enum="SearchEngineChoiceScrollState" expires_after="2025-08-24">
   <owner>jyammine@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -245,21 +297,6 @@ chromium-metrics-reviews@google.com.
     when the &quot;More&quot; button is clicked. In some cases, the page doesn't
     scroll to the exact bottom when the button is clicked. Recorded only when
     the &quot;More&quot; button is clicked.
-  </summary>
-</histogram>
-
-<histogram name="Search.ChoiceDebug.UnexpectedSearchEngineId" units="id"
-    expires_after="2025-02-11">
-  <owner>dgn@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
-  <summary>
-    Records the id of an unexpected search engine that causes the choice screen
-    to be suppressed. We would normally only expect the choice screen to include
-    options that are in a country-specific list, or at least part of the set of
-    currently available prepopulated search engines.
-
-    This histogram might be recorded at each navigation, in a sparse histogram,
-    until the choice screen ends up being shown.
   </summary>
 </histogram>
 
@@ -281,7 +318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceReprompt{Category}"
-    enum="SearchEngineChoiceReprompt" expires_after="2025-06-08">
+    enum="SearchEngineChoiceReprompt" expires_after="2025-08-10">
   <owner>droger@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -297,7 +334,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenDefaultSearchEngineType"
-    enum="OmniboxSearchEngineType" expires_after="2025-04-13">
+    enum="OmniboxSearchEngineType" expires_after="2025-08-24">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -323,7 +360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenEvents"
-    enum="SearchEngineChoiceScreenEvents" expires_after="2025-04-13">
+    enum="SearchEngineChoiceScreenEvents" expires_after="2025-08-24">
   <owner>samarchehade@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -336,7 +373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenNavigationConditions"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2025-04-13">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2025-08-24">
   <owner>dgn@chromium.org</owner>
   <owner>muellerj@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -350,7 +387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenProfileInitConditions"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2025-04-13">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2025-08-24">
   <owner>dgn@chromium.org</owner>
   <owner>muellerj@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -363,7 +400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenSelectedEngineIndex" units="index"
-    expires_after="2025-04-20">
+    expires_after="2025-08-24">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -374,7 +411,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenShowedEngineAt.CountryMismatch"
-    enum="BooleanSkipped" expires_after="2025-05-04">
+    enum="BooleanSkipped" expires_after="2025-09-07">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -386,7 +423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenShowedEngineAt.Index{Index}"
-    enum="OmniboxSearchEngineType" expires_after="2025-04-20">
+    enum="OmniboxSearchEngineType" expires_after="2025-08-24">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -537,52 +574,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearch.Ranker.Model.Status"
-    enum="RankerModelStatus" expires_after="M77">
-  <owner>donnd@chromium.org</owner>
-  <owner>charleszhao@chromium.org</owner>
-  <summary>Tracks the outcome of attempts to download a Ranker Model.</summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.Timer.DownloadModel" units="ms"
-    expires_after="M81">
-  <owner>charleszhao@chromium.org</owner>
-  <owner>donnd@chromium.org</owner>
-  <summary>
-    Time taken for the Ranker Model Loader to download its model from the
-    configured URL, in ms.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.Timer.ParseModel" units="ms"
-    expires_after="M77">
-  <owner>charleszhao@chromium.org</owner>
-  <owner>donnd@chromium.org</owner>
-  <summary>
-    Time taken for the Ranker Model Loader to parse its model, in ms.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.Timer.ReadModel" units="ms"
-    expires_after="M85">
-  <owner>charleszhao@chromium.org</owner>
-  <owner>donnd@chromium.org</owner>
-  <summary>
-    Time taken for the Ranker Model Loader to read its model from local storage
-    (cache), in ms.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.Timer.WriteModel" units="ms"
-    expires_after="M85">
-  <owner>charleszhao@chromium.org</owner>
-  <owner>donnd@chromium.org</owner>
-  <summary>
-    Time taken for the Ranker Model Loader to write its model to local storage,
-    in ms.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearch.ResolveReceived" enum="Boolean"
     expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
@@ -700,30 +691,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchIPHShown" enum="Boolean"
-    expires_after="M77">
-  <owner>donnd@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The number of times the Contextual Search panel is opened, categorized by
-    whether In-Product Help for Contextual Search was shown before. Logged when
-    the panel is opened. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchPanelOpenedIPHShown" enum="Boolean"
-    expires_after="M77">
-  <owner>donnd@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The number of times the Contextual Search panel is opened, categorized by
-    whether In-Product Help for opening the panel was shown before. Logged when
-    the panel is opened. Implemented for Android.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearchPreferenceState"
     enum="ContextualSearchPreferenceState" expires_after="never">
 <!-- expires-never: dashboard metric (internal: go/cs-metrics-dashboard) -->
@@ -795,7 +762,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchQuickActions.Clicked"
+<histogram
+    name="Search.ContextualSearchQuickActions.Clicked{ContextualSearchQuickActionCategory}"
     enum="BooleanClicked" expires_after="never">
 <!-- expires-never: indicates completion of a user journey. -->
 
@@ -805,11 +773,16 @@ chromium-metrics-reviews@google.com.
     Whether a quick action in the Contextual Search bar was clicked, which
     activates the associated intent. Recorded when Contextual Search is
     dismissed due to a click on a QuickAction in the Bar. Implemented for
-    Android.
+    Android. {ContextualSearchQuickActionCategory}
   </summary>
+  <token key="ContextualSearchQuickActionCategory"
+      variants="ContextualSearchQuickActionCategory">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Search.ContextualSearchQuickActions.IntentResolution"
+<histogram
+    name="Search.ContextualSearchQuickActions.IntentResolution{ContextualSearchQuickActionCategory}"
     enum="ContextualSearchQuickActionIntentResolution"
     expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
@@ -818,10 +791,16 @@ chromium-metrics-reviews@google.com.
     Whether a Contextual Search quick action intent resolved to zero, one, or
     many apps. Recorded when the quick action intent URI is resolved.
     Implemented for Android. (Expired in M81. Revived in M120.)
+    {ContextualSearchQuickActionCategory}
   </summary>
+  <token key="ContextualSearchQuickActionCategory"
+      variants="ContextualSearchQuickActionCategory">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Search.ContextualSearchQuickActions.ResultsSeen"
+<histogram
+    name="Search.ContextualSearchQuickActions.ResultsSeen{ContextualSearchQuickActionCategory}"
     enum="ContextualSearchResultsSeen" expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
@@ -829,7 +808,12 @@ chromium-metrics-reviews@google.com.
     Whether search results were seen as part of a Contextual Search when a quick
     action was shown. Recorded when Contextual Search is dismissed. Implemented
     for Android. (Expired in M81. Revived in M120.)
+    {ContextualSearchQuickActionCategory}
   </summary>
+  <token key="ContextualSearchQuickActionCategory"
+      variants="ContextualSearchQuickActionCategory">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Search.ContextualSearchResultsSeen"
@@ -856,28 +840,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchTapIPHShown" enum="Boolean"
-    expires_after="M77">
-  <owner>donnd@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The number of times the Contextual Search is triggered by tapping,
-    categorized by whether In-Product Help for tapping was shown before. Logged
-    when Contextual Search is triggered by tapping. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchTranslateCondition" enum="Boolean"
-    expires_after="M77">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    For each contextual search that is triggered by tap, records whether the
-    translation conditions are met. Implemented for Android.
-  </summary>
-</histogram>
-
 <histogram name="Search.DefaultSearchEngineMirrored" enum="Boolean"
     expires_after="2025-11-10">
   <owner>davidbienvenu@chromium.org</owner>
@@ -894,7 +856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.DefaultSearchProviderType2{Population}"
-    enum="OmniboxSearchEngineType" expires_after="2025-06-08">
+    enum="OmniboxSearchEngineType" expires_after="2025-08-10">
   <owner>mpearson@chromium.org</owner>
   <owner>ftirelo@chromium.org</owner>
   <summary>
@@ -930,7 +892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.Image.Camera.Open" enum="CameraOpenEntryPoint"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>juanmojica@google.com</owner>
   <owner>schechter@google.com</owner>
   <owner>stanfield@google.com</owner>
@@ -955,7 +917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.iOS.SelectDefaultSearchEngine"
-    enum="OmniboxSearchEngineType" expires_after="2025-04-27">
+    enum="OmniboxSearchEngineType" expires_after="2025-08-10">
   <owner>sczs@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -1006,7 +968,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus"
-    units="ms" expires_after="2025-05-11">
+    units="ms" expires_after="2025-07-13">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1026,7 +988,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.DelayFromObservationToFirstStatus"
-    units="ms" expires_after="2025-05-11">
+    units="ms" expires_after="2025-07-13">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1043,7 +1005,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.DialogShownAttempt" units="attempts"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1063,7 +1025,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.DialogStatusChange"
-    enum="OsDefaultsChoiceDialogStatus" expires_after="2025-05-11">
+    enum="OsDefaultsChoiceDialogStatus" expires_after="2025-07-13">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1081,7 +1043,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.DialogStatusOnAppOpen"
-    enum="OsDefaultsChoiceDialogStatus" expires_after="2025-05-11">
+    enum="OsDefaultsChoiceDialogStatus" expires_after="2025-07-13">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1092,7 +1054,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.DialogSuppressionStatus"
-    enum="OsDefaultsChoiceDialogSuppressionStatus" expires_after="2025-05-11">
+    enum="OsDefaultsChoiceDialogSuppressionStatus" expires_after="2025-07-13">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1111,7 +1073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.LaunchChoiceScreenTapHandlingStatus"
-    enum="LaunchOsChoiceScreenTapHandlingStatus" expires_after="2025-03-01">
+    enum="LaunchOsChoiceScreenTapHandlingStatus" expires_after="2025-08-24">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1125,41 +1087,6 @@ chromium-metrics-reviews@google.com.
     since the last button tap. This status indicates whether we identified the
     current tap as the initial one, or whether for a repeated tap we decided to
     avoid requesting the choice screen to be launched again.
-  </summary>
-</histogram>
-
-<histogram name="Search.PartnershipSearchPerformed" enum="SearchEntryPoint"
-    expires_after="M85">
-  <owner>yusufo@chromium.org</owner>
-  <summary>
-    The entry point used for all searches performed under partnership after the
-    Android search engine promo dialog was shown. This is a dialog prompting the
-    user to pick a default search engine. This metric is collected for every
-    search query performed.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Search.QueryTiles.Bitmap.Available"
-    enum="BooleanAvailable" expires_after="2022-10-31">
-<!-- Name completed by histogram_suffixes name="TileUiSurface" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Indicates whether or not a bitmap could be shown for a tile.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Search.QueryTiles.Bitmap.FetchDuration" units="ms"
-    expires_after="2022-04-01">
-<!-- Name completed by histogram_suffixes name="TileUiSurface" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the time taken to fetch a bitmap for a tile when a bitmap could be
-    found. It includes the time starting from the UI layer requesting the
-    backend till the backend returns the associated bitmap.
   </summary>
 </histogram>
 
@@ -1222,19 +1149,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Search.QueryTiles.NoBitmap.FetchDuration"
-    units="ms" expires_after="2022-04-01">
-<!-- Name completed by histogram_suffixes name="TileUiSurface" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the time taken by the bitmap request for a tile when no bitmap could
-    be found. It includes the time starting from the UI layer requesting the
-    backend till the backend returns the associated bitmap.
-  </summary>
-</histogram>
-
 <histogram name="Search.QueryTiles.RequestStatus"
     enum="QueryTilesRequestStatus" expires_after="2023-04-16">
   <owner>qinmin@chromium.org</owner>
@@ -1245,39 +1159,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Search.QueryTiles.Tile.Clicked" units="index"
-    expires_after="2023-08-31">
-<!-- Name completed by histogram_suffixes name="TileUiSurface" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the index of the tile that was clicked. The index refers to the
-    position of the tile in the carousel.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Search.QueryTiles.Tile.Clicked.IsTopLevel"
-    enum="BooleanIsTopLevel" expires_after="2022-04-01">
-<!-- Name completed by histogram_suffixes name="TileUiSurface" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>Indicates whether the tile clicked was a top level tile.</summary>
-</histogram>
-
-<histogram base="true" name="Search.QueryTiles.TileCount" units="tiles"
-    expires_after="2023-08-31">
-<!-- Name completed by histogram_suffixes name="TileUiSurface" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Indicates the number of tiles displayed in the UI after the backend was
-    loaded.
-  </summary>
-</histogram>
-
 <histogram name="Search.QueryTiles.TrendingTileEvent" enum="TrendingTileEvent"
     expires_after="2024-09-22">
   <owner>qinmin@chromium.org</owner>
@@ -1285,6 +1166,66 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records events related to trending tiles, including display, removal and
     click, after the events occur.
+  </summary>
+</histogram>
+
+<histogram name="Search.QueryTiles.{TileUiSurface}Bitmap.Available"
+    enum="BooleanAvailable" expires_after="2022-10-31">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Indicates whether or not a bitmap could be shown for a tile. {TileUiSurface}
+  </summary>
+</histogram>
+
+<histogram name="Search.QueryTiles.{TileUiSurface}Bitmap.FetchDuration"
+    units="ms" expires_after="2022-04-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Records the time taken to fetch a bitmap for a tile when a bitmap could be
+    found. It includes the time starting from the UI layer requesting the
+    backend till the backend returns the associated bitmap. {TileUiSurface}
+  </summary>
+</histogram>
+
+<histogram name="Search.QueryTiles.{TileUiSurface}NoBitmap.FetchDuration"
+    units="ms" expires_after="2022-04-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Records the time taken by the bitmap request for a tile when no bitmap could
+    be found. It includes the time starting from the UI layer requesting the
+    backend till the backend returns the associated bitmap. {TileUiSurface}
+  </summary>
+</histogram>
+
+<histogram name="Search.QueryTiles.{TileUiSurface}Tile.Clicked" units="index"
+    expires_after="2023-08-31">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Records the index of the tile that was clicked. The index refers to the
+    position of the tile in the carousel. {TileUiSurface}
+  </summary>
+</histogram>
+
+<histogram name="Search.QueryTiles.{TileUiSurface}Tile.Clicked.IsTopLevel"
+    enum="BooleanIsTopLevel" expires_after="2022-04-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Indicates whether the tile clicked was a top level tile. {TileUiSurface}
+  </summary>
+</histogram>
+
+<histogram name="Search.QueryTiles.{TileUiSurface}TileCount" units="tiles"
+    expires_after="2023-08-31">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Indicates the number of tiles displayed in the UI after the backend was
+    loaded. {TileUiSurface}
   </summary>
 </histogram>
 
@@ -1313,7 +1254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RegionSearch.Lens.Result"
-    enum="LensRegionSearchCaptureResult" expires_after="2025-05-11">
+    enum="LensRegionSearchCaptureResult" expires_after="2025-07-13">
   <owner>juanmojica@google.com</owner>
   <owner>benwgold@google.com</owner>
   <owner>stanfield@google.com</owner>
@@ -1454,7 +1395,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SaveGuestModeSelection" enum="BooleanYesNo"
-    expires_after="2025-06-08">
+    expires_after="2025-08-10">
   <owner>dullweber@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -1465,7 +1406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchEngineCountryDelegate.Connection{Result}Time"
-    units="ms" expires_after="2025-05-04">
+    units="ms" expires_after="2025-09-07">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1484,7 +1425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchEngineCountryDelegate.Fetch{Result}Time"
-    units="ms" expires_after="2025-05-04">
+    units="ms" expires_after="2025-09-07">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1504,7 +1445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchEngineCountryDelegate.ServiceBindStatus"
-    enum="BooleanStartedCompleted" expires_after="2025-05-04">
+    enum="BooleanStartedCompleted" expires_after="2025-09-07">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1518,10 +1459,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.SearchEngineListedInPromoDialog"
-    enum="OmniboxSearchEngineType" expires_after="2025-04-20">
-<!-- Name completed by histogram_suffixes name="SearchEnginePromoOrdering" and name="SearchEnginePromoDeviceType" -->
-
+<histogram
+    name="Search.SearchEngineListedInPromoDialog{SearchEnginePromoDeviceType}"
+    enum="OmniboxSearchEngineType" expires_after="2025-08-24">
   <owner>yusufo@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1531,13 +1471,17 @@ chromium-metrics-reviews@google.com.
     introduced.
 
     Warning: this histogram was expired from M81 to M124; data may be missing.
+    {SearchEnginePromoDeviceType}
   </summary>
+  <token key="SearchEnginePromoDeviceType"
+      variants="SearchEnginePromoDeviceType">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Search.SearchEngineSelectionInPromoDialog"
-    enum="OmniboxSearchEngineType" expires_after="2025-04-20">
-<!-- Name completed by histogram_suffixes name="SearchEnginePromoDeviceType" -->
-
+<histogram
+    name="Search.SearchEngineSelectionInPromoDialog{SearchEnginePromoDeviceType}"
+    enum="OmniboxSearchEngineType" expires_after="2025-08-24">
   <owner>yusufo@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1547,7 +1491,12 @@ chromium-metrics-reviews@google.com.
     introduced.
 
     Warning: this histogram was expired from M81 to M124; data may be missing.
+    {SearchEnginePromoDeviceType}
   </summary>
+  <token key="SearchEnginePromoDeviceType"
+      variants="SearchEnginePromoDeviceType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Search.SearchPolicyConflict.HasConflictWith.{ConflictType}"
@@ -1604,7 +1553,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchProviderOverrideStatus"
-    enum="SearchProviderOverrideStatus" expires_after="2025-04-13">
+    enum="SearchProviderOverrideStatus" expires_after="2025-08-24">
   <owner>dgn@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -1631,41 +1580,6 @@ chromium-metrics-reviews@google.com.
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>Time between showing and hiding the answer card.</summary>
-</histogram>
-
-<histogram name="SearchAnswer.LoadingTime" units="ms" expires_after="M85">
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Time between sending an answer server request and the end of loading of the
-    answer card. Failed requests and requests not returning an answer are not
-    counted.
-  </summary>
-</histogram>
-
-<histogram name="SearchAnswer.NavigationTime" units="ms" expires_after="M85">
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Time between sending an answer server request and successful finish of
-    navigation. Failed requests and requests not returning an answer are not
-    counted.
-  </summary>
-</histogram>
-
-<histogram name="SearchAnswer.RequestResult" enum="SearchAnswerRequestResult"
-    expires_after="M85">
-  <owner>newcomer@chromium.org</owner>
-  <summary>Result of a answer server request.</summary>
-</histogram>
-
-<histogram name="SearchAnswer.ResizeAfterLoadTime" units="ms"
-    expires_after="M85">
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Time between successfully loading an answer card request and updating its
-    preferred size. There might be no or more than one size update per card
-    load. Size updates that happen before the card finishes loading are ignored
-    since they are not visible.
-  </summary>
 </histogram>
 
 </histograms>

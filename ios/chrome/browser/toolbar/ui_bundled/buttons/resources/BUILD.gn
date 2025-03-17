@@ -8,7 +8,6 @@ bundle_data_xcassets("resources") {
   catalog = "Assets.xcassets"
   sources = [
     "Assets.xcassets/Contents.json",
-    "Assets.xcassets/omnibox_incognito_background_color.colorset/Contents.json",
     "Assets.xcassets/tab_toolbar_button_color_highlighted.colorset/Contents.json",
     "Assets.xcassets/tab_toolbar_button_color_highlighted_incognito.colorset/Contents.json",
   ]

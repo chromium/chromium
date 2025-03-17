@@ -36,11 +36,9 @@ class AppWindowFrameView : public views::NonClientFrameView {
   // AppWindowFrameView is used to draw frames for app windows when a non
   // standard frame is needed. This occurs if there is no frame needed, or if
   // there is a frame color.
-  // If |draw_frame| is true, the view draws its own window title area and
-  // controls, using |frame_color|. If |draw_frame| is not true, no frame is
-  // drawn.
-  // TODO(benwells): Refactor this to split out frameless and colored frame
-  // views. See http://crbug.com/359432.
+  // If `draw_frame` is true, the view draws its own window title area and
+  // controls, using `active_frame_color`/`inactive_frame_color`. Otherwise, no
+  // frame is drawn.
   AppWindowFrameView(views::Widget* widget,
                      extensions::NativeAppWindow* window,
                      bool draw_frame,

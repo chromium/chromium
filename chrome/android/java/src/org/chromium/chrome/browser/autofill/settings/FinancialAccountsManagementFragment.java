@@ -5,13 +5,9 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
@@ -23,6 +19,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.PersonalDataManagerObserver;
@@ -34,8 +31,6 @@ import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-
-import java.util.Optional;
 
 /** Fragment showing management options for financial accounts like Pix, e-Wallets etc. */
 public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragment
@@ -188,22 +183,9 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                                 getBankAccountTypeString(bankAccount.getAccountType()),
                                 bankAccount.getAccountNumberSuffix()));
         bankAccountPref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
-        Optional<Bitmap> displayIconOptional = Optional.empty();
-        if (bankAccount.getDisplayIconUrl() != null && bankAccount.getDisplayIconUrl().isValid()) {
-            displayIconOptional =
-                    mPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
-                            bankAccount.getDisplayIconUrl(),
-                            AutofillUiUtils.CardIconSpecs.create(
-                                    getStyledContext(), ImageSize.LARGE));
-        }
-        Drawable displayIconBitmapDrawable =
-                displayIconOptional.isPresent()
-                        ? new BitmapDrawable(getResources(), displayIconOptional.get())
-                        : ResourcesCompat.getDrawable(
-                                getResources(),
-                                R.drawable.ic_account_balance,
-                                getStyledContext().getTheme());
-        bankAccountPref.setIcon(displayIconBitmapDrawable);
+        bankAccountPref.setIcon(
+                AutofillImageFetcherFactory.getForProfile(getProfile())
+                        .getPixAccountIcon(getStyledContext(), bankAccount.getDisplayIconUrl()));
         bankAccountPref.setOnPreferenceClickListener(
                 preference -> {
                     mFinancialAccountManageLinkOpenerCallback.onResult(

@@ -66,7 +66,7 @@ TEST(ScriptSerializationUnitTest, ParseMinimalScript) {
             script->js_scripts()[0]->source());
   EXPECT_THAT(script->url_patterns().ToStringVector(),
               testing::ElementsAre("http://matches.example/*"));
-  EXPECT_EQ(MatchOriginAsFallbackBehavior::kNever,
+  EXPECT_EQ(mojom::MatchOriginAsFallbackBehavior::kNever,
             script->match_origin_as_fallback());
   EXPECT_EQ(mojom::RunLocation::kDocumentIdle, script->run_location());
   EXPECT_EQ(UserScript::Source::kDynamicContentScript, script->GetSource());
@@ -122,7 +122,7 @@ TEST(ScriptSerializationUnitTest, ParseMaximalScript) {
             script->js_scripts()[0]->source());
   EXPECT_THAT(script->url_patterns().ToStringVector(),
               testing::ElementsAre("http://matches.example/*"));
-  EXPECT_EQ(MatchOriginAsFallbackBehavior::kAlways,
+  EXPECT_EQ(mojom::MatchOriginAsFallbackBehavior::kAlways,
             script->match_origin_as_fallback());
   EXPECT_EQ(mojom::RunLocation::kDocumentStart, script->run_location());
   EXPECT_EQ(UserScript::Source::kDynamicContentScript, script->GetSource());
@@ -151,7 +151,8 @@ TEST(ScriptSerializationUnitTest, SerializeUserScript) {
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("script.js")),
       stub_extension->GetResourceURL("script.js")));
   script.add_url_pattern(URLPattern(valid_schemes, "http://matches.example/*"));
-  script.set_match_origin_as_fallback(MatchOriginAsFallbackBehavior::kAlways);
+  script.set_match_origin_as_fallback(
+      mojom::MatchOriginAsFallbackBehavior::kAlways);
   script.set_run_location(mojom::RunLocation::kDocumentStart);
   script.set_execution_world(mojom::ExecutionWorld::kMain);
 

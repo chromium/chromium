@@ -16,6 +16,11 @@
 #include "ui/gl/scoped_make_current.h"
 
 namespace media {
+namespace {
+BASE_FEATURE(kHandleUpdateTexImageFailures,
+             "HandleUpdateTexImageFailures",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}
 
 CodecOutputBufferRenderer::CodecOutputBufferRenderer(
     std::unique_ptr<CodecOutputBuffer> output_buffer,
@@ -84,8 +89,11 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer() {
       codec_buffer_wait_coordinator_->WaitForFrameAvailable();
 
       // We must call update tex image if we did get OnFrameAvailable, otherwise
-      // we will stop receiving callbacks (see https://crbug.com/c/1113203)
-      codec_buffer_wait_coordinator_->texture_owner()->UpdateTexImage();
+      // we will stop receiving callbacks (see https://crbug.com/c/1113203).
+      // Note, that we don't early out here if this didn't succeed, as we only
+      // need to attempt getting the buffer for callbacks to work.
+      codec_buffer_wait_coordinator_->texture_owner()->UpdateTexImage(
+          /*discard=*/true);
     }
     if (!RenderToTextureOwnerBackBuffer()) {
       // RenderTotextureOwnerBackBuffer can fail now only if ReleaseToSurface
@@ -100,7 +108,12 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer() {
   if (codec_buffer_wait_coordinator_->IsExpectingFrameAvailable())
     codec_buffer_wait_coordinator_->WaitForFrameAvailable();
 
-  codec_buffer_wait_coordinator_->texture_owner()->UpdateTexImage();
+  if (!codec_buffer_wait_coordinator_->texture_owner()->UpdateTexImage(
+          /*discard=*/false)) {
+    if (base::FeatureList::IsEnabled(kHandleUpdateTexImageFailures)) {
+      return false;
+    }
+  }
 
   if (frame_info_callback_) {
     gfx::Size coded_size;

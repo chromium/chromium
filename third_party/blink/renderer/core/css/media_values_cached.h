@@ -26,8 +26,6 @@ namespace blink {
 class CORE_EXPORT MediaValuesCached final : public MediaValues {
  public:
   struct CORE_EXPORT MediaValuesCachedData final {
-    USING_FAST_MALLOC(MediaValuesCachedData);
-
    public:
     // Members variables must be thread safe, since they're copied to the parser
     // thread

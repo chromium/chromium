@@ -69,7 +69,7 @@ class LoginTabHelper : public content::WebContentsObserver,
   virtual std::unique_ptr<LoginHandler> CreateLoginHandler(
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
-      LoginAuthRequiredCallback auth_required_callback);
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
  private:
   friend class content::WebContentsUserData<LoginTabHelper>;

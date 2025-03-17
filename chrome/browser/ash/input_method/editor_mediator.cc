@@ -12,8 +12,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
@@ -26,7 +24,10 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
-#include "chromeos/components/editor_menu/public/cpp/editor_helpers.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_helpers.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/display/screen.h"
@@ -94,12 +95,6 @@ void EditorMediator::ResetEditorConnections() {
         editor_service_connector_.get());
     panel_manager_.BindEditorClient();
   }
-}
-
-void EditorMediator::BindEditorPanelManager(
-    mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
-        pending_receiver) {
-  panel_manager_.BindReceiver(std::move(pending_receiver));
 }
 
 void EditorMediator::OnContextUpdated() {
@@ -206,7 +201,8 @@ size_t EditorMediator::GetSelectedTextLength() {
   return surrounding_text_.selection_range.length();
 }
 
-void EditorMediator::OnEditorModeChanged(const EditorMode& mode) {
+void EditorMediator::OnEditorModeChanged(
+    chromeos::editor_menu::EditorMode mode) {
   panel_manager_.NotifyEditorModeChanged(mode);
 }
 
@@ -226,34 +222,34 @@ void EditorMediator::HandleTrigger(
           : EditorQueryContext{preset_query_id, freeform_text};
 
   switch (GetEditorMode()) {
-    case EditorMode::kRewrite:
+    case chromeos::editor_menu::EditorMode::kRewrite:
       mako_bubble_coordinator_.LoadEditorUI(
           profile_, MakoEditorMode::kRewrite,
           /*can_fallback_to_center_position=*/true,
-          /*feedback_enabled=*/editor_switch_->IsFeedbackEnabled(),
+          /*feedback_enabled=*/CanAccessFeedback(),
           active_query_context.preset_query_id,
           active_query_context.freeform_text);
       query_context_ = std::nullopt;
       metrics_recorder_->LogEditorState(EditorStates::kNativeRequest);
       break;
-    case EditorMode::kWrite:
+    case chromeos::editor_menu::EditorMode::kWrite:
       mako_bubble_coordinator_.LoadEditorUI(
           profile_, MakoEditorMode::kWrite,
           /*can_fallback_to_center_position=*/true,
-          /*feedback_enabled=*/editor_switch_->IsFeedbackEnabled(),
+          /*feedback_enabled=*/CanAccessFeedback(),
           active_query_context.preset_query_id,
           active_query_context.freeform_text);
       query_context_ = std::nullopt;
       metrics_recorder_->LogEditorState(EditorStates::kNativeRequest);
       break;
-    case EditorMode::kConsentNeeded:
+    case chromeos::editor_menu::EditorMode::kConsentNeeded:
       query_context_ = EditorQueryContext(/*preset_query_id=*/preset_query_id,
                                           /*freeform_text=*/freeform_text);
       ShowNotice(EditorNoticeTransitionAction::kShowEditorPanel);
       metrics_recorder_->LogEditorState(EditorStates::kConsentScreenImpression);
       break;
-    case EditorMode::kHardBlocked:
-    case EditorMode::kSoftBlocked:
+    case chromeos::editor_menu::EditorMode::kHardBlocked:
+    case chromeos::editor_menu::EditorMode::kSoftBlocked:
       mako_bubble_coordinator_.CloseUI();
   }
 }
@@ -261,16 +257,11 @@ void EditorMediator::HandleTrigger(
 void EditorMediator::ShowNotice(
     EditorNoticeTransitionAction transition_action) {
   if (chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->magic_boost_controller_ash()
-        ->ShowDisclaimerUi(
-            /*display_id=*/display::Screen::GetScreen()
-                ->GetPrimaryDisplay()
-                .id(),
-            /*action=*/
-            ConvertToMagicBoostTransitionAction(transition_action),
-            /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+    ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
+        /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+        /*action=*/
+        ConvertToMagicBoostTransitionAction(transition_action),
+        /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
     return;
   }
 
@@ -367,18 +358,28 @@ bool EditorMediator::IsAllowedForUse() {
   return editor_switch_->IsAllowedForUse();
 }
 
+bool EditorMediator::CanAccessFeedback() {
+  return editor_switch_->IsFeedbackEnabled();
+}
+
 bool EditorMediator::CanShowNoticeBanner() const {
   return editor_switch_->CanShowNoticeBanner();
 }
 
-EditorMode EditorMediator::GetEditorMode() const {
+chromeos::editor_menu::EditorMode EditorMediator::GetEditorMode() const {
   if (editor_mode_override_for_testing_.has_value()) {
     return *editor_mode_override_for_testing_;
   }
   return editor_switch_->GetEditorMode();
 }
 
-ConsentStatus EditorMediator::GetConsentStatus() const {
+chromeos::editor_menu::EditorTextSelectionMode
+EditorMediator::GetEditorTextSelectionMode() const {
+  return editor_switch_->GetEditorTextSelectionMode();
+}
+
+chromeos::editor_menu::EditorConsentStatus EditorMediator::GetConsentStatus()
+    const {
   return consent_store_->GetConsentStatus();
 }
 
@@ -416,7 +417,8 @@ bool EditorMediator::SetTextQueryProviderResponseForTesting(
   return true;
 }
 
-void EditorMediator::OverrideEditorModeForTesting(EditorMode editor_mode) {
+void EditorMediator::OverrideEditorModeForTesting(
+    chromeos::editor_menu::EditorMode editor_mode) {
   editor_mode_override_for_testing_ = editor_mode;
 }
 

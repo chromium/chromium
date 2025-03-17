@@ -146,6 +146,10 @@ inline PhysicalSize ToPhysicalSize(const LogicalSize& other, WritingMode mode) {
              : PhysicalSize(other.block_size, other.inline_size);
 }
 
+// Convert an aspect ratio represented as a gfx::SizeF (width:height) to the
+// closest PhysicalSize representation.
+PhysicalSize LayoutRatioFromSizeF(gfx::SizeF ratio);
+
 // TODO(crbug.com/962299): These functions should upgraded to force correct
 // pixel snapping in a type-safe way.
 inline gfx::Size ToRoundedSize(const PhysicalSize& s) {

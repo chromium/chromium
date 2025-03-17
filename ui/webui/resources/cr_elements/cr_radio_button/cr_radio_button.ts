@@ -34,7 +34,7 @@ export class CrRadioButtonElement extends CrRadioButtonElementBase {
 
   // Overridden from CrRippleMixin
   override createRipple() {
-    this.rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
+    this.rippleContainer = this.shadowRoot.querySelector('.disc-wrapper');
     const ripple = super.createRipple();
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle');

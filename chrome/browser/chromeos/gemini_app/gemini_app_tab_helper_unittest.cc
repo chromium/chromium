@@ -12,8 +12,8 @@
 #include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
@@ -24,19 +24,12 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/test/scoped_feature_list.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace {
-
-// Aliases.
 using ::base::Bucket;
 using ::base::BucketsAreArray;
 using ::testing::Bool;
 using ::testing::Combine;
 using ::testing::WithParamInterface;
-
 }  // namespace
 
 // GeminiAppTabHelperTest ------------------------------------------------------
@@ -83,11 +76,9 @@ class GeminiAppTabHelperTest
     GeminiAppTabHelper::MaybeCreateForWebContents(web_contents());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Used to conditionally enable/disable the Gemini app preinstallation
   // feature based on test parameterization.
   base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -141,8 +132,8 @@ TEST_P(GeminiAppTabHelperTest, RecordsPageVisitHistograms) {
   // (b) the profile is not off the record.
   bool record = IsGeminiAppPreinstallEnabled() && !IsProfileOffTheRecord();
   for (const auto& [url, page] : page_urls) {
-    auto histogram_buckets_it = base::ranges::find(
-        histogram_buckets, static_cast<base::HistogramBase::Sample>(page),
+    auto histogram_buckets_it = std::ranges::find(
+        histogram_buckets, static_cast<base::HistogramBase::Sample32>(page),
         &Bucket::min);
     {
       // Check exact page match.

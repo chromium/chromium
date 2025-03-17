@@ -203,10 +203,6 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   // Counts both RunFileChooser and EnumerateDirectory.
   size_t run_file_chooser_count() const { return run_file_chooser_count_; }
 
-  FileSelectListener* held_file_chooser_listener() const {
-    return held_file_chooser_listener_.get();
-  }
-
  private:
   class DevToolsWebContentsObserver;
 

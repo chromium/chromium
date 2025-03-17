@@ -20,12 +20,7 @@ namespace attribution_reporting {
 namespace {
 
 base::expected<std::optional<Registrar>, ParseError> ParsePreferredPlatform(
-    const net::structured_headers::Dictionary& dict,
-    bool cross_app_web_enabled) {
-  if (!cross_app_web_enabled) {
-    return std::nullopt;
-  }
-
+    const net::structured_headers::Dictionary& dict) {
   auto iter = dict.find("preferred-platform");
   if (iter == dict.end()) {
     return std::nullopt;
@@ -75,8 +70,7 @@ base::expected<bool, ParseError> ParseReportHeaderErrors(
 
 // static
 base::expected<RegistrationInfo, RegistrationInfoError>
-RegistrationInfo::ParseInfo(std::string_view header,
-                            bool cross_app_web_enabled) {
+RegistrationInfo::ParseInfo(std::string_view header) {
   if (header.empty()) {
     return RegistrationInfo();
   }
@@ -85,7 +79,7 @@ RegistrationInfo::ParseInfo(std::string_view header,
       base::unexpected(RegistrationInfoError::kRootInvalid);
 
   if (const auto dict = net::structured_headers::ParseDictionary(header)) {
-    info = ParseInfo(*dict, cross_app_web_enabled);
+    info = ParseInfo(*dict);
   }
 
   if (!info.has_value()) {
@@ -97,14 +91,11 @@ RegistrationInfo::ParseInfo(std::string_view header,
 
 // static
 base::expected<RegistrationInfo, RegistrationInfoError>
-RegistrationInfo::ParseInfo(const net::structured_headers::Dictionary& dict,
-                            bool cross_app_web_enabled) {
-  ASSIGN_OR_RETURN(
-      std::optional<Registrar> preferred_platform,
-      ParsePreferredPlatform(dict, cross_app_web_enabled)
-          .transform_error([](ParseError) {
-            return RegistrationInfoError::kInvalidPreferredPlatform;
-          }));
+RegistrationInfo::ParseInfo(const net::structured_headers::Dictionary& dict) {
+  ASSIGN_OR_RETURN(std::optional<Registrar> preferred_platform,
+                   ParsePreferredPlatform(dict).transform_error([](ParseError) {
+                     return RegistrationInfoError::kInvalidPreferredPlatform;
+                   }));
 
   ASSIGN_OR_RETURN(
       bool report_header_errors,

@@ -4,21 +4,26 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.url.GURL;
 
@@ -26,6 +31,7 @@ import org.chromium.url.GURL;
  * A coordinator for the recent activity UI. This includes (1) creating and managing bottom sheet,
  * and (2) building and showing the list of recent activity UI.
  */
+@NullMarked
 public class RecentActivityListCoordinator {
     /** Interface to fetch favicons for tabs to be used for data sharing UI. */
     public interface FaviconProvider {
@@ -49,10 +55,12 @@ public class RecentActivityListCoordinator {
         /**
          * Given a {@link GroupMember}, fetches their avatar from the data sharing backend.
          *
-         * @param member The associated {@link GroupMember}.
+         * @param member The associated {@link GroupMember}. If null, returns a default fallback
+         *     avatar.
          * @param avatarDrawableCallback The callback to be invoked when avatar is ready.
          */
-        void getAvatarBitmap(GroupMember member, Callback<Drawable> avatarDrawableCallback);
+        void getAvatarBitmap(
+                @Nullable GroupMember member, Callback<Drawable> avatarDrawableCallback);
     }
 
     private final BottomSheetController mBottomSheetController;
@@ -60,7 +68,7 @@ public class RecentActivityListCoordinator {
     private final View mContentContainer;
     private final RecyclerView mContentRecyclerView;
     private final RecentActivityListMediator mMediator;
-    private RecentActivityBottomSheetContent mBottomSheetContent;
+    private @Nullable RecentActivityBottomSheetContent mBottomSheetContent;
 
     /**
      * Constructor.
@@ -74,23 +82,27 @@ public class RecentActivityListCoordinator {
      */
     public RecentActivityListCoordinator(
             Context context,
-            @NonNull BottomSheetController bottomSheetController,
+            BottomSheetController bottomSheetController,
             MessagingBackendService messagingBackendService,
             FaviconProvider faviconProvider,
             AvatarProvider avatarProvider,
             RecentActivityActionHandler recentActivityActionHandler) {
-        mModelList = new ModelList();
         mBottomSheetController = bottomSheetController;
+        mContentContainer =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.recent_activity_bottom_sheet, /* root= */ null);
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(RecentActivityContainerProperties.ALL_KEYS).build();
+        PropertyModelChangeProcessor.create(
+                propertyModel, mContentContainer, RecentActivityContainerViewBinder::bind);
 
+        mModelList = new ModelList();
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);
         adapter.registerType(
                 0,
                 new LayoutViewBuilder(R.layout.recent_activity_log_item),
                 RecentActivityListViewBinder::bind);
 
-        mContentContainer =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.recent_activity_bottom_sheet, /* root= */ null);
         mContentRecyclerView = mContentContainer.findViewById(R.id.recent_activity_recycler_view);
         mContentRecyclerView.setAdapter(adapter);
 
@@ -107,6 +119,7 @@ public class RecentActivityListCoordinator {
         mMediator =
                 new RecentActivityListMediator(
                         context,
+                        propertyModel,
                         mModelList,
                         messagingBackendService,
                         faviconProvider,
@@ -131,6 +144,7 @@ public class RecentActivityListCoordinator {
     }
 
     private void closeBottomSheet() {
+        assumeNonNull(mBottomSheetContent);
         mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ false);
     }
 }

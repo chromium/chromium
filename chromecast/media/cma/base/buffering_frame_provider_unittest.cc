@@ -131,12 +131,10 @@ TEST_F(BufferingFrameProviderTest, FastProviderSlowConsumer) {
 
   const size_t frame_count = 100u;
   Configure(frame_count,
-            std::vector<bool>(
-                provider_delayed_pattern,
-                provider_delayed_pattern + std::size(provider_delayed_pattern)),
-            std::vector<bool>(consumer_delayed_pattern,
-                              consumer_delayed_pattern +
-                                  std::size(consumer_delayed_pattern)));
+            std::vector<bool>(std::begin(provider_delayed_pattern),
+                              std::end(provider_delayed_pattern)),
+            std::vector<bool>(std::begin(consumer_delayed_pattern),
+                              std::end(consumer_delayed_pattern)));
 
   base::test::SingleThreadTaskEnvironment task_environment;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -151,12 +149,10 @@ TEST_F(BufferingFrameProviderTest, SlowProviderFastConsumer) {
 
   const size_t frame_count = 100u;
   Configure(frame_count,
-            std::vector<bool>(
-                provider_delayed_pattern,
-                provider_delayed_pattern + std::size(provider_delayed_pattern)),
-            std::vector<bool>(consumer_delayed_pattern,
-                              consumer_delayed_pattern +
-                                  std::size(consumer_delayed_pattern)));
+            std::vector<bool>(std::begin(provider_delayed_pattern),
+                              std::end(provider_delayed_pattern)),
+            std::vector<bool>(std::begin(consumer_delayed_pattern),
+                              std::end(consumer_delayed_pattern)));
 
   base::test::SingleThreadTaskEnvironment task_environment;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -178,12 +174,10 @@ TEST_F(BufferingFrameProviderTest, SlowFastProducerConsumer) {
 
   const size_t frame_count = 100u;
   Configure(frame_count,
-            std::vector<bool>(
-                provider_delayed_pattern,
-                provider_delayed_pattern + std::size(provider_delayed_pattern)),
-            std::vector<bool>(consumer_delayed_pattern,
-                              consumer_delayed_pattern +
-                                  std::size(consumer_delayed_pattern)));
+            std::vector<bool>(std::begin(provider_delayed_pattern),
+                              std::end(provider_delayed_pattern)),
+            std::vector<bool>(std::begin(consumer_delayed_pattern),
+                              std::end(consumer_delayed_pattern)));
 
   base::test::SingleThreadTaskEnvironment task_environment;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

@@ -4,6 +4,9 @@
 
 package org.chromium.ui;
 
+import static android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
+import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -23,6 +26,7 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -352,11 +356,21 @@ public class UiUtils {
      * Sets the navigation bar icons to dark or light.
      *
      * @param rootView The root view used to request updates to the system UI theme.
-     * @param useDarkIcons Whether the navigation bar icons should be dark.
+     * @param lightNavigationBar Whether the navigation bar has a light appearance with dark icons.
      */
-    public static void setNavigationBarIconColor(View rootView, boolean useDarkIcons) {
+    public static void setNavigationBarIconColor(View rootView, boolean lightNavigationBar) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            WindowInsetsController controller = rootView.getWindowInsetsController();
+            if (controller != null) {
+                controller.setSystemBarsAppearance(
+                        lightNavigationBar ? APPEARANCE_LIGHT_NAVIGATION_BARS : 0,
+                        APPEARANCE_LIGHT_NAVIGATION_BARS);
+                return;
+            }
+        }
+
         int systemUiVisibility = rootView.getSystemUiVisibility();
-        if (useDarkIcons) {
+        if (lightNavigationBar) {
             systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
         } else {
             systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
@@ -383,19 +397,25 @@ public class UiUtils {
     }
 
     /**
-     * Sets the status bar icons to dark or light. Note that this is only valid for
-     * Android M+.
-     *
-     * TODO: migrate to WindowInsetsController API for Android R+ (API 30+)
+     * Sets the status bar icons to dark or light. Note that this is only valid for Android M+.
      *
      * @param rootView The root view used to request updates to the system UI theming.
-     * @param useDarkIcons Whether the status bar icons should be dark.
+     * @param lightStatusBar Whether the status bar has a light appearance with dark icons.
      */
-    public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
+    public static void setStatusBarIconColor(View rootView, boolean lightStatusBar) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            WindowInsetsController controller = rootView.getWindowInsetsController();
+            if (controller != null) {
+                controller.setSystemBarsAppearance(
+                        lightStatusBar ? APPEARANCE_LIGHT_STATUS_BARS : 0,
+                        APPEARANCE_LIGHT_STATUS_BARS);
+                return;
+            }
+        }
         int systemUiVisibility = rootView.getSystemUiVisibility();
         // The status bar should always be black in automotive devices to match the black back
         // button toolbar, so we should not use dark icons.
-        if (useDarkIcons && !BuildInfo.getInstance().isAutomotive) {
+        if (lightStatusBar && !BuildInfo.getInstance().isAutomotive) {
             systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         } else {
             systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;

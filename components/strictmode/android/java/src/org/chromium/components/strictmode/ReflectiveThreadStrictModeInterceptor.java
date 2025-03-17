@@ -12,11 +12,11 @@ import android.os.strictmode.DiskReadViolation;
 import android.os.strictmode.DiskWriteViolation;
 import android.os.strictmode.ResourceMismatchViolation;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -46,15 +46,15 @@ import java.util.function.Function;
  * death penalty, the whitelisting mechanism itself can be configured to execute the death penalty
  * after the first non-whitelisted violation.
  */
+@NullMarked
 final class ReflectiveThreadStrictModeInterceptor implements ThreadStrictModeInterceptor {
     private static final String TAG = "ThreadStrictMode";
 
-    @NonNull private final List<Function<Violation, Integer>> mWhitelistEntries;
-    @Nullable private final Consumer mCustomPenalty;
+    private final List<Function<Violation, Integer>> mWhitelistEntries;
+    private final @Nullable Consumer mCustomPenalty;
 
     ReflectiveThreadStrictModeInterceptor(
-            @NonNull List<Function<Violation, Integer>> whitelistEntries,
-            @Nullable Consumer customPenalty) {
+            List<Function<Violation, Integer>> whitelistEntries, @Nullable Consumer customPenalty) {
         mWhitelistEntries = whitelistEntries;
         mCustomPenalty = customPenalty;
     }

@@ -107,10 +107,10 @@ suite('ExtensionToolbarTest', function() {
     assertTrue(toastManager.isToastOpen);
     await mockDelegate.whenCalled('updateAllExtensions');
     assertEquals(1, mockDelegate.getCallCount('updateAllExtensions'));
-    assertFalse(!!toolbar.shadowRoot!.querySelector('extensions-pack-dialog'));
+    assertFalse(!!toolbar.shadowRoot.querySelector('extensions-pack-dialog'));
     toolbar.$.packExtensions.click();
     await microtasksFinished();
-    const dialog = toolbar.shadowRoot!.querySelector('extensions-pack-dialog');
+    const dialog = toolbar.shadowRoot.querySelector('extensions-pack-dialog');
     assertTrue(!!dialog);
   });
 

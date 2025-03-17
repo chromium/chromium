@@ -81,7 +81,7 @@ namespace test3 {
 
 const char kHost[] = "example.test";
 
-const auto kGoodPath = std::to_array<const char*>({
+constexpr auto kGoodPath = std::to_array<const char*>({
     "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
     "sha256/fzP+pVAbH0hRoUphJKenIP8+2tD/d2QH9J+kQNieM6Q=",
     "sha256/9vRUVdjloCa4wXUKfDWotV5eUXYD7vu0v0z9SRzQdzg=",
@@ -89,7 +89,7 @@ const auto kGoodPath = std::to_array<const char*>({
     nullptr,
 });
 
-const auto kBadPath = std::to_array<const char*>({
+constexpr auto kBadPath = std::to_array<const char*>({
     "sha256/1111111111111111111111111111111111111111111=",
     "sha256/2222222222222222222222222222222222222222222=",
     "sha256/3333333333333333333333333333333333333333333=",
@@ -177,6 +177,8 @@ class TransportSecurityStateTest : public ::testing::Test,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, DomainNameOddities) {
   TransportSecurityState state;
   const base::Time current_time(base::Time::Now());
@@ -188,114 +190,157 @@ TEST_F(TransportSecurityStateTest, DomainNameOddities) {
   // layer (that is, whether they are treated as equivalent or distinct),
   // ensure that for policy matching, something lacking a terminal "."
   // is equivalent to something with a terminal "."
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("example.com"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
 
   state.AddHSTS("example.com", expiry, true /* include_subdomains */);
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("example.com"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
   // Trailing '.' should be equivalent; it's just a resolver hint
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("example.com."));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example.com.", /*is_top_level_nav=*/true));
   // Leading '.' should be invalid
-  EXPECT_FALSE(state.ShouldUpgradeToSSL(".example.com"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL(".example.com", /*is_top_level_nav=*/true));
   // Subdomains should work regardless
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("sub.example.com"));
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("sub.example.com."));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("sub.example.com", /*is_top_level_nav=*/true));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("sub.example.com.", /*is_top_level_nav=*/true));
   // But invalid subdomains should be rejected
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("sub..example.com"));
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("sub..example.com."));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("sub..example.com", /*is_top_level_nav=*/true));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("sub..example.com.", /*is_top_level_nav=*/true));
 
   // Now try the inverse form
   TransportSecurityState state2;
   state2.AddHSTS("example.net.", expiry, true /* include_subdomains */);
-  EXPECT_TRUE(state2.ShouldUpgradeToSSL("example.net."));
-  EXPECT_TRUE(state2.ShouldUpgradeToSSL("example.net"));
-  EXPECT_TRUE(state2.ShouldUpgradeToSSL("sub.example.net."));
-  EXPECT_TRUE(state2.ShouldUpgradeToSSL("sub.example.net"));
+  EXPECT_TRUE(
+      state2.ShouldUpgradeToSSL("example.net.", /*is_top_level_nav=*/true));
+  EXPECT_TRUE(
+      state2.ShouldUpgradeToSSL("example.net", /*is_top_level_nav=*/true));
+  EXPECT_TRUE(
+      state2.ShouldUpgradeToSSL("sub.example.net.", /*is_top_level_nav=*/true));
+  EXPECT_TRUE(
+      state2.ShouldUpgradeToSSL("sub.example.net", /*is_top_level_nav=*/true));
 
   // Finally, test weird things
   TransportSecurityState state3;
   state3.AddHSTS("", expiry, true /* include_subdomains */);
-  EXPECT_FALSE(state3.ShouldUpgradeToSSL(""));
-  EXPECT_FALSE(state3.ShouldUpgradeToSSL("."));
-  EXPECT_FALSE(state3.ShouldUpgradeToSSL("..."));
+  EXPECT_FALSE(state3.ShouldUpgradeToSSL("", /*is_top_level_nav=*/true));
+  EXPECT_FALSE(state3.ShouldUpgradeToSSL(".", /*is_top_level_nav=*/true));
+  EXPECT_FALSE(state3.ShouldUpgradeToSSL("...", /*is_top_level_nav=*/true));
   // Make sure it didn't somehow apply HSTS to the world
-  EXPECT_FALSE(state3.ShouldUpgradeToSSL("example.org"));
+  EXPECT_FALSE(
+      state3.ShouldUpgradeToSSL("example.org", /*is_top_level_nav=*/true));
 
   TransportSecurityState state4;
   state4.AddHSTS(".", expiry, true /* include_subdomains */);
-  EXPECT_FALSE(state4.ShouldUpgradeToSSL(""));
-  EXPECT_FALSE(state4.ShouldUpgradeToSSL("."));
-  EXPECT_FALSE(state4.ShouldUpgradeToSSL("..."));
-  EXPECT_FALSE(state4.ShouldUpgradeToSSL("example.org"));
+  EXPECT_FALSE(state4.ShouldUpgradeToSSL("", /*is_top_level_nav=*/true));
+  EXPECT_FALSE(state4.ShouldUpgradeToSSL(".", /*is_top_level_nav=*/true));
+  EXPECT_FALSE(state4.ShouldUpgradeToSSL("...", /*is_top_level_nav=*/true));
+  EXPECT_FALSE(
+      state4.ShouldUpgradeToSSL("example.org", /*is_top_level_nav=*/true));
 
   // Now do the same for preloaded entries
   TransportSecurityState state5;
-  EXPECT_TRUE(state5.ShouldUpgradeToSSL("hsts-preloaded.test"));
-  EXPECT_TRUE(state5.ShouldUpgradeToSSL("hsts-preloaded.test."));
-  EXPECT_FALSE(state5.ShouldUpgradeToSSL("hsts-preloaded..test"));
-  EXPECT_FALSE(state5.ShouldUpgradeToSSL("hsts-preloaded..test."));
+  EXPECT_TRUE(state5.ShouldUpgradeToSSL("hsts-preloaded.test",
+                                        /*is_top_level_nav=*/true));
+  EXPECT_TRUE(state5.ShouldUpgradeToSSL("hsts-preloaded.test.",
+                                        /*is_top_level_nav=*/true));
+  EXPECT_FALSE(state5.ShouldUpgradeToSSL("hsts-preloaded..test",
+                                         /*is_top_level_nav=*/true));
+  EXPECT_FALSE(state5.ShouldUpgradeToSSL("hsts-preloaded..test.",
+                                         /*is_top_level_nav=*/true));
 }
 
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, SimpleMatches) {
   TransportSecurityState state;
   const base::Time current_time(base::Time::Now());
   const base::Time expiry = current_time + base::Seconds(1000);
 
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("example.com"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
   bool include_subdomains = false;
   state.AddHSTS("example.com", expiry, include_subdomains);
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("example.com"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
   EXPECT_TRUE(state.ShouldSSLErrorsBeFatal("example.com"));
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("foo.example.com"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("foo.example.com", /*is_top_level_nav=*/true));
   EXPECT_FALSE(state.ShouldSSLErrorsBeFatal("foo.example.com"));
 }
 
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, MatchesCase1) {
   TransportSecurityState state;
   const base::Time current_time(base::Time::Now());
   const base::Time expiry = current_time + base::Seconds(1000);
 
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("example.com"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
   bool include_subdomains = false;
   state.AddHSTS("EXample.coM", expiry, include_subdomains);
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("example.com"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
 }
 
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, MatchesCase2) {
   TransportSecurityState state;
   const base::Time current_time(base::Time::Now());
   const base::Time expiry = current_time + base::Seconds(1000);
 
   // Check dynamic entries
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("EXample.coM"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("EXample.coM", /*is_top_level_nav=*/true));
   bool include_subdomains = false;
   state.AddHSTS("example.com", expiry, include_subdomains);
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("EXample.coM"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("EXample.coM", /*is_top_level_nav=*/true));
 
   // Check static entries
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("hStS-prelOAded.tEsT"));
-  EXPECT_TRUE(
-      state.ShouldUpgradeToSSL("inClude-subDOmaIns-hsts-prEloaDed.TesT"));
+  EXPECT_TRUE(state.ShouldUpgradeToSSL("hStS-prelOAded.tEsT",
+                                       /*is_top_level_nav=*/true));
+  EXPECT_TRUE(state.ShouldUpgradeToSSL("inClude-subDOmaIns-hsts-prEloaDed.TesT",
+                                       /*is_top_level_nav=*/true));
 }
 
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, SubdomainMatches) {
   TransportSecurityState state;
   const base::Time current_time(base::Time::Now());
   const base::Time expiry = current_time + base::Seconds(1000);
 
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("example.test"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("example.test", /*is_top_level_nav=*/true));
   bool include_subdomains = true;
   state.AddHSTS("example.test", expiry, include_subdomains);
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("example.test"));
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("foo.example.test"));
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("foo.bar.example.test"));
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("foo.bar.baz.example.test"));
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("test"));
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("notexample.test"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example.test", /*is_top_level_nav=*/true));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("foo.example.test", /*is_top_level_nav=*/true));
+  EXPECT_TRUE(state.ShouldUpgradeToSSL("foo.bar.example.test",
+                                       /*is_top_level_nav=*/true));
+  EXPECT_TRUE(state.ShouldUpgradeToSSL("foo.bar.baz.example.test",
+                                       /*is_top_level_nav=*/true));
+  EXPECT_FALSE(state.ShouldUpgradeToSSL("test", /*is_top_level_nav=*/true));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("notexample.test", /*is_top_level_nav=*/true));
 }
 
 // Tests that a more-specific HSTS rule without the includeSubDomains bit does
 // not override a less-specific rule with includeSubDomains. Applicability is
 // checked before specificity. See https://crbug.com/821811.
+//
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, STSSubdomainNoOverride) {
   TransportSecurityState state;
   const base::Time current_time(base::Time::Now());
@@ -307,18 +352,24 @@ TEST_F(TransportSecurityStateTest, STSSubdomainNoOverride) {
 
   // The example.test rule applies to the entire domain, including subdomains of
   // foo.example.test.
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("example.test"));
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("foo.example.test"));
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("bar.foo.example.test"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example.test", /*is_top_level_nav=*/true));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("foo.example.test", /*is_top_level_nav=*/true));
+  EXPECT_TRUE(state.ShouldUpgradeToSSL("bar.foo.example.test",
+                                       /*is_top_level_nav=*/true));
   EXPECT_TRUE(state.ShouldSSLErrorsBeFatal("bar.foo.example.test"));
 
   // Expire the foo.example.test rule.
   state.AddHSTS("foo.example.test", older, false);
 
   // The example.test rule still applies.
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("example.test"));
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("foo.example.test"));
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("bar.foo.example.test"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example.test", /*is_top_level_nav=*/true));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("foo.example.test", /*is_top_level_nav=*/true));
+  EXPECT_TRUE(state.ShouldUpgradeToSSL("bar.foo.example.test",
+                                       /*is_top_level_nav=*/true));
   EXPECT_TRUE(state.ShouldSSLErrorsBeFatal("bar.foo.example.test"));
 }
 
@@ -364,6 +415,9 @@ TEST_F(TransportSecurityStateTest, FatalSSLErrors) {
 
 // Tests that HPKP and HSTS state both expire. Also tests that expired entries
 // are pruned.
+//
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, Expiration) {
   TransportSecurityState state;
   const base::Time current_time(base::Time::Now());
@@ -374,7 +428,8 @@ TEST_F(TransportSecurityStateTest, Expiration) {
   // the past works and is pruned on query.
   state.AddHSTS("example1.test", older, false);
   EXPECT_TRUE(TransportSecurityState::STSStateIterator(state).HasNext());
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("example1.test"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("example1.test", /*is_top_level_nav=*/true));
   // Querying |state| for a domain should flush out expired entries.
   EXPECT_FALSE(TransportSecurityState::STSStateIterator(state).HasNext());
 
@@ -396,18 +451,23 @@ TEST_F(TransportSecurityStateTest, Expiration) {
   // Test that HSTS can outlive HPKP.
   state.AddHSTS("example1.test", expiry, false);
   state.AddHPKP("example1.test", older, false, GetSampleSPKIHashes());
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("example1.test"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example1.test", /*is_top_level_nav=*/true));
   EXPECT_FALSE(state.HasPublicKeyPins("example1.test"));
 
   // Test that HPKP can outlive HSTS.
   state.AddHSTS("example2.test", older, false);
   state.AddHPKP("example2.test", expiry, false, GetSampleSPKIHashes());
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("example2.test"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("example2.test", /*is_top_level_nav=*/true));
   EXPECT_TRUE(state.HasPublicKeyPins("example2.test"));
 }
 
 // Tests that HPKP and HSTS state are queried independently for subdomain
 // matches.
+//
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, IndependentSubdomain) {
   TransportSecurityState state;
   const base::Time current_time(base::Time::Now());
@@ -419,13 +479,18 @@ TEST_F(TransportSecurityStateTest, IndependentSubdomain) {
   state.AddHSTS("example2.test", expiry, false);
   state.AddHPKP("example2.test", expiry, true, GetSampleSPKIHashes());
 
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("foo.example1.test"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("foo.example1.test", /*is_top_level_nav=*/true));
   EXPECT_FALSE(state.HasPublicKeyPins("foo.example1.test"));
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("foo.example2.test"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("foo.example2.test", /*is_top_level_nav=*/true));
   EXPECT_TRUE(state.HasPublicKeyPins("foo.example2.test"));
 }
 
 // Tests that HPKP and HSTS state are inserted and overridden independently.
+//
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, IndependentInsertion) {
   TransportSecurityState state;
   const base::Time current_time(base::Time::Now());
@@ -435,33 +500,41 @@ TEST_F(TransportSecurityStateTest, IndependentInsertion) {
   state.AddHSTS("example1.test", expiry, true);
   state.AddHPKP("foo.example1.test", expiry, false, GetSampleSPKIHashes());
 
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("foo.example1.test"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("foo.example1.test", /*is_top_level_nav=*/true));
   EXPECT_TRUE(state.HasPublicKeyPins("foo.example1.test"));
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("example1.test"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example1.test", /*is_top_level_nav=*/true));
   EXPECT_FALSE(state.HasPublicKeyPins("example1.test"));
 
   // Drop the includeSubdomains from the HSTS entry.
   state.AddHSTS("example1.test", expiry, false);
 
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("foo.example1.test"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("foo.example1.test", /*is_top_level_nav=*/true));
   EXPECT_TRUE(state.HasPublicKeyPins("foo.example1.test"));
 
   // Place an includeSubdomains HPKP entry below a normal HSTS entry.
   state.AddHSTS("foo.example2.test", expiry, false);
   state.AddHPKP("example2.test", expiry, true, GetSampleSPKIHashes());
 
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("foo.example2.test"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("foo.example2.test", /*is_top_level_nav=*/true));
   EXPECT_TRUE(state.HasPublicKeyPins("foo.example2.test"));
 
   // Drop the includeSubdomains from the HSTS entry.
   state.AddHPKP("example2.test", expiry, false, GetSampleSPKIHashes());
 
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("foo.example2.test"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("foo.example2.test", /*is_top_level_nav=*/true));
   EXPECT_FALSE(state.HasPublicKeyPins("foo.example2.test"));
 }
 
 // Tests that GetDynamic[PKP|STS]State returns the correct data and that the
 // states are not mixed together.
+//
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, DynamicDomainState) {
   TransportSecurityState state;
   const base::Time current_time(base::Time::Now());
@@ -487,6 +560,9 @@ TEST_F(TransportSecurityStateTest, DynamicDomainState) {
 
 // Tests that GetSSLUpgradeDecision() matches the result of ShouldUpgradeToSSL()
 // and correctly identifies the source of the decision.
+//
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, StaticOrDynamicSource) {
   TransportSecurityState state;
   SetTransportSecurityStateSourceForTesting(&test1::kHSTSSource);
@@ -505,18 +581,21 @@ TEST_F(TransportSecurityStateTest, StaticOrDynamicSource) {
   EXPECT_EQ(state.GetSSLUpgradeDecision("dynamic.example.com",
                                         /*is_top_level_nav=*/true),
             SSLUpgradeDecision::kNoUpgrade);
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("dynamic.example.com"));
+  EXPECT_FALSE(state.ShouldUpgradeToSSL("dynamic.example.com",
+                                        /*is_top_level_nav=*/true));
 
   EXPECT_EQ(state.GetSSLUpgradeDecision("hsts.example.com",
                                         /*is_top_level_nav=*/true),
             SSLUpgradeDecision::kStaticUpgrade);
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("hsts.example.com"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("hsts.example.com", /*is_top_level_nav=*/true));
 
   state.AddHSTS("dynamic.example.com", expiry, false);
   EXPECT_EQ(state.GetSSLUpgradeDecision("dynamic.example.com",
                                         /*is_top_level_nav=*/true),
             SSLUpgradeDecision::kDynamicUpgrade);
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("dynamic.example.com"));
+  EXPECT_TRUE(state.ShouldUpgradeToSSL("dynamic.example.com",
+                                       /*is_top_level_nav=*/true));
 
   // Dynamic state for a host that already has static state doesn't change the
   // decision.
@@ -524,7 +603,8 @@ TEST_F(TransportSecurityStateTest, StaticOrDynamicSource) {
   EXPECT_EQ(state.GetSSLUpgradeDecision("subdomain.hsts.example.com",
                                         /*is_top_level_nav=*/true),
             SSLUpgradeDecision::kStaticUpgrade);
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("subdomain.hsts.example.com"));
+  EXPECT_TRUE(state.ShouldUpgradeToSSL("subdomain.hsts.example.com",
+                                       /*is_top_level_nav=*/true));
 }
 
 // Tests that new pins always override previous pins. This should be true for
@@ -560,13 +640,16 @@ TEST_F(TransportSecurityStateTest, NewPinsOverride) {
   EXPECT_EQ(pkp_state.spki_hashes[0], hash3);
 }
 
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, DeleteAllDynamicDataBetween) {
   TransportSecurityState state;
   const base::Time current_time(base::Time::Now());
   const base::Time expiry = current_time + base::Seconds(1000);
   const base::Time older = current_time - base::Seconds(1000);
 
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("example.com"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
   EXPECT_FALSE(state.HasPublicKeyPins("example.com"));
   bool include_subdomains = false;
   state.AddHSTS("example.com", expiry, include_subdomains);
@@ -575,21 +658,25 @@ TEST_F(TransportSecurityStateTest, DeleteAllDynamicDataBetween) {
 
   state.DeleteAllDynamicDataBetween(expiry, base::Time::Max(),
                                     base::DoNothing());
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("example.com"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
   EXPECT_TRUE(state.HasPublicKeyPins("example.com"));
 
   state.DeleteAllDynamicDataBetween(older, current_time, base::DoNothing());
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("example.com"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
   EXPECT_TRUE(state.HasPublicKeyPins("example.com"));
 
   state.DeleteAllDynamicDataBetween(base::Time(), current_time,
                                     base::DoNothing());
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("example.com"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
   EXPECT_TRUE(state.HasPublicKeyPins("example.com"));
 
   state.DeleteAllDynamicDataBetween(older, base::Time::Max(),
                                     base::DoNothing());
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("example.com"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
   EXPECT_FALSE(state.HasPublicKeyPins("example.com"));
 
   // Dynamic data in |state| should be empty now.
@@ -597,6 +684,8 @@ TEST_F(TransportSecurityStateTest, DeleteAllDynamicDataBetween) {
   EXPECT_FALSE(state.has_dynamic_pkp_state());
 }
 
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, DeleteDynamicDataForHost) {
   TransportSecurityState state;
   const base::Time current_time(base::Time::Now());
@@ -607,13 +696,16 @@ TEST_F(TransportSecurityStateTest, DeleteDynamicDataForHost) {
   state.AddHPKP("example1.test", expiry, include_subdomains,
                 GetSampleSPKIHashes());
 
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("example1.test"));
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("example2.test"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example1.test", /*is_top_level_nav=*/true));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("example2.test", /*is_top_level_nav=*/true));
   EXPECT_TRUE(state.HasPublicKeyPins("example1.test"));
   EXPECT_FALSE(state.HasPublicKeyPins("example2.test"));
 
   EXPECT_TRUE(state.DeleteDynamicDataForHost("example1.test"));
-  EXPECT_FALSE(state.ShouldUpgradeToSSL("example1.test"));
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("example1.test", /*is_top_level_nav=*/true));
   EXPECT_FALSE(state.HasPublicKeyPins("example1.test"));
 }
 
@@ -823,6 +915,8 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedMultipleMix) {
   EXPECT_TRUE(pkp_state == TransportSecurityState::PKPState());
 }
 
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, HstsHostBypassList) {
   SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
 
@@ -835,16 +929,18 @@ TEST_F(TransportSecurityStateTest, HstsHostBypassList) {
   {
     TransportSecurityState state;
     // Check that "example" is preloaded with subdomains.
-    EXPECT_TRUE(state.ShouldUpgradeToSSL(preloaded_tld));
-    EXPECT_TRUE(state.ShouldUpgradeToSSL(subdomain));
+    EXPECT_TRUE(
+        state.ShouldUpgradeToSSL(preloaded_tld, /*is_top_level_nav=*/true));
+    EXPECT_TRUE(state.ShouldUpgradeToSSL(subdomain, /*is_top_level_nav=*/true));
   }
 
   {
     // Add "example" to the bypass list.
     TransportSecurityState state({preloaded_tld});
-    EXPECT_FALSE(state.ShouldUpgradeToSSL(preloaded_tld));
+    EXPECT_FALSE(
+        state.ShouldUpgradeToSSL(preloaded_tld, /*is_top_level_nav=*/true));
     // The preloaded entry should still apply to the subdomain.
-    EXPECT_TRUE(state.ShouldUpgradeToSSL(subdomain));
+    EXPECT_TRUE(state.ShouldUpgradeToSSL(subdomain, /*is_top_level_nav=*/true));
   }
 }
 
@@ -1448,6 +1544,8 @@ TEST_F(TransportSecurityStateStaticTest, OptionalHSTSCertPins) {
   EXPECT_TRUE(HasStaticPublicKeyPins("a.googlegroups.com"));
 }
 
+// Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+// kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateStaticTest, OverrideBuiltins) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
@@ -1463,7 +1561,8 @@ TEST_F(TransportSecurityStateStaticTest, OverrideBuiltins) {
   const base::Time expiry = current_time + base::Seconds(1000);
   state.AddHSTS("www.google.com", expiry, true);
 
-  EXPECT_TRUE(state.ShouldUpgradeToSSL("www.google.com"));
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("www.google.com", /*is_top_level_nav=*/true));
 }
 
 TEST_F(TransportSecurityStateTest, WriteSizeDecodeSize) {

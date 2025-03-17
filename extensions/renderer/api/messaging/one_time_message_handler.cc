@@ -4,13 +4,13 @@
 
 #include "extensions/renderer/api/messaging/one_time_message_handler.h"
 
+#include <algorithm>
 #include <map>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/supports_user_data.h"
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/api/messaging/message.h"
@@ -93,8 +93,8 @@ void OneTimeMessageResponseHelper(
 
   v8::Local<v8::External> external = info.Data().As<v8::External>();
   auto* raw_callback = static_cast<OneTimeMessageCallback*>(external->Value());
-  auto iter = base::ranges::find(data->pending_callbacks, raw_callback,
-                                 &std::unique_ptr<OneTimeMessageCallback>::get);
+  auto iter = std::ranges::find(data->pending_callbacks, raw_callback,
+                                &std::unique_ptr<OneTimeMessageCallback>::get);
   if (iter == data->pending_callbacks.end())
     return;
 

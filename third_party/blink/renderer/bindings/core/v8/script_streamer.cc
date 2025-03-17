@@ -67,17 +67,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
-namespace WTF {
-
-template <>
-struct CrossThreadCopier<mojo_base::BigBuffer> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = mojo_base::BigBuffer;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-}  // namespace WTF
-
 namespace blink {
 namespace {
 

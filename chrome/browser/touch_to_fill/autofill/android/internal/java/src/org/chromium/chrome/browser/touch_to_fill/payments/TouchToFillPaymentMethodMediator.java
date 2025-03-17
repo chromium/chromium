@@ -246,13 +246,13 @@ class TouchToFillPaymentMethodMediator {
                 RecordHistogram.recordEnumeratedHistogram(
                         TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM,
                         TouchToFillCreditCardOutcome.DISMISS,
-                        TouchToFillCreditCardOutcome.MAX_VALUE + 1);
+                        TouchToFillCreditCardOutcome.MAX_VALUE);
             } else {
                 assert mIbans != null;
                 RecordHistogram.recordEnumeratedHistogram(
                         TOUCH_TO_FILL_IBAN_OUTCOME_HISTOGRAM,
                         TouchToFillIbanOutcome.DISMISS,
-                        TouchToFillIbanOutcome.MAX_VALUE + 1);
+                        TouchToFillIbanOutcome.MAX_VALUE);
             }
         }
     }
@@ -394,14 +394,14 @@ class TouchToFillPaymentMethodMediator {
         RecordHistogram.recordEnumeratedHistogram(
                 TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM,
                 outcome,
-                TouchToFillCreditCardOutcome.MAX_VALUE + 1);
+                TouchToFillCreditCardOutcome.MAX_VALUE);
     }
 
     private static void recordTouchToFillIbanOutcomeHistogram(@TouchToFillIbanOutcome int outcome) {
         RecordHistogram.recordEnumeratedHistogram(
                 TOUCH_TO_FILL_IBAN_OUTCOME_HISTOGRAM,
                 outcome,
-                TouchToFillIbanOutcome.MAX_VALUE + 1);
+                TouchToFillIbanOutcome.MAX_VALUE);
     }
 
     void setInputProtectorForTesting(InputProtector inputProtector) {

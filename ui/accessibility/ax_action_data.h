@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ui/accessibility/ax_base_export.h"
+#include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -62,10 +63,12 @@ struct AX_BASE_EXPORT AXActionData {
   // For an action that creates a selection, the selection anchor and focus
   // (see ax_tree_data.h for definitions).
   int anchor_node_id = -1;
-  int anchor_offset = -1;
+  // To clear the selection, use an anchor_offset and focus_offset of
+  // and set the the anchor_node_id and focus_node_id to the target_node_id.
+  int anchor_offset = ax::mojom::kNoSelectionOffset;
 
   int focus_node_id = -1;
-  int focus_offset = -1;
+  int focus_offset = ax::mojom::kNoSelectionOffset;
 
   // Start index of the text which should be queried for.
   int32_t start_index = -1;

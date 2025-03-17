@@ -238,6 +238,10 @@ FindBarController* FindBarHost::GetFindBarController() const {
   return find_bar_controller_;
 }
 
+bool FindBarHost::HasFocus() const {
+  return view_->ContainsFocus();
+}
+
 void FindBarHost::SetFindBarController(FindBarController* find_bar_controller) {
   find_bar_controller_ = find_bar_controller;
 
@@ -329,7 +333,7 @@ void FindBarHost::SetFindTextAndSelectedRange(
   view_->SetFindTextAndSelectedRange(find_text, selected_range);
 }
 
-std::u16string FindBarHost::GetFindText() const {
+std::u16string_view FindBarHost::GetFindText() const {
   return view_->GetFindText();
 }
 
@@ -459,11 +463,11 @@ bool FindBarHost::GetFindBarWindowInfo(gfx::Point* position,
   return true;
 }
 
-std::u16string FindBarHost::GetFindSelectedText() const {
+std::u16string_view FindBarHost::GetFindSelectedText() const {
   return view_->GetFindSelectedText();
 }
 
-std::u16string FindBarHost::GetMatchCountText() const {
+std::u16string_view FindBarHost::GetMatchCountText() const {
   return view_->GetMatchCountText();
 }
 

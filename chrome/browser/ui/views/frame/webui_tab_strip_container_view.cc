@@ -504,7 +504,7 @@ bool WebUITabStripContainerView::UseTouchableTabStrip(const Browser* browser) {
   // being less accessible than the traditional tabstrip.
   if (content::BrowserAccessibilityState::GetInstance()
           ->GetAccessibilityMode()
-          .has_mode(ui::AXMode::kScreenReader)) {
+          .has_mode(ui::AXMode::kExtendedProperties)) {
     return false;
   }
 

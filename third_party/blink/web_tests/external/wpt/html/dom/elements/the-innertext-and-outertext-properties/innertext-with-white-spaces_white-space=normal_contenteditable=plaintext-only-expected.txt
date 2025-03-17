@@ -1,0 +1,162 @@
+This is a testharness.js-based test.
+Found 79 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Leading white-space should not appear if white-spaces are collapsible
+  assert_equals: expected "abc" but got " abc"
+[FAIL] Leading white-spaces should not appear if white-spaces are collapsible
+  assert_equals: expected "abc" but got "  abc"
+[FAIL] Leading tab should not appear if white-spaces are collapsible
+  assert_equals: expected "abc" but got "\\tabc"
+[FAIL] Leading tabs should not appear if white-spaces are collapsible
+  assert_equals: expected "abc" but got "\\t\\tabc"
+[FAIL] Leading linefeed should not appear if it's collapsible
+  assert_equals: expected "abc" but got "\\nabc"
+[FAIL] Leading linefeeds should not appear if they are collapsible
+  assert_equals: expected "abc" but got "\\n\\nabc"
+[FAIL] Leading mixed white-spaces should not appear if they are collapsible
+  assert_equals: expected "abc" but got " \\n\\t abc"
+[FAIL] Leading CR should be normalized to LF and should not appear if linefeeds are collapsible
+  assert_equals: expected "abc" but got "\\nabc"
+[FAIL] Leading CRs should be normalized to LFs and should not appear if linefeeds are collapsible
+  assert_equals: expected "abc" but got "\\n\\nabc"
+[FAIL] Trailing white-space should not appear if white-spaces are collapsible
+  assert_equals: expected "abc" but got "abc "
+[FAIL] Trailing white-spaces should not appear if white-spaces are collapsible
+  assert_equals: expected "abc" but got "abc  "
+[FAIL] Trailing tab should not appear if white-spaces are collapsible
+  assert_equals: expected "abc" but got "abc\\t"
+[FAIL] Trailing tabs should not appear if white-spaces are collapsible
+  assert_equals: expected "abc" but got "abc\\t\\t"
+[FAIL] Trailing linefeed should not appear if it's collapsible
+  assert_equals: expected "abc" but got "abc\\n"
+[FAIL] Trailing linefeeds should not appear if they are collapsible
+  assert_equals: expected "abc" but got "abc\\n\\n"
+[FAIL] Trailing mixed white-spaces should not appear if they are collapsible
+  assert_equals: expected "abc" but got "abc\\t \\n "
+[FAIL] Trailing CR should be normalized to LF and should not appear if linefeeds are collapsible
+  assert_equals: expected "abc" but got "abc\\n"
+[FAIL] Trailing CRs should be normalized to LFs and should not appear if linefeeds are collapsible
+  assert_equals: expected "abc" but got "abc\\n\\n"
+[FAIL] Only single collapsible space should be invisible
+  assert_equals: expected "" but got " "
+[FAIL] Only single collapsible tab should be invisible
+  assert_equals: expected "" but got "\\t"
+[FAIL] Only single collapsible linefeed should be invisible
+  assert_equals: expected "" but got "\\n"
+[FAIL] Only single collapsible CR should be invisible
+  assert_equals: expected "" but got "\\n"
+[FAIL] Only multiple collapsible spaces should be invisible
+  assert_equals: expected "" but got "   "
+[FAIL] Only multiple collapsible tabs should be invisible
+  assert_equals: expected "" but got "\\t\\t\\t"
+[FAIL] Only multiple collapsible linefeeds should be invisible
+  assert_equals: expected "" but got "\\n\\n\\n"
+[FAIL] Only multiple collapsible CRs should be invisible
+  assert_equals: expected "" but got "\\n\\n\\n"
+[FAIL] Single collapsible tab should be converted to an ASCII space
+  assert_equals: expected "abc def" but got "abc\\tdef"
+[FAIL] Single collapsible linefeed should be converted to an ASCII space
+  assert_equals: expected "abc def" but got "abc\\ndef"
+[FAIL] Single collapsible CR should be converted to an ASCII space, or otherwise, a linefeed
+  assert_equals: expected "abc def" but got "abc\\ndef"
+[FAIL] Multiple white-spaces between words may be invisible if they are collapsible
+  assert_equals: expected "abc def" but got "abc   def"
+[FAIL] Multiple mixed white-spaces between words may be invisible if they are collapsible #1
+  assert_equals: expected "abc def" but got "abc\\t def"
+[FAIL] Multiple mixed white-spaces between words may be invisible if they are collapsible #2
+  assert_equals: expected "abc def" but got "abc \\tdef"
+[FAIL] Multiple mixed white-spaces between words may be invisible if they are collapsible #3
+  assert_equals: expected "abc def" but got "abc\\n def"
+[FAIL] Multiple mixed white-spaces between words may be invisible if they are collapsible #4
+  assert_equals: expected "abc def" but got "abc \\ndef"
+[FAIL] white-space before <br> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc \\ndef"
+[FAIL] white-spaces before <br> should be invisible if they are collapsible
+  assert_equals: expected "abc\\ndef" but got "abc  \\ndef"
+[FAIL] tab before <br> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\t\\ndef"
+[FAIL] linefeed before <br> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\ndef"
+[FAIL] CR before <br> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\ndef"
+[FAIL] white-space after <br> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n def"
+[FAIL] white-spaces after <br> should be invisible if they are collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n  def"
+[FAIL] tab after <br> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\tdef"
+[FAIL] linefeed after <br> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\ndef"
+[FAIL] CR after <br> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\ndef"
+[FAIL] white-space between <br>s should be invisible if it's collapsible
+  assert_equals: expected "abc\\n\\ndef" but got "abc\\n \\ndef"
+[FAIL] white-spaces between <br>s should be invisible if they are collapsible
+  assert_equals: expected "abc\\n\\ndef" but got "abc\\n  \\ndef"
+[FAIL] tab between <br>s should be invisible if it's collapsible
+  assert_equals: expected "abc\\n\\ndef" but got "abc\\n\\t\\ndef"
+[FAIL] linefeed between <br>s should be invisible if it's collapsible
+  assert_equals: expected "abc\\n\\ndef" but got "abc\\n\\n\\ndef"
+[FAIL] CR between <br>s should be invisible if it's collapsible
+  assert_equals: expected "abc\\n\\ndef" but got "abc\\n\\n\\ndef"
+[FAIL] white-space before <hr> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc \\ndef"
+[FAIL] white-spaces before <hr> should be invisible if they are collapsible
+  assert_equals: expected "abc\\ndef" but got "abc  \\ndef"
+[FAIL] tab before <hr> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\t\\ndef"
+[FAIL] linefeed before <hr> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\ndef"
+[FAIL] CR before <hr> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\ndef"
+[FAIL] white-space after <hr> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n def"
+[FAIL] white-spaces after <hr> should be invisible if they are collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n  def"
+[FAIL] tab after <hr> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\tdef"
+[FAIL] linefeed after <hr> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\ndef"
+[FAIL] CR after <hr> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\ndef"
+[FAIL] white-space between <hr>s should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n \\ndef"
+[FAIL] white-spaces between <hr>s should be invisible if they are collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n  \\ndef"
+[FAIL] tab between <hr>s should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\t\\ndef"
+[FAIL] linefeed between <hr>s should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\n\\ndef"
+[FAIL] CR between <hr>s should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\n\\ndef"
+[FAIL] white-space before <div> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc \\ndef"
+[FAIL] white-spaces before <div> should be invisible if they are collapsible
+  assert_equals: expected "abc\\ndef" but got "abc  \\ndef"
+[FAIL] tab before <div> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\t\\ndef"
+[FAIL] linefeed before <div> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\ndef"
+[FAIL] CR before <div> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\ndef"
+[FAIL] white-space after <div> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n def"
+[FAIL] white-spaces after <div> should be invisible if they are collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n  def"
+[FAIL] tab after <div> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\tdef"
+[FAIL] linefeed after <div> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\ndef"
+[FAIL] CR after <div> should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\ndef"
+[FAIL] white-space between <div>s should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n \\ndef"
+[FAIL] white-spaces between <div>s should be invisible if they are collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n  \\ndef"
+[FAIL] tab between <div>s should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\t\\ndef"
+[FAIL] linefeed between <div>s should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\n\\ndef"
+[FAIL] CR between <div>s should be invisible if it's collapsible
+  assert_equals: expected "abc\\ndef" but got "abc\\n\\n\\ndef"
+Harness: the test ran to completion.
+

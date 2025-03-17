@@ -95,10 +95,20 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Failure dialog shown"/>
 </enum>
 
+<!-- LINT.IfChange(SignalAllAcceptedCredentialsResultEnum) -->
+
 <enum name="SignalAllAcceptedCredentialsResult">
-  <int value="0" label="No passkeys were removed"/>
+  <int value="0" label="No passkeys were changed"/>
   <int value="1" label="A passkey was removed"/>
+  <int value="2" label="A passkey was hidden"/>
+  <int value="3" label="A passkey was restored"/>
+  <int value="4"
+      label="The website exceeded the quota, so the request was dropped."/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/chrome_web_authentication_delegate.h:SignalAllAcceptedCredentialsResult) -->
+
+<!-- LINT.IfChange(SignalCurrentUserDetailsResultEnum) -->
 
 <enum name="SignalCurrentUserDetailsResult">
   <int value="0"
@@ -109,10 +119,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="No passkeys were updated."/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/webauthn/chrome_web_authentication_delegate.h:SignalCurrentUserDetailsResult) -->
+
+<!-- LINT.IfChange(SignalUnknownCredentialResultEnum) -->
+
 <enum name="SignalUnknownCredentialResult">
   <int value="0" label="The passkey ID was not found, so nothing was removed."/>
   <int value="1" label="The passkey ID was found and removed."/>
+  <int value="2" label="The passkey ID was found and hidden."/>
+  <int value="3"
+      label="The website exceeded the quota, so the request was dropped."/>
+  <int value="4" label="The passkey ID was already hidden."/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/chrome_web_authentication_delegate.h:SignalUnknownCredentialResult) -->
 
 <enum name="SuccessState">
   <int value="0" label="FIDO2 and Passkey Cache calls failed."/>
@@ -120,6 +140,21 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="FIDO2 call succeeded; Passkey Cache call failed."/>
   <int value="3" label="FIDO2 and Passkey Cache calls succeeded."/>
 </enum>
+
+<!-- LINT.IfChange(U2fSignOperationResultEnum) -->
+
+<enum name="U2fSignOperationResult">
+  <int value="0" label="Operation succeeded"/>
+  <int value="1" label="Operation was cancelled"/>
+  <int value="2" label="User had no credentials"/>
+  <int value="3" label="An unrecoverable error occurred"/>
+  <int value="4" label="An error occurred, then the operation succeeded"/>
+  <int value="5" label="An error occurred, then the operation was cancelled"/>
+  <int value="6" label="An error occurred, then the user had no credentials"/>
+  <int value="7" label="An error occurred, then a fatal error occurred"/>
+</enum>
+
+<!-- LINT.ThenChange(//device/fido/u2f_sign_operation.cc:U2fSignOperationResult) -->
 
 <enum name="WebAuthenticationCableV2TunnelEvent">
   <int value="0"
@@ -198,6 +233,9 @@ chromium-metrics-reviews@google.com.
   <int value="11"
       label="Recoverable sign in error, user needs to reauth to use the
              enclave"/>
+  <int value="12"
+      label="The enclave was the default but loading took too long, so Chrome
+             jumped to the mechanism selection screen instead"/>
 </enum>
 
 <enum name="WebAuthenticationEnclaveRequestResult">
@@ -324,6 +362,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Started renewal"/>
   <int value="5" label="Successful renewal"/>
   <int value="6" label="Renewal failed"/>
+</enum>
+
+<enum name="WebAuthenticationPinRenewalFailureCause">
+  <int value="1" label="Renewal failed while downloading XML files"/>
+  <int value="2" label="Renewal failed getting access token"/>
+  <int value="3" label="Renewal failed during enclave request (1)"/>
+  <int value="4" label="Renewal failed during enclave request (2)"/>
+  <int value="5" label="Renewal failed parsing enclave response (1)"/>
+  <int value="6" label="Renewal failed parsing enclave response (2)"/>
+  <int value="7" label="Renewal failed uploading to recovery key store"/>
+  <int value="8" label="Renewal failed joining the PIN to the domain"/>
 </enum>
 
 <enum name="WebAuthenticationRequestMode">

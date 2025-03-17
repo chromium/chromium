@@ -7,10 +7,12 @@
 #include <string>
 
 #include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
 
 ChromeGWSPageLoadMetricsObserver::ChromeGWSPageLoadMetricsObserver() = default;
 
@@ -30,4 +32,12 @@ bool ChromeGWSPageLoadMetricsObserver::IsFromNewTabPage(
 
 bool ChromeGWSPageLoadMetricsObserver::IsBrowserStartupComplete() {
   return AfterStartupTaskUtils::IsBrowserStartupComplete();
+}
+
+bool ChromeGWSPageLoadMetricsObserver::IsIncognitoProfile() const {
+  if (Profile* profile = Profile::FromBrowserContext(
+          GetDelegate().GetWebContents()->GetBrowserContext())) {
+    return profile->IsIncognitoProfile();
+  }
+  return false;
 }

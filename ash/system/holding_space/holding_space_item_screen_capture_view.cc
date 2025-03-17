@@ -124,7 +124,7 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
                           kColorAshShieldAndBase80))))
       .AddChild(views::Builder<views::View>()
                     .SetCanProcessEventsWithinSubtree(false)
-                    .SetBorder(views::CreateThemedRoundedRectBorder(
+                    .SetBorder(views::CreateRoundedRectBorder(
                         kBorderThickness, kHoldingSpaceCornerRadius,
                         kColorAshSeparatorColor)))
       .BuildChildren();
@@ -179,7 +179,7 @@ void HoldingSpaceItemScreenCaptureView::UpdateTooltipText() {
   // If the associated `item()` has been deleted then `this` is in the process
   // of being destroyed and no action needs to be taken.
   if (const auto* item = this->item()) {
-    SetCachedTooltipText(item->GetText());
+    SetTooltipText(item->GetText());
   }
 }
 

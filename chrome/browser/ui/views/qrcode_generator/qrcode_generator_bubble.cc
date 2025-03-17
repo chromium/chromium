@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -112,7 +111,7 @@ void QRCodeGeneratorBubble::Show() {
   UpdateQRContent();
   ShowForReason(USER_GESTURE);
   Browser* browser = chrome::FindLastActive();
-  if (browser && base::FeatureList::IsEnabled(features::kToolbarPinning)) {
+  if (browser) {
     qrcode_action_item_ =
         actions::ActionManager::Get()
             .FindAction(kActionQrCodeGenerator,

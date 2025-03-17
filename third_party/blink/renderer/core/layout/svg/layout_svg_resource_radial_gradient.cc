@@ -81,7 +81,7 @@ scoped_refptr<Gradient> LayoutSVGResourceRadialGradient::BuildGradient() const {
       FocalPoint(attributes_), FocalRadius(attributes_),
       CenterPoint(attributes_), Radius(attributes_), 1,
       PlatformSpreadMethodFromSVGType(attributes_.SpreadMethod()),
-      Gradient::ColorInterpolation::kUnpremultiplied,
+      Gradient::PremultipliedAlpha::kUnpremultiplied,
       Gradient::DegenerateHandling::kAllow);
 }
 

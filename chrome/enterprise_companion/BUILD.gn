@@ -4,6 +4,7 @@
 
 import("//build/util/process_version.gni")
 import("//chrome/enterprise_companion/branding.gni")
+import("//chrome/process_version_rc_template.gni")
 import("//chrome/updater/zip.gni")
 import("//testing/test.gni")
 
@@ -50,6 +51,10 @@ process_version("branding_header") {
   output = "$target_gen_dir/enterprise_companion_branding.h"
 }
 
+source_set("flags") {
+  sources = [ "flags.h" ]
+}
+
 source_set("base") {
   sources = [
     "app/app.cc",
@@ -89,6 +94,7 @@ source_set("base") {
   deps = [
     ":branding_header",
     ":client",
+    ":flags",
     ":installer_paths",
     ":version_header",
     "mojom/",
@@ -150,6 +156,7 @@ executable("test_crashpad_embedder") {
     ":base",
     ":client",
     ":constants_test",
+    ":flags",
     "//base",
     "//chrome/updater:constants_test",
   ]
@@ -170,6 +177,7 @@ source_set("test_utils") {
     ":base",
     ":branding_header",
     ":client",
+    ":flags",
     ":installer_paths",
     ":version_header",
     "//base",
@@ -258,6 +266,7 @@ test("enterprise_companion_integration_tests") {
     ":branding_header",
     ":client",
     ":constants_test",
+    ":flags",
     ":installer_paths",
     ":test_utils",
     ":version_header",
@@ -281,13 +290,6 @@ test("enterprise_companion_integration_tests") {
   data = [ "//testing/scripts/run_telemetry_as_googletest.py" ]
   data_deps = []
 
-  # The MacOS integration tests require the pkg installer to be built, which is
-  # only possible on MacOS hosts.
-  if (is_mac && host_os == "mac") {
-    sources += [ "test/integration_tests_mac.cc" ]
-    data_deps += [ "//chrome/enterprise_companion/mac:enterprise_companion_installer_unsigned" ]
-  }
-
   if (is_mac) {
     data_deps +=
         [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test" ]
@@ -309,6 +311,7 @@ static_library("client") {
   ]
   deps = [
     ":branding_header",
+    ":flags",
     ":installer_paths",
     "//components/named_mojo_ipc_server",
     "//components/policy/core/common:common_constants",
@@ -377,6 +380,29 @@ static_library("constants_test") {
   defines = [ "ENTERPRISE_COMPANION_TEST_ONLY" ]
 }
 
+if (is_win) {
+  # `process_version_rc_template` invokes `process_version` with the default
+  # template rc file which is at //chrome/app/chrome_version.rc.version.
+  process_version_rc_template("enterprise_companion_rc") {
+    _product_fullname = "$enterprise_companion_product_full_name"
+    _internal_name = _product_fullname + " ($current_cpu)"
+    if (is_debug) {
+      _internal_name += " (debug)"
+    }
+    extra_args = [
+      "-e",
+      "PRODUCT_FULLNAME=\"$_product_fullname\"",
+      "-e",
+      "INTERNAL_NAME=\"$_internal_name\"",
+      "-e",
+      "ORIGINAL_FILENAME=\"enterprise_companion.exe\"",
+      "-e",
+      "PRODUCT_SHORTNAME=\"$enterprise_companion_product_full_name\"",
+    ]
+    output = "$target_gen_dir/enterprise_companion.exe.rc"
+  }
+}
+
 executable("enterprise_companion") {
   sources = [ "main.cc" ]
   deps = [
@@ -387,6 +413,7 @@ executable("enterprise_companion") {
 
   if (is_win) {
     configs += [ "//build/config/win:windowed" ]
+    deps += [ ":enterprise_companion_rc" ]
   }
 }
 
@@ -417,10 +444,35 @@ group("all") {
   ]
   if (!is_official_build) {
     deps += [ ":enterprise_companion" ]
+  }
+}
 
-    if (is_mac) {
-      deps += [ "//chrome/enterprise_companion/mac" ]
-    }
+if (is_mac && !is_component_build && enable_dsyms) {
+  action("syms") {
+    script = "//build/redirect_stdout.py"
+    sources = [ "$root_out_dir/$enterprise_companion_product_full_name.app/Contents/MacOS/$enterprise_companion_product_full_name" ]
+    _dump_syms =
+        "//third_party/breakpad:dump_syms($host_system_allocator_toolchain)"
+    public_deps = [
+      "//chrome/enterprise_companion/mac:enterprise_companion_bundle",
+      _dump_syms,
+    ]
+    outputs = [ "$root_out_dir/$enterprise_companion_product_full_name-$chrome_version_full.breakpad" ]
+
+    args = rebase_path(outputs, root_build_dir) + [
+             rebase_path(get_label_info(_dump_syms, "root_out_dir") + "/" +
+                             get_label_info(_dump_syms, "name"),
+                         root_build_dir),
+             "-m",
+             "-d",
+             "-g",
+             rebase_path(
+                 "$root_out_dir/$enterprise_companion_product_full_name.dSYM/Contents/Resources/DWARF/$enterprise_companion_product_full_name",
+                 root_build_dir),
+             rebase_path(
+                 "$root_out_dir/$enterprise_companion_product_full_name.app/Contents/MacOS/$enterprise_companion_product_full_name",
+                 root_build_dir),
+           ]
   }
 }
 
@@ -443,6 +495,12 @@ artifact_zip("enterprise_companion_zip") {
       "//chrome/enterprise_companion/mac:copy_signing",
       "//chrome/enterprise_companion/mac:enterprise_companion_bundle",
     ]
+    if (!is_component_build && enable_dsyms) {
+      # Build symbols but do not include them in the archive. In official
+      # builds, the symbols built alongside the archive will be uploaded to the
+      # crash servers via symupload.
+      deps += [ ":syms" ]
+    }
   } else if (is_win) {
     inputs = [ "$root_build_dir/enterprise_companion.exe" ]
     deps = [ ":enterprise_companion" ]

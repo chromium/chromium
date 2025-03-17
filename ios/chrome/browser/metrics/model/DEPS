@@ -15,6 +15,7 @@ include_rules = [
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/parcel_tracking",
+  "+ios/chrome/browser/first_run/ui_bundled",
 ]
 
 specific_include_rules = {
@@ -44,6 +45,9 @@ specific_include_rules = {
   ],
   "^ios_chrome_metrics_service_client.mm": [
     "+ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h",
+  ],
+  "^bookmark_model_metrics_service_factory.mm": [
+    "+ios/chrome/browser/bookmarks/model/bookmark_model_factory.h",
   ],
 
   # TODO(crbug.com/40820398): Remove this dependency.

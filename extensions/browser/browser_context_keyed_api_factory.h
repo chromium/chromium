@@ -72,7 +72,7 @@ class BrowserContextKeyedAPI : public KeyedService {
 };
 
 // Declare dependencies on other factories.
-// By default, ExtensionSystemFactory is the only dependency; however,
+// By default, ChromeExtensionSystemFactory is the only dependency; however,
 // specializations can override this. Declare your specialization in
 // your header file after the BrowserContextKeyedAPI class definition.
 // Declare this struct in the header file. The implementation may optionally

@@ -4,7 +4,7 @@ URL: https://github.com/nodejs/node
 Version: 12.14.1
 Revision: f098f8295c407e5a5126b501ed5f1aa80bd86106
 Date: 2016-12-06
-License: NodeJS
+License: Unicode-DFS-2016, NAIST-2003, MIT, HPND, BSD-3-Clause, OpenSSL, Zlib, ISC, BSD-2-Clause, Artistic-2.0, ICU, SSLeay
 License File: LICENSE
 Security Critical: no
 Shipped: no
@@ -81,7 +81,7 @@ Name: Typescript Compiler
 Short Name: typescript
 URL: https://www.npmjs.com/package/typescript
 Version: 5.7.2
-License: Apache 2.0
+License: Apache-2.0
 Security Critical: no
 Shipped: no
 
@@ -235,7 +235,7 @@ Name: ESLint JSDoc Plugin
 Short Name: eslint-plugin-jsdoc
 URL: https://www.npmjs.com/package/eslint-plugin-jsdoc
 Version: 50.2.2
-License: 3-Clause BSD
+License: BSD-3-Clause
 Security Critical: no
 Shipped: no
 
@@ -253,7 +253,7 @@ Name: ESLint Plugin TypeScript
 Short Name: @typescript-eslint/eslint-plugin
 URL: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
 Version: 8.4.0
-License: 2-Clause BSD
+License: BSD-2-Clause
 Security Critical: no
 Shipped: no
 
@@ -271,7 +271,7 @@ Name: TypeScript ESLint Parser
 Short Name: @typescript-eslint/parser
 URL: https://www.npmjs.com/package/@typescript-eslint/parser
 Version: 8.4.0
-License: 2-Clause BSD
+License: BSD-2-Clause
 Security Critical: no
 Shipped: no
 
@@ -463,10 +463,11 @@ Name: Lit
 Short Name: lit
 URL: https://lit.dev
 Version: 3.0.2
-License: BSD 3-Clause
+License: BSD-3-Clause
 License File: LICENSE
 Security Critical: no
 Shipped: yes
+License Android Compatible: yes
 
 Description:
 A thin library around native web component APIs, to be used in WebUI development
@@ -487,7 +488,7 @@ Name: Mediapipe Tasks Vision
 Short Name: @mediapipe/tasks-vision
 URL: https://www.npmjs.com/package/@mediapipe/tasks-vision
 Version: 0.10.9
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
 Security Critical: no
 Shipped: yes
@@ -563,11 +564,12 @@ Local Modifications:
 Name: Microsoft Authentication Library for JavaScript (MSAL.js) for Browser-Based Single-Page Applications
 Short Name: msal-browser
 URL: https://www.npmjs.com/package/@azure/msal-browser
-Version: 3.27.0
+Version: 4.2.1
 License: MIT
 License File: MSAL_LICENSE
 Security Critical: yes
 Shipped: yes
+License Android Compatible: yes
 
 Description:
 Authentication for Microsoft integrations within client-side JS.

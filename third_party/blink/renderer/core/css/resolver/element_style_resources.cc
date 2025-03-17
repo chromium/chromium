@@ -145,7 +145,7 @@ StyleImage* StyleImageLoader::Load(
                         length_resolver);
     return image_set_value->CacheImage(
         style_image, device_scale_factor_,
-        style_image ? style_image->IsOriginClean() : true);
+        !style_image || style_image->IsOriginClean());
   }
 
   NOTREACHED();

@@ -19,17 +19,17 @@
 #include "media/gpu/test/video_frame_helpers.h"
 
 namespace base {
-
 class WaitableEvent;
-
 }  // namespace base
 
-namespace media {
+namespace gpu {
+class TestSharedImageInterface;
+}  // namespace gpu
 
+namespace media {
 class VideoFrame;
 
 namespace test {
-
 class Image;
 
 // ImageProcessorClient is a client of ImageProcessor for testing purpose.
@@ -118,6 +118,8 @@ class ImageProcessorClient {
   std::unique_ptr<ImageProcessor> image_processor_;
 
   std::unique_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
+
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 
   // VideoFrameProcessors that will process the video frames produced by
   // |image_processor_|.

@@ -14,11 +14,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
@@ -32,7 +33,7 @@ bool IsManifestEmpty(const mojom::blink::ManifestPtr& manifest) {
 }
 }  // namespace
 
-class ManifestParserTest : public testing::Test {
+class ManifestParserTest : public SimTest {
  public:
   ManifestParserTest(const ManifestParserTest&) = delete;
   ManifestParserTest& operator=(const ManifestParserTest&) = delete;
@@ -45,7 +46,7 @@ class ManifestParserTest : public testing::Test {
                                                    const KURL& manifest_url,
                                                    const KURL& document_url) {
     ManifestParser parser(data, manifest_url, document_url,
-                          /*execution_context=*/nullptr);
+                          GetDocument().GetExecutionContext());
     parser.Parse();
     Vector<mojom::blink::ManifestErrorPtr> errors;
     parser.TakeErrors(&errors);
@@ -109,7 +110,6 @@ class ManifestParserTest : public testing::Test {
   }
 
  private:
-  test::TaskEnvironment task_environment_;
   mojom::blink::ManifestPtr manifest_;
   Vector<String> errors_;
 };
@@ -3349,7 +3349,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& scope_extensions = manifest->scope_extensions;
 
     ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("scope_extensions entry ignored, type string or object expected.",
+    EXPECT_EQ("scope_extensions entry ignored, type object expected.",
               errors()[0]);
     EXPECT_EQ(0u, scope_extensions.size());
   }
@@ -3359,23 +3359,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "https://foo.com"
+              "type" : "origin", "value" : "https://foo.com"
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(0u, GetErrorCount());
-    ASSERT_EQ(1u, scope_extensions.size());
-    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
-                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
-  }
-
-  // A valid scope extension in shorthand format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "https://foo.com"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3391,7 +3376,23 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "invalid_field": "https://foo.com"
+              "type": "invalid_field", "value": "https://foo.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("Scope extension 'type' invalid.", errors()[0]);
+    EXPECT_EQ(0u, scope_extensions.size());
+  }
+
+  // Scope extension missing `type` key
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "value": "https://foo.com"
             }
           ]
         })");
@@ -3399,9 +3400,46 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
 
     ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ(
-        "scope_extensions entry ignored, required property 'origin' is "
-        "missing.",
+        "scope_extensions entry ignored, required properties 'type' and "
+        "'value' "
+        "are missing.",
         errors()[0]);
+    EXPECT_EQ(0u, scope_extensions.size());
+  }
+
+  // Scope extension missing `value` key
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "type": "origin", "asdf": "http://foo.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "scope_extensions entry ignored, required properties 'type' and "
+        "'value' "
+        "are missing.",
+        errors()[0]);
+    EXPECT_EQ(0u, scope_extensions.size());
+  }
+
+  // Scope extension using unsupported `type` key
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "type": "site", "value": "http://foo.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("Scope extension 'type' invalid.", errors()[0]);
     EXPECT_EQ(0u, scope_extensions.size());
   }
 
@@ -3410,14 +3448,14 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": 7
+              "type": "origin", "value": 7
             }
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
 
-    ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("property 'origin' ignored, type string expected.", errors()[0]);
+    EXPECT_EQ(2u, GetErrorCount());
+    EXPECT_EQ("property 'value' ignored, type string expected.", errors()[0]);
     EXPECT_EQ(0u, scope_extensions.size());
   }
 
@@ -3426,25 +3464,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "http://foo.com"
+              "type": "origin", "value": "http://foo.com"
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ(
-        "scope_extensions entry ignored, required property 'origin' must use "
-        "the https scheme.",
-        errors()[0]);
-    ASSERT_EQ(0u, scope_extensions.size());
-  }
-
-  // Scheme must be https in shorthand format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "http://foo.com"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3462,25 +3483,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "https:///////"
+              "type": "origin", "value": "https:///////"
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ(
-        "scope_extensions entry ignored, required property 'origin' is "
-        "invalid.",
-        errors()[0]);
-    ASSERT_EQ(0u, scope_extensions.size());
-  }
-
-  // Origin must be valid in shorthand format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "https:///////"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3498,29 +3502,11 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "https://foo.com"
+              "type": "origin", "value": "https://foo.com"
             },
             {
-              "origin": "https://bar.com"
+              "type": "origin", "value": "https://bar.com"
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(0u, GetErrorCount());
-    ASSERT_EQ(2u, scope_extensions.size());
-    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
-                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
-    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://bar.com")
-                    ->IsSameOriginWith(scope_extensions[1]->origin.get()));
-  }
-
-  // Parse multiple valid scope extensions in shorthand format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "https://foo.com",
-            "https://bar.com"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3538,48 +3524,9 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "https://foo.com"
+              "type": "origin", "value": "https://foo.com"
             },
             []
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("scope_extensions entry ignored, type string or object expected.",
-              errors()[0]);
-    ASSERT_EQ(1u, scope_extensions.size());
-    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
-                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
-  }
-
-  // Parse invalid scope extensions list with an array entry in shorthand
-  // format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "https://foo.com",
-            []
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("scope_extensions entry ignored, type string or object expected.",
-              errors()[0]);
-    ASSERT_EQ(1u, scope_extensions.size());
-    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
-                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
-  }
-
-  // Parse invalid scope extensions list with entries in mixed formats.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            {
-              "origin": "https://foo.com"
-            },
-            "https://bar.com"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3592,36 +3539,31 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
                     ->IsSameOriginWith(scope_extensions[0]->origin.get()));
   }
 
-  // Parse both valid and invalid scope extensions.
+  // Parse shorthand notation as an invalid format
   {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
-            {
-              "origin": "https://foo.com"
-            },
-            {
-              "origin": "about:"
-            }
+            "https://bar.com"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
 
     ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ(
-        "scope_extensions entry ignored, required property 'origin' is "
-        "invalid.",
-        errors()[0]);
-    ASSERT_EQ(1u, scope_extensions.size());
-    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
-                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    EXPECT_EQ("scope_extensions entry ignored, type object expected.",
+              errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
   }
 
-  // Parse both valid and invalid scope extensions in shorthand format.
+  // Parse both valid and invalid scope extensions.
   {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
-            "https://foo.com",
-            "about:"
+            {
+              "type": "origin", "value": "https://foo.com"
+            },
+            {
+              "type": "origin", "value": "about:"
+            }
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3641,26 +3583,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "https://co.uk"
+              "type": "origin", "value": "https://co.uk"
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ(
-        "scope_extensions entry ignored, domain of required property 'origin' "
-        "is invalid.",
-        errors()[0]);
-    ASSERT_EQ(0u, scope_extensions.size());
-  }
-
-  // Parse invalid scope extension where the origin is a TLD in shorthand
-  // format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "https://co.uk"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3678,24 +3602,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "https://*.foo.com"
+              "type": "origin", "value": "https://*.foo.com"
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(0u, GetErrorCount());
-    ASSERT_EQ(1u, scope_extensions.size());
-    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
-                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
-    ASSERT_TRUE(scope_extensions[0]->has_origin_wildcard);
-  }
-
-  // Parse origin with wildcard in shorthand format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "https://*.foo.com"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3712,24 +3620,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "https://*foo.com"
+              "type": "origin", "value": "https://*foo.com"
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(0u, GetErrorCount());
-    ASSERT_EQ(1u, scope_extensions.size());
-    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://*foo.com")
-                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
-    ASSERT_FALSE(scope_extensions[0]->has_origin_wildcard);
-  }
-
-  // Parse invalid origin wildcard format in shorthand format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "https://*foo.com"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3746,26 +3638,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "https://*."
+              "type": "origin", "value": "https://*."
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    ASSERT_EQ(
-        "scope_extensions entry ignored, domain of required property 'origin' "
-        "is invalid.",
-        errors()[0]);
-    ASSERT_EQ(0u, scope_extensions.size());
-  }
-
-  // Parse origin where the host is just the wildcard prefix in shorthand
-  // format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "https://*."
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3783,25 +3657,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "https://*.com"
+              "type": "origin", "value": "https://*.com"
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    ASSERT_EQ(
-        "scope_extensions entry ignored, domain of required property 'origin' "
-        "is invalid.",
-        errors()[0]);
-    ASSERT_EQ(0u, scope_extensions.size());
-  }
-
-  // Parse invalid origin where wildcard is used with a TLD in shorthand format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "https://*.com"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3819,26 +3676,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "https://*.foo"
+              "type": "origin", "value": "https://*.foo"
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    ASSERT_EQ(
-        "scope_extensions entry ignored, domain of required property 'origin' "
-        "is invalid.",
-        errors()[0]);
-    ASSERT_EQ(0u, scope_extensions.size());
-  }
-
-  // Parse invalid origin where wildcard is used with an unknown TLD in
-  // shorthand format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "https://*.foo"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3856,26 +3695,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "https://*.co.uk"
+              "type": "origin", "value": "https://*.co.uk"
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    ASSERT_EQ(
-        "scope_extensions entry ignored, domain of required property 'origin' "
-        "is invalid.",
-        errors()[0]);
-    ASSERT_EQ(0u, scope_extensions.size());
-  }
-
-  // Parse invalid origin where wildcard is used with a multipart TLD in
-  // shorthand format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "https://*.co.uk"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3893,24 +3714,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "https://*.glitch.me"
+              "type": "origin", "value": "https://*.glitch.me"
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(0u, GetErrorCount());
-    ASSERT_EQ(1u, scope_extensions.size());
-    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://glitch.me")
-                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
-    ASSERT_TRUE(scope_extensions[0]->has_origin_wildcard);
-  }
-
-  // Parse valid origin with private registry in shorthand format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "https://*.glitch.me"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3927,25 +3732,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "origin": "https://192.168.0.1:8888"
+              "type": "origin", "value": "https://192.168.0.1:8888"
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(0u, GetErrorCount());
-    ASSERT_EQ(1u, scope_extensions.size());
-    ASSERT_TRUE(
-        blink::SecurityOrigin::CreateFromString("https://192.168.0.1:8888")
-            ->IsSameOriginWith(scope_extensions[0]->origin.get()));
-    ASSERT_FALSE(scope_extensions[0]->has_origin_wildcard);
-  }
-
-  // Parse valid IP address as origin in shorthand format.
-  {
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            "https://192.168.0.1:8888"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -3966,71 +3754,38 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
         R"({
           "scope_extensions": [
             {
-              "origin": "https://192.168.0.1:8001"
+              "type": "origin", "value": "https://192.168.0.1:8001"
             },
             {
-              "origin": "https://192.168.0.1:8002"
+              "type": "origin", "value": "https://192.168.0.1:8002"
             },
             {
-              "origin": "https://192.168.0.1:8003"
+              "type": "origin", "value": "https://192.168.0.1:8003"
             },
             {
-              "origin": "https://192.168.0.1:8004"
+              "type": "origin", "value": "https://192.168.0.1:8004"
             },
             {
-              "origin": "https://192.168.0.1:8005"
+              "type": "origin", "value": "https://192.168.0.1:8005"
             },
             {
-              "origin": "https://192.168.0.1:8006"
+              "type": "origin", "value": "https://192.168.0.1:8006"
             },
             {
-              "origin": "https://192.168.0.1:8007"
+              "type": "origin", "value": "https://192.168.0.1:8007"
             },
             {
-              "origin": "https://192.168.0.1:8008"
+              "type": "origin", "value": "https://192.168.0.1:8008"
             },
             {
-              "origin": "https://192.168.0.1:8009"
+              "type": "origin", "value": "https://192.168.0.1:8009"
             },
             {
-              "origin": "https://192.168.0.1:8010"
+              "type": "origin", "value": "https://192.168.0.1:8010"
             },
             {
-              "origin": "https://192.168.0.1:8011"
+              "type": "origin", "value": "https://192.168.0.1:8011"
             }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ(
-        "property 'scope_extensions' contains more than 10 valid elements, "
-        "only the first 10 are parsed.",
-        errors()[0]);
-    ASSERT_EQ(10u, scope_extensions.size());
-    ASSERT_TRUE(
-        blink::SecurityOrigin::CreateFromString("https://192.168.0.1:8010")
-            ->IsSameOriginWith(scope_extensions[9]->origin.get()));
-  }
-
-  // Validate only the first 10 scope extensions are parsed in shorthand format.
-  // The following manifest specifies 11 scope extensions, so the last one
-  // should not be in the result.
-  {
-    auto& manifest = ParseManifest(
-        R"({
-          "scope_extensions": [
-            "https://192.168.0.1:8001",
-            "https://192.168.0.1:8002",
-            "https://192.168.0.1:8003",
-            "https://192.168.0.1:8004",
-            "https://192.168.0.1:8005",
-            "https://192.168.0.1:8006",
-            "https://192.168.0.1:8007",
-            "https://192.168.0.1:8008",
-            "https://192.168.0.1:8009",
-            "https://192.168.0.1:8010",
-            "https://192.168.0.1:8011"
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
@@ -5826,7 +5581,7 @@ TEST_F(ManifestParserTest, LaunchHandlerParseRules) {
     auto& manifest = ParseManifest(R"({
       "launch_handler": {}
     })");
-    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
+    EXPECT_EQ(manifest->launch_handler->client_mode, std::nullopt);
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -5837,7 +5592,7 @@ TEST_F(ManifestParserTest, LaunchHandlerParseRules) {
         "client_mode": []
       }
     })");
-    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
+    EXPECT_EQ(manifest->launch_handler->client_mode, std::nullopt);
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -5848,7 +5603,7 @@ TEST_F(ManifestParserTest, LaunchHandlerParseRules) {
         "client_mode": "space"
       }
     })");
-    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
+    EXPECT_EQ(manifest->launch_handler->client_mode, std::nullopt);
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("client_mode value 'space' ignored, unknown value.", errors()[0]);
   }
@@ -5906,6 +5661,8 @@ TEST_F(ManifestParserTest, TranslationsParseRules) {
         ParseManifest(R"({ "translations": {"fr": {"name": "french name"}} })");
     EXPECT_TRUE(manifest->translations.empty());
     EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTranslations));
   }
   {
     ScopedWebAppTranslationsForTest feature(true);
@@ -5945,6 +5702,8 @@ TEST_F(ManifestParserTest, TranslationsParseRules) {
       EXPECT_EQ(manifest->translations.find("fr")->value->description,
                 "french description");
       EXPECT_EQ(0u, GetErrorCount());
+      EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
+          WebFeature::kWebAppManifestTranslations));
     }
 
     // Don't parse if the property isn't an object.
@@ -6001,6 +5760,8 @@ TEST_F(ManifestParserTest, TranslationsStringsParseRules) {
     EXPECT_EQ(
         "property 'name' of 'translations' ignored, type string expected.",
         errors()[0]);
+    EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTranslations));
   }
 
   // Ignore non-string translations short_name.
@@ -6013,6 +5774,8 @@ TEST_F(ManifestParserTest, TranslationsStringsParseRules) {
         "property 'short_name' of 'translations' ignored, type string "
         "expected.",
         errors()[0]);
+    EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTranslations));
   }
 
   // Ignore non-string translations description.
@@ -6025,6 +5788,8 @@ TEST_F(ManifestParserTest, TranslationsStringsParseRules) {
         "property 'description' of 'translations' ignored, type string "
         "expected.",
         errors()[0]);
+    EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTranslations));
   }
 
   // Translation with empty strings is ignored.
@@ -6041,6 +5806,8 @@ TEST_F(ManifestParserTest, TranslationsStringsParseRules) {
               errors()[1]);
     EXPECT_EQ("property 'description' of 'translations' is an empty string.",
               errors()[2]);
+    EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTranslations));
   }
 }
 
@@ -6056,6 +5823,8 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
       EXPECT_TRUE(manifest->tab_strip.is_null());
       EXPECT_EQ(0u, GetErrorCount());
     }
+    EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTabStrip));
   }
   {
     ScopedWebAppTabStripForTest feature1(true);
@@ -6067,6 +5836,8 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
           ParseManifest(R"({ "tab_strip": {"home_tab": "auto"} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(0u, GetErrorCount());
+      EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
+          WebFeature::kWebAppManifestTabStrip));
     }
 
     // Manifest does not contain 'tab_strip' field.
@@ -6201,6 +5972,8 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
             [{"protocol": "ftp"}, {"hostname": "bar.com"},
             {"protocol": "ftp", "hostname": "bar.com"}]}} })");
     EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTabStrip));
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 3u);
@@ -6254,6 +6027,8 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
           }} })",
         KURL("http://foo.com/static/manifest.json"), DefaultDocumentUrl());
     EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTabStrip));
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 4u);
@@ -6388,6 +6163,8 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
           ]}}
          })");
     EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTabStrip));
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 5u);
@@ -6480,6 +6257,8 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
             {"pathname": "/foo/:bar/*"}]}}
         })");
     EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTabStrip));
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 6u);
@@ -6601,6 +6380,8 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
             {"hostname": "foo.:bar.*"}, {"hostname": "*.com"}]}}
         })");
     EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTabStrip));
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 7u);
@@ -6757,6 +6538,8 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
             {"search": "([A-Za-z0-9])+"}
     ]}} })a");
     EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTabStrip));
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 0u);
@@ -6770,6 +6553,8 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
         "tab_strip": {
           "home_tab": {"scope_patterns": ["blah", 3]}} })");
     EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTabStrip));
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 0u);
@@ -6783,6 +6568,8 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
         "tab_strip": {
           "home_tab": {"scope_patterns": []}} })");
     EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
+        WebFeature::kWebAppManifestTabStrip));
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 0u);

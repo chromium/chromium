@@ -19,6 +19,9 @@
           ပြီးတော့ "သင်၏ LAN အတွက် ပရောက်စီ ဆာဗာ သုံရန်" ခြစ်ရမည့် အကွက် ရွေးထားမှုကို ပြန်ဖျက်လိုက်ပါ။</translation>
 <translation id="4622039161600275920">Chromium က ဤစာမျက်နှာကို ပိတ်ထားသည်</translation>
 <translation id="48558539577516920">သင့် Firewall သို့မဟုတ် ဗိုင်းရပ်စ်ခုခံစနစ် ဆက်တင်များအတွင်း ကွန်ရက်အသုံးပြုရန် Chromium ကိုခွင့်ပြုပါ။</translation>
+<translation id="4949828774841497663">‘အပလီကေးရှင်းများ’ &gt; ‘စနစ် ဆက်တင်များ’ &gt; ‘ကွန်ရက်’ သို့ သွားပြီး
+          သုံးနေသောကွန်ရက်ကို ရွေးပါ။ ‘အသေးစိတ်...’ ခလုတ်ကို နှိပ်ပြီး ရွေးထားသော ပရောက်စီများကို
+          ပြန်ဖြုတ်ပါ။</translation>
 <translation id="580822234363523061">သွားရန်
           Chromium မီနျူး &gt;
           <ph name="SETTINGS_TITLE" />
@@ -27,6 +30,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           သင့်ပြုပြင်ချက်များကို "no proxy" သို့မဟုတ် "direct" ဟုသတ်မှတ်ပါ။</translation>
+<translation id="648062525172759633">ဤစာမျက်နှာများကို Chromium ဆော့ဖ်ဝဲရေးသူများ သုံးရန်အတွက် ရည်ရွယ်ထားပြီး အမြဲတစေ ပြုပြင်ထိန်းသိမ်းခြင်း/စမ်းသပ်ထားခြင်း မရှိနိုင်ပါ။ ၎င်းတို့ကိုဖွင့်ရန် <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> သို့ သွားပြီး အမှားရှာပြင်ခြင်းစာမျက်နှာများ ဖွင့်ရန် ခလုတ်ကိုနှိပ်ပြီးနောက် ဤစာမျက်နှာသို့ ပြန်လာပါ။</translation>
 <translation id="6549378540556750549">အခြား <ph name="BEGIN_LINK_OSS" />အခမဲ့ ရင်းမြစ်ဆော့ဖ်ဝဲ<ph name="END_LINK_OSS" /> ဖြင့်လည်း Chromium ကို ထုတ်လုပ်ထားသည်။</translation>
 <translation id="6613594504749178791">Chromium ကိုသင်နောက်တစ်ကြိမ် ပြန်လည်စတင်လျှင် သင့်ပြောင်းလဲမှုများ အကျိုးသက်ရောက်မှု ရှိမည်ဖြစ်သည်။</translation>
 <translation id="691026815377248078">Chromium သည် ဆက်လက်တွဲချိတ်ရန် ဘလူးတုသ်သုံးခွင့် 
@@ -38,9 +42,6 @@
           <ph name="ADVANCED_TITLE" />
           ပြီးတော့ "<ph name="NO_PREFETCH_DESCRIPTION" />"ကို ရွေးပါ။
           ၎င်းက ပြဿနာကို ဖြေရှင်းမပေးနိုင်ခဲ့သော်၊ ပိုပြီး အဆင့်မြင့်သည့် လုပ်ကိုင်မှုအတွက် ဒီရွေးချယ်မှုကို ထပ်ပြီး ရွေးချယ်ရန်ကို ကျွန်ပ်တို့ အကြံပေးလိုပါသည်။</translation>
-<translation id="8187289872471304532">သွားမည်
-          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
-          and deselect any proxies that have been selected.</translation>
 <translation id="8597726643333341451">သင်သည် လုံခြုံသည့် Chrome for Testing စာမျက်နှာကို ကြည့်နေခြင်းဖြစ်သည်</translation>
 <translation id="8684913864886094367">Chromium သည် မှန်ကန်စွာ ပိတ်မသွားခဲ့ပါ။</translation>
 </translationbundle>

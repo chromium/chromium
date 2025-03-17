@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
@@ -53,7 +54,14 @@ void DocumentStyleEnvironmentVariables::InvalidateVariable(
 DocumentStyleEnvironmentVariables::DocumentStyleEnvironmentVariables(
     StyleEnvironmentVariables& parent,
     Document& document)
-    : StyleEnvironmentVariables(parent), document_(&document) {}
+    : StyleEnvironmentVariables(parent), document_(&document) {
+  if (RuntimeEnabledFeatures::CSSPreferredTextScaleEnabled()) {
+    SetVariable(
+        UADefinedVariable::kPreferredTextScale,
+        String::Number(
+            document_->GetSettings()->GetAccessibilityFontScaleFactor()));
+  }
+}
 
 void DocumentStyleEnvironmentVariables::RecordVariableUsage(
     const AtomicString& name) {
@@ -78,6 +86,13 @@ void DocumentStyleEnvironmentVariables::RecordVariableUsage(
   } else if (name == "safe-area-inset-right") {
     UseCounter::Count(document_,
                       WebFeature::kCSSEnvironmentVariable_SafeAreaInsetRight);
+  } else if (name == "safe-area-max-inset-bottom") {
+    UseCounter::Count(
+        document_, WebFeature::kCSSEnvironmentVariable_SafeAreaMaxInsetBottom);
+  } else if (name == GetVariableName(UADefinedVariable::kPreferredTextScale,
+                                     /* feature_context */ nullptr)) {
+    UseCounter::Count(document_,
+                      WebFeature::kCSSEnvironmentVariable_PreferredTextScale);
   } else {
     // Do nothing if this is an unknown variable.
   }

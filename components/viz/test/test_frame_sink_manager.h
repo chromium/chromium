@@ -97,6 +97,10 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
           rir_delegate_client_remote,
       mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
           rir_delegate_receiver) override {}
+  void NotifyRendererBlockStateChanged(
+      bool blocked,
+      const std::vector<FrameSinkId>& render_input_routers) override {}
+  void RequestInputBack() override {}
 
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
   mojo::Remote<mojom::FrameSinkManagerClient> client_;

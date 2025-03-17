@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_type_util.h"
 
 #import <ostream>
+
 #import "base/notreached.h"
 
 BadgeType BadgeTypeForInfobarType(InfobarType infobar_type) {

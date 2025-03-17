@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "components/password_manager/core/browser/credential_manager_impl.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace password_manager {
@@ -14,8 +15,9 @@ namespace password_manager {
 // ContentCredentialManager -------------------------------------------------
 
 ContentCredentialManager::ContentCredentialManager(
-    PasswordManagerClient* client)
-    : impl_(client) {}
+    std::unique_ptr<credential_management::CredentialManagerInterface>
+        credential_manager)
+    : credential_manager_(std::move(credential_manager)) {}
 
 ContentCredentialManager::~ContentCredentialManager() = default;
 
@@ -43,25 +45,25 @@ bool ContentCredentialManager::HasBinding() const {
 
 void ContentCredentialManager::DisconnectBinding() {
   receiver_.reset();
-  impl_.ResetPendingRequest();
+  credential_manager_->ResetPendingRequest();
 }
 
 void ContentCredentialManager::Store(const CredentialInfo& credential,
                                      StoreCallback callback) {
-  impl_.Store(credential, std::move(callback));
+  credential_manager_->Store(credential, std::move(callback));
 }
 
 void ContentCredentialManager::PreventSilentAccess(
     PreventSilentAccessCallback callback) {
-  impl_.PreventSilentAccess(std::move(callback));
+  credential_manager_->PreventSilentAccess(std::move(callback));
 }
 
 void ContentCredentialManager::Get(CredentialMediationRequirement mediation,
                                    int requested_credential_type_flags,
                                    const std::vector<GURL>& federations,
                                    GetCallback callback) {
-  impl_.Get(mediation, requested_credential_type_flags,
-            federations, std::move(callback));
+  credential_manager_->Get(mediation, requested_credential_type_flags,
+                           federations, std::move(callback));
 }
 
 }  // namespace password_manager

@@ -70,12 +70,14 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
 
     @Override
     public void cancel() {
+        if (mNativeChromeHttpAuthHandler == 0) return;
         ChromeHttpAuthHandlerJni.get()
                 .cancelAuth(mNativeChromeHttpAuthHandler, ChromeHttpAuthHandler.this);
     }
 
     @Override
     public void proceed(String username, String password) {
+        if (mNativeChromeHttpAuthHandler == 0) return;
         ChromeHttpAuthHandlerJni.get()
                 .setAuth(
                         mNativeChromeHttpAuthHandler,

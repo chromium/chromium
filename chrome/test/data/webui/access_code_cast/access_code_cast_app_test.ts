@@ -213,7 +213,7 @@ suite('AccessCodeCastAppTest', () => {
       });
 
 
-  test('enter key press can cast', async () => {
+  test('enter key press can cast', () => {
     let visited = false;
     app.setAccessCodeForTest('qwe');
     const realAddSinkAndCast = app.addSinkAndCast;

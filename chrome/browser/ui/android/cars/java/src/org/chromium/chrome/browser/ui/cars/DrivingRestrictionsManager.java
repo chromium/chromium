@@ -9,10 +9,13 @@ import android.app.Activity;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Monitors changes to driving restrictions and applies required optimizations. */
+@NullMarked
 public class DrivingRestrictionsManager {
-    private static DrivingRestrictionsManager sInstance;
+    private static @Nullable DrivingRestrictionsManager sInstance;
 
     private DrivingRestrictionsDelegate mDelegate;
     private boolean mMonitoring;
@@ -60,7 +63,7 @@ public class DrivingRestrictionsManager {
         return mDelegate;
     }
 
-    static DrivingRestrictionsManager getInstanceForTesting() {
+    static @Nullable DrivingRestrictionsManager getInstanceForTesting() {
         return sInstance;
     }
 }

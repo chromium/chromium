@@ -11,7 +11,6 @@
 
 #include <inttypes.h>
 
-#include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -22,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace gpu {
@@ -213,6 +213,8 @@ bool GrShaderCache::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
   dump->AddScalar(MemoryAllocatorDump::kNameSize,
                   MemoryAllocatorDump::kUnitsBytes, curr_size_bytes_);
+  dump->AddScalar(MemoryAllocatorDump::kNameObjectCount,
+                  MemoryAllocatorDump::kUnitsObjects, store_.size());
 
   return true;
 }
@@ -299,7 +301,7 @@ GrShaderCache::ScopedCacheUse::~ScopedCacheUse() {
 }
 
 GrShaderCache::CacheKey::CacheKey(sk_sp<SkData> data) : data(std::move(data)) {
-  hash = base::FastHash(base::span(this->data->bytes(), this->data->size()));
+  hash = base::FastHash(skia::as_byte_span(*this->data));
 }
 GrShaderCache::CacheKey::CacheKey(const CacheKey& other) = default;
 GrShaderCache::CacheKey::CacheKey(CacheKey&& other) = default;

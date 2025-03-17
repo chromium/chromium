@@ -81,7 +81,10 @@ bool Base64Decode(std::string_view input,
     // in-place, but it violates the API contract that `output` is only modified
     // on success.
     std::string input_without_whitespace;
-    RemoveChars(input, kInfraAsciiWhitespace, &input_without_whitespace);
+    RemoveChars(input,
+                std::string_view(std::begin(kInfraAsciiWhitespace),
+                                 std::end(kInfraAsciiWhitespace)),
+                &input_without_whitespace);
     // This means that the required size to decode is at most what was needed
     // above, which means `decode_buf` will fit the decoded bytes at its current
     // size and we don't need to call `modp_b64_decode_len()` again.

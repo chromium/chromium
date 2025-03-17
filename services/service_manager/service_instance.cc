@@ -4,13 +4,13 @@
 
 #include "services/service_manager/service_instance.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -39,15 +39,15 @@ std::set<std::string> GetRequiredCapabilities(
   // Start by looking for requirements specific to the target identity.
   auto it = source_requirements.find(target_service);
   if (it != source_requirements.end()) {
-    base::ranges::copy(it->second,
-                       std::inserter(capabilities, capabilities.begin()));
+    std::ranges::copy(it->second,
+                      std::inserter(capabilities, capabilities.begin()));
   }
 
   // Apply wild card rules too.
   it = source_requirements.find("*");
   if (it != source_requirements.end()) {
-    base::ranges::copy(it->second,
-                       std::inserter(capabilities, capabilities.begin()));
+    std::ranges::copy(it->second,
+                      std::inserter(capabilities, capabilities.begin()));
   }
   return capabilities;
 }

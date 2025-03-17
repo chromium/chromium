@@ -4,11 +4,12 @@
 
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 
+#include <algorithm>
+
 #include "base/check_deref.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
@@ -138,15 +139,15 @@ IbanSaveManager::TypeOfOfferToSave IbanSaveManager::DetermineHowToSaveIban(
 
   // Trigger server save if available, otherwise local save as long as the IBAN
   // isn't already saved locally.
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableServerIban) &&
-      IsIbanUploadEnabled(
+  if (IsIbanUploadEnabled(
           client_->GetSyncService(),
           payments_data_manager().GetPaymentsSigninStateForMetrics()) &&
       payments_data_manager().GetServerIbans().size() <= kMaxNumServerIbans) {
     autofill_metrics::LogIbanSaveOfferedCountry(
         import_candidate.GetCountryCode());
     return TypeOfOfferToSave::kOfferServerSave;
-  } else if (import_candidate.record_type() != Iban::kLocalIban) {
+  }
+  if (import_candidate.record_type() != Iban::kLocalIban) {
     autofill_metrics::LogIbanSaveOfferedCountry(
         import_candidate.GetCountryCode());
     return TypeOfOfferToSave::kOfferLocalSave;

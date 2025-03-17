@@ -17,7 +17,7 @@ source_set("actions") {
   deps = [
     "//components/omnibox/browser",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/omnibox/ui_bundled:features",
+    "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_popup_shared",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_accessibility_identifier_constants",
@@ -33,26 +33,4 @@ source_set("actions") {
     "//ui/base",
     "//url",
   ]
-}
-
-source_set("eg2_tests") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [ "actions_in_suggest_egtest.mm" ]
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//components/omnibox/common",
-    "//ios/chrome/browser/omnibox/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/omnibox/ui_bundled:features",
-    "//ios/chrome/browser/omnibox/ui_bundled:omnibox_popup_shared",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_accessibility_identifier_constants",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//net:test_support",
-    "//ui/base",
-  ]
-  frameworks = [ "UIKit.framework" ]
 }

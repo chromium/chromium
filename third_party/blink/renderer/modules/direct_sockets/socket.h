@@ -57,7 +57,7 @@ class MODULES_EXPORT Socket : public ExecutionContextLifecycleStateObserver {
   }
 
   State GetState() const { return state_; }
-  void SetState(State state) { state_ = state; }
+  virtual void SetState(State state) { state_ = state; }
 
   // Resets |service_| and |feature_handle_for_scheduler_|.
   void ResetServiceAndFeatureHandle();

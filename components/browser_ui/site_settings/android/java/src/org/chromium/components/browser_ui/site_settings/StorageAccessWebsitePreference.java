@@ -4,9 +4,13 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 
@@ -17,6 +21,7 @@ import java.util.List;
  * and URL, and an icon on the RHS to reset the permission. See {@link WebsitePreference} for more
  * details on how this preference can be used.
  */
+@NullMarked
 class StorageAccessWebsitePreference extends WebsitePreference {
 
     private final OnStorageAccessWebsiteReset mOnStorageAccessWebsiteResetListener;
@@ -49,11 +54,11 @@ class StorageAccessWebsitePreference extends WebsitePreference {
     }
 
     @Override
-    protected String buildSummary() {
+    protected @Nullable String buildSummary() {
 
         List<ContentSettingException> exceptions =
                 mSite.getEmbeddedContentSettings(ContentSettingsType.STORAGE_ACCESS);
-        assert exceptions.size() == 1;
+        assert assumeNonNull(exceptions).size() == 1;
 
         ContentSettingException exception = exceptions.get(0);
         if (exception.isEmbargoed()) {

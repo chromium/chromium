@@ -25,7 +25,6 @@
 #include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -144,24 +143,19 @@ base::expected<TriggerRegistration, TriggerRegistrationError> ParseDict(
           TriggerRegistrationError::kAggregatableTriggerDataWrongType,
           &AggregatableTriggerData::FromJSON));
 
-  if (base::FeatureList::IsEnabled(
-          features::kAttributionAggregatableNamedBudgets)) {
-    ASSIGN_OR_RETURN(
-        registration.aggregatable_named_budget_candidates,
-        ParseList<AggregatableNamedBudgetCandidate>(
-            dict.Find(kAggregatableNamedBudgets),
-            TriggerRegistrationError::kAggregatableNamedBudgetWrongType,
-            &AggregatableNamedBudgetCandidate::FromJSON));
-  }
+  ASSIGN_OR_RETURN(
+      registration.aggregatable_named_budget_candidates,
+      ParseList<AggregatableNamedBudgetCandidate>(
+          dict.Find(kAggregatableNamedBudgets),
+          TriggerRegistrationError::kAggregatableNamedBudgetWrongType,
+          &AggregatableNamedBudgetCandidate::FromJSON));
 
   ASSIGN_OR_RETURN(
       registration.aggregatable_values,
       AggregatableValues::FromJSON(dict.Find(kAggregatableValues)));
 
-  if (base::FeatureList::IsEnabled(features::kAttributionScopes)) {
-    ASSIGN_OR_RETURN(registration.attribution_scopes,
-                     AttributionScopesSet::FromJSON(dict));
-  }
+  ASSIGN_OR_RETURN(registration.attribution_scopes,
+                   AttributionScopesSet::FromJSON(dict));
 
   registration.debug_key = ParseDebugKey(dict);
   registration.debug_reporting = ParseDebugReporting(dict);
@@ -260,9 +254,7 @@ base::Value::Dict TriggerRegistration::ToJson() const {
 
   aggregatable_debug_reporting_config.Serialize(dict);
 
-  if (base::FeatureList::IsEnabled(features::kAttributionScopes)) {
-    attribution_scopes.SerializeForTrigger(dict);
-  }
+  attribution_scopes.SerializeForTrigger(dict);
 
   SerializeListIfNotEmpty(dict, kAggregatableNamedBudgets,
                           aggregatable_named_budget_candidates);

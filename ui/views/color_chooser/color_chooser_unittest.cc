@@ -13,9 +13,11 @@
 
 #include <tuple>
 
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/background.h"
 #include "ui/views/color_chooser/color_chooser_listener.h"
@@ -55,7 +57,7 @@ class ColorChooserTest : public views::ViewsTestBase {
     view->SetBounds(0, 0, 400, 300);
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                                views::Widget::InitParams::TYPE_WINDOW);
-    widget_->GetContentsView()->AddChildView(std::move(view));
+    widget_->GetContentsView()->AddChildViewRaw(std::move(view));
     generator_ = std::make_unique<ui::test::EventGenerator>(
         views::GetRootWindow(widget_.get()), widget_->GetNativeWindow());
   }
@@ -85,13 +87,15 @@ class ColorChooserTest : public views::ViewsTestBase {
   }
 
   SkColor GetShownColor() const {
+    CHECK(widget_);
     return chooser_->selected_color_patch_for_testing()
         ->background()
-        ->get_color();
+        ->color()
+        .ConvertToSkColor(widget_->GetColorProvider());
   }
 
   SkColor GetTextualColor() const {
-    std::u16string text = chooser_->textfield_for_testing()->GetText();
+    std::u16string_view text = chooser_->textfield_for_testing()->GetText();
     if (text.empty() || text[0] != '#') {
       return SK_ColorTRANSPARENT;
     }
@@ -106,8 +110,9 @@ class ColorChooserTest : public views::ViewsTestBase {
     chooser_->textfield_for_testing()->SetText(base::UTF8ToUTF16(color));
     // Synthesize ContentsChanged, since Textfield normally doesn't deliver it
     // for SetText, only for user-typed text.
-    chooser_->ContentsChanged(chooser_->textfield_for_testing(),
-                              chooser_->textfield_for_testing()->GetText());
+    chooser_->ContentsChanged(
+        chooser_->textfield_for_testing(),
+        std::u16string(chooser_->textfield_for_testing()->GetText()));
   }
 
   void PressMouseAt(views::View* view, const gfx::Point& p) {

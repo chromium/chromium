@@ -19,8 +19,8 @@ using ::base::android::ConvertUTF8ToJavaString;
 using ::base::android::JavaParamRef;
 using ::base::android::ScopedJavaLocalRef;
 
-// Formats the |phone_number| to the specified |format| for the given country
-// |country_code|. Returns the original number if the operation is not possible.
+// Formats the `phone_number` to the specified `format` for the given country
+// `country_code`. Returns the original number if the operation is not possible.
 std::string FormatPhoneNumberWithCountryCode(
     const std::string& phone_number,
     const std::string& country_code,
@@ -38,7 +38,7 @@ std::string FormatPhoneNumberWithCountryCode(
   return formatted_number;
 }
 
-// Formats the |phone_number| to the specified |format|. Use application locale
+// Formats the `phone_number` to the specified `format`. Use application locale
 // to determine country code. Returns the original number if the operation is
 // not possible.
 std::string FormatPhoneNumber(
@@ -53,8 +53,8 @@ std::string FormatPhoneNumber(
 
 }  // namespace
 
-// Formats the given number |phone_number| for the given country
-// |jcountry_code| to
+// Formats the given number `phone_number` for the given country
+// `jcountry_code` to
 // i18n::phonenumbers::PhoneNumberUtil::PhoneNumberFormat::INTERNATIONAL format
 // by using i18n::phonenumbers::PhoneNumberUtil::Format.
 std::string JNI_PhoneNumberUtil_FormatForDisplay(
@@ -71,7 +71,7 @@ std::string JNI_PhoneNumberUtil_FormatForDisplay(
                        INTERNATIONAL);
 }
 
-// Formats the given number |phone_number| to
+// Formats the given number `phone_number` to
 // i18n::phonenumbers::PhoneNumberUtil::PhoneNumberFormat::E164 format by using
 // i18n::phonenumbers::PhoneNumberUtil::Format , as defined in the Payment
 // Request spec
@@ -83,8 +83,8 @@ std::string JNI_PhoneNumberUtil_FormatForResponse(JNIEnv* env,
       ::i18n::phonenumbers::PhoneNumberUtil::PhoneNumberFormat::E164);
 }
 
-// Checks whether the given number |phone_number| is a possible number for a
-// given country |jcountry_code| by using
+// Checks whether the given number `phone_number` is a possible number for a
+// given country `jcountry_code` by using
 // i18n::phonenumbers::PhoneNumberUtil::IsPossibleNumberForString.
 jboolean JNI_PhoneNumberUtil_IsPossibleNumber(
     JNIEnv* env,

@@ -57,7 +57,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({"enable-features=StylusRichGestures"})
 @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-@DisabledTest(message = "crbug.com/343810189")
 public class StylusGestureEndToEndTest {
     @Rule public ImeActivityTestRule mRule = new ImeActivityTestRule();
 
@@ -79,6 +78,7 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "b:390692224")
     public void testSelectGesture() throws TimeoutException {
         List<RectF> bounds =
                 initialiseElementAndGetCharacterBounds("contenteditable1", "hello world");
@@ -108,6 +108,7 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b:390692224")
     public void testInsertGesture() throws TimeoutException {
         List<RectF> bounds =
                 initialiseElementAndGetCharacterBounds("contenteditable1", "hello world");
@@ -134,6 +135,7 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "b:390692224")
     public void testDeleteGesture() throws TimeoutException {
         List<RectF> bounds =
                 initialiseElementAndGetCharacterBounds("contenteditable1", "hello world");
@@ -161,6 +163,7 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b:390692224")
     public void testRemoveSpaceGesture() throws TimeoutException {
         List<RectF> bounds =
                 initialiseElementAndGetCharacterBounds("contenteditable1", "hello world");
@@ -191,6 +194,7 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b:390692224")
     public void testJoinOrSplitGesture() throws TimeoutException {
         List<RectF> bounds =
                 initialiseElementAndGetCharacterBounds("contenteditable1", "hello world");
@@ -234,6 +238,7 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b:390692224")
     public void testSelectRangeGesture() throws TimeoutException {
         List<RectF> bounds =
                 initialiseElementAndGetCharacterBounds(
@@ -269,6 +274,7 @@ public class StylusGestureEndToEndTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b:390692224")
     public void testDeleteRangeGesture() throws TimeoutException {
         List<RectF> bounds =
                 initialiseElementAndGetCharacterBounds(

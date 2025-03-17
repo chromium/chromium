@@ -28,6 +28,7 @@
 <translation id="2329392777730037872">ਕਲਾਇੰਟ 'ਤੇ <ph name="URL" /> ਖੋਲ੍ਹਣ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2366718077645204424">ਹੋਸਟ ਤੱਕ ਪਹੁੰਚਣ ਵਿੱਚ ਅਸਮਰੱਥ। ਇਹ ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤੇ ਜਾ ਰਹੇ ਨੈੱਟਵਰਕ ਦਸੰਰੂਪਣ ਦੇ ਕਾਰਨ ਹੈ।</translation>
+<translation id="242591256144136845">ਕਾਪੀਰਾਈਟ 2025 Google LLC. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> ਨੂੰ 'ਪਹੁੰਚਯੋਗਤਾ' ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> ਨਾਲ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="2540992418118313681">ਕੀ ਤੁਸੀਂ ਕਿਸੇ ਦੂਜੇ ਵਰਤੋਂਕਾਰ ਨੂੰ ਦਿਖਾਉਣ ਅਤੇ ਕੰਟਰੋਲ ਕਰਨ ਦੇਣ ਲਈ ਇਹ ਕੰਪਿਊਟਰ ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
@@ -133,6 +134,7 @@
 <translation id="7067321367069083429">ਸਕ੍ਰੀਨ ਕਿਸੇ ਸਪਰਸ਼ ਸਕ੍ਰੀਨ ਦੀ ਤਰ੍ਹਾਂ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
 <translation id="7116737094673640201">'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ</translation>
 <translation id="7144878232160441200">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
+<translation id="7298392173540380852">ਕਾਪੀਰਾਈਟ 2025 The Chromium Authors. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="7312846573060934304">ਹੋਸਟ ਆਫ਼ਲਾਈਨ ਹੈ।</translation>
 <translation id="7319983568955948908">ਸ਼ੇਅਰਿੰਗ ਰੋਕੋ</translation>
 <translation id="7359298090707901886">ਸਥਾਨਕ ਮਸ਼ੀਨ 'ਤੇ URL ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਚੁਣੇ ਗਏ ਬ੍ਰਾਊਜ਼ਰ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ।</translation>
@@ -149,7 +151,6 @@
 <translation id="7693372326588366043">ਹੋਸਟਾਂ ਦੀ ਸੂਚੀ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="7714222945760997814">ਇਸ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
 <translation id="7868137160098754906">ਕਿਰਪਾ ਕਰਕੇ ਰਿਮੋਟ ਕੰਪਿਊਟਰ ਲਈ ਆਪਣਾ ਪਿੰਨ ਦਾਖਲ ਕਰੋ।</translation>
-<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="7895403300744144251">ਰਿਮੋਟ ਕੰਪਿਊਟਰ ਦੀਆਂ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਤੋਂ ਕਨੈਕਸ਼ਨਾਂ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੰਦੀਆਂ ਹਨ।</translation>
 <translation id="7936528439960309876">ਸੱਜੇ ਪਾਸੇ ਲਿਜਾਓ</translation>
 <translation id="7970576581263377361">ਪ੍ਰਮਾਣੀਕਰਨ ਅਸਫਲ ਰਿਹਾ। ਕਿਰਪਾ ਕਰਕੇ Chromium 'ਤੇ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
@@ -181,7 +182,6 @@
 <translation id="8747048596626351634">ਸੈਸ਼ਨ ਕ੍ਰੈਸ਼ ਹੋ ਗਿਆ ਜਾਂ ਸ਼ੁਰੂ ਹੋਣ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ। ਜੇਕਰ ਰਿਮੋਟ ਕੰਪਿਊਟਰ 'ਤੇ ~/.chrome-remote-desktop-session ਮੌਜੂਦ ਹੈ, ਤਾਂ ਇਸਦਾ ਕਿਸੇ ਡੈਸਕਟਾਪ ਵਾਤਾਵਰਨ ਜਾਂ ਵਿੰਡੋ ਪ੍ਰਬੰਧਕ ਵਜੋਂ ਸਾਹਮਣੇ ਚੱਲਣ ਵਾਲੀ ਲੰਬੀ-ਪ੍ਰਕਿਰਿਆ ਵਾਂਗ ਚੱਲਣਾ ਪੱਕਾ ਕਰੋ।</translation>
 <translation id="8804164990146287819">ਪਰਦੇਦਾਰੀ ਨੀਤੀ</translation>
 <translation id="8906511416443321782">ਆਡੀਓ ਕੈਪਚਰ ਕਰਨ ਅਤੇ ਇਸਨੂੰ Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਕਲਾਇੰਟ ਵਿੱਚ ਸਟ੍ਰੀਮ ਕਰਨ ਲਈ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="9111855907838866522">ਤੁਸੀਂ ਆਪਣੇ ਰਿਮੋਟ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਹੋ। ਮੀਨੂ ਖੋਲ੍ਹਣ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਸਕ੍ਰੀਨ 'ਤੇ ਚਾਰ ਉਂਗਲੀਆਂ ਨਾਲ ਟੈਪ ਕਰੋ।</translation>
 <translation id="9126115402994542723">ਇਸ ਡਿਵਾਈਸ ਤੋਂ ਇਸ ਹੋਸਟ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਵੇਲੇ ਦੁਬਾਰਾ ਪਿੰਨ ਨਾ ਮੰਗੋ।</translation>
 <translation id="916856682307586697">ਪੂਰਵ-ਨਿਰਧਾਰਤ XSession ਲਾਂਚ ਕਰੋ</translation>

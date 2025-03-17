@@ -140,9 +140,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   virtual void FireAriaNotificationEvent(
       BrowserAccessibility* node,
       const std::string& announcement,
+      ax::mojom::AriaNotificationPriority priority_property,
       const std::string& notification_id,
-      ax::mojom::AriaNotificationInterrupt interrupt_property,
-      ax::mojom::AriaNotificationPriority priority_property) {}
+      ax::mojom::AriaNotificationInterrupt interrupt_property) {}
 
   virtual void FireBlinkEvent(ax::mojom::Event event_type,
                               BrowserAccessibility* node,
@@ -503,6 +503,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   // platform.
   AXPlatformNodeId GetNodeUniqueId(const BrowserAccessibility* node);
 
+  // Returns the global accessibility focus. Only relevant on a root manager.
+  BrowserAccessibility* GetAccessibilityFocus();
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(content::BrowserAccessibilityManagerTest,
                            TestShouldFireEventForNode);
@@ -618,12 +621,23 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   BrowserAccessibility* AXTreeHitTest(
       const gfx::Point& blink_screen_point) const;
 
+  // Updates global accessibility focus on platforms without an explicit
+  // accessibility focus API. Involves clearing pre-existing focus and setting
+  // the new focus.
+  void UpdateAccessibilityFocus(BrowserAccessibilityManager* manager,
+                                const BrowserAccessibility& node);
+
   // A delegate responsible for assigning window-unique identifiers for nodes.
   const raw_ref<AXNodeIdDelegate> node_id_delegate_;
 
   // Only used on the root node for AXTree hit testing as an alternative to
   // ApproximateHitTest when used without a renderer.
   std::unique_ptr<cc::RTree<AXNodeID>> cached_node_rtree_;
+
+  // Data tracking the global accessibility focus. Meant to be set on the root
+  // manager.
+  AXTreeID accessibility_focus_tree_id_;
+  AXNodeID accessibility_focus_node_id_ = AXNodeData::kInvalidAXID;
 };
 
 }  // namespace ui

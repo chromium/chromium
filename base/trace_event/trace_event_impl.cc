@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/trace_event/trace_event_impl.h"
 
 #include <stddef.h>
@@ -31,7 +36,7 @@ namespace legacy {
 
 template <>
 perfetto::ThreadTrack ConvertThreadId(const ::base::PlatformThreadId& thread) {
-  return perfetto::ThreadTrack::ForThread(thread);
+  return perfetto::ThreadTrack::ForThread(thread.raw());
 }
 
 }  // namespace legacy
@@ -58,8 +63,7 @@ void WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation,
 }  // namespace internal
 }  // namespace perfetto
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 bool ConvertableToTraceFormat::AppendToProto(ProtoAppender* appender) const {
   return false;
@@ -79,7 +83,6 @@ TraceEvent::TraceEvent(PlatformThreadId thread_id,
                        const char* name,
                        const char* scope,
                        unsigned long long id,
-                       unsigned long long bind_id,
                        TraceArguments* args,
                        unsigned int flags)
     : timestamp_(timestamp),
@@ -90,7 +93,6 @@ TraceEvent::TraceEvent(PlatformThreadId thread_id,
       name_(name),
       thread_id_(thread_id),
       flags_(flags),
-      bind_id_(bind_id),
       phase_(phase) {
   InitArgs(args);
 }
@@ -116,7 +118,6 @@ void TraceEvent::Reset(PlatformThreadId thread_id,
                        const char* name,
                        const char* scope,
                        unsigned long long id,
-                       unsigned long long bind_id,
                        TraceArguments* args,
                        unsigned int flags) {
   Reset();
@@ -128,15 +129,15 @@ void TraceEvent::Reset(PlatformThreadId thread_id,
   name_ = name;
   thread_id_ = thread_id;
   flags_ = flags;
-  bind_id_ = bind_id;
   phase_ = phase;
 
   InitArgs(args);
 }
 
 void TraceEvent::InitArgs(TraceArguments* args) {
-  if (args)
+  if (args) {
     args_ = std::move(*args);
+  }
   args_.CopyStringsTo(&parameter_copy_storage_,
                       !!(flags_ & TRACE_EVENT_FLAG_COPY), &name_, &scope_);
 }
@@ -148,18 +149,8 @@ void TraceEvent::UpdateDuration(const TimeTicks& now,
 
   // |thread_timestamp_| can be empty if the thread ticks clock wasn't
   // initialized when it was recorded.
-  if (thread_timestamp_ != ThreadTicks())
+  if (thread_timestamp_ != ThreadTicks()) {
     thread_duration_ = thread_now - thread_timestamp_;
-}
-
-void TraceEvent::EstimateTraceMemoryOverhead(
-    TraceEventMemoryOverhead* overhead) {
-  overhead->Add(TraceEventMemoryOverhead::kTraceEvent,
-                parameter_copy_storage_.EstimateTraceMemoryOverhead());
-
-  for (size_t i = 0; i < arg_size(); ++i) {
-    if (arg_type(i) == TRACE_VALUE_TYPE_CONVERTABLE)
-      arg_value(i).as_convertable->EstimateTraceMemoryOverhead(overhead);
   }
 }
 
@@ -168,11 +159,11 @@ void TraceEvent::AppendAsJSON(
     const ArgumentFilterPredicate& argument_filter_predicate) const {
   int64_t time_int64 = timestamp_.ToInternalValue();
   ProcessId process_id;
-  PlatformThreadId thread_id;
+  std::optional<PlatformThreadId> thread_id;
   if ((flags_ & TRACE_EVENT_FLAG_HAS_PROCESS_ID) &&
       process_id_ != kNullProcessId) {
     process_id = process_id_;
-    thread_id = static_cast<PlatformThreadId>(-1);
+    thread_id = std::nullopt;
   } else {
     process_id = TraceLog::GetInstance()->process_id();
     thread_id = thread_id_;
@@ -180,13 +171,26 @@ void TraceEvent::AppendAsJSON(
   const char* category_group_name =
       TraceLog::GetCategoryGroupName(category_group_enabled_);
 
+  // The thread id might be an int64, however int64 values are not
+  // representable in JS and JSON (cf. crbug.com/40228085) since JS
+  // numbers are float64. Since thread IDs are likely to be allocated
+  // sequentially, truncation of the high bits is preferable to loss of
+  // precision in the low bits, as threads are more likely to differ in
+  // their low bit values, so we truncate the value to int32. Since this
+  // is only used for legacy JSON trace events, the loss of information
+  // is not catastrophic and won't affect normal browser execution, nor
+  // tracing with perfetto protobufs. In the worst case, the trace events
+  // will show up on a different thread track when displayed in a trace UI.
+  int thread_id_for_json =
+      thread_id ? thread_id->truncate_to_int32_for_display_only() : -1;
+
   // Category group checked at category creation time.
   DCHECK(!strchr(name_, '"'));
   StringAppendF(out,
                 "{\"pid\":%i,\"tid\":%i,\"ts\":%" PRId64
                 ",\"ph\":\"%c\",\"cat\":\"%s\",\"name\":",
-                static_cast<int>(process_id), static_cast<int>(thread_id),
-                time_int64, phase_, category_group_name);
+                static_cast<int>(process_id), thread_id_for_json, time_int64,
+                phase_, category_group_name);
   EscapeJSONString(name_, true, out);
   *out += ",\"args\":";
 
@@ -206,8 +210,9 @@ void TraceEvent::AppendAsJSON(
     *out += "{";
 
     for (size_t i = 0; i < arg_size() && arg_name(i); ++i) {
-      if (i > 0)
+      if (i > 0) {
         *out += ",";
+      }
       *out += "\"";
       *out += arg_name(i);
       *out += "\":";
@@ -225,12 +230,14 @@ void TraceEvent::AppendAsJSON(
 
   if (phase_ == TRACE_EVENT_PHASE_COMPLETE) {
     int64_t duration = duration_.ToInternalValue();
-    if (duration != -1)
+    if (duration != -1) {
       StringAppendF(out, ",\"dur\":%" PRId64, duration);
+    }
     if (!thread_timestamp_.is_null()) {
       int64_t thread_duration = thread_duration_.ToInternalValue();
-      if (thread_duration != -1)
+      if (thread_duration != -1) {
         StringAppendF(out, ",\"tdur\":%" PRId64, thread_duration);
+      }
     }
   }
 
@@ -247,12 +254,13 @@ void TraceEvent::AppendAsJSON(
 
   // If id_ is set, print it out as a hex string so we don't loose any
   // bits (it might be a 64-bit pointer).
-  unsigned int id_flags_ = flags_ & (TRACE_EVENT_FLAG_HAS_ID |
-                                     TRACE_EVENT_FLAG_HAS_LOCAL_ID |
-                                     TRACE_EVENT_FLAG_HAS_GLOBAL_ID);
+  unsigned int id_flags_ =
+      flags_ & (TRACE_EVENT_FLAG_HAS_ID | TRACE_EVENT_FLAG_HAS_LOCAL_ID |
+                TRACE_EVENT_FLAG_HAS_GLOBAL_ID);
   if (id_flags_) {
-    if (scope_ != trace_event_internal::kGlobalScope)
+    if (scope_ != trace_event_internal::kGlobalScope) {
       StringAppendF(out, ",\"scope\":\"%s\"", scope_);
+    }
 
     switch (id_flags_) {
       case TRACE_EVENT_FLAG_HAS_ID:
@@ -275,18 +283,21 @@ void TraceEvent::AppendAsJSON(
     }
   }
 
-  if (flags_ & TRACE_EVENT_FLAG_BIND_TO_ENCLOSING)
+  if (flags_ & TRACE_EVENT_FLAG_BIND_TO_ENCLOSING) {
     StringAppendF(out, ",\"bp\":\"e\"");
+  }
 
   if ((flags_ & TRACE_EVENT_FLAG_FLOW_OUT) ||
       (flags_ & TRACE_EVENT_FLAG_FLOW_IN)) {
     StringAppendF(out, ",\"bind_id\":\"0x%" PRIx64 "\"",
-                  static_cast<uint64_t>(bind_id_));
+                  static_cast<uint64_t>(0));
   }
-  if (flags_ & TRACE_EVENT_FLAG_FLOW_IN)
+  if (flags_ & TRACE_EVENT_FLAG_FLOW_IN) {
     StringAppendF(out, ",\"flow_in\":true");
-  if (flags_ & TRACE_EVENT_FLAG_FLOW_OUT)
+  }
+  if (flags_ & TRACE_EVENT_FLAG_FLOW_OUT) {
     StringAppendF(out, ",\"flow_out\":true");
+  }
 
   // Instant events also output their scope.
   if (phase_ == TRACE_EVENT_PHASE_INSTANT) {
@@ -317,8 +328,9 @@ void TraceEvent::AppendPrettyPrinted(std::ostringstream* out) const {
   if (arg_size() > 0 && arg_name(0)) {
     *out << ", {";
     for (size_t i = 0; i < arg_size() && arg_name(i); ++i) {
-      if (i > 0)
+      if (i > 0) {
         *out << ", ";
+      }
       *out << arg_name(i) << ":";
       std::string value_as_text;
       arg_value(i).AppendAsJSON(arg_type(i), &value_as_text);
@@ -328,5 +340,4 @@ void TraceEvent::AppendPrettyPrinted(std::ostringstream* out) const {
   }
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

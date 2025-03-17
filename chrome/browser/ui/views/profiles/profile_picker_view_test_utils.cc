@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,23 +55,17 @@ class TestProfileManagementFlowController
         initial_step_load_finished_closure_(
             std::move(initial_step_load_finished_closure)) {}
 
-  void Init(StepSwitchFinishedCallback step_switch_finished_callback) override {
+  void Init() override {
     RegisterStep(step_, step_controller_factory_.Run(host()));
     SwitchToStep(
         step_, /*reset_state=*/true,
         /*step_switch_finished_callback=*/
         base::BindOnce(
             &TestProfileManagementFlowController::OnInitialStepSwitchFinished,
-            weak_ptr_factory_.GetWeakPtr(),
-            std::move(step_switch_finished_callback)));
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void OnInitialStepSwitchFinished(StepSwitchFinishedCallback original_callback,
-                                   bool success) {
-    if (original_callback) {
-      std::move(original_callback).Run(success);
-    }
-
+  void OnInitialStepSwitchFinished(bool success) {
     if (host()->GetPickerContents()->IsLoading()) {
       Observe(host()->GetPickerContents());
     } else {
@@ -79,13 +74,18 @@ class TestProfileManagementFlowController
     }
   }
 
-  void DidFirstVisuallyNonEmptyPaint() override {
+  void DidStopLoading() override {
     Observe(nullptr);
     DCHECK(initial_step_load_finished_closure_);
     std::move(initial_step_load_finished_closure_).Run();
   }
 
   void CancelPostSignInFlow() override { NOTREACHED(); }
+
+  void PickProfile(const base::FilePath& profile_path,
+                   ProfilePicker::ProfilePickingArgs args) override {
+    NOTREACHED();
+  }
 
   Step step_;
   ProfileManagementStepTestView::StepControllerFactory step_controller_factory_;
@@ -248,6 +248,9 @@ ProfileManagementStepTestView::CreateFlowController(
       this, std::move(clear_host_callback), step_, step_controller_factory_,
       run_loop_.QuitClosure());
 }
+
+MockProfilePickerWebContentsHost::MockProfilePickerWebContentsHost() = default;
+MockProfilePickerWebContentsHost::~MockProfilePickerWebContentsHost() = default;
 
 // -- Other utils --------------------------------------------------------------
 namespace profiles::testing {

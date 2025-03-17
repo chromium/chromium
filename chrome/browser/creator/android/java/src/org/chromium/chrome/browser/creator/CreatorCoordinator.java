@@ -55,7 +55,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -97,7 +97,7 @@ public class CreatorCoordinator
     private final CreatorSnackbarController mCreatorSnackbarController;
     private final WindowAndroid mWindowAndroid;
     private BottomSheetController mBottomSheetController;
-    private ScrimCoordinator mScrim;
+    private ScrimManager mScrimManager;
     private ViewGroup mBottomSheetContainer;
     private Profile mProfile;
     private Stream mStream;
@@ -255,7 +255,7 @@ public class CreatorCoordinator
                         mSnackbarManager,
                         mBottomSheetController,
                         mWindowAndroid,
-                        /* shareSupplier= */ shareDelegateSupplier,
+                        /* shareDelegateSupplier= */ shareDelegateSupplier,
                         StreamKind.SINGLE_WEB_FEED,
                         feedActionDelegate,
                         /* feedContentFirstLoadWatcher= */ this,
@@ -271,7 +271,7 @@ public class CreatorCoordinator
         mStream.bind(
                 mRecyclerView,
                 mContentManager,
-                /* feedScrollState= */ null,
+                /* savedInstanceState= */ null,
                 mSurfaceScope,
                 mHybridListRenderer,
                 null,
@@ -330,8 +330,8 @@ public class CreatorCoordinator
                     (RecyclerView)
                             mHybridListRenderer.bind(
                                     mContentManager,
-                                    /* mViewportView= */ null,
-                                    /* useStaggeredLayout= */ false);
+                                    /* viewport= */ null,
+                                    /* shouldUseStaggeredLayout= */ false);
             view.setId(R.id.creator_feed_stream_recycler_view);
             view.setClipToPadding(false);
             view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
@@ -394,18 +394,7 @@ public class CreatorCoordinator
 
     /** Set up the bottom sheet for this activity. */
     private void initBottomSheet() {
-        mScrim =
-                new ScrimCoordinator(
-                        mActivity,
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {}
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {}
-                        },
-                        mCreatorViewGroup,
-                        mActivity.getColor(R.color.default_scrim_color));
+        mScrimManager = new ScrimManager(mActivity, mCreatorViewGroup);
 
         mBottomSheetContainer = new FrameLayout(mActivity);
         mBottomSheetContainer.setId(R.id.creator_content_preview_bottom_sheet);
@@ -414,7 +403,7 @@ public class CreatorCoordinator
         mCreatorViewGroup.addView(mBottomSheetContainer);
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
-                        () -> mScrim,
+                        () -> mScrimManager,
                         (sheet) -> {},
                         mActivity.getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),

@@ -24,6 +24,8 @@ bool UnexportableSigningKey::IsHardwareBacked() const {
 
 #if BUILDFLAG(IS_WIN)
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin();
+std::unique_ptr<UnexportableKeyProvider>
+GetMicrosoftSoftwareUnexportableKeyProviderWin();
 std::unique_ptr<VirtualUnexportableKeyProvider>
 GetVirtualUnexportableKeyProviderWin();
 #elif BUILDFLAG(IS_MAC)
@@ -45,6 +47,18 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider(
   return GetUnexportableKeyProviderWin();
 #elif BUILDFLAG(IS_MAC)
   return GetUnexportableKeyProviderMac(std::move(config));
+#else
+  return nullptr;
+#endif
+}
+
+std::unique_ptr<UnexportableKeyProvider>
+GetMicrosoftSoftwareUnexportableKeyProvider() {
+  if (g_mock_provider) {
+    return g_mock_provider();
+  }
+#if BUILDFLAG(IS_WIN)
+  return GetMicrosoftSoftwareUnexportableKeyProviderWin();
 #else
   return nullptr;
 #endif

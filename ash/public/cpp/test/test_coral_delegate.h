@@ -22,6 +22,12 @@ class TestCoralDelegate : public CoralDelegate {
   void MoveTabsInGroupToNewDesk(const std::vector<coral::mojom::Tab>& tabs,
                                 size_t src_desk_index) override;
   int GetChromeDefaultRestoreId() override;
+  void OpenFeedbackDialog(
+      const std::string& group_description,
+      ScannerDelegate::SendFeedbackCallback send_feedback_callback) override;
+  void CheckGenAIAgeAvailability(GenAIInquiryCallback callback) override;
+  bool GetGenAILocationAvailability() override;
+  bool GetLanguageAvailability() override;
 };
 
 }  // namespace ash

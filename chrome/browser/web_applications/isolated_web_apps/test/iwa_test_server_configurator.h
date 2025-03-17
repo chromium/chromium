@@ -30,6 +30,11 @@ class IwaTestServerConfigurator {
       std::unique_ptr<BundledIsolatedWebApp> bundle,
       std::optional<std::vector<UpdateChannel>> update_channels = std::nullopt);
 
+  void SetServedUpdateManifestResponse(
+      const web_package::SignedWebBundleId& web_bundle_id,
+      net::HttpStatusCode http_status,
+      std::string_view json_content);
+
   // Generates a policy entry that can be appended to
   // `prefs::kIsolatedWebAppInstallForceList` in order to force-install the IWA.
   // Delegates to `test::CreateForceInstallIwaPolicyEntry()` with a custom
@@ -37,12 +42,15 @@ class IwaTestServerConfigurator {
   static base::Value::Dict CreateForceInstallPolicyEntry(
       const web_package::SignedWebBundleId& web_bundle_id,
       const std::optional<UpdateChannel>& update_channel = std::nullopt,
-      const std::optional<base::Version>& pinned_version = std::nullopt);
+      const std::optional<base::Version>& pinned_version = std::nullopt,
+      bool allow_downgrades = false);
+
+  GURL GetUpdateManifestUrlForIwa(
+      const web_package::SignedWebBundleId& web_bundle_id) {
+    return storage_.GetUpdateManifestUrl(web_bundle_id);
+  }
 
  private:
-  void RegenerateServedUpdateManifest(
-      const web_package::SignedWebBundleId& web_bundle_id);
-
   test::BundleVersionsStorage storage_;
 
   const raw_ref<network::TestURLLoaderFactory> factory_;

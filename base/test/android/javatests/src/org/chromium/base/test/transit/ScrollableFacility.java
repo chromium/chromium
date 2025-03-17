@@ -470,4 +470,14 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
             return mViewElement.get();
         }
     }
+
+    /** Scroll to each declared item and check they are there with the expected enabled state. */
+    public void verifyPresentItems() {
+        for (ScrollableFacility<?>.Item<?> item : getItems()) {
+            if (item.getPresence() == Presence.PRESENT_AND_ENABLED
+                    || item.getPresence() == Presence.PRESENT_AND_DISABLED) {
+                item.scrollTo();
+            }
+        }
+    }
 }

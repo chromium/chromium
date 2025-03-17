@@ -31,7 +31,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
     };
   }
 
-  function runTestSuiteInWorker() {
+  async function runTestSuiteInWorker() {
     var testSuite = [
       function heapSnapshotNodeSimpleTest() {
         var snapshot = HeapProfilerTestRunner.createJSHeapSnapshotMockObject();
@@ -160,7 +160,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
             JSON.stringify(expectedRetainedSizes), JSON.stringify(actualRetainedSizes), 'Retained sizes');
       },
 
-      function heapSnapshotLargeRetainedSize(next) {
+      function heapSnapshotLargeRetainedSize() {
         var builder = new HeapProfilerTestRunner.HeapSnapshotBuilder();
         var node = builder.rootNode;
 
@@ -196,7 +196,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
           TestRunner.assertEquals(expectedDominatedNodeIndex[i], actualDominatedNodeIndex[i], 'Dominated Nodes Index');
       },
 
-      function heapSnapshotPageOwnedTest(next) {
+      function heapSnapshotPageOwnedTest() {
         var builder = new HeapProfilerTestRunner.HeapSnapshotBuilder();
         var rootNode = builder.rootNode;
 
@@ -345,8 +345,8 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
         for (var i = 0, l = sourceStringified.length; i < l; i += partSize)
           loader.write(sourceStringified.slice(i, i + partSize));
         loader.close();
-        await 0;  // Make sure loader parses the input.
-        var result = loader.buildSnapshot(false);
+        await loader.parsingComplete;
+        var result = loader.buildSnapshot();
         result.nodes = new Uint32Array(result.nodes);
         result.containmentEdges = new Uint32Array(result.containmentEdges);
         function assertSnapshotEquals(reference, actual) {
@@ -365,9 +365,9 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
       result.push('');
       result.push('Running: ' + test.name);
       try {
-        test();
+        await test();
       } catch (e) {
-        result.push('FAIL: ' + e);
+        result.push('FAIL: ' + e + '\n' + e.stack);
       }
     }
     return result.join('\n');

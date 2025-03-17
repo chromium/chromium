@@ -6,22 +6,24 @@ package org.chromium.chrome.browser.feedback;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Map;
 
 /** Grabs feedback about the current URL. */
+@NullMarked
 class UrlFeedbackSource implements FeedbackSource {
     private static final String URL_KEY = "URL";
 
-    private final String mUrl;
+    private final @Nullable String mUrl;
 
     UrlFeedbackSource(@Nullable String url) {
         mUrl = url;
     }
 
     @Override
-    public Map<String, String> getFeedback() {
+    public @Nullable Map<String, String> getFeedback() {
         if (TextUtils.isEmpty(mUrl)) return null;
         return Map.of(URL_KEY, mUrl);
     }

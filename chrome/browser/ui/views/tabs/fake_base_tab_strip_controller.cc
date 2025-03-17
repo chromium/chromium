@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -28,13 +27,15 @@ void FakeBaseTabStripController::AddTab(int index,
   num_tabs_++;
   tab_groups_.insert(tab_groups_.begin() + index, std::nullopt);
 
+  std::vector<std::pair<int, TabRendererData>> data_list;
   TabRendererData data;
   if (is_pinned == TabPinned::kPinned) {
     num_pinned_tabs_++;
     data.pinned = true;
   }
+  data_list.emplace_back(index, std::move(data));
   if (tab_strip_) {
-    tab_strip_->AddTabAt(index, std::move(data));
+    tab_strip_->AddTabsAt(std::move(data_list));
   }
   if (is_active == TabActive::kActive) {
     SetActiveIndex(index);
@@ -234,6 +235,9 @@ void FakeBaseTabStripController::SelectTab(int index, const ui::Event& event) {
   SetActiveIndex(index);
 }
 
+void FakeBaseTabStripController::RecordMetricsOnTabSelectionChange(
+    std::optional<tab_groups::TabGroupId> group) {}
+
 void FakeBaseTabStripController::ExtendSelectionTo(int index) {}
 
 void FakeBaseTabStripController::ToggleSelected(int index) {}
@@ -243,8 +247,8 @@ void FakeBaseTabStripController::AddSelectionFromAnchorTo(int index) {}
 void FakeBaseTabStripController::OnCloseTab(
     int index,
     CloseTabSource source,
-    base::OnceCallback<void()> callback) {
-  std::move(callback).Run();
+    base::OnceCallback<void(CloseTabSource)> callback) {
+  std::move(callback).Run(source);
 }
 
 void FakeBaseTabStripController::ToggleTabAudioMute(int index) {}
@@ -324,6 +328,15 @@ FakeBaseTabStripController::GetBrowserWindowInterface() {
 }
 
 const Browser* FakeBaseTabStripController::GetBrowser() const {
+  return nullptr;
+}
+
+bool FakeBaseTabStripController::CanShowModalUI() const {
+  return false;
+}
+
+std::unique_ptr<ScopedTabStripModalUI>
+FakeBaseTabStripController::ShowModalUI() {
   return nullptr;
 }
 

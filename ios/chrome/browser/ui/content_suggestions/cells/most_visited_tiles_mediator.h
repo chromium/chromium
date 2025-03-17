@@ -9,9 +9,8 @@
 
 #include <memory>
 
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
-
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
 
 namespace favicon {
 class LargeIconService;
@@ -22,6 +21,7 @@ class MostVisitedSites;
 }
 
 @class BrowserActionFactory;
+class ChromeAccountManagerService;
 @protocol ContentSuggestionsConsumer;
 @protocol ContentSuggestionsDelegate;
 enum class ContentSuggestionsModuleType;
@@ -95,6 +95,7 @@ class UrlLoadingBrowserAgent;
            largeIconService:(favicon::LargeIconService*)largeIconService
              largeIconCache:(LargeIconCache*)largeIconCache
      URLLoadingBrowserAgent:(UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
+      accountManagerService:(ChromeAccountManagerService*)accountManagerService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -103,6 +104,9 @@ class UrlLoadingBrowserAgent;
 
 // Trigger a refresh of the Most Visited tiles.
 - (void)refreshMostVisitedTiles;
+
+// Disable the most visited sites module.
+- (void)disableModule;
 
 @end
 

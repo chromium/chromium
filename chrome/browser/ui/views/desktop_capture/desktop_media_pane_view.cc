@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_pane_view.h"
 
+#include <string_view>
+
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
@@ -47,7 +49,7 @@ void DesktopMediaPaneView::SetAudioSharingApprovedByUser(bool is_on) {
   content_pane_view_->SetAudioSharingApprovedByUser(is_on);
 }
 
-std::u16string DesktopMediaPaneView::GetAudioLabelText() const {
+std::u16string_view DesktopMediaPaneView::GetAudioLabelText() const {
   return content_pane_view_->GetAudioLabelText();
 }
 

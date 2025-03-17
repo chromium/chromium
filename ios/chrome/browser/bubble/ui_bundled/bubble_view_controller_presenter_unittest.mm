@@ -25,7 +25,6 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
       : bubble_view_controller_presenter_([[BubbleViewControllerPresenter alloc]
                  initWithText:@"Text"
                         title:@"Title"
-                        image:[[UIImage alloc] init]
                arrowDirection:BubbleArrowDirectionUp
                     alignment:BubbleAlignmentCenter
                    bubbleType:BubbleViewTypeRichWithSnooze
@@ -226,7 +225,6 @@ TEST_F(BubbleViewControllerPresenterTest,
       [[BubbleViewControllerPresenter alloc]
                initWithText:@"Text"
                       title:@"Title"
-                      image:[[UIImage alloc] init]
              arrowDirection:BubbleArrowDirectionUp
                   alignment:BubbleAlignmentCenter
                  bubbleType:BubbleViewTypeWithClose

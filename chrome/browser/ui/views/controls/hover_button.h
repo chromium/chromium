@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -22,6 +23,10 @@ namespace media_router {
 FORWARD_DECLARE_TEST(CastDialogSinkButtonTest, SetTitleLabel);
 FORWARD_DECLARE_TEST(CastDialogSinkButtonTest, SetStatusLabel);
 }  // namespace media_router
+
+namespace webid {
+class AccountSelectionViewTestBase;
+}
 
 namespace ui {
 class ImageModel;
@@ -64,13 +69,17 @@ class HoverButton : public views::LabelButton {
   // the label wrapper. Warning: |icon_view| must have a fixed size and be
   // correctly set during its constructor for the HoverButton to layout
   // correctly.
-  HoverButton(PressedCallback callback,
-              std::unique_ptr<views::View> icon_view,
-              const std::u16string& title,
-              const std::u16string& subtitle = std::u16string(),
-              std::unique_ptr<views::View> secondary_view = nullptr,
-              bool add_vertical_label_spacing = true,
-              const std::u16string& footer = std::u16string());
+  HoverButton(
+      PressedCallback callback,
+      std::unique_ptr<views::View> icon_view,
+      const std::u16string& title,
+      const std::u16string& subtitle = std::u16string(),
+      std::unique_ptr<views::View> secondary_view = nullptr,
+      bool add_vertical_label_spacing = true,
+      const std::u16string& footer = std::u16string(),
+      int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_LABEL_HORIZONTAL),
+      bool multiline_subtitle = false);
 
   HoverButton(const HoverButton&) = delete;
   HoverButton& operator=(const HoverButton&) = delete;
@@ -124,7 +133,7 @@ class HoverButton : public views::LabelButton {
                            SetTitleLabel);
   FRIEND_TEST_ALL_PREFIXES(media_router::CastDialogSinkButtonTest,
                            SetStatusLabel);
-  friend class AccountSelectionViewTestBase;
+  friend class webid::AccountSelectionViewTestBase;
   friend class HoverButtonTest;
   friend class PageInfoBubbleViewBrowserTest;
 

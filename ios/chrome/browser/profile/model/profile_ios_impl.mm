@@ -127,6 +127,14 @@ base::Uuid GetStorageUUID(const std::string& name,
 
 }  // namespace
 
+// Struct storing informations that is needed for prefs initialisation.
+struct ProfileIOSImpl::InitInfo {
+  CreationMode creation_mode;
+  bool is_new_profile;
+  base::FilePath cache_path;
+  scoped_refptr<SupervisedUserPrefStore> supervised_user_prefs;
+};
+
 // Helper class to create the Profile's directory.
 //
 // This is a separate class to limit how much code can be allowed to block
@@ -285,43 +293,14 @@ ProfileIOSImpl::ProfileIOSImpl(
       policy_connector_ ? policy_connector_->GetPolicyService() : nullptr,
       GetApplicationContext()->GetBrowserPolicyConnector(),
       supervised_user_prefs, creation_mode == CreationMode::kAsynchronous);
-  // Register on Profile.
-  user_prefs::UserPrefs::Set(this, prefs_.get());
-
-  // In //chrome/browser, SupervisedUserSettingsService is a SimpleKeyedService
-  // and can be created to initialize SupervisedUserPrefStore.
-  // In //ios/chrome/browser, SupervisedUserSettingsService is a
-  // BrowserStateKeyedService and is only available after the creation of
-  // SupervisedUserPrefStore.
-  supervised_user::SupervisedUserSettingsService* supervised_user_settings =
-      SupervisedUserSettingsServiceFactory::GetForProfile(this);
-
-  // Initialize the settings service and have the pref store subscribe to it.
-  supervised_user_settings->Init(state_path, GetIOTaskRunner(),
-                                 creation_mode == CreationMode::kSynchronous);
-
-  supervised_user_prefs->Init(supervised_user_settings);
-
-  auto supervised_provider =
-      std::make_unique<supervised_user::SupervisedUserContentSettingsProvider>(
-          supervised_user_settings);
-
-  ios::HostContentSettingsMapFactory::GetForProfile(this)->RegisterProvider(
-      content_settings::ProviderType::kSupervisedProvider,
-      std::move(supervised_provider));
-
-  base::FilePath cookie_path = state_path.Append(kIOSChromeCookieFilename);
-  base::FilePath cache_path = directories_creation_result.cache_path;
-  int cache_max_size = 0;
-
-  // Make sure we initialize the io_data_ after everything else has been
-  // initialized that we might be reading from the IO thread.
-  io_data_->Init(cookie_path, cache_path, cache_max_size, state_path);
 
   const InitInfo init_info{
       .creation_mode = creation_mode,
       .is_new_profile = directories_creation_result.created,
+      .cache_path = directories_creation_result.cache_path,
+      .supervised_user_prefs = supervised_user_prefs,
   };
+
   if (init_info.creation_mode == CreationMode::kAsynchronous) {
     // It is safe to use base::Unretained(...) here since `this` owns the
     // PrefService and the callback will not be invoked after destruction
@@ -439,12 +418,57 @@ void ProfileIOSImpl::PrefsInitStage1(InitInfo init_info, bool success) {
     return;
   }
 
+  // Register on Profile.
+  user_prefs::UserPrefs::Set(this, prefs_.get());
+
+  // The HostContentSettingsMap constructor expects the prefs to have
+  // already been loaded from disk before it is instantiated. One the
+  // other hand, the SupervisedUserPrefStore is needed as part of the
+  // PrefService creation (thus before the prefs are loaded from disk)
+  // and must be registered with the HostContentSettingsMap.
+  //
+  // When loading the pref synchronously, the read happens as part of
+  // the CreateProfilePrefs(...) function call, but when loading them
+  // asynchronously, it happened on a background thread. This caused
+  // the HostContentSettingsMap to be created before the data was read
+  // from disk, and resulted in invalid values.
+  //
+  // To ensure that the construction of the objects happens in the
+  // same relative order compared to reading the data from disk when
+  // for both synchronous and asynchronous initialisation, move all
+  // the logic for initialising SupervisedUserPrefStore in the method
+  // invoked when the data has been read from disk (PrefsInitStage1).
+
+  // Initialize the settings service and have the pref store subscribe to it.
+  supervised_user::SupervisedUserSettingsService* supervised_user_settings =
+      SupervisedUserSettingsServiceFactory::GetForProfile(this);
+
+  const base::FilePath& state_path = GetStatePath();
+  supervised_user_settings->Init(
+      state_path, GetIOTaskRunner(),
+      init_info.creation_mode == CreationMode::kSynchronous);
+
+  init_info.supervised_user_prefs->Init(supervised_user_settings);
+
+  auto supervised_provider =
+      std::make_unique<supervised_user::SupervisedUserContentSettingsProvider>(
+          supervised_user_settings);
+
+  ios::HostContentSettingsMapFactory::GetForProfile(this)->RegisterProvider(
+      content_settings::ProviderType::kSupervisedProvider,
+      std::move(supervised_provider));
+
+  const int cache_max_size = 0;
+  base::FilePath cookie_path = state_path.Append(kIOSChromeCookieFilename);
+
+  // Make sure we initialize the io_data_ after everything else has been
+  // initialized that we might be reading from the IO thread.
+  io_data_->Init(cookie_path, init_info.cache_path, cache_max_size, state_path);
+
   // If the initialisation is asynchronous, then we also need to wait for
   // the SupervisedUserSettingsService to complete its initialisation, if
   // is not yet complete.
   if (init_info.creation_mode == CreationMode::kAsynchronous) {
-    supervised_user::SupervisedUserSettingsService* supervised_user_settings =
-        SupervisedUserSettingsServiceFactory::GetForProfile(this);
     if (!supervised_user_settings->IsReady()) {
       // It is safe to use base::Unretained(...) here since `this` owns the
       // SupervisedUserSettingsService and the callback will not be invoked

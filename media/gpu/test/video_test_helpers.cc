@@ -23,7 +23,9 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/stl_util.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame_layout.h"
@@ -38,8 +40,8 @@
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-namespace media {
-namespace test {
+namespace media::test {
+
 namespace {
 constexpr uint16_t kIvfFileHeaderSize = 32;
 constexpr size_t kIvfFrameHeaderSize = 12;
@@ -68,7 +70,8 @@ uint32_t GetReadFrameIndex(uint32_t frame_index,
   frame_index -= num_frames;
   return num_frames - 2 - frame_index;
 }
-}  // namespace
+
+}  // anonymous namespace
 
 IvfFileHeader GetIvfFileHeader(base::span<const uint8_t> data) {
   LOG_ASSERT(data.size_bytes() == 32u);
@@ -607,7 +610,8 @@ AlignedDataHelper::AlignedDataHelper(const RawVideo* video,
       visible_rect_(video_->VisibleRect()),
       natural_size_(natural_size),
       time_stamp_interval_(base::Seconds(/*secs=*/0u)),
-      elapsed_frame_time_(base::Seconds(/*secs=*/0u)) {
+      elapsed_frame_time_(base::Seconds(/*secs=*/0u)),
+      test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
   // If the frame_rate is passed in, then use that timing information
   // to generate timestamps that increment according the frame_rate.
   // Otherwise timestamps will be generated when GetNextFrame() is called
@@ -631,8 +635,9 @@ AlignedDataHelper::AlignedDataHelper(const RawVideo* video,
 
   video_frame_data_.resize(num_frames_);
   for (size_t i = 0; i < num_frames_; i++) {
-    video_frame_data_[i] = CreateVideoFrameData(
-        storage_type_, video->GetFrame(i), video_->FrameLayout(), *layout_);
+    video_frame_data_[i] =
+        CreateVideoFrameData(storage_type_, video->GetFrame(i),
+                             video_->FrameLayout(), *layout_, test_sii_.get());
   }
 
   LOG_ASSERT(video_frame_data_.size() == num_frames_)
@@ -676,8 +681,9 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
       GetReadFrameIndex(frame_index_++, reverse_, num_frames_);
   if (create_frame_mode_ == CreateFrameMode::kOnDemand) {
     auto frame_data = video_->GetFrame(read_frame_index);
-    VideoFrameData video_frame_data = CreateVideoFrameData(
-        storage_type_, frame_data, video_->FrameLayout(), *layout_);
+    VideoFrameData video_frame_data =
+        CreateVideoFrameData(storage_type_, frame_data, video_->FrameLayout(),
+                             *layout_, test_sii_.get());
     return CreateVideoFrameFromVideoFrameData(video_frame_data,
                                               frame_timestamp);
   } else {
@@ -704,21 +710,22 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
       return nullptr;
     }
 
-    // Create GpuMemoryBuffer from GpuMemoryBufferHandle.
-    gpu::GpuMemoryBufferSupport support;
-    auto gpu_memory_buffer = support.CreateGpuMemoryBufferImplFromHandle(
-        std::move(dup_handle), layout_->coded_size(), *buffer_format,
+    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    auto shared_image = test_sii_->CreateSharedImage(
+        {viz::GetSharedImageFormat(*buffer_format), layout_->coded_size(),
+         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
+         "AlignedDataHelper"},
+        gpu::kNullSurfaceHandle,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-        base::DoNothing());
-    if (!gpu_memory_buffer) {
-      LOG(ERROR) << "Failed to create GpuMemoryBuffer from "
-                 << "GpuMemoryBufferHandle";
+        std::move(dup_handle));
+    if (!shared_image) {
+      LOG(ERROR) << "Failed to create a mappable shared image.";
       return nullptr;
     }
-
-    return media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        visible_rect_, natural_size_, std::move(gpu_memory_buffer),
-        frame_timestamp);
+    return media::VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+        base::NullCallback(), visible_rect_, natural_size_, frame_timestamp);
   } else {
     const auto& shmem_region = video_frame_data.shmem_region;
     auto dup_region = shmem_region.Duplicate();
@@ -746,7 +753,8 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
     VideoFrame::StorageType storage_type,
     const RawVideo::FrameData& src_frame,
     const VideoFrameLayout& src_layout,
-    const VideoFrameLayout& dst_layout) {
+    const VideoFrameLayout& dst_layout,
+    gpu::TestSharedImageInterface* test_sii) {
   LOG_ASSERT(gfx::Rect(dst_layout.coded_size())
                  .Contains(gfx::Rect(src_layout.coded_size())))
       << "The destination buffer resolution must not be smaller than the "
@@ -768,9 +776,10 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
           VideoFrame::Rows(i, pixel_format, resolution.height()));
     }
     // Create GpuMemoryBuffer VideoFrame from the on-memory VideoFrame.
-    auto frame = CloneVideoFrame(
-        memory_frame.get(), dst_layout, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+    auto frame =
+        CloneVideoFrame(memory_frame.get(), dst_layout, test_sii,
+                        VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+                        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     LOG_ASSERT(!!frame) << "Failed creating GpuMemoryBuffer VideoFrame";
 
     auto gmb_handle = CreateGpuMemoryBufferHandle(frame.get());
@@ -830,5 +839,4 @@ scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) const {
   return video_frame;
 }
 
-}  // namespace test
-}  // namespace media
+}  // namespace media::test

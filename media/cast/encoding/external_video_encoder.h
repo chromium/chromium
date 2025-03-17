@@ -42,7 +42,6 @@ class ExternalVideoEncoder final : public VideoEncoder {
       const gfx::Size& frame_size,
       FrameId first_frame_id,
       StatusChangeCallback status_change_cb,
-      FrameEncodedCallback output_cb,
       const CreateVideoEncodeAcceleratorCallback& create_vea_cb);
 
   ExternalVideoEncoder(const ExternalVideoEncoder&) = delete;
@@ -52,7 +51,8 @@ class ExternalVideoEncoder final : public VideoEncoder {
 
   // VideoEncoder implementation.
   bool EncodeVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
-                        base::TimeTicks reference_time) final;
+                        base::TimeTicks reference_time,
+                        FrameEncodedCallback frame_encoded_callback) final;
   void SetBitRate(int new_bit_rate) final;
   void GenerateKeyFrame() final;
 
@@ -79,8 +79,6 @@ class ExternalVideoEncoder final : public VideoEncoder {
 
   raw_ref<VideoEncoderMetricsProvider> metrics_provider_;
 
-  FrameEncodedCallback output_cb_;
-
   // The size of the visible region of the video frames to be encoded.
   const gfx::Size frame_size_;
 
@@ -104,7 +102,6 @@ class SizeAdaptableExternalVideoEncoder final
       const FrameSenderConfig& video_config,
       std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
       StatusChangeCallback status_change_cb,
-      FrameEncodedCallback output_cb,
       const CreateVideoEncodeAcceleratorCallback& create_vea_cb);
 
   SizeAdaptableExternalVideoEncoder(const SizeAdaptableExternalVideoEncoder&) =
@@ -128,7 +125,6 @@ class SizeAdaptableExternalVideoEncoder final
 // value is related to the complexity of the content of the frame.
 class QuantizerEstimator {
  public:
-  static constexpr int NO_RESULT = -1;
   static constexpr int MIN_VPX_QUANTIZER = 4;
   static constexpr int MAX_VPX_QUANTIZER = 63;
 
@@ -145,9 +141,9 @@ class QuantizerEstimator {
   // Examine |frame| and estimate and return the quantizer value the software
   // VP8 encoder would have used when encoding the frame, in the range
   // [4.0,63.0].  If |frame| is not in planar YUV format, or its size is empty,
-  // this returns |NO_RESULT|.
-  double EstimateForKeyFrame(const VideoFrame& frame);
-  double EstimateForDeltaFrame(const VideoFrame& frame);
+  // this returns std::nullopt.
+  std::optional<double> EstimateForKeyFrame(const VideoFrame& frame);
+  std::optional<double> EstimateForDeltaFrame(const VideoFrame& frame);
 
  private:
   // Returns true if the frame is in planar YUV format.

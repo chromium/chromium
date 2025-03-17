@@ -44,7 +44,7 @@ class CORE_EXPORT HTMLBRElement final : public HTMLElement {
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 };

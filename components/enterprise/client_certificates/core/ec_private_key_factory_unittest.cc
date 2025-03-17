@@ -8,8 +8,10 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/ec_private_key.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
+#include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/scoped_ssl_key_converter.h"
 #include "crypto/ec_private_key.h"
 #include "net/ssl/ssl_private_key.h"
@@ -18,15 +20,29 @@
 
 namespace client_certificates {
 
-TEST(ECPrivateKeyFactoryTest, CreatePrivateKey) {
+namespace {
+
+void ValidatePrivateKey(scoped_refptr<PrivateKey> key,
+                        scoped_refptr<PrivateKey> loaded_key) {
+  ASSERT_TRUE(loaded_key);
+  EXPECT_NE(key, loaded_key);
+  EXPECT_EQ(key->GetAlgorithm(), loaded_key->GetAlgorithm());
+  ASSERT_THAT(key->GetSubjectPublicKeyInfo(),
+              testing::ElementsAreArray(loaded_key->GetSubjectPublicKeyInfo()));
+  ASSERT_TRUE(key->GetSSLPrivateKey());
+}
+
+}  // namespace
+
+TEST(ECPrivateKeyFactoryTest, SupportedCreateKey_LoadKey) {
   base::test::TaskEnvironment task_environment;
   ScopedSSLKeyConverter scoped_converter;
   ECPrivateKeyFactory factory;
 
-  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
-  factory.CreatePrivateKey(test_future.GetCallback());
+  base::test::TestFuture<scoped_refptr<PrivateKey>> create_key_future;
+  factory.CreatePrivateKey(create_key_future.GetCallback());
 
-  auto ec_private_key = test_future.Get();
+  auto ec_private_key = create_key_future.Get();
 
   ASSERT_TRUE(ec_private_key);
   EXPECT_EQ(ec_private_key->GetAlgorithm(),
@@ -39,18 +55,33 @@ TEST(ECPrivateKeyFactoryTest, CreatePrivateKey) {
   ASSERT_TRUE(signature.has_value());
   EXPECT_GT(signature->size(), 0U);
 
-  base::test::TestFuture<scoped_refptr<PrivateKey>> other_test_future;
+  base::test::TestFuture<scoped_refptr<PrivateKey>> load_key_future;
   auto proto_key = ec_private_key->ToProto();
-  factory.LoadPrivateKey(std::move(proto_key), other_test_future.GetCallback());
+  factory.LoadPrivateKey(std::move(proto_key), load_key_future.GetCallback());
+  ValidatePrivateKey(ec_private_key, load_key_future.Get());
+}
 
-  auto second_private_key = other_test_future.Get();
-  ASSERT_TRUE(second_private_key);
-  EXPECT_NE(ec_private_key, second_private_key);
-  EXPECT_EQ(ec_private_key->GetAlgorithm(), second_private_key->GetAlgorithm());
-  ASSERT_THAT(
-      ec_private_key->GetSubjectPublicKeyInfo(),
-      testing::ElementsAreArray(second_private_key->GetSubjectPublicKeyInfo()));
-  ASSERT_TRUE(ec_private_key->GetSSLPrivateKey());
+TEST(ECPrivateKeyFactoryTest, SupportedCreateKey_LoadKeyFromDict) {
+  base::test::TaskEnvironment task_environment;
+  ScopedSSLKeyConverter scoped_converter;
+  ECPrivateKeyFactory factory;
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> create_key_future;
+  factory.CreatePrivateKey(create_key_future.GetCallback());
+  auto ec_private_key = create_key_future.Get();
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> load_key_future;
+  auto dict_key = ec_private_key->ToDict();
+  factory.LoadPrivateKeyFromDict(dict_key, load_key_future.GetCallback());
+  ValidatePrivateKey(ec_private_key, load_key_future.Get());
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>>
+      load_key_fails_future_invalid_key;
+  dict_key.Set(kKey, "");
+  dict_key.Set(kKeySource, static_cast<int>(PrivateKeySource::kSoftwareKey));
+  factory.LoadPrivateKeyFromDict(
+      dict_key, load_key_fails_future_invalid_key.GetCallback());
+  EXPECT_FALSE(load_key_fails_future_invalid_key.Get());
 }
 
 }  // namespace client_certificates

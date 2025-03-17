@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 242 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 234 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["insertunorderedlist",""]] "foo[]bar" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "foo[]bar" queryCommandValue("insertunorderedlist") after
@@ -180,14 +180,10 @@ Found 242 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><ol><li>[foo]</ol></ol>" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["insertunorderedlist",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<br>bar</li></ul><ol><li>baz</li></ol>" but got "<ul><li>foo</li></ul>bar<br><ol><li>baz</li></ol>"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["insertunorderedlist",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<br>bar</li></ul><ol><li>baz</li></ol>" but got "foo<br><ul><li>bar</li></ul><ol><li>baz</li></ol>"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" queryCommandValue("insertunorderedlist") after
@@ -218,22 +214,18 @@ Found 242 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "<ul><li>foo</li></ul><ol><li>bar</li></ol><ol><li>baz</li></ol>"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandValue("insertunorderedlist") after
-  assert_equals: Wrong result returned expected "" but got "true"
+  assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><ul><li>bar</li></ul><ol><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo</li></ol><ul><li>bar</li></ul><ol><li>baz</li></ol><ol><li>quz</li></ol>"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") after
-  assert_equals: Wrong result returned expected "" but got "true"
+  assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") after
@@ -250,12 +242,10 @@ Found 242 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><ol><li>baz</li></ol>" but got "<ul><li>foo</li><li>bar</li></ul><ol><li>baz</li></ol>"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" queryCommandValue("insertunorderedlist") after
-  assert_equals: Wrong result returned expected "" but got "true"
+  assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><ul><ul><li>bar</li></ul><li>baz</li></ul>" but got "<ol><li>foo<ul><li>bar</li></ul></li></ol><ul><li>baz</li></ul>"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandValue("insertunorderedlist") before
@@ -270,30 +260,24 @@ Found 242 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "<ul><li>foo</li></ul><ol><li>bar</li></ol>baz"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandValue("insertunorderedlist") after
-  assert_equals: Wrong result returned expected "" but got "true"
+  assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ul><li>bar</li></ul><li>baz</li></ol>" but got "<ol><li>foo<ul><li>bar</li></ul>baz</li></ol>"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol></ol><ul><li>baz</li></ul>" but got "foo<ol><li>bar</li></ol><ul><li>baz</li></ul>"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandValue("insertunorderedlist") after
-  assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><ol><li>baz</li></ol>" but got "<ul><li>foo</li><li>bar</li></ul>baz"
+  assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandValue("insertunorderedlist") after
-  assert_equals: Wrong result returned expected "" but got "true"
+  assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo<li>[bar]<li>baz</ul>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><div>bar</div><ul><li>baz</li></ul>" but got "<ul><li>foo</li></ul>bar<br><ul><li>baz</li></ul>"
 [FAIL] [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo<li>[bar]<li>baz</ul>" queryCommandValue("insertunorderedlist") before

@@ -12,6 +12,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -19,11 +21,12 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * Class handling the communication with the C++ part of the reauthentication based on device lock.
  * It forwards messages to and from its C++ counterpart and owns it.
  */
+@NullMarked
 public class ReauthenticatorBridge {
-    private static ReauthenticatorBridge sReauthenticatorBridgeForTesting;
+    private static @Nullable ReauthenticatorBridge sReauthenticatorBridgeForTesting;
 
     private long mNativeReauthenticatorBridge;
-    private Callback<Boolean> mAuthResultCallback;
+    private @Nullable Callback<Boolean> mAuthResultCallback;
 
     private ReauthenticatorBridge(
             Activity activity, Profile profile, @DeviceAuthSource int source) {
@@ -77,7 +80,7 @@ public class ReauthenticatorBridge {
     public static ReauthenticatorBridge create(
             Activity activity,
             Profile profile,
-            ModalDialogManager unused_modalDialogManager,
+            @Nullable ModalDialogManager unused_modalDialogManager,
             @DeviceAuthSource int source) {
         if (sReauthenticatorBridgeForTesting != null) {
             return sReauthenticatorBridgeForTesting;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -166,12 +167,12 @@ IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
 // the real detected text.
 IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
                        EmptyDetectedTextWhenOCRNotSupported) {
-  base::test::TestFuture<std::string> detected_text_future;
+  base::test::TestFuture<std::optional<std::string>> detected_text_future;
 
   ChromeCaptureModeDelegate::Get()->DetectTextInImage(
       SkBitmap(), detected_text_future.GetCallback());
 
-  EXPECT_EQ(detected_text_future.Get(), "");
+  EXPECT_EQ(detected_text_future.Get(), std::nullopt);
 }
 
 // Simulates successful text detection using a fake OCR backend.
@@ -193,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
       std::move(visual_annotation));
   delegate->set_optical_character_recognizer_for_testing(
       std::move(optical_character_recognizer));
-  base::test::TestFuture<std::string> detected_text_future;
+  base::test::TestFuture<std::optional<std::string>> detected_text_future;
 
   delegate->DetectTextInImage(SkBitmap(), detected_text_future.GetCallback());
 
@@ -206,11 +207,11 @@ IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
   delegate->set_optical_character_recognizer_for_testing(
       screen_ai::FakeOpticalCharacterRecognizer::Create(
           /*empty_ax_tree_update_result=*/false));
-  base::test::TestFuture<std::string> detected_text_future;
+  base::test::TestFuture<std::optional<std::string>> detected_text_future;
 
   // Close the session immediately after a text detection request.
   delegate->DetectTextInImage(SkBitmap(), detected_text_future.GetCallback());
   delegate->OnSessionStateChanged(/*started=*/false);
 
-  EXPECT_EQ(detected_text_future.Get(), "");
+  EXPECT_EQ(detected_text_future.Get(), std::nullopt);
 }

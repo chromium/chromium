@@ -24,6 +24,7 @@
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "components/permissions/test/mock_permission_ui_selector.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -33,32 +34,6 @@
 #include "url/gurl.h"
 
 namespace {
-
-// Test implementation of PermissionUiSelector that always returns a canned
-// decision.
-class TestQuietNotificationPermissionUiSelector
-    : public permissions::PermissionUiSelector {
- public:
-  explicit TestQuietNotificationPermissionUiSelector(
-      const Decision& canned_decision)
-      : canned_decision_(canned_decision) {}
-  ~TestQuietNotificationPermissionUiSelector() override = default;
-
- protected:
-  // permissions::PermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
-                     DecisionMadeCallback callback) override {
-    std::move(callback).Run(canned_decision_);
-  }
-
-  bool IsPermissionRequestSupported(
-      permissions::RequestType request_type) override {
-    return request_type == permissions::RequestType::kNotifications;
-  }
-
- private:
-  Decision canned_decision_;
-};
 
 class LocationBarViewQuietNotificationInteractiveUITest
     : public InteractiveFeaturePromoTest,
@@ -98,7 +73,7 @@ class LocationBarViewQuietNotificationInteractiveUITest
   }
 
   ContentSettingImageView* GetNotificationView() {
-    return *base::ranges::find(
+    return *std::ranges::find(
         *content_setting_views_,
         ContentSettingImageModel::ImageType::NOTIFICATIONS,
         &ContentSettingImageView::GetType);
@@ -125,7 +100,7 @@ class LocationBarViewQuietNotificationInteractiveUITest
 
   void SetCannedUiDecision() {
     test_api_->manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<TestQuietNotificationPermissionUiSelector>(
+        std::make_unique<MockPermissionUiSelector>(
             permissions::PermissionUiSelector::Decision(
                 permissions::PermissionUiSelector::QuietUiReason::
                     kEnabledInPrefs,

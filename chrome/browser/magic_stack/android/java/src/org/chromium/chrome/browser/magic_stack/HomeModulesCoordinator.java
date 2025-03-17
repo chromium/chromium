@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.magic_stack;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Point;
 import android.os.SystemClock;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -21,6 +20,7 @@ import androidx.recyclerview.widget.SnapHelper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry.OnViewCreatedCallback;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -93,9 +93,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         assert mModuleRegistry != null;
 
         mCallbackController = new CallbackController();
-        mHomeModulesContextMenuManager =
-                new HomeModulesContextMenuManager(
-                        this, moduleDelegateHost.getContextMenuStartPoint());
+        mHomeModulesContextMenuManager = new HomeModulesContextMenuManager(this);
         mProfileSupplier = profileSupplier;
 
         mModel = new ModelList();
@@ -283,14 +281,27 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         // Updates the enabled module list.
         mMediator.onModuleConfigChanged(moduleType, isEnabled);
 
-        // The single tab module and the tab resumption modules are controlled by the same
-        // preference key. Once it is turned on or off, both modules will be enabled or disabled.
         if (!isEnabled) {
             removeModule(moduleType);
+
+            // The single tab module and the tab resumption modules are controlled by the same
+            // preference key. Once it is turned on or off, both modules will be enabled or
+            // disabled.
             if (moduleType == ModuleType.SINGLE_TAB) {
                 removeModule(ModuleType.TAB_RESUMPTION);
             } else if (moduleType == ModuleType.TAB_RESUMPTION) {
                 removeModule(ModuleType.SINGLE_TAB);
+            }
+
+            // All the educational tip modules are controlled by the same preference key. Once it is
+            // turned on or off, all educational tip modules will be enabled or disabled.
+            if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+                for (int educationalTipModuleType :
+                        HomeModulesUtils.getEducationalTipModuleList()) {
+                    if (educationalTipModuleType != moduleType) {
+                        removeModule(educationalTipModuleType);
+                    }
+                }
             }
         }
     }
@@ -392,16 +403,21 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                         .getDimensionPixelSize(
                                 org.chromium.chrome.browser.magic_stack.R.dimen.home_module_height);
         group.setLayoutParams(layoutParams);
+        // Handle long clicks.
         group.setOnLongClickListener(
                 view -> {
-                    Point offset = mHomeModulesContextMenuManager.getContextMenuOffset();
-                    return view.showContextMenu(offset.x, offset.y);
+                    mHomeModulesContextMenuManager.displayMenu(view, moduleProvider);
+                    return true;
                 });
+
+        // Handle long clicks on descendants views (e.g., TabResumptionTileView) that got
+        // setOnClicksListener(). These views require setOnLongClickListener(v -> false) to ensure
+        // the event is captured here.
         group.setOnCreateContextMenuListener(
                 (contextMenu, view, contextMenuInfo) -> {
-                    mHomeModulesContextMenuManager.createContextMenu(
-                            contextMenu, view, moduleProvider);
+                    mHomeModulesContextMenuManager.displayMenu(view, moduleProvider);
                 });
+
         moduleProvider.onViewCreated();
         int position = mMediator.findModuleIndexInRecyclerView(moduleType, mAdapter.getItemCount());
         HomeModulesMetricsUtils.recordModuleShown(
@@ -473,5 +489,11 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
     public void setModelForTesting(ModelList model) {
         mModel = model;
+    }
+
+    void setHomeModulesContextMenuManagerForTesting(HomeModulesContextMenuManager manager) {
+        HomeModulesContextMenuManager oldManager = mHomeModulesContextMenuManager;
+        mHomeModulesContextMenuManager = manager;
+        ResettersForTesting.register(() -> mHomeModulesContextMenuManager = oldManager);
     }
 }

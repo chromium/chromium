@@ -862,8 +862,8 @@ TEST_F(EasySelectorCheckerTest, IsEasy) {
   EXPECT_FALSE(IsEasy("a:link"));
   EXPECT_FALSE(IsEasy("::before"));
   EXPECT_FALSE(IsEasy("div::before"));
-  EXPECT_FALSE(IsEasy("* .a"));  // Due to the universal selector.
-  EXPECT_TRUE(IsEasy(".a *"));   // Due to bucketing.
+  EXPECT_TRUE(IsEasy("* .a"));
+  EXPECT_TRUE(IsEasy(".a *"));
   EXPECT_TRUE(IsEasy("[attr]"));
   EXPECT_TRUE(IsEasy("[attr=\"foo\"]"));
   EXPECT_TRUE(IsEasy("[attr=\"foo\" i]"));

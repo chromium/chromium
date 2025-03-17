@@ -20,6 +20,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -27,6 +28,7 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
+#include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
@@ -4695,10 +4697,18 @@ void GLES2Implementation::WritePixelsYUVINTERNAL(
   // pixels_offset_plane4: stores source pixels for plane 4
 
   const int kMaxPlanes = 4;
-  GLuint src_sizes[kMaxPlanes] = {src_size_plane1, src_size_plane2,
-                                  src_size_plane3, src_size_plane4};
-  const void* src_pixels[kMaxPlanes] = {src_pixels_plane1, src_pixels_plane2,
-                                        src_pixels_plane3, src_pixels_plane4};
+  std::array<GLuint, kMaxPlanes> src_sizes = {
+      src_size_plane1,
+      src_size_plane2,
+      src_size_plane3,
+      src_size_plane4,
+  };
+  std::array<const void*, kMaxPlanes> src_pixels = {
+      src_pixels_plane1,
+      src_pixels_plane2,
+      src_pixels_plane3,
+      src_pixels_plane4,
+  };
 
   GLuint total_size =
       base::bits::AlignUp(sizeof(gpu::Mailbox), sizeof(uint64_t));
@@ -4728,7 +4738,7 @@ void GLES2Implementation::WritePixelsYUVINTERNAL(
   GLuint mailbox_offset = 0;
   memcpy(static_cast<uint8_t*>(address), mailbox, sizeof(gpu::Mailbox));
 
-  GLuint pixel_offsets[kMaxPlanes] = {};
+  std::array<GLuint, kMaxPlanes> pixel_offsets = {};
   // Calculate first plane offset based on mailbox.
   pixel_offsets[0] =
       mailbox_offset + static_cast<GLuint>(base::bits::AlignUp(
@@ -4840,7 +4850,12 @@ GLboolean GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
   if (!*readback_result) {
     return GL_FALSE;
   }
-  memcpy(pixels, static_cast<uint8_t*>(shm_address) + pixels_offset, dst_size);
+  // We need to use `RelaxedAtomicWriteMemcpy` because we might be writing into
+  // memory observed by JS at the same time.
+  auto dst = base::span(static_cast<uint8_t*>(pixels), dst_size);
+  auto src =
+      base::span(static_cast<uint8_t*>(shm_address) + pixels_offset, dst_size);
+  base::subtle::RelaxedAtomicWriteMemcpy(dst, src);
   return GL_TRUE;
 }
 
@@ -6213,15 +6228,13 @@ void GLES2Implementation::RequestExtensionCHROMIUM(const char* extension) {
     const char* extension;
     raw_ptr<ExtensionStatus> status;
   };
-  const ExtensionCheck checks[] = {
+  const auto checks = std::to_array<ExtensionCheck>({
       {
           "GL_CHROMIUM_framebuffer_multisample",
           &chromium_framebuffer_multisample_,
       },
-  };
-  const size_t kNumChecks = sizeof(checks) / sizeof(checks[0]);
-  for (size_t ii = 0; ii < kNumChecks; ++ii) {
-    const ExtensionCheck& check = checks[ii];
+  });
+  for (const ExtensionCheck& check : checks) {
     if (*check.status == kUnavailableExtensionStatus &&
         !strcmp(extension, check.extension)) {
       *check.status = kUnknownExtensionStatus;

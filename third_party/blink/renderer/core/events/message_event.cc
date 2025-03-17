@@ -38,9 +38,6 @@
 
 namespace blink {
 
-// extern
-const V8PrivateProperty::SymbolKey kPrivatePropertyMessageEventCachedData;
-
 static inline bool IsValidSource(EventTarget* source) {
   return !source || source->ToDOMWindow() || source->ToMessagePort() ||
          source->ToServiceWorker();
@@ -99,7 +96,7 @@ MessageEvent::MessageEvent(const AtomicString& type,
   if (initializer->hasSource() && IsValidSource(initializer->source()))
     source_ = initializer->source();
   if (initializer->hasPorts())
-    ports_ = MakeGarbageCollected<MessagePortArray>(initializer->ports());
+    ports_ = MakeGarbageCollected<GCedMessagePortArray>(initializer->ports());
   if (initializer->hasUserActivation())
     user_activation_ = initializer->userActivation();
   DCHECK(IsValidSource(source_.Get()));
@@ -108,7 +105,7 @@ MessageEvent::MessageEvent(const AtomicString& type,
 MessageEvent::MessageEvent(const String& origin,
                            const String& last_event_id,
                            EventTarget* source,
-                           MessagePortArray* ports)
+                           GCedMessagePortArray* ports)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeScriptValue),
       origin_(origin),
@@ -122,7 +119,7 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
                            const String& origin,
                            const String& last_event_id,
                            EventTarget* source,
-                           MessagePortArray* ports,
+                           GCedMessagePortArray* ports,
                            UserActivation* user_activation)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeSerializedScriptValue),
@@ -233,7 +230,7 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
   if (ports.empty()) {
     ports_ = nullptr;
   } else {
-    ports_ = MakeGarbageCollected<MessagePortArray>(std::move(ports));
+    ports_ = MakeGarbageCollected<GCedMessagePortArray>(std::move(ports));
   }
   is_ports_dirty_ = true;
 }
@@ -396,40 +393,6 @@ void MessageEvent::Trace(Visitor* visitor) const {
 
 void MessageEvent::LockToAgentCluster() {
   locked_to_agent_cluster_ = true;
-}
-
-v8::Local<v8::Object> MessageEvent::AssociateWithWrapper(
-    v8::Isolate* isolate,
-    const WrapperTypeInfo* wrapper_type,
-    v8::Local<v8::Object> wrapper) {
-  wrapper = Event::AssociateWithWrapper(isolate, wrapper_type, wrapper);
-
-  // Let V8 know the memory usage of the platform object, especially of |data|
-  // IDL attribute which could consume huge memory, so that V8 can best schedule
-  // GCs.
-  switch (data_type_) {
-    case kDataTypeNull:
-    // V8 is already aware of memory usage of ScriptValue.
-    case kDataTypeScriptValue:
-    case kDataTypeSerializedScriptValue:
-      break;
-    case kDataTypeString:
-      V8PrivateProperty::GetSymbol(isolate,
-                                   kPrivatePropertyMessageEventCachedData)
-          .Set(wrapper, V8String(isolate, data_as_string_));
-      break;
-    case kDataTypeBlob:
-      break;
-    case kDataTypeArrayBuffer:
-      V8PrivateProperty::GetSymbol(isolate,
-                                   kPrivatePropertyMessageEventCachedData)
-          .Set(wrapper, ToV8Traits<DOMArrayBuffer>::ToV8(
-                            ScriptState::ForRelevantRealm(isolate, wrapper),
-                            data_as_array_buffer_));
-      break;
-  }
-
-  return wrapper;
 }
 
 }  // namespace blink

@@ -21,12 +21,13 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -217,7 +218,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     // TODO(crbug.com/40172317): Remove this restriction.
-    if (!base::ranges::is_sorted(
+    if (!std::ranges::is_sorted(
             config.spatial_layers,
             [](const VideoEncodeAccelerator::Config::SpatialLayer& lhs,
                const VideoEncodeAccelerator::Config::SpatialLayer& rhs) {
@@ -645,11 +646,11 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
   // ordered from small to larger ones. It cannot contain duplicates.
   // TODO(crbug.com/40172317): Consider supporting multiple layers with the
   // same resolution.
-  CHECK(base::ranges::is_sorted(spatial_layer_resolutions,
-                                [](const gfx::Size& lhs, const gfx::Size& rhs) {
-                                  return lhs.width() < rhs.width() &&
-                                         lhs.height() < rhs.height();
-                                }));
+  CHECK(std::ranges::is_sorted(spatial_layer_resolutions,
+                               [](const gfx::Size& lhs, const gfx::Size& rhs) {
+                                 return lhs.width() < rhs.width() &&
+                                        lhs.height() < rhs.height();
+                               }));
 
   // Create input surfaces.
   TRACE_EVENT1("media,gpu", "VAVEA::ConstructSurfaces", "layers",
@@ -891,19 +892,19 @@ VaapiVideoEncodeAccelerator::CreateEncodeJob(
   scoped_refptr<CodecPicture> picture;
   switch (output_codec_) {
     case VideoCodec::kH264:
-      picture = new VaapiH264Picture(
+      picture = base::MakeRefCounted<VaapiH264Picture>(
           reconstructed_surface->ReleaseAsVASurfaceHandle());
       break;
     case VideoCodec::kVP8:
-      picture = new VaapiVP8Picture(
+      picture = base::MakeRefCounted<VaapiVP8Picture>(
           reconstructed_surface->ReleaseAsVASurfaceHandle());
       break;
     case VideoCodec::kVP9:
-      picture = new VaapiVP9Picture(
+      picture = base::MakeRefCounted<VaapiVP9Picture>(
           reconstructed_surface->ReleaseAsVASurfaceHandle());
       break;
     case VideoCodec::kAV1:
-      picture = new VaapiAV1Picture(
+      picture = base::MakeRefCounted<VaapiAV1Picture>(
           /*display_va_surface=*/nullptr,
           reconstructed_surface->ReleaseAsVASurfaceHandle());
       break;
@@ -1246,7 +1247,7 @@ bool VaapiVideoEncodeAccelerator::OnMemoryDump(
 
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
   dump->AddString("encoder native input mode", "",
-                  native_input_mode_ ? "true" : "false");
+                  base::ToString(native_input_mode_));
 
   constexpr double kNumBytesPerPixelYUV420 = 12.0 / 8;
 

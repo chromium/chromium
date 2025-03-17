@@ -6,20 +6,21 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -82,6 +83,7 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private TabListEditorController mTabListEditorController;
     @Mock private PriceWelcomeMessageReviewActionProvider mPriceWelcomeMessageReviewActionProvider;
     @Mock private PriceMessageService mPriceMessageService;
+    @Mock private PriceMessageService.PriceTabData mPriceTabData;
     @Mock private MessageUpdateObserver mMessageUpdateObserver;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private TabContentManager mTabContentManager;
@@ -120,7 +122,11 @@ public class TabSwitcherMessageManagerUnitTest {
         doNothing().when(mTabGroupModelFilter).addObserver(mTabModelObserverCaptor.capture());
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(mProfile).when(mTabModel).getProfile();
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
         mCurrentTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+
+        when(mPriceMessageService.preparePriceMessage(anyInt(), eq(mPriceTabData)))
+                .thenReturn(true);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityReady);
     }
@@ -167,7 +173,6 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBeforeReset() {
         mMessageManager.beforeReset();
         verify(mPriceMessageService).invalidateMessage();
@@ -175,7 +180,6 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAfterReset() {
         verify(mTabGroupModelFilter).addObserver(any());
 
@@ -191,7 +195,6 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void removeMessageItemsWhenCloseLastTab() {
         // Mock that mTab1 is not the only tab in the current tab model and it will be closed.
         doReturn(2).when(mTabModel).getCount();
@@ -213,7 +216,6 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void restoreMessageItemsWhenUndoLastTabClosure() {
         // Mock that mTab1 was not the only tab in the current tab model and its closure will be
         // undone.
@@ -228,7 +230,6 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void enterMultiWindowMode() {
         mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(true);
 
@@ -243,7 +244,6 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void exitMultiWindowMode() {
         mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(false);
 
@@ -251,7 +251,36 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
-    @SmallTest
+    public void showPriceWelcomeMessage_Unbound() {
+        mMessageManager.unbind(mTabListCoordinator);
+        mMessageManager.showPriceWelcomeMessage(mPriceTabData);
+
+        verify(mPriceWelcomeMessageReviewActionProvider, never()).scrollToTab(anyInt());
+        verify(mMessageUpdateObserver, never()).onShowPriceWelcomeMessage();
+    }
+
+    @Test
+    public void showPriceWelcomeMessage_FeatureDisabled() {
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false);
+
+        mMessageManager.showPriceWelcomeMessage(mPriceTabData);
+
+        verify(mPriceWelcomeMessageReviewActionProvider, never()).scrollToTab(anyInt());
+        verify(mMessageUpdateObserver, never()).onShowPriceWelcomeMessage();
+    }
+
+    @Test
+    public void showPriceWelcomeMessage() {
+        int index = 7;
+        when(mTabGroupModelFilter.index()).thenReturn(index);
+        mMessageManager.showPriceWelcomeMessage(mPriceTabData);
+
+        verify(mPriceWelcomeMessageReviewActionProvider).scrollToTab(index);
+        verify(mMessageUpdateObserver).onShowPriceWelcomeMessage();
+    }
+
+    @Test
     public void removePriceWelcomeMessageWhenCloseBindingTab() {
         doReturn(1).when(mTabModel).getCount();
         doReturn(TAB1_ID).when(mPriceMessageService).getBindingTabId();
@@ -270,7 +299,6 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void restorePriceWelcomeMessageWhenUndoBindingTabClosure() {
         doReturn(1).when(mTabModel).getCount();
         doReturn(TAB1_ID).when(mPriceMessageService).getBindingTabId();
@@ -285,7 +313,6 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void invalidatePriceWelcomeMessageWhenBindingTabClosureCommitted() {
         doReturn(TAB2_ID).when(mPriceMessageService).getBindingTabId();
         mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
@@ -297,7 +324,6 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void dismissHandlerSkipWhenUnbound() {
         @MessageService.MessageType
         int messageType = MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE;

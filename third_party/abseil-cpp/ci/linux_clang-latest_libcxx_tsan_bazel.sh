@@ -25,7 +25,7 @@ if [[ -z ${ABSEIL_ROOT:-} ]]; then
 fi
 
 if [[ -z ${STD:-} ]]; then
-  STD="c++14 c++17 c++20"
+  STD="c++17 c++20 c++23"
 fi
 
 if [[ -z ${COMPILATION_MODE:-} ]]; then
@@ -68,13 +68,13 @@ for std in ${STD}; do
         --workdir=/abseil-cpp \
         --cap-add=SYS_PTRACE \
         --rm \
-        -e CC="/opt/llvm/clang/bin/clang" \
-        -e BAZEL_CXXOPTS="-std=${std}:-nostdinc++" \
-        -e BAZEL_LINKOPTS="-L/opt/llvm/libcxx-tsan/lib:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm/libcxx-tsan/lib" \
-        -e CPLUS_INCLUDE_PATH="/opt/llvm/libcxx-tsan/include/c++/v1" \
         ${DOCKER_EXTRA_ARGS:-} \
         ${DOCKER_CONTAINER} \
         /usr/local/bin/bazel test ... \
+          --action_env="CC=/opt/llvm/clang/bin/clang" \
+          --action_env="BAZEL_CXXOPTS=-std=${std}:-nostdinc++" \
+          --action_env="BAZEL_LINKOPTS=-L/opt/llvm/libcxx-tsan/lib:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm/libcxx-tsan/lib" \
+          --action_env="CPLUS_INCLUDE_PATH=/opt/llvm/libcxx-tsan/include/c++/v1" \
           --build_tag_filters="-notsan" \
           --compilation_mode="${compilation_mode}" \
           --copt="${exceptions_mode}" \

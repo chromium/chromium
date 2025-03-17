@@ -303,4 +303,19 @@ TEST_F(WebNNGraphBuilderImplTest, CreateInvalidPendingConstantBadType) {
             kBadMessageInvalidPendingConstant);
 }
 
+TEST_F(WebNNGraphBuilderImplTest, CreateInvalidGraphForTensorByteLengthLimit) {
+  const std::vector<uint32_t> large_tensor_shape = {
+      base::checked_cast<uint32_t>(std::numeric_limits<int32_t>::max() / 4), 2};
+
+  GraphInfoBuilder builder(graph_builder_remote());
+  uint64_t input_operand_id = builder.BuildInput("input", large_tensor_shape,
+                                                 OperandDataType::kFloat32);
+  uint64_t output_operand_id = builder.BuildOutput("output", large_tensor_shape,
+                                                   OperandDataType::kFloat32);
+  builder.BuildClamp(input_operand_id, output_operand_id, /*min_value=*/0.0,
+                     /*max_value=*/1.0);
+  EXPECT_FALSE(
+      builder.IsValidGraphForTesting(GetContextPropertiesForTesting()));
+}
+
 }  // namespace webnn

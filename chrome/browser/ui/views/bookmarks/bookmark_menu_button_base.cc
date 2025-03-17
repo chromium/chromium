@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_button_base.h"
 
 #include <memory>
+#include <string_view>
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_button_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -14,7 +15,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 
 BookmarkMenuButtonBase::BookmarkMenuButtonBase(PressedCallback callback,
-                                               const std::u16string& title)
+                                               std::u16string_view title)
     : MenuButton(std::move(callback), title) {
   ConfigureInkDropForToolbar(this);
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(

@@ -37,21 +37,18 @@ public class LogoCoordinator {
      * @param logoView The view that shows the search provider logo.
      * @param onLogoAvailableCallback The callback for when logo is available.
      * @param visibilityObserver Observer object monitoring logo visibility.
-     * @param isLogoPolishFlagEnabled True if logo polish flag is enabled.
      */
     public LogoCoordinator(
             Context context,
             Callback<LoadUrlParams> logoClickedCallback,
             LogoView logoView,
             Callback<Logo> onLogoAvailableCallback,
-            VisibilityObserver visibilityObserver,
-            boolean isLogoPolishFlagEnabled) {
+            VisibilityObserver visibilityObserver) {
         // TODO(crbug.com/40881870): This is weird that we're passing in our view,
         //  and we have to expose our view via getView. We shouldn't only have to do one of these.
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
         mLogoView = logoView;
         PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
-        mLogoModel.set(LogoProperties.LOGO_POLISH_FLAG_ENABLED, isLogoPolishFlagEnabled);
         mMediator =
                 new LogoMediator(
                         context,
@@ -138,12 +135,12 @@ public class LogoCoordinator {
     }
 
     /**
-     * Updates the logo size to use when logo polish is enabled.
+     * Updates the logo size to use when logo is a google doodle.
      *
-     * @param logoSizeForLogoPolish The logo size to use when logo polish is enabled.
+     * @param doodleSize The logo size to use when logo is a google doodle.
      */
-    public void setLogoSizeForLogoPolish(int logoSizeForLogoPolish) {
-        mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, logoSizeForLogoPolish);
+    public void setDoodleSize(int doodleSize) {
+        mLogoModel.set(LogoProperties.DOODLE_SIZE, doodleSize);
     }
 
     /**

@@ -42,9 +42,10 @@ void FakePictureLayerImpl::PushPropertiesTo(LayerImpl* layer_impl) {
   PictureLayerImpl::PushPropertiesTo(layer_impl);
 }
 
-void FakePictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
+void FakePictureLayerImpl::AppendQuads(const AppendQuadsContext& context,
+                                       viz::CompositorRenderPass* render_pass,
                                        AppendQuadsData* append_quads_data) {
-  PictureLayerImpl::AppendQuads(render_pass, append_quads_data);
+  PictureLayerImpl::AppendQuads(context, render_pass, append_quads_data);
   ++append_quads_count_;
 }
 
@@ -86,10 +87,9 @@ PictureLayerTiling* FakePictureLayerImpl::LowResTiling() const {
 void FakePictureLayerImpl::SetRasterSource(
     scoped_refptr<RasterSource> raster_source,
     const Region& invalidation) {
-  Region invalidation_temp = invalidation;
   set_gpu_raster_max_texture_size(
       layer_tree_impl()->GetDeviceViewport().size());
-  UpdateRasterSource(raster_source, &invalidation_temp);
+  SetRasterSourceForTesting(raster_source, invalidation);
 }
 
 size_t FakePictureLayerImpl::GetNumberOfTilesWithResources() const {

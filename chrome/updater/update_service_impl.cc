@@ -21,6 +21,7 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_impl_impl.h"
 #include "chrome/updater/util/util.h"
+#include "components/policy/core/common/policy_types.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/util/win_util.h"
@@ -40,9 +41,10 @@ void UpdateServiceImpl::GetVersion(
   delegate_->GetVersion(std::move(callback));
 }
 
-void UpdateServiceImpl::FetchPolicies(base::OnceCallback<void(int)> callback) {
+void UpdateServiceImpl::FetchPolicies(policy::PolicyFetchReason reason,
+                                      base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate_->FetchPolicies(std::move(callback));
+  delegate_->FetchPolicies(reason, std::move(callback));
 }
 
 void UpdateServiceImpl::RegisterApp(const RegistrationRequest& request,
@@ -83,19 +85,23 @@ void UpdateServiceImpl::CheckForUpdate(
     std::move(callback).Run(Result::kEulaRequiredOrOemMode);
     return;
   }
-  delegate_->FetchPolicies(base::BindPostTaskToCurrentDefault(base::BindOnce(
-      [](scoped_refptr<UpdateServiceImplImpl> delegate,
-         const std::string& app_id, Priority priority,
-         PolicySameVersionUpdate policy_same_version_update,
-         const std::string& language,
-         base::RepeatingCallback<void(const UpdateState&)> state_update,
-         base::OnceCallback<void(Result)> callback, int policy_fetch_result) {
-        VLOG(1) << "Policy fetch result: " << policy_fetch_result;
-        delegate->CheckForUpdate(app_id, priority, policy_same_version_update,
-                                 language, state_update, std::move(callback));
-      },
-      delegate_, app_id, priority, policy_same_version_update, language,
-      state_update, std::move(callback))));
+  delegate_->FetchPolicies(
+      policy::PolicyFetchReason::kUserRequest,
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          [](scoped_refptr<UpdateServiceImplImpl> delegate,
+             const std::string& app_id, Priority priority,
+             PolicySameVersionUpdate policy_same_version_update,
+             const std::string& language,
+             base::RepeatingCallback<void(const UpdateState&)> state_update,
+             base::OnceCallback<void(Result)> callback,
+             int policy_fetch_result) {
+            VLOG(1) << "Policy fetch result: " << policy_fetch_result;
+            delegate->CheckForUpdate(app_id, priority,
+                                     policy_same_version_update, language,
+                                     state_update, std::move(callback));
+          },
+          delegate_, app_id, priority, policy_same_version_update, language,
+          state_update, std::move(callback))));
 }
 
 void UpdateServiceImpl::Update(

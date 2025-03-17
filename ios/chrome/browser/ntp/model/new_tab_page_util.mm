@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 
+#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -33,7 +34,9 @@ bool IsNTPWithoutHistory(web::WebState* web_state) {
          !web_state->GetNavigationManager()->CanGoForward();
 }
 
-bool ShouldHideFeedWithSearchChoice(TemplateURLService* template_url_service) {
+bool ShouldHideFeedWithSearchChoice(
+    TemplateURLService* template_url_service,
+    regional_capabilities::RegionalCapabilitiesService* regional_capabilities) {
   return !search::DefaultSearchProviderIsGoogle(template_url_service) &&
-         template_url_service->IsEeaChoiceCountry();
+         regional_capabilities->IsInEeaCountry();
 }

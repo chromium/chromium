@@ -57,7 +57,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -71,15 +70,12 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
 import org.chromium.chrome.browser.feed.v2.TestFeedServer;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
@@ -98,8 +94,6 @@ import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependencies
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
@@ -127,7 +121,6 @@ import java.util.concurrent.TimeoutException;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "disable-features=IPH_FeedHeaderMenu"
 })
-@Features.EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class FeedV2NewTabPageTest {
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
     private static final int SIGNIN_PROMO_POSITION = 2;
@@ -140,22 +133,8 @@ public class FeedV2NewTabPageTest {
             new GeneralSwipeAction(
                     Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.CENTER_LEFT, Press.FINGER);
 
-    private boolean mIsCachePopulatedInAccountManagerFacade = true;
-
     private final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
-
-    private final FakeAccountManagerFacade mFakeAccountManagerFacade =
-            new FakeAccountManagerFacade() {
-                @Override
-                public Promise<List<CoreAccountInfo>> getCoreAccountInfos() {
-                    // Attention. When cache is not populated, the Promise shouldn't be fulfilled.
-                    if (mIsCachePopulatedInAccountManagerFacade) {
-                        return super.getCoreAccountInfos();
-                    }
-                    return new Promise<>();
-                }
-            };
 
     @Rule
     public final SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
@@ -167,7 +146,7 @@ public class FeedV2NewTabPageTest {
                             ChromeRenderTestRule.Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED)
                     .build();
 
-    public final SigninTestRule mSigninTestRule = new SigninTestRule(mFakeAccountManagerFacade);
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     // Mock sign-in environment needs to be destroyed after ChromeActivity in case there are
     // observers registered in the AccountManagerFacade mock.
@@ -343,8 +322,8 @@ public class FeedV2NewTabPageTest {
                                 Assert.assertEquals(
                                         "Feed has been scrolled to target position when NTP"
                                                 + " finished faded out",
-                                        getRecyclerView().getScrollState(),
-                                        RecyclerView.SCROLL_STATE_IDLE);
+                                        RecyclerView.SCROLL_STATE_IDLE,
+                                        getRecyclerView().getScrollState());
                                 Assert.assertEquals(
                                         "Feed has been scrolled to target position when NTP"
                                                 + " finished faded out",
@@ -402,19 +381,19 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     public void testSignInPromo_AccountsNotReady() {
-        mIsCachePopulatedInAccountManagerFacade = false;
-        openNewTabPage();
-        // Check that the sign-in promo is not shown if accounts are not ready.
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        try (var unused = mSigninTestRule.blockGetCoreAccountInfosUpdate(false)) {
+            openNewTabPage();
+            // Check that the sign-in promo is not shown if accounts are not ready.
+            onView(withId(R.id.feed_stream_recycler_view))
+                    .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+            onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        }
     }
 
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
     public void testSignInPromo_AccountsReady() {
-        mIsCachePopulatedInAccountManagerFacade = true;
         openNewTabPage();
         // Check that the sign-in promo is displayed this time.
         onView(withId(R.id.feed_stream_recycler_view))
@@ -426,7 +405,6 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     public void testSignInPromo_NotShownAfterSignIn() {
-        mIsCachePopulatedInAccountManagerFacade = true;
         openNewTabPage();
         // Check that the sign-in promo is displayed.
         onView(withId(R.id.feed_stream_recycler_view))
@@ -445,7 +423,6 @@ public class FeedV2NewTabPageTest {
     @Feature({"FeedNewTabPage"})
     public void testSignInPromoWhenDefaultAccountCannotShowHistorySyncWithoutMinorRestrictions() {
         mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
-        mIsCachePopulatedInAccountManagerFacade = true;
 
         openNewTabPage();
         onView(withId(R.id.feed_stream_recycler_view))
@@ -495,7 +472,6 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Restriction({DeviceFormFactor.PHONE})
-    @DisableFeatures({ChromeFeatureList.LOGO_POLISH})
     public void testLoadFeedContent_Landscape() throws IOException {
         ChromeTabbedActivity chromeActivity = mActivityTestRule.getActivity();
         chromeActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);

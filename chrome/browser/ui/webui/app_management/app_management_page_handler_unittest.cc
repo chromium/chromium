@@ -6,11 +6,10 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/arc_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,9 +27,6 @@
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/components/arc/app/arc_app_constants.h"
-#include "ash/components/arc/test/fake_app_instance.h"
-#include "ash/components/arc/test/fake_intent_helper_instance.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -38,6 +35,9 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_chromeos.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
+#include "chromeos/ash/experiences/arc/test/fake_intent_helper_instance.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #else
 #include "chrome/browser/ui/webui/app_management/web_app_settings_page_handler.h"
@@ -79,7 +79,7 @@ class AppManagementPageHandlerTestBase
 
     mojo::PendingReceiver<app_management::mojom::Page> page;
     mojo::Remote<app_management::mojom::PageHandler> handler;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     handler_ = std::make_unique<AppManagementPageHandlerChromeOs>(
         handler.BindNewPipeAndPassReceiver(),
         page.InitWithNewPipeAndPassRemote(), profile(), *delegate_);
@@ -618,20 +618,23 @@ TEST_P(AppManagementPageHandlerTestBase, GetScopeExtensions) {
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://example.com/"));
   web_app_info->title = u"app_name";
-  web_app_info->scope_extensions = web_app::ScopeExtensions(
-      {web_app::ScopeExtensionInfo(
-           url::Origin::Create(GURL("https://sitea.com"))),
-       web_app::ScopeExtensionInfo(
-           url::Origin::Create(GURL("https://app.siteb.com"))),
-       web_app::ScopeExtensionInfo(
-           url::Origin::Create(GURL("https://sitec.com")),
-           /*has_origin_wildcard=*/true),
-       web_app::ScopeExtensionInfo(
-           url::Origin::Create(GURL("http://☃.net/"))) /* Unicode */,
-       web_app::ScopeExtensionInfo(
-           url::Origin::Create(GURL("https://localhost:443"))),
-       web_app::ScopeExtensionInfo(
-           url::Origin::Create(GURL("https://localhost:9999")))});
+  web_app_info->scope_extensions = web_app::ScopeExtensions({
+      web_app::ScopeExtensionInfo::CreateForScope(GURL("https://sitea.com")),
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("https://app.siteb.com")),
+      web_app::ScopeExtensionInfo::CreateForScope(GURL("https://sitec.com"),
+                                                  /*has_origin_wildcard=*/true),
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("http://☃.net/")) /* Unicode */,
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("https://localhost:443")),
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("https://localhost:9999")),
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("https://google.com/search?q=search+query")),
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("https://google.com/search?q=search+query#fragment")),
+  });
 
   web_app::WebAppInstallParams install_params;
   // Skip origin association validation for testing.
@@ -656,6 +659,7 @@ TEST_P(AppManagementPageHandlerTestBase, GetScopeExtensions) {
   std::vector<std::string> expected_scope_extensions = {
       "xn--n3h.net" /* Unicode */,
       "app.siteb.com",
+      "google.com",
       "localhost",
       "sitea.com",
       "*.sitec.com",
@@ -817,7 +821,7 @@ TEST_P(AppManagementPageHandlerTestBase, NavigationCapturingUserChoice) {
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class AppManagementPageHandlerArcTest
     : public AppManagementPageHandlerTestBase {
  public:
@@ -939,15 +943,17 @@ TEST_P(AppManagementPageHandlerArcTest, SetAppLocale) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     AppManagementPageHandlerArcTest,
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff),
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
     apps::test::LinkCapturingVersionToString);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     AppManagementPageHandlerTestBase,
 #if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
                     apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)

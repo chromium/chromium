@@ -12,7 +12,6 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
@@ -29,6 +28,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
@@ -105,7 +105,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     private final TabModelInitializer mTabModelInitializer;
     private final CipherFactory mCipherFactory;
 
-    @Nullable private final CustomTabsSessionToken mSession;
+    @Nullable private final SessionHolder<?> mSession;
     private final Intent mIntent;
     private CookiesFetcher mCookiesFetcher;
 
@@ -391,7 +391,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         String url = intentDataProvider.getUrlToLoad();
         String referrerUrl =
                 IntentHandler.getReferrerUrlIncludingExtraHeaders(intentDataProvider.getIntent());
-        CustomTabsSessionToken token = intentDataProvider.getSession();
+        SessionHolder<?> token = intentDataProvider.getSession();
         HiddenTab hiddenTab =
                 CustomTabsConnection.getInstance().takeHiddenTab(token, url, referrerUrl);
         if (hiddenTab == null) return null;
@@ -546,7 +546,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             CustomTabObserver customTabObserver,
             CustomTabNavigationEventObserver customTabNavigationEventObserver,
             Tab tab,
-            CustomTabsSessionToken token) {
+            SessionHolder<?> token) {
         registrar.registerTabObserver(customTabObserver);
         registrar.registerTabObserver(customTabNavigationEventObserver);
         registrar.registerPageLoadMetricsObserver(new PageLoadMetricsObserver(token, tab));

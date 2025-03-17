@@ -141,6 +141,27 @@
     <option>..</option>
   </select>
 
+  <!-- <selectedcontent> and <option> content with multiple levels of children -->
+  <select>
+    <button>
+      <selectedcontent></selectedcontent>
+    </button>
+    <option>
+      <span>
+        <svg width="100" height="100">
+          <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+        </svg>
+        <span>..</span>
+      </span>
+      <div>
+        <svg width="100" height="100">
+          <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+        </svg>
+        <div>..</div>
+      </div>
+    </option>
+  </select>
+
 <!-- Direct children of <optgroup>: -->
   <!-- <option> -->
   <select>

@@ -455,6 +455,12 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Saving on this domain is explicitly blocklisted";
     case STRING_SAVING_BLOCKLISTED_BY_SMART_BUBBLE:
       return "Saving on this domain is blocklisted by the smart bubble";
+    case STRING_PASSWORD_CHANGE_STARTED:
+      return "Password Change started";
+    case STRING_PASSWORD_CHANGE_FINISHED:
+      return "Password Change finished with result";
+    case STRING_PASSWORD_CHANGE_STATE_CHANGED:
+      return "Password Change internal state changed to";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.

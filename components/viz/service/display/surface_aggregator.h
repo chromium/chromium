@@ -29,6 +29,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
+#include "ui/gfx/overlay_layer_id.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace viz {
@@ -167,7 +168,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   void HandleSurfaceQuad(
       const CompositorRenderPass& source_pass,
       const SurfaceDrawQuad* surface_quad,
-      uint32_t embedder_client_namespace_id,
+      const gfx::OverlayLayerId::NamespaceId& embedder_client_namespace_id,
       float parent_device_scale_factor,
       const gfx::Transform& target_transform,
       const std::optional<gfx::Rect> added_clip_rect,
@@ -179,7 +180,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       ResolvedFrameData& resolved_frame,
       float parent_device_scale_factor,
       const SurfaceDrawQuad* surface_quad,
-      uint32_t embedder_client_namespace_id,
+      const gfx::OverlayLayerId::NamespaceId& embedder_client_namespace_id,
       const gfx::Transform& target_transform,
       const std::optional<gfx::Rect> added_clip_rect,
       const std::optional<gfx::Rect> dest_root_target_clip_rect,
@@ -188,7 +189,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
 
   void EmitDefaultBackgroundColorQuad(
       const SurfaceDrawQuad* surface_quad,
-      uint32_t embedder_client_namespace_id,
+      const gfx::OverlayLayerId::NamespaceId& embedder_client_namespace_id,
       const gfx::Transform& target_transform,
       const std::optional<gfx::Rect> clip_rect,
       AggregatedRenderPass* dest_pass,
@@ -198,7 +199,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       const gfx::Rect& primary_rect,
       const gfx::Rect& fallback_rect,
       const SharedQuadState* primary_shared_quad_state,
-      uint32_t embedder_client_namespace_id,
+      const gfx::OverlayLayerId::NamespaceId& embedder_client_namespace_id,
       const gfx::Transform& target_transform,
       const std::optional<gfx::Rect> clip_rect,
       SkColor4f background_color,

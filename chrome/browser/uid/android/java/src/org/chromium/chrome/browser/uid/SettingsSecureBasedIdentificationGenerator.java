@@ -7,16 +7,18 @@ package org.chromium.chrome.browser.uid;
 import android.annotation.SuppressLint;
 import android.provider.Settings;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.util.HashUtil;
 
 /**
  * Unique identificator implementation that uses the Settings.Secure.ANDROID_ID field and MD5
  * hashing.
  */
+@NullMarked
 public class SettingsSecureBasedIdentificationGenerator implements UniqueIdentificationGenerator {
     public static final String GENERATOR_ID = "SETTINGS_SECURE_ANDROID_ID";
 

@@ -30,6 +30,16 @@ bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
   return false;
 }
 
+std::optional<std::string> ConnectorsService::GetBrowserDmToken() const {
+  auto browser_dm_token =
+      policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
+  if (!browser_dm_token.is_valid()) {
+    return std::nullopt;
+  }
+
+  return browser_dm_token.value();
+}
+
 std::optional<ConnectorsServiceBase::DmToken> ConnectorsService::GetDmToken(
     const char* scope_pref) const {
   policy::PolicyScope scope =
@@ -44,13 +54,11 @@ std::optional<ConnectorsServiceBase::DmToken> ConnectorsService::GetDmToken(
   }
 
   DCHECK_EQ(scope, policy::PolicyScope::POLICY_SCOPE_MACHINE);
-  auto browser_dm_token =
-      policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
-  if (!browser_dm_token.is_valid()) {
+  auto browser_dm_token = GetBrowserDmToken();
+  if (!browser_dm_token) {
     return std::nullopt;
   }
-
-  return DmToken(browser_dm_token.value(),
+  return DmToken(std::move(*browser_dm_token),
                  policy::PolicyScope::POLICY_SCOPE_MACHINE);
 }
 

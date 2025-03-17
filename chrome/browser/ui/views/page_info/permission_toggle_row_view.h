@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PERMISSION_TOGGLE_ROW_VIEW_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -53,12 +54,12 @@ class PermissionToggleRowView : public views::View {
   void UpdatePermission(const PageInfo::PermissionInfo& permission);
   void ResetPermission();
 
-  const std::u16string& GetRowTitleForTesting() const {
+  std::u16string_view GetRowTitleForTesting() const {
     return row_view_->GetTitleForTesting();
   }
 
-  std::u16string GetRowSubTitleForTesting() const {
-    return state_label_ != nullptr ? state_label_->GetText() : u"";
+  std::u16string_view GetRowSubTitleForTesting() const {
+    return state_label_ ? state_label_->GetText() : std::u16string_view();
   }
 
   views::ToggleButton* toggle_button_for_testing() { return toggle_button_; }

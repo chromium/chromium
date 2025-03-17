@@ -7,6 +7,10 @@ import("//components/nacl/toolchain.gni")
 import("//gpu/vulkan/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
+if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")  # For `target_platform`
+}
+
 group("common") {
   if (is_component_build) {
     public_deps = [ "//gpu" ]
@@ -78,6 +82,7 @@ source_set("ipc_common_sources") {
 
   sources = [
     "command_buffer_id.h",
+    "command_buffer_trace_utils.h",
     "gpu_client_ids.h",
     "gpu_disk_cache_type.cc",
     "gpu_disk_cache_type.h",
@@ -125,6 +130,7 @@ source_set("ipc_common_sources") {
     ":gpu_peak_memory",
     ":interfaces_cpp_sources",
     ":memory_stats_sources",
+    ":shared_image_pool_client_interface",
     ":surface_handle_type",
     ":vulkan_ycbcr_info",
     "//ipc",
@@ -154,6 +160,13 @@ source_set("ipc_common_sources") {
       "gpu_memory_buffer_impl_io_surface.h",
     ]
     frameworks = [ "IOSurface.framework" ]
+  }
+
+  if (is_ios && target_platform == "iphoneos") {
+    sources += [
+      "ios/be_layer_hierarchy_transport.cc",
+      "ios/be_layer_hierarchy_transport.h",
+    ]
   }
 
   if (!is_nacl && !is_minimal_toolchain) {
@@ -210,6 +223,7 @@ mojom("gpu_channel_mojom") {
   sources = [ "gpu_channel.mojom" ]
 
   public_deps = [
+    ":shared_image_pool_client_interface",
     ":surface_handle",
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom:shared_image_format",
@@ -304,6 +318,19 @@ mojom("gmb_interface") {
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
+}
+
+mojom("shared_image_pool_client_interface") {
+  generate_java = true
+  visibility = [
+    "//gpu/*",
+    "//services/*",
+  ]
+  sources = [ "shared_image_pool_client_interface.mojom" ]
+  deps = [ "//mojo/public/mojom/base" ]
+  export_class_attribute = "GPU_EXPORT"
+  export_header = "gpu/gpu_export.h"
+  cpp_configs = [ "//gpu:gpu_implementation" ]
 }
 
 mojom("surface_handle") {
@@ -419,6 +446,7 @@ mojom("interfaces") {
         {
           mojom = "gpu.mojom.ExportedSharedImage"
           cpp = "::gpu::ExportedSharedImage"
+          move_only = true
         },
       ]
       traits_headers = [ "exported_shared_image_mojom_traits.h" ]
@@ -644,6 +672,7 @@ mojom("interfaces") {
         {
           mojom = "gpu.mojom.ExportedSharedImage"
           cpp = "::gpu::ExportedSharedImage"
+          move_only = true
         },
       ]
       traits_headers = [ "exported_shared_image_mojom_traits.h" ]

@@ -38,7 +38,7 @@ struct CORE_EXPORT NavigateEventDispatchParams
   NavigateEventDispatchParams(const KURL&, NavigateEventType, WebFrameLoadType);
   ~NavigateEventDispatchParams();
 
-  const KURL url;
+  KURL url;
   const NavigateEventType event_type;
   const WebFrameLoadType frame_load_type;
   UserNavigationInvolvement involvement = UserNavigationInvolvement::kNone;
@@ -51,6 +51,7 @@ struct CORE_EXPORT NavigateEventDispatchParams
   String download_filename;
   std::optional<scheduler::TaskAttributionId>
       soft_navigation_heuristics_task_id;
+  bool should_skip_screenshot;
 
   void Trace(Visitor*) const;
 };

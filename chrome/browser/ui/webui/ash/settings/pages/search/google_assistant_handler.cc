@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/assistant/assistant_setup.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "base/functional/bind.h"
@@ -15,6 +13,8 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_ui.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/gfx/geometry/rect.h"

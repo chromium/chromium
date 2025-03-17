@@ -1,8 +1,11 @@
 include_rules = [
-  "+ash/public/cpp",
-  "+ash/resources/vector_icons",
-  "+ash/webui/eche_app_ui",
   "+chromeos/ash/components/multidevice",
+  "+chromeos/ash/services/multidevice_setup/public",
+  "+chromeos/ash/services/secure_channel/public",
+  "+chromeos/ash/services/device_sync/public",
+  "+chromeos/ash/services/network_config/in_process_instance.h",
+  "+chromeos/ash/services/network_config/public",
+  "+chromeos/services/network_config/public",
   "+components/keyed_service/core/keyed_service.h",
   "+components/session_manager/core",
   "+components/metrics/structured",
@@ -10,6 +13,16 @@ include_rules = [
   "+services/data_decoder/public",
   "+third_party/skia",
   "+ui/gfx",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to //ash.
+  # Resolve it.
+  "+ash/public/cpp/network_config_service.h",
+  "+ash/resources/vector_icons/vector_icons.h",
+  "+ash/webui/eche_app_ui/eche_connection_status_handler.h",
+  "+ash/webui/eche_app_ui/eche_connection_status_handler.h",
+  "+ash/webui/eche_app_ui/mojom",
+  "+ash/webui/eche_app_ui/pref_names.h",
+  "+ash/webui/eche_app_ui/system_info_provider.h",
 ]
 
 specific_include_rules = {

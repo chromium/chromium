@@ -46,27 +46,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @interface AutofillAddCreditCardViewController () <
     TableViewTextEditItemDelegate>
 
-// The AddCreditCardViewControllerDelegate for this ViewController.
-@property(nonatomic, weak) id<AddCreditCardViewControllerDelegate> delegate;
-
-// The card holder name updated with the text in tableview cell.
-@property(nonatomic, strong) NSString* cardHolderName;
-
-// The card number in the UI.
-@property(nonatomic, strong) NSString* cardNumber;
-
-// The expiration month in the UI.
-@property(nonatomic, strong) NSString* expirationMonth;
-
-// The expiration year in the UI.
-@property(nonatomic, strong) NSString* expirationYear;
-
-// The user provided nickname for the credit card.
-@property(nonatomic, strong) NSString* cardNickname;
-
 @end
 
-@implementation AutofillAddCreditCardViewController
+@implementation AutofillAddCreditCardViewController {
+  // The AddCreditCardViewControllerDelegate for this ViewController.
+  __weak id<AddCreditCardViewControllerDelegate> _delegate;
+
+  // The card holder name updated with the text in tableview cell.
+  NSString* _cardHolderName;
+
+  // The card number in the UI.
+  NSString* _cardNumber;
+
+  // The expiration month in the UI.
+  NSString* _expirationMonth;
+
+  // The expiration year in the UI.
+  NSString* _expirationYear;
+
+  // The user provided nickname for the credit card.
+  NSString* _cardNickname;
+}
 
 - (instancetype)initWithDelegate:
     (id<AddCreditCardViewControllerDelegate>)delegate {
@@ -113,9 +113,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (BOOL)tableViewHasUserInput {
   [self updateCreditCardData];
 
-  BOOL hasUserInput = self.cardHolderName.length || self.cardNumber.length ||
-                      self.expirationMonth.length ||
-                      self.expirationYear.length || self.cardNickname.length;
+  BOOL hasUserInput = _cardHolderName.length || _cardNumber.length ||
+                      _expirationMonth.length || _expirationYear.length ||
+                      _cardNickname.length;
 
   return hasUserInput;
 }
@@ -164,11 +164,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self updateCreditCardData];
 
   self.navigationItem.rightBarButtonItem.enabled =
-      [self.delegate addCreditCardViewController:self
-                         isValidCreditCardNumber:self.cardNumber
-                                 expirationMonth:self.expirationMonth
-                                  expirationYear:self.expirationYear
-                                    cardNickname:self.cardNickname];
+      [_delegate addCreditCardViewController:self
+                     isValidCreditCardNumber:_cardNumber
+                             expirationMonth:_expirationMonth
+                              expirationYear:_expirationYear
+                                cardNickname:_cardNickname];
 
   [self reconfigureCellsForItems:@[ tableViewTextEditItem ]];
 }
@@ -189,23 +189,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switch (tableViewTextEditItem.type) {
     case ItemTypeCardNumber:
       tableViewTextEditItem.hasValidText =
-          [self.delegate addCreditCardViewController:self
-                             isValidCreditCardNumber:self.cardNumber];
+          [_delegate addCreditCardViewController:self
+                         isValidCreditCardNumber:_cardNumber];
       break;
     case ItemTypeExpirationMonth:
       tableViewTextEditItem.hasValidText =
-          [self.delegate addCreditCardViewController:self
-                    isValidCreditCardExpirationMonth:self.expirationMonth];
+          [_delegate addCreditCardViewController:self
+                isValidCreditCardExpirationMonth:_expirationMonth];
       break;
     case ItemTypeExpirationYear:
       tableViewTextEditItem.hasValidText =
-          [self.delegate addCreditCardViewController:self
-                     isValidCreditCardExpirationYear:self.expirationYear];
+          [_delegate addCreditCardViewController:self
+                 isValidCreditCardExpirationYear:_expirationYear];
       break;
     case ItemTypeCardNickname:
       tableViewTextEditItem.hasValidText =
-          [self.delegate addCreditCardViewController:self
-                                 isValidCardNickname:self.cardNickname];
+          [_delegate addCreditCardViewController:self
+                             isValidCardNickname:_cardNickname];
       break;
     default:
       // For the 'Name on card' textfield.
@@ -252,33 +252,32 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Handles Add button to add a new credit card.
 - (void)didTapAddButton:(id)sender {
   [self updateCreditCardData];
-  [self.delegate addCreditCardViewController:self
-                 addCreditCardWithHolderName:self.cardHolderName
-                                  cardNumber:self.cardNumber
-                             expirationMonth:self.expirationMonth
-                              expirationYear:self.expirationYear
-                                cardNickname:self.cardNickname];
+  [_delegate addCreditCardViewController:self
+             addCreditCardWithHolderName:_cardHolderName
+                              cardNumber:_cardNumber
+                         expirationMonth:_expirationMonth
+                          expirationYear:_expirationYear
+                            cardNickname:_cardNickname];
 }
 
 // Updates credit card data properties with the text in TableView cells.
 - (void)updateCreditCardData {
-  self.cardHolderName =
+  _cardHolderName =
       [self readTextFromItemtype:ItemTypeName
                sectionIdentifier:SectionIdentifierCreditCardDetails];
 
-  self.cardNumber =
-      [self readTextFromItemtype:ItemTypeCardNumber
-               sectionIdentifier:SectionIdentifierCreditCardDetails];
+  _cardNumber = [self readTextFromItemtype:ItemTypeCardNumber
+                         sectionIdentifier:SectionIdentifierCreditCardDetails];
 
-  self.expirationMonth =
+  _expirationMonth =
       [self readTextFromItemtype:ItemTypeExpirationMonth
                sectionIdentifier:SectionIdentifierCreditCardDetails];
 
-  self.expirationYear =
+  _expirationYear =
       [self readTextFromItemtype:ItemTypeExpirationYear
                sectionIdentifier:SectionIdentifierCreditCardDetails];
 
-  self.cardNickname =
+  _cardNickname =
       [self readTextFromItemtype:ItemTypeCardNickname
                sectionIdentifier:SectionIdentifierCreditCardDetails];
 }
@@ -314,7 +313,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Dimisses this view controller when Cancel button is tapped.
 - (void)handleCancelButton:(id)sender {
-  [self.delegate addCreditCardViewControllerDidCancel:self];
+  [_delegate addCreditCardViewControllerDidCancel:self];
 }
 
 // Returns initialized tableViewItem with passed arguments.
@@ -344,7 +343,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self createTableViewItemWithType:ItemTypeExpirationYear
                      fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_EXP_YEAR)
-                         textFieldValue:self.expirationYear
+                         textFieldValue:_expirationYear
                    textFieldPlaceholder:
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRATION_YEAR)
@@ -358,7 +357,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self createTableViewItemWithType:ItemTypeExpirationMonth
                      fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_EXP_MONTH)
-                         textFieldValue:self.expirationMonth
+                         textFieldValue:_expirationMonth
                    textFieldPlaceholder:
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_MONTH)
@@ -372,7 +371,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self createTableViewItemWithType:ItemTypeCardNumber
                      fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_CARD_NUMBER)
-                         textFieldValue:self.cardNumber
+                         textFieldValue:_cardNumber
                    textFieldPlaceholder:
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_NUMBER)
@@ -386,7 +385,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self createTableViewItemWithType:ItemTypeName
                      fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_CARDHOLDER)
-                         textFieldValue:self.cardHolderName
+                         textFieldValue:_cardHolderName
                    textFieldPlaceholder:
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_HOLDER_NAME)
@@ -400,7 +399,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self createTableViewItemWithType:ItemTypeCardNickname
                      fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_NICKNAME)
-                         textFieldValue:self.cardNickname
+                         textFieldValue:_cardNickname
                    textFieldPlaceholder:
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_NICKNAME)

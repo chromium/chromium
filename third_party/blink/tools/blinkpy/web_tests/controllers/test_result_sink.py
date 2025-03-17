@@ -16,9 +16,12 @@ section.
 import json
 import logging
 import requests
+from typing import Optional
 
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.web_tests.models import test_failures
+from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.models.test_results import TestResult
 from blinkpy.web_tests.models.typ_types import ResultType
 
 logging.getLogger("urllib3").setLevel(logging.WARNING)
@@ -51,11 +54,13 @@ class TestResultSinkClosed(Exception):
     """Raises if sink() is called over a closed TestResultSink instance."""
 
 
-def CreateTestResultSink(port):
+def CreateTestResultSink(port,
+                         expectations: Optional[TestExpectations] = None):
     """Creates TestResultSink, if result_sink is present in LUCI_CONTEXT.
 
     Args:
         port: A blinkpy.web_tests.port.Port object
+
     Returns:
         TestResultSink object if result_sink section is present in LUCI_CONTEXT.
             None, otherwise.
@@ -69,14 +74,19 @@ def CreateTestResultSink(port):
         if sink_ctx is None:
             return None
 
-    return TestResultSink(port, sink_ctx)
+    return TestResultSink(port, sink_ctx, expectations)
 
 
-class TestResultSink(object):
+class TestResultSink:
     """A class for uploading test results and artifacts via ResultSink."""
 
-    def __init__(self, port, sink_ctx):
+    def __init__(self,
+                 port,
+                 sink_ctx,
+                 expectations: Optional[TestExpectations] = None):
         self._port = port
+        # Null with `--no-expectations`.
+        self._expectations = expectations
         self.is_closed = False
         self._sink_ctx = sink_ctx
         self._url = (
@@ -107,7 +117,7 @@ class TestResultSink(object):
         assert status is not None, 'unsupported result.type %r' % result.type
         return status
 
-    def _tags(self, result, expectations):
+    def _tags(self, result):
         """Returns a list of tags that should be added into a given test result.
 
         Args:
@@ -131,9 +141,7 @@ class TestResultSink(object):
         tags = [
             pair('test_name', result.test_name),
             pair('web_tests_device_failed', str(result.device_failed)),
-            pair('web_tests_result_type', result.type),
-            pair('web_tests_flag_specific_config_name',
-                 self._port.flag_specific_config_name() or ''),
+            # Used by `//third_party/blink/tools/run_slow_test_analyzer.py`.
             pair('web_tests_base_timeout',
                  str(int(self._port.timeout_ms() / 1000))),
             pair('web_tests_test_was_slow', json.dumps(test_was_slow)),
@@ -146,6 +154,7 @@ class TestResultSink(object):
                 pair(test_failures.FailureImage.ACTUAL_HASH_RDB_TAG,
                      result.actual_image_hash))
 
+        # Used by `//third_party/blink/tools/run_fuzzy_diff_analyzer.py`.
         if (result.image_diff_stats and result.image_diff_stats.keys() >=
             {'maxDifference', 'totalPixels'}):
             tags.append(
@@ -154,22 +163,21 @@ class TestResultSink(object):
             tags.append(
                 pair('web_tests_image_diff_total_pixels',
                      str(result.image_diff_stats['totalPixels'])))
-
         for test_type_str in sorted(result.test_type):
             tags.append(pair('web_tests_test_type', test_type_str))
 
+        # Used by the Blink unexpected pass finder (UPF).
         for used_file in self._port.used_expectations_files():
             tags.append(
                 pair('web_tests_used_expectations_file',
                      self._port.relative_test_filename(used_file)))
 
-        if expectations:
-            expectation_tags = expectations.system_condition_tags
-            test_expectation = expectations.get_expectations(result.test_name)
-            raw_expected_results = test_expectation.raw_results
-            for expectation in raw_expected_results:
+        if self._expectations:
+            test_expectation = self._expectations.get_expectations(
+                result.test_name)
+            for expectation in test_expectation.raw_results:
                 tags.append(pair('raw_typ_expectation', expectation))
-            for tag in expectation_tags:
+            for tag in self._expectations.system_condition_tags:
                 tags.append(pair('typ_tag', tag))
 
         return tags
@@ -222,15 +230,9 @@ class TestResultSink(object):
         # Sort summaries to display "command" at the top of the summary.
         return sorted(summaries), ret
 
-    def sink(self, expected, result, expectations):
+    def sink(self, result: TestResult):
         """Reports the test result to ResultSink.
 
-        Args:
-            expected: True if the test was expected to fail and actually failed.
-                False, otherwise.
-            result: The TestResult object to report.
-            expectations: A test_expectations.TestExpectations object to pull
-                expectation data from.
         Exceptions:
             requests.exceptions.ConnectionError, if there was a network
               connection error.
@@ -253,12 +255,12 @@ class TestResultSink(object):
             'artifacts': artifacts,
             'duration': '%ss' % result.total_run_time,
             # device failures are never expected.
-            'expected': not result.device_failed and expected,
+            'expected': not result.device_failed and result.is_expected,
             'status': self._status(result),
             # TODO(crbug/1093659): web_tests report TestResult with the start
             # time.
             # 'startTime': result.start_time
-            'tags': self._tags(result, expectations),
+            'tags': self._tags(result),
             'testId': result.test_name,
             'testMetadata': {
                 'name': result.test_name,

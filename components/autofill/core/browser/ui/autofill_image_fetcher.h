@@ -46,6 +46,7 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
       base::OnceCallback<void(
           const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback)
       override;
+  void FetchPixAccountImages(base::span<const GURL> image_urls) override;
 
   // Subclasses may override this to provide custom handling of a given card art
   // URL.

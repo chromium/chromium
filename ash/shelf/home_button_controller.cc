@@ -6,10 +6,12 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/assistant/model/assistant_ui_model.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/root_window_controller.h"
-#include "ash/shelf/assistant_overlay.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/shelf/home_button.h"
+#include "ash/shelf/home_button_tap_overlay.h"
 #include "ash/shelf/shelf_button.h"
 #include "ash/shell.h"
 #include "base/check_op.h"
@@ -37,9 +39,11 @@ HomeButtonController::HomeButtonController(HomeButton* button)
   DCHECK(button_);
 
   InitializeAssistantOverlay();
-  DCHECK(assistant_overlay_);
+  DCHECK(tap_overlay_);
 
   Shell* shell = Shell::Get();
+  sunfish_scanner_feature_observation_.Observe(
+      shell->sunfish_scanner_feature_watcher());
   shell->app_list_controller()->AddObserver(this);
   AssistantUiController::Get()->GetModel()->AddObserver(this);
   AssistantState::Get()->AddObserver(this);
@@ -62,39 +66,58 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::EventType::kGestureTap:
     case ui::EventType::kGestureTapCancel:
-      if (IsAssistantAvailable()) {
-        assistant_overlay_->EndAnimation();
-        assistant_animation_delay_timer_->Stop();
-      }
+      // Unconditionally stop the animation, even if Assistant / Sunfish/Scanner
+      // is not currently available - because the animation could have been
+      // started when they _were_ available.
+      // These are no-ops if the animation did not start.
+      tap_overlay_->EndAnimation();
+      tap_animation_delay_timer_->Stop();
 
       // After animating the ripple, let the button handle the event.
       return false;
     case ui::EventType::kGestureTapDown:
-      if (IsAssistantAvailable()) {
-        assistant_animation_delay_timer_->Start(
+      if (IsAssistantAvailable() || IsSunfishOrScannerAvailable()) {
+        tap_animation_delay_timer_->Start(
             FROM_HERE, kAssistantAnimationDelay,
             base::BindOnce(&HomeButtonController::StartAssistantAnimation,
                            base::Unretained(this)));
       }
       return false;
     case ui::EventType::kGestureLongPress:
-      // Only consume the long press event if the Assistant is available.
-      if (!IsAssistantAvailable())
-        return false;
+      // Only consume the long press event if Assistant / Sunfish/Scanner is
+      // available.
+      //
+      // Update Sunfish/Scanner feature state in case it is stale.
+      sunfish_scanner_feature_observation_.GetSource()->UpdateFeatureStates();
+      if (IsSunfishOrScannerAvailable()) {
+        tap_overlay_->BurstAnimation();
+        event->SetHandled();
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::
+                kSunfishSessionStartedFromHomeButtonLongPress);
+        CaptureModeController::Get()->StartSunfishSession();
+        return true;
+      }
 
-      base::RecordAction(base::UserMetricsAction(
-          "VoiceInteraction.Started.HomeButtonLongPress"));
-      assistant_overlay_->BurstAnimation();
-      event->SetHandled();
-      Shell::SetRootWindowForNewWindows(
-          button_->GetWidget()->GetNativeWindow()->GetRootWindow());
-      AssistantUiController::Get()->ShowUi(
-          AssistantEntryPoint::kLongPressLauncher);
-      return true;
+      if (IsAssistantAvailable()) {
+        base::RecordAction(base::UserMetricsAction(
+            "VoiceInteraction.Started.HomeButtonLongPress"));
+        tap_overlay_->BurstAnimation();
+        event->SetHandled();
+        Shell::SetRootWindowForNewWindows(
+            button_->GetWidget()->GetNativeWindow()->GetRootWindow());
+        AssistantUiController::Get()->ShowUi(
+            AssistantEntryPoint::kLongPressLauncher);
+        return true;
+      }
+
+      return false;
     case ui::EventType::kGestureLongTap:
-      // Only consume the long tap event if the Assistant is available.
-      if (!IsAssistantAvailable())
+      // Only consume the long tap event if Assistant / Sunfish/Scanner is
+      // available.
+      if (!(IsAssistantAvailable() || IsSunfishOrScannerAvailable())) {
         return false;
+      }
 
       // We already handled the long press; consume the long tap to avoid
       // bringing up the context menu again.
@@ -114,6 +137,11 @@ bool HomeButtonController::IsAssistantAvailable() {
 bool HomeButtonController::IsAssistantVisible() {
   return AssistantUiController::Get()->GetModel()->visibility() ==
          AssistantVisibility::kVisible;
+}
+
+bool HomeButtonController::IsSunfishOrScannerAvailable() const {
+  return sunfish_scanner_feature_observation_.GetSource()
+      ->CanShowSunfishOrScannerUi();
 }
 
 void HomeButtonController::OnAppListVisibilityWillChange(bool shown,
@@ -150,8 +178,13 @@ void HomeButtonController::OnUiVisibilityChanged(
   button_->OnAssistantAvailabilityChanged();
 }
 
+void HomeButtonController::OnSunfishScannerFeatureStatesChanged(
+    SunfishScannerFeatureWatcher& source) {
+  // TODO: crbug.com/391909810 - Update the button's visibility here.
+}
+
 void HomeButtonController::StartAssistantAnimation() {
-  assistant_overlay_->StartAnimation(false);
+  tap_overlay_->StartAnimation();
 }
 
 void HomeButtonController::OnAppListShown() {
@@ -169,11 +202,11 @@ void HomeButtonController::OnAppListDismissed() {
 }
 
 void HomeButtonController::InitializeAssistantOverlay() {
-  DCHECK_EQ(nullptr, assistant_overlay_);
-  assistant_overlay_ = new AssistantOverlay(button_);
-  button_->AddChildView(assistant_overlay_.get());
-  assistant_overlay_->SetVisible(false);
-  assistant_animation_delay_timer_ = std::make_unique<base::OneShotTimer>();
+  DCHECK_EQ(nullptr, tap_overlay_);
+  tap_overlay_ = new HomeButtonTapOverlay(button_);
+  button_->AddChildViewRaw(tap_overlay_.get());
+  tap_overlay_->SetVisible(false);
+  tap_animation_delay_timer_ = std::make_unique<base::OneShotTimer>();
 }
 
 }  // namespace ash

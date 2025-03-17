@@ -11,6 +11,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.LinearLayout;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.ViewUtils;
 
 /**
@@ -23,6 +24,7 @@ import org.chromium.ui.base.ViewUtils;
  * app:maxWidthLandscape="@dimen/modal_dialog_landscape_max_width"
  * app:maxWidthPortrait="@dimen/modal_dialog_portrait_max_width"> ...
  */
+@NullMarked
 public class BoundedLinearLayout extends LinearLayout {
     private static final int NOT_SPECIFIED = -1;
 

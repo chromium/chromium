@@ -31,8 +31,9 @@ void OverlayBrowserAgentBase::AddInstaller(
   storage.request_support = nullptr;
   // Notify the installation driver if this is the first installer added for
   // `modality`.
-  if (storage.installers.size() == 1U)
+  if (storage.installers.size() == 1U) {
     installation_driver_.StartInstallingCallbacks(modality);
+  }
 }
 
 #pragma mark Private
@@ -78,8 +79,9 @@ void OverlayBrowserAgentBase::CallbackInstallationDriver::
     StartInstallingCallbacks(OverlayModality modality) {
   OverlayPresenter* presenter =
       OverlayPresenter::FromBrowser(browser_, modality);
-  if (!scoped_observations_.IsObservingSource(presenter))
+  if (!scoped_observations_.IsObservingSource(presenter)) {
     scoped_observations_.AddObservation(presenter);
+  }
 }
 
 const OverlayRequestSupport*
@@ -92,8 +94,9 @@ void OverlayBrowserAgentBase::CallbackInstallationDriver::WillShowOverlay(
     OverlayPresenter* presenter,
     OverlayRequest* request,
     bool initial_presentation) {
-  if (!initial_presentation)
+  if (!initial_presentation) {
     return;
+  }
   browser_agent_->InstallOverlayRequestCallbacks(request,
                                                  presenter->GetModality());
 }

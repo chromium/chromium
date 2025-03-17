@@ -64,6 +64,9 @@ class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
   std::vector<ListCertsResult> ListCertsIgnoringNSSRoots();
 
  private:
+  std::vector<ListCertsResult> ListCertsIgnoringNSSRootsImpl(
+      bool ignore_chaps_module);
+
   bssl::CertificateTrust GetTrustForNSSTrust(const CERTCertTrust& trust) const;
 
   bssl::CertificateTrust GetTrustIgnoringSystemTrust(

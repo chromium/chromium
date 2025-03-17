@@ -15,8 +15,9 @@ using alert_overlays::ButtonConfig;
 namespace java_script_dialog_overlay {
 
 bool ShouldAddBlockDialogsButton(web::WebState* web_state) {
-  if (!web_state)
+  if (!web_state) {
     return false;
+  }
   JavaScriptDialogBlockingState* blocking_state =
       JavaScriptDialogBlockingState::FromWebState(web_state);
   return blocking_state && blocking_state->show_blocking_option();

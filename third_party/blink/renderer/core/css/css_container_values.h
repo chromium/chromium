@@ -44,6 +44,7 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
   float RootLineHeight(float zoom) const override;
   float CapFontSize(float zoom) const override;
   float RcapFontSize(float zoom) const override;
+  Element* GetElement() const override { return element_.Get(); }
   // Note that ContainerWidth/ContainerHeight are used to resolve
   // container *units*. See `container_sizes_`.
   Element* ContainerElement() const override { return element_.Get(); }
@@ -98,13 +99,6 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
   CSSToLengthConversionData::FontSizes font_sizes_;
   // LineHeightSize of the container element.
   CSSToLengthConversionData::LineHeightSize line_height_size_;
-
-  // Both `font_sizes_`, and `line_height_size_` have a pointer to a `Font`
-  // from the computed-style objects. Explicitly own the computed-style objects
-  // here so the underlying `Font` object doesn't get destroyed.
-  Member<const ComputedStyle> font_style_;
-  Member<const ComputedStyle> root_font_style_;
-
   // Used to resolve container-relative units found in the @container prelude.
   // Such units refer to container sizes of *ancestor* containers, and must
   // not be confused with the size of the *current* container (which is stored

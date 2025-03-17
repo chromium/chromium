@@ -320,10 +320,8 @@ TEST(AutocompleteInputTest, ParseForEmphasizeComponent) {
   for (size_t i = 0; i < std::size(input_cases); ++i) {
     SCOPED_TRACE(input_cases[i].input);
     Component scheme, host;
-    AutocompleteInput::ParseForEmphasizeComponents(input_cases[i].input,
-                                                   TestSchemeClassifier(),
-                                                   &scheme,
-                                                   &host);
+    AutocompleteInput::ParseForEmphasizeComponents(
+        input_cases[i].input, TestSchemeClassifier(), &scheme, &host);
     EXPECT_EQ(input_cases[i].scheme.begin, scheme.begin);
     EXPECT_EQ(input_cases[i].scheme.len, scheme.len);
     EXPECT_EQ(input_cases[i].host.begin, host.begin);
@@ -515,4 +513,68 @@ TEST(AutocompleteInputTest, TypedURLHadHTTPSchemeTest) {
     EXPECT_EQ(test_case.expected_typed_url_had_http_scheme,
               input.typed_url_had_http_scheme());
   }
+}
+
+TEST(AutocompleteInputTest, GetFeaturedKeywordMode) {
+  struct TestData {
+    const std::u16string input;
+    AutocompleteInput::FeaturedKeywordMode expected_mode;
+  };
+
+  const TestData test_cases[] = {
+      {u"", AutocompleteInput::FeaturedKeywordMode::kFalse},
+      {u"@", AutocompleteInput::FeaturedKeywordMode::kExact},
+      {u"@x", AutocompleteInput::FeaturedKeywordMode::kPrefix},
+      {u"x@", AutocompleteInput::FeaturedKeywordMode::kFalse},
+  };
+  for (const TestData& test_case : test_cases) {
+    AutocompleteInput input(test_case.input, std::u16string::npos,
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier(),
+                            /*should_use_https_as_default_scheme=*/true);
+    EXPECT_EQ(input.GetFeaturedKeywordMode(), test_case.expected_mode);
+  }
+}
+
+TEST(AutocompleteInputTest, ParseUrlLookalikeWithCredentials) {
+  std::u16string input = u"login:password@domain:1234/path";
+  std::u16string scheme;
+  url::Parsed parts;
+  GURL canonicalized_url;
+  auto input_type = AutocompleteInput::Parse(
+      input, "", TestSchemeClassifier(), &parts, &scheme, &canonicalized_url);
+
+  EXPECT_TRUE(parts.username.is_nonempty());
+  EXPECT_TRUE(parts.password.is_nonempty());
+  EXPECT_EQ(metrics::OmniboxInputType::URL, input_type);
+  EXPECT_EQ("http://login:password@domain:1234/path", canonicalized_url.spec());
+}
+
+TEST(AutocompleteInputTest, ParseUrlLookalikeWithScheme) {
+  std::u16string input = u"http://login:pass word@domain:1234/path";
+  std::u16string scheme;
+  url::Parsed parts;
+  GURL canonicalized_url;
+  auto input_type = AutocompleteInput::Parse(
+      input, "", TestSchemeClassifier(), &parts, &scheme, &canonicalized_url);
+
+  EXPECT_TRUE(parts.username.is_nonempty());
+  EXPECT_TRUE(parts.password.is_nonempty());
+  EXPECT_EQ(metrics::OmniboxInputType::URL, input_type);
+  EXPECT_EQ("http://login:pass%20word@domain:1234/path",
+            canonicalized_url.spec());
+}
+
+TEST(AutocompleteInputTest, ParseUrlLookalikeWithSearchQuery) {
+  std::u16string input = u"site:wikipedia.org ch4@zeolite";
+  std::u16string scheme;
+  url::Parsed parts;
+  GURL canonicalized_url;
+  auto input_type = AutocompleteInput::Parse(
+      input, "", TestSchemeClassifier(), &parts, &scheme, &canonicalized_url);
+
+  EXPECT_FALSE(parts.username.is_nonempty());
+  EXPECT_FALSE(parts.password.is_nonempty());
+  EXPECT_EQ(metrics::OmniboxInputType::QUERY, input_type);
+  EXPECT_FALSE(canonicalized_url.is_valid());
 }

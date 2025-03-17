@@ -47,11 +47,9 @@ enum class SplitCacheTestCase {
   kEnabledTripleKeyed,
   kEnabledTriplePlusCredsBool,
   kEnabledTriplePlusCrossSiteMainFrameNavBool,
-  kEnabledTriplePlusMainFrameNavInitiator,
-  kEnabledTriplePlusNavInitiator
-  // Note: For the purposes of our HTTP Cache initiator experiment we won't
-  // assume that SplitCacheByCredentials feature can be enabled while any of the
-  // initiator features are, and we won't test these combinations.
+  // TODO(crbug.com/40186884): If we decide to launch SplitCacheByCredentials,
+  // we should add a test case for the SplitCacheByCredentials feature and the
+  // SplitCacheByCrossSiteMainFrameNavigationBoolean feature both enabled.
 };
 
 const struct {
@@ -61,11 +59,7 @@ const struct {
     {SplitCacheTestCase::kEnabledTriplePlusCredsBool,
      net::features::kSplitCacheByIncludeCredentials},
     {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean},
-    {SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-     net::features::kSplitCacheByMainFrameNavigationInitiator},
-    {SplitCacheTestCase::kEnabledTriplePlusNavInitiator,
-     net::features::kSplitCacheByNavigationInitiator}};
+     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean}};
 
 }  // namespace
 
@@ -78,13 +72,18 @@ class PrefetchBrowserTest
         split_cache_test_case_(GetParam()),
         split_cache_experiment_feature_list_(GetParam(),
                                              kTestCaseToFeatureMapping) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (IsSplitCacheEnabled()) {
-      split_cache_enabled_feature_list_.InitAndEnableFeature(
+      enabled_features.emplace_back(
           net::features::kSplitCacheByNetworkIsolationKey);
     } else {
-      split_cache_enabled_feature_list_.InitAndDisableFeature(
+      disabled_features.emplace_back(
           net::features::kSplitCacheByNetworkIsolationKey);
     }
+    enabled_features.emplace_back(net::features::kHttpCacheNoVarySearch);
+    split_cache_enabled_feature_list_.InitWithFeatures(enabled_features,
+                                                       disabled_features);
   }
 
   PrefetchBrowserTest(const PrefetchBrowserTest&) = delete;
@@ -1210,27 +1209,12 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, FileToHttp) {
     EXPECT_EQ(1, GetPrefetchURLLoaderCallCount());
   }
 
-  switch (GetParam()) {
-    case SplitCacheTestCase::kDisabled:
-    case SplitCacheTestCase::kEnabledTripleKeyed:
-    case SplitCacheTestCase::kEnabledTriplePlusCredsBool:
-    case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-      // Shutdown the server.
-      EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+  // Shutdown the server.
+  EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
 
-      // Subsequent navigation to the target URL wouldn't hit the network for
-      // the target URL. The target content should still be read correctly.
-      NavigateToURLAndWaitTitle(target_url, "Prefetch Target");
-      break;
-    case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-    case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
-      // We don't expect re-use of the prefetched navigations because caching
-      // isn't supported when the initiator is opaque (when the initiator is
-      // incorporated into the cache key).
-      NavigateToURLAndWaitTitle(target_url, "Prefetch Target");
-      EXPECT_EQ(2, request_counter->GetRequestCount());
-      break;
-  }
+  // Subsequent navigation to the target URL wouldn't hit the network for
+  // the target URL. The target content should still be read correctly.
+  NavigateToURLAndWaitTitle(target_url, "Prefetch Target");
 }
 
 class FencedFramePrefetchTest : public PrefetchBrowserTestBase {
@@ -1659,9 +1643,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(
         {SplitCacheTestCase::kDisabled, SplitCacheTestCase::kEnabledTripleKeyed,
          SplitCacheTestCase::kEnabledTriplePlusCredsBool,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-         SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-         SplitCacheTestCase::kEnabledTriplePlusNavInitiator}),
+         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case SplitCacheTestCase::kDisabled:
@@ -1672,10 +1654,6 @@ INSTANTIATE_TEST_SUITE_P(
           return "SplitCacheEnabledTriplePlusCredsBool";
         case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
           return "SplitCacheEnabledTriplePlusCrossSiteMainFrameNavigationBool";
-        case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-          return "SplitCacheEnabledTriplePlusMainFrameNavigationInitiator";
-        case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
-          return "SplitCacheEnabledTriplePlusNavigationInitiator";
       }
     });
 

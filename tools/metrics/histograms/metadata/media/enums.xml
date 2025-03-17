@@ -276,6 +276,18 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="In flight duration too high (after encoding)"/>
 </enum>
 
+<enum name="CastStreamingVideoEncoderType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Software H264 encoder"/>
+  <int value="2" label="Hardware H264 encoder"/>
+  <int value="3" label="Software VP8 encoder"/>
+  <int value="4" label="Hardware VP8 encoder"/>
+  <int value="5" label="Software VP9 encoder"/>
+  <int value="6" label="Hardware VP9 encoder"/>
+  <int value="7" label="Software AV1 encoder"/>
+  <int value="8" label="Hardware AV1 encoder"/>
+</enum>
+
 <enum name="CdmCapabilityQueryStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown"/>
@@ -437,13 +449,6 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="Android: Unable to start provisioning."/>
   <int value="28" label="Android: Unable to create MediaCrypto object."/>
   <int value="29" label="Android: Crypto scheme not supported."/>
-</enum>
-
-<enum name="CrosBeamformingDeviceState">
-  <int value="0" label="Default enabled"/>
-  <int value="1" label="User enabled"/>
-  <int value="2" label="Default disabled"/>
-  <int value="3" label="User disabled"/>
 </enum>
 
 <enum name="CrosCdmType">
@@ -979,6 +984,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="FailureAfterRetry"/>
 </enum>
 
+<enum name="GetDisplayMediaAudioToggleStatus">
+  <int value="0" label="AudioNotRequested"/>
+  <int value="1" label="AudioRequestedButNotSupported"/>
+  <int value="2" label="AudioRequestedButUserDidNotApprove"/>
+  <int value="3" label="AudioRequestedAndUserApproved"/>
+</enum>
+
 <enum name="GetDisplayMediaBooleanConstraint">
   <int value="0" label="Not specified"/>
   <int value="1" label="True"/>
@@ -1050,19 +1062,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="AES128"/>
   <int value="2" label="SampleAES"/>
   <int value="3" label="SampleAESCTR"/>
-</enum>
-
-<enum name="ImageCaptureOutcome">
-  <int value="0" label="Succeeded using video stream"/>
-  <int value="1" label="Succeeded using photo stream"/>
-  <int value="2" label="Failed using video stream"/>
-  <int value="3" label="Failed using photo stream"/>
-</enum>
-
-<enum name="LacrosBundledWidevine">
-  <int value="0" label="None found"/>
-  <int value="1" label="Lacros bundled"/>
-  <int value="2" label="Ash bundled"/>
 </enum>
 
 <enum name="MakeAudioStreamStatus">
@@ -1236,17 +1235,6 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Close device list for casting"/>
   <int value="11" label="Enter picture in picture"/>
   <int value="12" label="Exit picture in picture"/>
-</enum>
-
-<enum name="MediaLicenseStorageHostOpenError">
-  <int value="0" label="InvalidBucket"/>
-  <int value="1" label="kNoFileSpecified"/>
-  <int value="2" label="kInvalidFileName"/>
-  <int value="3" label="kDatabaseOpenError"/>
-  <int value="4" label="kBucketNotFound"/>
-  <int value="5" label="kDatabaseRazeError"/>
-  <int value="6" label="kSQLExecutionError"/>
-  <int value="7" label="kBucketLocatorError"/>
 </enum>
 
 <enum name="MediaLoadType">
@@ -1529,15 +1517,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="kUserSelectedThisTab"/>
 </enum>
 
-<enum name="MediaVideoHeight">
-  <int value="0" label="~360 or lower"/>
-  <int value="1" label="~480"/>
-  <int value="2" label="~720"/>
-  <int value="3" label="~1080"/>
-  <int value="4" label="~1440"/>
-  <int value="5" label="~2160 or higher"/>
-</enum>
-
 <enum name="MicrophoneMuteResult">
   <int value="0" label="Muted"/>
   <int value="1" label="Not muted"/>
@@ -1765,23 +1744,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="PromiseRejected"/>
 </enum>
 
-<enum name="QuotaError">
-  <int value="0" label="None"/>
-  <int value="1" label="Unknown Error"/>
-  <int value="2" label="Database Error"/>
-  <int value="3" label="Not Found Error"/>
-  <int value="4" label="Entry Exists Error"/>
-  <int value="5" label="File Operation Error"/>
-  <int value="6" label="Invalid Expiration Error"/>
-  <int value="7" label="Quota Exceeded Error"/>
-  <int value="8" label="Database Disabled">
-    The database failed to bootstrap.
-  </int>
-  <int value="9" label="Storage key error">
-    Deserialization failed on a storage key.
-  </int>
-</enum>
-
 <enum name="ReactionEffectsGesturesState">
   <int value="0" label="The platform does not support reaction effects"/>
   <int value="1" label="Reaction effects supported, but disabled"/>
@@ -1910,6 +1872,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="OpenOffice Impress"/>
   <int value="3" label="Keynote"/>
   <int value="4" label="LibreOffice"/>
+</enum>
+
+<enum name="ScreenCaptureKitSCContentSharingPicker">
+  <int value="0" label="PresentScreen_Start"/>
+  <int value="1" label="PresentScreen_Update"/>
+  <int value="2" label="PresentScreen_Cancel"/>
+  <int value="3" label="PresentScreen_Error"/>
+  <int value="4" label="PresentWindow_Start"/>
+  <int value="5" label="PresentWindow_Update"/>
+  <int value="6" label="PresentWindow_Cancel"/>
+  <int value="7" label="PresentWindow_Error"/>
 </enum>
 
 <enum name="SelectedTabDiscardStatus">
@@ -2246,35 +2219,10 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="kSubCaptureTargetVersionNotCurrent"/>
 </enum>
 
-<enum name="VideoCaptureServiceEvent">
-  <int value="0" label="Browser is using legacy video capture stack"/>
-  <int value="1" label="Browser connecting to video capture service"/>
-  <int value="2" label="Video capture service started"/>
-  <int value="3"
-      label="Video capture service shutting down because last client
-             disconnected"/>
-  <int value="4" label="Video capture service lost connection to Browser"/>
-  <int value="5" label="Browser lost connection to video capture service"/>
-  <int value="6" label="Browser closing connection to video capture service"/>
-  <int value="7"
-      label="Browser closing connection to video capture service after
-             enumerating devices only"/>
-  <int value="8"
-      label="Browser closing connection to video capture service after video
-             capture session"/>
-  <int value="9" label="Video capture service timeout canceled"/>
-</enum>
-
 <enum name="VideoCaptureStartOutcome">
   <int value="0" label="kStarted"/>
   <int value="1" label="kTimedout"/>
   <int value="2" label="kFailed"/>
-</enum>
-
-<enum name="VideoCaptureWinBackendUsed">
-  <int value="0" label="Using DirectShow as default"/>
-  <int value="1" label="Using MediaFoundation as default"/>
-  <int value="2" label="Using DirectShow as fallback"/>
 </enum>
 
 <enum name="VideoEffectStatus">

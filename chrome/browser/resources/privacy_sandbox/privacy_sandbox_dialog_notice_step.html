@@ -12,6 +12,12 @@
   .banner {
     height: 140px;
   }
+
+  .learn-more-title {
+    color: initial;
+    font-size: inherit;
+    font-weight: 500;
+  }
 </style>
 
 <div id="notice" hidden$="[[hideNoticePage_]]">
@@ -60,9 +66,9 @@
           <div class="banner">
             <img class="fledge-banner" alt="">
           </div>
-          <div class="section cr-secondary-text">
+          <h2 class="section learn-more-title">
             $i18n{m1NoticeEEASiteSuggestedAdsTitle}
-          </div>
+          </h2>
           <div class="section cr-secondary-text">
             $i18n{m1NoticeEEASiteSuggestedAdsDescription}
           </div>
@@ -85,9 +91,9 @@
               <li>$i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet2}</li>
             </ul>
           </privacy-sandbox-dialog-learn-more>
-          <div class="section cr-secondary-text">
+          <h2 class="section learn-more-title">
             $i18n{m1NoticeEEAAdMeasurementTitle}
-          </div>
+          </h2>
           <div class="section cr-secondary-text">
             $i18n{m1NoticeEEAAdMeasurementDescription}
           </div>

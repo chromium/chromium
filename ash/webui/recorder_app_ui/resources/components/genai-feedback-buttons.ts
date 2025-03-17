@@ -61,6 +61,10 @@ export class GenaiFeedbackButtons extends ReactiveLitElement {
 
   resultType: GenaiResultType|null = null;
 
+  result: string|null = null;
+
+  transcription: string|null = null;
+
   private sendFeedbackEvent(rating: UserRating): void {
     if (this.resultType === null) {
       return;
@@ -79,6 +83,40 @@ export class GenaiFeedbackButtons extends ReactiveLitElement {
     }
   }
 
+  /**
+   * Creates template consisting four parts: hashtags, feedback prompt, GenAI
+   * results, and transcript used.
+   */
+  private createFeedbackTemplate(): string {
+    const templateParts: string[] = [];
+    let hashTag = '#RecorderApp';
+    switch (this.resultType) {
+      case GenaiResultType.TITLE_SUGGESTION:
+        hashTag += ' #NameCreation';
+        break;
+      case GenaiResultType.SUMMARY:
+        hashTag += ' #Summary';
+        break;
+      default:
+        break;
+    }
+    templateParts.push(hashTag);
+    templateParts.push(i18n.genAiFeedbackPrompt);
+    if (this.result !== null) {
+      const outputField = this.resultType === GenaiResultType.SUMMARY ?
+        i18n.genAiFeedbackSummaryOutputField :
+        i18n.genAiFeedbackTitleSuggestionOutputField;
+      templateParts.push(`${outputField}\n${this.result}`);
+    }
+    if (this.transcription !== null) {
+      templateParts.push(
+        `${i18n.genAiFeedbackModelInputField}\n${this.transcription}`,
+      );
+    }
+    // Separates each part with an empty line.
+    return templateParts.join('\n\n');
+  }
+
   private onThumbUpClick() {
     if (this.userRating.value === UserRating.THUMB_UP) {
       this.userRating.value = null;
@@ -94,10 +132,7 @@ export class GenaiFeedbackButtons extends ReactiveLitElement {
     } else {
       this.userRating.value = UserRating.THUMB_DOWN;
       this.sendFeedbackEvent(UserRating.THUMB_DOWN);
-      // TODO: b/344789836 - Determine what should be the default description
-      // for the feedback report (we likely want the model input & output), and
-      // also put it into recorder_strings.grdp for i18n.
-      this.platformHandler.showAiFeedbackDialog('#RecorderApp');
+      this.platformHandler.showAiFeedbackDialog(this.createFeedbackTemplate());
     }
   }
 

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 
@@ -15,8 +16,9 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
-import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleState;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -30,6 +32,7 @@ class SafetyHubUtils {
      *
      * @param context used to show the dialog.
      */
+    // TODO(crbug.com/388788969): Rename to `showAccountPasswordCheckUi`.
     static void showPasswordCheckUi(
             Context context,
             Profile profile,
@@ -40,6 +43,23 @@ class SafetyHubUtils {
                 : "The password check UI should only be launched for signed in Safety Hub users.";
         passwordManagerHelper.showPasswordCheckup(
                 context, PasswordCheckReferrer.SAFETY_CHECK, modalDialogManagerSupplier, account);
+    }
+
+    /**
+     * Launches the Local Password Checkup UI from GMSCore.
+     *
+     * @param context used to show the dialog.
+     */
+    static void showLocalPasswordCheckUi(
+            Context context,
+            Profile profile,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
+        passwordManagerHelper.showPasswordCheckup(
+                context,
+                PasswordCheckReferrer.SAFETY_CHECK,
+                modalDialogManagerSupplier,
+                /* accountEmail= */ null);
     }
 
     /**
@@ -103,5 +123,10 @@ class SafetyHubUtils {
         return (safeBrowsingState == SafeBrowsingState.NO_SAFE_BROWSING)
                 ? ModuleState.WARNING
                 : ModuleState.SAFE;
+    }
+
+    static Drawable getManagedIcon(Context context) {
+        return SettingsUtils.getTintedIcon(
+                context, R.drawable.ic_business, R.color.default_icon_color_secondary_tint_list);
     }
 }

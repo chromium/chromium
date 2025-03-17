@@ -416,6 +416,13 @@ void AwPermissionManager::RequestPermissions(
         pending_request_raw->SetPermissionStatus(permissions[i],
                                                  PermissionStatus::DENIED);
         break;
+      case PermissionType::LOCAL_NETWORK_ACCESS:
+        // PermissionType::LOCAL_NETWORK_ACCESS requests are always granted so
+        // that local network requests in WebView work as-is. WebView is
+        // currently out-of-scope for Local Network Access restrictions.
+        pending_request_raw->SetPermissionStatus(permissions[i],
+                                                 PermissionStatus::GRANTED);
+        break;
       case PermissionType::NUM:
         NOTREACHED() << "PermissionType::NUM was not expected here.";
     }
@@ -557,6 +564,7 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::CLIPBOARD_SANITIZED_WRITE:
     case blink::PermissionType::MIDI:
     case blink::PermissionType::SENSORS:
+    case blink::PermissionType::LOCAL_NETWORK_ACCESS:
       // These permissions are auto-granted by WebView.
       return PermissionStatus::GRANTED;
 
@@ -608,15 +616,16 @@ PermissionStatus AwPermissionManager::GetGeolocationPermission(
   }
 
   AwSettings* settings = AwSettings::FromWebContents(web_contents);
+  if (!settings) {
+    // If we don't have a settings, we can't determine if we have
+    // permission.
+    return PermissionStatus::ASK;
+  }
+
   if (!settings->geolocation_enabled()) {
     return PermissionStatus::DENIED;
   }
-  AwContents* aw_contents = AwContents::FromWebContents(web_contents);
-  if (!aw_contents->UseLegacyGeolocationPermissionAPI()) {
-    // The new geolocation API does not have a cache for permission decisions,
-    // so if that's in use, we will need to ask the app.
-    return PermissionStatus::ASK;
-  }
+
   return context_delegate_->GetGeolocationPermission(requesting_origin);
 }
 
@@ -750,6 +759,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::SENSORS:
       case PermissionType::WAKE_LOCK_SCREEN:
       case PermissionType::WAKE_LOCK_SYSTEM:
+      case PermissionType::LOCAL_NETWORK_ACCESS:
         // There is nothing to cancel so this is simply ignored.
         break;
       case PermissionType::NUM:

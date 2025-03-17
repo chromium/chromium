@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin.signin_promo;
 
 import android.content.Context;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -22,8 +23,25 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** {@link SigninPromoDelegate} for recent tabs signin promo. */
 public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
+
+    /** Indicates the type of content the should be shown in the visible promo. */
+    @IntDef({PromoState.NONE, PromoState.SIGNIN})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface PromoState {
+        /** No promo should be shown. */
+        int NONE = 0;
+
+        /** The promo content should promote sign-in. Shown to signed-out user. */
+        int SIGNIN = 1;
+    }
+
+    private @PromoState int mPromoState = PromoState.NONE;
+
     public RecentTabsSigninPromoDelegate(
             Context context,
             Profile profile,
@@ -60,17 +78,16 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    boolean canShowPromo(@Nullable CoreAccountInfo visibleAccount) {
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(mProfile);
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
-                && !signinManager.isSigninAllowed()) {
-            // If sign-in is not possible, then history sync isn't possible either.
-            return false;
-        }
-        final HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(mProfile);
-        return !historySyncHelper.shouldSuppressHistorySync();
+    boolean canShowPromo() {
+        return mPromoState != PromoState.NONE;
+    }
+
+    @Override
+    boolean refreshPromoState(@Nullable CoreAccountInfo visibleAccount) {
+        @PromoState int newState = computePromoState();
+        boolean wasStateChanged = mPromoState != newState;
+        mPromoState = newState;
+        return wasStateChanged;
     }
 
     @Override
@@ -92,5 +109,18 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
     @HistorySyncConfig.OptInMode
     int getHistoryOptInMode() {
         return HistorySyncConfig.OptInMode.REQUIRED;
+    }
+
+    private @PromoState int computePromoState() {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
+                && !signinManager.isSigninAllowed()) {
+            // If sign-in is not possible, then history sync isn't possible either.
+            return PromoState.NONE;
+        }
+        final HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(mProfile);
+        return historySyncHelper.shouldSuppressHistorySync() ? PromoState.NONE : PromoState.SIGNIN;
     }
 }

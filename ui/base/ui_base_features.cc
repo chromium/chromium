@@ -119,7 +119,12 @@ BASE_FEATURE(kWaylandLinuxDrmSyncobj,
 // Controls whether support for Wayland's per-surface scaling is enabled.
 BASE_FEATURE(kWaylandPerSurfaceScale,
              "WaylandPerSurfaceScale",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_LINUX)
+);
 
 // Controls whether Wayland text-input-v3 protocol support is enabled.
 BASE_FEATURE(kWaylandTextInputV3,
@@ -205,6 +210,12 @@ BASE_FEATURE(kUiCompositorScrollWithLayers,
 #endif
 );
 
+// TODO(crbug.com/389771428): Switch the ui::Compositor to use
+// cc::PropertyTrees and layer lists rather than layer trees.
+BASE_FEATURE(kUiCompositorUsesLayerLists,
+             "UiCompositorUsesLayerLists",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the use of a touch fling curve that is based on the behavior of
 // native apps on Windows.
 BASE_FEATURE(kExperimentalFlingAnimation,
@@ -215,16 +226,6 @@ BASE_FEATURE(kExperimentalFlingAnimation,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kClipboardFiles,
-             "ClipboardFiles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDragDropEmpty, "DragDropEmpty", base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDragDropFiles, "DragDropFiles", base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 // Cached in Java as well, make sure defaults are updated together.
@@ -422,9 +423,6 @@ BASE_FEATURE(kBubbleMetricsApi,
 BASE_FEATURE(kUseGammaContrastRegistrySettings,
              "UseGammaContrastRegistrySettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIncreaseWindowsTextContrast,
-             "IncreaseWindowsTextContrast",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 BASE_FEATURE(kBubbleFrameViewTitleIsHeading,
@@ -452,6 +450,11 @@ BASE_FEATURE(kWriteBookmarkWithoutTitle,
 // If enabled, fullscreen window state is updated asynchronously.
 BASE_FEATURE(kAsyncFullscreenWindowState,
              "AsyncFullscreenWindowState",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature flag for enabling the clipboardchange event.
+BASE_FEATURE(kClipboardChangeEvent,
+             "ClipboardChangeEvent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

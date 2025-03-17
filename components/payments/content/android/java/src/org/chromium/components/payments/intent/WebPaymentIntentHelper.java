@@ -11,8 +11,8 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.JsonWriter;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.payments.Address;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.PayerData;
@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /** The helper that handles intent for AndroidPaymentApp. */
+@NullMarked
 public class WebPaymentIntentHelper {
     /** The action name for the Pay Intent. */
     public static final String ACTION_PAY = "org.chromium.intent.action.PAY";
@@ -100,12 +101,11 @@ public class WebPaymentIntentHelper {
      * @param data The payment intent data.
      * @return The stringified payment details, if any.
      */
-    @Nullable
-    public static String getPaymentIntentDetails(Intent data) {
-        String details = data.getExtras().getString(EXTRA_RESPONSE_DETAILS);
+    public static @Nullable String getPaymentIntentDetails(Intent data) {
+        String details = data.getStringExtra(EXTRA_RESPONSE_DETAILS);
         if (details == null) {
             // try to get deprecated details rather than early returning.
-            details = data.getExtras().getString(EXTRA_DEPRECATED_RESPONSE_INSTRUMENT_DETAILS);
+            details = data.getStringExtra(EXTRA_DEPRECATED_RESPONSE_INSTRUMENT_DETAILS);
         }
         return details;
     }
@@ -122,7 +122,7 @@ public class WebPaymentIntentHelper {
     public static void parsePaymentResponse(
             int resultCode,
             Intent data,
-            PaymentOptions requestedPaymentOptions,
+            @Nullable PaymentOptions requestedPaymentOptions,
             PaymentErrorCallback errorCallback,
             PaymentSuccessCallback successCallback) {
         if (data == null) {
@@ -260,7 +260,7 @@ public class WebPaymentIntentHelper {
             String merchantName,
             String schemelessOrigin,
             String schemelessIframeOrigin,
-            @Nullable byte[][] certificateChain,
+            byte @Nullable [][] certificateChain,
             Map<String, PaymentMethodData> methodDataMap,
             PaymentItem total,
             @Nullable List<PaymentItem> displayItems,
@@ -335,7 +335,7 @@ public class WebPaymentIntentHelper {
             String serviceName,
             String schemelessOrigin,
             String schemelessIframeOrigin,
-            @Nullable byte[][] certificateChain,
+            byte @Nullable [][] certificateChain,
             Map<String, PaymentMethodData> methodDataMap,
             boolean clearIdFields,
             boolean removeDeprecatedFields) {
@@ -378,7 +378,7 @@ public class WebPaymentIntentHelper {
             String merchantName,
             String schemelessOrigin,
             String schemelessIframeOrigin,
-            @Nullable byte[][] certificateChain,
+            byte @Nullable [][] certificateChain,
             Map<String, PaymentMethodData> methodDataMap,
             PaymentItem total,
             @Nullable List<PaymentItem> displayItems,
@@ -405,23 +405,21 @@ public class WebPaymentIntentHelper {
                     EXTRA_MODIFIERS, PaymentDetailsModifier.serializeModifiers(modifiers.values()));
         }
 
-        // shippingOptions should not be null when shipping is requested.
+        // `shippingOptions` can be null when the payment app needs to send the shipping address to
+        // the merchant website in order to get the different shipping options available and their
+        // corresponding prices.
         if (paymentOptions != null
                 && paymentOptions.requestShipping
-                && (shippingOptions == null || shippingOptions.isEmpty())) {
-            throw new IllegalArgumentException(
-                    "shippingOptions should not be null or empty when shipping is requested.");
+                && shippingOptions != null
+                && !shippingOptions.isEmpty()) {
+            // ShippingOptions are populated only when shipping is requested.
+            Parcelable[] serializedShippingOptionList =
+                    PaymentShippingOption.buildPaymentShippingOptionList(shippingOptions);
+            extras.putParcelableArray(EXTRA_SHIPPING_OPTIONS, serializedShippingOptionList);
         }
 
         if (paymentOptions != null) {
             extras.putBundle(EXTRA_PAYMENT_OPTIONS, buildPaymentOptionsBundle(paymentOptions));
-        }
-
-        // ShippingOptions are populated only when shipping is requested.
-        if (paymentOptions != null && paymentOptions.requestShipping) {
-            Parcelable[] serializedShippingOptionList =
-                    PaymentShippingOption.buildPaymentShippingOptionList(shippingOptions);
-            extras.putParcelableArray(EXTRA_SHIPPING_OPTIONS, serializedShippingOptionList);
         }
 
         addCommonExtrasWithIdentity(
@@ -442,7 +440,7 @@ public class WebPaymentIntentHelper {
     private static Bundle addCommonExtrasWithIdentity(
             String schemelessOrigin,
             String schemelessIframeOrigin,
-            @Nullable byte[][] certificateChain,
+            byte @Nullable [][] certificateChain,
             Map<String, PaymentMethodData> methodDataMap,
             boolean removeDeprecatedFields,
             Bundle extras) {
@@ -484,7 +482,7 @@ public class WebPaymentIntentHelper {
     private static Bundle addDeprecatedCommonExtrasWithIdentity(
             String schemelessOrigin,
             String schemelessIframeOrigin,
-            @Nullable Parcelable[] serializedCertificateChain,
+            Parcelable @Nullable [] serializedCertificateChain,
             Map<String, PaymentMethodData> methodDataMap,
             Bundle methodDataBundle,
             Bundle extras) {
@@ -548,7 +546,7 @@ public class WebPaymentIntentHelper {
         return bundle;
     }
 
-    private static String deprecatedSerializeDetails(
+    private static @Nullable String deprecatedSerializeDetails(
             @Nullable PaymentItem total, @Nullable List<PaymentItem> displayItems) {
         StringWriter stringWriter = new StringWriter();
         JsonWriter json = new JsonWriter(stringWriter);
@@ -581,6 +579,7 @@ public class WebPaymentIntentHelper {
     }
 
     private static String getStringOrEmpty(Intent data, String key) {
-        return data.getExtras().getString(key, /* defaultValue= */ "");
+        @Nullable String value = data.getStringExtra(key);
+        return (value == null) ? "" : value;
     }
 }

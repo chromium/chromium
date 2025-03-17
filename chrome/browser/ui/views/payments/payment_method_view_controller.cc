@@ -99,11 +99,11 @@ class PaymentMethodListItem final : public PaymentRequestItemList::Item {
 
     std::u16string label_str = app_->GetLabel();
     if (!label_str.empty()) {
-      card_info_container->AddChildView(new views::Label(label_str));
+      card_info_container->AddChildViewRaw(new views::Label(label_str));
     }
     std::u16string sublabel = app_->GetSublabel();
     if (!sublabel.empty()) {
-      card_info_container->AddChildView(new views::Label(sublabel));
+      card_info_container->AddChildViewRaw(new views::Label(sublabel));
     }
     std::u16string missing_info;
     if (!app_->IsCompleteForPayment()) {
@@ -187,7 +187,7 @@ void PaymentMethodViewController::FillContentView(views::View* content_view) {
       payment_method_list_.CreateListView();
   list_view->SetID(
       static_cast<int>(DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW));
-  content_view->AddChildView(list_view.release());
+  content_view->AddChildViewRaw(list_view.release());
 }
 
 bool PaymentMethodViewController::ShouldShowPrimaryButton() {

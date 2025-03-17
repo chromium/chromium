@@ -12,3 +12,4 @@ dvallet@chromium.org
 
 per-file *.cmx=set noparent
 per-file *.cmx=file://build/fuchsia/SECURITY_OWNERS
+per-file headless_bluetooth_*=file://content/browser/bluetooth/OWNERS

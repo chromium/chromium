@@ -104,12 +104,11 @@ class PasswordSyncBridge : public syncer::DataTypeSyncBridge {
   bool SyncMetadataCacheContainsSupportedFields(
       const syncer::EntityMetadataMap& metadata_map) const;
 
+  const syncer::WipeModelUponSyncDisabledBehavior
+      wipe_model_upon_sync_disabled_behavior_;
+
   // Password store responsible for persistence.
   raw_ptr<PasswordStoreSync> password_store_sync_;
-
-  syncer::WipeModelUponSyncDisabledBehavior
-      wipe_model_upon_sync_disabled_behavior_ =
-          syncer::WipeModelUponSyncDisabledBehavior::kNever;
 
   base::RepeatingClosure sync_enabled_or_disabled_cb_;
 

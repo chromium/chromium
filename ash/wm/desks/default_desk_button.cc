@@ -44,7 +44,7 @@ DefaultDeskButton::DefaultDeskButton(DeskBarViewBase* bar_view)
                                  DesksController::Get()->desks()[0]->name()),
       ax::mojom::NameFrom::kAttribute);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kDefaultButtonCornerRadius));
 }
 

@@ -328,11 +328,6 @@ void FrameSinkBundleImpl::Submit(
           sink->DidNotProduceFrame(
               submission->data->get_did_not_produce_frame());
           break;
-
-        case mojom::BundledFrameSubmissionData::Tag::kDidDeleteSharedBitmap:
-          sink->DidDeleteSharedBitmap(
-              submission->data->get_did_delete_shared_bitmap());
-          break;
       }
     }
   }
@@ -347,15 +342,6 @@ void FrameSinkBundleImpl::Submit(
     if (weak_group) {
       weak_group->FlushMessages();
     }
-  }
-}
-
-void FrameSinkBundleImpl::DidAllocateSharedBitmap(
-    uint32_t sink_id,
-    base::ReadOnlySharedMemoryRegion region,
-    const SharedBitmapId& id) {
-  if (auto* sink = GetFrameSink(sink_id)) {
-    sink->DidAllocateSharedBitmap(std::move(region), id);
   }
 }
 

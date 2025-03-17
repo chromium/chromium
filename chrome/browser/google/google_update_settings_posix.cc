@@ -12,7 +12,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/crash/core/app/crashpad.h"
 
@@ -33,7 +32,7 @@ base::LazyInstance<base::Lock>::Leaky g_posix_client_id_lock =
 const char kConsentToSendStats[] = "Consent To Send Stats";
 
 void SetConsentFilePermissionIfNeeded(const base::FilePath& consent_file) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // The consent file needs to be world readable. See http://crbug.com/383003
   int permissions;
   if (base::GetPosixFilePermissions(consent_file, &permissions) &&

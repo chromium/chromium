@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/component_updater/installer_policies/masked_domain_list_component_installer_policy.h"
 
 #include <optional>
@@ -149,9 +144,8 @@ void MaskedDomainListComponentInstallerPolicy::GetHash(
 // static
 void MaskedDomainListComponentInstallerPolicy::GetPublicKeyHash(
     std::vector<uint8_t>* hash) {
-  hash->assign(kMaskedDomainListPublicKeySHA256,
-               kMaskedDomainListPublicKeySHA256 +
-                   std::size(kMaskedDomainListPublicKeySHA256));
+  hash->assign(std::begin(kMaskedDomainListPublicKeySHA256),
+               std::end(kMaskedDomainListPublicKeySHA256));
 }
 
 std::string MaskedDomainListComponentInstallerPolicy::GetName() const {

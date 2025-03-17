@@ -18,12 +18,10 @@ const CGFloat kVerticalOffset = 8.0f;
 BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
                                NSString* text,
                                NSString* title,
-                               UIImage* image,
                                BubbleArrowDirection arrow_direction,
                                BubbleAlignment alignment,
                                id<BubbleViewDelegate> delegate) {
   BOOL show_title = NO;
-  BOOL show_image = NO;
   BOOL show_close_button = NO;
   BOOL show_snooze_button = NO;
   NSTextAlignment text_alignment = NSTextAlignmentNatural;
@@ -37,11 +35,9 @@ BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
       break;
     case BubbleViewTypeRich:
       show_title = YES;
-      show_image = !IsRichBubbleWithoutImageEnabled();
       break;
     case BubbleViewTypeRichWithSnooze:
       show_title = YES;
-      show_image = !IsRichBubbleWithoutImageEnabled();
       show_snooze_button = YES;
       break;
   }
@@ -51,7 +47,6 @@ BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
                              alignment:alignment
                       showsCloseButton:show_close_button
                                  title:show_title ? title : nil
-                                 image:show_image ? image : nil
                      showsSnoozeButton:show_snooze_button
                          textAlignment:text_alignment
                               delegate:delegate];
@@ -62,7 +57,6 @@ BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
 
 @interface BubbleViewController ()
 @property(nonatomic, copy, readonly) NSString* text;
-@property(nonatomic, strong, readonly) UIImage* image;
 @property(nonatomic, assign, readonly) BubbleArrowDirection arrowDirection;
 @property(nonatomic, assign, readonly) BubbleAlignment alignment;
 @property(nonatomic, weak) id<BubbleViewDelegate> delegate;
@@ -78,7 +72,6 @@ BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
 
 - (instancetype)initWithText:(NSString*)text
                        title:(NSString*)titleString
-                       image:(UIImage*)image
               arrowDirection:(BubbleArrowDirection)direction
                    alignment:(BubbleAlignment)alignment
               bubbleViewType:(BubbleViewType)type
@@ -86,7 +79,6 @@ BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _text = text;
-    _image = image;
     self.title = [titleString copy];
     _arrowDirection = direction;
     _alignment = alignment;
@@ -98,7 +90,7 @@ BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
 
 - (void)loadView {
   self.view =
-      BubbleViewWithType(self.bubbleViewType, self.text, self.title, self.image,
+      BubbleViewWithType(self.bubbleViewType, self.text, self.title,
                          self.arrowDirection, self.alignment, self.delegate);
   // Begin hidden.
   [self.view setAlpha:0.0f];

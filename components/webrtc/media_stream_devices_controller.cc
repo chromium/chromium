@@ -4,12 +4,12 @@
 
 #include "components/webrtc/media_stream_devices_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/browser_context.h"
@@ -23,7 +23,6 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/permissions/android/android_permission_util.h"
@@ -449,7 +448,7 @@ void MediaStreamDevicesController::PromptAnsweredGroupedRequest(
   }
 
   std::vector<ContentSetting> responses;
-  base::ranges::transform(
+  std::ranges::transform(
       permissions_status, back_inserter(responses),
       permissions::PermissionUtil::PermissionStatusToContentSetting);
 

@@ -492,7 +492,7 @@ void RecordInitialButtonRemappingAction(
 std::optional<ui::KeyboardDevice> FindKeyboardWithId(int device_id) {
   const auto& keyboards =
       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices();
-  auto iter = base::ranges::find(
+  auto iter = std::ranges::find(
       keyboards, device_id,
       [](const ui::KeyboardDevice& keyboard) { return keyboard.id; });
   if (iter == keyboards.end()) {

@@ -4,6 +4,8 @@
 
 #include "extensions/browser/zipfile_installer.h"
 
+#include <variant>
+
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -142,12 +144,12 @@ ZipFileInstaller::~ZipFileInstaller() = default;
 void ZipFileInstaller::Unzip(ZipResultVariant unzip_dir_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (absl::holds_alternative<std::string>(unzip_dir_or_error)) {
-    ReportFailure(absl::get<std::string>(unzip_dir_or_error));
+  if (std::holds_alternative<std::string>(unzip_dir_or_error)) {
+    ReportFailure(std::get<std::string>(unzip_dir_or_error));
     return;
   }
 
-  base::FilePath unzip_dir = absl::get<base::FilePath>(unzip_dir_or_error);
+  base::FilePath unzip_dir = std::get<base::FilePath>(unzip_dir_or_error);
   unzip::Unzip(
       unzip::LaunchUnzipper(), zip_file_, unzip_dir,
       unzip::mojom::UnzipOptions::New(),

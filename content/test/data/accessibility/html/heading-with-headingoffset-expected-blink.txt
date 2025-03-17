@@ -1,0 +1,82 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer description='container headingoffset=1' descriptionFrom=title
+++++++++heading hierarchicalLevel=2
+++++++++heading hierarchicalLevel=3
+++++++++heading hierarchicalLevel=4
+++++++++genericContainer description='container headingoffset=2' descriptionFrom=title
+++++++++++heading hierarchicalLevel=4
+++++++++++heading hierarchicalLevel=5
+++++++++++genericContainer description='container headingreset' descriptionFrom=title
+++++++++++++heading hierarchicalLevel=1
+++++++++++dialog name='container dialog' nameFrom=title
+++++++++++++heading hierarchicalLevel=4
+++++++++++++heading hierarchicalLevel=1
+++++++genericContainer description='container headingoffset=8' descriptionFrom=title
+++++++++heading hierarchicalLevel=9
+++++++++heading hierarchicalLevel=9
+++++++++heading hierarchicalLevel=9
+++++++++heading hierarchicalLevel=9
+++++++++heading hierarchicalLevel=9
+++++++++heading hierarchicalLevel=9
+++++++++genericContainer description='container headingreset' descriptionFrom=title
+++++++++++heading hierarchicalLevel=1
+++++++++dialog name='container dialog' nameFrom=title
+++++++++++heading hierarchicalLevel=9
+++++++genericContainer description='container headingoffset=-3' descriptionFrom=title
+++++++++heading hierarchicalLevel=1
+++++++++heading hierarchicalLevel=2
+++++++++heading hierarchicalLevel=3
+++++++++heading hierarchicalLevel=4
+++++++++heading hierarchicalLevel=5
+++++++++heading hierarchicalLevel=6
+++++++++genericContainer description='container headingreset' descriptionFrom=title
+++++++++++heading hierarchicalLevel=1
+++++++++dialog name='container dialog' nameFrom=title
+++++++++++heading hierarchicalLevel=1
+++++++genericContainer description='container shadowroot headingoffset=1' descriptionFrom=title
+++++++++heading hierarchicalLevel=2
+++++++++heading hierarchicalLevel=2
+++++++genericContainer description='container shadowroot slotted headingoffset=1' descriptionFrom=title
+++++++++heading hierarchicalLevel=2
+++++++++heading hierarchicalLevel=3
+++++++++heading hierarchicalLevel=3
+++++++++genericContainer ignored
+++++++++++heading hierarchicalLevel=2
+++++++genericContainer description='container shadowroot slotted with container headingoffset=1' descriptionFrom=title
+++++++++heading hierarchicalLevel=2
+++++++++genericContainer description='container inside shadowroot headingoffset=1' descriptionFrom=title
+++++++++++heading hierarchicalLevel=4
+++++++++++heading hierarchicalLevel=6
+++++++++++heading hierarchicalLevel=4
+++++++genericContainer description='container shadowroot slot with attr headingoffset=1' descriptionFrom=title
+++++++++heading hierarchicalLevel=2
+++++++++genericContainer ignored
+++++++++++heading hierarchicalLevel=4
+++++++heading hierarchicalLevel=2
+++++++heading hierarchicalLevel=3
+++++++heading hierarchicalLevel=3
+++++++heading hierarchicalLevel=4
+++++++heading hierarchicalLevel=2
+++++++heading hierarchicalLevel=3
+++++++heading hierarchicalLevel=3
+++++++heading hierarchicalLevel=4
+++++++heading hierarchicalLevel=9
+++++++heading hierarchicalLevel=9
+++++++heading hierarchicalLevel=1
+++++++heading hierarchicalLevel=2
+++++++genericContainer description='container with no attr' descriptionFrom=title
+++++++++heading hierarchicalLevel=2
+++++++++heading hierarchicalLevel=3
+++++++++heading hierarchicalLevel=2
+++++++++heading hierarchicalLevel=3
+++++++++heading hierarchicalLevel=1
+++++++++heading hierarchicalLevel=2
+++++++genericContainer description='many nested + and - values' descriptionFrom=title
+++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++heading hierarchicalLevel=5
+++++++heading hierarchicalLevel=3

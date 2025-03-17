@@ -57,8 +57,8 @@ void WaitForHistogram(const std::string& histogram_name) {
       std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
           histogram_name,
           base::BindLambdaForTesting(
-              [&](const char* histogram_name, uint64_t name_hash,
-                  base::HistogramBase::Sample sample) { run_loop.Quit(); }));
+              [&](std::string_view histogram_name, uint64_t name_hash,
+                  base::HistogramBase::Sample32 sample) { run_loop.Quit(); }));
   run_loop.Run();
 }
 

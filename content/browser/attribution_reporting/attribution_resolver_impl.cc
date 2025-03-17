@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -17,8 +19,6 @@
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -435,6 +435,29 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
     return make_result(StoreSourceResult::InternalError());
   }
 
+  const net::SchemefulSite reporting_site(
+      source.common_info().reporting_origin());
+  if (int64_t count =
+          storage_.CountUniqueDailyReportingOriginsPerReportingSiteForSource(
+              reporting_site, source_time);
+      count >= 0) {
+    base::UmaHistogramCounts100(
+        "Conversions.UniqueReportingOriginsPerReportingSiteForSource", count);
+  }
+
+  for (const net::SchemefulSite& destination_site :
+       source.registration().destination_set.destinations()) {
+    if (int64_t count =
+            storage_
+                .CountUniqueDailyReportingOriginsPerDestinationAndReportingSiteForSource(
+                    destination_site, reporting_site, source_time);
+        count >= 0) {
+      base::UmaHistogramCounts100(
+          "Conversions.UniqueReportingOriginsPerDestAndReportingSiteForSource",
+          count);
+    }
+  }
+
   std::optional<base::Time> min_fake_report_time;
 
   if (attribution_logic == StoredSource::AttributionLogic::kFalsely) {
@@ -730,6 +753,8 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
           GetSuccessResult(*aggregatable_result)) {
     aggregatable_result = storage_.MaybeStoreAggregatableAttributionReportData(
         source_to_attribute->source,
+        trigger_registration.aggregatable_trigger_config.trigger_context_id()
+            .has_value(),
         source_to_attribute->source.remaining_aggregatable_attribution_budget(),
         source_to_attribute->num_aggregatable_attribution_reports,
         aggregatable_dedup_key,
@@ -839,7 +864,7 @@ AttributionResolverImpl::MaybeCreateEventLevelReport(
 
   const SourceType source_type = common_info.source_type();
 
-  auto event_trigger = base::ranges::find_if(
+  auto event_trigger = std::ranges::find_if(
       trigger.registration().event_triggers,
       [&](const attribution_reporting::EventTriggerData& event_trigger) {
         return source.filter_data().Matches(
@@ -908,7 +933,7 @@ AttributionResolverImpl::MaybeCreateAggregatableAttributionReport(
 
   const SourceType source_type = common_info.source_type();
 
-  auto matched_dedup_key = base::ranges::find_if(
+  auto matched_dedup_key = std::ranges::find_if(
       trigger.registration().aggregatable_dedup_keys,
       [&](const attribution_reporting::AggregatableDedupKey&
               aggregatable_dedup_key) {
@@ -1100,17 +1125,16 @@ std::vector<StoredSource> AttributionResolverImpl::GetActiveSourcesWithLimit(
 std::set<AttributionDataModel::DataKey>
 AttributionResolverImpl::GetAllDataKeys() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SCOPED_UMA_HISTOGRAM_TIMER("Conversions.GetAllDataKeysTime");
   return storage_.GetAllDataKeys();
 }
 
 void AttributionResolverImpl::DeleteByDataKey(
     const AttributionDataModel::DataKey& datakey) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ClearData(base::Time::Min(), base::Time::Max(),
-            base::BindRepeating(std::equal_to<blink::StorageKey>(),
-                                blink::StorageKey::CreateFirstParty(
-                                    datakey.reporting_origin())),
-            /*delete_rate_limit_data=*/true);
+  storage_.ClearDataWithFilter(base::Time::Min(), base::Time::Max(),
+                               datakey.reporting_origin(),
+                               /*delete_rate_limit_data=*/true);
 }
 
 bool AttributionResolverImpl::DeleteReport(AttributionReport::Id report_id) {
@@ -1139,7 +1163,8 @@ void AttributionResolverImpl::ClearDataIncludingRateLimit(
     base::Time delete_begin,
     base::Time delete_end,
     StoragePartition::StorageKeyMatcherFunction filter) {
-  ClearData(delete_begin, delete_end, filter, /*delete_rate_limit_data=*/true);
+  ClearData(delete_begin, delete_end, std::move(filter),
+            /*delete_rate_limit_data=*/true);
 }
 
 void AttributionResolverImpl::ClearData(
@@ -1264,6 +1289,12 @@ AttributionResolverImpl::ProcessAggregatableDebugReport(
   }
 
   return make_result(ProcessAggregatableDebugReportStatus::kSuccess);
+}
+
+void AttributionResolverImpl::StoreOsRegistrations(
+    const base::flat_set<url::Origin>& origins) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  storage_.StoreOsRegistrations(origins);
 }
 
 void AttributionResolverImpl::SetDelegate(

@@ -18,6 +18,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.RequiredCallback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
@@ -181,7 +182,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     /** Clear the status map and references to other objects. */
     @Override
     public void destroy() {
-        if (mWebContentsObserver != null) mWebContentsObserver.destroy();
+        if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
         mIsDestroyed = true;
     }
 
@@ -209,14 +210,17 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         mCustomTabNavigationDelegate =
                 new InterceptNavigationDelegate() {
                     @Override
-                    public boolean shouldIgnoreNavigation(
+                    public void shouldIgnoreNavigation(
                             NavigationHandle navigationHandle,
                             GURL escapedUrl,
                             boolean hiddenCrossFrame,
-                            boolean isSandboxedFrame) {
+                            boolean isSandboxedFrame,
+                            boolean shouldRunAsync,
+                            RequiredCallback<Boolean> resultCallback) {
                         if (DomDistillerUrlUtils.isDistilledPage(navigationHandle.getUrl())
                                 || navigationHandle.isExternalProtocol()) {
-                            return false;
+                            resultCallback.onResult(false);
+                            return;
                         }
 
                         Intent returnIntent =
@@ -233,7 +237,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
                         activity.startActivity(returnIntent);
                         activity.finish();
-                        return true;
+                        resultCallback.onResult(true);
                     }
                 };
 
@@ -294,7 +298,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
     /** Clear the reader mode state for this manager. */
     private void removeTabState() {
-        if (mWebContentsObserver != null) mWebContentsObserver.destroy();
+        if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
         mDistillationStatus = DistillationStatus.POSSIBLE;
         mIsDismissed = false;
         mMessageRequestedForNavigation = false;
@@ -367,7 +371,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
                 // Reader Mode should not pollute the navigation stack. To avoid this, watch for
                 // navigations and prepare to remove any that are "chrome-distiller" urls.
-                NavigationController controller = mWebContents.get().getNavigationController();
+                NavigationController controller = getWebContents().getNavigationController();
                 int index = controller.getLastCommittedEntryIndex();
                 NavigationEntry entry = controller.getEntryAtIndex(index);
 
@@ -395,7 +399,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
                 if (mShouldRemovePreviousNavigation) {
                     mShouldRemovePreviousNavigation = false;
-                    NavigationController controller = mWebContents.get().getNavigationController();
+                    NavigationController controller = getWebContents().getNavigationController();
                     if (controller.getEntryAtIndex(mLastDistillerPageIndex) != null) {
                         controller.removeEntryAtIndex(mLastDistillerPageIndex);
                     }

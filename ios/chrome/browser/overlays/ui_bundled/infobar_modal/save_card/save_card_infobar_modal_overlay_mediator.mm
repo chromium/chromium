@@ -98,13 +98,15 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
 }
 
 - (void)setConsumer:(id<InfobarSaveCardModalConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
+  }
   _consumer = consumer;
 
   DefaultInfobarOverlayRequestConfig* config = self.config;
-  if (!_consumer || !config)
+  if (!_consumer || !config) {
     return;
+  }
 
   autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
@@ -123,12 +125,6 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
   // previously saved.
   BOOL supportsEditing = delegate->is_for_upload() && !infobar->accepted();
 
-  // Convert gfx::Image to UIImage. The NSDictionary below doesn't support nil,
-  // so NSNull must be used.
-  const gfx::Image& avatarGfx = delegate->displayed_target_account_avatar();
-  NSObject* avatar =
-      avatarGfx.IsEmpty() ? [NSNull null] : avatarGfx.ToUIImage();
-
   NSDictionary* prefs = @{
     kCardholderNamePrefKey :
         base::SysUTF16ToNSString(delegate->cardholder_name()),
@@ -144,13 +140,24 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
     kSupportsEditingPrefKey : @(supportsEditing),
     kDisplayedTargetAccountEmailPrefKey :
         base::SysUTF16ToNSString(delegate->displayed_target_account_email()),
-    kDisplayedTargetAccountAvatarPrefKey : avatar,
+    kLogoIconPrefKey : NativeImage(delegate->GetIconId()),
+    kLogoIconDescriptionPrefKey :
+        base::SysUTF16ToNSString(delegate->logo_icon_description()),
   };
   [_consumer setupModalViewControllerWithPrefs:prefs];
 
-  if (delegate->is_for_upload() && infobar->accepted() &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+  if (!infobar->accepted()) {
+    // Log metrics for modal being shown to offer card save. We log each time
+    // the modal is shown, even if it is a re-show via the omnibox chip, as
+    // each show will be paired with one outcome (e.g. dismiss, accept, etc).
+    // However once the prompt has been accepted, we stop logging any re-shows
+    // as the user has already committed to the save flow.
+    delegate->LogSaveCreditCardInfoBarResultMetric(
+        autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kShown,
+        autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kModal);
+  }
+
+  if (delegate->is_for_upload() && infobar->accepted()) {
     // If the infobar has been accepted and the card upload is in progress or
     // complete, display the appropriate progress state (loading or
     // confirmation).
@@ -162,27 +169,23 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
 #pragma mark - Public
 
 - (void)creditCardUploadCompleted:(BOOL)card_saved {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    if (!_loadingDismissedByUser) {
-      autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
-          autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted);
-    }
-    if (card_saved) {
-      autofill::autofill_metrics::
-          LogCreditCardUploadConfirmationViewShownMetric(
-              /*is_shown=*/true, /*is_card_uploaded=*/true);
+  if (!_loadingDismissedByUser) {
+    autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
+        autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted);
+  }
+  if (card_saved) {
+    autofill::autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
+        /*is_shown=*/true, /*is_card_uploaded=*/true);
 
-      _creditCardUploadCompleted = YES;
-      [self.consumer showProgressWithUploadCompleted:YES];
+    _creditCardUploadCompleted = YES;
+    [self.consumer showProgressWithUploadCompleted:YES];
 
-      // Auto close modal after showing successful card save confirmation.
-      [self closeModalAfterDelay];
-    } else {
-      // On card save failure, this modal is dimissed and user is shown an error
-      // dialog triggered from IOSChromePaymentsAutofillClient.
-      [self dismissOverlay];
-    }
+    // Auto close modal after showing successful card save confirmation.
+    [self closeModalAfterDelay];
+  } else {
+    // On card save failure, this modal is dimissed and user is shown an error
+    // dialog triggered from IOSChromePaymentsAutofillClient.
+    [self dismissOverlay];
   }
 }
 
@@ -210,17 +213,13 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
       self.saveCardDelegate;
   InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
 
+  delegate->LogSaveCreditCardInfoBarResultMetric(
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kAccepted,
+      autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kModal);
+
   infobar->set_accepted(delegate->UpdateAndAccept(
       base::SysNSStringToUTF16(cardholderName), base::SysNSStringToUTF16(month),
       base::SysNSStringToUTF16(year)));
-
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
-        /*is_shown=*/false);
-    [self dismissOverlay];
-    return;
-  }
 
   if (delegate->is_for_upload()) {
     autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
@@ -238,6 +237,16 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
 }
 
 - (void)dismissModalAndOpenURL:(const GURL&)linkURL {
+  InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
+
+  if (infobar && !infobar->accepted()) {
+    // Logs that modal is being dismissed without being accepted due to link
+    // clicked by the user.
+    self.saveCardDelegate->LogSaveCreditCardInfoBarResultMetric(
+        autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kLinkClicked,
+        autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kModal);
+  }
+
   [self.save_card_delegate pendingURLToLoad:linkURL];
   [self dismissOverlay];
 }
@@ -255,9 +264,7 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
   // completed, modal would be showing a success confirmation and value of
   // `_creditCardUploadCompleted` would be `YES`. Modal getting closed from here
   // means user dismissed it using the close button.
-  if (_creditCardUploadCompleted.has_value() &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+  if (_creditCardUploadCompleted.has_value()) {
     if (_creditCardUploadCompleted.value()) {
       [self onConfirmationClosedWithAutoClose:NO];
     } else {
@@ -265,6 +272,15 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
       autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
           autofill::autofill_metrics::SaveCardPromptResult::kClosed);
     }
+  } else {
+    autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
+        self.saveCardDelegate;
+
+    // Logs that modal is being dismissed without being accepted due to cancel
+    // button tapped by the user.
+    delegate->LogSaveCreditCardInfoBarResultMetric(
+        autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kDenied,
+        autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kModal);
   }
 }
 

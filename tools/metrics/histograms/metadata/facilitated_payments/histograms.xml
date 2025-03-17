@@ -41,6 +41,72 @@ reviewer.
       summary="Facilitate a Pix based payment using Google Pay."/>
 </variants>
 
+<variants name="PurchaseActionResult">
+  <variant name="Abandoned" summary="Abandoned InitiatePurchaseAction call"/>
+  <variant name="Failed" summary="Failed InitiatePurchaseAction call"/>
+  <variant name="Succeeded" summary="Successful InitiatePurchaseAction call"/>
+</variants>
+
+<histogram
+    name="FacilitatedPayments.Ewallet.FopSelector.UserAction.{AvailableEwalletsConfiguration}"
+    enum="FacilitatedPayments.FopSelectorAction" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for eWallet transactions on Chrome, this
+    histogram logs user actions on the eWallet FOP selector. FOP selector UI
+    will be different according to the {AvailableEwalletsConfiguration}, which
+    might affect user behaviors. {AvailableEwalletsConfiguration} infers the
+    available eWallet accounts for this profile. [Frequency] Logged once per
+    eWallet payflow. eWallet payflow is triggered at most once per page load.
+    [Trigger] User interacts with the eWallet FOP selector.
+  </summary>
+  <token key="AvailableEwalletsConfiguration">
+    <variant name="MultipleEwallets"
+        summary="Mutilple eWallets are available."/>
+    <variant name="SingleBoundEwallet"
+        summary="Only one eWallet is available, and it's bound to the device."/>
+    <variant name="SingleUnboundEwallet"
+        summary="Only one eWallet is available, and it’s not bound to the
+                 device."/>
+  </token>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.Ewallet.FopSelectorShown.LatencyAfterDetectingPaymentLink"
+    units="ms" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the latency for
+    seeing the FOP selector since a payment link was detected. [Frequency]
+    Logged once per payflow. Ewallet payflow is triggered at most once per page
+    load. [Trigger] The histogram is logged when the eWallet FOP selector is
+    shown.
+  </summary>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.Ewallet.FopSelectorShown.LatencyAfterDetectingPaymentLink.{Scheme}"
+    units="ms" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the latency for
+    seeing the FOP selector since a payment link was detected. The payment is
+    supported by {Scheme}. [Frequency] Logged once per payflow. Ewallet payflow
+    is triggered at most once per page load. [Trigger] The histogram is logged
+    when the eWallet FOP selector is shown.
+  </summary>
+  <token key="Scheme" variants="EwalletScheme"/>
+</histogram>
+
 <histogram
     name="FacilitatedPayments.Ewallet.GetClientToken.{Result}.Latency.{Scheme}"
     units="ms" expires_after="2025-07-01">
@@ -108,6 +174,31 @@ reviewer.
 </histogram>
 
 <histogram
+    name="FacilitatedPayments.Ewallet.InitiatePurchaseAction.{Result}.Latency.{Scheme}.{IsDeviceBound}"
+    units="ms" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the latency for the call made to payments platform (client) which
+    faciliates the payment and breaks it down by the result of the call. The
+    result is {Result}. The payment is supported by {Scheme}. Whether the chosen
+    payment FOP is bound to the device: {IsDeviceBound}. [Frequency] Logged at
+    most once per eWallet payflow. [Trigger] User selects a payment instrument
+    from the list of options shown in the eWallet UI.
+  </summary>
+  <token key="Result" variants="PurchaseActionResult"/>
+  <token key="Scheme" variants="EwalletScheme"/>
+  <token key="IsDeviceBound">
+    <variant name="DeviceBound"
+        summary="The chosen payment FOP is bound to the device"/>
+    <variant name="DeviceNotBound"
+        summary="The chosen payment FOP is not bound to the device"/>
+  </token>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.Ewallet.IsApiAvailable.{Result}.Latency.{Scheme}"
     units="ms" expires_after="2025-07-01">
   <owner>junhuihe@google.com</owner>
@@ -172,6 +263,51 @@ reviewer.
   <token key="Scheme" variants="EwalletScheme"/>
 </histogram>
 
+<histogram name="FacilitatedPayments.Ewallet.PaymentLinkDetected"
+    enum="Boolean" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An eWallet specific histogram. Logs true when a payment link is detected on
+    a merchant webpage. [Trigger] A payment link on a merchant page has
+    triggered the eWallet push payment flow. [Frequency] Logged once per page
+    load.
+  </summary>
+</histogram>
+
+<histogram name="FacilitatedPayments.Ewallet.UiScreenShown.{Scheme}"
+    enum="FacilitatedPayments.UiScreen" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the UI screens
+    being shown to the user. The payment is supported by {Scheme}. [Frequency]
+    Each enum value is logged at most once per payflow. [Trigger] The browser
+    gets signal that a {Scheme} payment link exists on the page, and the user
+    clicks on the UI screens to proceed with payment.
+  </summary>
+  <token key="Scheme" variants="EwalletScheme"/>
+</histogram>
+
+<histogram name="FacilitatedPayments.Pix.FopSelected.Latency" units="ms"
+    expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for Pix payments, this histogram logs the time
+    taken by the user to select a Pix account to pay with after the FOP selector
+    is shown. [Frequency] Logged once per Pix payflow. Pix payflow is triggered
+    at most once per page load. [Trigger] The histogram is logged when the user
+    selects the Pix account to pay with on the FOP selector.
+  </summary>
+</histogram>
+
 <histogram name="FacilitatedPayments.Pix.FopSelector.UserAction"
     enum="FacilitatedPayments.FopSelectorAction" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
@@ -216,15 +352,11 @@ reviewer.
     in the Pix UI and the backend returns the instruction to trigger the
     purchase action flow in GMSCore.
   </summary>
-  <token key="Result">
-    <variant name="Abandoned" summary="Abandoned InitiatePurchaseAction call"/>
-    <variant name="Failed" summary="Failed InitiatePurchaseAction call"/>
-    <variant name="Succeeded" summary="Successful InitiatePurchaseAction call"/>
-  </token>
+  <token key="Result" variants="PurchaseActionResult"/>
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.PayflowExitedReason"
-    enum="FacilitatedPayments.PixFlowExitedReason" expires_after="2025-07-01">
+    enum="FacilitatedPayments.PixFlowExitedReason" expires_after="2025-08-31">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -238,7 +370,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.Pix.PaymentCodeValidation.{PaymentCodeValidationResult}.Latency"
-    units="ms" expires_after="2025-07-01">
+    units="ms" expires_after="2025-08-31">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -262,7 +394,7 @@ reviewer.
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.PixCodeCopied" enum="Boolean"
-    expires_after="2025-07-01">
+    expires_after="2025-08-31">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -278,20 +410,27 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="FacilitatedPayments.Pix.UiShown"
-    enum="FacilitatedPayments.UiScreen" expires_after="2025-07-01">
+<histogram name="FacilitatedPayments.Pix.Transaction.{Result}.Latency"
+    units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    On a webpage that is eligible for facilitated payments, this histogram logs
-    the UI screens being shown to the user. [Frequency] Each enum value is
-    logged at most once per Pix payflow. Pix payflow is triggered at most once
-    per page load. [Trigger] The Pix payflow could be triggered on pages that
-    have loaded, and the main frame contains a valid payment code for Pix. The
-    screens are shown during the payflow based on internal logic.
+    Logs the overall latency for the Pix transaction as experienced by the user
+    and breaks it down by the result of the transaction. The timer starts when
+    the user copies the Pix code, and ends when Chrome receives the result of
+    the transaction (which also coincides with all Chrome and platform UIs
+    closing). The result is {Result}. [Frequency] Logged at most once per Pix
+    payflow. Pix payflow is triggered at most once per page load. [Trigger] User
+    copies the Pix code, goes through the steps to complete the transaction, and
+    at the end Chrome receives the result of the transaction.
+
+    Note: A `Succeeded` result doesn't indicate that the transaction was
+    successful. It only means that the payments backend was contacted, and a
+    response was received.
   </summary>
+  <token key="Result" variants="PurchaseActionResult"/>
 </histogram>
 
 <histogram name="FacilitatedPayments.SettingsPage.Shown" enum="BooleanShown"
@@ -430,6 +569,22 @@ reviewer.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
   <token key="Result" variants="BooleanResult"/>
+</histogram>
+
+<histogram name="FacilitatedPayments.{FacilitatedPaymentsType}.UiScreenShown"
+    enum="FacilitatedPayments.UiScreen" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for facilitated payments, this histogram logs
+    the UI screens being shown to the user. [Frequency] Each enum value is
+    logged at most once per {FacilitatedPaymentsType} payflow. [Trigger] The
+    browser gets signal that a {FacilitatedPaymentsType} code exists on the
+    page, and the user clicks on the UI screens to proceed with payment.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
 </histogram>
 
 </histograms>

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
+
 #include <memory>
 
 #include "base/metrics/user_metrics.h"
@@ -9,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"

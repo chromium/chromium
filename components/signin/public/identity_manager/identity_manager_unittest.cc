@@ -20,7 +20,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -63,7 +62,7 @@
 #include "components/signin/internal/identity_manager/child_account_info_fetcher_android.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
@@ -107,8 +106,9 @@ class CustomFakeOAuth2AccessTokenManager : public FakeOAuth2AccessTokenManager {
 
       // It should trigger OnAccessTokenRemovedFromCache from
       // IdentityManager::DiagnosticsObserver.
-      for (auto& observer : GetDiagnosticsObserversForTesting())
+      for (auto& observer : GetDiagnosticsObserversForTesting()) {
         observer.OnAccessTokenRemoved(account_id, scopes);
+      }
 
       std::move(on_access_token_invalidated_callback_).Run();
     }
@@ -211,8 +211,9 @@ class TestIdentityManagerDiagnosticsObserver
     token_requestor_consumer_id_ = consumer_id;
     token_requestor_scopes_ = scopes;
 
-    if (on_access_token_requested_callback_)
+    if (on_access_token_requested_callback_) {
       std::move(on_access_token_requested_callback_).Run();
+    }
   }
 
   void OnAccessTokenRemovedFromCache(const CoreAccountId& account_id,
@@ -231,8 +232,9 @@ class TestIdentityManagerDiagnosticsObserver
     access_token_request_completed_scopes_ = scopes;
     access_token_request_completed_error_ = error;
 
-    if (on_access_token_request_completed_callback_)
+    if (on_access_token_request_completed_callback_) {
       std::move(on_access_token_request_completed_callback_).Run();
+    }
   }
 
   raw_ptr<IdentityManager> identity_manager_;
@@ -271,7 +273,7 @@ class IdentityManagerTest : public testing::Test {
   const std::string kTestLocale = "locale";
   const std::string kTestPictureUrl = "http://picture.example.com/picture.jpg";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const std::string kTestEmailWithPeriod = "m.e@gmail.com";
 #endif
 
@@ -341,8 +343,9 @@ class IdentityManagerTest : public testing::Test {
     // trigger a DCHECK because there are still living observers.
     identity_manager_observer_.reset();
     identity_manager_diagnostics_observer_.reset();
-    if (identity_manager_)
+    if (identity_manager_) {
       identity_manager_->Shutdown();
+    }
     identity_manager_.reset();
 
     if (temp_profile_dir_.IsValid()) {
@@ -361,7 +364,7 @@ class IdentityManagerTest : public testing::Test {
     account_tracker_service->Initialize(&pref_service_,
                                         temp_profile_dir_.GetPath());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     account_manager::AccountManager::RegisterPrefs(pref_service_.registry());
     auto* ash_account_manager = GetAccountManagerFactory()->GetAccountManager(
         temp_profile_dir_.GetPath().value());
@@ -423,8 +426,7 @@ class IdentityManagerTest : public testing::Test {
           account_tracker_service->SeedAccountInfo(kTestGaiaId, kTestEmail);
       primary_account_manager->SetPrimaryAccountInfo(
           account_tracker_service->GetAccountInfo(account_id),
-          ConsentLevel::kSync,
-          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+          ConsentLevel::kSync, signin_metrics::AccessPoint::kUnknown);
     }
 
     IdentityManager::InitParameters init_params;
@@ -452,7 +454,7 @@ class IdentityManagerTest : public testing::Test {
         token_service.get(), account_tracker_service.get(),
         primary_account_manager.get(), &pref_service_);
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     init_params.account_manager_facade = account_manager_facade_.get();
 #endif
     init_params.signin_client = &signin_client_;
@@ -502,7 +504,7 @@ class IdentityManagerTest : public testing::Test {
     return &test_url_loader_factory_;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::AccountManagerFactory* GetAccountManagerFactory() {
     return &account_manager_factory_;
   }
@@ -511,7 +513,7 @@ class IdentityManagerTest : public testing::Test {
  private:
   base::ScopedTempDir temp_profile_dir_;
   base::test::TaskEnvironment task_environment_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::AccountManagerFactory account_manager_factory_;
   std::unique_ptr<account_manager::AccountManagerFacadeImpl>
       account_manager_facade_;
@@ -543,7 +545,7 @@ TEST_F(IdentityManagerTest, Construct) {
   EXPECT_NE(identity_manager()->GetAccountsMutator(), nullptr);
   EXPECT_EQ(identity_manager()->GetDeviceAccountsSynchronizer(), nullptr);
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_NE(identity_manager()->GetAccountManagerFacade(), nullptr);
 #endif
 }
@@ -564,11 +566,16 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAtStartup) {
 
 // Signin/signout tests aren't relevant and cannot build on ChromeOS, which
 // doesn't support signin/signout.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Test that the user signing in results in firing of the IdentityManager
 // observer callback and the IdentityManager's state being updated.
 TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSignin) {
   ClearPrimaryAccount(identity_manager());
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(identity_manager_observer()
+                ->GetOnEndBatchOfPrimaryAccountChangesCalledCount(),
+            1ul);
+#endif  // BUILDFLAG(IS_IOS)
 
   SetPrimaryAccount(identity_manager(), kTestEmail, ConsentLevel::kSync);
   auto event = identity_manager_observer()->GetPrimaryAccountChangedEvent();
@@ -576,6 +583,11 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSignin) {
             event.GetEventTypeFor(ConsentLevel::kSync));
   EXPECT_EQ(PrimaryAccountChangeEvent::Type::kSet,
             event.GetEventTypeFor(ConsentLevel::kSignin));
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(identity_manager_observer()
+                ->GetOnEndBatchOfPrimaryAccountChangesCalledCount(),
+            2ul);
+#endif  // BUILDFLAG(IS_IOS)
 
   CoreAccountInfo primary_account_from_set_callback =
       event.GetCurrentState().primary_account;
@@ -604,13 +616,28 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSignin) {
 // observer callback and the IdentityManager's state being updated.
 TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSigninAndSignout) {
   ClearPrimaryAccount(identity_manager());
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(identity_manager_observer()
+                ->GetOnEndBatchOfPrimaryAccountChangesCalledCount(),
+            1ul);
+#endif  // BUILDFLAG(IS_IOS)
   // First ensure that the user is signed in from the POV of the
   // IdentityManager.
   SetPrimaryAccount(identity_manager(), kTestEmail, ConsentLevel::kSync);
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(identity_manager_observer()
+                ->GetOnEndBatchOfPrimaryAccountChangesCalledCount(),
+            2ul);
+#endif  // BUILDFLAG(IS_IOS)
 
   // Sign the user out and check that the IdentityManager responds
   // appropriately.
   ClearPrimaryAccount(identity_manager());
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(identity_manager_observer()
+                ->GetOnEndBatchOfPrimaryAccountChangesCalledCount(),
+            3ul);
+#endif  // BUILDFLAG(IS_IOS)
   auto event = identity_manager_observer()->GetPrimaryAccountChangedEvent();
   EXPECT_EQ(PrimaryAccountChangeEvent::Type::kCleared,
             event.GetEventTypeFor(ConsentLevel::kSync));
@@ -629,7 +656,7 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSigninAndSignout) {
 
   CoreAccountInfo primary_account_info =
       identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
-  EXPECT_EQ("", primary_account_info.gaia);
+  EXPECT_EQ(GaiaId(), primary_account_info.gaia);
   EXPECT_EQ("", primary_account_info.email);
   EXPECT_EQ(primary_account_info,
             identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
@@ -674,7 +701,7 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(primary_account_id,
             identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(IdentityManagerTest, HasPrimaryAccount) {
   EXPECT_TRUE(
@@ -689,7 +716,7 @@ TEST_F(IdentityManagerTest, HasPrimaryAccount) {
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Signing out should cause IdentityManager to recognize that there is no
   // longer a primary account.
   ClearPrimaryAccount(identity_manager());
@@ -1269,7 +1296,7 @@ TEST_F(IdentityManagerTest, RemoveAccessTokenFromCache) {
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       primary_account_id(), ConsentLevel::kSync,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      signin_metrics::AccessPoint::kUnknown);
   SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
                             "refresh_token");
 
@@ -1313,7 +1340,7 @@ TEST_F(IdentityManagerTest,
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       primary_account_id(), ConsentLevel::kSync,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      signin_metrics::AccessPoint::kUnknown);
   SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
                             "refresh_token");
 
@@ -1407,7 +1434,7 @@ TEST_F(IdentityManagerTest, ObserveAccessTokenFetch) {
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       primary_account_id(), ConsentLevel::kSync,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      signin_metrics::AccessPoint::kUnknown);
   SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
                             "refresh_token");
 
@@ -1466,7 +1493,7 @@ TEST_F(IdentityManagerTest,
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       primary_account_id(), ConsentLevel::kSync,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      signin_metrics::AccessPoint::kUnknown);
   SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
                             "refresh_token");
   token_service()->set_auto_post_fetch_response_on_message_loop(true);
@@ -1534,7 +1561,7 @@ TEST_F(IdentityManagerTest, GetAccountsCookieMutator) {
   EXPECT_TRUE(mutator);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // On ChromeOS, AccountTrackerService first receives the normalized email
 // address from GAIA and then later has it updated with the user's
 // originally-specified version of their email address (at the time of that
@@ -1637,7 +1664,7 @@ TEST_F(IdentityManagerTest, CallbackSentOnSecondaryAccountRefreshTokenRemoval) {
       identity_manager_observer()->AccountIdFromRefreshTokenRemovedCallback());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(
     IdentityManagerTest,
     CallbackSentOnSecondaryAccountRefreshTokenUpdateWithValidTokenWhenNoPrimaryAccount) {
@@ -1735,7 +1762,7 @@ TEST_F(IdentityManagerTest, IdentityManagerGetsTokensLoadedEvent) {
   // we fake the credentials loaded state and force another load in
   // order to be able to capture the TokensLoaded event.
   token_service()->set_all_credentials_loaded_for_testing(false);
-  token_service()->LoadCredentials(CoreAccountId(), /*is_syncing=*/false);
+  token_service()->LoadCredentials(CoreAccountId());
   run_loop.Run();
 }
 
@@ -1783,7 +1810,7 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
       listed_account.id);
-  EXPECT_EQ(kTestGaiaId, listed_account.gaia_id.ToString());
+  EXPECT_EQ(kTestGaiaId, listed_account.gaia_id);
   EXPECT_EQ(kTestEmail, listed_account.email);
 }
 
@@ -1814,7 +1841,7 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
       listed_account1.id);
-  EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id.ToString());
+  EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id);
   EXPECT_EQ(kTestEmail, listed_account1.email);
 
   gaia::ListedAccount account_info2 =
@@ -1822,7 +1849,7 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId2, kTestEmail2),
       account_info2.id);
-  EXPECT_EQ(kTestGaiaId2, account_info2.gaia_id.ToString());
+  EXPECT_EQ(kTestGaiaId2, account_info2.gaia_id);
   EXPECT_EQ(kTestEmail2, account_info2.email);
 }
 
@@ -1872,11 +1899,12 @@ TEST_F(IdentityManagerTest, CallbackSentOnUpdateToSignOutAccountsInCookie) {
             ? accounts_in_cookie_jar_info.GetSignedOutAccounts()[i++]
             : accounts_in_cookie_jar_info
                   .GetPotentiallyInvalidSignedInAccounts()[j++];
-    if (!signed_out_status.account_1)
+    if (!signed_out_status.account_1) {
       EXPECT_EQ(
           identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
           listed_account1.id);
-    EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id.ToString());
+    }
+    EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id);
     EXPECT_EQ(kTestEmail, listed_account1.email);
 
     gaia::ListedAccount listed_account2 =
@@ -1884,11 +1912,12 @@ TEST_F(IdentityManagerTest, CallbackSentOnUpdateToSignOutAccountsInCookie) {
             ? accounts_in_cookie_jar_info.GetSignedOutAccounts()[i++]
             : accounts_in_cookie_jar_info
                   .GetPotentiallyInvalidSignedInAccounts()[j++];
-    if (!signed_out_status.account_2)
+    if (!signed_out_status.account_2) {
       EXPECT_EQ(identity_manager()->PickAccountIdForAccount(kTestGaiaId2,
                                                             kTestEmail2),
                 listed_account2.id);
-    EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id.ToString());
+    }
+    EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id);
     EXPECT_EQ(kTestEmail2, listed_account2.email);
   }
 }
@@ -1982,7 +2011,7 @@ TEST_F(IdentityManagerTest, GetAccountsInCookieJarWithOneAccount) {
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
       listed_account.id);
-  EXPECT_EQ(kTestGaiaId, listed_account.gaia_id.ToString());
+  EXPECT_EQ(kTestGaiaId, listed_account.gaia_id);
   EXPECT_EQ(kTestEmail, listed_account.email);
 }
 
@@ -2024,7 +2053,7 @@ TEST_F(IdentityManagerTest, GetAccountsInCookieJarWithTwoAccounts) {
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
       listed_account1.id);
-  EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id.ToString());
+  EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id);
   EXPECT_EQ(kTestEmail, listed_account1.email);
 
   gaia::ListedAccount listed_account2 =
@@ -2032,7 +2061,7 @@ TEST_F(IdentityManagerTest, GetAccountsInCookieJarWithTwoAccounts) {
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId2, kTestEmail2),
       listed_account2.id);
-  EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id.ToString());
+  EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id);
   EXPECT_EQ(kTestEmail2, listed_account2.email);
 }
 
@@ -2144,7 +2173,7 @@ TEST_F(IdentityManagerTest,
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       primary_account_id(), ConsentLevel::kSync,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+      signin_metrics::AccessPoint::kUnknown);
   SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
                             "refresh_token");
 
@@ -2308,7 +2337,7 @@ TEST_F(IdentityManagerTest, FindExtendedPrimaryAccountInfo) {
   EXPECT_EQ(core_info.email, extended_info.email);
   EXPECT_EQ(core_info.gaia, extended_info.gaia);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // It's not possible to sign out on Ash.
   ClearPrimaryAccount(identity_manager());
   SetRefreshTokenForAccount(identity_manager(), core_info.account_id, "token");
@@ -2334,53 +2363,10 @@ TEST_F(IdentityManagerTest, AreRefreshTokensLoaded) {
   // order to test AreRefreshTokensLoaded.
   token_service()->set_all_credentials_loaded_for_testing(false);
   EXPECT_FALSE(identity_manager()->AreRefreshTokensLoaded());
-  token_service()->LoadCredentials(CoreAccountId(), /*is_syncing=*/false);
+  token_service()->LoadCredentials(CoreAccountId());
   run_loop.Run();
   EXPECT_TRUE(identity_manager()->AreRefreshTokensLoaded());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(IdentityManagerTest, SetPrimaryAccount) {
-  signin_client()->SetInitialPrimaryAccountForTests(
-      account_manager::Account{
-          account_manager::AccountKey{kTestGaiaId,
-                                      account_manager::AccountType::kGaia},
-          kTestEmail},
-      /*is_child=*/false);
-  // Do not sign into a primary account as part of the test setup.
-  RecreateIdentityManager(AccountConsistencyMethod::kDisabled,
-                          PrimaryAccountManagerSetup::kNoAuthenticatedAccount);
-
-  // We should have a non-syncing Primary Account set up automatically.
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_EQ(
-      kTestGaiaId,
-      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia);
-}
-
-// TODO(crbug.com/40774609): Remove this when all the users are migrated.
-TEST_F(IdentityManagerTest, SetPrimaryAccountClearsExistingPrimaryAccount) {
-  signin_client()->SetInitialPrimaryAccountForTests(
-      account_manager::Account{
-          account_manager::AccountKey{kTestGaiaId2,
-                                      account_manager::AccountType::kGaia},
-          kTestEmail2},
-      /*is_child=*/false);
-
-  // RecreateIdentityManager will create PrimaryAccountManager with the primary
-  // account set to kTestGaiaId. After that, IdentityManager ctor should clear
-  // this existing primary account and set the new one to the initial value
-  // provided by the SigninClient.
-  RecreateIdentityManager(AccountConsistencyMethod::kDisabled,
-                          PrimaryAccountManagerSetup::kWithAuthenticatedAccout);
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_EQ(
-      kTestGaiaId2,
-      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia);
-}
-#endif
 
 // Checks that IdentityManager::Observer gets OnAccountUpdated when account info
 // is updated.
@@ -2425,9 +2411,9 @@ TEST_F(IdentityManagerTest, TestOnAccountRemovedWithInfoCallback) {
 }
 
 TEST_F(IdentityManagerTest, TestPickAccountIdForAccount) {
-  EXPECT_EQ(kTestGaiaId, identity_manager()
-                             ->PickAccountIdForAccount(kTestGaiaId, kTestEmail)
-                             .ToString());
+  EXPECT_EQ(
+      CoreAccountId::FromGaiaId(kTestGaiaId),
+      identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2458,6 +2444,52 @@ TEST_F(IdentityManagerTest, RefreshAccountInfoIfStale) {
   EXPECT_EQ(kTestLocale, refreshed_account_info.locale);
   EXPECT_EQ(kTestPictureUrl, refreshed_account_info.picture_url);
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_IOS)
+// Tests `OnEndBatchOfPrimaryAccountChanges()` with
+// `StartBatchOfPrimaryAccountChanges()`.
+TEST_F(IdentityManagerTest, BatchOfPrimaryAccountChanges) {
+  size_t on_primary_account_changed_called = 0ul;
+  base::RepeatingCallback<void(PrimaryAccountChangeEvent)>
+      primary_account_callback = base::BindRepeating(
+          [](size_t* on_primary_account_changed_called,
+             PrimaryAccountChangeEvent event) {
+            ++*on_primary_account_changed_called;
+          },
+          &on_primary_account_changed_called);
+  identity_manager_observer()->SetOnPrimaryAccountChangedCallback(
+      primary_account_callback);
+
+  base::ScopedClosureRunner scoped_closure_runner =
+      identity_manager()->StartBatchOfPrimaryAccountChanges();
+  EXPECT_EQ(on_primary_account_changed_called, 0ul);
+  ClearPrimaryAccount(identity_manager());
+  EXPECT_EQ(on_primary_account_changed_called, 1ul);
+  identity_manager_observer()->SetOnPrimaryAccountChangedCallback(
+      primary_account_callback);
+  SetPrimaryAccount(identity_manager(), kTestEmail, ConsentLevel::kSync);
+  EXPECT_EQ(identity_manager_observer()
+                ->GetOnEndBatchOfPrimaryAccountChangesCalledCount(),
+            0ul);
+  EXPECT_EQ(on_primary_account_changed_called, 2ul);
+  identity_manager_observer()->SetOnPrimaryAccountChangedCallback(
+      primary_account_callback);
+
+  scoped_closure_runner.RunAndReset();
+  EXPECT_EQ(identity_manager_observer()
+                ->GetOnEndBatchOfPrimaryAccountChangesCalledCount(),
+            1ul);
+  EXPECT_EQ(on_primary_account_changed_called, 2ul);
+  EXPECT_EQ(identity_manager_observer()
+                ->GetOnEndBatchOfPrimaryAccountChangesCalledCount(),
+            1ul);
+  ClearPrimaryAccount(identity_manager());
+  EXPECT_EQ(on_primary_account_changed_called, 3ul);
+  EXPECT_EQ(identity_manager_observer()
+                ->GetOnEndBatchOfPrimaryAccountChangesCalledCount(),
+            2ul);
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace signin

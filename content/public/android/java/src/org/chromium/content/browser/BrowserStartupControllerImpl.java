@@ -26,6 +26,8 @@ import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.app.ContentMain;
 import org.chromium.content.browser.ServicificationStartupUma.ServicificationStartup;
 import org.chromium.content_public.browser.BrowserStartupController;
@@ -40,6 +42,7 @@ import java.util.List;
  * This is a singleton, and stores a reference to the application context.
  */
 @JNINamespace("content")
+@NullMarked
 public class BrowserStartupControllerImpl implements BrowserStartupController {
     private static final String TAG = "BrowserStartup";
 
@@ -54,7 +57,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
         int MINIMAL_BROWSER = 1;
     }
 
-    private static BrowserStartupControllerImpl sInstance;
+    private static @Nullable BrowserStartupControllerImpl sInstance;
 
     private static boolean sShouldStartGpuProcessOnBrowserStartup;
 
@@ -107,7 +110,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
 
     // Tests may inject a method to be run instead of calling ContentMain() in order for them to
     // initialize the C++ system via another means.
-    private Runnable mContentMainCallbackForTests;
+    private @Nullable Runnable mContentMainCallbackForTests;
 
     // Browser start up type. If the type is |BROWSER_START_TYPE_MINIMAL|, start up
     // will be paused after the minimal environment is setup. Additional request to launch the full
@@ -123,7 +126,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     // Whether the minimal browser environment is set up.
     private boolean mMinimalBrowserStarted;
 
-    private TracingControllerAndroidImpl mTracingController;
+    private @Nullable TracingControllerAndroidImpl mTracingController;
 
     BrowserStartupControllerImpl() {
         mAsyncStartupCallbacks = new ArrayList<>();
@@ -447,7 +450,8 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     }
 
     @VisibleForTesting
-    void prepareToStartBrowserProcess(final boolean singleProcess, final Runnable deferrableTask) {
+    void prepareToStartBrowserProcess(
+            final boolean singleProcess, final @Nullable Runnable deferrableTask) {
         if (mPrepareToStartCompleted) {
             return;
         }
@@ -470,7 +474,8 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             }
 
             // TODO(yfriedman): Remove dependency on a command line flag for this.
-            DeviceUtilsImpl.addDeviceSpecificUserAgentSwitch();
+            DeviceUtilsImpl.updateDeviceSpecificUserAgentSwitch(
+                    ContextUtils.getApplicationContext());
             BrowserStartupControllerImplJni.get().setCommandLineFlags(singleProcess);
         }
 

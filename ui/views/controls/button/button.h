@@ -159,9 +159,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   static ButtonState GetButtonStateFrom(ui::NativeTheme::State state);
 
-  const std::u16string& GetTooltipText() const;
-  virtual void SetTooltipText(const std::u16string& tooltip_text);
-
   // Tag is now a property. These accessors are deprecated. Use GetTag() and
   // SetTag() below or even better, use SetID()/GetID() from the ancestor.
   int tag() const { return tag_; }
@@ -252,7 +249,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void ShowContextMenu(const gfx::Point& p,
                        ui::mojom::MenuSourceType source_type) override;
   void OnDragDone() override;
@@ -303,6 +299,8 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   // Called when the tooltip is set.
   virtual void OnSetTooltipText(const std::u16string& tooltip_text);
+
+  void OnTooltipTextChanged(const std::u16string& old_tooltip_text) override;
 
   // Invoked from SetState() when SetState() is passed a value that differs from
   // the current node_data. Button's implementation of StateChanged() does

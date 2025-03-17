@@ -811,7 +811,7 @@ TEST_F(PermissionRequestManagerTest, UMAForSimpleDeniedBubbleAlternatePath) {
 
   Deny();
   histograms.ExpectUniqueSample(PermissionUmaUtil::kPermissionsPromptDenied,
-                                static_cast<base::HistogramBase::Sample>(
+                                static_cast<base::HistogramBase::Sample32>(
                                     RequestTypeForUma::PERMISSION_GEOLOCATION),
                                 1);
 }
@@ -822,14 +822,14 @@ TEST_F(PermissionRequestManagerTest, UMAForTabSwitching) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
   histograms.ExpectUniqueSample(PermissionUmaUtil::kPermissionsPromptShown,
-                                static_cast<base::HistogramBase::Sample>(
+                                static_cast<base::HistogramBase::Sample32>(
                                     RequestTypeForUma::PERMISSION_GEOLOCATION),
                                 1);
 
   MockTabSwitchAway();
   MockTabSwitchBack();
   histograms.ExpectUniqueSample(PermissionUmaUtil::kPermissionsPromptShown,
-                                static_cast<base::HistogramBase::Sample>(
+                                static_cast<base::HistogramBase::Sample32>(
                                     RequestTypeForUma::PERMISSION_GEOLOCATION),
                                 1);
 }
@@ -851,7 +851,8 @@ class MockNotificationPermissionUiSelector : public PermissionUiSelector {
         prediction_likelihood_(prediction_likelihood),
         async_delay_(async_delay) {}
 
-  void SelectUiToUse(PermissionRequest* request,
+  void SelectUiToUse(content::WebContents* web_contents,
+                     PermissionRequest* request,
                      DecisionMadeCallback callback) override {
     selected_ui_to_use_ = true;
     Decision decision(quiet_ui_reason_, Decision::ShowNoWarning());

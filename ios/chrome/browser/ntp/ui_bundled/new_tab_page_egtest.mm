@@ -7,10 +7,17 @@
 #import "base/test/scoped_command_line.h"
 #import "components/policy/core/common/policy_test_utils.h"
 #import "components/policy/policy_constants.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -30,6 +37,12 @@ namespace {
 const char kPageLoadedString[] = "Page loaded!";
 const char kPageURL[] = "/test-page.html";
 const char kPageTitle[] = "Page title!";
+
+// The passphrase for the fake sync server.
+NSString* const kPassphrase = @"hello";
+
+// The primary identity.
+FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
 
 // Provides responses for redirect and changed window location URLs.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
@@ -72,6 +85,18 @@ BOOL WaitForHistoryToDisappear() {
 
 @implementation NewTabPageTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+
+  if ([self isRunningTest:@selector(DISABLED_testErrorBadge)]) {
+    config.features_enabled.push_back(
+        switches::kEnableErrorBadgeOnIdentityDisc);
+    config.features_disabled.push_back(kIdentityDiscAccountMenu);
+  }
+
+  return config;
+}
+
 - (void)tearDownHelper {
   [self releaseHistogramTester];
   policy_test_utils::ClearPolicies();
@@ -83,8 +108,8 @@ BOOL WaitForHistoryToDisappear() {
     return;
   }
   self.histogramTesterSet = YES;
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
 - (void)releaseHistogramTester {
@@ -92,8 +117,8 @@ BOOL WaitForHistoryToDisappear() {
     return;
   }
   self.histogramTesterSet = NO;
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
 }
 
 #pragma mark - Helpers
@@ -135,15 +160,15 @@ BOOL WaitForHistoryToDisappear() {
   NSError* error =
       [MetricsAppInterface expectTotalCount:0
                                forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey closeAllTabs];
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [self releaseHistogramTester];
 
   // Open an incognito NTP and close it.
@@ -151,22 +176,22 @@ BOOL WaitForHistoryToDisappear() {
   [self setupHistogramTester];
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey closeAllTabs];
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"NewTabPage.TimeSpent"];
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
+  chrome_test_util::GREYAssertErrorNil(error);
   [self releaseHistogramTester];
 
   // Open an NTP and navigate to another URL.
   [self setupHistogramTester];
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
@@ -175,8 +200,8 @@ BOOL WaitForHistoryToDisappear() {
                                    forHistogram:@"NewTabPage.TimeSpent"];
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
+  chrome_test_util::GREYAssertErrorNil(error);
   [self releaseHistogramTester];
 
   // Open an NTP and switch tab.
@@ -188,26 +213,26 @@ BOOL WaitForHistoryToDisappear() {
   [self setupHistogramTester];
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey openNewTab];
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey selectTabAtIndex:0];
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey selectTabAtIndex:1];
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey selectTabAtIndex:0];
   error = [MetricsAppInterface expectTotalCount:2
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [self releaseHistogramTester];
 
   // Open two NTPs and close them.
@@ -216,22 +241,22 @@ BOOL WaitForHistoryToDisappear() {
 
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey openNewTab];
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   error = [MetricsAppInterface expectTotalCount:2
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey closeAllTabs];
   error = [MetricsAppInterface expectTotalCount:2
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   error = [MetricsAppInterface expectTotalCount:2
                                    forHistogram:@"IOS.NTP.Impression"];
   [self releaseHistogramTester];
@@ -388,6 +413,59 @@ BOOL WaitForHistoryToDisappear() {
       performAction:grey_tap()];
 
   [self validateNTPURL:expectedURL];
+}
+
+// Tests that the error badge is shown on top of the identity disc when the
+// primary account has a persistent error.
+- (void)DISABLED_testErrorBadge {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Wait for the error badge to appear.
+  id<GREYMatcher> errorBadgeMatcher =
+      grey_accessibilityID(kNTPFeedHeaderIdentityDiscBadge);
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:errorBadgeMatcher]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return !error;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Error badge didn't appear in the allotted time");
+
+  // Tap on the identity disc to open Settings.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
+      performAction:grey_tap()];
+
+  // Open account settings.
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsAccountButton()];
+
+  // Verify the error section is showing.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap "Enter Passphrase" button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Enter the passphrase.
+  [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
+
+  // Dismiss settings.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Verify the error badge on the ADP disappears.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kNTPFeedHeaderIdentityDiscBadge)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end

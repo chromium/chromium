@@ -705,6 +705,16 @@ namespace OmniboxFieldTrial {
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions:
 
+// Whether to ignore all ZPS prefetch responses received from the Suggest
+// service when the user is on a Google SRP. This can be used, for example,
+// during experimentation to measure the performance impact of only the
+// request/response portion of ZPS prefetching (i.e. without updating the
+// user-visible list of suggestions in the Omnibox).
+const base::FeatureParam<bool> kZeroSuggestPrefetchingOnSRPCounterfactual(
+    &omnibox::kZeroSuggestPrefetchingOnSRP,
+    "ZeroSuggestPrefetchingOnSRPCounterfactual",
+    false);
+
 // The debouncing delay (in milliseconds) to use when throttling ZPS prefetch
 // requests.
 const base::FeatureParam<int> kZeroSuggestPrefetchDebounceDelay(
@@ -750,6 +760,21 @@ bool IsZeroSuggestPrefetchingEnabledInContext(
     case metrics::OmniboxEventProto::OTHER_ZPS_PREFETCH:
       return base::FeatureList::IsEnabled(
           omnibox::kZeroSuggestPrefetchingOnWeb);
+    default:
+      return false;
+  }
+}
+
+bool IsOnFocusZeroSuggestEnabledInContext(
+    metrics::OmniboxEventProto::PageClassification page_classification) {
+  static bool enabled =
+      base::FeatureList::IsEnabled(omnibox::kFocusTriggersWebAndSRPZeroSuggest);
+
+  switch (page_classification) {
+    case metrics::OmniboxEventProto::
+        SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT:
+    case metrics::OmniboxEventProto::OTHER:
+      return enabled;
     default:
       return false;
   }
@@ -1134,6 +1159,10 @@ bool IsStarterPackExpansionEnabled() {
 
 bool IsStarterPackIPHEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackIPH);
+}
+
+bool IsStarterPackPageEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kStarterPackPage);
 }
 // <- Site Search Starter Pack
 }  // namespace OmniboxFieldTrial

@@ -10,10 +10,7 @@ NSString* const kDataFromChromeSyncAccessibilityIdentifier =
 NSString* const kManageSyncTableViewAccessibilityIdentifier =
     @"ManageSyncTableViewAccessibilityIdentifier";
 
-NSString* const kSyncEverythingItemAccessibilityIdentifier =
-    @"syncEverythingItemAccessibilityIdentifier";
 NSString* const kSyncBookmarksIdentifier = @"syncBookmarksIdentifier";
-NSString* const kSyncOmniboxHistoryIdentifier = @"syncOmniboxHistoryIdentifier";
 NSString* const kSyncHistoryAndTabsIdentifier = @"syncHistoryAndTabsIdentifier";
 NSString* const kSyncPasswordsIdentifier = @"syncPasswordsIdentifier";
 NSString* const kSyncPaymentsIdentifier = @"syncPaymentsIdentifier";

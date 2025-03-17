@@ -31,13 +31,15 @@ MediaSinksObserver::~MediaSinksObserver() {
   DCHECK(!in_on_sinks_updated_);
 #endif
 
-  if (initialized_)
+  if (initialized_) {
     router_->UnregisterMediaSinksObserver(this);
+  }
 }
 
 bool MediaSinksObserver::Init() {
-  if (initialized_)
+  if (initialized_) {
     return true;
+  }
 
   initialized_ = router_->RegisterMediaSinksObserver(this);
   return initialized_;
@@ -50,10 +52,11 @@ void MediaSinksObserver::OnSinksUpdated(
   base::AutoReset<bool> reset_in_on_sinks_updated(&in_on_sinks_updated_, true);
 #endif
 
-  if (origins.empty() || base::Contains(origins, origin_))
+  if (origins.empty() || base::Contains(origins, origin_)) {
     OnSinksReceived(sinks);
-  else
+  } else {
     OnSinksReceived(std::vector<MediaSink>());
+  }
 }
 
 }  // namespace media_router

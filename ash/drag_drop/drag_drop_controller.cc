@@ -317,7 +317,7 @@ void DragDropController::SetDragImage(const gfx::ImageSkia& image,
 
   DragImageView* drag_image =
       static_cast<DragImageView*>(drag_image_widget_->GetContentsView());
-  drag_image->SetImage(image);
+  drag_image->SetImage(ui::ImageModel::FromImageSkia(image));
   drag_image_offset_ = image_offset;
   gfx::Rect drag_image_bounds(current_location_,
                               drag_image->GetPreferredSize());

@@ -10,6 +10,7 @@
 class Browser;
 @class ContentSuggestionsMetricsRecorder;
 @protocol NewTabPageActionsDelegate;
+class OptimizationGuideService;
 class PrefService;
 @protocol TabResumptionHelperDelegate;
 @class TabResumptionItem;
@@ -38,7 +39,10 @@ class IdentityManager;
 - (instancetype)initWithLocalState:(PrefService*)localState
                        prefService:(PrefService*)prefService
                    identityManager:(signin::IdentityManager*)identityManager
-                           browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+                           browser:(Browser*)browser
+          optimizationGuideService:
+              (OptimizationGuideService*)optimizationGuideService
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

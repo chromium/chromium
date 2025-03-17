@@ -7,7 +7,10 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
+#import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
+#import "ios/chrome/credential_provider_extension/passkey_util_swift.h"
+#import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 
 @interface PasskeyRequestDetails ()
 
@@ -37,7 +40,9 @@
 
 @end
 
-@implementation PasskeyRequestDetails
+@implementation PasskeyRequestDetails {
+  PRFData* _prf;
+}
 
 - (instancetype)initWithParameters:(ASPasskeyCredentialRequestParameters*)
                                        passkeyCredentialRequestParameters
@@ -58,6 +63,12 @@
     self.algorithmIsSupported = NO;
     self.userName = nil;
     self.userHandle = nil;
+
+    if (@available(iOS 18.0, *)) {
+      if (IsPasskeyPRFEnabled()) {
+        _prf = [PRFData fromParameters:passkeyCredentialRequestParameters];
+      }
+    }
   }
   return self;
 }
@@ -96,6 +107,12 @@
     self.userName = identity.userName;
     self.userHandle = identity.userHandle;
     self.allowedCredentials = nil;
+
+    if (@available(iOS 18.0, *)) {
+      if (IsPasskeyPRFEnabled()) {
+        _prf = [PRFData fromRequest:passkeyCredentialRequest];
+      }
+    }
   }
   return self;
 }
@@ -104,18 +121,78 @@
                                    securityDomainSecrets:
                                        (NSArray<NSData*>*)securityDomainSecrets
     API_AVAILABLE(ios(17.0)) {
-  return PerformPasskeyCreation(self.clientDataHash,
-                                self.relyingPartyIdentifier, self.userName,
-                                self.userHandle, gaia, securityDomainSecrets);
+  NSArray<NSData*>* prfInputs = nil;
+  if (@available(iOS 18.0, *)) {
+    if (_prf.inputValues) {
+      prfInputs = [NSArray arrayWithObjects:_prf.inputValues.saltInput1,
+                                            _prf.inputValues.saltInput2, nil];
+    } else if (_prf.checkForSupport) {
+      // Initialize prfInputs with a non nil empty array to check for support.
+      prfInputs = [NSArray array];
+    }
+  }
+  PasskeyCreationOutput passkeyCreationOutput = PerformPasskeyCreation(
+      self.clientDataHash, self.relyingPartyIdentifier, self.userName,
+      self.userHandle, gaia, securityDomainSecrets, prfInputs);
+  if (@available(iOS 18.0, *)) {
+    if (passkeyCreationOutput.credential) {
+      if ([passkeyCreationOutput.prf_outputs count]) {
+        PRFOutputValues* prfOutputValues =
+            [PRFOutputValues fromValues:passkeyCreationOutput.prf_outputs];
+        [passkeyCreationOutput.credential
+            setPRFFromOutputValues:prfOutputValues];
+      } else if (_prf.checkForSupport) {
+        [passkeyCreationOutput.credential setPRFIsSupported];
+      }
+    }
+  }
+  return passkeyCreationOutput.credential;
 }
 
 - (ASPasskeyAssertionCredential*)
     assertPasskeyCredential:(id<Credential>)credential
       securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
     API_AVAILABLE(ios(17.0)) {
-  return PerformPasskeyAssertion(credential, self.clientDataHash,
-                                 self.allowedCredentials,
-                                 securityDomainSecrets);
+  NSArray<NSData*>* prfInputs = nil;
+  PRFInputValues* inputValues = nil;
+  if (@available(iOS 18.0, *)) {
+    if (_prf) {
+      // Check if there's per credential values available.
+      inputValues = _prf.perCredentialInputValues[credential.credentialId];
+      if (!inputValues) {
+        // If there are no per credential values, use the generic values.
+        inputValues = _prf.inputValues;
+      }
+      if (inputValues) {
+        prfInputs = [NSArray arrayWithObjects:inputValues.saltInput1,
+                                              inputValues.saltInput2, nil];
+      }
+    }
+  }
+  PasskeyAssertionOutput passkeyAssertionOutput = PerformPasskeyAssertion(
+      credential, self.clientDataHash, self.allowedCredentials,
+      securityDomainSecrets, prfInputs);
+  if (@available(iOS 18.0, *)) {
+    if (passkeyAssertionOutput.credential &&
+        [passkeyAssertionOutput.prf_outputs count]) {
+      PRFOutputValues* prfOutputValues =
+          [PRFOutputValues fromValues:passkeyAssertionOutput.prf_outputs];
+      [passkeyAssertionOutput.credential
+          setPRFFromOutputValues:prfOutputValues];
+    }
+  }
+  return passkeyAssertionOutput.credential;
+}
+
+- (BOOL)hasMatchingPassword:(NSArray<id<Credential>>*)credentials {
+  NSUInteger credentialIndex = [credentials indexOfObjectPassingTest:^BOOL(
+                                                id<Credential> credential,
+                                                NSUInteger idx, BOOL* stop) {
+    return !credential.isPasskey &&
+           [credential.username isEqualToString:self.userName] &&
+           [credential.serviceName isEqualToString:self.relyingPartyIdentifier];
+  }];
+  return credentialIndex != NSNotFound;
 }
 
 @end

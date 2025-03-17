@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
@@ -423,10 +424,6 @@ id<GREYMatcher> GoogleServicesSettingsButton() {
   return [ChromeMatchersAppInterface googleServicesSettingsButton];
 }
 
-id<GREYMatcher> ManageSyncSettingsButton() {
-  return [ChromeMatchersAppInterface manageSyncSettingsButton];
-}
-
 id<GREYMatcher> InactiveTabsSettingsButton() {
   return [ChromeMatchersAppInterface inactiveTabsSettingsButton];
 }
@@ -761,6 +758,10 @@ id<GREYMatcher> IncognitoTabGrid() {
   return [ChromeMatchersAppInterface incognitoTabGrid];
 }
 
+id<GREYMatcher> InactiveTabGrid() {
+  return [ChromeMatchersAppInterface inactiveTabGrid];
+}
+
 id<GREYMatcher> TabGridCloseButtonForCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabGridCloseButtonForCellAtIndex:index];
 }
@@ -814,6 +815,10 @@ id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title) {
 
 id<GREYMatcher> SettingsToolbarAddButton() {
   return [ChromeMatchersAppInterface settingsToolbarAddButton];
+}
+
+id<GREYMatcher> SettingsToolbarEditButton() {
+  return grey_accessibilityID(kSettingsToolbarEditButtonId);
 }
 
 id<GREYMatcher> CellCanBeSwipedToDismissed() {
@@ -897,12 +902,12 @@ id<GREYMatcher> SettingsActionButton() {
 
 #pragma mark - Promo style view controller
 
-id<GREYMatcher> PromoStylePrimaryActionButtonMatcher() {
-  return [ChromeMatchersAppInterface promoStylePrimaryActionButtonMatcher];
+id<GREYMatcher> PromoScreenPrimaryButtonMatcher() {
+  return [ChromeMatchersAppInterface promoScreenPrimaryButtonMatcher];
 }
 
-id<GREYMatcher> PromoStyleSecondaryActionButtonMatcher() {
-  return [ChromeMatchersAppInterface promoStyleSecondaryActionButtonMatcher];
+id<GREYMatcher> PromoScreenSecondaryButtonMatcher() {
+  return [ChromeMatchersAppInterface promoScreenSecondaryButtonMatcher];
 }
 
 #pragma mark - Incognito Interstitial
@@ -1057,6 +1062,38 @@ id<GREYMatcher> ShareGroupButton() {
 
 id<GREYMatcher> ManageGroupButton() {
   return [ChromeMatchersAppInterface manageGroupButton];
+}
+
+id<GREYMatcher> LeaveSharedGroupButton() {
+  return [ChromeMatchersAppInterface leaveSharedGroupButton];
+}
+
+id<GREYMatcher> LeaveSharedGroupConfirmationButton() {
+  return [ChromeMatchersAppInterface leaveSharedGroupConfirmationButton];
+}
+
+id<GREYMatcher> DeleteSharedGroupButton() {
+  return [ChromeMatchersAppInterface deleteSharedGroupButton];
+}
+
+id<GREYMatcher> DeleteSharedConfirmationButton() {
+  return [ChromeMatchersAppInterface deleteSharedConfirmationButton];
+}
+
+id<GREYMatcher> KeepSharedConfirmationButton() {
+  return [ChromeMatchersAppInterface keepSharedConfirmationButton];
+}
+
+id<GREYMatcher> FakeShareFlowView() {
+  return [ChromeMatchersAppInterface fakeShareFlowView];
+}
+
+id<GREYMatcher> FakeManageFlowView() {
+  return [ChromeMatchersAppInterface fakeManageFlowView];
+}
+
+id<GREYMatcher> FakeJoinFlowView() {
+  return [ChromeMatchersAppInterface fakeJoinFlowView];
 }
 
 #pragma mark - Tab Groups Panel

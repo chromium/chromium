@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_SYNC_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -70,7 +71,7 @@ class SyncHandler : public content::WebUIMessageHandler,
   void HandleGetLocalPasswordCount(const base::Value::List& args);
   void FireOnGetLocalDataDescriptionReceived(
       std::map<syncer::DataType, syncer::LocalDataDescription> data);
-  void HandleOnGetLocalDataDescriptionReceived(
+  void OnGetLocalDataDescriptionReceived(
       base::Value callback_id,
       std::map<syncer::DataType, syncer::LocalDataDescription> data);
 
@@ -91,6 +92,8 @@ class SyncHandler : public content::WebUIMessageHandler,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  base::WeakPtrFactory<SyncHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

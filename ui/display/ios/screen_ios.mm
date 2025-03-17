@@ -35,10 +35,12 @@ class ScreenNotification {
   if ((self = [super init])) {
     _notifier = notifier;
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
+#if !BUILDFLAG(IS_IOS_TVOS)
     [defaultCenter addObserver:self
                       selector:@selector(mainScreenChanged)
                           name:UIDeviceOrientationDidChangeNotification
                         object:nil];
+#endif
     [defaultCenter addObserver:self
                       selector:@selector(mainScreenChanged)
                           name:UIWindowDidBecomeKeyNotification

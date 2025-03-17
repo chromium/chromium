@@ -42,10 +42,6 @@
 // Returns the height of the feed header.
 - (CGFloat)feedHeaderHeight;
 
-// Returns the height of the custom search engine view. Returns 0 if it is not
-// visible.
-- (CGFloat)customSearchEngineViewHeight;
-
 // Updates the header view and re-applies constraints in response to the default
 // search engine changing.
 - (void)updateForDefaultSearchEngineChanged;

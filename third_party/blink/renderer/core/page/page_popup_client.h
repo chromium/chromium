@@ -58,7 +58,7 @@ class CORE_EXPORT PagePopupClient {
   // source is rendered in a PagePopup.
   // The content HTML supports:
   //  - No <select> popups
-  //  - window.setValueAndClosePopup(number, string).
+  //  - window.setValueAndClosePopup(number, string, bool).
   virtual void WriteDocument(SegmentedBuffer&) = 0;
 
   virtual Element& OwnerElement() = 0;
@@ -83,7 +83,8 @@ class CORE_EXPORT PagePopupClient {
   // An implementation of this function should call
   // ChromeClient::closePagePopup().
   virtual void SetValueAndClosePopup(int num_value,
-                                     const String& string_value) = 0;
+                                     const String& string_value,
+                                     bool is_keyboard_event) = 0;
 
   // This is called by the content HTML of a PagePopup.
   virtual void SetValue(const String&) = 0;

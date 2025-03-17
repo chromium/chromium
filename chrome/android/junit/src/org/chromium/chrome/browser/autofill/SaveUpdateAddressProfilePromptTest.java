@@ -239,14 +239,14 @@ public class SaveUpdateAddressProfilePromptTest {
         View dialog = mPrompt.getDialogViewForTesting();
 
         mPrompt.setUpdateDetails("subtitle", "", "new details");
-        assertEquals(dialog.findViewById(R.id.header_new).getVisibility(), View.GONE);
-        assertEquals(dialog.findViewById(R.id.header_old).getVisibility(), View.GONE);
-        assertEquals(dialog.findViewById(R.id.no_header_space).getVisibility(), View.VISIBLE);
+        assertEquals(View.GONE, dialog.findViewById(R.id.header_new).getVisibility());
+        assertEquals(View.GONE, dialog.findViewById(R.id.header_old).getVisibility());
+        assertEquals(View.VISIBLE, dialog.findViewById(R.id.no_header_space).getVisibility());
 
         mPrompt.setUpdateDetails("subtitle", "old details", "new details");
-        assertEquals(dialog.findViewById(R.id.header_new).getVisibility(), View.VISIBLE);
-        assertEquals(dialog.findViewById(R.id.header_old).getVisibility(), View.VISIBLE);
-        assertEquals(dialog.findViewById(R.id.no_header_space).getVisibility(), View.GONE);
+        assertEquals(View.VISIBLE, dialog.findViewById(R.id.header_new).getVisibility());
+        assertEquals(View.VISIBLE, dialog.findViewById(R.id.header_old).getVisibility());
+        assertEquals(View.GONE, dialog.findViewById(R.id.no_header_space).getVisibility());
     }
 
     @Test

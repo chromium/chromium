@@ -62,7 +62,7 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
     network_handler_test_helper_.reset();
   }
 
-  void LogIn() { SimulateUserLogin("user1@test.com"); }
+  void LogIn() { SimulateUserLogin({"user1@test.com"}); }
 
   void LogOut() { ClearLogin(); }
 

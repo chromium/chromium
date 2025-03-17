@@ -35,6 +35,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_SELECTION;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_TEXT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_ON_SCREEN;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_IN_WINDOW_KEY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_CHARACTER;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_LINE;
@@ -43,13 +44,24 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEM
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.LocaleSpan;
+import android.text.style.StrikethroughSpan;
+import android.text.style.StyleSpan;
+import android.text.style.SubscriptSpan;
 import android.text.style.SuggestionSpan;
+import android.text.style.SuperscriptSpan;
+import android.text.style.TextAppearanceSpan;
+import android.text.style.TypefaceSpan;
 import android.text.style.URLSpan;
+import android.text.style.UnderlineSpan;
 import android.view.View;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -57,8 +69,14 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.ax.mojom.TextStyle;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.ui.accessibility.AccessibilityFeatures;
+import org.chromium.ui.accessibility.AccessibilityFeaturesMap;
 
 import java.util.Collections;
 import java.util.List;
@@ -70,6 +88,7 @@ import java.util.Locale;
  * construct objects for the virtual view hierarchy to provide to the Android framework.
  */
 @JNINamespace("content")
+@NullMarked
 public class AccessibilityNodeInfoBuilder {
     // Constants defined for AccessibilityNodeInfo Bundle extras keys. These values are Chromium
     // specific, and allow Chromium-based browsers to provide richer information to AT. These
@@ -119,9 +138,15 @@ public class AccessibilityNodeInfoBuilder {
             "AccessibilityNodeInfo.requestImageData";
     public static final String EXTRAS_KEY_IMAGE_DATA = "AccessibilityNodeInfo.imageData";
 
-    // Static instances of the two types of extra data keys that can be added to nodes.
+    public static final String ACCESSIBILITY_SPANNABLE_CREATION_TIME =
+            "Accessibility.Android.Performance.SpannableCreationTime";
+
+    // Static instances of the three types of extra data keys that can be added to nodes.
     private static final List<String> sTextCharacterLocation =
             Collections.singletonList(EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
+
+    private static final List<String> sTextCharacterLocationInWindow =
+            Collections.singletonList(EXTRA_DATA_TEXT_CHARACTER_LOCATION_IN_WINDOW_KEY);
 
     private static final List<String> sRequestImageData =
             Collections.singletonList(EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY);
@@ -150,9 +175,11 @@ public class AccessibilityNodeInfoBuilder {
         int currentAccessibilityFocusId();
 
         // The language tag String provided by the default Locale of the device.
+        @Nullable
         String getLanguageTag();
 
         // Comma separate value of HTML tags that a given node can traverse by.
+        @Nullable
         String getSupportedHtmlTags();
 
         // Set of coordinates for providing the correct size and scroll of the View.
@@ -189,7 +216,8 @@ public class AccessibilityNodeInfoBuilder {
             boolean scrollable,
             boolean selected,
             boolean visibleToUser,
-            boolean hasCharacterLocations) {
+            boolean hasCharacterLocations,
+            boolean isRequired) {
         node.setCheckable(checkable);
         node.setChecked(checked);
         node.setClickable(clickable);
@@ -200,6 +228,7 @@ public class AccessibilityNodeInfoBuilder {
         node.setScrollable(scrollable);
         node.setSelected(selected);
         node.setVisibleToUser(visibleToUser);
+        node.setFieldRequired(isRequired);
 
         // In the special case that we have invalid content on a focused field, we only want to
         // report that to the user at most once per {@link CONTENT_INVALID_THROTTLE_DELAY} time
@@ -233,6 +262,7 @@ public class AccessibilityNodeInfoBuilder {
 
         if (hasCharacterLocations) {
             node.setAvailableExtraData(sTextCharacterLocation);
+            node.setAvailableExtraData(sTextCharacterLocationInWindow);
         }
 
         node.setMovementGranularities(
@@ -441,6 +471,8 @@ public class AccessibilityNodeInfoBuilder {
             int[] suggestionEnds,
             String[] suggestions,
             String stateDescription) {
+        long now = SystemClock.elapsedRealtime();
+
         CharSequence computedText =
                 computeText(
                         text,
@@ -463,6 +495,73 @@ public class AccessibilityNodeInfoBuilder {
         } else {
             node.setText(computedText);
         }
+
+        recordTimeToCreateSpannables(now);
+    }
+
+    @CalledByNative
+    protected void setAccessibilityNodeInfoText(
+            AccessibilityNodeInfoCompat node,
+            String text,
+            String targetUrl,
+            boolean annotateAsLink,
+            boolean isEditableText,
+            String language,
+            int[] suggestionStarts,
+            int[] suggestionEnds,
+            String[] suggestions,
+            String stateDescription,
+            float textSize,
+            int textStyle,
+            int textColor,
+            int textBackgroundColor,
+            String fontFamily,
+            boolean isSubscript,
+            boolean isSuperscript) {
+        assert AccessibilityFeaturesMap.isEnabled(
+                        AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING)
+                : "setAccessibilityNodeInfoText with text styling information was called when"
+                        + " feature was not enabled.";
+
+        long now = SystemClock.elapsedRealtime();
+
+        CharSequence computedText =
+                computeText(
+                        text,
+                        targetUrl,
+                        annotateAsLink,
+                        language,
+                        suggestionStarts,
+                        suggestionEnds,
+                        suggestions,
+                        textSize,
+                        textStyle,
+                        textColor,
+                        textBackgroundColor,
+                        fontFamily,
+                        isSubscript,
+                        isSuperscript);
+
+        // We add the stateDescription attribute when it is non-null and not empty.
+        if (stateDescription != null && !stateDescription.isEmpty()) {
+            node.setStateDescription(stateDescription);
+        }
+
+        // We expose the nested structure of links, which results in the roles of all nested nodes
+        // being read. Use content description in the case of links to prevent verbose TalkBack
+        if (annotateAsLink) {
+            node.setContentDescription(computedText);
+        } else {
+            node.setText(computedText);
+        }
+
+        recordTimeToCreateSpannables(now);
+    }
+
+    private void recordTimeToCreateSpannables(long startTime) {
+        // TODO(mschillaci): Check initial data and change time range/buckets if needed.
+        RecordHistogram.recordTimesHistogram(
+                ACCESSIBILITY_SPANNABLE_CREATION_TIME, SystemClock.elapsedRealtime() - startTime);
     }
 
     @CalledByNative
@@ -496,7 +595,8 @@ public class AccessibilityNodeInfoBuilder {
                 rect,
                 node.getExtras(),
                 mDelegate.getAccessibilityCoordinates(),
-                mDelegate.getView());
+                mDelegate.getView(),
+                /* isScreenCoordinates= */ true);
 
         node.setBoundsInScreen(rect);
 
@@ -601,6 +701,102 @@ public class AccessibilityNodeInfoBuilder {
         return text;
     }
 
+    private CharSequence computeText(
+            String text,
+            String targetUrl,
+            boolean annotateAsLink,
+            String language,
+            int[] suggestionStarts,
+            int[] suggestionEnds,
+            String[] suggestions,
+            float textSize,
+            int textStyle,
+            int textColor,
+            int textBackgroundColor,
+            String fontFamily,
+            boolean isSubscript,
+            boolean isSuperscript) {
+        assert AccessibilityFeaturesMap.isEnabled(
+                        AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING)
+                : "computeText with text styling information was called when feature was not"
+                        + " enabled.";
+
+        // The TextStyle from Blink is communicated as a bit flag. A piece of text can have multiple
+        // styles, these are applied to nodes as an IntAttribute by bit-shifting 1 by the value of
+        // the enum for that style.
+        // For example, a bold piece of text would have textStyle=2, and a piece of text that is
+        // bold, italic, and underline would have a value textStyle=14.
+        //
+        // There are 3 possible Spannables we may need to use here:
+        //    - StyleSpan - used for bold, italic, and bold+italic
+        //    - UnderlineSpan - used for underlines
+        //    - StrikethroughSpan - used for strikethroughs ("linethrough" in Blink)
+        //
+        // We do not have any use-cases for OVERLINE, and we do not use any Spannables for NONE.
+        boolean needsStyleSpan =
+                (textStyle & ((1 << TextStyle.BOLD) | (1 << TextStyle.ITALIC))) != 0;
+        boolean needsUnderlineSpan = (textStyle & (1 << TextStyle.UNDERLINE)) != 0;
+        boolean needsStrikethroughSpan = (textStyle & (1 << TextStyle.LINE_THROUGH)) != 0;
+
+        // We previously would only create a SpannableString if needed, and would check each of
+        // these specific cases within a separate if statement. Since every piece of text must have
+        // a color, size, background color, etc, we are always making spans so we have removed that
+        // extra check and will always return a Spannable.
+        SpannableString spannable = new SpannableString(text);
+        if (annotateAsLink) {
+            spannable.setSpan(new URLSpan(targetUrl), 0, spannable.length(), 0);
+        }
+        if (!language.isEmpty() && !language.equals(mDelegate.getLanguageTag())) {
+            Locale locale = Locale.forLanguageTag(language);
+            spannable.setSpan(new LocaleSpan(locale), 0, spannable.length(), 0);
+        }
+        if (suggestionStarts != null && suggestionStarts.length > 0) {
+            addSuggestionSpans(spannable, suggestionStarts, suggestionEnds, suggestions);
+        }
+        if (needsStyleSpan) {
+            boolean isBold = (textStyle & (1 << TextStyle.BOLD)) != 0;
+            boolean isItalic = (textStyle & (1 << TextStyle.ITALIC)) != 0;
+
+            if (isBold && isItalic) {
+                spannable.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), 0, spannable.length(), 0);
+            } else if (isBold) {
+                spannable.setSpan(new StyleSpan(Typeface.BOLD), 0, spannable.length(), 0);
+            } else if (isItalic) {
+                spannable.setSpan(new StyleSpan(Typeface.ITALIC), 0, spannable.length(), 0);
+            }
+        }
+        if (needsUnderlineSpan) {
+            spannable.setSpan(new UnderlineSpan(), 0, spannable.length(), 0);
+        }
+        if (needsStrikethroughSpan) {
+            spannable.setSpan(new StrikethroughSpan(), 0, spannable.length(), 0);
+        }
+        // Subscript and superscript are mutually exclusive.
+        if (isSubscript) {
+            spannable.setSpan(new SubscriptSpan(), 0, spannable.length(), 0);
+        } else if (isSuperscript) {
+            spannable.setSpan(new SuperscriptSpan(), 0, spannable.length(), 0);
+        }
+        if (fontFamily != null && !fontFamily.isEmpty()) {
+            spannable.setSpan(new TypefaceSpan(fontFamily), 0, spannable.length(), 0);
+        }
+
+        spannable.setSpan(new ForegroundColorSpan(textColor), 0, spannable.length(), 0);
+        spannable.setSpan(new BackgroundColorSpan(textBackgroundColor), 0, spannable.length(), 0);
+        spannable.setSpan(
+                new TextAppearanceSpan(
+                        fontFamily,
+                        0,
+                        (int) textSize,
+                        ColorStateList.valueOf(textColor),
+                        ColorStateList.valueOf(0)),
+                0,
+                spannable.length(),
+                0);
+
+        return spannable;
+    }
+
     private void addSuggestionSpans(
             SpannableString spannable,
             int[] suggestionStarts,
@@ -636,7 +832,8 @@ public class AccessibilityNodeInfoBuilder {
             Rect rect,
             Bundle extras,
             AccessibilityDelegate.AccessibilityCoordinates accessibilityCoordinates,
-            View view) {
+            View view,
+            boolean isScreenCoordinates) {
         // Offset by the scroll position.
         AccessibilityDelegate.AccessibilityCoordinates ac = accessibilityCoordinates;
         rect.offset(-(int) ac.getScrollX(), -(int) ac.getScrollY());
@@ -653,7 +850,11 @@ public class AccessibilityNodeInfoBuilder {
         // Finally offset by the location of the view within the screen.
         final int[] viewLocation = new int[2];
         view.getLocationOnScreen(viewLocation);
-        rect.offset(viewLocation[0], viewLocation[1]);
+        // Only offset the view location when the screen coordinates are requested.
+        // For window coordinates, no need to offset the view location.
+        if (isScreenCoordinates) {
+            rect.offset(viewLocation[0], viewLocation[1]);
+        }
 
         // TODO(mschillaci): This block is the same per-node and is purely viewport dependent,
         //                   pull this out into a reusable object for simplicity/performance.

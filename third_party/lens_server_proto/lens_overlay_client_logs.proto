@@ -30,4 +30,9 @@ message LensOverlayClientLogs {
 
   // A unique identifier for associating events logged by lens asynchronously.
   optional uint64 paella_id = 3;
+
+  // Whether the user has disabled metrics collection.
+  optional bool metrics_collection_disabled = 5;
+
+  reserved 4;
 }

@@ -239,9 +239,7 @@ TEST_F(CastDialogViewTest, StartCasting) {
 }
 
 TEST_F(CastDialogViewTest, FreezeUiStartCasting) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
+  // Enable the proper pref.
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   std::vector<UIMediaSink> media_sinks = {CreateAvailableSink(),
@@ -265,9 +263,7 @@ TEST_F(CastDialogViewTest, StopCasting) {
 }
 
 TEST_F(CastDialogViewTest, FreezeRoute) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
+  // Enable the proper pref.
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   CastDialogModel model = CreateModelWithSinks(
@@ -285,9 +281,7 @@ TEST_F(CastDialogViewTest, FreezeRoute) {
 }
 
 TEST_F(CastDialogViewTest, FreezeNoRoute) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
+  // Enable the proper pref.
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   CastDialogModel model = CreateModelWithSinks({CreateFreezableSink()});

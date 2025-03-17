@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.app.NotificationCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -146,13 +145,10 @@ public class WebApkInstallService {
         Context context = ContextUtils.getApplicationContext();
 
         String channelId;
-        int preOPriority;
         if (type == SystemNotificationType.WEBAPK_INSTALL_IN_PROGRESS) {
             channelId = ChromeChannelDefinitions.ChannelId.BROWSER;
-            preOPriority = NotificationCompat.PRIORITY_DEFAULT;
         } else {
             channelId = ChromeChannelDefinitions.ChannelId.WEBAPPS;
-            preOPriority = NotificationCompat.PRIORITY_HIGH;
         }
 
         NotificationMetadata metadata =
@@ -168,7 +164,6 @@ public class WebApkInstallService {
                 .setLargeIcon(icon)
                 .setSmallIcon(R.drawable.ic_chrome)
                 .setContentIntent(clickPendingIntent)
-                .setPriorityBeforeO(preOPriority)
                 .setWhen(System.currentTimeMillis())
                 .setSubText(
                         UrlFormatter.formatUrlForSecurityDisplay(

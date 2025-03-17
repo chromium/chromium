@@ -58,21 +58,22 @@ class PartitionItem {
 WebviewInfo::WebviewInfo(const ExtensionId& extension_id)
     : extension_id_(extension_id) {}
 
-WebviewInfo::~WebviewInfo() {
-}
+WebviewInfo::~WebviewInfo() = default;
 
 // static
 bool WebviewInfo::IsResourceWebviewAccessible(
     const Extension* extension,
     const std::string& partition_id,
     const std::string& relative_path) {
-  if (!extension)
+  if (!extension) {
     return false;
+  }
 
   const WebviewInfo* webview_info = static_cast<const WebviewInfo*>(
       extension->GetManifestData(keys::kWebviewAccessibleResources));
-  if (!webview_info)
+  if (!webview_info) {
     return false;
+  }
 
   for (const auto& item : webview_info->partition_items_) {
     if (item->Matches(partition_id) &&
@@ -91,12 +92,14 @@ bool WebviewInfo::HasWebviewAccessibleResources(
     const std::string& partition_id) {
   const WebviewInfo* webview_info = static_cast<const WebviewInfo*>(
       extension.GetManifestData(keys::kWebviewAccessibleResources));
-  if (!webview_info)
+  if (!webview_info) {
     return false;
+  }
 
   for (const auto& item : webview_info->partition_items_) {
-    if (item->Matches(partition_id))
+    if (item->Matches(partition_id)) {
       return true;
+    }
   }
   return false;
 }

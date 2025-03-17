@@ -126,11 +126,11 @@ async function runThirdSession() {
 chrome.runtime.onStartup.addListener(async () => {});
 
 chrome.test.sendMessage('ready', testName => {
-  if (testName === 'PRE_PRE_PersistentWorldConfiguration')
+  if (testName.startsWith('PRE_PRE_PersistentWorldConfiguration'))
     runFirstSession();
-  else if (testName === 'PRE_PersistentWorldConfiguration')
+  else if (testName.startsWith('PRE_PersistentWorldConfiguration'))
     runSecondSession();
-  else if (testName === 'PersistentWorldConfiguration')
+  else if (testName.startsWith('PersistentWorldConfiguration'))
     runThirdSession();
   else
     chrome.test.fail();

@@ -13,6 +13,7 @@ namespace blink {
 
 class Document;
 class Element;
+class ExceptionState;
 class CSSValue;
 
 struct TimelineOffset {

@@ -330,12 +330,8 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   void SeekInternal(base::TimeDelta time,
                     base::OnceCallback<void(int)> seek_cb);
-  void OnVideoSeekedForTrackChange(DemuxerStream* video_stream,
-                                   base::OnceClosure seek_completed_cb,
-                                   int result);
-  void SeekOnVideoTrackChange(base::TimeDelta seek_to_time,
-                              TrackChangeCB seek_completed_cb,
-                              const std::vector<DemuxerStream*>& streams);
+  void OnTrackChangeSeekComplete(base::OnceClosure seek_completed_cb,
+                                 int result);
 
   // Executes |init_cb_| with |status| and closes out the async trace.
   void RunInitCB(PipelineStatus status);

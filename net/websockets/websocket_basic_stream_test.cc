@@ -173,7 +173,8 @@ class WebSocketBasicStreamSocketTest : public TestWithTaskEnvironment {
     transport_socket->Init(
         group_id, null_params, std::nullopt /* proxy_annotation_tag */, MEDIUM,
         SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-        CompletionOnceCallback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
+        CompletionOnceCallback(), ClientSocketPool::ProxyAuthCallback(),
+        /*fail_if_alias_requires_proxy_override=*/false, &pool_,
         NetLogWithSource());
     return transport_socket;
   }
@@ -851,15 +852,16 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest,
   EXPECT_TRUE(frames.empty());
 }
 
+const char kMultiplePongFrames[] = {
+    '\x8A', '\x05', 'P', 'o', 'n', 'g', '1',  // "Pong1".
+    '\x8A', '\x05', 'P', 'o', 'n', 'g', '2'   // "Pong2".
+};
+
+constexpr size_t kMultiplePongFramesSize = sizeof(kMultiplePongFrames);
+
 // Test to ensure multiple control frames with different payloads are handled
 // properly.
 TEST_F(WebSocketBasicStreamSocketTest, MultipleControlFramesInOneRead) {
-  const char kMultiplePongFrames[] = {
-      '\x8A', '\x05', 'P', 'o', 'n', 'g', '1',  // "Pong1".
-      '\x8A', '\x05', 'P', 'o', 'n', 'g', '2'   // "Pong2".
-  };
-
-  constexpr size_t kMultiplePongFramesSize = sizeof(kMultiplePongFrames);
   std::vector<std::unique_ptr<WebSocketFrame>> frames;
 
   MockRead reads[] = {
@@ -876,6 +878,74 @@ TEST_F(WebSocketBasicStreamSocketTest, MultipleControlFramesInOneRead) {
   EXPECT_EQ(WebSocketFrameHeader::kOpCodePong, frames[1]->header.opcode);
   EXPECT_EQ(5U, frames[1]->header.payload_length);
   EXPECT_EQ(base::as_string_view(frames[1]->payload), "Pong2");
+}
+
+// This is a repro for https://crbug.com/issues/377318323
+TEST_F(WebSocketBasicStreamSocketTest, SplitControlFrameAfterAnotherFrame) {
+  std::vector<std::unique_ptr<WebSocketFrame>> frames;
+
+  MockRead reads[] = {
+      MockRead(ASYNC, kMultiplePongFrames, kMultiplePongFramesSize - 2u),
+      MockRead(SYNCHRONOUS, kMultiplePongFrames + kMultiplePongFramesSize - 2,
+               2u)};
+  CreateStream(reads, base::span<MockWrite>());
+
+  TestCompletionCallback cb1;
+  EXPECT_THAT(stream_->ReadFrames(&frames, cb1.callback()),
+              IsError(ERR_IO_PENDING));
+  EXPECT_THAT(cb1.WaitForResult(), IsOk());
+  // ReadFrames() returns after the first read that returns at least 1 complete
+  // frame, so this call only returns the first pong.
+  ASSERT_EQ(1U, frames.size());
+  EXPECT_EQ(base::as_string_view(frames[0]->payload), "Pong1");
+
+  frames.clear();
+
+  TestCompletionCallback cb2;
+  EXPECT_THAT(stream_->ReadFrames(&frames, cb2.callback()), IsOk());
+  ASSERT_EQ(1U, frames.size());
+  EXPECT_EQ(base::as_string_view(frames[0]->payload), "Pong2");
+}
+
+// This is a repro for https://crbug.com/issues/393000981
+TEST_F(WebSocketBasicStreamSocketTest, SplitControlFrameBetweenTextFrames) {
+  static constexpr auto kFirstReadBuffer =
+      std::to_array<char>({// Text frame, size 5.
+                           '\x81', '\x05', 't', 'e', 'x', 't', '1',
+                           // Ping frame, size 4, truncated.
+                           '\x89', '\x04', 'p', 'i'});
+  static constexpr auto kSecondReadBuffer =
+      std::to_array<char>({// Last two bytes of ping frame.
+                           'n', 'g',
+                           // Text frame, size 5.
+                           '\x81', '\x05', 't', 'e', 'x', 't', '2'});
+
+  std::vector<std::unique_ptr<WebSocketFrame>> frames;
+
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, kFirstReadBuffer.data(), kFirstReadBuffer.size()),
+      MockRead(SYNCHRONOUS, kSecondReadBuffer.data(),
+               kSecondReadBuffer.size())};
+  CreateStream(reads, base::span<MockWrite>());
+
+  EXPECT_THAT(stream_->ReadFrames(&frames, CompletionOnceCallback()), IsOk());
+  // ReadFrames() returns after the first read that returns at least 1 complete
+  // frame, so this call only returns the first text frame.
+  ASSERT_EQ(1U, frames.size());
+  const auto& frame = *frames.front();
+  EXPECT_EQ(frame.header.opcode, WebSocketFrameHeader::kOpCodeText);
+  EXPECT_EQ(base::as_string_view(frame.payload), "text1");
+
+  frames.clear();
+
+  EXPECT_THAT(stream_->ReadFrames(&frames, CompletionOnceCallback()), IsOk());
+  ASSERT_EQ(2U, frames.size());
+  const auto& ping_frame = *frames[0];
+  const auto& text_frame = *frames[1];
+  EXPECT_EQ(ping_frame.header.opcode, WebSocketFrameHeader::kOpCodePing);
+  EXPECT_EQ(base::as_string_view(ping_frame.payload), "ping");
+  EXPECT_EQ(text_frame.header.opcode, WebSocketFrameHeader::kOpCodeText);
+  EXPECT_EQ(base::as_string_view(text_frame.payload), "text2");
 }
 
 // In the synchronous case, ReadFrames assembles the whole control frame before

@@ -7,12 +7,15 @@
 
 #include <os/availability.h>
 
+#include <memory>
 #include <optional>
+#include <utility>
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
-#include "crypto/scoped_lacontext.h"
+#include "chrome/browser/webauthn/local_authentication_token.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
 
 // Displays a sheet prompting the user to tap their Touch ID sensor to complete
 // a passkey flow.
@@ -31,7 +34,8 @@ class API_AVAILABLE(macos(12.0)) AuthenticatorTouchIdView
 
  private:
   // Called after the user taps their Touch ID sensor.
-  void OnTouchIDComplete(std::optional<crypto::ScopedLAContext> lacontext);
+  void OnTouchIDComplete(
+      std::optional<webauthn::LocalAuthenticationToken> local_auth_token);
 
   // AuthenticatorRequestSheetView:
   std::unique_ptr<views::View> BuildStepSpecificHeader() override;

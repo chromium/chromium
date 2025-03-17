@@ -41,14 +41,10 @@ void RecordBubbleHistogramValue(StoragePressureBubbleHistogramValue value) {
 
 }  // namespace
 
-namespace chrome {
-
 // static
 void ShowStoragePressureBubble(const url::Origin& origin) {
   StoragePressureBubbleView::ShowBubble(origin);
 }
-
-}  // namespace chrome
 
 void StoragePressureBubbleView::ShowBubble(const url::Origin& origin) {
   Browser* browser = BrowserList::GetInstance()->GetLastActive();

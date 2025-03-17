@@ -328,13 +328,7 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillPageQueryRequest& query) {
   for (const auto& form : query.forms()) {
     LogBuffer form_buffer(LogBuffer::IsActive(true));
     for (const auto& field : form.fields()) {
-      form_buffer << Tag{"table"};
-      form_buffer << Tr{} << "Signature"
-                  << "Field name"
-                  << "Control type";
-      form_buffer << Tr{} << field.signature() << field.name()
-                  << field.control_type();
-      form_buffer << CTag{"table"};
+      form_buffer << "Signature: " << field.signature();
     }
     out << Tr{} << ("Form " + base::NumberToString(form.signature()))
         << std::move(form_buffer);
@@ -369,6 +363,18 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
     out << Tr{} << "has_form_tag:" << upload.has_form_tag();
 
   out << Tr{} << "form_signature:" << upload.form_signature();
+  if (upload.has_second_last_address_form_submitted()) {
+    out << Tr{} << "second_last_address_form_submitted:"
+        << upload.second_last_address_form_submitted();
+  }
+  if (upload.has_last_address_form_submitted()) {
+    out << Tr{} << "last_address_form_submitted:"
+        << upload.last_address_form_submitted();
+  }
+  if (upload.has_last_credit_card_form_submitted()) {
+    out << Tr{} << "last_credit_card_form_submitted:"
+        << upload.last_credit_card_form_submitted();
+  }
   for (const auto& field : upload.field_data()) {
     out << Tr{} << Attrib{"style", "font-weight: bold"}
         << "field_signature:" << field.signature();
@@ -574,6 +580,14 @@ void InitActiveExperiments() {
   active_experiments.erase(
       std::unique(active_experiments.begin(), active_experiments.end()),
       active_experiments.end());
+
+  // We specify the experiment id for AutofillAI server predictions via a
+  // feature parameter instead of a variations ids so that we can use it
+  // together with a Google Groups controlled study.
+  if (features::kAutofillAiWithDataSchemaServerExperimentId.Get()) {
+    active_experiments.push_back(
+        features::kAutofillAiWithDataSchemaServerExperimentId.Get());
+  }
 
   GetActiveExperiments() = std::move(active_experiments);
 }

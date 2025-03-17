@@ -10,7 +10,6 @@
 #include <optional>
 #include <utility>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login/login_utils.h"
@@ -55,6 +54,7 @@
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/account_id/account_id.h"
@@ -161,7 +161,7 @@ bool IsSigninToAdd() {
 
 bool CanRemoveUser(const user_manager::User* user) {
   const bool is_single_user =
-      user_manager::UserManager::Get()->GetUsers().size() == 1;
+      user_manager::UserManager::Get()->GetPersistedUsers().size() == 1;
 
   // Single user check here is necessary because owner info might not be
   // available when running into login screen on first boot.

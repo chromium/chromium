@@ -6,7 +6,6 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -31,7 +30,8 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/account_manager_core/pref_names.h"
 #endif
 
@@ -49,8 +49,10 @@ namespace {
 bool IsFirstPartyRequest(ResponseAdapter* response_adapter) {
   const url::Origin* top_frame_origin =
       response_adapter->GetRequestTopFrameOrigin();
-  return top_frame_origin && net::SchemefulSite(*top_frame_origin) ==
-                                 net::SchemefulSite(response_adapter->GetUrl());
+  return top_frame_origin &&
+         net::SchemefulSite::IsSameSite(
+             *top_frame_origin,
+             url::Origin::Create(response_adapter->GetUrl()));
 }
 }  // namespace
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -112,7 +114,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
       SyncServiceFactory::GetForProfile(profile_);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool is_secondary_account_addition_allowed = true;
   if (!prefs->GetBoolean(
           ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed)) {
@@ -147,7 +149,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
       incognito_mode_availability,
       AccountConsistencyModeManager::GetMethodForProfile(profile_),
       account.gaia, is_child_account,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       is_secondary_account_addition_allowed,
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

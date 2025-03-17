@@ -25,6 +25,23 @@ class DefaultBrowserPromoTest : public testing::Test {
 
   void TearDown() override { Test::TearDown(); }
 
+  void TestComputeCardResultImpl(
+      bool hasDefaultBrowserPromoInteracted,
+      float hasDefaultBrowserPromoShownInOtherSurface,
+      float shouldShowNonRoleManagerDefaultBrowserPromo,
+      EphemeralHomeModuleRank position) {
+    pref_service_.SetUserPref(
+        kDefaultBrowserPromoInteractedPref,
+        std::make_unique<base::Value>(hasDefaultBrowserPromoInteracted));
+    auto card = std::make_unique<DefaultBrowserPromo>(&pref_service_);
+    AllCardSignals all_signals = CreateAllCardSignals(
+        card.get(), {hasDefaultBrowserPromoShownInOtherSurface,
+                     shouldShowNonRoleManagerDefaultBrowserPromo});
+    CardSelectionSignals card_signal(&all_signals, kDefaultBrowserPromo);
+    CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
+    EXPECT_EQ(position, result.position);
+  }
+
  protected:
   TestingPrefServiceSimple pref_service_;
 };
@@ -45,18 +62,13 @@ TEST_F(DefaultBrowserPromoTest, GetInputsReturnsExpectedInputs) {
       inputs.end());
 }
 
-// Validates that ComputeCardResult() returns kTop when default browser promo
+// Validates that ComputeCardResult() returns kLast when default browser promo
 // card is enabled.
 TEST_F(DefaultBrowserPromoTest, TestComputeCardResultWithCardEnabled) {
-  pref_service_.SetUserPref(kDefaultBrowserPromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<DefaultBrowserPromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kHasDefaultBrowserPromoShownInOtherSurface */ 0,
-                   /* kShouldShowNonRoleManagerDefaultBrowserPromo */ 1});
-  CardSelectionSignals card_signal(&all_signals, kDefaultBrowserPromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
+  TestComputeCardResultImpl(/* hasDefaultBrowserPromoInteracted */ false,
+                            /* hasDefaultBrowserPromoShownInOtherSurface */ 0,
+                            /* shouldShowNonRoleManagerDefaultBrowserPromo */ 1,
+                            EphemeralHomeModuleRank::kLast);
 }
 
 // Validates that when the default browser promo card is disabled because the
@@ -64,15 +76,10 @@ TEST_F(DefaultBrowserPromoTest, TestComputeCardResultWithCardEnabled) {
 // ComputeCardResult() function returns kNotShown.
 TEST_F(DefaultBrowserPromoTest,
        TestComputeCardResultWithCardDisabledForNotShowNonRoleManagerPromo) {
-  pref_service_.SetUserPref(kDefaultBrowserPromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<DefaultBrowserPromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kHasDefaultBrowserPromoShownInOtherSurface */ 0,
-                   /* kShouldShowNonRoleManagerDefaultBrowserPromo */ 0});
-  CardSelectionSignals card_signal(&all_signals, kDefaultBrowserPromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+  TestComputeCardResultImpl(/* hasDefaultBrowserPromoInteracted */ false,
+                            /* hasDefaultBrowserPromoShownInOtherSurface */ 0,
+                            /* shouldShowNonRoleManagerDefaultBrowserPromo */ 0,
+                            EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
@@ -80,15 +87,10 @@ TEST_F(DefaultBrowserPromoTest,
 // in other surfaces, such as through settings, messages, or alternative NTPs.
 TEST_F(DefaultBrowserPromoTest,
        TestComputeCardResultWithCardDisabledForShownInOtherSurface) {
-  pref_service_.SetUserPref(kDefaultBrowserPromoInteractedPref,
-                            std::make_unique<base::Value>(false));
-  auto card = std::make_unique<DefaultBrowserPromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kHasDefaultBrowserPromoShownInOtherSurface */ 1,
-                   /* kShouldShowNonRoleManagerDefaultBrowserPromo */ 1});
-  CardSelectionSignals card_signal(&all_signals, kDefaultBrowserPromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+  TestComputeCardResultImpl(/* hasDefaultBrowserPromoInteracted */ false,
+                            /* hasDefaultBrowserPromoShownInOtherSurface */ 1,
+                            /* shouldShowNonRoleManagerDefaultBrowserPromo */ 1,
+                            EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
@@ -96,15 +98,10 @@ TEST_F(DefaultBrowserPromoTest,
 // with the card.
 TEST_F(DefaultBrowserPromoTest,
        TestComputeCardResultWithCardDisabledForUserInteraction) {
-  pref_service_.SetUserPref(kDefaultBrowserPromoInteractedPref,
-                            std::make_unique<base::Value>(true));
-  auto card = std::make_unique<DefaultBrowserPromo>(&pref_service_);
-  AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kHasDefaultBrowserPromoShownInOtherSurface */ 0,
-                   /* kShouldShowNonRoleManagerDefaultBrowserPromo */ 1});
-  CardSelectionSignals card_signal(&all_signals, kDefaultBrowserPromo);
-  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+  TestComputeCardResultImpl(/* hasDefaultBrowserPromoInteracted */ true,
+                            /* hasDefaultBrowserPromoShownInOtherSurface */ 0,
+                            /* shouldShowNonRoleManagerDefaultBrowserPromo */ 1,
+                            EphemeralHomeModuleRank::kNotShown);
 }
 
 }  // namespace segmentation_platform::home_modules

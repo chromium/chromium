@@ -59,7 +59,8 @@ constexpr char kOidcNonEntraReprocessUrl[] =
 constexpr char kOidcEntraKmsiUrl[] = "https://login.microsoftonline.com/kmsi";
 constexpr char kOidcState[] = "1234";
 
-constexpr char kHeaderInterceptionTestUrl[] = "http://somehost/register";
+constexpr char kHeaderInterceptionTestUrl[] =
+    "https://chromeenterprise.google/profile-enrollment/register-handler";
 
 constexpr char kUserPrincipleNameClaimName[] = "upn";
 constexpr char kSubjectClaimName[] = "sub";
@@ -166,8 +167,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
       public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   explicit OidcAuthResponseCaptureNavigationThrottleTest(
-      const std::string& additional_hosts,
-      const std::string& additional_header_urls = std::string()) {
+      const std::string& additional_hosts) {
     std::vector<FeatureRefAndParams> enabled_features;
     std::vector<FeatureRef> disabled_features;
 
@@ -184,20 +184,13 @@ class OidcAuthResponseCaptureNavigationThrottleTest
            {{features::kOidcAuthAdditionalHosts.name, additional_hosts}}});
     }
 
-    if (!additional_header_urls.empty()) {
-      enabled_features.push_back(
-          {features::kOidcAuthHeaderInterception,
-           {{features::kOidcAuthAdditionalUrls.name, additional_header_urls}}});
-    }
-
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
   }
 
   OidcAuthResponseCaptureNavigationThrottleTest()
       : OidcAuthResponseCaptureNavigationThrottleTest(
-            /*additional_hosts=*/std::string(),
-            /*additional_header_urls=*/kHeaderInterceptionTestUrl) {}
+            /*additional_hosts=*/std::string()) {}
 
   ~OidcAuthResponseCaptureNavigationThrottleTest() override = default;
 

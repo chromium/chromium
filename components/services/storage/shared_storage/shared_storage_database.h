@@ -62,6 +62,12 @@ class SharedStorageDatabase {
       base::RepeatingCallback<bool(const blink::StorageKey&,
                                    SpecialStoragePolicy*)>;
 
+  enum class DataClearSource {
+    kSite,
+    kUI,
+    kExpiration,
+  };
+
   enum class InitStatus {
     kUnattempted =
         0,  // Status if `LazyInit()` has not yet been called or if `LazyInit()`
@@ -302,7 +308,9 @@ class SharedStorageDatabase {
 
   // Clears all entries for `context_origin`. Returns whether the operation is
   // successful.
-  [[nodiscard]] OperationResult Clear(url::Origin context_origin);
+  [[nodiscard]] OperationResult Clear(
+      url::Origin context_origin,
+      DataClearSource source = DataClearSource::kSite);
 
   // Returns the number of unexpired entries for `context_origin` in the
   // database, or -1 on error.
@@ -477,7 +485,8 @@ class SharedStorageDatabase {
   // successful. Not named `Clear()` to distinguish it from the public method
   // called via `SequenceBound::AsyncCall()`. We remove `context_origin` from
   // `per_origin_mapping` if the origin becomes empty.
-  [[nodiscard]] bool Purge(const std::string& context_origin)
+  [[nodiscard]] bool Purge(const std::string& context_origin,
+                           DataClearSource source)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Performs the common last steps for calls to `Set()` or `Append()`.
@@ -567,8 +576,8 @@ class SharedStorageDatabase {
 
   // Deletes the row for `context_origin` from `per_origin_mapping`.
   [[nodiscard]] bool DeleteFromPerOriginMapping(
-      const std::string& context_origin)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+      const std::string& context_origin,
+      DataClearSource source) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Inserts the tuple for `(context_origin, creation_time, num_bytes)`
   // into `per_origin_mapping`.

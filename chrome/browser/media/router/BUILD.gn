@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -61,7 +60,7 @@ static_library("media_router_feature") {
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/browser_context_helper" ]
   }
 }
@@ -170,7 +169,7 @@ static_library("router") {
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/profiles:profile",
       "//components/access_code_cast/common:metrics",
-      "//components/embedder_support:browser_util",
+      "//components/embedder_support:user_agent",
       "//components/mirroring/mojom:service",
       "//components/ukm/content:content",
       "//components/version_info:version_info",
@@ -192,8 +191,8 @@ static_library("router") {
 
     if (enable_openscreen_protocol) {
       sources += [
-        "providers/openscreen/discovery/open_screen_listener.cc",
-        "providers/openscreen/discovery/open_screen_listener.h",
+        "providers/openscreen/discovery/open_screen_listener_delegate.cc",
+        "providers/openscreen/discovery/open_screen_listener_delegate.h",
         "providers/openscreen/network_service_async_packet_sender.cc",
         "providers/openscreen/network_service_async_packet_sender.h",
         "providers/openscreen/network_service_quic_packet_writer.cc",
@@ -402,7 +401,7 @@ source_set("unittests") {
   if (enable_openscreen_protocol) {
     include_dirs = [ "//third_party/openscreen/src" ]
     sources += [
-      "providers/openscreen/discovery/open_screen_listener_unittest.cc",
+      "providers/openscreen/discovery/open_screen_listener_delegate_unittest.cc",
       "providers/openscreen/network_service_quic_packet_writer_unittest.cc",
     ]
   }

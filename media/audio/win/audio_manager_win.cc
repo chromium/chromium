@@ -192,8 +192,8 @@ void AudioManagerWin::GetAudioOutputDeviceNames(
 AudioParameters AudioManagerWin::GetInputStreamParameters(
     const std::string& device_id) {
   AudioParameters parameters;
-  HRESULT hr =
-      CoreAudioUtil::GetPreferredAudioParameters(device_id, false, &parameters);
+  HRESULT hr = CoreAudioUtil::GetPreferredAudioParameters(
+      device_id, /*is_output_device=*/false, &parameters);
 
   if (FAILED(hr) || !parameters.IsValid()) {
     LOG(WARNING) << "Unable to get preferred audio params for " << device_id

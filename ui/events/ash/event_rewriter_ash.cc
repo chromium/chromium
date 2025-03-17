@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 
 #include "ash/constants/ash_features.h"
@@ -21,7 +22,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1027,7 +1027,7 @@ bool MaybeNotifyTopRowKeyBlockedByFnKey(
   }
   const auto& scan_code_vector = *scan_code_vector_ptr;
   const auto& key_iter =
-      base::ranges::find(scan_code_vector, key_event.scan_code());
+      std::ranges::find(scan_code_vector, key_event.scan_code());
 
   // If the scan code appears in the top row mapping it is an action key then
   // notify the user the key has been blocked.
@@ -1475,9 +1475,10 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
     // same, too, but actually CapsLock will trigger to change the
     // EF_CAPS_LOCK_ON flag of the original event. Instead, check whether the
     // current key is already pressed or not.
-    bool is_repeat = base::ranges::find(
+    bool is_repeat = std::ranges::find(
                          pressed_key_states_,
-                         std::tuple(key_event.code(), key_event.GetDomKey(),
+                         std::tuple(key_event.code(),
+                                    DomKey::Base{key_event.GetDomKey()},
                                     key_event.key_code()),
                          [](auto entry) {
                            return std::tuple(entry.first.code, entry.first.key,
@@ -2204,8 +2205,7 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
         rewritten_event ? static_cast<const KeyEvent*>(rewritten_event.get())
                         : &key_event);
     MutableKeyState original_key_state(&key_event);
-    auto iter =
-        base::ranges::find_if(pressed_key_states_, key_state_comparator);
+    auto iter = std::ranges::find_if(pressed_key_states_, key_state_comparator);
 
     // When a key is pressed, store |current_key_state| if it is not stored
     // before.
@@ -2288,7 +2288,7 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
   current_key_state = MutableKeyState(
       rewritten_event ? static_cast<const KeyEvent*>(rewritten_event.get())
                       : &key_event);
-  auto iter = base::ranges::find_if(pressed_key_states_, key_state_comparator);
+  auto iter = std::ranges::find_if(pressed_key_states_, key_state_comparator);
   if (iter != pressed_key_states_.end()) {
     pressed_key_states_.erase(iter);
 
@@ -2364,7 +2364,7 @@ bool EventRewriterAsh::RewriteTopRowKeysForCustomLayout(
 
   const auto& scan_code_vector = *scan_code_vector_ptr;
   const auto& key_iter =
-      base::ranges::find(scan_code_vector, key_event.scan_code());
+      std::ranges::find(scan_code_vector, key_event.scan_code());
 
   // If the scan code appears in the top row mapping it is an action key.
   const bool is_action_key = (key_iter != scan_code_vector.end());

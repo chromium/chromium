@@ -18,20 +18,19 @@ suite(`SigninSyncConfirmationTest`, function() {
   let browserProxy: TestSyncConfirmationBrowserProxy;
 
   async function testButtonClick(buttonSelector: string) {
-    const allButtons =
-        Array.from(app.shadowRoot!.querySelectorAll('cr-button'));
+    const allButtons = Array.from(app.shadowRoot.querySelectorAll('cr-button'));
     const actionButton =
-        app.shadowRoot!.querySelector<HTMLElement>(buttonSelector);
+        app.shadowRoot.querySelector<HTMLElement>(buttonSelector);
 
     allButtons.forEach(button => assertFalse(button.disabled));
-    assertFalse(!!app.shadowRoot!.querySelector('.spinner'));
+    assertFalse(!!app.shadowRoot.querySelector('.spinner'));
 
     assertTrue(!!actionButton);
     actionButton.click();
     await microtasksFinished();
 
     allButtons.forEach(button => assertTrue(button.disabled));
-    assertTrue(!!app.shadowRoot!.querySelector('.spinner'));
+    assertTrue(!!app.shadowRoot.querySelector('.spinner'));
   }
 
   setup(async function() {
@@ -49,12 +48,12 @@ suite(`SigninSyncConfirmationTest`, function() {
   // configuration.
   test('LoadPage', function() {
     const cancelButton =
-        app.shadowRoot!.querySelector<HTMLElement>('#notNowButton');
+        app.shadowRoot.querySelector<HTMLElement>('#notNowButton');
     assertFalse(cancelButton!.hidden);
     assertTrue(cancelButton!.classList.contains('visibility-hidden'));
 
     const confirmButton =
-        app.shadowRoot!.querySelector<HTMLElement>('#confirmButton');
+        app.shadowRoot.querySelector<HTMLElement>('#confirmButton');
     assertFalse(confirmButton!.hidden);
     assertTrue(confirmButton!.classList.contains('visibility-hidden'));
   });
@@ -121,7 +120,7 @@ suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
     const i18n = app.i18n.bind(app);
     webUIListenerCallback('screen-mode-changed', ScreenMode.RESTRICTED);
 
-    app.shadowRoot!.querySelector<HTMLElement>('#confirmButton')!.click();
+    app.shadowRoot.querySelector<HTMLElement>('#confirmButton')!.click();
     const [description, confirmation, screenMode] =
         await browserProxy.whenCalled('confirm');
 
@@ -136,7 +135,7 @@ suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
     const i18n = app.i18n.bind(app);
     webUIListenerCallback('screen-mode-changed', ScreenMode.RESTRICTED);
 
-    app.shadowRoot!.querySelector<HTMLElement>('#settingsButton')!.click();
+    app.shadowRoot.querySelector<HTMLElement>('#settingsButton')!.click();
     const [description, confirmation, screenMode] =
         await browserProxy.whenCalled('goToSettings');
 
@@ -150,7 +149,7 @@ suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
   test('passScreenModeOnUndo', async function() {
     webUIListenerCallback('screen-mode-changed', ScreenMode.RESTRICTED);
 
-    app.shadowRoot!.querySelector<HTMLElement>('#notNowButton')!.click();
+    app.shadowRoot.querySelector<HTMLElement>('#notNowButton')!.click();
     const [screenMode] = await browserProxy.whenCalled('undo');
 
     assertEquals(ScreenMode.RESTRICTED, screenMode);

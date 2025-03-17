@@ -10,12 +10,16 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -37,6 +41,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/common/chrome_features.h"
@@ -61,17 +66,18 @@
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/test/sk_gmock_support.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_app_instance.h"
-#include "ash/components/arc/test/fake_intent_helper_host.h"
-#include "ash/components/arc/test/fake_intent_helper_instance.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
+#include "chromeos/ash/experiences/arc/test/fake_intent_helper_host.h"
+#include "chromeos/ash/experiences/arc/test/fake_intent_helper_instance.h"
 #endif
 
 namespace web_app {
@@ -96,7 +102,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
 
     web_contents_manager().SetUrlLoaded(web_contents(), kWebAppUrl);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     arc_test_.SetUp(profile());
 
     auto* arc_bridge_service =
@@ -112,7 +118,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     arc_test_.arc_service_manager()
         ->arc_bridge_service()
         ->intent_helper()
@@ -138,7 +144,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
     return *fake_provider().file_utils()->AsTestFileUtils();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ArcAppTest& arc_test() { return arc_test_; }
 #endif
 
@@ -148,6 +154,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
           mojom::UserDisplayMode::kBrowser) {
     return base::BindOnce(
         [](bool accept, mojom::UserDisplayMode user_display_mode,
+           base::WeakPtr<WebAppScreenshotFetcher>,
            content::WebContents* initiator_web_contents,
            std::unique_ptr<WebAppInstallInfo> web_app_info,
            WebAppInstallationAcceptanceCallback acceptance_callback) {
@@ -226,7 +233,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
  private:
   base::HistogramTester histogram_tester_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ArcAppTest arc_test_;
   std::unique_ptr<arc::FakeIntentHelperHost> fake_intent_helper_host_;
   std::unique_ptr<arc::FakeIntentHelperInstance> fake_intent_helper_instance_;
@@ -292,7 +299,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
                 FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
-  EXPECT_TRUE(provider()->registrar_unsafe().IsNotInRegistrar(kWebAppId));
+  EXPECT_FALSE(provider()->registrar_unsafe().IsInRegistrar(kWebAppId));
   EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -311,7 +318,7 @@ TEST_F(FetchManifestAndInstallCommandTest, UserInstallDeclined) {
                            CreateDialogCallback(
                                false, mojom::UserDisplayMode::kStandalone)),
             webapps::InstallResultCode::kUserInstallDeclined);
-  EXPECT_TRUE(provider()->registrar_unsafe().IsNotInRegistrar(kWebAppId));
+  EXPECT_FALSE(provider()->registrar_unsafe().IsInRegistrar(kWebAppId));
   EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -322,7 +329,8 @@ TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {
 
   base::RunLoop dialog_runloop;
   auto dialog_callback = base::BindLambdaForTesting(
-      [&](content::WebContents* initiator_web_contents,
+      [&](base::WeakPtr<WebAppScreenshotFetcher>,
+          content::WebContents* initiator_web_contents,
           std::unique_ptr<WebAppInstallInfo> web_app_info,
           WebAppInstallationAcceptanceCallback acceptance_callback) {
         std::move(acceptance_callback).Run(true, std::move(web_app_info));
@@ -728,10 +736,10 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsNavigates) {
   ASSERT_TRUE(install_future.Wait());
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
-  EXPECT_TRUE(provider()->registrar_unsafe().IsNotInRegistrar(kWebAppId));
+  EXPECT_FALSE(provider()->registrar_unsafe().IsInRegistrar(kWebAppId));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(FetchManifestAndInstallCommandTest, IntentToPlayStore) {
   arc_test().app_instance()->set_is_installable(true);
 
@@ -756,6 +764,8 @@ class FetchManifestAndInstallCommandUniversalInstallTest
   const GURL kIconUrl = GURL("https://example.com/icon.png");
   static constexpr SkColor kIconColor = SK_ColorCYAN;
   const std::u16string kPageTitle = u"Page Title";
+  const base::FilePath kUnmaskableFavicon{
+      FILE_PATH_LITERAL("chrome/test/data/web_apps/pattern3-256.png")};
 
   ~FetchManifestAndInstallCommandUniversalInstallTest() override = default;
 
@@ -803,14 +813,24 @@ TEST_F(FetchManifestAndInstallCommandUniversalInstallTest, NoManifest) {
       webapps::InstallResultCode::kSuccessNewInstall);
 }
 
+gfx::Image LoadTestPNG(const base::FilePath& path) {
+  base::FilePath data_root =
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT);
+  base::FilePath image_path = data_root.Append(path);
+  std::string png_data;
+  ReadFileToString(image_path, &png_data);
+  return gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(png_data));
+}
+
+using FaviconOptions = absl::variant<absl::monostate, SkColor, base::FilePath>;
+
 using ManifestConfig = std::tuple<
     /*app_name=*/std::optional<std::u16string>,
-    /*favicon=*/std::optional<SkColor>,
+    /*favicon=*/FaviconOptions,
     /*start_url=*/std::optional<GURL>,
     /*manifest_id=*/std::optional<webapps::ManifestId>,
     /*display_mode=*/std::optional<blink::mojom::DisplayMode>,
     /*manifest_icons=*/std::optional<blink::Manifest::ImageResource>>;
-
 class UniversalInstallComboTest
     : public FetchManifestAndInstallCommandUniversalInstallTest,
       public testing::WithParamInterface<ManifestConfig> {
@@ -832,7 +852,11 @@ class UniversalInstallComboTest
          std::get<0>(config) ? base::UTF16ToUTF8(std::get<0>(config).value())
                              : "Absent",
          "_Favicon",
-         std::get<1>(config) ? ui::SkColorName(*std::get<1>(config)) : "Absent",
+         absl::holds_alternative<absl::monostate>(std::get<1>(config))
+             ? "Absent"
+         : absl::holds_alternative<SkColor>(std::get<1>(config))
+             ? ui::SkColorName(absl::get<SkColor>(std::get<1>(config)))
+             : "IconPathSpecified",
          "_StartUrl", std::get<2>(config) ? "Specified" : "Absent",
          "_ManifestId", std::get<3>(config) ? "Specified" : "Absent",
          "_DisplayMode",
@@ -846,8 +870,21 @@ class UniversalInstallComboTest
     return std::get<std::optional<std::u16string>>(GetParam());
   }
   std::optional<SkColor> GetFaviconColor() {
-    return std::get<std::optional<SkColor>>(GetParam());
+    auto param = std::get<1>(GetParam());
+    if (!absl::holds_alternative<SkColor>(param)) {
+      return std::nullopt;
+    }
+    return absl::get<SkColor>(param);
   }
+  std::optional<std::string> GetFaviconFilePath() {
+    auto param = std::get<1>(GetParam());
+    if (!absl::holds_alternative<base::FilePath>(param)) {
+      return std::nullopt;
+    }
+    base::FilePath file_path = absl::get<base::FilePath>(param);
+    return file_path.AsUTF8Unsafe();
+  }
+
   std::optional<GURL> GetStartUrl() { return std::get<2>(GetParam()); }
   std::optional<webapps::ManifestId> GetManifestIdentity() {
     return std::get<3>(GetParam());
@@ -884,13 +921,17 @@ class UniversalInstallComboTest
   SkBitmap GenerateExpected256Icon() {
     if (GetIcon() && !base::Contains(GetIcon()->src.spec(), "not_found")) {
       return CreateSquareIcon(icon_size::k256, kIconColor);
-    } else if (IsDiyApp() && GetFaviconColor()) {
-      return CreateSquareIcon(icon_size::k256, GetFaviconColor().value());
-    } else {
-      // This generates the letter icons.
-      return GenerateIcons(base::UTF16ToUTF8(
-          GetAppName().value_or(kPageTitle)))[icon_size::k256];
+    } else if (IsDiyApp()) {
+      if (GetFaviconColor()) {
+        return CreateSquareIcon(icon_size::k256, GetFaviconColor().value());
+      } else if (GetFaviconFilePath()) {
+        gfx::Image favicon_icon = LoadTestPNG(kUnmaskableFavicon);
+        return favicon_icon.AsBitmap();
+      }
     }
+    // This generates the letter icons.
+    return GenerateIcons(
+        base::UTF16ToUTF8(GetAppName().value_or(kPageTitle)))[icon_size::k256];
   }
 
   void SetupPageFromParams() {
@@ -901,6 +942,10 @@ class UniversalInstallComboTest
       page_state.favicon = {CreateSquareIcon(32, GetFaviconColor().value()),
                             CreateSquareIcon(64, GetFaviconColor().value()),
                             CreateSquareIcon(256, GetFaviconColor().value())};
+    } else if (GetFaviconFilePath()) {
+      page_state.favicon_url = kFaviconUrl;
+      gfx::Image test_icon = LoadTestPNG(kUnmaskableFavicon);
+      page_state.favicon = {test_icon.AsBitmap()};
     }
     page_state.manifest_before_default_processing =
         blink::mojom::Manifest::New();
@@ -957,6 +1002,41 @@ class UniversalInstallComboTest
   }
 
   SkBitmap GetExpectedPlatformIconAtSize(int width) {
+#if BUILDFLAG(IS_MAC)
+    if (IsDiyApp()) {
+      if (GetIcon().has_value() &&
+          !base::Contains(GetIcon()->src.spec(), "not_found") &&
+          !base::Contains(GetIcon()->src.spec(), "Absent")) {
+        gfx::Image test_icon = LoadTestPNG(base::FilePath(FILE_PATH_LITERAL(
+            "chrome/test/data/web_apps/diyapp_icon_image.png")));
+        SkBitmap test_bitmap = test_icon.AsBitmap();
+        return test_bitmap;
+      }
+      auto favicon_path = GetFaviconFilePath();
+      if (favicon_path && base::Contains(*favicon_path, "pattern3")) {
+        gfx::Image test_icon = LoadTestPNG(base::FilePath(FILE_PATH_LITERAL(
+            "chrome/test/data/web_apps/masked_pattern3-256.png")));
+        SkBitmap test_bitmap = test_icon.AsBitmap();
+        return test_bitmap;
+      }
+      if (GetFaviconColor() == SK_ColorBLUE) {
+        gfx::Image test_icon = LoadTestPNG(base::FilePath(FILE_PATH_LITERAL(
+            "chrome/test/data/web_apps/diyapp_blue_image.png")));
+        SkBitmap test_bitmap = test_icon.AsBitmap();
+        return test_bitmap;
+      }
+      if (GetAppName() == u"AppName") {
+        gfx::Image test_icon = LoadTestPNG(base::FilePath(FILE_PATH_LITERAL(
+            "chrome/test/data/web_apps/diyapp_textA_image.png")));
+        SkBitmap test_bitmap = test_icon.AsBitmap();
+        return test_bitmap;
+      }
+      gfx::Image test_icon = LoadTestPNG(base::FilePath(FILE_PATH_LITERAL(
+          "chrome/test/data/web_apps/diyapp_textP_image.png")));
+      SkBitmap test_bitmap = test_icon.AsBitmap();
+      return test_bitmap;
+    }
+#endif
     // Note: These should be static test images instead of dynamically
     // generating these using the same production code.
     if (GetIcon().has_value() &&
@@ -1037,17 +1117,12 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
       << ui::SkColorName(
              bitmap->getColor(bitmap->width() / 2, bitmap->height() / 2));
 #elif BUILDFLAG(IS_MAC)
-  // Use the bitmap's size instead of a static one, as the os integration
-  // reading code above is not consistent.
-  // TODO(https://crbug.com/372688523): Implement icon checks for masked DIY app
-  // icons.
-  if (!IsDiyApp()) {
-    EXPECT_THAT(*bitmap, gfx::test::EqualsBitmap(
-                             GetExpectedPlatformIconAtSize(bitmap->width())))
-        << bitmap->width() << "x" << bitmap->height() << ", with center color "
-        << ui::SkColorName(
-               bitmap->getColor(bitmap->width() / 2, bitmap->height() / 2));
-  }
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      *bitmap, GetExpectedPlatformIconAtSize(bitmap->width()),
+      /*max_deviation=*/3))
+      << bitmap->width() << "x" << bitmap->height() << ", with center color "
+      << ui::SkColorName(
+             bitmap->getColor(bitmap->width() / 2, bitmap->height() / 2));
 #endif
 
   EXPECT_THAT(histogram_tester.GetAllSamples(GetBucketName()),
@@ -1075,7 +1150,14 @@ INSTANTIATE_TEST_SUITE_P(
     UniversalInstallComboTest,
     ::testing::Combine(
         testing::Values(u"AppName", std::nullopt),
-        testing::Values(SK_ColorBLUE, std::nullopt),
+        testing::Values(FaviconOptions(SK_ColorBLUE),
+                        absl::monostate()
+#if BUILDFLAG(IS_MAC)
+                            ,
+                        FaviconOptions(base::FilePath(FILE_PATH_LITERAL(
+                            "chrome/test/data/web_apps/pattern3-256.png")))
+#endif
+                            ),
         // Note: the name just specified if the start_url exists or not - to add
         // more values, the ParamToString function must be changed.
         testing::Values(GURL("https://example.com/path/index.html?start_url"),

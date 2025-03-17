@@ -17,7 +17,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/clear_key_cdm_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -39,14 +38,11 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/constants/dbus_switches.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/constants/dbus_switches.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 #error This file needs to be updated to run on Android.
@@ -59,7 +55,6 @@ const char* kExternalClearKey = media::kExternalClearKeyKeySystem;
 
 const char kWidevine[] = "com.widevine.alpha";
 const char kWidevineExperiment[] = "com.widevine.alpha.experiment";
-const char kWidevineExperiment2[] = "com.widevine.alpha.experiment2";
 
 const char kAudioWebMMimeType[] = "audio/webm";
 const char kVideoWebMMimeType[] = "video/webm";
@@ -145,7 +140,7 @@ const char16_t kUnexpectedResult16[] = u"unexpected result";
 // session is supported on Windows and Mac. On ChromeOS, it is supported when
 // the protected media identifier permission is allowed. See
 // kUnsafelyAllowProtectedMediaIdentifierForDomain used below.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define EXPECT_WV_SW_SECURE_PERSISTENT_SESSION EXPECT_WV
 #else
 #define EXPECT_WV_SW_SECURE_PERSISTENT_SESSION EXPECT_UNSUPPORTED
@@ -155,7 +150,7 @@ const char16_t kUnexpectedResult16[] = u"unexpected result";
 // session is only supported on ChromeOS when the protected media identifier
 // permission is allowed. See kUnsafelyAllowProtectedMediaIdentifierForDomain
 // used below.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define EXPECT_WV_HW_SECURE_PERSISTENT_SESSION EXPECT_WV
 #else
 #define EXPECT_WV_HW_SECURE_PERSISTENT_SESSION EXPECT_UNSUPPORTED
@@ -639,9 +634,7 @@ class EncryptedMediaSupportedTypesRAAllowedTest
     command_line->AppendSwitch(switches::kAllowRAInDevMode);
   }
 };
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class EncryptedMediaSupportedTypesRAForContentBlockedTest
     : public EncryptedMediaSupportedTypesTest {
  public:
@@ -653,7 +646,7 @@ class EncryptedMediaSupportedTypesRAForContentBlockedTest
  protected:
   EncryptedMediaSupportedTypesRAForContentBlockedTest() = default;
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class EncryptedMediaSupportedTypesWidevineHwSecureTest
     : public EncryptedMediaSupportedTypesWidevineTest {
@@ -708,6 +701,9 @@ class EncryptedMediaSupportedTypesWidevineHwSecureExperimentTest
  protected:
   EncryptedMediaSupportedTypesWidevineHwSecureExperimentTest() {
     EnableFeature(media::kHardwareSecureDecryptionExperiment);
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+    EnableFeature(media::kPlatformEncryptedDolbyVision);
+#endif
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -717,7 +713,7 @@ class EncryptedMediaSupportedTypesWidevineHwSecureExperimentTest
     // audio.
     command_line->AppendSwitchASCII(
         switches::kOverrideHardwareSecureCodecsForTesting,
-        "vp8,vp9,av01-no-clearlead,vorbis");
+        "vp8,vp9,av01-no-clearlead,dolbyvision,vorbis");
   }
 };
 
@@ -1451,7 +1447,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Robustness) {
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // "HW_SECURE_ALL" supported on ChromeOS when the protected media identifier
   // permission is allowed. See kUnsafelyAllowProtectedMediaIdentifierForDomain
   // used above.
@@ -1467,7 +1463,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Robustness) {
   EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "Invalid String"));
   EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // "SW_SECURE_DECODE" and "HW_SECURE_ALL" supported on ChromeOS when the
   // protected media identifier permission is allowed. See
   // kUnsafelyAllowProtectedMediaIdentifierForDomain used above.
@@ -1517,9 +1513,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesRAAllowedTest, SessionType) {
   EXPECT_WV_SW_SECURE_PERSISTENT_SESSION(
       IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesRAForContentBlockedTest,
                        SessionType) {
   // Temporary session always supported.
@@ -1543,7 +1537,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesRAForContentBlockedTest,
   EXPECT_UNSUPPORTED(
       IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // EncryptedMediaSupportedTypesWidevineHwSecureTest tests Widevine with hardware
 // secure decryption support.
@@ -1564,13 +1558,13 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
   // Video robustness.
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
-  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
-  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
 
   // Audio robustness.
   EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
-  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
+#if BUILDFLAG(IS_CHROMEOS)
   // "SW_SECURE_DECODE" and "HW_SECURE_ALL" supported on ChromeOS when the
   // protected media identifier permission is allowed. See
   // kUnsafelyAllowProtectedMediaIdentifierForDomain used above.
@@ -1586,7 +1580,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
       IsVideoMp4RobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
   EXPECT_WV_PROPRIETARY(
       IsVideoMp4RobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // "SW_SECURE_DECODE" and "HW_SECURE_ALL" supported on ChromeOS when the
   // protected media identifier permission is allowed. See
   // kUnsafelyAllowProtectedMediaIdentifierForDomain used above.
@@ -1618,7 +1612,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
   // "SW_SECURE_CRYPTO" is always supported.
   EXPECT_WV_PROPRIETARY(
       IsAudioMp4RobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // "SW_SECURE_DECODE", "HW_SECURE_CRYPTO", and "HW_SECURE_ALL" supported
   // on ChromeOS when the protected media identifier permission is allowed.
   // See kUnsafelyAllowProtectedMediaIdentifierForDomain used above.
@@ -1667,11 +1661,11 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
   // the command line switch kOverrideHardwareSecureCodecsForTesting.
   // ChromeOS has special handling for hardware support, so 'cbcs' is supported
   // on ChromeOS, but not on other platforms.
-  EXPECT_WV(
+  EXPECT_UNSUPPORTED(
       IsAudioEncryptionSchemeSupported(kWidevine, "cenc", "HW_SECURE_CRYPTO"));
-  EXPECT_WV(
+  EXPECT_UNSUPPORTED(
       IsVideoEncryptionSchemeSupported(kWidevine, "cenc", "HW_SECURE_ALL"));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_WV(
       IsAudioEncryptionSchemeSupported(kWidevine, "cbcs", "HW_SECURE_CRYPTO"));
   EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs-1-9",
@@ -1699,10 +1693,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
                                    "SW_SECURE_CRYPTO"));
   EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary,
                                    "SW_SECURE_DECODE"));
-  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary,
-                                   "HW_SECURE_CRYPTO"));
-  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary,
-                                   "HW_SECURE_ALL"));
+  EXPECT_UNSUPPORTED(IsSessionTypeSupported(kWidevine, SessionType::kTemporary,
+                                            "HW_SECURE_CRYPTO"));
+  EXPECT_UNSUPPORTED(IsSessionTypeSupported(kWidevine, SessionType::kTemporary,
+                                            "HW_SECURE_ALL"));
 
   // Persistent session for software secure Widevine is platform specific.
   EXPECT_WV_SW_SECURE_PERSISTENT_SESSION(IsSessionTypeSupported(
@@ -1710,7 +1704,8 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
   EXPECT_WV_SW_SECURE_PERSISTENT_SESSION(IsSessionTypeSupported(
       kWidevine, SessionType::kPersistentLicense, "SW_SECURE_DECODE"));
 
-  // Persistent session for hardware secure Widevine is platform specific.
+  // Persistent session for hardware secure Widevine is only supported on
+  // ChromeOS.
   EXPECT_WV_HW_SECURE_PERSISTENT_SESSION(IsSessionTypeSupported(
       kWidevine, SessionType::kPersistentLicense, "HW_SECURE_CRYPTO"));
   EXPECT_WV_HW_SECURE_PERSISTENT_SESSION(IsSessionTypeSupported(
@@ -1720,13 +1715,13 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
                        DolbyVision) {
-  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType,
-                                   dolby_vision_codecs(),
-                                   SessionType::kTemporary, "HW_SECURE_ALL"));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
+      kWidevine, kVideoMP4MimeType, dolby_vision_codecs(),
+      SessionType::kTemporary, "HW_SECURE_ALL"));
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 
-// Widevine experiment key systems should not be supported without the
+// Widevine experiment key system should not be supported without the
 // `kHardwareSecureDecryptionExperiment` feature enabled.
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
                        WidevineExperiment) {
@@ -1742,44 +1737,19 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
       IsAudioRobustnessSupported(kWidevineExperiment, "SW_SECURE_CRYPTO"));
   EXPECT_UNSUPPORTED(
       IsAudioRobustnessSupported(kWidevineExperiment, "HW_SECURE_CRYPTO"));
-
-  EXPECT_UNSUPPORTED(
-      IsVideoRobustnessSupported(kWidevineExperiment2, "SW_SECURE_CRYPTO"));
-  EXPECT_UNSUPPORTED(
-      IsVideoRobustnessSupported(kWidevineExperiment2, "SW_SECURE_DECODE"));
-  EXPECT_UNSUPPORTED(
-      IsVideoRobustnessSupported(kWidevineExperiment2, "HW_SECURE_CRYPTO"));
-  EXPECT_UNSUPPORTED(
-      IsVideoRobustnessSupported(kWidevineExperiment2, "HW_SECURE_ALL"));
-  EXPECT_UNSUPPORTED(
-      IsAudioRobustnessSupported(kWidevineExperiment2, "SW_SECURE_CRYPTO"));
-  EXPECT_UNSUPPORTED(
-      IsAudioRobustnessSupported(kWidevineExperiment2, "HW_SECURE_CRYPTO"));
 }
 
+// Even with ForceClearLeadSupport, HW security should not be supported on
+// Widevine default key system.
 IN_PROC_BROWSER_TEST_F(
     EncryptedMediaSupportedTypesWidevineHwSecureForceClearLeadSupportTest,
     SupportedCodecs) {
-  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
-                                   video_webm_codecs(), SessionType::kTemporary,
-                                   "HW_SECURE_ALL"));
-  // AV1 codec does not have clear lead support, but is still supported by the
-  // default Widevine key system since `force_support_clear_lead` is specified.
-  EXPECT_WV_AV1(IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType,
-                                       av1_codecs(), SessionType::kTemporary,
-                                       "HW_SECURE_ALL"));
-
-#if BUILDFLAG(IS_WIN)
-  EXPECT_WV(IsSupportedByKeySystem(kWidevineExperiment2, kVideoWebMMimeType,
-                                   video_webm_codecs(), SessionType::kTemporary,
-                                   "HW_SECURE_ALL"));
-  // AV1 codec does not have clear lead support, but is still supported by the
-  // Experiment2 Widevine key system since `force_support_clear_lead` is
-  // specified.
-  EXPECT_WV_AV1(IsSupportedByKeySystem(kWidevineExperiment2, kVideoMP4MimeType,
-                                       av1_codecs(), SessionType::kTemporary,
-                                       "HW_SECURE_ALL"));
-#endif
+  EXPECT_UNSUPPORTED(
+      IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType, video_webm_codecs(),
+                             SessionType::kTemporary, "HW_SECURE_ALL"));
+  EXPECT_UNSUPPORTED(
+      IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType, av1_codecs(),
+                             SessionType::kTemporary, "HW_SECURE_ALL"));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1809,29 +1779,11 @@ IN_PROC_BROWSER_TEST_F(
       IsAudioRobustnessSupported(kWidevineExperiment, "SW_SECURE_CRYPTO"));
   EXPECT_WV(
       IsAudioRobustnessSupported(kWidevineExperiment, "HW_SECURE_CRYPTO"));
-
-  // Widevine experiment2 key system supports both software/hardware security.
-  EXPECT_WV(
-      IsVideoRobustnessSupported(kWidevineExperiment2, "SW_SECURE_CRYPTO"));
-  EXPECT_WV(
-      IsVideoRobustnessSupported(kWidevineExperiment2, "SW_SECURE_DECODE"));
-  EXPECT_WV(
-      IsVideoRobustnessSupported(kWidevineExperiment2, "HW_SECURE_CRYPTO"));
-  EXPECT_WV(IsVideoRobustnessSupported(kWidevineExperiment2, "HW_SECURE_ALL"));
-  EXPECT_WV(
-      IsAudioRobustnessSupported(kWidevineExperiment2, "SW_SECURE_CRYPTO"));
-  EXPECT_WV(
-      IsAudioRobustnessSupported(kWidevineExperiment2, "HW_SECURE_CRYPTO"));
 #else
   EXPECT_UNSUPPORTED(
       IsAudioRobustnessSupported(kWidevineExperiment, "SW_SECURE_DECODE"));
   EXPECT_UNSUPPORTED(
       IsAudioRobustnessSupported(kWidevineExperiment, "HW_SECURE_ALL"));
-
-  EXPECT_UNSUPPORTED(
-      IsAudioRobustnessSupported(kWidevineExperiment2, "SW_SECURE_DECODE"));
-  EXPECT_UNSUPPORTED(
-      IsAudioRobustnessSupported(kWidevineExperiment2, "HW_SECURE_ALL"));
 #endif
 }
 
@@ -1845,7 +1797,7 @@ IN_PROC_BROWSER_TEST_F(
       IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType, av1_codecs(),
                              SessionType::kTemporary, "HW_SECURE_ALL"));
 
-  // Widevine experiment key systems are only supported on Windows.
+  // Widevine experiment key system is only supported on Windows.
 #if BUILDFLAG(IS_WIN)
   EXPECT_WV(IsSupportedByKeySystem(kWidevineExperiment, kVideoWebMMimeType,
                                    video_webm_codecs(), SessionType::kTemporary,
@@ -1855,15 +1807,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_WV_AV1(IsSupportedByKeySystem(kWidevineExperiment, kVideoMP4MimeType,
                                        av1_codecs(), SessionType::kTemporary,
                                        "HW_SECURE_ALL"));
-
-  EXPECT_WV(IsSupportedByKeySystem(kWidevineExperiment2, kVideoWebMMimeType,
-                                   video_webm_codecs(), SessionType::kTemporary,
-                                   "HW_SECURE_ALL"));
-  // AV1 is not supported for the experimental2 key system as it does not have
-  // clear lead support.
-  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
-      kWidevineExperiment2, kVideoMP4MimeType, av1_codecs(),
-      SessionType::kTemporary, "HW_SECURE_ALL"));
 #else
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
       kWidevineExperiment, kVideoWebMMimeType, video_webm_codecs(),
@@ -1880,6 +1823,16 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 }
 
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+IN_PROC_BROWSER_TEST_F(
+    EncryptedMediaSupportedTypesWidevineHwSecureExperimentTest,
+    DolbyVision) {
+  EXPECT_WV(IsSupportedByKeySystem(kWidevineExperiment, kVideoMP4MimeType,
+                                   dolby_vision_codecs(),
+                                   SessionType::kTemporary, "HW_SECURE_ALL"));
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+
 IN_PROC_BROWSER_TEST_F(
     EncryptedMediaSupportedTypesWidevineHwSecureDefaultAndExperimentTest,
     Robustness) {
@@ -1888,12 +1841,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
   EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
 
-  // Widevine key system supports hardware security.
-  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
-  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
-  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
+  // Widevine key system does not support hardware security.
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
+  EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
 
-  // Widevine experiment key systems are only supported on Windows.
+  // Widevine experiment key system is only supported on Windows.
 #if BUILDFLAG(IS_WIN)
   // Widevine experiment key system supports both software/hardware security.
   EXPECT_WV(
@@ -1907,46 +1860,26 @@ IN_PROC_BROWSER_TEST_F(
       IsAudioRobustnessSupported(kWidevineExperiment, "SW_SECURE_CRYPTO"));
   EXPECT_WV(
       IsAudioRobustnessSupported(kWidevineExperiment, "HW_SECURE_CRYPTO"));
-
-  // Widevine experiment2 key system supports both software/hardware security.
-  EXPECT_WV(
-      IsVideoRobustnessSupported(kWidevineExperiment2, "SW_SECURE_CRYPTO"));
-  EXPECT_WV(
-      IsVideoRobustnessSupported(kWidevineExperiment2, "SW_SECURE_DECODE"));
-  EXPECT_WV(
-      IsVideoRobustnessSupported(kWidevineExperiment2, "HW_SECURE_CRYPTO"));
-  EXPECT_WV(IsVideoRobustnessSupported(kWidevineExperiment2, "HW_SECURE_ALL"));
-  EXPECT_WV(
-      IsAudioRobustnessSupported(kWidevineExperiment2, "SW_SECURE_CRYPTO"));
-  EXPECT_WV(
-      IsAudioRobustnessSupported(kWidevineExperiment2, "HW_SECURE_CRYPTO"));
 #else
   EXPECT_UNSUPPORTED(
       IsAudioRobustnessSupported(kWidevineExperiment, "SW_SECURE_DECODE"));
   EXPECT_UNSUPPORTED(
       IsAudioRobustnessSupported(kWidevineExperiment, "HW_SECURE_ALL"));
-  EXPECT_UNSUPPORTED(
-      IsAudioRobustnessSupported(kWidevineExperiment2, "SW_SECURE_DECODE"));
-  EXPECT_UNSUPPORTED(
-      IsAudioRobustnessSupported(kWidevineExperiment2, "HW_SECURE_ALL"));
 #endif
 }
 
-// Widevine key system should only support codecs that support
-// clear lead.
 IN_PROC_BROWSER_TEST_F(
     EncryptedMediaSupportedTypesWidevineHwSecureDefaultAndExperimentTest,
     SupportedCodecs) {
-  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
-                                   video_webm_codecs(), SessionType::kTemporary,
-                                   "HW_SECURE_ALL"));
-  // AV1 codec does not have clear lead support, so should be unsupported in the
-  // normal Widevine key system.
+  // Default Widevine key system does not support hardware security.
+  EXPECT_UNSUPPORTED(
+      IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType, video_webm_codecs(),
+                             SessionType::kTemporary, "HW_SECURE_ALL"));
   EXPECT_UNSUPPORTED(
       IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType, av1_codecs(),
                              SessionType::kTemporary, "HW_SECURE_ALL"));
 
-  // Widevine experiment key systems are only supported on Windows.
+  // Widevine experiment key system is only supported on Windows.
 #if BUILDFLAG(IS_WIN)
   // Clear lead support for codecs do not matter for the experimental key system
   EXPECT_WV(IsSupportedByKeySystem(kWidevineExperiment, kVideoWebMMimeType,
@@ -1955,26 +1888,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_WV_AV1(IsSupportedByKeySystem(kWidevineExperiment, kVideoMP4MimeType,
                                        av1_codecs(), SessionType::kTemporary,
                                        "HW_SECURE_ALL"));
-
-  // Clear lead support for codecs does matter for the experimental2 key system
-  EXPECT_WV(IsSupportedByKeySystem(kWidevineExperiment2, kVideoWebMMimeType,
-                                   video_webm_codecs(), SessionType::kTemporary,
-                                   "HW_SECURE_ALL"));
-  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
-      kWidevineExperiment2, kVideoMP4MimeType, av1_codecs(),
-      SessionType::kTemporary, "HW_SECURE_ALL"));
 #else
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
       kWidevineExperiment, kVideoWebMMimeType, video_webm_codecs(),
       SessionType::kTemporary, "HW_SECURE_ALL"));
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
       kWidevineExperiment, kVideoMP4MimeType, av1_codecs(),
-      SessionType::kTemporary, "HW_SECURE_ALL"));
-  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
-      kWidevineExperiment2, kVideoWebMMimeType, video_webm_codecs(),
-      SessionType::kTemporary, "HW_SECURE_ALL"));
-  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
-      kWidevineExperiment2, kVideoMP4MimeType, av1_codecs(),
       SessionType::kTemporary, "HW_SECURE_ALL"));
 #endif  // BUILDFLAG(IS_WIN)
 }

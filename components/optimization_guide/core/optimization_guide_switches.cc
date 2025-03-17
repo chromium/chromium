@@ -110,6 +110,11 @@ const char kModelValidate[] = "optimization-guide-model-validate";
 const char kModelExecutionValidate[] =
     "optimization-guide-model-execution-validate";
 
+// Adds header to indicate to return debug logging data from the model execution
+// service via response header.
+const char kModelExecutionEnableRemoteDebugLogging[] =
+    "optimization-guide-model-execution-enable-remote-debug-logging";
+
 // Overrides the model quality service URL.
 const char kModelQualityServiceURL[] = "model-quality-service-url";
 

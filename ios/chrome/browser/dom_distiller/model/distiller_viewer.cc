@@ -22,24 +22,6 @@
 namespace dom_distiller {
 
 DistillerViewer::DistillerViewer(
-    dom_distiller::DomDistillerService* distillerService,
-    PrefService* prefs,
-    const GURL& url,
-    DistillationFinishedCallback callback)
-    : DistillerViewerInterface(prefs),
-      url_(url),
-      csp_nonce_(base::Base64Encode(base::RandBytesAsVector(16))),
-      callback_(std::move(callback)) {
-  DCHECK(distillerService);
-  DCHECK(url.is_valid());
-  std::unique_ptr<dom_distiller::DistillerPage> page =
-      distillerService->CreateDefaultDistillerPage(gfx::Size());
-  std::unique_ptr<ViewerHandle> viewer_handle =
-      distillerService->ViewUrl(this, std::move(page), url);
-  TakeViewerHandle(std::move(viewer_handle));
-}
-
-DistillerViewer::DistillerViewer(
     dom_distiller::DistillerFactory* distiller_factory,
     std::unique_ptr<dom_distiller::DistillerPage> page,
     PrefService* prefs,

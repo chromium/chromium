@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/layer_tree_impl.h"
@@ -86,12 +87,18 @@ using testing::WithParamInterface;
 using AnimatorState = BackForwardTransitionAnimator::State;
 using enum BackForwardTransitionAnimator::State;
 
-// The tolerance for two float to be considered equal.
-static constexpr float kFloatTolerance = 0.001f;
+// The tolerance for floats from 0 to 1.0 to be considered equal, typically
+// representing percentages.
+static constexpr float kFloatTolerance = 0.005f;
+
+// The tolerance for floats representing pixel positions to be considered equal.
+static constexpr float kPixelFloatTolerance = 1.f;
+
+static base::TimeTicks sTick = base::TimeTicks();
 
 #define EXPECT_X_TRANSLATION(expected, actual)                    \
   EXPECT_TRANSFORM_NEAR(ViewportTranslationX(expected), (actual), \
-                        kFloatTolerance)
+                        kPixelFloatTolerance)
 
 #define EXPECT_STATE_EQ(expected, actual)                                      \
   EXPECT_EQ(expected, actual)                                                  \
@@ -106,14 +113,8 @@ static constexpr float kFloatTolerance = 0.001f;
 // produce one frame: the frame for the final position.
 constexpr base::TimeDelta kLongDurationBetweenFrames = base::Seconds(99);
 
-// Test parameter to run tests either with default device-scale-factor==1 or a
-// fractional (1.333) device scale factor.
-enum class DSFMode { kOne, kFractional };
-
-// Test parameter to run tests with UI laid out both left to right and right
-// to left, the latter forces the back-edge to be flipped (i.e. right edge
-// uses an animated gesture).
-enum class UILayoutDirection { kLTR, kRTL };
+// The approximate time between OnAnimate calls for a 60Hz display.
+constexpr base::TimeDelta k60HzDuration = base::Milliseconds(16);
 
 static constexpr gfx::Transform kIdentityTransform;
 
@@ -131,13 +132,10 @@ AssertionResult ColorsNear(const SkColor4f& e, const SkColor4f& a) {
          << "," << a.fA << "].";
 }
 
-// Color values with scrim for light/dark modes.
-// The scrim is calculated as follows: 0.65 * (1 - [percent] * 0.85)
-// For example, scrim at 30% is 0.65 * (1 - 0.3 * 0.85).
-static constexpr SkColor4f kScrimColorAtStart = {0, 0, 0, 0.65f};
-static constexpr SkColor4f kScrimColorAt30 = {0, 0, 0, 0.48425f};
-static constexpr SkColor4f kScrimColorAt60 = {0, 0, 0, 0.3185f};
-static constexpr SkColor4f kScrimColorAt90 = {0, 0, 0, 0.15275f};
+constexpr SkColor4f ScrimColorAt(float progress) {
+  return {0, 0, 0, 0.65f * (1.f - progress * .85f)};
+}
+static constexpr SkColor4f kScrimColorAtStart = ScrimColorAt(0.f);
 
 int64_t GetItemSequenceNumberForNavigation(
     NavigationHandle* navigation_handle) {
@@ -160,15 +158,18 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
       NavigationEntryImpl* destination_entry,
       const SkBitmap& embedder_bitmap,
       BackForwardTransitionAnimationManagerAndroid* animation_manager)
-      : BackForwardTransitionAnimator(web_contents_view_android,
-                                      controller,
-                                      gesture,
-                                      nav_type,
-                                      initiating_edge,
-                                      destination_entry,
-                                      embedder_bitmap,
-                                      animation_manager),
-        wcva_(web_contents_view_android) {}
+      : BackForwardTransitionAnimator(
+            web_contents_view_android,
+            controller,
+            ui::BackGestureEvent(gesture.progress(), sTick),
+            nav_type,
+            initiating_edge,
+            destination_entry,
+            embedder_bitmap,
+            animation_manager),
+        wcva_(web_contents_view_android) {
+    sTick += k60HzDuration;
+  }
 
   ~AnimatorForTesting() override {
     if (on_impl_destroyed_) {
@@ -202,9 +203,8 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     if (next_on_animate_callback_) {
       std::move(next_on_animate_callback_).Run();
     }
-    static base::TimeTicks tick = base::TimeTicks();
-    tick += duration_between_frames_;
-    BackForwardTransitionAnimator::OnAnimate(tick);
+    BackForwardTransitionAnimator::OnAnimate(sTick);
+    sTick += duration_between_frames_;
   }
   void DirectlyCallOnAnimate(base::TimeTicks frame_time) {
     BackForwardTransitionAnimator::OnAnimate(frame_time);
@@ -270,10 +270,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     pause_on_animate_at_state_ = State::kDisplayingCrossFadeAnimation;
   }
 
-  void UnpauseAnimation() {
-    pause_on_animate_at_state_ = std::nullopt;
-    OnAnimate(base::TimeTicks{});
-  }
+  void ClearPauseAtState() { pause_on_animate_at_state_ = std::nullopt; }
 
   void set_intercept_render_frame_metadata_changed(bool intercept) {
     intercept_render_frame_metadata_changed_ = intercept;
@@ -457,6 +454,23 @@ class BackForwardTransitionAnimationManagerBrowserTest
         web_contents()->GetBackForwardTransitionAnimationManager());
   }
 
+  void GestureProgressWaitForAnimate(float progress) {
+    TestFuture<void> gesture_on_animate_call;
+    ASSERT_TRUE(GetAnimator());
+    GetAnimator()->set_next_on_animate_callback(
+        gesture_on_animate_call.GetCallback());
+    GetAnimationManager()->OnGestureProgressed(
+        ui::BackGestureEvent(progress, sTick));
+    EXPECT_TRUE(gesture_on_animate_call.Wait());
+  }
+
+  void UnpauseAnimation() {
+    GetAnimator()->ClearPauseAtState();
+    // Calling OnAnimate from the manager destroys the animator if it reaches a
+    // terminal state.
+    GetAnimationManager()->OnAnimate(base::TimeTicks());
+  }
+
   GURL RedURL() const { return embedded_test_server()->GetURL("/red.html"); }
 
   GURL GreenURL() const {
@@ -610,14 +624,32 @@ class BackForwardTransitionAnimationManagerBrowserTest
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram;
 };
+
+// Test parameter to run tests either with default device-scale-factor==1 or a
+// fractional (1.333) device scale factor.
+enum class DSFMode { kOne, kFractional };
+
+// Test parameter to run tests with UI laid out both left to right and right
+// to left, the latter forces the back-edge to be flipped (i.e. right edge
+// uses an animated gesture).
+enum class UILayoutDirection { kLTR, kRTL };
+
+typedef std::tuple<UILayoutDirection, DSFMode> DirectionDSF;
+
+void PrintTo(const DirectionDSF& v, std::ostream* os) {
+  *os << base::StrCat(
+      {std::get<0>(v) == UILayoutDirection::kLTR ? "LTR" : "RTL",
+       std::get<1>(v) == DSFMode::kOne ? "" : "FractionalDSF"});
+}
 
 // Basic tests which will be run both with a swipe from the left edge as well as
 // a swipe from the right edge with an RTL UI direction. Tests from the right
 // edge also force the UI to use an RTL direction.
 class BackForwardTransitionAnimationManagerBothEdgeBrowserTest
     : public BackForwardTransitionAnimationManagerBrowserTest,
-      public WithParamInterface<std::tuple<UILayoutDirection, DSFMode>> {
+      public WithParamInterface<DirectionDSF> {
  public:
   BackForwardTransitionAnimationManagerBothEdgeBrowserTest() {
     scoped_feature_list_.Reset();
@@ -675,10 +707,11 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
                                           NavType::kBackward);
   ASSERT_TRUE(GetAnimator());
+  GetAnimator()->set_duration_between_frames(k60HzDuration);
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
+  GestureProgressWaitForAnimate(0.3);
+  GestureProgressWaitForAnimate(0.6);
+  GestureProgressWaitForAnimate(0.9);
 
   TestFrameNavigationObserver back_to_red(web_contents());
   {
@@ -716,7 +749,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
                                           NavType::kBackward);
   ASSERT_TRUE(GetAnimator());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
+  GestureProgressWaitForAnimate(0.9f);
 
   {
     TestFuture<AnimatorState> destroyed;
@@ -749,14 +782,16 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
                                           NavType::kBackward);
+  GetAnimator()->set_duration_between_frames(k60HzDuration);
 
   // The gesture should have created and attached a screenshot layer with a
   // child scrim layer, under the live page.
   ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
 
-  // In a back navigation, the screenshot starts off-screen in the direction the
-  // swipe is coming from and moves to the viewport origin. Therefore we expect
-  // it to be at `(1-progress) * initial_position` at all times.
+  // In a back navigation, the screenshot starts off-screen in the
+  // TestScreenshotTransformScrimColorForwardNavigationdirection the swipe is
+  // coming from and moves to the viewport origin. Therefore we expect it to be
+  // at `(1-progress) * initial_position` at all times.
   float initial_position = BackEdge() == SwipeEdge::LEFT
                                ? PhysicsModel::kScreenshotInitialPositionRatio
                                : -PhysicsModel::kScreenshotInitialPositionRatio;
@@ -765,39 +800,35 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
       ColorsNear(kScrimColorAtStart, GetScrimLayer()->background_color()));
   EXPECT_X_TRANSLATION(initial_position, GetScreenshotLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt30, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(initial_position * 0.7,
+  // The position and screen color lags behind the input, due to filtering.
+  GestureProgressWaitForAnimate(0.3f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.206f), GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(initial_position * 0.794f,
                        GetScreenshotLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(initial_position * 0.4,
+  GestureProgressWaitForAnimate(0.6f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.324f), GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(initial_position * 0.676f,
                        GetScreenshotLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt90, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(initial_position * 0.1,
+  GestureProgressWaitForAnimate(0.9f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.553f), GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(initial_position * 0.447f,
                        GetScreenshotLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(initial_position * 0.4,
+  GestureProgressWaitForAnimate(0.6f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.622f), GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(initial_position * 0.378f,
                        GetScreenshotLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt30, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(initial_position * 0.7,
-                       GetScreenshotLayer()->transform());
-
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(initial_position * 0.4,
-                       GetScreenshotLayer()->transform());
-
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt90, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(initial_position * 0.1,
+  GestureProgressWaitForAnimate(0.3f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.522f), GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(initial_position * 0.478f,
                        GetScreenshotLayer()->transform());
 }
 
@@ -828,6 +859,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
                                           ForwardEdge(), NavType::kForward);
+  GetAnimator()->set_duration_between_frames(k60HzDuration);
 
   // In a forward navigation, the screenshot starts off-screen at the viewport
   // edge where the gesture is initiated. It in the direction of the swipe over
@@ -839,39 +871,34 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 
   EXPECT_X_TRANSLATION(0, GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt30, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(start_position + total_distance * 0.3,
+  GestureProgressWaitForAnimate(0.3f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.206f), GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(start_position + total_distance * 0.2063f,
                        GetScreenshotLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(start_position + total_distance * 0.6,
+  GestureProgressWaitForAnimate(0.6f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.324f), GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(start_position + total_distance * 0.324f,
                        GetScreenshotLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt90, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(start_position + total_distance * 0.9,
+  GestureProgressWaitForAnimate(0.9f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.553f), GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(start_position + total_distance * 0.553f,
                        GetScreenshotLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(start_position + total_distance * 0.6,
+  GestureProgressWaitForAnimate(0.6f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.6215f), GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(start_position + total_distance * 0.6215f,
                        GetScreenshotLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt30, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(start_position + total_distance * 0.3,
-                       GetScreenshotLayer()->transform());
-
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(start_position + total_distance * 0.6,
-                       GetScreenshotLayer()->transform());
-
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt90, GetScrimLayer()->background_color()));
-  EXPECT_X_TRANSLATION(start_position + total_distance * 0.9,
+  GestureProgressWaitForAnimate(0.3f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.522f), GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(start_position + total_distance * 0.522f,
                        GetScreenshotLayer()->transform());
 }
 
@@ -881,24 +908,40 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
                                           NavType::kBackward);
+  GetAnimator()->set_duration_between_frames(k60HzDuration);
+
   ASSERT_TRUE(GetScrimLayer());
   EXPECT_TRUE(
       ColorsNear(kScrimColorAtStart, GetScrimLayer()->background_color()));
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt30, GetScrimLayer()->background_color()));
+  GestureProgressWaitForAnimate(0.3f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.206f), GetScrimLayer()->background_color()));
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
+  GestureProgressWaitForAnimate(0.6f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.324f), GetScrimLayer()->background_color()));
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt90, GetScrimLayer()->background_color()));
+  GestureProgressWaitForAnimate(0.9f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.553f), GetScrimLayer()->background_color()));
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt30, GetScrimLayer()->background_color()));
+  GestureProgressWaitForAnimate(0.6f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.622f), GetScrimLayer()->background_color()));
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
+  GestureProgressWaitForAnimate(0.3f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.522f), GetScrimLayer()->background_color()));
+
+  // Continues to estabilize around 0.3.
+  GestureProgressWaitForAnimate(0.3f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.4373f), GetScrimLayer()->background_color()));
+
+  GestureProgressWaitForAnimate(0.3f);
+  EXPECT_TRUE(
+      ColorsNear(ScrimColorAt(0.39f), GetScrimLayer()->background_color()));
 }
 
 // Tests the translation of the live page as the gesture is progressed in both
@@ -910,6 +953,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
                                           NavType::kBackward);
+  GetAnimator()->set_duration_between_frames(k60HzDuration);
 
   // In a back navigation, the live page starts off at the viewport origin and
   // moves in the direction of the swipe to a maximum defined by the "commit
@@ -920,26 +964,39 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 
   EXPECT_X_TRANSLATION(0, GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_X_TRANSLATION(final_position * 0.3, GetLivePageLayer()->transform());
+  // The position lags behind the input, due to filtering.
+  GestureProgressWaitForAnimate(0.3f);
+  EXPECT_X_TRANSLATION(final_position * 0.2063f,
+                       GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_X_TRANSLATION(final_position * 0.6, GetLivePageLayer()->transform());
+  GestureProgressWaitForAnimate(0.6f);
+  EXPECT_X_TRANSLATION(final_position * 0.324f,
+                       GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
-  EXPECT_X_TRANSLATION(final_position * 0.9, GetLivePageLayer()->transform());
+  GestureProgressWaitForAnimate(0.9f);
+  EXPECT_X_TRANSLATION(final_position * 0.553f,
+                       GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_X_TRANSLATION(final_position * 0.6, GetLivePageLayer()->transform());
+  // The translation continues catching up to the input.
+  GestureProgressWaitForAnimate(0.9f);
+  EXPECT_X_TRANSLATION(final_position * 0.732f,
+                       GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_X_TRANSLATION(final_position * 0.3, GetLivePageLayer()->transform());
+  GestureProgressWaitForAnimate(0.6f);
+  EXPECT_X_TRANSLATION(final_position * 0.713f,
+                       GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_X_TRANSLATION(final_position * 0.6, GetLivePageLayer()->transform());
+  GestureProgressWaitForAnimate(0.3f);
+  EXPECT_X_TRANSLATION(final_position * 0.5753f,
+                       GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
-  EXPECT_X_TRANSLATION(final_position * 0.9, GetLivePageLayer()->transform());
+  GestureProgressWaitForAnimate(0.6f);
+  EXPECT_X_TRANSLATION(final_position * 0.547f,
+                       GetLivePageLayer()->transform());
+
+  GestureProgressWaitForAnimate(0.9f);
+  EXPECT_X_TRANSLATION(final_position * 0.664f,
+                       GetLivePageLayer()->transform());
 }
 
 // Tests the translation of the live page as the gesture is progressed in both
@@ -969,6 +1026,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
                                           ForwardEdge(), NavType::kForward);
+  GetAnimator()->set_duration_between_frames(k60HzDuration);
 
   // In a forward navigation, the live page starts off at the viewport origin
   // and moves in the direction of the swipe the same amount as the screenshot
@@ -979,26 +1037,34 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 
   EXPECT_X_TRANSLATION(0, GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_X_TRANSLATION(final_position * 0.3, GetLivePageLayer()->transform());
+  // The position lags behind the input, due to filtering.
+  GestureProgressWaitForAnimate(0.3f);
+  EXPECT_X_TRANSLATION(final_position * 0.206f,
+                       GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_X_TRANSLATION(final_position * 0.6, GetLivePageLayer()->transform());
+  GestureProgressWaitForAnimate(0.6f);
+  EXPECT_X_TRANSLATION(final_position * 0.324f,
+                       GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
-  EXPECT_X_TRANSLATION(final_position * 0.9, GetLivePageLayer()->transform());
+  GestureProgressWaitForAnimate(0.9f);
+  EXPECT_X_TRANSLATION(final_position * 0.553f,
+                       GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_X_TRANSLATION(final_position * 0.6, GetLivePageLayer()->transform());
+  GestureProgressWaitForAnimate(0.6f);
+  EXPECT_X_TRANSLATION(final_position * 0.622f,
+                       GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_X_TRANSLATION(final_position * 0.3, GetLivePageLayer()->transform());
+  GestureProgressWaitForAnimate(0.3f);
+  EXPECT_X_TRANSLATION(final_position * 0.522f,
+                       GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_X_TRANSLATION(final_position * 0.6, GetLivePageLayer()->transform());
+  GestureProgressWaitForAnimate(0.6f);
+  EXPECT_X_TRANSLATION(final_position * 0.515f,
+                       GetLivePageLayer()->transform());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
-  EXPECT_X_TRANSLATION(final_position * 0.9, GetLivePageLayer()->transform());
+  GestureProgressWaitForAnimate(0.9f);
+  EXPECT_X_TRANSLATION(final_position * 0.651f,
+                       GetLivePageLayer()->transform());
 }
 
 // Tests a forward navigation creates the expected layers and puts them in the
@@ -1055,7 +1121,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
   {
     TestFuture<void> did_invoke;
     GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
-    GetAnimator()->UnpauseAnimation();
+    UnpauseAnimation();
     ASSERT_TRUE(did_invoke.Wait());
 
     // A clone of the old page should be removed. The screenshot should remain
@@ -1089,7 +1155,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
   ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
   ASSERT_EQ(GetScrimLayer()->background_color().fA, 0.65f);
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
+  GestureProgressWaitForAnimate(0.9f);
 
   TestFuture<void> did_cancel;
   TestFuture<AnimatorState> destroyed;
@@ -1263,13 +1329,7 @@ INSTANTIATE_TEST_SUITE_P(
     BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
     Combine(Values(UILayoutDirection::kLTR, UILayoutDirection::kRTL),
             Values(DSFMode::kOne, DSFMode::kFractional)),
-    [](const TestParamInfo<
-        BackForwardTransitionAnimationManagerBothEdgeBrowserTest::ParamType>&
-           info) {
-      return base::StrCat(
-          {std::get<0>(info.param) == UILayoutDirection::kLTR ? "LTR" : "RTL",
-           std::get<1>(info.param) == DSFMode::kOne ? "" : "FractionalDSF"});
-    });
+    testing::PrintToStringParamName());
 
 // Runs a transition in a ViewTransition enabled page. Ensures view transition
 // does not run.
@@ -1391,44 +1451,58 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
                                           SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimator()->set_duration_between_frames(k60HzDuration);
 
   // live page layer with screenshot underneath, and the rounded rectangle is
   // above the scrim.
   ASSERT_EQ("[Screenshot[Scrim,RRect[Favicon]],LivePage]",
             ChildrenInOrder(*GetViewLayer()));
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.2));
+  GestureProgressWaitForAnimate(0.2f);
   auto expected_bg_color = web_contents()
                                ->GetDelegate()
                                ->GetBackForwardTransitionFallbackUXConfig()
                                .background_color;
   EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
-  EXPECT_TRUE(base::IsApproximatelyEqual(GetRRectLayer()->opacity(), 0.f,
-                                         kFloatTolerance));
+  EXPECT_NEAR(GetRRectLayer()->opacity(), 0.f, kFloatTolerance);
   // Opacity value isn't propagated into the subtree.
-  EXPECT_TRUE(base::IsApproximatelyEqual(GetFaviconLayer()->opacity(), 1.f,
-                                         kFloatTolerance));
+  EXPECT_NEAR(GetFaviconLayer()->opacity(), 1.f, kFloatTolerance);
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.5));
+  // Due to input filtering and the drag curve, the opacity output lags behind
+  // the gesture progress.
+  GestureProgressWaitForAnimate(0.4f);
   EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
-  EXPECT_TRUE(base::IsApproximatelyEqual(GetRRectLayer()->opacity(), 0.7f,
-                                         kFloatTolerance));
-  EXPECT_TRUE(base::IsApproximatelyEqual(GetFaviconLayer()->opacity(), 1.f,
-                                         kFloatTolerance));
+  EXPECT_NEAR(GetRRectLayer()->opacity(), 0.f, kFloatTolerance);
+  EXPECT_NEAR(GetFaviconLayer()->opacity(), 1.f, kFloatTolerance);
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.8));
+  GestureProgressWaitForAnimate(0.6f);
   EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
-  EXPECT_TRUE(base::IsApproximatelyEqual(GetRRectLayer()->opacity(), 1.f,
-                                         kFloatTolerance));
-  EXPECT_TRUE(base::IsApproximatelyEqual(GetFaviconLayer()->opacity(), 1.f,
-                                         kFloatTolerance));
+  EXPECT_NEAR(GetRRectLayer()->opacity(), 0.199f, kFloatTolerance);
+  EXPECT_NEAR(GetFaviconLayer()->opacity(), 1.f, kFloatTolerance);
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
+  GestureProgressWaitForAnimate(0.7f);
   EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
-  EXPECT_TRUE(base::IsApproximatelyEqual(GetRRectLayer()->opacity(), 0.02f,
-                                         kFloatTolerance));
-  EXPECT_TRUE(base::IsApproximatelyEqual(GetFaviconLayer()->opacity(), 1.f,
-                                         kFloatTolerance));
+  EXPECT_NEAR(GetRRectLayer()->opacity(), 0.713f, kFloatTolerance);
+  EXPECT_NEAR(GetFaviconLayer()->opacity(), 1.f, kFloatTolerance);
+
+  GestureProgressWaitForAnimate(0.8f);
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_NEAR(GetRRectLayer()->opacity(), 1.f, kFloatTolerance);
+  EXPECT_NEAR(GetFaviconLayer()->opacity(), 1.f, kFloatTolerance);
+
+  // Reversing the gesture lowers the opacity again.
+
+  GestureProgressWaitForAnimate(0.4f);
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_NEAR(GetRRectLayer()->opacity(), 0.986f, kFloatTolerance);
+  EXPECT_NEAR(GetFaviconLayer()->opacity(), 1.f, kFloatTolerance);
+
+  GestureProgressWaitForAnimate(0.2f);
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_NEAR(GetRRectLayer()->opacity(), 0.540f, kFloatTolerance);
+  EXPECT_NEAR(GetFaviconLayer()->opacity(), 1.f, kFloatTolerance);
+
+  GetAnimator()->set_duration_between_frames(kLongDurationBetweenFrames);
 
   TestFrameNavigationObserver back_navigation(web_contents());
 
@@ -1637,7 +1711,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
     EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
     // Force the cancel animation to finish playing, by unpausing it and
     // calling OnAnimate on it.
-    GetAnimator()->UnpauseAnimation();
+    UnpauseAnimation();
 
     ASSERT_TRUE(did_cancel.Wait());
     ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
@@ -1670,6 +1744,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
             BlueURL());
 
   EXPECT_STATE_EQ(kStarted, GetAnimator()->state());
+
+  histogram.ExpectBucketCount(
+      "Navigation.GestureTransition.NewCommitInPrimaryMainFrame", 0 /*=kOther*/,
+      1);
 
   // The gesture should have created and attached a screenshot layer with a
   // child scrim layer, under the live page.
@@ -1706,7 +1784,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   // child scrim layer, under the live page.
   ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
 
-  GetAnimator()->UnpauseAnimation();
+  UnpauseAnimation();
   ASSERT_TRUE(destroyed.Wait());
   EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
   ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
@@ -1971,7 +2049,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
                                           SwipeEdge::LEFT, NavType::kBackward);
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+  GestureProgressWaitForAnimate(0.6f);
+  EXPECT_STATE_EQ(kStarted, GetAnimator()->state());
 
   TestFuture<void> did_cross_fade;
   TestFuture<void> did_invoke;
@@ -2169,7 +2248,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
     ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
   }
 
-  GetAnimator()->UnpauseAnimation();
+  UnpauseAnimation();
   EXPECT_TRUE(invoke_played.Wait());
   ASSERT_TRUE(destroyed.Wait());
   EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
@@ -2538,8 +2617,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerEventsTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          BackForwardTransitionAnimationManagerEventsTest,
-                         testing::Values<std::string>("navigate", "popstate"),
-                         [](const testing::TestParamInfo<std::string> info) {
+                         Values<std::string>("navigate", "popstate"),
+                         [](const TestParamInfo<std::string> info) {
                            return info.param;
                          });
 
@@ -2838,7 +2917,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   EXPECT_TRUE(dialog_shown.Wait());
   EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
   EXPECT_TRUE(dialog_manager->RunBeforeUnloadCallback(false, u"title"));
-  GetAnimator()->UnpauseAnimation();
+  UnpauseAnimation();
 
   EXPECT_TRUE(did_cancel.Wait());
   EXPECT_TRUE(destroyed.Wait());
@@ -2903,7 +2982,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_FALSE(did_invoke.IsReady());
   ASSERT_FALSE(did_cancel.IsReady());
 
-  GetAnimator()->UnpauseAnimation();
+  UnpauseAnimation();
   ASSERT_TRUE(destroyed.Wait());
   EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 
@@ -3090,7 +3169,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_TRUE(did_invoke.Wait());
   EXPECT_STATE_EQ(kDisplayingCrossFadeAnimation, GetAnimator()->state());
 
-  GetAnimator()->UnpauseAnimation();
+  UnpauseAnimation();
   ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
   ASSERT_TRUE(destroyed.Wait());
   EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
@@ -3992,7 +4071,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(dialog_shown.Wait());
   EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
   ASSERT_TRUE(dialog_manager->RunBeforeUnloadCallback(false, u"title"));
-  GetAnimator()->UnpauseAnimation();
+  UnpauseAnimation();
 
   ASSERT_TRUE(cancel_displayed.Wait());
   ASSERT_TRUE(destroyed.Wait());
@@ -4057,13 +4136,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(beforeunload_complete.Wait());
   EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
 
-  GetAnimator()->UnpauseAnimation();
+  UnpauseAnimation();
 
   ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
 
   // The current live page should be blue.html.
   ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
             BlueURL());
+
+  histogram.ExpectBucketCount(
+      "Navigation.GestureTransition.NewCommitWhileDisplayingCanceledAnimation",
+      0 /*=kOther*/, 1);
 
   ASSERT_FALSE(did_invoke.IsReady());
   ASSERT_TRUE(did_cancel.Wait());

@@ -38,8 +38,23 @@ The bot provides analysis using:
 If your CL shows a large increase in ARM64 size, but not for ARM32, keep in mind:
 - ARM32 instructions are ~half the size of ARM64 instructions.
 - ARM32 builds are optimized-for-size (`-Os`) and ARM64 optimizes for speed (`-O2`).
+- ARM32 builds use AFDO and ARM64 builds use PGO.
+  - Both use flags to consider unknown symbols as cold in order to
+    underestimate size changes, which can actually lead to overestimating in cases
+    where aggressive inlining leads to smaller size.
 
-To create a SuperSize report for ARM64, do so locally via:
+In this scenario, `android-binary-size` should automatically create a second
+size breakdown for ARM64. You'll find a link to it at the bottom of the bot's
+LUCI page.
+
+To force the bot to create an ARM64 breakdown, add this to your commit footer
+(leaving no blank line before subsequent footers):
+
+```
+CreateArm64SizeReport: true
+```
+
+To create a SuperSize report for ARM64 locally:
 
 ```sh
 tools/binary_size/diagnose_bloat.py --arm64

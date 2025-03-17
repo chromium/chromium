@@ -8,7 +8,7 @@
 <translation id="1012173283529841972">Élément de liste</translation>
 <translation id="1013742170491673792">recherche</translation>
 <translation id="1014370462248694370">Balayer l'écran vers la droite avec deux doigts</translation>
-<translation id="1022586497894531524">Est-ce la première fois que vous utilisez les commentaires audio de ChromeVox ? Ce tutoriel rapide explique les bases pour commencer à utiliser ChromeVox.</translation>
+<translation id="1022586497894531524">Est-ce la première fois que vous utilisez la lecture vocale de ChromeVox ? Ce tutoriel rapide explique les bases pour commencer à utiliser ChromeVox.</translation>
 <translation id="1025074108959230262">Mode rémanent désactivé</translation>
 <translation id="1031961866430398710">puis</translation>
 <translation id="1038643060055067718">Lignes :</translation>
@@ -69,7 +69,7 @@
 <translation id="1325946044405407859">Brun clair</translation>
 <translation id="1328928545650070438">Froncer les sourcils</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> sur <ph name="TOTAL" /></translation>
-<translation id="1334095593597963605">écho des caractères et des mots</translation>
+<translation id="1334095593597963605">lecture des caractères et des mots</translation>
 <translation id="1334570596456017464">Indice</translation>
 <translation id="133801305381959373">Aucun champ de texte modifiable suivant</translation>
 <translation id="1342835525016946179">article</translation>
@@ -331,7 +331,7 @@
 <translation id="3078345202707391975">En-tête suivant de niveau 2</translation>
 <translation id="3078740164268491126">tableau</translation>
 <translation id="3082249673510793544">Faire défiler vers l'arrière</translation>
-<translation id="3084806535845658316">aucun écho de saisie</translation>
+<translation id="3084806535845658316">aucune lecture de la saisie</translation>
 <translation id="3086746722712840547">remarque</translation>
 <translation id="308736057934395497">Cela permet d'améliorer la confidentialité en éteignant l'écran pour que les autres ne puissent pas le voir. Vous pouvez le rallumer à tout moment en appuyant sur Rechercher+Augmenter la luminosité.</translation>
 <translation id="3090227230165225418">Annoncer les notifications de téléchargement</translation>
@@ -423,7 +423,7 @@
 <translation id="3564729643041517261">Le style d'affichage actuel est "côte à côte"</translation>
 <translation id="3570904478351465021">Hiver</translation>
 <translation id="3573145950452451508">Pied de page</translation>
-<translation id="3587482841069643663">Tous</translation>
+<translation id="3587482841069643663">Complète</translation>
 <translation id="3589661172894441357">Glossaire</translation>
 <translation id="3591784666823501596">Bleu royal</translation>
 <translation id="3592715211448024517">Accéder aux menus</translation>
@@ -504,7 +504,7 @@
 <translation id="4148180433151187540">{COUNT,plural, =1{accolade droite}one{# accolade droite}other{# accolades droites}}</translation>
 <translation id="4159784952369912983">Violet</translation>
 <translation id="4161104397932142764">{COUNT,plural, =1{seconde}one{seconde}other{secondes}}</translation>
-<translation id="4161663686871496107">La fonctionnalité de commentaires audio ChromeVox est prête.</translation>
+<translation id="4161663686871496107">La lecture vocale ChromeVox est prête.</translation>
 <translation id="4176463684765177261">Désactivé</translation>
 <translation id="4187322598335821254">Balayez l'écran vers le haut ou vers le bas pour vous déplacer ligne par ligne</translation>
 <translation id="4188530942454211480">Phrase précédente</translation>
@@ -548,7 +548,7 @@
 <translation id="4384583879834880242">Questions/Réponses</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Bleu céleste</translation>
-<translation id="4406249099130339147">Écho de la ponctuation :</translation>
+<translation id="4406249099130339147">Lecture de la ponctuation :</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY" /></translation>
 <translation id="4423525817792153232">Montrer toutes vos dents</translation>
 <translation id="4432457053224379116">Rouge indien</translation>
@@ -934,7 +934,7 @@
 <translation id="7096668131290451939">Appuyez de nouveau sur Échap pour quitter le mode d'apprentissage</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="MODIFIER_THREE" />+<ph name="MODIFIER_FOUR" />+<ph name="KEY" /></translation>
-<translation id="712735679809149106">écho des mots</translation>
+<translation id="712735679809149106">lecture des mots</translation>
 <translation id="7137397390322864165">Saumon</translation>
 <translation id="7140168702531682811">Exposant</translation>
 <translation id="7143034430156387447">Alterner entre les méthodes braille à six et huit points</translation>
@@ -942,7 +942,7 @@
 <translation id="7153618581592392745">Lavande</translation>
 <translation id="7157306005867877619">Résumé</translation>
 <translation id="7161771961008409533">Bouton pop-up</translation>
-<translation id="7167657087543110">écho des caractères</translation>
+<translation id="7167657087543110">lecture des caractères</translation>
 <translation id="7173102181852295013">Bleu nuit</translation>
 <translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Développé</translation>
@@ -1021,7 +1021,7 @@
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Case d'option précédente</translation>
 <translation id="7696631298608145306">aller au mot suivant</translation>
-<translation id="7701040980221191251">Aucun</translation>
+<translation id="7701040980221191251">Désactivée</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Aucune boîte combinée suivante</translation>
 <translation id="7715455358521357192">Plisser l'œil droit</translation>
@@ -1115,6 +1115,7 @@
 <translation id="8316881042119029234">Dentelle ancienne</translation>
 <translation id="8326783648485765113">Vert pelouse</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{dièse}one{# dièse}other{# dièses}}</translation>
+<translation id="8351821207686449674">Activer/Désactiver les sous-titres</translation>
 <translation id="8378855320830505539">Section</translation>
 <translation id="8382679411218029383">Saisie semi-automatique intégrée ou sous forme de liste</translation>
 <translation id="8394908167088220973">Contenu multimédia : lecture/pause</translation>
@@ -1179,7 +1180,7 @@
 <translation id="8883850400338911892">modURL 8pt</translation>
 <translation id="8896479570570613387">Violet moyen</translation>
 <translation id="8897030325301866860">Police <ph name="FONT_FAMILY" /></translation>
-<translation id="8898516272131543774">Écho de la ponctuation par cycle</translation>
+<translation id="8898516272131543774">Lecture de la ponctuation par cycle</translation>
 <translation id="8908714597367957477">colhdr</translation>
 <translation id="8910180774920883033">Actions possibles. Appuyez sur Recherche+Ctrl+A pour les afficher</translation>
 <translation id="8937112856099038376">intlnk</translation>
@@ -1205,7 +1206,7 @@
 <translation id="9077213568694924680">supprimé de la sélection</translation>
 <translation id="9077305471618729969">Bleu paon</translation>
 <translation id="9080299285199342830">Aller à la fin</translation>
-<translation id="9089864840575085222">Écho de la saisie par cycle</translation>
+<translation id="9089864840575085222">Lecture de la saisie par cycle</translation>
 <translation id="9099429023611373837">couper</translation>
 <translation id="9108370397979208512">math.</translation>
 <translation id="9108589040018540527">scbr</translation>

@@ -133,23 +133,21 @@ std::unique_ptr<SurfaceAnimationManager>
 SurfaceAnimationManager::CreateWithSave(
     const CompositorFrameTransitionDirective& directive,
     Surface* surface,
-    SharedBitmapManager* shared_bitmap_manager,
     gpu::SharedImageInterface* shared_image_interface,
     ReservedResourceIdTracker* id_tracker,
     SaveDirectiveCompleteCallback sequence_id_finished_callback) {
   return base::WrapUnique(new SurfaceAnimationManager(
-      directive, surface, shared_bitmap_manager, shared_image_interface,
-      id_tracker, std::move(sequence_id_finished_callback)));
+      directive, surface, shared_image_interface, id_tracker,
+      std::move(sequence_id_finished_callback)));
 }
 
 SurfaceAnimationManager::SurfaceAnimationManager(
     const CompositorFrameTransitionDirective& directive,
     Surface* surface,
-    SharedBitmapManager* shared_bitmap_manager,
     gpu::SharedImageInterface* shared_image_interface,
     ReservedResourceIdTracker* id_tracker,
     SaveDirectiveCompleteCallback sequence_id_finished_callback)
-    : transferable_resource_tracker_(shared_bitmap_manager, id_tracker),
+    : transferable_resource_tracker_(id_tracker),
       saved_frame_(directive, shared_image_interface) {
   DCHECK(directive.type() == CompositorFrameTransitionDirective::Type::kSave);
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/core/html/parser/html_preload_scanner.h"
 
 #include <memory>
@@ -128,6 +133,13 @@ struct SharedStorageWritableTestCase {
   const char* base_url;
   const char* input_html;
   bool expected_shared_storage_writable_opted_in;
+};
+
+struct BrowsingTopicsWritableTestCase {
+  bool use_secure_document_url;
+  const char* base_url;
+  const char* input_html;
+  bool expected_browsing_topics;
 };
 
 class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
@@ -309,6 +321,16 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
               resource->GetResourceRequest().GetSharedStorageWritableOptedIn());
   }
 
+  void BrowsingTopicsRequestVerification(Document* document,
+                                         bool expected_browsing_topics) {
+    ASSERT_TRUE(preload_request_.get());
+    Resource* resource = preload_request_->Start(document);
+    ASSERT_TRUE(resource);
+
+    EXPECT_EQ(expected_browsing_topics,
+              resource->GetResourceRequest().GetBrowsingTopics());
+  }
+
  protected:
   void Preload(std::unique_ptr<PreloadRequest> preload_request) override {
     preload_request_ = std::move(preload_request);
@@ -453,7 +475,7 @@ class HTMLPreloadScannerTest : public PageTestBase {
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
     auto data = scanner_->Scan(base_url);
-    EXPECT_EQ(test_case.should_see_csp_tag, data->csp_meta_tag_count > 0);
+    EXPECT_EQ(test_case.should_see_csp_tag, data->has_csp_meta_tag);
   }
 
   void Test(NonceTestCase test_case) {
@@ -544,6 +566,20 @@ class HTMLPreloadScannerTest : public PageTestBase {
     preloader.TakePreloadData(std::move(preload_data));
     preloader.SharedStorageWritableRequestVerification(
         &GetDocument(), test_case.expected_shared_storage_writable_opted_in);
+  }
+
+  void Test(BrowsingTopicsWritableTestCase test_case) {
+    SCOPED_TRACE(base::StringPrintf("Use secure doc URL: %d; HTML: '%s'",
+                                    test_case.use_secure_document_url,
+                                    test_case.input_html));
+
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
+    KURL base_url(test_case.base_url);
+    scanner_->AppendToEnd(String(test_case.input_html));
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
+    preloader.BrowsingTopicsRequestVerification(
+        &GetDocument(), test_case.expected_browsing_topics);
   }
 
  private:
@@ -1485,42 +1521,23 @@ TEST_F(HTMLPreloadScannerTest, Integrity) {
     Test(test_case);
 }
 
-class MetaCspNoPreloadsAfterTest : public HTMLPreloadScannerTest,
-                                   public ::testing::WithParamInterface<bool> {
- public:
-  MetaCspNoPreloadsAfterTest() : scopedAllow(GetParam()) {}
-
-  bool ExpectPreloads() const { return GetParam(); }
-
- private:
-  blink::RuntimeEnabledFeaturesTestHelpers::ScopedAllowPreloadingWithCSPMetaTag
-      scopedAllow;
-};
-
-INSTANTIATE_TEST_SUITE_P(MetaCspNoPreloadsAfterTests,
-                         MetaCspNoPreloadsAfterTest,
-                         testing::Bool());
-
 // Regression test for http://crbug.com/898795 where preloads after a
 // dynamically inserted meta csp tag are dispatched on subsequent calls to the
 // HTMLPreloadScanner, after they had been parsed.
-TEST_P(MetaCspNoPreloadsAfterTest, NoPreloadsAfter) {
+TEST_F(HTMLPreloadScannerTest, MetaCsp_NoPreloadsAfter) {
   PreloadScannerTestCase test_cases[] = {
       {"http://example.test",
        "<meta http-equiv='Content-Security-Policy'><link rel=preload href=bla "
        "as=SCRIPT>",
-       ExpectPreloads() ? "bla" : nullptr, "http://example.test/",
-       ResourceType::kScript, 0},
-      // The buffered text referring to the preload above should be
-      // cleared, so make sure it is not preloaded on subsequent calls to
-      // Scan.
+       nullptr, "http://example.test/", ResourceType::kScript, 0},
+      // The buffered text referring to the preload above should be cleared, so
+      // make sure it is not preloaded on subsequent calls to Scan.
       {"http://example.test", "", nullptr, "http://example.test/",
        ResourceType::kScript, 0},
   };
 
-  for (const auto& test_case : test_cases) {
+  for (const auto& test_case : test_cases)
     Test(test_case);
-  }
 }
 
 TEST_F(HTMLPreloadScannerTest, LazyLoadImage) {
@@ -1986,6 +2003,44 @@ TEST_F(HTMLPreloadScannerTest, PreloadScanDisabled_NoPreloads) {
     RunSetUp(kViewportDisabled, kPreloadEnabled,
              network::mojom::ReferrerPolicy::kDefault, true, {},
              /* disable_preload_scanning=*/true);
+    Test(test_case);
+  }
+}
+
+TEST_F(HTMLPreloadScannerTest, testBrowsingTopics) {
+  WebRuntimeFeaturesBase::EnableTopicsAPI(true);
+  static constexpr bool kSecureDocumentUrl = true;
+  static constexpr bool kInsecureDocumentUrl = false;
+
+  static constexpr char kSecureBaseURL[] = "https://example.test";
+  static constexpr char kInsecureBaseURL[] = "http://example.test";
+
+  BrowsingTopicsWritableTestCase test_cases[] = {
+      // Insecure context
+      {kInsecureDocumentUrl, kSecureBaseURL,
+       "<img src='/image' browsingtopics>",
+       /*expected_browsing_topics=*/false},
+      // No browsingtopics attribute
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>",
+       /*expected_browsing_topics=*/false},
+      // Irrelevant element type
+      {kSecureDocumentUrl, kSecureBaseURL,
+       "<video poster='/image' browsingtopics>",
+       /*expected_browsing_topics=*/false},
+      // Secure context, browsingtopics attribute
+      // Base (initial) URL does not affect SharedStorageWritable eligibility
+      {kSecureDocumentUrl, kInsecureBaseURL,
+       "<img src='/image' browsingtopics>",
+       /*expected_browsing_topics=*/true},
+      // Secure context, browsingtopics attribute
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' browsingtopics>",
+       /*expected_browsing_topics=*/true},
+  };
+
+  for (const auto& test_case : test_cases) {
+    RunSetUp(kViewportDisabled, kPreloadEnabled,
+             network::mojom::ReferrerPolicy::kDefault,
+             /*use_secure_document_url=*/test_case.use_secure_document_url);
     Test(test_case);
   }
 }

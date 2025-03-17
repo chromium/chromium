@@ -18,6 +18,7 @@
 <translation id="1650423536718072820">đoạn trích dẫn</translation>
 <translation id="1681022320378710418">thời gian hiện tại</translation>
 <translation id="1727839386348365796">Dụng cụ nhỏ giọt</translation>
+<translation id="1771761307086386028">Cuộn sang phải</translation>
 <translation id="1787192514241997742">tổng thời gian: <ph name="REMAINING_TIME" /></translation>
 <translation id="1821985195704844674">lưới dạng cây</translation>
 <translation id="1822429046913737220">SA/CH</translation>
@@ -65,11 +66,11 @@
 <translation id="3670698553867754311">bộ chọn tuần</translation>
 <translation id="3706100364254443312">chuyển</translation>
 <translation id="3808586225841795776">cụm từ</translation>
-<translation id="3914173277599553213">Bắt buộc</translation>
 <translation id="3920932319529768807">kết luận</translation>
 <translation id="3924558731517983934">ứng dụng</translation>
 <translation id="3944740393230681990">phần mở đầu</translation>
 <translation id="3960700977367013758">thanh cuộn</translation>
+<translation id="4021716437419160885">Cuộn xuống</translation>
 <translation id="4103419683916926126">Mili giây</translation>
 <translation id="4151657705144244502">hình ảnh</translation>
 <translation id="4160057747563657758">điện thoại</translation>
@@ -85,6 +86,7 @@
 <translation id="4661075872484491155">cây</translation>
 <translation id="4668956016107839909">phụ lục</translation>
 <translation id="4698212723196775569">mã</translation>
+<translation id="4710792130811321440">hiển thị trình đơn chọn bản âm thanh</translation>
 <translation id="4742539557769756338">trang bìa</translation>
 <translation id="4748357248530471599">bật/tắt chế độ toàn màn hình có vết cắt</translation>
 <translation id="4757246831282535685">bảng điều khiển thẻ</translation>
@@ -96,6 +98,7 @@
 <translation id="492244087561876220">nhận xét</translation>
 <translation id="4924138096460353083">không xác định</translation>
 <translation id="4950364064308314478">Hiển thị bộ chọn ngày và giờ địa phương</translation>
+<translation id="495046168593986294">Cuộn lên</translation>
 <translation id="4971739861736909480">Đã chọn <ph name="ACCNAME" /></translation>
 <translation id="5022314756875057021">nhóm hàng</translation>
 <translation id="5034860022980953847">chỉ báo tiến trình</translation>
@@ -126,13 +129,14 @@
 <translation id="576709008726043716">giới thiệu</translation>
 <translation id="5786442179789148008">hiện trình đơn tốc độ phát</translation>
 <translation id="5787939484346677755">đã mở rộng, có các tùy chọn tự động hoàn thành.</translation>
-<translation id="5860033963881614850">Tắt</translation>
+<translation id="5860033963881614850">Đang tắt</translation>
 <translation id="591047860372322273">hộp tìm kiếm</translation>
 <translation id="5916664084637901428">Đang bật</translation>
 <translation id="5966707198760109579">Tuần</translation>
 <translation id="5987525920412732405">nút quay tròn</translation>
 <translation id="6011459053400940133">thanh trượt âm lượng</translation>
 <translation id="6015796118275082299">Năm</translation>
+<translation id="602001110135236999">Cuộn sang trái</translation>
 <translation id="6023896073578205740">hộp danh sách</translation>
 <translation id="6119846243427417423">kích hoạt</translation>
 <translation id="6150588977291308318">danh mục</translation>
@@ -163,6 +167,7 @@
 <translation id="6845533974506654842">nhấn</translation>
 <translation id="6885760532393684712">thư mục</translation>
 <translation id="689129560213475294">lời ghi cuối sách</translation>
+<translation id="6919089238568236262">hiển thị trình đơn chọn bản video</translation>
 <translation id="6934078000481955284">khung trích dẫn</translation>
 <translation id="693476918119313863">tiêu đề</translation>
 <translation id="6941933287844615239">tải xuống phương tiện</translation>

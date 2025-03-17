@@ -57,13 +57,60 @@ and what needs to be resolved to make it non-tentative.
 [testdriver.js](https://web-platform-tests.org/writing-tests/testdriver.html)
 provides a means to automate tests that cannot be written purely using web
 platform APIs, similar to `internals.*` and `eventSender.*` in regular Blink
-web tests.
+web tests. It uses either [WebDriver Classic](https://www.w3.org/TR/webdriver/),
+or [WebDriver BiDi](https://www.w3.org/TR/webdriver-bidi/) protocols.
 
-If no testdriver.js API exists, check if it's a
-[known issue](https://github.com/web-platform-tests/wpt/labels/testdriver.js)
-and otherwise consider filing a new issue. For instructions on how to add a new
-testing API, see [WPT Test Automation for
-Chromium](https://docs.google.com/document/d/18BpD41vyX1cFZ77CE0a_DJYlGpdvyLlx3pwXVRxUzvI/preview#)
+[WPT Test Automation for Chromium](https://docs.google.com/document/d/18BpD41vyX1cFZ77CE0a_DJYlGpdvyLlx3pwXVRxUzvI/edit?usp=sharing) overview.
+
+The recommended way to extend `testdriver.js` is by adding extending
+[WebDriver BiDi](https://www.w3.org/TR/webdriver-bidi/) protocol.
+
+##### WebDriver BiDi Specification
+
+The WebDriver BiDi protocol was designed to support cross-browser testing. It is
+extensible by design, and can be extended by a separate specification.
+
+###### Example
+
+The [WebDriver BiDi extension module](https://www.w3.org/TR/webdriver-bidi/#protocol-modules) `permissions` is outlined in an external specification: https://www.w3.org/TR/permissions/#automation-webdriver-bidi.
+
+##### WPT wdspec tests
+
+The specification part should be accompanied by WPT wdspec tests. These tests
+allow for implementations to verify they implement the BiDi extension properly.
+The process is described here: https://web-platform-tests.org/writing-tests/wdspec.html#extending-webdriver-bidi.
+
+###### Example
+
+WPT tests for permissions.setPermission command: webdriver/tests/bidi/external/permissions/set_permission.
+
+##### Implement the required endpoints in CDP
+
+Under the hood, Chromium is controlled by Chrome Devtools Protocol
+(https://chromedevtools.github.io/devtools-protocol/). This means that in order
+to implement the WebDriver BiDi commands, the corresponding commands should be
+added to CDP.
+
+##### Implement WebDriver BiDi commands using CDP
+
+The [BiDi-CDP Mapper](https://github.com/GoogleChromeLabs/chromium-bidi) is an
+implementation of WebDriver BiDi in Chromium, and is used by ChromeDriver. It
+translates WebDriver BiDi commands into Chrome DevTools Protocol (CDP) commands.
+
+[How to add the new commands to BiDi-CDP Mapper and roll it in ChromeDriver](https://github.com/GoogleChromeLabs/chromium-bidi#adding-new-command).
+
+###### Example
+
+[Implement ”permissions.setPermission”](https://github.com/GoogleChromeLabs/chromium-bidi/pull/1645).
+
+##### Extend `testdriver.js`
+
+In order to expose the new method to WPT tests, `testdriver.js` should be
+updated with the new method. This process is described in the [“Testdriver extension tutorial”](https://web-platform-tests.org/writing-tests/testdriver-extension-tutorial.html), referred to in “WebDriver BiDi” sections.
+
+###### Example
+
+[Add `test_driver.bidi.permissions.set_permission`](https://github.com/web-platform-tests/wpt/pull/49170).
 
 #### MojoJS
 

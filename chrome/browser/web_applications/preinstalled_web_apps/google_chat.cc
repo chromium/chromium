@@ -24,8 +24,7 @@ ExternalInstallOptions GetConfigForGoogleChat(bool is_standalone,
                     : mojom::UserDisplayMode::kBrowser,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
-  // Exclude managed users until we have a way for admins to block the app.
-  options.user_type_allowlist = {"unmanaged"};
+  options.user_type_allowlist = {"unmanaged", "managed", "child"};
   options.only_for_new_users = only_for_new_users;
   options.expected_app_id = ash::kGoogleChatAppId;
   options.app_info_factory = base::BindRepeating(

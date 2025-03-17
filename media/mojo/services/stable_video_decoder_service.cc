@@ -8,7 +8,7 @@
 #include "media/gpu/chromeos/frame_registry.h"
 #include "media/mojo/common/media_type_converters.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_VAAPI)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #endif
 
@@ -148,10 +148,10 @@ StableVideoDecoderService::StableVideoDecoderService(
       stable_video_frame_handle_releaser_receiver_(this),
       dst_video_decoder_(std::move(dst_video_decoder)),
       dst_video_decoder_receiver_(dst_video_decoder_.get())
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       ,
       cdm_service_context_(cdm_service_context)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       ,
       frame_registry_(frame_registry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -163,10 +163,10 @@ StableVideoDecoderService::StableVideoDecoderService(
 StableVideoDecoderService::~StableVideoDecoderService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (cdm_id_)
     cdm_service_context_->UnregisterRemoteCdmContext(cdm_id_.value());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void StableVideoDecoderService::GetSupportedConfigs(
@@ -232,7 +232,7 @@ void StableVideoDecoderService::Initialize(
   // The |config| should have been validated at deserialization time.
   DCHECK(config.IsValidConfig());
   if (config.is_encrypted()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (!cdm_id_) {
       if (!cdm_context) {
         std::move(callback).Run(DecoderStatus::Codes::kMissingCDM,
@@ -258,7 +258,7 @@ void StableVideoDecoderService::Initialize(
                             VideoDecoderType::kUnknown,
                             /*needs_transcryption=*/false);
     return;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   // Even though this is in-process, we still need to pass a |cdm_id_|

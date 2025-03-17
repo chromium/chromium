@@ -19,8 +19,7 @@ IOSWebViewSigninClient::IOSWebViewSigninClient(
       pref_service_(pref_service),
       browser_state_(browser_state) {}
 
-IOSWebViewSigninClient::~IOSWebViewSigninClient() {
-}
+IOSWebViewSigninClient::~IOSWebViewSigninClient() {}
 
 void IOSWebViewSigninClient::Shutdown() {
   network_callback_helper_.reset();

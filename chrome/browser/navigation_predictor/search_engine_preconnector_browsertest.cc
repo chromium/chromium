@@ -126,14 +126,15 @@ class SearchEnginePreconnectorNoDelaysBrowserTest
     if (PreconnectWithPrivacyModeEnabled()) {
       feature_list_.InitWithFeaturesAndParameters(
           {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
+           {net::features::kSearchEnginePreconnectInterval,
+            {{"preconnect_interval", "0"}}},
            {features::kPreconnectToSearchWithPrivacyModeEnabled, {}}},
           {});
     } else {
       feature_list_.InitWithFeaturesAndParameters(
-          {
-              {features::kPreconnectToSearch,
-               {{"startup_delay_ms", "1000000"}}},
-          },
+          {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
+           {net::features::kSearchEnginePreconnectInterval,
+            {{"preconnect_interval", "0"}}}},
           {{features::kPreconnectToSearchWithPrivacyModeEnabled}});
     }
   }
@@ -141,12 +142,6 @@ class SearchEnginePreconnectorNoDelaysBrowserTest
   bool PreconnectWithPrivacyModeEnabled() const { return GetParam(); }
 
   ~SearchEnginePreconnectorNoDelaysBrowserTest() override = default;
-
- private:
-  void SetUpOnMainThread() override {
-    SearchEnginePreconnectorBrowserTest::SetUpOnMainThread();
-    SearchEnginePreconnector::SetPreconnectIntervalForTesting(0);
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -414,9 +409,9 @@ class SearchEnginePreconnectorKeepSocketBrowserTest
  public:
   SearchEnginePreconnectorKeepSocketBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
-        },
+        {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
+         {net::features::kSearchEnginePreconnectInterval,
+          {{"preconnect_interval", "60"}}}},
         {});
   }
 
@@ -479,10 +474,10 @@ class SearchEnginePreconnectorDesktopAutoStartBrowserTest
  public:
   SearchEnginePreconnectorDesktopAutoStartBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPreconnectToSearch, {{"startup_delay_ms", "0"}}}}, {});
-    // Set the interval before starting the test so that we can test from
-    // browser start.
-    SearchEnginePreconnector::SetPreconnectIntervalForTesting(0);
+        {{features::kPreconnectToSearch, {{"startup_delay_ms", "0"}}},
+         {net::features::kSearchEnginePreconnectInterval,
+          {{"preconnect_interval", "0"}}}},
+        {});
   }
 
   ~SearchEnginePreconnectorDesktopAutoStartBrowserTest() override = default;
@@ -503,12 +498,15 @@ class SearchEnginePreconnectorEnabledOnlyBrowserTest
       if (PreconnectWithPrivacyModeEnabled()) {
         feature_list_.InitWithFeaturesAndParameters(
             {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
+             {net::features::kSearchEnginePreconnectInterval,
+              {{"preconnect_interval", "60"}}},
              {features::kPreconnectToSearchWithPrivacyModeEnabled, {}}},
             {});
       } else {
         feature_list_.InitWithFeaturesAndParameters(
-            {{features::kPreconnectToSearch,
-              {{"startup_delay_ms", "1000000"}}}},
+            {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
+             {net::features::kSearchEnginePreconnectInterval,
+              {{"preconnect_interval", "60"}}}},
             {{features::kPreconnectToSearchWithPrivacyModeEnabled}});
       }
     }
@@ -517,12 +515,6 @@ class SearchEnginePreconnectorEnabledOnlyBrowserTest
   bool PreconnectWithPrivacyModeEnabled() const { return GetParam(); }
 
   ~SearchEnginePreconnectorEnabledOnlyBrowserTest() override = default;
-
- private:
-  void SetUpOnMainThread() override {
-    SearchEnginePreconnectorBrowserTest::SetUpOnMainThread();
-    SearchEnginePreconnector::SetPreconnectIntervalForTesting(0);
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

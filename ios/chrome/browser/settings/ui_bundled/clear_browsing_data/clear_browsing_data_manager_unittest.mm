@@ -204,8 +204,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
   test_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   AuthenticationServiceFactory::GetForProfile(profile_.get())
-      ->SignIn(fake_identity(),
-               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      ->SignIn(fake_identity(), signin_metrics::AccessPoint::kSettings);
 
   [manager_ loadModel:model_];
 
@@ -354,8 +353,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestOnPreferenceChanged) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedIn) {
   AuthenticationServiceFactory::GetForProfile(profile_.get())
-      ->SignIn(fake_identity(),
-               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      ->SignIn(fake_identity(), signin_metrics::AccessPoint::kSettings);
 
   [manager_ loadModel:model_];
 
@@ -374,8 +372,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedIn) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedOut) {
   AuthenticationServiceFactory::GetForProfile(profile_.get())
-      ->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
-                /*force_clear_browsing_data=*/false, nil);
+      ->SignOut(signin_metrics::ProfileSignout::kAbortSignin, nil);
 
   [manager_ loadModel:model_];
 
@@ -385,8 +382,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedOut) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedIn) {
   AuthenticationServiceFactory::GetForProfile(profile_.get())
-      ->SignIn(fake_identity(),
-               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      ->SignIn(fake_identity(), signin_metrics::AccessPoint::kSettings);
 
   // Set DSE to one from "prepoulated list".
   const std::string kEngineP1Name = "prepopulated-1";
@@ -418,8 +414,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedIn) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedOut) {
   AuthenticationServiceFactory::GetForProfile(profile_.get())
-      ->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
-                /*force_clear_browsing_data=*/false, nil);
+      ->SignOut(signin_metrics::ProfileSignout::kAbortSignin, nil);
 
   // Set DSE to one from "prepoulated list".
   const std::string kEngineP1Name = "prepopulated-1";
@@ -452,8 +447,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedOut) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
   AuthenticationServiceFactory::GetForProfile(profile_.get())
-      ->SignIn(fake_identity(),
-               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      ->SignIn(fake_identity(), signin_metrics::AccessPoint::kSettings);
 
   // Set DSE to a be fully custom.
   const std::string kEngineC1Name = "custom-1";
@@ -487,8 +481,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestCustomeTextSignedOut) {
   AuthenticationServiceFactory::GetForProfile(profile_.get())
-      ->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
-                /*force_clear_browsing_data=*/false, nil);
+      ->SignOut(signin_metrics::ProfileSignout::kAbortSignin, nil);
 
   // Set DSE to a be fully custom.
   const std::string kEngineC1Name = "custom-1";

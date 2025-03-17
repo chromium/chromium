@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("extended_updates") {
   sources = [
@@ -49,9 +49,6 @@ source_set("unit_tests") {
   deps = [
     ":extended_updates",
     "//ash",
-    "//ash:test_support",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
@@ -61,8 +58,11 @@ source_set("unit_tests") {
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/prefs",
     "//content/public/browser",
     "//content/test:test_support",

@@ -6,7 +6,7 @@
 /**
  * JavaScript hooks into the native WebUI handler.
  */
-const WebUI = {
+export const WebUI = {
   getLogMessages: function() {
     chrome.send('getLogMessages');
   },
@@ -39,4 +39,3 @@ const WebUI = {
     chrome.send('onWebContentsInitialized');
   },
 };
-

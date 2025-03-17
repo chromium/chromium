@@ -56,6 +56,23 @@ void SpeechRecognizerImplAndroid::StartRecognition(
           this, config.language, config.continuous, config.interim_results));
 }
 
+void SpeechRecognizerImplAndroid::UpdateRecognitionContext(
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SpeechRecognizerImplAndroid::UpdateRecognitionContext,
+                       this, recognition_context));
+    return;
+  }
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  listener()->OnRecognitionError(
+      session_id(), media::mojom::SpeechRecognitionError(
+                        media::mojom::SpeechRecognitionErrorCode::
+                            kRecognitionContextNotSupported,
+                        media::mojom::SpeechAudioErrorDetails::kNone));
+}
+
 void SpeechRecognizerImplAndroid::StartRecognitionOnUIThread(
     const std::string& language,
     bool continuous,

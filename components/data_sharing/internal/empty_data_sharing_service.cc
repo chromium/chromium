@@ -5,6 +5,7 @@
 #include "components/data_sharing/internal/empty_data_sharing_service.h"
 
 #include "base/functional/callback.h"
+#include "components/data_sharing/internal/preview_server_proxy.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 
 namespace data_sharing {
@@ -91,6 +92,11 @@ void EmptyDataSharingService::LeaveGroup(
     const GroupId& group_id,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
 
+bool EmptyDataSharingService::IsLeavingOrDeletingGroup(
+    const GroupId& group_id) {
+  return false;
+}
+
 std::vector<GroupEvent> EmptyDataSharingService::GetGroupEventsSinceStartup() {
   return {};
 }
@@ -139,6 +145,18 @@ DataSharingUIDelegate* EmptyDataSharingService::GetUiDelegate() {
   return nullptr;
 }
 
+Logger* EmptyDataSharingService::GetLogger() {
+  return nullptr;
+}
+
 void EmptyDataSharingService::AddGroupDataForTesting(GroupData group_data) {}
+void EmptyDataSharingService::SetPreviewServerProxyForTesting(
+    std::unique_ptr<PreviewServerProxy> preview_server_proxy) {}
+PreviewServerProxy* EmptyDataSharingService::GetPreviewServerProxyForTesting() {
+  return nullptr;
+}
+
+void EmptyDataSharingService::OnCollaborationGroupRemoved(
+    const GroupId& group_id) {}
 
 }  // namespace data_sharing

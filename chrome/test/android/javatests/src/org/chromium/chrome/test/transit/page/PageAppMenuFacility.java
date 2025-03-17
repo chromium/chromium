@@ -7,7 +7,7 @@ package org.chromium.chrome.test.transit.page;
 import androidx.annotation.CallSuper;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.chrome.test.transit.AppMenuFacility;
+import org.chromium.chrome.test.transit.CtaAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageAppMenuFacility;
@@ -29,7 +29,7 @@ import org.chromium.chrome.test.transit.settings.SettingsStation;
  * @param <HostPageStationT> the type of host {@link PageStation} where this app menu is opened.
  */
 public class PageAppMenuFacility<HostPageStationT extends PageStation>
-        extends AppMenuFacility<HostPageStationT> {
+        extends CtaAppMenuFacility<HostPageStationT> {
 
     protected Item<RegularNewTabPageStation> mNewTab;
     protected Item<IncognitoNewTabPageStation> mNewIncognitoTab;

@@ -1,0 +1,35 @@
+<!--
+  Copyright 2025 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.-->
+
+<resources>
+  <string name="app_name">Chromium Test Autofill App</string>
+  <string name="service_name">Chromium Test Autofill Service</string>
+  <string name="action_settings">Settings</string>
+  <string name="fragment_instructions_label">Instructions Fragment</string>
+  <string name="fragment_browser_communication_label">Browser Communication Fragment</string>
+  <string name="comms_test">Test Communication</string>
+  <string name="show_instructions">Show Instructions</string>
+
+  <string name="fragment_instructions_summary">
+    This test app comes with an Autofill Service providing static data.\n
+    \n
+    In order to use it\:\n
+    a. Enable it in Android System settings, and\n
+    b. Enable the use of Android Autofill Services in Chrome settings.\n
+    \n
+    Click the button at the top to check how this app can communicate with the
+    browser.\n
+    \n
+    By default, this app does not use the compatibility mode to fill Chrome.
+    Change the autofill_service_config.xml and recompile this app to allow it.
+  </string>
+  <string name="fragment_browser_communication_summary">
+    Besides the Autofill service, this test app may communicate with Chrome.\n
+    \n
+    TODO(izuzic): Add instructions for ContentProvider usage and read data here.
+    TODO(izuzic): Add explanation and deep-link to Chrome\'s setting here.
+  </string>
+  <string name="settings_msg">Nothing to see here. This app doesn\'t have settings.</string>
+</resources>

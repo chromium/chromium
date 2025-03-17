@@ -101,12 +101,13 @@ std::unique_ptr<GaiaConfig>* GaiaConfig::GetGlobalConfig() {
 // static
 std::unique_ptr<GaiaConfig> GaiaConfig::ReadConfigFromString(
     const std::string& config_contents) {
-  std::optional<base::Value> dict = base::JSONReader::Read(config_contents);
-  if (!dict || !dict->is_dict()) {
+  std::optional<base::Value::Dict> dict =
+      base::JSONReader::ReadDict(config_contents);
+  if (!dict) {
     LOG(FATAL) << "Couldn't parse Gaia config file";
   }
 
-  return std::make_unique<GaiaConfig>(std::move(dict->GetDict()));
+  return std::make_unique<GaiaConfig>(std::move(*dict));
 }
 
 // static

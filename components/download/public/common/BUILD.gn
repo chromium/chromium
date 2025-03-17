@@ -118,14 +118,6 @@ component("public") {
       "android/auto_resumption_handler.h",
     ]
   }
-
-  if (is_chromeos) {
-    sources += [
-      "download_item_utils.cc",
-      "download_item_utils.h",
-    ]
-    deps += [ "//chromeos/crosapi/mojom" ]
-  }
 }
 
 if (is_android) {

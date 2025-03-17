@@ -98,6 +98,8 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
                                       ->GetDefaultStoragePartition();
     wrapper_ = static_cast<ServiceWorkerContextWrapper*>(
         partition->GetServiceWorkerContext());
+
+    CHECK(temp_dir_.CreateUniqueTempDir());
   }
 
   ServiceWorkerContextWrapper* wrapper() { return wrapper_.get(); }
@@ -109,6 +111,38 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
   // handle the request.
   GURL BuildTargetUrl(const std::string& path, const std::string& query) {
     return embedded_test_server()->GetURL(path + "?" + query);
+  }
+
+  void InstallServiceWorker() {
+    // Install the service worker. Use root scope since the network fallback
+    // test needs it: the service worker will intercept "/echo", then fall back
+    // to network, and the request gets handled by the default request handler
+    // for that URL which echoes back the request.
+    EXPECT_TRUE(NavigateToURL(
+        shell(), embedded_test_server()->GetURL(
+                     "/service_worker/create_service_worker.html")));
+    EXPECT_EQ("DONE",
+              EvalJs(shell(), "register('file_upload_worker.js', '/');"));
+  }
+
+  base::FilePath CreateTemporaryFile() {
+    // Prepare a file for the upload form.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath file_path;
+    CHECK(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
+    CHECK(
+        base::WriteFile(file_path, std::string_view(kFileContent, kFileSize)));
+    return file_path;
+  }
+
+  void FilloutFileForm(const base::FilePath& file_path) {
+    // Fill out the form to refer to the test file.
+    base::RunLoop run_loop;
+    auto delegate = std::make_unique<FileChooserDelegate>(
+        file_path, run_loop.QuitClosure());
+    shell()->web_contents()->SetDelegate(delegate.get());
+    EXPECT_TRUE(ExecJs(shell(), "fileInput.click();"));
+    run_loop.Run();
   }
 
   // Tests submitting a form that is intercepted by a service worker. The form
@@ -124,15 +158,7 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
                TargetOrigin target_origin,
                std::string* out_file_name,
                std::string* out_result) {
-    // Install the service worker. Use root scope since the network fallback
-    // test needs it: the service worker will intercept "/echo", then fall back
-    // to network, and the request gets handled by the default request handler
-    // for that URL which echoes back the request.
-    EXPECT_TRUE(NavigateToURL(
-        shell(), embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html")));
-    EXPECT_EQ("DONE",
-              EvalJs(shell(), "register('file_upload_worker.js', '/');"));
+    InstallServiceWorker();
 
     // Generate the URL for the page with the file upload form.
     GURL page_url = embedded_test_server()->GetURL("/service_worker/form.html");
@@ -150,22 +176,8 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
     // Navigate to the page with a file upload form.
     EXPECT_TRUE(NavigateToURL(shell(), page_url));
 
-    // Prepare a file for the upload form.
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::ScopedTempDir temp_dir;
-    base::FilePath file_path;
-    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &file_path));
-    ASSERT_TRUE(
-        base::WriteFile(file_path, std::string_view(kFileContent, kFileSize)));
-
-    // Fill out the form to refer to the test file.
-    base::RunLoop run_loop;
-    auto delegate = std::make_unique<FileChooserDelegate>(
-        file_path, run_loop.QuitClosure());
-    shell()->web_contents()->SetDelegate(delegate.get());
-    EXPECT_TRUE(ExecJs(shell(), "fileInput.click();"));
-    run_loop.Run();
+    base::FilePath file_path = CreateTemporaryFile();
+    FilloutFileForm(file_path);
 
     // Submit the form.
     TestNavigationObserver form_post_observer(shell()->web_contents(), 1);
@@ -230,13 +242,9 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
 
   bool IsDifferentProcessForced() { return GetParam(); }
 
-  void RunSubresourceTest(const base::FilePath& file_path,
-                          std::string* out_result) {
-    // Install the service worker.
-    EXPECT_TRUE(NavigateToURL(
-        shell(), embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html")));
-    EXPECT_EQ("DONE", EvalJs(shell(), "register('file_upload_worker.js');"));
+  std::string RunServiceWorkerParamedTest(const base::FilePath& file_path,
+                                          const std::string& eval) {
+    InstallServiceWorker();
 
     if (IsDifferentProcessForced()) {
       // Stop the service worker.
@@ -258,40 +266,62 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
     page_url = net::AppendQueryParameter(page_url, "target", target_url.spec());
 
     // Navigate to the page with a file upload form.
-    EXPECT_TRUE(NavigateToURL(shell(), page_url));
+    CHECK(NavigateToURL(shell(), page_url));
 
     if (IsDifferentProcessForced()) {
       int page_process_id =
           current_frame_host()->GetProcess()->GetDeprecatedID();
       int worker_process_id = GetServiceWorkerProcessId();
-      ASSERT_NE(page_process_id, worker_process_id);
+      CHECK_NE(page_process_id, worker_process_id);
     }
 
-    // Fill out the form to refer to the test file.
-    base::RunLoop run_loop;
-    auto delegate = std::make_unique<FileChooserDelegate>(
-        file_path, run_loop.QuitClosure());
-    shell()->web_contents()->SetDelegate(delegate.get());
-    EXPECT_TRUE(ExecJs(shell(), "fileInput.click();"));
-    run_loop.Run();
+    if (!file_path.empty()) {
+      FilloutFileForm(file_path);
+    }
 
     // Submit the form using XHR.
-    EvalJsResult result = EvalJs(shell(), "submitXhr()");
-    ASSERT_TRUE(result.error.empty());
-    *out_result = result.ExtractString();
+    EvalJsResult result = EvalJs(shell(), eval);
+    CHECK(result.error.empty()) << result;
+    return result.ExtractString();
+  }
+
+  std::string RunSubresourceTest(const base::FilePath& file_path) {
+    return RunServiceWorkerParamedTest(file_path, "submitFormDataViaXhr()");
+  }
+
+  std::string BuildBoundary(const std::string& boundary) {
+    return "--" + boundary + "\r\n";
+  }
+  std::string BuildContent(const std::string& name, const std::string& value) {
+    return "Content-Disposition: form-data; name=\"" + name + "\"\r\n\r\n" +
+           value + "\r\n";
+  }
+  std::string BuildFileContent(const std::string& filename) {
+    return "Content-Disposition: form-data; name=\"file\"; "
+           "filename=\"" +
+           filename + "\"\r\n" +
+           "Content-Type: application/octet-stream\r\n\r\n" + kFileContent +
+           "\r\n";
+  }
+
+  std::string BuildBlobContent(const std::string& name,
+                               const std::string& content) {
+    return "Content-Disposition: form-data; name=\"" + name +
+           "\"; "
+           "filename=\"blob\"\r\n" +
+           "Content-Type: application/octet-stream\r\n\r\n" + content + "\r\n";
+  }
+
+  std::string BuildTerminator(const std::string& boundary) {
+    return "--" + boundary + "--\r\n";
   }
 
   std::string BuildExpectedBodyAsText(const std::string& boundary,
                                       const std::string& filename) {
-    return "--" + boundary + "\r\n" +
-           "Content-Disposition: form-data; name=\"text1\"\r\n" + "\r\n" +
-           "textValue1\r\n" + "--" + boundary + "\r\n" +
-           "Content-Disposition: form-data; name=\"text2\"\r\n" + "\r\n" +
-           "textValue2\r\n" + "--" + boundary + "\r\n" +
-           "Content-Disposition: form-data; name=\"file\"; "
-           "filename=\"" +
-           filename + "\"\r\n" + "Content-Type: application/octet-stream\r\n" +
-           "\r\n" + kFileContent + "\r\n" + "--" + boundary + "--\r\n";
+    return BuildBoundary(boundary) + BuildContent("text1", "textValue1") +
+           BuildBoundary(boundary) + BuildContent("text2", "textValue2") +
+           BuildBoundary(boundary) + BuildFileContent(filename) +
+           BuildTerminator(boundary);
   }
 
   base::Value::Dict BuildExpectedBodyAsFormData(const std::string& filename) {
@@ -328,9 +358,12 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
     return std::move(*result).TakeDict();
   }
 
+  const base::FilePath& GetTempDirPath() const { return temp_dir_.GetPath(); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
+  base::ScopedTempDir temp_dir_;
 };
 
 // Tests using Request.text().
@@ -393,6 +426,34 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFileUploadTest,
   RunNetworkFallbackTest(TargetOrigin::kCrossOrigin);
 }
 
+std::pair<std::string, std::string> ExtractBoundaryAndBody(
+    const std::string& html_result) {
+  std::string result = html_result;
+
+  // Test that the file name and contents are present.
+  const std::string header =
+      std::string() + "\n    <!doctype html>" + "\n    <html>" +
+      "\n    <title>form submitted</title>" + "\n    <body>";
+  CHECK_EQ(result.substr(0u, header.size()), header) << result;
+  result = result.substr(header.size());
+
+  const std::string footer = "</body>\n    </html>\n  ";
+  CHECK_EQ(result.substr(result.size() - footer.size(), footer.size()), footer)
+      << result;
+  result = result.substr(0u, result.size() - footer.size());
+
+  std::optional<base::Value> parsed_result = base::test::ParseJson(result);
+  CHECK(parsed_result) << result;
+  CHECK(parsed_result->is_dict()) << result;
+  base::Value::Dict dict = std::move(*parsed_result).TakeDict();
+
+  std::string boundary;
+  GetKey(dict, "boundary", &boundary);
+  std::string body;
+  GetKey(dict, "body", &body);
+  return {boundary, body};
+}
+
 // Tests a subresource request.
 // Flaky on Android; see https://crbug.com/1320972.
 #if BUILDFLAG(IS_ANDROID)
@@ -401,22 +462,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFileUploadTest,
 #define MAYBE_Subresource Subresource
 #endif
 IN_PROC_BROWSER_TEST_P(ServiceWorkerFileUploadTest, MAYBE_Subresource) {
-  // Prepare a file for the upload form.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  base::FilePath file_path;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &file_path));
-  ASSERT_TRUE(
-      base::WriteFile(file_path, std::string_view(kFileContent, kFileSize)));
+  const base::FilePath file_path = CreateTemporaryFile();
 
-  std::string result;
-  RunSubresourceTest(file_path, &result);
+  const std::string result = RunSubresourceTest(file_path);
 
-  // Test that the file name and contents are present.
-  EXPECT_THAT(result,
-              ::testing::HasSubstr(file_path.BaseName().MaybeAsASCII()));
-  EXPECT_THAT(result, ::testing::HasSubstr(kFileContent));
+  const auto [boundary, body] = ExtractBoundaryAndBody(result);
+  const std::string filename = file_path.BaseName().MaybeAsASCII();
+  const std::string expected_body = BuildExpectedBodyAsText(boundary, filename);
+  EXPECT_EQ(expected_body, body);
 }
 
 // Tests a subresource request where the filename is non-ascii. Regression test
@@ -436,19 +489,35 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerFileUploadTest,
 
   // Prepare a file for the upload form.
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath file_path = temp_dir.GetPath().Append(nonAsciiFilename);
+  base::FilePath file_path = GetTempDirPath().Append(nonAsciiFilename);
   ASSERT_TRUE(
       base::WriteFile(file_path, std::string_view(kFileContent, kFileSize)));
 
-  std::string result;
-  RunSubresourceTest(file_path, &result);
+  const std::string result = RunSubresourceTest(file_path);
 
-  // Test that the file name and contents are present. Repeat "こんにちは" here
-  // since HasSubstr() doesn't work with FilePath::CharType on Windows.
-  EXPECT_THAT(result, ::testing::HasSubstr("\u3053\u3093\u306B\u3061\u306F"));
-  EXPECT_THAT(result, ::testing::HasSubstr(kFileContent));
+  const auto [boundary, body] = ExtractBoundaryAndBody(result);
+  std::string filename = file_path.BaseName().AsUTF8Unsafe();
+  const std::string expected_body = BuildExpectedBodyAsText(boundary, filename);
+  EXPECT_EQ(expected_body, body);
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerFileUploadTest, SubmitXhrFormWithBlob) {
+  const base::FilePath file_path = CreateTemporaryFile();
+  const std::string kBlobName = "blobName";
+  const std::string kBlobData = "blobData";
+  const std::string result = RunServiceWorkerParamedTest(
+      file_path, "submitFormDataWithBlobViaXhr(\"" + kBlobName + "\",\"" +
+                     kBlobData + "\")");
+
+  const auto [boundary, body] = ExtractBoundaryAndBody(result);
+  const std::string filename = file_path.BaseName().MaybeAsASCII();
+  const std::string expected_body =
+      BuildBoundary(boundary) + BuildContent("text1", "textValue1") +
+      BuildBoundary(boundary) + BuildContent("text2", "textValue2") +
+      BuildBoundary(boundary) + BuildFileContent(filename) +
+      BuildBoundary(boundary) + BuildBlobContent(kBlobName, kBlobData) +
+      BuildTerminator(boundary);
+  EXPECT_EQ(expected_body, body);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, ServiceWorkerFileUploadTest, ::testing::Bool());

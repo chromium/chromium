@@ -99,11 +99,13 @@ class FakeAutocompleteController : public AutocompleteController {
   // AutocompleteController (methods):
   using AutocompleteController::MaybeRemoveCompanyEntityImages;
   using AutocompleteController::ShouldRunProvider;
+  using AutocompleteController::UpdateAssociatedKeywords;
   using AutocompleteController::UpdateResult;
 
   // AutocompleteController (fields):
   using AutocompleteController::input_;
   using AutocompleteController::internal_result_;
+  using AutocompleteController::keyword_provider_;
   using AutocompleteController::last_update_type_;
   using AutocompleteController::metrics_;
   using AutocompleteController::providers_;

@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -29,10 +30,12 @@
 #include "components/permissions/permission_prompt.h"
 #include "components/security_state/core/security_state.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
@@ -150,6 +153,10 @@ class LocationBarView
     return page_action_icon_controller_;
   }
 
+  page_actions::PageActionContainerView* page_action_container() {
+    return page_action_container_;
+  }
+
   // Returns the screen coordinates of the omnibox (where the URL text appears,
   // not where the icons are shown).
   gfx::Point GetOmniboxViewOrigin() const;
@@ -157,15 +164,15 @@ class LocationBarView
   // Shows |text| as an inline autocompletion.  This is useful for IMEs, where
   // we can't show the autocompletion inside the actual OmniboxView.  See
   // comments on |ime_inline_autocomplete_view_|.
-  void SetImePrefixAutocompletion(const std::u16string& text);
-  std::u16string GetImePrefixAutocompletion() const;
-  void SetImeInlineAutocompletion(const std::u16string& text);
-  std::u16string GetImeInlineAutocompletion() const;
+  void SetImePrefixAutocompletion(std::u16string_view text);
+  std::u16string_view GetImePrefixAutocompletion() const;
+  void SetImeInlineAutocompletion(std::u16string_view text);
+  std::u16string_view GetImeInlineAutocompletion() const;
 
   // Sets the additional omnibox text. E.g. the title corresponding to the URL
   // displayed in the OmniboxView.
-  void SetOmniboxAdditionalText(const std::u16string& text);
-  std::u16string GetOmniboxAdditionalText() const;
+  void SetOmniboxAdditionalText(std::u16string_view text);
+  std::u16string_view GetOmniboxAdditionalText() const;
 
   // Select all of the text. Needed when the user tabs through controls
   // in the toolbar in full keyboard accessibility mode.
@@ -259,6 +266,14 @@ class LocationBarView
   // |is_hovering| should be true when mouse is in omnibox; false when exited.
   void OnOmniboxHovered(bool is_hovering);
 
+  // `browser_` returned here may be nullptr. There are two known cases.
+  //
+  // 1. simple_web_view_dialog, which is used to show captive portal page on
+  // signin screen on ChromeOS, passes in nullptr while constructing its
+  // location_bar_view_. See crbug.com/379534750.
+  //
+  // 2. presentation_receiver_window_view is the other known case. However,
+  // presentation_receiver_window_view is about to be sunsetted in a year or so.
   Browser* browser() { return browser_; }
   Profile* profile() { return profile_; }
 
@@ -286,6 +301,8 @@ class LocationBarView
   void SetConfirmationChipShownTimeForTesting(base::TimeTicks time) {
     confirmation_chip_collapsed_time_ = time;
   }
+
+  SkColor GetBackgroundColorForTesting() const { return background_color_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SecurityIndicatorTest, CheckIndicatorText);
@@ -340,7 +357,7 @@ class LocationBarView
   // Helper to set the texts of labels adjacent to the omnibox:
   // `ime_prefix_autocomplete_view_`, `ime_inline_autocomplete_view_`, and
   // `omnibox_additional_text_view_`.
-  void SetOmniboxAdjacentText(views::Label* label, const std::u16string& text);
+  void SetOmniboxAdjacentText(views::Label* label, std::u16string_view text);
 
   // LocationBar:
   void FocusSearch() override;
@@ -515,7 +532,9 @@ class LocationBarView
   bool is_initialized_ = false;
 
   // Used for metrics collection.
-  base::TimeTicks confirmation_chip_collapsed_time_ = base::TimeTicks();
+  base::TimeTicks confirmation_chip_collapsed_time_;
+
+  SkColor background_color_ = gfx::kPlaceholderColor;
 
   // The focus manager associated with this view. The focus manager is expected
   // to outlive this view.

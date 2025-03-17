@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "pdf/loader/url_loader_wrapper_impl.h"
 
 #include <stddef.h>
@@ -23,6 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_util.h"
+#include "pdf/loader/result_codes.h"
 #include "pdf/loader/url_loader.h"
 #include "ui/gfx/range/range.h"
 
@@ -162,7 +168,7 @@ void URLLoaderWrapperImpl::OpenRange(const std::string& url,
                                      const std::string& referrer_url,
                                      uint32_t position,
                                      uint32_t size,
-                                     base::OnceCallback<void(int)> callback) {
+                                     base::OnceCallback<void(bool)> callback) {
   url_loader_->Open(
       MakeRangeRequest(url, referrer_url, position, size),
       base::BindOnce(&URLLoaderWrapperImpl::DidOpen, weak_factory_.GetWeakPtr(),
@@ -239,10 +245,10 @@ void URLLoaderWrapperImpl::ParseHeaders(const std::string& response_headers) {
   }
 }
 
-void URLLoaderWrapperImpl::DidOpen(base::OnceCallback<void(int)> callback,
-                                   int32_t result) {
+void URLLoaderWrapperImpl::DidOpen(base::OnceCallback<void(bool)> callback,
+                                   Result result) {
   SetHeadersFromLoader();
-  std::move(callback).Run(result);
+  std::move(callback).Run(result == Result::kSuccess);
 }
 
 void URLLoaderWrapperImpl::DidRead(base::OnceCallback<void(int)> callback,

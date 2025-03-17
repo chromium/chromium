@@ -4,11 +4,11 @@
 
 #include "components/password_manager/core/browser/generation/password_generator.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -48,7 +48,7 @@ bool IsCharInClass(char16_t c, const std::string& class_name) {
 
 size_t CountCharsInClass(const std::u16string& password,
                          const std::string& class_name) {
-  return base::ranges::count_if(password, [&class_name](char16_t c) {
+  return std::ranges::count_if(password, [&class_name](char16_t c) {
     return IsCharInClass(c, class_name);
   });
 }

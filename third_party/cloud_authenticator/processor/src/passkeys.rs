@@ -29,6 +29,7 @@ use crate::{pin, MetricsUpdate};
 use alloc::collections::BTreeMap;
 use alloc::string::String;
 use alloc::vec::Vec;
+use base64::Engine;
 use cbor::{MapKey, MapKeyRef, MapLookupKey, Value};
 use chromesync::pb::webauthn_credential_specifics::EncryptedData;
 use chromesync::pb::WebauthnCredentialSpecifics;
@@ -522,7 +523,7 @@ impl TryFrom<&Value> for PRFValues {
             let Value::String(value) = value else {
                 return debug("invalid PRF value");
             };
-            let value = base64::decode_config(value, base64::URL_SAFE_NO_PAD)
+            let value = base64::engine::general_purpose::URL_SAFE_NO_PAD.decode(value)
                 .map_err(|_| RequestError::Debug("invalid PRF base64url"))?;
             Ok(hash_prf_value(&value))
         }
@@ -579,7 +580,7 @@ fn prf_values_by_id(
     let Some(Value::Map(by_credential)) = prf.get(EVAL_BY_CREDENTIAL_KEY) else {
         return Ok(None);
     };
-    let base64url_credential_id = base64::encode_config(credential_id, base64::URL_SAFE_NO_PAD);
+    let base64url_credential_id = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(credential_id);
     let Some(values) = by_credential.get(&MapKey::String(base64url_credential_id)) else {
         return Ok(None);
     };

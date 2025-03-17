@@ -5,12 +5,18 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_DELEGATE_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_DELEGATE_H_
 
+#include <cstddef>
 #include <deque>
+#include <string>
 
-#include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
+#include "net/proxy_resolution/proxy_retry_info.h"
 
 class GURL;
 
@@ -61,11 +67,20 @@ class IpProtectionProxyDelegate : public net::ProxyDelegate {
       const net::HttpResponseHeaders& response_headers) override;
   void SetProxyResolutionService(
       net::ProxyResolutionService* proxy_resolution_service) override;
+  bool AliasRequiresProxyOverride(
+      const std::string scheme,
+      const std::vector<std::string>& dns_aliases,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
  private:
   friend class IpProtectionProxyDelegateTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionProxyDelegateTest, MergeProxyRules);
 
+  // Note: the order of the return values must match the order of the enum
+  // values in ProxyResolutionResult so that existing metric data is not
+  // affected when we add a new enum value.
+  // TODO(crbug.com/403156545): Refactor this so that we can make calls more
+  // efficiently.
   ProxyResolutionResult ClassifyRequest(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,

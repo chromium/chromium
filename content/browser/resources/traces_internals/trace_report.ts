@@ -62,6 +62,7 @@ export class TraceReportElement extends CrLitElement {
     creationTime: {internalValue: 0n},
     scenarioName: '',
     uploadRuleName: '',
+    uploadRuleValue: null,
     totalSize: 0n,
     uploadState: ReportUploadState.kNotUploaded,
     uploadTime: {internalValue: 0n},
@@ -177,7 +178,7 @@ export class TraceReportElement extends CrLitElement {
         bytes = new Uint8Array(data.bytes);
       } else {
         assert(!!data.sharedMemory, 'sharedMemory must be defined here');
-        const sharedMemory = data.sharedMemory!;
+        const sharedMemory = data.sharedMemory;
         const {buffer, result} =
             sharedMemory.bufferHandle.mapBuffer(0, sharedMemory.size);
         assert(result === Mojo.RESULT_OK, 'Could not map buffer');
@@ -223,8 +224,8 @@ export class TraceReportElement extends CrLitElement {
   }
 
   protected getTokenAsUuidString_(): string {
-    const highHex = this.trace.uuid.high.toString(16);
-    const lowHex = this.trace.uuid.low.toString(16);
+    const highHex = this.trace.uuid.high.toString(16).padStart(16, '0');
+    const lowHex = this.trace.uuid.low.toString(16).padStart(16, '0');
     return `${lowHex.slice(0, 8)}-${lowHex.slice(8, 12)}-${
         lowHex.slice(12, 16)}-${highHex.slice(0, 4)}-${highHex.slice(4)}`;
   }

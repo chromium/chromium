@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 
 #include <cstdint>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -197,10 +193,11 @@ void IDBValueWrapper::MaybeCompress() {
   wire_data_buffer_[1] = kRequiresProcessingSSVPseudoVersion;
   wire_data_buffer_[2] = kCompressedWithSnappy;
   size_t compressed_length;
-  snappy::RawCompress(
-      reinterpret_cast<const char*>(wire_data_.data()), wire_data_size,
-      reinterpret_cast<char*>(wire_data_buffer_.data() + kHeaderSize),
-      &compressed_length);
+  snappy::RawCompress(reinterpret_cast<const char*>(wire_data_.data()),
+                      wire_data_size,
+                      reinterpret_cast<char*>(
+                          UNSAFE_TODO(wire_data_buffer_.data() + kHeaderSize)),
+                      &compressed_length);
   if (ShouldTransmitCompressed(wire_data_size, compressed_length)) {
     // Truncate the excess space that was previously allocated.
     wire_data_buffer_.resize(kHeaderSize +
@@ -346,8 +343,8 @@ bool IDBValueUnwrapper::Parse(IDBValue* value) {
     return false;
 
   const uint8_t* data = reinterpret_cast<const uint8_t*>(value->Data().data());
-  end_ = data + value->DataSize();
-  current_ = data + kHeaderSize;
+  end_ = UNSAFE_TODO(data + value->DataSize());
+  current_ = UNSAFE_TODO(data + kHeaderSize);
 
   if (!ReadVarInt(blob_size_))
     return Reset();
@@ -384,7 +381,7 @@ bool IDBValueUnwrapper::ReadVarInt(unsigned& value) {
     if (shift >= sizeof(unsigned) * 8)
       return false;
     uint8_t byte = *current_;
-    ++current_;
+    UNSAFE_TODO(++current_);
     value |= static_cast<unsigned>(byte & 0x7F) << shift;
     shift += 7;
 
@@ -403,9 +400,9 @@ bool IDBValueUnwrapper::ReadBytes(Vector<uint8_t>& value) {
     return false;
   Vector<uint8_t> result;
   result.ReserveInitialCapacity(length);
-  result.AppendSpan(base::span(current_, end_).first(length));
+  result.AppendSpan(UNSAFE_TODO(base::span(current_, end_)).first(length));
   value = std::move(result);
-  current_ += length;
+  UNSAFE_TODO(current_ += length);
   return true;
 }
 

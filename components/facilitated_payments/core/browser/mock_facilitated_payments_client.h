@@ -10,14 +10,15 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
-#include "components/autofill/core/browser/data_model/bank_account.h"
-#include "components/autofill/core/browser/data_model/ewallet.h"
+#include "components/autofill/core/browser/data_model/payments/bank_account.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
 class PaymentsDataManager;
+class StrikeDatabase;
 }  // namespace autofill
 
 namespace payments::facilitated {
@@ -47,19 +48,21 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               (),
               (override));
   MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
+  MOCK_METHOD(bool, IsFoldable, (), (override));
   MOCK_METHOD(void,
               ShowPixPaymentPrompt,
               (base::span<const autofill::BankAccount> pix_account_suggestions,
-               base::OnceCallback<void(bool, int64_t)>),
+               base::OnceCallback<void(int64_t)>),
               (override));
   MOCK_METHOD(void,
               ShowEwalletPaymentPrompt,
               (base::span<const autofill::Ewallet> ewallet_suggestions,
-               base::OnceCallback<void(bool, int64_t)>),
+               base::OnceCallback<void(int64_t)>),
               (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, DismissPrompt, (), (override));
+  MOCK_METHOD(autofill::StrikeDatabase*, GetStrikeDatabase, (), (override));
 };
 
 }  // namespace payments::facilitated

@@ -27,6 +27,10 @@ struct ConfigureShortcutsWidgetEntry: TimelineEntry {
   let isExpired: Bool
   // Expiration date of the widget if it hasn't expired.
   let expirationDate: Date?
+  // Profile avatar (to be used when multiprofile flag is enabled).
+  let avatar: Image?
+  let gaiaID: String?
+
 }
 
 // Advises WidgetKit when to update a widget’s display.
@@ -38,7 +42,8 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
   // Provides a timeline entry representing a placeholder version of the widget.
   func placeholder(in context: TimelineProviderContext) -> Entry {
     return Entry(
-      date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil)
+      date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
+      avatar: nil, gaiaID: nil)
   }
 
   // Provides a timeline entry that represents the current time and state of a widget.
@@ -46,7 +51,7 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
     in context: TimelineProviderContext,
     completion: @escaping (Entry) -> Void
   ) {
-    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview)
+    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, gaia: nil)
     completion(entry)
   }
 
@@ -55,7 +60,7 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
     in context: TimelineProviderContext,
     completion: @escaping (Timeline<Entry>) -> Void
   ) {
-    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview)
+    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, gaia: nil)
     let entries = [entry]
     let timeline = Timeline(
       entries: entries, policy: entry.expirationDate.map { .after($0) } ?? .never)
@@ -132,12 +137,17 @@ struct ShortcutsWidget: Widget {
     // Provides a timeline entry representing a placeholder version of the widget.
     func placeholder(in context: TimelineProviderContext) -> Entry {
       return Entry(
-        date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil)
+        date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
+        avatar: nil, gaiaID: nil)
     }
 
     // Provides a timeline entry that represents the current time and state of a widget.
     func snapshot(for configuration: SelectProfileIntent, in context: Context) async -> Entry {
-      let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview)
+
+      let avatar: Image? = configuration.avatar()
+      let gaiaID: String? = configuration.gaia()
+      let entry = loadMostVisitedSitesEntry(
+        isPreview: context.isPreview, avatar: avatar, gaia: gaiaID)
       return entry
     }
 
@@ -145,7 +155,10 @@ struct ShortcutsWidget: Widget {
     func timeline(for configuration: SelectProfileIntent, in context: Context) async -> Timeline<
       Entry
     > {
-      let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview)
+      let avatar: Image? = configuration.avatar()
+      let gaiaID: String? = configuration.gaia()
+      let entry = loadMostVisitedSitesEntry(
+        isPreview: context.isPreview, avatar: avatar, gaia: gaiaID)
       let entries = [entry]
       let timeline = Timeline(
         entries: entries, policy: entry.expirationDate.map { .after($0) } ?? .never)
@@ -155,7 +168,9 @@ struct ShortcutsWidget: Widget {
 #endif
 
 // Return ConfigureShortcutsWidgetEntry with the most visited sites
-func loadMostVisitedSitesEntry(isPreview: Bool) -> ConfigureShortcutsWidgetEntry {
+func loadMostVisitedSitesEntry(isPreview: Bool, avatar: Image? = nil, gaia: String? = nil)
+  -> ConfigureShortcutsWidgetEntry
+{
   // A type that specifies the entry of the configured timeline entry of the widget.
   typealias Entry = ConfigureShortcutsWidgetEntry
 
@@ -165,7 +180,9 @@ func loadMostVisitedSitesEntry(isPreview: Bool) -> ConfigureShortcutsWidgetEntry
     mostVisitedSites: [:],
     isPreview: isPreview,
     isExpired: false,
-    expirationDate: nil
+    expirationDate: nil,
+    avatar: avatar,
+    gaiaID: gaia
   )
   // A constant of an expired entry.
   let expiredEntry = Entry(
@@ -173,19 +190,35 @@ func loadMostVisitedSitesEntry(isPreview: Bool) -> ConfigureShortcutsWidgetEntry
     mostVisitedSites: [:],
     isPreview: isPreview,
     isExpired: true,
-    expirationDate: nil
+    expirationDate: nil,
+    avatar: avatar,
+    gaiaID: gaia
   )
   // Returns an empty entry if the Shortcuts Widget is in the Widgets Gallery.
   if isPreview {
     return emptyEntry
   }
 
-  guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults(),
-    let lastModificationDate = sharedDefaults.object(forKey: "SuggestedItemsLastModificationDate")
-      as? Date
-  else {
-    return emptyEntry
-  }
+  #if IOS_ENABLE_WIDGETS_FOR_MIM
+    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults(),
+      let lastModificationDates = sharedDefaults.object(
+        forKey: "SuggestedItemsLastModificationDateForMIM")
+        as? [String: Date]
+    else { return emptyEntry }
+    var date: Date?
+    for (key, value) in lastModificationDates {
+      if gaia == key {
+        date = value
+      }
+    }
+    guard let lastModificationDate = date
+    else { return emptyEntry }
+  #else
+    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults(),
+      let lastModificationDate = sharedDefaults.object(forKey: "SuggestedItemsLastModificationDate")
+        as? Date
+    else { return emptyEntry }
+  #endif
 
   let extensionsFlags =
     sharedDefaults.object(forKey: "Extension.FieldTrial") as? [String: Any] ?? [:]
@@ -208,10 +241,22 @@ func loadMostVisitedSitesEntry(isPreview: Bool) -> ConfigureShortcutsWidgetEntry
   if numberOfSecondsFromLastModificationToExpiration < numberOfSecondsSinceLastModification {
     return expiredEntry
   }
-
-  guard let data = sharedDefaults.object(forKey: "SuggestedItems") as? Data,
-    let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
-  else { return emptyEntry }
+  #if IOS_ENABLE_WIDGETS_FOR_MIM
+    guard let data = sharedDefaults.object(forKey: "SuggestedItemsForMIM") as? [String: Data]
+    else { return emptyEntry }
+    var unarchiverForAccount: NSKeyedUnarchiver?
+    for (key, value) in data {
+      if gaia == key {
+        unarchiverForAccount = try? NSKeyedUnarchiver(forReadingFrom: value)
+      }
+    }
+    guard let unarchiver = unarchiverForAccount
+    else { return emptyEntry }
+  #else
+    guard let data = sharedDefaults.object(forKey: "SuggestedItems") as? Data,
+      let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
+    else { return emptyEntry }
+  #endif
 
   unarchiver.requiresSecureCoding = false
 
@@ -227,7 +272,9 @@ func loadMostVisitedSitesEntry(isPreview: Bool) -> ConfigureShortcutsWidgetEntry
     mostVisitedSites: mostVisitedSites,
     isPreview: isPreview,
     isExpired: false,
-    expirationDate: expirationDate
+    expirationDate: expirationDate,
+    avatar: avatar,
+    gaiaID: gaia
   )
 }
 
@@ -267,10 +314,17 @@ struct ShortcutsWidgetEntryView: View {
 
   // Create a chromewidgetkit:// url to open the given URL.
   private func convertURL(url: URL) -> URL {
-    let query = URLQueryItem(name: "url", value: url.absoluteString)
+    let query_url = URLQueryItem(name: "url", value: url.absoluteString)
     var urlcomps = URLComponents(
-      url: WidgetConstants.ShortcutsWidget.open, resolvingAgainstBaseURL: false)!
-    urlcomps.queryItems = [query]
+      url: WidgetConstants.ShortcutsWidget.open,
+      resolvingAgainstBaseURL: false)!
+    if entry.gaiaID == nil {
+      urlcomps.queryItems = [query_url]
+    } else {
+      // Add the gaia_id parameter only if available.
+      let query_gaia = URLQueryItem(name: "gaia_id", value: entry.gaiaID)
+      urlcomps.queryItems = [query_url, query_gaia]
+    }
     return urlcomps.url!
   }
 
@@ -283,7 +337,10 @@ struct ShortcutsWidgetEntryView: View {
     let spacing: CGFloat = 12
     let padding: CGFloat = 8
 
-    Link(destination: WidgetConstants.ShortcutsWidget.searchUrl) {
+    Link(
+      destination: destinationURL(
+        url: WidgetConstants.ShortcutsWidget.searchUrl, gaia: entry.gaiaID)
+    ) {
       ZStack {
         RoundedRectangle(cornerRadius: cornerRadius)
           .frame(height: height)
@@ -297,6 +354,9 @@ struct ShortcutsWidgetEntryView: View {
             .font(.subheadline)
             .foregroundColor(Colors.widgetTextColor)
           Spacer()
+          #if IOS_ENABLE_WIDGETS_FOR_MIM
+            AvatarForShortcuts(entry: entry)
+          #endif
         }
       }
       .frame(minWidth: 0, maxWidth: .infinity)
@@ -536,5 +596,26 @@ struct WebsiteLabel: View {
     Text(verbatim: self.websiteTitle)
       .font(.system(size: fontSize))
       .opacity(0.59)
+  }
+}
+
+struct AvatarForShortcuts: View {
+  var entry: ConfigureShortcutsWidgetEntry
+  var body: some View {
+    if entry.isPreview {
+      Circle()
+        .foregroundColor(Color("widget_text_color"))
+        .opacity(0.2)
+        .frame(width: 35, height: 35)
+        .padding(.trailing, 8)
+    } else if let avatar = entry.avatar {
+      avatar
+        .resizable()
+        .clipShape(Circle())
+        .unredacted()
+        .scaledToFill()
+        .frame(width: 35, height: 35)
+        .padding(.trailing, 8)
+    }
   }
 }

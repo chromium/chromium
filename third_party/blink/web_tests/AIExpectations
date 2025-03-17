@@ -1,0 +1,6 @@
+# results: [ Timeout Crash Pass Failure Skip ]
+
+# Some of AI related API tests can pass only on Optimization Guide Bots. So they
+# are skipped or marked as flaky by the defaut TestExpectations.
+# When Optimization Guide Bots run AI related API tests, the default
+# TestExpectations file is ignored and this file is referred.

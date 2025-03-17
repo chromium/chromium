@@ -7,12 +7,12 @@
 
 #include "extensions/browser/api/execute_code_function.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/load_and_localize_file.h"
@@ -92,10 +92,11 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
 
   root_frame_id_ = details_->frame_id.value_or(GetRootFrameId());
 
-  ScriptExecutor::MatchAboutBlank match_about_blank =
+  mojom::MatchOriginAsFallbackBehavior match_about_blank =
       details_->match_about_blank.value_or(false)
-          ? ScriptExecutor::MATCH_ABOUT_BLANK
-          : ScriptExecutor::DONT_MATCH_ABOUT_BLANK;
+          ? mojom::MatchOriginAsFallbackBehavior::
+                kMatchForAboutSchemeAndClimbTree
+          : mojom::MatchOriginAsFallbackBehavior::kNever;
 
   mojom::RunLocation run_at = ConvertRunLocation(details_->run_at);
 
@@ -217,7 +218,7 @@ void ExecuteCodeFunction::OnExecuteCodeFinished(
     std::vector<ScriptExecutor::FrameResult> results) {
   DCHECK(!results.empty());
 
-  auto root_frame_result = base::ranges::find(
+  auto root_frame_result = std::ranges::find(
       results, root_frame_id_, &ScriptExecutor::FrameResult::frame_id);
 
   CHECK(root_frame_result != results.end(), base::NotFatalUntil::M130);

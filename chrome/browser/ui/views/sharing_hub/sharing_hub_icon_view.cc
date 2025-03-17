@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"

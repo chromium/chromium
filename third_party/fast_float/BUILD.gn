@@ -61,12 +61,15 @@ if (build_with_chromium) {
   #   configs += [ "//build/config/compiler:no_chromium_code" ]
   # }
 
-  test("fast_float_powersoffive_hardround_test") {
-    testonly = true
-    sources = [ "src/tests/powersoffive_hardround.cpp" ]
-    deps = [ ":fast_float" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
+  if (!is_fuchsia) {
+    # strtod_l et al. are not available on Fuchsia (see crbug.com/389897610).
+    test("fast_float_powersoffive_hardround_test") {
+      testonly = true
+      sources = [ "src/tests/powersoffive_hardround.cpp" ]
+      deps = [ ":fast_float" ]
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+    }
   }
 
   # Disabled because it uses exceptions.

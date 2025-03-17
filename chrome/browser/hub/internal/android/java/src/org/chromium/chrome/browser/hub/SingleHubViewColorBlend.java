@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.getPaneColorBlendInterpolator;
 import static org.chromium.ui.util.ColorBlendAnimationFactory.createColorBlendAnimation;
 
 import android.animation.Animator;
@@ -36,7 +37,10 @@ public class SingleHubViewColorBlend implements HubViewColorBlend {
             @HubColorScheme int startScheme, @HubColorScheme int endScheme) {
         @ColorInt int startColor = mColorGetter.colorIntFromColorScheme(startScheme);
         @ColorInt int endColor = mColorGetter.colorIntFromColorScheme(endScheme);
-        return createColorBlendAnimation(
-                mDurationMs, startColor, endColor, mColorSetter::setColorInt);
+        Animator animation =
+                createColorBlendAnimation(
+                        mDurationMs, startColor, endColor, mColorSetter::setColorInt);
+        animation.setInterpolator(getPaneColorBlendInterpolator());
+        return animation;
     }
 }

@@ -5,7 +5,6 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -56,7 +55,7 @@ class RendererEventInjectionTest
     command_line->AppendSwitch(switches::kDisableRendererBackgrounding);
     command_line->AppendSwitch(switches::kEnableGpuBenchmarking);
     // kHostWindowBounds is unique to ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     command_line->AppendSwitchASCII(switches::kHostWindowBounds, GetParam());
 #endif
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
@@ -128,7 +127,7 @@ IN_PROC_BROWSER_TEST_P(RendererEventInjectionTest, TestRootTransform) {
   rwh->RemoveInputEventObserver(&touch_observer);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // This configures the display in various interesting ways for ChromeOS. In
 // particular, it tests rotation "/r" and a scale factor of 2 "*2".
 INSTANTIATE_TEST_SUITE_P(

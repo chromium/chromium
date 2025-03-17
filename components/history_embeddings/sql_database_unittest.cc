@@ -18,9 +18,12 @@
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history_embeddings {
+
+using passage_embeddings::Embedding;
 
 namespace {
 

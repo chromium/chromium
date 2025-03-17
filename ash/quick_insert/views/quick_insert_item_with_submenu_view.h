@@ -6,6 +6,7 @@
 #define ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_ITEM_WITH_SUBMENU_VIEW_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -49,7 +50,7 @@ class ASH_EXPORT QuickInsertItemWithSubmenuView : public QuickInsertItemView {
   // QuickInsertItemView:
   void OnMouseEntered(const ui::MouseEvent& event) override;
 
-  const std::u16string& GetTextForTesting() const;
+  std::u16string_view GetTextForTesting() const;
 
  private:
   raw_ptr<views::ImageView> leading_icon_view_ = nullptr;

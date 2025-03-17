@@ -66,7 +66,7 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
     menu_view_ = new SelectToSpeakMenuView(this);
     menu_view_->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(kUnifiedTopShortcutSpacing, 0, 0, 0)));
-    bubble_view_->AddChildView(menu_view_.get());
+    bubble_view_->AddChildViewRaw(menu_view_.get());
     menu_view_->SetSpeedButtonToggled(false);
 
     bubble_widget_ =

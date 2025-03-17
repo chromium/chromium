@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/webxr/xr_test_hook_wrapper.h"
 
 #include "base/task/single_thread_task_runner.h"
@@ -36,7 +31,7 @@ device::PoseFrameData MojoToDevicePoseFrameData(
   device::PoseFrameData ret = {};
   ret.is_valid = !!pose->device_to_origin;
   if (ret.is_valid) {
-    pose->device_to_origin->GetColMajorF(ret.device_to_origin);
+    pose->device_to_origin->GetColMajorF(ret.device_to_origin.data());
   }
 
   return ret;

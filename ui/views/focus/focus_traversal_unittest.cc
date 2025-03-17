@@ -15,6 +15,8 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -30,6 +32,7 @@
 #include "ui/views/test/focus_manager_test.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 using base::ASCIIToUTF16;
 
@@ -210,6 +213,20 @@ class FocusTraversalTest : public FocusManagerTest {
 
  protected:
   FocusTraversalTest();
+
+  std::unique_ptr<Widget> CreateBubbleDialog() {
+    auto delegate = std::make_unique<BubbleDialogDelegate>(
+        style_tab_, BubbleBorder::TOP_LEFT);
+    auto root_view = std::make_unique<MdTextButton>(Button::PressedCallback(),
+                                                    u"bubble button");
+    delegate->SetContentsView(std::move(root_view));
+    auto params = views::Widget::InitParams(
+        Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET,
+        Widget::InitParams::Type::TYPE_BUBBLE);
+    params.delegate = delegate.release();
+    params.parent = GetWidget()->GetNativeView();
+    return std::make_unique<views::Widget>(std::move(params));
+  }
 
   View* FindViewByID(int id) {
     View* view = GetContentsView()->GetViewByID(id);
@@ -905,6 +922,56 @@ TEST_F(FocusTraversalTest, TraversesFocusInFocusOrder) {
   AdvanceEntireFocusLoop(kTraversalIDs, true);
 }
 
+// Invisible bubble dialogs should not interact with parent focus traversal.
+TEST_F(FocusTraversalTest, SkipNonVisibleDialog) {
+  auto widget = CreateBubbleDialog();
+  widget->Hide();
+
+  // Clear focus in both the parent and child widgets.
+  widget->GetFocusManager()->ClearFocus();
+  GetFocusManager()->ClearFocus();
+
+  std::set<View*> focused_views;
+  while (true) {
+    GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+    View* outer_focused_view = GetFocusManager()->GetFocusedView();
+    View* inner_focused_view = widget->GetFocusManager()->GetFocusedView();
+
+    // Focus should never enter the child widget since it's hidden.
+    EXPECT_FALSE(inner_focused_view);
+
+    // When focus has cycled in the parent widget, the test has completed.
+    if (focused_views.contains(outer_focused_view)) {
+      break;
+    }
+    focused_views.insert(outer_focused_view);
+  }
+
+  // The child widget should stay invisible.
+  EXPECT_TRUE(!widget->IsVisible());
+}
+
+// Visible bubble dialogs should interact with parent focus traversal.
+TEST_F(FocusTraversalTest, EnterVisibleDialog) {
+  // Create a visible bubble.
+  auto widget = CreateBubbleDialog();
+  widget->Show();
+
+  // Clear focus in both the parent and child widgets.
+  widget->GetFocusManager()->ClearFocus();
+  GetFocusManager()->ClearFocus();
+
+  // Focus should eventually enter the child widget.
+  while (true) {
+    GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+    View* inner_focused_view = widget->GetFocusManager()->GetFocusedView();
+    if (inner_focused_view != nullptr) {
+      // Success.
+      break;
+    }
+  }
+}
+
 class FocusTraversalNonFocusableTest : public FocusManagerTest {
  public:
   FocusTraversalNonFocusableTest(const FocusTraversalNonFocusableTest&) =
@@ -947,20 +1014,20 @@ void FocusTraversalNonFocusableTest::InitContentView() {
     // |v|'s left child is the top of the next group. If |v| is 20, this is 30.
     View* v10 = new View;
     v10->SetID(i + 10);
-    v->AddChildView(v10);
+    v->AddChildViewRaw(v10);
 
     // |v|'s right child. If |v| is 20, this is 21.
     View* v1 = new View;
     v1->SetID(i + 1);
-    v->AddChildView(v1);
+    v->AddChildViewRaw(v1);
 
     // |v|'s right child has two children. If |v| is 20, these are 22 and 23.
     View* v2 = new View;
     v2->SetID(i + 2);
     View* v3 = new View;
     v3->SetID(i + 3);
-    v1->AddChildView(v2);
-    v1->AddChildView(v3);
+    v1->AddChildViewRaw(v2);
+    v1->AddChildViewRaw(v3);
 
     v = v10;
   }

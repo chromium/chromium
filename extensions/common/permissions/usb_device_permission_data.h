@@ -49,8 +49,10 @@ class UsbDevicePermissionData {
   // Populate |this| from a base::Value.
   bool FromValue(const base::Value* value);
 
-  bool operator<(const UsbDevicePermissionData& rhs) const;
-  bool operator==(const UsbDevicePermissionData& rhs) const;
+  friend auto operator<=>(const UsbDevicePermissionData&,
+                          const UsbDevicePermissionData&) = default;
+  friend bool operator==(const UsbDevicePermissionData&,
+                         const UsbDevicePermissionData&) = default;
 
   const int& vendor_id() const { return vendor_id_; }
   const int& product_id() const { return product_id_; }

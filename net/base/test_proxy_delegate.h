@@ -86,6 +86,10 @@ class TestProxyDelegate : public ProxyDelegate {
       const HttpResponseHeaders& response_headers) override;
   void SetProxyResolutionService(
       ProxyResolutionService* proxy_resolution_service) override;
+  bool AliasRequiresProxyOverride(
+      const std::string scheme,
+      const std::vector<std::string>& dns_aliases,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
  private:
   std::optional<ProxyChain> proxy_chain_;

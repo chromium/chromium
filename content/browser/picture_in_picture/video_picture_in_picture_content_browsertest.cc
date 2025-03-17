@@ -651,6 +651,31 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
+                       SeeksVideoWithoutMediaSessionHandler) {
+  // Open a page with a paused player in pip.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
+  ASSERT_TRUE(ExecJs(shell(), "video.load();"));
+  ASSERT_EQ(true, EvalJs(shell(), "enterPictureInPicture();"));
+  ASSERT_EQ(0, EvalJs(shell(), "video.currentTime"));
+  ASSERT_TRUE(ExecJs(shell(), "setTitleToVideoCurrentTime();"));
+
+  // `SeekTo()` should properly seek the video and give the updated media
+  // position to the overlay window, even if no media session seekto action
+  // handler is set (it should instead update the media player directly).
+  EXPECT_CALL(*overlay_window(), SetMediaPosition(_))
+      .WillOnce(Invoke([](const media_session::MediaPosition& position) {
+        EXPECT_EQ(position.GetPosition(), base::Seconds(2));
+        EXPECT_EQ(position.playback_rate(), 0);
+      }));
+  window_controller()->SeekTo(base::Seconds(2));
+
+  // We need to wait until the currentTime has actually updated.
+  WaitForTitle(u"currentTime 2");
+  EXPECT_EQ(2, EvalJs(shell(), "video.currentTime"));
+}
+
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
                        SendsFaviconImagesToOverlayWindow) {
   ASSERT_TRUE(NavigateToURL(
       shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));

@@ -9,18 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/intent_helper/arc_intent_helper_package.h"
-#include "ash/components/arc/intent_helper/intent_constants.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "ash/components/arc/mojom/app_permissions.mojom.h"
-#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
-#include "ash/components/arc/mojom/file_system.mojom.h"
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/containers/contains.h"
@@ -58,6 +46,18 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
+#include "chromeos/ash/experiences/arc/intent_helper/intent_constants.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#include "chromeos/ash/experiences/arc/mojom/app_permissions.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/compatibility_mode.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -443,7 +443,7 @@ bool IntentHasFilesAndMimeTypes(const apps::IntentPtr& intent) {
   if (intent->files.empty()) {
     return false;
   }
-  bool all_files_have_mime_type = base::ranges::all_of(
+  bool all_files_have_mime_type = std::ranges::all_of(
       intent->files,
       [](apps::IntentFilePtr& file) { return file->mime_type.has_value(); });
   return all_files_have_mime_type || intent->mime_type.has_value();
@@ -491,15 +491,15 @@ std::vector<apps::IntentFilterPtr> GetHardcodedPlayStoreIntentFilters() {
   authorities.emplace_back("play.google.com", -1);
 
   std::vector<arc::IntentFilter::PatternMatcher> paths;
-  paths.emplace_back("", arc::mojom::PatternType::PATTERN_LITERAL);
-  paths.emplace_back("/", arc::mojom::PatternType::PATTERN_LITERAL);
-  paths.emplace_back("/store", arc::mojom::PatternType::PATTERN_PREFIX);
-  paths.emplace_back("/redeem", arc::mojom::PatternType::PATTERN_PREFIX);
-  paths.emplace_back("/wishlist", arc::mojom::PatternType::PATTERN_PREFIX);
-  paths.emplace_back("/apps/test/", arc::mojom::PatternType::PATTERN_PREFIX);
-  paths.emplace_back("/apps", arc::mojom::PatternType::PATTERN_LITERAL);
-  paths.emplace_back("/apps/launch", arc::mojom::PatternType::PATTERN_LITERAL);
-  paths.emplace_back("/protect/home", arc::mojom::PatternType::PATTERN_PREFIX);
+  paths.emplace_back("", arc::PatternType::kLiteral);
+  paths.emplace_back("/", arc::PatternType::kLiteral);
+  paths.emplace_back("/store", arc::PatternType::kPrefix);
+  paths.emplace_back("/redeem", arc::PatternType::kPrefix);
+  paths.emplace_back("/wishlist", arc::PatternType::kPrefix);
+  paths.emplace_back("/apps/test/", arc::PatternType::kPrefix);
+  paths.emplace_back("/apps", arc::PatternType::kLiteral);
+  paths.emplace_back("/apps/launch", arc::PatternType::kLiteral);
+  paths.emplace_back("/protect/home", arc::PatternType::kPrefix);
 
   std::vector<apps::IntentFilterPtr> intent_filters;
   apps::IntentFilterPtr filter = apps_util::CreateIntentFilterForArc(

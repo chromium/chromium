@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: Ed448 bits (spki, buffer(69), {name: Ed448}, true, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: Ed448 bits (spki, buffer(69), Ed448, true, [verify])
@@ -8,9 +8,13 @@ Found 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: Ed448 bits (jwk, object(kty, crv, x), Ed448, true, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
-[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(kty, crv, x), {name: Ed448}, true, [verify])
+[FAIL] Good parameters with JWK alg Ed448: Ed448 (jwk, object(kty, crv, x), {name: Ed448}, true, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
-[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(kty, crv, x), Ed448, true, [verify])
+[FAIL] Good parameters with JWK alg EdDSA: Ed448 (jwk, object(kty, crv, x), {name: Ed448}, true, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with JWK alg Ed448: Ed448 (jwk, object(kty, crv, x), Ed448, true, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with JWK alg EdDSA: Ed448 (jwk, object(kty, crv, x), Ed448, true, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: Ed448 bits (raw, buffer(57), {name: Ed448}, true, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -24,9 +28,13 @@ Found 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: Ed448 bits (jwk, object(kty, crv, x), Ed448, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
-[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(kty, crv, x), {name: Ed448}, true, [])
+[FAIL] Good parameters with JWK alg Ed448: Ed448 (jwk, object(kty, crv, x), {name: Ed448}, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
-[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(kty, crv, x), Ed448, true, [])
+[FAIL] Good parameters with JWK alg EdDSA: Ed448 (jwk, object(kty, crv, x), {name: Ed448}, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with JWK alg Ed448: Ed448 (jwk, object(kty, crv, x), Ed448, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with JWK alg EdDSA: Ed448 (jwk, object(kty, crv, x), Ed448, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: Ed448 bits (raw, buffer(57), {name: Ed448}, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -40,9 +48,13 @@ Found 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: Ed448 bits (jwk, object(kty, crv, x), Ed448, true, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
-[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(kty, crv, x), {name: Ed448}, true, [verify, verify])
+[FAIL] Good parameters with JWK alg Ed448: Ed448 (jwk, object(kty, crv, x), {name: Ed448}, true, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
-[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(kty, crv, x), Ed448, true, [verify, verify])
+[FAIL] Good parameters with JWK alg EdDSA: Ed448 (jwk, object(kty, crv, x), {name: Ed448}, true, [verify, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with JWK alg Ed448: Ed448 (jwk, object(kty, crv, x), Ed448, true, [verify, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with JWK alg EdDSA: Ed448 (jwk, object(kty, crv, x), Ed448, true, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: Ed448 bits (raw, buffer(57), {name: Ed448}, true, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -56,9 +68,13 @@ Found 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: Ed448 bits (jwk, object(crv, d, x, kty), Ed448, true, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
-[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(crv, d, x, kty), {name: Ed448}, true, [sign])
+[FAIL] Good parameters with JWK alg Ed448: Ed448 (jwk, object(crv, d, x, kty), {name: Ed448}, true, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
-[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(crv, d, x, kty), Ed448, true, [sign])
+[FAIL] Good parameters with JWK alg EdDSA: Ed448 (jwk, object(crv, d, x, kty), {name: Ed448}, true, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with JWK alg Ed448: Ed448 (jwk, object(crv, d, x, kty), Ed448, true, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with JWK alg EdDSA: Ed448 (jwk, object(crv, d, x, kty), Ed448, true, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: Ed448 bits (pkcs8, buffer(73), {name: Ed448}, true, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -68,9 +84,13 @@ Found 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: Ed448 bits (jwk, object(crv, d, x, kty), Ed448, true, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
-[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(crv, d, x, kty), {name: Ed448}, true, [sign, sign])
+[FAIL] Good parameters with JWK alg Ed448: Ed448 (jwk, object(crv, d, x, kty), {name: Ed448}, true, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
-[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(crv, d, x, kty), Ed448, true, [sign, sign])
+[FAIL] Good parameters with JWK alg EdDSA: Ed448 (jwk, object(crv, d, x, kty), {name: Ed448}, true, [sign, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with JWK alg Ed448: Ed448 (jwk, object(crv, d, x, kty), Ed448, true, [sign, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with JWK alg EdDSA: Ed448 (jwk, object(crv, d, x, kty), Ed448, true, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: Ed448 bits (spki, buffer(69), {name: Ed448}, false, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -125,3 +145,4 @@ Found 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: Ed448 bits (jwk, object(crv, d, x, kty), Ed448, false, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 Harness: the test ran to completion.
+

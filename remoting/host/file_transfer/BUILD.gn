@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//remoting/build/config/remoting_build.gni")
 
 source_set("file_transfer") {
@@ -32,7 +31,7 @@ source_set("file_transfer") {
       "//remoting/host/mojom",
       "//remoting/host/win",
     ]
-  } else if (is_chromeos_ash) {
+  } else if (is_chromeos) {
     deps += [
       ":file_chooser_chromeos",
       "//remoting/host/chromeos",
@@ -103,7 +102,7 @@ source_set("common") {
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   source_set("file_chooser_chromeos") {
     sources = [
       "file_chooser_chromeos.cc",
@@ -134,7 +133,7 @@ source_set("test_support") {
   ]
   public_deps = []
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public_deps += [ ":file_chooser_chromeos" ]
   } else {
     sources += [
@@ -166,7 +165,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "file_chooser_chromeos_unittest.cc" ]
     deps += [
       "//content/test:test_support",

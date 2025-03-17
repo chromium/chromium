@@ -57,3 +57,25 @@ TEST_F(VcardTabHelperTest, ValidVcardFile) {
 
   EXPECT_OCMOCK_VERIFY(mockHandler);
 }
+
+// Tests downloading a valid vcard file with the older text/x-vcard MIME type.
+TEST_F(VcardTabHelperTest, ValidXVcardFile) {
+  auto task =
+      std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kXVcardMimeType);
+  web::FakeDownloadTask* task_ptr = task.get();
+  tab_helper()->Download(std::move(task));
+
+  std::string pass_data = testing::GetTestFileContents(testing::kVcardFilePath);
+  NSData* data = [NSData dataWithBytes:pass_data.data()
+                                length:pass_data.size()];
+
+  // Verify that openVcardFromData was correctly dispatched.
+  id mockHandler = OCMProtocolMock(@protocol(VcardTabHelperDelegate));
+  tab_helper()->set_delegate(mockHandler);
+  OCMExpect([mockHandler openVcardFromData:data]);
+
+  task_ptr->SetResponseData(data);
+  task_ptr->SetDone(true);
+
+  EXPECT_OCMOCK_VERIFY(mockHandler);
+}

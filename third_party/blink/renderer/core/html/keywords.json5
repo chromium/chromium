@@ -70,20 +70,21 @@
     // command attribute
     // https://open-ui.org/components/invokers.explainer/
     "auto",
-    // invokeaction for popovers
+    // command for popovers
     "toggle-popover",
     "hide-popover",
     "show-popover",
-    // invokeaction for dialog
+    // command for dialog
     "show-modal",
     "close",
-    // invokeaction for details
+    "request-close",
+    // command for details
     "toggle",
     "close",
     "open",
-    // invokeaction for input and select
+    // command for input and select
     "show-picker",
-    // invokeaction for number input
+    // command for number input
     "step-up",
     "step-down",
     // invokeaction for fullscreen
@@ -115,7 +116,10 @@
     "toggle",
     "show",
     "hide",
-    "hover",
+
+    // hidden=until-found attribute
+    // https://html.spec.whatwg.org/#the-hidden-attribute
+    "until-found",
 
     // dialog closedby attribute
     // See https://github.com/whatwg/html/pull/10737.
@@ -159,6 +163,7 @@
     // Blocking attributes
     // https://html.spec.whatwg.org/C/#blocking-attribute
     "render",
+    "full-frame-rate",
 
     // dropEffect IDL attribute
     // https://html.spec.whatwg.org/C/#dom-datatransfer-dropeffect

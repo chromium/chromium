@@ -10,6 +10,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/policy/core/common/mock_policy_service.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"

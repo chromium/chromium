@@ -20,7 +20,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/ranges/algorithm.h"
 
 namespace base {
 
@@ -41,7 +40,7 @@ constexpr bool is_sorted_and_unique(const Range& range, Comp comp) {
   // Being unique implies that there are no adjacent elements that
   // compare equal. So this checks that each element is strictly less
   // than the element after it.
-  return ranges::adjacent_find(range, std::not_fn(comp)) ==
+  return std::ranges::adjacent_find(range, std::not_fn(comp)) ==
          std::ranges::end(range);
 }
 
@@ -431,8 +430,9 @@ class flat_tree {
   std::pair<iterator, bool> insert_or_assign(V&& val) {
     auto position = lower_bound(GetKeyFromValue()(val));
 
-    if (position == end() || value_comp()(val, *position))
+    if (position == end() || value_comp()(val, *position)) {
       return {body_.emplace(position, std::forward<V>(val)), true};
+    }
 
     *position = std::forward<V>(val);
     return {position, false};
@@ -989,8 +989,9 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::equal_range(
   auto lower = lower_bound(key);
 
   KeyValueCompare comp(comp_);
-  if (lower == end() || comp(key, *lower))
+  if (lower == end() || comp(key, *lower)) {
     return {lower, lower};
+  }
 
   return {lower, std::next(lower)};
 }
@@ -1010,8 +1011,9 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::equal_range(
   auto lower = lower_bound(key);
 
   KeyValueCompare comp(comp_);
-  if (lower == end() || comp(key, *lower))
+  if (lower == end() || comp(key, *lower)) {
     return {lower, lower};
+  }
 
   return {lower, std::next(lower)};
 }
@@ -1026,7 +1028,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::lower_bound(
     const Key& key) const -> const_iterator {
   KeyValueCompare comp(comp_);
-  return ranges::lower_bound(*this, key, comp);
+  return std::ranges::lower_bound(*this, key, comp);
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -1047,7 +1049,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::lower_bound(
   const KeyTypeOrK<K>& key_ref = key;
 
   KeyValueCompare comp(comp_);
-  return ranges::lower_bound(*this, key_ref, comp);
+  return std::ranges::lower_bound(*this, key_ref, comp);
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -1060,7 +1062,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::upper_bound(
     const Key& key) const -> const_iterator {
   KeyValueCompare comp(comp_);
-  return ranges::upper_bound(*this, key, comp);
+  return std::ranges::upper_bound(*this, key, comp);
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -1081,7 +1083,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::upper_bound(
   const KeyTypeOrK<K>& key_ref = key;
 
   KeyValueCompare comp(comp_);
-  return ranges::upper_bound(*this, key_ref, comp);
+  return std::ranges::upper_bound(*this, key_ref, comp);
 }
 
 // ----------------------------------------------------------------------------
@@ -1107,8 +1109,9 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::emplace_key_args(
     const K& key,
     Args&&... args) -> std::pair<iterator, bool> {
   auto lower = lower_bound(key);
-  if (lower == end() || comp_(key, GetKeyFromValue()(*lower)))
+  if (lower == end() || comp_(key, GetKeyFromValue()(*lower))) {
     return {unsafe_emplace(lower, std::forward<Args>(args)...), true};
+  }
   return {lower, false};
 }
 
@@ -1147,10 +1150,10 @@ size_t EraseIf(
     base::internal::flat_tree<Key, GetKeyFromValue, KeyCompare, Container>&
         container,
     Predicate pred) {
-  auto it = ranges::remove_if(container, pred);
-  size_t removed = std::distance(it, container.end());
-  container.erase(it, container.end());
-  return removed;
+  auto removed = std::ranges::remove_if(container, pred);
+  size_t num_removed = removed.size();
+  container.erase(removed.begin(), removed.end());
+  return num_removed;
 }
 
 }  // namespace base

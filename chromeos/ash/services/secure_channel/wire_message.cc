@@ -64,15 +64,14 @@ const char* const kV3Features[] = {
 
 std::unique_ptr<WireMessage> DeserializeJsonMessageBody(
     const std::string& serialized_message_body) {
-  std::optional<base::Value> body_value =
-      base::JSONReader::Read(serialized_message_body);
-  if (!body_value || !body_value->is_dict()) {
+  std::optional<base::Value::Dict> body_value =
+      base::JSONReader::ReadDict(serialized_message_body);
+  if (!body_value) {
     PA_LOG(WARNING) << "Unable to parse message as JSON.";
     return nullptr;
   }
 
-  const base::Value::Dict& body = body_value->GetDict();
-  const std::string* payload_base64 = body.FindString(kPayloadKey);
+  const std::string* payload_base64 = body_value->FindString(kPayloadKey);
   if (!payload_base64) {
     // Legacy case: Message without a payload.
     return base::WrapUnique(new WireMessage(serialized_message_body));
@@ -91,7 +90,7 @@ std::unique_ptr<WireMessage> DeserializeJsonMessageBody(
     return nullptr;
   }
 
-  const std::string* feature = body.FindString(kFeatureKey);
+  const std::string* feature = body_value->FindString(kFeatureKey);
   if (!feature || feature->empty()) {
     return base::WrapUnique(new WireMessage(payload, kDefaultFeature));
   }

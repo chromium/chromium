@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_finds_exising_user_prompt_after_tab_switch[alert]
+  webdriver.error.NoSuchAlertException: no such alert (404): no such alert
+[FAIL] test_finds_exising_user_prompt_after_tab_switch[confirm]
+  webdriver.error.NoSuchAlertException: no such alert (404): no such alert
+[FAIL] test_finds_exising_user_prompt_after_tab_switch[prompt]
+  webdriver.error.NoSuchAlertException: no such alert (404): no such alert
+Harness: the test ran to completion.
+

@@ -46,6 +46,8 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
+import org.chromium.components.signin.identitymanager.AccountManagedStatusFinder;
+import org.chromium.components.signin.identitymanager.AccountManagedStatusFinderOutcome;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
@@ -57,6 +59,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -74,6 +77,8 @@ import java.util.Objects;
  */
 class SigninManagerImpl implements IdentityManager.Observer, SigninManager, AccountsChangeObserver {
     private static final String TAG = "SigninManager";
+
+    private static final Duration MANAGED_STATUS_TIMEOUT = Duration.ofSeconds(10);
 
     /**
      * Address of the native Signin Manager android. This is not final, as destroy() updates this.
@@ -114,8 +119,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     @VisibleForTesting
     static SigninManager create(
             long nativeSigninManagerAndroid,
-            Profile profile,
-            IdentityManager identityManager,
+            @JniType("Profile*") Profile profile,
+            @JniType("signin::IdentityManager*") IdentityManager identityManager,
             IdentityMutator identityMutator,
             SyncService syncService) {
         assert nativeSigninManagerAndroid != 0;
@@ -219,14 +224,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
      * to null in case the user is signed out.
      */
     private void maybeUpdateLegacyPrimaryAccountEmail() {
-        @ConsentLevel
-        int consentLevel =
-                SigninFeatureMap.isEnabled(
-                                SigninFeatures
-                                        .USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF)
-                        ? ConsentLevel.SIGNIN
-                        : ConsentLevel.SYNC;
-        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(consentLevel);
+        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (Objects.equals(
                 CoreAccountInfo.getEmailFrom(accountInfo),
                 SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail())) {
@@ -455,7 +453,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
             RecordHistogram.recordEnumeratedHistogram(
                     "Signin.SigninCompletedAccessPoint",
                     mSignInState.getAccessPoint(),
-                    SigninAccessPoint.MAX);
+                    SigninAccessPoint.MAX_VALUE );
         }
 
         if (mSignInState.mCallback != null) {
@@ -604,7 +602,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.SigninAbortedAccessPoint",
                 signInState.getAccessPoint(),
-                SigninAccessPoint.MAX);
+                SigninAccessPoint.MAX_VALUE);
 
         if (signInState.mCallback != null) {
             signInState.mCallback.onSignInAborted();
@@ -672,17 +670,39 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     public void isAccountManaged(
             @NonNull CoreAccountInfo account, final Callback<Boolean> callback) {
         if (account == null) throw new IllegalArgumentException("Account shouldn't be null!");
-        SigninManagerImplJni.get().isAccountManaged(mNativeSigninManagerAndroid, account, callback);
+
+        if (SigninFeatureMap.isEnabled(
+                SigninFeatures.USE_HOSTED_DOMAIN_FOR_MANAGEMENT_CHECK_ON_SIGNIN)) {
+            Callback<Integer> finderCallback =
+                    (outcome) -> {
+                        boolean isManaged =
+                                outcome == AccountManagedStatusFinderOutcome.ENTERPRISE
+                                        || outcome
+                                                == AccountManagedStatusFinderOutcome
+                                                        .ENTERPRISE_GOOGLE_DOT_COM;
+                        callback.onResult(isManaged);
+                    };
+            AccountManagedStatusFinder finder =
+                    new AccountManagedStatusFinder(
+                            getIdentityManager(), account, finderCallback, MANAGED_STATUS_TIMEOUT);
+            if (finder.getOutcome() != AccountManagedStatusFinderOutcome.PENDING) {
+                finderCallback.onResult(finder.getOutcome());
+            }
+            // `destroy` for `finder` will be called automatically when the outcome is decided (or
+            // when the timeout is reached).
+        } else {
+            SigninManagerImplJni.get()
+                    .isAccountManaged(mNativeSigninManagerAndroid, account, callback);
+        }
     }
 
     private void seedThenReloadAllAccountsFromSystem(@Nullable CoreAccountId primaryAccountId) {
-        if (!mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) {
+        if (!mAccountManagerFacade.getAccounts().isFulfilled()) {
             throw new IllegalStateException("Account information should be available when seeding");
         }
         mIdentityMutator.seedAccountsThenReloadAllAccountsWithPrimaryAccount(
-                mAccountManagerFacade.getCoreAccountInfos().getResult(), primaryAccountId);
-        mIdentityManager.refreshAccountInfoIfStale(
-                mAccountManagerFacade.getCoreAccountInfos().getResult());
+                mAccountManagerFacade.getAccounts().getResult(), primaryAccountId);
+        mIdentityManager.refreshAccountInfoIfStale(mAccountManagerFacade.getAccounts().getResult());
         // Should be called after re-seeding accounts to make sure that we get the new email.
         maybeUpdateLegacyPrimaryAccountEmail();
     }
@@ -917,7 +937,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
         void fetchAndApplyCloudPolicy(
                 long nativeSigninManagerAndroid,
-                CoreAccountInfo account,
+                @JniType("CoreAccountInfo") CoreAccountInfo account,
                 @JniType("base::RepeatingClosure") Runnable callback);
 
         void stopApplyingCloudPolicy(long nativeSigninManagerAndroid);

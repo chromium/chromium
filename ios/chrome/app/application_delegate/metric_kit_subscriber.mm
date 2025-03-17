@@ -116,7 +116,9 @@ void SendDiagnostic(MXDiagnostic* diagnostic, const std::string& type) {
           {"breadcrumbs",
            base::SysNSStringToUTF8(previous_session.breadcrumbs)});
     }
-    crash_reporter::ProcessExternalDump("MetricKit", spanpayload,
+    const std::string source =
+        type == "crash" ? "MetricKit" : "MetricKit_Diagnostics";
+    crash_reporter::ProcessExternalDump(source, spanpayload,
                                         override_annotations);
   }
 }
@@ -137,6 +139,10 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads) {
       for (MXDiskWriteExceptionDiagnostic* diagnostic in payload
                .diskWriteExceptionDiagnostics) {
         SendDiagnostic(diagnostic, "diskwrite-exception");
+      }
+      for (MXCPUExceptionDiagnostic* diagnostic in payload
+               .appLaunchDiagnostics) {
+        SendDiagnostic(diagnostic, "app-launch");
       }
     }
   }
@@ -220,7 +226,7 @@ std::string HistogramPrefix(bool include_mismatch) {
     DCHECK_LE(end - start, 10);
     double sample = (end + start) / 2;
     histogramUMA->AddCount(
-        base::saturated_cast<base::HistogramBase::Sample>(sample),
+        base::saturated_cast<base::HistogramBase::Sample32>(sample),
         bucket.bucketCount);
   }
 }

@@ -4,6 +4,8 @@
 
 #include "components/crash/core/app/fallback_crash_handling_win.h"
 
+#include <windows.h>
+
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"

@@ -14,7 +14,7 @@ import {EventHandler} from '/common/event_handler.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Command} from '../common/command.js';
-import {TtsSpeechProperties} from '../common/tts_types.js';
+import type {TtsSpeechProperties} from '../common/tts_types.js';
 
 import {ChromeVoxRange} from './chromevox_range.js';
 import {CommandHandlerInterface} from './input/command_handler_interface.js';

@@ -23,7 +23,7 @@ constexpr unsigned kDefaultNumberOfOutputChannels = 2;
 MediaStreamAudioSourceHandler::MediaStreamAudioSourceHandler(
     AudioNode& node,
     std::unique_ptr<AudioSourceProvider> audio_source_provider)
-    : AudioHandler(kNodeTypeMediaStreamAudioSource,
+    : AudioHandler(NodeType::kNodeTypeMediaStreamAudioSource,
                    node,
                    node.context()->sampleRate()),
       audio_source_provider_(std::move(audio_source_provider)) {

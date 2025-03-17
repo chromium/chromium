@@ -6,11 +6,11 @@
 
 #include <math.h>
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/dcheck_is_on.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/error.h"
@@ -28,7 +28,7 @@ bool ValidateWebNNTensors(
     const base::flat_map<std::string_view, WebNNTensorImpl*>& named_tensors,
     const base::flat_map<std::string, OperandDescriptor>&
         names_to_descriptors) {
-  return base::ranges::equal(
+  return std::ranges::equal(
       named_tensors, names_to_descriptors,
       [](const auto& named_tensor, const auto& tensor_spec) {
         const auto& [tensor_name, tensor_impl] = named_tensor;

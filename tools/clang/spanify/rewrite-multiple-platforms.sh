@@ -262,16 +262,21 @@ main_rewrite() {
     fi
 
     # Main rewrite.
+    #
+    # To avoid spending too much time writing to disk, we use `awk '!x[$0]++'`
+    # to removes duplicate lines. This reduces the output by a 62 factor: from
+    # 20GB to 300MB. It is faster than `sort -u`. This consumes RAM, but
+    # cloudtops have plenty of it.
     echo "*** Running the main rewrite phase for $PLATFORM ***"
-    time tools/clang/scripts/run_tool.py \
+    time (
+      tools/clang/scripts/run_tool.py \
         $TARGET_OS_OPTION \
         --tool spanify \
         --generate-compdb \
         -p $OUT_DIR \
-        $COMPILE_DIRS > ~/scratch/rewriter-$PLATFORM.main.out \
-        2>~/scratch/rewriter-"${PLATFORM}".main.err
-    touch ~/scratch/rewriter.main.out
-    cat ~/scratch/rewriter-$PLATFORM.main.out >> ~/scratch/rewriter.main.out
+        $COMPILE_DIRS    2>~/scratch/rewriter-${PLATFORM}.main.err \
+        | awk '!x[$0]++' 1>~/scratch/rewriter-${PLATFORM}.main.out
+    )
 }
 
 if [ $REWRITE = true ]
@@ -296,9 +301,9 @@ then
   rm ~/scratch/patch*
 
   echo "*** Applying edits ***"
-  cat ~/scratch/rewriter.main.out | \
-      tools/clang/spanify/extract_edits.py | \
-      tools/clang/scripts/apply_edits.py -p $OUT_DIR $EDIT_DIRS
+  cat ~/scratch/rewriter-*.main.out \
+    | tools/clang/spanify/extract_edits.py \
+    | tools/clang/scripts/apply_edits.py -p $OUT_DIR $EDIT_DIRS
 else
   echo "*** Skipping edits ***"
 fi

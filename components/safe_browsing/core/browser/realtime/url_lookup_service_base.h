@@ -293,6 +293,13 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
                                                    bool was_first_request,
                                                    bool sent_with_token) {}
 
+  // Fills in the ReferringAppInfo field pertaining to a referring WebAPK, if
+  // appropriate. The safe_browsing::ReferringAppInfo message should already
+  // have been added to the RTLookupRequest.
+  virtual void MaybeFillReferringWebApk(
+      const internal::ReferringAppInfo& referring_app_info,
+      RTLookupRequest& request) {}
+
   // Get a resource request with URL, load_flags and method set.
   std::unique_ptr<network::ResourceRequest> GetResourceRequest();
 

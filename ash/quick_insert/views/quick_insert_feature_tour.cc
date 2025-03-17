@@ -115,14 +115,16 @@ std::unique_ptr<views::Widget> CreateWidget(
           .SetCancelCallback(std::move(learn_more_callback))
           .SetTopContentView(
               views::Builder<views::ImageView>()
-                  .SetBackground(views::CreateThemedRoundedRectBackground(
+                  .SetBackground(views::CreateRoundedRectBackground(
                       cros_tokens::kCrosSysIlloColor12,
                       kFeatureTourDialogIllustrationCornerRadii))
                   .SetImage(GetIllustration()))
           .SetModalType(ui::mojom::ModalType::kSystem)
           .Build();
 
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.delegate = feature_tour_dialog.release();
   params.name = "QuickInsertFeatureTourWidget";
   params.activatable = views::Widget::InitParams::Activatable::kYes;

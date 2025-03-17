@@ -9,11 +9,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+using performance_manager::user_tuning::PerformanceDetectionManager;
+}
 
 class PerformanceControlsMetricsTest
     : public content::RenderViewHostTestHarness {
@@ -56,9 +61,7 @@ TEST_F(PerformanceControlsMetricsTest, DailyMetricsResets) {
   histogram_tester.ExpectBucketCount(rate_limited_histogram_name, 1, 0);
 
   RecordInterventionMessageCount(
-      performance_manager::user_tuning::PerformanceDetectionManager::
-          ResourceType::kCpu,
-      pref_service);
+      PerformanceDetectionManager::ResourceType::kCpu, pref_service);
 
   // Only the pref count should increment when we record a message count since
   // the histogram should record the value only after each day.
@@ -67,9 +70,7 @@ TEST_F(PerformanceControlsMetricsTest, DailyMetricsResets) {
   histogram_tester.ExpectBucketCount(message_count_histogram_name, 1, 0);
 
   RecordInterventionRateLimitedCount(
-      performance_manager::user_tuning::PerformanceDetectionManager::
-          ResourceType::kCpu,
-      pref_service);
+      PerformanceDetectionManager::ResourceType::kCpu, pref_service);
   EXPECT_EQ(1,
             pref_service->GetInteger(
                 prefs::kPerformanceInterventionBackgroundCpuRateLimitedCount));
@@ -85,4 +86,43 @@ TEST_F(PerformanceControlsMetricsTest, DailyMetricsResets) {
                 prefs::kPerformanceInterventionBackgroundCpuRateLimitedCount));
   histogram_tester.ExpectBucketCount(message_count_histogram_name, 1, 1);
   histogram_tester.ExpectBucketCount(rate_limited_histogram_name, 1, 1);
+}
+
+TEST_F(PerformanceControlsMetricsTest, HealthStatusChange) {
+  base::HistogramTester histogram_tester;
+  const std::string message_count_histogram_name =
+      "PerformanceControls.Intervention.BackgroundTab.Cpu.HealthStatusChange."
+      "1Min";
+
+  // Recording a health status that didn't change.
+  RecordCpuHealthStatusChange(
+      base::Minutes(1), PerformanceDetectionManager::HealthLevel::kHealthy,
+      PerformanceDetectionManager::HealthLevel::kHealthy);
+  histogram_tester.ExpectBucketCount(
+      message_count_histogram_name,
+      CpuInterventionHealthChange::kHealthyToHealthy, 1);
+
+  // Recording a health status that improved by one level.
+  RecordCpuHealthStatusChange(
+      base::Minutes(1), PerformanceDetectionManager::HealthLevel::kUnhealthy,
+      PerformanceDetectionManager::HealthLevel::kDegraded);
+  histogram_tester.ExpectBucketCount(
+      message_count_histogram_name,
+      CpuInterventionHealthChange::kUnhealthyToDegraded, 1);
+
+  // Recording a health status that improved by 2 levels.
+  RecordCpuHealthStatusChange(
+      base::Minutes(1), PerformanceDetectionManager::HealthLevel::kUnhealthy,
+      PerformanceDetectionManager::HealthLevel::kHealthy);
+  histogram_tester.ExpectBucketCount(
+      message_count_histogram_name,
+      CpuInterventionHealthChange::kUnhealthyToHealthy, 1);
+
+  // Recording a health status that got worse.
+  RecordCpuHealthStatusChange(
+      base::Minutes(1), PerformanceDetectionManager::HealthLevel::kHealthy,
+      PerformanceDetectionManager::HealthLevel::kUnhealthy);
+  histogram_tester.ExpectBucketCount(
+      message_count_histogram_name,
+      CpuInterventionHealthChange::kHealthyToUnhealthy, 1);
 }

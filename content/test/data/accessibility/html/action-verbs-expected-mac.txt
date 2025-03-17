@@ -1,0 +1,39 @@
+AXWebArea AXTitle='Action verbs'
+++AXGroup
+++++AXStaticText AXValue='Generic div'
+++AXHeading AXTitle='Heading' AXValue=1
+++++AXStaticText AXValue='Heading'
+++AXButton AXTitle='Button'
+++AXLink AXDescription='Link'
+++++AXStaticText AXValue='Link'
+++AXTextField
+++AXTextField AXSubrole=AXSearchField
+++AXTextArea
+++AXTextArea
+++AXCheckBox AXValue=0
+++AXCheckBox AXValue=1
+++AXRadioButton AXValue=0
+++AXCheckBox AXSubrole=AXSwitch AXTitle='ARIA Switch' AXValue=0
+++AXGroup
+++++AXButton AXTitle='Summary'
+++++++AXStaticText AXValue='Summary'
+++AXPopUpButton AXValue='Pop-up button'
+++++AXMenuItem AXValue='Pop-up button'
+++AXGroup
+++++AXStaticText AXValue='Div with click handler'
+++AXGroup AXSubrole=AXApplicationGroup
+++++AXGroup
+++++++AXStaticText AXValue='Paragraph with click handler on parent'
+++AXMenu
+++++AXMenuItem AXTitle='Menu item 1'
+++++AXMenuItem AXTitle='Menu item 2' AXValue=1
+++++AXMenuItem AXTitle='Menu item 3' AXValue=0
+++AXButton AXTitle='ARIA Button'
+++AXButton AXTitle='ARIA button with tab index'
+++AXButton AXTitle='ARIA button with negative tab index'
+++AXGroup
+++++AXButton AXTitle='ARIA button that is an active descendant'
+++AXGroup
+++++AXCheckBox AXSubrole=AXSwitch AXTitle='ARIA switch in clickable container' AXValue=0
+++++AXGroup
+++++++AXStaticText AXValue='Generic in clickable container'

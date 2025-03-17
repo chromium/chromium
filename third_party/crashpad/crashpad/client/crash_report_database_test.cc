@@ -810,9 +810,26 @@ TEST_F(CrashReportDatabaseTest, OrphanedAttachments) {
             CrashReportDatabase::kNoError);
   EXPECT_EQ(uuid, expect_uuid);
 
+#if BUILDFLAG(IS_WIN)
+  const std::wstring uuid_string = uuid.ToWString();
+#else
+  const std::string uuid_string = uuid.ToString();
+#endif
+  const base::FilePath report_attachments_dir(
+      path().Append(FILE_PATH_LITERAL("attachments")).Append(uuid_string));
+  const base::FilePath file_path1(
+      report_attachments_dir.Append(FILE_PATH_LITERAL("file1")));
+  const base::FilePath file_path2(
+      report_attachments_dir.Append(FILE_PATH_LITERAL("file2")));
+
   CrashReportDatabase::Report report;
   ASSERT_EQ(db()->LookUpCrashReport(uuid, &report),
             CrashReportDatabase::kNoError);
+
+  // Cleaning a consistent database does not remove the attachements.
+  EXPECT_EQ(db()->CleanDatabase(0), 0);
+  EXPECT_TRUE(FileExists(file_path1));
+  EXPECT_TRUE(FileExists(file_path1));
 
   ASSERT_TRUE(LoggingRemoveFile(report.file_path));
 
@@ -828,17 +845,6 @@ TEST_F(CrashReportDatabaseTest, OrphanedAttachments) {
   ASSERT_EQ(db()->LookUpCrashReport(uuid, &report),
             CrashReportDatabase::kReportNotFound);
 
-#if BUILDFLAG(IS_WIN)
-  const std::wstring uuid_string = uuid.ToWString();
-#else
-  const std::string uuid_string = uuid.ToString();
-#endif
-  base::FilePath report_attachments_dir(
-      path().Append(FILE_PATH_LITERAL("attachments")).Append(uuid_string));
-  base::FilePath file_path1(
-      report_attachments_dir.Append(FILE_PATH_LITERAL("file1")));
-  base::FilePath file_path2(
-      report_attachments_dir.Append(FILE_PATH_LITERAL("file2")));
   EXPECT_TRUE(FileExists(file_path1));
   EXPECT_TRUE(FileExists(file_path1));
 

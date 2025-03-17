@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include <memory>
 #include <set>
 #include <string>
@@ -34,7 +39,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/bluetooth/web_bluetooth_test_utils.h"
@@ -79,7 +83,6 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "components/permissions/mock_chooser_controller_view.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/prefs/pref_service.h"
@@ -160,6 +163,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_updates_and_events.h"
@@ -170,9 +174,9 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#include "ash/webui/settings/public/constants/routes.mojom.h"  // nogncheck
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #endif
 
@@ -785,6 +789,12 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
                         base::StrCat({"onAppCommand('", message, "');"})));
   }
 
+  void SendMessageToEmbedderAsync(const std::string& message) {
+    content::ExecuteScriptAsync(
+        GetEmbedderWebContents(),
+        base::StrCat({"onAppCommand('", message, "');"}));
+  }
+
   void SendMessageToGuestAndWait(const std::string& message,
                                  const std::string& wait_message) {
     std::unique_ptr<ExtensionTestMessageListener> listener;
@@ -1115,6 +1125,16 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, WebViewRespectsInsets) {
   EXPECT_EQ(expected.size(), size_after);
 }
 
+IN_PROC_BROWSER_TEST_P(WebViewTest, ShutdownBeforeAttach) {
+  LoadAndLaunchPlatformApp("web_view/app_creates_webview",
+                           "WebViewTest.LAUNCHED");
+  SendMessageToEmbedderAsync("create-guest-and-stall-attachment");
+  GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  // After guest creation, but before attachment, shutdown the embedder to
+  // verify that we can shutdown safely in this state.
+  CloseAppWindow(GetFirstAppWindow());
+}
+
 IN_PROC_BROWSER_TEST_P(WebViewTest, AudioMutesWhileAttached) {
   LoadAppWithGuest("web_view/simple");
 
@@ -1183,7 +1203,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, AutoplayPolicy) {
 
 // This test exercises the webview spatial navigation API
 // TODO(crbug.com/41493388): Flaky timeouts on Mac and Cros.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SpatialNavigationJavascriptAPI \
   DISABLED_SpatialNavigationJavascriptAPI
 #else
@@ -1854,8 +1874,6 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_Redirect) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_Close) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testNewWindowClose", "web_view/newwindow", NEEDS_TEST_SERVER);
 }
 
@@ -2141,8 +2159,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestGetProcessId) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewVisibilityTest, Shim_TestHiddenBeforeNavigation) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testHiddenBeforeNavigation", "web_view/shim", NO_TEST_SERVER);
 }
 
@@ -2585,6 +2601,9 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, CannotNavigateGuestToChromeURL) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, ShimSrcAttribute) {
+  // TODO(crbug.com/40202416): Re-enable after fixing MPArch-related flakiness.
+  SKIP_FOR_MPARCH();
+
   ASSERT_TRUE(RunExtensionTest("platform_apps/web_view/src_attribute",
                                {.launch_as_platform_app = true}))
       << message_;
@@ -2728,8 +2747,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, CookieIsolation) {
 // This tests that in-memory storage partitions are reset on browser restart,
 // but persistent ones maintain state for cookies and HTML5 storage.
 IN_PROC_BROWSER_TEST_P(WebViewTest, PRE_StoragePersistence) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
   // We don't care where the main browser is on this test.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
@@ -2743,8 +2760,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, PRE_StoragePersistence) {
 // This is the post-reset portion of the StoragePersistence test.  See
 // PRE_StoragePersistence for main comment.
 IN_PROC_BROWSER_TEST_P(WebViewTest, StoragePersistence) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
   // We don't care where the main browser is on this test.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
@@ -2760,8 +2775,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, StoragePersistence) {
 // entries, which the test checks to ensure proper storage isolation is
 // enforced.
 IN_PROC_BROWSER_TEST_P(WebViewTest, DOMStorageIsolation) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   GURL navigate_to_url = embedded_test_server()->GetURL(
@@ -2794,8 +2807,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, DOMStorageIsolation) {
 // This is also a regression test for https://crbug.com/802278 (setting of
 // a guestview as an opener should not leak any memory).
 IN_PROC_BROWSER_TEST_P(WebViewTest, FindabilityIsolation) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   GURL navigate_to_url = embedded_test_server()->GetURL(
@@ -2824,8 +2835,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, IndexedDBIsolation) {
 // then launches the app window again. The process is repeated 3 times.
 // TODO(crbug.com/40621838): The test is flaky (crash) on ChromeOS debug and
 // ASan/LSan
-#if BUILDFLAG(IS_CHROMEOS_ASH) && \
-    (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_CHROMEOS) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 #define MAYBE_CloseOnLoadcommit DISABLED_CloseOnLoadcommit
 #else
 #define MAYBE_CloseOnLoadcommit CloseOnLoadcommit
@@ -2836,36 +2846,26 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_CloseOnLoadcommit) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, MediaAccessAPIDeny_TestDeny) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   MediaAccessAPIDenyTestHelper("testDeny");
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        MediaAccessAPIDeny_TestDenyThenAllowThrows) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   MediaAccessAPIDenyTestHelper("testDenyThenAllowThrows");
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        MediaAccessAPIDeny_TestDenyWithPreventDefault) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   MediaAccessAPIDenyTestHelper("testDenyWithPreventDefault");
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        MediaAccessAPIDeny_TestNoListenersImplyDeny) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   MediaAccessAPIDenyTestHelper("testNoListenersImplyDeny");
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        MediaAccessAPIDeny_TestNoPreventDefaultImpliesDeny) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   MediaAccessAPIDenyTestHelper("testNoPreventDefaultImpliesDeny");
 }
 
@@ -3036,7 +3036,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuInspectElement) {
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class WebViewChromeOSTest : public WebViewTestBase,
                             public testing::WithParamInterface<bool> {
  public:
@@ -3066,7 +3066,7 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
 // Elsewhere, it will load chrome://settings/languages in a browser window.
 // In either case, this is a browser-initiated operation and so we expect it
 // to succeed if the embedder is allowed to perform the operation.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(WebViewChromeOSTest, ContextMenuLanguageSettings) {
 #else
 IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuLanguageSettings) {
@@ -3075,7 +3075,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuLanguageSettings) {
   content::WebContents* embedder = GetEmbedderWebContents();
   ASSERT_TRUE(embedder);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::SystemWebAppManager::Get(browser()->profile())
       ->InstallSystemAppsForTesting();
 #endif
@@ -3091,7 +3091,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuLanguageSettings) {
   // Language Settings page.
   content::WebContents* new_contents =
       web_contents_added_observer.GetWebContents();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(GURL(chrome::kChromeUIOSSettingsURL)
                 .Resolve(chromeos::settings::mojom::kLanguagesSubpagePath),
             new_contents->GetVisibleURL());
@@ -3211,32 +3211,22 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, TestContextMenu) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, MediaAccessAPIAllow_TestAllow) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   MediaAccessAPIAllowTestHelper("testAllow");
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, MediaAccessAPIAllow_TestAllowAndThenDeny) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   MediaAccessAPIAllowTestHelper("testAllowAndThenDeny");
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, MediaAccessAPIAllow_TestAllowTwice) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   MediaAccessAPIAllowTestHelper("testAllowTwice");
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, MediaAccessAPIAllow_TestAllowAsync) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   MediaAccessAPIAllowTestHelper("testAllowAsync");
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, MediaAccessAPIAllow_TestCheck) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
   LoadAndLaunchPlatformApp("web_view/media_access/check", "Launched");
 
@@ -3350,16 +3340,12 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        PermissionsAPIEmbedderHasAccessAllowCamera) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAllowCamera",
              "web_view/permissions_test/embedder_has_permission",
              NEEDS_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, PermissionsAPIEmbedderHasAccessDenyCamera) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testDenyCamera",
              "web_view/permissions_test/embedder_has_permission",
              NEEDS_TEST_SERVER);
@@ -3367,8 +3353,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, PermissionsAPIEmbedderHasAccessDenyCamera) {
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        PermissionsAPIEmbedderHasAccessAllowMicrophone) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAllowMicrophone",
              "web_view/permissions_test/embedder_has_permission",
              NEEDS_TEST_SERVER);
@@ -3376,24 +3360,18 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        PermissionsAPIEmbedderHasAccessDenyMicrophone) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testDenyMicrophone",
              "web_view/permissions_test/embedder_has_permission",
              NEEDS_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, PermissionsAPIEmbedderHasAccessAllowMedia) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAllowMedia",
              "web_view/permissions_test/embedder_has_permission",
              NEEDS_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, PermissionsAPIEmbedderHasAccessDenyMedia) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testDenyMedia",
              "web_view/permissions_test/embedder_has_permission",
              NEEDS_TEST_SERVER);
@@ -3566,8 +3544,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        PermissionsAPIEmbedderHasNoAccessAllowCamera) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAllowCamera",
              "web_view/permissions_test/embedder_has_no_permission",
              NEEDS_TEST_SERVER);
@@ -3575,8 +3551,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        PermissionsAPIEmbedderHasNoAccessDenyCamera) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testDenyCamera",
              "web_view/permissions_test/embedder_has_no_permission",
              NEEDS_TEST_SERVER);
@@ -3584,8 +3558,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        PermissionsAPIEmbedderHasNoAccessAllowMicrophone) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAllowMicrophone",
              "web_view/permissions_test/embedder_has_no_permission",
              NEEDS_TEST_SERVER);
@@ -3593,8 +3565,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        PermissionsAPIEmbedderHasNoAccessDenyMicrophone) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testDenyMicrophone",
              "web_view/permissions_test/embedder_has_no_permission",
              NEEDS_TEST_SERVER);
@@ -3602,8 +3572,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        PermissionsAPIEmbedderHasNoAccessAllowMedia) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAllowMedia",
              "web_view/permissions_test/embedder_has_no_permission",
              NEEDS_TEST_SERVER);
@@ -3611,8 +3579,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        PermissionsAPIEmbedderHasNoAccessDenyMedia) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testDenyMedia",
              "web_view/permissions_test/embedder_has_no_permission",
              NEEDS_TEST_SERVER);
@@ -3641,8 +3607,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, DISABLED_GeolocationRequestGone) {
 // filesystem access from main thread of the guest.
 // FileSystemAPIRequestFromMainThread* test 1 of 3
 IN_PROC_BROWSER_TEST_P(WebViewTest, FileSystemAPIRequestFromMainThreadAllow) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAllow", "web_view/filesystem/main", NEEDS_TEST_SERVER);
 }
 
@@ -3747,8 +3711,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ClearData) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, ClearSessionCookies) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/common",
@@ -3757,8 +3719,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ClearSessionCookies) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, ClearPersistentCookies) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/common",
@@ -3768,8 +3728,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ClearPersistentCookies) {
 
 // Regression test for https://crbug.com/615429.
 IN_PROC_BROWSER_TEST_P(WebViewTest, ClearDataTwice) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/common",
@@ -4226,8 +4184,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, SetPropertyOnDocumentInteractive) {
 
 IN_PROC_BROWSER_TEST_P(WebViewSpeechAPITest,
                        SpeechRecognitionAPI_HasPermissionAllow) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/speech_recognition_api",
       {.custom_arg = "allowTest", .launch_as_platform_app = true}))
@@ -4236,8 +4192,6 @@ IN_PROC_BROWSER_TEST_P(WebViewSpeechAPITest,
 
 IN_PROC_BROWSER_TEST_P(WebViewSpeechAPITest,
                        SpeechRecognitionAPI_HasPermissionDeny) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/speech_recognition_api",
       {.custom_arg = "denyTest", .launch_as_platform_app = true}))
@@ -4246,8 +4200,6 @@ IN_PROC_BROWSER_TEST_P(WebViewSpeechAPITest,
 
 IN_PROC_BROWSER_TEST_P(WebViewSpeechAPITest,
                        SpeechRecognitionAPI_NoPermission) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(
       RunExtensionTest("platform_apps/web_view/common",
                        {.custom_arg = "speech_recognition_api_no_permission",
@@ -4336,8 +4288,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          WebViewCaptureTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestZoomAPI) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testZoomAPI", "web_view/shim", NO_TEST_SERVER);
 }
 
@@ -4438,26 +4388,18 @@ IN_PROC_BROWSER_TEST_P(WebViewSizeTest, Shim_TestResizeEvents) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestPerOriginZoomMode) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testPerOriginZoomMode", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestPerViewZoomMode) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testPerViewZoomMode", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestDisabledZoomMode) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testDisabledZoomMode", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestZoomBeforeNavigation) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testZoomBeforeNavigation", "web_view/shim", NO_TEST_SERVER);
 }
 
@@ -4656,8 +4598,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 // Ensure a guest triggering a client certificate dialog does not crash.
 IN_PROC_BROWSER_TEST_P(WebViewCertificateSelectorTest,
                        CertificateSelectorForGuest) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   LoadAppWithGuest("web_view/simple");
   content::RenderFrameHost* guest_rfh = GetGuestRenderFrameHost();
 
@@ -4683,7 +4623,9 @@ IN_PROC_BROWSER_TEST_P(WebViewCertificateSelectorTest,
 // if we are in this situation, we at least don't crash.
 IN_PROC_BROWSER_TEST_P(WebViewCertificateSelectorTest,
                        CertificateSelectorForGuestMisconfigured) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+  // TODO(crbug.com/40202416): This test doesn't apply for MPArch and
+  // can be removed when the InnerWebContents version is removed.
+  SKIP_FOR_MPARCH();
 
   LoadAppWithGuest("web_view/simple");
   content::WebContents* guest_contents = GetGuestWebContents();
@@ -4757,8 +4699,6 @@ class WebViewChannelTest : public WebViewTestBase,
 IN_PROC_BROWSER_TEST_P(
     WebViewChannelTest,
     MAYBE_Shim_TestRulesRegistryIDAreRemovedAfterWebViewIsGone) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_EQ(extensions::GetCurrentChannel(), GetChannelParam());
   SCOPED_TRACE(base::StrCat(
       {"Testing Channel ", version_info::GetChannelString(GetChannelParam())}));
@@ -5048,8 +4988,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestMailtoLink) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testMailtoLink", "web_view/shim", NEEDS_TEST_SERVER);
 }
 
@@ -5095,8 +5033,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadWebviewAccessibleResource) {
 
 // Tests that a WebView can be navigated to a WebView accessible resource.
 IN_PROC_BROWSER_TEST_P(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testNavigateGuestToWebviewAccessibleResource",
              "web_view/load_webview_accessible_resource", NO_TEST_SERVER);
 
@@ -5143,8 +5079,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ReloadWebviewAccessibleResource) {
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        CookiesEnabledAfterWebviewAccessibleResource) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testCookiesEnabledAfterWebviewAccessibleResource",
              "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
 }
@@ -5285,15 +5219,11 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadWebviewInaccessibleResource) {
 // webview even if the webview commits an app frame.
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        LoadAccessibleSubresourceInAppWebviewFrame) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testLoadAccessibleSubresourceInAppWebviewFrame",
              "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
 }
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        InaccessibleResourceDoesNotLoadInAppWebviewFrame) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testInaccessibleResourceDoesNotLoadInAppWebviewFrame",
              "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
 }
@@ -5363,8 +5293,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 // script context for the iframe. See crbug.com/788914
 IN_PROC_BROWSER_TEST_P(WebViewTestNoDomAutomationController,
                        LoadWebviewInsideIframe) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testLoadWebviewInsideIframe",
              "web_view/load_webview_inside_iframe", NEEDS_TEST_SERVER);
 
@@ -5387,6 +5315,8 @@ IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, LoadWebViewAccessibility) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, FocusAccessibility) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
@@ -5580,8 +5510,6 @@ INSTANTIATE_TEST_SUITE_P(WebViewScrollBubbling,
                          WebViewGuestScrollTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest, TestGuestWheelScrollsBubble) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   LoadAppWithGuest("web_view/scrollable_embedder_and_guest");
 
   if (GetScrollParam())
@@ -5598,9 +5526,10 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest, TestGuestWheelScrollsBubble) {
 
   content::RenderFrameHost* guest_rfh = guest_rfh_list[0];
   content::RenderFrameSubmissionObserver guest_frame_observer(guest_rfh);
+  content::RenderWidgetHostView* guest_host_view = guest_rfh->GetView();
 
   gfx::Rect embedder_rect = embedder_contents->GetContainerBounds();
-  gfx::Rect guest_rect = guest_rfh->GetView()->GetViewBounds();
+  gfx::Rect guest_rect = guest_host_view->GetViewBounds();
 
   guest_rect.set_x(guest_rect.x() - embedder_rect.x());
   guest_rect.set_y(guest_rect.y() - embedder_rect.y());
@@ -5614,8 +5543,7 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest, TestGuestWheelScrollsBubble) {
   // Make sure wheel events don't get filtered.
   float scroll_magnitude = 15.f;
 
-  display::ScreenInfo screen_info =
-      GetGuestWebContents()->GetRenderWidgetHostView()->GetScreenInfo();
+  display::ScreenInfo screen_info = guest_host_view->GetScreenInfo();
   {
     // Scroll the embedder from a position in the embedder that is not over
     // the guest.
@@ -5666,8 +5594,6 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest, TestGuestWheelScrollsBubble) {
 // consume the scroll.
 IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest,
                        ScrollLatchingPreservedInGuests) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   LoadAppWithGuest("web_view/scrollable_embedder_and_guest");
 
   content::WebContents* embedder_contents = GetEmbedderWebContents();
@@ -5755,8 +5681,6 @@ INSTANTIATE_TEST_SUITE_P(WebViewScrollBubbling,
 
 IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTouchTest,
                        TestGuestGestureScrollsBubble) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   // Just in case we're running ChromeOS tests, we need to make sure the
   // debounce interval is set to zero so our back-to-back gesture-scrolls don't
   // get munged together. Since the first scroll will be put on the fast
@@ -5887,10 +5811,6 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
 // page with both an attached and an unattached <webview> and verifies that,
 // unlike the attached guest, no find requests are sent for the unattached
 // guest. For more context see https://crbug.com/897465.
-// TODO(mcnee): chrome://chrome-signin is not currently supported on Lacros.
-// Instead of repurposing existing webui pages to be able to create webviews
-// within a tabbed browser, create a dedicated test webui with the necessary
-// guest view permissions.
 IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
                        NoFindInPageForUnattachedGuest) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
@@ -5942,6 +5862,44 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
   run_loop.Run();
 }
 
+// Ensure that WebRequest events are not dispatched to pages that are not the
+// embedder of the source webview.
+// See also testWebRequestAPIOnlyForInstance.
+IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
+                       TestWebRequestOnlyDispatchToEmbedder) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load a WebUI with a webview. For testing convenience, we use the existing
+  // chrome signin page.
+  const GURL signin_url{"chrome://chrome-signin/?reason=5"};
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
+  WaitForWebViewInDom();
+  content::WebContents* tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Set an onBeforeRequest handler on the WebUI's webview.
+  EXPECT_TRUE(content::ExecJs(
+      tab_contents,
+      "let wv = document.querySelector( "
+      "    'inline-login-app').shadowRoot.querySelector('webview'); "
+      "window.sawRequest = false; "
+      "wv.request.onBeforeRequest.addListener((details) => { "
+      "  console.log('Unexpected request event', details.url); "
+      "  window.sawRequest = true; "
+      "  return {cancel: true}; "
+      "}, {types: ['main_frame'], urls: ['<all_urls>']}, "
+      "['blocking']);"));
+
+  // Launch an app that creates and loads its own webview. The app will get
+  // WebRequest events for its webview.
+  TestHelper("testWebRequestAPI", "web_view/shim", NO_TEST_SERVER);
+
+  // The WebUI should not see the events for the app's webview.
+  EXPECT_EQ(false, content::EvalJs(tab_contents, "window.sawRequest;"));
+}
+
 // This test class makes "isolated.com" an isolated origin, to be used in
 // testing isolated origins inside of a WebView.
 class IsolatedOriginWebViewTest : public WebViewTest {
@@ -5976,8 +5934,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 // that had loaded it previously, which would result in renderer kills. See
 // https://crbug.com/751916 and https://crbug.com/751920.
 IN_PROC_BROWSER_TEST_P(IsolatedOriginWebViewTest, IsolatedOriginInWebview) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   LoadAppWithGuest("web_view/simple");
   guest_view::GuestViewBase* guest = GetGuestView();
 
@@ -6048,8 +6004,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedOriginWebViewTest, IsolatedOriginInWebview) {
 // https://crbug.com/751916 and https://crbug.com/751920.
 IN_PROC_BROWSER_TEST_P(IsolatedOriginWebViewTest,
                        LoadIsolatedOriginInWebviewAfterLoadingInRegularTab) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   LoadAppWithGuest("web_view/simple");
   guest_view::GuestViewBase* guest = GetGuestView();
 
@@ -6228,8 +6182,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 // app testing infrastructure. Other similar tests that do not require that
 // infrastructure live in PrivateNetworkAccessBrowserTest.*
 IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWebViewTest, ClassificationInGuest) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   LoadAppWithGuest("web_view/simple");
   content::RenderFrameHost* guest_frame_host = GetGuestRenderFrameHost();
   ASSERT_TRUE(guest_frame_host);
@@ -6380,8 +6332,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, InsertFromOtherWindow) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, InsertIntoDetachedIframe) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testInsertIntoDetachedIframe", "web_view/shim",
              NEEDS_TEST_SERVER);
   // Round-trip to ensure the embedder did not crash.
@@ -6447,14 +6397,10 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          WebViewPPAPITest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(WebViewPPAPITest, Shim_TestPlugin) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testPlugin", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewPPAPITest, Shim_TestPluginLoadPermission) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testPluginLoadPermission", "web_view/shim", NO_TEST_SERVER);
 }
 #endif  // BUILDFLAG(ENABLE_PPAPI)
@@ -6659,7 +6605,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
       starting_instance->IsRelatedSiteInstance(main_frame->GetSiteInstance()));
   EXPECT_EQ(starting_instance->GetStoragePartitionConfig(),
             main_frame->GetSiteInstance()->GetStoragePartitionConfig());
-  EXPECT_EQ(starting_instance->GetProcess()->GetStoragePartition(),
+  EXPECT_EQ(starting_instance->GetOrCreateProcess()->GetStoragePartition(),
             main_frame->GetProcess()->GetStoragePartition());
 
   // Ensure the guest SiteInstance reflects the proper site and actually uses
@@ -6865,7 +6811,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, BrowsingInstanceSwap) {
   EXPECT_FALSE(first_instance->IsRelatedSiteInstance(second_instance.get()));
   EXPECT_EQ(first_instance->GetStoragePartitionConfig(),
             second_instance->GetStoragePartitionConfig());
-  EXPECT_EQ(first_instance->GetProcess()->GetStoragePartition(),
+  EXPECT_EQ(first_instance->GetOrCreateProcess()->GetStoragePartition(),
             second_instance->GetProcess()->GetStoragePartition());
 }
 
@@ -6954,7 +6900,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, NavigateToAboutBlank) {
   EXPECT_FALSE(first_instance->IsRelatedSiteInstance(third_instance.get()));
   EXPECT_EQ(first_instance->GetStoragePartitionConfig(),
             third_instance->GetStoragePartitionConfig());
-  EXPECT_EQ(first_instance->GetProcess()->GetStoragePartition(),
+  EXPECT_EQ(first_instance->GetOrCreateProcess()->GetStoragePartition(),
             third_instance->GetProcess()->GetStoragePartition());
 
   // Ask embedder to navigate the webview back to about:blank.  This should
@@ -7093,16 +7039,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ContentScript) {
 
 // Checks that content scripts work in an out-of-process iframe in a <webview>
 // tag.
-// TODO(crbug.com/40864752): Fix flakiness on win-rel. The test is also disabled
-// on mac11-arm64-rel using filter.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/40864752): Fix flakiness on win-rel and mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ContentScriptInOOPIF DISABLED_ContentScriptInOOPIF
 #else
 #define MAYBE_ContentScriptInOOPIF ContentScriptInOOPIF
 #endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, MAYBE_ContentScriptInOOPIF) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
@@ -7337,8 +7280,6 @@ IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
 // that requires a dedicated process, while all other navigations should use
 // the default SiteInstance and an unlocked process.
 IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, IsolatedOrigin) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Load an app with a <webview> guest that starts at a data: URL.
@@ -7462,6 +7403,39 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
                          testing::Combine(testing::Bool(), testing::Bool()),
                          WebViewFencedFrameTest::DescribeParams);
 
+IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest, ZoomFencedFrame) {
+  TestHelper("testZoomFencedFrame", "web_view/shim", NEEDS_TEST_SERVER);
+
+  // Verify setup is correct.
+  auto* guest_rfh =
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+  std::vector<content::RenderFrameHost*> rfhs =
+      content::CollectAllRenderFrameHosts(guest_rfh);
+  ASSERT_EQ(rfhs.size(), 2u);
+  ASSERT_EQ(rfhs[0], guest_rfh);
+  content::RenderFrameHostWrapper fenced_frame(rfhs[1]);
+  EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
+
+  // Query zoom level of FencedFrame's RenderWidgetHost, make sure it matches
+  // the expected zoom level.
+  auto* fenced_frame_rwh = fenced_frame->GetRenderWidgetHost();
+  // See Javascript fcn testZoomFencedFrame for source of the 0.95 zoom factor.
+  double expected_zoom_level = blink::ZoomFactorToZoomLevel(0.95);
+  // Guest has `expected_zoom_level`.
+  EXPECT_DOUBLE_EQ(expected_zoom_level, content::GetPendingZoomLevel(
+                                            guest_rfh->GetRenderWidgetHost()));
+  // FencedFrame has `expected_zoom_level`.
+  EXPECT_DOUBLE_EQ(expected_zoom_level,
+                   content::GetPendingZoomLevel(fenced_frame_rwh));
+
+  // Verify webview's embedder has expected zoom.
+  auto* embedder_web_contents = GetFirstAppWindowWebContents();
+  auto* embedder_rwh =
+      embedder_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  EXPECT_DOUBLE_EQ(blink::ZoomFactorToZoomLevel(1.0),
+                   content::GetPendingZoomLevel(embedder_rwh));
+}
+
 IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest,
                        FencedFrameInGuestHasGuestSiteInstance) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
@@ -7537,14 +7511,10 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          WebViewUsbTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(WebViewUsbTest, Shim_TestCannotRequestUsb) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testCannotRequestUsb", "web_view/shim", NEEDS_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewUsbTest, Shim_TestCannotReuseUsbPairedInTab) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   // We start the test server here, instead of in TestHelper, because we need
   // to know the origin used in both the tab and webview before running the rest
   // of the test.
@@ -7643,8 +7613,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 IN_PROC_BROWSER_TEST_P(WebViewSerialTest,
                        Shim_TestEnabledInTabButNotInWebView) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   // We start the test server here, instead of in TestHelper, because we need
   // to know the origin used in both the tab and webview.
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -7735,8 +7703,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 IN_PROC_BROWSER_TEST_P(WebViewBluetoothTest,
                        Shim_TestEnabledInTabButNotInWebView) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   // We start the test server here, instead of in TestHelper, because we
   // need to know the origin used in the tab.
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -7874,14 +7840,12 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, PerformanceManager) {
           guest->GetGuestMainFrame());
   ASSERT_TRUE(inner_root_frame_node);
 
-  // Jump into the graph and make sure guest view does not have a
-  // parent frame node.
-  performance_manager::RunInGraph([main_frame_node, inner_root_frame_node]() {
-    // <webviews> have an outer document instead of a parent frame node.
-    EXPECT_EQ(inner_root_frame_node->GetParentFrameNode(), nullptr);
+  // Make sure the guest view node does not have a parent frame node.
 
-    // The outer document of the guest view is available.
-    EXPECT_EQ(inner_root_frame_node->GetParentOrOuterDocumentOrEmbedder(),
-              main_frame_node.get());
-  });
+  // <webviews> have an outer document instead of a parent frame node.
+  EXPECT_EQ(inner_root_frame_node->GetParentFrameNode(), nullptr);
+
+  // The outer document of the guest view is available.
+  EXPECT_EQ(inner_root_frame_node->GetParentOrOuterDocumentOrEmbedder(),
+            main_frame_node.get());
 }

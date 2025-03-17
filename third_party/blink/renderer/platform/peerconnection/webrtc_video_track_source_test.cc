@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
@@ -46,7 +47,7 @@ class MockVideoSink : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
 TEST(WebRtcVideoTrackSourceRefreshFrameTest, CallsRefreshFrame) {
   bool called = false;
   scoped_refptr<WebRtcVideoTrackSource> track_source =
-      new rtc::RefCountedObject<WebRtcVideoTrackSource>(
+      new webrtc::RefCountedObject<WebRtcVideoTrackSource>(
           /*is_screencast=*/false,
           /*needs_denoising=*/std::nullopt,
           base::BindLambdaForTesting([](const media::VideoCaptureFeedback&) {}),
@@ -65,7 +66,7 @@ class WebRtcVideoTrackSourceTest
       : shared_resources_(
             base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
                 /*gpu_factories=*/nullptr)),
-        track_source_(new rtc::RefCountedObject<WebRtcVideoTrackSource>(
+        track_source_(new webrtc::RefCountedObject<WebRtcVideoTrackSource>(
             /*is_screencast=*/false,
             /*needs_denoising=*/std::nullopt,
             base::BindRepeating(&WebRtcVideoTrackSourceTest::ProcessFeedback,
@@ -74,6 +75,8 @@ class WebRtcVideoTrackSourceTest
             /*gpu_factories=*/nullptr,
             shared_resources_)) {
     track_source_->AddOrUpdateSink(&mock_sink_, rtc::VideoSinkWants());
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
   }
 
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback) {
@@ -110,7 +113,7 @@ class WebRtcVideoTrackSourceTest
     scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
-        frame_parameters.pixel_format, timestamp);
+        frame_parameters.pixel_format, timestamp, test_sii_.get());
     track_source_->OnFrameCaptured(frame);
   }
 
@@ -124,7 +127,7 @@ class WebRtcVideoTrackSourceTest
                 frame_parameters.pixel_format)
                 .value(),
             premapped, this);
-    scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
+    scoped_refptr<media::VideoFrame> frame = CreateTestFrameWithGMB(
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
         frame_parameters.pixel_format, timestamp, std::move(fake_gmb));
@@ -137,7 +140,7 @@ class WebRtcVideoTrackSourceTest
     scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
-        frame_parameters.pixel_format, base::TimeDelta());
+        frame_parameters.pixel_format, base::TimeDelta(), test_sii_.get());
     track_source_->OnFrameCaptured(frame);
     EXPECT_EQ(feedback_.max_pixels, max_pixels);
     EXPECT_EQ(feedback_.max_framerate_fps, max_framerate);
@@ -149,7 +152,7 @@ class WebRtcVideoTrackSourceTest
     scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
-        frame_parameters.pixel_format, base::TimeDelta());
+        frame_parameters.pixel_format, base::TimeDelta(), test_sii_.get());
     frame->metadata().capture_counter = capture_counter;
     frame->metadata().capture_update_rect = update_rect;
     track_source_->OnFrameCaptured(frame);
@@ -160,7 +163,7 @@ class WebRtcVideoTrackSourceTest
     scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
-        frame_parameters.pixel_format, base::TimeDelta());
+        frame_parameters.pixel_format, base::TimeDelta(), test_sii_.get());
     frame->set_color_space(color_space);
     track_source_->OnFrameCaptured(frame);
   }
@@ -215,6 +218,7 @@ class WebRtcVideoTrackSourceTest
   scoped_refptr<WebRtcVideoTrackSource> track_source_;
   media::VideoCaptureFeedback feedback_;
   WTF::Deque<base::OnceCallback<void(bool)>> map_callbacks_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 namespace {

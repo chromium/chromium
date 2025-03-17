@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "components/content_settings/core/common/content_settings.mojom";
 import "components/ip_protection/mojom/core.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -23,6 +24,7 @@ import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/device_bound_sessions.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
+import "services/network/public/mojom/document_isolation_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/first_party_sets_access_delegate.mojom";
 import "services/network/public/mojom/hash_value.mojom";
@@ -72,7 +74,7 @@ import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 import "services/network/public/mojom/dhcp_wpad_url_client.mojom";
 
 [EnableIf=is_p2p_enabled]
@@ -345,19 +347,11 @@ struct NetworkContextParams {
   // Retrieves the PAC script URL set via DHCP from the browser process. Only
   // used if |proxy_resolver_factory| is set. Note: optional because some tests
   // build their own NetworkContextParams and don't need a DHCP WPAD client.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   pending_remote<DhcpWpadUrlClient>? dhcp_wpad_url_client;
 
   // If true, cookies will be stored encrypted.
   bool enable_encrypted_cookies = true;
-
-  // On Windows, whether or not the cookie database should be opened with
-  // the sqlite3 flag `exclusive=true` which asks the sqlite VFS to open them
-  // without file sharing enabled. This has the consequence that other processes
-  // should not be able to open the cookie database file. If left unspecified
-  // then a feature-determined default value will be used.
-  [EnableIf=is_win]
-  bool? enable_locking_cookie_database;
 
   // If the cookie file is given, this controls whether previously written
   // session cookies are restored. Otherwise it should be false.
@@ -454,6 +448,9 @@ struct NetworkContextParams {
   // is created. This setting can change via the
   // `SetIpProtectionEnabled` method of the `IpProtectionControl` interface.
   bool enable_ip_protection = false;
+
+  // Signals to IP Protection if this is an incognito network context.
+  bool ip_protection_incognito = false;
 
   // When PAC quick checking is enabled, DNS lookups for PAC script's host are
   // timed out aggressively. This prevents hanging all network request on DNS
@@ -621,6 +618,12 @@ struct NetworkContextParams {
   // Stores mapping of endpoint name to endpoint url from initial reporting
   // endpoints set by the ReportingEndpoints enterprise policy.
   map<string, url.mojom.Url>? enterprise_reporting_endpoints;
+
+  // Enables usage of net::dns::StaleHostResolver. This is only available
+  // as opt-in in Android. This will be used during constructing
+  // the URLRequestContextOwner object in the NetworkContext.
+  [EnableIf=is_android]
+  bool stale_dns_enabled = false;
 };
 
 struct NetworkConditions {
@@ -854,6 +857,9 @@ struct URLLoaderFactoryParams {
   // Used to report CORP violations caused by COEP.
   pending_remote<CrossOriginEmbedderPolicyReporter>? coep_reporter;
 
+  // Used to report CORP violations caused by DocumentIsolationPolicy.
+  pending_remote<DocumentIsolationPolicyReporter>? dip_reporter;
+
   // Used to notify clients about cookie reads or writes.
   pending_remote<CookieAccessObserver>? cookie_observer;
 
@@ -900,6 +906,11 @@ struct URLLoaderFactoryParams {
   // Lists all the cookie setting overrides that should be specified on
   // each URLRequest.
   CookieSettingOverrides cookie_setting_overrides;
+
+  // The cookie setting overrides from devtools, only conditionally applied
+  // on requests from devtools enabled context, i.e. when
+  // `ResourceRequest::devtools_request_id` is present.
+  CookieSettingOverrides devtools_cookie_setting_overrides;
 
   // If `require_cross_site_request_for_cookies` is specified, then all
   // loaded requests must have an empty site_for_cookies to ensure only
@@ -976,6 +987,7 @@ interface NetworkContext {
       url.mojom.Origin origin,
       IsolationInfo isolation_info,
       CookieSettingOverrides cookie_setting_overrides,
+      CookieSettingOverrides devtools_cookie_setting_overrides,
       pending_remote<CookieAccessObserver>? cookie_observer);
 
   // Provides a TrustTokenQueryAnswerer scoped to the given top-frame origin
@@ -1024,6 +1036,10 @@ interface NetworkContext {
 
   // Set Trust Token blocking to |block|.
   SetBlockTrustTokens(bool block);
+
+  // Sets the list of TRACKING_PROTECTION content setting exceptions in IpProtectionCore.
+  SetTrackingProtectionContentSetting(
+    array<content_settings.mojom.ContentSettingPatternSource> settings);
 
   // Clears network objects with implicit URL history information. Data related
   // to events that happened prior to |start_time| and after |end_time| may be
@@ -1511,10 +1527,17 @@ interface NetworkContext {
   CreateHostResolver(DnsConfigOverrides? config_overrides,
                      pending_receiver<HostResolver> host_resolver);
 
-  // Checks the given certificate against the CertVerifier and CTVerifier. This
-  // implementation is currently specific for use by Signed Exchange.
+  // Checks the given certificate against the CertVerifier and CTVerifier.
+  VerifyCert(X509Certificate certificate,
+             HostPortPair host_port,
+             string ocsp_response,
+             string sct_list)
+      => (int32 error_code, CertVerifyResult cv_result, bool pkp_bypassed);
+
+  // Checks the given certificate against the CertVerifier and CTVerifier.
+  // This implementation is specific for use by Signed Exchange.
   VerifyCertForSignedExchange(X509Certificate certificate,
-                              url.mojom.Url url,
+                              HostPortPair host_port,
                               string ocsp_response,
                               string sct_list)
       => (int32 error_code, CertVerifyResult cv_result, bool pkp_bypassed);
@@ -1524,9 +1547,11 @@ interface NetworkContext {
   AddHSTS(string host, mojo_base.mojom.Time expiry, bool include_subdomains)
       => ();
 
-  // Returns true if it is known that |host| has requested to always be
-  // accessed via HTTPS.
-  IsHSTSActiveForHost(string host) => (bool result);
+  // Returns true if it is known that `host` has requested to always be
+  // accessed via HTTPS. `is_top_level_nav` indicates whether or not the query
+  // for the HSTS state is being made by a top-level/primary/outermost frame
+  // navigation request.
+  IsHSTSActiveForHost(string host, bool is_top_level_nav) => (bool result);
 
   // Retrieve values from the HSTS state from the associated contexts
   // transport security state.
@@ -1603,7 +1628,7 @@ interface NetworkContext {
   // |auth_scheme| is the authentication scheme of the challenge and it's
   // specified as a case-insensitive string. Unlike server credentials, proxy
   // credentials are not keyed on NetworkAnonymizationKey.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   LookupProxyAuthCredentials(
       ProxyServer proxy_server, string auth_scheme, string realm)
       => (AuthCredentials? credentials);

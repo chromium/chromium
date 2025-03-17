@@ -76,6 +76,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DataSharing.Intent.{Progress}" enum="DataSharingIntentType"
+    expires_after="2025-11-06">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the progress of the action / intent the user has taken on the
+    ShareKit UI such as copying a link, clicking the learn more url, leaving a
+    group, updating access, etc. Recorded when a DataSharingEvent is triggered.
+  </summary>
+  <token key="Progress">
+    <variant name="Failed"/>
+    <variant name="Started"/>
+    <variant name="Succeeded"/>
+    <variant name="Unknown"/>
+  </token>
+</histogram>
+
+<histogram name="DataSharing.TotalMembersInGroup.AtStartup" units="members"
+    expires_after="2025-09-03">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the number of members in a group. Recorded when the
+    DataSharingService has finished initializing.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

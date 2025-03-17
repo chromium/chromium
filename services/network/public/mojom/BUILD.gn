@@ -2,11 +2,38 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//services/network/public/cpp/features.gni")
+
+mojom("mojom_ad_auction") {
+  generate_java = true
+  sources = [ "ad_auction.mojom" ]
+
+  public_deps = [ "//url/mojom:url_mojom_origin" ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.AdAuctionEventRecord"
+          cpp = "::network::AdAuctionEventRecord"
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/ad_auction/event_record_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//net" ]
+    },
+  ]
+}
 
 # These interfaces are put in their own target to avoid a circular dependency,
 # which comes from the fact that proxy_resolver service uses these interfaces,
@@ -23,13 +50,12 @@ mojom("mojom_ip_address") {
     "ip_endpoint.mojom",
   ]
 
-  # WebUI bindings are only needed on ChromeOS Ash.
-  if (is_chromeos_ash) {
+  # WebUI bindings are only needed on ChromeOS.
+  if (is_chromeos) {
     webui_module_path = "chrome://resources/mojo/services/network/public/mojom"
 
-    # Used by ash/webui/resources/common/network_health, which is still using
-    # Closure Compiler, so generate WebUI bindings in JavaScript.
-    generate_webui_js_bindings = true
+    # Still used by blink targets.
+    generate_legacy_js_bindings = true
   }
 
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
@@ -185,6 +211,26 @@ mojom("mojom_ip_address") {
   blink_cpp_typemaps += shared_cpp_typemaps
 }
 
+mojom("mojom_network_isolation_partition") {
+  generate_java = true
+  sources = [ "network_isolation_partition.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.NetworkIsolationPartition"
+          cpp = "::net::NetworkIsolationPartition"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/network_isolation_partition_mojom_traits.h" ]
+      traits_sources = [ "//services/network/public/cpp/network_isolation_partition_mojom_traits.cc" ]
+      traits_public_deps = [ "//net" ]
+    },
+  ]
+}
+
 # As with mojom_ip_address, this is a separate target to avoid a circular
 # dependency, which comes from the fact that proxy_resolver service uses
 # this interfaces, and the network service uses the proxy_resolver service.
@@ -195,6 +241,7 @@ mojom("mojom_network_isolation_key") {
   sources = [ "network_isolation_key.mojom" ]
 
   public_deps = [
+    ":mojom_network_isolation_partition",
     ":mojom_schemeful_site",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_origin",
@@ -245,6 +292,10 @@ mojom("mojom_shared_storage") {
           mojom = "network.mojom.SharedStorageValueArgument"
           cpp = "::std::u16string"
         },
+        {
+          mojom = "network.mojom.LockName"
+          cpp = "::std::string"
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/shared_storage_mojom_traits.h" ]
@@ -260,6 +311,10 @@ mojom("mojom_shared_storage") {
         },
         {
           mojom = "network.mojom.SharedStorageValueArgument"
+          cpp = "::WTF::String"
+        },
+        {
+          mojom = "network.mojom.LockName"
           cpp = "::WTF::String"
         },
       ]
@@ -328,6 +383,7 @@ mojom("mojom_network_anonymization_key") {
   sources = [ "network_anonymization_key.mojom" ]
 
   public_deps = [
+    ":mojom_network_isolation_partition",
     ":mojom_schemeful_site",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_origin",
@@ -464,6 +520,64 @@ mojom("mojom_attribution") {
   sources = [ "attribution.mojom" ]
 }
 
+mojom("mojom_cors_origin_pattern") {
+  generate_java = true
+  sources = [ "cors_origin_pattern.mojom" ]
+  public_deps = [ "//url/mojom:url_mojom_origin" ]
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+}
+
+mojom("mojom_integrity_algorithm") {
+  generate_java = true
+  sources = [ "integrity_algorithm.mojom" ]
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+}
+
+mojom("mojom_source_location") {
+  generate_java = true
+  sources = [ "source_location.mojom" ]
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+}
+
+mojom("mojom_web_sandbox_flags") {
+  generate_java = true
+  sources = [ "web_sandbox_flags.mojom" ]
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+}
+
+mojom("mojom_content_security_policy") {
+  generate_java = true
+  sources = [ "content_security_policy.mojom" ]
+  public_deps = [
+    ":mojom_integrity_algorithm",
+    ":mojom_source_location",
+    ":mojom_web_sandbox_flags",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
+  ]
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+}
+
 # These .mojom files are put in their own target to avoid a circular dependency,
 # which comes from the fact that the typemap for url_loader.mojom
 # (ResourceRequest) depends on them.
@@ -475,7 +589,6 @@ mojom("url_loader_base") {
     "chunked_data_pipe_getter.mojom",
     "clear_data_filter.mojom",
     "client_security_state.mojom",
-    "content_security_policy.mojom",
     "cors.mojom",
     "cross_origin_embedder_policy.mojom",
     "cross_origin_opener_policy.mojom",
@@ -488,7 +601,6 @@ mojom("url_loader_base") {
     "fetch_api.mojom",
     "http_raw_headers.mojom",
     "http_request_headers.mojom",
-    "integrity_algorithm.mojom",
     "ip_address_space.mojom",
     "isolation_info.mojom",
     "link_header.mojom",
@@ -505,7 +617,7 @@ mojom("url_loader_base") {
     "request_priority.mojom",
     "service_worker_router_info.mojom",
     "shared_dictionary_access_observer.mojom",
-    "source_location.mojom",
+    "source_type.mojom",
     "sri_message_signature.mojom",
     "supports_loading_mode.mojom",
     "timing_allow_origin.mojom",
@@ -518,7 +630,6 @@ mojom("url_loader_base") {
     "url_response_head.mojom",
     "web_bundle_handle.mojom",
     "web_client_hints_types.mojom",
-    "web_sandbox_flags.mojom",
     "web_transport.mojom",
     "x_frame_options.mojom",
   ]
@@ -526,12 +637,19 @@ mojom("url_loader_base") {
   public_deps = [
     ":cookies_mojom",
     ":mojom_attribution",
+    ":mojom_content_security_policy",
+    ":mojom_integrity_algorithm",
     ":mojom_ip_address",
+    ":mojom_network_isolation_partition",
     ":mojom_network_param",
+    ":mojom_permissions_policy",
     ":mojom_proxy_config",
     ":mojom_schemeful_site",
     ":mojom_shared_dictionary",
     ":mojom_shared_storage",
+    ":mojom_source_location",
+    ":mojom_storage_access_api",
+    ":mojom_web_sandbox_flags",
     "//mojo/public/mojom/base",
     "//services/proxy_resolver/public/mojom",
     "//url/mojom:url_mojom_gurl",
@@ -643,10 +761,6 @@ mojom("url_loader_base") {
           copyable_pass_by_value = true
         },
         {
-          mojom = "network.mojom.SourceType"
-          cpp = "::net::SourceStream::SourceType"
-        },
-        {
           mojom = "network.mojom.DataElementBytes"
           cpp = "::network::DataElementBytes"
           move_only = true
@@ -734,6 +848,17 @@ mojom("url_loader_base") {
       traits_headers = [
         "//services/network/public/cpp/parsed_request_cookie_mojom_traits.h",
       ]
+      traits_public_deps = [ "//net" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.SourceType"
+          cpp = "::net::SourceStreamType"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/source_type_mojom_traits.h" ]
       traits_public_deps = [ "//net" ]
     },
   ]
@@ -834,6 +959,10 @@ mojom("url_loader_base") {
         {
           mojom = "network.mojom.DeviceBoundSessionKey"
           cpp = "::net::device_bound_sessions::SessionKey"
+        },
+        {
+          mojom = "network.mojom.DeviceBoundSessionAccess"
+          cpp = "::net::device_bound_sessions::SessionAccess"
         },
       ]
       traits_headers = [
@@ -1458,13 +1587,60 @@ mojom("mojom_host_resolver") {
   blink_cpp_typemaps = shared_cpp_typemaps
 }
 
+mojom("mojom_permissions_policy") {
+  generate_java = true
+  sources = [
+    "permissions_policy/permissions_policy.mojom",
+    "permissions_policy/permissions_policy_feature.mojom",
+  ]
+
+  public_deps = [ "//url/mojom:url_mojom_origin" ]
+
+  shared_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.OriginWithPossibleWildcards"
+          cpp = "::network::OriginWithPossibleWildcards"
+        },
+        {
+          mojom = "network.mojom.ParsedPermissionsPolicyDeclaration"
+          cpp = "::network::ParsedPermissionsPolicyDeclaration"
+        },
+        {
+          mojom = "network.mojom.PermissionsPolicy"
+          cpp = "::network::PermissionsPolicy"
+          default_constructible = false
+          move_only = true
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/permissions_policy/permissions_policy_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//services/network/public/cpp:web_platform",
+        "//url/mojom:mojom_traits",
+      ]
+    },
+  ]
+  cpp_typemaps = shared_cpp_typemaps
+  blink_cpp_typemaps = shared_cpp_typemaps
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  # Don't scramble message IDs so they are redistributable to external tests.
+  scramble_message_ids = false
+}
+
 mojom("mojom") {
   generate_java = true
   sources = [
     "cert_verifier_service.mojom",
     "cert_verifier_service_updater.mojom",
     "cookie_encryption_provider.mojom",
-    "cors_origin_pattern.mojom",
     "default_credentials.mojom",
     "dhcp_wpad_url_client.mojom",
     "digitally_signed.mojom",
@@ -1499,6 +1675,7 @@ mojom("mojom") {
 
   public_deps = [
     ":cookies_mojom",
+    ":mojom_cors_origin_pattern",
     ":mojom_first_party_sets",
     ":mojom_host_resolver",
     ":mojom_ip_address",

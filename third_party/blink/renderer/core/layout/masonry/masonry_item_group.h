@@ -26,6 +26,9 @@ class MasonryItemGroupProperties {
   MasonryItemGroupProperties(WTF::HashTableDeletedValueType)
       : is_deleted_(true) {}
 
+  explicit MasonryItemGroupProperties(const GridSpan& item_span)
+      : item_span_(item_span) {}
+
   bool operator==(const MasonryItemGroupProperties& other) const {
     return is_deleted_ == other.is_deleted_ && item_span_ == other.item_span_;
   }
@@ -40,6 +43,11 @@ class MasonryItemGroupProperties {
   }
 
   bool IsHashTableDeletedValue() const { return is_deleted_; }
+
+  GridSpan Span() const {
+    DCHECK(item_span_);
+    return *item_span_;
+  }
 
  private:
   // `HashTraits` requires a way to create a "deleted value". In this class it's

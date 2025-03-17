@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/test/earl_grey/accessibility_util.h"
 
 #import <GTXiLib/GTXiLib.h>
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/test/earl_grey/accessibility_util.h"
 
 namespace chrome_test_util {
 

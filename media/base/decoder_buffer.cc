@@ -8,7 +8,9 @@
 
 #include "base/containers/heap_array.h"
 #include "base/debug/alias.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/pass_key.h"
 #include "media/base/subsample_entry.h"
 
 namespace media {
@@ -54,18 +56,37 @@ DecoderBuffer::DecoderBuffer(DecoderBufferType decoder_buffer_type,
   }
 }
 
+DecoderBuffer::DecoderBuffer(base::PassKey<DecoderBuffer>,
+                             base::span<const uint8_t> data)
+    : DecoderBuffer(std::move(data)) {}
+
+DecoderBuffer::DecoderBuffer(base::PassKey<DecoderBuffer>,
+                             base::HeapArray<uint8_t> data)
+    : DecoderBuffer(std::move(data)) {}
+
+DecoderBuffer::DecoderBuffer(base::PassKey<DecoderBuffer>,
+                             std::unique_ptr<ExternalMemory> external_memory)
+    : DecoderBuffer(std::move(external_memory)) {}
+
+DecoderBuffer::DecoderBuffer(base::PassKey<DecoderBuffer>,
+                             DecoderBufferType decoder_buffer_type,
+                             std::optional<ConfigVariant> next_config)
+    : DecoderBuffer(decoder_buffer_type, std::move(next_config)) {}
+
 DecoderBuffer::~DecoderBuffer() = default;
 
 // static
 scoped_refptr<DecoderBuffer> DecoderBuffer::CopyFrom(
     base::span<const uint8_t> data) {
-  return base::WrapRefCounted(new DecoderBuffer(data));
+  return base::MakeRefCounted<DecoderBuffer>(base::PassKey<DecoderBuffer>(),
+                                             data);
 }
 
 // static
 scoped_refptr<DecoderBuffer> DecoderBuffer::FromArray(
     base::HeapArray<uint8_t> data) {
-  return base::WrapRefCounted(new DecoderBuffer(std::move(data)));
+  return base::MakeRefCounted<DecoderBuffer>(base::PassKey<DecoderBuffer>(),
+                                             std::move(data));
 }
 
 // static
@@ -114,14 +135,16 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::FromExternalMemory(
   if (external_memory->Span().empty()) {
     return nullptr;
   }
-  return base::WrapRefCounted(new DecoderBuffer(std::move(external_memory)));
+  return base::MakeRefCounted<DecoderBuffer>(base::PassKey<DecoderBuffer>(),
+                                             std::move(external_memory));
 }
 
 // static
 scoped_refptr<DecoderBuffer> DecoderBuffer::CreateEOSBuffer(
     std::optional<ConfigVariant> next_config) {
-  return base::WrapRefCounted(new DecoderBuffer(DecoderBufferType::kEndOfStream,
-                                                std::move(next_config)));
+  return base::MakeRefCounted<DecoderBuffer>(base::PassKey<DecoderBuffer>(),
+                                             DecoderBufferType::kEndOfStream,
+                                             std::move(next_config));
 }
 
 // static
@@ -141,11 +164,6 @@ bool DecoderBuffer::DoSubsamplesMatch(const DecoderBuffer& buffer) {
     return true;
   }
   return VerifySubsamplesMatchSize(subsamples, buffer.size());
-}
-
-base::span<const uint8_t> DecoderBuffer::AsSpan() const {
-  DCHECK(!end_of_stream());
-  return external_memory_ ? external_memory_->Span() : data_;
 }
 
 void DecoderBuffer::set_discard_padding(const DiscardPadding& discard_padding) {

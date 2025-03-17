@@ -192,13 +192,14 @@ bool ThreadProfilerConfiguration::IsProcessGloballyEnabled(
 // static
 ThreadProfilerConfiguration::VariationGroup
 ThreadProfilerConfiguration::ChooseVariationGroup(
-    std::initializer_list<Variation> variations) {
+    std::initializer_list<Variation> variations,
+    double randValue) {
   double total_weight = 0;
   for (const Variation& variation : variations)
     total_weight += variation.weight;
   DCHECK(base::IsApproximatelyEqual(total_weight, 100.0, 0.0001));
 
-  int chosen = base::RandDouble() * total_weight;  // Max is inclusive.
+  double chosen = randValue * total_weight;  // Max is inclusive.
   double cumulative_weight = 0;
   const Variation* last_item = variations.end() - 1;
   for (const Variation* it = variations.begin(); it != last_item; ++it) {
@@ -240,14 +241,16 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
   const std::optional<sampling_profiler::ProfilerProcessType>
       process_type_to_sample = platform_configuration.ChooseEnabledProcess();
 
-  return {
-      ChooseVariationGroup({
-          {kProfileDisabledOutsideOfExperiment, relative_populations.disabled},
-          {kProfileEnabled, relative_populations.enabled},
-          {kProfileControl, relative_populations.experiment / 2.0},
-          {kProfileDisabled, relative_populations.experiment / 2.0},
-      }),
-      process_type_to_sample};
+  return {ChooseVariationGroup(
+              {
+                  {kProfileDisabledOutsideOfExperiment,
+                   relative_populations.disabled},
+                  {kProfileEnabled, relative_populations.enabled},
+                  {kProfileControl, relative_populations.experiment / 2.0},
+                  {kProfileDisabled, relative_populations.experiment / 2.0},
+              },
+              base::RandDouble()),
+          process_type_to_sample};
 }
 
 // static

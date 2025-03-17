@@ -110,8 +110,9 @@ NSString* InjectedErrorPageFilePath() {
 #pragma mark - Public
 
 + (GURL)failedNavigationURLFromErrorPageFileURL:(const GURL&)URL {
-  if (!URL.is_valid())
+  if (!URL.is_valid()) {
     return GURL();
+  }
 
   if (URL.SchemeIsFile() &&
       URL.path() == base::SysNSStringToUTF8(LoadedErrorPageFilePath())) {

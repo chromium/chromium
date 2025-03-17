@@ -42,6 +42,7 @@ class ViewScreenRequest : public google_apis::UrlFetchRequestBase {
   ViewScreenRequest(google_apis::RequestSender* sender,
                     std::string session_id,
                     ViewScreenParam view_screen_param,
+                    std::string url_base,
                     ViewScreenRequestCallback callback);
   ViewScreenRequest(const ViewScreenRequest&) = delete;
   ViewScreenRequest& operator=(const ViewScreenRequest&) = delete;

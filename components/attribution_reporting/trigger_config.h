@@ -16,7 +16,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
@@ -24,6 +23,8 @@
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 
 namespace base {
+class DictValue;
+class ListValue;
 class TimeDelta;
 }  // namespace base
 
@@ -47,7 +48,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpec {
     return event_report_windows_;
   }
 
-  base::Value::Dict ToJson() const;
+  base::DictValue ToJson() const;
 
   friend bool operator==(const TriggerSpec&, const TriggerSpec&) = default;
 
@@ -64,7 +65,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   // TODO: Merge `ParseTopLevelTriggerData()` into this function and rename it
   // to `Parse()`.
   static base::expected<TriggerSpecs, mojom::SourceRegistrationError>
-  ParseFullFlexForTesting(const base::Value::Dict&,
+  ParseFullFlexForTesting(const base::DictValue&,
                           mojom::SourceType,
                           base::TimeDelta expiry,
                           EventReportWindows default_report_windows,
@@ -73,7 +74,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   // Parses the top-level `trigger_data` field. The resulting value is either
   // `empty()` or `SingleSharedSpec()`.
   static base::expected<TriggerSpecs, mojom::SourceRegistrationError>
-  ParseTopLevelTriggerData(const base::Value::Dict&,
+  ParseTopLevelTriggerData(const base::DictValue&,
                            mojom::SourceType,
                            EventReportWindows default_report_windows,
                            mojom::TriggerDataMatching);
@@ -104,9 +105,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   // Will return nullptr if there is not a single shared spec.
   const TriggerSpec* SingleSharedSpec() const;
 
-  base::Value::List ToJson() const;
+  base::ListValue ToJson() const;
 
-  void Serialize(base::Value::Dict&) const;
+  void Serialize(base::DictValue&) const;
 
   class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) Iterator {
    public:
@@ -222,10 +223,10 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<mojom::TriggerDataMatching, mojom::SourceRegistrationError>
-ParseTriggerDataMatching(const base::Value::Dict&);
+ParseTriggerDataMatching(const base::DictValue&);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-void Serialize(base::Value::Dict&, mojom::TriggerDataMatching);
+void Serialize(base::DictValue&, mojom::TriggerDataMatching);
 
 }  // namespace attribution_reporting
 

@@ -4,11 +4,11 @@
 
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
@@ -25,7 +25,7 @@ namespace {
 using HolderPtr = std::unique_ptr<BulkLeakCheckImpl::CredentialHolder>;
 HolderPtr RemoveFromQueue(BulkLeakCheckImpl::CredentialHolder* weak_holder,
                           base::circular_deque<HolderPtr>* queue) {
-  auto it = base::ranges::find(*queue, weak_holder, &HolderPtr::get);
+  auto it = std::ranges::find(*queue, weak_holder, &HolderPtr::get);
   CHECK(it != queue->end());
   HolderPtr holder = std::move(*it);
   queue->erase(it);

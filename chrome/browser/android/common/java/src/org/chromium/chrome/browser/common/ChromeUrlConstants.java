@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.common;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /**
@@ -11,6 +12,7 @@ import org.chromium.url.GURL;
  *
  * <p>Java side version of NTP related constants in chrome/common/url_constants.cc
  */
+@NullMarked
 public class ChromeUrlConstants {
     private static class Holder {
         private static final String SERIALIZED_NATIVE_NTP_URL =

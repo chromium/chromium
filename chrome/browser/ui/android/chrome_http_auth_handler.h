@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -47,8 +48,8 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
   void CloseDialog();
 
   // password_manager::HttpAuthObserver:
-  void OnAutofillDataAvailable(const std::u16string& username,
-                               const std::u16string& password) override;
+  void OnAutofillDataAvailable(std::u16string_view username,
+                               std::u16string_view password) override;
   void OnLoginModelDestroying() override;
 
   // --------------------------------------------------------------

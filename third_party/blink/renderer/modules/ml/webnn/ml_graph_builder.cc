@@ -6,18 +6,20 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
@@ -175,8 +177,9 @@ enum class MLGraphOperatorUma {
   kTriangular = 89,
   kWhere = 90,
   kReverse = 91,
+  kNotEqual = 92,
   kMinValue = kGraphBuilt,
-  kMaxValue = kReverse,
+  kMaxValue = kNotEqual,
 };
 
 using MLGraphOperatorUmaSet = base::EnumSet<MLGraphOperatorUma,
@@ -233,6 +236,8 @@ MLGraphOperatorUma GetUmaValueForOperation(
           return MLGraphOperatorUma::kLesser;
         case blink_mojom::ElementWiseBinary::Kind::kLesserOrEqual:
           return MLGraphOperatorUma::kLesserOrEqual;
+        case blink_mojom::ElementWiseBinary::Kind::kNotEqual:
+          return MLGraphOperatorUma::kNotEqual;
         case blink_mojom::ElementWiseBinary::Kind::kLogicalAnd:
           return MLGraphOperatorUma::kLogicalAnd;
         case blink_mojom::ElementWiseBinary::Kind::kLogicalOr:
@@ -905,26 +910,27 @@ MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
 }
 
 MLOperand* BuildElementWiseBinary(
+    const webnn::ContextProperties& context_properties,
     MLGraphBuilder* builder,
     blink_mojom::ElementWiseBinary::Kind kind,
-    const webnn::SupportedDataTypes& data_type_constraint,
+    const webnn::SupportedTensors& tensor_constraint,
     MLOperand* a,
     MLOperand* b,
     const MLOperatorOptions* options,
     ExceptionState& exception_state) {
   const std::string label = options->label().Utf8();
-  if (!data_type_constraint.Has(a->DataType())) {
+  if (!tensor_constraint.Supports(a->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-        String(NotSupportedArgumentTypeError("a", a->DataType(),
-                                             data_type_constraint)));
+        String(NotSupportedArgumentError("a", a->Descriptor(),
+                                         tensor_constraint)));
     return nullptr;
   }
-  if (!data_type_constraint.Has(b->DataType())) {
+  if (!tensor_constraint.Supports(b->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-        String(NotSupportedArgumentTypeError("b", b->DataType(),
-                                             data_type_constraint)));
+        String(NotSupportedArgumentError("b", b->Descriptor(),
+                                         tensor_constraint)));
     return nullptr;
   }
 
@@ -950,7 +956,8 @@ MLOperand* BuildElementWiseBinary(
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::OperandDescriptor::Create(data_type, *output_shape));
+      webnn::OperandDescriptor::Create(context_properties, data_type,
+                                       *output_shape, label));
 
   auto* binary = MakeGarbageCollected<MLOperator>(
       builder, /*kind=*/blink_mojom::Operation::Tag::kElementWiseBinary,
@@ -962,20 +969,19 @@ MLOperand* BuildElementWiseBinary(
   return output;
 }
 
-MLOperand* BuildUnaryOperator(
-    MLGraphBuilder* builder,
-    ExceptionState& exception_state,
-    blink_mojom::Operation::Tag kind,
-    const webnn::SupportedDataTypes& data_type_constraint,
-    MLOperand* input,
-    const MLOperatorOptions* options) {
+MLOperand* BuildUnaryOperator(MLGraphBuilder* builder,
+                              ExceptionState& exception_state,
+                              blink_mojom::Operation::Tag kind,
+                              const webnn::SupportedTensors& tensor_constraint,
+                              MLOperand* input,
+                              const MLOperatorOptions* options) {
   // The output tensor of unary operator has the same data type and dimensions
   // as its input tensor.
-  if (!data_type_constraint.Has(input->DataType())) {
+  if (!tensor_constraint.Supports(input->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
-        String(NotSupportedInputArgumentTypeError(input->DataType(),
-                                                  data_type_constraint)));
+        String(NotSupportedInputArgumentError(input->Descriptor(),
+                                              tensor_constraint)));
     return nullptr;
   }
 
@@ -991,15 +997,15 @@ MLOperand* BuildElementWiseUnaryOperator(
     MLGraphBuilder* builder,
     ExceptionState& exception_state,
     blink_mojom::ElementWiseUnary::Kind kind,
-    const webnn::SupportedDataTypes& data_type_constraint,
+    const webnn::SupportedTensors& tensor_constraint,
     MLOperand* input,
     const MLOperatorOptions* options) {
   const std::string label = options->label().Utf8();
-  if (!data_type_constraint.Has(input->DataType())) {
+  if (!tensor_constraint.Supports(input->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
-        String(NotSupportedInputArgumentTypeError(input->DataType(),
-                                                  data_type_constraint)));
+        String(webnn::NotSupportedInputArgumentError(input->Descriptor(),
+                                                     tensor_constraint)));
     return nullptr;
   }
 
@@ -1532,7 +1538,7 @@ void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
     // For each constant operand, keep walking down the dependencies until no
     // reshape is found.
     while (true) {
-      auto reshape_operation_it = base::ranges::find_if(
+      auto reshape_operation_it = std::ranges::find_if(
           graph_info.operations,
           [&constant_operand_id](const blink_mojom::OperationPtr& operation) {
             return operation->is_reshape() &&
@@ -1550,7 +1556,7 @@ void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
       //
       // TODO(crbug.com/364348897): Consider handling the case where a constant
       // operand is reshaped by multiple identical reshape operators.
-      if (base::ranges::count_if(
+      if (std::ranges::count_if(
               graph_info.operations,
               [&constant_operand_id](
                   const blink_mojom::OperationPtr& operation) {
@@ -1651,7 +1657,8 @@ MLOperand* MLGraphBuilder::input(ScriptState* script_state,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
 
   auto input_operand = MLOperand::ValidateAndCreateInput(
-      this, desc->dataType().AsEnum(), desc->shape(), std::move(name));
+      ml_context_->GetProperties(), this, desc->dataType().AsEnum(),
+      desc->shape(), std::move(name));
   if (!input_operand.has_value()) {
     exception_state.ThrowTypeError(input_operand.error());
     return nullptr;
@@ -1672,7 +1679,7 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
                                     const MLOperandDescriptor* desc,
                                     AllowSharedBufferSource* buffer,
                                     ExceptionState& exception_state) {
-  ScopedMLTrace scoped_trace("MLGraphBuilder::constant");
+  webnn::ScopedTrace scoped_trace("MLGraphBuilder::constant");
   CHECK(buffer);
 
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
@@ -1680,14 +1687,29 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor descriptor,
       webnn::OperandDescriptor::Create(
-          FromBlinkDataType(desc->dataType().AsEnum()), desc->shape()));
+          ml_context_->GetProperties(),
+          FromBlinkDataType(desc->dataType().AsEnum()), desc->shape(),
+          webnn::GetErrorLabelPrefix("constant")));
 
   if (buffer->IsArrayBufferViewAllowShared()) {
     if (GetArrayBufferViewType(descriptor.data_type()) !=
         buffer->GetAsArrayBufferViewAllowShared().Get()->GetType()) {
-      exception_state.ThrowTypeError(
-          "The buffer view type doesn't match the operand data type.");
-      return nullptr;
+      if (descriptor.data_type() == webnn::OperandDataType::kFloat16 &&
+          buffer->GetAsArrayBufferViewAllowShared().Get()->GetType() ==
+              DOMArrayBufferView::ViewType::kTypeUint16) {
+        // Passing a Uint16Array when the data type is float16 was supported
+        // prior to Float16Array shipping. Maintain this special case to give
+        // developers/frameworks time to migrate their code.
+        // TODO(crbug.com/399459942): Remove this circa 2025Q3.
+        LogConsoleWarning(script_state,
+                          "Passing a Uint16Array instance for a float16 "
+                          "operand is deprecated. Use Float16Array instead.");
+
+      } else {
+        exception_state.ThrowTypeError(
+            "The buffer view type doesn't match the operand data type.");
+        return nullptr;
+      }
     }
   }
 
@@ -1711,6 +1733,7 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
   auto* constant =
       MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor));
 
+  UMA_HISTOGRAM_MEMORY_KB("WebNN.ConstantDataSizeInKB", bytes.size() / 1024);
   scoped_trace.AddStep(
       String::Format("copy constant bytes into BigBuffer, size: %zu",
                      bytes.size())
@@ -1789,9 +1812,8 @@ MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
 
   std::vector<webnn::OperandDescriptor> input_component_operands;
   input_component_operands.reserve(inputs.size());
-  base::ranges::transform(
-      inputs, std::back_inserter(input_component_operands),
-      [](const auto& input) { return input->Descriptor(); });
+  std::ranges::transform(inputs, std::back_inserter(input_component_operands),
+                         [](const auto& input) { return input->Descriptor(); });
 
   const std::string label = options->label().Utf8();
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
@@ -1934,7 +1956,8 @@ MLOperand* MLGraphBuilder::cumulativeSum(MLOperand* input,
     THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);          \
     THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs({a, b}), nullptr);          \
     return BuildElementWiseBinary(                                            \
-        this, blink_mojom::ElementWiseBinary::Kind::op_kind,                  \
+        ml_context_->GetProperties(), this,                                   \
+        blink_mojom::ElementWiseBinary::Kind::op_kind,                        \
         ml_context_->GetProperties().data_type_limits.op_snake##_input, a, b, \
         options, exception_state);                                            \
   }
@@ -1951,6 +1974,7 @@ BUILD_ELEMENTWISE_BINARY_OP(greater, greater, kGreater)
 BUILD_ELEMENTWISE_BINARY_OP(lesser, lesser, kLesser)
 BUILD_ELEMENTWISE_BINARY_OP(greaterOrEqual, greater_or_equal, kGreaterOrEqual)
 BUILD_ELEMENTWISE_BINARY_OP(lesserOrEqual, lesser_or_equal, kLesserOrEqual)
+BUILD_ELEMENTWISE_BINARY_OP(notEqual, not_equal, kNotEqual)
 BUILD_ELEMENTWISE_BINARY_OP(logicalAnd, logical_and, kLogicalAnd)
 BUILD_ELEMENTWISE_BINARY_OP(logicalOr, logical_or, kLogicalOr)
 BUILD_ELEMENTWISE_BINARY_OP(logicalXor, logical_xor, kLogicalXor)
@@ -2002,12 +2026,12 @@ MLOperand* MLGraphBuilder::cast(MLOperand* input,
 
   const std::string label = options->label().Utf8();
 
-  if (!ml_context_->GetProperties().data_type_limits.cast_input.Has(
-          input->DataType())) {
+  if (!ml_context_->GetProperties().data_type_limits.cast_input.Supports(
+          input->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-        String(NotSupportedInputArgumentTypeError(
-            input->DataType(),
+        String(NotSupportedInputArgumentError(
+            input->Descriptor(),
             ml_context_->GetProperties().data_type_limits.cast_input)));
     return nullptr;
   }
@@ -2015,19 +2039,20 @@ MLOperand* MLGraphBuilder::cast(MLOperand* input,
   const webnn::OperandDataType cast_data_type =
       FromBlinkDataType(output_data_type.AsEnum());
 
-  if (!ml_context_->GetProperties().data_type_limits.cast_input.Has(
+  if (!ml_context_->GetProperties().data_type_limits.cast_input.data_types.Has(
           cast_data_type)) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
         String(NotSupportedOpOutputTypeError(
-            cast_data_type,
-            ml_context_->GetProperties().data_type_limits.cast_input)));
+            cast_data_type, ml_context_->GetProperties()
+                                .data_type_limits.cast_input.data_types)));
     return nullptr;
   }
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::OperandDescriptor::Create(cast_data_type, input->Shape()));
+      webnn::OperandDescriptor::Create(ml_context_->GetProperties(),
+                                       cast_data_type, input->Shape(), label));
 
   auto* cast = MakeGarbageCollected<MLOperator>(
       this, blink_mojom::Operation::Tag::kElementWiseUnary, options,
@@ -2109,13 +2134,13 @@ MLOperand* MLGraphBuilder::expand(MLOperand* input,
 
   const std::string label = options->label().Utf8();
 
-  const webnn::SupportedDataTypes& data_type_constraint =
+  const webnn::SupportedTensors& tensor_constraint =
       ml_context_->GetProperties().data_type_limits.expand_input;
-  if (!data_type_constraint.Has(input->DataType())) {
+  if (!tensor_constraint.Supports(input->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
-        String(NotSupportedInputArgumentTypeError(input->DataType(),
-                                                  data_type_constraint)));
+        String(NotSupportedInputArgumentError(input->Descriptor(),
+                                              tensor_constraint)));
     return nullptr;
   }
 
@@ -2127,11 +2152,13 @@ MLOperand* MLGraphBuilder::expand(MLOperand* input,
         "The input shape is not broadcastable to the new shape.");
     return nullptr;
   }
-  CHECK(base::ranges::equal(*output_shape, new_shape));
+  CHECK(std::ranges::equal(*output_shape, new_shape));
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::OperandDescriptor::Create(input->DataType(), *output_shape));
+      webnn::OperandDescriptor::Create(ml_context_->GetProperties(),
+                                       input->DataType(), *output_shape,
+                                       label));
 
   auto* expand = MakeGarbageCollected<MLOperator>(
       this, blink_mojom::Operation::Tag::kExpand, options);
@@ -2784,12 +2811,12 @@ MLOperand* MLGraphBuilder::reshape(MLOperand* input,
 
   const std::string label = options->label().Utf8();
 
-  if (!ml_context_->GetProperties().data_type_limits.reshape_input.Has(
-          input->DataType())) {
+  if (!ml_context_->GetProperties().data_type_limits.reshape_input.Supports(
+          input->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-        String(NotSupportedInputArgumentTypeError(
-            input->DataType(),
+        String(NotSupportedInputArgumentError(
+            input->Descriptor(),
             ml_context_->GetProperties().data_type_limits.reshape_input)));
     return nullptr;
   }
@@ -2830,9 +2857,12 @@ MLOperand* MLGraphBuilder::reshape(MLOperand* input,
     return nullptr;
   }
 
+  // The output tensor byte length is valid because the data type and element
+  // count are the same as input.
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::OperandDescriptor::Create(input->DataType(), output_shape));
+      webnn::OperandDescriptor::Create(ml_context_->GetProperties(),
+                                       input->DataType(), output_shape, label));
 
   auto* reshape = MakeGarbageCollected<MLOperator>(
       this, blink_mojom::Operation::Tag::kReshape, options);
@@ -3247,7 +3277,7 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
     ScriptState* script_state,
     const MLNamedOperands& named_outputs,
     ExceptionState& exception_state) {
-  ScopedMLTrace scoped_trace("MLGraphBuilder::build");
+  webnn::ScopedTrace scoped_trace("MLGraphBuilder::build");
   base::expected<void, String> validation_result = ValidateGraphBuilderState();
   if (!validation_result.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -3256,7 +3286,7 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
   }
 
   HeapVector<Member<MLOperand>> outputs(named_outputs.size());
-  base::ranges::transform(
+  std::ranges::transform(
       named_outputs, outputs.begin(),
       [](const auto& named_output) { return named_output.second; });
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(outputs),

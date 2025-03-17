@@ -5,6 +5,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_trial.h"
 
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "components/saved_tab_groups/public/synthetic_field_trial_helper.h"
 #include "components/variations/synthetic_trials.h"
 
 namespace tab_groups {
@@ -13,9 +14,30 @@ namespace {
 const char kSyntheticTrialName[] = "SyncableTabGroups";
 }  // namespace
 
-void TabGroupTrial::OnTabgroupSyncEnabled(bool enabled) {
+// static
+void TabGroupTrial::OnTabGroupSyncEnabled(bool enabled) {
+  RegisterFieldTrial(kSyntheticTrialName, enabled ? "Enabled" : "Disabled");
+}
+
+// static
+void TabGroupTrial::OnHadSyncedTabGroup(bool had_synced_group) {
+  RegisterFieldTrial(kSyncedTabGroupFieldTrialName,
+                     had_synced_group ? kHasOwnedTabGroupTypeName
+                                      : kHasNotOwnedTabGroupTypeName);
+}
+
+// static
+void TabGroupTrial::OnHadSharedTabGroup(bool had_shared_group) {
+  RegisterFieldTrial(kSharedTabGroupFieldTrialName,
+                     had_shared_group ? kHasOwnedTabGroupTypeName
+                                      : kHasNotOwnedTabGroupTypeName);
+}
+
+// static
+void TabGroupTrial::RegisterFieldTrial(std::string_view trial_name,
+                                       std::string_view group_name) {
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      kSyntheticTrialName, enabled ? "Enabled" : "Disabled",
+      trial_name, group_name,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 

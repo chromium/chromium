@@ -14,6 +14,8 @@
 #import "components/browsing_data/core/pref_names.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -21,8 +23,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -30,6 +30,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -72,7 +73,7 @@ id<GREYMatcher> DeleteHistoryEntriesButton() {
 }
 // Matcher for the search button.
 id<GREYMatcher> SearchIconButton() {
-    return grey_accessibilityID(kHistorySearchControllerSearchBarIdentifier);
+  return grey_accessibilityID(kHistorySearchControllerSearchBarIdentifier);
 }
 // Matcher for the cancel button.
 id<GREYMatcher> CancelButton() {
@@ -180,15 +181,15 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
   // screen.
   [ChromeEarlGrey resetBrowsingDataPrefs];
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
 - (void)tearDownHelper {
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
 
   NSError* error = nil;
   // Dismiss search bar by pressing cancel, if present. Passing error prevents
@@ -310,10 +311,10 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_tap()];
 
-    // Verify that scrim is visible.
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kHistorySearchScrimIdentifier)]
-        assertWithMatcher:grey_notNil()];
+  // Verify that scrim is visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistorySearchScrimIdentifier)]
+      assertWithMatcher:grey_notNil()];
 
   NSString* searchString =
       [NSString stringWithFormat:@"%s", _URL1.path().c_str()];
@@ -369,11 +370,11 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
 
   // Add a typed URL and wait for it to show up on the server.
   [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
-    NSArray<NSURL*>* URLs = @[
-      net::NSURLWithGURL(mockURL),
-    ];
-    [ChromeEarlGrey waitForSyncServerHistoryURLs:URLs
-                                         timeout:kSyncOperationTimeout];
+  NSArray<NSURL*>* URLs = @[
+    net::NSURLWithGURL(mockURL),
+  ];
+  [ChromeEarlGrey waitForSyncServerHistoryURLs:URLs
+                                       timeout:kSyncOperationTimeout];
 
   [self loadTestURLs];
   [self openHistoryPanel];
@@ -661,8 +662,9 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
 // Tests display and selection of 'Open in New Window' in a context menu on a
 // history entry.
 - (void)testContextMenuOpenInNewWindow {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   // At the beginning of the test, the Context Menu History Entry Actions metric
   // should be empty.
@@ -915,9 +917,9 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
                       grey_accessibilityID(kHistoryTableViewIdentifier)];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   // Close history.
-    id<GREYMatcher> exitMatcher =
-        grey_accessibilityID(kHistoryNavigationControllerDoneButtonIdentifier);
-    [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
+  id<GREYMatcher> exitMatcher =
+      grey_accessibilityID(kHistoryNavigationControllerDoneButtonIdentifier);
+  [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
 }
 
 // Tests that if only some of the history entries are deleted from Delete
@@ -1001,13 +1003,9 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
 #pragma mark Multiwindow
 
 - (void)testHistorySyncInMultiwindow {
-  // TODO(crbug.com/40198758): Test is flaky on iPad devices.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad devices.");
-  }
-
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   // Create history in first window.
   [self loadTestURLs];
@@ -1128,8 +1126,11 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
 
 - (void)openHistoryPanelInWindowWithNumber:(int)windowNumber {
   [ChromeEarlGreyUI openToolsMenuInWindowWithNumber:windowNumber];
-  [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::HistoryDestinationButton()];
+  // TODO(crbug.com/249582361): Switch back to using `tapToolsMenuButton:`
+  // helper if/when the issue checking visibility of SwiftUI views in
+  // multiwindow is fixed.
+  chrome_test_util::TapAtOffsetOf(kToolsMenuHistoryId, windowNumber,
+                                  CGVectorMake(0.5, 0.5));
 }
 
 @end

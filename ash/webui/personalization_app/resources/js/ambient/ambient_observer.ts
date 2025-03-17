@@ -3,17 +3,19 @@
 // found in the LICENSE file.
 
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface, AmbientTheme, AmbientUiVisibility, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
+import type {AmbientModeAlbum, AmbientObserverInterface, AmbientProviderInterface, AmbientTheme, AmbientUiVisibility, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
+import {AmbientObserverReceiver} from '../../personalization_app.mojom-webui.js';
 import {isAmbientModeAllowed} from '../load_time_booleans.js';
 import {logGooglePhotosPreviewsLoadTime} from '../personalization_metrics_logger.js';
 import {Paths} from '../personalization_router_element.js';
 import {PersonalizationStore} from '../personalization_store.js';
 import {isRecentHighlightsAlbum} from '../utils.js';
 
-import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientThemeAction, setAmbientUiVisibilityAction, setGeolocationIsUserModifiableAction, setGeolocationPermissionEnabledAction, setPreviewsAction, setScreenSaverDurationAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientThemeAction, setAmbientThemePreviewsAction, setAmbientUiVisibilityAction, setGeolocationIsUserModifiableAction, setGeolocationPermissionEnabledAction, setPreviewsAction, setScreenSaverDurationAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
+import {AmbientThemePreviewMap} from './utils.js';
 
 /** @fileoverview listens for updates on ambient mode changes. */
 
@@ -64,6 +66,11 @@ export class AmbientObserver implements AmbientObserverInterface {
         AmbientObserver.shouldLogPreviewsLoadPerformance && ambientModeEnabled;
     const store = PersonalizationStore.getInstance();
     store.dispatch(setAmbientModeEnabledAction(ambientModeEnabled));
+  }
+
+  onAmbientThemePreviewImagesChanged(previews: AmbientThemePreviewMap): void {
+    const store = PersonalizationStore.getInstance();
+    store.dispatch(setAmbientThemePreviewsAction(previews));
   }
 
   onAmbientThemeChanged(ambientTheme: AmbientTheme): void {

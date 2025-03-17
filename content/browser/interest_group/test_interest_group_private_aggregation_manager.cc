@@ -5,7 +5,9 @@
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <string>
@@ -16,7 +18,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
@@ -44,18 +45,20 @@ TestInterestGroupPrivateAggregationManager::
 bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
-    PrivateAggregationCallerApi api_for_budgeting,
+    PrivateAggregationCallerApi caller_api,
     std::optional<std::string> context_id,
     std::optional<base::TimeDelta> timeout,
     std::optional<url::Origin> aggregation_coordinator_origin,
     size_t filtering_id_max_bytes,
+    std::optional<size_t> max_contributions,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   EXPECT_EQ(expected_top_frame_origin_, top_frame_origin);
-  EXPECT_EQ(PrivateAggregationCallerApi::kProtectedAudience, api_for_budgeting);
+  EXPECT_EQ(PrivateAggregationCallerApi::kProtectedAudience, caller_api);
   EXPECT_FALSE(context_id.has_value());
   EXPECT_FALSE(timeout.has_value());
   EXPECT_EQ(filtering_id_max_bytes, 1u);
+  EXPECT_FALSE(max_contributions.has_value());
 
   // TODO(alexmt): Change once selecting the origin is possible.
   EXPECT_FALSE(aggregation_coordinator_origin.has_value());
@@ -96,6 +99,15 @@ void TestInterestGroupPrivateAggregationManager::ContributeToHistogram(
     private_aggregation_contributions_[receiver_id].push_back(
         std::move(contribution));
   }
+}
+
+void TestInterestGroupPrivateAggregationManager::ContributeToHistogramOnEvent(
+    blink::mojom::PrivateAggregationErrorEvent error_event,
+    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+        contribution_ptrs) {
+  // TODO(crbug.com/381788013): Add tests once Protected Audience supports
+  // aggregate error reporting.
+  NOTREACHED();
 }
 
 void TestInterestGroupPrivateAggregationManager::EnableDebugMode(
@@ -166,7 +178,7 @@ void TestInterestGroupPrivateAggregationManager::LogPrivateAggregationRequests(
   logged_private_aggregation_requests_.reserve(
       logged_private_aggregation_requests_.size() +
       private_aggregation_requests.size());
-  base::ranges::for_each(
+  std::ranges::for_each(
       private_aggregation_requests,
       [this](
           const auction_worklet::mojom::PrivateAggregationRequestPtr& request) {

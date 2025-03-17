@@ -299,6 +299,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
       {USCRIPT_LYCIAN, kLycianFonts},
       {USCRIPT_LYDIAN, kLydianFonts},
       {USCRIPT_MALAYALAM, kMalayalamFonts},
+      {USCRIPT_MEITEI_MAYEK, kSoraSompengFonts},
       {USCRIPT_MEROITIC_CURSIVE, kMeroiticCursiveFonts},
       {USCRIPT_MONGOLIAN, kMongolianFonts},
       {USCRIPT_MYANMAR, kMyanmarFonts},
@@ -328,6 +329,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
       {USCRIPT_TIBETAN, kTibetanFonts},
       {USCRIPT_TIFINAGH, kTifinaghFonts},
       {USCRIPT_TRADITIONAL_HAN, kTraditionalHanFonts},
+      {USCRIPT_BOPOMOFO, kTraditionalHanFonts},
       {USCRIPT_VAI, kVaiFonts},
       {USCRIPT_YI, kYiFonts}};
   script_font_map.Set(kScriptToFontFamilies);

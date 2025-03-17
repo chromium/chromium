@@ -25,7 +25,7 @@ TEST(SiteDataCacheFactoryTest, EndToEnd) {
   content::BrowserTaskEnvironment task_environment;
   auto performance_manager = PerformanceManagerImpl::Create(base::DoNothing());
   base::SequenceBound<SiteDataCacheFactory> cache_factory(
-      PerformanceManager::GetTaskRunner());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   content::TestBrowserContext browser_context;
   cache_factory.AsyncCall(&SiteDataCacheFactory::OnBrowserContextCreated)

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -12,7 +13,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -20,8 +20,8 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_ash_utils.h"
+#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -111,7 +111,7 @@ bool AreModesEqual(const QuickUnlockModeList& a, const QuickUnlockModeList& b) {
 }
 
 bool IsPinNumeric(const std::string& pin) {
-  return base::ranges::all_of(pin, ::isdigit);
+  return std::ranges::all_of(pin, ::isdigit);
 }
 
 // Reads and sanitizes the pin length policy.
@@ -196,7 +196,7 @@ Profile* GetActiveProfile(content::BrowserContext* browser_context) {
   // When OOBE continues in-session as Furst Run UI, it is still executed
   // under Sign-In profile.
   if (ash::ProfileHelper::IsSigninProfile(profile))
-    return ProfileManager::GetPrimaryUserProfile();
+    return profile_util::GetPrimaryUserProfile();
 
   return profile;
 }

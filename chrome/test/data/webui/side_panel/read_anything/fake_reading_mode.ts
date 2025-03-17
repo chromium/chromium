@@ -19,6 +19,7 @@ export class FakeReadingMode {
   backgroundColor: number = 0;
   lineSpacing: number = 0;
   letterSpacing: number = 0;
+  imagesEnabled: boolean = false;
 
   // The current color theme value.
   colorTheme: number = 0;
@@ -51,7 +52,7 @@ export class FakeReadingMode {
   isWebUIToolbarVisible: boolean = true;
 
   // Whether the Read Aloud feature flag is enabled.
-  isReadAloudEnabled: boolean = false;
+  isReadAloudEnabled: boolean = true;
 
   // Returns true if the webpage corresponds to a Google Doc.
   isGoogleDocs: boolean = false;
@@ -187,6 +188,11 @@ export class FakeReadingMode {
   // Called when a user toggles links via the webui toolbar.
   onLinksEnabledToggled() {
     this.linksEnabled = !this.linksEnabled;
+  }
+
+  // Called when a user toggles images via the webui toolbar.
+  onImagesEnabledToggled() {
+    this.imagesEnabled = !this.imagesEnabled;
   }
 
   // Called when the letter spacing is changed via the webui toolbar.

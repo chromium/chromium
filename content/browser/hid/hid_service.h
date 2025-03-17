@@ -151,6 +151,11 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
   // the user revokes a permission.
   std::multimap<std::string, mojo::ReceiverId> watcher_ids_;
 
+  // Prevent the document from going into an inactive state while the service is
+  // active.
+  RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
+      back_forward_cache_feature_handle_;
+
   base::WeakPtrFactory<HidService> weak_factory_{this};
 };
 

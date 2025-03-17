@@ -328,13 +328,17 @@ ObservePolicy PerformanceManagerMetricsObserver::LogMetricsIfLoaded(
 void PerformanceManagerMetricsObserver::WatchForLoadedIdle(
     base::WeakPtr<PageNode> page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!PerformanceManager::IsAvailable()) {
+    return;
+  }
+
   auto on_loaded_idle_callback =
       base::BindOnce(&PerformanceManagerMetricsObserver::OnPageNodeLoadedIdle,
                      weak_factory_.GetWeakPtr());
   // When `page_node` enters the LoadedIdle state in PerformanceManager, call
   // `on_loaded_idle_callback` on this sequence.
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(&WatchLoadedIdleObserver, page_node,
-                                base::BindPostTaskToCurrentDefault(
-                                    std::move(on_loaded_idle_callback))));
+  WatchLoadedIdleObserver(std::move(page_node),
+                          std::move(on_loaded_idle_callback),
+                          PerformanceManager::GetGraph());
 }

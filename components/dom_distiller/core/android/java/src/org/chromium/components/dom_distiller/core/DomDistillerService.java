@@ -9,9 +9,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** Wrapper for native dom_distiller::DomDistillerService. */
 @JNINamespace("dom_distiller::android")
+@NullMarked
 public final class DomDistillerService {
 
     private final DistilledPagePrefs mDistilledPagePrefs;

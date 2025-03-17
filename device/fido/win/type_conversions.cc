@@ -374,7 +374,12 @@ WinCredentialDetailsListToCredentialMetadata(
                 : std::nullopt,
             user->pwszDisplayName
                 ? std::make_optional(base::WideToUTF8(user->pwszDisplayName))
-                : std::nullopt));
+                : std::nullopt),
+        credential->dwVersion >= WEBAUTHN_CREDENTIAL_DETAILS_VERSION_3 &&
+                credential->pwszAuthenticatorName
+            ? std::make_optional(
+                  base::WideToUTF8(credential->pwszAuthenticatorName))
+            : std::nullopt);
     metadata.system_created = !credential->bRemovable;
     result.push_back(std::move(metadata));
   }

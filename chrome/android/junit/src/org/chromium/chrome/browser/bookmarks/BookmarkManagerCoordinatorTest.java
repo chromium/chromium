@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -45,7 +46,6 @@ import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
@@ -56,10 +56,6 @@ import org.chromium.ui.base.TestActivity;
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
-})
-@EnableFeatures({
-    SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
 })
 // TODO(crbug.com/327387704): Add tests with this flag enabled.
 @Features.DisableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
@@ -85,6 +81,9 @@ public class BookmarkManagerCoordinatorTest {
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private ShoppingService mShoppingService;
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
+    @Mock private BookmarkOpener mBookmarkOpener;
+    @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
+    @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
 
     private Activity mActivity;
     private BookmarkManagerCoordinator mCoordinator;
@@ -118,13 +117,14 @@ public class BookmarkManagerCoordinatorTest {
                             mCoordinator =
                                     new BookmarkManagerCoordinator(
                                             mActivity,
-                                            /* openBookmarkComponentName= */ null,
                                             /* isDialogUi= */ !DeviceFormFactor
                                                     .isNonMultiDisplayContextOnTablet(mActivity),
                                             mSnackbarManager,
                                             mProfile,
                                             mBookmarkUiPrefs,
-                                            /* bookmarkOpenedCallback= */ null);
+                                            mBookmarkOpener,
+                                            mBookmarkManagerOpener,
+                                            mPriceDropNotificationManager);
                             mActivity.setContentView(mCoordinator.getView());
                         });
     }
@@ -154,8 +154,6 @@ public class BookmarkManagerCoordinatorTest {
     @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
     public void testCreateViewUNOPhase2FollowUpEnabled() {
         FrameLayout parent = new FrameLayout(mActivity);
-        assertNotNull(mCoordinator.buildPersonalizedPromoView(parent));
-        assertNotNull(mCoordinator.buildLegacyPromoView(parent));
         assertNotNull(mCoordinator.buildBatchUploadCardView(parent));
         assertNotNull(mCoordinator.buildSectionHeaderView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));

@@ -34,7 +34,7 @@ HTMLDivElement::HTMLDivElement(Document& document)
 void HTMLDivElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kAlignAttr) {
     if (EqualIgnoringASCIICase(value, "middle") ||
         EqualIgnoringASCIICase(value, "center")) {

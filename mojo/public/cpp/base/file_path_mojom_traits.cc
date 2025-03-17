@@ -17,7 +17,7 @@ namespace mojo {
 bool StructTraits<mojo_base::mojom::FilePathDataView, base::FilePath>::Read(
     mojo_base::mojom::FilePathDataView data,
     base::FilePath* out) {
-  base::FilePath::StringPieceType path_view;
+  base::FilePath::StringViewType path_view;
 #if BUILDFLAG(IS_WIN)
   ArrayDataView<uint16_t> view;
   data.GetPathDataView(&view);
@@ -55,7 +55,7 @@ StructTraits<mojo_base::mojom::RelativeFilePathDataView, base::FilePath>::path(
 // static
 bool StructTraits<mojo_base::mojom::RelativeFilePathDataView, base::FilePath>::
     Read(mojo_base::mojom::RelativeFilePathDataView data, base::FilePath* out) {
-  base::FilePath::StringPieceType path_view;
+  base::FilePath::StringViewType path_view;
 #if BUILDFLAG(IS_WIN)
   ArrayDataView<uint16_t> view;
   data.GetPathDataView(&view);

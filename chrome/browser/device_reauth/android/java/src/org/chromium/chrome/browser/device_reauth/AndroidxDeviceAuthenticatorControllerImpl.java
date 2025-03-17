@@ -13,7 +13,6 @@ import static androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS;
 import android.app.KeyguardManager;
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricManager.Authenticators;
 import androidx.biometric.BiometricPrompt;
@@ -21,10 +20,14 @@ import androidx.biometric.BiometricPrompt.AuthenticationCallback;
 import androidx.biometric.BiometricPrompt.PromptInfo;
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+@NullMarked
 class AndroidxDeviceAuthenticatorControllerImpl implements DeviceAuthenticatorController {
     FragmentActivity mActivity;
     Delegate mDelegate;
-    private BiometricPrompt mBiometricPrompt;
+    private @Nullable BiometricPrompt mBiometricPrompt;
 
     public AndroidxDeviceAuthenticatorControllerImpl(FragmentActivity activity, Delegate delegate) {
         mActivity = activity;
@@ -82,7 +85,7 @@ class AndroidxDeviceAuthenticatorControllerImpl implements DeviceAuthenticatorCo
                         new AuthenticationCallback() {
                             @Override
                             public void onAuthenticationError(
-                                    int errorCode, @NonNull CharSequence errString) {
+                                    int errorCode, CharSequence errString) {
                                 if (errorCode == BiometricPrompt.ERROR_USER_CANCELED) {
                                     onAuthenticationCompleted(DeviceAuthUIResult.CANCELED_BY_USER);
                                     return;
@@ -92,7 +95,7 @@ class AndroidxDeviceAuthenticatorControllerImpl implements DeviceAuthenticatorCo
 
                             @Override
                             public void onAuthenticationSucceeded(
-                                    @NonNull BiometricPrompt.AuthenticationResult result) {
+                                    BiometricPrompt.AuthenticationResult result) {
                                 switch (result.getAuthenticationType()) {
                                     case BiometricPrompt.AUTHENTICATION_RESULT_TYPE_UNKNOWN:
                                         onAuthenticationCompleted(

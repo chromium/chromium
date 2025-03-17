@@ -91,8 +91,9 @@ using chrome_test_util::SettingsDoneButton;
 // Tests that keyboard commands are registered when the BVC is showing in
 // MultiWindow mode.
 - (void)testKeyboardCommandsRegistered_MultiWindow {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];

@@ -22,6 +22,7 @@
 #include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
+#include "ash/app_list/views/button_focus_skipper.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
@@ -32,7 +33,6 @@
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -105,7 +105,6 @@ class SeparatorWithLayer : public views::View {
   SeparatorWithLayer() {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     // Color is set in OnThemeChanged().
-    layer()->SetFillsBoundsOpaquely(false);
   }
   SeparatorWithLayer(const SeparatorWithLayer&) = delete;
   SeparatorWithLayer& operator=(const SeparatorWithLayer&) = delete;
@@ -160,51 +159,6 @@ const ui::DropTargetEvent GetTranslatedDropTargetEvent(
 
 }  // namespace
 
-// Makes focus traversal skip the assistant button and the hide continue section
-// button when pressing the down arrow key or the up arrow key. Normally views
-// would move focus from the search box to the assistant button on arrow down.
-// However, these buttons are visually to the right, so this feels weird.
-// Likewise, on arrow up from continue tasks it feels better to put focus
-// directly in the search box.
-class ButtonFocusSkipper : public ui::EventHandler {
- public:
-  ButtonFocusSkipper() { Shell::Get()->AddPreTargetHandler(this); }
-
-  ~ButtonFocusSkipper() override { Shell::Get()->RemovePreTargetHandler(this); }
-
-  void AddButton(views::View* button) {
-    DCHECK(button);
-    buttons_.push_back(button);
-  }
-
-  // ui::EventHandler:
-  void OnEvent(ui::Event* event) override {
-    // Don't adjust focus behavior if the user already focused the button.
-    for (views::View* button : buttons_) {
-      if (button->HasFocus()) {
-        return;
-      }
-    }
-
-    bool skip_focus = false;
-    // This class overrides OnEvent() to examine all events so that focus
-    // behavior is restored by mouse events, gesture events, etc.
-    if (event->type() == ui::EventType::kKeyPressed) {
-      ui::KeyboardCode key = event->AsKeyEvent()->key_code();
-      if (key == ui::VKEY_UP || key == ui::VKEY_DOWN) {
-        skip_focus = true;
-      }
-    }
-    for (views::View* button : buttons_) {
-      button->SetFocusBehavior(skip_focus ? views::View::FocusBehavior::NEVER
-                                          : views::View::FocusBehavior::ALWAYS);
-    }
-  }
-
- private:
-  std::vector<raw_ptr<views::View, VectorExperimental>> buttons_;
-};
-
 AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate)
     : view_delegate_(view_delegate) {
   DCHECK(view_delegate);
@@ -224,8 +178,8 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate)
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
-                                                         kBubbleCornerRadius));
+  SetBackground(views::CreateRoundedRectBackground(background_color_id,
+                                                   kBubbleCornerRadius));
 
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBubbleCornerRadius,
@@ -281,11 +235,9 @@ void AppListBubbleView::InitContentsView() {
       /*delegate=*/this, view_delegate_, /*is_app_list_bubble=*/true));
   search_box_view_->InitializeForBubbleLauncher();
 
-  // Skip the assistant button on arrow up/down in app list.
-  button_focus_skipper_ = std::make_unique<ButtonFocusSkipper>();
-  if (IsSunfishAllowedAndEnabled()) {
-    button_focus_skipper_->AddButton(search_box_view_->sunfish_button());
-  }
+  // Skip the Sunfish and assistant button on arrow up/down in app list.
+  button_focus_skipper_ = std::make_unique<ButtonFocusSkipper>(this);
+  button_focus_skipper_->AddButton(search_box_view_->sunfish_button());
   button_focus_skipper_->AddButton(search_box_view_->assistant_button());
 
   // The main view has a solid color layer, so the separator needs its own

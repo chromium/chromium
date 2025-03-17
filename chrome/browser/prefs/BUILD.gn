@@ -24,7 +24,6 @@ source_set("prefs") {
 
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
     "//components/keyed_service/core",
@@ -84,7 +83,6 @@ source_set("impl") {
     "//components/enterprise/connectors/core",
     "//components/fingerprinting_protection_filter/common",
     "//components/fingerprinting_protection_filter/common:prefs",
-    "//components/flags_ui",
     "//components/history_clusters/core",
     "//components/image_fetcher/core/cache",
     "//components/invalidation/impl",
@@ -104,6 +102,7 @@ source_set("impl") {
     "//components/permissions",
     "//components/plus_addresses:prefs",
     "//components/pref_registry",
+    "//components/privacy_sandbox:privacy_sandbox_notice_storage",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:tpcd",
     "//components/proxy_config",
@@ -124,15 +123,20 @@ source_set("impl") {
     "//components/ukm",
     "//components/update_client",
     "//components/variations/service",
+    "//components/webui/chrome_urls",
+    "//components/webui/flags",
     "//services/preferences/public/cpp/tracked",
     "//services/preferences/public/mojom",
     "//services/preferences/tracked",
   ]
 
+  if (enable_background_mode) {
+    deps += [ "//chrome/browser/background/extensions:extensions" ]
+  }
+
   if (is_chromeos) {
     deps += [
       "//ash",
-      "//ash/components/arc:prefs",
       "//chrome/browser/apps/app_discovery_service",
       "//chrome/browser/apps/app_preload_service",
       "//chrome/browser/apps/app_service",
@@ -152,7 +156,6 @@ source_set("impl") {
       "//chrome/browser/ash/child_accounts",
       "//chrome/browser/ash/child_accounts/parent_access_code",
       "//chrome/browser/ash/child_accounts/time_limits",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/cryptauth",
       "//chrome/browser/ash/customization",
@@ -194,7 +197,6 @@ source_set("impl") {
       "//chrome/browser/ash/printing/enterprise",
       "//chrome/browser/ash/release_notes",
       "//chrome/browser/ash/scanning",
-      "//chrome/browser/ash/scheduler_config",
       "//chrome/browser/ash/settings",
       "//chrome/browser/ash/system",
       "//chrome/browser/ash/system_web_apps/apps/help_app",
@@ -204,12 +206,10 @@ source_set("impl") {
       "//chrome/browser/chromeos/extensions/echo_private:echo_private_api_util",
       "//chrome/browser/chromeos/extensions/login_screen/login",
       "//chrome/browser/chromeos/policy/dlp",
-      "//chrome/browser/chromeos/quickoffice",
       "//chrome/browser/chromeos/reporting",
       "//chrome/browser/chromeos/upload_office_to_cloud",
       "//chrome/browser/extensions/api/document_scan:profile_prefs_registry_util",
       "//chrome/browser/extensions/api/enterprise_platform_keys:enterprise_platform_keys_registry_util",
-      "//chrome/browser/extensions/api/shared_storage",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/policy:onc",
       "//chrome/browser/policy:system_features_disable_list",
@@ -220,15 +220,18 @@ source_set("impl") {
       "//chrome/browser/ui/webui/ash/settings",
       "//chrome/browser/ui/webui/signin/ash",
       "//chromeos/ash/components/audio",
+      "//chromeos/ash/components/boca/babelorca",
       "//chromeos/ash/components/boca/on_task",
       "//chromeos/ash/components/carrier_lock",
       "//chromeos/ash/components/demo_mode",
       "//chromeos/ash/components/local_search_service",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/policy",
+      "//chromeos/ash/components/quickoffice",
       "//chromeos/ash/components/report",
-      "//chromeos/ash/components/standalone_browser",
+      "//chromeos/ash/components/scheduler_config",
       "//chromeos/ash/components/timezone",
+      "//chromeos/ash/experiences/arc:prefs",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/auth_factor_config",
       "//chromeos/ash/services/bluetooth_config",
@@ -244,7 +247,7 @@ source_set("impl") {
   if (is_win || is_mac || is_linux) {
     deps += [ "//chrome/browser/ui/webui/whats_new" ]
     if (is_win || is_mac) {
-      deps += [ "//components/os_crypt/sync:os_crypt" ]
+      deps += [ "//components/os_crypt/sync" ]
     }
   }
 
@@ -275,21 +278,22 @@ source_set("impl") {
       "//components/headless/policy",
       "//components/live_caption",
       "//components/live_caption:live_translate",
-      "//components/user_notes:user_notes_prefs",
     ]
   }
 
   if (enable_extensions) {
     deps += [
       "//chrome/browser/apps/platform_apps",
-      "//chrome/browser/extensions",
       "//extensions/browser/api/audio",
       "//extensions/browser/api/runtime",
     ]
   }
 
   if (enable_extensions_core) {
-    deps += [ "//extensions/browser" ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//extensions/browser",
+    ]
   }
 
   if (enable_on_device_translation) {
@@ -313,7 +317,10 @@ source_set("impl") {
   }
 
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic/launcher" ]
+    deps += [
+      "//chrome/browser/background/glic",
+      "//chrome/browser/glic",
+    ]
   }
 }
 
@@ -344,7 +351,6 @@ source_set("util_impl") {
   deps = [
     ":util",
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/startup:startup_tab",
     "//chrome/common:constants",
@@ -367,6 +373,7 @@ source_set("unit_tests") {
     "chrome_command_line_pref_store_proxy_unittest.cc",
     "chrome_command_line_pref_store_ssl_manager_unittest.cc",
     "chrome_command_line_pref_store_unittest.cc",
+    "chrome_pref_service_factory_unittest.cc",
     "chrome_pref_service_unittest.cc",
     "incognito_mode_prefs_unittest.cc",
     "profile_pref_store_manager_unittest.cc",
@@ -379,7 +386,6 @@ source_set("unit_tests") {
     ":util",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile_util",
@@ -432,9 +438,9 @@ if (!is_android) {
     deps = [
       "//base",
       "//base/test:test_support",
-      "//build:chromeos_buildflags",
       "//chrome/browser",
       "//chrome/browser/preloading:prefs",
+      "//chrome/browser/search_engines",
       "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:constants",

@@ -4,12 +4,12 @@
 
 package org.chromium.components.content_settings;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
@@ -18,33 +18,54 @@ import java.util.List;
 
 /** Communicates between CookieControlsController (C++ backend) and PageInfoView (Java UI). */
 @JNINamespace("content_settings")
+@NullMarked
 public class CookieControlsBridge {
     private long mNativeCookieControlsBridge;
     private CookieControlsObserver mObserver;
 
     /**
      * Initializes a CookieControlsBridge instance.
+     *
      * @param observer An observer to call with updates from the cookie controller.
      * @param webContents The WebContents instance to observe.
      * @param originalBrowserContext The "original" browser context. In Chrome, this corresponds to
-     *         the regular profile when webContents is incognito.
+     *     the regular profile when the current profile is off the record.
+     * @param isIncognitoBranded boolean that determines whether the profile is incognito.
      */
     public CookieControlsBridge(
             CookieControlsObserver observer,
             WebContents webContents,
-            @Nullable BrowserContextHandle originalBrowserContext) {
+            @Nullable BrowserContextHandle originalBrowserContext,
+            boolean isIncognitoBranded) {
         mObserver = observer;
         mNativeCookieControlsBridge =
                 CookieControlsBridgeJni.get()
-                        .init(CookieControlsBridge.this, webContents, originalBrowserContext);
+                        .init(
+                                CookieControlsBridge.this,
+                                webContents,
+                                originalBrowserContext,
+                                isIncognitoBranded);
     }
 
+    /**
+     * Called when web contents have changed.
+     *
+     * @param webContents The WebContents instance to update to.
+     * @param originalBrowserContext The "original" browser context. In Chrome, this corresponds to
+     *     the regular profile when the current profile is off the record.
+     * @param isIncognitoBranded boolean that determines whether the profile is incognito.
+     */
     public void updateWebContents(
-            WebContents webContents, @Nullable BrowserContextHandle originalBrowserContext) {
+            WebContents webContents,
+            @Nullable BrowserContextHandle originalBrowserContext,
+            boolean isIncognitoBranded) {
         if (mNativeCookieControlsBridge != 0) {
             CookieControlsBridgeJni.get()
                     .updateWebContents(
-                            mNativeCookieControlsBridge, webContents, originalBrowserContext);
+                            mNativeCookieControlsBridge,
+                            webContents,
+                            originalBrowserContext,
+                            isIncognitoBranded);
         }
     }
 
@@ -148,12 +169,14 @@ public class CookieControlsBridge {
         long init(
                 CookieControlsBridge caller,
                 WebContents webContents,
-                BrowserContextHandle originalContextHandle);
+                @Nullable BrowserContextHandle originalContextHandle,
+                boolean isIncognitoBranded);
 
         void updateWebContents(
                 long nativeCookieControlsBridge,
                 WebContents webContents,
-                @Nullable BrowserContextHandle originalBrowserContext);
+                @Nullable BrowserContextHandle originalBrowserContext,
+                boolean isIncognitoBranded);
 
         void destroy(long nativeCookieControlsBridge, CookieControlsBridge caller);
 

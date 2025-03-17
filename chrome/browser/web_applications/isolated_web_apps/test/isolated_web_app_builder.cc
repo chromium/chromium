@@ -10,9 +10,11 @@
 #include <string_view>
 
 #include "base/base_paths.h"
+#include "base/containers/to_value_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
+#include "base/functional/function_ref.h"
 #include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -24,8 +26,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "base/types/optional_ref.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -44,11 +48,12 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "skia/ext/codec_utils.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -118,7 +123,10 @@ FakeWebContentsManager::FakePageState& FakeInstallPageState(
 base::expected<IsolatedWebAppUrlInfo, std::string> Install(
     Profile* profile,
     const web_package::SignedWebBundleId& web_bundle_id,
-    const IsolatedWebAppInstallSource& install_source) {
+    const IsolatedWebAppInstallSource& install_source,
+    const ManifestBuilder& manifest_builder,
+    bool fake_install_page,
+    bool trust_key) {
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
   if (FakeWebAppProvider* fake_provider = GetFakeWebAppProvider(profile)) {
@@ -134,10 +142,20 @@ base::expected<IsolatedWebAppUrlInfo, std::string> Install(
     auto& web_contents_manager = static_cast<FakeWebContentsManager&>(
         fake_provider->web_contents_manager());
     if (!web_contents_manager.HasPageState(install_url)) {
-      LOG(WARNING) << "The install page for this IWA has not been faked. "
-                   << "You likely need to call FakeInstallPageState before "
-                   << "Install.";
+      if (fake_install_page) {
+        FakeInstallPageState(
+            profile, url_info,
+            manifest_builder.ToBlinkManifest(url_info.origin()));
+      } else {
+        LOG(WARNING) << "The install page for this IWA has not been faked. "
+                     << "You likely need to remove DoNotFakeInstallPage or "
+                     << "manually call FakeInstallPageState before Install.";
+      }
     }
+  }
+
+  if (trust_key) {
+    AddTrustedWebBundleIdForTesting(web_bundle_id);
   }
 
   base::test::TestFuture<InstallResult> future;
@@ -167,138 +185,6 @@ web_package::SignedWebBundleId CreateSignedWebBundleIdFromKeyPair(
 
 }  // namespace
 
-BundledIsolatedWebApp::BundledIsolatedWebApp(
-    const web_package::SignedWebBundleId& web_bundle_id,
-    const std::vector<uint8_t> serialized_bundle,
-    const base::FilePath path,
-    ManifestBuilder manifest_builder)
-    : web_bundle_id_(web_bundle_id),
-      path_(std::move(path)),
-      manifest_builder_(manifest_builder) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  CHECK(base::WriteFile(path_, std::move(serialized_bundle)));
-}
-
-BundledIsolatedWebApp::~BundledIsolatedWebApp() = default;
-
-void BundledIsolatedWebApp::TrustSigningKey() {
-  AddTrustedWebBundleIdForTesting(web_bundle_id_);
-}
-
-std::string BundledIsolatedWebApp::GetBundleData() const {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  std::string content;
-  CHECK(base::ReadFileToString(path_, &content));
-  return content;
-}
-
-IsolatedWebAppUrlInfo BundledIsolatedWebApp::InstallChecked(Profile* profile) {
-  auto result = Install(profile);
-  CHECK(result.has_value()) << result.error();
-  return *result;
-}
-
-base::expected<IsolatedWebAppUrlInfo, std::string>
-BundledIsolatedWebApp::Install(Profile* profile) {
-  return ::web_app::Install(
-      profile, web_bundle_id_,
-      IsolatedWebAppInstallSource::FromGraphicalInstaller(
-          web_app::IwaSourceBundleProdModeWithFileOp(
-              path(), web_app::IwaSourceBundleProdFileOp::kCopy)));
-}
-
-base::expected<IsolatedWebAppUrlInfo, std::string>
-BundledIsolatedWebApp::InstallWithSource(
-    Profile* profile,
-    IsolatedWebAppInstallSource src_source) {
-  return ::web_app::Install(profile, web_bundle_id_, src_source);
-}
-
-base::expected<IsolatedWebAppUrlInfo, std::string>
-BundledIsolatedWebApp::TrustBundleAndInstall(Profile* profile) {
-  TrustSigningKey();
-  return Install(profile);
-}
-
-FakeWebContentsManager::FakePageState&
-BundledIsolatedWebApp::FakeInstallPageState(Profile* profile) {
-  auto url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
-  return ::web_app::FakeInstallPageState(
-      profile, url_info, manifest_builder_.ToBlinkManifest(url_info.origin()));
-}
-
-// static
-std::unique_ptr<ScopedBundledIsolatedWebApp>
-ScopedBundledIsolatedWebApp::Create(
-    const web_package::SignedWebBundleId& web_bundle_id,
-    const std::vector<uint8_t> serialized_bundle,
-    ManifestBuilder manifest_builder) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempFile bundle_file;
-  CHECK(bundle_file.Create());
-
-  return base::WrapUnique(new ScopedBundledIsolatedWebApp(
-      web_bundle_id, std::move(serialized_bundle), std::move(bundle_file),
-      std::move(manifest_builder)));
-}
-
-ScopedBundledIsolatedWebApp::ScopedBundledIsolatedWebApp(
-    const web_package::SignedWebBundleId& web_bundle_id,
-    const std::vector<uint8_t> serialized_bundle,
-    base::ScopedTempFile bundle_file,
-    ManifestBuilder manifest_builder)
-    : BundledIsolatedWebApp(web_bundle_id,
-                            std::move(serialized_bundle),
-                            bundle_file.path(),
-                            std::move(manifest_builder)),
-      bundle_file_(std::move(bundle_file)) {}
-
-ScopedBundledIsolatedWebApp::~ScopedBundledIsolatedWebApp() {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  bundle_file_.Reset();
-}
-
-ScopedProxyIsolatedWebApp::ScopedProxyIsolatedWebApp(
-    std::unique_ptr<net::EmbeddedTestServer> proxy_server,
-    std::optional<ManifestBuilder> manifest_builder)
-    : proxy_server_(std::move(proxy_server)),
-      manifest_builder_(manifest_builder) {}
-
-ScopedProxyIsolatedWebApp::~ScopedProxyIsolatedWebApp() = default;
-
-IsolatedWebAppUrlInfo ScopedProxyIsolatedWebApp::InstallChecked(
-    Profile* profile) {
-  auto result = Install(profile);
-  CHECK(result.has_value()) << result.error();
-  return *result;
-}
-
-base::expected<IsolatedWebAppUrlInfo, std::string>
-ScopedProxyIsolatedWebApp::Install(Profile* profile) {
-  return Install(profile,
-                 web_package::SignedWebBundleId::CreateRandomForProxyMode());
-}
-
-base::expected<IsolatedWebAppUrlInfo, std::string>
-ScopedProxyIsolatedWebApp::Install(
-    Profile* profile,
-    const web_package::SignedWebBundleId& web_bundle_id) {
-  return ::web_app::Install(profile, web_bundle_id,
-                            IsolatedWebAppInstallSource::FromDevUi(
-                                IwaSourceProxy(proxy_server_->GetOrigin())));
-}
-
-FakeWebContentsManager::FakePageState&
-ScopedProxyIsolatedWebApp::FakeInstallPageState(
-    Profile* profile,
-    const web_package::SignedWebBundleId& web_bundle_id) {
-  auto url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
-  return ::web_app::FakeInstallPageState(
-      profile, url_info, manifest_builder_->ToBlinkManifest(url_info.origin()));
-}
-
 ManifestBuilder::PermissionsPolicy::PermissionsPolicy(
     bool wildcard,
     bool self,
@@ -315,7 +201,7 @@ ManifestBuilder::PermissionsPolicy::~PermissionsPolicy() = default;
 ManifestBuilder::ManifestBuilder()
     : name_("Test App"), version_("0.0.1"), start_url_("/") {
   AddPermissionsPolicy(
-      blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+      network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
       /*self=*/true, /*origins=*/{});
 }
 
@@ -337,6 +223,18 @@ ManifestBuilder& ManifestBuilder::SetStartUrl(std::string_view start_url) {
   return *this;
 }
 
+ManifestBuilder& ManifestBuilder::SetDisplayMode(
+    blink::mojom::DisplayMode display_mode) {
+  display_mode_ = display_mode;
+  return *this;
+}
+
+ManifestBuilder& ManifestBuilder::SetDisplayModeOverride(
+    std::vector<blink::mojom::DisplayMode> display_mode_override) {
+  display_mode_override_ = std::move(display_mode_override);
+  return *this;
+}
+
 ManifestBuilder& ManifestBuilder::AddIcon(std::string_view resource_path,
                                           gfx::Size size,
                                           std::string_view content_type) {
@@ -346,7 +244,7 @@ ManifestBuilder& ManifestBuilder::AddIcon(std::string_view resource_path,
 }
 
 ManifestBuilder& ManifestBuilder::AddPermissionsPolicyWildcard(
-    blink::mojom::PermissionsPolicyFeature feature) {
+    network::mojom::PermissionsPolicyFeature feature) {
   permissions_policy_.insert_or_assign(
       feature,
       ManifestBuilder::PermissionsPolicy(/*wildcard=*/true, /*self=*/false,
@@ -355,7 +253,7 @@ ManifestBuilder& ManifestBuilder::AddPermissionsPolicyWildcard(
 }
 
 ManifestBuilder& ManifestBuilder::AddPermissionsPolicy(
-    blink::mojom::PermissionsPolicyFeature feature,
+    network::mojom::PermissionsPolicyFeature feature,
     bool self,
     std::vector<url::Origin> origins) {
   permissions_policy_.insert_or_assign(
@@ -399,7 +297,10 @@ std::string ManifestBuilder::ToJson() const {
                   .Set("id", "/")
                   .Set("scope", "/")
                   .Set("start_url", start_url_)
-                  .Set("display", "standalone");
+                  .Set("display", blink::DisplayModeToString(display_mode_))
+                  .Set("display_override",
+                       base::ToValueList(display_mode_override_,
+                                         &blink::DisplayModeToString));
 
   base::Value::Dict policies;
   for (const auto& policy : permissions_policy_) {
@@ -468,7 +369,8 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
   manifest->id = base_url;
   manifest->scope = base_url;
   manifest->start_url = base_url.Resolve(start_url_);
-  manifest->display = blink::mojom::DisplayMode::kStandalone;
+  manifest->display = display_mode_;
+  manifest->display_override = display_mode_override_;
 
   for (const auto& icon : icons_) {
     blink::Manifest::ImageResource blink_icon;
@@ -488,7 +390,7 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
   }
 
   for (const auto& policy : permissions_policy_) {
-    blink::ParsedPermissionsPolicyDeclaration decl;
+    network::ParsedPermissionsPolicyDeclaration decl;
     decl.feature = policy.first;
     if (policy.second.wildcard) {
       decl.matches_all_origins = true;
@@ -498,7 +400,7 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
     }
     for (const auto& origin : policy.second.origins) {
       decl.allowed_origins.push_back(
-          blink::OriginWithPossibleWildcards::FromOrigin(origin).value());
+          network::OriginWithPossibleWildcards::FromOrigin(origin).value());
     }
     manifest->permissions_policy.push_back(decl);
   }
@@ -666,6 +568,8 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFileFromDisk(
     const Headers& headers) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   CHECK(base::PathExists(file_path)) << file_path << " does not exist";
+  CHECK(resource_path != kManifestPath)
+      << "The manifest must be specified through the ManifestBuilder";
   resources_.insert_or_assign(std::string(resource_path),
                               Resource(net::HTTP_OK, headers, file_path));
   return *this;
@@ -690,7 +594,13 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFolderFromDisk(
   for (base::FilePath path = files.Next(); !path.empty(); path = files.Next()) {
     base::FilePath relative(FILE_PATH_LITERAL("/"));
     CHECK(folder_path.AppendRelativePath(path, &relative));
-    AddFileFromDisk(relative.AsUTF8Unsafe(), path);
+    std::string relative_resource_path = relative.AsUTF8Unsafe();
+    if (relative_resource_path == kManifestPath) {
+      LOG(WARNING) << "Ignoring /.well-known/manifest.webmanifest, the "
+                      "serialized ManifestBuilder value will be used instead.";
+      continue;
+    }
+    AddFileFromDisk(relative_resource_path, path);
   }
   return *this;
 }
@@ -767,12 +677,11 @@ std::vector<uint8_t> IsolatedWebAppBuilder::BuildInMemoryBundle(
   base::ScopedAllowBlockingForTesting allow_blocking;
   Validate();
   web_package::WebBundleBuilder builder;
-  for (const auto& resource : resources_) {
-    scoped_refptr<net::HttpResponseHeaders> headers =
-        resource.second.headers(resource.first);
+  for (const auto& [url, resource] : resources_) {
+    scoped_refptr<net::HttpResponseHeaders> headers = resource.headers(url);
 
     web_package::WebBundleBuilder::Headers bundle_headers = {
-        {":status", base::ToString(resource.second.status())}};
+        {":status", base::ToString(resource.status())}};
     size_t iterator = 0;
     std::string name;
     std::string value;
@@ -782,7 +691,7 @@ std::vector<uint8_t> IsolatedWebAppBuilder::BuildInMemoryBundle(
       bundle_headers.push_back({base::ToLowerASCII(name), value});
     }
 
-    builder.AddExchange(resource.first, bundle_headers, resource.second.body());
+    builder.AddExchange(url, bundle_headers, resource.body());
   }
 
   builder.AddExchange(
@@ -843,6 +752,122 @@ IsolatedWebAppBuilder::HandleRequest(
     response->set_code(net::HTTP_NOT_FOUND);
   }
   return response;
+}
+
+BundledIsolatedWebApp::BundledIsolatedWebApp(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::vector<uint8_t> serialized_bundle,
+    const base::FilePath path,
+    ManifestBuilder manifest_builder)
+    : web_bundle_id_(web_bundle_id),
+      path_(std::move(path)),
+      manifest_builder_(manifest_builder) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  CHECK(base::WriteFile(path_, std::move(serialized_bundle)));
+}
+
+BundledIsolatedWebApp::~BundledIsolatedWebApp() = default;
+
+std::string BundledIsolatedWebApp::GetBundleData() const {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string content;
+  CHECK(base::ReadFileToString(path_, &content));
+  return content;
+}
+
+void BundledIsolatedWebApp::TrustSigningKey() {
+  AddTrustedWebBundleIdForTesting(web_bundle_id_);
+}
+
+FakeWebContentsManager::FakePageState&
+BundledIsolatedWebApp::FakeInstallPageState(Profile* profile) {
+  auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
+  return ::web_app::FakeInstallPageState(
+      profile, url_info, manifest_builder_.ToBlinkManifest(url_info.origin()));
+}
+
+base::expected<IsolatedWebAppUrlInfo, std::string>
+BundledIsolatedWebApp::InstallWithSource(Profile* profile,
+                                         IsolatedWebAppInstallSource source,
+                                         bool fake_install_page,
+                                         bool trust_key) {
+  return ::web_app::Install(profile, web_bundle_id_, source, manifest_builder_,
+                            fake_install_page, trust_key);
+}
+
+// static
+std::unique_ptr<ScopedBundledIsolatedWebApp>
+ScopedBundledIsolatedWebApp::Create(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::vector<uint8_t> serialized_bundle,
+    ManifestBuilder manifest_builder) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempFile bundle_file;
+  CHECK(bundle_file.Create());
+
+  return base::WrapUnique(new ScopedBundledIsolatedWebApp(
+      web_bundle_id, std::move(serialized_bundle), std::move(bundle_file),
+      std::move(manifest_builder)));
+}
+
+ScopedBundledIsolatedWebApp::ScopedBundledIsolatedWebApp(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::vector<uint8_t> serialized_bundle,
+    base::ScopedTempFile bundle_file,
+    ManifestBuilder manifest_builder)
+    : BundledIsolatedWebApp(web_bundle_id,
+                            std::move(serialized_bundle),
+                            bundle_file.path(),
+                            std::move(manifest_builder)),
+      bundle_file_(std::move(bundle_file)) {}
+
+ScopedBundledIsolatedWebApp::~ScopedBundledIsolatedWebApp() {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  bundle_file_.Reset();
+}
+
+ScopedProxyIsolatedWebApp::ScopedProxyIsolatedWebApp(
+    std::unique_ptr<net::EmbeddedTestServer> proxy_server,
+    const ManifestBuilder& manifest_builder)
+    : proxy_server_(std::move(proxy_server)),
+      manifest_builder_(manifest_builder) {}
+
+ScopedProxyIsolatedWebApp::~ScopedProxyIsolatedWebApp() = default;
+
+IsolatedWebAppUrlInfo ScopedProxyIsolatedWebApp::InstallChecked(
+    Profile* profile) {
+  auto result = Install(profile);
+  CHECK(result.has_value()) << result.error();
+  return *result;
+}
+
+base::expected<IsolatedWebAppUrlInfo, std::string>
+ScopedProxyIsolatedWebApp::Install(Profile* profile) {
+  return Install(profile,
+                 web_package::SignedWebBundleId::CreateRandomForProxyMode());
+}
+
+base::expected<IsolatedWebAppUrlInfo, std::string>
+ScopedProxyIsolatedWebApp::Install(
+    Profile* profile,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  return ::web_app::Install(profile, web_bundle_id,
+                            IsolatedWebAppInstallSource::FromDevUi(
+                                IwaSourceProxy(proxy_server_->GetOrigin())),
+                            manifest_builder_,
+                            /*fake_install_page=*/true,
+                            /*trust_key=*/false);
+}
+
+FakeWebContentsManager::FakePageState&
+ScopedProxyIsolatedWebApp::FakeInstallPageState(
+    Profile* profile,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
+  return ::web_app::FakeInstallPageState(
+      profile, url_info, manifest_builder_.ToBlinkManifest(url_info.origin()));
 }
 
 }  // namespace web_app

@@ -27,6 +27,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/install_service_work_item.h"
@@ -353,7 +354,7 @@ void AddInstallServerWorkItems(HKEY root,
 
   base::CommandLine run_com_server_command(com_server_path);
   run_com_server_command.AppendSwitch(kServerSwitch);
-  run_com_server_command.AppendSwitchASCII(
+  run_com_server_command.AppendSwitchUTF8(
       kServerServiceSwitch, internal_service
                                 ? kServerUpdateServiceInternalSwitchValue
                                 : kServerUpdateServiceSwitchValue);
@@ -399,7 +400,7 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   base::CommandLine com_service_command(com_service_path);
   com_service_command.AppendSwitch(kSystemSwitch);
   com_service_command.AppendSwitch(kWindowsServiceSwitch);
-  com_service_command.AppendSwitchASCII(
+  com_service_command.AppendSwitchUTF8(
       kServerServiceSwitch, internal_service
                                 ? kServerUpdateServiceInternalSwitchValue
                                 : kServerUpdateServiceSwitchValue);
@@ -423,12 +424,14 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
     }
   }
 
+  const std::wstring language = base::UTF8ToWide(GetTagLanguage());
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
       GetLocalizedString(internal_service
                              ? IDS_INTERNAL_UPDATER_SERVICE_DISPLAY_NAME_BASE
-                             : IDS_UPDATER_SERVICE_DISPLAY_NAME_BASE),
-      GetLocalizedString(IDS_UPDATER_SERVICE_DESCRIPTION_BASE),
+                             : IDS_UPDATER_SERVICE_DISPLAY_NAME_BASE,
+                         language),
+      GetLocalizedString(IDS_UPDATER_SERVICE_DESCRIPTION_BASE, language),
       SERVICE_AUTO_START, com_service_command, com_switch, UPDATER_KEY, clsids,
       {}));
 
@@ -504,7 +507,7 @@ HRESULT RegisterTypeLibs(UpdaterScope scope, bool is_internal) {
          return {TYPELIB_UPDATER_IDL_USER, TYPELIB_UPDATER_LEGACY_IDL_USER};
        }()) {
     const base::FilePath typelib_path =
-        exe_path.AppendASCII(base::NumberToString(typelib_resource_index));
+        exe_path.AppendUTF8(base::NumberToString(typelib_resource_index));
 
     Microsoft::WRL::ComPtr<ITypeLib> type_lib;
     if (HRESULT hr = ::LoadTypeLib(typelib_path.value().c_str(), &type_lib);

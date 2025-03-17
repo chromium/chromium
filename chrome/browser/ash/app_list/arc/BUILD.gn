@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("arc") {
   sources = [
@@ -62,12 +62,6 @@ static_library("arc") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_app_constants",
-    "//ash/components/arc/intent_helper:arc_intent_helper_constants",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
-    "//ash/components/arc/session:connection_holder",
     "//ash/constants",
     "//base",
     "//chrome/app:generated_resources",
@@ -81,6 +75,12 @@ static_library("arc") {
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/arc/session:connection_holder",
     "//components/app_restore",
     "//components/crx_file",
     "//components/keyed_service/core",
@@ -128,16 +128,6 @@ source_set("unit_tests") {
   deps = [
     ":arc",
     ":test_support",
-    "//ash/components/arc:arc_app_constants",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:arc_features",
-    "//ash/components/arc:arc_metrics_constants",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/intent_helper",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -162,6 +152,16 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc:arc_metrics_constants",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
     "//components/services/app_service/public/cpp:test_support",
     "//components/session_manager/core",
     "//components/sync:test_support",
@@ -197,10 +197,6 @@ source_set("browser_tests") {
 
   deps = [
     ":arc",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
-    "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
@@ -209,6 +205,10 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/user_manager",
     "//content/test:test_support",
   ]
@@ -226,22 +226,16 @@ static_library("test_support") {
 
   public_deps = [
     ":arc",
-    "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ui",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/session_manager/core",
     "//components/user_manager",
     "//testing/gmock",
   ]
 
   deps = [
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
-    "//ash/components/arc/intent_helper",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/arc",
@@ -251,6 +245,12 @@ static_library("test_support") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
     "//testing/gtest",
   ]
 }

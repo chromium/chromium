@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/oauth2/authorization_zone_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -16,7 +17,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
@@ -371,7 +371,7 @@ void AuthorizationZoneImpl::OnSendTokenRequestCallback(
     StatusCode status,
     std::string data) {
   // Find the session for which the request was completed.
-  auto it_session = base::ranges::find(
+  auto it_session = std::ranges::find(
       sessions_, session, &std::unique_ptr<AuthorizationServerSession>::get);
   DCHECK(it_session != sessions_.end());
 
@@ -523,7 +523,7 @@ bool AuthorizationZoneImpl::FindAndRemovePendingAuthorization(
     const std::string& state,
     base::flat_set<std::string>& scopes,
     std::string& code_verifier) {
-  std::list<PendingAuthorization>::iterator it = base::ranges::find(
+  std::list<PendingAuthorization>::iterator it = std::ranges::find(
       pending_authorizations_, state, &PendingAuthorization::state);
   if (it == pending_authorizations_.end()) {
     return false;

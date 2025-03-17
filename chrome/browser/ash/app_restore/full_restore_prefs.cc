@@ -51,6 +51,16 @@ bool CanPerformRestore(PrefService* prefs) {
          RestoreOption::kDoNotRestore;
 }
 
+bool IsAskEveryTime(PrefService* prefs) {
+  if (!HasRestorePref(prefs)) {
+    return false;
+  }
+
+  return static_cast<RestoreOption>(
+             prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName)) ==
+         RestoreOption::kAskEveryTime;
+}
+
 void SetDefaultRestorePrefIfNecessary(PrefService* prefs) {
   DCHECK(!HasRestorePref(prefs));
 

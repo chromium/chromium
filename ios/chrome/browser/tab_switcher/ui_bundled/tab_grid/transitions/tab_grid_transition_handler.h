@@ -12,16 +12,12 @@
 
 @protocol TabGridTransitionLayoutProviding;
 
-namespace {
-
 // Transition types available.
 enum class TabGridTransitionType {
   kNormal,
   kReducedMotion,
   kAnimationDisabled,
 };
-
-}  // namespace
 
 @class TabGridTransitionHandler;
 

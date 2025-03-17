@@ -4,6 +4,7 @@
 
 #include "services/media_session/audio_focus_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -11,12 +12,10 @@
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/audio_focus_request.h"
 #include "services/media_session/media_session_service_impl.h"
@@ -185,7 +184,7 @@ class AudioFocusManagerTest
   }
 
   bool IsEnforcementEnabled() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Enforcement is enabled by default on Chrome OS.
     if (GetParam() == mojom::EnforcementMode::kDefault)
       return true;
@@ -244,9 +243,8 @@ class AudioFocusManagerTest
  private:
   int GetCountForType(mojom::AudioFocusType type) {
     const auto audio_focus_requests = GetRequests();
-    return base::ranges::count(
-        audio_focus_requests, type,
-        &mojom::AudioFocusRequestState::audio_focus_type);
+    return std::ranges::count(audio_focus_requests, type,
+                              &mojom::AudioFocusRequestState::audio_focus_type);
   }
 
   std::vector<mojom::AudioFocusRequestStatePtr> GetRequests() {

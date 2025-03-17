@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.thumbnail.generator;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
 import androidx.core.util.Pair;
@@ -23,6 +23,8 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailCacheEntry.ContentId;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailCacheEntry.ThumbnailEntry;
 import org.chromium.components.browser_ui.util.ConversionUtils;
@@ -50,6 +52,7 @@ import java.util.LinkedHashSet;
  * on restart (when initDiskCache is called) and trim to sync to disk if file was removed
  * elsewhere (e.g. manually from disk).
  */
+@NullMarked
 public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
     private static final String TAG = "ThumbnailStorage";
     private static final int MAX_CACHE_BYTES =
@@ -73,7 +76,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
     @VisibleForTesting final ThumbnailGenerator mThumbnailGenerator;
 
     // This should be initialized once.
-    private File mDirectory;
+    private @Nullable File mDirectory;
 
     private ThumbnailStorageDelegate mDelegate;
 
@@ -88,16 +91,16 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
     AsyncTask<Void> mInitTask;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    AsyncTask<Void> mLastClearTask;
+    @Nullable AsyncTask<Void> mLastClearTask;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    AsyncTask<Void> mLastCacheThumbnailTask;
+    @Nullable AsyncTask<Void> mLastCacheThumbnailTask;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    AsyncTask<Bitmap> mLastGetThumbnailTask;
+    @Nullable AsyncTask<@Nullable Bitmap> mLastGetThumbnailTask;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    AsyncTask<Void> mLastRemoveThumbnailTask;
+    @Nullable AsyncTask<Void> mLastRemoveThumbnailTask;
 
     // Whether or not this class has been destroyed and should not be used.
     private boolean mDestroyed;
@@ -138,7 +141,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
     }
 
     /** Reads from disk cache. If missing, fetch from {@link ThumbnailGenerator}. */
-    private class GetThumbnailTask extends AsyncTask<Bitmap> {
+    private class GetThumbnailTask extends AsyncTask<@Nullable Bitmap> {
         private final ThumbnailProvider.ThumbnailRequest mRequest;
 
         public GetThumbnailTask(ThumbnailProvider.ThumbnailRequest request) {
@@ -146,7 +149,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
         }
 
         @Override
-        protected Bitmap doInBackground() {
+        protected @Nullable Bitmap doInBackground() {
             if (sDiskLruCache.contains(
                     Pair.create(mRequest.getContentId(), mRequest.getIconSize()))) {
                 return getFromDisk(mRequest.getContentId(), mRequest.getIconSize());
@@ -155,9 +158,10 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
         }
 
         @Override
-        protected void onPostExecute(Bitmap bitmap) {
+        protected void onPostExecute(@Nullable Bitmap bitmap) {
             if (bitmap != null) {
-                onThumbnailRetrieved(mRequest.getContentId(), bitmap, mRequest.getIconSize());
+                onThumbnailRetrieved(
+                        assumeNonNull(mRequest.getContentId()), bitmap, mRequest.getIconSize());
                 return;
             }
             // Asynchronously process the file to make a thumbnail.
@@ -243,8 +247,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
      * thumbnail requested.
      */
     @Override
-    public void onThumbnailRetrieved(
-            @NonNull String contentId, @Nullable Bitmap bitmap, int iconSizePx) {
+    public void onThumbnailRetrieved(String contentId, @Nullable Bitmap bitmap, int iconSizePx) {
         // If we've been destroyed, drop any responses coming back from retrieval tasks.
         if (mDestroyed) return;
 
@@ -254,7 +257,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
                     new CacheThumbnailTask(contentId, bitmap, iconSizePx)
                             .executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         }
-        mDelegate.onThumbnailRetrieved(contentId, bitmap);
+        mDelegate.onThumbnailRetrieved(contentId, bitmap, iconSizePx);
     }
 
     /**
@@ -379,8 +382,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
      * @return Bitmap If thumbnail is not cached to disk, this is null.
      */
     @VisibleForTesting
-    @Nullable
-    Bitmap getFromDisk(String contentId, int iconSizePx) {
+    @Nullable Bitmap getFromDisk(@Nullable String contentId, int iconSizePx) {
         ThreadUtils.assertOnBackgroundThread();
         if (!isInitialized()) return null;
 
@@ -461,7 +463,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
 
         // Update internal cache state.
         sDiskLruCache.remove(contentIdSizePair);
-        sIconSizesMap.get(contentId).remove(iconSizePx);
+        assumeNonNull(sIconSizesMap.get(contentId)).remove(iconSizePx);
         if (sIconSizesMap.get(contentId).size() == 0) {
             sIconSizesMap.remove(contentId);
         }
@@ -489,7 +491,8 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
      * thumbnail.
      * @return File path.
      */
-    private String getThumbnailFilePath(String contentId, int iconSizePx) {
+    private String getThumbnailFilePath(@Nullable String contentId, int iconSizePx) {
+        assumeNonNull(mDirectory);
         return mDirectory.getPath() + File.separator + contentId + iconSizePx + ".entry";
     }
 

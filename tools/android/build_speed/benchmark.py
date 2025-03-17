@@ -11,10 +11,10 @@ Example Output:
     Summary
     gn args: target_os="android" use_remoteexec=true incremental_install=true
     gn gen: 6.7s
-    chrome_java_nosig: 36.1s avg (35.9s, 36.3s)
-    chrome_java_sig: 38.9s avg (38.8s, 39.1s)
-    base_java_nosig: 41.0s avg (41.1s, 40.9s)
-    base_java_sig: 93.1s avg (93.1s, 93.2s)
+    chrome_nosig: 36.1s avg (35.9s, 36.3s)
+    chrome_sig: 38.9s avg (38.8s, 39.1s)
+    base_nosig: 41.0s avg (41.1s, 40.9s)
+    base_sig: 93.1s avg (93.1s, 93.2s)
 
 Note: This tool will make edits on files in your local repo. It will revert the
       edits afterwards.
@@ -26,14 +26,18 @@ import contextlib
 import dataclasses
 import functools
 import logging
+import os
 import pathlib
+import random
+import re
+import signal
 import statistics
 import subprocess
 import sys
 import time
 import shutil
 
-from typing import Dict, Callable, Iterator, List, Optional
+from typing import Dict, Callable, Iterator, List, Optional, Tuple
 
 USE_PYTHON_3 = f'{__file__} will only run under python3.'
 
@@ -109,24 +113,24 @@ _TARGETS = {
 
 _SUITES = {
     'all_incremental': [
-        'chrome_java_nosig',
-        'chrome_java_sig',
-        'module_java_public_sig',
-        'module_java_internal_nosig',
-        'base_java_nosig',
-        'base_java_sig',
+        'chrome_nosig',
+        'chrome_sig',
+        'module_public_sig',
+        'module_internal_nosig',
+        'base_nosig',
+        'base_sig',
     ],
     'all_chrome_java': [
-        'chrome_java_nosig',
-        'chrome_java_sig',
+        'chrome_nosig',
+        'chrome_sig',
     ],
     'all_module_java': [
-        'module_java_public_sig',
-        'module_java_internal_nosig',
+        'module_public_sig',
+        'module_internal_nosig',
     ],
     'all_base_java': [
-        'base_java_nosig',
-        'base_java_sig',
+        'base_nosig',
+        'base_sig',
     ],
     'extra_incremental': [
         'turbine_headers',
@@ -149,64 +153,64 @@ class Benchmark:
 
 _BENCHMARKS = [
     Benchmark(
-        name='chrome_java_nosig',
-        from_string='super.onCreate();',
-        to_string='super.onCreate();super.onCreate();',
+        name='chrome_nosig',
+        from_string='IntentHandler";',
+        to_string='Different<sub>UniqueString";',
         change_file=
-        'chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',  # pylint: disable=line-too-long
+        'chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
-        name='chrome_java_sig',
+        name='chrome_sig',
         from_string='public ChromeApplicationImpl() {}',
         to_string=
-        'public ChromeApplicationImpl() {};public void NewInterfaceMethod(){}',  # pylint: disable=line-too-long
+        'public ChromeApplicationImpl() {};public void NewInterface<sub>Method(){}',  # pylint: disable=line-too-long
         change_file=
         'chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
-        name='module_java_public_sig',
+        name='module_public_sig',
         from_string='INVALID_WINDOW_INDEX = -1',
-        to_string='INVALID_WINDOW_INDEX = -2',
+        to_string='INVALID_WINDOW_INDEX = -<sub>',
         change_file=
         'chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
-        name='module_java_internal_nosig',
+        name='module_internal_nosig',
         from_string='"TabModelSelector',
-        to_string='"DifferentUniqueString',
+        to_string='"DifferentUnique<sub>String',
         change_file=
         'chrome/browser/tabmodel/internal/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerImpl.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
-        name='base_java_nosig',
-        from_string='"SysUtil',
-        to_string='"SysUtil1',
-        change_file='base/android/java/src/org/chromium/base/SysUtils.java',
+        name='base_nosig',
+        from_string='"PathUtil',
+        to_string='"PathUtil<sub>1',
+        change_file='base/android/java/src/org/chromium/base/PathUtils.java',
     ),
     Benchmark(
-        name='base_java_sig',
-        from_string='SysUtils";',
-        to_string='SysUtils";public void NewInterfaceMethod(){}',
-        change_file='base/android/java/src/org/chromium/base/SysUtils.java',
+        name='base_sig',
+        from_string='PathUtils";',
+        to_string='PathUtils";public void NewInterface<sub>Method(){}',
+        change_file='base/android/java/src/org/chromium/base/PathUtils.java',
     ),
     Benchmark(
         name='turbine_headers',
         from_string='# found in the LICENSE file.',
-        to_string='#temporary_edit_for_benchmark.py',
+        to_string='#temporary_edit_for_benchmark<sub>.py',
         change_file='build/android/gyp/turbine.py',
         can_install=False,
     ),
     Benchmark(
         name='compile_java',
         from_string='# found in the LICENSE file.',
-        to_string='#temporary_edit_for_benchmark.py',
+        to_string='#temporary_edit_for_benchmark<sub>.py',
         change_file='build/android/gyp/compile_java.py',
         can_install=False,
     ),
     Benchmark(
         name='write_build_config',
         from_string='# found in the LICENSE file.',
-        to_string='#temporary_edit_for_benchmark.py',
+        to_string='#temporary_edit_for_benchmark<sub>.py',
         change_file='build/android/gyp/write_build_config.py',
         can_install=False,
     ),
@@ -299,6 +303,10 @@ def _run_and_time_cmd(cmd: List[str]) -> float:
     try:
         # Since output can be verbose, only show it for debug/errors.
         show_output = logging.getLogger().isEnabledFor(logging.DEBUG)
+        # Set autoninja stdout to /dev/null so that autoninja does not set this
+        # to an anonymous pipe.
+        env = os.environ.copy()
+        env['AUTONINJA_STDOUT_NAME'] = '/dev/null'
         # Ensure that stdout goes to stderr so that timing output does not get
         # mixed with logging output.
         subprocess.run(cmd,
@@ -306,7 +314,8 @@ def _run_and_time_cmd(cmd: List[str]) -> float:
                        capture_output=not show_output,
                        stdout=sys.stderr if show_output else None,
                        check=True,
-                       text=True)
+                       text=True,
+                       env=env)
     except subprocess.CalledProcessError as e:
         logging.error('Output was: %s', e.output)
         raise
@@ -317,9 +326,33 @@ def _run_gn_gen(out_dir: pathlib.Path) -> float:
     return _run_and_time_cmd([str(_GN_PATH), 'gen', '-C', str(out_dir)])
 
 
+def _terminate_build_server_if_needed(out_dir: pathlib.Path):
+    cmd = ["pgrep", "-f", "fast_local_dev_server.py"]
+    proc = subprocess.run(cmd, capture_output=True, text=True)
+    if not proc.stdout:
+        logging.info('No build server detected via pgrep.')
+        return
+    pid = proc.stdout.strip()
+    logging.info(f'Detected build server with pid {pid}, sending SIGINT...')
+    os.kill(int(pid), signal.SIGINT)
+    for _ in range(5):
+        proc = subprocess.run(cmd, capture_output=True, text=True)
+        if not proc.stdout:
+            logging.info('Successfully terminated build server.')
+            break
+        logging.info('Waiting 1s for build server to terminate...')
+        time.sleep(1)
+    else:
+        raise Exception('Build server still running after waiting 5s.')
+
+
 def _compile(out_dir: pathlib.Path, target: str) -> float:
     cmd = gn_helpers.CreateBuildCommand(str(out_dir))
-    return _run_and_time_cmd(cmd + [target])
+    try:
+        return _run_and_time_cmd(cmd + [target])
+    finally:
+        # This ensures that the build server does not affect subsequent runs.
+        _terminate_build_server_if_needed(out_dir)
 
 
 def _run_install(out_dir: pathlib.Path, target: str,
@@ -338,35 +371,47 @@ def _run_install(out_dir: pathlib.Path, target: str,
 
 
 def _run_and_maybe_install(
-        out_dir: pathlib.Path, target: str,
-        emulator: Optional[device_utils.DeviceUtils]) -> float:
-    total_time = _compile(out_dir, target)
+        name: str, out_dir: pathlib.Path, target: str,
+        emulator: Optional[device_utils.DeviceUtils]
+) -> List[Tuple[str, float]]:
+    results = [(f'{name}_compile', _compile(out_dir, target))]
     if emulator:
-        total_time += _run_install(out_dir, target, emulator.serial)
-    return total_time
+        results.append(
+            (f'{name}_install', _run_install(out_dir, target,
+                                             emulator.serial)))
+    return results
 
 
-def _run_benchmark(benchmark: Benchmark, out_dir: pathlib.Path, target: str,
-                   emulator: Optional[device_utils.DeviceUtils]) -> float:
+def _run_benchmark(
+        benchmark: Benchmark, out_dir: pathlib.Path, target: str,
+        emulator: Optional[device_utils.DeviceUtils]
+) -> List[Tuple[str, float]]:
     # This ensures that the only change is the one that this script makes.
     logging.info(f'Prepping benchmark...')
     if not benchmark.can_install:
         emulator = None
-    prep_time = _run_and_maybe_install(out_dir, target, emulator)
-    logging.info(f'Took {prep_time:.1f}s to prep.')
+    results = _run_and_maybe_install(benchmark.name, out_dir, target, emulator)
+    for name, elapsed in results:
+        logging.info(f'Took {elapsed:.1f}s to prep {name}.')
     logging.info(f'Starting actual test...')
     change_file_path = _SRC_ROOT / benchmark.change_file
     with _backup_file(change_file_path):
         with open(change_file_path, 'r') as f:
             content = f.read()
         with open(change_file_path, 'w') as f:
-            new_content = content.replace(benchmark.from_string,
-                                          benchmark.to_string)
+            # 2 billion is less than 2^31-1, which is the maximum positive int
+            # in java and less than the maximum negative int, which is -2^31.
+            replacement = benchmark.to_string.replace(
+                '<sub>', str(random.randint(1, 2_000_000_000)))
+            logging.info(
+                f'Replacing {benchmark.from_string} with {replacement}')
+            new_content = content.replace(benchmark.from_string, replacement)
             assert content != new_content, (
                 f'Need to update {benchmark.from_string} in '
                 f'{benchmark.change_file}')
             f.write(new_content)
-        return _run_and_maybe_install(out_dir, target, emulator)
+        return _run_and_maybe_install(benchmark.name, out_dir, target,
+                                      emulator)
 
 
 def _format_result(time_taken: List[float]) -> str:
@@ -410,12 +455,13 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                 # Start a fresh emulator for each benchmark to produce more
                 # consistent results.
                 with emulator_ctx() as emulator:
-                    elapsed = _run_benchmark(benchmark=benchmark,
+                    results = _run_benchmark(benchmark=benchmark,
                                              out_dir=output_directory,
                                              target=target,
                                              emulator=emulator)
-                logging.info(f'Completed {benchmark.name}: {elapsed:.1f}s')
-                timings[benchmark.name].append(elapsed)
+                for name, elapsed in results:
+                    logging.info(f'Completed {name}: {elapsed:.1f}s')
+                    timings[name].append(elapsed)
     return timings
 
 

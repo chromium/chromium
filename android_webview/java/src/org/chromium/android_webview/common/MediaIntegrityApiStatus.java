@@ -6,6 +6,8 @@ package org.chromium.android_webview.common;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -28,6 +30,7 @@ import java.lang.annotation.Target;
     MediaIntegrityApiStatus.ENABLED,
     MediaIntegrityApiStatus.COUNT
 })
+@NullMarked
 public @interface MediaIntegrityApiStatus {
     int DISABLED = 0;
     int ENABLED_WITHOUT_APP_IDENTITY = 1;

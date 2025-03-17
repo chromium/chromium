@@ -39,6 +39,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/linux/fake_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_switches.h"
@@ -584,11 +585,12 @@ std::unique_ptr<ui::NavButtonProvider> GtkUi::CreateNavButtonProvider() {
 }
 
 ui::WindowFrameProvider* GtkUi::GetWindowFrameProvider(bool solid_frame,
-                                                       bool tiled) {
-  auto& provider = frame_providers_[solid_frame][tiled];
+                                                       bool tiled,
+                                                       bool maximized) {
+  auto& provider = frame_providers_[solid_frame][tiled][maximized];
   if (!provider) {
-    provider =
-        std::make_unique<gtk::WindowFrameProviderGtk>(solid_frame, tiled);
+    provider = std::make_unique<gtk::WindowFrameProviderGtk>(solid_frame, tiled,
+                                                             maximized);
   }
   return provider.get();
 }
@@ -674,30 +676,15 @@ int GtkUi::GetCursorThemeSize() {
   return size;
 }
 
-bool GtkUi::GetTextEditCommandsForEvent(
-    const ui::Event& event,
-    int text_flags,
-    std::vector<ui::TextEditCommandAuraLinux>* commands) {
-  // GTK4 dropped custom key bindings.
-  if (GtkCheckVersion(4)) {
-    return false;
-  }
-
-  // TODO(crbug.com/40627552): Use delegate's |GetGdkKeymap| here to
-  // determine if GtkUi's key binding handling implementation is used or not.
-  // Ozone/Wayland was unintentionally using GtkUi for keybinding handling, so
-  // early out here, for now, until a proper solution for ozone is implemented.
-  if (!platform_->GetGdkKeymap()) {
-    return false;
-  }
-
+ui::TextEditCommand GtkUi::GetTextEditCommandForEvent(const ui::Event& event,
+                                                      int text_flags) {
   // Skip mapping arrow keys to edit commands for vertical text fields in a
   // renderer.  Blink handles them.  See crbug.com/484651.
   if (text_flags & ui::TEXT_INPUT_FLAG_VERTICAL) {
     ui::KeyboardCode code = event.AsKeyEvent()->key_code();
     if (code == ui::VKEY_LEFT || code == ui::VKEY_RIGHT ||
         code == ui::VKEY_UP || code == ui::VKEY_DOWN) {
-      return false;
+      return ui::TextEditCommand::INVALID_COMMAND;
     }
   }
 
@@ -706,7 +693,7 @@ bool GtkUi::GetTextEditCommandsForEvent(
     key_bindings_handler_ = std::make_unique<GtkKeyBindingsHandler>();
   }
 
-  return key_bindings_handler_->MatchEvent(event, commands);
+  return key_bindings_handler_->MatchEvent(event);
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)

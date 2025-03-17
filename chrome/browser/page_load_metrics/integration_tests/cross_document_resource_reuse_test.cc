@@ -13,7 +13,7 @@
 using CrossDocumentResourceReuseTest = MetricIntegrationTest;
 
 // Enumeration value hard coded in histograms.xml
-constexpr base::Histogram::Sample kImage = 1;
+constexpr base::Histogram::Sample32 kImage = 1;
 
 // The test verifies the metrics for reusing resources among different
 // documents. The first and the second page share an image in common. We
